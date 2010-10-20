@@ -5,19 +5,93 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			
-			protected var kc:KalturaClient;
+			import events.NavigationEvent;
+			
+			import mx.resources.ResourceManager;
+
+			/**
+			 * Dispatched when the module needs to navigate to another module.
+			 * @eventType events.NavigationEvent.NAVIGATE
+			 */
+			[Event(name="navigate",type="events.NavigationEvent")]
 			
 			
-			public function loadLocale(path:String):void {
-				
+			/**
+			 * @copy #kc
+			 * */
+			protected var _kc:KalturaClient;
+
+			/**
+			 * @copy #context
+			 * */
+			protected var _context:Context;
+
+
+			/**
+			 * Load locale data.
+			 * @param locale	path to the locale (.swf) file
+			 * */
+			protected function loadLocale(locale:String):void {
+
 			}
+
 			
-			
-			public function navigate(moduleName:String, subTab:String = ""):void {
-				
+			/**
+			 * Tell KMC to switch to another module.
+			 * @param module	name of module to show, should match the values listed in
+			 * 					<code>events.NavigationEvent</code> class.
+			 * @param subtab	name of subtab of the module to show. If <code>subtab</code> is supplied and the 
+			 * 					module has a subtab with the same name it should show the matching subtab. 
+			 * 					Otherwise it is up to the module to decide which subtab to show.
+			 * */
+			protected function navigate(module:String, subtab:String = ""):void {
+				this.dispatchEvent(new NavigationEvent(NavigationEvent.NAVIGATE, module, subtab);
 			}
+
 			
-			
+			/**
+			 * Navigate to a subtab in the module.
+			 * Each module should implement this method according to its inner structure.
+			 * @param subtab	name (id) of the required subtab. 
+			 * */
+			public function showSubtab(subtab:String):void {
+				throw new Error("showSubtab must be implemented");
+			}
+
+
+			/**
+			 * KalturaClient for server API calls
+			 * */
+			public function get kc():KalturaClient {
+				return _kc;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set kc(value:KalturaClient):void {
+				_kc = value;
+			}
+
+
+			/**
+			 * Application context
+			 * */
+			public function get context():Context {
+				return _context;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set context(value:Context):void {
+				_context = value;
+			}
 		]]>
 	</mx:Script>
+	<mx:HBox verticalAlign="middle">
+		<mx:Label text="{ResourceManager.getInstance().getString('dummy', 'name')}"
+	</mx:HBox>
 </mx:Module>
