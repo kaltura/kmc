@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- build.xml -->
+<project name="as3FlexClient Builder" basedir=".">    
+
+	<import file="${flex-build}" />  	
+    	
+	<property name="output.file" value="as3FlexClient.swc"/>
+	
+	<!-- This target compiles the library -->
+	<target name="lib" depends="flex-extract-classes">
+		<echo>Compiling ${output.file}</echo>
+		<echo>${basedir}/src</echo>
+        <compc output="${dir.kaltura.bin}/${output.file}" 
+			   include-classes="${include.classes}" 
+			   debug="${flex.compile.debug}">
+			
+			<!-- Set the sources path to the 'src' directory -->			
+			<source-path path-element="${basedir}/src"/>
+        </compc>
+    </target>
+	
+    <target name="clean">
+        <delete>
+            <fileset dir="${dir.kaltura.bin}" includes="${output.file}"/>
+        </delete>
+    </target>	
+</project>

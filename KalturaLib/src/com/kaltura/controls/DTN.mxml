@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" addedToStage="addedToStageHandler()" 
+	styleName="dtnStyle">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.List;
+			import mx.events.ListEvent;
+			import mx.events.FlexEvent;
+			import mx.controls.Button;
+			import mx.binding.utils.BindingUtils;
+
+			[Bindable] private var _dataProvider : Array;
+			[Bindable] private var _selectedIndex : Number = 0;
+			public var btnStyleName : String = "dtnBtn";
+			public var btnSelectedStyleName : String = "dtnSelectedBtn";
+			public var dataField : String  = null;
+			
+			private function addedToStageHandler() : void
+			{
+				
+			}
+			
+			private function populateChildren() :void
+			{
+				var firstOne : Boolean = true;
+				for each( var prop : Object in  _dataProvider)
+				{
+					var btn : Button = new Button();
+					btn.percentWidth=100;
+					btn.buttonMode=true;
+					
+					if(!dataField)
+						btn.label = prop.toString();
+					else
+						btn.label =	prop[dataField];
+					
+					btn.addEventListener( MouseEvent.CLICK , onItemClick );
+					
+					if(firstOne)
+					{
+						btn.styleName = btnSelectedStyleName;
+						firstOne = false;
+					}
+					else	
+						btn.styleName = btnStyleName;	
+					
+					this.addChild( btn );
+				}
+				
+				if(numChildren>0)
+					(this.getChildAt(0) as Button).selected = true;
+			}
+			
+			private function onItemClick( event : MouseEvent ) : void
+			{
+				var btn1 : Button = (this.getChildAt(_selectedIndex) as Button);
+				if(event.target == btn1)
+					return;
+
+				btn1.selected = true;
+				btn1.styleName = btnStyleName;
+				
+				_selectedIndex = this.getChildIndex( event.target as DisplayObject );
+				
+				//(this.getChildAt(_selectedIndex) as Button).styleName = btnSelectedStyleName;
+				var btn2 : Button = (this.getChildAt(_selectedIndex) as Button);
+				btn2.selected = true;
+				btn2.styleName = btnSelectedStyleName;
+				
+				dispatchEvent( new ListEvent( ListEvent.CHANGE , false,false,-1,_selectedIndex,"itemClick",btn2) );	
+			}
+				
+			public function set dataProvider( arr : Array) : void
+			{
+				_selectedIndex = 0;
+				_dataProvider = arr;
+				removeAllChildren();
+				populateChildren();
+			}
+			
+			public function get dataProvider() : Array
+			{
+				return _dataProvider;
+			}
+			
+			public function set selectedIndex( index : int ) : void
+			{
+				if(_selectedIndex == index)
+					return;
+					
+				if(_dataProvider && _dataProvider.length > 0)
+				{
+					var btn1 : Button = (this.getChildAt(_selectedIndex) as Button);
+
+					
+					btn1.selected = true;
+					btn1.styleName = btnStyleName;
+				}
+				
+				_selectedIndex = index;
+				
+				if(_dataProvider && _dataProvider.length > 0)
+				{
+					var btn2 : Button = (this.getChildAt(_selectedIndex) as Button);
+					btn2.selected = true;
+					btn2.styleName = btnSelectedStyleName;
+				}
+				
+				dispatchEvent(new FlexEvent(FlexEvent.VALUE_COMMIT));	
+			}
+			
+			[Bindable("change")]
+    		[Bindable("valueCommit")]
+			public function get selectedIndex() : int
+			{
+				return _selectedIndex;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Event(name="change", type="mx.events.ListEvent")]
+	</mx:Metadata>
+</mx:VBox>

@@ -1,0 +1,124 @@
+<project name="Cairngorm" default="main">
+
+	<!-- Load the properties file. -->
+	<property file="build.properties" />
+	
+	<!-- Load the platform specific properties file. -->
+	<property file="${os.name}.properties" />
+	
+	<!-- Define the Flex tasks. -->
+	<taskdef
+		resource="flexTasks.tasks"
+		classpath="antlib/flexTasks.jar" />
+		
+	<!-- Set the FLEX_HOME property. -->
+	<property name="FLEX_HOME" value="${flex.sdk.home}"/>
+	
+	<target name="main" depends="checkos, clean, compile, doc, package" />
+	
+	<target name="checkos">
+		<condition property="isWindows">
+      		<os family="windows"/>
+		</condition>
+	</target>
+	
+	<target name="clean">
+		<!--
+		Create the output directory.
+		-->
+		<delete dir="${output.dir}" />
+		<mkdir dir="${output.dir}" />
+				
+		<!--
+		Create the temp directory.
+		-->
+		<delete dir="${temp.dir}" />
+		<mkdir dir="${temp.dir}" />
+	</target>
+	
+	<target name="compile">
+		<property name="config" value="${temp.dir}/config.xml" />
+				
+		<!-- Generate the config file. -->
+		<xslt
+			in=".flexLibProperties"
+			out="${config}"
+		    style="config.xsl">
+		</xslt>
+		
+		<compc 
+		    output="${output.swc}"
+			locale="${application.locale}"
+			allow-source-path-overlap="true"
+			headless-server="true"
+			warn-no-constructor="false">
+			
+			<!-- Specify namespaces. -->
+			<namespace uri="${namespace}" manifest="cairngorm-manifest.xml" />
+			
+			<!-- Config file. -->
+			<load-config filename="${config}" />
+					
+		    <!-- List of path elements that form the roots of ActionScript class hierarchies. -->
+			<source-path path-element="${flex.src.dir}" />
+			<source-path path-element="${flex.src.dir}/${locale.dir}/{locale}" />
+			
+			<!-- Resource bundles to include. -->
+			<include-resource-bundles string="CairngormMessages" />
+			
+			<!-- Namespaces to include. -->
+			<include-namespaces uri="${namespace}" />
+						
+			<!-- List of SWC files or directories that contain SWC files. -->
+		    <external-library-path dir="${flex.sdk.home}/frameworks/libs" append="true">
+				<include name="*.swc" />
+			</external-library-path>
+		</compc>
+	</target>
+	
+	<target name="doc" if="isWindows">
+		<exec
+			executable="${asdoc.exe}"
+			failonerror="true">
+			
+			<arg line="-source-path ${locale.dir}/${application.locale}" />
+			<arg line="-doc-sources ${flex.src.dir}" />
+			<arg line="-window-title '${asdoc.title}'" />
+			<arg line="-output ${asdoc.output}" />
+		</exec>
+	</target>
+	
+	<target name="package" depends="packageBinary, packageSource, packageDocs" />
+	
+	<target name="packageBinary">
+		<!--
+		Create the binary distribution.
+		-->
+		<zip
+			basedir="."
+			includes="${output.swc}"
+			destfile="${bin.zip}" />
+	</target>
+	
+	<target name="packageSource">
+		<!--
+		Create the source distribution.
+		-->
+		<zip
+			basedir=".."			
+			includes="${project.name}/**/*.*"
+			excludes="**/${temp.dir}/**/*.*,**/${output.dir}/**.*"
+			destfile="${src.zip}" />
+	</target>
+	
+	<target name="packageDocs" if="isWindows">
+		<!--
+		Create the documentation distribution.
+		-->
+		<zip
+			basedir="${asdoc.output}"
+			includes="**/*.*"
+			destfile="${doc.zip}" />
+	</target>
+	
+</project>

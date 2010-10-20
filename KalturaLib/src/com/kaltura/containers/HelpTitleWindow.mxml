@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" creationComplete="onCreationCompleteHelpWindow()" resize="onResize()" styleName="TitleWindowType2">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.binding.utils.BindingUtils;
+			import mx.core.FlexVersion;
+			import mx.controls.Button;
+
+			[Bindable] public var fullUrlHost : String;
+
+			private var _helpBtn : Button;
+			private var helpStyleName : String;
+			
+			protected var _titleBtnHeight : Number = 16;
+			protected var _titleBtnWidth : Number = 16;
+			private var _helpCloseGap : Number = 5;
+			private var _showHelpButton : Boolean = false;
+			
+			//Private Functions
+			////////////////////////////////////////////////////
+			
+			protected function onCreationCompleteHelpWindow() : void
+			{
+				this.mx_internal::closeButton.height = _titleBtnHeight;
+				this.mx_internal::closeButton.width = _titleBtnWidth;
+				this.mx_internal::closeButton.buttonMode = true;
+				var titleBar : UIComponent = this.mx_internal::getTitleBar();
+				titleBar.height = 20;
+				addHelpBtn();
+			}
+
+			private function help( event : MouseEvent ) : void
+		    {
+		    	dispatchEvent( new Event( "help") );
+		    }
+		    
+		    override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		    {
+		    	super.updateDisplayList(unscaledWidth, unscaledHeight);
+		    	if(_helpBtn)
+		    	{
+					setHelpBtnPos();
+      			}
+		    }
+		    
+		    private function  onResize() : void
+		    {
+		    	if(_helpBtn)
+		    	{
+					setHelpBtnPos();
+      			}
+		    }
+		     
+		    private function setHelpBtnPos() : void
+		    {
+		    	_helpBtn.height = this.mx_internal::closeButton.height;
+			    _helpBtn.width =  this.mx_internal::closeButton.width; 
+			    _helpBtn.x = this.mx_internal::closeButton.x - _helpBtn.width - _helpCloseGap;
+                _helpBtn.y = this.mx_internal::closeButton.y;
+		    }
+		    
+			private function addHelpBtn():void 
+			{
+				_helpBtn = new Button();
+			    setHelpBtnPos();
+ 
+			    _helpBtn.buttonMode = true;
+			    _helpBtn.addEventListener("click", help);
+			        
+			    if(getStyle("helpStyleName"))
+			    	_helpBtn.styleName = getStyle("helpStyleName");
+			    else
+			        _helpBtn.styleName = "help";
+
+			    // Add the child component to the custom component.
+			    titleBar.addChild(_helpBtn);
+			}
+		    
+		    public function get helpBtn() : Button
+		    {
+		    	return _helpBtn;
+		    }
+		    
+		    public function set showHelpButton( showHelpButton : Boolean ) : void
+		    {
+		    	_showHelpButton = showHelpButton;
+		    	if(_showHelpButton)
+		    		_helpBtn.visible = true;
+		    	else
+		    		_helpBtn.visible = false;
+		    }
+		    
+		    public function get showHelpButton() : Boolean
+		    {
+		    	return _showHelpButton;
+		    }
+
+		]]>
+	</mx:Script>
+	
+	<mx:Metadata>
+		[Style(name="helpStyleName",type="String")]
+		[Event(name="help", type="flash.events.Event")] 
+	</mx:Metadata>
+	
+</mx:TitleWindow>

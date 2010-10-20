@@ -1,0 +1,66 @@
+Cairngorm 2.2.1 for Flex 2
+==========================
+
+What is Cairngorm
+-----------------
+The Cairngorm Microarchitecture is a lightweight yet prescriptive framework 
+for Rich Internet application (RIA) development.
+
+Cairngorm is an implementation of design patterns that the consultants at 
+Adobe Consulting have successfully taken from enterprise software development 
+(with technologies including J2EE and .NET) and applied rich Internet 
+application development using Adobe Flex.
+
+Cairngorm can be downloaded in binary and source forms from 
+http://www.adobe.com/go/cairngorm. This package is the source distribution. 
+Documentation can also be downloaded from the same location.
+
+If you wish to use Cairngorm with LiveCycle Data Services other than RemoteObject, 
+WebService or HTTPService, then you should also download Cairngorm Enterprise, 
+available at the same location. The other services within LiveCycle Data Services 
+have a dependency on fds.swc, which does is not shipped with the standard Flex 
+Framework, so any dependencies have been externalised to Cairngorm Enterprise.
+
+Building Cairngorm 
+------------------
+This downloadable zip for Cairngorm is a ready-to-use FlexBuilder project 
+structure. To build Cairngorm, extract the zip to a known location and import
+it into your FlexBuilder workspace. 
+
+There is also an Ant script to Compile, generate Cairngorm.swc, generate ASDoc
+and package everything, but you may have to change it (or build.properties) to 
+match your environment.
+
+Using Cairngorm
+---------------
+To use the compiled Cairngorm in your Flex 2 application, copy Cairngorm.swc 
+from the \bin to a location on your actionscript classpath.
+
+Changes between Cairngorm 2.2.1 and Cairngorm 2.2
+-------------------------------------------------
+- Changed ServiceLocator to reflect moving of classes to LiveCycle Data Services (fds.swc)
+
+Changes between Cairngorm 2.2 and Cairngorm 2.1
+-----------------------------------------------
+- Removed dependency on LiveCycle Data Services (fds.swc) - externalised to Cairngorm Enterprise
+- Flex SDK SWCs are no longer linked into Cairngorm.swc (produces a smaller cairngorm.swc)
+- Added support for setting remote credentials
+- Fixed bug with Web services not loading the WSDL (no need to call loadWSDL() explicitly)
+- ModelLocator interface has been deprecated. Added com.adobe.cairngorm.model.IModelLocator
+- Added deprecation metadata for compiler support
+- Added dispatch() helper method to CairngormEvent class
+- Controller added to CairngormEventDispatcher with weak reference
+- Added removeCommand to FrontController
+- Made commands protected in FrontController (was private)
+
+Changes between Cairngorm 2.1 and Cairngorm 2
+---------------------------------------------
+- Responder has been deprecated. Use mx.rpc.IResponder
+- Command has been deprecated. Use com.adobe.cairngorm.commands.ICommand
+- ValueObject has been deprecated. Use com.adobe.cairngorm.vo.IValueObject
+- ServiceLocator.getService() has been deprecated. Use ServiceLocator.getRemoteObject( string )
+- ServiceLocator.getInvokerService() has been deprecated.
+- IServiceLocator interface has been created to support unit testing
+- ServiceLocator has security methods added
+- FrontControler.executeCommand() and getCommand() visibility has been changed to protected
+- Error messages have been internationalized

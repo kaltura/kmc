@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	 Copyright (c) 2007 Stretch Media Group
+
+	 Permission is hereby granted, free of charge, to any person
+	 obtaining a copy of this software and associated documentation
+	 files (the "Software"), to deal in the Software without
+	 restriction, including without limitation the rights to use,
+	 copy, modify, merge, publish, distribute, sublicense, and/or sell
+	 copies of the Software, and to permit persons to whom the
+	 Software is furnished to do so, subject to the following
+	 conditions:
+
+	 The above copyright notice and this permission notice shall be
+	 included in all copies or substantial portions of the Software.
+
+	 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+	 EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+	 OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+	 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+	 HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+	 WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+	 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+	 OTHER DEALINGS IN THE SOFTWARE.
+
+	 Features:
+
+	 - Provides time entry for hours, minutes and seconds in 24 and 12 hour format
+	 - Resizable to fit various text sizes, and also allows for styling of stepper buttons, border, and background
+	 - Can use numeric stepper to increase/decrease hour, minute, second, am/pm entries
+	 - Can use keyboard up/down, left/right to increase/decrease hour, minute, second, am/pm entries
+	 - Hour, minute, second, am/pm entries wrap if reaching max/min values
+	 - Can tab through fields
+	 - Can enable/disable component
+	 - Easily provide hour/minute/text values for preset/updatable time
+
+	 Properties:
+
+	 hour : the numeric value of the selected hour (if provided, overrides the defaultHour value)
+	 minute : the numeric value of the selected minute (if provided, overrides the defaultMinute value)
+	 second : the numeric value of the selected second (if provided, overrides the defaultSecond value)
+	 am_pm : the string value of the selected am/pm entry ("am", "pm")
+	 defaultHour : the hour which you want the selector to default to (is overriden if hour argument is provided)
+	 defaultMinute : the minute which you want the selector to default to (is overriden if minute argument is provided)
+	 defaultSecond : the second which you want the selector to default to (is overriden if second argument is provided)
+	 showSeconds : show seconds entry in selector
+	 is24Hour : if false hour selector allows range of 1-12 and am/pm entry is enabled
+	 if true hour selector allows range of 0-23 and am/pm entry is disabled
+
+-->
+
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="createComplete();">
+
+	<mx:NumberValidator id="hourValidator" source="{hourText}" invalid="hourText.text = String(maxHour); hourText.errorString = '';"
+						exceedsMaxError="" lowerThanMinError="" integerError=""
+						property="text" maxValue="{maxHour}" minValue="{minHour}"
+						trigger="{hourText}" />
+	<mx:NumberValidator id="minuteValidator" source="{minuteText}" invalid="minuteText.text = '59'"
+						exceedsMaxError="" lowerThanMinError="" integerError=""
+						property="text" maxValue="59" minValue="0"
+						trigger="{minuteText}" allowNegative="false" />
+	<mx:NumberValidator id="secondValidator" source="{secondText}" invalid="secondText.text = '59'"
+						exceedsMaxError="" lowerThanMinError="" integerError=""
+						property="text" maxValue="59" minValue="0"
+						trigger="{secondText}" allowNegative="false" />
+
+	<mx:NumericStepper focusEnabled="false" height="100%" id="timeStepper"
+					   maximum="99" minimum="-99" width="100"
+					   x="0" y="0" change="changeStepValue(event)"
+					   click="_focusArea.setFocus();" backgroundAlpha="0" borderStyle="none"
+					   borderThickness="0" color="{this.getStyle('backgroundColor')}" focusAlpha="0"
+					   fontSize="0" paddingLeft="100" textAlign="right" />
+
+	<mx:HBox height="100%" horizontalScrollPolicy="off" id="timeBox"
+			 verticalScrollPolicy="off" x="3" y="2"
+			 creationComplete="setTimeStepperPosition();" backgroundAlpha="0" horizontalGap="0"
+			 verticalAlign="center">
+
+
+		<mx:TextInput id="hourText" height="100%" maxChars="2" 
+					  text="{formatText(String(hour), 'hourText')}" change="setValues(event)"
+					  focusIn="setTextFocus(event)" focusOut="fixText(event)" keyDown="keyHandler(event)"
+					  mouseDown="setTextFocus(event)" mouseUp="setTextFocus(event)" 
+					  backgroundAlpha="0" backgroundColor="0xff0000" textAlign="center" 
+					  borderStyle="none" borderThickness="0" focusAlpha="0" 
+					  visible="{showHours}" includeInLayout="{showHours}" errorString=""/>
+
+		<mx:Spacer width="-8" />
+		<mx:Label text=":" />
+		<mx:Spacer width="-16" />
+
+		<mx:TextInput id="minuteText" height="100%" maxChars="2"
+					  text="{formatText(String(minute), 'minuteText')}" change="setValues(event)" 
+					  focusIn="setTextFocus(event)" focusOut="fixText(event)" keyDown="keyHandler(event)" 
+					  mouseDown="setTextFocus(event)" mouseUp="setTextFocus(event)" 
+					  backgroundAlpha="0" backgroundColor="0xff0000" textAlign="center" 
+					  borderStyle="none" borderThickness="0" focusAlpha="0" />
+
+		<mx:Spacer includeInLayout="{showSeconds}" width="-8" visible="{showSeconds}" />
+		<mx:Label includeInLayout="{showSeconds}" text=":" visible="{showSeconds}" />
+		<mx:Spacer includeInLayout="{showSeconds}" width="-16" visible="{showSeconds}" />
+
+		<mx:TextInput id="secondText" height="100%" maxChars="2"
+					  text="{formatText(String(second), 'secondText')}" change="setValues(event)"
+					  focusIn="setTextFocus(event)" focusOut="fixText(event)" keyDown="keyHandler(event)"
+					  mouseDown="setTextFocus(event)" mouseUp="setTextFocus(event)" 
+					  backgroundAlpha="0" backgroundColor="0xff0000" textAlign="center" 
+					  borderStyle="none" borderThickness="0" focusAlpha="0"
+					  visible="{showSeconds}" includeInLayout="{showSeconds}" />
+
+		<mx:Spacer includeInLayout="{!is24Hour}" width="-8" visible="{!is24Hour}" />
+
+
+		<mx:TextInput id="amPMText" height="100%" maxChars="2" 
+					  text="{this.am_pm}" editable="false"
+					  focusIn="setTextFocus(event)" keyDown="amPMKeyHandler(event)" 
+					  mouseDown="setTextFocus(event)" mouseUp="setTextFocus(event)"
+					  backgroundAlpha="0" backgroundColor="0xff0000" textAlign="center"
+					  borderStyle="none" borderThickness="0" focusAlpha="0" 
+					  visible="{and(!is24Hour, showAMPMLabel)}" includeInLayout="{and(!is24Hour, showAMPMLabel)}"/>
+
+		<mx:Spacer includeInLayout="{and(!is24Hour, showAMPMLabel)}" width="-5" visible="{and(!is24Hour, showAMPMLabel)}" />
+
+	</mx:HBox>
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.NumericStepper;
+			import mx.events.NumericStepperEvent;
+			import mx.core.UITextField;
+			import flash.events.MouseEvent;
+
+			/**
+			 * @copy #timeValue
+			 * */
+			protected var _timeValue:Object;
+
+			/**
+			 * the textfield currently in focus
+			 * */
+			protected var _focusArea:TextInput;
+
+			/**
+			 * value of the currently focused (=changing) text field
+			 * */
+			protected var _currentStepValue:Number;
+
+			/**
+			 * maximal value for hours, depending on 24/12 hours use.
+			 * */
+			[Bindable] protected var maxHour:Number;
+
+			/**
+			 * minimal value for hours, depending on 24/12 hours use.
+			 * */
+			[Bindable] protected var minHour:Number;
+
+
+			/**
+			 * current hour value
+			 * */
+			[Bindable] public var hour:Number = 0;
+
+			/**
+			 * current minute value
+			 * */
+			[Bindable] public var minute:Number = 0;
+
+			/**
+			 * current second value
+			 * */
+			[Bindable] public var second:Number = 0;
+
+			/**
+			 * current am/pm value
+			 * */
+			[Bindable] public var am_pm:String = 'am';
+
+			/**
+			 * if true, seconds textfield is shown
+			 * */
+			[Bindable] public var showSeconds:Boolean;
+
+			/**
+			 * 12/24 hours format
+			 * */
+			[Bindable] public var is24Hour:Boolean;
+
+			/**
+			 * if true, hours textfield is shown
+			 * */
+			[Bindable] public var showHours:Boolean;
+
+			/**
+			 * if true, am/pm label is shown
+			 * */
+			[Bindable] public var showAMPMLabel:Boolean;
+
+			public var defaultHour:Number;
+			public var defaultMinute:Number = 0;
+			public var defaultSecond:Number = 0;
+
+
+			/**
+			 * logical and
+			 * */
+			private function and(p1:Boolean, p2:Boolean):Boolean {
+				return p1 && p2;
+			}
+
+
+			/**
+			 * an object describing the time this component is showing
+			 * */
+			public function get timeValue():Object {
+				var tmpTime:Object = new Object();
+				tmpTime.hour = this.hour;
+				tmpTime.minute = this.minute;
+				tmpTime.second = this.second;
+				return tmpTime;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set timeValue(value:Object):void {
+				this._timeValue = value;
+			}
+
+
+			private function createComplete():void {
+
+				if (!this.hour) {
+					String(this.hour);
+					this.hour = Number(hourText.text);
+				}
+				else {
+					if (defaultHour) {
+						hourText.text = String(defaultHour);
+					}
+					else {
+						(is24Hour) ? hourText.text = "12" : hourText.text = "1";
+					}
+				}
+				if (!this.minute) {
+					minuteText.text = (defaultMinute < 10) ? "0" + String(defaultMinute) : String(defaultMinute);
+					this.minute = Number(minuteText.text);
+				}
+				if (!this.second) {
+					secondText.text = (defaultSecond < 10) ? "0" + String(defaultSecond) : String(defaultSecond);
+					this.second = Number(secondText.text);
+				}
+
+				if (!this.am_pm) {
+					this.am_pm = (is24Hour) ? 'pm' : "am";;
+				}
+
+				(is24Hour) ? maxHour = 23 : maxHour = 12;
+				(is24Hour) ? minHour = 0 : minHour = 1;
+
+				if (!_focusArea) {
+					_focusArea = minuteText;
+					_currentStepValue = Number(_focusArea.text);
+					timeStepper.value = _currentStepValue;
+				}
+
+			}
+
+
+			/**
+			 * selects the text in the focused textfield and remembers it's value
+			 * */
+			private function setTextFocus(event:Event):void {
+//				_focusArea.setStyle("backgroundAlpha", 0);
+				_focusArea = event.currentTarget as TextInput;
+//				_focusArea.setStyle("backgroundAlpha", 0.3);
+				_focusArea.setSelection(0, 2);
+				if (event.currentTarget != amPMText) {
+					_currentStepValue = Number(_focusArea.text);
+					timeStepper.value = _currentStepValue;
+				}
+				setStepValue();
+
+			}
+
+
+			private function setTimeStepperPosition():void {
+				if (timeBox)
+					timeStepper.x = (!is24Hour) ? (timeBox.width - (timeStepper.width * 0.72)) : timeBox.width - (timeStepper.width * 0.8);
+			}
+
+
+			private function setStepValue():void {
+				if (_focusArea == amPMText) {
+					timeStepper.minimum = -99;
+					timeStepper.maximum = 99;
+				}
+			}
+
+
+			protected function changeStepValue(event:Event):void {
+				if (_focusArea != amPMText) {
+					if (_focusArea == hourText) {
+						var tmpMinValue:Number = (is24Hour) ? 0 : 1;
+						if (NumericStepper(event.target).value > maxHour) {
+							NumericStepper(event.target).value = (is24Hour) ? 0 : 1;
+							am_pm = (am_pm == 'am') ? 'pm' : 'am';
+						}
+						else if (NumericStepper(event.target).value < tmpMinValue) {
+							NumericStepper(event.target).value = (is24Hour) ? 23 : 12;
+							am_pm = (am_pm == 'am') ? 'pm' : 'am';
+						}
+						amPMText.text = am_pm;
+					}
+					else if (_focusArea == minuteText || _focusArea == secondText) {
+						if (NumericStepper(event.target).value > 59) {
+							NumericStepper(event.target).value = 0;
+						}
+						else if (NumericStepper(event.target).value < 0) {
+							NumericStepper(event.target).value = 59;
+						}
+					}
+
+					_focusArea.setFocus();
+					if (_focusArea == hourText)
+						this.hour = NumericStepper(event.target).value;
+					if (_focusArea == minuteText)
+						this.minute = NumericStepper(event.target).value;
+					if (_focusArea == secondText)
+						this.second = NumericStepper(event.target).value;
+				}
+				else {
+					amPMText.text = (amPMText.text == "am") ? "pm" : "am";
+					this.am_pm = amPMText.text;
+				}
+			}
+
+
+			protected function fixText(event:Event):void {
+				if (!(event.currentTarget == hourText && !is24Hour)) {
+					_focusArea.text = (_focusArea.text.length < 2) ? "0" + _focusArea.text : _focusArea.text;
+				}
+				 _focusArea.setSelection(0, 2); 
+				if (event.currentTarget == hourText)
+					this.hour = Number(event.currentTarget.text);
+				if (event.currentTarget == minuteText)
+					this.minute = Number(timeStepper.value);
+				if (event.currentTarget == secondText)
+					this.second = Number(timeStepper.value);
+			}
+
+
+			private function setValues(event:Event):void {
+				if (event.currentTarget == hourText) {
+					if (hourValidator.validate(Number(event.currentTarget.text)))
+						timeStepper.value = Number(event.currentTarget.text);
+				}
+				if (event.currentTarget == minuteText) {
+					if (minuteValidator.validate(Number(event.currentTarget.text)))
+						timeStepper.value = Number(event.currentTarget.text);
+				}
+				if (event.currentTarget == secondText) {
+					if (secondValidator.validate(Number(event.currentTarget.text)))
+						timeStepper.value = Number(event.currentTarget.text);
+				}
+			}
+
+
+			private function formatText(value:String, theField:String):String {
+ 				if (_focusArea) {
+					_focusArea.setSelection(0, 2);
+				}
+				if (Number(value) > 12 && !is24Hour && theField == 'hourText') {
+					value = String(Number(value) % 12);
+				}
+				if (theField == 'hourText' && !is24Hour) {
+					return value;
+				}
+				else {
+					return (value.length < 2) ? ("0" + value) : value;
+				}
+			}
+
+
+			protected function keyHandler(event:KeyboardEvent):void {
+				if (event.keyCode == 39 || event.keyCode == 38) {
+					if (_focusArea == hourText) {
+						_currentStepValue++;
+						var tmpMaxValue:Number = (is24Hour) ? (maxHour) : maxHour;
+						if (_currentStepValue > tmpMaxValue) {
+							_currentStepValue = (is24Hour) ? 0 : 1;
+						}
+
+					}
+					else if (_focusArea == minuteText || _focusArea == secondText) {
+						_currentStepValue++;
+						if (_currentStepValue > 59) {
+							_currentStepValue = 0;
+						}
+
+					}
+					timeStepper.value = _currentStepValue;
+					timeStepper.dispatchEvent(new NumericStepperEvent('change'));
+					 _focusArea.setSelection(0, 2); 
+				}
+				if (event.keyCode == 37 || event.keyCode == 40) {
+					if (_focusArea == hourText) {
+						_currentStepValue--;
+						var tmpMinValue:Number = (is24Hour) ? 0 : 1;
+						if (_currentStepValue < tmpMinValue) {
+							_currentStepValue = (is24Hour) ? 23 : 12;
+						}
+					}
+					else if (_focusArea == minuteText || _focusArea == secondText) {
+						_currentStepValue--;
+						if (_currentStepValue < 0) {
+							_currentStepValue = 59;
+						}
+					}
+					timeStepper.value = _currentStepValue;
+					timeStepper.dispatchEvent(new NumericStepperEvent('change'));
+					 _focusArea.setSelection(0, 2); 
+				}
+			}
+
+
+			private function amPMKeyHandler(event:KeyboardEvent):void {
+				if (event.keyCode == 38 || event.keyCode == 40 || event.keyCode == 37 || event.keyCode == 39) {
+					amPMText.text = (amPMText.text == "am") ? "pm" : "am";
+					this.am_pm = amPMText.text;
+ 					_focusArea.setSelection(0, 2);
+ 				}
+
+			}
+		]]>
+	</mx:Script>
+
+</mx:Canvas>

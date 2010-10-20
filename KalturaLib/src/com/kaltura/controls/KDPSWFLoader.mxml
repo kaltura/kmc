@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:SWFLoader xmlns:mx="http://www.adobe.com/2006/mxml"  
+	creationComplete="onCreationComplete(event)"
+	init="onInit( event )" 
+	addedToStage="onAddedToStage( event )">
+	
+	<mx:Metadata>
+		  [Event(name="playerReady", type="flash.events.Event")] 
+		  [Event(name="playerEmpty", type="flash.events.Event")] 
+		  [Event(name="captureThumbnailSuccess", type="flash.events.Event")]  
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+						
+			private var _flashvars:Object;
+			private var _applicationDomain:ApplicationDomain;
+			private var _loader:Loader;
+			public var _widget_uiconf:String;
+			public var cfg:Object = {};
+			private	var _kdpUrl:String;
+			public	var readyToUse : Boolean = false;
+			public	var kdpFlashvars : String = "";
+			public var autoLoadKdp : Boolean = true;
+			
+			public function insertMedia( kshowId : String = "-1",
+										entryId : String = "-1",
+										entryVersion:Object = -1,
+										autoPlay:Boolean = false):void
+			{
+				//kshowId:String="-1",entryId:String = "-1",entryVersion:Object = -1,autoPlay:Boolean = true
+				if(readyToUse)
+					this.content['application']["insertMedia"](kshowId, entryId,entryVersion,autoPlay);
+			}
+			
+			public function reloadSkin() : IEventDispatcher
+			{
+				return this.content['application'].manager.reloadSkin(); 
+			}
+			
+			public function clearSkin() : void
+			{
+				if( this.content && this.content.hasOwnProperty('application') && this.content['application'].manager )
+					this.content['application'].manager.clearSkin();
+			}
+			
+    		private function onCreationComplete( event : Event ):void
+    		{
+    			_widget_uiconf = "";
+				Security.allowDomain("*");
+		    	Security.allowInsecureDomain("cdn.gigya.com");
+				
+				if(loaderInfo)
+					_flashvars = loaderInfo.parameters;
+				
+				if(_flashvars && _flashvars.devFlag == "true") _kdpUrl = "kdp.swf"; //if we are working localy use the kdp.swf
+				 
+				var childDefinitions:LoaderContext = new LoaderContext();
+				childDefinitions.applicationDomain = new ApplicationDomain();//new ApplicationDomain(ApplicationDomain.currentDomain);
+		 		
+		 		if(_flashvars && autoLoadKdp)
+		 			loadKdp();
+    		}
+
+    		public function loadKdp() : void
+    		{
+    			//_kdpUrl = "kdp.swf"//TODO: REMOVE
+ 				//TODO: GET PATH FROM SERVICE
+				load(_kdpUrl);	
+					
+				trace("KDPSWFLoder==> " + _kdpUrl);
+    		}
+    		
+    		
+    		private function onInit( event : Event ) : void
+    		{
+    			if(this.content)
+    				this.content.addEventListener( FlexEvent.APPLICATION_COMPLETE , onChildApplicationComplete );
+    		}
+    		
+    		private function onChildApplicationComplete( event : FlexEvent ) : void
+    		{
+    			this.content.removeEventListener( FlexEvent.APPLICATION_COMPLETE , onChildApplicationComplete );
+    			if(this.content['application'].manager)
+    			{
+	    			this.content['application'].manager.addEventListener( "playerReady" , onPlayerReady );
+	    			this.content['application'].manager.addEventListener( "playerEmpty" , onPlayerReady );
+	    			this.content['application'].manager.addEventListener( "captureThumbnailSuccess" , onCaptureThumbnailSuccess );
+    			}
+    		}
+    		
+    		private function onCaptureThumbnailSuccess( event : Event ) : void
+    		{
+    			dispatchEvent( event );
+    		}
+    		
+    		private function onPlayerReady( event : Event ) : void
+			{
+				if(!readyToUse)
+				{
+					readyToUse = true;
+					dispatchEvent( event );
+				}
+			}
+
+    		private function onAddedToStage(evt:Event):void
+			{
+				//trace('SWFLoader ==> onAddedToStage'); 
+			}
+			
+			// add Gigya evnet - to recieve the gigya object
+			private function onContexComplete(evt:Event):void
+			{
+				this.getChildAt(0).addEventListener("gigya",onGigya);
+			}
+			
+			// the Gigya object must be on top level displayobject - see if this is needed in case of just a preview widget 
+			// under KMC application 
+			private function onGigya(evt:Event):void
+			{
+				cfg = evt["data"];
+			}
+			
+			public function set kdpUrl( kdpUrl : String ) : void
+			{
+				_kdpUrl = kdpUrl;
+			}
+			
+			public function get kdpUrl() : String
+			{
+				return _kdpUrl;
+			}
+			
+		]]>
+	</mx:Script>
+</mx:SWFLoader>

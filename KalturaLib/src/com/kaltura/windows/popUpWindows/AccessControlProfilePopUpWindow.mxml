@@ -1,0 +1,758 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asdoc\AccessControlProfilePopUpWindow.mxml -->
+
+<!---
+
+	This popup window is used to add or edit an Access Control Profile VO.
+	Use the 'newProfileState' state for the 'Add New..' action
+
+-->
+
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" title="{rm.getString('windows', 'editAccessControlTitle')}" 
+	showCloseButton="true" close="closeWindow(event)" layout="vertical" creationComplete="onCreationComplete(event)"
+	width="700" height="550" xmlns:containers="com.kaltura.containers.*" xmlns:controllers="com.adobe.controllers.*" xmlns:controls="com.kaltura.controls.*"
+	verticalScrollPolicy="off" help="{navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'generalHelp') ) )}" >
+	<containers:states>
+		<mx:State name="newProfileState">
+			<mx:SetProperty name="title" value="{rm.getString('windows', 'newAccessControlTitle')}"/>
+			<mx:SetProperty target="{submitBtn}" name="label" value="{rm.getString('windows', 'submitNewBtn')}"/>
+			<mx:SetProperty target="{profileNameTextInput}" name="text"/>
+			<mx:SetProperty target="{profileDescriptionTextArae}" name="text"/>
+		</mx:State>
+	</containers:states>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import flexlib.scheduling.scheduleClasses.lineRenderer.Line;
+			import com.kaltura.utils.KArrayUtil;
+			import com.kaltura.types.KalturaNullableBoolean;
+			import mx.controls.LinkButton;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+			import mx.resources.ResourceBundle;
+			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KalturaCountryRestriction;
+			import com.kaltura.types.KalturaSessionType;
+			import com.kaltura.vo.KalturaPreviewRestriction;
+			import com.kaltura.types.KalturaDirectoryRestrictionType;
+			import com.kaltura.vo.KalturaDirectoryRestriction;
+			import com.kaltura.vo.KalturaSessionRestriction;
+			import com.kaltura.types.KalturaCountryRestrictionType;
+			import com.kaltura.types.KalturaSiteRestrictionType;
+			import com.kaltura.vo.KalturaSiteRestriction;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import mx.collections.ArrayCollection;
+		
+			import com.kaltura.utils.KCountriesUtil;
+			import mx.managers.PopUpManager;
+			
+			[ResourceBundle("windows")]
+			private static var rb:ResourceBundle;
+			
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+			
+			/**
+			 *  the accessControlProfile(acp) to add ot edit
+			 */ 
+			[Bindable]
+			private var _accessControlProfile:AccessControlProfileVO;
+			
+			/**
+			 * get the accessControlProfile(acp)
+			 */ 
+			[Bindable]
+			public function get accessControlProfile():AccessControlProfileVO
+			{
+				return _accessControlProfile;
+			}
+			
+			/**
+			 * set the accessControlProfile(acp)
+			 */ 
+			public function set accessControlProfile(accessControlProfile:AccessControlProfileVO):void
+			{
+				_accessControlProfile = accessControlProfile;
+			}
+			
+			/**
+			 * creation complete of the main window, for edit we clone the acp. For add new one we create a new acp
+			 */ 
+			private function onCreationComplete(event:Event):void
+			{
+				if(currentState == null)
+				{
+					accessControlProfile = accessControlProfile.clone();
+					setAccessControlProfileData();
+				}
+				else
+				{
+					accessControlProfile = new AccessControlProfileVO();
+				}
+				
+				validateInput();
+			}
+			
+			/**
+			 * seting all the data when editing an acp
+			 */ 
+			private function setAccessControlProfileData():void
+			{
+				setDefaultProfileSettings();
+				setSiteRestrictions();
+				setCountriesRestrictions();
+				setSessionRestriction();
+	//			setDirectoryRestrictions();
+				setPreviewRestrictions();
+			}
+			
+			
+			public var rootUrl:String;
+			
+			private function setDefaultProfileSettings():void
+			{
+				profileNameTextInput.enabled = !(accessControlProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE) ;
+			}
+			
+			/**
+			 * 
+			 */ 
+			[Bindable]private var allowedSitesArr:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */ 
+			[Bindable]private var notAllowedSitesArr:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */ 
+			private function setSiteRestrictions():void
+			{
+				var restrictionFound:Boolean = false;
+				for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
+				{
+					if(restriction is KalturaSiteRestriction)
+					{
+						restrictionFound = true;
+						var arr:ArrayCollection;
+						if((restriction as KalturaSiteRestriction).siteRestrictionType == KalturaSiteRestrictionType.ALLOW_SITE_LIST)
+						{
+							approvedSitesRadioBtn.selected = true;
+							arr = allowedSitesArr;
+						}
+						else
+						{
+							notApprovedSitesRadioBtn.selected = true;
+							arr = notAllowedSitesArr;
+						}
+						
+						setSitesFromString(arr, (restriction as KalturaSiteRestriction).siteList);
+						break;
+					}
+				}
+				
+				anySiteRaddioBtn.selected = !restrictionFound;
+			}
+			
+			/**
+			 * 
+			 */ 
+			[Bindable]private var allowedCountriesArr:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */ 
+			[Bindable]private var notAllowedCountriesArr:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */ 
+			private function setCountriesRestrictions():void
+			{
+				var restrictionFound:Boolean = false;
+				for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
+				{
+					if(restriction is KalturaCountryRestriction)
+					{
+						restrictionFound = true;
+						var arr:ArrayCollection;
+						if((restriction as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST)
+						{
+							approvedCountiesRadioBtn.selected = true;
+							arr = allowedCountriesArr;
+						}
+						else
+						{
+							notApprovedCountiesRadioBtn.selected = true;
+							arr = notAllowedCountriesArr;
+						}
+						
+						setCountriesFromString(arr, (restriction as KalturaCountryRestriction).countryList);
+						break;
+					}
+				}
+				
+				allCountriesRaddioBtn.selected = !restrictionFound;
+			}
+			
+			/**
+			 * 
+			 */ 
+			private function setSessionRestriction():void
+			{
+				var restrictionFound:Boolean = false;
+				for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
+				{
+					if(restriction is KalturaSessionRestriction)
+					{
+						secureKSCBBtn.selected = true;
+						break;
+					}
+				}
+			}
+			
+			/**
+			 * 
+			 */ 
+			/* private function setDirectoryRestrictions():void
+			{
+				var restrictionFound:Boolean = false;
+				for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
+				{
+					if(restriction is KalturaDirectoryRestriction)
+					{
+						restrictionFound = true;
+						if((restriction as KalturaDirectoryRestriction).directoryRestrictionType == KalturaDirectoryRestrictionType.DONT_DISPLAY)
+						{
+							noKalDevRadioBtn.selected = true;
+						}
+						else
+						{
+							allowLinkToKalDevRadioBtn.selected = true;
+						}
+		
+						break;
+					}
+				}
+				
+				allowDirectToKalDevRadioBtn.selected = !restrictionFound;
+			} */
+			
+			/**
+			 * 
+			 */ 
+			private function setPreviewRestrictions():void
+			{
+				var restrictionFound:Boolean = false;
+				for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
+				{
+					if(restriction is KalturaPreviewRestriction)
+					{
+						freePerviewCBBtn.selected = true;
+						var len:int = (restriction as KalturaPreviewRestriction).previewLength;
+						freePreviewDuration.minute = Math.floor(len/60);
+						freePreviewDuration.second = len % 60;
+						break;
+					}
+				}
+			}
+			
+			/**
+			 * 
+			 */ 
+			private function setSitesFromString(ac:ArrayCollection, itemStr:String):void
+			{
+				var arr:Array = itemStr.split(',');
+				for each(var item:String in arr)
+				{
+					ac.addItem(item);
+				}
+			}
+			
+			/**
+			 * 
+			 */ 
+			private function setCountriesFromString(ac:ArrayCollection, itemStr:String):void
+			{
+				var arr:Array = itemStr.split(',');
+				for each(var countryCode:String in arr)
+				{
+					ac.addItem({name: KCountriesUtil.instance.getCountryName(countryCode), code: countryCode});
+				}
+			}
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */ 
+			private function closeWindow(event:Event=null):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			/**
+			 * 
+			 */ 
+			private function and(p1:Boolean, p2:Boolean):Boolean 
+			{
+       			 return p1 && p2;
+   			}
+   			/**
+			 * 
+			 */ 
+   			private function showAddRemoveCountriesPopUp(event:Event, list:List):void
+   			{
+   				var addRmvCountriesPopUp:AddRemoveCountriesPopUpWindow = new AddRemoveCountriesPopUpWindow();
+   				if((event.target as LinkButton).id == "restrictCountriesLinkButton")
+   				{
+   					addRmvCountriesPopUp.currentState = AddRemoveCountriesPopUpWindow.RESTRICT_STATE;
+   				}
+   				addRmvCountriesPopUp.selectedData = list.dataProvider as ArrayCollection;
+   				
+				PopUpManager.addPopUp(addRmvCountriesPopUp, this as DisplayObject, true);
+				PopUpManager.centerPopUp(addRmvCountriesPopUp);
+   			}
+   			
+   		
+   			
+   			/**
+			 * 
+			 */ 
+			private function showNewDomainPopUpWindow(event:Event, list:List):void
+   			{
+   				var addNewDomainPopUp:AddNewDomainPopUpWindow = new AddNewDomainPopUpWindow();
+   				addNewDomainPopUp.domainsListData = list.dataProvider as ArrayCollection;
+				PopUpManager.addPopUp(addNewDomainPopUp, this as DisplayObject, true);
+				PopUpManager.centerPopUp(addNewDomainPopUp);
+   			}
+   			
+   			private var selectedList:List;
+   			
+   			/**
+			 * 
+			 */ 
+			private function showRemoveDomainsPopUpWindow(event:Event, list:List):void
+   			{
+   				/* var removeDomainPopUp:RemoveDomainsPopUpWindow = new RemoveDomainsPopUpWindow();
+   				removeDomainPopUp.domainsListData = list.dataProvider as ArrayCollection;
+				PopUpManager.addPopUp(removeDomainPopUp, this as DisplayObject, true);
+				PopUpManager.centerPopUp(removeDomainPopUp); */
+				if(list.selectedItems.length == 0)
+				{
+					Alert.show(rm.getString('windows', 'noSelectedDomainToDelete'));
+				}
+				else
+				{
+					selectedList = list;
+					var domainsStrings:String = '';
+					for each(var domain:String in list.selectedItems)
+					{
+						domainsStrings += '\t\t' + domain + '\n';
+					}
+					Alert.show(rm.getString('windows', 'areYouSureToRemove') + domainsStrings, rm.getString('windows', 'removeDomainTitle'), Alert.YES|Alert.NO, this, alertHandler, null, Alert.NO);
+				}
+  			}
+  			
+  			private function alertHandler(event:CloseEvent):void
+			{
+				if(event.detail == Alert.YES)
+				{
+					for each(var domain:String in selectedList.selectedItems)
+					{
+						KArrayUtil.removeItemFromArray(domain, selectedList.dataProvider.source);
+					}
+					selectedList.dataProvider.refresh();
+				}
+			}
+   			
+   			
+   			/**
+			 * 
+			 */ 
+   			private function saveProfile(event:Event):void
+   			{
+   				updateProperties();
+   				
+   				if(_isCountriesOk && _isSitesOk)
+   				{
+   					saveAndClose();
+   				}
+   				else
+   				{
+   					var msg:String = '';
+   					msg += _isSitesOk ? msg : rm.getString('windows', 'noSitesWereSelected');
+   					msg = _isCountriesOk ? msg : msg + "\n" + rm.getString('windows', 'noCountriesWereSelected');
+   					
+   					msg = msg + "\n\n\t" + rm.getString('windows', 'noSelectionQuestion');
+   					Alert.show(msg, rm.getString('windows', 'alertTitle'), Alert.YES | Alert.NO, null, alertResponseHandler);
+   				}
+   				
+   			}
+   			
+   			private function alertResponseHandler(event:CloseEvent):void
+   			{
+   				if(event.detail == Alert.YES)
+   				{
+   					saveAndClose();
+   				}
+   			}
+   			
+   			private function saveAndClose():void
+   			{
+   				if(this.currentState == null)
+   				{
+   					saveUpdatedProfile();
+   				}
+   				else
+   				{
+   					saveNewProfile();
+   				}
+   				
+   				closeWindow();
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateProperties():void
+   			{
+   				updateName();
+   				updateDescription();
+   				clearRestrictions();
+   				updateSiteRestrictions();
+   				updateCountriesRestrictions();
+   				updateSessionRestrictions();
+   				UpdatePreviewRestrictions();
+   //				UpdateDirectoryRestrictions();
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateName():void
+   			{
+   				accessControlProfile.profile.name = profileNameTextInput.text;
+   			} 
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateDescription():void
+   			{
+   				accessControlProfile.profile.description = profileDescriptionTextArae.text;
+   			} 
+   			
+   			/**
+			 * 
+			 */ 
+   			private function clearRestrictions():void
+   			{
+   				accessControlProfile.profile.restrictions = new Array();
+   			}
+   			
+   			
+   			private var _isSitesOk:Boolean = true;
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateSiteRestrictions():void
+   			{
+   				if(anySiteRaddioBtn.selected != true)
+   				{
+   					var siteRestriction:KalturaSiteRestriction = new KalturaSiteRestriction();
+   					siteRestriction.siteRestrictionType = (approvedSitesRadioBtn.selected == true) ? KalturaSiteRestrictionType.ALLOW_SITE_LIST : KalturaSiteRestrictionType.RESTRICT_SITE_LIST;
+   					
+   					var list:List = (approvedSitesRadioBtn.selected == true) ? approvedDomainsList : notApprovedDomainsList;
+   					siteRestriction.siteList = getSitesList(list.dataProvider as ArrayCollection);
+   					
+   					if((list.dataProvider as ArrayCollection).length > 0)
+   					{
+   						_isSitesOk = true;
+   						accessControlProfile.profile.restrictions.push(siteRestriction);
+   					}
+   					else
+   					{
+   						_isSitesOk = false;
+   					}
+   				}
+   				else
+   				{
+   					_isSitesOk = true;
+   				}
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function getSitesList(ac:ArrayCollection):String
+   			{
+   				var sitesList:String = "";
+   				for each(var item:String in ac)
+   				{
+   					sitesList += item + ',';
+   				}
+   				if(sitesList.length > 0)
+   				{
+   					sitesList = sitesList.substr(0, sitesList.length-1)
+   				}
+   				return sitesList;
+   			}
+   			
+   			
+   			private var _isCountriesOk:Boolean = true;
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateCountriesRestrictions():void
+   			{
+   				if(allCountriesRaddioBtn.selected != true)
+   				{
+   					var countryRestriction:KalturaCountryRestriction = new KalturaCountryRestriction();
+   					countryRestriction.countryRestrictionType = (approvedCountiesRadioBtn.selected == true) ? KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST : KalturaCountryRestrictionType.RESTRICT_COUNTRY_LIST;
+   					
+   					var list:List = (approvedCountiesRadioBtn.selected == true) ? approvedCountriesList : notApprovedCountriesList;
+   					countryRestriction.countryList = getCountriesList(list.dataProvider as ArrayCollection);
+   					
+   					if((list.dataProvider as ArrayCollection).length > 0)
+   					{
+   						_isCountriesOk = true;
+   						accessControlProfile.profile.restrictions.push(countryRestriction);
+   					}
+   					else
+   					{
+   						_isCountriesOk = false;
+   					}
+   				}
+   				else
+   				{
+   					_isCountriesOk = true;
+   				}
+   			} 
+   			
+   			/**
+			 * 
+			 */ 
+   			private function getCountriesList(ac:ArrayCollection):String
+   			{
+   				var countriesList:String = "";
+   				for each(var item:Object in ac)
+   				{
+   					countriesList += item.code + ',';
+   				}
+   				if(countriesList.length > 0)
+   				{
+   					countriesList = countriesList.substr(0, countriesList.length-1)
+   				}
+   				return countriesList;
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function updateSessionRestrictions():void
+   			{
+   				if(secureKSCBBtn.selected == true)
+   				{
+   					var sessionRestriction:KalturaSessionRestriction = new KalturaSessionRestriction();
+   					accessControlProfile.profile.restrictions.push(sessionRestriction);
+   				}
+   			} 
+   			
+   			/**
+			 * 
+			 */ 
+   			private function UpdatePreviewRestrictions():void
+   			{
+   				if(freePerviewCBBtn.selected == true)
+   				{
+   					var previewRestriction:KalturaPreviewRestriction = new KalturaPreviewRestriction();
+   					previewRestriction.previewLength = (freePreviewDuration.minute * 60) + freePreviewDuration.second;
+   					
+   					accessControlProfile.profile.restrictions.push(previewRestriction);
+   				}
+   			} 
+   			
+   			/**
+			 * 
+			 */ 
+   			/* private function UpdateDirectoryRestrictions():void
+   			{
+   				if(allowDirectToKalDevRadioBtn.selected != true)
+   				{
+   					var directoryRestriction:KalturaDirectoryRestriction = new KalturaDirectoryRestriction();
+   					directoryRestriction.directoryRestrictionType = (noKalDevRadioBtn.selected == true) ? KalturaDirectoryRestrictionType.DONT_DISPLAY : KalturaDirectoryRestrictionType.DISPLAY_WITH_LINK;
+   					accessControlProfile.profile.restrictions.push(directoryRestriction);
+   				}
+   			}  */
+   			
+   			/**
+			 * 
+			 */ 
+   			private function saveUpdatedProfile():void
+   			{
+   				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+				saveProfileChangesEvent.data = accessControlProfile;
+				saveProfileChangesEvent.dispatch();
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function saveNewProfile():void
+   			{
+   				var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+				addNewProfileEvent.data = accessControlProfile;
+				addNewProfileEvent.dispatch();
+   			}
+   			
+   			/**
+			 * 
+			 */ 
+   			private function validateInput(event:Event=null):void
+   			{
+   				var isValid:Boolean = true
+   				var name:String = profileNameTextInput.text;
+   				name = name.replace(new RegExp(' ', 'g'), '');
+   				isValid = (name != '');
+   				
+   				submitBtn.enabled = isValid;
+   			}
+   			
+		]]>
+	</mx:Script>
+	
+	<mx:StringValidator source="{profileNameTextInput}" property="text" 
+        trigger="{profileNameTextInput}" triggerEvent="change" required="true" requiredFieldError="{rm.getString('windows', 'profileNameErrorMsg')}"
+        />
+
+	
+	<mx:VBox verticalScrollPolicy="on" horizontalScrollPolicy="off" height="450" width="100%" styleName="acpPopUpMainVBox">
+		<mx:VBox width="100%" styleName="acpPopUpSectionBox">
+			<mx:VBox width="100%" styleName="acpPopUpTitleBox">
+				<mx:Label text="{rm.getString('windows', 'profileTitle')}" styleName="acpPopUpTitleLabel"/>
+			</mx:VBox>
+			<mx:Form width="100%" textAlign="left" paddingLeft="0">
+				<mx:FormItem label="{rm.getString('windows', 'nameLabel')}" width="100%" >
+					<mx:TextInput id='profileNameTextInput' width="100%" change='validateInput(event)' text="{accessControlProfile.profile.name}"/>
+				</mx:FormItem>
+				<mx:FormItem label="{rm.getString('windows', 'descriptionLabel')}" width="100%">
+					<mx:TextArea id='profileDescriptionTextArae' width="100%" text="{accessControlProfile.profile.description}"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+		<mx:VBox width="100%" styleName="acpPopUpSectionBox">
+			<mx:VBox width="100%" styleName="acpPopUpTitleBox">
+				<mx:Label text="{rm.getString('windows', 'authoSiteBigLabel')}" styleName="acpPopUpTitleLabel"/>
+			</mx:VBox>
+			<mx:Spacer height="10" />
+			<mx:RadioButtonGroup id='authoSitesGroup'/>
+			<mx:Form width="100%" paddingTop="0" >
+				<mx:Label text="{rm.getString('windows', 'authoSiteSmallLabel')}" styleName="acpPopUpSmallTitleLabel"/>
+				<mx:FormItem>
+					<mx:RadioButton label="{rm.getString('windows', 'anySiteRadioBtn')}" groupName="authoSitesGroup" id="anySiteRaddioBtn" selected="true" styleName="acpRadioButton"/>
+				</mx:FormItem>
+				<mx:FormItem width="100%">
+					<mx:VBox width="100%" height="100%">
+						<mx:RadioButton label="{rm.getString('windows', 'authoSitesRaddioBtn')}" groupName="authoSitesGroup" id="approvedSitesRadioBtn" styleName="acpRadioButton"/>
+						<mx:HBox width="100%">
+							<mx:Label text="{rm.getString('windows', 'domains')}" enabled="{approvedSitesRadioBtn.selected}"/>
+							<mx:List width="100%" id="approvedDomainsList" enabled="{approvedSitesRadioBtn.selected}" allowMultipleSelection="true" rowCount="5" dataProvider="{allowedSitesArr}"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:HBox>
+						<mx:LinkButton label="{rm.getString('windows', 'addDomainBtn')}" enabled="{approvedSitesRadioBtn.selected}" click='showNewDomainPopUpWindow(event, approvedDomainsList)' styleName="acpLinkButton"/>
+						<mx:LinkButton label="{rm.getString('windows', 'removeDomainBtn')}" enabled="{approvedSitesRadioBtn.selected}" click='showRemoveDomainsPopUpWindow(event, approvedDomainsList)' styleName="acpLinkButton"/>
+					</mx:HBox>
+				</mx:FormItem>
+				<mx:FormItem width="100%">
+					<mx:VBox width="100%" height="100%">
+						<mx:RadioButton label="{rm.getString('windows', 'noAuthoSitesRadioBtn')}" groupName="authoSitesGroup" id="notApprovedSitesRadioBtn" styleName="acpRadioButton"/>
+						<mx:HBox width="100%">
+							<mx:Label text="{rm.getString('windows', 'domains')}" enabled="{notApprovedSitesRadioBtn.selected}"/>
+							<mx:List width="100%" id="notApprovedDomainsList" enabled="{notApprovedSitesRadioBtn.selected}" rowCount="5" dataProvider="{notAllowedSitesArr}" allowMultipleSelection="true"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:HBox>
+						<mx:LinkButton label="{rm.getString('windows', 'addDomainBtn')}" enabled="{notApprovedSitesRadioBtn.selected}" click='showNewDomainPopUpWindow(event, notApprovedDomainsList)' styleName="acpLinkButton"/>
+						<mx:LinkButton label="{rm.getString('windows', 'removeDomainBtn')}" enabled="{notApprovedSitesRadioBtn.selected}" click='showRemoveDomainsPopUpWindow(event, notApprovedDomainsList)' styleName="acpLinkButton"/>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+		<mx:VBox width="100%" styleName="acpPopUpSectionBox">
+			<mx:VBox width="100%" styleName="acpPopUpTitleBox">
+				<mx:Label text="{rm.getString('windows', 'authoCountriesBigLabel')}" styleName="acpPopUpTitleLabel"/>
+			</mx:VBox>
+			<mx:Spacer height="10" />
+			<mx:RadioButtonGroup id='authoCountriesGroup'/>
+			<mx:Form width="100%">
+				<mx:Label text="{rm.getString('windows', 'authoCountriesSmallLabel')}" styleName="acpPopUpSmallTitleLabel"/>
+				<mx:FormItem>
+					<mx:RadioButton label="{rm.getString('windows', 'anyCountryRadioBtn')}" groupName="authoCountriesGroup" id='allCountriesRaddioBtn' selected="true" styleName="acpRadioButton"/>
+				</mx:FormItem>
+				<mx:FormItem width="100%">
+					<mx:VBox width="100%" height="100%">
+						<mx:RadioButton label="{rm.getString('windows', 'authoCountriesRadioBtn')}" groupName="authoCountriesGroup" id="approvedCountiesRadioBtn" styleName="acpRadioButton"/>
+						<mx:HBox width="100%">
+							<mx:Label text="{rm.getString('windows', 'countriesLabel')}" enabled="{approvedCountiesRadioBtn.selected}"/>
+							<mx:List width="100%" id="approvedCountriesList" enabled="{approvedCountiesRadioBtn.selected}" dataProvider="{allowedCountriesArr}" rowCount="5" itemRenderer="com.kaltura.renderers.CountryListItemRenderer" selectable="false"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:HBox>
+						<mx:LinkButton label="{rm.getString('windows', 'addRemoveCountriesBtn')}" enabled="{approvedCountiesRadioBtn.selected}" click="showAddRemoveCountriesPopUp(event, approvedCountriesList)" styleName="acpLinkButton"/>
+					</mx:HBox>
+				</mx:FormItem>
+				
+				<mx:FormItem width="100%">
+					<mx:VBox width="100%" height="100%">
+						<mx:RadioButton label="{rm.getString('windows', 'noAuthoCountriesRadioBtn')}" groupName="authoCountriesGroup" id="notApprovedCountiesRadioBtn" styleName="acpRadioButton"/>
+						<!--<mx:Text enabled="false" styleName="acpText">
+							<mx:text>{rm.getString('windows', 'noAuthoCountriesDescription')}</mx:text>
+						</mx:Text>-->
+						<mx:HBox width="100%">
+							<mx:Label text="{rm.getString('windows', 'countriesLabel')}" enabled="{notApprovedCountiesRadioBtn.selected}"/>
+							<mx:List width="100%" id="notApprovedCountriesList" dataProvider="{notAllowedCountriesArr}" enabled="{notApprovedCountiesRadioBtn.selected}" rowCount="5" itemRenderer="com.kaltura.renderers.CountryListItemRenderer" selectable="false"/>
+						</mx:HBox>
+					</mx:VBox>
+					<mx:HBox>
+						<mx:LinkButton id="restrictCountriesLinkButton" label="{rm.getString('windows', 'addRemoveCountriesBtn')}" enabled="{notApprovedCountiesRadioBtn.selected}" click="showAddRemoveCountriesPopUp(event, notApprovedCountriesList)" styleName="acpLinkButton"/>
+					</mx:HBox>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+
+		<mx:VBox width="100%" styleName="acpPopUpSectionBox">
+			<mx:VBox width="100%" styleName="acpPopUpTitleBox">
+				<mx:Label text="{rm.getString('windows', 'advanceSecLabel')}" styleName="acpPopUpTitleLabel"/>
+			</mx:VBox>
+			<mx:Form width="100%">
+				<mx:FormItem>
+					<mx:VBox width="100%" height="100%">
+						<mx:CheckBox label="{rm.getString('windows', 'secKSCheckBoxBtn')}" id='secureKSCBBtn' styleName="acpCheckButton" change="{if(!secureKSCBBtn.selected) freePerviewCBBtn.selected=false;}"/>
+						<mx:Text width="100%" enabled="false" styleName="acpText">
+							<mx:text>{rm.getString('windows', 'secKSDescription')}</mx:text>
+						</mx:Text>
+					</mx:VBox>
+				</mx:FormItem>
+
+				<mx:FormItem enabled="{secureKSCBBtn.selected}">
+					<mx:CheckBox label="{rm.getString('windows', 'freePreviewCheckBoxBtn')}" id='freePerviewCBBtn' styleName="acpCheckButton"/>
+					<mx:HBox verticalAlign="bottom">
+						<mx:Label text="{rm.getString('windows', 'freePreviewLabel1')}" enabled="{and(secureKSCBBtn.selected, freePerviewCBBtn.selected)}"/>
+						<controls:SM_TimeEntry height="25" id='freePreviewDuration' showSeconds="true" showHours="false" is24Hour="false" showAMPMLabel="false"
+							  styleName="timeEntry" enabled="{and(secureKSCBBtn.selected, freePerviewCBBtn.selected)}"/>
+						<mx:Label text="{rm.getString('windows', 'previewTimeLabel')}" enabled="{and(secureKSCBBtn.selected, freePerviewCBBtn.selected)}"/>
+					</mx:HBox>
+					<mx:Label text="{rm.getString('windows', 'freePreviewLabel2')}" enabled="{and(secureKSCBBtn.selected, freePerviewCBBtn.selected)}"/>
+				</mx:FormItem>
+			</mx:Form>
+		</mx:VBox>
+	</mx:VBox>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+		<mx:Button label="Save Changes" useHandCursor="true" buttonMode="true" click="saveProfile(event)" id="submitBtn"/>
+		<!--<mx:Button label="Cancel" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>-->
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

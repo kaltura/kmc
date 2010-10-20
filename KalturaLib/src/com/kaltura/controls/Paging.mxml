@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" styleName="paging" horizontalAlign="center"
+	verticalAlign="middle" height="40">
+    <mx:Script>
+    	<![CDATA[
+    		import mx.resources.IResourceManager;
+    		import mx.resources.ResourceManager;
+    		import mx.resources.ResourceBundle;
+    		import com.kaltura.vo.KalturaFilterPager;
+    		import com.kaltura.events.PagingEvent;
+    		import com.kaltura.utils.pager.PagerEvent;
+    		import mx.events.ItemClickEvent;
+    		import mx.events.ListEvent;
+			import flash.events.TextEvent; 
+			
+			[ResourceBundle("windows")]
+			private static var rb:ResourceBundle;
+			
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+			
+			[Bindable]private var lastHtmlStr:String = "<a href='event:last'><b><font color='#009acc' size='11'>" + rm.getString('windows', 'last') + "</font></b></a>";
+			[Bindable]private var nextHtmlStr:String = "<b><font color='#009acc' size='11'><a href='event:next'>" + rm.getString('windows', 'next') + "</a></font></b>";
+			[Bindable]private var prvHtmlStr:String = "<a href='event:prv'><b><font color='#009acc' size='11'>" + rm.getString('windows', 'prv') + "</font></b></a>";
+			[Bindable]private var firstHtmlStr:String = "<a href='event:first'><b><font color='#009acc' size='11'>" + rm.getString('windows', 'first') + "</font></b></a>";
+			
+			public static const SELECTION_CHANGED:String = "selectionChange";
+			private var _totalCount:int = 50;
+    		private var _firstPage:int = 1;
+    		private var _oneSizeDelta : int = 2;
+    		private var _selectedPage:int = 1;
+    		private var _lastPage:int = 0;
+    		[Bindable] private var _rowsInPage : Array = [10,25,50,100,250,500];
+    		
+			[Bindable] public var showRowsInPage : Boolean = false;   		
+    		[Bindable] public var showLastPageFlag : Boolean = false;
+    		[Bindable] public var showFirstPageFlag : Boolean = false;
+    		[Bindable] public var showNextFlag : Boolean = true;
+    		[Bindable] public var showPrvFlag : Boolean = true;
+    		[Bindable] public var kalturaFilterPager:KalturaFilterPager = new KalturaFilterPager();
+    		    		
+    		//public functions
+    		/////////////////////////////////////////////////////////////////
+    		public function update( selectedPage:int=1 ) : void
+    		{
+    			//if(selectedPage == _selectedPage) return;
+    			
+    			selectionChange(selectedPage);
+    			kalturaFilterPager.pageIndex = selectedPage;
+    			if( _selectedPage<=_lastPage && _selectedPage>=_firstPage)
+    			{		
+    				numbers.htmlText = getCurrentPaging(_selectedPage-_oneSizeDelta,_selectedPage+_oneSizeDelta,_selectedPage);
+    				
+				    if(selectedPage == _firstPage)
+				    {
+				    	firstLbl.visible = false;
+				    	prvLbl.visible = false;
+				    }
+				    else
+				    {
+				    	if(showFirstPageFlag) firstLbl.visible = false;
+				    	if(showPrvFlag) prvLbl.visible = true;
+				    }
+				    						
+    				if(selectedPage == _lastPage)
+    				{
+    					lastLbl.visible = false
+    					nextLbl.visible = false;
+    				}
+    				else
+    				{
+    					if(showLastPageFlag)lastLbl.visible = true
+    					if(showNextFlag)nextLbl.visible = true;
+    				}
+    				
+    				if(showRowsInPage)
+    				{ 	
+	    				pagerSize.visible = true;
+    				}
+    				
+    				if(_totalCount > 0) 
+    					pagerContainer.visible = true;
+    				else 
+    					pagerContainer.visible = false;
+    			}
+    			else
+    			{
+    				pagerContainer.visible = false;
+    				pagerSize.visible = false;
+    			}
+    		}
+    		
+    		//private functions
+    		/////////////////////////////////////////////////////////////////
+    		private function init():void
+    		{
+    			pagerContainer.visible = false;
+    			pagerSize.visible = false;
+    		}
+    		    		
+    		public function linkHandler(event:TextEvent):void
+    		{
+	          	switch(event.text)
+	            {
+	                case "prv": if(_selectedPage>_firstPage) { update(_selectedPage-1); dispatchEvent(new PagingEvent("prvPage")); }	break;	
+	                case "next": if(_selectedPage<_lastPage) { update(_selectedPage+1); dispatchEvent(new PagingEvent("nextPage")); } break;
+	                case "last": if(_selectedPage!=_lastPage) { update(_lastPage); dispatchEvent(new PagingEvent("lastPage")); } break;
+	                case "first": if(_selectedPage!=_firstPage) { update(_firstPage); dispatchEvent(new PagingEvent("firstPage")); } break;
+	                default: update(int(event.text)); dispatchEvent(new PagingEvent("getPageNum")); break;  
+	            }
+             }
+             
+             private function getCurrentPaging(fromPage:int,toPage:int,selectedPage:int):String
+             {
+             	var pagesHtmlLabel:String = "";
+             	var fromToDelta : int = toPage-fromPage;
+             	for(var i:int=selectedPage-(fromToDelta/2); i<=selectedPage+(fromToDelta/2); i++)
+             	{
+             		if( i<= lastPage && i>= firstPage)
+             		{
+	             		if(i == selectedPage)
+	             			pagesHtmlLabel += addLink(i,true);
+	             		else
+	             			pagesHtmlLabel += addLink(i,false);
+             		}
+             	}	
+             	return pagesHtmlLabel;
+             }
+             
+             private function addLink(num:int,isSelected:Boolean = false):String
+             {
+             	if(isSelected)
+             		return "<b><font color='#333333' size='11'> "+num+" </font></b>";
+             		             	
+             	return "<a href='event:"+num+"'><b><font color='#009acc' size='11'> "+num+" </font></b></a>";
+             }
+             
+             private function selectionChange(newValue:int):void
+             {
+             	if(_selectedPage != newValue)
+             	{
+             		_selectedPage = newValue;
+             		dispatchEvent(new Event("selectionChange",true));
+             	}
+             }
+             /**
+             * change the page size - dispatches an event PagingEvent.ROWS_IN_PAGE_CHANGE
+             */
+             private function resultSizeChange( event : ListEvent ) : void
+             {
+             	selectedPage = 1;
+             	_selectedPage = 1;
+             	pageSize = int(rowInPageCb.selectedItem);
+             	kalturaFilterPager.pageSize = pageSize;
+             	kalturaFilterPager.pageIndex = 1;
+             	var pageEvent : PagingEvent = new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE , selectedPage , 1, int(rowInPageCb.selectedItem));
+             	dispatchEvent( pageEvent ); 
+             }
+             
+             //setters & getters
+             /////////////////////////////////////////////////////////
+  
+  			public function set oneSizeDelta( value : int ) : void { _oneSizeDelta = value; }	
+    		public function get oneSizeDelta() : int { return _oneSizeDelta; }	
+    		
+    		public function get firstPage() : int { return _firstPage; }
+    		public function get lastPage() : int { return _lastPage; }
+    		
+    		public function set selectedPage( value : int ) : void { update(value); } 
+    		public function get selectedPage() : int { return _selectedPage; } 
+    		
+    		public function get rowsInPage() : Array { return _rowsInPage; } 
+    		public function set rowsInPage( array : Array ) : void { _rowsInPage = array; } 
+    		
+    		public function get pageSize() : int { return int(rowInPageCb.selectedItem); } 
+    		public function set pageSize( value : int ) : void 
+    		{ 
+    			for( var i:int=0; i<_rowsInPage.length; i++)
+    			{
+    				if(_rowsInPage[i] == value.toString())
+    					rowInPageCb.selectedItem  = value.toString();
+    			}
+    			
+    			totalCount = _totalCount;
+    			update( _selectedPage );
+    		}
+    		
+    		public function get totalCount() : int { return _totalCount; } 
+    		public function set totalCount( value : int ) : void
+    		{
+    			_totalCount = value;
+				
+				if(_totalCount > 0)
+				{
+	    			if( _totalCount%pageSize == 0)
+	    				_lastPage = _totalCount/pageSize;
+	    			else
+	    				_lastPage = int(_totalCount/pageSize) + 1;
+	    				
+	    			if(_lastPage < _selectedPage )
+	    				update( _lastPage );
+	    			else
+	    			    update( _selectedPage );
+    			}
+    			else
+    				pagerContainer.visible = false;
+    		}
+ 
+    	]]>
+    </mx:Script>
+   
+    <mx:Metadata>
+    	[Event(name="nextPage", type="com.kaltura.events.PagingEvent")]
+    	[Event(name="prvPage", type="com.kaltura.events.PagingEvent")]
+    	[Event(name="firstPage", type="com.kaltura.events.PagingEvent")]
+    	[Event(name="lastPage", type="com.kaltura.events.PagingEvent")]
+    	[Event(name="getPageNum", type="com.kaltura.events.PagingEvent")]
+    	[Event(name="rowsInPageChange", type="com.kaltura.events.PagingEvent")]
+    </mx:Metadata>
+    
+   	<mx:HBox id="pagerContainer" horizontalCenter="0" verticalCenter="0" 
+   		paddingTop="5" paddingBottom="5" paddingRight="2" paddingLeft="2"
+   		horizontalAlign="center" verticalAlign="middle">
+		<mx:Label id="firstLbl" visible="{showFirstPageFlag}" includeInLayout="{showFirstPageFlag}" link="linkHandler(event);" 
+			selectable="true" htmlText="{firstHtmlStr}">
+		</mx:Label>
+		
+		<mx:Label id="prvLbl" visible="{showPrvFlag}" includeInLayout="{showPrvFlag}" link="linkHandler(event);" 
+			selectable="true" htmlText="{prvHtmlStr}">
+		</mx:Label>
+		
+		<mx:Label id="numbers" textAlign="center" horizontalCenter="0" link="linkHandler(event);" selectable="true"/>
+		
+		<mx:Label id="nextLbl" visible="{showNextFlag}" includeInLayout="{showNextFlag}" link="linkHandler(event);" 
+			selectable="true" htmlText="{nextHtmlStr}">
+		</mx:Label>
+		
+		<mx:Label id="lastLbl" visible="{showLastPageFlag}" includeInLayout="{showLastPageFlag}" link="linkHandler(event);" 
+			selectable="true" htmlText="{lastHtmlStr}">
+		</mx:Label>
+	</mx:HBox>
+	
+	<mx:HBox id="pagerSize" verticalAlign="middle" paddingTop="5" paddingBottom="5" paddingRight="2" paddingLeft="2" >	
+		<mx:Label id="rowInPageLbl" text="{rm.getString('windows', 'rowsInPage')}" visible="{showRowsInPage}" color="#333333" fontWeight="bold" fontSize="11"/>
+		<mx:ComboBox id="rowInPageCb" 
+			dataProvider="{_rowsInPage}" 
+			rowCount="{_rowsInPage.length}" 
+			change="{resultSizeChange(event)}" /> 
+	</mx:HBox>
+			
+</mx:HBox>
+

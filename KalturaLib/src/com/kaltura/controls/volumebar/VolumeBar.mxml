@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--/*
+This file is part of the Kaltura Collaborative Media Suite which allows users
+to do with audio, video, and animation what Wiki platfroms allow them to do with
+text.
+
+Copyright (C) 2006-2008  Kaltura Inc.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as
+published by the Free Software Foundation, either version 3 of the
+License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
+
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+@ignore
+*/
+-->
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	clipContent="false"
+	rollOver="soundBtnRollOverHandler( event )"
+	creationComplete="init()">
+
+	<mx:Metadata>
+		[Event(name="volumeChanged", type="mx.events.SliderEvent")]
+		[Event(name="mute", type="flash.events.Event")]
+		[Event(name="unmute", type="flash.events.Event")]
+
+		[Style(name="barStyleName" , type="String", inherit="no")]
+		[Style(name="buttonNotPressedStyleName" , type="String", inherit="no")]
+		[Style(name="buttonPressedStyleName" , type="String", inherit="no")]
+		[Style(name="volumeContainerStyleName" , type="String", inherit="no")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import flash.utils.getTimer;
+			import mx.controls.sliderClasses.Slider;
+			import mx.core.UIComponent;
+			import mx.controls.sliderClasses.SliderThumb;
+			import mx.events.SliderEvent;
+			import flash.utils.setTimeout;
+
+			//consts
+			////////////////////////////////////////////////////////////////////
+			public static const VOLUME_CHANGED_EVENT : String = "volumeChanged";
+			public static const MUTE : String = "mute";
+			public static const UNMUTE : String = "unmute";
+			////////////////////////////////////////////////////////////////////
+
+			//private vars
+			///////////////////////////////////////////////////////////////////
+			private var _mutedFlag :Boolean = false;
+			private var _lastValumeValue : Number = 100;
+
+			[Bindable] private var _minimum : Number = 0;
+			[Bindable] private var _maximum : Number = 1;
+			[Bindable] private var _barHOffset : Number = 0;
+			[Bindable] private var _barVOffset : Number = 0;
+
+			/**
+			 * keeps the value before initialization.
+			 */
+			private var _value : Number = 100;
+
+			private var _overVolumeFlag : Boolean = false;
+
+			///////////////////////////////////////////////////////////////////
+
+			private function init() : void
+			{
+				setComponentStyles();
+				maskVolumeBar();
+				setButtonHitArea();
+				//fix slider thumb:
+				/* bar.getThumbAt(0).height = thumbHeight;
+				bar.getThumbAt(0).width = thumbWidth; */
+			}
+
+			private function setButtonHitArea() : void
+			{
+				//trace("setButtonHitArea");
+				var closeHitArea : UIComponent = new UIComponent();
+				closeHitArea.graphics.beginFill(0xCC0000 , 0);
+				closeHitArea.graphics.drawRect(buttonContainer.x  , buttonContainer.y , buttonContainer.width , buttonContainer.height+2 );
+				this.addChild( closeHitArea );
+				buttonContainer.hitArea = closeHitArea;
+				closeHitArea.mouseEnabled = false;
+			}
+
+			private function maskVolumeBar() : void
+			{
+				//trace("maskVolumeBar");
+				var rect:UIComponent = new UIComponent();
+				rect.graphics.lineStyle(1, 0x000000);
+				rect.graphics.beginFill(0xCC0000);
+				rect.graphics.drawRect(volumeContainer.x, -volumeContainer.height-1+_barVOffset, volumeContainer.width , volumeContainer.height );
+				rect.graphics.endFill();
+				rect.cacheAsBitmap = true;
+				this.addChild(rect);
+				volumeContainer.mask = rect;
+			}
+
+			private function setComponentStyles() : void
+			{
+				var barStyleName:String = getStyle("barStyleName");
+				if(barStyleName)
+					bar.styleName = barStyleName;
+
+				var volumeContainerStyleName:String = getStyle("volumeContainerStyleName");
+				if(volumeContainerStyleName)
+					volumeContainer.styleName = volumeContainerStyleName;
+
+				setNonMuteStyle();
+			}
+
+
+			private function soundBtnRollOverHandler( event : MouseEvent ) : void
+			{
+				setTimeout(showSlider, delayRollover, event);
+			}
+
+			protected function showSlider (event:MouseEvent):void
+			{
+				if ( ! (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height))
+					return;
+
+				if(event && event.buttonDown)
+					return;
+
+				if(volumeContainer.y == -volumeContainer.height + _barVOffset)
+					return;
+
+				_overVolumeFlag = true;
+
+				moveEffect.end();
+				moveEffect.yTo = -volumeContainer.height + _barVOffset;
+	            moveEffect.play();
+
+	            stage.addEventListener(MouseEvent.MOUSE_MOVE, closeSlider);
+			}
+
+			private function closeSlider( event:MouseEvent ) : void
+			{
+				if (mouseX >= 0 && mouseX <= width && mouseY >= (-volumeContainer.height) && mouseY <= height)
+					return;
+
+				if(volumeContainer.y == _barVOffset)
+					return;
+
+				_overVolumeFlag = false;
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, closeSlider);
+				moveEffect.pause();
+				moveEffect.yTo = _barVOffset;
+				moveEffect.play();
+
+			}
+
+			private function changeVolumeHandler() : void
+			{
+				dispatchEvent( new SliderEvent ( VOLUME_CHANGED_EVENT ,
+												 false ,
+												 false ,
+												 -1,
+												 bar.value) );
+				changedVolumeCheck ();
+			}
+
+			private function changedVolumeCheck ():void
+			{
+				_lastValumeValue = bar.value;
+				if( int(bar.value) != 0 && _mutedFlag)
+				{
+					setNonMuteStyle();
+					_mutedFlag = false;
+					dispatchEvent( new Event( UNMUTE ) );
+				}
+				else if( int(bar.value) == 0 )
+				{
+					setMuteStyle();
+					_mutedFlag = true;
+					dispatchEvent( new Event( MUTE ) );
+				}
+			}
+
+			private function mutePressedHandler( event : MouseEvent ) : void
+			{
+				if(!_mutedFlag)
+				{
+					bar.value = _minimum;
+					setMuteStyle();
+					_mutedFlag= true;
+					dispatchEvent( new Event( MUTE ) );
+				}
+				else
+				{
+					bar.value = _lastValumeValue;
+					setNonMuteStyle();
+					_mutedFlag = false;
+					dispatchEvent( new Event( UNMUTE ) );
+				}
+			}
+
+			private function setNonMuteStyle() : void
+			{
+				var buttonNotPressedStyleName:String = getStyle("buttonNotPressedStyleName");
+				if(buttonNotPressedStyleName)
+					openCloseBtn.styleName = buttonNotPressedStyleName;
+			}
+
+			private function setMuteStyle() : void
+			{
+				var buttonPressedStyleName:String = getStyle("buttonPressedStyleName");
+				if(buttonPressedStyleName)
+					openCloseBtn.styleName = buttonPressedStyleName;
+			}
+
+			protected function effectStartHandler() : void
+			{
+
+			}
+
+			protected function effectEndHandler() : void
+			{
+
+			}
+
+			private function volumeDataTip(val:String):String
+			{
+				return int(val).toString();
+			}
+
+			//getters & setters
+			/////////////////////////////////////////////////////////
+			[Bindable]
+			public var thumbHeight:Number = 4;
+			[Bindable]
+			public var thumbWidth:Number = 10;
+
+			[Bindable]
+			[Inspectable]
+			public function get value ():Number
+			{
+				if (initialized)
+					return bar.value;
+				else
+					return _value;
+			}
+			public function set value (volume:Number):void
+			{
+				_value = volume;
+				if (initialized)
+					bar.value = volume;
+				changedVolumeCheck ();
+			}
+			public function set maximum( value : Number ) : void
+			{
+				_maximum = value;
+			}
+
+			public function get maximum() : Number
+			{
+				return _maximum;
+			}
+
+			public function set minimum( value : Number ) : void
+			{
+				_minimum = value;
+			}
+
+			public function get minimum() : Number
+			{
+				return _minimum;
+			}
+
+			public function set barHOffset( value : Number ) : void
+			{
+				_barHOffset = value;
+			}
+
+			public function get barHOffset() : Number
+			{
+				return _barHOffset;
+			}
+
+			public function set barVOffset( value : Number ) : void
+			{
+				_barVOffset = value;
+			}
+
+			public function get barVOffset() : Number
+			{
+				return _barVOffset;
+			}
+
+			public function get lastValumeValue() : Number
+			{
+				return _lastValumeValue;
+			}
+
+			[Bindable]
+			[Inspectable]
+			public var delayRollover:uint = 500;
+
+		]]>
+	</mx:Script>
+
+	<mx:VBox id="volumeContainer"
+		x="{-(volumeContainer.width - buttonContainer.width) / 2 + _barHOffset}" y="{_barVOffset}"
+		height="100" width="25"
+		verticalAlign="middle" horizontalAlign="center"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		cacheAsBitmap="true" >
+
+		<mx:VSlider id="bar" height="80"
+			dataTipFormatFunction="{volumeDataTip}"
+			minimum="{_minimum}" maximum="{_maximum}" value="{value}"
+			liveDragging="true"
+			change="{ changeVolumeHandler() }"  />
+
+	</mx:VBox>
+
+	<mx:VBox id="buttonContainer" width="100%" height="100%"
+		horizontalAlign="center" verticalAlign="middle">
+		<mx:Button id="openCloseBtn" width="25" height="100%" click="mutePressedHandler( event )" buttonMode="true" />
+	</mx:VBox>
+
+	<mx:Move id="moveEffect" target="{volumeContainer}"
+		effectStart="effectStartHandler()" effectEnd="effectEndHandler()" suspendBackgroundProcessing="true"/>
+
+</mx:Canvas>

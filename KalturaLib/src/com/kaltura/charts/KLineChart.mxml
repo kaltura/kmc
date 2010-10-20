@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+[Avi]04/08/2009: I have copied this file here from Reports & Analitics to be used in the dashboard as well 
+
+
+-->
+<mx:LineChart xmlns:mx="http://www.adobe.com/2006/mxml" seriesFilters="{[]}" 
+	dataTipFunction="onDataTip" showDataTips="true" > 
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.charts.HitData;
+			import mx.collections.ArrayCollection;
+			import mx.graphics.Stroke;
+			
+			private var _minHAxisDate : Date;
+			private var _maxHAxisDate : Date;
+			private var day : Number = 1000*60*60*24;
+			
+			override public function set dataProvider(value:Object):void
+			{
+				horizontalDateTimeAxis.minimum = null;
+				horizontalDateTimeAxis.maximum = null;
+			// [Avi]05/08/2009: fix, taking out from the loop the line below to prevent NPE 	
+				var newArrCol : ArrayCollection = new ArrayCollection();
+				if(_maxHAxisDate && _minHAxisDate)
+				{
+					var minMaxDays : int = (_maxHAxisDate.time - _minHAxisDate.time)/day;
+					for(var j:int=0; j<=minMaxDays; j++)
+					{
+						var obj : Object = new Object();
+						obj.x = _minHAxisDate.time + (j * day);
+						obj.y = 0;
+						newArrCol.addItem( obj );
+					}
+				}
+					
+				if( value && value is ArrayCollection )
+				{
+					var arrCol : ArrayCollection = value as ArrayCollection;
+					for(var i:int=0; i<arrCol.length; i++)
+					{
+						for(var k:int=0; k<newArrCol.length; k++)
+						{
+							var firstDate : Date = new Date( newArrCol[k].x );
+							var secondDate : Date = new Date( arrCol[i].x );
+							if( firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month)
+								newArrCol[k] = arrCol[i];
+						}
+
+						if(String(arrCol[i].y).indexOf('.') != -1)
+							arrCol[i].y = Number(arrCol[i].y).toFixed(2);
+						else
+							arrCol[i].y = Number(arrCol[i].y);
+							
+					}
+				}
+
+				super.dataProvider = newArrCol;
+			}
+ 
+            private function onDataTip( hitData:HitData ) : String
+            {
+            	var s:String;
+		        s = new Date(hitData.item.x).toDateString() + "\n";
+		        s += hitData.item.y;
+		        return s;
+            }
+            
+            public function set minHAxisDate( date : Date ) : void
+            {
+            	horizontalDateTimeAxis.minimum = date;
+            	_minHAxisDate = date;
+            }
+            
+            public function set maxHAxisDate( date : Date ) : void
+            {
+            	horizontalDateTimeAxis.maximum = date;
+            	_maxHAxisDate = date;
+            }
+
+		]]>
+	</mx:Script>
+	
+	<!-- Define chart effects -->
+	<mx:Stroke id="axis" color="0xb1b1b1" weight="2" />
+
+   <mx:SeriesInterpolate id="rearrangeData" duration="1000" minimumElementDuration="200" elementOffset="0" /> 
+	 
+	 <mx:horizontalAxisRenderers>
+     	<mx:AxisRenderer placement="bottom" axis="{horizontalDateTimeAxis}" axisStroke="{axis}" />
+     </mx:horizontalAxisRenderers>
+     
+	 <mx:horizontalAxis>
+    	<mx:DateTimeAxis id="horizontalDateTimeAxis" dataUnits="days" labelUnits="days" displayLocalTime="true" />
+     </mx:horizontalAxis>
+
+     <mx:verticalAxisRenderers>
+     	<mx:AxisRenderer placement="left" axis="{verticalLinearAxis}" axisStroke="{axis}" />
+     </mx:verticalAxisRenderers>
+     
+     <mx:verticalAxis>
+     	<mx:LinearAxis id="verticalLinearAxis" autoAdjust="false" />
+     </mx:verticalAxis>
+     
+     <mx:series>
+     	<mx:LineSeries id="lineSeries" yField="y" xField="x"  showDataEffect="rearrangeData" > <!-- form="curve" -->
+	     	<mx:lineStroke>
+		        <mx:Stroke color="#9ab40c" weight="3"/>
+	        </mx:lineStroke>  
+     	</mx:LineSeries>
+     </mx:series>
+     
+</mx:LineChart>

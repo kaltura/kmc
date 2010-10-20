@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asdoc\RemoveDomainsPopUpWindow.mxml -->
+
+<!---
+
+	This popup window is used to remove a domain name from the Sites Restriction list
+
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" 
+	close="closeWindow(event)" title="{rm.getString('windows', 'removeDomainTitle')}"
+	width="350">
+	<mx:Script>
+		<![CDATA[
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.events.CloseEvent;
+			import com.kaltura.utils.KArrayUtil;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.collections.ArrayCollection;
+			
+			[ResourceBundle("windows")]
+			private static var rb:ResourceBundle;
+			
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+			
+			/**
+			 * 
+			 */
+			[Bindable]private var _domainsListData:ArrayCollection;
+			
+			/**
+			 * 
+			 */
+			[Bindable]public function get domainsListData():ArrayCollection
+			{
+				return _domainsListData;
+			}
+			
+			/**
+			 * 
+			 */
+			public function set domainsListData(domainsListData:ArrayCollection):void
+			{
+				_domainsListData = domainsListData;
+			}
+			
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 
+			 */
+			private function saveData(event:Event):void
+			{
+				if(domainList.selectedItems.length == 0)
+				{
+					PopUpManager.removePopUp(this);
+				}
+				else
+				{
+					var domainsStrings:String = '';
+					for each(var domain:String in domainList.selectedItems)
+					{
+						domainsStrings += '\t\t' + domain + '\n';
+					}
+					Alert.show(rm.getString('windows', 'areYouSureToRemove') + domainsStrings, rm.getString('windows', 'removeDomainTitle'), Alert.YES|Alert.NO, this, alertHandler, null, Alert.NO);
+				}
+			}
+			
+			/**
+			 * 
+			 */
+			private function alertHandler(event:CloseEvent):void
+			{
+				if(event.detail == Alert.YES)
+				{
+					for each(var domain:String in domainList.selectedItems)
+					{
+						KArrayUtil.removeItemFromArray(domain, domainsListData.source);
+					}
+					domainsListData.refresh();
+					PopUpManager.removePopUp(this);
+				}
+			}
+			
+			private function onDomainClick(event:Event):void
+			{
+				delBtn.enabled = (domainList.selectedItems.length != 0);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Form defaultButton='{delBtn}' width="100%" height="100%">
+		<mx:VBox width="100%" height="100%">
+			<mx:List id='domainList' rowCount="5" dataProvider="{domainsListData}" width="100%" height="100%" allowMultipleSelection="true" click="onDomainClick(event)"/>
+			<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+				<mx:Button id='delBtn' label="{rm.getString('windows', 'removeDomainsBtn')}" useHandCursor="true" buttonMode="true" click="saveData(event)" enabled="false"/>
+				<!--<mx:Button label="{rm.getString('windows', 'cancelDomainsBtn')}" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>-->
+			</mx:ControlBar>
+		</mx:VBox>
+	</mx:Form>
+</HelpTitleWindow>

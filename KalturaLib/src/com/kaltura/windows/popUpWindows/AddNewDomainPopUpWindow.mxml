@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asdoc\AddNewDomainPopUpWindow.mxml -->
+
+<!---
+
+	This popup window is used to add a new domain name to the Sites Restriction list
+
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" 
+	title="{rm.getString('windows', 'addNewDomainTitle')}" layout="vertical" close="closeWindow(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.resources.ResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.resources.IResourceManager;
+			import mx.controls.Alert;
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			[ResourceBundle("windows")]
+			private static var rb:ResourceBundle;
+			
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+			
+			
+			/**
+			 * 
+			 */
+			[Bindable]private var _domainsListData:ArrayCollection;
+			
+			/**
+			 * 
+			 */
+			[Bindable]public function get domainsListData():ArrayCollection
+			{
+				return _domainsListData;
+			}
+			
+			/**
+			 * 
+			 */
+			public function set domainsListData(domainsListData:ArrayCollection):void
+			{
+				_domainsListData = domainsListData;
+			}
+			
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 
+			 */
+			private function saveData(event:Event):void
+			{
+				var newDomain:String = domainTextInput.text
+				
+				if(StringUtil.trim(newDomain) == '')
+				{
+					Alert.show(rm.getString('windows', 'emptyDomainMsg'), rm.getString('windows', 'error'));
+					return;
+				}
+				else if((newDomain.lastIndexOf('.') == -1) || (newDomain.lastIndexOf('..') != -1) ||
+						(newDomain.charAt(0) == '.') || (newDomain.charAt(newDomain.length-1) == '.'))
+				{
+					Alert.show(rm.getString('windows', 'invalidDomainNameMsg'), rm.getString('windows', 'error'));
+					return;
+				}
+								
+				for each(var domain:String in domainsListData)
+				{
+					if(domain == newDomain)
+					{
+						Alert.show(rm.getString('windows', 'sameDomainMsg'), rm.getString('windows', 'error'));
+						return;
+					}
+				} 
+				domainsListData.addItem(domainTextInput.text);
+				PopUpManager.removePopUp(this);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Form defaultButton='{saveBtn}'>
+		<mx:Label text="{rm.getString('windows', 'domainExampleLabel')}" enabled="false"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{rm.getString('windows', 'domainLabel')}"/>
+			<mx:TextInput id='domainTextInput' width="100%" restrict="0-9\-\A-Z\a-z\." maxChars="64"/>
+		</mx:HBox>
+		<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+			<mx:Button id='saveBtn' label="{rm.getString('windows', 'saveBtn')}" useHandCursor="true" buttonMode="true" click="saveData(event)"/>
+			<!--<mx:Button label="{rm.getString('windows', 'cancelBtn')}" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>-->
+		</mx:ControlBar>
+	</mx:Form>
+</HelpTitleWindow>

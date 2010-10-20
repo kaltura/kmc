@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- asdoc\AddRemoveCountriesPopUpWindow.mxml -->
+
+<!---
+
+	This popup window is used to add or remove a country(s) from the Countries Restriction list
+
+-->
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" title="{rm.getString('windows', 'addRemoveTitle')}" 
+	close="closeWindow(event)" height="350" xmlns:containers="com.kaltura.containers.*" showCloseButton="true" width="450"
+	>
+	<containers:states>
+		<mx:State name="{RESTRICT_STATE}">
+			<mx:SetProperty target="{label1}" name="text" value="{rm.getString('windows', 'countriesToRestrictLabel')}"/>
+		</mx:State>
+	</containers:states>
+	<mx:Script>
+		<![CDATA[
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+			import mx.resources.ResourceBundle;
+			import com.kaltura.utils.KArrayUtil;
+			import mx.collections.ArrayCollection;
+			import com.kaltura.utils.KCountriesUtil;
+			import mx.managers.PopUpManager;
+			
+			public static const RESTRICT_STATE:String = "restrict state";
+			
+			[ResourceBundle("windows")]
+			private static var rb:ResourceBundle;
+			
+			[Bindable]
+			private var rm:IResourceManager = ResourceManager.getInstance();
+			
+			
+			/**
+			 * 
+			 */
+			[Bindable]private var _selectedData:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */
+			[Bindable]private var _allCountriesData:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * 
+			 */
+			[Bindable]public function get selectedData():ArrayCollection
+			{
+				return _selectedData;
+			}
+			
+			/**
+			 * 
+			 */
+			public function set selectedData(selectedDataArr:ArrayCollection):void
+			{
+				_selectedData = selectedDataArr;
+				
+				removeElementsFromAllCountriesList();
+			}
+			
+			/**
+			 * 
+			 */
+			private function removeElementsFromAllCountriesList():void
+			{
+				var allCountriesArr:ArrayCollection = KCountriesUtil.instance.getAllCountriesForModificationUse();
+				for each(var country:Object in selectedData)
+				{
+					var obj:Object = allCountriesArr.getItemAt(KCountriesUtil.instance.getLocationInCollection(country.code));
+					obj.code = '';
+				}
+				
+				for each(var nonSelectCountry:Object in allCountriesArr)
+				{
+					
+					if(nonSelectCountry.code != '')
+					{
+						_allCountriesData.addItem(nonSelectCountry);
+					}
+				}
+				
+			}
+			
+			/**
+			 *  close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 
+			 */
+			private function saveData(event:Event):void
+			{
+				selectedData.removeAll();
+				
+				for each(var country:Object in selectedCountriesList.dataProvider)
+				{
+					selectedData.addItem(country);
+				}
+				
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * 
+			 */
+			private function onClickShift(event:Event):void
+			{
+				var clickedBtn:Button = event.target as Button;
+				var fromList:List = (clickedBtn.id == 'shiftLeftBtn') ? allCountriesList : selectedCountriesList;
+				var toList:List = (clickedBtn.id == 'shiftLeftBtn') ? selectedCountriesList : allCountriesList;
+				
+				var selectedItems:Array = fromList.selectedItems;
+				var allItems:Array = (fromList.dataProvider as ArrayCollection).source;
+				fromList.dataProvider = new ArrayCollection(KArrayUtil.subtract(allItems, selectedItems));
+				var oldSelectedItems:Array = (toList.dataProvider as ArrayCollection).source;
+				toList.dataProvider = new ArrayCollection(oldSelectedItems.concat(selectedItems).sortOn('name'));
+			}
+		
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox height="100%" width="100%">
+		<mx:Label text="{rm.getString('windows', 'allCountriesLabel')}"/>
+		<mx:List height="100%" dataProvider="{_allCountriesData}" itemRenderer="com.kaltura.renderers.CountryListItemRenderer" width="100%" allowMultipleSelection="true" id="allCountriesList"></mx:List>
+		</mx:VBox>
+		<mx:VBox height="100%" horizontalAlign="center" verticalAlign="middle" paddingLeft="2" paddingRight="2">
+			<mx:Button label="{rm.getString('windows', 'shiftLeftBtn')}" id="shiftLeftBtn" useHandCursor="true" buttonMode="true" click='onClickShift(event)'/>
+			<mx:Button label="{rm.getString('windows', 'shiftRightBtn')}" id="shiftRightBtn" useHandCursor="true" buttonMode="true" click='onClickShift(event)'/>
+		</mx:VBox>
+		<mx:VBox height="100%" width="100%">
+			<mx:Label text="{rm.getString('windows', 'countriesToAllowLabel')}" id="label1"/>
+			<mx:List height="100%" width="100%" allowMultipleSelection="true" id="selectedCountriesList" dataProvider="{new ArrayCollection(selectedData.toArray())}" itemRenderer="com.kaltura.renderers.CountryListItemRenderer"></mx:List>
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+		<mx:Button label="{rm.getString('windows', 'saveCountirsBtn')}" useHandCursor="true" buttonMode="true" click="saveData(event)"/>
+		<!--<mx:Button label="{rm.getString('windows', 'cancelCountiesBtn')}" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>-->
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

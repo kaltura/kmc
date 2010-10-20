@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- build.xml -->
+<project name="KalturaLib Builder" basedir=".">    
+    
+	<import file="${flex-build}" />  
+    
+	<property name="output.file" value="KalturaLib.swc"/>
+	
+	<!-- This target compiles the library -->
+	<target name="lib" depends="flex-extract-classes">
+		<echo>Compiling ${output.file}</echo>
+		<echo>${basedir}/src</echo>
+        <compc output="${dir.kaltura.bin}/${output.file}" include-classes="${include.classes}" 
+			   debug="${flex.compile.debug}">
+			
+			<!-- Set the sources path to the 'src' directory -->			
+			<source-path path-element="${basedir}"/>
+			
+			<!-- Include libraries, include from each dir should be in it's own dcompiler.library-path! -->
+			<compiler.library-path dir="${dir.kaltura.flexlibs}" append="true">
+                <include name="*" />
+            </compiler.library-path>
+			
+			<!-- Locale source path -->
+			<source-path path-element="${basedir}/locale/en_US_kaltura"/>
+			
+			<include-resource-bundles>countries</include-resource-bundles>
+			<include-resource-bundles>languages</include-resource-bundles>
+			<include-resource-bundles>windows</include-resource-bundles>
+			
+			 <!-- These are kaltura library swcs (w/a different home directory) -->
+            <compiler.library-path dir="${dir.kaltura.bin}" append="true">
+                <include name="Common.swc" />
+                <include name="as3FlexClient.swc" />
+            </compiler.library-path>
+        </compc>
+    </target>
+	
+    <target name="clean">
+        <delete>
+            <fileset dir="${dir.kaltura.bin}" includes="/${output.file}"/>
+        </delete>
+    </target>	
+</project>
