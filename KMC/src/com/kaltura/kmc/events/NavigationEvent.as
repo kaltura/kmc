@@ -8,7 +8,8 @@ package com.kaltura.kmc.events {
 	 * @author Atar
 	 */
 	public class NavigationEvent extends Event {
-
+		//TODO list module ids
+		
 		/**
 		 * The NavigationEvent.NAVIGATE constant defines the value of the 
 		 * <code>type</code> property of the event object 
@@ -21,13 +22,16 @@ package com.kaltura.kmc.events {
 		private var _module:String;
 
 		private var _subtab:String;
+		
+		private var _data:Object;
 
 
-		public function NavigationEvent(type:String, module:String, subtab:String = "",
+		public function NavigationEvent(type:String, module:String, subtab:String = "", data:Object = null,
 										bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_module = module;
 			_subtab = subtab;
+			_data = data;
 		}
 
 
@@ -44,6 +48,15 @@ package com.kaltura.kmc.events {
 		 */
 		public function get subtab():String {
 			return _subtab;
+		}
+
+		/**
+		 * (Optional) any extra data required for the event. </br>
+		 * i.e. when appstudio needs to navigate to content and pass 
+		 * uiconf id use <code>{uiconfId:333414}</code>
+		 */		
+		public function get data():Object {
+			return _data;
 		}
 
 

@@ -10,15 +10,18 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.events.KalturaEvent;
-			import com.kaltura.vo.KalturaUiConf;
-			
 			import com.kaltura.kmc.events.NavigationEvent;
+			import com.kaltura.vo.KalturaUiConf;
 			
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 			import mx.events.ResourceEvent;
 			import mx.resources.ResourceManager;
 
+			// =====================================================
+			// events
+			// =====================================================
+			
 			/**
 			 * Dispatched when the module needs to navigate to another module.
 			 * @eventType com.kaltura.kmc.events.NavigationEvent
@@ -27,10 +30,20 @@
 			
 			/**
 			 * Dispatched when the module encountered some error that prevents it from functioning.
-			 * @eventType flash.events.ErrorEvent
+			 * @eventType com.kaltura.events.KalturaEvent
 			 */
-			[Event(name="error",type="flash.events.ErrorEvent")]
+			[Event(name="error",type="com.kaltura.events.KalturaEvent")]
 			
+			/**
+			 * Dispatched when user clicked a help link.
+			 * The <code>data</code> parameter is the anchor on help page.
+			 * @eventType com.kaltura.events.KalturaEvent
+			 */
+			[Event(name="help",type="com.kaltura.events.KalturaEvent")]
+			
+			// =====================================================
+			// members
+			// =====================================================
 			
 			/**
 			 * @copy #kc
@@ -58,7 +71,9 @@
 			protected var _uiconf:KalturaUiConf; 
 			
 			
-
+			// =====================================================
+			// methods
+			// =====================================================
 			
 			/**
 			 * module initialization
@@ -74,6 +89,8 @@
 			 * load configuration info
 			 * */
 			protected function loadUiconf(uiconfId:String):void {
+				//TODO backdoor for local uiconf
+				// - figure out what flashvar name to use to match all modules
 				var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
 				uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
 				uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
@@ -83,6 +100,7 @@
 			
 			/**
 			 * use configuration info
+			 * @param e		data from server
 			 * */
 			protected function configurationLoadHandler(e:KalturaEvent):void {
 				_uiconf = e.data as KalturaUiConf;
@@ -94,10 +112,13 @@
 			
 			/**
 			 * failed loading uiconf
+			 * @param e		data from server
 			 * */
 			protected function configurationLoadFailedHandler(e:KalturaEvent):void {
-				//TODO global and locale-ized error handling
-				Alert.show(e.error.errorMsg);
+				//TODO use locale value instead of given error
+				// - do we know the resourceBundle name? put all errors in "errors" bundle on all locales 
+				//TODO use const for event type instead of a hardcoded string
+				dispatchEvent(new KalturaEvent("error", false, false, false, null, e.error));
 			}
 
 			
@@ -147,6 +168,9 @@
 				throw new Error("showSubtab must be implemented");
 			}
 
+			// =====================================================
+			// getters / setters
+			// =====================================================
 
 			/**
 			 * KalturaClient for server API calls
@@ -204,7 +228,7 @@
 		]]>
 	</mx:Script>
 	<mx:HBox verticalAlign="middle">
-		<mx:Label text="rrrrr" />
+		<mx:Label text="{ResourceManager.getInstance().getString('dummy', 'name')}" />
 		<mx:Label text="baaaa" />
 	</mx:HBox>
 </mx:Module>
