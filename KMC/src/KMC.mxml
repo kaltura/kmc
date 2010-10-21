@@ -1,4 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600">
-	<mx:Label text="this is the main kmc application"/>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="application_creationCompleteHandler(event)">
+	
+		
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.kmc.business.KmcModuleLoader;
+			import com.kaltura.kmc.model.KmcModelLocator;
+			import com.kaltura.utils.KUtils;
+			import com.kaltura.utils.ObjectHelpers;
+			
+			import mx.events.FlexEvent;
+
+			public var uiConfXml:XML = 	<root>
+										<!-- path to skin file -->
+										<skinPath>http://www.../kmcSkin.swf</skinPath>
+										<!-- path to help page -->
+										<helpPage>http://www.../helpPage.html</helpPage>
+									
+										<!-- login data -->
+										<login>18125</login>
+										
+										<!-- dashboard data -->
+										<dashboard>12132</dashboard>
+										
+										<!-- studio data -->
+										<studio>12135</studio>
+											
+										<!-- Content data -->
+										<content>32132</content>
+										
+										<!-- account data -->
+										<settings>132132</settings>
+										
+										<!-- analytics data -->
+										<analytics>321654</analytics>
+									
+									</root>
+
+			
+				
+			protected function application_creationCompleteHandler(event:FlexEvent):void
+			{
+				
+				
+				//TODO add the config from the outside 
+				var objParam:Object = Application.application.parameters;
+				objParam = ObjectHelpers.lowerNoUnderscore(objParam); 
+				
+				var configuration:KalturaConfig = new KalturaConfig();
+				configuration.partnerId = objParam.partnerid;
+				configuration.ignoreNull = 1;
+				configuration.protocol = objParam.protocol ? objParam.protocol : "http://";
+				configuration.domain = KUtils.hostFromCode(objParam.host);
+				configuration.srvUrl = objParam.srvurl;
+				configuration.clientTag = "kmc";
+				
+				KmcModelLocator.getInstance().kalturaClient = new KalturaClient(configuration);
+				
+				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
+				
+			}
+			
+			
+
+		]]>
+	</mx:Script>
+	<mx:Label text="this is the main kmc application" />
+	
 </mx:Application>
