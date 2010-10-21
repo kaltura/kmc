@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="Locale Compiler" basedir="." default="build">
+	
+	<!-- the language for which we compile locale -->
+    <property name="LANGUAGE" value="de_DE"/>
+	
+	<!-- path to Flex SDK -->
+    <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4/sdks/3.5.0"/>
+	
+	<!-- directory for the compiled locale swf -->
+    <property name="DEPLOY_DIR" value="../bin-debug/locale/${LANGUAGE}"/>
+	
+	<!-- include flex tasks -->
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    
+	<target name="build" depends="clean, init, compile">
+		<echo>Locale ${LANGUAGE} compiled successfully</echo>
+	</target>
+	
+	<target name="init">
+		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+	</target>
+	
+	<target name="compile" description="compile the desired locale module">
+        <mxmlc output="${DEPLOY_DIR}/${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
+			
+            <!-- Get default compiler options. -->
+            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
+
+            <!-- List of path elements that form the roots of ActionScript class hierarchies. -->
+            <source-path path-element="../locale/{locale}"/>
+
+			<!-- List of resource bundles to compile in the resourceModule -->
+			<include-resource-bundles>dummy</include-resource-bundles>
+
+            <!-- List of SWC files or directories that contain SWC files. >
+            <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
+                <include name="libs" />
+                <include name="../bundles/{locale}" />
+            </compiler.library-path-->
+
+        </mxmlc>
+    </target>
+	
+    <target name="clean" description="delete old file">
+		<echo>Deleting ${LANGUAGE}_ResourceModule.swf</echo>
+        <delete failonerror="false">
+            <fileset dir="${DEPLOY_DIR}" includes="${LANGUAGE}_ResourceModule.swf"/>
+        </delete>
+    </target>
+</project>
+
+
+<!-- sample commandline locale compilation -->
+<!-- 
+	 mxmlc -locale=en_US 
+     -source-path=locale/{locale}
+     -include-resource-bundles=RegistrationForm,collections,containers,controls,core,effects,skins,styles 
+     -output en_US_ResourceModule.swf
+-->

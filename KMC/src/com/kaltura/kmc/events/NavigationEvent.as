@@ -1,4 +1,4 @@
-package events {
+package com.kaltura.kmc.events {
 	import flash.events.Event;
 
 	/**

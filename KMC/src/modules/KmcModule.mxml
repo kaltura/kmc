@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--- KmcModule is an abstract class that holds common functionalities of KMC modules. -->
-<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical">
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[ResourceBundle("dummy")]
+	</mx:Metadata> 
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.vo.KalturaUiConf;
 			
-			import events.NavigationEvent;
+			import com.kaltura.kmc.events.NavigationEvent;
 			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.ResourceEvent;
 			import mx.resources.ResourceManager;
 
 			/**
 			 * Dispatched when the module needs to navigate to another module.
-			 * @eventType events.NavigationEvent.NAVIGATE
+			 * @eventType com.kaltura.kmc.events.NavigationEvent
 			 */
-			[Event(name="navigate",type="events.NavigationEvent")]
+			[Event(name="navigate",type="com.kaltura.kmc.events.NavigationEvent")]
+			
+			/**
+			 * Dispatched when the module encountered some error that prevents it from functioning.
+			 * @eventType flash.events.ErrorEvent
+			 */
+			[Event(name="error",type="flash.events.ErrorEvent")]
 			
 			
 			/**
@@ -25,15 +41,88 @@
 			 * @copy #context
 			 * */
 			protected var _context:Context;
+			
+			/**
+			 * currently showing locale code
+			 * */
+			protected var _localeCode:String; 
+			
+			/**
+			 * @copy #uiconfId
+			 * */
+			protected var _uiconfId:String;
+			
+			/**
+			 * configuration object
+			 * */
+			protected var _uiconf:KalturaUiConf; 
+			
+			
 
+			
+			/**
+			 * module initialization
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				if (_uiconfId) {
+					loadUiconf(_uiconfId);
+				}
+			}
+			
+			
+			/**
+			 * load configuration info
+			 * */
+			protected function loadUiconf(uiconfId:String):void {
+				var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
+				uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
+				uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
+				_kc.post(uiconf);
+			}
+			
+			
+			/**
+			 * use configuration info
+			 * */
+			protected function configurationLoadHandler(e:KalturaEvent):void {
+				_uiconf = e.data as KalturaUiConf;
+				var confFile:XML = new XML(_uiconf.confFile);
+				
+				loadLocale(confFile.locale.path.toString(), confFile.locale.language.toString());
+			}
+			
+			
+			/**
+			 * failed loading uiconf
+			 * */
+			protected function configurationLoadFailedHandler(e:KalturaEvent):void {
+				//TODO global and locale-ized error handling
+				Alert.show(e.error.errorMsg);
+			}
 
+			
 			/**
 			 * Load locale data.
-			 * @param locale	path to the locale (.swf) file
+			 * @param localePath	path to the locale (.swf) file
+			 * @param language		locale code (i.e. en_US)
 			 * */
-			protected function loadLocale(locale:String):void {
-
+			protected function loadLocale(localePath:String, language:String):void {
+				_localeCode = language;
+				var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
+				eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 			}
+			
+			
+			/**
+			 * Set use of loaded locale.
+			 * This is also the place to update any values which are not  
+			 * bound to resource manager values and have to be set manualy.
+			 * */
+			protected function localeLoadCompleteHandler(event:ResourceEvent):void {
+				event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+				ResourceManager.getInstance().localeChain = [_localeCode];
+			}        
+
 
 			
 			/**
@@ -89,9 +178,33 @@
 			public function set context(value:Context):void {
 				_context = value;
 			}
+			
+
+			/**
+			 * Id of uiconf that the module has to load.
+			 * Setting this value after the module's creation complete 
+			 * event will trigger loading of the given uiconf.
+			 * */
+			public function get uiconfId():String {
+				return _uiconfId;
+			}
+
+			
+			/**
+			 * @private
+			 */
+			public function set uiconfId(value:String):void
+			{
+				_uiconfId = value;
+				loadUiconf(_uiconfId);
+			}
+
+			
+
 		]]>
 	</mx:Script>
 	<mx:HBox verticalAlign="middle">
 		<mx:Label text="rrrrr" />
+		<mx:Label text="baaaa" />
 	</mx:HBox>
 </mx:Module>
