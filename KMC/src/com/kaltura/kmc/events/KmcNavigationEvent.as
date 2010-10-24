@@ -7,7 +7,7 @@ package com.kaltura.kmc.events {
 	 * This class also lists the names (ids) of the different modules.
 	 * @author Atar
 	 */
-	public class NavigationEvent extends Event {
+	public class KmcNavigationEvent extends Event {
 		//TODO list module ids
 		
 		/**
@@ -26,7 +26,7 @@ package com.kaltura.kmc.events {
 		private var _data:Object;
 
 
-		public function NavigationEvent(type:String, module:String, subtab:String = "", data:Object = null,
+		public function KmcNavigationEvent(type:String, module:String, subtab:String = "", data:Object = null,
 										bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_module = module;

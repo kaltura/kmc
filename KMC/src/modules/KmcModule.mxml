@@ -10,10 +10,11 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.events.KalturaEvent;
-			import com.kaltura.kmc.events.NavigationEvent;
+			import com.kaltura.kmc.events.KmcErrorEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.vo.KalturaUiConf;
 			
-			import mx.controls.Alert;
+			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.events.ResourceEvent;
 			import mx.resources.ResourceManager;
@@ -24,15 +25,15 @@
 			
 			/**
 			 * Dispatched when the module needs to navigate to another module.
-			 * @eventType com.kaltura.kmc.events.NavigationEvent
+			 * @eventType com.kaltura.kmc.events.KmcNavigationEvent
 			 */
-			[Event(name="navigate",type="com.kaltura.kmc.events.NavigationEvent")]
+			[Event(name="navigate",type="com.kaltura.kmc.events.KmcNavigationEvent")]
 			
 			/**
 			 * Dispatched when the module encountered some error that prevents it from functioning.
-			 * @eventType com.kaltura.events.KalturaEvent
+			 * @eventType com.kaltura.kmc.events.KmcErrorEvent
 			 */
-			[Event(name="error",type="com.kaltura.events.KalturaEvent")]
+			[Event(name="error",type="com.kaltura.kmc.events.KmcErrorEvent")]
 			
 			/**
 			 * Dispatched when user clicked a help link.
@@ -40,6 +41,7 @@
 			 * @eventType com.kaltura.events.KalturaEvent
 			 */
 			[Event(name="help",type="com.kaltura.events.KalturaEvent")]
+			//TODO what event should this be?
 			
 			// =====================================================
 			// members
@@ -89,12 +91,37 @@
 			 * load configuration info
 			 * */
 			protected function loadUiconf(uiconfId:String):void {
-				//TODO backdoor for local uiconf
-				// - figure out what flashvar name to use to match all modules
-				var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
-				uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
-				uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
-				_kc.post(uiconf);
+				if (Application.application.parameters[this.id + "Uiconf"]) {
+					// backdoor for local uiconf
+					var ldr:URLLoader = new URLLoader();
+					ldr.addEventListener(Event.COMPLETE, onLocalDataLoaded);
+					ldr.addEventListener(IOErrorEvent.IO_ERROR, onLocalDataLoaded);
+					ldr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLocalDataLoaded);
+					ldr.load(new URLRequest(Application.application.parameters[this.id + "Uiconf"]));
+				}
+				else {
+					var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
+					uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
+					uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
+					_kc.post(uiconf);
+				}
+			}
+			
+			
+			/**
+			 * when loading a local uiconf, this function is 
+			 * triggered for both success and failure events.
+			 * */
+			protected function onLocalDataLoaded(e:Event):void {
+				if (e is IOErrorEvent || e is SecurityErrorEvent) {
+					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, "failed to load local data"));
+				}
+				else {
+					_uiconf = new KalturaUiConf();
+					_uiconf.confFile = new XML(e.target.data);
+					var confFile:XML = new XML(_uiconf.confFile);
+					loadLocale(confFile.locale.path.toString(), confFile.locale.language.toString());
+				}
 			}
 			
 			
@@ -117,8 +144,7 @@
 			protected function configurationLoadFailedHandler(e:KalturaEvent):void {
 				//TODO use locale value instead of given error
 				// - do we know the resourceBundle name? put all errors in "errors" bundle on all locales 
-				//TODO use const for event type instead of a hardcoded string
-				dispatchEvent(new KalturaEvent("error", false, false, false, null, e.error));
+				dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, e.error.errorCode));
 			}
 
 			
@@ -155,7 +181,7 @@
 			 * 					Otherwise it is up to the module to decide which subtab to show.
 			 * */
 			protected function navigate(module:String, subtab:String = ""):void {
-				this.dispatchEvent(new NavigationEvent(NavigationEvent.NAVIGATE, module, subtab));
+				this.dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, module, subtab));
 			}
 
 			
