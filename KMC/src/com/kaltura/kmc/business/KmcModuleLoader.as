@@ -10,9 +10,20 @@ package com.kaltura.kmc.business
 	public class KmcModuleLoader extends EventDispatcher
 	{
 		
+		
+		/**
+		 * Dispatched when the module was loaded.
+		 * @eventType KmcModuleEvents.moduleLoaded
+		 */
+		[Event(name="moduleLoaded",type="events.KmcModuleEvents")]
+		
 		private static var instance:KmcModuleLoader;
 
-			
+		/**
+		 * Get a path and load a module.  
+		 * @param path
+		 * 
+		 */			
 		public function loadKmcModule(path:String):void
 		{
 			var moduleLoader:ModuleLoader = new ModuleLoader();
@@ -22,7 +33,11 @@ package com.kaltura.kmc.business
 			moduleLoader.addEventListener(ModuleEvent.ERROR , onModuleError);
 			moduleLoader.loadModule( path );
 		}
-		
+		/**
+		 * Progress handler. When the total bytes and loaded bytes are equle - the loading is done.  
+		 * @param event
+		 * 
+		 */		
 		public function onModuleProgress(event:ModuleEvent):void
 		{
 			if(event.bytesLoaded == event.bytesTotal)
@@ -42,6 +57,9 @@ package com.kaltura.kmc.business
 		{
 			trace("onModuleError");
 		}
+		
+		
+		///////////////////////// singletone ////////////////////////////////
 		
 		public function KmcModuleLoader(p_key:SingletonBlocker)
 		{

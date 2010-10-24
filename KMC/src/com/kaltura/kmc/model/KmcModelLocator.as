@@ -22,7 +22,7 @@ package com.kaltura.kmc.model {
 		
 		/**
 		 * singleton means of retreiving an instance of the 
-		 * <code>CmsModelLocator</code> class.
+		 * <code>KmcModelLocator</code> class.
 		 */		
 		public static function getInstance():KmcModelLocator {
 			if (_instance == null) {
