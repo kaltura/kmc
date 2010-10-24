@@ -168,6 +168,7 @@
 			protected function localeLoadCompleteHandler(event:ResourceEvent):void {
 				event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 				ResourceManager.getInstance().localeChain = [_localeCode];
+				init();
 			}        
 
 
@@ -182,6 +183,17 @@
 			 * */
 			protected function navigate(module:String, subtab:String = ""):void {
 				this.dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, module, subtab));
+			}
+			
+			
+			/**
+			 * This is the function that kicks-off any module-specific code. At this point we 
+			 * know the uiconf is loaded and its data is ready, the locale is loaded and used, 
+			 * and the application is just waiting for you to tell it what to do next.
+			 * Each module should implement this method according to its inner structure.  
+			 * */
+			protected function init():void {
+				throw new Error("init must be implemented");
 			}
 
 			
