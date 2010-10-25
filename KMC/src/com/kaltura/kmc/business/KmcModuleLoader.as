@@ -6,6 +6,7 @@ package com.kaltura.kmc.business
 	import mx.events.ModuleEvent;
 	import mx.modules.Module;
 	import mx.modules.ModuleLoader;
+	import com.kaltura.kmc.events.KmcModuleEvent;
 
 	public class KmcModuleLoader extends EventDispatcher
 	{
@@ -17,6 +18,8 @@ package com.kaltura.kmc.business
 		 */
 		[Event(name="moduleLoaded",type="events.KmcModuleEvents")]
 		
+		private var moduleLoader:ModuleLoader;
+		
 		private static var instance:KmcModuleLoader;
 
 		/**
@@ -26,7 +29,7 @@ package com.kaltura.kmc.business
 		 */			
 		public function loadKmcModule(path:String):void
 		{
-			var moduleLoader:ModuleLoader = new ModuleLoader();
+			moduleLoader = new ModuleLoader();
 			moduleLoader.applicationDomain = ApplicationDomain.currentDomain;
 			moduleLoader.addEventListener(ModuleEvent.READY , onModuleReady);
 			moduleLoader.addEventListener(ModuleEvent.PROGRESS , onModuleProgress);
@@ -42,12 +45,22 @@ package com.kaltura.kmc.business
 		{
 			if(event.bytesLoaded == event.bytesTotal)
 			{
-				trace("onModuleReady");	
-				dispatchEvent(new KmcModuleEvents(KmcModuleEvents.MODULE_LOADED ,event.target as ModuleLoader));
+				trace("onModuleProgress onModuleReady");	
+				dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
+				removeLsteners();
 			}
 				
 		}
-		
+		/**
+		 * Remove the listeners  
+		 * 
+		 */		
+		protected function removeLsteners():void
+		{
+			moduleLoader.removeEventListener(ModuleEvent.READY , onModuleReady);
+			moduleLoader.removeEventListener(ModuleEvent.PROGRESS , onModuleProgress);
+			moduleLoader.removeEventListener(ModuleEvent.ERROR , onModuleError);
+		}
 		public function onModuleReady(event:ModuleEvent):void
 		{
 			trace("onModuleReady");

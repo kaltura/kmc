@@ -20,6 +20,14 @@ package com.kaltura.kmc.model {
 		 */		
 		public var kalturaClient:KalturaClient;
 		
+		
+		
+		/**
+		 * Flashvars of the main app wrapped in one object. The items are  
+		 */		
+		public var flashvars:Object;
+		
+		
 		/**
 		 * singleton means of retreiving an instance of the 
 		 * <code>KmcModelLocator</code> class.

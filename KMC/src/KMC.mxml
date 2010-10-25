@@ -6,7 +6,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.config.KalturaConfig;
-			import com.kaltura.kmc.business.KmcModuleEvents;
+			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.model.KmcModelLocator;
 			import com.kaltura.utils.KUtils;
@@ -61,14 +61,15 @@
 				KmcModelLocator.getInstance().kalturaClient = new KalturaClient(configuration);
 				
 				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
-				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvents.MODULE_LOADED , onModuleLoaded);
+				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
 				
 				
 				
 			}
 			
-			public function onModuleLoaded(event:KmcModuleEvents):void
+			public function onModuleLoaded(event:KmcModuleEvent):void
 			{
+				KmcModuleLoader.getInstance().removeEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
 				mainViewStack.addChild(event.moduleLoader);
 				event.moduleLoader.percentHeight = 100;
 				event.moduleLoader.percentWidth = 100;
