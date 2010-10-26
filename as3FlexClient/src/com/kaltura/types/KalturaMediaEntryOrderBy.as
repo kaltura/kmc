@@ -18,6 +18,8 @@ package com.kaltura.types
 		public static const MODERATION_COUNT_DESC : String = '-moderationCount';
 		public static const CREATED_AT_ASC : String = '+createdAt';
 		public static const CREATED_AT_DESC : String = '-createdAt';
+		public static const UPDATED_AT_ASC : String = '+updatedAt';
+		public static const UPDATED_AT_DESC : String = '-updatedAt';
 		public static const RANK_ASC : String = '+rank';
 		public static const RANK_DESC : String = '-rank';
 	}

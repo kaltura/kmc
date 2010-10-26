@@ -25,6 +25,12 @@ package com.kaltura.vo
 
 		public var mediaType : int = int.MIN_VALUE;
 
+		public var primaryBroadcastingUrl : String;
+
+		public var secondaryBroadcastingUrl : String;
+
+		public var streamName : String;
+
 override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -39,6 +45,9 @@ override public function getUpdateableParamKeys():Array
 			arr.push('endDate');
 			arr.push('returnVal');
 			arr.push('mediaType');
+			arr.push('primaryBroadcastingUrl');
+			arr.push('secondaryBroadcastingUrl');
+			arr.push('streamName');
 			return arr;
 		}
 	}

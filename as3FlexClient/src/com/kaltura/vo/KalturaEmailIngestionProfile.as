@@ -44,7 +44,6 @@ public function getUpdateableParamKeys():Array
 			arr.push('description');
 			arr.push('emailAddress');
 			arr.push('mailboxId');
-			arr.push('partnerId');
 			arr.push('conversionProfile2Id');
 			arr.push('moderationStatus');
 			arr.push('defaultCategory');

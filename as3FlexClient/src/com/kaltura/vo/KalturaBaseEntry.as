@@ -32,6 +32,8 @@ package com.kaltura.vo
 
 		public var createdAt : int = int.MIN_VALUE;
 
+		public var updatedAt : int = int.MIN_VALUE;
+
 		public var rank : Number = NaN;
 
 		public var totalRank : int = int.MIN_VALUE;

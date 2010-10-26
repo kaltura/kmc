@@ -67,6 +67,10 @@ package com.kaltura.vo
 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
+
 		public var groupIdEqual : int = int.MIN_VALUE;
 
 		public var searchTextMatchAnd : String;
@@ -140,6 +144,8 @@ override public function getUpdateableParamKeys():Array
 			arr.push('typeIn');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
+			arr.push('updatedAtGreaterThanOrEqual');
+			arr.push('updatedAtLessThanOrEqual');
 			arr.push('groupIdEqual');
 			arr.push('searchTextMatchAnd');
 			arr.push('searchTextMatchOr');

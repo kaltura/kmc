@@ -12,5 +12,10 @@ package com.kaltura.types
 		public static const PLAYER_V3 : int = 8;
 		public static const PLAYER_SL : int = 14;
 		public static const CLIENTSIDE_ENCODER : int = 15;
+		public static const KMC_GENERAL : int = 16;
+		public static const KMC_CONTENT : int = 17;
+		public static const KMC_SETTINGS : int = 18;
+		public static const KMC_ANALYTICS : int = 19;
+		public static const KMC_DASHBOARD : int = 20;
 	}
 }
