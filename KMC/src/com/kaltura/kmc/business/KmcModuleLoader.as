@@ -16,7 +16,7 @@ package com.kaltura.kmc.business
 		 * Dispatched when the module was loaded.
 		 * @eventType KmcModuleEvents.moduleLoaded
 		 */
-		[Event(name="moduleLoaded",type="events.KmcModuleEvents")]
+		[Event(name="moduleLoaded",type="com.kaltura.kmc.events")]
 		
 		private var moduleLoader:ModuleLoader;
 		
@@ -46,8 +46,8 @@ package com.kaltura.kmc.business
 			if(event.bytesLoaded == event.bytesTotal)
 			{
 				trace("onModuleProgress onModuleReady");	
-				dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
-				removeLsteners();
+//				dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
+//				removeLsteners();
 			}
 				
 		}
@@ -61,9 +61,12 @@ package com.kaltura.kmc.business
 			moduleLoader.removeEventListener(ModuleEvent.PROGRESS , onModuleProgress);
 			moduleLoader.removeEventListener(ModuleEvent.ERROR , onModuleError);
 		}
+		
 		public function onModuleReady(event:ModuleEvent):void
 		{
 			trace("onModuleReady");
+			dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
+			removeLsteners();
 		}
 		
 		public function onModuleError(event:ModuleEvent):void

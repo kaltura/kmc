@@ -4,11 +4,10 @@ package com.kaltura.kmc.events {
 	/**
 	 * The NavigationEvent class represents an event that modules
 	 * dispatch in order to navigate to a new module / sub-module.
-	 * This class also lists the names (ids) of the different modules.
 	 * @author Atar
 	 */
 	public class KmcNavigationEvent extends Event {
-		//TODO list module ids
+		
 		
 		/**
 		 * The NavigationEvent.NAVIGATE constant defines the value of the 

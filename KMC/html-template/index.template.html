@@ -72,8 +72,24 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 		"name", "${application}",
 		"allowScriptAccess","sameDomain",
 		"type", "application/x-shockwave-flash",
-		
-		"flashvars", 
+		"pluginspage", "http://www.adobe.com/go/getflashplayer"
+	);
+} else if (hasRequestedVersion) {
+	// if we've detected an acceptable version
+	// embed the Flash Content SWF when all tests are passed
+	AC_FL_RunContent(
+			"src", "${swf}",
+			"width", "${width}",
+			"height", "${height}",
+			"align", "middle",
+			"id", "${application}",
+			"quality", "high",
+			"bgcolor", "${bgcolor}",
+			"name", "${application}",
+			"allowScriptAccess","sameDomain",
+			"type", "application/x-shockwave-flash",
+			"flashvars", 
+						
 						// partner id:
 						 "partner_id=569"+
 	
@@ -129,23 +145,6 @@ if ( hasProductInstall && !hasRequestedVersion ) {
 	
 						 // batch upload sample file:
                          "&sampleFileUrl=http://www.kaltura.co.cc/content/uiconf/kaltura/kmc/sample.csv",
-		
-		"pluginspage", "http://www.adobe.com/go/getflashplayer"
-	);
-} else if (hasRequestedVersion) {
-	// if we've detected an acceptable version
-	// embed the Flash Content SWF when all tests are passed
-	AC_FL_RunContent(
-			"src", "${swf}",
-			"width", "${width}",
-			"height", "${height}",
-			"align", "middle",
-			"id", "${application}",
-			"quality", "high",
-			"bgcolor", "${bgcolor}",
-			"name", "${application}",
-			"allowScriptAccess","sameDomain",
-			"type", "application/x-shockwave-flash",
 			"pluginspage", "http://www.adobe.com/go/getflashplayer"
 	);
   } else {  // flash is too old or we can't detect the plugin

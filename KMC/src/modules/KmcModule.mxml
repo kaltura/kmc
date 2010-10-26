@@ -81,9 +81,9 @@
 			 * module initialization
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				if (_uiconfId) {
-					loadUiconf(_uiconfId);
-				}
+//				if (_uiconfId) {
+//					loadUiconf(_uiconfId);
+//				}
 			}
 			
 			
@@ -91,38 +91,12 @@
 			 * load configuration info
 			 * */
 			protected function loadUiconf(uiconfId:String):void {
-				if (Application.application.parameters[this.id + "Uiconf"]) {
-					// backdoor for local uiconf
-					var ldr:URLLoader = new URLLoader();
-					ldr.addEventListener(Event.COMPLETE, onLocalDataLoaded);
-					ldr.addEventListener(IOErrorEvent.IO_ERROR, onLocalDataLoaded);
-					ldr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLocalDataLoaded);
-					ldr.load(new URLRequest(Application.application.parameters[this.id + "Uiconf"]));
-				}
-				else {
-					var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
-					uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
-					uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
-					_kc.post(uiconf);
-				}
+				var uiconf:UiConfGet = new UiConfGet(int (uiconfId));
+				uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
+				uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadFailedHandler);
+				_kc.post(uiconf);
 			}
 			
-			
-			/**
-			 * when loading a local uiconf, this function is 
-			 * triggered for both success and failure events.
-			 * */
-			protected function onLocalDataLoaded(e:Event):void {
-				if (e is IOErrorEvent || e is SecurityErrorEvent) {
-					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, "failed to load local data"));
-				}
-				else {
-					_uiconf = new KalturaUiConf();
-					_uiconf.confFile = new XML(e.target.data);
-					var confFile:XML = new XML(_uiconf.confFile);
-					loadLocale(confFile.locale.path.toString(), confFile.locale.language.toString());
-				}
-			}
 			
 			
 			/**
@@ -168,7 +142,7 @@
 			protected function localeLoadCompleteHandler(event:ResourceEvent):void {
 				event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 				ResourceManager.getInstance().localeChain = [_localeCode];
-				init();
+				start();
 			}        
 
 
@@ -192,10 +166,25 @@
 			 * and the application is just waiting for you to tell it what to do next.
 			 * Each module should implement this method according to its inner structure.  
 			 * */
-			protected function init():void {
+			protected function start():void {
 				throw new Error("init must be implemented");
 			}
 
+			
+			/**
+			 * Initialize the module.
+			 * @param kc	KalturaClient for server API calls
+			 * @param uiconfid	Id of uiconf that the module has to load.
+			 * @param context	Application context
+			 * */
+			public function init(kc:KalturaClient, uiconfid:String, context:Context = null):void {
+				_kc = kc;
+				_uiconfId = uiconfid;
+				_context = context;
+				
+				loadUiconf(uiconfid);
+			}
+			
 			
 			/**
 			 * Navigate to a subtab in the module.
@@ -209,57 +198,6 @@
 			// =====================================================
 			// getters / setters
 			// =====================================================
-
-			/**
-			 * KalturaClient for server API calls
-			 * */
-			public function get kc():KalturaClient {
-				return _kc;
-			}
-
-
-			/**
-			 * @private
-			 * */
-			public function set kc(value:KalturaClient):void {
-				_kc = value;
-			}
-
-
-			/**
-			 * Application context
-			 * */
-			public function get context():Context {
-				return _context;
-			}
-
-
-			/**
-			 * @private
-			 * */
-			public function set context(value:Context):void {
-				_context = value;
-			}
-			
-
-			/**
-			 * Id of uiconf that the module has to load.
-			 * Setting this value after the module's creation complete 
-			 * event will trigger loading of the given uiconf.
-			 * */
-			public function get uiconfId():String {
-				return _uiconfId;
-			}
-
-			
-			/**
-			 * @private
-			 */
-			public function set uiconfId(value:String):void
-			{
-				_uiconfId = value;
-				loadUiconf(_uiconfId);
-			}
 
 			
 

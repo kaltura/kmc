@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600" creationComplete="application_creationCompleteHandler(event)" xmlns:view="com.kaltura.kmc.view.*">
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
+				xmlns:view="com.kaltura.kmc.view.*" 
+				layout="absolute" minWidth="955" minHeight="600"
+				creationComplete="application_creationCompleteHandler(event)" >
 	
 		
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.config.KalturaConfig;
-			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
+			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
 			
+			import modules.KmcModule;
+			
+			import mx.core.Application;
 			import mx.events.FlexEvent;
 
 			public var uiConfXml:XML = 	<root>
@@ -44,8 +50,6 @@
 				
 			protected function application_creationCompleteHandler(event:FlexEvent):void
 			{
-				
-				
 				//TODO add the config from the outside 
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam); 
@@ -63,8 +67,6 @@
 				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
 				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
 				
-				
-				
 			}
 			
 			public function onModuleLoaded(event:KmcModuleEvent):void
@@ -74,6 +76,7 @@
 				event.moduleLoader.percentHeight = 100;
 				event.moduleLoader.percentWidth = 100;
 				mainViewStack.selectedIndex = 0;
+				(event.moduleLoader.child as KmcModule).init(KmcModelLocator.getInstance().kalturaClient, "1002374");
 			}
 
 		]]>
