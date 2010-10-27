@@ -8,7 +8,9 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
@@ -44,15 +46,20 @@
 										<!-- analytics data -->
 										<analytics>321654</analytics>
 									
-									</root>
+									</root> ;
 
+			private var modelLocator:KmcModelLocator =  KmcModelLocator.getInstance();
 			
-				
+			protected var flashvars:Object;
+			
+			
+			
 			protected function application_creationCompleteHandler(event:FlexEvent):void
 			{
 				//TODO add the config from the outside 
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam); 
+				flashvars = objParam;
 				
 				var configuration:KalturaConfig = new KalturaConfig();
 				configuration.partnerId = objParam.partnerid;
@@ -62,13 +69,33 @@
 				configuration.srvUrl = objParam.srvurl;
 				configuration.clientTag = "kmc";
 				
-				KmcModelLocator.getInstance().kalturaClient = new KalturaClient(configuration);
+				modelLocator.kalturaClient = new KalturaClient(configuration);
 				
-				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
-				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
+				var uiconf:UiConfGet = new UiConfGet(objParam.uiconf);
+				uiconf.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler);
+				uiconf.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler);
+				modelLocator.kalturaClient.post(uiconf);
+			}
+
+			
+			/**
+			 * UiConf failed to load
+			 */
+			protected function uiconfFailedHandler(event:KalturaEvent):void
+			{
 				
 			}
+			/**
+			 * Kmc uiConf loaded. Parse it and load it. 
+			 */
+			protected function uiconfLoadHandler(event:KalturaEvent):void
+			{
+				//TODO - parse 
+				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
+				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
+			}
 			
+		
 			public function onModuleLoaded(event:KmcModuleEvent):void
 			{
 				KmcModuleLoader.getInstance().removeEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
