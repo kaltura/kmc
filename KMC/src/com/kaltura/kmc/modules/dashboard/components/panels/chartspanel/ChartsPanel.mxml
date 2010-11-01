@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+		Charts Panel section
+
+
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" styleName="chartsBox" height="100%" 
+		 xmlns:charts="com.kaltura.charts.*" 
+		 xmlns:chartspanel="com.kaltura.kmc.modules.dashboard.components.panels.chartspanel.*" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.binding.utils.BindingUtils;
+			
+			/**
+			 *  Bind the graphs to the data
+			 * 
+			 */
+			private function chartCreationComplete(event:Event):void
+			{
+				BindingUtils.bindSetter(setChartData, DashboardManager.instance, 'selectedDim');
+			}
+			
+			/**
+			 *  set the graphs data
+			 * 
+			 */
+			private function setChartData(data:Object):void
+			{
+				chart.dataProvider = DashboardManager.instance.selectedDim;
+			}
+			
+			private function loadReports():void{
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_VIEW_REPORTS);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_VIEW_REPORTS, "DashBoard>View Reports")
+				// show analytics module
+//				DashboardManager.instance.loadKMCModule('reports');
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'reports'));
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="Top Content Last 30 Days " id="chartsTitleLabel" styleName="chartTitleLabel"/>
+	<chartspanel:ChartDimOptionsComboBox/>
+	<charts:KLineChart id='chart' width="100%" height="100%" minHAxisDate="{DashboardManager.instance.DATE_30_DAYS_AGO}" maxHAxisDate="{DashboardManager.instance.TODAY_DATE}" dataProvider="{DashboardManager.instance.selectedDim}" creationComplete="chartCreationComplete(event)"/>
+	<mx:Button id='viewReportsLinkButton' label="View Reports" click="loadReports()" useHandCursor="true" buttonMode="true" styleName="buttonType2"/>
+</mx:VBox>

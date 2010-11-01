@@ -26,7 +26,7 @@ package com.kaltura.kmc.events {
 
 
 		public function KmcNavigationEvent(type:String, module:String, subtab:String = "", data:Object = null,
-										bubbles:Boolean = false, cancelable:Boolean = false) {
+										bubbles:Boolean = true, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_module = module;
 			_subtab = subtab;

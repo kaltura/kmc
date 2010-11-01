@@ -7,6 +7,8 @@ package com.kaltura.kmc.events
 	public class KmcModuleEvent extends Event
 	{
 		public static const MODULE_LOADED:String = "moduleLoaded";
+		public static const MODULE_LOAD_ERROR:String = "moduleLoadError";
+		
 		public var moduleLoader:ModuleLoader;
 		
 		public function KmcModuleEvent(type:String,moduleLoader:ModuleLoader, bubbles:Boolean=false, cancelable:Boolean=false)

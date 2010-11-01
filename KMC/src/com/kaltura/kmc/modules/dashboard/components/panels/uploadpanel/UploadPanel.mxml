@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+		
+		Upload Panel section
+
+
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="uploadBox">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.dashboard.Dashboard;
+			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			/**
+			 * url to open when user clicks quickstart button
+			 * */
+			public var quickStartURL:String;
+			
+			
+			private function upload1():void
+			{
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_IMPORT_CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_IMPORT_CONTENT, "DashBoard>Import Content");
+				// show content>upload tab
+//				DashboardManager.instance.loadKMCModule('content', 'Upload');
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'Upload'));
+			}
+			
+			private function upload2():void
+			{
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_UPLOAD_CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_UPDATE_CONTENT, "DashBoard>Upload Content");
+				// show content>upload tab
+//				DashboardManager.instance.loadKMCModule('content', 'Upload');
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'Upload'));
+				//TODO open contribution wizard
+				DashboardManager.instance.loadKMCModule('content', 'uploadKMC');
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" styleName="featureTitleBox">
+		<mx:Label text="{resourceManager.getString('kdashboard', 'upload_title')}" id="titleLabel" styleName="titleLabel"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<mx:VBox height="100%" styleName="uploadInnerBox">
+			<mx:Button id="uploadTitleImage" styleName="uploadTitleImage"/>
+		</mx:VBox>
+		<mx:VBox width="100%" height="100%" styleName="uploadInnerBox">
+			<mx:HBox width="100%">
+				<mx:Text id="uploadOption1Label" width="95%" text="{resourceManager.getString('kdashboard', 'upload_option_1_description')}" styleName="featureLineLabel"/>
+				<mx:Spacer width="5%"/>
+				<mx:Button id="uploadOption1Button" label="{resourceManager.getString('kdashboard', 'upload_option_1_button')}" useHandCursor="true" buttonMode="true" styleName="buttonType2" click="upload1()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Text id="uploadOption2Label" width="95%" text="{resourceManager.getString('kdashboard', 'upload_option_2_description')}" styleName="featureLineLabel"/>
+				<mx:Spacer width="5%"/>
+				<mx:Button id="uploadOption2Button" label="{resourceManager.getString('kdashboard', 'upload_option_2_button')}" useHandCursor="true" buttonMode="true" styleName="buttonType2" click="upload2()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+			</mx:HBox>
+			<mx:LinkButton id='quickStartLinkButton' label="{resourceManager.getString('kdashboard', 'quick_start_link')}" click="{DashboardManager.instance.launchExactOuterLink(quickStartURL)}"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+</mx:VBox>

@@ -13,15 +13,21 @@ package com.kaltura.kmc.business
 		
 		
 		/**
-		 * Dispatched when the module was loaded.
+		 * Dispatched when a module was loaded.
+		 * @eventType KmcModuleEvent.MODULE_LOADED
+		 */
+		[Event(name="moduleLoaded",type="com.kaltura.kmc.events.KmcModuleEvent")]
+		
+		/**
+		 * Dispatched when a module failed loading.
 		 * @eventType KmcModuleEvents.moduleLoaded
 		 */
-		[Event(name="moduleLoaded",type="com.kaltura.kmc.events")]
+		[Event(name="moduleLoadError",type="com.kaltura.kmc.events.KmcModuleEvent")]
+		
+		private static var instance:KmcModuleLoader;
 		
 		private var moduleLoader:ModuleLoader;
 		
-		private static var instance:KmcModuleLoader;
-
 		/**
 		 * Get a path and load a module.  
 		 * @param path
@@ -36,26 +42,28 @@ package com.kaltura.kmc.business
 			moduleLoader.addEventListener(ModuleEvent.ERROR , onModuleError);
 			moduleLoader.loadModule( path );
 		}
+		
 		/**
-		 * Progress handler. When the total bytes and loaded bytes are equle - the loading is done.  
+		 * Progress handler. 
 		 * @param event
 		 * 
 		 */		
 		public function onModuleProgress(event:ModuleEvent):void
 		{
-			if(event.bytesLoaded == event.bytesTotal)
-			{
-				trace("onModuleProgress onModuleReady");	
-//				dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
-//				removeLsteners();
-			}
+//			if(event.bytesLoaded == event.bytesTotal)
+//			{
+//				trace("onModuleProgress onModuleReady");	
+////				dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
+////				removeLsteners();
+//			}
 				
 		}
+		
 		/**
 		 * Remove the listeners  
 		 * 
 		 */		
-		protected function removeLsteners():void
+		protected function removeListeners():void
 		{
 			moduleLoader.removeEventListener(ModuleEvent.READY , onModuleReady);
 			moduleLoader.removeEventListener(ModuleEvent.PROGRESS , onModuleProgress);
@@ -64,14 +72,16 @@ package com.kaltura.kmc.business
 		
 		public function onModuleReady(event:ModuleEvent):void
 		{
-			trace("onModuleReady");
+//			trace("onModuleReady");
 			dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOADED ,event.target as ModuleLoader));
-			removeLsteners();
+			removeListeners();
 		}
 		
 		public function onModuleError(event:ModuleEvent):void
 		{
-			trace("onModuleError");
+//			trace("onModuleError");
+			dispatchEvent(new KmcModuleEvent(KmcModuleEvent.MODULE_LOAD_ERROR ,event.target as ModuleLoader));
+			removeListeners();
 		}
 		
 		

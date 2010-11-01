@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+		Dimentions ComboBox
+
+
+-->												
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml"  change="onChange(event)" buttonMode="true" useHandCursor="true"
+	dataProvider="{[{data: 'count_plays', label: resourceManager.getString('kdashboard', 'count_plays')}, 
+					{data: 'count_loads' ,label: resourceManager.getString('kdashboard', 'count_loads')}, 
+					{data: 'sum_time_viewed' ,label: resourceManager.getString('kdashboard', 'sum_time_viewed')}, 
+					{data: 'avg_time_viewed' ,label: resourceManager.getString('kdashboard', 'avg_time_viewed')}]}">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			
+			/**
+			 *  when combobox selected item changed
+			 * 
+			 */
+			private function onChange(event:Event=null):void
+			{
+				DashboardManager.instance.updateSelectedDim(this.selectedItem.data as String);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+</mx:ComboBox>

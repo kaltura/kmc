@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+	 Account Panel section
+
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="accountBox">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+
+
+			private function contactUs():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_ACCOUNT_CONTACT_US);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_ACCOUNT_CONTACT_US,
+														  "DashBoard>Account Contacts Us")
+//				DashboardManager.instance.loadKMCModule('account', 'Account Upgrade')
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'Account Upgrade'));
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('kdashboard', 'account_title')}" id="accountTitleLabel"
+			  styleName="accountSubTitleLabel"/>
+	<mx:Label 
+			  text="{resourceManager.getString('kdashboard', 'total_bandwidth') + ' ' + DashboardManager.instance.totalBWSoFar + ' ' + resourceManager.getString('kdashboard', 'GB') +  ', ' + resourceManager.getString('kdashboard', 'include_storage') + ' ' +  DashboardManager.instance.hostingGB + ' ' + resourceManager.getString('kdashboard', 'GB')}"
+			  id="usageMsgLabel" styleName="featureLineLabel"/>
+	<mx:Text id="customizeOptionText" text="{resourceManager.getString('kdashboard', 'contact_us_text')}"
+			 styleName="featureLineLabel" width="100%"/>
+	<mx:Button id='contactUsLinkButton' label="{resourceManager.getString('kdashboard', 'contact_us_link')}"
+			   click="contactUs()" useHandCursor="true" buttonMode="true" styleName="buttonType2"/>
+</mx:VBox>

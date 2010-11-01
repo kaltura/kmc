@@ -2,7 +2,8 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" 
 				xmlns:view="com.kaltura.kmc.view.*" 
 				layout="absolute" minWidth="955" minHeight="600"
-				creationComplete="application_creationCompleteHandler(event)" >
+				creationComplete="creationCompleteHandler(event)" 
+				addedToStage="setNavigationListener(event)">
 	
 		
 	<mx:Script>
@@ -13,13 +14,18 @@
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.events.KmcModuleEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
+			import com.kaltura.kmc.modules.KmcModule; KmcModule
+			import com.kaltura.kmc.modules.dashboard.Dashboard;
+			import com.kaltura.kmc.vo.DashboardContext;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
 			
-			import modules.KmcModule;
+			import flash.utils.setTimeout;
 			
 			import mx.core.Application;
+			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 
 			public var uiConfXml:XML = 	<root>
@@ -54,8 +60,9 @@
 			
 			
 			
-			protected function application_creationCompleteHandler(event:FlexEvent):void
+			protected function creationCompleteHandler(event:FlexEvent):void
 			{
+				
 				//TODO add the config from the outside 
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam); 
@@ -70,11 +77,13 @@
 				configuration.clientTag = "kmc";
 				
 				modelLocator.kalturaClient = new KalturaClient(configuration);
+				modelLocator.kalturaClient.ks = objParam.ks;
 				
-				var uiconf:UiConfGet = new UiConfGet(objParam.uiconf);
-				uiconf.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler);
-				uiconf.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler);
-				modelLocator.kalturaClient.post(uiconf);
+//				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
+//				uiconf.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler);
+//				uiconf.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler);
+//				modelLocator.kalturaClient.post(uiconf);
+				uiconfLoadHandler(null);
 			}
 
 			
@@ -83,27 +92,66 @@
 			 */
 			protected function uiconfFailedHandler(event:KalturaEvent):void
 			{
-				
+				//TODO implement uiconfFailedHandler
 			}
+			
+			/**
+			 * module failed to load
+			 */
+			protected function onModuleLoadError(event:KmcModuleEvent):void
+			{
+				throw new Error("KMC.mxml: Module load failed.");
+			}
+			
 			/**
 			 * Kmc uiConf loaded. Parse it and load it. 
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void
 			{
 				//TODO - parse 
-				KmcModuleLoader.getInstance().loadKmcModule("modules/KmcModule.swf");
+				KmcModuleLoader.getInstance().loadKmcModule("com/kaltura/kmc/modules/dashboard/Dashboard.swf");
 				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
+				KmcModuleLoader.getInstance().addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR , onModuleLoadError);
 			}
 			
 		
-			public function onModuleLoaded(event:KmcModuleEvent):void
+			private function onModuleLoaded(event:KmcModuleEvent):void
 			{
 				KmcModuleLoader.getInstance().removeEventListener(KmcModuleEvent.MODULE_LOADED , onModuleLoaded);
+				KmcModuleLoader.getInstance().removeEventListener(KmcModuleEvent.MODULE_LOAD_ERROR , onModuleLoadError);
+				(event.moduleLoader.child as UIComponent).percentHeight = 100;
+				(event.moduleLoader.child as UIComponent).percentWidth = 100;
 				mainViewStack.addChild(event.moduleLoader);
-				event.moduleLoader.percentHeight = 100;
-				event.moduleLoader.percentWidth = 100;
 				mainViewStack.selectedIndex = 0;
-				(event.moduleLoader.child as KmcModule).init(KmcModelLocator.getInstance().kalturaClient, "1002374");
+				
+				// dashboard params:
+				var dc:DashboardContext = new DashboardContext();
+				dc.customizedoclink = flashvars.customizedoclink;
+				dc.embeddoclink = flashvars.embeddoclink;
+				dc.firstlogin = flashvars.firstlogin;
+				dc.gaDebug = flashvars.gaDebug;
+				dc.uploaddoclink = flashvars.uploaddoclink;
+				dc.urchinnumber = flashvars.urchinnumber;
+				dc.username = flashvars.username;
+				dc.uid = flashvars.uid;
+				
+				// init dashboard:
+				(event.moduleLoader.child as KmcModule).init(KmcModelLocator.getInstance().kalturaClient, "1002374", dc);
+			}
+			
+			/**
+			 * Switch to a different KMC module (tab).
+			 * Can also include subtab on the new module.
+			 * @param e		event holding navigation request info.
+			 * */
+			private function navigateToModule(e:KmcNavigationEvent):void {
+				trace("KMC going to", e.module, e.subtab != null ? "> " + e.subtab : "");
+			}
+
+
+			protected function setNavigationListener(event:Event):void
+			{
+				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
 			}
 
 		]]>

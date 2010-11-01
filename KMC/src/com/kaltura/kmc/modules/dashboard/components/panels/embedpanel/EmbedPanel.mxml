@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+	 Embed Panel section
+
+
+
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="left"
+		 styleName="embedBox">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.dashboard.Dashboard;
+			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+
+			/**
+			 * url to open when user clicks quickstart button
+			 * */
+			public var quickStartURL:String;
+
+
+			private function manage():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_EMBED_PLAYER);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_EMBED_PLAYER,
+														  "DashBoard>Embed Player")
+//				DashboardManager.instance.loadKMCModule('content', 'Manage');
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'Manage'));
+			}
+
+
+			private function publish():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_EMBED_PLAYLIST);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.DASHBOARD_EMBED_PLAYLIST,
+														  "DashBoard>Embed PlayList")
+//				DashboardManager.instance.loadKMCModule('content', 'Publish');
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'Publish'));
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" horizontalAlign="left" styleName="featureTitleBox">
+		<mx:Label text="{resourceManager.getString('kdashboard', 'embed_title')}" id="titleLabel" styleName="titleLabel"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<mx:VBox height="100%" styleName="embedInnerBox">
+			<mx:Button id="embedTitleImage" styleName="embedTitleImage"/>
+		</mx:VBox>
+		<mx:VBox width="100%" height="100%" styleName="embedInnerBox">
+			<mx:HBox width="100%">
+				<mx:Text id="embedOption1Label" width="95%"
+						 text="{resourceManager.getString('kdashboard', 'embed_option_1_description')}"
+						 styleName="featureLineLabel"/>
+				<mx:Spacer width="5%"/>
+				<mx:Button id="embedOption1Button"
+						   label="{resourceManager.getString('kdashboard', 'embed_option_1_button')}"
+						   useHandCursor="true" buttonMode="true" styleName="buttonType2" click="manage()"
+						   width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Text id="embedOption2Label" width="95%"
+						 text="{resourceManager.getString('kdashboard', 'embed_option_2_description')}"
+						 styleName="featureLineLabel"/>
+				<mx:Spacer width="5%"/>
+				<mx:Button id="embedOption2Button"
+						   label="{resourceManager.getString('kdashboard', 'embed_option_2_button')}"
+						   useHandCursor="true" buttonMode="true" styleName="buttonType2" click="publish()"
+						   width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+			</mx:HBox>
+			<mx:LinkButton id='quickStartLinkButton'
+						   label="{resourceManager.getString('kdashboard', 'quick_start_link')}"
+						   click="{DashboardManager.instance.launchExactOuterLink(quickStartURL)}"/>
+		</mx:VBox>
+	</mx:HBox>
+
+
+</mx:VBox>
