@@ -5,7 +5,7 @@
 				   xmlns:business="com.kaltura.kmc.modules.analytics.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.analytics.control.*"
 				   xmlns:view="com.kaltura.kmc.modules.analytics.view.*" minHeight="520" minWidth="950"
-				   addedToStage="onAddedToStage()">
+				   >
 	
 	<mx:Style source="assets/analytics/analytics.css"/>
 	
@@ -37,6 +37,12 @@
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.ItemClickEvent;
+			
+			/**
+			 * KMC is responsible to use the value of  
+			 * this const as the id of this module.
+			 * */
+			public static const NAME:String = "analytics";
 			
 			[Bindable]
 			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
@@ -74,6 +80,7 @@
 				var objParam:Object = KMC.flashvars;
 				urchinNumber = objParam.urchinnumber;
 				_model.kdpUiConf = objParam.drilldownkdpuiconf;
+				_model.kc = _kc;
 				initModelContext(objParam);
 				/// set Alert locale for all this application
 				Alert.yesLabel = resourceManager.getString('kmc', 'yes');
@@ -83,6 +90,18 @@
 				
 				var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				listCategories.dispatch();
+				
+				// initialize the tabs: (need to do this after we have _kc)
+				usage.init();
+				content.init();
+				users.init();
+				
+				if (stage) {
+					onAddedToStage();
+				}
+				else {
+					addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				}
 			}
 			
 			
@@ -95,18 +114,6 @@
 				_model.context.debugMode = objParam.debugmode == "true" ? true : false;
 				_model.context.hostName = objParam.host;
 				_model.context.cdnHost = objParam.cdnHost ? objParam.cdnHost : objParam.host;
-				
-				var configuration:KalturaConfig = new KalturaConfig();
-				configuration.partnerId = objParam.partnerid;
-				configuration.ignoreNull = 1;
-				configuration.protocol = objParam.protocol ? objParam.protocol : "http://";
-				configuration.domain = KUtils.hostFromCode(objParam.host); //"kaldev.kaltura.com";
-				configuration.srvUrl = objParam.srvurl; //"api_v3/index.php";
-				
-				_model.context.kc = new KalturaClient(configuration);
-				_model.context.kc.ks = objParam.ks;
-				
-				_model.kc = _model.context.kc;
 			}
 			
 			
@@ -146,17 +153,20 @@
 			 * initialize stats trackers and show a different tab if reqeusted.
 			 * */
 			private function onAddedToStage():void {
+				if (this.willTrigger(Event.ADDED_TO_STAGE)) {
+					removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+				}
 				/* google tracker must be initialized after "addedToStage"
 				because of its debug mode.*/
 				// initialize trackers
 				var objParams:Object = Application.application.parameters;
 				objParams = ObjectHelpers.lowerNoUnderscore(objParams);
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
-				ga.init(_model.context.kc.partnerId, _model.context.userId, this,
+				ga.init(_model.kc.partnerId, _model.context.userId, this,
 					"KMC_ANDROMEDA/Reports and Analytics", urchinNumber, "AS3",
 					objParams.gaDebug == "true" ? true : false);
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
-				ka.init(_model.context.kc, "Content", VERSION, _model.context.userId);
+				ka.init(_model.kc, "Content", VERSION, _model.context.userId);
 				
 				// show different initial tab if provided
 				/* this must happen after trackers have been initialized because it logs something */

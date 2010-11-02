@@ -21,7 +21,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			var getPartnerUsage:PartnerGetUsage = new PartnerGetUsage(params.year, params.month, params.resolution);
 			getPartnerUsage.addEventListener(KalturaEvent.COMPLETE, result);
 			getPartnerUsage.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getPartnerUsage);	
+			_model.kc.post(getPartnerUsage);	
 		}
 		
 		public function result(data:Object):void

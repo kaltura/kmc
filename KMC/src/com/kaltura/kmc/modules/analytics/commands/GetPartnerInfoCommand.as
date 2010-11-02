@@ -32,9 +32,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		 	var getPartnerInfo:PartnerGetInfo = new PartnerGetInfo();
 		 	getPartnerInfo.addEventListener(KalturaEvent.COMPLETE, result);
 			getPartnerInfo.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getPartnerInfo);	
-			
-			
+			_model.kc.post(getPartnerInfo);	
 		}
 		
 		public function result(data:Object):void
@@ -77,7 +75,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				pvo.notify = resultKp.notify == 1;
 				pvo.partnerPackage = resultKp.partnerPackage;
 				pvo.phone = resultKp.phone;
-				pvo.pId = _model.context.kc.partnerId;
+				pvo.pId = _model.kc.partnerId;
 				pvo.secret = resultKp.secret;
 				pvo.status = resultKp.status;
 				pvo.type = resultKp.type;

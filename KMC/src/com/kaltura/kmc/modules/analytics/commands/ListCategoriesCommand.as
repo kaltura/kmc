@@ -36,7 +36,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 		 	mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(mr);	
+			_model.kc.post(mr);	
 			
 			
 		}

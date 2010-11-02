@@ -4,7 +4,7 @@
 	 First phase - Launch link and show basic graphs
 -->
 <modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" 
-				   xmlns:modules="com.kaltura.kmc.modules.*" width="400" height="300"
+				   xmlns:modules="com.kaltura.kmc.modules.*"
 				   preloader="com.kaltura.preloaders.KmcPreloader" 
 				   backgroundColor="#034F57" layout="vertical"
 				   verticalAlign="top" styleName="mainView"
@@ -25,7 +25,7 @@
 		</mx:State>
 	</mx:states-->
 
-	<mx:Style source="../../assets/css/kaltura.css"/>
+	<mx:Style source="assets/dashboard/dashboard.css"/>
 
 	<mx:Metadata>
 			[ResourceBundle("kdashboard")]
@@ -36,11 +36,16 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
-			import com.kaltura.kmc.vo.DashboardContext;
 			
 			import mx.controls.Alert;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
+			
+			/**
+			 * KMC is responsible to use the value of  
+			 * this const as the id of this module.
+			 * */
+			public static const NAME:String = "dashboard";
 			
 			// keep this public, it is used in the panels
 			public static const BUTTON_WIDTH_SIZE:int = 140;
@@ -79,21 +84,21 @@
 				var item:ContextMenuItem = new ContextMenuItem("KMC Dashboard " + VERSION);
 				this.contextMenu.customItems.push(item);
 
-				var context:DashboardContext = _context as DashboardContext;
-				_urchinNumber = context.urchinnumber;
+				var fv:Object = KMC.flashvars;
+				_urchinNumber = fv.urchinnumber;
 
-				_userName = context.username;
-				_userId = context.uid;
+				_userName = fv.username;
+				_userId = fv.uid;
 
-				if (context.firstlogin == 'true') {
+				if (fv.firstlogin == 'true') {
 					currentState = 'firstTimeUserState';
 				}
 
 				DashboardManager.instance.kc = _kc;
 
-				uploadPnl.quickStartURL = context.uploaddoclink;
-				embedPnl.quickStartURL = context.embeddoclink;
-				customizePnl.quickStartURL = context.customizedoclink;
+				uploadPnl.quickStartURL = fv.uploaddoclink;
+				embedPnl.quickStartURL = fv.embeddoclink;
+				customizePnl.quickStartURL = fv.customizedoclink;
 
 				DashboardManager.instance.app = this;
 				DashboardManager.instance.getData();
@@ -126,7 +131,7 @@
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(DashboardManager.instance.kc.partnerId, _userId, this, "KMC/Dashboard",
 						_urchinNumber, "AS3",
-						(_context as DashboardContext).gaDebug == "true" ? true : false);
+						KMC.flashvars.gaDebug == "true" ? true : false);
 			}
 		]]>
 	</mx:Script>

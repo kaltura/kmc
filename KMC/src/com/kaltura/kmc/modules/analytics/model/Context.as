@@ -75,8 +75,8 @@ package com.kaltura.kmc.modules.analytics.model {
 		/**
 		 * an object holding variables that need to be passed with every API call.
 		 */
-		public function get defaultUrlVars():Object {
-			return {uid: userId, partner_id: kc.partnerId, subp_id: subpId, ks: kc.ks};
-		}
+//		public function get defaultUrlVars():Object {
+//			return {uid: userId, partner_id: kc.partnerId, subp_id: subpId, ks: kc.ks};
+//		}
 	}
 }

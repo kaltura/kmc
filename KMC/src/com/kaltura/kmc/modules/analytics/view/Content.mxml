@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 creationComplete="init()"
 		 xmlns:content="com.kaltura.kmc.modules.analytics.view.content.*"
 		 xmlns:drilldown="com.kaltura.kmc.modules.analytics.view.content.drilldown.*"
 		 xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*"
-		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*">
+		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*"
+		 creationComplete="{_ready = true}">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -18,6 +18,10 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.events.FlexEvent;
+			
+			
+			private var _ready:Boolean = false;
 
 			/**
 			 * data model
@@ -29,10 +33,16 @@
 			/**
 			 * watch model changes
 			 * */
-			private function init():void {
-				BindingUtils.bindSetter(onStateChange, _model, "currentScreenState");
-				BindingUtils.bindSetter(selectedReportChange, _model, "selectedReportData");
-				BindingUtils.bindSetter(selectedEntryChange, _model, "selectedEntry");
+			public function init(event:Event = null):void {
+				if (_ready) {
+					BindingUtils.bindSetter(onStateChange, _model, "currentScreenState");
+					BindingUtils.bindSetter(selectedReportChange, _model, "selectedReportData");
+					BindingUtils.bindSetter(selectedEntryChange, _model, "selectedEntry");
+				}
+				else {
+					_ready = true;
+					addEventListener(FlexEvent.CREATION_COMPLETE, init);
+				}
 			}
 
 
@@ -153,6 +163,12 @@
 					}
 				}
 			}
+
+			protected function hbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
 		]]>
 	</mx:Script>
 	<dtn:DTN id="dtn"
