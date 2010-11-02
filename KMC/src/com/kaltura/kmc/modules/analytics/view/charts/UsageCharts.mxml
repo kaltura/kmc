@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:states>
+		<mx:State name="lineChartState">
+			<mx:RemoveChild target="{usageColChart}"/>
+			<mx:AddChild position="lastChild">
+				<mx:LineChart id="usageLineChart" width="100%" height="100%" dataProvider="{chartPoints}" showDataTips="true" dataTipFunction="getDataTip">
+			        <mx:horizontalAxis>
+			           <mx:CategoryAxis id='lineTimeAxis'
+			                dataProvider="{chartPoints}" 
+			                categoryField="Time" title="{xLabel}" />
+			        </mx:horizontalAxis>
+					<mx:series>
+						<mx:LineSeries displayName="Usage" yField="Usage" xField="Time">
+							<mx:lineStroke>
+						        <mx:Stroke color="#9ab40c" weight="3"/>
+					        </mx:lineStroke>  
+						</mx:LineSeries>
+					</mx:series>
+				</mx:LineChart>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
+			
+			import mx.collections.ArrayCollection;
+			
+		
+			[Bindable]public var usageData:AccountUsageVO;
+			
+			[Bindable]public var chartPoints:ArrayCollection = new ArrayCollection();
+			[Bindable]public var xLabel:String = "Time";
+			
+			private function getDataTip(data:Object):String
+			{
+				var catAxis:CategoryAxis = (currentState == null) ? colTimeAxis : lineTimeAxis;
+				return  data.item.Time + " " + catAxis.title + '\nUsage:' + data.item.Usage;
+			}
+			
+			private function changeToColChartState(event:Event):void
+			{
+				currentState = null;
+			}
+			
+			private function changeToLineChartState(event:Event):void
+			{
+				currentState = 'lineChartState';
+			}
+			
+		]]>
+	</mx:Script>
+	 <!-- Define chart effects --> 
+	 <mx:HBox width="100%" horizontalAlign="right">
+	 	<mx:Button styleName="barChartIcon" click="changeToColChartState(event)" buttonMode="true" useHandCursor="true" toolTip="Show Bar Chart"/>
+		<mx:Button  styleName="lineChartIcon" click="changeToLineChartState(event)" buttonMode="true" useHandCursor="true"  toolTip="Show Line Chart"/>
+	 </mx:HBox>
+	
+	<mx:ColumnChart id="usageColChart" width="100%" height="100%" dataProvider="{chartPoints}" showDataTips="true" dataTipFunction="getDataTip">
+        <mx:horizontalAxis>
+           <mx:CategoryAxis id='colTimeAxis'
+                dataProvider="{chartPoints}" 
+                categoryField="Time" title="{xLabel}"/>
+        </mx:horizontalAxis>
+		<mx:series>
+			<mx:ColumnSeries displayName="Usage" yField="Usage" xField="Time">
+				<mx:fills>
+     				<mx:SolidColor color="#9ab40c"/>
+				</mx:fills>
+			</mx:ColumnSeries>
+		</mx:series>
+	</mx:ColumnChart>
+</mx:VBox>

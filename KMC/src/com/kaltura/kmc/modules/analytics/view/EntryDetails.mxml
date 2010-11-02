@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.utils.KTimeUtil;
+			[Bindable] private var _lblWidth : Number = 80;
+			
+			override public function set data(value : Object ) : void
+			{
+				super.data = value;
+				
+				if(value)
+					createdAt.text = new Date(Number(data.createdAt)*1000).toDateString();	
+			}
+		]]>
+	</mx:Script>
+	<mx:Label styleName="pageTitle2" text="{resourceManager.getString('kmc','videoDetails')}"/>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','name')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text width="100%" text="{data.name}" />
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','description')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text width="100%" text="{data.description}" />
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','tags')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text width="100%" text="{data.tags}" />
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','adminTags')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text width="100%" text="{data.adminTags}" />
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','duration')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text text="{ KTimeUtil.formatTime( Number(data.duration) ) }" />
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('kmc','createdAt')}:" width="{_lblWidth}" styleName="boldLabel"/>
+		<mx:Text id="createdAt"  />
+	</mx:HBox>
+</mx:VBox>

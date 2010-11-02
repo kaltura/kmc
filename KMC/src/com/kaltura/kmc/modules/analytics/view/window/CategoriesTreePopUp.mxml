@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="450"
+				 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" showCloseButton="true" close="closeWindow(event)"
+				 title="Categories">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+
+			[Bindable]
+			private var _selectedCategoriesArr:ArrayCollection;
+			[Bindable]
+			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+
+
+			[Bindable]
+			public function get selectedCategoriesArr():ArrayCollection {
+				return _selectedCategoriesArr;
+			}
+
+
+			public function set selectedCategoriesArr(selectedCategoriesArr:ArrayCollection):void {
+				_selectedCategoriesArr = selectedCategoriesArr;
+			}
+
+
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event = null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function onSubmitClick(event:Event):void {
+				var categories:String = tree.selectedFilterCategories;
+				var catArr:Array = categories.split(',');
+
+				_selectedCategoriesArr.removeAll();
+				for each (var cat:String in catArr) {
+					if (cat != '') {
+						_selectedCategoriesArr.addItem(cat);
+					}
+				}
+				dispatchEvent(new Event("filterByCategories"));
+				closeWindow();
+			}
+
+
+			private function onTreeCreationComplete(event:Event):void {
+				var categories:String = _selectedCategoriesArr.source.join(',');
+				tree.selectedFilterCategories = categories;
+			}
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Event(name="filterByCategories",type="flash.events.Event")]
+	</mx:Metadata>
+	<view:CategoriesTree id='tree' dataProvider="{_model.categories}" showRoot="false"
+						 creationComplete="onTreeCreationComplete(event)" visible="{_model.categories.children.length}">
+
+	</view:CategoriesTree>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button label="Filter" useHandCursor="true" buttonMode="true" id="submitBtn" click="onSubmitClick(event)"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

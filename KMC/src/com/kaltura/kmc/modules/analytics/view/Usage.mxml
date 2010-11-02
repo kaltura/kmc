@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*"
+	creationComplete="init()" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.modules.analytics.control.PartnerEvent;
+			import com.kaltura.kmc.modules.analytics.control.UsageGraphEvent;
+			import com.kaltura.kmc.modules.analytics.model.types.PackageType;
+			import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
+			import com.kaltura.kmc.modules.analytics.vo.PackagesVO;
+			import com.kaltura.kmc.modules.analytics.vo.PartnerVO;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Text;
+			import mx.events.ItemClickEvent;
+			
+			public static const INT2MONTHS_MAP : Object = { 1:"January", 
+												   			2:"February",
+															3:"March",
+															4:"April",
+															5:"May",
+															6:"June",
+															7:"July",
+															8:"August",
+															9:"September",
+															10:"October",
+															11:"November",
+															12:"December"
+													  };	
+													  
+			public static const MONTHS2INT_MAP : Object = { "January":1, 
+												   			"February":2,
+															"March":3,
+															"April":4,
+															"May":5,
+															"June":6,
+															"July":7,
+															"August":8,
+															"September":9,
+															"October":10,
+															"November":11,
+															"December":12
+													  };	
+													  
+			public static const Y_UNITS : String = "mb";
+			public static const YEARS : String = "years";
+			public static const DAYS : String = "days";
+			public static const MONTHS : String = "months";
+			
+			private var _defaultYear:Boolean=false;
+			private var _defaultMonth:Boolean=false;
+			[Bindable] public var partnerPackage : PackagesVO;
+			[Bindable] public var partnerData : PartnerVO;
+			[Bindable] public var accountUsageData : AccountUsageVO;
+			[Bindable] public var srvParams : Object = null;
+			[Bindable] public var getPartnerUsageURL : String = null;
+			[Bindable] public var rootUrl : String = "www.kaltura.com";
+			
+			[Bindable] public var createdYear : uint;
+			[Bindable] public var createdMonth : uint;
+			[Bindable] public var createdDay : uint;
+			
+			private var _currentTimeFrame : String = MONTHS;
+			private var _currentResolution : String = DAYS;
+			
+			private var _today : Date = new Date();
+			
+			private var _selectedYear : String = _today.fullYear.toString();
+			private var _selectedMonth : String = String(_today.month + 1);
+			
+			private var _mText : Text;
+			private var _srvParams : Object = null;
+			
+			private var monthsMap:HashMap = new HashMap();
+			
+			public function init() : void
+			{
+				BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
+				BindingUtils.bindSetter(onPackageChange, this, "partnerPackage"); 
+				BindingUtils.bindSetter(onAccountUsageDataChanged, this, 'accountUsageData'); 
+				
+				var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
+				partnerEvent.dispatch();
+			}
+			
+						
+			private function onAccountUsageDataChanged(usageData:AccountUsageVO):void
+			{
+				onPercentSoFarChange();
+				setChartData();
+			}
+			
+			private function setChartData():void
+			{
+				
+				if(accountUsageData == null)
+				{
+					return;
+				}
+				
+				var points:ArrayCollection = new ArrayCollection();//
+			/* 	
+		 	    var arr:ArrayCollection = (timeFrameTBB.selectedIndex == 1) ? new ArrayCollection(String("1,123;2,432;3,333;4,44;5,0;6,0;7,443;8,987;9,543;10,0;11,0;12,456;").split(';')) :
+					new ArrayCollection(String("1,33;2,566;3,777;4,0;5,546;6,456;7,888;8,0;9,0;10,0;11,0;12,456;13,0;14,11;15,11;16,0;17,555;18,0;19,0;20,0;21,0;22,456;23,0;24,456;25,456;26,0;27,456;28,888;29,456;30,0;31,0;").split(';'));
+				  */
+		 		var arr:ArrayCollection = new ArrayCollection(accountUsageData.usageSeries.split(';'));
+				
+				for each(var p:String in arr)
+				{
+					if(p != '')
+					{
+						var point:Array = p.split(',');
+						points.addItem({Time: ((timeFrameTBB.selectedIndex == 1) ? getMonth(point[0]) : point[0]), Usage: point[1]});
+					}
+				}
+				
+				usageCharts.xLabel = cb.selectedLabel;
+				usageCharts.chartPoints = points;
+			}
+			
+			private function getMonth(monthCode:String):String
+			{
+				return INT2MONTHS_MAP[int(monthCode)];
+			}
+			
+			private function onPackageChange( partnerPackage : PackagesVO ) : void
+			{
+				if(partnerPackage)
+				{
+					loadData();
+				}
+			}
+			
+			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
+			{
+				if((pvo != null) && pvo.pId)
+				{
+					setCBDataProvider();
+					loadData();					
+				}
+			}
+			
+			private function onPercentSoFarChange() : void
+			{
+				//pb.setProgress( kdc.totalPercentSoFar , 100);
+				
+				if(partnerData == null)
+				{
+					return;
+				}
+				
+				if( partnerData.partnerPackage == PackageType.FREE )
+				{
+					
+					totalBWSoFar.text = resourceManager.getString('kmc','totalUsageSoFar') + ": "+ accountUsageData.totalBWSoFar + " " + resourceManager.getString('kmc','gb')+ " "  +resourceManager.getString('kmc','including') + " " + accountUsageData.hostingGB + " " + resourceManager.getString('kmc','gb') + " "+resourceManager.getString('kmc','spaceUsed');
+					//pb.label = resourceManager.getString('kmc','usedFreeUsageText',[kdc.totalPercentSoFar]);
+
+					/*if(partnerData.status == PartnerStatusType.LOCKED)
+						addMessege( resourceManager.getString('kmc','locked100FreeHtmlText') );	
+					else if( kdc.totalPercentSoFar >= 100) 
+						addMessege( resourceManager.getString('kmc','free100HtmlText') );
+					else if( kdc.totalPercentSoFar > 80 )
+						addMessege( resourceManager.getString('kmc','free80HtmlText') );	*/
+				}
+				else
+				{
+					
+					totalBWSoFar.text = resourceManager.getString('kmc','totalMonthlyBW')+": "+ accountUsageData.totalBWSoFar + " "+resourceManager.getString('kmc','gb')+" "+resourceManager.getString('kmc','including')+" " + accountUsageData.hostingGB + " "+resourceManager.getString('kmc','gb')+" "+resourceManager.getString('kmc','spaceUsed');
+					//pb.label = resourceManager.getString('kmc','usedUsageText',[kdc.totalPercentSoFar]);
+					
+					/*if( kdc.totalPercentSoFar >= 120 )
+						addMessege( resourceManager.getString('kmc','fit120PayingHtmlText', [kdc.totalBWSoFar]) );*/
+				}
+				
+				/*if( kdc.totalPercentSoFar >= 80)
+			pb.setStyle('themeColor','red');
+				else if(kdc.totalPercentSoFar >= 70)
+					pb.setStyle('themeColor','yellow');
+				else
+					pb.setStyle('themeColor','green');
+					
+				pb.visible = true;*/
+			}
+			
+			/*private function addMessege( str : String ) : void
+			{
+				if(!_mText)
+				{
+					_mText = new Text();
+					_mText.addEventListener( TextEvent.LINK , linkHandler );
+				}
+				
+				_mText.percentWidth = 100;
+				_mText.htmlText = str;
+				
+				if( ! this.contains( _mText ) && mainCanvas.contains(totalStats))
+					this.addChildAt(_mText , mainCanvas.getChildIndex(totalStats)+1);
+			}	*/
+			
+			 private function linkHandler(linkEvent:TextEvent):void
+	        {
+	            switch(linkEvent.text)
+	            {
+	            	case "package": dispatchEvent( new ItemClickEvent(ItemClickEvent.ITEM_CLICK , false , false , null, 2) ); break;
+	            }
+	        }
+			
+			public function undo() : void
+			{
+				
+			}
+					
+			public function isChanged() : Boolean
+			{
+				return false;
+			}
+			
+			public function saveChanges() : void
+			{
+				
+			}
+			
+			public function resetClonedData() : void
+			{
+				
+			}
+			
+			private function onTimeFrameChange() : void
+	     	{
+	     		switch(timeFrameTBB.selectedIndex)
+	     		{
+	     			case 0: 
+	  //   				this.title = resourceManager.getString('kmc','monthlyBW');
+ 						_currentTimeFrame = MONTHS;
+	     				_currentResolution = DAYS;
+	     			break;
+	     			case 1: 
+	//     				this.title = resourceManager.getString('kmc','yearlyBW');
+	     				_currentTimeFrame = YEARS;
+	     				_currentResolution = MONTHS;
+	     			break;
+	     		}
+	     		
+	     		setCBDataProvider();
+	     		onCBChange()
+	     		loadData();
+	     	}
+	     	
+	     	private function setCBDataProvider() : void
+	     	{
+	     		var arrColl : ArrayCollection = new ArrayCollection();
+		
+	     		var years : int = _today.fullYear - partnerData.createdYear; 
+		     	var months : int = _today.month + 1 - partnerData.createdMonth; 
+		     	var totalMonth : int = months + years * 12; 
+		     	
+		     	var i:int=0;
+		     	
+	     		if( _currentTimeFrame == YEARS )
+	     		{
+		     		for( i=0 ; i <= years ; i++)
+		     		{
+		     			arrColl.addItem( _today.fullYear - i );
+		     		}
+	     		}
+	     		else if( _currentTimeFrame == MONTHS )
+	     		{
+	     			var year : uint = _today.fullYear;
+	     			var month : uint = _today.month + 1;
+		     		
+		     		for( i=0 ; i <= totalMonth ; i++)
+		     		{
+		     			arrColl.addItem( INT2MONTHS_MAP[month] +" "+  year );
+		     			if(month>1)
+		     				--month;
+		     			else
+		     			{
+		     				month = 12;
+		     				--year;
+		     			}	
+		     		}
+	     		}
+	     		
+	     		cb.dataProvider = arrColl;
+	     	}
+	     	
+	     	private function onCBChange() : void
+	     	{
+	     		if(cb.selectedItem)
+	     		{
+		     		if(_currentTimeFrame == MONTHS)
+		     		{
+			     		var dateArr : Array = cb.selectedItem.split(" ");
+			     		_selectedYear = dateArr[1];
+				    	_selectedMonth = MONTHS2INT_MAP[dateArr[0]];
+				    	if(_defaultMonth){
+				    	GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY+"/month:"+_selectedMonth);
+		     		    KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY,"Bandwidth Usage>View Monthly>month:"+_selectedMonth);  
+		     		}
+		     		_defaultMonth=true;
+		     		}
+		     		else if( _currentTimeFrame == YEARS)
+		     		{
+		     			_selectedYear = cb.selectedItem.toString();
+		     			if(_defaultYear){
+		     			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY+"/year:"+_selectedYear);
+		     		    KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY,"Bandwidth Usage>View Yearly>Year:"+_selectedYear);
+		     			}
+		     			_defaultYear=true;
+		     		} 
+	     		}
+	     		
+	     		loadData();
+	     	}
+	     	
+	     	public function loadData() : void
+		    {
+		    	_srvParams = new Object();
+		        _srvParams.month = _selectedMonth ;
+		    	_srvParams.year = _selectedYear;
+		    	_srvParams.resolution = _currentResolution;
+		    		    	
+		    	var usageGraphEvent:UsageGraphEvent = new UsageGraphEvent(UsageGraphEvent.USAGE_GRAPH);
+		    	usageGraphEvent.data = _srvParams;
+				usageGraphEvent.dispatch();
+		    } 
+			
+		]]>
+	</mx:Script> 
+	
+	<mx:Metadata>
+		 [Event(name="itemClick", type="mx.events.ItemClickEvent")]
+	</mx:Metadata>
+	<mx:Canvas id="mainCanvas" width="100%">
+		<mx:Label id="totalBWSoFar" styleName="boldLabel" />
+		<mx:Button styleName="help" buttonMode="true" right="5"
+			click="{ navigateToURL( new URLRequest('http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'helpUsage') ) )}"/>
+	</mx:Canvas>	
+	
+	<mx:HBox width="100%" paddingLeft="20">
+		<mx:ToggleButtonBar id="timeFrameTBB" itemClick="onTimeFrameChange()" selectedIndex="0" buttonMode="true">
+			<mx:dataProvider>
+	            <mx:String>{resourceManager.getString('kmc','viewMonthly')}</mx:String>
+	            <mx:String>{resourceManager.getString('kmc','viewYearly')}</mx:String>
+	        </mx:dataProvider>
+		</mx:ToggleButtonBar>
+		<mx:ComboBox id="cb" width="140" change="onCBChange()"/>
+	</mx:HBox>
+	
+	<charts:UsageCharts id='usageCharts' styleName="pageStyle" />
+		
+	
+</mx:VBox>

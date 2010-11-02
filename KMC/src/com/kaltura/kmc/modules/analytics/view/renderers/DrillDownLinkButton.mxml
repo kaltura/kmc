@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	implements="mx.controls.listClasses.IDropInListItemRenderer"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	creationComplete="init()" show="refrashItemRenderer()">
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.URLUtil;
+			
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.listClasses.IDropInListItemRenderer;
+			import flash.net.navigateToURL;
+			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
+			
+			//because I am not creating the instance of this item renderer i use a static Boolean value to show or hde the referer icon
+			public static var showRefererIcon : Boolean = false;
+			public static var linkable : Boolean = false;
+			
+   		    // Internal variable for the property value.
+   			[Bindable] private var _listData:BaseListData;
+    
+		    // Define the getter method and make the listData property bindable.
+		    [Bindable("dataChange")]
+		    public function get listData():BaseListData
+		    {
+		      return _listData;
+		    }
+		    
+		    // Define the setter method,
+		    public function set listData(value:BaseListData):void
+		    {
+		      _listData = value;
+		    }
+		    
+		    private function refrashItemRenderer() : void
+		    {
+		    	refererIcon.visible = showRefererIcon;
+				refererIcon.includeInLayout = showRefererIcon;
+				
+		    	//TODO: FIX THIS STATE ISSUE
+		    	if(linkable && !showRefererIcon)
+				{
+					linkBtn.visible = linkBtn.includeInLayout = true;
+					regularText.visible = regularText.includeInLayout = false;
+				}
+				else
+				{
+					linkBtn.visible = linkBtn.includeInLayout = false;
+					regularText.visible = regularText.includeInLayout = true;
+				}	
+		    }
+		    
+			private function init() : void
+			{
+				refrashItemRenderer();
+			}
+			
+			private function onItemClick( event : MouseEvent ) : void
+			{
+				var object_name : String;
+				
+				if(data.country) object_name = data.country;
+				else if(data.entry_media_source_name) object_name = data.entry_media_source_name;
+				else if(data.entry_name) object_name = data.entry_name;
+				else if(data.domain_name) object_name = data.domain_name;
+				
+				var drillDownEvent : DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name); //data.entry_id
+				drillDownEvent.dispatch();	
+			}
+			
+			private function onRefererClick( event : MouseEvent ) : void
+			{
+				var url : String = _listData.label ;
+				if( !URLUtil.isHttpURL(_listData.label) &&  !URLUtil.isHttpsURL(_listData.label))
+				{
+					url = "http://" + _listData.label;
+				}
+				
+				navigateToURL( new URLRequest( url ) , '_blank');
+			}
+	
+		]]>
+	</mx:Script>
+	<mx:HBox paddingTop="2" paddingLeft="2">
+		<mx:Button id="refererIcon" styleName="refererStyle" buttonMode="true"
+			click="onRefererClick(event)" visible="false" includeInLayout="false"/>
+	</mx:HBox>
+	<mx:Label id="regularText" textAlign="left" text="{_listData.label}" />
+	<mx:LinkButton id="linkBtn" click="onItemClick(event)" 
+		textAlign="left" label="{_listData.label}" />
+	
+</mx:HBox>

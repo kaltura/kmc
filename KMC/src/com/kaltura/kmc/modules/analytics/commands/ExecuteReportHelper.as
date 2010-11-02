@@ -1,0 +1,47 @@
+package com.kaltura.kmc.modules.analytics.commands
+{
+	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+	import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
+	import com.kaltura.vo.KalturaReportInputFilter;
+	
+	public class ExecuteReportHelper
+	{
+		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		
+		public function ExecuteReportHelper(){}
+
+		public function reportSetupBeforeExecution() : void
+		{
+			DrillDownLinkButton.showRefererIcon = false;
+			if(_model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)
+				DrillDownLinkButton.showRefererIcon = true;
+		}
+		
+		/**
+		 * creates a new KalturaReportInputFilter from the current filter in the KMCModelLocator instance 
+		 * @return krif the new KalturaReportInputFilter
+		 * 
+		 */		
+		public function createFilterFromCurrentReport() : KalturaReportInputFilter
+		{
+			var krif : KalturaReportInputFilter = new KalturaReportInputFilter();
+			var today : Date = new Date();
+			if( _model.filter )
+			{
+				//krif.fromDate = Math.ceil(_model.filter.fromDate.time/1000)  + (_model.filter.fromDate.timezoneOffset*60) +_model.KALTURA_OFFSET; //- todaysHourInSeconds
+				krif.fromDate = Math.ceil(_model.filter.fromDate.time/1000) +_model.KALTURA_OFFSET; //- todaysHourInSeconds
+				//krif.toDate = Math.ceil(_model.filter.toDate.time/1000) + (_model.filter.fromDate.timezoneOffset*60) + _model.KALTURA_OFFSET + 86399 ; // - todaysHourInSeconds
+
+				krif.toDate = Math.ceil(_model.filter.toDate.time/1000) + _model.KALTURA_OFFSET + _model.END_OF_DAY_IN_SECONDS ; // - todaysHourInSeconds
+				
+				krif.keywords = _model.filter.keywords;
+				krif.categories = _model.filter.categories;
+				krif.searchInTags =  _model.filter.searchInTags;
+				krif.searchInAdminTags = _model.filter.searchInAdminTags;
+			}
+			
+			return krif;
+		}
+	}
+}

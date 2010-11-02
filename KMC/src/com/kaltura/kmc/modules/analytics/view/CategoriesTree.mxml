@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Tree xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+			   	labelField="name" styleName="categoriesTree"
+				allowMultipleSelection="true"
+				dropEnabled="false"  
+	 			allowDragSelection="false"
+	 			dragMoveEnabled="false"
+	 			dragEnabled="false" 
+				borderThickness="3" borderColor="#FFFFFF" borderStyle="solid" rowHeight="30"
+				backgroundColor="#FFFFFF" backgroundAlpha="0.1">
+       <mx:Metadata>
+		  [Event(name="newSearch", type="flash.events.Event")] 
+	 </mx:Metadata>      	
+	 <mx:Script>
+	 	<![CDATA[
+	 		import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	 		import com.kaltura.kmc.modules.analytics.vo.CategoryVO;
+	 	
+	 		import com.kaltura.dataStructures.HashMap;
+	 		import mx.collections.ArrayCollection;
+	 		import mx.utils.StringUtil;
+	 	
+	 	
+	        private var _selectedFilterCategories:String = null;
+	 //       private var _isRootSelected:Boolean = true;
+	        
+	        public function get selectedFilterCategories():String
+	        {
+	        	var catNameArr:Array = new Array();
+				var categories:Array = this.selectedItems;
+				
+				for each(var category:CategoryVO in categories)
+				{
+					catNameArr.push(category.category.fullName);
+				}
+				
+				return catNameArr.join(',');
+	        }
+	        
+	        public function set selectedFilterCategories(selectedFilterCategories:String):void
+	        {
+	        	_selectedFilterCategories = selectedFilterCategories;
+	 //       	_isRootSelected = (selectedFilterCategories == null);
+	        	expendAndMarkTree();
+	        }
+	        
+	 		
+	 		
+	 		
+	 		override public function set dataProvider(value:Object):void
+	 		{
+	 			super.dataProvider = value;
+	 			expendAndMarkTree();
+	 		}
+	 		
+	 		private function expendAndMarkTree():void
+	 		{
+	 			expendAllTree();
+	 			markSelectedCategories();
+	 		} 
+	 	
+	 		private function expendAllTree():void
+	 		{
+				var treeRoot:CategoryVO = dataProvider[0] as CategoryVO;
+			 	this.openItems = KMCModelLocator.getInstance().categoriesMap.values;
+			    validateNow();
+	 		}
+	 		
+	 		private var catSelectedNames:HashMap;
+	 		
+	 		private function markSelectedCategories():void
+	 		{
+	 			/* if(_isRootSelected)
+	 			{
+	 				this.selectedItems = [this.dataProvider[0]];
+	 			}
+	 			else 
+	 			{*/
+	 			var catFullNames:Array = _selectedFilterCategories.split(',');
+	 			catSelectedNames = new HashMap();
+	 			for each(var name:String in catFullNames)
+	 			{
+	 				catSelectedNames.put(name, name);
+	 			}
+	 			
+	 			if(selectedFilterCategories != null)
+	 			{
+	 				var catParent:CategoryVO = this.dataProvider[0] as CategoryVO;
+	 				explorChildren(catParent);
+	 				
+	 				this.selectedItems = selectedCatsArr;
+	 			}
+		 	//	}
+		 		this.validateNow();
+	 			
+	 		}
+	 		
+	 		private var selectedCatsArr:Array = new Array();
+	 		private function explorChildren(childParent:CategoryVO):Boolean
+	 		{
+	 			var foundName:Boolean;
+	 			var foundChildName:Boolean;
+ 				for each(var childCat:CategoryVO in childParent.children)
+ 				{
+ 					var catFullName:String = childCat.category.fullName;
+ 					if(catSelectedNames.containsKey(catFullName))
+ 					{
+ 						selectedCatsArr.push(childCat);
+ 						foundName = true;
+ 					}
+ 					foundChildName = explorChildren(childCat);
+ 				}
+ 				
+ 				this.expandItem(childParent, true);
+ 				return foundName || foundChildName;
+	 		}
+	 
+	 	]]>
+	 </mx:Script>
+</mx:Tree>

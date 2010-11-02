@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	creationComplete="init()"
+	xmlns:users="com.kaltura.kmc.modules.analytics.view.users.*" 
+	xmlns:drilldown="com.kaltura.kmc.modules.analytics.view.users.drilldown.*" 
+	xmlns:dtn="com.kaltura.kmc.modules.analytics.view.dtn.*" 
+	xmlns:view="com.kaltura.kmc.modules.analytics.view.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.kmc.modules.analytics.control.StateEvent;
+			import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
+			import com.kaltura.types.KalturaReportType;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			
+			[Bindable] private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+			
+			private var _default:Boolean=false;
+			
+			private function init() : void
+			{
+				BindingUtils.bindSetter( onStateChnage , _model , "currentScreenState");
+				BindingUtils.bindSetter( selectedReportChange , _model , "selectedReportData");
+				
+				var stateEvent : StateEvent = new StateEvent( StateEvent.STATE_CHANGE , ScreenTypes.TOP_CONTRIBUTORS );
+				stateEvent.dispatch();
+			}
+			
+			private function onDrillDown( newState : int ) : void
+			{
+				var stateEvent : StateEvent = new StateEvent( StateEvent.STATE_CHANGE, newState );
+				stateEvent.dispatch();
+			}
+			
+			private function onStateChnage( newState : int ) :void
+			{
+				switch(newState)
+				{
+					case ScreenTypes.TOP_CONTRIBUTORS: userViewStack.selectedIndex = dtn.selectedIndex = 0;  break;
+					case ScreenTypes.MAP_OVERLAY: userViewStack.selectedIndex = dtn.selectedIndex = 1; break;
+					case ScreenTypes.TOP_SYNDICATIONS: userViewStack.selectedIndex = dtn.selectedIndex = 2; break;
+					case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN: 
+						userViewStack.selectedIndex = 3; 
+						dtn.selectedIndex = -1; 
+						(dtn.getChildAt(2) as DTNItem).btn.styleName = "selectedDtnBtn";
+					break;
+					case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
+						userViewStack.selectedIndex = 4; 
+						dtn.selectedIndex = -1; 
+						(dtn.getChildAt(1) as DTNItem).btn.styleName = "selectedDtnBtn";
+					break;
+					default:
+						// the new screen is not in Users's scope, need to hide panel
+						(userViewStack.selectedChild as KalturaReportView).onHide();
+				}
+			}
+			
+			private function onDtnChange() : void
+			{
+				if(dtn.selectedIndex == 0)
+					{
+					(new StateEvent( StateEvent.STATE_CHANGE , ScreenTypes.TOP_CONTRIBUTORS )).dispatch();
+					}
+				else if(dtn.selectedIndex == 1)
+				{  
+					(new StateEvent( StateEvent.STATE_CHANGE , ScreenTypes.MAP_OVERLAY )).dispatch();
+				}
+				else if(dtn.selectedIndex == 2)
+				{
+					(new StateEvent( StateEvent.STATE_CHANGE , ScreenTypes.TOP_SYNDICATIONS )).dispatch();
+				}
+			}
+			
+			private function selectedReportChange( selectedReport : ReportData ) : void
+			{
+				if(selectedReport)
+				{
+					switch(_model.currentScreenState)
+					{
+						case ScreenTypes.TOP_CONTRIBUTORS:
+							if(selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
+								selectedReport.message = resourceManager.getString('kmc','topContributorsLbl' , [ selectedReport.totalCount , selectedReport.aggregatedDataArrCol[0].value ]);
+						break;
+						case ScreenTypes.MAP_OVERLAY:    
+							if(selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
+								selectedReport.message = resourceManager.getString('kmc','mapOverlayLbl' , [ selectedReport.totalCount , selectedReport.aggregatedDataArrCol[0].value ]);
+						break;
+						case ScreenTypes.TOP_SYNDICATIONS:
+							if(selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
+								selectedReport.message = resourceManager.getString('kmc','topSyndicationsLbl' , [ selectedReport.totalCount , selectedReport.aggregatedDataArrCol[0].value ]);
+						break;
+						case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
+							if(selectedReport.objectIds && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
+								selectedReport.message = resourceManager.getString('kmc','syndicationsDrillDownLbl' , [ selectedReport.totalCount , selectedReport.aggregatedDataArrCol[0].value , selectedReport.objectName ]);
+						break;
+						case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
+							if(selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value)
+								selectedReport.message = resourceManager.getString('kmc','mapOverlayLbl' , [ selectedReport.totalCount , selectedReport.aggregatedDataArrCol[0].value ]);
+						break;
+					}
+				}
+			}
+
+		
+		]]>
+	</mx:Script>
+	
+	<dtn:DTN id="dtn" width="158" dataProvider="{_model.userDtnDp}" enabled="{!_model.loadingFlag}"
+		change="{onDtnChange()}"/>
+	<mx:ViewStack id="userViewStack" selectedIndex="0"
+		width="100%" height="{this.height - 15}" styleName="contentViewStack">
+		<view:KalturaReportView id="topContributors" width="100%" 
+			dateOnlyFlag="{true}" context="{_model.context}"
+			filterVo="{_model.filter}"
+			creationComplete="{topContributors.onShow()}"
+			loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+			isLoading="{_model.loadingFlag}" 
+			reportData="{_model.selectedReportData}"
+			orderBy="count_total"
+			aggregatedHeaders="{ _model.aggregateHeaders.topContrib }"
+			tableHeaders="{ _model.tableHeaders.topContrib }"
+			dimCbDp="{ _model.reportDimension.topContrib }"
+			helpUrl="{_model.kc.domain +'/index.php/kmc/kmc2help#reportAndAnalyticsSection421'}"
+			reportType="{KalturaReportType.TOP_CONTRIBUTORS}"
+			label="{resourceManager.getString('kmc','topContributors')}" 
+			gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
+			KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
+			KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
+			styleName="pageStyle" />
+		<view:KalturaReportView id="mapOverlay" width="100%" 
+			dateOnlyFlag="{true}" context="{_model.context}"
+			filterVo="{_model.filter}"
+			reportData="{_model.selectedReportData}"
+			loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+			isLoading="{_model.loadingFlag}" 
+			showDimention="false" showColumnChart="false" showLineChart="false"
+			showMap="false" showTable="true" showKDP="false"
+			orderBy="count_plays"
+			aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
+			tableHeaders="{ _model.tableHeaders.mapOverlay }"
+			drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}"
+			helpUrl="{_model.kc.domain +'/index.php/kmc/kmc2help#reportAndAnalyticsSection422'}"
+			reportType="{KalturaReportType.MAP_OVERLAY}"
+			label="{resourceManager.getString('kmc','mapOverlay')}" 
+			gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
+			KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
+			KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
+			styleName="pageStyle" />
+		<view:KalturaReportView id="topSyndications" 
+			dateOnlyFlag="{true}" context="{_model.context}"
+			filterVo="{_model.filter}"
+			width="100%" height="100%"
+			orderBy="count_plays"
+			loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+			isLoading="{_model.loadingFlag}" 
+			reportData="{_model.selectedReportData}"
+			showDimention="true" showColumnChart="false" showLineChart="true"
+			showMap="false" showTable="true" showKDP="false"
+			aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
+			tableHeaders="{ _model.tableHeaders.syndicator }"
+			dimCbDp="{ _model.reportDimension.syndicator }"
+			drillDown="{onDrillDown(ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)}"
+			helpUrl="{_model.kc.domain +'/index.php/kmc/kmc2help#reportAndAnalyticsSection423'}"
+			reportType="{KalturaReportType.TOP_SYNDICATION}"
+			gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
+			KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
+			KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
+			label="{resourceManager.getString('kmc','topSyndications')}" 
+			styleName="pageStyle" />
+		<view:KalturaReportView id="syndicationsDrillDown" 
+			dateOnlyFlag="{true}" isDrillDown="{true}"
+			filterVo="{_model.filter}" context="{_model.context}"
+			width="100%" height="100%"
+			creationComplete="{_model.selectedReportData.orderBy='count_plays'}"
+			loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+			isLoading="{_model.loadingFlag}" 
+			showDimention="false" showColumnChart="false" showLineChart="false"
+			showMap="false" showTable="true" showKDP="false"
+			aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
+			tableHeaders="{ _model.tableHeaders.syndicator }"
+			dimCbDp="{ _model.reportDimension.syndicator }"
+			reportData="{_model.selectedReportData}" 
+			backScreenType="{ScreenTypes.TOP_SYNDICATIONS}"
+			helpUrl="{_model.kc.domain +'/index.php/kmc/kmc2help#reportAndAnalyticsSection421'}"
+			reportType="{KalturaReportType.TOP_SYNDICATION}"
+			gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
+			KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
+			KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
+			label="{resourceManager.getString('kmc','topSyndications')}" 
+			styleName="pageStyle" />
+		<view:KalturaReportView id="mapOverlayDrillDown" 
+			dateOnlyFlag="{true}" isDrillDown="{true}"
+			filterVo="{_model.filter}" context="{_model.context}"
+			reportData="{_model.selectedReportData}"
+			loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}" loadTable="{_model.loadingTableFlag}"
+			isLoading="{_model.loadingFlag}" 
+			showDimention="false" showColumnChart="false" showLineChart="false"
+			showMap="false" showTable="true" showKDP="false"
+			orderBy="count_plays"
+			backScreenType="{ScreenTypes.MAP_OVERLAY}"
+			aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
+			tableHeaders="{ _model.tableHeaders.mapOverlay }"
+			helpUrl="{_model.kc.domain +'/index.php/kmc/kmc2help#reportAndAnalyticsSection422'}"
+			reportType="{KalturaReportType.MAP_OVERLAY}"
+			gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
+			KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
+			KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
+			label="{resourceManager.getString('kmc','mapOverlay')}" 
+			styleName="pageStyle" />
+	</mx:ViewStack>	 
+	
+</mx:HBox>

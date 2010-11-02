@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Panel xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" visible="{_isLoading}" 
+	dropShadowEnabled="false">
+	<mx:Script>
+		<![CDATA[
+			public var halfSecCycles : Number = 60; // 30 sec
+			public var timer : Timer;
+			
+			private var _i : int = 0;
+			
+			[Bindable] private var _isLoading : Boolean = false;
+			public function get isLoading () : Boolean {return _isLoading;}
+			public function set isLoading ( value : Boolean ) : void
+			{
+				if(_isLoading == value) return;
+				
+				_isLoading = value;
+				if(_isLoading)
+				{
+					pb.setProgress( 0  , 100 )
+					if(!timer)
+					{
+						timer = new Timer( 500 ,  halfSecCycles);
+						timer.addEventListener( TimerEvent.TIMER , onTimer );
+						timer.addEventListener( TimerEvent.TIMER_COMPLETE , onTimerComplete );
+						timer.start();
+					}
+				}
+				else
+				{
+					onTimerComplete();
+				}
+			}
+			
+			private function onTimer( event : TimerEvent ) : void
+			{
+				var newValue : Number = pb.value + (100/halfSecCycles);
+				pb.setProgress( newValue  , 100 );
+			}
+			
+			private function onTimerComplete( event : TimerEvent = null) : void
+			{
+				if(timer)
+				{
+					timer.stop();
+					timer.removeEventListener( TimerEvent.TIMER , onTimer );
+					timer.removeEventListener( TimerEvent.TIMER_COMPLETE , onTimerComplete );
+					timer = null;
+				}
+				pb.setProgress( 100 , 100 );
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:ProgressBar id="pb" mode="manual" barColor="#9ab40c" label="{resourceManager.getString('kmc', 'downloadingPercent')}"/>
+</mx:Panel>

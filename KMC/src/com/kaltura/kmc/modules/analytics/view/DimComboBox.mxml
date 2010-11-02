@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ComboBox xmlns:mx="http://www.adobe.com/2006/mxml" width="150" 
+	change="{ onChange() }">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.control.GraphEvent;
+			
+			private function onChange() : void
+			{
+				var graphEvent : GraphEvent = new GraphEvent( GraphEvent.CHANGE_DIM , this.selectedItem.data);
+				 graphEvent.dispatch();
+			}
+			
+			override public function set dataProvider(value:Object):void 
+			{
+				 if(value && value is Array)
+				 {
+				 	var dp : Array = new Array();
+				 	
+				 	for(var i:int=0; i< (value as Array).length; i++)
+				 	{
+				 		var obj : Object = new Object();
+				 		obj.data = (value as Array)[i];
+				 		obj.label = resourceManager.getString('kmc', (value as Array)[i]);
+				 		dp.push( obj );
+				 	}
+				 		
+					super.dataProvider = dp;
+				}
+				else
+					 super.dataProvider = value;
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:ComboBox>

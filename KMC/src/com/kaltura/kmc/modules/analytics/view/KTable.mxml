@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" textAlign="left" paddingLeft="2" 
+	headerRelease="onHeaderRelease( event )" creationComplete="init()"
+	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
+			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+			import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
+			
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.DataGridEvent;
+			
+			private var _tempHeaderArr : Array;
+			private var _headerDataProvider : Array;
+			public var reportType : int;
+			private var _sortIndex : int = 1;
+			private var _sortDirection : String = "DESC";
+			
+			[Bindable] public var orderBy : String;
+			
+			private function init() : void
+			{
+				if(_tempHeaderArr)
+				{
+					var headerTextArr : Array = _tempHeaderArr;
+					var firstProp : Boolean = true;
+					var tempArr : Array = new Array();
+					for(var i : int = 0 ; i<headerTextArr.length; i++)
+					{
+						var dgc : DataGridColumn = new DataGridColumn();
+						dgc.headerText = resourceManager.getString('kmc' , headerTextArr[i]);
+						//dgc.dataField = headerTextArr[i];
+						if(firstProp)
+						{
+							firstProp = false;
+							
+							if(DrillDownLinkButton.linkable)
+								dgc.itemRenderer = new ClassFactory( DrillDownLinkButton );
+						}
+							
+						tempArr.push( dgc );
+					}
+					
+					_headerDataProvider = tempArr;
+					this.columns = _headerDataProvider;
+				}
+			}
+			
+			public function set headerDataProvider( value:Object ) : void
+			{
+				if( ! value ) return;
+				if(value is Array)
+				{
+					_tempHeaderArr = value as Array;
+				}
+			}
+			
+			public function set reportData( rdtc : ReportData ) : void
+			{
+				//headerTextArr = rdtc.headerTextArr;
+				if(rdtc)
+				{
+					dataProvider = rdtc.tableDp;
+					for(var i:int; i<this.columns.length; i++)
+						(this.columns[i] as DataGridColumn).dataField = rdtc.dataFieldDp[i];
+				}
+				
+				setSortIndicator();	
+			}
+			
+			private function onHeaderRelease( event : DataGridEvent ) : void
+			{
+				event.preventDefault();
+				var dir:String = _sortDirection;
+				
+				if(orderBy == "-" + event.itemRenderer.data.dataField || orderBy == event.itemRenderer.data.dataField)
+				{
+					dir = "ASC";
+					orderBy = "+" + event.itemRenderer.data.dataField;
+				}
+				else
+				{
+					dir = "DESC";
+					orderBy = "-" + event.itemRenderer.data.dataField;
+				}
+				
+				_sortIndex = event.columnIndex;
+				_sortDirection = dir;
+				setSortIndicator();	
+				
+				var reportTableEvent : ReportEvent = new ReportEvent( ReportEvent.GET_TABLE , reportType , orderBy );
+		 		reportTableEvent.dispatch();
+			}
+			
+			private function setSortIndicator() : void
+			{
+				this.mx_internal::sortIndex = _sortIndex
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+			
+		]]>
+	</mx:Script>
+</mx:DataGrid>

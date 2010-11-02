@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ColumnChart xmlns:mx="http://www.adobe.com/2006/mxml" 
+	height="200" 
+	creationComplete="init()"
+	seriesFilters="{[]}" 
+	showDataTips="true"
+	xmlns:styles="com.google.maps.styles.*">
+	 <mx:Script>
+	 	<![CDATA[
+	 		[Bindable] private var categoryDp : Array;
+	 		private function init() : void
+	 		{
+	 			categoryDp = [ resourceManager.getString('kmc','count_plays') ,
+ 							   resourceManager.getString('kmc','count_plays_25') ,
+ 							   resourceManager.getString('kmc','count_plays_50') ,
+ 							   resourceManager.getString('kmc','count_plays_75') ,
+ 							   resourceManager.getString('kmc','count_plays_100') ];
+	 		}
+	 		
+	 		override public function set dataProvider( value : Object ) :void
+	 		{
+	 			super.dataProvider = value;
+	 			columnSeries.dataProvider = value;
+	 		}
+	 	]]>
+	 </mx:Script>
+ 	<mx:Stroke id="axis" color="0xb1b1b1" weight="2" />
+ 	
+ 	<mx:SolidColor id="sc1" color="#9ab40c" />
+
+	 <mx:horizontalAxis>
+		 <mx:CategoryAxis id="catAxis" dataProvider="{categoryDp}"/>
+     </mx:horizontalAxis>
+     
+     <mx:verticalAxis>
+     	<mx:LinearAxis id="verticalLinearAxis" autoAdjust="false" baseAtZero="true"/>
+     </mx:verticalAxis>
+     
+	 <mx:series>
+	     <mx:ColumnSeries id="columnSeries" yField="y" xField="x" fill="{sc1}" showDataEffect="rearrangeData" />
+     </mx:series>
+    
+    <mx:SeriesInterpolate id="rearrangeData" duration="1000" minimumElementDuration="200" elementOffset="0" /> 
+    
+</mx:ColumnChart>

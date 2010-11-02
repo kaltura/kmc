@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="400"
+	horizontalAlign="center" 
+	title="{resourceManager.getString('kmc','downloadCSVTitle')}" 
+	creationComplete="init()"
+	showCloseButton="true" close="cancelDownload()">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import flash.utils.setTimeout;
+			import mx.core.mx_internal;
+			use namespace mx_internal;
+			
+			[Bindable] public var fr : FileReference;
+			public var downloadContext : Boolean = true;
+			
+			public function init() : void
+			{
+				uploadProgress.setProgress(0,100);
+				uploadProgress.label = "";
+				fileName.text = "";
+			}
+			
+			public function progressHandler(event:ProgressEvent):void
+		    {
+		    	if(!fileName.text)
+		    		 fileName.text = fr.name;
+		    		 
+		        uploadProgress.setProgress(event.bytesLoaded*100/event.bytesTotal, 100);
+		    }
+		    
+		    public function openHandler(event:Event):void
+		    {
+		    	if(downloadContext)
+		        	uploadProgress.label = resourceManager.getString('kmc','downloading') + " %3%%";
+		        else
+		        	uploadProgress.label = resourceManager.getString('kmc','uploading') + " %3%%";
+		        	
+		        cancelUpload.enabled = true;
+		    }
+		    
+		    public function completeHandler(event:Event):void
+		    {
+		    	if(downloadContext)
+		        	uploadProgress.label = resourceManager.getString('kmc','downloadComplete');
+		         else
+		         	uploadProgress.label = resourceManager.getString('kmc','uploadComplete');
+		         	
+		        cancelUpload.enabled = false;
+		        setTimeout( removeMe , 500 );
+		    }
+		    
+		    public function  removeMe() : void
+		    {
+		    	if(fr)
+		    	{
+			    	fr.removeEventListener( Event.OPEN, openHandler);
+	        		fr.removeEventListener( ProgressEvent.PROGRESS, progressHandler);
+	        		fr.removeEventListener( Event.COMPLETE, completeHandler);
+	        		fr.removeEventListener( Event.CANCEL  , cancelDownload );
+	        		fr.removeEventListener( SecurityErrorEvent.SECURITY_ERROR , cancelDownload );
+					fr.removeEventListener( IOErrorEvent.IO_ERROR , cancelDownload );
+	        		fr = null;
+      			}
+
+		    	PopUpManager.removePopUp( this );
+		    }
+
+		    public function cancelDownload( event : Event = null):void
+		    {
+		    	if(fr)
+		        	fr.cancel();
+		        
+		        if(uploadProgress)
+		        {
+			        if(downloadContext)
+			        	uploadProgress.label = resourceManager.getString('kmc','downloadCancelled');
+			        else
+			        	uploadProgress.label = resourceManager.getString('kmc','uploadCancelled');
+		        }
+		        
+		        if(cancelUpload)	
+		        	cancelUpload.enabled = false;
+		        	
+		        setTimeout( removeMe , 500 );
+		        fr = null;
+		    }
+		]]>
+	</mx:Script>
+	<mx:Label id="fileName" />
+	<mx:ProgressBar id="uploadProgress" label="" mode="manual" width="100%"/>
+	<mx:Button id="cancelUpload" label="Cancel" click="cancelDownload()" enabled="false" buttonMode="true"/>
+</mx:TitleWindow>

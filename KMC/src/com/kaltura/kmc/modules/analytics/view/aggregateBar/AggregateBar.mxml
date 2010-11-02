@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	styleName="blueBox"
+	xmlns:aggregateBar="com.kaltura.kmc.modules.analytics.view.aggregateBar.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			private var _dataProvider : ArrayCollection;
+			public function set dataProvider( arrCol : ArrayCollection ) : void
+			{
+				_dataProvider = arrCol;
+				var i:int;
+				if(arrCol)
+				{
+					for(i=0; i<arrCol.length; i++)
+					{
+						var aggregateBar : AggregateItem = this.getChildAt(i) as AggregateItem;
+						if(aggregateBar)
+							aggregateBar.data = arrCol[i];
+					}
+				}
+				else
+				{
+					for(i=0; i<this.numChildren; i++)
+						(this.getChildAt(i) as AggregateItem).data = null;
+				}
+
+			}
+			
+			public function set headerDataProvider( arr : Array ) : void
+			{
+				if( ! arr ) return;
+				
+				for( var i:int=0; i<arr.length; i++)
+				{
+					var aggregateItem : AggregateItem = new AggregateItem();
+					aggregateItem.headerTxt = resourceManager.getString('kmc', arr[i]);
+					aggregateItem.percentWidth = 100;
+					this.addChild( aggregateItem );
+				}
+			}
+		]]>
+	</mx:Script>
+
+</mx:HBox>

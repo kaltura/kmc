@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
+				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#034F57" layout="absolute"
+				   horizontalScrollPolicy="off" verticalScrollPolicy="off"
+				   xmlns:business="com.kaltura.kmc.modules.analytics.business.*"
+				   xmlns:control="com.kaltura.kmc.modules.analytics.control.*"
+				   xmlns:view="com.kaltura.kmc.modules.analytics.view.*" minHeight="520" minWidth="950"
+				   addedToStage="onAddedToStage()">
+	
+	<mx:Style source="assets/analytics/analytics.css"/>
+	
+	<mx:Metadata>
+		[ResourceBundle("kmc")]
+		[ResourceBundle("map")]
+		[ResourceBundle("sourceTypes")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.commands.mixing.MixingGetReadyMediaEntries;
+			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.commands.widget.WidgetGet;
+			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.kmc.modules.analytics.control.CategoryEvent;
+			import com.kaltura.kmc.modules.analytics.control.StateEvent;
+			import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.KUtils;
+			import com.kaltura.utils.ObjectHelpers;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.ItemClickEvent;
+			
+			[Bindable]
+			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+			
+			//loading the kdp commands of the current client
+			/////////////////////////////////////
+			private var widgetGet:WidgetGet;
+			private var uiconfGet:UiConfGet;
+			private var mgrm:MixingGetReadyMediaEntries;
+			/////////////////////////////////////
+			public var urchinNumber:String;
+			
+			private static const VERSION:String = "2.0";
+			
+			// the following const values match *keys* in locale, not values.
+			private static const BANDWIDTH_USAGE:String = "usageTabTitle";
+			private static const CONTENT:String = "contentDashboard";
+			private static const USERS_AND_COMMUNITY:String = "usersandCommunity";
+			
+			
+			
+			
+			override protected function start():void {
+				Security.allowDomain('*');
+				
+				trace("======================");
+				trace("KMC R&A VERSION " + VERSION);
+				trace("======================");
+				
+				var item:ContextMenuItem = new ContextMenuItem("KMC R&A v" + VERSION);
+				this.contextMenu.customItems.push(item);
+				
+				BindingUtils.bindSetter(onLoading, _model, "loadingFlag");
+				
+				var objParam:Object = KMC.flashvars;
+				urchinNumber = objParam.urchinnumber;
+				_model.kdpUiConf = objParam.drilldownkdpuiconf;
+				initModelContext(objParam);
+				/// set Alert locale for all this application
+				Alert.yesLabel = resourceManager.getString('kmc', 'yes');
+				Alert.noLabel = resourceManager.getString('kmc', 'no');
+				Alert.okLabel = resourceManager.getString('kmc', 'ok');
+				Alert.cancelLabel = resourceManager.getString('kmc', 'cancel');
+				
+				var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				listCategories.dispatch();
+			}
+			
+			
+			private function initModelContext(objParam:Object):void {
+				_model.context.userId = objParam.uid;
+				_model.context.partnerId = objParam.partnerid;
+				_model.context.subpId = objParam.subpid;
+				_model.context.ks = objParam.ks;
+				_model.context.rootUrl = KUtils.hostFromCode(objParam.host);
+				_model.context.debugMode = objParam.debugmode == "true" ? true : false;
+				_model.context.hostName = objParam.host;
+				_model.context.cdnHost = objParam.cdnHost ? objParam.cdnHost : objParam.host;
+				
+				var configuration:KalturaConfig = new KalturaConfig();
+				configuration.partnerId = objParam.partnerid;
+				configuration.ignoreNull = 1;
+				configuration.protocol = objParam.protocol ? objParam.protocol : "http://";
+				configuration.domain = KUtils.hostFromCode(objParam.host); //"kaldev.kaltura.com";
+				configuration.srvUrl = objParam.srvurl; //"api_v3/index.php";
+				
+				_model.context.kc = new KalturaClient(configuration);
+				_model.context.kc.ks = objParam.ks;
+				
+				_model.kc = _model.context.kc;
+			}
+			
+			
+			/**
+			 * shows a subtab as dictated by subtab
+			 * */
+			private function showTab(subtab:String):void {
+				//[Avi]:09/08/2009 - in case the usage tab is reduced from view stack
+				//				var countTabsDiff:int = (contentView.numChildren == 4) ? 0 : 1;
+				
+				switch (subtab) {
+					case BANDWIDTH_USAGE:
+						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 0))
+						contentView.selectedIndex = 0;
+						break;
+					case CONTENT:
+						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 1))
+						contentView.selectedIndex = 1;
+						break;
+					case USERS_AND_COMMUNITY:
+						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 2))
+						contentView.selectedIndex = 2;
+						break;
+					// what's this case?
+					//					case resourceManager.getString('kmc', 'serverSettings'):
+					//						contentView.selectedIndex = (3 - countTabsDiff);
+					//						break;
+					default:
+						trace("din't get annea dese, eh got " + subtab);
+				}
+				
+				
+			}
+			
+			
+			/**
+			 * initialize stats trackers and show a different tab if reqeusted.
+			 * */
+			private function onAddedToStage():void {
+				/* google tracker must be initialized after "addedToStage"
+				because of its debug mode.*/
+				// initialize trackers
+				var objParams:Object = Application.application.parameters;
+				objParams = ObjectHelpers.lowerNoUnderscore(objParams);
+				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
+				ga.init(_model.context.kc.partnerId, _model.context.userId, this,
+					"KMC_ANDROMEDA/Reports and Analytics", urchinNumber, "AS3",
+					objParams.gaDebug == "true" ? true : false);
+				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
+				ka.init(_model.context.kc, "Content", VERSION, _model.context.userId);
+				
+				// show different initial tab if provided
+				/* this must happen after trackers have been initialized because it logs something */
+				if (objParams.subnavtab) {
+					showTab(objParams.subnavtab);
+				}
+			}
+			
+			
+			/**
+			 * show different cursor while loading
+			 * @param isIt	new value for <code>_model.loadingFlag</code>
+			 * */
+			private function onLoading(isIt:Boolean):void {
+				if (isIt) {
+					cursorManager.setBusyCursor();
+				}
+				else {
+					cursorManager.removeAllCursors();
+				}
+			}
+			
+			
+			/**
+			 * switch between subnav tabs
+			 * @param event
+			 * */
+			private function onItemClick(event:ItemClickEvent):void {
+				
+				var stateEvent:StateEvent;
+				if (event.index == 0) {
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB);
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
+						"Main Menu>Bandwidth Usage Tab");
+					ExternalInterface.call("kmc.mediator.writeUrlHash", "reports", BANDWIDTH_USAGE);
+				}
+				if (event.index == 1) {
+					// if we get back to the first subtab we must refresh
+					// because the user might have changed filter
+					if (content.topContet && content.dtn.selectedIndex == 0) {
+						content.topContet.onShow();
+					}
+					
+					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTENT);
+					stateEvent.dispatch();
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB);
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB,
+						"Main Menu>Contents and Reports Tab");
+					ExternalInterface.call("kmc.mediator.writeUrlHash", "reports", CONTENT);
+					
+					// Atar - calling this twice on purpose?
+					// seems not to be necessary, every button press triggers onShow.
+					//					if (content.topContet) {
+					//						content.topContet.onShow();
+					//					}
+				}
+				else if (event.index == 2) {
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB);
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB,
+						"Main Menu>Users and Community Reports");
+					ExternalInterface.call("kmc.mediator.writeUrlHash", "reports", USERS_AND_COMMUNITY);
+					
+					// if we get back to the first subtab we must refresh because the user
+					// might have changed filter...
+					if (users.topContributors && users.dtn.selectedIndex == 0)
+						users.topContributors.onShow();
+					
+					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTRIBUTORS);
+					stateEvent.dispatch();
+					
+				}
+			}
+		]]>
+	</mx:Script>
+	<!-- the ServiceLocator where we specify the remote services -->
+	<!--business:Services  /-->
+	
+	<!-- the FrontController, containing Commands specific to this appliation -->
+	<control:KMCController/>
+	
+	<mx:VBox id="mainView" width="100%" height="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			 styleName="mainView">
+		
+		<mx:HBox width="100%" styleName="tabsContainer" enabled="{!_model.loadingFlag}">
+			<mx:TabBar id="secTln" styleName="tln" itemClick="onItemClick( event )" buttonMode="true"
+					   dataProvider="contentView"/>
+		</mx:HBox>
+		
+		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
+					  horizontalScrollPolicy="off" verticalScrollPolicy="off" minWidth="900" minHeight="500">
+			<view:Usage id='usage' horizontalScrollPolicy="off" verticalScrollPolicy="off"
+						label="{resourceManager.getString('kmc','usageTabTitle')}" styleName="pageStyle"
+						partnerData="{_model.partnerData}" accountUsageData="{_model.usageData}"/>
+			<view:Content id="content" width="100%" height="100%" horizontalScrollPolicy="off"
+						  verticalScrollPolicy="off" label="{resourceManager.getString('kmc','contentDashboard')}"
+						  styleName="pageStyle"/>
+			<view:Users id="users" width="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+						label="{resourceManager.getString('kmc','usersAndCommunity')}" styleName="pageStyle"/>
+		</mx:ViewStack>
+		
+	</mx:VBox>
+	
+</modules:KmcModule>
