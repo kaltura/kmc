@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules {
 	
 	import flash.events.IEventDispatcher;
 	import flash.ui.ContextMenu;
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.events.FlexEvent;
 	import mx.events.ResourceEvent;
@@ -43,12 +44,12 @@ package com.kaltura.kmc.modules {
 		 * @eventType com.kaltura.events.KalturaEvent
 		 */
 		[Event(name="help", type="com.kaltura.events.KalturaEvent")]
-		//TODO what event should this be?
 
 		// =====================================================
 		// members
 		// =====================================================
 
+		
 		/**
 		 * @copy #kc
 		 * */
@@ -183,6 +184,15 @@ package com.kaltura.kmc.modules {
 			this.contextMenu = cm;
 
 		}
+		
+		
+		/**
+		 * The name returned by this method will be the ID of the module in KMC.
+		 * Each module must implement this method to return the right name.  
+		 */		
+		public function getModuleName():String {
+			throw new Error(getQualifiedClassName(this) + ".getModuleName() must be implemented");
+		}
 
 
 		/**
@@ -191,8 +201,11 @@ package com.kaltura.kmc.modules {
 		 * @param subtab	name (id) of the required subtab.
 		 * */
 		public function showSubtab(subtab:String):void {
-			throw new Error("showSubtab must be implemented");
+			throw new Error(getQualifiedClassName(this) + ".showSubtab() must be implemented");
 		}
+		
+		
+		
 
 		// =====================================================
 		// getters / setters
