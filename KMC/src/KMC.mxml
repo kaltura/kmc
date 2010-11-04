@@ -84,6 +84,11 @@
 				if (objParam.modulespath) {
 					_modulesFolder = objParam.modulespath;
 				}
+				
+				// hook ExternalInterface:
+				if (ExternalInterface.available) {
+					ExternalInterface.addCallback("gotoPage", gotoPage);
+				}
 
 				// create KalturaClient:
 				var configuration:KalturaConfig = new KalturaConfig();
@@ -171,27 +176,41 @@
 			}
 
 
-
 			/**
 			 * Switch to a different KMC module (tab).
 			 * Can also include subtab on the new module.
+			 * This method can be triggered from JS using ExternalInterface.
+			 * */
+			private function gotoPage(moduleName:String, subtab:String):void {
+				trace("KMC going to", moduleName, subtab != null ? "> " + subtab : "");
+			}
+			
+
+			/**
+			 * Trigger module switching
 			 * @param e		event holding navigation request info.
 			 * */
 			private function navigateToModule(e:KmcNavigationEvent):void {
-				trace("KMC going to", e.module, e.subtab != null ? "> " + e.subtab : "");
+				gotoPage(e.module, e.subtab);
 			}
 
 
 			protected function btn_clickHandler(event:MouseEvent):void {
-				if (mainViewStack.selectedIndex == mainViewStack.numChildren - 1) {
-					mainViewStack.selectedIndex = 0;
-				}
-				else {
-					mainViewStack.selectedIndex++;
-				}
+				var ar:Array = txt.text.split("|");
+				gotoPage(ar[0], ar[1]);
+				
+//				if (mainViewStack.selectedIndex == mainViewStack.numChildren - 1) {
+//					mainViewStack.selectedIndex = 0;
+//				}
+//				else {
+//					mainViewStack.selectedIndex++;
+//				}
 			}
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>
-	<mx:Button id="btn" click="btn_clickHandler(event)" label="switch"/>
+	<mx:HBox>
+		<mx:TextInput id="txt" />
+		<mx:Button id="btn" click="btn_clickHandler(event)" label="switch"/>
+	</mx:HBox>
 </mx:Application>
