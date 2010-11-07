@@ -58,7 +58,8 @@ package com.kaltura.kmc.modules {
 		 * @copy #kc
 		 * */
 		protected var _kc:KalturaClient;
-
+		
+		[Bindable]
 		/**
 		 * @copy #context
 		 * */
