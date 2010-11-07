@@ -5,40 +5,46 @@
 	<!-- the language for which we compile locale -->
     <property name="LANGUAGE" value="de_DE"/>
 	
+	<!-- the module (folder name) for which we compile locale -->
+    <property name="MODULE" value="account"/>
+	
 	<!-- path to Flex SDK -->
     <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4/sdks/3.5.0"/>
 	
 	<!-- directory for the compiled locale swf -->
     <property name="DEPLOY_DIR" value="../html-template/locale/${LANGUAGE}"/>
 	
+	
+	
 	<!-- include flex tasks -->
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
     
-	<target name="build" depends="clean, init, compile">
-		<echo>Locale ${LANGUAGE} compiled successfully</echo>
-	</target>
-	
-	<target name="init">
-		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
-	</target>
+
 	
 	<target name="compile" description="compile the desired locale module">
-        <mxmlc output="${DEPLOY_DIR}/${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
+        <mxmlc output="${DEPLOY_DIR}/${MODULE}_${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
 			
             <!-- Get default compiler options. -->
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 
             <!-- List of path elements that form the roots of ActionScript class hierarchies. -->
             <source-path path-element="../locale/{locale}"/>
+            <source-path path-element="../locale/{locale}/${MODULE}"/>
 
 			<!-- List of resource bundles to compile in the resourceModule -->
-			<!-- dashboard -->
+			<!-- dashboard 
 			<include-resource-bundles>charts</include-resource-bundles>
-			<include-resource-bundles>kdashboard</include-resource-bundles> 
-			<!-- analytics -->
+			<include-resource-bundles>kdashboard</include-resource-bundles> -->
+			
+			<!-- analytics 
 			<include-resource-bundles>kmc</include-resource-bundles>
 			<include-resource-bundles>map</include-resource-bundles>
-			<include-resource-bundles>sourceTypes</include-resource-bundles>
+			<include-resource-bundles>sourceTypes</include-resource-bundles>-->
+			
+			<!-- account -->
+			<include-resource-bundles>kmc</include-resource-bundles>
+			<include-resource-bundles>charts</include-resource-bundles>
+			<include-resource-bundles>CairngormMessages</include-resource-bundles>
 
             <!-- List of SWC files or directories that contain SWC files. >
             <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
@@ -48,13 +54,24 @@
 
         </mxmlc>
     </target>
+
+		
+	<target name="build" depends="clean, init, compile">
+		<echo>Locale ${MODULE}_${LANGUAGE} compiled successfully</echo>
+	</target>
 	
-    <target name="clean" description="delete old file">
-		<echo>Deleting ${LANGUAGE}_ResourceModule.swf</echo>
+	
+	<target name="clean" description="delete old file">
+		<echo>Deleting ${MODULE}_${LANGUAGE}_ResourceModule.swf</echo>
         <delete failonerror="false">
-            <fileset dir="${DEPLOY_DIR}" includes="${LANGUAGE}_ResourceModule.swf"/>
+            <fileset dir="${DEPLOY_DIR}" includes="${MODULE}_${LANGUAGE}_ResourceModule.swf"/>
         </delete>
     </target>
+	
+	
+	<target name="init">
+		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+	</target>
 </project>
 
 
