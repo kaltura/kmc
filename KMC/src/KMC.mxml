@@ -20,6 +20,7 @@
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
+			import mx.core.Container;
 			import mx.events.FlexEvent;
 			import mx.events.ModuleEvent;
 			import mx.modules.ModuleLoader;
@@ -188,6 +189,29 @@
 			 * */
 			private function gotoPage(moduleName:String, subtab:String):void {
 				trace("KMC going to", moduleName, subtab != null ? "> " + subtab : "");
+				var ml:ModuleLoader = getModuleParent(moduleName);
+				if (ml) {
+					mainViewStack.selectedChild = ml;
+				}
+			}
+			
+			
+			/**
+			 * get the ModuleLoader instance that holds the required module.
+			 * mainViewstack holds ModuleLoader instances, not modules.
+			 * @param	name (id) of desired module.
+			 * @return 	ml holding the given module. 
+			 * */
+			private function getModuleParent(moduleName:String):ModuleLoader {
+				var children:int = mainViewStack.numChildren;
+				var ml:ModuleLoader;
+				for (var i:int = 0; i<children; i++) {
+					ml = mainViewStack.getChildAt(i) as ModuleLoader;
+					if ((ml.child as KmcModule).getModuleName() == moduleName) {
+						break;
+					}
+				}
+				return ml;
 			}
 			
 
