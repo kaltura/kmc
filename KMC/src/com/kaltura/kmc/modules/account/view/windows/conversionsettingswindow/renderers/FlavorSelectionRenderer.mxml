@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center"
+		 verticalAlign="middle" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		 creationComplete="setSelectionCBox()" paddingLeft="4">
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.ConversionSettingsTable;
+			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.kmc.modules.account.vo.FlavorVO;
+
+
+			private function onSelectionChaged(event:Event):void {
+				var flavorObj:FlavorVO = data as FlavorVO;
+				flavorObj.selected = selectionCBox.selected;
+				updateFlavorsList();
+			}
+
+
+			/**
+			 *  updating the flavors list in the conversion profile
+			 *
+			 */
+			private function updateFlavorsList():void {
+				var flavorObj:FlavorVO = data as FlavorVO;
+				var idsArr:Array;
+				var cProfile:ConversionProfileVO = (this.parent.parent as ConversionSettingsTable).cProfile;
+				if (cProfile.profile.flavorParamsIds == null) {
+					idsArr = [];
+				}
+				else {
+					idsArr = cProfile.profile.flavorParamsIds.split(',');
+				}
+
+				if (flavorObj.selected) {
+					idsArr.push(flavorObj.kFlavor.id);
+				}
+				else {
+					var index:int = 0;
+					for each (var id:String in idsArr) {
+						if (int(id) == flavorObj.kFlavor.id) {
+							idsArr.splice(index, 1);
+							break;
+						}
+						index++;
+					}
+				}
+
+				var ids:String = idsArr.join(','); //getIdsString(idsArr);
+
+				ids = StringUtil.trim(ids) == '' ? null : ids;
+
+				cProfile.profile.flavorParamsIds = ids;
+			}
+
+
+			private function getIdsString(idsArr:Array):String {
+				var ids:String = '';
+				for each (var id:String in idsArr) {
+					ids += id + ',';
+				}
+
+				return ids.substr(0, ids.length - 1);
+			}
+
+
+			public function setSelectionCBox():void {
+				selectionCBox.selected = false;
+				var cProfile:ConversionProfileVO = (this.parent.parent as ConversionSettingsTable).cProfile;
+				if ((cProfile == null) || (cProfile.profile.flavorParamsIds == null)) {
+					return; // in case there are no flavors for the current profile
+				}
+
+				var flavorObj:FlavorVO = data as FlavorVO;
+				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
+				var isSelected:Boolean = false;
+				for each (var id:String in idsArr) {
+					if (int(id) == flavorObj.kFlavor.id) {
+						isSelected = true;
+						flavorObj.selected = true;
+					}
+				}
+
+
+				selectionCBox.selected = isSelected;
+			}
+
+
+			override public function validateNow():void {
+				super.validateNow();
+				setSelectionCBox();
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:CheckBox id='selectionCBox' buttonMode="true" selected="{data.selected}" change="onSelectionChaged(event)"/>
+
+</mx:HBox>

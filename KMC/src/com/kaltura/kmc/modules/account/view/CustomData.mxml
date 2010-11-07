@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" show="onShow(event)"
+		 xmlns:dataGrid="com.kaltura.kmc.view.dataGrid.*"
+		 xmlns:customdatawindow="com.kaltura.kmc.modules.account.view.windows.customdatawindow.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.events.MetadataProfileEvent;
+			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
+			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
+			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.CustomDataAddEditPopup;
+			import com.kaltura.vo.MetadataFieldVO;
+
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+
+
+			/**
+			 * This function will be called on every "show" event of this class
+			 * it will trigger an event to request the server the most updated metadataProfile to display
+			 * */
+			private function onShow(event:Event):void {
+				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				getMetadataProfile.dispatch();
+			}
+
+
+			/**
+			 * On click on the "add" button a popup will be opened.
+			 * @param event
+			 *
+			 */
+			private function openAddFieldPopup(event:Event):void {
+				var addCustomFieldPopup:CustomDataAddEditPopup = new CustomDataAddEditPopup();
+				addCustomFieldPopup.addEventListener(AddMetadataFieldEvent.ADD, addNewFieldHandler);
+				PopUpManager.addPopUp(addCustomFieldPopup, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(addCustomFieldPopup);
+			}
+
+
+			/**
+			 * When saving a new field, this handler will be called
+			 * @param event
+			 *
+			 */
+			private function addNewFieldHandler(event:AddMetadataFieldEvent):void {
+				var fieldsArray:Array = new Array();
+				fieldsArray.push(event.metadataField);
+				var addMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.ADD, fieldsArray);
+				addMetadataField.dispatch();
+
+			}
+
+
+			/**
+			 * On click on the "delete" field, the "are you sure" alert will pop up
+			 * @param event
+			 *
+			 */
+			private function deleteField(event:Event):void {
+				if (!customFieldsTable.selectedItem) {
+					Alert.show(resourceManager.getString('kmc', 'customFieldsDeleteError'), resourceManager.getString('kmc', 'custonFieldsDeleteErrorTitle'));
+					return;
+				}
+
+				var delStr:String = '';
+				for each (var item:Object in customFieldsTable.selectedItems) {
+					delStr += '\n' + (item as MetadataFieldVO).name;
+				}
+
+				Alert.show(resourceManager.getString('kmc', 'metadataFieldDeleteAlert') + delStr, resourceManager.getString('kmc', 'metadataFieldDeleteTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
+			}
+
+
+			/**
+			 * This function handles the case of "yes" selection and deletes the selected fields
+			 * */
+			private function deleteResponseFunc(evt:CloseEvent):void {
+				if (evt.detail == Alert.YES) {
+					var fieldsArray:Array = new Array();
+					for each (var item:Object in customFieldsTable.selectedItems) {
+						var indexToRemove:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(item);
+						var fieldToRemove:MetadataFieldVO = MetadataFieldVO(_model.metadataProfile.metadataFieldVOArray.getItemAt(indexToRemove));
+						fieldsArray.push(fieldToRemove);
+					}
+					var deleteMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.DELETE, fieldsArray);
+					deleteMetadataField.dispatch();
+				}
+			}
+
+
+			public function isChanged():Boolean {
+				return false;
+			}
+
+
+			public function undo():void {
+			}
+
+
+			public function saveChanges():void {
+			}
+
+
+			public function resetClonedData():void {
+			}
+		]]>
+
+	</mx:Script>
+	<mx:Label styleName="expendableButton" width="100%" text="{resourceManager.getString('kmc', 'customFieldsTitle')}"/>
+	<mx:Spacer height="20"/>
+	<mx:HBox id="fieldsTableBox" width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
+		<mx:VBox width="100%" height="100%" id='tableContainer' styleName="tableAndPagerContainerStyle"
+				 horizontalAlign="center">
+			<mx:HBox width="100%" height="100%">
+				<customdatawindow:CustomDataFieldsTable id="customFieldsTable" allowMultipleSelection="true"
+														dataProvider="{_model.metadataProfile.metadataFieldVOArray}"
+														selectable="true"/>
+				<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
+					<mx:Button label="{resourceManager.getString('kmc', 'customFieldsAddField')}" useHandCursor="true"
+							   buttonMode="true" click="openAddFieldPopup(event)" styleName="listActionButton"/>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
+				<mx:Button label="{resourceManager.getString('kmc', 'customFieldsDeleteField')}"
+						   click="deleteField(event)" useHandCursor="true" buttonMode="true"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+
+</mx:VBox>

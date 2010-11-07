@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+				 title="{resourceManager.getString('kmc','addNewConvProfileTitle')}" height="500"
+				 xmlns:conversionsettingswindow="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
+				 close="closeWindow(event)" showCloseButton="true" creationComplete="onCreationComplete(event)"
+				 help="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'generalHelp') ) )}"
+				 styleName="TitleWindowType2" xmlns:validators="com.kaltura.validators.*">
+	<states>
+		<mx:State name="{EDIT_MODE_STATE}">
+			<mx:SetProperty name="title" value="{resourceManager.getString('kmc','editConvProfileTitle')}"/>
+			<mx:SetProperty target="{submitBtn}" name="label"
+							value="{resourceManager.getString('kmc','saveConProfileChanges')}"/>
+		</mx:State>
+	</states>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaNullableBoolean;
+			import mx.controls.Alert;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.command.UpdateConversionProfileCommand;
+			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import mx.managers.PopUpManager;
+
+			public static const EDIT_MODE_STATE:String = "edit mode state";
+			public var rootUrl:String;
+
+			[Bindable]
+			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+			/**
+			 *  the accessControlProfile(acp) to add ot edit
+			 */
+			[Bindable]
+			private var _conversionProfile:ConversionProfileVO;
+
+
+			/**
+			 * get the accessControlProfile(acp)
+			 */
+			[Bindable]
+			public function get conversionProfile():ConversionProfileVO {
+				return _conversionProfile;
+			}
+
+
+			/**
+			 * set the accessControlProfile(acp)
+			 */
+			public function set conversionProfile(conversionProfile:ConversionProfileVO):void {
+				_conversionProfile = conversionProfile;
+			}
+
+
+			/**
+			 * creation complete of the main window, for edit we clone the acp. For add new one we create a new acp
+			 */
+			private function onCreationComplete(event:Event):void {
+				if (currentState == null) // when we use this pop-up to create a new Conversion profile
+				{
+					conversionProfile = new ConversionProfileVO();
+				}
+				else {
+					//			conversionProfile = conversionProfile.clone();
+					setConversionControlProfileData();
+				}
+
+				//			validateInput();
+			}
+
+
+			/**
+			 * seting all the data when editing an acp
+			 */
+			private function setConversionControlProfileData():void {
+				setName();
+				setDescription();
+
+				// flavors are set in the cProfile
+
+
+				validateInput();
+			}
+
+
+			private function setName():void {
+				conversionNameTextInput.enabled = !(conversionProfile.profile.isDefault);
+				conversionNameTextInput.text = conversionProfile.profile.name;
+			}
+
+
+			private function setDescription():void {
+				conversionDescTextArea.text = conversionProfile.profile.description;
+			}
+
+
+			/**
+			 *
+			 */
+			private function validateInput(event:Event = null):Boolean {
+				var isValid:Boolean = true
+				var name:String = conversionNameTextInput.text;
+				name = name.replace(new RegExp(' ', 'g'), '');
+				isValid = (name != '');
+
+				return isValid && flavorsTable.isFlavorsSelected();
+			}
+
+
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event = null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function saveProfile(event:Event):void {
+				if (validateInput()) {
+					conversionProfile.profile.name = conversionNameTextInput.text;
+					conversionProfile.profile.description = conversionDescTextArea.text;
+
+					if (currentState == EDIT_MODE_STATE) {
+						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionProfile);
+						updateProfileEvent.dispatch();
+					}
+					else {
+						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, false, conversionProfile);
+						addProfileEvent.dispatch();
+					}
+
+					closeWindow();
+				}
+				else {
+					Alert.show(resourceManager.getString('kmc', 'invalidInputErrorMsg'), resourceManager.getString('kmc', 'invalidInputErrorTitle'));
+				}
+
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:StringValidator source="{conversionNameTextInput}" property="text" trigger="{conversionNameTextInput}"
+						triggerEvent="change" required="true"
+						requiredFieldError="{resourceManager.getString('kmc','requiredNameError')}"/>
+	<!--<validators:ListValidator source="{flavorsTable}" property="selectedItems" required="true" requiredFieldError="{'Error'/* resourceManager.getString('kmc','requiredNameError') */}" />-->
+	<mx:Form width="100%" height="100%">
+		<mx:FormItem label="{resourceManager.getString('kmc','requiredName')}" width="100%"
+					 toolTip="{resourceManager.getString('kmc','requiredNameToolTip')}">
+			<mx:TextInput id="conversionNameTextInput" width="100%" change='validateInput(event)'/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('kmc','description')}" width="100%">
+			<mx:TextArea id="conversionDescTextArea" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('kmc','requiredFlavors')}" height="100%"
+					 toolTip="{resourceManager.getString('kmc','requiredFlavorsToolTip')}">
+			<conversionsettingswindow:ConversionSettingsTable id='flavorsTable'
+															  dataProvider="{currentState == EDIT_MODE_STATE ? _model.getClonedFlavorsData() : _model.getUnselectedClonedFlavorsData()}"
+															  cProfile="{conversionProfile}"
+															  change="validateInput(event)" click="validateInput(event)"
+															  height="100%"/>
+		</mx:FormItem>
+	</mx:Form>
+
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button label="{resourceManager.getString('kmc','createNewConvProfile')}" useHandCursor="true"
+				   buttonMode="true" click="saveProfile(event)" id="submitBtn"/>
+		<!--<mx:Button label="Cancel" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>-->
+	</mx:ControlBar>
+</HelpTitleWindow>

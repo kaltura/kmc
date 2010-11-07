@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center" horizontalScrollPolicy="off">
+	<mx:LinkButton click="moveItemUp(event)" styleName="moveUpButton" buttonMode="true"/>
+	<mx:VRule height="20"/>
+	<mx:LinkButton click="moveItenDown(event)" styleName="moveDownButton" buttonMode="true"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
+			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			import mx.collections.ArrayCollection;
+
+			private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+			
+			private function moveItemUp(event:Event):void {
+				var currentField:MetadataFieldVO = MetadataFieldVO(data);
+				var tempField:MetadataFieldVO;
+
+				if (!_model.metadataProfile) {
+					return;
+				}
+				
+				var curIndex:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(currentField);
+				if (curIndex > 0) {
+					tempField = _model.metadataProfile.metadataFieldVOArray.getItemAt(curIndex - 1).Clone();
+					_model.metadataProfile.metadataFieldVOArray.removeItemAt(curIndex - 1);
+					_model.metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
+				}
+				
+				var reorderEvent:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.REORDER);
+				reorderEvent.dispatch();
+			}
+			
+			private function moveItenDown(event:Event):void {
+				var currentField:MetadataFieldVO = MetadataFieldVO(data);
+				var tempField:MetadataFieldVO;
+				
+				if (!_model.metadataProfile) {
+					return;
+				}
+				
+				var curIndex:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(currentField);
+				if (curIndex < (_model.metadataProfile.metadataFieldVOArray.length-1)) {
+					tempField = _model.metadataProfile.metadataFieldVOArray.getItemAt(curIndex + 1).Clone();
+					_model.metadataProfile.metadataFieldVOArray.removeItemAt(curIndex + 1);
+					_model.metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
+				}
+				
+				var reorderEvent:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.REORDER);
+				reorderEvent.dispatch();
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>
+

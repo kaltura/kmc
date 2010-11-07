@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="mainACPvBox"
+	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%" 
+	xmlns:controls="com.kaltura.controls.*" 
+	xmlns:accesscontrolwindow="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.*"
+	 >
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.pager.Pager;
+			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
+			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			import mx.binding.utils.BindingUtils;
+			import com.kaltura.kmc.modules.account.vo.PartnerVO;
+			import com.kaltura.kmc.modules.account.events.PartnerEvent;
+			import mx.events.CollectionEvent;
+			import mx.collections.ArrayCollection;
+		
+		
+	   	[Bindable]private var _accessControlsList:ArrayCollection;
+		[Bindable] public var rootUrl : String;
+	   	[Bindable]public var allSelected:Boolean = false;
+	   
+	   public function set accessControlsList(accessControlsList:ArrayCollection):void
+	   {
+	   		_accessControlsList = accessControlsList;
+	   		setListenerToProfilesData();
+	   }
+	   
+	   [Bindable]public function get accessControlsList():ArrayCollection
+	   {
+	   		return _accessControlsList;
+	   }
+		   
+		   
+	 //  [Bindable]private var _model:KMCModelLocator = ;
+	/*    private function onInit(event:Event):void
+	   {
+	   		BindingUtils.bindSetter(loadProfilesData, accessControlsList, "source");
+	   } */
+	   
+	   private function loadAccessControlsList():void
+	   {
+	   		if (paging.pageSize == 10)
+			{
+				tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height + 15;
+				accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height);//entryTable.rowHeight*11+entryTable.headerHeight;
+				accessControlProfilesTable.rowCount = 10;
+				actionBox.height = accessControlProfilesTable.height + paging.height + bottomActionBox.height;
+			}
+			else
+			{
+				tableContainer.percentHeight = 100;
+				accessControlProfilesTable.percentHeight = 100;
+				accessControlProfilesTable.rowCount = -1;
+				actionBox.percentHeight = 100;
+			}
+	   	
+	   		
+	   	
+	   		var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+			getAllProfilesEvent.dispatch();
+	   }
+				
+	    private function setListenerToProfilesData():void
+	    {
+	    	for each(var profile:AccessControlProfileVO in accessControlsList)
+			{
+				profile.addEventListener(AccessControlProfileVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
+			}
+			updateBtnStatus();
+	    }
+		   
+	   private function updateBtnStatus(event:Event=null):void
+	   {
+	   		var numSelected:int = 0;
+			for each(var profile:AccessControlProfileVO in accessControlsList)
+			{
+				numSelected += profile.selected ? 1 : 0;
+			}
+			
+		/*	deleteProfilesBtn.enabled = (numSelected != 0);
+			
+			 if(numSelected == 0)
+			{
+				deleteProfilesBtn.label = resourceManager.getString('kmc','disabledDeleteButton');
+			}
+			else if(numSelected == 1)
+			{
+				deleteProfilesBtn.label = resourceManager.getString('kmc','deleteAccessControlButton');
+			}
+			else if(numSelected != accessControlsList.length)
+			{
+				deleteProfilesBtn.label = resourceManager.getString('kmc','deleteAccessControlsButton').replace('NUM_OF_DEL', numSelected);
+			}
+			else
+			{
+				deleteProfilesBtn.label = resourceManager.getString('kmc','deleteAllAccessControlsButton');
+			} */
+			
+			allSelected = (accessControlsList.length == numSelected);
+	   }
+
+		
+		private function onAddNewProfileClick(event:Event):void
+		{
+			var addNewProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
+			addNewProfileWin.rootUrl = rootUrl;
+			addNewProfileWin.currentState = 'newProfileState';
+			PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
+			PopUpManager.centerPopUp(addNewProfileWin);
+		}
+		
+		private function onDeleteCheckedProfileClick(event:Event):void
+		{
+			KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE,"Account>Access Control Delete");
+			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE);
+			var selItems:Array = accessControlProfilesTable.selectedItems;
+			if(selItems.length == 0)
+			{
+				Alert.show(resourceManager.getString('kmc', 'noProfilesSelected'));
+				return;
+			}
+			
+			var delStr:String = '';
+			for each(var acp:AccessControlProfileVO in selItems)
+			{
+				if(!acp.profile.isDefault)
+				{
+					delStr += '\n' + acp.profile.name;
+				}
+			}
+			
+			var msg:String = "";
+			var title:String = "";
+			if(accessControlProfilesTable.selectedItems.length == accessControlsList.length)
+			{
+				msg = resourceManager.getString('kmc','deleteAllAccessControlAlertMsg');
+				title =	resourceManager.getString('kmc','deleteAllAccessControlAlertTitle');
+			}
+			else
+			{
+				msg = resourceManager.getString('kmc','deleteAccessControlAlertMsg') + delStr + " ?";
+				title = resourceManager.getString('kmc','deleteAccessControlAlertTitle');	
+			}
+			
+			Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
+			
+		}
+		
+		private function responeFnc(evt:CloseEvent):void
+		{
+			if(evt.detail == Alert.YES)
+			{
+				var ids:Array = new Array();
+				for each(var acp:AccessControlProfileVO in accessControlProfilesTable.selectedItems)
+				{
+					if(!acp.profile.isDefault)
+					{
+						ids.push(acp.profile.id);
+					}
+				}
+				var deleteProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.DELETE_ACCESS_CONTROL_PROFILES);
+				deleteProfilesEvent.data = ids;
+				deleteProfilesEvent.dispatch();
+			}
+		}
+		
+		//paging
+		private function gotoPage() : void
+		{
+			// update filter here
+			paging.kalturaFilterPager.pageIndex = paging.selectedPage;
+			
+			loadAccessControlsList();
+		}
+		
+		private function onPagerCreationComplete(event:Event):void
+		{
+			KMCModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
+			paging.kalturaFilterPager.pageIndex = 0;
+			paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+			loadAccessControlsList();
+		}
+		
+		
+		public function isChanged():Boolean { return false; }
+		public function undo():void {}
+		public function saveChanges():void {} 
+		public function resetClonedData():void {}
+		
+
+		]]>
+	</mx:Script>
+	 <mx:Text styleName="expendableButton" text="{resourceManager.getString('kmc','accessControlProfiles')}" />
+	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10">
+		<mx:Text styleName="featureDescriptionTitleText" text="{resourceManager.getString('kmc','accessControlIntroText')}" width="100%" id="accessControlIntroText"/>
+		<mx:Button styleName="help" buttonMode="true" 
+				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'generalHelp') ) )}"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
+		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">
+			<accesscontrolwindow:AccessControlProfilesTable id='accessControlProfilesTable' dataProvider="{accessControlsList}" allSelected="{allSelected}"/>
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" totalCount="{KMCModelLocator.getInstance().accessControlProfilesTotalCount}"
+								nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
+								showRowsInPage="true" showNextFlag="true" showPrvFlag="true" creationComplete="onPagerCreationComplete(event)" 
+								rowsInPage="{[10, 15, 20, 25]}"/>
+			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
+				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('kmc','disabledDeleteButton')}" useHandCursor="true" 
+						   buttonMode="true" click='onDeleteCheckedProfileClick(event)'/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
+			<mx:Button label="{resourceManager.getString('kmc','addAccessControlButton')}" useHandCursor="true" 
+				buttonMode="true" click='onAddNewProfileClick(event)' styleName="listActionButton"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+</mx:VBox>

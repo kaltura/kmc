@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
+	><!-- creationComplete="init()" -->
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import mx.managers.PopUpManager;
+			import com.kaltura.kmc.modules.account.view.modalWindows.PayPalFormWin;
+			import mx.validators.ValidationResult;
+			import mx.events.ValidationResultEvent;
+			import com.kaltura.kmc.modules.account.events.KalturaEvent;
+			import com.kaltura.kmc.modules.account.vo.PartnerVO;
+			import com.kaltura.kmc.modules.account.vo.PackagesVO;
+			import com.kaltura.kmc.modules.account.view.itemRenderer.DataGridColumnLabel;
+			import mx.controls.Text;
+			import com.kaltura.kmc.modules.account.view.itemRenderer.UpgradeDowngradeBtn;
+			import mx.resources.ResourceManager;
+			import com.kaltura.kmc.modules.account.events.PackageEvent;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+					
+			[Bindable] private var _cbWidth : Number = 300;
+			[Bindable] private var _lblWidth : Number = 80;
+			
+			[Bindable] public var packagesList : ArrayCollection;
+			[Bindable] public var partnerPackage : PackagesVO;
+			
+			private static const PACKAGE_ARRAY_DP : Array = ["name", "cycleFeeAsString", "cycleBw", "overageFee" , "supportTypes" ];			
+													   
+			private var HEADER_ARRAY_DP : Array = [ ResourceManager.getInstance().getString('kmc','packageName'),
+													ResourceManager.getInstance().getString('kmc','minMonthFee'),
+													ResourceManager.getInstance().getString('kmc','incMonthBandAndStream'),
+													ResourceManager.getInstance().getString('kmc','bwOverFee'),
+													ResourceManager.getInstance().getString('kmc','support'),
+													ResourceManager.getInstance().getString('kmc','')];
+													
+			private static const DG_COLUMN_WIDTH : Array = [120,140,180,85,180,80];
+			
+/* 			private function init() : void
+			{
+				BindingUtils.bindSetter(  buildTable , this , "packagesList" );
+				BindingUtils.bindSetter(  partnerPackageChange , this , "partnerPackage" );
+				
+				var packageEvent : PackageEvent = new PackageEvent( PackageEvent.LIST_PARTNER_PACKAGE );
+				packageEvent.dispatch();
+			} */
+			
+			/*private function partnerPackageChange( pp : PackagesVO ) : void
+			{
+				if( pp && dg )
+				{
+					dg.selectedItem = partnerPackage;
+					
+					if(packagesList)
+						buildTable( packagesList );
+				}
+			}*/
+			
+/* 			private function buildTable( arrCol : ArrayCollection ) : void
+			{
+				if(arrCol)
+				{
+					var columns : Array = new Array();
+					for( var i:int=0 ; i < PACKAGE_ARRAY_DP.length; i++ )
+					{
+						var dgc : DataGridColumn = new DataGridColumn();
+						dgc.headerText = HEADER_ARRAY_DP[i];
+						dgc.headerRenderer = new ClassFactory( Text );
+						dgc.itemRenderer= new ClassFactory( DataGridColumnLabel );					
+						dgc.dataField = PACKAGE_ARRAY_DP[i];
+						dgc.minWidth = DG_COLUMN_WIDTH[i];
+						dgc.width = DG_COLUMN_WIDTH[i];
+						dgc.setStyle("textAlign","center");
+						columns.push( dgc );
+					}
+					var dgcUpgrade : DataGridColumn = new DataGridColumn();
+					dgcUpgrade.itemRenderer = new ClassFactory( UpgradeDowngradeBtn );
+					columns.push( dgcUpgrade );
+					dg.columns = columns;	
+					setDgSize();
+				}
+			} */
+			
+/* 			private function setDgSize() : void
+			{
+				if( packagesList && packagesList.length > 0)
+				{
+					dg.rowHeight = (dg.height / packagesList.length) - ( dg.headerHeight /  (packagesList.length) ) - 3; // -3 fix some bug that i don't take into account somthing maybe the border...
+					dg.invalidateList();
+				}
+			} */
+			
+			private function sendContact() : void
+			{ 
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CONTACT_US_USAGE,
+															  "AccountUpgrade>Contact Us Usage");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CONTACT_US_USAGE);
+				
+				
+				if( ! checkFirstResultOk( phoneValidator.validate() ) ) return;
+				
+				var services : String = "";
+				services = "none"; //we must sent somthing to the DB TODO: fix in server side				
+				/*if(advancedVideoAnal.selected) services += advancedVideoAnal.label + ",";
+				if(entSup.selected) services += entSup.label + ",";
+				if(reportingApi.selected) services += reportingApi.label + ",";
+				if(fanSup.selected) services += fanSup.label + ",";
+				if(hdSupport.selected) services += hdSupport.label + ",";
+				if(platGrayLbl.selected) services += platGrayLbl.label + ",";
+				if(videoDisc.selected) services += videoDisc.label + ",";
+				if(publishToSubdomain.selected) services += publishToSubdomain.label + ",";
+				if(subTitleSup.selected) services += subTitleSup.label;*/
+
+				var kEvent : KalturaEvent = new KalturaEvent( KalturaEvent.CONTACT_US , 
+															  cuName.text ,
+															  cuTelephone.text,
+															  cuComments.text ,
+															  services);
+				kEvent.dispatch();
+			}
+			
+			private function checkFirstResultOk( vre : ValidationResultEvent ) : Boolean
+			{
+				if(vre.results && (vre.results[0] as ValidationResult).isError ) 
+					return false;
+					
+				return true;
+			}
+					
+			
+				
+			public function isChanged() : Boolean { return false; }
+			public function undo() : void {}
+			public function saveChanges() : void{}
+			public function resetClonedData() : void{}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:PhoneNumberValidator id="phoneValidator" source="{cuTelephone}" property="text" />
+	
+	<!--<mx:HBox width="100%" height="100%" >
+		 <mx:DataGrid id="dg" height="100%" width="100%" useRollOver="false" 
+			draggableColumns="false"
+			selectable="false"
+			sortableColumns="false"
+			resize="setDgSize()"
+			dataProvider="{packagesList}" 
+			verticalScrollPolicy="off">
+		</mx:DataGrid>
+		<mx:VBox height="100%"
+			horizontalAlign="center" verticalAlign="middle" 
+			styleName="blueBox">
+			<mx:Text width="150" text="{resourceManager.getString('kmc','kaltura1000AndUp')}" styleName="pageTitle"
+				textAlign="center" selectable="false"/>
+			<mx:Text width="150" text="{resourceManager.getString('kmc','contactUsText')}" textAlign="center" 
+				selectable="false"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Spacer height="5" /> -->
+	<mx:VBox width="100%" styleName="blueBox" paddingLeft="20">
+		<mx:Text text="{ resourceManager.getString('kmc','toLearenMore')}" styleName="pageTitle"/>
+	</mx:VBox> 
+	<mx:Spacer height="10" />
+	<mx:VBox width="100%" height="100%" styleName="blueBox" paddingTop="25" paddingLeft="20">
+		<mx:Label text="{ resourceManager.getString('kmc','contactUsTitle')}:" styleName="pageTitle" />
+		<mx:HBox>
+			<mx:VBox>
+				<mx:HBox id="nameBox">
+					<mx:Label width="{_lblWidth}" text="{ resourceManager.getString('kmc','name')}:" />
+					<mx:TextInput id="cuName" width="{_cbWidth}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label width="{_lblWidth}" text="{ resourceManager.getString('kmc','telephone')}:" />
+					<mx:TextInput id="cuTelephone" width="{_cbWidth}"/>
+				</mx:HBox>
+				<mx:HBox height="100%">
+					<mx:Label width="{_lblWidth}" text="{ resourceManager.getString('kmc','comments')}:" />
+					<mx:TextArea height="100%" id="cuComments" width="{_cbWidth}"/>
+				</mx:HBox>
+			</mx:VBox>
+			<!-- <mx:Spacer width="10" />
+			<mx:VBox>
+				<mx:Label text="{ resourceManager.getString('kmc','servicesTexts')}:"/>
+				<mx:HBox>
+					<mx:CheckBox id="advancedVideoAnal" width="{_cbWidth}" label="{resourceManager.getString('kmc','advancedVideoAnal')}"/>
+					<mx:CheckBox id="entSup" width="{_cbWidth}" label="{resourceManager.getString('kmc','entSup')}" />
+				</mx:HBox>
+				<mx:HBox>
+					<mx:CheckBox id="reportingApi" width="{_cbWidth}" label="{resourceManager.getString('kmc','reportingApi')}"/>
+					<mx:CheckBox id="fanSup" width="{_cbWidth}" label="{resourceManager.getString('kmc','fanSup')}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:CheckBox id="hdSupport" width="{_cbWidth}" label="{resourceManager.getString('kmc','hdSupport')}" />
+					<mx:CheckBox id="platGrayLbl" width="{_cbWidth}" label="{resourceManager.getString('kmc','platGrayLbl')}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:CheckBox id="videoDisc" width="{_cbWidth}" label="{resourceManager.getString('kmc','videoDisc')}"/>
+					<mx:CheckBox id="publishToSubdomain" width="{_cbWidth}" label="{resourceManager.getString('kmc','publishToSubdomain')}"/>
+				</mx:HBox>
+				<mx:CheckBox id="subTitleSup" width="{_cbWidth}" label="{resourceManager.getString('kmc','subTitleSup')}"/>
+			</mx:VBox>-->
+		</mx:HBox> 
+		<mx:HBox width="{nameBox.width}" horizontalAlign="right">
+			<mx:Button label="{resourceManager.getString('kmc','send')}"
+				click="sendContact()" 
+				buttonMode="true" />
+		</mx:HBox> 
+	</mx:VBox>
+</mx:VBox>

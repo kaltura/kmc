@@ -87,21 +87,20 @@
 				var item:ContextMenuItem = new ContextMenuItem("KMC Dashboard " + VERSION);
 				this.contextMenu.customItems.push(item);
 
-				var fv:Object = KMC.flashvars;
-				_urchinNumber = fv.urchinnumber;
+				_urchinNumber = _flashvars.urchinnumber;
 
-				_userName = fv.username;
-				_userId = fv.uid;
+				_userName = _flashvars.username;
+				_userId = _flashvars.uid;
 
-				if (fv.firstlogin == 'true') {
+				if (_flashvars.firstlogin == 'true') {
 					currentState = 'firstTimeUserState';
 				}
 
 				DashboardManager.instance.kc = _kc;
 
-				uploadPnl.quickStartURL = fv.uploaddoclink;
-				embedPnl.quickStartURL = fv.embeddoclink;
-				customizePnl.quickStartURL = fv.customizedoclink;
+				uploadPnl.quickStartURL = _flashvars.uploaddoclink;
+				embedPnl.quickStartURL = _flashvars.embeddoclink;
+				customizePnl.quickStartURL = _flashvars.customizedoclink;
 
 				DashboardManager.instance.app = this;
 				DashboardManager.instance.getData();
@@ -134,7 +133,7 @@
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(DashboardManager.instance.kc.partnerId, _userId, this, "KMC/Dashboard",
 						_urchinNumber, "AS3",
-						KMC.flashvars.gaDebug == "true" ? true : false);
+						_flashvars.gaDebug == "true" ? true : false);
 			}
 		]]>
 	</mx:Script>

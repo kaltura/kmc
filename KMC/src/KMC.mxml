@@ -8,6 +8,8 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
+			import com.kaltura.kmc.events.KmcErrorEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
@@ -16,6 +18,7 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaUiConf;
 			
+			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.events.ModuleEvent;
@@ -29,7 +32,7 @@
 			 * a global access point to the application's flashvars,
 			 * all keys are converted to lower case and no underscores.
 			 * */
-			public static var flashvars:Object;
+			private var _flashvars:Object;
 
 //			KMC UIConf looks like this:
 //			<root>
@@ -73,13 +76,15 @@
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
 
-				// listen to module navigation requests
+				// listen to module requests
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
+				this.addEventListener(KmcErrorEvent.ERROR, showError);
+				this.addEventListener(KmcHelpEvent.HELP, showHelp);
 
 				// save flashvars
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam);
-				flashvars = objParam;
+				_flashvars = objParam;
 
 				if (objParam.modulespath) {
 					_modulesFolder = objParam.modulespath;
@@ -172,7 +177,7 @@
 				
 				// the uiconf id this module should load:
 				var uiconfid:String = moduleList.(@id == moduleid)[0].@uiconf;
-				mod.init(KmcModelLocator.getInstance().kalturaClient, uiconfid);
+				mod.init(KmcModelLocator.getInstance().kalturaClient, uiconfid, _flashvars);
 			}
 
 
@@ -192,6 +197,24 @@
 			 * */
 			private function navigateToModule(e:KmcNavigationEvent):void {
 				gotoPage(e.module, e.subtab);
+			}
+			
+			
+			/**
+			 * Show an error with the text on the error event.
+			 * This text should alresy be localized by the module
+			 * which dispatched this event.
+			 * */
+			private function showError(e:KmcErrorEvent):void {
+				Alert.show(e.error);
+			}
+			
+			
+			/**
+			 * open the relevant help page, based on the anchor in the event.
+			 * */
+			private function showHelp(e:KmcHelpEvent):void {
+				//TODO implement showHelp
 			}
 
 

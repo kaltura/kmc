@@ -1,0 +1,119 @@
+package com.kaltura.kmc.modules.account.model
+{
+	import com.adobe.cairngorm.model.IModelLocator;
+	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
+	import com.kaltura.kmc.modules.account.vo.AccountUsageVO;
+	import com.kaltura.kmc.modules.account.vo.AdminVO;
+	import com.kaltura.kmc.modules.account.vo.FlavorVO;
+	import com.kaltura.kmc.modules.account.vo.PackagesVO;
+	import com.kaltura.kmc.modules.account.vo.PartnerVO;
+	import com.kaltura.kmc.modules.account.vo.PaymentDetailsVO;
+	import com.kaltura.kmc.modules.account.vo.UIConfVO;
+	import com.kaltura.types.KalturaAccessControlOrderBy;
+	import com.kaltura.vo.KMCMetadataProfileVO;
+	import com.kaltura.vo.KalturaAccessControlFilter;
+	import com.kaltura.vo.KalturaConversionProfileFilter;
+	import com.kaltura.vo.KalturaFilterPager;
+	
+	import flash.events.EventDispatcher;
+	
+	import mx.collections.ArrayCollection;
+	
+	[Bindable]
+	public class KMCModelLocator extends EventDispatcher implements IModelLocator
+	{
+		public static const USAGE_GRAPH_RESULT : String = "usageGraphResult";
+		public static const USAGE_GRAPH_FAULT : String = "usageGraphFault";
+		
+		public var context : Context = null;
+		public var uiConfigVo : UIConfVO = null;
+		
+		//---------------------------------------------------------
+		//data objects
+	    public var partnerData : PartnerVO = new PartnerVO();
+	    public var partnerPackage : PackagesVO = null;
+		public var adminData : AdminVO = new AdminVO();
+		public var usageData : AccountUsageVO = new AccountUsageVO();
+		public var paymentDetailsVo : PaymentDetailsVO = new PaymentDetailsVO();
+		public var listPackages : ArrayCollection;
+		public var modalWinData : Object = null;
+		public var gaTrackUrl : String = null;
+		public var metadataProfile: KMCMetadataProfileVO = new KMCMetadataProfileVO();
+		
+		public var accessControlData:ArrayCollection = new ArrayCollection();
+		
+		public var accessControlProfilesTotalCount:int = 10;
+		public var filterPager:KalturaFilterPager;
+		public var acpFilter:KalturaAccessControlFilter;
+		
+		public var conversionData:ArrayCollection = new ArrayCollection();
+		public var flavorsData:ArrayCollection = new ArrayCollection();
+		public var cpFilter:KalturaConversionProfileFilter;
+	    //---------------------------------------------------------
+	    //states
+	    public var windowState : String = WindowsStates.NONE;
+	    
+		//---------------------------------------------------------
+		//Flags 
+		public var devFlag : Boolean = false;
+		public var loadingFlag : Boolean = false;
+		public var partnerInfoLoaded : Boolean = false;
+		public var openPayPalWindowFlag : Boolean = false; 
+		public var saveAndExitFlag : Boolean = false;
+		
+		public var displayCustomFieldsTab:Boolean = false;
+		
+		//---------------------------------------------------------
+		//singleton methods
+		private static var _modelLocator : KMCModelLocator;
+		public static function getInstance() : KMCModelLocator
+		{
+			if ( _modelLocator == null )
+			{
+				_modelLocator = new KMCModelLocator(new Enforcer());
+			}
+
+			return _modelLocator;
+		}
+
+		public function KMCModelLocator(enforcer:Enforcer)
+		{
+			context = new Context();
+			uiConfigVo = new UIConfVO();
+			acpFilter = new KalturaAccessControlFilter();
+			acpFilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
+			
+			cpFilter = new KalturaConversionProfileFilter();
+	//		cpFilter.orderBy = KalturaConversionProfileOrderBy.
+		}
+		
+		public function getClonedFlavorsData():ArrayCollection
+		{
+			var arr:ArrayCollection = new ArrayCollection();
+			for each(var flavor:FlavorVO in flavorsData)
+			{
+				arr.addItem(flavor.clone());
+			}		
+			
+			return arr;
+		}
+		
+		public function getUnselectedClonedFlavorsData():ArrayCollection
+		{
+			var arr:ArrayCollection = new ArrayCollection();
+			for each(var flavor:FlavorVO in flavorsData)
+			{
+				var cloned:FlavorVO = flavor.clone();
+				cloned.selected = false;
+				arr.addItem(cloned);
+			}
+		
+			return arr;
+		}
+	}
+}
+
+class Enforcer
+{
+	
+}

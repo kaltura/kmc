@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" xmlns:validators="com.kaltura.validators.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import mx.validators.ValidationResult;
+			import mx.events.ValidationResultEvent;
+			import mx.binding.utils.BindingUtils;
+			import com.kaltura.kmc.modules.account.events.AdminEvent;
+			import com.kaltura.kmc.modules.account.events.PartnerEvent;
+			import com.kaltura.kmc.modules.account.vo.AdminVO;
+			import com.kaltura.kmc.modules.account.vo.PartnerVO;
+			import mx.controls.RadioButton;
+			import mx.controls.CheckBox;
+			import mx.controls.ComboBox;
+			import mx.controls.ComboBase;
+			import mx.controls.List;
+			
+			[Bindable] public var partnerData : PartnerVO;
+			[Bindable] public var adminData : AdminVO;
+			[Bindable] public var rootUrl : String;
+			
+			private var _clonedPartnerData : PartnerVO;
+			private var _clonedAdminData : AdminVO;
+			
+			[Bindable] private var _lblWidth : Number = 150;
+			[Bindable] private var _maxWidth : Number = 300;
+			[Bindable] private var _textWidth : Number = 190;
+			[Bindable] private var _ctList : Array = [];
+			[Bindable] private var _ctComboBox : Array = [];
+
+			public function init( event : FlexEvent = null ) : void
+			{
+				//populate the content type list
+				_ctList = (resourceManager.getString('kmc', 'contentList')).split(',');
+				_ctComboBox = (resourceManager.getString('kmc', 'describeList')).split(',');
+				
+				_clonedAdminData = adminData.clone(); //admin has the email when the application init (in flashvars) so it can be set here
+				
+				BindingUtils.bindSetter( onPartnerDataLoaded , this , "partnerData" );
+				BindingUtils.bindSetter( onAdminDataLoaded , this , "adminData" );
+				
+				var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
+				partnerEvent.dispatch();
+			}
+			
+			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
+			{
+				if(pvo)
+				{
+					_clonedPartnerData = pvo.clone();
+					setContentCategories();
+					setDescribeYourself();
+				}
+			}
+			
+			private function onAdminDataLoaded( avo : AdminVO ) : void
+			{
+				if(avo)
+					_clonedAdminData = avo.clone();
+			}
+			
+			private function setContentCategories() : void
+			{
+				var arr : Array = partnerData.contentCategories.split(",");
+				if((arr.length > 0) && (arr[0] != ''))
+				{
+					cctList.selectedItems = arr;
+				}
+			}
+			
+			private function setDescribeYourself() : void
+			{
+				for(var i:int=0; i< dyCB.dataProvider.length ; i++)
+				{
+					if( partnerData.describeYourself == dyCB.dataProvider[i])
+						dyCB.selectedIndex = i;
+				}   
+			}
+					
+			//public functions
+			//------------------------------------------------
+			public function undo() : void
+			{
+				adminData = _clonedAdminData.clone();
+				partnerData = _clonedPartnerData.clone();
+			}
+			
+			public function isChanged() : Boolean
+			{
+				return ( ! partnerData.equals( _clonedPartnerData ) || ! adminData.equals( _clonedAdminData ) ) ? true : false;
+			}
+			
+			public function savePartnerInfo( force : Boolean ) : void
+			{
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,"Account>Change Partner Info");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+				
+				if( ! partnerData.equals( _clonedPartnerData ) || force )
+				{
+					emailValidator.source = pEmail;
+					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
+					urlValidator.source = pWebsite;
+					if( (urlValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
+					
+					if(cctList.selectedItems.length < 0)
+					{
+						Alert.show( resourceManager.getString('kmc', 'enterContentCategory') );
+					}	
+									
+					_clonedPartnerData = partnerData.clone();
+					//do save
+					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.UPDATE_PARTNER );
+					partnerEvent.dispatch();
+					
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,
+															  "AccountSettings>PartnerInfo>SaveChangesBtn");
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+				}
+			}
+			
+			public function saveLoginInfo( force : Boolean ) : void
+			{
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO);
+				if( ! adminData.equals( _clonedAdminData ) || force)
+				{
+					//validation
+					///////////////////////////////////////
+					emailValidator.source = aEmail;
+					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
+					passwordValidator.source = oldPass;
+					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+					passwordValidator.source = newPass;
+					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+					passwordValidator.source = confPass;
+					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+					if(confPass.text != newPass.text)
+					{
+						Alert.show( resourceManager.getString('kmc', 'passwordNoMatch') );
+						return;
+					}
+					////////////////////////////////////////
+					
+					_clonedAdminData = adminData.clone();
+					var adminEvent : AdminEvent = new AdminEvent( AdminEvent.UPDATE_ADMIN_PASSWORD );
+					adminEvent.dispatch();
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
+															  "AccountSettings>LofinInfo>SaveChangesBtn");
+				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+				}
+			}
+			
+			public function saveChanges() : void
+			{
+				savePartnerInfo( false );
+				saveLoginInfo( false );
+			}
+			
+			public function resetClonedData() : void
+			{
+				_clonedPartnerData = partnerData.clone();
+				_clonedAdminData = adminData.clone();
+			}	
+			
+			
+		]]>
+	</mx:Script>
+	<mx:EmailValidator id="emailValidator" required="true" property="text" />
+	<mx:StringValidator id="passwordValidator" required="true" property="text"
+		minLength="4" maxLength="20"/>
+	<mx:StringValidator id="nameValidator" required="true" property="text"
+		minLength="4" maxLength="20"/>
+		
+	<validators:URLValidator id="urlValidator" required="true" property="text"  />
+	
+	<mx:VBox id="pInfo" width="100%" height="100%" styleName="blueBox" 
+		horizontalAlign="left" verticalAlign="top"   >
+		<mx:HBox width="100%">
+			<mx:Label styleName="pageTitle" text="{resourceManager.getString('kmc', 'partnerInfo')}" />
+			<mx:Spacer width="100%" />
+			<mx:Button styleName="help" buttonMode="true" 
+				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'helpUsage') ) )}"/>
+		</mx:HBox>
+		<mx:Text id="partnerInfoText" width="{_maxWidth}" height="40" 
+			text="{resourceManager.getString('kmc', 'partnerInfoText')}"/>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'name')}*"/>
+			<mx:TextInput id="pName" width="{_textWidth}" text="{partnerData.adminName}" 
+				change="{ partnerData.adminName = pName.text }"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'email')}*"/>
+			<mx:TextInput id="pEmail" width="{_textWidth}" text="{partnerData.adminEmail}" 
+				change="{partnerData.adminEmail = pEmail.text}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'phone')}"/>
+			<mx:TextInput id="pPhone" width="{_textWidth}" text="{partnerData.phone}" 
+				change="{partnerData.phone = pPhone.text}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'website')}*" />
+			<mx:TextInput id="pWebsite" width="{_textWidth}" text="{partnerData.url1}"
+				change="{partnerData.url1 = pWebsite.text}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'description')}"/>
+			<mx:TextArea id="desc" width="{_textWidth}" text="{partnerData.description}" 
+				change="{partnerData.description = desc.text}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'contetntCategories')}*"/>
+			<mx:List id="cctList" width="{_textWidth}" height="100" dataProvider="{_ctList}" allowMultipleSelection="true"
+				change="{ partnerData.contentCategories = cctList.selectedItems.toString(); }" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'describeYourself')}" />
+			<mx:ComboBox id="dyCB" width="{_textWidth}" dataProvider="{_ctComboBox}" 
+				change="{partnerData.describeYourself = dyCB.selectedItem.toString()}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('kmc', 'adultContent')}" />
+			<mx:RadioButton id="adContYes" label="{resourceManager.getString('kmc', 'yes')}" groupName="adCont" 
+				selected="{partnerData.adultContent}" change="{if(adContYes.selected)partnerData.adultContent = true}" />
+			<mx:RadioButton id="adContNo" label="{resourceManager.getString('kmc', 'no')}" groupName="adCont" 
+				selected="{!partnerData.adultContent}" change="{if(adContNo.selected)partnerData.adultContent = false}"/>
+		</mx:HBox>
+		<mx:Label text="{resourceManager.getString('kmc', 'reqF')}" fontSize="9"/>
+		<mx:Button label="{resourceManager.getString('kmc', 'saveChanges')}" 
+			click="savePartnerInfo( true )" buttonMode="true" />
+	</mx:VBox>
+	<mx:VBox width="100%" height="100%"  styleName="blueBox" 
+		horizontalAlign="left" verticalAlign="top">
+		<mx:HBox width="100%">
+			<mx:Label  styleName="pageTitle" text="{resourceManager.getString('kmc', 'loginInfo')}"/>
+			<mx:Spacer width="100%" />
+			<mx:Button styleName="help" buttonMode="true" 
+				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'helpUsage') ) )}"/>
+		</mx:HBox>
+		
+		<mx:Text id="loginInfoText"  width="{_textWidth}"  height="40" />
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'email')}"/>
+			<mx:TextInput id="aEmail" width="{_textWidth}" 
+				text="{adminData.newEmail}" 
+				change="{adminData.newEmail = aEmail.text}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'oldPassword')}"/>
+			<mx:TextInput id="oldPass" width="{_textWidth}" 
+				text="{adminData.oldPassword}" 
+				displayAsPassword="true"
+				change="{adminData.oldPassword = oldPass.text}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'newPassword')}"/>
+			<mx:TextInput id="newPass" width="{_textWidth}" 
+				text="{adminData.newPassword}" 
+				displayAsPassword="true"
+				change="{adminData.newPassword = newPass.text}"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'confirmPassword')}"/>
+			<mx:TextInput id="confPass" width="{_textWidth}" 
+				displayAsPassword="true"
+				text="{adminData.confirmedPassword}" 
+				change="{adminData.confirmedPassword = confPass.text}" />
+		</mx:HBox>
+		<mx:Button label="{resourceManager.getString('kmc', 'saveChanges')}" 
+			click="saveLoginInfo( true )" buttonMode="true" />
+	</mx:VBox>
+</mx:HBox>

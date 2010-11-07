@@ -40,8 +40,8 @@ package com.kaltura.kmc.modules {
 
 		/**
 		 * Dispatched when user clicked a help link.
-		 * The <code>data</code> parameter is the anchor on help page.
-		 * @eventType com.kaltura.events.KalturaEvent
+		 * The <code>page</code> parameter is the anchor on help page.
+		 * @eventType com.kaltura.kmc.events.KmcHelpEvent
 		 */
 		[Event(name="help", type="com.kaltura.events.KalturaEvent")]
 
@@ -49,6 +49,10 @@ package com.kaltura.kmc.modules {
 		// members
 		// =====================================================
 
+		/**
+		 * all the flashvars, lowercased with no underscores 
+		 */
+		protected var _flashvars:Object;
 		
 		/**
 		 * @copy #kc
@@ -172,9 +176,10 @@ package com.kaltura.kmc.modules {
 		 * @param uiconfid	Id of uiconf that the module has to load.
 		 * @param context	Application context
 		 * */
-		public function init(kc:KalturaClient, uiconfid:String, context:Context = null):void {
+		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, context:Context = null):void {
 			_kc = kc;
 			_uiconfId = uiconfid;
+			_flashvars = flashvars;
 			_context = context;
 
 			loadUiconf(uiconfid);
