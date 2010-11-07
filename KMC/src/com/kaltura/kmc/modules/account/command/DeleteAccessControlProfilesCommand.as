@@ -43,18 +43,18 @@ package com.kaltura.kmc.modules.account.command
 			{
 				if(multiProfiles)
 				{
-					Alert.show(ResourceManager.getInstance().getString('kmc', 'deleteAccessProfilesDoneMsg'));
+					Alert.show(ResourceManager.getInstance().getString('account', 'deleteAccessProfilesDoneMsg'));
 				}
 				else
 				{
-					Alert.show(ResourceManager.getInstance().getString('kmc', 'deleteAccessProfileDoneMsg'));
+					Alert.show(ResourceManager.getInstance().getString('account', 'deleteAccessProfileDoneMsg'));
 				}
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
 			{
-				Alert.show(data.error, ResourceManager.getInstance().getString('kmc', 'error'));
+				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 
 			_model.partnerInfoLoaded = true;
@@ -68,7 +68,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 

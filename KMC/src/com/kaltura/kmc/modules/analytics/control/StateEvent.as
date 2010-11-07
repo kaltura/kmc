@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class StateEvent extends CairngormEvent
 	{
-		public static const STATE_CHANGE : String = "stateChange";
+		public static const STATE_CHANGE : String = "analytics_stateChange";
 		
 		public var newState : int;
 		

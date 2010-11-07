@@ -41,16 +41,16 @@
 			public function get filterVo() : FilterVo { return _filterVo; }
 			
 			[Bindable] private var _dateRange : Array = [
-															ResourceManager.getInstance().getString('kmc', 'yesterday'),  
-															ResourceManager.getInstance().getString('kmc', 'last7Days'),
-															ResourceManager.getInstance().getString('kmc', 'thisWeek'),
-															ResourceManager.getInstance().getString('kmc', 'lastWeek'),
-															ResourceManager.getInstance().getString('kmc', 'last30Days'),
-															ResourceManager.getInstance().getString('kmc', 'thisMonth'),
-															ResourceManager.getInstance().getString('kmc', 'lastMonth'),
-															ResourceManager.getInstance().getString('kmc', 'last12Months'),
-															ResourceManager.getInstance().getString('kmc', 'thisYear'),
-															ResourceManager.getInstance().getString('kmc', 'custom')
+															ResourceManager.getInstance().getString('analytics', 'yesterday'),  
+															ResourceManager.getInstance().getString('analytics', 'last7Days'),
+															ResourceManager.getInstance().getString('analytics', 'thisWeek'),
+															ResourceManager.getInstance().getString('analytics', 'lastWeek'),
+															ResourceManager.getInstance().getString('analytics', 'last30Days'),
+															ResourceManager.getInstance().getString('analytics', 'thisMonth'),
+															ResourceManager.getInstance().getString('analytics', 'lastMonth'),
+															ResourceManager.getInstance().getString('analytics', 'last12Months'),
+															ResourceManager.getInstance().getString('analytics', 'thisYear'),
+															ResourceManager.getInstance().getString('analytics', 'custom')
 														 ];
 														 
 			[Bindable] public var dateOnlyFlag : Boolean = false;
@@ -92,7 +92,7 @@
 				{
 					_filterVo.fromDate = _oldFromDate;
 					fromDate.text =  (_filterVo.fromDate.month+1)+"/"+_filterVo.fromDate.date+"/"+_filterVo.fromDate.fullYear;
-					Alert.show(resourceManager.getString('kmc', 'fromToDateAlert'));
+					Alert.show(resourceManager.getString('analytics', 'fromToDateAlert'));
 					return;	
 				}	
 			
@@ -112,7 +112,7 @@
 				{
 					_filterVo.toDate = _oldToDate;
 					toDate.text = (_filterVo.fromDate.month+1)+"/"+_filterVo.toDate.date+"/"+_filterVo.toDate.fullYear;
-					Alert.show(resourceManager.getString('kmc', 'fromToDateAlert'));	
+					Alert.show(resourceManager.getString('analytics', 'fromToDateAlert'));	
 					return;
 				}
 				_filterVo.toDate =new Date(Number(event.newDate.time - (event.newDate.timezoneOffset*60*1000)));
@@ -133,42 +133,42 @@
 				if( today.time - _filterVo.fromDate.time >= ONE_DAY && today.time - filterVo.fromDate.time < ONE_DAY*2 &&
 					today.time - _filterVo.toDate.time >= 0 && today.time - filterVo.toDate.time <= ONE_DAY)
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'yesterday');
+					dateCb.selectedItem = resourceManager.getString('analytics', 'yesterday');
 				}
 				else if( today.time - _filterVo.fromDate.time >= ONE_DAY*6 && today.time - _filterVo.fromDate.time < ONE_DAY*7 && 
 						 today.time - _filterVo.toDate.time >= 0 && today.time - toDate.selectedDate.time <= ONE_DAY  )
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'last7Days');				
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last7Days');				
 				}
 				else if( today.time - _filterVo.fromDate.time >= ((_filterVo.toDate.day) * ONE_DAY) && 
 						 today.time - _filterVo.fromDate.time < ((_filterVo.toDate.day+1) * ONE_DAY) &&
 						 today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY )
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'thisWeek');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisWeek');	
 				}
 				else if( today.time - _filterVo.fromDate.time >= 7*ONE_DAY && today.time - _filterVo.fromDate.time < 14*ONE_DAY &&
 						_filterVo.fromDate.dayUTC == 0 && _filterVo.toDate.dayUTC == 6)
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'lastWeek');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'lastWeek');	
 				}
 				else if(today.time - _filterVo.fromDate.time >= ONE_DAY*30 && today.time - _filterVo.fromDate.time < ONE_DAY*31 && 
 						today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY)
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'last30Days');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last30Days');	
 				}
 				else if(today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY &&
 						_filterVo.fromDate.fullYearUTC == _filterVo.toDate.fullYearUTC && _filterVo.fromDate.monthUTC == _filterVo.toDate.monthUTC && _filterVo.fromDate.dateUTC == 1)
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'thisMonth');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisMonth');	
 				}
 				else if( _filterVo.toDate.monthUTC+1==today.monthUTC && _filterVo.fromDate.dateUTC == 1 &&
 						_filterVo.fromDate.monthUTC+1==today.monthUTC)  
 				{
 					var tempDate:Date  = new Date(today.time - (today.dateUTC*ONE_DAY) );
 					if (_filterVo.toDate.dateUTC == tempDate.dateUTC)
-						dateCb.selectedItem = resourceManager.getString('kmc', 'lastMonth');
+						dateCb.selectedItem = resourceManager.getString('analytics', 'lastMonth');
 					else
-						dateCb.selectedItem = ResourceManager.getInstance().getString('kmc', 'custom');	
+						dateCb.selectedItem = ResourceManager.getInstance().getString('analytics', 'custom');	
 				}
 			//	else if(today.time - toDate.selectedDate.time > ONE_DAY && today.time - toDate.selectedDate.time < ONE_DAY*2 && 
 			//			toDate.selectedDate.fullYear+1 == fromDate.selectedDate.fullYear )
@@ -176,18 +176,18 @@
 						 _filterVo.toDate.monthUTC == _filterVo.fromDate.monthUTC && _filterVo.toDate.dateUTC==_filterVo.fromDate.dateUTC-1 &&
 						today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY)
 				{
-					dateCb.selectedItem = resourceManager.getString('kmc', 'last12Months');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last12Months');	
 				}
 				else if(today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY && 
 						today.fullYearUTC == _filterVo.fromDate.fullYearUTC &&  _filterVo.fromDate.monthUTC == 0 &&  _filterVo.fromDate.dateUTC == 1)
 				{
 					//_filterVo.toDate = new Date( today.time - ONE_DAY);
 					//_filterVo.fromDate = new Date( today.fullYear ,  0 , 1 );
-					dateCb.selectedItem = resourceManager.getString('kmc', 'thisYear');	
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisYear');	
 				}
 				else
 				{
-					dateCb.selectedItem = ResourceManager.getInstance().getString('kmc', 'custom');
+					dateCb.selectedItem = ResourceManager.getInstance().getString('analytics', 'custom');
 				}
 				
 				dispatchEvent(new Event('apply')); //apply
@@ -209,55 +209,55 @@
 				
 				switch( (event.target as ComboBox).selectedItem.toString() )
 				{
-					case resourceManager.getString('kmc', 'yesterday'): 			
+					case resourceManager.getString('analytics', 'yesterday'): 			
 						//_filterVo.toDate = new Date( today.time - ONE_DAY );
 						//_filterVo.fromDate = new Date( today.time - 2*ONE_DAY );
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 2*ONE_DAY );
 					break;
-					case resourceManager.getString('kmc', 'last7Days'):
+					case resourceManager.getString('analytics', 'last7Days'):
 						//_filterVo.toDate = new Date( today.time - ONE_DAY);
 						//_filterVo.fromDate = new Date( today.time - ONE_DAY*7);
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 7*ONE_DAY );
 					break;
-					case resourceManager.getString('kmc', 'thisWeek'):
+					case resourceManager.getString('analytics', 'thisWeek'):
 						// _filterVo.toDate = new Date( today.time - ONE_DAY);
 						// _filterVo.fromDate = new Date( today.time - ( (_filterVo.toDate.day+1) * ONE_DAY) );
 					    _filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - (_filterVo.toDate.day+1)*ONE_DAY );
 					break;
-					case resourceManager.getString('kmc', 'lastWeek'): 
+					case resourceManager.getString('analytics', 'lastWeek'): 
 						// _filterVo.toDate = new Date( today.time - ( (today.day+1)  * ONE_DAY ) );
 						// _filterVo.fromDate = new Date(  _filterVo.toDate.time - 6*ONE_DAY );
 						 _filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - (today.day+1)*ONE_DAY);
 						_filterVo.fromDate = new Date( Number( _filterVo.toDate.time) - 6*ONE_DAY );		
 					break;
-					case resourceManager.getString('kmc', 'last30Days'):
+					case resourceManager.getString('analytics', 'last30Days'):
 						//_filterVo.toDate = new Date( today.time - ONE_DAY);
 						//_filterVo.fromDate = new Date( today.time - 30*ONE_DAY );
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 31*ONE_DAY );
 					break;
-					case resourceManager.getString('kmc', 'last12Months'): 
+					case resourceManager.getString('analytics', 'last12Months'): 
 						//_filterVo.toDate = new Date( today.time - ONE_DAY);
 						//_filterVo.fromDate = new Date( today.fullYear-1 ,  today.month , today.date );
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC - 1, today.monthUTC, today.dateUTC);
 					break;
-					case resourceManager.getString('kmc', 'thisMonth'): 
+					case resourceManager.getString('analytics', 'thisMonth'): 
 						//_filterVo.toDate = new Date( today.time - ONE_DAY);
 						//_filterVo.fromDate = new Date( today.fullYear ,  today.month , 1 );
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
 						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC, today.monthUTC, 1);
 					break;
-					case resourceManager.getString('kmc', 'lastMonth'): 
+					case resourceManager.getString('analytics', 'lastMonth'): 
 						//_filterVo.toDate = new Date( today.time - (ONE_DAY * today.date));
 						//_filterVo.fromDate = new Date( _filterVo.toDate.fullYear ,  _filterVo.toDate.month , 1 );
 						_filterVo.toDate = new Date( Number( today.time - todaysHourInMiliSeconds) -(ONE_DAY * today.date));
 						_filterVo.fromDate = adjustDateToUTC(_filterVo.toDate.fullYearUTC, _filterVo.toDate.monthUTC, 1);
 					break;
-					case resourceManager.getString('kmc', 'thisYear'): 
+					case resourceManager.getString('analytics', 'thisYear'): 
 						//_filterVo.toDate = new Date( today.time - ONE_DAY);
 						//_filterVo.fromDate = new Date( today.fullYear ,  0 , 1 );
 						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
@@ -332,11 +332,11 @@
 					allCategoriesBtn.setStyle("color", "#000000");
 					allCategoriesBtn.setStyle("rollOverColor", "#000000");
 					allCategoriesBtn.setStyle("textDecoration", "none");
-					allCategoriesBtn.toolTip = resourceManager.getString('kmc','allCategoriesSelectedToolTip');
+					allCategoriesBtn.toolTip = resourceManager.getString('analytics','allCategoriesSelectedToolTip');
 					allCategoriesBtn.removeEventListener( MouseEvent.CLICK , allCategoriesClick);
 					//selectedCategoriesBtn.setStyle("color", "#bcbffa");
-					selectedCategoriesBtn.label = resourceManager.getString('kmc','selectCategories');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('kmc','selectCategoriesToolTip');
+					selectedCategoriesBtn.label = resourceManager.getString('analytics','selectCategories');
+					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics','selectCategoriesToolTip');
 					_filterVo.categories = null;
 					
 				}
@@ -345,10 +345,10 @@
 					//allCategoriesBtn.setStyle("color", "#bcbffa");
 					allCategoriesBtn.clearStyle( "color" );
 					allCategoriesBtn.clearStyle( "rollOverColor" );
-					allCategoriesBtn.toolTip = resourceManager.getString('kmc','allCategoriesToolTip');
+					allCategoriesBtn.toolTip = resourceManager.getString('analytics','allCategoriesToolTip');
 					allCategoriesBtn.addEventListener( MouseEvent.CLICK , allCategoriesClick );
 					//selectedCategoriesBtn.setStyle("color", "#000000");
-					selectedCategoriesBtn.label =  resourceManager.getString('kmc','selectedCategories') + "(" + selectedCategoriesArr.length + ")";
+					selectedCategoriesBtn.label =  resourceManager.getString('analytics','selectedCategories') + "(" + selectedCategoriesArr.length + ")";
 					var catsStr:String = '';
 					var categories:Array = [];
 					for each(var cat:String in  selectedCategoriesArr)
@@ -357,7 +357,7 @@
 						categories.push(cat);
 					}
 					_filterVo.categories = categories.join(',');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('kmc','selectedCategories') +":\n" + catsStr;
+					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics','selectedCategories') +":\n" + catsStr;
 				}
 			}
 			
@@ -374,43 +374,43 @@
 	</mx:Metadata>
 	
 	<mx:HBox width="100%" verticalAlign="middle">
-		<mx:Label text="{resourceManager.getString('kmc','dateRange')}"/>
+		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
 		<mx:ComboBox id="dateCb" dataProvider="{_dateRange}" change="changeDateByRange(event)" />
-		<mx:Label text="{resourceManager.getString('kmc','dates')}"/>
+		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
 		<mx:DateField id="fromDate" width="100" buttonMode="true"
 			selectedDate="{_filterVo.fromDate}"
 			change="fromDateChanged( event )"/>
 		<mx:DateField id="toDate" width="100" buttonMode="true" 
 			selectedDate="{_filterVo.toDate}" change="toDateChanged( event )"/>
-		<mx:Button label="{resourceManager.getString('kmc','apply')}" visible="false" includeInLayout="false"
+		<mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
 			buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>	
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}" >
-		<mx:Label text="{resourceManager.getString('kmc','categoriesTitle')}"/>
-		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('kmc','categoriesAll')}" click="onAllCategoriesSelection(event)" />
-		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('kmc','selectCategories')}" click="onCategoriesTreeOpen(event)" />
+		<mx:Label text="{resourceManager.getString('analytics','categoriesTitle')}"/>
+		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('analytics','categoriesAll')}" click="onAllCategoriesSelection(event)" />
+		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}" click="onCategoriesTreeOpen(event)" />
 	</mx:HBox>
 
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{dateOnlyFlag}" visible="{dateOnlyFlag}">
-		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}" label="{resourceManager.getString('kmc','basicDetails')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true"/>
-		<mx:LinkButton id="dropoff" visible="{showDrillDownNav}" label="{resourceManager.getString('kmc','dropoff')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true"/>
-		<mx:LinkButton id="interactions" visible="{showDrillDownNav}" label="{resourceManager.getString('kmc','interactions')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"/>
+		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','basicDetails')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true"/>
+		<mx:LinkButton id="dropoff" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','dropoff')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true"/>
+		<mx:LinkButton id="interactions" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','interactions')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"/>
 	</mx:HBox>
 	
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
-		<mx:Label text="{resourceManager.getString('kmc','searchFilter')}" />
+		<mx:Label text="{resourceManager.getString('analytics','searchFilter')}" />
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}" 
 			change="{_filterVo.keywords = searchTerm.text}" keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}" />
-		<!--<mx:Label text="{resourceManager.getString('kmc','in')}:" />-->
+		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
 		<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
-			label="{resourceManager.getString('kmc','searchInTags')}"
+			label="{resourceManager.getString('analytics','searchInTags')}"
 			selected="{_filterVo.searchInTags}" change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
 			visible="false" includeInLayout="false"/> <!--  checkDisableTextField() -->
 		<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
-			label="{resourceManager.getString('kmc','searchInAdminTags')}" 
+			label="{resourceManager.getString('analytics','searchInAdminTags')}" 
 			selected="{_filterVo.searchInAdminTags}" change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
 			visible="false" includeInLayout="false"/><!--  checkDisableTextField() -->
-		<mx:Button label="{resourceManager.getString('kmc','apply')}" buttonMode="true"
+		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
 			click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" />
 	</mx:HBox>
 

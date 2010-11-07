@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		public function fault(info:Object):void
 		{
 			_model.loadingFlag = false;
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc','error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('analytics','error'));
 		}
 
 		public function result(event:Object):void
@@ -56,7 +56,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			if(event.data[0] is KalturaError)
 			{
-				Alert.show((event.data[0] as KalturaError).errorMsg, ResourceManager.getInstance().getString('kmc','error'));
+				Alert.show((event.data[0] as KalturaError).errorMsg, ResourceManager.getInstance().getString('analytics','error'));
 			}
 			else
 			{

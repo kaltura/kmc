@@ -4,8 +4,8 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class DrillDownEvent extends CairngormEvent
 	{
-		public static const DRILL_DOWN : String = "drillDown";
-		public static const GET_MEDIA_ENTRY : String = "getMediaEntry";
+		public static const DRILL_DOWN : String = "analytics_drillDown";
+		public static const GET_MEDIA_ENTRY : String = "analytics_getMediaEntry";
 		
 		public var entryId : String;
 		public var newScreen : int;

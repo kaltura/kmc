@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.analytics.control
 	
 	public class  UsageGraphEvent extends CairngormEvent
 	{
-		public static const USAGE_GRAPH : String = "usageGraph";
+		public static const USAGE_GRAPH : String = "analytics_usageGraph";
 		
 		public function UsageGraphEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

@@ -55,7 +55,7 @@ package com.kaltura.kmc.modules.account.command
 			}
 			else
 			{
-				Alert.show(data.error, ResourceManager.getInstance().getString('kmc', 'error'));
+				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 		
 			/* var acProfile1:AccessControlProfileVO = new AccessControlProfileVO();

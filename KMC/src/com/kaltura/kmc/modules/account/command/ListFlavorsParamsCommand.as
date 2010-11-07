@@ -61,7 +61,7 @@ package com.kaltura.kmc.modules.account.command
 				ExternalInterface.call("kmc.functions.expired");
 				return;
 			}
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'notLoadFlavors') + "/n/t"  + info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(ResourceManager.getInstance().getString('account', 'notLoadFlavors') + "/n/t"  + info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 	//		clearOldData();
 	//		setDummyData();
 			_model.loadingFlag = false;

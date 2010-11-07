@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.events
 
 	public class KalturaEvent extends CairngormEvent
 	{
-		public static const CONTACT_US : String = "contactUs";
+		public static const CONTACT_US : String = "account_contactUs";
 		public var userName : String = "";
 		public var userPhone : String = "";
 		public var userComment : String = "";

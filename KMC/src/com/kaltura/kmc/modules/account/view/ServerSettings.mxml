@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable">
+		 creationComplete="init()"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable">
 		<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -25,12 +26,22 @@
 			[Bindable] public var partnerData : PartnerVO;
 			private var _clonedPartnerData : PartnerVO;
 			
+			/**
+			 * make sure we have both creationComplete and an external call to init()
+			 * */
+			private var _ready:Boolean = false;
+			
 			public function init() : void
-			{				
-				BindingUtils.bindSetter( onPartnerDataLoaded , this , "partnerData" );
-				
-				var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
-				partnerEvent.dispatch();
+			{
+				if (_ready) {
+					BindingUtils.bindSetter( onPartnerDataLoaded , this , "partnerData" );
+					
+					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
+					partnerEvent.dispatch();
+				}
+				else {
+					_ready = true;
+				}
 			}
 			
 			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
@@ -143,7 +154,7 @@
 					recieveServerNoti.text.indexOf("http")>-1)
 				pingUrlSrv.send()
 			else
-				Alert.show(resourceManager.getString('kmc', 'httpverify'))
+				Alert.show(resourceManager.getString('account', 'httpverify'))
 			}
 			
 			
@@ -169,8 +180,8 @@
 	<mx:HTTPService id="pingUrlSrv" 
 		url="{recieveServerNoti.text}" 
 		resultFormat="text"
-		result="{Alert.show(resourceManager.getString('kmc', 'pingSuccessful'))}"
-		fault="{Alert.show(resourceManager.getString('kmc', 'pingFailed'))}"
+		result="{Alert.show(resourceManager.getString('account', 'pingSuccessful'))}"
+		fault="{Alert.show(resourceManager.getString('account', 'pingFailed'))}"
 		method="POST" 
 		showBusyCursor="true"/>
 		
@@ -178,116 +189,116 @@
 	<mx:WipeUp id="wipeOut" />
 	<mx:WipeDown id="wipeIn" />
 	<!-- <mx:HBox width="100%" horizontalAlign="right">
-		<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('kmc', 'advancedSettings')}" 
+		<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}" 
 				click="toggoleAdvanced()" styleName="openCloseBtnOpen" />	
 	</mx:HBox> -->
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox width="100%" height="100%">
 			<mx:VBox id="details" width="100%" height="100%" horizontalAlign="left"  styleName="blueBox" >
-				<mx:Label text="{resourceManager.getString('kmc', 'partnerInfo')}" styleName="pageTitle"/>
-				<mx:Label htmlText="{resourceManager.getString('kmc', 'partnerIdB')} {partnerData.pId}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('kmc', 'subPartnerIdB')} {partnerData.subPId}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('kmc', 'adminSeceretB')} {partnerData.adminSecret}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('kmc', 'userSeceretB')} {partnerData.secret}" selectable="true"/>
+				<mx:Label text="{resourceManager.getString('account', 'partnerInfo')}" styleName="pageTitle"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'partnerIdB')} {partnerData.pId}" selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'subPartnerIdB')} {partnerData.subPId}" selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'adminSeceretB')} {partnerData.adminSecret}" selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'userSeceretB')} {partnerData.secret}" selectable="true"/>
 				<mx:HBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
-					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('kmc', 'advancedSettings')}" 
+					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}" 
 							click="toggoleAdvanced()" styleName="openCloseBtnOpen" />	
 				</mx:HBox>
 			</mx:VBox>
 			<mx:VBox id="advCont" width="100%" height="100%" horizontalAlign="left" styleName="blueBox" visible="false"
 				hideEffect="{wipeOut}" showEffect="{wipeIn}">
-				<mx:Label text="{resourceManager.getString('kmc', 'entryManagment')}" styleName="pageTitle"/>
+				<mx:Label text="{resourceManager.getString('account', 'entryManagment')}" styleName="pageTitle"/>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'appendEntry')}" />
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}" />
 					<mx:ComboBox id="appendEntry" 
 						change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}">
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('kmc', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('kmc', 'false')}</mx:String>
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
 				<!-- <mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'createUniqeMixId')}" />
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'createUniqeMixId')}" />
 					<mx:ComboBox id="createUniqeMixId" 
 						change="{partnerData.shouldForceUniqueKshow = createUniqeMixId.selectedIndex == 0 ? true : false}">
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('kmc', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('kmc', 'false')}</mx:String>
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'returnDuplicateMix')}" />
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnDuplicateMix')}" />
 					<mx:ComboBox id="returnDuplicateMix" 
 						change="{partnerData.returnDuplicateKshow = returnDuplicateMix.selectedIndex == 0 ? true : false}"> 
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('kmc', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('kmc', 'false')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>	
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox> -->
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'appearInUploader')}" />
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appearInUploader')}" />
 					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )" >
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('kmc', 'kalturaNetwork')}</mx:String>	
-							<mx:String>{resourceManager.getString('kmc', 'siteSearch')}</mx:String>
-							<mx:String>{resourceManager.getString('kmc', 'doesntAppearInCW')}</mx:String>		
+							<mx:String>{resourceManager.getString('account', 'kalturaNetwork')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'siteSearch')}</mx:String>
+							<mx:String>{resourceManager.getString('account', 'doesntAppearInCW')}</mx:String>		
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'returnListOfUserClips')}" />
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnListOfUserClips')}" />
 					<mx:ComboBox id="returnListOfUserClips" 
 						change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}" > 
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('kmc', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('kmc', 'false')}</mx:String>
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
-				<mx:Label text="{resourceManager.getString('kmc', 'misc')}" styleName="pageTitle"/>
+				<mx:Label text="{resourceManager.getString('account', 'misc')}" styleName="pageTitle"/>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'userPageUrlFormat')}"/>
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userPageUrlFormat')}"/>
 					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}" 
 						change="{partnerData.userLandingPage = userLandingPage.text}"/>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'mediaPageUrlFormat')}"/>
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'mediaPageUrlFormat')}"/>
 					<mx:TextInput id="landingPage" text="{partnerData.landingPage}" 
 						change="{partnerData.landingPage = landingPage.text}"/>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('kmc', 'userUploadLimit')}"/>
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userUploadLimit')}"/>
 					<mx:NumericStepper id="maxUploadSize" minimum="0" maximum="10000" value="{partnerData.maxUploadSize}" 
 						change="{partnerData.maxUploadSize = maxUploadSize.value}" />
-					<mx:Label text="{resourceManager.getString('kmc', 'mb')}"/>
+					<mx:Label text="{resourceManager.getString('account', 'mb')}"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:VBox>
 		<mx:VBox width="100%" height="100%">
 			<mx:VBox width="100%"  height="100%" maxHeight="{details.height}" horizontalAlign="left"  styleName="blueBox" >
 				<mx:HBox width="100%" >
-					<mx:Label text="{resourceManager.getString('kmc', 'notifications')}" styleName="pageTitle"/>
+					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="pageTitle"/>
 					<mx:Spacer width="100%" />
 					<mx:Button styleName="help" buttonMode="true" 
-						click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'helpServerSettings') ) )}"/>
+						click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'helpServerSettings') ) )}"/>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('kmc', 'recieveServerNoti')}" />
-					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('kmc', 'yes')}" groupName="getNoti" 
+					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}" />
+					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}" groupName="getNoti" 
 						change="onNotificationsConfigChange( event )" />
-					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('kmc', 'no')}" groupName="getNoti" 
+					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}" groupName="getNoti" 
 						change="onNotificationsConfigChange( event )" />
 				</mx:HBox>
 				
 				<mx:HBox >
-					<mx:Label text="{resourceManager.getString('kmc', 'notificationUrl')}:"/>
+					<mx:Label text="{resourceManager.getString('account', 'notificationUrl')}:"/>
 					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
 						change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected}"/>
-					<mx:Button label="{resourceManager.getString('kmc', 'pingUrl')}" 
+					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" 
 						click="{verifyHttp()}" enabled="{yesGetNoti.selected}"
 						buttonMode="true"/>
 				</mx:HBox>
@@ -299,10 +310,10 @@
 					dataProvider="{partnerData.notifications}"
 					selectable="false">
 					<mx:columns>
-						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('kmc', 'notiName')}"
+						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('account', 'notiName')}"
 							dataField="name" dataTipField="name" />
 						<mx:DataGridColumn width="60" 
-							headerText="{resourceManager.getString('kmc', 'availableInClient')}"
+							headerText="{resourceManager.getString('account', 'availableInClient')}"
 							textAlign="center"
 							dataField="availableInClient" dataTipField="availableInClient">
 							<mx:itemRenderer>
@@ -313,7 +324,7 @@
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						<mx:DataGridColumn width="60" 
-							headerText="{resourceManager.getString('kmc', 'availableInServer')}"
+							headerText="{resourceManager.getString('account', 'availableInServer')}"
 							 textAlign="center"
 							dataField="availableInServer" dataTipField="availableInServer">
 							<mx:itemRenderer>
@@ -329,6 +340,6 @@
 	</mx:HBox>
 	<mx:Spacer height="10" />
 	<mx:HBox width="100%" styleName="centerHBox">
-		<mx:Button label="{resourceManager.getString('kmc', 'saveChanges')}" click="saveChanges()" buttonMode="true"/>
+		<mx:Button label="{resourceManager.getString('account', 'saveChanges')}" click="saveChanges()" buttonMode="true"/>
 	</mx:HBox>
 </mx:VBox>

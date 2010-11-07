@@ -10,10 +10,10 @@ package com.kaltura.kmc.modules.account.events
 	 */	
 	public class MetadataFieldEvent extends CairngormEvent
 	{	
-		public static const DELETE : String = "deleteField";
-		public static const ADD : String = "addField";
-		public static const EDIT : String = "editField";
-		public static const REORDER : String = "reorderFields";
+		public static const DELETE : String = "account_deleteField";
+		public static const ADD : String = "account_addField";
+		public static const EDIT : String = "account_editField";
+		public static const REORDER : String = "account_reorderFields";
 		
 		public var metadataFields:Array;
 		

@@ -73,6 +73,8 @@ package com.kaltura.kmc.business {
 			
 			// set module for load
 			var moduleLoader:ModuleLoader = new ModuleLoader();
+//			moduleLoader.applicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
+//			moduleLoader.applicationDomain = new ApplicationDomain();
 			moduleLoader.applicationDomain = ApplicationDomain.currentDomain;
 			moduleLoader.addEventListener(ModuleEvent.READY, onModuleReady);
 			moduleLoader.addEventListener(ModuleEvent.PROGRESS, onModuleProgress);

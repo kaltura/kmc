@@ -59,7 +59,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			
-			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('kmc', 'changesSaved'));
+			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('account', 'changesSaved'));
 			setTimeout( closeAlert , 3000 , alert);
 		}
 		
@@ -73,7 +73,7 @@ package com.kaltura.kmc.modules.account.command
 			}
 			// show readable error message
 			//TODO if one day we get an enum of error codes from server, show locale string instead.
-			var alert : Alert = Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error')); 
+			var alert : Alert = Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error')); 
 //			setTimeout( closeAlert , 2000 , alert);
 		}
 	}

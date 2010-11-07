@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
 				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#034F57" layout="vertical"
-				   minHeight="520" minWidth="950" 
-				   borderThickness="0" borderStyle="solid" 
-				   paddingLeft="0" paddingRight="0" paddingTop="0"
-				   paddingBottom="0" 
-				   xmlns:view="com.kaltura.kmc.modules.account.view.*" 
+				   minHeight="520" minWidth="950" borderThickness="0" borderStyle="solid" paddingLeft="0"
+				   paddingRight="0" paddingTop="0" paddingBottom="0" xmlns:view="com.kaltura.kmc.modules.account.view.*"
 				   xmlns:business="com.kaltura.kmc.modules.account.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.account.control.*">
 
 	<mx:Style source="assets/account/account.css"/>
 
 	<mx:Metadata>
-		[ResourceBundle("kmc")]
+		[ResourceBundle("account")]
 	</mx:Metadata>
 
 
@@ -45,9 +42,9 @@
 			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			import mx.managers.PopUpManager;
-			
+
 			/**
-			 * KMC is responsible to use the value of  
+			 * KMC is responsible to use the value of
 			 * this const as the id of this module.
 			 * */
 			public static const NAME:String = "account";
@@ -68,10 +65,12 @@
 
 			private var _paypalWin:PayPalFormWin;
 
+
 			override public function getModuleName():String {
 				return Account.NAME;
 			}
-			
+
+
 			override protected function start():void {
 				Security.allowDomain('*');
 
@@ -96,19 +95,22 @@
 				var adminVo:AdminVO = new AdminVO();
 				adminVo.oldEmail = adminVo.newEmail = _flashvars.email;
 				_model.adminData = adminVo;
+				
+				// after we have the client, initialize the different panels
 				ao.init();
 				ss.init();
+				cs.init();
 
 				/// set Alert locale for all this application
-				Alert.yesLabel = resourceManager.getString('kmc', 'yes');
-				Alert.noLabel = resourceManager.getString('kmc', 'no');
-				Alert.okLabel = resourceManager.getString('kmc', 'ok');
-				Alert.cancelLabel = resourceManager.getString('kmc', 'cancel');
+				Alert.yesLabel = resourceManager.getString('account', 'yes');
+				Alert.noLabel = resourceManager.getString('account', 'no');
+				Alert.okLabel = resourceManager.getString('account', 'ok');
+				Alert.cancelLabel = resourceManager.getString('account', 'cancel');
 
 				//// init analytics feature and Google Analytics
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
 				ka.init(_model.context.kc, "Account", VERSION, _model.context.userId);
-				
+
 				if (stage) {
 					onAddedToStage();
 				}
@@ -122,7 +124,7 @@
 			public function onExternalTabChange():void {
 				_model.saveAndExitFlag = true;
 				if ((contentView.getChildAt(_oldSelectedTab) as IUndoable).isChanged()) {
-					Alert.show(resourceManager.getString('kmc', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQAndExit);
+					Alert.show(resourceManager.getString('account', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQAndExit);
 					return;
 				}
 
@@ -155,7 +157,7 @@
 				//displays the custom data tab only when the customFieldsTab flashvar is true
 				if (objParam.enablecustomdata == "true") {
 					var customDataView:CustomData = new CustomData();
-					customDataView.label = resourceManager.getString('kmc', 'customData');
+					customDataView.label = resourceManager.getString('account', 'customData');
 					customDataView.setStyle("styleName", "pageStyle");
 					contentView.addChild(customDataView);
 
@@ -167,19 +169,19 @@
 				if (objParam.subnavtab) {
 					//		Alert.show(objParam.subnavtab, "objParam.subnavtab");
 					switch (objParam.subnavtab.toString()) {
-						case resourceManager.getString('kmc', 'accountOverview'):
+						case resourceManager.getString('account', 'accountOverview'):
 							contentView.selectedIndex = 0;
 							break;
-						case resourceManager.getString('kmc', 'serverSettings'):
+						case resourceManager.getString('account', 'serverSettings'):
 							contentView.selectedIndex = 1;
 							break;
-						case resourceManager.getString('kmc', 'accessControl'):
+						case resourceManager.getString('account', 'accessControl'):
 							contentView.selectedIndex = 2;
 							break;
-						case resourceManager.getString('kmc', 'transcodingSettings'):
+						case resourceManager.getString('account', 'transcodingSettings'):
 							contentView.selectedIndex = 3;
 							break;
-						case resourceManager.getString('kmc', 'accountUpgrade'):
+						case resourceManager.getString('account', 'accountUpgrade'):
 							contentView.selectedIndex = 4;
 							break;
 					}
@@ -195,12 +197,12 @@
 						_paypalWin.paymentDetailsVo = _model.paymentDetailsVo;
 						_paypalWin.data = _model.modalWinData;
 						if ((_model.modalWinData as PackagesVO).cycleFee == _model.partnerPackage.cycleFee)
-							_paypalWin.title = resourceManager.getString('kmc', 'updatePaymetInfo');
+							_paypalWin.title = resourceManager.getString('account', 'updatePaymetInfo');
 						else if ((_model.modalWinData as PackagesVO).cycleFee > _model.partnerPackage.cycleFee)
-							_paypalWin.title = resourceManager.getString('kmc', 'upgradePackage');
+							_paypalWin.title = resourceManager.getString('account', 'upgradePackage');
 						else {
-							_paypalWin.title = resourceManager.getString('kmc', 'downgradePackage');
-							_paypalWin.actionBtnText = resourceManager.getString('kmc', 'downgradeNow');
+							_paypalWin.title = resourceManager.getString('account', 'downgradePackage');
+							_paypalWin.actionBtnText = resourceManager.getString('account', 'downgradeNow');
 						}
 
 						_paypalWin.title += " - " + _model.modalWinData.name;
@@ -252,7 +254,7 @@
 				_newSelectedTab = event.index;
 
 				if ((contentView.getChildAt(_oldSelectedTab) as IUndoable).isChanged()) {
-					Alert.show(resourceManager.getString('kmc', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQ);
+					Alert.show(resourceManager.getString('account', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQ);
 					return;
 				}
 
@@ -309,20 +311,20 @@
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500">
-			<view:AccountOverview id="ao" width="100%" label="{resourceManager.getString('kmc','accountOverview')}"
+			<view:AccountOverview id="ao" width="100%" label="{resourceManager.getString('account','accountOverview')}"
 								  styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								  partnerData="{_model.partnerData}" adminData="{_model.adminData}"/>
-			<view:ServerSettings id="ss" width="100%" label="{resourceManager.getString('kmc','serverSettings')}"
+			<view:ServerSettings id="ss" width="100%" label="{resourceManager.getString('account','serverSettings')}"
 								 styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								 partnerData="{_model.partnerData}"/>
-			<view:AccessControl label="{resourceManager.getString('kmc','accessControl')}"
+			<view:AccessControl label="{resourceManager.getString('account','accessControl')}"
 								rootUrl="{_model.context.rootUrl}" accessControlsList="{_model.accessControlData}"
 								styleName="pageStyle"/>
-			<view:ConversionSettings label="{resourceManager.getString('kmc','transcodingSettings')}"
+			<view:ConversionSettings id="cs" label="{resourceManager.getString('account','transcodingSettings')}"
 									 rootUrl="{_model.context.rootUrl}" conversionData="{_model.conversionData}"
 									 flavorParamData="{_model.flavorsData}" styleName="pageStyle"/>
 			<view:Packages width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
-						   label="{resourceManager.getString('kmc','accountUpgrade')}" styleName="pageStyle"/>
+						   label="{resourceManager.getString('account','accountUpgrade')}" styleName="pageStyle"/>
 		</mx:ViewStack>
 
 	</mx:VBox>

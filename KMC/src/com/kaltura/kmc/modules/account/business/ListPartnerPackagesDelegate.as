@@ -32,13 +32,13 @@ package com.kaltura.kmc.modules.account.business
 			//TODO: BREAK THE BITWISE OPPERATIONS
 			switch( type )
 			{
-				case 1: return ResourceManager.getInstance().getString('kmc','communtySupport'); break;
-				case 2: return ResourceManager.getInstance().getString('kmc','ticketSystem'); break;
-				case 3: return ResourceManager.getInstance().getString('kmc','communtySupport') +", "+ResourceManager.getInstance().getString('kmc','ticketSystem'); break;
-				case 4: return ResourceManager.getInstance().getString('kmc','email')+","+ResourceManager.getInstance().getString('kmc','email'); break;
-				case 6: return ResourceManager.getInstance().getString('kmc','ticketSystem')+", "+ResourceManager.getInstance().getString('kmc','email'); break;
-				case 8: return ResourceManager.getInstance().getString('kmc','phone'); break;
-				case 14: return ResourceManager.getInstance().getString('kmc','ticketSystem')+", "+ResourceManager.getInstance().getString('kmc','email')+", "+ResourceManager.getInstance().getString('kmc','phone'); break;
+				case 1: return ResourceManager.getInstance().getString('account','communtySupport'); break;
+				case 2: return ResourceManager.getInstance().getString('account','ticketSystem'); break;
+				case 3: return ResourceManager.getInstance().getString('account','communtySupport') +", "+ResourceManager.getInstance().getString('kmc','ticketSystem'); break;
+				case 4: return ResourceManager.getInstance().getString('account','email')+","+ResourceManager.getInstance().getString('kmc','email'); break;
+				case 6: return ResourceManager.getInstance().getString('account','ticketSystem')+", "+ResourceManager.getInstance().getString('kmc','email'); break;
+				case 8: return ResourceManager.getInstance().getString('account','phone'); break;
+				case 14: return ResourceManager.getInstance().getString('account','ticketSystem')+", "+ResourceManager.getInstance().getString('kmc','email')+", "+ResourceManager.getInstance().getString('kmc','phone'); break;
 			}
 			
 			return "";
@@ -69,10 +69,10 @@ package com.kaltura.kmc.modules.account.business
 					packageVo.pId = prop.id;
 					packageVo.name = prop.name;
 					packageVo.cycleType = prop.cycle_type.text();
-					packageVo.cycleBw = prop.cycle_bw.text() + ResourceManager.getInstance().getString('kmc','perGb');
+					packageVo.cycleBw = prop.cycle_bw.text() + ResourceManager.getInstance().getString('account','perGb');
 					packageVo.cycleFee =  prop.cycle_fee.text();
-					packageVo.cycleFeeAsString = ResourceManager.getInstance().getString('kmc','dollarSign') + prop.cycle_fee.text();
-					packageVo.overageFee = ResourceManager.getInstance().getString('kmc','dollarSign') + prop.overage_fee.text() + ResourceManager.getInstance().getString('kmc','perGb');
+					packageVo.cycleFeeAsString = ResourceManager.getInstance().getString('account','dollarSign') + prop.cycle_fee.text();
+					packageVo.overageFee = ResourceManager.getInstance().getString('account','dollarSign') + prop.overage_fee.text() + ResourceManager.getInstance().getString('kmc','perGb');
 					packageVo.supportTypes = getSupportType( int(prop.support_types) );
 					arr.push( packageVo );
 				}

@@ -72,18 +72,18 @@ package com.kaltura.kmc.modules.analytics.model
 		 * dataprovider for content reports tab sub-navigation 
 		 */		
 		public var contentDtnDp : ArrayCollection = new ArrayCollection( 
-										  [ ResourceManager.getInstance().getString('kmc','topContent') ,
-										    ResourceManager.getInstance().getString('kmc','contentDropOff') ,
-										    ResourceManager.getInstance().getString('kmc','contentInteractions') ,
-										    ResourceManager.getInstance().getString('kmc','contentContributions') ]);
+										  [ ResourceManager.getInstance().getString('analytics','topContent') ,
+										    ResourceManager.getInstance().getString('analytics','contentDropOff') ,
+										    ResourceManager.getInstance().getString('analytics','contentInteractions') ,
+										    ResourceManager.getInstance().getString('analytics','contentContributions') ]);
 		
 		/**
 		 * dataprovider for the community reports tab sub-navigation 
 		 */		
 		public var userDtnDp : ArrayCollection = new ArrayCollection( 
-										  [ ResourceManager.getInstance().getString('kmc','topContributors') ,
-										 	ResourceManager.getInstance().getString('kmc','mapOverlay') ,
-										 	ResourceManager.getInstance().getString('kmc','topSyndications') ]);
+										  [ ResourceManager.getInstance().getString('analytics','topContributors') ,
+										 	ResourceManager.getInstance().getString('analytics','mapOverlay') ,
+										 	ResourceManager.getInstance().getString('analytics','topSyndications') ]);
 										 								 
 	    //---------------------------------------------------------
 		/**

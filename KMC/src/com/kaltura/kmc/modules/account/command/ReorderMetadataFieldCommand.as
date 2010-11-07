@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.account.command
 				_model.metadataProfile.xsd = MetadataProfileParser.fromArrayToXSD(_model.metadataProfile.metadataFieldVOArray);
 			}
 			catch (e:Error){
-				Alert.show(ResourceManager.getInstance().getString('kmc','metadataMalformedXSDError'), ResourceManager.getInstance().getString('kmc','error'));
+				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('account','error'));
 				return;
 			}
 			

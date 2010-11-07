@@ -43,7 +43,7 @@ package com.kaltura.kmc.modules.account.command
 				}
 			}
 			catch (e:Error){
-				Alert.show(ResourceManager.getInstance().getString('kmc','metadataMalformedXSDError'), ResourceManager.getInstance().getString('kmc','error'));
+				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('kmc','error'));
 				return;
 			}
 

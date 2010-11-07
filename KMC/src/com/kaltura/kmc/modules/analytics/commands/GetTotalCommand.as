@@ -60,9 +60,9 @@ package com.kaltura.kmc.modules.analytics.commands
 			for(var i:int=0; i<aggArr.length; i++)
 			{
 				var aggDataVo : AggregateDataVo = new AggregateDataVo();
-				aggDataVo.title = ResourceManager.getInstance().getString('kmc',aggLbls[i]);
+				aggDataVo.title = ResourceManager.getInstance().getString('analytics',aggLbls[i]);
 				aggDataVo.value = FormatReportParam.format( aggLbls[i] , aggArr[i] );
-				aggDataVo.helpToolTip =ResourceManager.getInstance().getString('kmc',aggLbls[i]+"ToolTip");
+				aggDataVo.helpToolTip =ResourceManager.getInstance().getString('analytics',aggLbls[i]+"ToolTip");
 				arrCol.addItem( aggDataVo );
 			}
 			

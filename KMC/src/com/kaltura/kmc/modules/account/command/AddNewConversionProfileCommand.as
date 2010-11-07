@@ -42,7 +42,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 

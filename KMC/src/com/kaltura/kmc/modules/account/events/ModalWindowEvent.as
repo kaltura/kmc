@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.events
 
 	public class ModalWindowEvent extends CairngormEvent
 	{
-		public static const OPEN_PAYPAL_WINDOW : String = "openPayPalWindow";
+		public static const OPEN_PAYPAL_WINDOW : String = "account_openPayPalWindow";
 		public var openWin : Boolean;
 		public var windowState : String;
 		

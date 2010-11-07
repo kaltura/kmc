@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.re
 		{
 			if((data as ConversionProfileVO).profile.isDefault)
 			{
-				this.toolTip = resourceManager.getString('kmc', 'defualtProfileTooTip');
+				this.toolTip = resourceManager.getString('account', 'defualtProfileTooTip');
 				this.setStyle("backgroundColor", "#FFFDEF");
 			}
 			else

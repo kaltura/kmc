@@ -89,7 +89,7 @@ package com.kaltura.kmc.modules.account.command
 				ExternalInterface.call("kmc.functions.expired");
 				return;
 			}
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 	}

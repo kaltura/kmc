@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.analytics.vo
 	{
 		public static const millisecondsPerDay:int = 1000 * 60 * 60 * 24;
 		
-		public var selectedDate : String = ResourceManager.getInstance().getString('kmc', 'last30Days');
+		public var selectedDate : String = ResourceManager.getInstance().getString('analytics', 'last30Days');
 		public var fromDate : Date;
 		public var toDate : Date;
 		public var categories : String;

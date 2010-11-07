@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class GraphEvent extends CairngormEvent
 	{
-		public static const CHANGE_DIM : String = "changeDim";
+		public static const CHANGE_DIM : String = "analytics_changeDim";
 		public var newDim : String;
 		public function GraphEvent(type:String, newDim : String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

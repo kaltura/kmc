@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class PageEvent extends CairngormEvent
 	{
-		public static const PAGE_CHANGE : String = "pageChange";
+		public static const PAGE_CHANGE : String = "analytics_pageChange";
 		
 		public var currentPage : int = 1;
 		public var currentSize : int = 10;

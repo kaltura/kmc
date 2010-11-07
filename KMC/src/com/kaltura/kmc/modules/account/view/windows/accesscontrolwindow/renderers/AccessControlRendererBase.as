@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.rendere
 		{
 			if((data as AccessControlProfileVO).profile.isDefault == KalturaNullableBoolean.TRUE_VALUE)
 			{
-				this.toolTip = resourceManager.getString('kmc', 'defaultAccessContolProfileToolTip');
+				this.toolTip = resourceManager.getString('account', 'defaultAccessContolProfileToolTip');
 				this.setStyle("backgroundColor", "#FFFDEF");
 			}
 			else

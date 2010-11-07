@@ -27,7 +27,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			for(var j:int=0;j<_model.selectedReportData.totalHeaders.length; j++)
 				if(_model.selectedReportData.totalHeaders[j] != "object_id")
-					headers += ResourceManager.getInstance().getString('kmc',_model.selectedReportData.totalHeaders[j]) + ",";
+					headers += ResourceManager.getInstance().getString('analytics',_model.selectedReportData.totalHeaders[j]) + ",";
 					
 			headers = headers.substr(0,headers.length-1);
 			headers += ";Object Id,";
@@ -36,7 +36,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			{
 				for(var i:int=0;i<_model.selectedReportData.tableHeaders.length; i++)
 					if(_model.selectedReportData.tableHeaders[i] != "object_id")
-						headers +=  ResourceManager.getInstance().getString('kmc',_model.selectedReportData.tableHeaders[i]) + ",";
+						headers +=  ResourceManager.getInstance().getString('analytics',_model.selectedReportData.tableHeaders[i]) + ",";
 			}
 			else
 			{
@@ -69,8 +69,8 @@ package com.kaltura.kmc.modules.analytics.commands
 		{
 			_model.loadingFlag = false;
 			_fileUrl = result.data;
-			Alert.show(  ResourceManager.getInstance().getString('kmc','csvReady') ,
-						 ResourceManager.getInstance().getString('kmc','csvReadyTitle') ,
+			Alert.show(  ResourceManager.getInstance().getString('analytics','csvReady') ,
+						 ResourceManager.getInstance().getString('analytics','csvReadyTitle') ,
 						 Alert.OK ,
 						 null,
 						 onClose );	
@@ -79,7 +79,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		private function onClose( event : CloseEvent ) : void
 		{
 			fm.downloadFile( _fileUrl,
-							 ResourceManager.getInstance().getString('kmc','downloadCSVTitle'), 
+							 ResourceManager.getInstance().getString('analytics','downloadCSVTitle'), 
 							 _model.selectedReportData.title +".csv");
 		}
 		

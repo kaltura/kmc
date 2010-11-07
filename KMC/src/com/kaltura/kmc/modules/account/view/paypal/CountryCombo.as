@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.account.view.paypal
 		
 		function CountryCombo() {
 			super();
-			this.prompt =  resourceManager.getString('kmc','chooseCountry');
+			this.prompt =  resourceManager.getString('account','chooseCountry');
 			this.labelField = "country";
 			this.setDataProvider();
 		}

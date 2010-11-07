@@ -40,7 +40,7 @@ package com.kaltura.kmc.modules.account.command
 		public function result(data:Object):void
 		{
 			_model.loadingFlag = false;
-			var alert : Alert = Alert.show( ResourceManager.getInstance().getString('kmc', 'thankYou') );
+			var alert : Alert = Alert.show( ResourceManager.getInstance().getString('account', 'thankYou') );
 			setTimeout( closeAlert , 3000 , alert);
 		}
 		
@@ -52,7 +52,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 	}
 }

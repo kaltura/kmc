@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.events
 
 	public class AdminEvent extends CairngormEvent
 	{
-		public static const UPDATE_ADMIN_PASSWORD : String = "updateAdminPassword";
+		public static const UPDATE_ADMIN_PASSWORD : String = "account_updateAdminPassword";
 		public function AdminEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);

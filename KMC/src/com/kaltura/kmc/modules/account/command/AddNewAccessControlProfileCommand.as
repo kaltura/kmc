@@ -33,13 +33,13 @@ package com.kaltura.kmc.modules.account.command
 			
 			if(data.success)
 			{
-				Alert.show(ResourceManager.getInstance().getString('kmc', 'addNewAccessControlDoneMsg'));
+				Alert.show(ResourceManager.getInstance().getString('account', 'addNewAccessControlDoneMsg'));
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
 			{
-				Alert.show(data.error, ResourceManager.getInstance().getString('kmc', 'error'));
+				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 
 			_model.partnerInfoLoaded = true;
@@ -48,8 +48,8 @@ package com.kaltura.kmc.modules.account.command
 		public function fault(event:Object):void
 		{
 			_model.loadingFlag = false;
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'notAddedNewAccessControlMsg') + ':\n' + event.error.errorMsg, 
-					   ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(ResourceManager.getInstance().getString('account', 'notAddedNewAccessControlMsg') + ':\n' + event.error.errorMsg, 
+					   ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 

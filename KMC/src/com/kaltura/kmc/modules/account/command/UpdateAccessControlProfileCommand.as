@@ -33,13 +33,13 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			if(data.success)
 			{
-				Alert.show(ResourceManager.getInstance().getString('kmc', 'updateAccessControl'));
+				Alert.show(ResourceManager.getInstance().getString('account', 'updateAccessControl'));
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
 			{
-				Alert.show(data.error, ResourceManager.getInstance().getString('kmc', 'error'));
+				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 			_model.partnerInfoLoaded = true;
 		}
@@ -52,7 +52,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'noUpdateAccessControl'));
+			Alert.show(ResourceManager.getInstance().getString('account', 'noUpdateAccessControl'));
 		}
 		
 

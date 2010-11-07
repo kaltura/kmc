@@ -4,11 +4,11 @@ package com.kaltura.kmc.modules.account.events
 	
 	public class ExternalSyndicationEvent extends CairngormEvent
 	{
-		public static const GET_ALL_EXTERNAL_SYNDICATIONS : String = "getAllSyndications";
-		public static const SAVE_EXTERNAL_SYNDICATION_CHANGES : String = "saveSyndicationChanges";
-		public static const ADD_NEW_EXTERNAL_SYNDICATION : String = "addNewSyndication";
-		public static const DELETE_EXTERNAL_SYNDICATION : String = "deleteCheckedSyndication";
-		public static const MARK_EXTERNAL_SYNDICATION : String = "markSyndications";
+		public static const GET_ALL_EXTERNAL_SYNDICATIONS : String = "account_getAllSyndications";
+		public static const SAVE_EXTERNAL_SYNDICATION_CHANGES : String = "account_saveSyndicationChanges";
+		public static const ADD_NEW_EXTERNAL_SYNDICATION : String = "account_addNewSyndication";
+		public static const DELETE_EXTERNAL_SYNDICATION : String = "account_deleteCheckedSyndication";
+		public static const MARK_EXTERNAL_SYNDICATION : String = "account_markSyndications";
 		
 		public var selected : Boolean;
 		

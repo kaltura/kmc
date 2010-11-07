@@ -57,7 +57,7 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function fault(event:Object):void
 		{
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(ResourceManager.getInstance().getString('account', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 			_model.loadingFlag = false;
 		}
 		

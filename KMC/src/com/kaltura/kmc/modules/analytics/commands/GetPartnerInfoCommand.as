@@ -90,7 +90,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		
 		public function fault(info:Object):void
 		{
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'notLoadPartnerData'), ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(ResourceManager.getInstance().getString('analytics', 'notLoadPartnerData'), ResourceManager.getInstance().getString('analytics', 'error'));
 			_model.loadingFlag = false;
 		}
 		

@@ -4,8 +4,8 @@ package com.kaltura.kmc.modules.analytics.control
 
 	public class PartnerEvent extends CairngormEvent
 	{
-		public static const UPDATE_PARTNER : String = "updatePartner";
-		public static const GET_PARTNER_INFO : String = "getPartnerInfo";
+		public static const UPDATE_PARTNER : String = "analytics_updatePartner";
+		public static const GET_PARTNER_INFO : String = "analytics_getPartnerInfo";
 		
 		public function PartnerEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

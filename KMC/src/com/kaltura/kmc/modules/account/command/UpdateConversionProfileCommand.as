@@ -47,7 +47,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			if(event.error == null)
 			{
-				Alert.show(ResourceManager.getInstance().getString('kmc', 'changesSaved'));
+				Alert.show(ResourceManager.getInstance().getString('account', 'changesSaved'));
 			}
 			
 			var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);

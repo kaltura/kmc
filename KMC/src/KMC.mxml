@@ -125,7 +125,7 @@
 			 * UiConf failed to load, alert user
 			 */
 			protected function uiconfFailedHandler(event:KalturaEvent):void {
-				throw new Error("KMC.mxml, KMC uiconf load failed:", event.error.errorMsg);
+				throw new Error("KMC.mxml, KMC uiconf load failed: " + event.error.errorMsg);
 			}
 
 
@@ -133,7 +133,7 @@
 			 * module failed to load, alert user
 			 */
 			protected function onModuleLoadError(event:KmcModuleEvent):void {
-				throw new Error("KMC.mxml, Module load failed:", event.errorText);
+				throw new Error("KMC.mxml, Module load failed: " + event.errorText);
 			}
 
 
@@ -147,11 +147,11 @@
 				// load modules :
 				var moduleList:XMLList = _uiconf.modules.module;
 				var total:int = moduleList.length();
-				var moduleInfo:XML;
+				var mInfo:XML;
 				for (var i:int = 0; i < total; i++) {
-					moduleInfo = moduleList[i];
-					var url:String = _modulesFolder + "/" + moduleInfo.@id + ".swf";
-					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, moduleInfo.@id);
+					mInfo = moduleList[i];
+					var url:String = _modulesFolder + "/" + mInfo.@id + ".swf";
+					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
 					mainViewStack.addChild(ml);
 				}
 			}

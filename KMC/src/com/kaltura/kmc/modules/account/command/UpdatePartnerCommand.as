@@ -133,7 +133,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			
-			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('kmc', 'changesSaved') );
+			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('account', 'changesSaved') );
 			setTimeout( closeAlert , 3000 , alert);
 		}
 		
@@ -145,7 +145,7 @@ package com.kaltura.kmc.modules.account.command
 				ExternalInterface.call("kmc.functions.expired");
 				return;
 			}
-			var alert : Alert =  Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			var alert : Alert =  Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 			setTimeout( closeAlert , 3000 , alert);
 		}
 	}

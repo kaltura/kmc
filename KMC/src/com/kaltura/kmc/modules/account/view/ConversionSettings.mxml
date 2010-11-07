@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%" initialize="onInit(event)"
-	xmlns:conversionsettingswindow="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*" >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
+		 xmlns:conversionsettingswindow="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
+		 >
 	<mx:states>
 		<mx:State name="advanceModeState">
-	        <mx:SetProperty target="{titleText}" name="htmlText" value="{resourceManager.getString('kmc', 'transcodingProfiles')}"/>
-			<mx:SetProperty target="{linkbutton1}" name="label" value="{resourceManager.getString('kmc', 'switchToSimpleMode')}"/>
-			<mx:SetProperty target="{text1}" name="text" value="{resourceManager.getString('kmc', 'transcodingSettingsAdvancedModeIntroText')}">
+			<mx:SetProperty target="{titleText}" name="htmlText"
+							value="{resourceManager.getString('account', 'transcodingProfiles')}"/>
+			<mx:SetProperty target="{linkbutton1}" name="label"
+							value="{resourceManager.getString('account', 'switchToSimpleMode')}"/>
+			<mx:SetProperty target="{text1}" name="text"
+							value="{resourceManager.getString('account', 'transcodingSettingsAdvancedModeIntroText')}">
 			</mx:SetProperty>
 			<mx:AddChild relativeTo="{vbox1}" position="before">
-				<conversionsettingswindow:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%" 
-					selectable="true" allowMultipleSelection="true" dataProvider="{conversionData}" creationComplete="{setConversionProfilesTableHeight()}"/>
+				<conversionsettingswindow:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%"
+																		  height="100%" selectable="true"
+																		  allowMultipleSelection="true"
+																		  dataProvider="{conversionData}"
+																		  creationComplete="{setConversionProfilesTableHeight()}"/>
 			</mx:AddChild>
 			<mx:RemoveChild target="{conversionSettingsTable1}"/>
 			<mx:RemoveChild target="{saveButton}"/>
 			<mx:AddChild relativeTo="{subVbox}" position="after">
 				<mx:VBox styleName="listActionsBox" height="{subVbox.height}">
-					<mx:Button id='addNewProfileBtn' label="{resourceManager.getString('kmc', 'addNewTranscodingProfileButton')}" useHandCursor="true" 
-						buttonMode="true" click='onOpenNewConversionProfilePopUp(event)' styleName="listActionButton"/>
+					<mx:Button id='addNewProfileBtn'
+							   label="{resourceManager.getString('account', 'addNewTranscodingProfileButton')}"
+							   useHandCursor="true" buttonMode="true" click='onOpenNewConversionProfilePopUp(event)'
+							   styleName="listActionButton"/>
 				</mx:VBox>
 			</mx:AddChild>
 			<!--<mx:SetProperty target="{hbox1}" name="height" value="50"/>-->
 			<mx:AddChild relativeTo="{vbox2}" position="lastChild">
-				<mx:Button label="{resourceManager.getString('kmc', 'disabledDeleteButton')}" useHandCursor="true" buttonMode="true" id='deleteProfileBtn' click="onDeleteConversionProfiles(event)"/>
+				<mx:Button label="{resourceManager.getString('account', 'disabledDeleteButton')}" useHandCursor="true"
+						   buttonMode="true" id='deleteProfileBtn' click="onDeleteConversionProfiles(event)"/>
 			</mx:AddChild>
 		</mx:State>
 	</mx:states>
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -37,271 +47,261 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-			
-			[Bindable]private var _conversionData:ArrayCollection;
-			[Bindable]private var _flavorParamData:ArrayCollection;
-	//		[Bindable]public var allProfilesSelected:Boolean = false;
-			[Bindable]public var allFlavorsSelected:Boolean = false;
-			[Bindable] public var rootUrl : String;
-			
-			[Bindable]public function get conversionData():ArrayCollection
-			{
+
+			[Bindable]
+			private var _conversionData:ArrayCollection;
+			[Bindable]
+			private var _flavorParamData:ArrayCollection;
+			//		[Bindable]public var allProfilesSelected:Boolean = false;
+			[Bindable]
+			public var allFlavorsSelected:Boolean = false;
+			[Bindable]
+			public var rootUrl:String;
+
+
+			[Bindable]
+			public function get conversionData():ArrayCollection {
 				return _conversionData;
 			}
-			
-			public function set conversionData(conversionData:ArrayCollection):void
-			{
+
+
+			public function set conversionData(conversionData:ArrayCollection):void {
 				_conversionData = conversionData;
 				setData();
 			}
-			
-			[Bindable]public function get flavorParamData():ArrayCollection
-			{
+
+
+			[Bindable]
+			public function get flavorParamData():ArrayCollection {
 				return _flavorParamData;
 			}
-			
-			public function set flavorParamData(flavorParamData:ArrayCollection):void
-			{
+
+
+			public function set flavorParamData(flavorParamData:ArrayCollection):void {
 				_flavorParamData = flavorParamData;
 			}
-			
-		//	private var flavorWatcher:ChangeWatcher;
-			
-			private function onInit(event:Event):void
-		    {
-		   		/* flavorWatcher = BindingUtils.bindSetter(loadData, flavorParamData, "length");
-		   		if(flavorParamData)
-				{
-					var getAllFlavorParamsEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
-					getAllFlavorParamsEvent.dispatch();
-				} */
-				
+
+
+			//	private var flavorWatcher:ChangeWatcher;
+
+			/**
+			 * get data
+			 * */
+			public function init():void {
+				/* flavorWatcher = BindingUtils.bindSetter(loadData, flavorParamData, "length");
+				   if(flavorParamData)
+				   {
+				   var getAllFlavorParamsEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+				   getAllFlavorParamsEvent.dispatch();
+				 } */
+
 				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				getAllData.dispatch();
-		    }
-		    
-		    private function loadData(objArr:Object):void
-		    {
-		    	/* if(flavorWatcher != null)
-		    	{
-		    		flavorWatcher.unwatch();
-		    		BindingUtils.bindSetter(loadConversionProfilesData, conversionData, "length");
-			   		if(conversionData)
-					{
-						var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
-						getAllProfilesEvent.dispatch();
-					}
-		    	} */
-		    }
-		
-		    private function setData():void
-		    {
-		    	for each(var profile:ConversionProfileVO in conversionData)
-				{
-					if(profile.profile.isDefault)
-					{
+			}
+
+
+
+			private function setData():void {
+				for each (var profile:ConversionProfileVO in conversionData) {
+					if (profile.profile.isDefault) {
 						conversionSettingsTable1.cProfile = profile.clone();
 					}
-					
+
 					profile.addEventListener(ConversionProfileVO.SELECTED_CHANGED_EVENT, updateProflieStatus);
-					for each(var flavor:FlavorVO in flavorParamData)
-					{
+					for each (var flavor:FlavorVO in flavorParamData) {
 						flavor.addEventListener(FlavorVO.SELECTED_CHANGED_EVENT, updateFlavorsStatus);
 					}
 				}
-				
+
 				flavorParamData.refresh();
 				setFlavorsTableHeight();
 				setConversionProfilesTableHeight();
-		    }
-		    
-		    private function setConversionProfilesTableHeight():void
-		    {
-		    	if(conversionProfilesTable != null)
-				{
+			}
+
+
+			private function setConversionProfilesTableHeight():void {
+				if (conversionProfilesTable != null) {
 					conversionProfilesTable.height = (conversionProfilesTable.rowHeight * (conversionData.length + 0.5)) + conversionProfilesTable.headerHeight;
 				}
-		    }
-		    
-		    
-		    private function setFlavorsTableHeight():void
-		    {
-		    	if(conversionSettingsTable1 != null)
-				{
+			}
+
+
+			private function setFlavorsTableHeight():void {
+				if (conversionSettingsTable1 != null) {
 					conversionSettingsTable1.height = (conversionSettingsTable1.rowHeight * (flavorParamData.length + 0.5)) + conversionSettingsTable1.headerHeight;
 				}
-		    }
-		    
-		   private function updateFlavorsStatus(event:Event):void
-		   {
-		   		var numSelected:int = 0;
-				for each(var flavor:FlavorVO in flavorParamData)
-				{
+			}
+
+
+			private function updateFlavorsStatus(event:Event):void {
+				var numSelected:int = 0;
+				for each (var flavor:FlavorVO in flavorParamData) {
 					numSelected += flavor.selected ? 1 : 0;
 				}
-				
+
 				allFlavorsSelected = (flavorParamData.length == numSelected);
-		   }
-		    
-		   private function updateProflieStatus(event:Event):void
-		   {
-		   	/* 	var numSelected:int = 0;
-				for each(var profile:ConversionProfileVO in conversionData)
-				{
-					numSelected += profile.selected ? 1 : 0;
-				}
-				
-				deleteProfileBtn.enabled = numSelected != 0;
-				 */
-				/* if(numSelected == 0)
-				{
-					deleteProfileBtn.label = resourceManager.getString('kmc', 'disabledDeleteButton');
-				}
-				else if(numSelected == 1)
-				{
-					deleteProfileBtn.label = resourceManager.getString('kmc', 'deleteTranscodingProfile');
-				}
-				else if(numSelected != conversionData.length)
-				{
-					deleteProfileBtn.label = resourceManager.getString('kmc', 'deleteTranscodingProfiles').replace("NUM_OF_DEL" , numSelected);
-				}
-				else
-				{
-					deleteProfileBtn.label = resourceManager.getString('kmc', 'deleteAllTranscodingProfiles');
-				} */
-			
-			//	allFlavorsSelected = (conversionData.length == numSelected);
-		   }
-			
-			
-			private function onChangeState(event:Event):void
-			{
+			}
+
+
+			private function updateProflieStatus(event:Event):void {
+			/* 	var numSelected:int = 0;
+			   for each(var profile:ConversionProfileVO in conversionData)
+			   {
+			   numSelected += profile.selected ? 1 : 0;
+			   }
+
+			   deleteProfileBtn.enabled = numSelected != 0;
+			 */
+			/* if(numSelected == 0)
+			   {
+			   deleteProfileBtn.label = resourceManager.getString('account', 'disabledDeleteButton');
+			   }
+			   else if(numSelected == 1)
+			   {
+			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteTranscodingProfile');
+			   }
+			   else if(numSelected != conversionData.length)
+			   {
+			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteTranscodingProfiles').replace("NUM_OF_DEL" , numSelected);
+			   }
+			   else
+			   {
+			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteAllTranscodingProfiles');
+			 } */
+
+				 //	allFlavorsSelected = (conversionData.length == numSelected);
+			}
+
+
+			private function onChangeState(event:Event):void {
 				currentState = (currentState == null) ? 'advanceModeState' : null;
 			}
-			
-			
-			private function onOpenNewConversionProfilePopUp(event:Event):void
-			{
+
+
+			private function onOpenNewConversionProfilePopUp(event:Event):void {
 				var addNewConversionProfileWindow:ConversionProfilePopUpWindow = new ConversionProfilePopUpWindow();
 				addNewConversionProfileWindow.rootUrl = rootUrl;
-				
+
 				PopUpManager.addPopUp(addNewConversionProfileWindow, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addNewConversionProfileWindow);
 			}
-		
-			private function onDeleteConversionProfiles(event:Event):void
-			{
+
+
+			private function onDeleteConversionProfiles(event:Event):void {
 				var selItems:Array = conversionProfilesTable.selectedItems;
-				if(selItems.length == 0)
-				{
-					Alert.show(resourceManager.getString('kmc', 'noProfilesSelected'));
+				if (selItems.length == 0) {
+					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
 				}
-				else
-				{
+				else {
 					var delStr:String = "";
-					for each(var cp:ConversionProfileVO in selItems)
-					{
-						if(!cp.profile.isDefault)
-						{
+					for each (var cp:ConversionProfileVO in selItems) {
+						if (!cp.profile.isDefault) {
 							delStr += '\n' + cp.profile.name;
 						}
 					}
-					
+
 					var msg:String = "";
 					var title:String = "";
-					if(selItems.length == conversionData.length)
-					{
-						msg = resourceManager.getString('kmc', 'deleteAllAlertMsg');
-						title = resourceManager.getString('kmc', 'deleteAllAlertTitle');
+					if (selItems.length == conversionData.length) {
+						msg = resourceManager.getString('account', 'deleteAllAlertMsg');
+						title = resourceManager.getString('account', 'deleteAllAlertTitle');
 					}
-					else
-					{
-						msg = resourceManager.getString('kmc', 'deleteAlertMsg') + delStr + " ?";
-						title = resourceManager.getString('kmc', 'deleteAlertTitle');
+					else {
+						msg = resourceManager.getString('account', 'deleteAlertMsg') + delStr + " ?";
+						title = resourceManager.getString('account', 'deleteAlertTitle');
 					}
-					
+
 					Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
 				}
 			}
-			
-			private function responeFnc(evt:CloseEvent):void
-			{
-				if(evt.detail == Alert.YES)
-				{
+
+
+			private function responeFnc(evt:CloseEvent):void {
+				if (evt.detail == Alert.YES) {
 					var selItems:Array = conversionProfilesTable.selectedItems;
 					var ids:Array = new Array();
-					for each(var cp:ConversionProfileVO in selItems)
-					{
-						if(!cp.profile.isDefault)
-						{
+					for each (var cp:ConversionProfileVO in selItems) {
+						if (!cp.profile.isDefault) {
 							ids.push(cp.profile.id);
 						}
 					}
-					
+
 					var deletetProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
 					deletetProfilesEvent.data = ids;
 					deletetProfilesEvent.dispatch();
 				}
 			}
-			
-			private function onSaveProfileClick(event:Event):void
-			{
+
+
+			private function onSaveProfileClick(event:Event):void {
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_SAVE_TRANSCODING_SETTINGS, "Account>Save transcoding Settings");
-			    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS);
-			    
-				if(conversionSettingsTable1.isFlavorsSelected() && (conversionSettingsTable1.cProfile.profile.flavorParamsIds != null))
-				{
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS);
+
+				if (conversionSettingsTable1.isFlavorsSelected() && (conversionSettingsTable1.cProfile.profile.flavorParamsIds != null)) {
 					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionSettingsTable1.cProfile);
 					updateProfileEvent.dispatch();
 				}
-				else
-				{ 
-					Alert.show(resourceManager.getString('kmc', 'oneFlvorSelection'), resourceManager.getString('kmc', 'missingFlavorTitle'));
+				else {
+					Alert.show(resourceManager.getString('account', 'oneFlvorSelection'), resourceManager.getString('account', 'missingFlavorTitle'));
 				}
 			}
-			
-			public function isChanged():Boolean { return false; }
-			public function undo():void {}
-			public function saveChanges():void {} 
-			public function resetClonedData():void {}
-			
-		/* 	private function enableSaveButton(event:Event):void
-			{
-				saveButton.enabled = conversionSettingsTable1.isFlavorsSelected();
-			} */
-			
-			
+
+
+			public function isChanged():Boolean {
+				return false;
+			}
+
+
+			public function undo():void {
+			}
+
+
+			public function saveChanges():void {
+			}
+
+
+			public function resetClonedData():void {
+			}
+
+			/* 	private function enableSaveButton(event:Event):void
+			   {
+			   saveButton.enabled = conversionSettingsTable1.isFlavorsSelected();
+			 } */
 		]]>
 	</mx:Script>
-	<mx:Label styleName="expendableButton" width="100%" id="titleText"  htmlText="{resourceManager.getString('kmc','defaultTranscodingFlavors')}"/>
-	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10"
-		id="hbox1" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-		<mx:Text styleName="featureDescriptionTitleText" width="100%" 
-			selectable="false"
-			id="text1"  htmlText="{resourceManager.getString('kmc','transcodingSettingsSimpleModeIntroText')}">
+	<mx:Label styleName="expendableButton" width="100%" id="titleText"
+			  htmlText="{resourceManager.getString('account','defaultTranscodingFlavors')}"/>
+	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10" id="hbox1"
+			 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Text styleName="featureDescriptionTitleText" width="100%" selectable="false" id="text1"
+				 htmlText="{resourceManager.getString('account','transcodingSettingsSimpleModeIntroText')}">
 		</mx:Text>
-		<mx:Button styleName="help" buttonMode="true" 
-				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'generalHelp') ) )}"/>
+		<mx:Button styleName="help" buttonMode="true"
+				   click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'generalHelp') ) )}"/>
 	</mx:HBox>
-    
+
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox width="100%" id='subVbox' verticalGap="0">
-			<conversionsettingswindow:ConversionSettingsTable id="conversionSettingsTable1" allSelected="{allFlavorsSelected}" dataProvider="{flavorParamData}"/>
+			<conversionsettingswindow:ConversionSettingsTable id="conversionSettingsTable1"
+															  allSelected="{allFlavorsSelected}"
+															  dataProvider="{flavorParamData}"/>
 			<mx:HBox width="100%" id="vbox1" styleName="DataGridActions">
 				<mx:VBox width="40%" height="100%" verticalAlign="middle">
-					<mx:LinkButton label="{resourceManager.getString('kmc','switchToAdvanceMode')}" id="linkbutton1" click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
+					<mx:LinkButton label="{resourceManager.getString('account','switchToAdvanceMode')}" id="linkbutton1"
+								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
 				</mx:VBox>
 				<mx:VBox width="60%" height="100%" verticalAlign="middle" id="vbox2">
-					<mx:Button label="{resourceManager.getString('kmc','saveChangesButton')}" id="saveButton" useHandCursor="true" buttonMode="true" click="onSaveProfileClick(event)"/> 
+					<mx:Button label="{resourceManager.getString('account','saveChangesButton')}" id="saveButton"
+							   useHandCursor="true" buttonMode="true" click="onSaveProfileClick(event)"/>
 				</mx:VBox>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HBox>
-	
+
 </mx:VBox>

@@ -91,7 +91,7 @@ package com.kaltura.kmc.modules.analytics.commands
 						else
 						{
 							var obj : Object = new Object();
-							obj.x = ResourceManager.getInstance().getString('kmc', xYArr[0]);
+							obj.x = ResourceManager.getInstance().getString('analytics', xYArr[0]);
 							obj.y =  xYArr[1]
 							graphPoints.addItem( obj );
 						}
@@ -101,7 +101,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				if(!_model.reportDataMap[_model.currentScreenState])	
 					_model.reportDataMap[_model.currentScreenState] = new ReportData();
 			
-				var dimLbl : String = ResourceManager.getInstance().getString('kmc',krpArr[i].id);
+				var dimLbl : String = ResourceManager.getInstance().getString('analytics',krpArr[i].id);
 				var dimObj : Object = new Object()
 				dimObj.label = dimLbl;
 				dimObj.data = krpArr[i].id;

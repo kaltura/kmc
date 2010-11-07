@@ -40,13 +40,13 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			if(data.success)
 			{
-				Alert.show(ResourceManager.getInstance().getString('kmc', 'deleteConvProfilesDoneMsg'));
+				Alert.show(ResourceManager.getInstance().getString('account', 'deleteConvProfilesDoneMsg'));
 				var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
 			{
-				Alert.show(data.error, ResourceManager.getInstance().getString('kmc', 'error'));
+				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 
 			_model.partnerInfoLoaded = true;
@@ -60,7 +60,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.events
 	
 	public class  UsageGraphEvent extends CairngormEvent
 	{
-		public static const USAGE_GRAPH : String = "usageGraph";
+		public static const USAGE_GRAPH : String = "account_usageGraph";
 		
 		public function UsageGraphEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
