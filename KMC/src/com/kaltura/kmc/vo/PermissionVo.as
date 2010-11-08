@@ -14,19 +14,32 @@ package com.kaltura.kmc.vo
 			_attribute = attribute;
 		}
 
+		/**
+		 * Path for the UI component - IE 'content.manage.saveBtn' 
+		 * @return 
+		 * 
+		 */
 		public function get path():String
 		{
 			return _path;
 		}
-
-		public function set attribute(value:String):void
+		/**
+		 * The attribute to change - IE visible 
+		 * @param value
+		 * 
+		 */
+		public function get attribute():void
 		{
-			_attribute = value;
+			return _attribute;
 		}
-
-		public function set value(value:Object):void
+		/**
+		 * The new value to apply - IE true 
+		 * @param value
+		 * 
+		 */
+		public function get value():void
 		{
-			_value = value;
+			return _value;
 		}
 
 
