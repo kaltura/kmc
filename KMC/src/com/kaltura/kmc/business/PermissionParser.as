@@ -1,15 +1,25 @@
 package com.kaltura.kmc.business
 {
+	/**
+	 * This parser receives an XML and knows to build instructions. 
+	 * also the parser knows to provide a list of tabs and sub-tabs to hide.
+	 * @author Eitan
+	 * 
+	 */
 	public class PermissionParser
 	{
+		
+		private var _permissionXml:XML;
+		
 		public function PermissionParser()
 		{
 		}
 		
 		public function parsePermission(xml:XML):Array
 		{
+			_permissionXml = xml;
 			var array: Array = new Array();
-			var allPermissions:XMLList = xml..permission;
+			var allPermissions:XMLList = _permissionXml..permission;
 			for each (var permission:XML in allPermissions )
 			{
 				array = array.concat(permissionInstruction(permission));
