@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 graphic interface for changing player attributes such as player name, video ratio, autoplay.
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validators="com.kaltura.validators.*" paddingBottom="0"
+		 paddingLeft="0" paddingRight="0" paddingTop="0" height="100%">
+	<mx:Metadata>
+		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.view.ApsWizard;
+			import com.kaltura.kmc.modules.studio.vo.TemplateVo;
+			
+			import mx.events.NumericStepperEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.validators.ValidationResult;
+
+			public static const TEMPLATE_CHOOSEN:String = "templateChoosen";
+			public static const CHANGE_RATIO:String = "changeRatio";
+
+			/**
+			 * template data
+			 * */
+			private var _data:TemplateVo;
+			
+			private const _lblWidth:Number = 120;
+			private const _cbWidth:Number = 178;
+
+
+
+			/**
+			 * validate data in this panel: </br>
+			 * - player name must be set.
+			 * @return true if all valid, false otherwise.
+			 * */
+			public function validate():Boolean {
+				playerNameValidator.source = playerName;
+				playerNameValidator.property = "text";
+				playerNameValidator.required = true;
+
+				var result:Boolean = true;
+				var vre:ValidationResultEvent = playerNameValidator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					// something failed
+					result = !(vre.results[0] as ValidationResult).isError;
+				}
+				return result;
+			}
+
+
+			private function httpFault(evt:FaultEvent):void {
+				var s:String = "Template httpFault: \n" + evt.message;
+				dispatchEvent(new ErrorEvent(ApsWizard.ALERT_USER, false, false, s));
+			}
+
+
+			/**
+			 * makes this panel eligible for garbage collection
+			 * */
+			public function dispose():void {
+
+			}
+
+
+
+			/**
+			 * template page data
+			 * */
+			public function get templateData():TemplateVo {
+				return _data;
+			}
+
+
+			[Bindable]
+			/**
+			 * @private
+			 * */
+			public function set templateData(value:TemplateVo):void {
+				_data = value;
+				//TODO where are the default values set?
+				if (!_data.imageDefaultDuration) {
+					_data.imageDefaultDuration = 2;
+				}
+			}
+
+
+
+			/**
+			 * removes the text from the textfield on focus in
+			 * */
+			protected function removeText(event:FocusEvent):void {
+				if (_data.playerName == resourceManager.getString('aps', 'playerName')) {
+					_data.playerName = '';
+				}
+			}
+
+
+			/**
+			 * restores the default text in the textfield if no
+			 * text was entered on focus out
+			 * */
+			protected function restoreDefaultText(event:FocusEvent):void {
+				if (_data.playerName == '') {
+					_data.playerName = resourceManager.getString('aps', 'playerName');
+				}
+			}
+
+
+			/**
+			 * saves player name on change
+			 * */
+			protected function saveName(event:Event):void {
+				_data.playerName = playerName.text;
+			}
+
+
+			/**
+			 * saves autoplay value on change
+			 * */
+			protected function templateAutoPlay_changeHandler(event:Event):void {
+				if (!templateAutoPlay.selected) {
+					_data.autoMute = false;
+					_data.autoPlay = false;
+				}
+				else {
+					_data.autoPlay = true;
+				}
+			}
+
+
+			/**
+			 * saves automute value on change
+			 * */
+			protected function templateAutoMute_changeHandler(event:Event):void {
+				if (templateAutoMute.selected) {
+					_data.autoMute = true;
+				}
+				else {
+					_data.autoMute = false;
+				}
+			}
+
+			/**
+			 * saves stretch / keep ratio value on change
+			 * */
+			protected function keepOriginalRatio_changeHandler(event:Event):void {
+				if (mediaRatioGroup.selection == keepOriginalRatio) {
+					_data.keepAspectRatio = true;
+				}
+				else {
+					_data.keepAspectRatio = false;
+				}
+			}
+
+
+			/**
+			 * saves playlist autocontinue value on change
+			 * */
+			protected function playlistAutoContinue_changeHandler(event:Event):void {
+				_data.playlistAutoContinue = playlistAutoContinue.selected;
+			}
+
+			/**
+			 * saves image view duration on change
+			 * */
+			protected function playlistImagesInterval_changeHandler(event:NumericStepperEvent):void {
+				_data.imageDefaultDuration = playlistImagesInterval.value;
+			}
+		]]>
+	</mx:Script>
+	<validators:IllegalValueValidator id="playerNameValidator"
+									  requiredFieldError="{resourceManager.getString('aps','playerNameIsMandatory')}"
+									  illegalValue="{resourceManager.getString('aps','playerName')}"/>
+	<mx:VBox width="100%" height="100%">
+
+		<mx:Label text="{resourceManager.getString('aps','playerDetails')}" styleName="pageTitle"/>
+		<mx:HBox width="100%">
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('aps','playerName')}"/>
+			<mx:TextInput id="playerName" width="{_cbWidth}" text="{templateData.playerName}" change="saveName(event)"
+						  focusIn="removeText(event)" focusOut="restoreDefaultText(event)"/>
+		</mx:HBox>
+		<mx:Spacer height="10"/>
+		<mx:Label text="{resourceManager.getString('aps','videoRatio')}" styleName="pageTitle"/>
+		<mx:VBox width="100%">
+			<mx:Text text="{resourceManager.getString('aps','ifMediaAspectRatio')}" textDecoration="normal"/>
+			<mx:RadioButtonGroup id="mediaRatioGroup" change="keepOriginalRatio_changeHandler(event)"/>
+			<mx:RadioButton id="keepOriginalRatio" groupName="mediaRatioGroup"
+							label="{resourceManager.getString('aps','keepOriginalRatio')}"
+							selected="{templateData.keepAspectRatio}" buttonMode="true"/>
+			<mx:RadioButton id="streachMediaToFitPlayer" groupName="mediaRatioGroup" selected="{!templateData.keepAspectRatio}"
+							label="{resourceManager.getString('aps','streachMediaToFitPlayer')}" buttonMode="true"/>
+		</mx:VBox>
+		<mx:Spacer height="10"/>
+		<mx:Label text="{resourceManager.getString('aps','autoPlay')}" styleName="pageTitle"/>
+		<mx:CheckBox id="templateAutoPlay" label="{resourceManager.getString('aps','automaticPlay')}"
+					 selected="{templateData.autoPlay}" change="templateAutoPlay_changeHandler(event)"/>
+		<mx:CheckBox id="templateAutoMute" label="{resourceManager.getString('aps','startPlayMuted')}"
+					 change="templateAutoMute_changeHandler(event)" selected="{templateData.autoMute}"
+					 enabled="{templateAutoPlay.selected}"/>
+		<mx:Spacer height="10"/>
+		<mx:VBox id="playlistFeatures" width="100%">
+			<mx:Label text="{resourceManager.getString('aps','playlistControlls')}" styleName="pageTitle"/>
+			<mx:CheckBox id="playlistAutoContinue" label="{resourceManager.getString('aps','autocontinuePlaylist')}"
+						 selected="{templateData.playlistAutoContinue}" change="playlistAutoContinue_changeHandler(event)"/>
+			<mx:HBox visible="{playlistAutoContinue.selected}">
+				<mx:Label id="playlistImagesIntervalLabel" text="{resourceManager.getString('aps','imagesInterval')}"/>
+				<mx:NumericStepper id="playlistImagesInterval" maximum="3600" value="{templateData.imageDefaultDuration}"
+								   change="playlistImagesInterval_changeHandler(event)"/>
+				<mx:Label text="{resourceManager.getString('aps','sec')}"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:HBox>

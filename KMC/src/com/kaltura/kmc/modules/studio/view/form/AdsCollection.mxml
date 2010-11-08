@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+wraps a list of items and allows a graphic interface for 
+adding and removing items to/from the list, according to a given type.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="init()"
+		 minWidth="470">
+	<mx:Metadata>
+			[Event(name="change", type="flash.events.Event")]
+		</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.vo.ads.CompanionAdVo;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.Container;
+			import mx.events.CollectionEvent;
+			import mx.events.CollectionEventKind;
+			import mx.events.FlexEvent;
+			
+			/**
+			 * The constant defines the value of the type property of a removeAd event object.
+			 * */
+			public static const REMOVE_AD:String = "remove_ad";
+
+			/**
+			 * data provider for this component
+			 * */
+			private var _dataProvider:ArrayCollection = new ArrayCollection();
+
+			/**
+			 * @copy #adLocations
+			 * */
+			private var _adLocations:ArrayCollection;
+
+			/**
+			 * @copy #type
+			 * */
+			private var _type:String = "html";
+			
+			/**
+			 * @copy #addLabel 
+			 * */
+			private var _addLabel:String;
+
+
+			/**
+			 * initialize component
+			 * */
+			public function init():void {
+				_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, collectionChangeHandler, false, 0, true);
+				textHolder.addEventListener(AdsCollection.REMOVE_AD, removeItem);
+			}
+
+
+			/**
+			 * remove an item from the list
+			 * */
+			private function removeItem(e:Event):void {
+				var ad:Container = e.target as Container;
+				var vo:CompanionAdVo = ad.data as CompanionAdVo;
+				// remove ad data from the dp
+				for (var i:int = 0; i < _dataProvider.length; i++) {
+					if (_dataProvider[i] == vo) {
+						_dataProvider.removeItemAt(i);
+						break;
+					}
+				}
+				// remove the ad
+				textHolder.removeChild(ad);
+				invalidateSize();
+			}
+
+
+			/**
+			 * add a new item
+			 * */
+			private function addItem():void {
+				_dataProvider.addItem(new CompanionAdVo());
+
+			}
+
+
+			private function collectionChangeHandler(e:CollectionEvent):void {
+				switch (e.kind) {
+					case CollectionEventKind.ADD:
+						// adding a new item
+						var ad:Container;
+						var cv:CompanionAdVo = _dataProvider.getItemAt(_dataProvider.length - 1) as CompanionAdVo;
+						cv.type = _type;
+						if (_type == "html") {
+							ad = new HtmlAdDetails();
+						}
+						else if (_type == "flash") {
+							ad = new FlashAdDetails();
+							cv.dp = _adLocations;
+						}
+						ad.data = cv;
+						textHolder.addChild(ad);
+						invalidateSize();
+						dispatchEvent(new Event(Event.CHANGE));
+						break;
+
+					case CollectionEventKind.UPDATE:
+						// changing existing item
+						dispatchEvent(new Event(Event.CHANGE));
+						break;
+
+					case CollectionEventKind.RESET:
+						trace("reset");
+						break;
+					default:
+						trace("unknown collection change event:", e.kind);
+						break;
+				}
+			}
+
+
+			/**
+			 * data object for this component
+			 * (CompanionAdVo)
+			 * */
+			public function get dataProvider():ArrayCollection {
+				return _dataProvider;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set dataProvider(dp:ArrayCollection):void {
+				if (_dataProvider) {
+					_dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, collectionChangeHandler);
+				}
+				_dataProvider = dp;
+				_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, collectionChangeHandler, false, 0, true);
+
+				redraw();
+
+			}
+
+
+			private function redraw():void {
+				// remove all lines
+				textHolder.removeAllChildren();
+				
+				// add new lines as needed
+				var cv:CompanionAdVo;
+				var ad:Container;
+				var i:int, n:int = _dataProvider.length;
+				for (i = 0; i < n; i++) {
+					cv = _dataProvider.getItemAt(i) as CompanionAdVo;
+					switch (_type) {
+						case "html":
+							ad = new HtmlAdDetails();
+							break;
+						case "flash":
+							ad = new FlashAdDetails();
+							cv.dp = _adLocations;
+							break;
+					}
+					ad.data = cv;
+					textHolder.addChild(ad);
+				}
+				/* when we edit a player redraw() is triggered after 
+				* disabling the component, so the added ads are enabled. to 
+				* prevent this, we re-set enabled.	*/
+				enabled = enabled;
+				
+				dispatchEvent(new Event(Event.CHANGE));
+			}
+
+
+			/**
+			 * ad type
+			 * @default html
+			 * */
+			public function get type():String {
+				return _type;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set type(value:String):void {
+				// only allow supported types:
+				if (value == "flash" || value == "html") {
+					_type = value;
+				}
+			}
+
+
+			/**
+			 * a list of player elements' names which may take a companion ad
+			 * */
+			public function get adLocations():ArrayCollection {
+				return _adLocations;
+			}
+
+
+			/**
+			 * @private
+			 */
+			public function set adLocations(value:ArrayCollection):void {
+				_adLocations = value;
+			}
+
+			/**
+			 * label for "add companion ad" button
+			 * */
+			public function set addLabel(value:String):void {
+				_addLabel = value;
+				if (btnAdd != null) {
+					btnAdd.label = value;
+				}
+			}
+
+
+			/**
+			 * sets the label on the add button once created.
+			 * */
+			protected function btnAdd_creationCompleteHandler(event:FlexEvent):void {
+				btnAdd.label = _addLabel;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox id="textHolder"
+			 horizontalScrollPolicy="off"
+			 width="100%"/>
+	<mx:LinkButton id="btnAdd" click="addItem()" 
+				   paddingLeft="0"
+				   creationComplete="btnAdd_creationCompleteHandler(event)"/>
+
+
+</mx:VBox>

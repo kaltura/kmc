@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	form for filling details of a flash companion ad
+	takes CompanionAdVo as data object
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="showValues()"
+		 width="400">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.vo.ads.CompanionAdVo;
+			
+			import mx.collections.ArrayCollection;
+			
+			private const CUSTOM:String = "Custom";
+			private var dataFlag:Boolean = false;
+			
+			private function showValues():void {
+				if (dataFlag) {
+					var o:CompanionAdVo = data as CompanionAdVo;
+					var si:Object = getItemById(o.elementid);
+					if (si != null) {
+						tiElementid.selectedItem = si;
+					}
+					else {
+						// no initial element
+						tiElementid.selectedIndex = 0;
+						si = tiElementid.dataProvider.getItemAt(0);
+						data.elementid = si.elementid;
+						data.relativeTo = si.relativeTo;
+						data.position = si.position;
+					}
+				}
+				else {
+					dataFlag = true;
+				}
+			}
+			
+			private function getItemById(id:String):Object {
+				var dp:ArrayCollection = data.dp;
+				for (var o:String in dp) {
+					if (dp[o].elementid == id) {
+						return dp[o];
+					}
+				}
+				return null;
+			}
+			
+			/**
+			 * dispatch event with data specifying who to remove
+			 * */
+			private function remove(evt:Event):void {
+				evt.stopPropagation();
+				dispatchEvent(new Event(AdsCollection.REMOVE_AD, true));
+			}
+			
+			/**
+			 * update the relevant field in data object
+			 * */
+			private function dataChanged(e:Event):void {
+				switch (e.target) {
+					case tiElementid:
+						data.elementid = e.target.selectedItem.elementid;
+						data.relativeTo = e.target.selectedItem.relativeTo;
+						data.position = e.target.selectedItem.position;
+						break;
+					case tiRelative:
+						data.relativeTo = e.target.text;
+						tiElementid.selectedItem.relativeTo = e.target.text;
+						break;
+					case tiPosition:
+						data.position = e.target.text;
+						tiElementid.selectedItem.position = e.target.text;
+						break;
+					case tiWidth:
+						data.width = e.target.text;
+						break;
+					case tiHeight:
+						data.height = e.target.text;
+						break;
+					default:
+						trace("WTF?");
+				}
+			}
+
+			/**
+			 * @inheritDoc
+			 * */
+			override public function set data(value:Object):void {
+				super.data = value;
+				showValues();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" horizontalGap="4">
+		<mx:Label text="{resourceManager.getString('advertising', 'elementid')}:" />
+		<mx:ComboBox change="dataChanged(event)" id="tiElementid"
+					 dataProvider="{data.dp}" width="104"
+					 labelField="elementid"/>
+		<mx:Label text="{resourceManager.getString('advertising', 'dimensions')}:" />
+		<mx:TextInput change="dataChanged(event)" id="tiWidth"
+					  text="{data.width}" width="30" />
+		<mx:Label text="x" />
+		<mx:TextInput change="dataChanged(event)" id="tiHeight"
+					  text="{data.height}" width="30" />
+		<mx:LinkButton click="remove(event)" label="{resourceManager.getString('advertising', 'remove')}" styleName="removeButton"/>
+	</mx:HBox>
+	<mx:HBox id="details" width="100%" 
+			 visible="{tiElementid.selectedItem.elementid.indexOf(CUSTOM) > -1}"
+			 includeInLayout="{tiElementid.selectedItem.elementid.indexOf(CUSTOM) > -1}">
+		<mx:Label text="{resourceManager.getString('advertising', 'relativeTo')}" />
+		<mx:TextInput id="tiRelative" width="100%" 
+					  change="dataChanged(event)"
+					  text="{data.relativeTo}" />
+		<mx:Label text="{resourceManager.getString('advertising', 'position')}" />
+		<mx:TextInput id="tiPosition" width="100%" 
+					  change="dataChanged(event)"
+					  text="{data.position}" />
+	</mx:HBox>
+</mx:VBox>

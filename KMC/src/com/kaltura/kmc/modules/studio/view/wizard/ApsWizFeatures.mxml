@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 graphic interface for changing player attributes such as controlls, subtitles, etc.
+-->
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   xmlns:wizardCode="com.kaltura.kmc.modules.studio.business.wizard.*"
+		   xmlns:wizardView="com.kaltura.kmc.modules.studio.view.wizard.*"
+		   height="100%" width="100%" horizontalScrollPolicy="off" >
+	
+	<mx:Metadata>
+		[Event(name="alertUser", type="flash.events.ErrorEvent")]
+		[Event(name="refreshKdp", type="flash.events.Event")] 
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.events.ApsFeatureEvent;
+			import com.kaltura.kmc.modules.studio.view.ApsWizard;
+			import com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.BoxedList;
+			import com.kaltura.kmc.modules.studio.vo.KeyValVo;
+			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.VBox;
+			import mx.controls.Label;
+			import mx.controls.List;
+			import mx.controls.TextInput;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
+
+			private var _featuresXML:XML;
+			private var _screenAsset:XML;
+			private var _playerUiconfVo:PlayerUiConfVo;
+			private var _ir:XML;
+			private var _irCopy:XML;
+			private var _selectedFeatureData:XML = null;
+			
+			/**
+			 * The constant defines the value of the type property of a refreshKdp event object.
+			 * */
+			public static const REFRESH_KDP:String = "refreshKdp";
+
+			
+			/**
+			 * Add or remove a feature. This function is called when a features checkbox is being changed
+			 */
+			private function enableDisableFeature(evt:ApsFeatureEvent):void {
+				var ftName:String = _selectedFeatureData.@id.toString();
+				var myFeatureXml:XML = XML(_featuresXML).descendants("feature").(attribute("id") == ftName)[0];
+				myFeatureXml.@k_value = myFeatureXml.@selected = (evt.type == ApsFeatureEvent.FEATURE_SELECTED) ? "true" : "false";
+
+				showFeature();
+				// add remove the feature from ItemRenderer if available
+				var xmlIdToGet:String = myFeatureXml.(attribute("customXmlId"));
+				xmlIdToGet = myFeatureXml.@customXmlId.toString();
+				if (xmlIdToGet) {
+					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
+					var irScreenXML:XML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
+					ir = irScreenXML;
+					var disabledFeaturesIds:XMLList = featuresListCollection.source.(attribute("selected") == "false").@id;
+					var irCopy:XML = new XML(_ir);
+					var irCopyDecendants:XMLList = irCopy.descendants();
+					for each (var disabledFeatureId:String in disabledFeaturesIds) {
+						var disabledFeatureIdManipulated:String = disabledFeatureId + "IrScreen";
+						var rendererField:XML = irCopyDecendants.(attribute("id") == disabledFeatureIdManipulated)[0];
+						if (rendererField) {
+							var index:int = rendererField.childIndex();
+							delete rendererField.parent().children()[index];
+						}
+					}
+				}
+			}
+
+
+			/**
+			 * get a feature and set it to true / false in all the places 
+			 * it appears on (coltroller/start screen/ end screen etc')
+			 */
+			private function showFeature():void {
+				dispatchEvent(new Event(REFRESH_KDP));
+			}
+
+
+			private function openOptionScreen(evt:ApsFeatureEvent):void {
+				featureScreen.initFeature(_selectedFeatureData as XML);
+
+				featureScreen.dispose();
+				featureScreen.featureFormXML = _selectedFeatureData;
+
+				var xmlIdToGet:String = featureScreen.featureFormXML.(attribute("customXmlId"));
+				xmlIdToGet = featureScreen.featureFormXML.@customXmlId.toString();
+				if (xmlIdToGet) {
+					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
+					featureScreen.customXML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
+				}
+				featureScreen.renderFeatureScreen();
+				featureScreen.visible = true;
+			}
+
+
+//			public function onUpdatedPrefix(evt:ApsPrefixEvent):void {
+//				var prefix:String = evt.data.prefix;
+//				var featureName:String = evt.data.featureName;
+//				var myFeatureXml:XML = evt.data.featureXML;
+//			}
+
+
+			/**
+			 * validate data in this panel: </br>
+			 * - no data is being validated. But someday..
+			 * @return true if all valid, false otherwise.
+			 * */
+			public function validate():Boolean {
+				return true;
+			}
+
+
+			public function setFeatureList(featuresXML:XML):void {
+				_featuresXML = featuresXML;
+				featuresListCollection.source = featuresXML..feature;
+				var lc:XMLListCollection = featuresListCollection;
+				var currentFeatureXML:XMLListCollection = null;
+				var currentBoxedList:BoxedList;
+				var showCheckbox:String;
+				var boxedList:BoxedList;
+				for (var i:int = 0; i < lc.length; i++) {
+					showCheckbox = lc[i].attribute("showCheckbox").toString();
+					if (showCheckbox == "false") {
+						//if this is not the first loop
+						if (currentFeatureXML) {
+							currentBoxedList = accordi.getChildAt(accordi.numChildren - 1) as BoxedList;
+							addLblToEndOfTheList(currentBoxedList);
+							currentBoxedList.bList.dataProvider = currentFeatureXML;
+						}
+
+						currentFeatureXML = new XMLListCollection();
+						boxedList = new BoxedList();
+						boxedList.percentHeight = 100;
+						boxedList.percentWidth = 100;
+						boxedList.styleName = "accordiContainer";
+						boxedList.label = lc[i].attribute("featureLabel").toString();
+						boxedList.addEventListener(FlexEvent.CREATION_COMPLETE, boxedListCreationCompleate);
+						accordi.addChild(boxedList);
+					}
+					else {
+						currentFeatureXML.addItem(lc[i]);
+					}
+				}
+				currentBoxedList = accordi.getChildAt(accordi.numChildren - 1) as BoxedList;
+				addLblToEndOfTheList(currentBoxedList);
+				currentBoxedList.bList.dataProvider = currentFeatureXML;
+
+				keyValueBox.label = resourceManager.getString('aps', 'additionalParamsTab');
+				accordi.addChild(keyValueBox);
+			}
+
+
+			private function addLblToEndOfTheList(currentBoxedList:BoxedList):void {
+				var lbl:Label = new Label();
+				lbl.text = resourceManager.getString('aps', 'additionalConfig');
+				currentBoxedList.addChild(lbl);
+			}
+
+
+			private function boxedListCreationCompleate(event:Event):void {
+				var boxedList:BoxedList = event.target as BoxedList;
+				boxedList.bList.styleName = "accordionList";
+				boxedList.bList.addEventListener(ApsFeatureEvent.FEATURE_DISELECTED, enableDisableFeature);
+				boxedList.bList.addEventListener(ApsFeatureEvent.FEATURE_SELECTED, enableDisableFeature);
+				boxedList.bList.addEventListener(ApsFeatureEvent.FEATURE_OPEN_OPTION_SCREEN, openOptionScreen);
+				boxedList.bList.addEventListener(ListEvent.CHANGE, setSelectedFeature);
+			}
+
+
+			private function setSelectedFeature(event:ListEvent):void {
+				_selectedFeatureData = (event.target as List).selectedItem as XML;
+			}
+
+
+			/**
+			 * this allows to set the ir xml only once
+			 * */
+			private function set ir(xml:XML):void {
+				if (!_ir) {
+					_ir = xml;
+					_irCopy = xml;
+				}
+			}
+
+			/**
+			 * init player with current states of the template 
+			 * */
+			public function init():void {
+				showFeature();
+				var isPlaylist:Boolean = _playerUiconfVo.isMultiPlaylistTemplate || _playerUiconfVo.isSinglePlaylist;
+				if (isPlaylist) {
+					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
+					var irScreenXML:XML = lis..renderer.(attribute("id").toString() == "playlistItemRenderer")[0];
+					var irCopy:XML = irScreenXML.copy();
+					var disabledFeaturesIds:XMLList = featuresListCollection.source.(attribute("selected") == "false").@id;
+					var irCopyDecendants:XMLList = irCopy.descendants();
+					for each (var disabledFeatureId:String in disabledFeaturesIds) {
+						var disabledFeatureIdManipulated:String = disabledFeatureId + "IrScreen";
+						var rendererField:XML = irCopyDecendants.(attribute("id") == disabledFeatureIdManipulated)[0];
+						if (rendererField) {
+							var index:int = rendererField.childIndex();
+							delete rendererField.parent().children()[index];
+						}
+					}
+				}
+			}
+
+
+			public function dispose():void {
+				//featureList = null;
+				featureScreen = null;
+				_screenAsset = null;
+			}
+
+
+			public function set screenAsset(value:XML):void {
+				_screenAsset = value;
+			}
+
+
+			public function set playerUiconfVo(value:PlayerUiConfVo):void {
+				_playerUiconfVo = value;
+			}
+
+
+			private function onHeaderChange(event:IndexChangedEvent):void {
+				if (accordi.getChildAt(event.oldIndex) is BoxedList)
+					(accordi.getChildAt(event.oldIndex) as BoxedList).bList.selectedIndex = -1;
+			}
+			// key value code
+			[Bindable]
+			public var keyvals:ArrayCollection = new ArrayCollection(new Array());
+			public var urlPath:String = "http://www.kaltura.com";
+			[Bindable]
+			public var link:String = "<font color='#0000BB' ><u><a href='" + urlPath + "'>" + urlPath + '</a></u></font>';
+
+
+			private function onAddKeyVal():void {
+				var kv:KeyValVo = new KeyValVo();
+				kv.overridable = true;
+				keyvals.addItem(kv);
+			}
+
+
+			private function onRemoveKeyVal():void {
+				if (kvList.selectedIndex != -1)
+					keyvals.removeItemAt(kvList.selectedIndex);
+			}
+
+
+			/**
+			 * take an encoded plugin line, decoded it, seperate
+			 * it by the '&' string, and build
+			 */
+			public function onParsePluginLine():void {
+				var pluginLine:String = unescape(pluginLine.text);
+				var attributes:Array = pluginLine.split("&");
+				for (var i:uint = attributes.length; i > 0; i--) {
+					var kv:KeyValVo = new KeyValVo();
+					var keyvalArr:Array = (attributes[i - 1] as String).split("=");
+					kv.key = keyvalArr[0];
+					kv.val = keyvalArr[1];
+					kv.overridable = true;
+					if (attributes.length > 1)
+						keyvals.addItemAt(kv, 0);
+				}
+			}
+
+
+			public function deleteAll():void {
+				keyvals.removeAll();
+			}
+
+
+			public function populateKeyValues():XML {
+				var kvXml:XML = <uiVars />;
+				for each (var kv:KeyValVo in keyvals) {
+					var newPair:XML = XML('<var key="' + kv.key + '" value="' + kv.val + '" overrideFlashvar="' + kv.overridable + '" />');
+					kvXml.appendChild(newPair);
+				}
+				return kvXml;
+			}
+		]]>
+	</mx:Script>
+
+	
+
+	<mx:HBox width="100%" height="100%" horizontalGap="0">
+		<mx:VBox height="100%" width="260">
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('aps','selectFeaturesList')}" styleName="pageTitle"/>
+			</mx:HBox>
+			<mx:Accordion id="accordi" width="100%" height="100%" change="onHeaderChange(event)" />
+		</mx:VBox>
+	</mx:HBox>
+	<mx:XMLListCollection id="featuresListCollection"/>
+	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%"
+									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));"/>
+	<mx:VBox id="keyValueBox" visible="false" width="100%" height="90%" paddingLeft="5" paddingRight="5"
+			 horizontalScrollPolicy="off" includeInLayout="false">
+		<mx:Spacer height="10"/>
+		<mx:Text width="100%" selectable="false" text="{ResourceManager.getInstance().getString('aps','addMoreParam')}"/>
+		<mx:Text text="{ResourceManager.getInstance().getString('aps','pastePluginLine')}" width="100%"/>
+		<mx:HBox width="100%">
+			<mx:TextInput id="pluginLine" width="100%"/>
+			<mx:Button id="parsePluginLineBtn" label="go" click="onParsePluginLine()"/>
+		</mx:HBox>
+		<mx:HRule width="70%"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('aps','keyValueTable')}"/>
+		<mx:HBox width="100%">
+			<mx:LinkButton label="{ResourceManager.getInstance().getString('aps','addParam')}" click="{onAddKeyVal()}"/>
+			<mx:LinkButton label="{ResourceManager.getInstance().getString('aps','removeParam')}"
+						   click="{onRemoveKeyVal()}"/>
+			<mx:LinkButton label="{ResourceManager.getInstance().getString('aps','deleteAllParams')}"
+						   click="{deleteAll()}"/>
+		</mx:HBox>
+		<mx:List id="kvList" width="100%" height="100%"
+				 itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.KeyValueIr"
+				 dataProvider="{keyvals}"/>
+
+	</mx:VBox>
+</mx:Canvas>

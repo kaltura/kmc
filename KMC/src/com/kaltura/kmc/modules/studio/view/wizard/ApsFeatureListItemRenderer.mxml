@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+
+ItemRenderer for the features list
+
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
+		 implements="mx.core.IDataRenderer" dataChange="dataChange()">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.IDataRenderer;
+			import com.kaltura.kmc.modules.studio.events.ApsFeatureEvent;
+
+
+			private function onFeatureOptionBtnClick(evt:MouseEvent):void {
+				dispatchEvent(new ApsFeatureEvent(ApsFeatureEvent.FEATURE_OPEN_OPTION_SCREEN, true));
+			}
+
+
+			/**
+			 * @inheritDoc
+			 * */
+			override public function set data(value:Object):void {
+				super.data = value;
+				dataChange();
+			}
+
+
+			private function onCheckboxClick(evt:MouseEvent):void {
+				if (evt.target.selected) {
+					dispatchEvent(new ApsFeatureEvent(ApsFeatureEvent.FEATURE_SELECTED, true));
+				}
+				else {
+					dispatchEvent(new ApsFeatureEvent(ApsFeatureEvent.FEATURE_DISELECTED, true));
+				}
+			}
+
+
+			private function dataChange():void {
+				if (isActiveCb) {
+					data.@k_value = data.@selected;
+					isActiveCb.selected = (data.@selected == true);
+
+					if (data.@showCheckbox == "true") {
+						featureLabelField.setStyle("fontWeight", "normal");
+						isActiveCb.visible = true;
+						isActiveCb.includeInLayout = true;
+						optionButton.visible = true;
+						optionButton.includeInLayout = true;
+					}
+					else {
+						featureLabelField.setStyle("fontWeight", "bold");
+						isActiveCb.visible = false;
+						isActiveCb.includeInLayout = false;
+						optionButton.visible = false;
+						optionButton.includeInLayout = false;
+					}
+					featureLabelField.text = String(data.@featureLabel);
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:CheckBox id="isActiveCb" click="onCheckboxClick(event)"/>
+	<mx:Label id="featureLabelField"/>
+	<mx:Spacer width="100%"/>
+	<mx:LinkButton id="optionButton" textDecoration="underline" label="Options" enabled="{isActiveCb.selected}"
+				   paddingLeft="0" paddingRight="0" click="onFeatureOptionBtnClick(event)"/>
+</mx:HBox>

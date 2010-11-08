@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
+		 horizontalAlign="center" creationComplete="onCreationComplete()"
+		 xmlns:view="com.kaltura.kmc.modules.studio.view.*" >
+	
+	<mx:Metadata>
+		[Event(name="finishLoading", type="flash.events.Event")] 
+		[Event(name="autoPreviewChanged", type="flash.events.Event")] 
+		[Event(name="firstTimeLoad", type="flash.events.Event")] 
+		[Event(name="openPreview", type="flash.events.Event")] 
+		[Event(name="closePreview", type="flash.events.Event")] 
+		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.model.types.KdpEventTypes;
+			import com.kaltura.kmc.modules.studio.view.ApsWizard;
+			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
+			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
+			import com.kaltura.kmc.vo.Context;
+			
+			import modules.Studio;
+			
+			import mx.controls.Button;
+			import mx.core.Application;
+			import mx.resources.ResourceManager;
+
+			public static const PREVIEW_PLAYER_READY:String = "previewPlayerReady";
+			public static const FIRST_TIME_LOAD:String = "firstTimeLoad";
+			public static const FINISH_LOADING:String = "finishLoading";
+			public static const AUTO_PREVIEW_CHANGED:String = "autoPreviewChanged";
+			public static const CLOSE_PREVIEW:String = "closePreview";
+			public static const OPEN_PREVIEW:String = "openPreview";
+			public static const REFRESH_KDP:String = "refreshKdp";
+
+			/**
+			 * application context (partner data etc)
+			 * */
+			public var context:Context;
+			
+			/**
+			 * media KDP should display in appstudio
+			 * */
+			public var content:PlayerContentVo;
+			
+			/**
+			 * player config
+			 * */
+			public var playerUiConfVo:PlayerUiConfVo;
+			
+//			/**
+//			 * the url from which to load KDP
+//			 * */
+//			public var swfUrl:String;
+
+			private const _tolorance169:Number = 0.1;
+			private const _tolorance34:Number = 0.1;
+			
+			[Bindable]
+			private var _playerHeight:Number;
+			[Bindable]
+			private var _playerWidth:Number;
+			[Bindable]
+			private var _playerRatio:Number;
+			
+			/**
+			 * locally save autopreview preferences
+			 * */
+			private var _mySo:SharedObject;
+
+			/**
+			 * only disaptch <code>ApsWizPreviewPlayer.FIRST_TIME_LOAD</code> once
+			 * */
+			private var _firstTime:Boolean;
+
+			/**
+			 * player XML data passed to KDP for preview 
+			 * */
+			private var _tempUiConf:XML;
+
+			private var _kdpFirstTimeLoad:Boolean = true;
+
+
+			/**
+			 * unload the KDP
+			 * */
+			public function unLoadKdp():void {
+				removeEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
+				kdp3Loader.content.removeEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
+				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
+				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+//				if(kdp3Loader.loaderInfo.hasOwnProperty("uncaughtErrorEvents")){
+//					IEventDispatcher(kdp3Loader.loaderInfo["uncaughtErrorEvents"]).removeEventListener("uncaughtError", handleKDPError);
+//				}
+				kdp3Loader.unloadAndStop();
+			}
+
+
+			/**
+			 * init the loading proccess of the KDP
+			 * @param kdpUrl	url from where to load KDP
+			 * @param xmlToPreview	player config
+			 * */
+			public function loadKdp(kdpUrl:String, xmlToPreview:XML = null):void {
+				if (xmlToPreview) {
+					_tempUiConf = xmlToPreview
+				}
+				else {
+					_tempUiConf = null;
+				}
+				var url:String = kdpUrl;
+				if (Studio.flashvars.kdpurl) {
+					url = Studio.flashvars.kdpurl;
+				}
+				// this is for debugging a local KDP swf
+				if (Studio.flashvars.hasOwnProperty("debugmode") 
+					&& (Studio.flashvars.debugmode == '1' || Studio.flashvars.debugmode == 'true')) {
+					url = "http://" + Studio.flashvars.host + kdpUrl;
+				}
+				if (kdp3Loader.content != null) {
+					unLoadKdp();
+				}
+				kdp3Loader.scaleContent = false;
+				kdp3Loader.trustContent = true;
+				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+				// if we don't set size here wierd things happen.
+				changePlayerSize();
+				kdp3Loader.load(url);
+			}
+
+			
+			/**
+			 * change the dimensions of preview KDP 
+			 * */
+			private function changePlayerSize():void {
+				kdp3Loader.width = kdpWidth.value;
+				kdp3Loader.height = kdpHeight.value;
+				if (kdp3Loader.content) {
+					kdp3Loader.content.width = kdpWidth.value;
+					kdp3Loader.content.height = kdpHeight.value;
+					var objProxy:Object = kdp3Loader.content["evaluate"]("{this}");
+					if (objProxy.hasOwnProperty("video")) {
+						_playerWidth = objProxy.video.width;
+						_playerHeight = objProxy.video.height;
+						_playerRatio = objProxy.video.width / objProxy.video.height;
+					}
+				}
+			}
+
+ 
+			/**
+			 * make this panel eligible for garbage collection
+			 * */
+			public function dispose():void {
+				unLoadKdp();
+			}
+
+
+			/**
+			 * make all buttons same size by content of the widest one
+			 * */
+			private function onCreationComplete():void {
+				enabled = false;
+				var autopreview:Boolean = true;
+				// get the sharedObject if available and set it 
+				_mySo = SharedObject.getLocal("content");
+				if (_mySo.data) {
+					if (_mySo.data.autoPreview == false) {
+						autopreview = false;
+					}
+					else {
+						autopreview = true;
+					}
+				}
+				autoPreview.selected = autopreview;
+				autoPreviewChanged();
+			}
+
+
+			private function toggolePreview():void {
+				if (openClosePreview.styleName == "openPreview") {
+					openClosePreview.styleName = "closePreview";
+					dispatchEvent(new Event(ApsWizPreviewPlayer.CLOSE_PREVIEW));
+				}
+				else {
+					openClosePreview.styleName = "openPreview";
+					dispatchEvent(new Event(ApsWizPreviewPlayer.OPEN_PREVIEW));
+				}
+			}
+
+
+			/**
+			 * Preview player loaded and ready
+			 */
+			private function onKDP3Loaded(event:Event):void {
+				if (!_firstTime)
+					dispatchEvent(new Event(ApsWizPreviewPlayer.FIRST_TIME_LOAD));
+				_firstTime = true;
+				var params:Object = new Object();
+				params.autoPlay = "false";
+				params.loop = "false";
+				params.autoRewind = "false";
+				params.sourceType = "entryId";
+
+				//check if this ui already has a playlist in it and show defaults if no playlist 
+				if (!_tempUiConf.uiVars.children().(attribute("key") == "playlistAPI.kpl0Name").length()) {
+					params["playlistAPI.kpl0Name"] = content.kpl0Name;
+					params["playlistAPI.kpl0Url"] = content.kpl0Url;
+					params["playlistAPI.kpl1Name"] = content.kpl1Name;
+					params["playlistAPI.kpl1Url"] = content.kpl1Url;
+					params["playlistAPI.autoInsert"] = "true";
+				}
+				
+				if (!playerUiConfVo.isSinglePlaylist && !playerUiConfVo.isMultiPlaylistTemplate) {
+					// only load entry if not a playlist player
+					params.entryId = content.entryId;
+				}
+
+				params.cdnHost = params.cdnUrl = params.host = Application.application.parameters.host;
+				params.partnerId = context.partner_id;
+				params.widgetId = "_" + context.partner_id;
+				params.subpId = context.subp_id;
+				params.uiConfId = playerUiConfVo.playerId;
+
+				params.ks = context.ks;
+
+				if (_tempUiConf) {
+					params.kml = "inject";
+				}
+				
+				kdp3Loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
+				kdp3Loader.loaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
+				kdp3Loader.content.addEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
+				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
+				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+				// set KDP flashvars
+				kdp3Loader.content["flashvars"] = params; 
+
+				//start the loading sqeunce of the kdp
+				if (!_tempUiConf)
+					kdp3Loader.content["init"](); 
+				else
+					kdp3Loader.content["init"](_tempUiConf); 
+
+				enabled = true;
+
+				if (_kdpFirstTimeLoad)
+					dispatchEvent(new Event(PREVIEW_PLAYER_READY));
+			}
+
+			
+			/**
+			 * handles KDP errors - tells user to fix additional parameters
+			 * because in appstudio, errors probably origin there.
+			 * */
+			private function handleKDPError(e:Event):void {
+				var s:String = ResourceManager.getInstance().getString('aps', 'kdpLayoutError');
+				dispatchEvent(new ErrorEvent(ApsWizard.ALERT_USER, false, false, s));
+				// enable the appstudio
+				dispatchEvent(new Event(FINISH_LOADING));
+			}
+			
+
+			private function onKDPReady(event:Event):void {
+				changePlayerSize();
+				dispatchEvent(new Event(FINISH_LOADING));
+			}
+
+
+			/**
+			 * unloads and reloads the preview KDP
+			 * */
+			private function reloadPlayer():void {
+				_kdpFirstTimeLoad = false;
+				unLoadKdp();
+				dispatchEvent(new Event(ApsWizPreviewPlayer.REFRESH_KDP));
+			}
+
+
+			/**
+			 * Calculate if the offset of the ration is too large. if so, return a red color code,
+			 * if not return a green color code
+			 */
+			private function calcIfOkRatio(ratio:Number, idealRatio:Number, ratioOffset:Number):Number {
+				var offset:Number = Math.abs(idealRatio - ratio);
+				if (offset <= ratioOffset)
+					return 0x008000;
+				return 0xCC0000;
+			}
+
+
+			private function onAutoPreviewChanged():void {
+				_mySo.data.autoPreview = true;
+				_mySo.flush();
+				autoPreviewChanged();
+
+			}
+
+
+			private function autoPreviewChanged():void {
+				dispatchEvent(new Event(AUTO_PREVIEW_CHANGED));
+			}
+
+
+			/**
+			 * {playerWidth, playerHeight}
+			 * */
+			public function get previewPlayerData():Object {
+				return {playerWidth: kdpWidth.value, playerHeight: kdpHeight.value};
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set previewPlayerData(value:Object):void {
+				kdpHeight.value = value.playerHeight;
+				kdpWidth.value = value.playerWidth;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" verticalAlign="middle">
+		<mx:Button id="openClosePreview" styleName="closePreview" click="toggolePreview()" buttonMode="true"/>
+		<mx:Label text="{resourceManager.getString('aps','preview')}" styleName="pageTitle"/>
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+
+	<mx:VBox>
+		<mx:HBox id="resizeContainer">
+			<mx:Label text="{resourceManager.getString('aps','playerSize')}"/>
+			<mx:NumericStepper id="kdpWidth" width="60" value="500" maximum="2300" minimum="100"/>
+			<mx:Label text="x" textAlign="center"/>
+			<mx:NumericStepper id="kdpHeight" width="60" value="500" maximum="2300" minimum="100"/>
+			<mx:Spacer width="10"/>
+			<mx:Button id="refreshKdp3" buttonMode="true" label="{resourceManager.getString('aps','preview')}"
+					   click="reloadPlayer()"/>
+			<mx:Spacer width="10"/>
+			<mx:CheckBox id="autoPreview" 
+						 label="{resourceManager.getString('aps','autoPreview')}" 
+						 change="{onAutoPreviewChanged()}"/>
+		</mx:HBox>
+		<mx:VBox>
+			<mx:Label 
+					  text="{resourceManager.getString('aps','videoScreenSize')}: {int(_playerWidth)} x {int(_playerHeight)}"/>
+		</mx:VBox>
+		<mx:VBox width="100%">
+			<mx:HBox>
+				<mx:Text text="{resourceManager.getString('aps','videoRatio')}:" selectable="false"/>
+				<mx:VBox>
+					<mx:Label text="16 : {(int(16/_playerRatio*100))/100}"
+							  color="{calcIfOkRatio(16/_playerRatio,9,_tolorance169)}"/>
+					<mx:Label text=" 4 : {(int(4/_playerRatio*100))/100}"
+							  color="{calcIfOkRatio(4/_playerRatio,3,_tolorance34)}"/>
+				</mx:VBox>
+				<mx:Text text="{resourceManager.getString('aps','videoRecomendation')}" height="100%" selectable="false"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	<mx:SWFLoader id="kdp3Loader" width="400" height="400" init="{onKDP3Loaded(event)}"/>
+</mx:VBox>

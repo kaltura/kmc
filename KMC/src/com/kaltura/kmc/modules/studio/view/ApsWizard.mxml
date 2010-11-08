@@ -1,0 +1,1033 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+
+The main window for new player wizard.
+
+-->
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+						xmlns:wizardView="com.kaltura.kmc.modules.studio.view.wizard.*"
+						xmlns:wizardBusiness="com.kaltura.kmc.modules.studio.business.wizard.*"
+						xmlns:controls="com.kaltura.controls.*"
+						xmlns:window="com.kaltura.containers.*"
+						xmlns:containers="com.kaltura.containers.*"
+						showCloseButton="true" close="onWizardCancel()"
+						help="{help()}"
+						creationComplete="{onCreationComplete()}"
+						resize="{onResize()}"
+						width="100%" height="100%" minWidth="980" minHeight="510"
+						horizontalScrollPolicy="off" verticalScrollPolicy="off" layout="horizontal">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.commands.uiConf.UiConfAdd;
+			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.commands.uiConf.UiConfUpdate;
+			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.studio.business.wizard.ApsWizardXmlController;
+			import com.kaltura.kmc.modules.studio.vo.KeyValVo;
+			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
+			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
+			import com.kaltura.kmc.modules.studio.vo.StyleVo;
+			import com.kaltura.kmc.modules.studio.vo.TemplateVo;
+			import com.kaltura.kmc.modules.studio.vo.ads.AdvertizingVo;
+			import com.kaltura.kmc.vo.Context;
+			import com.kaltura.types.KalturaUiConfCreationMode;
+			import com.kaltura.vo.KalturaUiConf;
+			
+			import modules.Studio;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
+
+			public static const PLAYLIST:String = "playlist";
+			public static const PLAYER:String = "player";
+			public static const ALERT_USER:String = "alertUser";
+
+			/**
+			 * A flag saying if advertising tab should be displayed.
+			 * The value is passed via flashvars, then adjusted by player data.
+			 * */
+			public var enableAdsTab:Boolean;
+			
+			
+			/**
+			 * flag to know if the content page was changed or not - so we save playlist rendering after each change
+			 * */
+			private var _isContentChanged:Boolean;
+			
+			/**
+			 * regular player or playlist player
+			 * */
+			private var _templateType:String;
+			
+			/**
+			 * solves some sort of race conditions..
+			 * */
+			private var _shouldWaitForPreview:Boolean = false;
+			
+			
+			private var _wasFirstPreview:Boolean;
+			
+			/**
+			 * indicates autopreview is on
+			 * */
+			private var _autoPreview:Boolean;
+
+			[Bindable] public var swfUrl:String;
+			[Bindable] public var media:PlayerContentVo;
+
+			[Bindable] private var _xmlController:ApsWizardXmlController;
+			[Bindable] private var _isNewPlayer:Boolean;
+			[Bindable] private var _appStudioTemplates:XML;
+			[Bindable] private var _context:Context;
+			[Bindable] private var _playerUiConfVO:PlayerUiConfVo;
+
+
+			private function onCreationComplete():void {
+				enabled = false;
+				visible = false;
+				wizardSaveBtn.enabled = false;
+				templatePage.playlistFeatures.visible = false;
+				var tvo:TemplateVo = new TemplateVo();
+				if (_isNewPlayer) {
+					tvo.playerName = resourceManager.getString('aps', 'playerName');
+					// load template data (playerId is the template here)
+					loadTemplateUiconf(_playerUiConfVO.playerId);
+					linkDtn.selectedIndex = 0; //Select Template First
+				}
+				else {
+					//this is edit existing player mode
+					loadTemplateUiconf(_playerUiConfVO.fullTemplateId);
+					tvo.playerName = _playerUiConfVO.name;
+					linkDtn.selectedIndex = 1; //Select Features First	
+				}
+				templatePage.templateData = tvo;
+				
+				// in case of multiplaylist - load the content of the playlist
+				if (_playerUiConfVO.isMultiPlaylistTemplate) {
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[4], true);
+					if (enableAdsTab) {
+						linkDtn.dataProvider = [templatePage.label, featurePage.label, advertizingPage.label, stylePage.label, contentPage.label];
+					} else {
+						linkDtn.dataProvider = [templatePage.label, featurePage.label, stylePage.label, contentPage.label];
+					}
+					if (!_isNewPlayer) {
+						linkDtn.selectedIndex = 1; //Select Features First	
+						showPreview(true);
+					}
+				}
+				resizeWizardViewStack();
+				//Event Listners
+				this.parent.addEventListener(Event.RESIZE, onResize);
+				previewPlayerPage.addEventListener(ApsWizPreviewPlayer.REFRESH_KDP, previewKdp);
+			}
+			
+			/**
+			 * dispatch help event with relevant data
+			 * */
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('aps', 'helpWizardAppStu')));
+			}
+
+			/**
+			 * Refresh button was clicked - refresh the KDP
+			 */
+			private function previewKdp(event:Event = null):void {
+				enabled = false;
+				var style:StyleVo = stylePage.getStyleData();
+				var template:TemplateVo = templatePage.templateData;
+				var genFeatures:XML = featurePage.populateKeyValues();
+				var newUiConfXML:XML = _xmlController.getPlayerUIConf(templatePage.playerName.text, 
+															getTemplateType(_playerUiConfVO.fullplayer.@isPlaylist), 
+															new AdvertizingVo(), style, template, genFeatures, 
+															contentPage);
+				/* there will be no advertising related stuff, 
+				* because we sent an advertizingVO with no data. 
+				* NOTE if there was any, we had to remove it for the
+				* preview. We still have to manually remove plymedia. */
+				delete newUiConfXML..Plugin.(@id == "plymedia")[0];
+				// for editing old players
+				delete newUiConfXML..Plugin.(@id == "adaptv")[0];
+				delete newUiConfXML..Plugin.(@id == "tremor")[0];
+				previewPlayerPage.loadKdp(swfUrl, newUiConfXML);
+			}
+
+
+
+			/**
+			 * fix appearance
+			 * */
+			private function onResize(event:Event = null):void {
+				this.width = this.parent.width - 20;
+				this.height = this.parent.height - 20;
+				PopUpManager.centerPopUp(this);
+
+			}
+
+
+
+			/**
+			 * asuming the data on _playerUiConfVO is updated, we can now get the 
+			 * preview player and init it according to the snapshot.
+			 * */
+			private function setPanels():void {
+				if (!_playerUiConfVO.isMultiPlaylistTemplate || _playerUiConfVO.isSinglePlaylist) {
+					//move to the template or to the features sub tab
+					if (_isNewPlayer && linkDtn.selectedIndex != 0)
+						linkDtn.selectedIndex = 0;
+					else if (!_isNewPlayer) {
+						linkDtn.selectedIndex = 1;
+						showPreview(true);
+					}
+				}
+
+				if (_playerUiConfVO.isSinglePlaylist || _playerUiConfVO.isMultiPlaylistTemplate)
+					templatePage.playlistFeatures.visible = true;
+				
+//				Application.application.parameters.uiconfId = _playerUiConfVO.fullTemplateId;
+
+				// show the loaded data in the difefrrent panels
+				setupData();
+
+				// if this is not a multi playlist or if it is a new multiplaylist - load the player preview
+				var currentUiVars:XMLList = _playerUiConfVO.snapshot.uiVars.children().(String(attribute("key").toString()).indexOf("kpl") > -1);
+				if (!_playerUiConfVO.isMultiPlaylistTemplate || _isNewPlayer || currentUiVars.length() == 0)
+					previewKdp();
+				else
+					_shouldWaitForPreview = true;
+			}
+
+
+			/**
+			 * gathers content-tab data
+			 * @return xml with content tab data
+			 * */
+			private function buildContentXML():XML {
+				//get all vars that holds 'k_pl_'
+				var xmlList:XMLList = new XMLList(_playerUiConfVO.snapshot..descendants("var").(String(attribute("key").toString()).indexOf("kpl") > -1));
+				var plgroup:XML = <playlistGroup/>
+				plgroup.appendChild(xmlList);
+				return plgroup;
+			}
+
+
+
+			/**
+			 * initialize the different panels' data according to loaded data
+			 * */
+			private function setupData():void {
+				enabled = true;
+				visible = true;
+
+				// show the key-value box (uivars):
+				if (featurePage.keyValueBox) {
+					featurePage.keyValueBox.visible = true;
+					featurePage.keyValueBox.includeInLayout = true;
+				}
+				
+				// content tab:
+				var contentXML:XML = buildContentXML();
+				if (contentPage)
+					contentPage.setWidgetPlaylistXML(contentXML);
+				
+				// xml controller:
+				_xmlController = new ApsWizardXmlController();
+				_xmlController.fullPlayer = _playerUiConfVO.fullplayer;
+				_xmlController.featuresCollection = new XMLListCollection(_playerUiConfVO.features.feature);
+				
+				// features tab:
+				featurePage.screenAsset = _playerUiConfVO.snapshot..screenAssets[0];
+				featurePage.setFeatureList(_playerUiConfVO.features);
+				featurePage.init();				
+				
+				// general:
+				cursorManager.removeBusyCursor();
+				wizardSaveBtn.enabled = true;
+				
+				// send the constants height/width to the player 
+				var fixedAdditional:XML = _playerUiConfVO.snapshot..screenAssets.fixedAdditional[0];
+				var additionalTop:Number = fixedAdditional.@top;
+				var additionalBottom:Number = fixedAdditional.@bottom;
+				var additionalLeft:Number = fixedAdditional.@left;
+				var additionalRight:Number = fixedAdditional.@right;
+				// reduce the sizes of screen assets that are not active (visible) 
+				var screenAssets:XMLList = playerUiConfVO.snapshot.snapshot.screenAssets.screenasset;
+				var size:Object = {playerWidth:_playerUiConfVO.snapshot.playerProperties.width.text(),
+									playerHeight:_playerUiConfVO.snapshot.playerProperties.height.text()}
+				previewPlayerPage.previewPlayerData = size;
+
+				// set the loaded values to the Template Form
+				setTemplateData();
+				// if there's a definition to stretchContent, select the correct radiobutton.
+				if (_playerUiConfVO.snapshot.uiVars.children().(attribute('key') == 'stretchcontent').length() > 0) {
+					if (_playerUiConfVO.snapshot.uiVars.children().(attribute('key') == 'stretchcontent')[0].@value.toString() == "false") {
+						templatePage.templateData.keepAspectRatio = true;
+					}
+					else {
+						templatePage.templateData.keepAspectRatio = false;
+					}
+				}
+				
+				if (!_isNewPlayer) {	
+					// fill in the uiVars for the last accordion tab 
+					var allUiVars:XMLList = _playerUiConfVO.snapshot.uiVars.children();
+					var featuresKevals:Array = new Array();
+					for (var j:uint = 0; j < allUiVars.length(); j++) {
+						if ((allUiVars[j] as XML).attribute("overrideFlashvar").length() > 0) {
+							var kv:KeyValVo = new KeyValVo();
+							kv.key = (allUiVars[j] as XML).attribute("key");
+							kv.val = (allUiVars[j] as XML).attribute("value");
+							kv.overridable = (allUiVars[j] as XML).attribute("overrideFlashvar")[0].toString() == "true";
+							featuresKevals.push(kv);
+						}
+					}
+					featurePage.keyvals = new ArrayCollection(featuresKevals);
+				}
+
+				// styles tab:
+				stylePage.playerUiconfVo = _playerUiConfVO;
+				var theme:XML = _playerUiConfVO.snapshot.visual.theme[0];
+				stylePage.setStyleData(theme);
+			}
+
+			
+
+			///////////////////////////////////////////////////////////////////
+			///////////////////////// loading /////////////////////////////////
+			///////////////////////////////////////////////////////////////////
+
+			/**
+			 * fetch template data
+			 * */
+			private function loadTemplateUiconf(playerId:String):void {
+				cursorManager.setBusyCursor();
+				var fullUiconfGet:UiConfGet = new UiConfGet(int(playerId));
+				fullUiconfGet.addEventListener(KalturaEvent.COMPLETE, onTemplateUiConfLoaded);
+				fullUiconfGet.addEventListener(KalturaEvent.FAILED, fault);
+				Studio.kc.post(fullUiconfGet)
+			}
+
+
+//			/**
+//			 * load data of an existing player
+//			 * @param playerId	id of player to load data for
+//			 * */
+//			private function loadPlayerInstance(playerId:String):void {
+//				cursorManager.setBusyCursor();
+//				var uiconfGet:UiConfGet = new UiConfGet(int(playerId));
+//				uiconfGet.addEventListener(KalturaEvent.COMPLETE, onfullPlayerUiConfLoaded);
+//				uiconfGet.addEventListener(KalturaEvent.FAILED, fault);
+//				applicationstudio.kc.post(uiconfGet);
+//			}
+
+			
+			/**
+			 * reset initial values of template panel (stretch, autoplay, 
+			 * image duration, automoveNext) from the snapshot (features file)
+			 * */
+			private function setTemplateData():void {
+				var template:TemplateVo = templatePage.templateData;
+				var uiVars:XMLList = _playerUiConfVO.snapshot..uiVars.children();
+				for each (var uiV:XML in uiVars) {
+					//handle stretch content 
+					if (uiV.attribute("key")[0].toString() == "video.keepAspectRatio") {
+						if (uiV.attribute("value")[0].toString() == "true") {
+							template.keepAspectRatio = true;
+						}
+						else {
+							template.keepAspectRatio = false;
+						}
+					}
+					//handle playlist autocontinue 
+					if (uiV.attribute("key")[0].toString() == "playlistAPI.autoContinue") {
+						if (uiV.attribute("value")[0].toString() == "true") {
+							template.playlistAutoContinue = true;
+						}
+						else {
+							template.playlistAutoContinue = false;
+						}
+						
+					}
+					//handle playlist image duration  
+					if (uiV.attribute("key")[0].toString() == "imageDefaultDuration") {
+						template.imageDefaultDuration = Number(uiV.attribute("value")[0].toString());
+					}
+					//handle autoplay
+					if (uiV.attribute("key")[0].toString() == "autoPlay" || uiV.attribute("key")[0].toString() == "playlistAPI.autoPlay") {
+						if (uiV.attribute("value")[0].toString() == "true") {
+							template.autoPlay = true;
+						}
+						else {
+							template.autoPlay = false;
+						}
+						
+					}
+					//handle mute  
+					if (uiV.attribute("key")[0].toString() == "autoMute") {
+						if (uiV.attribute("value")[0].toString() == "true") {
+							template.autoMute = true;
+						}
+						else {
+							template.autoMute = false;
+						}
+					}
+				}
+			}
+
+			
+			/**
+			 * this method is triggered when the player template is loaded.
+			 * set loaded data on the different panels
+			 * */
+			private function onTemplateUiConfLoaded(evt:KalturaEvent):void {
+				if (_isNewPlayer) {
+					// use template data as player data
+					var fpXMl:XML = XML((evt.data as KalturaUiConf).confFile);
+					var ss:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
+					/* set the template player id on the snapshot. When saving the new 
+					   player, this is the value used for template id (fullPlayerId).
+					   This is needed because the values saved in the template-uiconfs 
+					   are not correct because of the deployment script that generates 
+					   the uiconf ids automatically. */
+					ss.@fullPlayerId = _playerUiConfVO.playerId;
+					_playerUiConfVO = new PlayerUiConfVo(_playerUiConfVO.playerId, fpXMl, ss, _playerUiConfVO.name);
+					setPanels();
+					//if this is multi playlist - load the available playlists 
+					if (_playerUiConfVO.isMultiPlaylistTemplate)
+						contentPage.listPlaylist();
+				}
+				
+				else {
+					// when we start, playerUiconfVo holds the edited-player's data.
+					var templateFeaturesXml:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
+					// use a "fresh" player:
+					_playerUiConfVO.fullplayer = XML((evt.data as KalturaUiConf).confFile);
+					var featuresData:XML = _playerUiConfVO.snapshot.featuresData[0];
+					var templateFeaturesData:XMLList = templateFeaturesXml..descendants().(attribute("k_param").toString().length != 0);
+					//initiate the player dynamic uiVars section
+					for each (var dataFeature:XML in templateFeaturesData) {
+						var feature:XML = dataFeature;
+						var fullName:String = dataFeature.@id;
+						var k_value:String = dataFeature.@k_value;
+						
+						// get the feature's full name:
+						while (dataFeature = dataFeature.parent()) {
+							// this was INTENTIONALLY assignment and not comaprison!!
+							if (dataFeature.@id[0])
+								fullName = dataFeature.@id + "." + fullName;
+						}
+						// get the player feature with matching full name:
+						var data:XMLList = featuresData.children().(attribute("k_fullName") == fullName);
+						if (data.length()) {
+							// change the template value to match the saved value:
+							feature.@k_value = data[0].@k_value.toString();
+							if (feature.name() == "feature")
+								feature.@selected = feature.@k_value;
+						}
+					}
+					// use the changed template as player data:
+					_playerUiConfVO.snapshot.features[0] = templateFeaturesXml;
+					
+					setPanels();
+					// if this is multi playlist - load the available playlists 
+					if (_playerUiConfVO.isMultiPlaylistTemplate)
+						contentPage.listPlaylist();
+				}
+			}
+
+
+//			/**
+//			 * when creating a new player we start the process by loading the full player template.
+//			 * This method is triggered wehn the full template is loaded.
+//			 * 
+//			 * - create new uiconfvo with loaded player and features
+//			 * - load the preview player
+//			 * (configure delta from template and apply to full player)
+//			 * */
+//			private function onfullPlayerUiConfLoaded(evt:KalturaEvent):void {
+//				var fpXMl:XML = XML((evt.data as KalturaUiConf).confFile);
+//				var ss:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
+//				_playerUiConfVO = new PlayerUiConfVo(_playerUiConfVO.playerId, fpXMl, ss, _playerUiConfVO.name);
+//				setPanels();
+//
+//				//if this is multi playlist - load the available playlists 
+//				if (_playerUiConfVO.isMultiPlaylistTemplate)
+//					contentPage.listPlaylist();
+//			}
+
+
+			private function onSaved(evt:KalturaEvent):void {
+				cursorManager.removeBusyCursor();
+				var alert:Alert = Alert.show(ResourceManager.getInstance().getString("aps", "savedPlayer") + " " + (evt.data as KalturaUiConf).name + " " + ResourceManager.getInstance().getString("aps", "playerId") + " " + (evt.data as KalturaUiConf).id);
+				alert.addEventListener(CloseEvent.CLOSE, onPlayerSavedAlertClose);
+			}
+
+
+			
+
+			/**
+			 * show or hide preview
+			 * @param value		indicates if need to hide (false) or show (true)
+			 * */
+			private function showPreview(value:Boolean):void {
+				previewPlayerPage.includeInLayout = value;
+				previewPlayerPage.visible = value;
+			}
+
+
+
+			private function onCloseHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					this.enabled = false;
+					//ExternalInterface.call("refreshSWF");
+					//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
+					navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
+				}
+			}
+
+
+			public function onWizardCancel():void {
+				Alert.show(resourceManager.getString('aps', 'discardAllChanges'), "", Alert.YES | Alert.NO, this, onCloseHandler);
+			}
+
+
+			public function dispose():void {
+				_xmlController.dispose();
+				templatePage.dispose();
+				featurePage.dispose();
+				advertizingPage.dispose();
+				stylePage.dispose();
+				//monitizationPage.dispose();
+				previewPlayerPage.dispose();
+				templatePage = null;
+				featurePage = null;
+				advertizingPage = null;
+				stylePage = null;
+				//monitizationPage = null;
+				previewPlayerPage = null;
+				removeAllChildren();
+			}
+
+
+			///////////////////////////////////////////////////////////////////
+			/////////////////////////// saving ////////////////////////////////
+			///////////////////////////////////////////////////////////////////
+			
+			
+			/**
+			 * validate all of the different panels.
+			 * @return	true if all data valid, or false if any validation failed.
+			 * */
+			private function validate():Boolean {
+				
+				if (!templatePage.validate()) {
+					linkDtn.selectedIndex = wizardViewStack.getChildIndex(templatePage);
+					return false;
+				}
+				if (!stylePage.validate()) {
+					linkDtn.selectedIndex = wizardViewStack.getChildIndex(stylePage);
+					return false;
+				}
+				if (!featurePage.validate()) {
+					linkDtn.selectedIndex = wizardViewStack.getChildIndex(featurePage);
+					return false;
+				}
+				if (_playerUiConfVO.fullplayer.@isPlaylist == "multi"  && !contentPage.validate()) {
+					linkDtn.selectedIndex = wizardViewStack.getChildIndex(contentPage);
+					return false;
+				}
+				if (enableAdsTab && !advertizingPage.validate()) {
+					linkDtn.selectedIndex = wizardViewStack.getChildIndex(advertizingPage);
+					return false;
+				}
+				return true;
+			}
+			
+			
+			/**
+			 * manipulate XML and save on server
+			 * */
+			private function onSave(evt:MouseEvent = null):void {
+				if (!validate()) {
+					Alert.show(resourceManager.getString('aps', 'checkErrors'));
+					return;
+				}
+				
+				var template:TemplateVo = templatePage.templateData;
+				
+				//replace appostroph in player's name so it does not break the XML
+				template.playerName = template.playerName.split("'").join("´");
+				
+				// update ads:
+				if (enableAdsTab) {
+					advertizingPage.update();
+				}
+				
+				var templateType:String = getTemplateType(_playerUiConfVO.fullplayer.@isPlaylist);
+				var style:StyleVo = stylePage.getStyleData();
+				var genFeatures:XML = featurePage.populateKeyValues();
+				var playerxml:XML = _xmlController.getPlayerUIConf(template.playerName, templateType,
+																_playerUiConfVO.advertizing, style, 
+																template, genFeatures, contentPage);
+				// copy screen assets from current snapshot:
+				var assets:XML = _playerUiConfVO.snapshot..screenAssets[0];
+				// if player was created with older version of appstudio that don't have advertising tab, don't pass advertising data.
+				var hasAdvertisingInFeatures:Boolean = _playerUiConfVO.snapshot.advertising.length() > 0;
+				var snapshot:XML = _xmlController.buildSnapshot(hasAdvertisingInFeatures ? _playerUiConfVO.advertizing : null, 
+																assets, _playerUiConfVO.fullTemplateId, 
+																templateType, stylePage.getStyleData(), 
+																previewPlayerPage.previewPlayerData, template, 
+																genFeatures, contentPage);
+				enabled = false;
+				cursorManager.setBusyCursor();
+				// save data as existing player or create new player 
+				if (_isNewPlayer)
+					saveNewPlayer(playerxml, snapshot);
+				else
+					updateExistingPlayer(playerxml, snapshot);
+			}
+
+
+			/**
+			 * @param pl	playlist type from xml
+			 * @return playlist type
+			 * */
+			private function getTemplateType(pl:String):String {
+				if (pl == "true" || pl == "multi")
+					return ApsWizard.PLAYLIST;
+				else
+					return ApsWizard.PLAYER;
+			}
+
+
+			private function buildParamObject(playerXml:XML, snapshotXML:XML):Object {
+				var template:TemplateVo = templatePage.templateData;
+				var params:Object = new Object();
+				params.ks = _context.ks;
+				params.partner_id = _context.partner_id;
+				params.subp_id = _context.subp_id;
+				params.uiconf_tags = _playerUiConfVO.tags;
+				//send uiconfid only if this is edit player and not a new player
+				if (!_isNewPlayer) {
+					params.uiconf_id = _playerUiConfVO.playerId;
+				}
+				params.uiconf_objType = "1";
+				params.uid = _context.uid;
+				params.uiconf_name = template.playerName; //templatePage.playerName.text;
+				
+				var size:Object = previewPlayerPage.previewPlayerData;
+				params.uiconf_width = size.playerWidth;
+				params.uiconf_height = size.playerHeight;
+
+				params.uiconf_swfUrl = swfUrl;
+				playerXml..layout.@playerName = template.playerName;
+				params.uiconf_confFile = playerXml.toXMLString();
+				//insert the content playlist to the snapshot
+				params.uiconf_confFileFeatures = snapshotXML.toXMLString();
+				params.uiconf_autoplay = template.autoPlay ? "true" : "false";
+				params.uiconf_automuted = template.autoMute ? "true" : "false";
+				params.uiconf_creationMode = "2";
+				_templateType = getTemplateType(_playerUiConfVO.fullplayer.@isPlaylist);
+				params.uiconf_tags = "kdp3," + _templateType;
+				return params;
+			}
+
+
+			private function onPlayerSavedAlertClose(evt:Event):void {
+				this.enabled = true;
+				var isPlaylist:String = "false";
+				if (_playerUiConfVO.isSinglePlaylist) {
+
+					ExternalInterface.call("playlistAdded");
+					isPlaylist = "true";
+				}
+				else if (!_playerUiConfVO.isMultiPlaylistTemplate) {
+					ExternalInterface.call("playerAdded");
+				}
+				if (_playerUiConfVO.isMultiPlaylistTemplate) {
+					isPlaylist = "true";
+				}
+				//ExternalInterface.call("refreshSWF");
+				//kmc.preview_embed.updateList(is_playlist)
+				ExternalInterface.call("kmc.preview_embed.updateList", isPlaylist);
+				//navigateToURL( new URLRequest("javascript: kmc.preview_embed.updateList("+isMulty+")") , "_self");
+				navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
+
+			}
+
+
+			/**
+			 * Update a new existing player with the new changed
+			 */
+			private function updateExistingPlayer(playerXml:XML, snapshotXML:XML):void {
+				var uiconf:KalturaUiConf = new KalturaUiConf();
+				var params:Object = buildParamObject(playerXml, snapshotXML);
+				uiconf.confFile = params.uiconf_confFile;
+				uiconf.confFileFeatures = params.uiconf_confFileFeatures;
+				uiconf.creationMode = KalturaUiConfCreationMode.WIZARD;
+				uiconf.height = params.uiconf_height;
+				uiconf.width = params.uiconf_width;
+				uiconf.swfUrl = params.uiconf_swfUrl;
+				uiconf.tags = params.uiconf_tags;
+				uiconf.name = params.uiconf_name;
+				uiconf.useCdn = true;
+				uiconf.objType = params.uiconf_objType;
+				var uiconfUpdate:UiConfUpdate = new UiConfUpdate(params.uiconf_id, uiconf);
+				uiconfUpdate.addEventListener(KalturaEvent.COMPLETE, onSaved);
+				uiconfUpdate.addEventListener(KalturaEvent.FAILED, fault);
+				Studio.kc.post(uiconfUpdate);
+			}
+
+
+			/**
+			 * Save a new player
+			 */
+			private function saveNewPlayer(playerXml:XML, snapshotXML:XML):void {
+				var params:Object = buildParamObject(playerXml, snapshotXML);
+				var uiconf:KalturaUiConf = new KalturaUiConf();
+				uiconf.confFile = params.uiconf_confFile;
+				uiconf.confFileFeatures = params.uiconf_confFileFeatures;
+				uiconf.creationMode = KalturaUiConfCreationMode.WIZARD;
+				uiconf.height = params.uiconf_height;
+				uiconf.width = params.uiconf_width;
+				uiconf.swfUrl = params.uiconf_swfUrl;
+				uiconf.tags = params.uiconf_tags;
+				uiconf.name = params.uiconf_name;
+				uiconf.objType = params.uiconf_objType;
+				uiconf.useCdn = true;
+				var uiConfAdd:UiConfAdd = new UiConfAdd(uiconf);
+				uiConfAdd.addEventListener(KalturaEvent.COMPLETE, onSaved);
+				uiConfAdd.addEventListener(KalturaEvent.FAILED, fault);
+				Studio.kc.post(uiConfAdd);
+			}
+
+
+			private function fault(evt:KalturaEvent):void {
+				Alert.show("httpFault \n" + evt.error);
+			}
+
+
+			/**
+			 * listen and know when the content page was changed
+			 * so the live preview will get the content.
+			 * */
+			private function onContentGroupChange():void {
+				_isContentChanged = true;
+			}
+
+
+			/**
+			 * re-arrange the right side playlist table to match the selected playlists.
+			 * */
+			private function reRenderPlaylist():void {
+				_isContentChanged = false;
+				var arr:Array = new Array();
+				var currentPlayLists:XML = contentPage.getWidgetPlaylistXML();
+				var items:XMLList = currentPlayLists.children();
+				var playlistAmount:Number = items.length() / 3;
+				for (var i:uint = 0; i < playlistAmount; i++) {
+					//get a single playlist data - name & url
+					var singlePlaylist:XMLList = items.(String(attribute("key").toString()).indexOf("playlistAPI.kpl" + i + "") > -1);
+					var plUrl:String;
+					var plName:String;
+					for (var j:uint = 0; j < singlePlaylist.length(); j++) {
+						if (String(XML(singlePlaylist[j]).@key.toString()).indexOf("Name") > -1)
+							plName = XML(singlePlaylist[j] as XML).attribute("value")[0].toString();
+						if (String(XML(singlePlaylist[j]).@key.toString()).indexOf("Url") > -1)
+							plUrl = XML(singlePlaylist[j] as XML).attribute("value")[0].toString();
+					}
+					plUrl = unescape(plUrl);
+					var splitKSarray:Array = plUrl.split('{ks}');
+					plUrl = splitKSarray[0] + _context.ks;
+					var plObj:Object = new Object();
+					plObj.url = plUrl;
+					plObj.name = plName;
+					arr.push(plObj);
+				}
+
+			}
+
+
+			private function onDtnChange():void {
+				if (_isContentChanged) {
+					reRenderPlaylist();
+				}
+
+				if (linkDtn.selectedIndex != 1 || linkDtn.selectedIndex != 2) {
+					if (!wizardViewStack.visible)
+						closePreview();
+				}
+			}
+
+
+			private function resizeViewstackByChild(event:Event):void {
+				wizardViewStack.width = event.target.measuredWidth;
+			}
+			
+
+
+			private function openPreview():void {
+				previewPlayerPage.openClosePreview.styleName = "openPreview";
+				wizardViewStack.visible = false;
+				wizardViewStack.includeInLayout = false;
+			}
+
+
+			private function closePreview():void {
+				previewPlayerPage.openClosePreview.styleName = "closePreview";
+				wizardViewStack.visible = true;
+				wizardViewStack.includeInLayout = true;
+			}
+
+
+			//getters & setters
+			/////////////////////////////////////////////
+			public function set context(value:Context):void {
+				_context = value;
+			}
+
+
+			public function get context():Context {
+				return _context;
+			}
+
+
+			public function set playerUiConfVO(value:PlayerUiConfVo):void {
+				_playerUiConfVO = value;
+			}
+
+
+			public function get playerUiConfVO():PlayerUiConfVo {
+				return _playerUiConfVO;
+			}
+
+
+			public function set appStudioTemplates(value:XML):void {
+				_appStudioTemplates = value;
+			}
+
+
+			public function get appStudioTemplates():XML {
+				return _appStudioTemplates;
+			}
+
+
+			public function set isNewPlayer(value:Boolean):void {
+				_isNewPlayer = value;
+			}
+
+
+			public function get isNewPlayer():Boolean {
+				return _isNewPlayer;
+			}
+
+			
+			/**
+			 * create viewstack's contents
+			 * */
+			public function onVsCreationComplete():void {
+				if (enableAdsTab) {
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[0], true);
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[1], true);
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[2], true);
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[3], true);
+					linkDtn.dataProvider = [templatePage.label, featurePage.label, advertizingPage.label, stylePage.label];
+				} else {
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[0], true);
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[1], true);
+					wizardViewStack.createComponentFromDescriptor(wizardViewStack.childDescriptors[3], true);
+					linkDtn.dataProvider = [templatePage.label, featurePage.label, stylePage.label];
+				}
+			}
+
+
+			public function onContentCreationComplete():void {
+				contentPage.addEventListener(ApsWizardContent.LIST_PLAYLIST_DONE, onAllListLoaded);
+			}
+
+
+			public function onAllListLoaded(evt:Event = null):void {
+				if (_playerUiConfVO.isMultiPlaylistTemplate) {
+					//check if there is a custom playlist made in this player. if not - show default content
+					var uivars:XML = _playerUiConfVO.snapshot..uiVars[0];
+					var costomPlaylists:XMLList;
+					if (uivars)
+						costomPlaylists = uivars..descendants().(attribute("key") == "playlistAPI.kpl0Name");
+					if (costomPlaylists && costomPlaylists.length() > 0) {
+						var contentXML:XML = buildContentXML();
+						if (contentPage)
+							contentPage.setWidgetPlaylistXML(contentXML);
+
+						reRenderPlaylist();
+
+						//race condition - available playlists & KDP preview  
+						if (_shouldWaitForPreview) {
+							previewKdp();
+						}
+						_shouldWaitForPreview = false;
+					}
+				}
+			}
+
+
+			/**
+			 * remember that the KDP was loaded for the 1st time and 
+			 * enable the semi-live preview behavior
+			 */
+			private function onFirstTimeLoaded(evt:Event = null):void {
+				_wasFirstPreview = true;
+			}
+
+
+			/**
+			 * Whenever a feature was added or saved, or a color / theme / font was changed,
+			 * update KDP auto preview if requested.
+			 */
+			private function onFeatureChanged(evt:Event = null):void {
+				if (_wasFirstPreview) {
+					if (_autoPreview)
+						previewKdp();
+				}
+			}
+
+
+			/**
+			 * enable the wizard once KDP loading is done.
+			 * */
+			private function onFinishLoading(evt:Event = null):void {
+				enabled = true;
+			}
+
+
+			/**
+			 * saves _autoPreview value if needed.
+			 * */
+			private function onAutoPreviewChanged():void {
+				if (previewPlayerPage)
+					_autoPreview = previewPlayerPage.autoPreview.selected;
+			}
+
+			/**
+			 * show the preview player in features & style tabs.
+			 * hide it in template page and in advertizing.
+			 * */
+			private function resizeWizardViewStack(event:IndexChangedEvent = null):void {
+				if (wizardViewStack.selectedChild == featurePage || 
+					wizardViewStack.selectedChild == stylePage) {
+					showPreview(true);
+					wizardViewStack.percentWidth = NaN;
+				}
+				else {
+					showPreview(false);
+					wizardViewStack.percentWidth = 100;
+				}
+//				wizardViewStack.selectedChild.addEventListener(FlexEvent.CREATION_COMPLETE, onCreationCompletesdefsrt);
+//				wizardViewStack.selectedChild.addEventListener(FlexEvent.SHOW, onCreationCompletesdefsrt);
+				
+			}
+			
+			
+			protected function onCreationCompletesdefsrt(e:Event):void {
+				wizardViewStack.selectedChild.removeEventListener(FlexEvent.CREATION_COMPLETE, onCreationCompletesdefsrt);
+				wizardViewStack.selectedChild.removeEventListener(FlexEvent.SHOW, onCreationCompletesdefsrt);
+				wizardViewStack.height = wizardViewStack.selectedChild.height;
+			}
+			
+			
+			/**
+			 * general error handling mechanism
+			 * @param e		error event whose text will be displayed on the screen
+			 * */
+			private function alertUser(e:ErrorEvent):void {
+				Alert.show(e.text, ResourceManager.getInstance().getString('cms', 'error'));
+			}
+
+		]]>
+	</mx:Script>
+	<controls:DTN id="linkDtn"
+				  show="resizeViewstackByChild(event)"
+				  change="onDtnChange()"/>
+	<mx:Canvas id="workaroundContainer"
+			   width="100%"
+			   height="100%" >
+		<!-- this is the scrolled container-->
+		<mx:HBox width="{workaroundContainer.width}" 
+				 height="{workaroundContainer.height}" 
+				 horizontalGap="0" backgroundColor="#f7f7f7"
+				 backgroundAlpha="1">
+			<mx:ViewStack id="wizardViewStack" 
+						  width="100%" 
+						  resizeToContent="true"
+						  styleName="plstBoxCont"
+						  creationComplete="onVsCreationComplete()"
+						  creationPolicy="none"
+						  change="resizeWizardViewStack(event)"
+						  selectedIndex="{linkDtn.selectedIndex}">
+				<wizardView:ApsWizTemplate id="templatePage"
+										   height="100%"
+										   label="{resourceManager.getString('aps','template')}"
+										   alertUser="{alertUser(event)}"/>
+
+				<wizardView:ApsWizFeatures id="featurePage"
+										   height="{previewPlayerPage.height - 35}"
+										   refreshKdp="onFeatureChanged()"
+										   playerUiconfVo="{_playerUiConfVO}"
+										   label="{resourceManager.getString('aps','featureTab')}"
+										   alertUser="{alertUser(event)}"/>
+
+				<wizardView:ApsWizAdvertizing id="advertizingPage"
+											  playerUiconfVo="{_playerUiConfVO}"
+											  label="{resourceManager.getString('aps','advertising')}"/>
+
+				<wizardView:ApsWizStyle id="stylePage"
+										height="100%"
+										refreshKdp="onFeatureChanged()"
+										label="{resourceManager.getString('aps','style')}"/>
+
+				<wizardView:ApsWizardContent id="contentPage"
+											 height="100%"
+											 width="100%"
+											 creationComplete="{onContentCreationComplete()}"
+											 verticalAlign="top"
+											 horizontalAlign="center"
+											 groupPlaylistChange="onContentGroupChange()"
+											 isSingleContent="{_playerUiConfVO.isSinglePlaylist}"
+											 ks="{_context.ks}"
+											 uid="{_context.uid}"
+											 partnerId="{_context.partner_id}"
+											 label="{resourceManager.getString('aps','content')}"
+											 alertUser="{alertUser(event)}" />
+			</mx:ViewStack>
+			<wizardView:ApsWizPreviewPlayer id="previewPlayerPage"
+											autoPreviewChanged="onAutoPreviewChanged()"
+											firstTimeLoad="onFirstTimeLoaded()"
+											finishLoading="onFinishLoading()"
+											alertUser="{alertUser(event)}"
+											visible="false"
+											includeInLayout="false"
+											height="100%"
+											width="100%"
+											context="{_context}"
+											content="{media}"
+											playerUiConfVo="{_playerUiConfVO}"
+											openPreview="openPreview()"
+											closePreview="closePreview()"
+											verticalAlign="top"
+											horizontalAlign="left"
+											styleName="plstBoxCont"/>
+		</mx:HBox>
+	</mx:Canvas>
+	<mx:ControlBar id="contBar"
+				   width="100%">
+		<mx:Button id="wizardSaveBtn"
+				   label="{resourceManager.getString('aps','save')}"
+				   buttonMode="true"
+				   click="onSave()"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

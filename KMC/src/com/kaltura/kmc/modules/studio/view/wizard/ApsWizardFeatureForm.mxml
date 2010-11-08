@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" backgroundColor="#f7f7f7" borderColor="#cfd7d7"
+		 borderStyle="solid" paddingRight="5" paddingLeft="5" horizontalScrollPolicy="off" visible="false"
+		 creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.studio.events.ApsPrefixEvent;
+			import com.kaltura.kmc.modules.studio.vo.ApsOptionItemVo;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.CheckBox;
+			import mx.controls.ComboBox;
+			import mx.controls.HRule;
+			import mx.controls.NumericStepper;
+			import mx.controls.Spacer;
+			import mx.controls.Text;
+			import mx.controls.TextInput;
+			import mx.core.UIComponent;
+			import mx.events.ListEvent;
+			import mx.events.NumericStepperEvent;
+
+			/**
+			 * The constant defines the value of the type property of a savedFeature event object.
+			 * */
+			public static const SAVED_FEATURE:String = "savedFeature";
+			
+			/**
+			 * current feature's data
+			 * */
+			public var featureFormXML:XML;
+			
+			public var customXML:XML;
+			
+			private var _originalfeatureXML:XML;
+			private var _featurePrefixName:String;
+			private var _componentsArray:Array;
+			private var _isTypingFlag:Boolean = false;
+			private var _isNumericFlag:Boolean = false;
+			private var _numericTimer:Timer;
+			private var _lastNumeric:NumericStepper;
+			private var _lastInput:TextInput;
+			private var _inputTimer:Timer;
+
+			private function onCreationComplete():void {
+				_numericTimer = new Timer(400, 1);
+				_inputTimer = new Timer(300, 1);
+			}
+
+			/**
+			 * shows feature data on screen
+			 * */
+			public function renderFeatureScreen():void {
+				_componentsArray = new Array();
+				addFormControllers(featureFormXML);
+				_featurePrefixName = featureFormXML.@id.toString();
+				addFormButtonsBehavior();
+			}
+
+
+			public function initFeature(localfeatureXML:XML):void {
+				featureFormXML = localfeatureXML;
+				_originalfeatureXML = localfeatureXML.copy();
+				_componentsArray = new Array();
+				addFormControllers(featureFormXML);
+				_featurePrefixName = featureFormXML.@id.toString();
+				addFormButtonsBehavior();
+				initPrefixes();
+				dispose();
+			}
+
+
+			/**
+			 * handle prefix init
+			 * */ 
+			private function initPrefixes():void {
+				var prefixes:XMLList = featureFormXML.children().(String(attribute("id")).indexOf("prefix") > -1);
+				var hasPrefix:Boolean;
+				for each (var prefixXml:XML in prefixes) {
+					var affectsOnAttribute:String = prefixXml.attribute("affectsOnAttribute")[0].toString();
+					var attributeXMLAffected:XML = featureFormXML.children().(String(attribute("k_param")).indexOf(affectsOnAttribute) > -1)[0];
+					var current_k_value:String = attributeXMLAffected.attribute("k_value").toString();
+					var original_k_value:String = "{" + current_k_value.split("{")[1];
+					var new_k_value:String = prefixXml.attribute("k_value")[0].toString() + original_k_value;
+					attributeXMLAffected.attribute("k_value")[0] = new_k_value;
+					hasPrefix = true;
+				}
+				if (hasPrefix) {
+					var d:Object = new Object();
+					d.prefix = prefixXml.attribute("k_value")[0].toString();
+					d.featureName = _featurePrefixName;
+					d.featureXML = _originalfeatureXML;
+					dispatchEvent(new ApsPrefixEvent(ApsPrefixEvent.NEW_PREFIX_TO_UPDATE, d));
+				}
+			}
+
+
+			private function addFormButtonsBehavior():void {
+				applyBtn.addEventListener(MouseEvent.CLICK, saveFeature, false, 0, true);
+				cancelBtn.addEventListener(MouseEvent.CLICK, cancelFeatureChange, false, 0, true);
+			}
+
+			/**
+			 * reset XML model
+			 * */
+			private function cancelFeatureChange(evt:MouseEvent = null):void {
+				featureFormXML.setChildren(_originalfeatureXML.children());
+				var paramsXmls:XMLList = _originalfeatureXML.descendants().(attribute("k_param").toString().length > 0);
+				initFeature(_originalfeatureXML);
+				visible = false;
+				dispose();
+			}
+
+
+			private function addFormControllers(stractureXml:XML, parentComponent:UIComponent = null):void {
+				var children:XMLList = stractureXml.children();
+				var xml:XML;
+				var uiComponent:UIComponent;
+
+				for (var i:uint = 0; i < children.length(); i++) {
+					xml = XML(children[i]);
+					uiComponent = factoryUiComponents(xml, parentComponent);
+					// manage only components that have id
+					if (xml.@id.toString() != "") {
+						_componentsArray.push(new ApsOptionItemVo(xml, xml.name().toString(), uiComponent, xml.@id.toString()));
+					}
+					if (uiComponent != null)
+						featureForm.addChild(uiComponent);
+					if (xml.name().toString() == "CheckBox") {
+						if (xml.children().length() > 0) {
+							addFormControllers(xml, uiComponent);
+						}
+					}
+					if (xml.@enabled.toString() == "false") {
+						uiComponent.enabled = false;
+					}
+					if (xml.@aps_visible.toString() == "false") {
+						uiComponent.visible = false;
+						uiComponent.includeInLayout = false;
+					}
+				}
+			}
+
+
+			/**
+			 * create uicomponents from xml data
+			 * @param componentXML	component data
+			 * @param parentToListenTo	form parent
+			 * */
+			private function factoryUiComponents(componentXML:XML, parentToListenTo:UIComponent = null):UIComponent {
+				var type:String = componentXML.name().toString();
+				var ui:UIComponent;
+				switch (type) {
+					case "NumericStepper":
+						var numericStepper:NumericStepper = new NumericStepper();
+						numericStepper.name = componentXML.@id.toString();
+						if (componentXML.@maximum.toString())
+							numericStepper.maximum = componentXML.@maximum;
+						else
+							numericStepper.maximum = 10000000;
+						if (componentXML.@minimum)
+							numericStepper.minimum = componentXML.@minimum;
+						if (componentXML.@k_value)
+							numericStepper.value = componentXML.@k_value;
+						numericStepper.addEventListener(NumericStepperEvent.CHANGE, onNumericStepperChange, false, 0, true);
+						numericStepper.addEventListener(FocusEvent.FOCUS_OUT, numericChange);
+						ui = numericStepper;
+						break;
+					case "Spacer":
+						var spacer:Spacer = new Spacer();
+						spacer.height = 10;
+						ui = spacer;
+						break;
+					case "Seperator":
+						var hrule:HRule = new HRule();
+						hrule.percentWidth = 80;
+						ui = hrule;
+						break;
+					case "CheckBox":
+						var cb:CheckBox = new CheckBox();
+						if (parentToListenTo != null) {
+							BindingUtils.bindProperty(cb, "enabled", parentToListenTo, "selected");
+							BindingUtils.bindProperty(cb, "visible", parentToListenTo, "selected");
+							BindingUtils.bindProperty(cb, "includeInLayout", parentToListenTo, "selected");
+							cb.setStyle("paddingLeft", 15);
+						}
+						if (componentXML.@k_value.toString() == "true") {
+							cb.selected = true;
+						}
+						cb.addEventListener(Event.CHANGE, onCheckboxChange, false, 0, true);
+						cb.id = componentXML.@id.toString();
+						cb.name = componentXML.@id.toString();
+						cb.label = componentXML.@label.toString();
+						ui = cb;
+						break;
+					case "ComboBox":
+						var combo:ComboBox = new ComboBox();
+						var comboChildrens:XMLList = componentXML.children();
+						combo.dataProvider = comboChildrens;
+						combo.id = componentXML.@id.toString();
+						combo.name = componentXML.@id.toString();
+						var selectedIndex:uint = 0;
+						//hooking the combobox dataprovider selected index
+						for (var i:uint = 0; i < comboChildrens.length(); i++) {
+							if (XML(comboChildrens[i]).data[0].toString() == componentXML.@k_value.toString()) {
+								selectedIndex = i;
+							}
+						}
+
+						combo.selectedIndex = selectedIndex;
+						combo.addEventListener(ListEvent.CHANGE, onComboChanged, false, 0, true);
+						ui = combo;
+						break;
+					case "Label":
+					case "Text":
+						var mLabel:Text = new Text();
+						mLabel.percentWidth = 95;
+						if (componentXML.@bold.toString() == "true") {
+							mLabel.setStyle("fontWeight", 'bold');
+						}
+						if ((componentXML.@label as XMLList).length() > 0)
+							mLabel.text = componentXML.@label.toString();
+						if ((componentXML.@link as XMLList).length() > 0) {
+							var url:String = componentXML.@link.toString();
+							var htmlTxt:String = "<font color='#0000BB' ><u><a href='" + url + "' target='_blank'>" + url + '</a></u></font>';
+							mLabel.htmlText = htmlTxt;
+						}
+						ui = mLabel;
+						break;
+					case "Input":
+						var input:TextInput = new TextInput();
+						if (componentXML.@k_value.toString() != "") {
+							input.text = componentXML.@k_value.toString();
+						}
+						input.addEventListener(Event.CHANGE, onInputChange, false, 0, true)
+						input.id = componentXML.@id.toString();
+						input.name = componentXML.@id.toString();
+						input.maxWidth = maxWidth;
+						input.percentWidth = 95;
+						ui = input;
+						break;
+				}
+				return ui;
+			}
+
+
+			private function onComboChanged(evt:ListEvent):void {
+				var comboName:String = evt.target.name;
+				var newValue:String = evt.target.selectedItem.data.toString();
+				featureFormXML..ComboBox.(@id == comboName)[0].@selected = newValue;
+				featureFormXML..ComboBox.(@id == comboName)[0].@k_value = newValue;
+			}
+
+
+			private function onNumericStepperChange(evt:Event):void {
+				_lastNumeric = evt.target as NumericStepper;
+				delayNumericStripper();
+			}
+
+
+			private function onCheckboxChange(evt:Event):void {
+				var checkboxName:String = evt.target.name;
+				var cbList:XMLList = featureFormXML..CheckBox.(attribute("id").toString().indexOf("Screen") > 0);
+				for each (var xml:XML in cbList) {
+					if (xml.@id == checkboxName) {
+						xml.@k_value = evt.target.selected;
+						xml.@selected = evt.target.selected;
+					}
+				}
+				if (checkboxName == "showOnVideoControllers") {
+					if (!evt.target.selected) {
+						unselectItemsFromScreens();
+					}
+					var parentScreenXML:XML = featureFormXML..CheckBox.(attribute("id").toString() == "showOnVideoControllers")[0];
+					parentScreenXML.@selected = evt.target.selected;
+					parentScreenXML.@k_value = evt.target.selected;
+				}
+			}
+
+
+			/**
+			 * unselect screen checkboxes from the video section
+			 * change the data - not the view
+			 * */
+			private function unselectItemsFromScreens():void {
+				var screens:XMLList = featureFormXML..CheckBox.(attribute("id").toString().indexOf("Screen") > -1 && !attribute("id").toString().indexOf("Controller") == 0);
+				for each (var xml:XML in screens) {
+					xml.@selected = "false";
+					xml.@k_value = "false";
+				}
+			}
+
+
+			private function checkIfScreenCheckboxIsSelected(screenName:String):Boolean {
+				var result:Boolean = false;
+				for each (var o:ApsOptionItemVo in _componentsArray) {
+					if (o.name == screenName && o.component is CheckBox) {
+						result = (o.component as CheckBox).selected;
+						break;
+					}
+				}
+				return result;
+			}
+
+
+			private function delayInput():void {
+				if (_inputTimer.running) {
+					_inputTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, inputChange);
+					_inputTimer.stop();
+				}
+				_inputTimer.addEventListener(TimerEvent.TIMER_COMPLETE, inputChange);
+				_inputTimer.start();
+
+			}
+
+
+			private function inputChange(evt:TimerEvent):void {
+				_inputTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, inputChange);
+				if (_lastNumeric) {
+					featureFormXML..NumericStepper.(@id == _lastNumeric.name)[0].@k_value = _lastNumeric.value;
+				}
+				//assign the new value to the feature XML 
+				(featureFormXML.Input.(@id == _lastInput.name)[0] as XML).@k_value = _lastInput.text as String;
+
+			}
+
+
+			private function delayNumericStripper():void {
+				if (_numericTimer.running) {
+					_numericTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, numericChange);
+					_numericTimer.stop();
+				}
+				_numericTimer.addEventListener(TimerEvent.TIMER_COMPLETE, numericChange);
+				_numericTimer.start();
+			}
+
+
+			private function numericChange(evt:Event = null):void {
+				_numericTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, numericChange);
+				featureFormXML..NumericStepper.(@id == _lastNumeric.name)[0].@k_value = _lastNumeric.value;
+			}
+
+
+			private function onInputChange(evt:Event):void {
+				_lastInput = evt.target as TextInput;
+				delayInput();
+			}
+
+
+			//todo - hook this to all components and hook it to the XML model
+			private function saveFeature(evt:Event = null):void {
+				var parentScreenXML:XML = featureFormXML..CheckBox.(attribute("id").toString() == "showOnVideoControllers")[0];
+				if (parentScreenXML && parentScreenXML.attribute("selected").toString() == "false") {
+					var screens:XMLList = featureFormXML..CheckBox.(attribute("id").toString().indexOf("Screen") > -1 && !attribute("id").toString().indexOf("Controller") == 0);
+					for each (var xml:XML in screens) {
+						xml.@selected = "false";
+						xml.@k_value = "false";
+					}
+				}
+				visible = false;
+				dispose();
+				dispatchEvent(new Event(SAVED_FEATURE));
+
+			}
+
+
+			/**
+			 * makes this feature form eligible for garbage collection
+			 * */
+			public function dispose():void {
+				featureFormXML = null;
+				featureForm.removeAllChildren();
+				for each (var o:ApsOptionItemVo in _componentsArray) {
+					o.dispose();
+					o = null;
+				}
+				_isTypingFlag = false;
+				_lastInput = null;
+				_lastNumeric = null;
+				_componentsArray = new Array();
+				applyBtn.removeEventListener(MouseEvent.CLICK, saveFeature);
+			}
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Event(name="savedFeature", type="flash.events.Event")] 
+	</mx:Metadata>
+
+
+	<mx:VBox id="featureForm" width="100%" backgroundColor="#f7f7f7" verticalGap="3">
+	</mx:VBox>
+	<mx:Spacer height="20"/>
+	<mx:HRule width="90%"/>
+	<mx:HBox id="buttonsContainer">
+		<mx:Button id="applyBtn" label="Apply" buttonMode="true"/>
+		<mx:Button id="cancelBtn" label="Cancel" buttonMode="true"/>
+	</mx:HBox>
+</mx:VBox>

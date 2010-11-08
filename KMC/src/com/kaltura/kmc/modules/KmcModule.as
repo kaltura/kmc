@@ -43,7 +43,7 @@ package com.kaltura.kmc.modules {
 		 * The <code>page</code> parameter is the anchor on help page.
 		 * @eventType com.kaltura.kmc.events.KmcHelpEvent
 		 */
-		[Event(name="help", type="com.kaltura.events.KalturaEvent")]
+		[Event(name="help", type="com.kaltura.kmc.events.KmcHelpEvent")]
 
 		// =====================================================
 		// members

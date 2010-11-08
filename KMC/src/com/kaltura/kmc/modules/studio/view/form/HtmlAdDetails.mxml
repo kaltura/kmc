@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+form for filling details of a html companion ad
+takes CompanionAdVo as data object
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="400">
+	<mx:Script>
+		<![CDATA[
+			
+			
+			
+			
+			/**
+			 * dispatch event with data specifying who to remove
+			 * */
+			private function remove(evt:Event):void {
+				evt.stopPropagation();
+				dispatchEvent(new Event(AdsCollection.REMOVE_AD, true));
+			}
+			
+			/**
+			 * update the relevant field in data object
+			 * */
+			private function dataChanged(e:Event):void {
+				switch (e.target) {
+					case tiElementid:
+						data.elementid = e.target.text;
+						break;
+					case tiWidth:
+						data.width = e.target.text;
+						break;
+					case tiHeight:
+						data.height = e.target.text;
+						break;
+					default:
+						trace("WTF?");
+				}
+			}
+
+			
+		]]>
+	</mx:Script>
+
+	<mx:Label text="{resourceManager.getString('advertising', 'divid')}:" />
+	<mx:TextInput change="dataChanged(event)" id="tiElementid"
+				  text="{data.elementid}" width="100%" />
+	<mx:Label text="{resourceManager.getString('advertising', 'dimensions')}:" />
+	<mx:TextInput change="dataChanged(event)" id="tiWidth"
+				  text="{data.width}" width="30" />
+	<mx:Label text="x" />
+	<mx:TextInput change="dataChanged(event)" id="tiHeight"
+				  text="{data.height}" width="30" />
+	<mx:LinkButton click="remove(event)" label="{resourceManager.getString('advertising', 'remove')}" styleName="removeButton"/>
+
+</mx:HBox>

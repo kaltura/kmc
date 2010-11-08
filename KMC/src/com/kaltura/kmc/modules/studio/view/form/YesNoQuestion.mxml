@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- this class represents a question that has 2 possible answers. -->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		> <!--  creationComplete="onCreationComplete(event)" -->
+	<mx:Metadata>
+		[Event(name="change", type="flash.events.Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var _selected:Boolean;
+			
+			[Bindable]
+			/**
+			 * the width of the text part of the question.
+			 * */
+			public var labelWidth:int;
+			
+			[Bindable]
+			/**
+			 * question text.
+			 * */
+			public var text:String;
+			
+			[Bindable]
+			/**
+			 * text to use as yes label (left answer)
+			 * */
+			public var yesLabel:String = "Yes";
+			
+			[Bindable]
+			/**
+			 * text to use as no label (right answer)
+			 * */
+			public var noLabel:String = "No";
+			
+			
+
+			
+			[Bindable]
+			/**
+			 * the selected value for this question
+			 * */
+			public function get selected():Boolean {
+				return _selected;
+			}
+			
+			 public function set selected(value:Boolean):void {
+				 _selected = value;
+			} 
+			
+//			public function get enabled():Boolean {
+//				return _enabled;
+//			}
+//			
+//			public function set enabled(value:Boolean):void {
+//				_enabled = value;
+//			}
+				
+
+		]]>
+	</mx:Script>
+	<mx:Label text="{text}" width="{labelWidth}" />
+	<mx:RadioButton id="yes" label="{yesLabel}" selected="{_selected}" change="{ selected = yes.selected }"/>
+	<mx:RadioButton id="no" label="{noLabel}" selected="{!_selected}" change="{ selected = !no.selected }"/>
+</mx:HBox>

@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
+				   xmlns:core="com.kaltura.core.*" xmlns:view="com.kaltura.kmc.modules.studio.view.*"
+				   xmlns:business="com.kaltura.kmc.modules.studio.business.*" xmlns:controls="com.kaltura.controls.*"
+				   layout="vertical" minHeight="510" minWidth="1000" borderThickness="0" borderStyle="solid"
+				   paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" horizontalScrollPolicy="off"
+				   verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
+			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
+			import com.kaltura.kmc.modules.studio.view.ApsWizard;
+			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
+			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
+			import com.kaltura.kmc.vo.Context;
+			import com.kaltura.utils.KUtils;
+			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.utils.PathUtil;
+			import com.kaltura.vo.KalturaUiConf;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+
+			/**
+			 * KMC is responsible to use the value of
+			 * this const as the id of this module.
+			 * */
+			public static const NAME:String = "studio";
+
+
+			override public function getModuleName():String {
+				return Studio.NAME;
+			}
+
+
+			/**
+			 * player edit/creation window
+			 * */
+			private var _wizard:ApsWizard;
+
+			private var _swfUrl:String;
+			
+			private var _media:PlayerContentVo;
+
+
+			[Bindable]
+			/**
+			 * a list of optional player templates
+			 * */
+			private var _appStudioTemplates:XML;
+
+			public static var kc:KalturaClient;
+			
+			/**
+			 * static access to application flashvars.
+			 * all keys are lowercase with no underscores.
+			 * */
+			public static var flashvars:Object;
+
+			// =====================================
+			private const VERSION:String = "3.0";
+
+
+			// =====================================
+
+			override protected function start():void {
+				Security.allowDomain('*');
+				var item:ContextMenuItem = new ContextMenuItem("version " + VERSION);
+				this.contextMenu.customItems.push(item);
+				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
+				
+				// make flashvars accessible for all module
+				Studio.flashvars = _flashvars;
+				
+				// make client accessible for all module
+				kc = _kc;
+				
+				// create application context
+				_context = new Context(_kc.ks, _flashvars.partnerid, _flashvars.uid, _flashvars.subpid);
+
+				// loaded data
+				var conf:XML = new XML(_uiconf.confFile);
+				
+				// save media info
+				_media = new PlayerContentVo();
+				_media.entryId = conf.content.entryId.text().toString();
+				
+				// playlists list
+				var plsts:XMLList = conf.content.playlists.playlist;
+				
+				// number of playlists
+				var pls:int = plsts.length();
+				// save playlists info
+				for (var i:int = 0; i<pls; i++) {
+					_media["kpl" + i + "Name"] = plsts[i].name[0].text().toString();
+					_media["kpl" + i + "Url"] = plsts[i].url[0].text().toString();
+				}
+				
+				// get templates info:
+				var uiconf:UiConfGet = new UiConfGet(conf.uiconf.text().toString());
+				uiconf.addEventListener(KalturaEvent.COMPLETE, loadedAppstudioUiconf);
+				uiconf.addEventListener(KalturaEvent.FAILED, failed);
+				kc.post(uiconf);
+			}
+
+
+
+			/**
+			 * triggers js function to change tab (??). <br>
+			 * linked to ExternalInterface
+			 * */
+			public function onExternalTabChange():void {
+				navigateToURL(new URLRequest("javascript: onTabChange()"), "_self");
+			}
+
+
+			/**
+			 * loaded the uiconf that holds the kdp flash version
+			 * and templates data
+			 * */
+			private function loadedAppstudioUiconf(evt:KalturaEvent):void {
+				playerList.startApsPlayerList();
+				_swfUrl = (evt.data as KalturaUiConf).swfUrl;
+
+				// if need to load local templates file 
+				var objParam:Object = _flashvars;
+				if (objParam.templatesxmlurl) {
+					getAllTemplates.url = objParam.templatesxmlurl;
+					getAllTemplates.send();
+				}
+				else {
+					// use the data received from uiconf
+					_appStudioTemplates = new XML((evt.data as KalturaUiConf).confFile);
+					this.enabled = true;
+				}
+			}
+
+
+			/**
+			 * could not get the uiConf that holds the kdp version
+			 * */
+			private function failed(evt:KalturaEvent):void {
+				Alert.show(evt.error.errorMsg);
+			}
+
+
+			/**
+			 * create a wizard for editing requested player
+			 * */
+			private function onEditPlayer(evt:ApsNavigationEvent):void {
+				var playerUiConfVo:PlayerUiConfVo = evt.data as PlayerUiConfVo;
+				newWizard(playerUiConfVo, false);
+			}
+
+
+			private function onNavigateToPlayersList(evt:ApsNavigationEvent):void {
+				this.enabled = true;
+				PopUpManager.removePopUp(_wizard);
+				_wizard = null;
+			}
+
+
+			/**
+			 * show create/edit player wizard
+			 * */
+			private function newWizard(playerUiConfVo:PlayerUiConfVo, isNew:Boolean = false):void {
+				//TODO why is this??
+				_flashvars.uiconfid = playerUiConfVo.playerId;
+
+				_wizard = new ApsWizard();
+				_wizard.swfUrl = _swfUrl;
+				_wizard.isNewPlayer = isNew;
+				_wizard.id = "wizard";
+				_wizard.styleName = "WinTitleStyle";
+				_wizard.context = _context;
+				_wizard.media = _media;
+				_wizard.playerUiConfVO = playerUiConfVo;
+				_wizard.appStudioTemplates = _appStudioTemplates;
+				_wizard.enableAdsTab = (_flashvars.hasOwnProperty("enableads") && _flashvars.enableads == "true");
+
+				if (!isNew) {
+					// edit player - check template's advertising data
+					_wizard.enableAdsTab = _wizard.enableAdsTab && playerUiConfVo.snapshot.advertising.length() > 0;
+				}
+				//				_wizard.enableAdsTab = _wizard.enableAdsTab && !isNew && playerUiConfVo.snapshot.advertising.length() > 0;
+				// on new player playerUiConfVo.snapshot is null.
+
+				if (isNew)
+					_wizard.title = "Create New Player";
+				else
+					_wizard.title = "Edit Player";
+
+				_wizard.addEventListener(ApsNavigationEvent.NAVIGATE_TO_PLAYERS_LIST, onNavigateToPlayersList);
+				PopUpManager.addPopUp(_wizard, this);
+				PopUpManager.centerPopUp(_wizard);
+				this.enabled = false;
+			}
+
+
+			/**
+			 * shows the window for creating a new player
+			 * */
+			private function createNewPlayer(event:ApsUiConfEvent):void {
+				var playerUiConfVo:PlayerUiConfVo = event.data as PlayerUiConfVo;
+				newWizard(playerUiConfVo, true);
+			}
+
+
+			/**
+			 * This function is triggered when a local templates file is loaded
+			 * */
+			private function onTemplateXmlLoaded(event:ResultEvent):void {
+				_appStudioTemplates = XML(event.result);
+				this.enabled = true;
+			}
+
+
+			/**
+			 * This function is triggered when a local templates file failed to load.
+			 * */
+			private function onTemplateXmlFault(event:FaultEvent):void {
+				this.enabled = true;
+				Alert.show(event.fault.message);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Metadata>
+		[ResourceBundle("advertising")]
+		[ResourceBundle("aps")]
+	</mx:Metadata>
+
+	<mx:Style source="assets/studio/studio.css"/>
+	<!--- player templates loader -->
+	<mx:HTTPService id="getAllTemplates" method="GET" resultFormat="xml" showBusyCursor="true"
+					result="onTemplateXmlLoaded( event )" fault="onTemplateXmlFault( event )"/>
+
+	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView">
+		<mx:HBox width="100%" styleName="tabsContainer">
+			<mx:TabBar id="secTln" styleName="tln" dataProvider="mainViewStack"/>
+		</mx:HBox>
+
+		<mx:ViewStack id="mainViewStack" styleName="contentViewStack" width="100%" height="100%" minWidth="1000"
+					  minHeight="510">
+			<view:ApsPlayersList id="playerList" width="100%" height="100%"
+								 label="{resourceManager.getString('aps','playersList')}" context="{_context}"
+								 styleName="pageStyle" editPlayer="onEditPlayer(event)"
+								 newPlayerChosen="{createNewPlayer(event)}" appStudioTemplates="{_appStudioTemplates}"/>
+		</mx:ViewStack>
+
+	</mx:VBox>
+</modules:KmcModule>
