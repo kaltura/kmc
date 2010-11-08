@@ -13,11 +13,6 @@ package com.kaltura.kmc.utils
 		 */		
 		private static var _instance:ApplyAttribute;
 		
-		
-		public function ApplyAttribute()
-		{
-		}
-		
 		/**
 		 * This function recieves a path to a component IE myCompo1.myCompo2.myButton
 		 * a starting target (instance of a uiComponent),a propery on the target to change
@@ -27,7 +22,7 @@ package com.kaltura.kmc.utils
 		 * @param componentProperty
 		 * @param newValue
 		 */
-		public static function applyAttribute(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:Object = null):void
+		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:Object):void
 		{
 			var chain:Array = compoentPath.split(".");
 			var o:Object = startComponent;
@@ -40,6 +35,10 @@ package com.kaltura.kmc.utils
 			o[componentProperty] = newValue;
 			
 		}
+		
+
+		
+
 		
 		
 		/**
@@ -55,19 +54,18 @@ package com.kaltura.kmc.utils
 		
 		
 		/**
-		 * initialize parameters and sub-models. 
 		 * @param enforcer	singleton garantee
 		 */		
-		public function KmcModelLocator(enforcer:Enforcer) 
+		public function ApplyAttribute(enforcer:Enforcer) 
 		{
 			
 		}
 		
 		
 	}
-	class Enforcer {
-		
-	}
+}
+class Enforcer {
+	
 }
 
 
