@@ -9,10 +9,21 @@ package com.kaltura.kmc.business
 	public class PermissionManager
 	{
 		
+		private var _permissions:Array;
+
+		/**
+		 * An array of instructions  
+		 * @param value
+		 * 
+		 */
+		public function set permissions(value:Array):void
+		{
+			_permissions = value;
+		}
 		
 		public function applyPermissions(target:Object):void
 		{
-			//TODO implement 
+			
 		}
 		
 		
@@ -32,7 +43,7 @@ package com.kaltura.kmc.business
 		
 		/**
 		 * singleton means of retreiving an instance of the 
-		 * <code>ApplyAttribute</code> class.
+		 * <code>PermissionManager</code> class.
 		 */		
 		public static function getInstance():PermissionManager {
 			if (_instance == null) {
@@ -40,6 +51,7 @@ package com.kaltura.kmc.business
 			}
 			return _instance;
 		}
+
 	}
 }
 
