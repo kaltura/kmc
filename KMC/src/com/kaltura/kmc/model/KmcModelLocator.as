@@ -1,6 +1,8 @@
 package com.kaltura.kmc.model {
 	import com.adobe.cairngorm.model.IModelLocator;
+	import com.google.analytics.core.ga_internal;
 	import com.kaltura.KalturaClient;
+	import com.kaltura.kmc.business.PermissionManager;
 	
 	import flash.events.EventDispatcher;
 
@@ -20,7 +22,10 @@ package com.kaltura.kmc.model {
 		 */		
 		public var kalturaClient:KalturaClient;
 		
-		
+		/**
+		 * The instance of a PermissionManager. 
+		 */		
+		public var permissionManager:PermissionManager = PermissionManager.getInstance();
 		
 		/**
 		 * Flashvars of the main app wrapped in one object. The items are  
