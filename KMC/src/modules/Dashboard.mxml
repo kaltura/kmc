@@ -97,10 +97,12 @@
 				}
 
 				DashboardManager.instance.kc = _kc;
+				var confFile:XML = new XML(_uiconf.confFile);
+				var links:XMLList = confFile.links.link;
 
-				uploadPnl.quickStartURL = _flashvars.uploaddoclink;
-				embedPnl.quickStartURL = _flashvars.embeddoclink;
-				customizePnl.quickStartURL = _flashvars.customizedoclink;
+				uploadPnl.quickStartURL = links.(@id == "upload")[0].@path; //_flashvars.uploaddoclink;
+				embedPnl.quickStartURL = links.(@id == "embed")[0].@path; //_flashvars.embeddoclink;
+				customizePnl.quickStartURL = links.(@id == "customize")[0].@path; //_flashvars.customizedoclink;
 
 				DashboardManager.instance.app = this;
 				DashboardManager.instance.getData();
@@ -133,7 +135,7 @@
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(DashboardManager.instance.kc.partnerId, _userId, this, "KMC/Dashboard",
 						_urchinNumber, "AS3",
-						_flashvars.gaDebug == "true" ? true : false);
+						_flashvars.gadebug == "true" ? true : false);
 			}
 		]]>
 	</mx:Script>
