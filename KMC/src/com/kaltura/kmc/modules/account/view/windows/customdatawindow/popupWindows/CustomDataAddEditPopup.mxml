@@ -2,7 +2,7 @@
 <HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" title="{resourceManager.getString('account','customNewFieldPopupTitle')}" height="550"
 	width="585" xmlns:conversionsettingswindow="com.kaltura.kmc.view.windows.conversionsettingswindow.*" close="closeWindow()" showCloseButton="true"
 	creationComplete="onCreationComplete(event)" 
-	help="{ navigateToURL( new URLRequest( 'http://'+_model.context.rootUrl+'/'+ resourceManager.getString('account', 'generalHelp') ) )}"
+	help="{help()}"
 	styleName="TitleWindowType2">
 	<states>
 		<mx:State name="{EDIT_MODE_STATE}">
@@ -16,6 +16,7 @@
 			import com.kaltura.controls.kobjecthadles.events.SelectionKohEvent;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.events.MetadataProfileEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.command.UpdateConversionProfileCommand;
 			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
@@ -72,6 +73,11 @@
 			private var _itemWidth:int = 180;
 			[Bindable]
 			private var _spacerHeight:int = 10;
+			
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp') ));
+			}
+			
 			
 			/**
 			 * sets the displayed data and the data providers for the comboBoxes

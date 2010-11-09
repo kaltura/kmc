@@ -3,7 +3,7 @@
 				 title="{resourceManager.getString('account','addNewConvProfileTitle')}" height="500"
 				 xmlns:conversionsettingswindow="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
 				 close="closeWindow(event)" showCloseButton="true" creationComplete="onCreationComplete(event)"
-				 help="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'generalHelp') ) )}"
+				 help="{help()}"
 				 styleName="TitleWindowType2" xmlns:validators="com.kaltura.validators.*">
 	<states>
 		<mx:State name="{EDIT_MODE_STATE}">
@@ -14,12 +14,14 @@
 	</states>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.types.KalturaNullableBoolean;
-			import mx.controls.Alert;
-			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.command.UpdateConversionProfileCommand;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.types.KalturaNullableBoolean;
+			
+			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 
 			public static const EDIT_MODE_STATE:String = "edit mode state";
@@ -50,6 +52,9 @@
 				_conversionProfile = conversionProfile;
 			}
 
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp')));
+			}
 
 			/**
 			 * creation complete of the main window, for edit we clone the acp. For add new one we create a new acp

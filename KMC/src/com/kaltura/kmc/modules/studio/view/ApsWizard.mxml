@@ -150,8 +150,9 @@ The main window for new player wizard.
 				/* there will be no advertising related stuff, 
 				* because we sent an advertizingVO with no data. 
 				* NOTE if there was any, we had to remove it for the
-				* preview. We still have to manually remove plymedia. */
+				* preview. We still have to manually remove plymedia and gigya. */
 				delete newUiConfXML..Plugin.(@id == "plymedia")[0];
+				delete newUiConfXML..Plugin.(@id == "gigya")[0];
 				// for editing old players
 				delete newUiConfXML..Plugin.(@id == "adaptv")[0];
 				delete newUiConfXML..Plugin.(@id == "tremor")[0];
@@ -485,7 +486,7 @@ The main window for new player wizard.
 			private function onCloseHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					this.enabled = false;
-					//ExternalInterface.call("refreshSWF");
+					//TODO HTML API
 					//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
 					navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
 				}
@@ -653,9 +654,8 @@ The main window for new player wizard.
 				if (_playerUiConfVO.isMultiPlaylistTemplate) {
 					isPlaylist = "true";
 				}
-				//ExternalInterface.call("refreshSWF");
-				//kmc.preview_embed.updateList(is_playlist)
 				ExternalInterface.call("kmc.preview_embed.updateList", isPlaylist);
+				//TODO HTML API
 				//navigateToURL( new URLRequest("javascript: kmc.preview_embed.updateList("+isMulty+")") , "_self");
 				navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
 

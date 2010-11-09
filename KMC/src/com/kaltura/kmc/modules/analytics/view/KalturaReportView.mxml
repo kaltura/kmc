@@ -11,7 +11,7 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.cairngorm.model.ModelLocator;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PageEvent;
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
@@ -21,19 +21,10 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaMediaEntry;
-			
-			import flash.net.navigateToURL;
-			import flash.utils.setTimeout;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
-			import mx.collections.ArrayCollection;
 			import mx.controls.SWFLoader;
-			import mx.controls.ToolTip;
-			import mx.core.Application;
-			import mx.events.DataGridEvent;
-			import mx.managers.ToolTipManager;
 
 			public static var kdp:SWFLoader;
 
@@ -56,7 +47,7 @@
 			[Bindable]
 			public var backScreenType:int;
 
-			public var helpUrl:String = "http://www.kaltura.com/index.php/kmc/kmc2help#reportAndAnalyticsSection4";
+			public var helpUrl:String = "reportAndAnalyticsSection4";
 			public var kdpUrl:String = "KDP_3.swf";
 
 			//SHOW & HIDE FLAGS
@@ -368,6 +359,13 @@
 				// start the loading sqeunce of the kdp 
 				event.target.content["init"](); 
 			}
+			
+			/**
+			 * dispatch help event for the KMC.
+			 * */
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, helpUrl));
+			}
 		]]>
 	</mx:Script>
 
@@ -389,7 +387,7 @@
 		<mx:Label id="reportTitle" text="{this.label}" styleName="pageTitle2"/>
 		<mx:Spacer width="100%"/>
 		<mx:Button styleName="help" buttonMode="true"
-				   click="{navigateToURL( new URLRequest( helpUrl ) , 'blank')}"/>
+				   click="{help()}"/>
 	</mx:HBox>
 
 	<mx:Spacer height="5"/>

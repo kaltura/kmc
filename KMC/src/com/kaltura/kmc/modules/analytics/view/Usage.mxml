@@ -7,6 +7,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PartnerEvent;
 			import com.kaltura.kmc.modules.analytics.control.UsageGraphEvent;
 			import com.kaltura.kmc.modules.analytics.model.types.PackageType;
@@ -331,6 +332,10 @@
 				usageGraphEvent.dispatch();
 		    } 
 			
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('analytics', 'helpUsage')));
+			}
+			
 		]]>
 	</mx:Script> 
 	
@@ -340,7 +345,7 @@
 	<mx:Canvas id="mainCanvas" width="100%">
 		<mx:Label id="totalBWSoFar" styleName="boldLabel" />
 		<mx:Button styleName="help" buttonMode="true" right="5"
-			click="{ navigateToURL( new URLRequest('http://'+rootUrl+'/'+ resourceManager.getString('analytics', 'helpUsage') ) )}"/>
+			click="{help()}"/>
 	</mx:Canvas>	
 	
 	<mx:HBox width="100%" paddingLeft="20">

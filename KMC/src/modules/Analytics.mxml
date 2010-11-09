@@ -161,19 +161,17 @@
 				/* google tracker must be initialized after "addedToStage"
 				because of its debug mode.*/
 				// initialize trackers
-				var objParams:Object = Application.application.parameters;
-				objParams = ObjectHelpers.lowerNoUnderscore(objParams);
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(_model.kc.partnerId, _model.context.userId, this,
 					"KMC_ANDROMEDA/Reports and Analytics", urchinNumber, "AS3",
-					objParams.gaDebug == "true" ? true : false);
+					_flashvars.gadebug == "true" ? true : false);
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
 				ka.init(_model.kc, "Content", VERSION, _model.context.userId);
 				
 				// show different initial tab if provided
 				/* this must happen after trackers have been initialized because it logs something */
-				if (objParams.subnavtab) {
-					showTab(objParams.subnavtab);
+				if (_flashvars.subnavtab) {
+					showTab(_flashvars.subnavtab);
 				}
 			}
 			

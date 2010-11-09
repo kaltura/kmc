@@ -6,6 +6,9 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 	import com.kaltura.commands.report.ReportGetGraphs;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.events.KmcNavigationEvent;
+	import com.kaltura.kmc.modules.KmcModule;
+	import com.kaltura.kmc.modules.dashboard.components.panels.ForbidenBox;
 	import com.kaltura.vo.KalturaPartnerUsage;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
@@ -15,9 +18,6 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
-	
-	import com.kaltura.kmc.modules.KmcModule;
-	import com.kaltura.kmc.modules.dashboard.components.panels.ForbidenBox;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -247,20 +247,6 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 			}
 		}
 		
-		/**
-		 * launch the links by clicking on the linkbuttons in the dashboard application
-		 * 
-		 * @param linkCode
-		 * @param pageNum
-		 * 
-		 */
-		public function launchOuterLink(linkCode:String, pageNum:String=null):void
-		{
-			var linkStr:String = ResourceManager.getInstance().getString('kdashboard', linkCode);
-			linkStr += pageNum ? ('#page=' + pageNum) : '';
-			var urlr:URLRequest = new URLRequest(linkStr);
-            navigateToURL(urlr, "_blank");
-		}
 		
 		
 		/**
@@ -268,6 +254,7 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 		 * @param url 	address to open
 		 */
 		public function launchExactOuterLink(url:String):void {
+			//TODO HTML API
 			var urlr:URLRequest = new URLRequest(url);
 			navigateToURL(urlr, "_blank");
 		}
@@ -278,8 +265,7 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 		 */
 		public function loadKMCModule(moduleName:String, subModule:String=''):void
 		{
-			//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
-			navigateToURL( new URLRequest("javascript: kmc.mediator.setState(" + JSON.encode({module: moduleName, subtab: subModule}) + ")") , "_self");
+			dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, moduleName, subModule));
 		}
 		
 	}

@@ -7,6 +7,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.vo.NotificationVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
@@ -157,6 +158,9 @@
 				Alert.show(resourceManager.getString('account', 'httpverify'))
 			}
 			
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'helpServerSettings') ));
+			}
 			
 			/**
 			 * helper function to decide if a checkbox on the client list should 
@@ -284,7 +288,7 @@
 					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="pageTitle"/>
 					<mx:Spacer width="100%" />
 					<mx:Button styleName="help" buttonMode="true" 
-						click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'helpServerSettings') ) )}"/>
+						click="{help()}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}" />

@@ -112,10 +112,19 @@
 
 
 			/**
-			 * triggers js function to change tab (??). <br>
+			 * when a user changes tab in HTML, JS triggers this function to 
+			 * allow a "save changes" dialog (currently not implemented).
+			 * show confirm: Save your changes before exiting ? [Yes] [No] [Cancel]
+			 *	- Yes = save and return true to html js function (to continue with tab change)
+			 *	- No = return true to html js function (without saving)
+			 *	- Cancel = return false to html js function, thereby canceling tab change
+			 * 
+			 * triggers js function to change tab. <br>
 			 * linked to ExternalInterface
 			 * */
-			public function onExternalTabChange():void {
+			private function onExternalTabChange():void {
+				//TODO show "discard changes" dialog box, return value as said above
+				//TODO HTML API
 				navigateToURL(new URLRequest("javascript: onTabChange()"), "_self");
 			}
 
@@ -170,9 +179,6 @@
 			 * show create/edit player wizard
 			 * */
 			private function newWizard(playerUiConfVo:PlayerUiConfVo, isNew:Boolean = false):void {
-				//TODO why is this??
-				_flashvars.uiconfid = playerUiConfVo.playerId;
-
 				_wizard = new ApsWizard();
 				_wizard.swfUrl = _swfUrl;
 				_wizard.isNewPlayer = isNew;
@@ -187,9 +193,8 @@
 				if (!isNew) {
 					// edit player - check template's advertising data
 					_wizard.enableAdsTab = _wizard.enableAdsTab && playerUiConfVo.snapshot.advertising.length() > 0;
+					// on new player playerUiConfVo.snapshot is null.
 				}
-				//				_wizard.enableAdsTab = _wizard.enableAdsTab && !isNew && playerUiConfVo.snapshot.advertising.length() > 0;
-				// on new player playerUiConfVo.snapshot is null.
 
 				if (isNew)
 					_wizard.title = "Create New Player";

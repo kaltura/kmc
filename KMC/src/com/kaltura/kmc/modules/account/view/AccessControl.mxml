@@ -10,21 +10,23 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.events.PartnerEvent;
+			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
-			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
-			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
-			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.vo.AccessControlProfileVO;
-			import mx.events.CloseEvent;
+			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
-			import mx.managers.PopUpManager;
-			import mx.binding.utils.BindingUtils;
-			import com.kaltura.kmc.modules.account.vo.PartnerVO;
-			import com.kaltura.kmc.modules.account.events.PartnerEvent;
+			import mx.events.CloseEvent;
 			import mx.events.CollectionEvent;
-			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
 		
 		
 	   	[Bindable]private var _accessControlsList:ArrayCollection;
@@ -192,6 +194,10 @@
 			paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 			loadAccessControlsList();
 		}
+			
+		private function help():void {
+			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp') ));
+		}
 		
 		
 		public function isChanged():Boolean { return false; }
@@ -199,6 +205,7 @@
 		public function saveChanges():void {} 
 		public function resetClonedData():void {}
 		
+			
 
 		]]>
 	</mx:Script>
@@ -206,7 +213,7 @@
 	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10">
 		<mx:Text styleName="featureDescriptionTitleText" text="{resourceManager.getString('account','accessControlIntroText')}" width="100%" id="accessControlIntroText"/>
 		<mx:Button styleName="help" buttonMode="true" 
-				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'generalHelp') ) )}"/>
+				click="{help()}"/>
 	</mx:HBox>
 	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">

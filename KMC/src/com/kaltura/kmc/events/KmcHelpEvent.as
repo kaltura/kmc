@@ -13,7 +13,7 @@ package com.kaltura.kmc.events {
 		private var _anchor:String;
 
 
-		public function KmcHelpEvent(type:String, anchor:String, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function KmcHelpEvent(type:String, anchor:String, bubbles:Boolean = true, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_anchor = anchor;
 		}

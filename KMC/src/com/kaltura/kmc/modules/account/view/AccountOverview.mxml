@@ -5,22 +5,24 @@
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.analytics.KAnalyticsTracker;
-			import mx.events.FlexEvent;
-			import mx.controls.Alert;
-			import mx.validators.ValidationResult;
-			import mx.events.ValidationResultEvent;
-			import mx.binding.utils.BindingUtils;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.AdminEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.vo.AdminVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
-			import mx.controls.RadioButton;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
 			import mx.controls.CheckBox;
-			import mx.controls.ComboBox;
 			import mx.controls.ComboBase;
+			import mx.controls.ComboBox;
 			import mx.controls.List;
+			import mx.controls.RadioButton;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
 			
 			[Bindable] public var partnerData : PartnerVO;
 			[Bindable] public var adminData : AdminVO;
@@ -83,6 +85,10 @@
 					if( partnerData.describeYourself == dyCB.dataProvider[i])
 						dyCB.selectedIndex = i;
 				}   
+			}
+			
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'helpUsage') ));
 			}
 					
 			//public functions
@@ -186,8 +192,7 @@
 		<mx:HBox width="100%">
 			<mx:Label styleName="pageTitle" text="{resourceManager.getString('account', 'partnerInfo')}" />
 			<mx:Spacer width="100%" />
-			<mx:Button styleName="help" buttonMode="true" 
-				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'helpUsage') ) )}"/>
+			<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 		</mx:HBox>
 		<mx:Text id="partnerInfoText" width="{_maxWidth}" height="40" 
 			text="{resourceManager.getString('account', 'partnerInfoText')}"/>
@@ -242,8 +247,7 @@
 		<mx:HBox width="100%">
 			<mx:Label  styleName="pageTitle" text="{resourceManager.getString('account', 'loginInfo')}"/>
 			<mx:Spacer width="100%" />
-			<mx:Button styleName="help" buttonMode="true" 
-				click="{ navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('account', 'helpUsage') ) )}"/>
+			<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 		</mx:HBox>
 		
 		<mx:Text id="loginInfoText"  width="{_textWidth}"  height="40" />
