@@ -22,6 +22,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.events.MetadataProfileEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
@@ -667,27 +668,27 @@
 
 
 			private function onHelpClick(event:Event):void {
-				var tabIndex:int = contentView.selectedIndex;
-
-				switch (tabIndex) {
-					case 0:  {
-						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpEntries')));
+				var tab:DisplayObject = contentView.selectedChild;
+				var anchor:String;
+				switch (tab) {
+					case entries:  {
+						anchor = resourceManager.getString('cms', 'helpEntries');
 						break;
 					}
-					case 1:  {
-						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpModeration')));
+					case moderation:  {
+						anchor = resourceManager.getString('cms', 'helpModeration');
 						break;
 					}
-					case 2:  {
-						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpPlaylist')));
+					case plst:  {
+						anchor = resourceManager.getString('cms', 'helpPlaylist');
 						break;
 					}
-					case 3:  {
-						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'generalHelp')));
+					case syndication:  {
+						anchor = resourceManager.getString('cms', 'generalHelp');
 						break;
 					}
-					case 4:  {
-						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpBulkUpload')))
+					case bulkupload:  {
+						anchor = resourceManager.getString('cms', 'helpBulkUpload');
 						break;
 					}
 
@@ -695,7 +696,7 @@
 						Alert.show("Help for unknown tab !");
 					}
 				}
-
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
 			}
 
 
@@ -730,9 +731,9 @@
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"/>
 			<playlist:Playlist id="plst" width="100%" styleName="pageStyle"
 							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"/>
-			<content:ExternalSyndication styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
+			<content:ExternalSyndication id="syndication" styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
-			<content:BulkUpload width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
+			<content:BulkUpload id="bulkupload" width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
 								bulkUploadData="{_model.bulkUploadModel}"/>
 		</mx:ViewStack>
 
