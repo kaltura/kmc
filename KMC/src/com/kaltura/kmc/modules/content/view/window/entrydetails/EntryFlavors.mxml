@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	Flavours tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" >
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			[Bindable]
+			private var _flavorAssets:ArrayCollection;
+			
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+		
+			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
+			{
+				_selectedEntry = selectedEntry;
+				
+				if(_selectedEntry != null)
+				{
+					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
+					cgEvent.dispatch();
+				}
+			}
+			
+			public function get flavorAssets():ArrayCollection
+			{
+				return _flavorAssets;
+			}
+		
+			public function set flavorAssets(flavorAssets:ArrayCollection):void
+			{
+				_flavorAssets = flavorAssets;
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	
+	
+	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
+	<mx:DataGrid width="100%" height="100%" dataProvider="{_flavorAssets}" sortableColumns="false" draggableColumns="false" 
+				 rowHeight="30" rowCount="8" selectable="false">
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','assetIdCol')}"  paddingLeft="4" paddingRight="4" width="75" dataField="col1" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','flavorNameCol')}"  paddingLeft="4" paddingRight="4" width="100" dataField="col2" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetNameRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','formatCol')}" width="50"  paddingLeft="4" paddingRight="4" dataField="col3" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetFormatRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','codecCol')}" width="50" paddingLeft="4" paddingRight="4" dataField="col1" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetCodecRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','bitrateCol')}" width="80" paddingLeft="4" paddingRight="4" dataField="col2" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetBitrateRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','dimCol')}" width="80" paddingLeft="4" paddingRight="4" dataField="col3" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetDimensionsRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','sizeCol')}" width="55" paddingLeft="4" paddingRight="4" dataField="col2" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetSizeRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','statusCol')}" width="45" paddingLeft="4" paddingRight="4" dataField="col3" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetStatusRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actionCol')}" width="120" paddingLeft="4" paddingRight="4"  dataField="col1" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetActionRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

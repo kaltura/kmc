@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 scheduling tab of EntryDetailsWin.
+	 also used in SetSchedulingWin.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
+		 xmlns:controls="com.kaltura.controls.*" show="setSchedulerData()">
+	<mx:states>
+		<mx:State name="{POP_UP_MODE}">
+			<mx:RemoveChild target="{label1}"/>
+		</mx:State>
+	</mx:states>
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.controls.Alert;
+
+			public static const POP_UP_MODE:String = 'popUpMode';
+
+			private var _selectedEntry:KalturaBaseEntry;
+
+
+
+			public function isInit():Boolean {
+				return (spcificRangeRBtn != null);
+			}
+
+
+			public function getStartTime():int {
+				return (anyTimeRBtn.selected ||
+					(sepcificStartDate.selectedDate == null)) ? -1 : getTimeInSeconds(sepcificStartDate,
+																					  sepcificStartHour);
+			}
+
+
+			public function getEndTime():int {
+				return (anyTimeRBtn.selected || !specificEndCBBtn.selected ||
+					(specificEndDate.selectedDate == null)) ? -1 : getTimeInSeconds(specificEndDate,
+																					specificEndHour);
+			}
+			
+			
+			/**
+			 * see all data on the panel is legal and save data
+			 * @return an object with error code 
+			 * */
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				
+				// scheduling section 
+				if (isInit()) {
+					var startTime:int = getStartTime();
+					var endTime:int = getEndTime();
+					
+					_selectedEntry.startDate = startTime;
+					_selectedEntry.endDate = endTime;
+				
+				
+					if (spcificRangeRBtn.selected && sepcificStartDate.selectedDate == null) {
+						result.error = EntryDetailsValidationError.SCHEDULING_START_DATE;
+					}
+					else if (specificEndCBBtn.selected && specificEndDate.selectedDate == null) {
+						result.error = EntryDetailsValidationError.SCHEDULING_END_DATE;
+					}
+				}
+				// if the panel didn't init no data was changed and therefore is legal. hopefully.
+				return result;
+			}
+
+
+			private function setSchedulerData():void {
+				if (_selectedEntry != null) {
+					var startTime:int = _selectedEntry.startDate;
+					var endTime:int = _selectedEntry.endDate;
+
+					if (((startTime == -1) || (startTime == int.MIN_VALUE)) &&
+						((endTime == -1) || (endTime == int.MIN_VALUE))) {
+						anyTimeRBtn.selected = true;
+					}
+					else {
+						spcificRangeRBtn.selected = true;
+						specificEndCBBtn.selected = (endTime != int.MIN_VALUE) && (endTime != -1);
+
+						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
+							var startDate:Date = new Date(startTime * 1000);
+							sepcificStartDate.selectedDate = startDate;
+							setTime(sepcificStartHour, startDate.hours, startDate.minutes);
+						}
+
+						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
+							var endDate:Date = new Date(endTime * 1000);
+							specificEndDate.selectedDate = endDate;
+							setTime(specificEndHour, endDate.hours, endDate.minutes);
+						}
+
+					}
+				}
+			}
+
+
+			private function setTime(timeEntry:SM_TimeEntry, hours:int, minutes:int):void {
+				timeEntry.minute = minutes;
+				timeEntry.am_pm = hours >= 12 ? 'pm' : 'am'
+				timeEntry.hour = hours % 12;
+				if (timeEntry.hour == 0) {
+					timeEntry.hour = 12;
+				}
+			}
+
+
+			private function and(boo:Boolean, lean:Boolean):Boolean {
+				return boo && lean;
+			}
+
+
+			private function onCreationComplete(event:Event):void {
+				var today:Date = new Date();
+				sepcificStartDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month,
+																		today.date - 1)}];
+				specificEndDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month,
+																	  today.date - 1)}];
+				setSchedulerData();
+			}
+
+			private var oldStartDate:Date = null;
+			private var oldEndDate:Date = null;
+
+
+			private function validateTimes():void {
+				if (spcificRangeRBtn.selected && specificEndCBBtn.selected) {
+					var sDate:Date = sepcificStartDate.selectedDate;
+					var eDate:Date = specificEndDate.selectedDate;
+
+					if ((sDate == null) || (eDate == null)) {
+						return;
+					}
+
+					if (eDate.time < sDate.time) {
+						Alert.show(resourceManager.getString('cms', 'startToEndDateAlert'));
+						specificEndDate.selectedDate = oldEndDate;
+						sepcificStartDate.selectedDate = oldStartDate;
+						specificEndDate.validateNow();
+						checkTime();
+					}
+					else if (eDate.time == sDate.time) {
+						checkTime();
+					}
+					else {
+						oldStartDate = new Date(sDate.time);
+						oldEndDate = new Date(eDate.time);
+					}
+				}
+
+			}
+
+
+			private function checkTime():void {
+				var sTimeObj:Object = sepcificStartHour.timeValue;
+				var sTime:Number = calculateTime(sTimeObj, sepcificStartHour.am_pm);
+				var eTimeObj:Object = specificEndHour.timeValue;
+				var eTime:Number = calculateTime(eTimeObj, specificEndHour.am_pm);
+
+				if (eTime <= sTime) {
+					specificEndHour.hour = sepcificStartHour.hour;
+					specificEndHour.minute = sepcificStartHour.minute;
+					specificEndHour.am_pm = sepcificStartHour.am_pm;
+				}
+			}
+
+
+			private function calculateTime(timeObj:Object, am_pmIndicator:String):Number {
+				var isPM:Boolean = am_pmIndicator == 'pm';
+				var dayHour:Number = isPM ? timeObj.hour : (timeObj.hour % 12);
+				var hours:Number = dayHour * 60 * 60;
+				var minute:Number = timeObj.minute * 60;
+				var seconds:Number = timeObj.second;
+				var addition:Number = isPM && (timeObj.hour != 12) ? (12 * 60 * 60) : 0;
+
+				var totalTime:Number = hours + minute + seconds + addition;
+
+				return totalTime;
+			}
+
+
+			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
+				var seconds:int = 0;
+				seconds += dateField.selectedDate.time / 1000;
+				seconds += calculateTime(timeEntry.timeValue, timeEntry.am_pm);
+				return seconds;
+			}
+
+
+
+
+			private function clearDates():void {
+				sepcificStartDate.selectedDate = null;
+				setTime(sepcificStartHour, 0, 0);
+				specificEndDate.selectedDate = null;
+				setTime(specificEndHour, 0, 0);
+			}
+
+
+			private function setTimeZoneLabel():void {
+				var now:Date = new Date();
+				var zoneTimeOffset:int = (now.getTimezoneOffset() / 60) * (-1);
+				var ztStr:String = (zoneTimeOffset ==
+					0) ? '' : (zoneTimeOffset > 0) ? ('+' + zoneTimeOffset) : zoneTimeOffset + '';
+				timeZoneLabel.text = resourceManager.getString('cms', 'timeOffsetLabel').replace("(NUM)",
+																								 ztStr);
+			}
+
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
+				_selectedEntry = selectedEntry;
+				setSchedulerData();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label text="{resourceManager.getString('cms', 'entrySchedulingTitle')}" styleName="drillDownTitleLabel"
+			  id="label1"/>
+	<mx:RadioButtonGroup id='timeGroup' change="validateTimes()"/>
+	<mx:RadioButton label="{resourceManager.getString('cms', 'ANY_TIME')}" groupName="timeGroup" id="anyTimeRBtn"
+					selected="true"/>
+	<mx:RadioButton label="{resourceManager.getString('cms', 'rangeRadioBtn')}" groupName="timeGroup"
+					id="spcificRangeRBtn"/>
+	<mx:VBox width="100%">
+		<mx:Grid verticalGap="10" creationComplete="onCreationComplete(event)">
+			<mx:GridRow width="100%" height="30">
+				<mx:GridItem width="100%" height="100%" colSpan="4" horizontalAlign="center">
+					<mx:Label width="100%" id='timeZoneLabel' enabled="{spcificRangeRBtn.selected}"
+							  creationComplete="{setTimeZoneLabel()}"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="30">
+				<mx:GridItem width="100%" height="100%">
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms', 'startDateLabel')}"
+							  enabled="{spcificRangeRBtn.selected}"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<mx:DateField id='sepcificStartDate' showToday="true" width="120"
+								  enabled="{spcificRangeRBtn.selected}" change="validateTimes()"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true" id='sepcificStartHour'
+										   styleName="timeEntry" enabled="{spcificRangeRBtn.selected}"
+										   click="validateTimes()"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%" height="30">
+				<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<mx:CheckBox id='specificEndCBBtn' enabled="{spcificRangeRBtn.selected}"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms', 'endDateLabel')}"
+							  enabled="{and(specificEndCBBtn.selected, spcificRangeRBtn.selected)}"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<mx:DateField enabled="{and(specificEndCBBtn.selected, spcificRangeRBtn.selected)}"
+								  id='specificEndDate' width="120" change="validateTimes()"/>
+				</mx:GridItem>
+				<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+					<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true"
+										   enabled="{and(specificEndCBBtn.selected, spcificRangeRBtn.selected)}"
+										   id='specificEndHour' styleName="timeEntry" click="validateTimes()"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<mx:LinkButton id='clearDatesBtn' label="{resourceManager.getString('cms', 'clearDates')}"
+					   enabled="{spcificRangeRBtn.selected}" click="clearDates()" height="17"
+					   styleName="clearDateButton"/>
+	</mx:VBox>
+</mx:VBox>

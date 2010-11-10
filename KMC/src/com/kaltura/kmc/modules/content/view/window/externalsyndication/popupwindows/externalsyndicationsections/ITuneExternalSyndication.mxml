@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 ITune syndication details.
+	 used as part of <Code>ExternalSyndicationPopUpWindow</code>
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 xmlns:validators="com.kaltura.validators.*"
+		 implements="com.kaltura.kmc.modules.content.view.interfaces.IExternalSyndicationFeed"
+		 creationComplete="vbox1_creationCompleteHandler(event)"
+		 label="{resourceManager.getString('cms', 'iTunes')}" paddingRight="10">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.PartnerVO;
+			import com.kaltura.types.KalturaITunesSyndicationFeedAdultValues;
+			import com.kaltura.types.KalturaSyndicationFeedType;
+			import com.kaltura.utils.KLanguageUtil;
+			import com.kaltura.vo.KalturaBaseSyndicationFeed;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaITunesSyndicationFeed;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.utils.StringUtil;
+			import mx.validators.ValidationResult;
+
+			//TODO extract
+			[Embed(source="assets/content/imgs/itunesFeedImage.JPG")]
+			private static const _ituneImage:Class;
+
+			/**
+			 * current partner data
+			 * */
+			public var partnerData:PartnerVO;
+
+			/**
+			 * optional flavors.
+			 * used for the setter bound to it.
+			 * */
+			public var flavorParams:ArrayCollection;
+
+			private var _feed:KalturaBaseSyndicationFeed;
+
+
+
+			private function getLanguge():String {
+				return feedLabguageComboBox.selectedItem.code;
+			}
+
+
+			private function getCategoriesList():String {
+				var tempArr:Array = [];
+				for each (var cat:String in categoriesList.selectedItems) {
+					tempArr.push(cat.replace(new RegExp('&', 'g'), '&amp;'));
+				}
+
+				return tempArr.join(',');
+			}
+
+
+
+			private function setLanguge(langCode:String):void {
+				feedLabguageComboBox.selectedIndex = (KLanguageUtil.instance.getLanguageByCode(langCode) as
+					Object).index;
+			}
+
+
+			private function setAdultcontent(adultCode:String):void {
+				for each (var obj:Object in adultcontentComboBox.dataProvider) {
+					if (obj.code == adultCode) {
+						adultcontentComboBox.selectedItem = obj;
+						break;
+					}
+				}
+			}
+
+
+			private function setCategories(categoriesListStr:String):void {
+				var carArr:Array = categoriesListStr.split(',');
+				var tempArr:Array = [];
+				for each (var cat:String in carArr) {
+					tempArr.push(cat.replace(new RegExp('&amp;', 'g'), '&'));
+				}
+
+				if ((tempArr.length > 0) && (tempArr[0] != '')) {
+					categoriesList.selectedItems = tempArr;
+				}
+			}
+
+
+			public function validate():Boolean {
+				var isOk:Boolean = true;
+
+				var landingPageValidateResultEvent:ValidationResultEvent = feedLandingPageValidator.validate();
+				if ((landingPageValidateResultEvent.results != null) &&
+					(landingPageValidateResultEvent.results.length > 0)) {
+					isOk = !(landingPageValidateResultEvent.results[0] as ValidationResult).isError;
+				}
+
+				if (isOk) {
+					var categoriesValidateResultEvent:ValidationResultEvent = categoriesValidator.validate();
+					if ((categoriesValidateResultEvent.results != null) &&
+						(categoriesValidateResultEvent.results.length > 0)) {
+						isOk = !(categoriesValidateResultEvent.results[0] as ValidationResult).isError;
+					}
+				}
+
+				if (isOk) {
+					if (StringUtil.trim(webSiteTextInput.text) != '') {
+						var webSiteValidateResultEvent:ValidationResultEvent = webSiteValidator.validate();
+						if ((webSiteValidateResultEvent.results != null) &&
+							(webSiteValidateResultEvent.results.length > 0)) {
+							isOk = !(webSiteValidateResultEvent.results[0] as ValidationResult).isError;
+						}
+					}
+				}
+
+				if (isOk) {
+					var feedOwnerNameValidateResultEvent:ValidationResultEvent = feedOwnerNameValidator.validate();
+					if ((feedOwnerNameValidateResultEvent.results != null) &&
+						(feedOwnerNameValidateResultEvent.results.length > 0)) {
+						isOk = !(feedOwnerNameValidateResultEvent.results[0] as ValidationResult).isError;
+					}
+				}
+
+				if (isOk) {
+					var feedOwnerEmailValidateResultEvent:ValidationResultEvent = feedOwnerEmailValidator.validate();
+					if ((feedOwnerEmailValidateResultEvent.results != null) &&
+						(feedOwnerEmailValidateResultEvent.results.length > 0)) {
+						isOk = !(feedOwnerEmailValidateResultEvent.results[0] as ValidationResult).isError;
+					}
+				}
+
+				return isOk;
+			}
+
+
+			private function setAdultcontentDefault():void {
+				var isAdultAllowed:Boolean = partnerData.adultContent;
+				var selectedIndex:int = isAdultAllowed ? 0 : 1; // 0-YES : 1-NO
+
+				adultcontentComboBox.selectedIndex = selectedIndex;
+			}
+
+
+			private function setFeedFlavorAndSettings():void {
+				// flavor param
+				var fpId:int = _feed.flavorParamId;
+				for each (var fp:KalturaFlavorParams in flavorsComboBox.dataProvider) {
+					if (fpId == fp.id) {
+						flavorsComboBox.selectedItem = fp;
+						break;
+					}
+				}
+
+				// other settings
+				/* additinalTranscodingCheckBox.selected = feed.transcodeExistingcontent; */
+				defaultCPCheckBox.selected = _feed.addToDefaultConversionProfile;
+
+			}
+
+
+			private function setFeedLandingPage():void {
+				landingPageInputText.text = _feed.landingPage;
+			}
+
+
+			private function getFlavorParamID():int {
+				return (flavorsComboBox.selectedItem as KalturaFlavorParams).id;
+			}
+
+
+			/**
+			 * take only relelvant items from the list
+			 * */
+			private function getFlavorsForItunes(value:ArrayCollection):void {
+				var tempArr:ArrayCollection = new ArrayCollection();
+				for each (var flavor:KalturaFlavorParams in value) {
+					if ((flavor.format == "m4a") || (flavor.format == "mp3") || (flavor.format == "mov") ||
+						(flavor.format == "mp4") || (flavor.format == "m4v")) {
+						tempArr.addItem(flavor);
+					}
+				}
+
+				flavorsComboBox.dataProvider = tempArr;
+			}
+
+
+			public function get syndication():KalturaBaseSyndicationFeed {
+				var iTunesFeed:KalturaITunesSyndicationFeed = (_feed !=
+					null) ? (_feed as KalturaITunesSyndicationFeed) : new KalturaITunesSyndicationFeed();
+				iTunesFeed.type = KalturaSyndicationFeedType.ITUNES;
+				iTunesFeed.landingPage = StringUtil.trim(landingPageInputText.text);
+				iTunesFeed.flavorParamId = getFlavorParamID();
+				iTunesFeed.addToDefaultConversionProfile = defaultCPCheckBox.selected;
+				/* iTunesFeed.transcodeExistingcontent = additinalTranscodingCheckBox.selected; */
+				iTunesFeed.feedAuthor = feedAuthorTextInput.text;
+				iTunesFeed.feedLandingPage = webSiteTextInput.text;
+				iTunesFeed.categories = getCategoriesList();
+				iTunesFeed.feedDescription = descriptionTextArea.text;
+				iTunesFeed.feedImageUrl = feedImageUrlTextInput.text;
+				iTunesFeed.ownerName = feedOwnerNameTextInput.text;
+				iTunesFeed.ownerEmail = feedOwnerEmailTextInput.text;
+				iTunesFeed.language = getLanguge();
+				iTunesFeed.adultcontent = adultcontentComboBox.selectedItem.code;
+				return iTunesFeed;
+			}
+
+
+			public function set syndication(syndication:KalturaBaseSyndicationFeed):void {
+				_feed = syndication as KalturaITunesSyndicationFeed;
+
+				setFeedFlavorAndSettings();
+				setFeedLandingPage();
+
+				feedAuthorTextInput.text = _feed.feedAuthor;
+				webSiteTextInput.text = _feed.feedLandingPage;
+				setCategories(_feed.categories);
+				descriptionTextArea.text = _feed.feedDescription;
+				feedImageUrlTextInput.text = _feed.feedImageUrl;
+				feedOwnerNameTextInput.text = _feed.ownerName;
+				feedOwnerEmailTextInput.text = _feed.ownerEmail;
+				setLanguge(_feed.language);
+				setAdultcontent(_feed.adultcontent);
+			}
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				BindingUtils.bindSetter(getFlavorsForItunes, this, "flavorParams"); 
+			}
+			
+
+		]]>
+	</mx:Script>
+	<validators:URLValidator id='feedLandingPageValidator' source="{landingPageInputText}" property="text"
+							 required="true"/>
+	<validators:URLValidator id='webSiteValidator' source="{webSiteTextInput}" property="text" required="false"/>
+	<mx:StringValidator id="feedOwnerNameValidator" source="{feedOwnerNameTextInput}" property="text" required="true"/>
+	<mx:EmailValidator id="feedOwnerEmailValidator" required="true" property="text" source="{feedOwnerEmailTextInput}"/>
+	<validators:ListValidator id='categoriesValidator' required="true" property="selectedItems"
+							  source="{categoriesList}"/>
+	<mx:VBox width="100%" styleName="formInnerTitle">
+		<mx:Label text="{resourceManager.getString('cms', 'iTunesFeedTitle')}" styleName="formInnerTitleText"/>
+	</mx:VBox>
+
+	<mx:Spacer height="10"/>
+
+	<mx:Text width="100%" fontSize="10" text="{resourceManager.getString('cms', 'titleParamsDescription')}"
+			 styleName="syndicationNote"/>
+
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:HBox>
+			<mx:ComboBox id="flavorsComboBox" labelField="name"/>
+			<mx:VBox width="100%" height="100%" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+				<mx:CheckBox id="defaultCPCheckBox" selected="true"
+							 label="{resourceManager.getString('cms','addDefaultConversionProfile')}" />
+			</mx:VBox>
+		</mx:HBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms','landingPageLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:TextInput width="100%" id="landingPageInputText" text="http://" restrict="0-9\-\/A-Z\a-z\.\_\?\:\=\#"/>
+	</mx:HBox>
+
+	<mx:Text width="100%" styleName="syndicationNote"
+			 text="{resourceManager.getString('cms','itunesLandingPageDescriptionLabel')}"/>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedAuthorLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:TextInput width="100%" id='feedAuthorTextInput'/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'webSiteLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:TextInput width="100%" id='webSiteTextInput'/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'itunesCategoriesLabel')}" width="180"
+				  styleName="feedParamLabel"/>
+		<mx:List id='categoriesList' selectedIndex="0" allowMultipleSelection="true" width="100%" rowCount="6">
+			<mx:dataProvider>
+				{[	
+				resourceManager.getString('cms', 'itunesCategory_ARTS'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_DESIGN'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_FASHION_BEAUTY'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_FOOD'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_LITERATURE'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_PERFORMING_ARTS'),
+				resourceManager.getString('cms', 'itunesCategory_ARTS_VISUAL_ARTS'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS_BUSINESS_NEWS'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS_CAREERS'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS_INVESTING'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS_MANAGEMENT_MARKETING'),
+				resourceManager.getString('cms', 'itunesCategory_BUSINESS_SHOPPING'),
+				resourceManager.getString('cms', 'itunesCategory_COMEDY'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION_HIGHER_EDUCATION'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION_K_12'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION_LANGUAGE_COURSES'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION_TECHNOLOGY'),
+				resourceManager.getString('cms', 'itunesCategory_EDUCATION_TRAINING'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES_AUTOMOTIVE'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES_AVIATION'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES_HOBBIES'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES_OTHER_GAMES'),
+				resourceManager.getString('cms', 'itunesCategory_GAMES_HOBBIES_VIDEO_GAMES'),
+				resourceManager.getString('cms', 'itunesCategory_GOVERNMENT_ORGANIZATIONS'),
+				resourceManager.getString('cms', 'itunesCategory_GOVERNMENT_ORGANIZATIONS_LOCAL'),
+				resourceManager.getString('cms', 'itunesCategory_GOVERNMENT_ORGANIZATIONS_NATIONAL'),
+				resourceManager.getString('cms', 'itunesCategory_GOVERNMENT_ORGANIZATIONS_NON_PROFIT'),
+				resourceManager.getString('cms', 'itunesCategory_GOVERNMENT_ORGANIZATIONS_REGIONAL'),
+				resourceManager.getString('cms', 'itunesCategory_HEALTH'),
+				resourceManager.getString('cms', 'itunesCategory_HEALTH_ALTERNATIVE_HEALTH'),
+				resourceManager.getString('cms', 'itunesCategory_HEALTH_FITNESS_NUTRITION'),
+				resourceManager.getString('cms', 'itunesCategory_HEALTH_SELF_HELP'),
+				resourceManager.getString('cms', 'itunesCategory_HEALTH_SEXUALITY'),
+				resourceManager.getString('cms', 'itunesCategory_KIDS_FAMILY'),
+				resourceManager.getString('cms', 'itunesCategory_MUSIC'),
+				resourceManager.getString('cms', 'itunesCategory_NEWS_POLITICS'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_BUDDHISM'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_CHRISTIANITY'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_HINDUISM'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_ISLAM'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_JUDAISM'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_OTHER'),
+				resourceManager.getString('cms', 'itunesCategory_RELIGION_SPIRITUALITY_SPIRITUALITY'),
+				resourceManager.getString('cms', 'itunesCategory_SCIENCE_MEDICINE'),
+				resourceManager.getString('cms', 'itunesCategory_SCIENCE_MEDICINE_MEDICINE'),
+				resourceManager.getString('cms', 'itunesCategory_SCIENCE_MEDICINE_NATURAL_SCIENCES'),
+				resourceManager.getString('cms', 'itunesCategory_SCIENCE_MEDICINE_SOCIAL_SCIENCES'),
+				resourceManager.getString('cms', 'itunesCategory_SOCIETY_CULTURE'),
+				resourceManager.getString('cms', 'itunesCategory_SOCIETY_CULTURE_HISTORY'),
+				resourceManager.getString('cms', 'itunesCategory_SOCIETY_CULTURE_PERSONAL_JOURNALS'),
+				resourceManager.getString('cms', 'itunesCategory_SOCIETY_CULTURE_PHILOSOPHY'),
+				resourceManager.getString('cms', 'itunesCategory_SOCIETY_CULTURE_PLACES_TRAVEL'),
+				resourceManager.getString('cms', 'itunesCategory_SPORTS_RECREATION'),
+				resourceManager.getString('cms', 'itunesCategory_SPORTS_RECREATION_AMATEUR'),
+				resourceManager.getString('cms', 'itunesCategory_SPORTS_RECREATION_COLLEGE_HIGH_SCHOOL'),
+				resourceManager.getString('cms', 'itunesCategory_SPORTS_RECREATION_OUTDOOR'),
+				resourceManager.getString('cms', 'itunesCategory_SPORTS_RECREATION_PROFESSIONAL'),
+				resourceManager.getString('cms', 'itunesCategory_TECHNOLOGY'),
+				resourceManager.getString('cms', 'itunesCategory_TECHNOLOGY_GADGETS'),
+				resourceManager.getString('cms', 'itunesCategory_TECHNOLOGY_PODCASTING'),
+				resourceManager.getString('cms', 'itunesCategory_TECHNOLOGY_SOFTWARE_HOW_TO'),
+				resourceManager.getString('cms', 'itunesCategory_TECHNOLOGY_TECH_NEWS'),
+				resourceManager.getString('cms', 'itunesCategory_TV_FILM')
+				]}
+			</mx:dataProvider>
+		</mx:List>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedDescriptionLabel')}" width="100%"
+				  styleName="feedParamLabel"/>
+		<mx:TextArea width="100%" id='descriptionTextArea' wordWrap="true"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedUrlImageLabel')}" width="100%" styleName="feedParamLabel"/>
+		<mx:VBox width="100%">
+			<mx:TextInput width="100%" id='feedImageUrlTextInput'/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'feedUrlImageDescriptionLabel')}"
+					 styleName="syndicationNote"/>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedOwnerNameLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:VBox width="100%">
+			<mx:TextInput width="100%" id='feedOwnerNameTextInput'/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'feedOwnerNameDescriptionLabel')}"
+					 styleName="syndicationNote"/>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedOwnerEmailLabel')}" width="180"
+				  styleName="feedParamLabel"/>
+		<mx:VBox width="100%">
+			<mx:TextInput width="100%" id='feedOwnerEmailTextInput'/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'feedOwnerEmailDescriptionLabel')}"
+					 styleName="syndicationNote"/>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'languageLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:VBox>
+			<mx:ComboBox id='feedLabguageComboBox' editable="false" dataProvider="{KLanguageUtil.instance.languagesArr}"
+						 selectedIndex="{(KLanguageUtil.instance.getLanguageByCode('en') as Object).index}"/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'languageDescriptionLabel')}" enabled="false"/>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'adultcontentLabel')}" styleName="feedParamLabel"/>
+		<mx:VBox width="100%">
+			<mx:ComboBox id='adultcontentComboBox' editable="false" creationComplete="setAdultcontentDefault()"
+						 dataProvider="{[{code:KalturaITunesSyndicationFeedAdultValues.YES, label:resourceManager.getString('cms', 'adult_option_yes')}, 
+							    {code:KalturaITunesSyndicationFeedAdultValues.NO, label:resourceManager.getString('cms', 'adult_option_no')}, 
+							    {code:KalturaITunesSyndicationFeedAdultValues.CLEAN, label:resourceManager.getString('cms', 'adult_option_clean')}]}"/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'adultcontentDescriptionLabel')}"
+					 enabled="false"/>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:VBox width="100%" horizontalAlign="center">
+		<mx:Image width="550" source="{_ituneImage}"/>
+	</mx:VBox>
+
+
+</mx:VBox>

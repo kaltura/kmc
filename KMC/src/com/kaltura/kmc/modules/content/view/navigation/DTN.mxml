@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	styleName="dtnStyle">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Button;
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+
+			[ArrayElementType("Object")]
+			[Bindable] private var _dataProvider : Array;
+			[Bindable] public var selectedIndex : Number = 0;
+			public var btnStyleName : String = "dtnBtn";
+			public var btnSelectedStyleName : String = "dtnSelectedBtn";
+			public var dataField : String  = null;
+			
+			
+			private function populateChildren() :void
+			{
+				var firstOne : Boolean = true;
+				for each( var prop : Object in  _dataProvider)
+				{
+					var btn : Button = new Button();
+					btn.percentWidth=100;
+					btn.buttonMode=true;
+					
+					if(!dataField)
+						btn.label = prop.toString();
+					else
+						btn.label =	prop[dataField];
+					
+					btn.addEventListener( MouseEvent.CLICK , onItemClick );
+					btn.toggle = true;
+					
+					if(firstOne)
+					{
+						btn.styleName = btnSelectedStyleName;
+						firstOne = false;
+					}
+					else	
+						btn.styleName = btnStyleName;	
+					
+					this.addChild( btn );
+				}
+				
+				if(numChildren>0)
+					(this.getChildAt(0) as Button).selected = true;
+			}
+			
+			private function onItemClick( event : MouseEvent ) : void
+			{
+				(this.getChildAt(selectedIndex) as Button).styleName = btnStyleName;
+				selectedIndex = this.getChildIndex( event.target as DisplayObject );
+				for( var i:int=0; i<this.numChildren; i++ )
+				{
+					var btn : Button;
+					if(i != selectedIndex)
+					{
+						btn = (this.getChildAt(i) as Button);
+						btn.selected = false;
+						btn.styleName = btnStyleName; 	
+					}
+					else
+					{
+						btn = (this.getChildAt(i) as Button);
+						btn.selected = true;
+						(event.target).styleName = btnSelectedStyleName; 
+					}
+				}
+			}
+			
+			public function set dataProvider( arr : Array) : void
+			{
+				_dataProvider = arr;
+				removeAllChildren();
+				populateChildren();
+			}
+
+		]]>
+	</mx:Script>
+	
+</mx:VBox>

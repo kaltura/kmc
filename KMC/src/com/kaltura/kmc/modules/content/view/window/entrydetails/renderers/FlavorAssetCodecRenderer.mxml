@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:FlavorAssetRendererBase xmlns="com.kaltura.kmc.modules.content.view.window.entrydetailswindowsections.renderers.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{onCreatoinComplete()}" xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				onCreatoinComplete();
+				setCodecLabel();
+			}
+			
+			private function setCodecLabel():void
+			{
+				codecLabel.enabled = (data.kalturaFlavorAssetWithParams.flavorAsset != null);
+				
+				if ((data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams 
+					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset
+					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.videoCodecId )
+				codecLabel.text = (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.videoCodecId;
+				codecLabel.toolTip = codecLabel.text;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:Label id='codecLabel' creationComplete="setCodecLabel()"/>
+</renderers:FlavorAssetRendererBase>

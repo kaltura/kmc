@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 on rule based playlists, this is the window that allows adding a new rule.
+	 opened from <code>RulePlaylistWindow</code>
+-->
+<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.kaltura.containers.*"
+				 xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
+				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" showCloseButton="true" 
+				 creationComplete="onCreationComplete()"
+				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'helpAddDynamicFilter')))}"
+				 close="onClose()" height="540" width="780">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+
+			//in case of editing an existing filter - this function will be called 
+			[Bindable]
+			public var filterForSingleRule:KalturaMediaEntryFilterForPlaylist;
+
+			[Bindable]
+			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+
+			public static const REMOVE_ME:String = "removeMe";
+
+
+			private function onCreationComplete():void {
+				singleRule.advancedBtn.visible = false;
+				singleRule.advancedBtn.includeInLayout = false;
+				//async call to the kaltura server to run the rule filter 
+				singleRule.runRule(); 
+			}
+
+
+			/**
+			 * close this popup - no changes
+			 */
+			private function onClose():void {
+				dispatchEvent(new Event(REMOVE_ME));
+			}
+
+
+			/**
+			 * apply this filter and close the popup
+			 */
+			private function save():void {
+				var kalturaPlaylistFilter:KalturaMediaEntryFilterForPlaylist = (singleRule.ruleFilter);
+				dispatchEvent(new NewFilterEvent(NewFilterEvent.NEW_PLAYLIST_FILTER, kalturaPlaylistFilter));
+				onClose();
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		<window:OneRule id="singleRule" width="100%" ruleToEdit="{filterForSingleRule}" height="100%"
+						filterData="{_model.filterModel}" />
+	</mx:HBox>
+	<mx:ControlBar>
+		<mx:Button label="{resourceManager.getString('cms', 'saveChanges')}" buttonMode="true" click="save()"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

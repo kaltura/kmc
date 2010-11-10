@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" layout="vertical"
+				 title="{resourceManager.getString('cms', 'setSchedulingTitle')}"
+				 xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" close="closeWindow(event)"
+				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryScheduling;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+
+			/**
+			 * @copy #selectedEntries
+			 * */
+			private var _selectedEntries:ArrayCollection;
+			
+
+			/**
+			 * close the window
+			 * */
+			private function closeWindow(event:Event = null):void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * save the changes:
+			 * */
+			private function saveData(event:Event):void {
+				var startTime:int = entryShec.getStartTime();
+				var endTime:int = entryShec.getEndTime();
+				
+				// we edit dummy entries, not the original (fuck me if I know why)
+				var clonedSelectedEntries:ArrayCollection = new ArrayCollection();
+				for (var i:int = 0; i < _selectedEntries.length; i++) {
+					clonedSelectedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+				}
+			
+				// set sheduling of each entry:
+				for each (var entry:KalturaBaseEntry in clonedSelectedEntries) {
+					entry.startDate = startTime;
+					entry.endDate = endTime;
+				}
+
+				// update entries:
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, clonedSelectedEntries);
+				cgEvent.dispatch();
+
+				// stats:
+				for each (var etr:Object in clonedSelectedEntries) {
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
+															  "setSchedulingForEntries", etr.id);
+				}
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING);
+				closeWindow();
+			}
+			
+			/**
+			 * a list of entries to edit
+			 * */
+			public function set selectedEntries(arr:ArrayCollection):void {
+				_selectedEntries = arr;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('cms', 'schedulingOverrideMsg')}"/>
+	<entrydetails:EntryScheduling id="entryShec"
+													   currentState="{EntryScheduling.POP_UP_MODE}"/>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button label="{resourceManager.getString('cms', 'applySechdulingBtn')}" useHandCursor="true"
+				   buttonMode="true" click="saveData(event)"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

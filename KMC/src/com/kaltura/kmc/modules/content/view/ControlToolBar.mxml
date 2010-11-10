@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="DataGridActions" horizontalScrollPolicy="off"
+		 verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			
+			import mx.core.UIComponent;
+			import mx.resources.ResourceManager;
+
+			/**
+			 * defines the value of the type property of the selectAllEntries event.
+			 * */
+			public static const SELECT_ALL_ENTRIES:String = "selectAllEntries";
+			
+			/**
+			 * defines the value of the type property of the deselectAllEntries event.
+			 * */
+			public static const DESELECT_ALL_ENTRIES:String = "deselectAllEntries";
+			
+			/**
+			 * defines the value of the type property of the approveSelectedEntries event.
+			 * */
+			public static const APPROVE_SELECTED_ENTRIES:String = "approveSelectedEntries";
+			
+			/**
+			 * defines the value of the type property of the rejectSelectedEntries event.
+			 * */
+			public static const REJECT_SELECTED_ENTRIES:String = "rejectSelectedEntries";
+			
+			/**
+			 * defines the value of the type property of the createNewManualPlaylist event.
+			 * */
+			public static const CREATE_NEW_MANUAL_PLAYLIST:String = "createNewManualPlaylist";
+			
+			/**
+			 * defines the value of the type property of the createNewRulePlaylist event.
+			 * */
+			public static const CREATE_NEW_RULE_PLAYLIST:String = "createNewRulePlaylist";
+			
+			[Bindable]
+			/**
+			 * show New Stream button
+			 * */
+			public var enablelivestream:Boolean;
+
+
+			[Bindable]
+			/**
+			 * Playlist | Entry
+			 * used to show correct text when deleting entries / playlists
+			 * */
+			public var entryType:String = "Entry";
+
+
+			/**
+			 * hide all 3 combos from controller
+			 */
+			public function removeCombos():void {
+				playlistCombo.visible = false;
+				playlistCombo.includeInLayout = false;
+				tagsCombo.visible = false;
+				tagsCombo.includeInLayout = false;
+				moreOption.visible = false;
+				moreOption.includeInLayout = false;
+			}
+
+
+			/**
+			 * Selective remove a component
+			 */
+			public function removeController(controller:UIComponent):void {
+				if (controller && controller.parent)
+					controller.parent.removeChild(controller);
+			}
+
+
+			/**
+			 * delete selected entries
+			 */
+			private function deleteEntries(event:MouseEvent):void {
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.DELETE_ENTRIES);
+				cgEvent.data = this.entryType;
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * selected all entries in table
+			 */
+			private function selectTable(event:MouseEvent):void {
+				dispatchEvent(new Event(SELECT_ALL_ENTRIES));
+			}
+
+
+			private function deselectTable(event:MouseEvent):void {
+				dispatchEvent(new Event(DESELECT_ALL_ENTRIES));
+			}
+
+
+			/**
+			 * The combo that holds the tags commande was changed
+			 */
+			private function onTagsClick(event:Event):void {
+				var cgEvent:WindowEvent
+				if (tagsCombo.selectedItem.data == "addTags") {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_TAGS_WINDOW);
+					cgEvent.dispatch();
+					var addTags:String = resourceManager.getString('cms', 'add_tags')
+				}
+				if (tagsCombo.selectedItem.data == "removeTags") {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REMOVE_TAGS_WINDOW);
+					cgEvent.dispatch();
+					var removetags:String = resourceManager.getString('cms', 'remove_tags')
+				}
+				tagsCombo.selectedIndex = -1;
+			}
+
+
+			/**
+			 * The combo that holds the playlist commande was changed
+			 */
+			private function onPlaylistClick(event:Event):void {
+				if (playlistCombo.selectedItem.data == "addManualPlaylist") {
+					dispatchEvent(new Event(CREATE_NEW_MANUAL_PLAYLIST));
+				}
+				if (playlistCombo.selectedItem.data == "addRuleBasedPlaylist") {
+					dispatchEvent(new Event(CREATE_NEW_RULE_PLAYLIST));
+				}
+				playlistCombo.selectedIndex = -1;
+			}
+
+
+			/**
+			 * The combo that holds more option was changed
+			 */
+			private function onMoreOptionChanged(event:Event):void {
+				var cgEvent:WindowEvent;
+				if (moreOption.selectedItem.data == "setAccessCOntrolProfile") {
+					cgEvent = new WindowEvent(WindowEvent.OPEN,
+											  WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW);
+					cgEvent.dispatch();
+				}
+				if (moreOption.selectedItem.data == "setSchedulingTitle") {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.SETTING_SCHEDULING_WINDOW);
+					cgEvent.dispatch();
+				}
+				moreOption.selectedIndex = -1;
+			}
+
+
+			private function onDownload():void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.DOWNLOAD_WINDOW);
+				cgEvent.dispatch();
+			}
+
+
+			private function onNewStream():void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
+				cgEvent.dispatch();
+			}
+
+
+			private function onApproveSelected():void {
+				dispatchEvent(new Event(APPROVE_SELECTED_ENTRIES));
+			}
+
+
+			private function onRejectSelected():void {
+				dispatchEvent(new Event(REJECT_SELECTED_ENTRIES));
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Metadata>
+		  [Event(name="selectAllEntries", type="flash.events.Event")] 
+		  [Event(name="deselectAllEntries", type="flash.events.Event")] 
+		  [Event(name="approveSelectedEntries", type="flash.events.Event")] 
+		  [Event(name="rejectSelectedEntries", type="flash.events.Event")] 
+		  [Event(name="createNewManualPlaylist", type="flash.events.Event")] 
+		  [Event(name="createNewRulePlaylist", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:HBox height="100%" verticalAlign="middle" left="5">
+		<mx:Label text="{resourceManager.getString('cms', 'selectionTitle')}"/>
+		<mx:LinkButton id="selectAll" label="{resourceManager.getString('cms', 'selectAllOption')}"
+					   click="selectTable(event)" buttonMode="true" paddingLeft="0" paddingRight="0"/>
+		<mx:LinkButton id="deselectAll" label="{resourceManager.getString('cms', 'deselectAllOption')}"
+					   click="deselectTable(event)" buttonMode="true" paddingLeft="0" paddingRight="0"/>
+	</mx:HBox>
+	<mx:HBox height="100%" width="100%" horizontalAlign="center">
+		<mx:Button id="deleteBtn" label="{resourceManager.getString('cms', 'delete')}" click="deleteEntries( event )"
+				   buttonMode="true"/>
+		<mx:Button id="download" label="{resourceManager.getString('cms', 'download')}" click="onDownload()"
+				   buttonMode="true"/>
+		<mx:ComboBox id="tagsCombo" change="{onTagsClick(event)}"
+					 prompt="{resourceManager.getString('cms', 'manageTags')}" selectedIndex="-1">
+			<mx:Array>
+				<mx:Object data="addTags" label="{resourceManager.getString('cms', 'addTags')}"/>
+				<mx:Object data="removeTags" label="{resourceManager.getString('cms', 'removeTags')}"/>
+			</mx:Array>
+		</mx:ComboBox>
+		<mx:ComboBox id="playlistCombo" change="{onPlaylistClick(event)}"
+					 prompt="{resourceManager.getString('cms', 'createPlaylist')}" selectedIndex="-1">
+			<mx:Array>
+				<mx:Object data="addManualPlaylist"
+						   label="{resourceManager.getString('cms', 'createManualPlaylistComboOption')}"/>
+				<mx:Object data="addRuleBasedPlaylist"
+						   label="{resourceManager.getString('cms', 'createRuleBasedPlaylistComboOption')}"/>
+			</mx:Array>
+		</mx:ComboBox>
+		<mx:ComboBox id="moreOption" change="{onMoreOptionChanged(event)}"
+					 prompt="{resourceManager.getString('cms', 'moreActions')}" selectedIndex="-1">
+			<mx:Array>
+				<mx:Object data="setAccessCOntrolProfile"
+						   label="{resourceManager.getString('cms', 'setAccessCOntrolProfile')}"/>
+				<mx:Object data="setSchedulingTitle" label="{resourceManager.getString('cms', 'setSchedulingTitle')}"/>
+			</mx:Array>
+		</mx:ComboBox>
+		<mx:Button id="addTags" label="{resourceManager.getString('cms', 'addTags')}" visible="false"
+				   includeInLayout="false"
+				   click="{var cgEvent : WindowEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.ADD_TAGS_WINDOW); cgEvent.dispatch()}"
+				   buttonMode="true"/>
+		<mx:Button id="removeTags" label="{resourceManager.getString('cms', 'removeTags')}" visible="false"
+				   includeInLayout="false"
+				   click="{var cgEvent : WindowEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.REMOVE_TAGS_WINDOW); cgEvent.dispatch()}"
+				   buttonMode="true"/>
+		<mx:Button id="approveSelected" label="{resourceManager.getString('cms', 'approveSelected')}"
+				   click="onApproveSelected()" buttonMode="true"/>
+		<mx:Button id="rejectSelected" label="{resourceManager.getString('cms', 'rejectSelected')}"
+				   click="onRejectSelected()" buttonMode="true"/>
+		<mx:Button id="setAccessCOntrolProfile" label="{resourceManager.getString('cms', 'setAccessCOntrolProfile')}"
+				   visible="false" includeInLayout="false"
+				   click="{var cgEvent : WindowEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW); cgEvent.dispatch()}"
+				   buttonMode="true"/>
+		<mx:Button id="setScheduling" label="{resourceManager.getString('cms', 'setSchedulingTitle')}" visible="false"
+				   includeInLayout="false"
+				   click="{var cgEvent : WindowEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.SETTING_SCHEDULING_WINDOW); cgEvent.dispatch()}"
+				   buttonMode="true"/>
+		<mx:Button id="manualPlaylistBtn" label="{resourceManager.getString('cms', 'createManualPlaylistComboOption')}"
+				   click="dispatchEvent(new Event(CREATE_NEW_MANUAL_PLAYLIST))" buttonMode="true" visible="false"
+				   includeInLayout="false"/>
+		<mx:Button id="ruleBasedPlaylistBtn"
+				   label="{resourceManager.getString('cms', 'createRuleBasedPlaylistComboOption')}"
+				   click="dispatchEvent(new Event(CREATE_NEW_RULE_PLAYLIST))" buttonMode="true" visible="false"
+				   includeInLayout="false"/>
+		<mx:Button id="newStreamBtn" label="{ResourceManager.getInstance().getString('cms', 'newLiveStream')}"
+				   click="onNewStream()" buttonMode="true" visible="{enablelivestream}"
+				   includeInLayout="{enablelivestream}"/>
+	</mx:HBox>
+</mx:HBox>

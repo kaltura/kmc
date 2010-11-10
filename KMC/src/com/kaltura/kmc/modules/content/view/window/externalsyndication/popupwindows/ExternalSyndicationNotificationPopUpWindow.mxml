@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 This is the window that opens after you add a new syndication,
+	 explaining how to use the feed.
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
+				 close="closeWindow(event)" title="{resourceManager.getString('cms', 'confirmationPopupTitle')}"
+				 height="560" width="560" help="{onHelp()}"
+				 xmlns:externalsyndicationsections="com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.externalsyndicationsections.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.PartnerVO;
+			import com.kaltura.vo.KalturaBaseSyndicationFeed;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaSyndicationFeedEntryCount;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.LinkButton;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var _feedCountersData:KalturaSyndicationFeedEntryCount;
+			[Bindable]
+			private var showDropEntriesMsg:Boolean = true;
+			[Bindable]
+			private var dropEntriesMsg:String = '';
+			[Bindable]
+			private var _feed:KalturaBaseSyndicationFeed;
+
+			/**
+			 * partner data
+			 * */
+			public var partnerData:PartnerVO;
+			
+			public var rootUrl:String;
+			
+			public var flavorParams:ArrayCollection;
+
+			[Bindable]
+			public function get feed():KalturaBaseSyndicationFeed {
+				return _feed;
+			}
+
+
+			public function set feed(feed:KalturaBaseSyndicationFeed):void {
+				_feed = feed;
+			}
+
+
+			private function onHelp():void {
+				navigateToURL(new URLRequest('http://' + rootUrl +
+					resourceManager.getString('cms', 'generalHelp')));
+			}
+
+
+			[Bindable]
+			public function get feedCountersData():KalturaSyndicationFeedEntryCount {
+				return _feedCountersData;
+			}
+
+
+			public function set feedCountersData(feedCountersData:KalturaSyndicationFeedEntryCount):void {
+				_feedCountersData = feedCountersData;
+				showDropEntriesMsg = _feedCountersData.requireTranscodingCount != 0;
+
+				if (showDropEntriesMsg) {
+					var tempStr:String = resourceManager.getString('cms', 'entriesNotIncludedMsg');
+					tempStr = tempStr.replace("{NUM}", _feedCountersData.requireTranscodingCount + '');
+
+					var flavorName:String = getFlavorName();
+
+					tempStr = tempStr.replace(new RegExp('{RQUIRED_FLAVOR_NAME}', 'g'), flavorName);
+
+
+					tempStr = tempStr.replace("{PARTNER_ID}", partnerData.pId);
+
+					tempStr = tempStr.replace("{EMAIL}", partnerData.adminEmail);
+					tempStr = tempStr.replace("{SCREEN_NAME}", partnerData.name);
+
+					dropEntriesMsg = tempStr;
+				}
+			}
+
+
+			private function getFlavorName():String {
+				var fName:String = '--- ';
+				for each (var flavor:KalturaFlavorParams in flavorParams) {
+					if (flavor.id == feed.flavorParamId) {
+						fName = flavor.name;
+						break;
+					}
+				}
+
+				return fName;
+			}
+
+
+			private function showFeedConfirmationText(event:Event):void {
+				switch (feed.objectType) {
+					case "KalturaYahooSyndicationFeed":  {
+						viewStack.selectedIndex = 0;
+						break;
+					}
+					case "KalturaTubeMogulSyndicationFeed":  {
+						viewStack.selectedIndex = 1;
+						break;
+					}
+					case "KalturaITunesSyndicationFeed":  {
+						viewStack.selectedIndex = 2;
+						break;
+					}
+					case "KalturaGoogleVideoSyndicationFeed":  {
+						viewStack.selectedIndex = 3;
+						break;
+					}
+				}
+			}
+
+
+			private function closeWindow(event:Event):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function openLink(event:Event):void {
+				var btn:LinkButton = event.target as LinkButton;
+				navigateToURL(new URLRequest(btn.label));
+			}
+
+
+			private function lbl_link(evt:TextEvent):void {
+				navigateToURL(new URLRequest(evt.text));
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack id='viewStack' width="100%" height="100%" creationComplete="showFeedConfirmationText(event)">
+		<!-- Yahoo -->
+		<mx:VBox width="100%" height="100%" styleName="confirmationVboxes" verticalGap="16">
+			<mx:HBox styleName="noteBackground" width="100%">
+				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
+						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			</mx:HBox>
+			<mx:Grid width="100%" verticalGap="10">
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem width="100%" height="100%" colSpan="2" styleName="formInnerTitle">
+						<mx:Label text="{resourceManager.getString('cms', 'yahooAdvise1')}"
+								  styleName="formInnerTitleText"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="1">
+				</mx:GridRow>
+
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="1."/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'yahooAdvise2')}"/>
+						<mx:TextInput text="{feed.feedUrl}" editable="false"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="2."/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'yahooAdvise3')}"/>
+						<mx:LinkButton label="{resourceManager.getString('cms', 'yahooAdviseLink')}" textAlign="left"
+									   paddingLeft="0" click="openLink(event)"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="3."/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'yahooAdvise4')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+
+		</mx:VBox>
+
+		<!-- Tube Mogul -->
+		<mx:VBox styleName="confirmationVboxes" verticalGap="16">
+			<mx:HBox styleName="noteBackground" width="100%">
+				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
+						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			</mx:HBox>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise1')}"/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise2')}"/>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise3')}"/>
+			<mx:Text width="100%" htmlText="{resourceManager.getString('cms', 'tmAdvise4WithLink')}"
+					 link="lbl_link(event)"/>
+
+			<mx:Grid width="100%" verticalGap="10">
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem width="100%" height="100%" colSpan="2" styleName="formInnerTitle">
+						<mx:Text width="98%" text="{resourceManager.getString('cms', 'tmAdvise5')}"
+								 styleName="formInnerTitleText"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="1">
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="1."/>
+						<mx:Label text="{resourceManager.getString('cms', 'tmAdvise6')}"/>
+						<mx:TextInput text="{feed.feedUrl}" editable="false"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="2."/>
+						<mx:Label text="{resourceManager.getString('cms', 'tmAdvise7')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="3."/>
+						<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise8')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="4."/>
+						<mx:Label text="{resourceManager.getString('cms', 'tmAdvise9')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+		</mx:VBox>
+
+		<!-- iTunes -->
+		<mx:VBox styleName="confirmationVboxes" verticalGap="16" paddingRight="11">
+			<mx:HBox styleName="noteBackground" width="100%">
+				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
+						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			</mx:HBox>
+
+			<mx:Grid width="100%" verticalGap="10">
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem height="100%" styleName="formInnerTitle">
+						<mx:Text width="98%" text="{resourceManager.getString('cms', 'itAdvise1')}"
+								 styleName="formInnerTitleText"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="1">
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="1."/>
+						<mx:Label text="{resourceManager.getString('cms', 'itAdvise2')}"/>
+						<mx:TextInput text="{feed.feedUrl}" editable="false"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="2."/>
+						<mx:Label text="{resourceManager.getString('cms', 'itAdvise3')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%" width="100%">
+						<mx:Label text="3."/>
+						<mx:Label width="100%" text="{resourceManager.getString('cms', 'itAdvise4')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem height="100%" styleName="formInnerTitle">
+						<mx:Text width="98%" text="{resourceManager.getString('cms', 'itAdvise5')}"
+								 styleName="formInnerTitleText"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="1">
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="1."/>
+						<mx:Label text="{resourceManager.getString('cms', 'itAdvise6')}"/>
+						<mx:TextInput text="{feed.feedUrl}" editable="false"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="2."/>
+						<mx:VBox>
+							<mx:HBox>
+								<mx:Label text="Go to"/>
+								<mx:LinkButton label="{resourceManager.getString('cms', 'itAdviseLink')}"
+											   textAlign="left" paddingLeft="0" click="openLink(event)"/>
+							</mx:HBox>
+							<mx:Label text="{resourceManager.getString('cms', 'itAdvise7')}"/>
+						</mx:VBox>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="3."/>
+						<mx:Label width="100%" text="{resourceManager.getString('cms', 'itAdvise8')}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+
+		</mx:VBox>
+
+		<!-- Google -->
+		<mx:VBox width="100%" height="100%" horizontalScrollPolicy="off" verticalGap="16" paddingRight="11">
+			<mx:HBox styleName="noteBackground" width="100%">
+				<mx:Text link="lbl_link(event)" width="100%" visible="{showDropEntriesMsg}"
+						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('cms', 'ggAdvise1')}" styleName="feedParamLabel"/>
+				<mx:TextInput text="{feed.feedUrl}" editable="false" width="100%"/>
+			</mx:HBox>
+			<mx:Text width="100%" text="{resourceManager.getString('cms', 'ggAdvise2')}"/>
+			<mx:Grid width="100%" verticalGap="10">
+				<mx:GridRow width="100%" height="100%">
+					<mx:GridItem width="100%" height="100%" colSpan="2" styleName="formInnerTitle">
+						<mx:Label width="100%" text="{resourceManager.getString('cms', 'ggAdvise3')}"
+								  styleName="formInnerTitleText"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="1">
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="1."/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'ggAdvise4')}" styleName="feedParamLabel"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%" width="100%">
+					<mx:GridItem height="100%">
+
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Grid width="100%" height="100%">
+							<mx:GridRow height="100%">
+								<mx:GridItem height="100%">
+									<mx:Label text="a."/>
+								</mx:GridItem>
+								<mx:GridItem width="100%" height="100%">
+									<mx:VBox width="100%" height="100%" verticalGap="0">
+										<mx:Label text="{resourceManager.getString('cms', 'webMasterAdvise1')}"/>
+										<mx:LinkButton label="{resourceManager.getString('cms', 'webMasterAdvise2')}"
+													   click="openLink(event)"/>
+									</mx:VBox>
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow height="100%">
+								<mx:GridItem height="100%">
+									<mx:Label text="b."/>
+								</mx:GridItem>
+								<mx:GridItem width="100%" height="100%">
+									<mx:VBox width="100%" height="100%" verticalGap="0">
+										<mx:Label text="{resourceManager.getString('cms', 'webMasterAdvise3')}"/>
+										<mx:LinkButton label="{resourceManager.getString('cms', 'webMasterAdvise4')}"
+													   click="openLink(event)"/>
+										<mx:Label text="{resourceManager.getString('cms', 'webMasterAdvise5')}."/>
+									</mx:VBox>
+								</mx:GridItem>
+							</mx:GridRow>
+						</mx:Grid>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%">
+					<mx:GridItem height="100%">
+						<mx:Label text="2."/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:VBox>
+							<mx:Label text="{resourceManager.getString('cms', 'ggAdvise5')}" styleName="feedParamLabel"/>
+						</mx:VBox>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow height="100%" width="100%">
+					<mx:GridItem height="100%">
+
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%">
+						<mx:Grid width="100%">
+							<mx:GridRow height="100%">
+								<mx:GridItem height="100%">
+									<mx:Label text="a."/>
+								</mx:GridItem>
+								<mx:GridItem width="100%" height="100%">
+									<!--<mx:VBox  width="100%" height="100%">-->
+									<mx:Label text="{resourceManager.getString('cms', 'ggAdvise6')}"/>
+									<mx:LinkButton label="{resourceManager.getString('cms', 'ggAdviseLink1')}"
+												   click="openLink(event)"/>
+									<!--</mx:VBox>-->
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow height="100%">
+								<mx:GridItem height="100%">
+									<mx:Label text="b."/>
+								</mx:GridItem>
+								<mx:GridItem width="100%" height="100%">
+									<!--<mx:VBox  width="100%" height="100%">-->
+									<mx:Label text="{resourceManager.getString('cms', 'ggAdvise7')}"/>
+									<mx:Label text="{resourceManager.getString('cms', 'ggAdvise8')}"/>
+									<!--</mx:VBox>-->
+								</mx:GridItem>
+							</mx:GridRow>
+							<mx:GridRow height="100%">
+								<mx:GridItem height="100%">
+									<mx:Label text="c."/>
+								</mx:GridItem>
+								<mx:GridItem width="100%" height="100%">
+									<!--<mx:VBox  width="100%" height="100%">-->
+									<mx:Label text="{resourceManager.getString('cms', 'ggAdvise9')}"/>
+									<mx:LinkButton label="{resourceManager.getString('cms', 'ggAdviseLink2')}"
+												   click="openLink(event)"/>
+									<!--</mx:VBox>-->
+								</mx:GridItem>
+							</mx:GridRow>
+						</mx:Grid>
+					</mx:GridItem>
+				</mx:GridRow>
+
+			</mx:Grid>
+		</mx:VBox>
+
+
+	</mx:ViewStack>
+
+
+	<mx:ControlBar horizontalAlign="center" paddingBottom="6" paddingLeft="2" paddingRight="2" paddingTop="6"
+				   verticalAlign="middle">
+		<mx:Button label="{resourceManager.getString('cms','ok')}" click="closeWindow(event)" useHandCursor="true"
+				   buttonMode="true"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

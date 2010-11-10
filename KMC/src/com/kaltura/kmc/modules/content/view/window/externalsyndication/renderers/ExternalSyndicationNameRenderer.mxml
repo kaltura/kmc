@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="4">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.ExternalSyndicationPopUpWindow;
+			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
+			
+			import mx.core.Application;
+			import mx.core.IFlexDisplayObject;
+			import mx.managers.PopUpManager;
+
+
+			private function onClickProfileName(event:Event):void {
+				var model:CmsModelLocator = CmsModelLocator.getInstance();
+				var editSyndicationWin:ExternalSyndicationPopUpWindow = new ExternalSyndicationPopUpWindow();
+				editSyndicationWin.flavorParams = model.filterModel.flavorParams;
+				editSyndicationWin.extSynModel = model.extSynModel;
+				editSyndicationWin.rootUrl = model.context.rootUrl;
+				editSyndicationWin.selectedExSynVo = this.data as ExternalSyndicationVO;
+				PopUpManager.addPopUp(editSyndicationWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(editSyndicationWin);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:LinkButton label="{(data as ExternalSyndicationVO).kSyndicationFeed.name}" click="onClickProfileName(event)"/>
+</mx:HBox>
+

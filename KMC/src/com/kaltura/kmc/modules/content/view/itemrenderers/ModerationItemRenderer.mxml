@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox width="100%" xmlns:mx="http://www.adobe.com/2006/mxml" >
+<mx:Script>
+	<![CDATA[
+		import mx.formatters.DateFormatter;
+        public function formatDate( date : Number ) : String
+        {
+        	var df:DateFormatter = new DateFormatter();
+        	df.formatString = resourceManager.getString('cms', 'listdateformat');
+        	var dt:Date = new Date();
+        	dt.setTime(date * 1000);
+        	return df.format(dt);
+        }
+	]]>
+</mx:Script>
+	<mx:Text text="{formatDate(data.createdAt)} , {data.comments}" width="100%" styleName="modItemText"/> 
+	<mx:Spacer height="100%" />
+	<mx:HRule width="100%" />
+</mx:VBox>
+

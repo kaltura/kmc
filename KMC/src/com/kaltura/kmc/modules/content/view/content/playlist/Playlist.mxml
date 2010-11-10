@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 "Playlists" section of content viewstack.
+	 lists all playlists and allows adding and editing them.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:view="com.kaltura.kmc.modules.content.view.*" 
+		 xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="onCreationComplete()"
+		 verticalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.SearchEvent;
+			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.vo.ListableVo;
+			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.pager.Pager;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaPlaylistFilter;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+
+			
+			// =============================================
+			// graphic assets
+			// =============================================
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_minimise.png")]
+			private static const closeFilterImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_expand.png")]
+			private static const openFilterImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/btn_search.png")]
+			private static const searchImg:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/btn_x.png")]
+			private static const clearSearchImg:Class;
+
+			// =============================================
+			// fields
+			// =============================================
+			
+			[Bindable]
+			/**
+			 * last selected entry
+			 * */
+			public var selectedEntry:KalturaBaseEntry;
+			
+			
+			[Bindable]
+			private var _pager:Pager;
+			
+			private var _orderBy:String = KalturaMediaEntryOrderBy.CREATED_AT_DESC;
+			
+			/**
+			 * defines characters which are illegal as search text
+			 * */
+			private var _invalidCharsRegex:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
+			
+			private var _currentOldStartDate:Date = null;
+			
+			private var _currentOldEndDate:Date = null;
+			
+			[Bindable]
+			private var _listableVo:ListableVo;
+
+			// =============================================
+			// methods
+			// =============================================
+
+			/**
+			 * initialize the panel
+			 * */
+			private function onCreationComplete():void {
+				setEntriesToolbar();
+				toolBar.removeCombos();
+				setButtonsAppearance();
+			}
+			
+			/**
+			 * fix the new playlists buttons
+			 * */
+			private function setButtonsAppearance():void {
+				// this is a one-time-assignment, there's no reason to use binding.
+				var newButtonsWidth:Number = Math.max(addManualPlaylistBtn.width, addRuleBasedPlaylistBtn.width);
+				addManualPlaylistBtn.width = newButtonsWidth;
+				addRuleBasedPlaylistBtn.width = newButtonsWidth;
+				addRuleBasedPlaylistBtn.visible = true;
+				addManualPlaylistBtn.visible = true;
+			}
+
+
+			private function updateExpenderLabel():void {
+				if ((StringUtil.trim(searchFilter.text) == resourceManager.getString('cms', 'searchPlaylists') ||
+					(StringUtil.trim(searchFilter.text) == '')) && (fromDate.selectedDate == null) &&
+					(toDate.selectedDate == null)) {
+					filteredLabel.visible = false;
+				}
+				else {
+					filteredLabel.visible = true;
+				}
+			}
+
+
+			/**
+			 * initialize panel
+			 * */
+			public function init():void {
+//				if (initialized)
+					loadEntries();
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+			}
+
+
+			/**
+			 * load data according to filter
+			 * */
+			private function loadEntries():void {
+				if (paging.pageSize == 10) {
+					entryTableContainer.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
+					playlistTable.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
+					playlistTable.rowCount = 10;
+					filter.height = entryTableContainer.height + paging.height + toolBar.height;
+					actionsBox.height = filter.height;
+				}
+				else {
+					entryTableContainer.percentHeight = 100;
+					playlistTable.percentHeight = 100;
+					playlistTable.rowCount = -1;
+					filter.percentHeight = 100;
+					actionsBox.percentHeight = 100;
+				}
+
+				_listableVo = new ListableVo(getFilterVo(), paging, null);
+				if (_orderBy)
+					_listableVo.filterVo.orderBy = _orderBy;
+				// save the new listable vo
+				var cgEvent:SetCurrentListableEvent = new SetCurrentListableEvent(SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL,
+					_listableVo);
+				cgEvent.dispatch();
+				// start search
+				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _listableVo);
+				searchEvent.dispatch();
+			}
+
+
+			private function preformNewSearch():void {
+				if (_invalidCharsRegex.test(searchFilter.text)) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'),
+																	   ResourceManager.getInstance().getString('cms',
+																											   'error'));
+					return;
+				}
+				paging.selectedPage = 1;
+				loadEntries();
+				updateExpenderLabel();
+			}
+
+
+			private function getFilterVo():Object {
+				var mediaFilterForPlaylist:KalturaPlaylistFilter = new KalturaPlaylistFilter();
+
+				// text search
+				if (searchFilter.text != resourceManager.getString('cms', 'searchPlaylists')) {
+					var trimmedText:String = StringUtil.trim(searchFilter.text);
+					mediaFilterForPlaylist.freeText = trimmedText;
+				}
+				else {
+					mediaFilterForPlaylist.freeText = '';
+				}
+
+				//add dates to filter
+				if (fromDate && fromDate.selectedDate) {
+					mediaFilterForPlaylist.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
+				}
+				if (toDate && toDate.selectedDate) {
+					mediaFilterForPlaylist.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
+				}
+				return mediaFilterForPlaylist;
+			}
+
+
+			private function setEntriesToolbar():void {
+				toolBar.removeController(toolBar.approveSelected);
+				toolBar.removeController(toolBar.rejectSelected);
+
+				toolBar.removeController(toolBar.download);
+				toolBar.removeController(toolBar.setAccessCOntrolProfile);
+				toolBar.removeController(toolBar.setScheduling);
+
+				toolBar.removeController(toolBar.addTags);
+				toolBar.removeController(toolBar.removeTags);
+
+				toolBar.removeController(toolBar.manualPlaylistBtn);
+				toolBar.removeController(toolBar.ruleBasedPlaylistBtn);
+			}
+
+
+			private function addManualPlaylist():void {
+				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
+															new KalturaBaseEntry());
+				cgEvent.dispatch();
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+				cgEvent.dispatch();
+			}
+
+
+			private function addRuleBasedPlaylist():void {
+				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
+															new KalturaBaseEntry());
+				cgEvent.dispatch();
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+				cgEvent.dispatch();
+			}
+
+
+			private function removeColums(event:Event):void {
+				event.target.removeColumn(resourceManager.getString('cms', 'thumbnail'));
+				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
+				event.target.removeColumn(resourceManager.getString('cms', 'creator'));
+				event.target.removeColumn(resourceManager.getString('cms', 'plays'));
+				event.target.removeColumn(resourceManager.getString('cms', 'status'));
+				event.target.removeColumn(resourceManager.getString('cms', 'flags'));
+				event.target.removeColumn(resourceManager.getString('cms', 'type'));
+				event.target.removeColumn(resourceManager.getString('cms', 'moderationStatus'));
+				event.target.removeColumn(resourceManager.getString('cms', 'duration'));
+				event.target.removeColumn(resourceManager.getString('cms', 'playerLoads'));
+
+				event.target.updateDefaultSortColumn();
+			}
+
+
+			/**
+			 * paging
+			 * */
+			private function gotoPage():void {
+				loadEntries();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>Show Rows");
+			}
+
+
+
+			private function onDeselectAll():void {
+				playlistTable.deselectAll();
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+															new ArrayCollection(playlistTable.selectedItems));
+				cgEvent.dispatch();
+			}
+
+
+			private function onSelectAll():void {
+				playlistTable.selectAll();
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+															new ArrayCollection(playlistTable.selectedItems));
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * fold / unfold filter
+			 */
+			private function foldFilter():void {
+				var flag:Boolean = !filter.visible;
+				filter.visible = flag;
+				filter.includeInLayout = flag;
+				filterLabel.visible = flag;
+				filterLabel.includeInLayout = flag;
+
+				foldBtn.setStyle('icon', flag ? closeFilterImage : openFilterImage);
+				foldBtn.labelPlacement = flag ? 'right' : 'left';
+
+			}
+
+
+			/**
+			 * Entry table dispatched an order-by changing
+			 */
+			private function onOrderByChanged():void {
+				_orderBy = playlistTable.orderBy;
+				loadEntries();
+			}
+
+
+			private function clearDates():void {
+				fromDate.selectedDate = null;
+				toDate.selectedDate = null;
+				preformNewSearch();
+				clearDatesBtn.enabled = false;
+			}
+
+			
+
+
+			private function cureentDatesChange(event:Event):void {
+				validateDates(fromDate, toDate);
+				clearDatesBtn.enabled = true;
+				preformNewSearch();
+			}
+
+
+			private function validateDates(fromDate:DateField, toDate:DateField):void {
+				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
+					var fd:Number = (fromDate.selectedDate as Date).time;
+					var ed:Number = (toDate.selectedDate as Date).time;
+
+					if (fd >= ed) {
+						Alert.show(resourceManager.getString('cms', 'fromToDateAlert'));
+						toDate.selectedDate = _currentOldEndDate;
+						fromDate.selectedDate = _currentOldStartDate;
+						toDate.validateNow();
+					}
+					else {
+						_currentOldStartDate = new Date((fromDate.selectedDate as Date).time);
+						_currentOldEndDate = new Date((toDate.selectedDate as Date).time);
+					}
+				}
+			}
+
+
+			private function onFoucsInSearchEvent(event:FocusEvent):void {
+				if (searchFilter.text == resourceManager.getString('cms', 'searchPlaylists')) {
+					searchFilter.text = '';
+				}
+			}
+
+
+			private function onFoucsOutSearchEvent(event:FocusEvent):void {
+				if (StringUtil.trim(searchFilter.text) == '') {
+					searchFilter.text = resourceManager.getString('cms', 'searchPlaylists');
+				}
+			}
+
+
+			private function updateSearchButtonMode():void {
+				if (searchBtn.data == 'v') {
+
+					if ((StringUtil.trim(searchFilter.text) != '') &&
+						(searchFilter.text != resourceManager.getString('cms', 'searchPlaylists'))) {
+						searchBtn.data = 'x';
+						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
+					}
+				}
+				else {
+					searchFilter.text = resourceManager.getString('cms', 'searchPlaylists');
+					searchBtn.data = 'v';
+					searchBtn.toolTip = null;
+				}
+
+
+				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
+				preformNewSearch();
+			}
+
+
+			private function onSearchTextChange(event:Event):void {
+				if ((StringUtil.trim(searchFilter.text) == '')) {
+					searchBtn.data = 'v';
+				}
+				//	 	searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
+																							   'clearFreeSearchToolTip');
+
+				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
+			}
+
+
+			private function onSearchEnterClick(event:Event):void {
+				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
+																							   'clearFreeSearchToolTip');
+
+				preformNewSearch();
+			}
+			
+			// =============================================
+			// getters / setters
+			// =============================================
+			
+			public function set pager(pager:Pager):void {
+				_pager = pager;
+				if (paging && _pager) {
+					paging.totalCount = _pager.numPagesTotal * _pager.localPageSize;
+				}
+			}
+			
+			
+			public function get pager():Pager {
+				return _pager;
+			}
+		]]>
+	</mx:Script>
+	<mx:WipeLeft id="wipeLeft" duration="400"/>
+	<mx:WipeRight id="wipeRight" duration="500"/>
+	<mx:HBox>
+		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
+				  styleName="filterTitleHeader"/>
+		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'playlistTable')}" click="{foldFilter()}"
+					   styleName="expendableButton" icon="{closeFilterImage}"/>
+		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
+				  visible="false"/>
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox id="filter" height="100%">
+			<mx:HBox includeInLayout="true" visible="true" styleName="searchHBox"
+					 label="{resourceManager.getString('cms', 'searchFilter')}" width="100%">
+				<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
+							  text="{resourceManager.getString('cms', 'searchPlaylists')}"
+							  change='onSearchTextChange(event)' buttonMode="true"
+							  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}"
+							  styleName="searchTextInput" focusIn="onFoucsInSearchEvent(event)"
+							  focusOut="onFoucsOutSearchEvent(event)"/>
+				<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true"
+						   click="updateSearchButtonMode()" buttonMode="true"/>
+			</mx:HBox>
+			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
+					 styleName="publishSearchAndFilterBox" height="100%">
+				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
+				<mx:HBox styleName="innerUpperDatesHBox">
+					<mx:DateField id="fromDate" width="90" toolTip="{resourceManager.getString('cms', 'from')}"
+								  change="{cureentDatesChange(event)}"/>
+					<mx:Label id="toDateTxt" text="-"/>
+					<mx:DateField id="toDate" width="90" toolTip="{resourceManager.getString('cms', 'to')}"
+								  change="{cureentDatesChange(event)}"/>
+				</mx:HBox>
+				<mx:HBox id="titleAndClearHolder" verticalAlign="middle">
+					<mx:LinkButton id='clearDatesBtn' label="{resourceManager.getString('cms', 'clearDates')}"
+								   click="clearDates()" height="17" enabled="false" styleName="clearDateButton"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+
+
+		<mx:VBox width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
+			<mx:HBox width="100%" height="100%" id="entryTableContainer">
+				<view:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
+								 orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
+								 selectedEntry="{selectedEntry}"
+								 creationComplete="{removeColums( event )}" dragEnabled="false" dragMoveEnabled="false"
+								 dropEnabled="false"/>
+			</mx:HBox>
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"
+							 showNextFlag="true" showPrvFlag="true"/>
+
+			<view:ControlToolBar id="toolBar" width="100%" entryType="Playlist" selectAllEntries="onSelectAll()"
+								 deselectAllEntries="onDeselectAll()"/>
+		</mx:VBox>
+		<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
+			<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
+					   buttonMode="true" click="addManualPlaylist()" 
+					   styleName="listActionButton" visible="false" />
+			<mx:Button id="addRuleBasedPlaylistBtn" label="{resourceManager.getString('cms', 'addRuleBasedPlaylist')}" 
+					   buttonMode="true" click="addRuleBasedPlaylist()"
+					   styleName="listActionButton" visible="false" />
+		</mx:VBox>
+
+	</mx:HBox>
+</mx:VBox>

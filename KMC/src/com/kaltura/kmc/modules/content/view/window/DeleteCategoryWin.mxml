@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+ delete confirmation window
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	showCloseButton="true" close="closeWindow(event)" title="{resourceManager.getString('cms','deleteCategoryTitle')}" minWidth="250">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.vo.KalturaCategory;
+			import mx.utils.StringUtil;
+			import com.kaltura.kmc.modules.content.vo.CategoryVO;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]public var selectedCategory:CategoryVO;
+			
+			
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */ 
+			private function closeWindow(event:Event=null):void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function deleteCategory(event:Event=null):void
+			{
+				var idsArr:Array = new Array();
+ 				idsArr.push(selectedCategory.id);
+ 				var deleteCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORY);
+	 			deleteCategoriesEvent.data = idsArr;
+	 			deleteCategoriesEvent.dispatch();
+	 			
+	 			KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_REMOVE_ADMIN_TAGS, "CategoriesTree>RemoveCategory");
+	 			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REMOVE_ADMIN_TAGS);
+				closeWindow();
+			}
+	
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="{selectedCategory.name}"  fontSize="12" fontWeight="bold" width="100%" textAlign="center"/>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" 
+		paddingTop="2">
+		<mx:Button label="{resourceManager.getString('cms','yes')}" useHandCursor="true" buttonMode="true" click="deleteCategory(event)" id="submitBtn"/>
+		<mx:Button label="{resourceManager.getString('cms','no')}" click="closeWindow(event)" useHandCursor="true" buttonMode="true"/>
+	</mx:ControlBar>
+	
+</HelpTitleWindow>

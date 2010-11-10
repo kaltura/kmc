@@ -49,6 +49,9 @@ package com.kaltura.kmc.modules {
 		// members
 		// =====================================================
 
+		private const FALLBACK_LOCALE:String = "en_US";
+		
+		
 		/**
 		 * all the flashvars, lowercased with no underscores 
 		 */
@@ -141,7 +144,14 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected function localeLoadCompleteHandler(event:ResourceEvent):void {
 			event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
-			ResourceManager.getInstance().localeChain = [_localeCode];
+			var chain:Array;
+			if (_localeCode == FALLBACK_LOCALE) {
+				chain = [_localeCode];
+			}
+			else {
+				chain = [_localeCode, FALLBACK_LOCALE];
+			}
+			ResourceManager.getInstance().localeChain = chain;
 			start();
 		}
 

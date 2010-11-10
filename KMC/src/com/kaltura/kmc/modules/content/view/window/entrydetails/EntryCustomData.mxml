@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	custom metadata tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event)" show="onShow(event)" xmlns:itemrenderers="com.kaltura.kmc.modules.content.view.itemrenderers.*">
+<mx:Script>
+	<![CDATA[
+		import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
+		import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+		import com.kaltura.kmc.modules.content.model.FilterModel;
+		import com.kaltura.kmc.modules.content.utils.FormBuilder;
+		import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
+		import com.kaltura.events.MetadataProfileEvent;
+		import com.kaltura.types.KalturaMetadataProfileStatus;
+		
+		import mx.binding.utils.BindingUtils;
+		import mx.controls.Alert;
+		import mx.core.Application;
+		import mx.core.UIComponent;
+
+		private var _pending:Boolean = false;
+		
+		/**
+		 * filtering data
+		 * */
+		public var filterModel:FilterModel;
+		
+		/**
+		 * entry details window data
+		 * */
+		public var entryDetailsModel:EntryDetailsModel;
+
+		private function onCreationComplete(event:Event):void {
+			//resets old metadata
+			entryDetailsModel.metadataInfo = new EntryMetadataDataVO();
+			
+			if (!filterModel.enableCustomData)
+				return;
+			
+			if (!filterModel.metadataProfile || !filterModel.metadataProfile.profile)
+				return;
+			if (filterModel.metadataProfile && filterModel.metadataProfile.profile &&
+				(filterModel.metadataProfile.profile.status == KalturaMetadataProfileStatus.TRANSFORMING)) {
+				var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				listMetadataProfile.dispatch();
+				_pending = true;
+			}
+			else {
+				var listMetadata:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
+				listMetadata.dispatch();
+				BindingUtils.bindSetter(addForm, entryDetailsModel, ["metadataInfo","finalViewMxml"]);
+			}
+		}
+		
+		/**
+		 * not building a form if metadataProfile is pending
+		 * */
+		private function onShow(event:Event):void {
+			if (_pending) {
+				Alert.show(resourceManager.getString('cms', 'metadataPending'), resourceManager.getString('cms', 'metadataPendingTitle'));
+			}
+		}
+		
+		private function addForm(finalMxml:XML) : void{
+			if (finalMxml) {
+				var form:UIComponent = FormBuilder.buildLayout(finalMxml);
+				this.addChild(form);
+			}
+		}
+
+	]]>
+</mx:Script>
+
+</mx:VBox>

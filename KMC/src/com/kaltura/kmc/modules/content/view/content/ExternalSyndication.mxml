@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 "Syndicate" part of the content view stack.
+	 lists all syndications and presents a gateway to adding
+	 syndications and editing them.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:externalsyndication="com.kaltura.kmc.modules.content.view.window.externalsyndication.*"
+		 xmlns:controls="com.kaltura.controls.*" width="100%" height="100%">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
+			import com.kaltura.kmc.modules.content.events.SearchEvent;
+			import com.kaltura.kmc.modules.content.model.ExtSynModel;
+			import com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.ExternalSyndicationPopUpWindow;
+			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+
+			[Bindable]
+			/**
+			 * the piece of the model required by this component
+			 * */
+			public var extSynModel:ExtSynModel;
+
+			/**
+			 * optional flavor params
+			 * */
+			public var flavorParams:ArrayCollection;
+			
+			/**
+			 * application base url
+			 * */
+			public var rootUrl:String;
+
+
+			/**
+			 * set all syndications data
+			 * @param externalSyndicationData new syndication data
+			 * */
+			private function setExternalSyndicationData(externalSyndicationData:ArrayCollection):void {
+				loadSyndicationData(externalSyndicationData);
+				updateBtnStatus();
+			}
+
+
+			public function init():void {
+				BindingUtils.bindSetter(setExternalSyndicationData, extSynModel, "externalSyndicationData");
+				BindingUtils.bindSetter(playlistReady, extSynModel, "generalPlayListdata");
+				// load playlists
+				var listPlayList:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, null);
+				listPlayList.dispatch();
+			}
+
+
+			private function playlistReady(generalPlayListdata:ArrayCollection):void {
+				if (generalPlayListdata)
+					loadFeeds();
+			}
+
+
+			private function loadFeeds():void {
+				if (paging.pageSize == 10) {
+					tableContainer.height = (feedsTable.rowHeight * 10) + feedsTable.headerHeight +
+						paging.height + deleteExSynBtn.height + 20;
+					feedsTable.percentHeight = 100; //tableContainer.height - (paging.height + deleteExSynBtn.height);//entryTable.rowHeight*11+entryTable.headerHeight;
+					feedsTable.rowCount = 10;
+					actionsBox.height = tableContainer.height;
+				}
+				else {
+					tableContainer.percentHeight = 100;
+					feedsTable.percentHeight = 100;
+					feedsTable.rowCount = -1;
+					actionsBox.percentHeight = 100;
+				}
+				var listExSyndicationEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.LIST_EXTERNAL_SYNDICATIONS);
+				listExSyndicationEvent.dispatch();
+			}
+
+
+			private function loadSyndicationData(externalSyndicationData:ArrayCollection):void {
+				for each (var extSynd:ExternalSyndicationVO in externalSyndicationData) {
+					extSynd.addEventListener(ExternalSyndicationVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
+				}
+			}
+
+
+			private function updateBtnStatus(event:Event = null):void {
+				var numSelected:int = 0;
+				for each (var extSynd:ExternalSyndicationVO in extSynModel.externalSyndicationData) {
+					numSelected += extSynd.selected ? 1 : 0;
+				}
+
+				allSelected = (extSynModel.externalSyndicationData.length == numSelected);
+			}
+
+
+			private function showNewVideoFeedWindow(event:Event):void {
+				var extFeedPopUp:ExternalSyndicationPopUpWindow = new ExternalSyndicationPopUpWindow();
+				extFeedPopUp.flavorParams = flavorParams;
+				extFeedPopUp.extSynModel = extSynModel;
+				extFeedPopUp.rootUrl = rootUrl;
+
+				PopUpManager.addPopUp(extFeedPopUp, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(extFeedPopUp);
+			}
+
+
+			private function onDelete(event:Event):void {
+				var selectedFeeds:Array = feedsTable.selectedItems;
+				if (selectedFeeds.length == 0) {
+					Alert.show(resourceManager.getString('cms', 'noFeedSelected'));
+					return;
+				}
+
+				var delStr:String = "";
+				for each (var feed:ExternalSyndicationVO in selectedFeeds) {
+					delStr += '\n' + feed.kSyndicationFeed.name;
+				}
+
+				var msg:String = "Are you sure you want to delete the following feeds:" + delStr + "\n?";
+				var title:String = "Delete ?";
+
+				Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
+			}
+
+
+			private function responeFnc(evt:CloseEvent):void {
+				if (evt.detail == Alert.YES) {
+					var selectedFeeds:Array = feedsTable.selectedItems;
+					var ids:Array = new Array();
+					for each (var feed:ExternalSyndicationVO in selectedFeeds) {
+						ids.push(feed.kSyndicationFeed.id);
+					}
+
+					var deletetFeedsEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.DELETE_EXTERNAL_SYNDICATION);
+					deletetFeedsEvent.data = ids;
+					deletetFeedsEvent.dispatch();
+				}
+			}
+
+
+			private function gotoPage():void {
+				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
+				loadFeeds();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>Show Rows");
+			}
+
+
+			private function onPagerCreationComplete(event:Event):void {
+				//TODO Atar: update model using a command
+				extSynModel.syndicationFeedsFilterPager = paging.kalturaFilterPager;
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+			}
+		]]>
+	</mx:Script>
+	<mx:Text styleName="expendableButton" text="{resourceManager.getString('cms', 'syndicationFeeds')}"/>
+	<mx:VBox width="100%" styleName="featureDescriptionTitleBox">
+		<mx:Text text="{resourceManager.getString('cms', 'externalSyndicationIntroText')}"
+				 styleName="featureDescriptionTitleText" width="100%" id="accessControlIntroText"/>
+	</mx:VBox>
+
+	<mx:HBox width="100%" height="100%">
+		<mx:VBox id='tableContainer' width="100%" horizontalAlign="center" styleName="entriesTablePagerAndButtonsVbox">
+			<externalsyndication:ExternalSyndicationTable id='feedsTable'
+																 dataProvider="{extSynModel.externalSyndicationData}"
+																 allSelected="{allSelected}" rowCount="10"/>
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 totalCount="{extSynModel.externalSyndicationFeedsTotalCount}" nextPage="gotoPage()"
+							 prvPage="gotoPage()" getPageNum="gotoPage()" visible="true" showRowsInPage="true"
+							 showNextFlag="true" showPrvFlag="true" creationComplete="{onPagerCreationComplete(event)}"
+							 rowsInPage="{[10, 25, 50, 100]}"/>
+			<mx:HBox width="100%" styleName="DataGridActions" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:Button id='deleteExSynBtn'
+						   label="{resourceManager.getString('cms', 'deleteExternalSyndicationButton')}"
+						   useHandCursor="true" buttonMode="true" click="onDelete(event)"
+						   toolTip="{resourceManager.getString('cms', 'deleteExternalSyndicationButtonToolTip')}"/>
+			</mx:HBox>
+
+		</mx:VBox>
+		<mx:VBox id='actionsBox' height="100%" styleName="listActionsBox">
+			<mx:Button label="{resourceManager.getString('cms', 'addExternalSyndicationButton')}" useHandCursor="true"
+					   buttonMode="true" click="showNewVideoFeedWindow(event)" styleName="listActionButton"/>
+		</mx:VBox>
+	</mx:HBox>
+
+</mx:VBox>

@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
+				   xmlns:content="com.kaltura.kmc.modules.content.view.content.*"
+				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
+				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
+				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" layout="vertical"
+				   minHeight="520" minWidth="950" backgroundColor="#034F57" backgroundAlpha="1" borderThickness="0"
+				   borderStyle="solid" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
+				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}">
+	<mx:Style source="assets/content/kaltura.css"/>
+
+	<mx:Metadata>
+		[ResourceBundle("cms")]
+		[ResourceBundle("customFields")]
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.google.analytics.AnalyticsTracker;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.events.MetadataProfileEvent;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.PartnerEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.utils.StringUtil;
+			import com.kaltura.kmc.modules.content.view.window.AddStream;
+			import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
+			import com.kaltura.kmc.modules.content.view.window.DownloadWin;
+			import com.kaltura.kmc.modules.content.view.window.ManualPlaylistWindow;
+			import com.kaltura.kmc.modules.content.view.window.RemoveTagsWin;
+			import com.kaltura.kmc.modules.content.view.window.RulePlaylistWindow;
+			import com.kaltura.kmc.modules.content.view.window.SetAccessControlProfileWin;
+			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDetailsWin;
+			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.KUtils;
+			import com.kaltura.utils.SoManager;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+			import com.kaltura.vo.KalturaLiveStreamBitrate;
+			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaPlaylist;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
+			import mx.events.ItemClickEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+
+			private static const VERSION:String = "4";
+			private static const DOWNLOAD_FINITE:String = "/file_name/name";
+
+			[Bindable]
+			/**
+			 * application model
+			 * */
+			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+
+			/**
+			 * active popup window
+			 * */
+			private var _popup:TitleWindow;
+
+			/**
+			 * a secondary popup window opened over the first one
+			 * */
+			private var _secondPopup:TitleWindow;
+
+			/**
+			 * Google analytics tracker identifier
+			 * */
+			private var _urchinNumber:String;
+
+			/**
+			 * Google analytics tracker
+			 * */
+			private var _tracker:AnalyticsTracker;
+
+			/**
+			 * the string to use for tracking with GA
+			 * */
+			private var _moduleName:String = "KMC_ANDROMEDA/content";
+
+
+			/**
+			 * accessControlData change watcher for
+			 * SetAccessControlProfileWin popups
+			 * */
+			private var _accessCtrlWatcher:ChangeWatcher;
+
+			/**
+			 * in case we want to start from a tab other than the
+			 * first, name of the initial tab (as in locale)
+			 * */
+			private var _initialTab:String;
+			
+			
+			protected var _ready:Boolean = false;
+
+
+			override protected function createChildren():void {
+				if (_ready) {
+					super.createChildren();
+				}
+			}
+			
+			
+			override protected function start():void {
+				trace("=================");
+				trace("KMC VERSION   " + VERSION);
+				trace("=================");
+
+				Security.allowDomain('*');
+				//ResourceManager.getInstance().localeChain = ["de_DE_kaltura","en_US_kaltura"];
+				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
+				setStyle("backgroundColor", 0xFFFFFF);
+
+				// context menu
+				var item:ContextMenuItem = new ContextMenuItem("KMC CONTENT v" + VERSION);
+				this.contextMenu.customItems.push(item);
+
+				// flashvars processing
+				initModelContext(_flashvars);
+				initModel(_flashvars);
+
+				//Bindings 
+				BindingUtils.bindSetter(changeWindowState, _model, "windowState");
+				BindingUtils.bindSetter(toggleLoading, _model, "loadingFlag");
+
+				//Register Event Listenters
+				addEventListener(Event.RESIZE, centerPopups);
+
+				setAlert();
+				loadData();
+				
+				if (stage) {
+					initTrackers();
+				}
+				else {
+					addEventListener(Event.ADDED_TO_STAGE, initTrackers);
+				}
+				_ready = true;
+				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
+				createChildren();
+			}
+
+			
+			/**
+			 * init the panels in the view after all data is ready
+			 * */
+			private function initChildren(e:FlexEvent):void {
+				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
+				entries.init();
+//				moderation.init();
+//				plst.init();	
+				
+				// switch tab if asked
+				switchToInitialTab(_flashvars.subnavtab);
+			}
+
+
+			/**
+			 * set Alert locale for all this application
+			 * */
+			private function setAlert():void {
+				Alert.yesLabel = resourceManager.getString('cms', 'yes');
+				Alert.noLabel = resourceManager.getString('cms', 'no');
+				Alert.okLabel = resourceManager.getString('cms', 'ok');
+				Alert.cancelLabel = resourceManager.getString('cms', 'cancel');
+			}
+
+
+			/**
+			 * dispatches events that trigger data loading
+			 * */
+			private function loadData():void {
+				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				getCategoriesList.dispatch();
+
+				//to populate the filter
+				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+				getAllFlavorParams.dispatch();
+
+				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+				getAllProfilesEvent.dispatch();
+
+				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+				getPartnerInfoEvent.dispatch();
+
+				if (_model.filterModel.enableCustomData) {
+					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+					listMetadataProfile.dispatch();
+				}
+			}
+
+
+			/**
+			 * I have no idea what this function (or this flag) do.
+			 * */
+			private function onExternalTabChange():void {
+				ExternalInterface.call("onTabChange");
+			}
+
+
+			/**
+			 * bring any visible popups to the center of the screen
+			 * */
+			private function centerPopups(event:Event = null):void {
+				if (_popup)
+					PopUpManager.centerPopUp(_popup);
+
+				if (_secondPopup)
+					PopUpManager.centerPopUp(_secondPopup);
+			}
+
+
+			/**
+			 * initialize analytics trackers (GA needs the stage for debug mode)
+			 * */
+			private function initTrackers(e:Event = null):void {
+				if (willTrigger(Event.ADDED_TO_STAGE)) {
+					removeEventListener(Event.ADDED_TO_STAGE, initTrackers);
+				}
+				_urchinNumber = _flashvars.urchinnumber;
+				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
+				ga.init(_model.context.kc.partnerId, _model.context.userId, this, _moduleName, _urchinNumber, "AS3", _flashvars.gadebug == "true" ? true : false);
+				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
+
+				// intialize local data
+				SoManager.getInstance().getLocalData("kmc", _model.context.userId);
+
+				ka.init(_model.context.kc, "content", VERSION, _model.context.userId);
+			}
+
+
+			/**
+			 * initialize application model according to flashvars data
+			 * @param objParam	"lowercased" parameters object
+			 * */
+			private function initModel(objParam:Object):void {
+				_model.app = this as IFlexDisplayObject;
+
+				if (objParam.opencw) {
+					_model.bulkUploadModel.openCw = objParam.opencw;
+				}
+
+				if (objParam.openplaylist) {
+					_model.openPlaylist = objParam.openplaylist;
+				}
+
+				if (objParam.openplayer) {
+					_model.openPlayer = objParam.openplayer;
+				}
+
+				if (objParam.metadataviewuiconf) {
+					_model.entryDetailsModel.metadataDefaultUiconf = parseInt(objParam.metadataviewuiconf);
+				}
+
+				// is this partner allowed to view liveStream
+				if (objParam.enablelivestream && objParam.enablelivestream == "true") {
+					_model.filterModel.enablelivestream = true;
+				}
+
+				// is this partner allowed to view Custom Data
+				if (objParam.enablecustomdata == "true") {
+					_model.filterModel.enableCustomData = true;
+				}
+
+				if (objParam.samplefileurl) {
+					_model.bulkUploadModel.sampleFileUrl = objParam.samplefileurl;
+				}
+
+			}
+
+
+			/**
+			 * initialize application context according to flashvars data
+			 * @param objParam	"lowercased" parameters object
+			 * */
+			private function initModelContext(objParam:Object):void {
+				_model.context.userId = objParam.uid;
+				_model.context.subpId = objParam.subpid;
+				_model.context.moderationUiconf = objParam.moderationuiconf;
+				_model.context.drilldownUiconf = objParam.drilldownuiconf;
+				_model.context.rootUrl = KUtils.hostFromCode(objParam.host);
+				_model.context.cdnHost = objParam.cdnhost;
+				_model.context.kc = _kc;
+			}
+
+
+			/**
+			 * fix race condition, application added or tab switch from initial flashvar
+			 */
+			private function switchToInitialTab(initialTab:String = ""):void {
+				switch (initialTab) {
+					case resourceManager.getString('cms', 'entries'):
+						secTln.selectedIndex = 0;
+						break;
+					case resourceManager.getString('cms', 'moderation'):
+						secTln.selectedIndex = 1;
+						break;
+					case resourceManager.getString('cms', 'playlistTitle'):
+						secTln.selectedIndex = 2;
+						break;
+					case resourceManager.getString('cms', 'externalSyndication'):
+						secTln.selectedIndex = 3;
+						break;
+					case resourceManager.getString('cms', 'bulkUpload'):
+						secTln.selectedIndex = 4;
+						break;
+					default:
+						secTln.selectedIndex = 0;
+						break;
+				}
+			}
+
+
+			/**
+			 * close popup window
+			 * */
+			private function closePopup():void {
+				if (_secondPopup) {
+					PopUpManager.removePopUp(_secondPopup);
+					_secondPopup = null;
+				}
+				else if (_popup) {
+					PopUpManager.removePopUp(_popup);
+					_popup = null;
+					if (_accessCtrlWatcher != null) {
+						_accessCtrlWatcher.unwatch();
+						_accessCtrlWatcher = null;
+					}
+				}
+			}
+
+
+			/**
+			 * check after changing <code>_model.windowState</code> if
+			 * somthing need to be refreshed
+			 * */
+			private function refreshDataByPopupType():void {
+				if (_popup is RulePlaylistWindow && !_secondPopup) {
+					//this is simple add rule state so do nothing
+				}
+				else if (_popup is RulePlaylistWindow && (_popup as RulePlaylistWindow).addRuleWin) {
+					//if add rule window exist we need to refreash it
+					(_popup as RulePlaylistWindow).addRuleWin.singleRule.runRule();
+				}
+				else if (_popup is RulePlaylistWindow && _secondPopup) {
+					// we just close the second popup in rule base playlist
+					(_popup as RulePlaylistWindow).simpleRule.runRule();
+				}
+				else if (_popup is ManualPlaylistWindow && _secondPopup) {
+					// we just close the second popup
+					(_popup as ManualPlaylistWindow).loadEntries();
+				}
+
+			}
+
+
+			/**
+			 * opens a popup window with entry details
+			 * */
+			private function openEntryDetails():EntryDetailsWin {
+				var edw:EntryDetailsWin = new EntryDetailsWin();
+				edw.styleName = "WinTitleStyle";
+				edw.entryDetailsModel = _model.entryDetailsModel;
+				edw.filterModel = _model.filterModel;
+				edw.context = _model.context;
+				edw.openPlayerFunc = _model.openPlayer;
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN)
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
+				return edw;
+			}
+
+
+			/**
+			 * allows download of a single image or opens a download popup window
+			 * */
+			private function openDownload():DownloadWin {
+				var dw:DownloadWin;
+				//if the user selected to download a single image, no need to open to pop-up
+				if ((_model.selectedEntries) && (_model.selectedEntries.length == 1) && (_model.selectedEntries[0] is KalturaMediaEntry) && ((_model.selectedEntries[0] as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE)) {
+					var urlRequest:URLRequest = new URLRequest(_model.selectedEntries[0].downloadUrl + DOWNLOAD_FINITE);
+					navigateToURL(urlRequest);
+					this.enabled = true;
+				}
+				else {
+					dw = new DownloadWin();
+					dw.entries = _model.selectedEntries;
+					dw.flavorParams = _model.filterModel.flavorParams;
+				}
+				return dw;
+			}
+
+
+			/**
+			 * opens a popup window with manual playlist
+			 * */
+			private function openManualPlaylist():ManualPlaylistWindow {
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES_FOR_PLAYLIST, new ArrayCollection(_model.selectedEntries));
+				cgEvent.dispatch();
+
+				var mpw:ManualPlaylistWindow = new ManualPlaylistWindow();
+				mpw.rootUrl = _model.context.rootUrl;
+				mpw.filterData = _model.filterModel;
+				mpw.playlistModel = _model.playlistModel;
+				mpw.selectedEntry = _model.entryDetailsModel.selectedEntry;
+				return mpw;
+			}
+
+
+			/**
+			 * opens a popup window with rule based playlist
+			 * */
+			private function openRuleBasedPlaylist():RulePlaylistWindow {
+				var rpw:RulePlaylistWindow = new RulePlaylistWindow();
+				rpw.rulePlaylistData = _model.playlistModel;
+				rpw.rootUrl = _model.context.rootUrl;
+				if (_model.entryDetailsModel.selectedEntry && (_model.entryDetailsModel.selectedEntry is KalturaPlaylist)) {
+					rpw.editPlaylist = _model.entryDetailsModel.selectedEntry as KalturaPlaylist;
+				}
+				rpw.filterData = _model.filterModel;
+				// assign the current fiter to the new window 
+				rpw.onTheFlyFilter = _model.playlistModel.onTheFlyFilter;
+				_model.playlistModel.onTheFlyFilter = null;
+				return rpw;
+			}
+
+
+			/**
+			 * opens or closes needed popup windows according to new state
+			 * */
+			private function changeWindowState(newState:String):void {
+				if (newState == WindowsStates.NONE) {
+					refreshDataByPopupType();
+					closePopup();
+					this.enabled = true;
+				}
+				else {
+					this.enabled = false;
+					var currentPopUp:TitleWindow;
+					switch (newState) {
+						case WindowsStates.ENTRY_DETAILS_WINDOW:
+							currentPopUp = openEntryDetails();
+							break;
+						case WindowsStates.DOWNLOAD_WINDOW:
+							currentPopUp = openDownload();
+							break;
+						case WindowsStates.ADD_TAGS_WINDOW:
+							var atw:AddTagsWin = new AddTagsWin();
+							atw.selectedEntries = new ArrayCollection(_model.selectedEntries);
+							currentPopUp = atw;
+							break;
+						case WindowsStates.ADD_LIVE_STREAM:
+							currentPopUp = new AddStream();
+							break;
+						case WindowsStates.ADD_ADMIN_TAGS_WINDOW:
+							var aatw:AddTagsWin = new AddTagsWin();
+							aatw.isAdminTag = true;
+							aatw.selectedEntries = _model.checkedEntries;
+							currentPopUp = aatw;
+							break;
+						case WindowsStates.REMOVE_TAGS_WINDOW:
+							currentPopUp = new RemoveTagsWin();
+							(currentPopUp as RemoveTagsWin).selectedEntries = new ArrayCollection(_model.selectedEntries);
+							break;
+						case WindowsStates.REMOVE_ADMIN_TAGS_WINDOW:
+							var rtw:RemoveTagsWin = new RemoveTagsWin();
+							rtw.isAdminTag = true;
+							rtw.selectedEntries = _model.checkedEntries;
+							currentPopUp = rtw;
+							break;
+						case WindowsStates.PLAYLIST_MANUAL_WINDOW:
+							currentPopUp = openManualPlaylist();
+							break;
+						case WindowsStates.PLAYLIST_RULE_BASED_WINDOW:
+							currentPopUp = openRuleBasedPlaylist();
+							break;
+						case WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW:
+							currentPopUp = new SetAccessControlProfileWin();
+							(currentPopUp as SetAccessControlProfileWin).selectedEntries = new ArrayCollection(_model.selectedEntries);
+							(currentPopUp as SetAccessControlProfileWin).filterModel = _model.filterModel;
+							_accessCtrlWatcher = BindingUtils.bindProperty(currentPopUp, 'accessControlData', _model, 'accessControlData');
+							break;
+						case WindowsStates.SETTING_SCHEDULING_WINDOW:
+							currentPopUp = new SetSchedulingWin();
+							(currentPopUp as SetSchedulingWin).selectedEntries = new ArrayCollection(_model.selectedEntries);
+							break;
+						case WindowsStates.PREVIEW:
+							openPreview();
+							break;
+					}
+
+					// add the new window
+					if (currentPopUp) {
+						addPopup(currentPopUp);
+					}
+				}
+			}
+
+
+			/**
+			 * adds a popup window to the screen
+			 * */
+			private function addPopup(currentPopUp:TitleWindow):void {
+				// remember the new window
+				if (_popup) {
+					_secondPopup = currentPopUp;
+					_model.has2OpenedPopups = true;
+				}
+				else {
+					_popup = currentPopUp;
+				}
+				//TODO: UGLY!!! USE INHERETNCE
+				currentPopUp["fullUrlHost"] = 'http://' + _model.context.rootUrl;
+				PopUpManager.addPopUp(currentPopUp, this, true);
+				centerPopups();
+			}
+
+
+			/**
+			 * open a preview player with live streaming entry
+			 * */
+			private function openLivestreamPreview(entry:KalturaBaseEntry):void {
+				var lp:KalturaLiveStreamAdminEntry = entry as KalturaLiveStreamAdminEntry;
+				var bitrates:Array = new Array();
+				var o:Object;
+				for each (var br:KalturaLiveStreamBitrate in lp.bitrates) {
+					o = new Object();
+					o.bitrate = br.bitrate;
+					o.width = br.width;
+					o.height = br.height;
+					bitrates.push(o);
+				}
+
+				if (_model.openPlayer) {
+					//id, name, description, is_playlist, uiconf_id 
+					ExternalInterface.call(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), false, null, bitrates);
+				}
+
+				//First time funnel
+				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED);
+				}
+			}
+
+
+			/**
+			 * open a preview player with playlist
+			 * */
+			private function openPlaylistPreview(entry:KalturaBaseEntry):void {
+				// open playlist preview
+				if (_model.openPlaylist) {
+					var pl:KalturaPlaylist = entry as KalturaPlaylist;
+					ExternalInterface.call(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), true);
+					//first time funnel 
+					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED);
+					}
+				}
+			}
+
+
+			/**
+			 * open a preview player with a normal entry
+			 * */
+			private function openEntryPreview(entry:KalturaBaseEntry):void {
+				// open regular entry preview
+				if (_model.openPlayer) {
+					ExternalInterface.call(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), false, null, (entry is KalturaMixEntry));
+				}
+				//First time funnel
+				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED);
+				}
+			}
+
+
+			/**
+			 * Open a preview player. <br>
+			 * This method triggers one of the specific openPreview methods.
+			 * */
+			private function openPreview():void {
+				if (!initialized)
+					return;
+
+				var entry:KalturaBaseEntry = _model.entryDetailsModel.selectedEntry;
+
+				if (entry is KalturaLiveStreamAdminEntry) {
+					openLivestreamPreview(entry);
+
+				}
+				else if (entry is KalturaPlaylist) {
+					openPlaylistPreview(entry);
+				}
+				else {
+					openEntryPreview(entry);
+				}
+				_model.windowState = WindowsStates.NONE;
+			}
+
+
+
+			/**
+			 * shows or hides the loading (busy) cursor
+			 * */
+			private function toggleLoading(isLoading:Boolean):void {
+				if (isLoading) {
+					CursorManager.setBusyCursor();
+					this.enabled = false;
+				}
+				else {
+					CursorManager.removeBusyCursor();
+					this.enabled = true;
+				}
+			}
+
+
+			/**
+			 * track tab changes in analytics and URL hash
+			 * */
+			private function trackTabChange(evt:Event):void {
+				var label:String = (evt as ItemClickEvent).label.toString()
+				switch (label) {
+					case "Manage":
+						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'));
+						break;
+					case "Upload":
+						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'));
+						break;
+					case "Playlists":
+						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'));
+						break;
+					case "Moderate":
+						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'))
+						break;
+					case "Syndicate":
+						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'));
+						break;
+				}
+
+				ExternalInterface.call("kmc.mediator.writeUrlHash", "content", label);
+
+				// reset data when moving between tabs
+				_model.selectedEntries = [];
+			}
+
+
+			private function onHelpClick(event:Event):void {
+				var tabIndex:int = contentView.selectedIndex;
+
+				switch (tabIndex) {
+					case 0:  {
+						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpEntries')));
+						break;
+					}
+					case 1:  {
+						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpModeration')));
+						break;
+					}
+					case 2:  {
+						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpPlaylist')));
+						break;
+					}
+					case 3:  {
+						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'generalHelp')));
+						break;
+					}
+					case 4:  {
+						navigateToURL(new URLRequest('http://' + _model.context.rootUrl + resourceManager.getString('cms', 'helpBulkUpload')))
+						break;
+					}
+
+					default:  {
+						Alert.show("Help for unknown tab !");
+					}
+				}
+
+			}
+
+
+			/**
+			 * initialize the selected view
+			 * */
+			protected function initSelected(event:IndexChangedEvent):void {
+				contentView.getChildAt(event.newIndex)['init']();
+			}
+		]]>
+	</mx:Script>
+
+	<!-- the FrontController, containing Commands specific to this appliation -->
+	<control:CMSController/>
+
+	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView">
+
+		<mx:HBox width="100%" styleName="tabsContainer">
+			<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
+					   dataProvider="{_model.tabsData.contentTabs}">
+			</mx:TabBar>
+			<mx:Spacer width="100%"/>
+			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
+		</mx:HBox>
+
+		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
+					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelected(event)">
+			<content:Entries id="entries" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
+							 filterModel="{_model.filterModel}"/>
+			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"
+								selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"/>
+			<playlist:Playlist id="plst" width="100%" styleName="pageStyle"
+							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"/>
+			<content:ExternalSyndication styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
+										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
+			<content:BulkUpload width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
+								bulkUploadData="{_model.bulkUploadModel}"/>
+		</mx:ViewStack>
+
+
+	</mx:VBox>
+
+</modules:KmcModule>

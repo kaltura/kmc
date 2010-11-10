@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:view="com.kaltura.kmc.modules.content.view.*"
+		 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" creationComplete="{onCreationComplete()}"
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.kmc.modules.content.vo.CategoryVO;
+			import com.kaltura.types.KalturaPlaylistType;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+			import com.kaltura.vo.KalturaPlaylist;
+			
+			import mx.collections.ArrayCollection;
+
+			/**
+			 * defines the value of the type property for the filterWasChanged event
+			 * */
+			public static const FILTER_WAS_CHANGED:String = "filterWasChanged";
+
+			/**
+			 * defines the value of the type property for the switchToAdvanced event
+			 * */
+			public static const SWITCH_TO_ADVANCED:String = "switchToAdvanced";
+
+
+			[Bindable]
+			public var playlistArrayCollection:ArrayCollection = new ArrayCollection();
+			
+			public var ruleToEdit:KalturaMediaEntryFilterForPlaylist;
+			
+			[Bindable]
+			public var showAdvanceModeBtn:Boolean = true;
+			
+			[Bindable]
+			public var filterData:FilterModel;
+
+
+			private function onCreationComplete():void {
+				entries.upDownContainer.visible = false;
+				entries.upDownContainer.includeInLayout = false;
+				if (ruleToEdit) {
+					//make sure to view only allowed content and hide moderation container 
+					ruleToEdit.moderationStatusIn = "2,6,1,5";
+					filter.moderationStatusContainer.allModerationStatus.selected = false;
+					filter.moderationStatusContainer.visible = false;
+					filter.moderationStatusContainer.includeInLayout = false;
+					filter.moderationStatusContainer.visible;
+					// convertion status 
+					ruleToEdit.statusIn = "2,1";
+					filter.allConversionStatusBtn.selected = false;
+					filter.convErrorBtn.selected = false;
+					filter.convUploadingBtn.selected = false;
+					filter.convConvertingBtn.selected = true;
+					filter.convReadyBtn.selected = true;
+					filter.ps3filter = ruleToEdit;
+					entries.limit = ruleToEdit.limit;
+					entries.ruleBasedPlaylistOrderBy.selectedIndex = PlaylistEntries.ORDER_BY_ARR.indexOf(ruleToEdit.orderBy);
+						//set filter to view only allowed entries and hide the moderation controllers
+				}
+				filter.validateNow();
+				//runRule();
+
+			}
+
+
+			/**
+			 * take current rule and execute it to estimate the outputlse;
+			   filter.moderationStatusContainer.includeInLayout
+			 */
+			public function runRule():void {
+				var playlist:KalturaPlaylist = new KalturaPlaylist();
+				playlist.totalResults = entries.maxEntriesInPlaylist.value;
+				playlist.playlistType = KalturaPlaylistType.DYNAMIC;
+
+				var orderByStr:String = entries.getSelectedOrderBy();
+
+				var kmef:KalturaMediaEntryFilter = filter.ps3filter;
+				kmef.moderationStatusIn = "2,6,1,5";
+				kmef.orderBy = orderByStr;
+				// request only ready assets
+				kmef.statusIn = "2,1";
+				playlist.filters.push(kmef);
+				playlist.parts = playlistArrayCollection;
+
+				var cgEvent:CairngormEvent = new RuleBasedTypeEvent(RuleBasedTypeEvent.ONE_RULE);
+				cgEvent.dispatch();
+
+				cgEvent = new EntryEvent(EntryEvent.GET_RULE_BASED_PLAYLIST, playlist);
+				cgEvent.dispatch();
+
+				if (!_isFirstRun)
+					dispatchEvent(new Event(FILTER_WAS_CHANGED));
+
+				_isFirstRun = false;
+			}
+			private var _isFirstRun:Boolean = true;
+
+
+			/**
+			 * order-by controller, filter or limit-max controller were changed on the PlaylistEntries list component
+			 * re-run the preview
+			 */
+			private function onUpdateData():void {
+				runRule();
+			}
+
+
+			/**
+			 * Get current rule filter
+			 */
+			public function get ruleFilter():KalturaMediaEntryFilterForPlaylist {
+				var plf:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter;
+				plf.statusIn = "2,1"; // only ready items 
+				plf.limit = entries.maxEntriesInPlaylist.value;
+				plf.orderBy = entries.getSelectedOrderBy();
+				return plf;
+			}
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		 [Event(name="filterWasChanged", type="flash.events.Event")]
+		 [Event(name="switchToAdvanced", type="flash.events.Event")]
+	</mx:Metadata>
+	<mx:VBox height="100%" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formSubTitleLabel"/>
+		<filter:Filter id="filter" width="260" height="100%" 
+					   newSearch="{runRule()}" 
+					   categories="{filterData.categories}"
+					   catMap="{filterData.categoriesMap}"
+					   enablelivestream="{filterData.enablelivestream}" 
+					   enableCustomData="{filterData.enableCustomData}"
+					   metadataProfile="{filterData.metadataProfile}" 
+					   showSchedulingOptions="false"
+					   showAccessControlOptions="false" 
+					   showModerationOptions="false" 
+					   showStatusOptions="false"/>
+		<mx:LinkButton id="advancedBtn" label="{resourceManager.getString('cms','switchToAdvanceMode')}"
+					   click="dispatchEvent(new Event(OneRule.SWITCH_TO_ADVANCED))" includeInLayout="{showAdvanceModeBtn}"
+					   visible="{showAdvanceModeBtn}"/>
+	</mx:VBox>
+	<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistArrayCollection}"
+							  updatedData="{onUpdateData()}">
+	</playlist:PlaylistEntries>
+</mx:HBox>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+TubeMogul syndication details.
+used as part of <Code>ExternalSyndicationPopUpWindow</code>
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:controls="com.kaltura.controls.*"
+		 xmlns:validators="com.kaltura.validators.*"
+		 implements="com.kaltura.kmc.modules.content.view.interfaces.IExternalSyndicationFeed"
+		 width="100%" height="100%"
+		 label="{resourceManager.getString('cms', 'tubeMogul')}">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaSyndicationFeedType;
+			import com.kaltura.vo.KalturaBaseSyndicationFeed;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaTubeMogulSyndicationFeed;
+			
+			import mx.collections.ArrayCollection;
+			
+
+			private var _feed:KalturaBaseSyndicationFeed;
+			
+			[Bindable]
+			public var flavorParams:ArrayCollection;
+
+
+			public function get syndication():KalturaBaseSyndicationFeed {
+				var tmFeed:KalturaTubeMogulSyndicationFeed = (_feed != null) ? (_feed as KalturaTubeMogulSyndicationFeed) : new KalturaTubeMogulSyndicationFeed();
+				tmFeed.type = KalturaSyndicationFeedType.TUBE_MOGUL;
+
+				tmFeed.flavorParamId = getFlavorParamID();
+				tmFeed.addToDefaultConversionProfile = defaultCPCheckBox.selected;
+
+				tmFeed.categories = categoriesComboBox.selectedLabel.replace(new RegExp('&', 'g'), '&amp;');
+
+				return tmFeed;
+			}
+
+
+			public function set syndication(syndication:KalturaBaseSyndicationFeed):void {
+				_feed = syndication as KalturaTubeMogulSyndicationFeed;
+
+				setFeedFlavorAndSettings();
+
+				var feedCatName:String = _feed.categories.replace(new RegExp('&amp;', 'g'), '&');
+				for each (var cat:String in categoriesComboBox.dataProvider) {
+					if (cat == feedCatName) {
+						categoriesComboBox.selectedItem = cat;
+						break;
+					}
+				}
+			}
+
+
+			public function validate():Boolean {
+				var isOk:Boolean = true;
+
+				return isOk;
+			}
+
+
+			private function setFeedFlavorAndSettings():void {
+				// flavor param
+				var fpId:int = _feed.flavorParamId;
+				for each (var fp:KalturaFlavorParams in flavorsComboBox.dataProvider) {
+					if (fpId == fp.id) {
+						flavorsComboBox.selectedItem = fp;
+						break;
+					}
+				}
+
+				// other settings
+				defaultCPCheckBox.selected = _feed.addToDefaultConversionProfile;
+
+			}
+
+
+			private function getFlavorParamID():int {
+				return (flavorsComboBox.selectedItem as KalturaFlavorParams).id;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%" styleName="formInnerTitle">
+		<mx:Label text="{resourceManager.getString('cms', 'tubeMogulFeedTitle')}"
+				  styleName="formInnerTitleText"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="10"/>
+	
+	<mx:HBox width="100%" >
+		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:ComboBox id='flavorsComboBox'
+					 dataProvider="{flavorParams}"
+					 labelField="name"/>
+		<mx:CheckBox id='defaultCPCheckBox'
+					 label="{resourceManager.getString('cms','addDefaultConversionProfile')}"
+					 selected="true"/>
+	</mx:HBox>
+	
+	
+	<mx:HBox width="100%" >
+		<mx:Label text="{resourceManager.getString('cms', 'tubeMogulCategoriesLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+	<mx:VBox width="100%" >
+			<mx:ComboBox id='categoriesComboBox'
+						 width="100%" editable="false">
+				<mx:dataProvider>
+					{[
+					resourceManager.getString('cms', 'tubeMogulCategory_AnimalsAndPets'),
+					resourceManager.getString('cms', 'tubeMogulCategory_ArtAndAnimation'),
+					resourceManager.getString('cms', 'tubeMogulCategory_Autos'),
+					resourceManager.getString('cms', 'tubeMogulCategory_Comedy'),
+					resourceManager.getString('cms', 'tubeMogulCategory_CommercialsOrPromotional'),
+					resourceManager.getString('cms', 'tubeMogulCategory_Entertainment'),
+					resourceManager.getString('cms', 'tubeMogulCategory_FamilyAndKids'),
+					resourceManager.getString('cms', 'tubeMogulCategory_HowToOrInstructionalOrDIY'),
+					resourceManager.getString('cms', 'tubeMogulCategory_Music'),
+					resourceManager.getString('cms', 'tubeMogulCategory_NewsAndBlogs'),
+					resourceManager.getString('cms', 'tubeMogulCategory_ScienceAndTechnology'),
+					resourceManager.getString('cms', 'tubeMogulCategory_Sports'),
+					resourceManager.getString('cms', 'tubeMogulCategory_TravelAndPlaces'),
+					resourceManager.getString('cms', 'tubeMogulCategory_VideoGames'),
+					resourceManager.getString('cms', 'tubeMogulCategory_VlogsAndPeople') 
+					]}
+				</mx:dataProvider>
+			</mx:ComboBox>
+			<mx:Text text="{resourceManager.getString('cms', 'tubeMogulCategoriesDescriptionLabel')}"
+					 width="100%" styleName="syndicationNote"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

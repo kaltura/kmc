@@ -1,0 +1,1603 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:adobe="http://www.adobe.com/2006/fc"
+		 xmlns:view="com.kaltura.kmc.modules.content.view.*" styleName="filter" paddingTop="0" paddingBottom="0"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" creationComplete="init()" 
+		 width="100%" height="100%" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.kmc.modules.content.vo.CategoryVO;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.types.KalturaDurationType;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaSearchOperatorType;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+			import com.kaltura.vo.KalturaMetadataSearchItem;
+			import com.kaltura.vo.KalturaPlaylistFilter;
+			import com.kaltura.vo.KalturaSearchCondition;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.Canvas;
+			import mx.controls.Alert;
+			import mx.core.Container;
+			import mx.core.UIComponent;
+			import mx.events.FlexEvent;
+			import mx.managers.DragManager;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+
+			
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_check.png")]
+			private static const checkedImg:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/emptyIcon.png")]
+			private static const emptyImg:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/btn_search.png")]
+			private static const searchImg:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/btn_x.png")]
+			private static const clearSearchImg:Class;
+
+
+			/**
+			 * value of the type property of the filterChanged event dispatched by inner tabs.
+			 * */
+			public static const FILTER_CHANGED:String = "filterChanged"; 
+			
+			/**
+			 * value of the type property of the newSearch event
+			 * */
+			public static const NEW_SEARCH:String = 'newSearch';
+			
+			/**
+			 * name of the no-metadata flex application state
+			 * */
+			public static const NO_METADATA:String = 'noMetadata';
+
+			private const XPATH_PREFIX:String = "local-name()='";
+			private const MAX_SEARCH_CHARS:int = 3;
+			public static const DATE_FIELD_WIDTH:Number = 80;
+
+
+			[Bindable]
+			/**
+			 * categories list
+			 * */
+			public var catMap:HashMap;
+			
+			
+			
+			[Bindable]
+			/**
+			 * dataprovider for the categories tree
+			 * */
+			public var categories:CategoryVO = null;
+
+			[Bindable]
+			/**
+			 * indicates header buttons should be visible
+			 * */
+			public var showAccordionHeaderButtons:Boolean = false;
+
+			[Bindable]
+			/**
+			 * show "approved" option in <code>moderationStatusContainer</code>
+			 * */
+			public var showApprovedOption:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show "rejected" option in <code>moderationStatusContainer</code>
+			 * */
+			public var showRejectedOption:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show "pending" option in <code>moderationStatusContainer</code>
+			 * */
+			public var showPendingModerationOption:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show scheduling container
+			 * */
+			public var showSchedulingOptions:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show access controll container
+			 * */
+			public var showAccessControlOptions:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show transcodingFlavorContainer
+			 * */
+			public var showFlavorsOptions:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show moderationStatusContainer
+			 * */
+			public var showModerationOptions:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show statusContainer
+			 * */
+			public var showStatusOptions:Boolean = true;
+
+			[Bindable]
+			/**
+			 * allow filtering by liveStream entry type
+			 * */
+			public var enablelivestream:Boolean;
+
+
+			/**
+			 * @copy #accessControlProfiles
+			 * */
+			private var _accessControlProfiles:ArrayCollection;
+
+			/**
+			 * @copy #flavorParams
+			 * */
+			private var _flavorParams:ArrayCollection;
+
+			/**
+			 * @copy #enableCustomData
+			 * */
+			private var _enableCustomData:Boolean;
+
+			/**
+			 * @copy #isFilterOn
+			 * */
+			private var _isFilterOn:Boolean = false;
+
+			/**
+			 * regex to test search text validity.
+			 * */
+			private var _invalidCharsRegexp:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
+
+			/**
+			 * filter initialization flag
+			 * */
+			private var _ready:Boolean;
+
+			/**
+			 * A complex object with button lists.
+			 * The keys are group names and values are arrays with references
+			 * to actual buttons. Each button group is a search filter.
+			 * */
+			private var _dynamicFilterData:Object;
+
+			/**
+			 * a list of metadata filter buttons
+			 * */
+			private var _metadataButtons:ArrayCollection = new ArrayCollection();
+
+			/**
+			 * holds mapping to the meta data filters
+			 * */
+			private var _metadataFilters:Object = new Object();
+
+			/**
+			 * indicates the control key is pressed
+			 * */
+			private var _controlIsDown:Boolean;
+
+			/**
+			 * initial filtering data. when the filter is set the data is
+			 * nullified until a new filter is externaly set. changing filter
+			 * data through filter buttons doesn't effect this object - it
+			 * is null while buttons are alive.
+			 * */
+			private var _readyFilter:KalturaMediaEntryFilter;
+
+			/**
+			 * metadata
+			 * */
+			private var _metadataProfile:KMCMetadataProfileVO;
+
+			/**
+			 * when changing dates of search range, saves the old starting
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentStartOld:Date = null;
+
+			/**
+			 * when changing dates of search range, saves the old ending
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentEndOld:Date = null;
+
+			private var _waitForSearch:Boolean;
+
+
+			/**
+			 * if there are no metadata fields that should appear
+			 * in search, remove the metadata tab from the accordion
+			 * */
+			private function setMetadataVisibility():void {
+				if (_enableCustomData && _metadataProfile) {
+					var field:MetadataFieldVO;
+					for each (var obj:Object in _metadataProfile.metadataFieldVOArray) {
+						field = obj as MetadataFieldVO;
+						if (field && field.appearInSearch) {
+							currentState = "";
+							return;
+						}
+					}
+				}
+
+				currentState = NO_METADATA;
+			}
+
+
+
+			/**
+			 * generate a KalturaMediaEntryFilterVo or KalturaMediaEntryFilterForPlaylist from current view
+			 * */
+			private function renderFilterVo(currentFilter:KalturaBaseEntryFilter):void {
+				//add dates to filter
+				if (fromDate && fromDate.selectedDate) {
+					currentFilter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
+				}
+				if (toDate && toDate.selectedDate) {
+					currentFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
+				}
+
+
+				// filter by durations with the server limitation logic 
+				var durationString:String = "";
+				//if non of the items are selected or all selected
+				if ((shortDuration.selected && mediumDuration.selected && longDuration.selected) ||
+					(!shortDuration.selected && !mediumDuration.selected && !longDuration.selected)) {
+					durationString = "";
+				}
+				else {
+					if (shortDuration.selected) {
+						durationString += KalturaDurationType.SHORT + ",";
+					}
+					if (mediumDuration.selected) {
+						durationString += KalturaDurationType.MEDIUM + ",";
+					}
+					if (longDuration.selected) {
+						durationString += KalturaDurationType.LONG + ",";
+					}
+					//remove last , 
+					durationString = durationString.slice(0, durationString.length - 1);
+				}
+				currentFilter.durationTypeMatchOr = durationString;
+
+
+				// filter by media types
+				var mediaTypeString:String = '';
+				if (videoType.selected)
+					mediaTypeString += KalturaMediaType.VIDEO + ",";
+				if (imageType.selected)
+					mediaTypeString += KalturaMediaType.IMAGE + ",";
+				if (audioType.selected)
+					mediaTypeString += KalturaMediaType.AUDIO + ",";
+				if (streamType.selected)
+					mediaTypeString += KalturaMediaType.LIVE_STREAM_FLASH + ",";
+				if (mixType.selected) {
+					// mix is not in the enum, so it's hardcoded
+					mediaTypeString += "6,";
+				}
+				//remove the last ,				 
+				mediaTypeString = mediaTypeString.slice(0, mediaTypeString.length - 1);
+				//if the select all media types is selected - add all media types
+				if (selectAllTypesBtn.selected)
+					mediaTypeString = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
+						KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
+				currentFilter.mediaTypeIn = mediaTypeString;
+
+
+				// filter by moderation
+				currentFilter.moderationStatusIn = moderationStatusContainer.getModerationString();
+				
+				// filter by conversion status	
+				var convStatusArray:Array = [];
+
+				if (allConversionStatusBtn.selected) {
+					convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING,
+										 KalturaEntryStatus.ERROR_IMPORTING);
+					convStatusArray.push(KalturaEntryStatus.IMPORT);
+					convStatusArray.push(KalturaEntryStatus.PRECONVERT);
+					convStatusArray.push(KalturaEntryStatus.READY);
+				}
+				else {
+					if (convErrorBtn.selected) { // for error
+						convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING,
+											 KalturaEntryStatus.ERROR_IMPORTING);
+					}
+
+					if (convUploadingBtn.selected) { // for uploading 
+						convStatusArray.push(KalturaEntryStatus.IMPORT);
+					}
+
+					if (convConvertingBtn.selected) { // for converting
+						convStatusArray.push(KalturaEntryStatus.PRECONVERT);
+					}
+
+					if (convReadyBtn.selected) { // for ready 
+						convStatusArray.push(KalturaEntryStatus.READY);
+					}
+				}
+				currentFilter.statusIn = convStatusArray.join(',');
+
+
+				// name & tags 
+				if (searchFilter.text != resourceManager.getString('cms', 'searchEntries')) {
+					var trimmedText:String = StringUtil.trim(searchFilter.text);
+					//var commaSeperated:String = trimmedText.split(" ").join();
+					currentFilter.freeText = trimmedText;
+				}
+				else {
+					currentFilter.freeText = '';
+				}
+				
+				// scheduling 
+				schedulingContainer.setSchedulingData(currentFilter);
+				
+
+				// access control profiles
+				var acps:Array = _dynamicFilterData["convProfile"];
+				var ids:Array = new Array();
+				for each (var btn:Button in acps) {
+					if (btn.selected) {
+						var id:String = (btn.data as String).split(' - ')[1];
+						if (id == '-1') {
+							ids = new Array();
+							break;
+						}
+						else {
+							ids.push(id);
+						}
+					}
+				}
+				var idsStr:String = ids.join(',');
+				if (idsStr != "") {
+					currentFilter.accessControlIdIn = idsStr;
+				}
+
+
+				// flavor params
+				var fps:Array = _dynamicFilterData["flavorParams"];
+				var fpIds:Array = new Array();
+				for each (var btn1:Button in fps) {
+					if (btn1.selected) {
+						var fpId:String = (btn1.data as String).split(' - ')[1];
+						if (fpId == '-1') {
+							fpIds = new Array();
+							break;
+						}
+						else {
+							fpIds.push(fpId);
+						}
+					}
+				}
+
+				var fpIdsStr:String = fpIds.join(',');
+				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = fpIdsStr;
+
+
+				if (metadataProfile) {
+					//Set the metadata filters here 
+					//TODO: extract to function
+					/////////////////////////////////////////////////////////////////////////////////////////////////
+					var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+					mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
+					mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+
+					//Setting the advanced filter when one change the filter of the metadata
+					for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
+						var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+						fieldKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
+						fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+
+						//get a reference to the current media field vo
+						var metadataFieldVo:MetadataFieldVO = metadataProfile.metadataFieldVOArray[i];
+
+						//recive the buttons array according to the list fiels vo that saved if not saved return null
+						//and bypass
+						var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
+
+						//if this filter exist
+						if (btnArr) {
+
+							//if the title selected we don't need to pass the metadata filter 
+							//but if it's not we will dive to check what values selected
+							if (!btnArr[0].selected) {
+								for (var j:int = 1; j < btnArr.length; j++) {
+									var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
+
+									if (btnArr[j].selected) {
+										fieldValueSearchCondition.field = metadataFieldVo.xpath;
+										fieldValueSearchCondition.value = btnArr[j].label;
+										fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
+										fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+									}
+								}
+							}
+						}
+
+						//if we have items in the array add them to main filter
+						if (fieldKalturaMetadataSearchItem.items.length > 0)
+							mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
+					}
+
+					if (currentFilter is KalturaMediaEntryFilter)
+						(currentFilter as
+							KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
+						/////////////////////////////////////////////////////////////////////////////////////////////////
+				}
+
+				/// category build
+				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
+
+				updateFilterStatus(currentFilter);
+			}
+
+
+			/**
+			 *
+			 *  Use the data(vo) or the UI to check if the filter is on
+			 *
+			 *  @TODO: what is better? - for future needs.
+			 * */
+			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) ||
+					(currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) ||
+					(currentFilter.durationTypeMatchOr != '') ||
+					// (currentFilter.mediaTypeIn != '')  ||
+					(!selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') ||
+					(!allConversionStatusBtn.selected) || (currentFilter.freeText != '') ||
+					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) ||
+					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) ||
+					(currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) ||
+					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) ||
+					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) ||
+					(currentFilter.accessControlIdIn != null) ||
+					(currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
+			}
+
+
+			/**
+			 * filter view is ready and now can fill its data
+			 * */
+			private function onReady(evt:FlexEvent):void {
+				removeEventListener(FlexEvent.CREATION_COMPLETE, onReady);
+				ps3filter = _readyFilter;
+				_readyFilter = null
+			}
+
+
+			/**
+			 * initialize the different filters and panels
+			 * */
+			private function init():void {
+				//if enableCustomData is false and metadata is exsit remove the metadata filter header
+				setMetadataVisibility();
+
+				_dynamicFilterData = new Object();
+
+				_ready = true;
+				if (!stage) {
+					addEventListener(Event.ADDED_TO_STAGE, addKeyListeners)
+				}
+				else {
+					addKeyListeners();
+				}
+				accordion.addEventListener(FilterAccordionHeader.EDIT_CATEGORIES_MODE_EVENT, onEditCategories);
+
+				updateImageButton(schedulingContainer.buttons);
+				updateImageButton(moderationStatusContainer.buttons);
+				
+				if ((_flavorParams != null) && (_flavorParams.length != 0)) {
+					buildFlavorParamList();
+				}
+
+				if ((accessControlProfiles != null) && (accessControlProfiles.length != 0)) {
+					buildAccessControlList();
+				}
+
+			}
+
+
+			private function onEditCategories(evt:Event):void {
+				catTree.isInEditMode = !catTree.isInEditMode;
+				searchBox.enabled = !catTree.isInEditMode;
+				additional.enabled = !catTree.isInEditMode;
+
+				accordion.selectedIndex = catTree.isInEditMode ? 2 : accordion.selectedIndex;
+			}
+
+
+			/**
+			 * add listeners to keyboard
+			 * */
+			private function addKeyListeners(evt:Event = null):void {
+				stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false, 0, true);
+				stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
+			}
+
+
+			/**
+			 * creates a filter based on VO data
+			 * @param metadataFieldVo	filter data
+			 * */
+			private function createDynamicFilter(metadataFieldVo:MetadataFieldVO):Container {
+				var container:Container;
+				switch (metadataFieldVo.type) {
+					case MetadataCustomFieldTypes.LIST:
+						container = new VBox();
+						container.percentWidth = 100;
+						container.styleName = "defualtFilter";
+
+						var arr:Array = new Array();
+
+						for (var i:int = 0; i < metadataFieldVo.optionalValues.length; i++) {
+							arr.push({name: metadataFieldVo.optionalValues[i]});
+						}
+
+						var listButtonsArr:Array = createButtonsGroup(metadataFieldVo.displayedLabel,
+																	  StringUtil.trim(metadataFieldVo.name),
+																	  arr, "name", onDynamicTitleClicked,
+																	  onDynamicMemberClicked);
+
+						_metadataFilters[StringUtil.trim(metadataFieldVo.name)] = listButtonsArr;
+						injectGroupToContainer(container, listButtonsArr);
+						break;
+					case MetadataCustomFieldTypes.DATE:
+					case MetadataCustomFieldTypes.TEXT:
+					//Today the code is done in the Server and it added the field automatic to search
+					default:
+						container = null;
+						break;
+				}
+				return container;
+			}
+
+
+			private function onDynamicTitleClicked(event:MouseEvent):void {
+				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
+				var btnArr:Array = _metadataFilters[groupName] as Array;
+
+				//if the title was clicked
+				if ((event.target as Button) == btnArr[0]) {
+					//if the title is selected unselect all the 
+					if ((event.target as Button).selected) {
+						for (var i:int = 1; i < btnArr.length; i++) {
+							btnArr[i].selected = false;
+						}
+
+						updateImageButton(btnArr);
+						preformNewSearch();
+					}
+					else {
+						//the title can't be unselected if it was selected before
+						(event.target as Button).selected = true;
+					}
+				}
+			}
+
+
+			private function onDynamicMemberClicked(event:MouseEvent):void {
+				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
+				var btnArr:Array = _metadataFilters[groupName] as Array;
+
+				var selectTheTitle:Boolean = true;
+				//if we unselected a member we should go over and see if we need to select the title 
+				if (!(event.target as Button).selected) {
+					for (var i:int = 1; i < btnArr.length; i++) {
+						if (btnArr[i].selected)
+							selectTheTitle = false;
+					}
+
+					if (selectTheTitle)
+						btnArr[0].selected = true;
+				}
+				else //if any of the members has been selected shut down the title
+					btnArr[0].selected = false;
+
+				updateImageButton(btnArr);
+				preformNewSearch();
+			}
+
+
+			private function buildeMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO):void {
+				metadataTab.removeAllChildren();
+
+				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
+					//if appear in search is true and we need to create additinal filter
+					var mfvo:MetadataFieldVO = kmcMetadataProfileVO.metadataFieldVOArray[i] as
+						MetadataFieldVO;
+					if (mfvo && mfvo.appearInSearch) {
+						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i]);
+
+						if (container) // if we need to add visual filter
+							metadataTab.addChild(container);
+					}
+				}
+
+				//if there are no feilds with displayInSearch = true we will hide the metadata accordion header
+				if (metadataTab.numChildren == 0)
+					currentState = NO_METADATA;
+
+				//select the last container after rebuild the filter
+				accordion.selectedIndex = accordion.numChildren - 1;
+			}
+
+
+			/**
+			 * create the flavour buttons group
+			 * */
+			private function buildFlavorParamList():void {
+				transcodingFlavorContainer.removeAllChildren();
+				var arr:Array = new Array();
+				for each (var kfp:KalturaFlavorParams in _flavorParams) {
+					arr.push({id: kfp.id, name: kfp.name});
+				}
+				var flvorParamsArr:Array = createButtonsGroup(resourceManager.getString('cms', 'allFlavorsBtn'),
+																"flavorParams", arr, "name", onAutoTitleClick,
+																onAutoMemberClick);
+				_dynamicFilterData["flavorParams"] = flvorParamsArr;
+				injectGroupToContainer(transcodingFlavorContainer, flvorParamsArr);
+			}
+
+
+			private function buildAccessControlList():void {
+				accessControlContainer.removeAllChildren();
+				var arr:Array = new Array();
+				for each (var acp:AccessControlProfileVO in accessControlProfiles) {
+					arr.push({id: acp.profile.id, name: acp.profile.name});
+				}
+				var conv_profile:Array = createButtonsGroup(resourceManager.getString('cms', 'allAccessControlBtn'),
+															"convProfile", arr, "name", onAutoTitleClick,
+															onAutoMemberClick);
+				_dynamicFilterData["convProfile"] = conv_profile;
+				injectGroupToContainer(accessControlContainer, conv_profile);
+
+			}
+
+
+			/**
+			 * check if one of the types is selected. if not - select the 'all types' button
+			 * if one of the types is selected - start a new search
+			 */
+			private function validateTypesAndSend(evt:Event = null):void {
+				// if the click is a select click - deselect the alltypes button
+				if ((evt.target as Button).selected) {
+					selectAllTypesBtn.selected = false;
+					updateImageButton([selectAllTypesBtn, (evt.target as Button)]);
+				}
+				if (validateTypes()) {
+					selectAllTypesBtn.selected = true;
+					updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType,
+									   streamType]);
+				}
+				else {
+					updateImageButton([mixType, videoType, imageType, audioType, streamType]);
+				}
+				preformNewSearch();
+			}
+
+
+			/**
+			 * show correct button icon (image)
+			 * */
+			private function updateImageButton(btnsList:Array):void {
+				for each (var btn:Button in btnsList) {
+					btn.setStyle('icon', btn.selected ? checkedImg : emptyImg);
+				}
+			}
+
+
+			/**
+			 * check if all types are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateTypes():Boolean {
+				var result:Boolean = false;
+				if (!mixType.selected && !videoType.selected && !imageType.selected && !audioType.selected &&
+					!streamType.selected) {
+					result = true;
+				}
+				return result;
+			}
+
+
+			/**
+			 * first validate the search text and only if valid will call sendNewSearch
+			 * */
+			private function preformNewSearch():void {
+				if (validateSearchText()) {
+					sendNewSearch();
+				}
+			}
+
+
+			/**
+			 * dispatch the new search event
+			 * */
+			private function sendNewSearch():void {
+				dispatchEvent(new Event(NEW_SEARCH));
+			}
+
+
+			/**
+			 * checks if text contains only valid chars and at least MAX_SEARCH_CHARS characters
+			 * */
+			private function validateSearchText():Boolean {
+				var result:Boolean = true;
+				if (_invalidCharsRegexp.test(searchFilter.text)) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'),
+																	   ResourceManager.getInstance().getString('cms',
+																											   'invalidInputTitle'));
+					result = false;
+				}
+				if ((searchFilter.text.length > 0) && (searchFilter.text.length < MAX_SEARCH_CHARS)) {
+					Alert.show(resourceManager.getString('cms', 'min3chars'),
+														 resourceManager.getString('cms',
+																				   'invalidInputTitle'));
+					result = false;
+				}
+				return result;
+			}
+
+
+			/**
+			 * select all type of entries
+			 */
+			public function selectAllTypes(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (isSelected) {
+					mixType.selected = false;
+					videoType.selected = false;
+					audioType.selected = false;
+					imageType.selected = false;
+					streamType.selected = false;
+					updateImageButton([evt.target, mixType, videoType, imageType, audioType, streamType]);
+					preformNewSearch();
+				}
+				else {
+					evt.target.selected = true;
+					updateImageButton([evt.target]);
+				}
+			}
+
+
+			/**
+			 * a duration button was clicked
+			 */
+			private function onDurationChanged(evt:Event):void {
+				//if a duration button was selected deselect the 'allDurationBtn' status 
+				if ((evt.target as Button).selected) {
+					allDurationBtn.selected = false;
+				}
+				//if non is selected - highlight the 'allDurationBtn' button
+				if (validateDuration()) {
+					allDurationBtn.selected = true;
+				}
+				updateImageButton([allDurationBtn, shortDuration, mediumDuration, longDuration]);
+				preformNewSearch();
+			}
+
+
+			/**
+			 * the 'allDurationBtn' was clicked
+			 */
+			private function allDuration(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (!isSelected) {
+					(evt.target as Button).selected = true;
+					shortDuration.selected = false;
+					mediumDuration.selected = false;
+					longDuration.selected = false;
+					updateImageButton([evt.target, shortDuration, mediumDuration, longDuration]);
+					preformNewSearch();
+				}
+			}
+
+
+			/**
+			 * user select to choose all conversion status
+			 */
+			private function onAllConversionStatusClicked(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (!isSelected) {
+					(evt.target as Button).selected = true;
+					convConvertingBtn.selected = false;
+					convErrorBtn.selected = false;
+					convReadyBtn.selected = false;
+					convUploadingBtn.selected = false;
+					updateImageButton([evt.target, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
+					preformNewSearch();
+				}
+			}
+
+
+			/**
+			 * one of the conversion status buttons was clicked
+			 */
+			private function changeConversionStatusFilter(evt:Event):void {
+				//if a moderation button was selected deselect the all moderation status 
+				if ((evt.target as Button).selected) {
+					allConversionStatusBtn.selected = false;
+				}
+				//if non is selected - highlight the 'allModeration' button
+				if (validateConversionStatus()) {
+					allConversionStatusBtn.selected = true;
+				}
+				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn,
+								   convUploadingBtn]);
+				preformNewSearch();
+			}
+
+
+			/**
+			 * check if all conversion status buttons are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateConversionStatus():Boolean {
+				return !convConvertingBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected &&
+					!convUploadingBtn.selected;
+			}
+
+
+			/**
+			 * check if all duration buttons are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateDuration():Boolean {
+				var result:Boolean = false;
+				if (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected) {
+					result = true;
+				}
+				return result;
+			}
+
+
+			/**
+			 * Handle the control key release.
+			 */
+			private function onKeyUp(evt:KeyboardEvent):void {
+				if (evt.keyCode == Keyboard.CONTROL && _controlIsDown && _waitForSearch) {
+					dispatchEvent(new Event(NEW_SEARCH));
+					_controlIsDown = false;
+					_waitForSearch = false;
+					//TODO Atar: _waitForSearch is never true
+					/*  making this whole function redundant. as a matter of fact,
+					 * the whole keyboard referencing here doesn't seem very useful.	*/
+				}
+			}
+
+
+			/**
+			 * remember the control key if it is pressed
+			 * */
+			private function onKeyDown(evt:KeyboardEvent):void {
+				if (evt.keyCode == Keyboard.CONTROL)
+					_controlIsDown = true;
+			}
+
+
+			/**
+			 * return an array of X buttons and a title button (select all)
+			 * all buttons are toggle buttons. click on any non titled button will deselect the title.
+			 * Clicking on the title will deselect all other buttons. clicking on the last button
+			 * in the group will deselect it and highlight the title button.
+			 * @param titleLabel
+			 * @param groupName
+			 * @param buttonsData - data provider for the buttons
+			 * @param buttonsLabels
+			 * @param titleClickFunc - the function to be called when the title filter is clicked
+			 * @param memberClickFunc - the function to be called when the title filter is clicked
+			 *
+			 * @return Array - return the Array of Buttons
+			 */
+			private function createButtonsGroup(titleLabel:String, groupName:String, buttonsData:Array,
+												buttonLabelField:String, titleClickFunc:Function,
+												memberClickFunc:Function):Array {
+				var btn:Button;
+				var array:Array = new Array();
+				//select all button
+				btn = new Button();
+				btn.toggle = true;
+				btn.percentWidth = 100;
+				btn.label = titleLabel;
+				btn.data = groupName + ' - ' + -1;
+				btn.id = groupName;
+				btn.selected = true;
+				btn.styleName = "mainFilterGroupButton";
+				btn.setStyle('icon', checkedImg);
+				btn.addEventListener(MouseEvent.CLICK, titleClickFunc);
+				array.push(btn);
+				_metadataButtons.addItem(btn);
+				// rest of buttons
+				for (var i:uint = 0; i < buttonsData.length; i++) {
+					btn = new Button();
+					btn.toggle = true;
+					btn.percentWidth = 100;
+					btn.label = buttonsData[i][buttonLabelField];
+					btn.data = groupName + ' - ' + buttonsData[i]['id'];
+					btn.selected = false;
+					btn.setStyle('icon', emptyImg);
+					btn.styleName = "innerFilterGroupButton";
+					btn.id = groupName + "_" + buttonsData[i][buttonLabelField];
+					btn.addEventListener(MouseEvent.CLICK, memberClickFunc);
+					array.push(btn);
+					_metadataButtons.addItem(btn);
+				}
+				return array;
+			}
+
+
+			/**
+			 * handle the top button click. disable all in case it is selected now
+			 */
+			public function onAutoTitleClick(evt:MouseEvent):void {
+				var groupName:String = ((evt.target as Button).data as String).split(' - ')[0];
+				var arr:Array = _dynamicFilterData[groupName] as Array;
+				var newValue:Boolean = (evt.target as Button).selected;
+				if (newValue) {
+					//top title was selected - unselect all other buttons
+					for (var i:uint = 1; i < arr.length; i++) {
+						(arr[i] as Button).selected = false;
+					}
+					updateImageButton(arr);
+					preformNewSearch();
+				}
+				else {
+					(evt.target as Button).selected = true;
+				}
+			}
+
+
+			/**
+			 * handle a group button click
+			 */
+			public function onAutoMemberClick(evt:MouseEvent):void {
+				// target button:
+				var btn:Button = evt.target as Button;
+
+				// name of relevant button group
+				var groupName:String = (btn.data as String).split(' - ')[0];
+
+				// all the buttons in the group
+				var arr:Array = _dynamicFilterData[groupName] as Array;
+				if (btn.selected) {
+					// deselect the all title button
+					(arr[0] as Button).selected = false;
+					updateImageButton(arr);
+					preformNewSearch();
+				}
+				else {
+					//check if this unselect it the last one on the group. if so - select the title
+					var counter:Number = 0;
+					for (var i:uint = 1; i < arr.length; i++) {
+						if ((arr[i] as Button) != btn && (arr[i] as Button).selected) {
+							counter++;
+						}
+					}
+					if (counter == 0) {
+						//this is the last button unselected - turn on the title button 
+						(arr[0] as Button).selected = true;
+					}
+					updateImageButton(arr);
+					preformNewSearch();
+				}
+			}
+
+
+			/**
+			 * Add a title button and group of buttons to conainer
+			 * 1st button in array is the title button.
+			 */
+			private function injectGroupToContainer(container:Container, buttons:Array):void {
+				for (var i:uint = 0; i < buttons.length; i++) {
+					container.addChild((buttons[i] as Button));
+				}
+			}
+
+
+			private function onDragEnter(evt:Event):void {
+				if (catTree != null) {
+					DragManager.acceptDragDrop(UIComponent(catTree));
+				}
+			}
+
+
+			private function updateSearchButtonMode():void {
+				if (!validateSearchText())
+					return;
+
+				if (searchBtn.data == 'v') {
+					if ((StringUtil.trim(searchFilter.text) != '') &&
+						(searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
+						searchBtn.data = 'x';
+						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
+					}
+				}
+				else {
+					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
+					searchBtn.data = 'v';
+					searchBtn.toolTip = null;
+				}
+
+				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
+				sendNewSearch();
+			}
+
+
+			private function onSearchTextChange(event:Event):void {
+				if ((StringUtil.trim(searchFilter.text) == '')) {
+					searchBtn.data = 'v';
+				}
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
+				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
+			}
+
+
+			private function clearDates():void {
+				fromDate.selectedDate = null;
+				toDate.selectedDate = null;
+				fromDate.selectedItem = new Date();
+				toDate.selectedItem = new Date();
+
+				preformNewSearch();
+			}
+
+
+			private function currentDatesChange(event:Event):void {
+				if (validateDates(fromDate, toDate)) {
+					_currentStartOld = (fromDate.selectedDate !=
+						null) ? new Date((fromDate.selectedDate as Date).time) : null;
+					_currentEndOld = (toDate.selectedDate !=
+						null) ? new Date((toDate.selectedDate as Date).time) : null;
+				}
+				else {
+					Alert.show(resourceManager.getString('cms', 'fromToDateAlert'));
+					toDate.selectedDate = _currentEndOld;
+					fromDate.selectedDate = _currentStartOld;
+					toDate.validateNow();
+					fromDate.validateNow();
+				}
+				preformNewSearch();
+			}
+			
+			/**
+			 * validate start date is before end date.
+			 * @param fromDate	starting date 
+			 * @param toDate	end date
+			 * @return true if dates are valid, false otherwise.
+			 * */
+			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
+				var isDatesOk:Boolean = true;
+				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
+					// starting date is after ending date.
+					if (fromDate.selectedDate.time >= toDate.selectedDate.time) {
+						isDatesOk = false;
+					}
+				}
+				return isDatesOk;
+			}
+
+
+			/**
+			 * updates images etc.
+			 * */
+			override public function validateNow():void {
+				// TODO: Add here sections of the filter you need to refresh at init time.
+				super.validateNow();
+				if (categories)
+					catTree.dataProvider = categories;
+				updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType, streamType]);
+				updateImageButton([allDurationBtn, shortDuration, mediumDuration, longDuration]);
+				updateImageButton(moderationStatusContainer.buttons);
+				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn,
+								   convUploadingBtn]);
+			}
+
+
+			private function onFoucsInSearchEvent(event:FocusEvent):void {
+				if (searchFilter.text == resourceManager.getString('cms', 'searchEntries')) {
+					searchFilter.text = '';
+				}
+			}
+
+
+			private function onFoucsOutSearchEvent(event:FocusEvent):void {
+				if (StringUtil.trim(searchFilter.text) == '') {
+					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
+				}
+			}
+
+
+			private function onSearchEnterClick(event:Event):void {
+				if (!validateSearchText())
+					return;
+
+				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
+																							   'clearFreeSearchToolTip');
+				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
+				sendNewSearch();
+			}
+
+			
+			/**
+			 * update button icons and start a search with new data
+			 * */
+			private function onTabChanged(e:Event):void {
+				var btns:Array = (e.target as IFilterTab).buttons;
+				updateImageButton(btns);
+				preformNewSearch();
+			}
+			
+			/**
+			 * Creates an object with keys as media types, 
+			 * later used for easy access while parsing this data.
+			 * The optional keys are enumerated in <code>KalturaMediaType</code>
+			 * @param mediaTypes	the string that represents media 
+			 * 						types on a filter
+			 * @return an object like {1:true, 201:true, ..}
+			 * */
+			protected function mediaTypesToObject(mediaTypes:String):Object {
+				var result:Object = {};
+				var mediaTypesArray:Array = mediaTypes.split(",");
+				for (var i:int = 0; i<mediaTypesArray.length; i++) {
+					result[mediaTypesArray[i]] = true;
+				}
+				return result;
+			}
+			
+			
+			/**
+			 * media types: check if there is an empty filter or if all 
+			 * types are in, select buttons accordingly. 
+			 * */
+			protected function showMediaTypesData(filterVo:KalturaMediaEntryFilter):void {
+				// filterVo.mediaTypeIn is a list of KalturaMediaType-s separated by ",".
+				var mediaTypes:Object = mediaTypesToObject(filterVo.mediaTypeIn);
+				if (filterVo.mediaTypeIn == "" ||
+					(mediaTypes[KalturaMediaType.VIDEO] && 
+						mediaTypes[6] &&
+						mediaTypes[KalturaMediaType.AUDIO] &&
+						mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] &&
+						mediaTypes[KalturaMediaType.IMAGE])) {
+					// all types selected
+					selectAllTypesBtn.selected = true;
+					mixType.selected = false;
+					audioType.selected = false;
+					videoType.selected = false;
+					imageType.selected = false;
+					imageType.selected = false;
+					streamType.selected = false;
+				}
+				else {
+					selectAllTypesBtn.selected = false;
+					
+					if (mediaTypes[KalturaMediaType.VIDEO])
+						videoType.selected = true;
+					if (mediaTypes[6])
+						mixType.selected = true;
+					if (mediaTypes[KalturaMediaType.AUDIO])
+						audioType.selected = true;
+					if (mediaTypes[KalturaMediaType.IMAGE])
+						imageType.selected = true;
+					if (mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH])
+						streamType.selected = true;
+				}
+			}
+			
+			
+			/**
+			 * show dates filtering data on filter
+			 * */
+			protected function showDatesData(filterVo:KalturaMediaEntryFilter):void {
+				if (filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE &&
+					filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+					// no dates
+					fromDate.data = null;
+					toDate.data = null
+				}
+				else {
+					var date:Date;
+					if (filterVo.createdAtGreaterThanOrEqual != int.MIN_VALUE) {
+						date = new Date();
+						date.time = filterVo.createdAtGreaterThanOrEqual * 1000;
+						fromDate.selectedDate = date;
+					}
+					if (filterVo.createdAtLessThanOrEqual != int.MIN_VALUE) {
+						date = new Date();
+						date.time = filterVo.createdAtLessThanOrEqual * 1000;
+						toDate.selectedDate = date;
+					}
+					
+				}
+			}
+			
+			
+			/**
+			 * show duration data on filter
+			 * */
+			protected function showDurationData(filterVo:KalturaMediaEntryFilter):void {
+				if (filterVo.durationTypeMatchOr == null || String(filterVo.durationTypeMatchOr) == "" ||
+					(String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1 &&
+						String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1 &&
+						String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1)) {
+					// no duration 
+					allDurationBtn.selected = true;
+					shortDuration.selected = false;
+					mediumDuration.selected = false;
+					longDuration.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allDurationBtn.selected = false;
+					//short or non duration is selecred
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) >
+						-1) {
+						shortDuration.selected = true;
+					}
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) >
+						-1) {
+						mediumDuration.selected = true;
+					}
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) >
+						-1) {
+						longDuration.selected = true;
+					}
+				}
+			}
+			
+			
+			/**
+			 * show Conversion status data on filter
+			 * */
+			protected function showConversionStatusData(filterVo:KalturaMediaEntryFilter):void {
+				if (!filterVo.statusIn) {
+					allConversionStatusBtn.selected = true;
+					convConvertingBtn.selected = false;
+					convErrorBtn.selected = false;
+					convReadyBtn.selected = false;
+					convUploadingBtn.selected = false;
+				}
+				else {
+					var convStatusArr:Array = filterVo.statusIn.split(',');
+					for each (var convCode:String in convStatusArr) {
+						switch (convCode) {
+							case KalturaEntryStatus.ERROR_CONVERTING:
+							case KalturaEntryStatus.ERROR_IMPORTING:
+								convErrorBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.IMPORT:
+								convUploadingBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.PRECONVERT:
+								convConvertingBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.READY:
+								convReadyBtn.selected = true;
+								break;
+							
+						}
+					}
+				}
+			}
+			
+			
+			/**
+			 * fill current view with the new filter values
+			 */
+			public function set ps3filter(filterVo:KalturaMediaEntryFilter):void {
+				if (!_ready) {
+					// filter is not ready for filling the view - wait for it to be ready
+					_readyFilter = filterVo;
+					addEventListener(FlexEvent.CREATION_COMPLETE, onReady);
+					return;
+				}
+				
+				showMediaTypesData(filterVo);
+				
+				showDatesData(filterVo);
+				
+				showDurationData(filterVo);
+				
+				// moderation
+				moderationStatusContainer.setModerationStatus(filterVo);
+
+				showConversionStatusData(filterVo);
+
+				//search
+				if (filterVo.freeText) {
+					//searchFilter.text = filterVo.freeText.split(",").join(" ");
+					searchFilter.text = filterVo.freeText;
+				}
+				else if (filterVo.tagsMultiLikeOr) {
+					//bugfix backwords competability
+					//searchFilter.text = filterVo.tagsMultiLikeOr.split(",").join(" ");
+					searchFilter.text = filterVo.tagsMultiLikeOr;
+					//for future saving, set the freeTextOr value
+					filterVo.freeText = filterVo.tagsMultiLikeOr;
+				}
+
+				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull ==
+					filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull ==
+					filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull ==
+					filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
+					schedulingContainer.allSchedulingBtn.selected = true;
+				}
+
+				// set categories here
+				catTree.selectedFilterCategories = filterVo.categoriesMatchOr;
+
+				// metadata
+				if (filterVo.advancedSearch && filterVo.advancedSearch.items) {
+					//getting selected items from metadata filter
+					for each (var item:Object in(filterVo.advancedSearch.items as Array)) {
+						for each (var subItem:Object in(item["items"] as Array)) {
+							var currentValue:String = subItem["value"];
+							var currentXpath:String = subItem["field"];
+							var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
+							var parentName:String = currentXpath.substring(startIndex,
+																		   currentXpath.length - 2);
+							var btnName:String = parentName + "_" + currentValue;
+							for each (var btn:Button in _metadataButtons) {
+								if (btn.id == btnName) {
+									btn.selected = true;
+									for each (var parentBtn:Button in _metadataButtons) {
+										if (parentBtn.id == parentName) {
+											parentBtn.selected = false;
+											break;
+										}
+									}
+									break;
+								}
+							}
+						}
+					}
+					updateImageButton(_metadataButtons.source);
+				}
+				validateNow();
+			}
+
+
+			[Bindable]
+			public function get enableCustomData():Boolean {
+				return _enableCustomData;
+			}
+
+
+			/**
+			 * enable custom metadata
+			 * */
+			public function set enableCustomData(value:Boolean):void {
+				_enableCustomData = value;
+				setMetadataVisibility();
+			}
+
+
+			[Bindable]
+			public function get metadataProfile():KMCMetadataProfileVO {
+				return _metadataProfile;
+			}
+
+
+			public function set metadataProfile(value:KMCMetadataProfileVO):void {
+				_metadataProfile = value;
+				setMetadataVisibility();
+
+				if (value)
+					buildeMetadataProfileFilter(value);
+			}
+
+
+			/**
+			 * there's an active filter
+			 * */
+			public function get isFilterOn():Boolean {
+				return _isFilterOn;
+			}
+
+
+			/**
+			 * access control profiles. <br>
+			 * <Code>ArrayCollection</Code> of <Code>AccessControlProfileVO</Code>.
+			 * */
+			public function set accessControlProfiles(accessControlProfiles:ArrayCollection):void {
+				_accessControlProfiles = accessControlProfiles;
+				buildAccessControlList();
+			}
+
+
+			[Bindable]
+			public function get accessControlProfiles():ArrayCollection {
+				return _accessControlProfiles;
+			}
+
+
+			/**
+			 * list of optional flavors.<br>
+			 * <Code>ArrayCollection</Code> of <Code>KalturaFlavorParams</code>
+			 * */
+			public function set flavorParams(flavorParams:ArrayCollection):void {
+				_flavorParams = flavorParams;
+				buildFlavorParamList();
+			}
+
+
+			[Bindable]
+			public function get flavorParams():ArrayCollection {
+				return _flavorParams;
+			}
+
+
+			public function get listPlaylistFilter():KalturaPlaylistFilter {
+				var playlistFilter:KalturaPlaylistFilter = new KalturaPlaylistFilter();
+				renderFilterVo(playlistFilter);
+				return playlistFilter;
+			}
+
+
+			public function get playlistFilter():KalturaMediaEntryFilterForPlaylist {
+				var mediaFilterForPlaylist:KalturaMediaEntryFilterForPlaylist = new KalturaMediaEntryFilterForPlaylist();
+				renderFilterVo(mediaFilterForPlaylist);
+				return mediaFilterForPlaylist;
+			}
+
+
+			public function get ps3filter():KalturaMediaEntryFilter {
+				var mediaFilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
+				renderFilterVo(mediaFilter);
+				return mediaFilter;
+			}
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		  [Event(name="newSearch", type="flash.events.Event")] 
+		  [Event(name="close", type="flash.events.Event")] 
+		  [Event(name="open", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:states>
+		<mx:State name="noMetadata">
+			<mx:RemoveChild target="{metadataTab}"/>
+		</mx:State>
+	</mx:states>
+
+	<mx:HBox id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
+			 label="{resourceManager.getString('cms', 'searchFilter')}" width="100%">
+		<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
+					  text="{resourceManager.getString('cms', 'searchEntries')}" focusIn="onFoucsInSearchEvent(event)"
+					  change='onSearchTextChange(event)' buttonMode="true"
+					  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}" styleName="searchTextInput"
+					  focusOut="onFoucsOutSearchEvent(event)"/>
+		<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true" click="updateSearchButtonMode()"
+				   buttonMode="true"/>
+	</mx:HBox>
+	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2">
+		<mx:headerRenderer>
+			<mx:Component>
+				<filter:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}" />
+			</mx:Component>
+		</mx:headerRenderer>
+		<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%"
+				 height="100%" styleName="additinalFilterVBox">
+			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
+					 styleName="upperDatesVBox">
+				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
+				<mx:HBox styleName="innerUpperDatesHBox">
+					<mx:DateField id="fromDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'from')}"
+								  change="{currentDatesChange(event)}"/>
+					<mx:Label id="toDateTxt" text="-"/>
+					<mx:DateField id="toDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'to')}"
+								  change="{currentDatesChange(event)}"/>
+				</mx:HBox>
+				<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
+							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
+			</mx:VBox>
+			<mx:VBox width="100%" styleName="typesVBox">
+				<mx:Button id="selectAllTypesBtn" width="100%" selected="true"
+						   label="{resourceManager.getString('cms', 'allMediaTypes')}" buttonMode="true" toggle="true"
+						   click="{selectAllTypes(event)}" styleName="mainFilterGroupButton" icon="{checkedImg}"/>
+				<mx:Button id="videoType" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'videoSingle')}" buttonMode="true" toggle="true"
+						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
+				<mx:Button id="imageType" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'image')}" buttonMode="true" toggle="true"
+						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
+				<mx:Button id="audioType" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'audio')}" buttonMode="true" toggle="true"
+						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
+				<mx:Button id="mixType" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'videoMix')}" buttonMode="true" toggle="true"
+						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
+				<mx:Button id="streamType" width="100%" 
+						   selected="false"
+						   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}" buttonMode="true"
+						   toggle="true" visible="{enablelivestream}" includeInLayout="{enablelivestream}"
+						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
+			</mx:VBox>
+			<mx:VBox id="statusContainer" label="{resourceManager.getString('cms', 'status')}" width="100%"
+					 styleName="moderationVBox" visible="{showStatusOptions}" includeInLayout="{showStatusOptions}">
+				<mx:Button id="allConversionStatusBtn" width="100%" selected="true"
+						   label="{resourceManager.getString('cms', 'allConversionStatus')}" buttonMode="true"
+						   click="{onAllConversionStatusClicked(event)}" styleName="mainFilterGroupButton"
+						   icon="{checkedImg}"/>
+				<mx:Button id="convReadyBtn" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'readyBtn')}" buttonMode="true" toggle="true"
+						   styleName="innerFilterGroupButton" icon="{emptyImg}"
+						   click="{changeConversionStatusFilter(event)}"/>
+				<mx:Button id="convUploadingBtn" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'uploadingBtn')}" buttonMode="true" toggle="true"
+						   styleName="innerFilterGroupButton" icon="{emptyImg}"
+						   click="{changeConversionStatusFilter(event)}"/>
+				<mx:Button id="convConvertingBtn" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'convertingBtn')}" buttonMode="true" toggle="true"
+						   styleName="innerFilterGroupButton" icon="{emptyImg}"
+						   click="{changeConversionStatusFilter(event)}"/>
+				<mx:Button id="convErrorBtn" width="100%" selected="false"
+						   label="{resourceManager.getString('cms', 'convertErrorBtn')}" buttonMode="true" toggle="true"
+						   styleName="innerFilterGroupButton" icon="{emptyImg}"
+						   click="{changeConversionStatusFilter(event)}"/>
+			</mx:VBox>
+			<mx:VBox id="durationStatusContainer" width="100%"
+					 label="{resourceManager.getString('cms', 'durationLabel')}" styleName="durationVBox">
+				<mx:Button id="allDurationBtn" width="100%"
+						   label="{resourceManager.getString('cms', 'allDurationsBtn')}" selected="true"
+						   click="{allDuration(event)}" styleName="mainFilterGroupButton" icon="{checkedImg}"/>
+				<mx:Button id="shortDuration" width="100%" label="{resourceManager.getString('cms', 'shortduration')}"
+						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
+						   icon="{emptyImg}"/>
+				<mx:Button id="mediumDuration" width="100%" label="{resourceManager.getString('cms', 'mediumduration')}"
+						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
+						   icon="{emptyImg}"/>
+				<mx:Button id="longDuration" width="100%" label="{resourceManager.getString('cms', 'longduration')}"
+						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
+						   icon="{emptyImg}"/>
+			</mx:VBox>
+			<filter:SchedulingTab id="schedulingContainer" width="100%" styleName="bottomSchedulingVBox"
+								  filterChanged="{onTabChanged(event)}"
+								  visible="{showSchedulingOptions}" includeInLayout="{showSchedulingOptions}" />
+			<filter:ModerationStatusTab id="moderationStatusContainer" label="{resourceManager.getString('cms', 'status')}"
+										filterChanged="{onTabChanged(event)}"
+										showPendingModerationOption="{showPendingModerationOption}"
+										showRejectedOption="{showRejectedOption}" showApprovedOption="{showApprovedOption}"
+										styleName="moderationVBox" 
+										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}" />
+			<mx:VBox id="accessControlContainer" width="100%" styleName="accessControlVBox"
+					 visible="{showAccessControlOptions}" includeInLayout="{showAccessControlOptions}">
+			</mx:VBox>
+
+			<mx:VBox id="transcodingFlavorContainer" width="100%" styleName="transcodingFlavorVBox"
+					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}">
+			</mx:VBox>
+		</mx:VBox>
+		<mx:VBox id="metadataTab" label="{resourceManager.getString('cms', 'metadataTab')}" width="100%" height="100%"
+				 styleName="additinalFilterVBox">
+		</mx:VBox>
+		<mx:Canvas id="vbox1" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%" height="100%"
+				   styleName="categoriesTreeVBox">
+			<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>
+			<view:CategoriesTree id="catTree" dataProvider="{categories}" catMap="{catMap}" dragEnter="onDragEnter(event)"
+								 newSearch="preformNewSearch()" styleName="categoriesTree" mask="{maskCanvas}" />
+		</mx:Canvas>
+	</mx:Accordion>
+</mx:VBox>

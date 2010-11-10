@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	horizontalAlign="center" verticalAlign="middle" paddingBottom="4" 
+	verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	paddingLeft="4" paddingRight="4" paddingTop="4">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.resources.ResourceManager;
+			import com.kaltura.types.KalturaMediaType;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_vid.png")]
+			private static const videoImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_audio.png")]
+			private static const audioImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_remix.png")]
+			private static const remoxImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_img.png")]
+			private static const imgImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_doc.png")]
+			private static const docImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_live.png")]
+			private static const docLive:Class;
+			
+			private function setImage(data:Object):void
+			{
+				var type:String = data.type;
+				var mediaType:String = data.mediaType;	
+			
+				if (type == "2")
+				{
+					 mediaTypeImage.source = remoxImage;
+					 mediaTypeImage.toolTip = resourceManager.getString('cms', 'videoMix');
+					 return;
+				}
+				switch(mediaType)  // TODO: replace codes with server enums
+				{
+					case "1":
+					{
+						mediaTypeImage.source = videoImage;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'video'); 
+						break;
+					} 
+					case "2": 
+					{
+						 mediaTypeImage.source = imgImage;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'image'); 
+						break;
+					}
+					case "5": 
+					{
+						 mediaTypeImage.source = audioImage;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'audio');
+						break;
+					}
+					case "6": 
+					{
+						 mediaTypeImage.source = remoxImage;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'videoMix'); 
+						break;
+					}
+					case "10": 
+					{
+						mediaTypeImage.source = docImage;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'xml'); 
+						break;
+					}
+					case KalturaMediaType.LIVE_STREAM_FLASH.toString(): 
+					{
+						mediaTypeImage.source = docLive;
+						mediaTypeImage.toolTip = resourceManager.getString('cms', 'live'); 
+						break;
+					}
+				}
+			}
+			
+			override public function validateNow():void
+			{
+				super.validateNow();
+				setImage(data);
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Image id='mediaTypeImage' creationComplete="setImage(data)"/>
+</mx:HBox>

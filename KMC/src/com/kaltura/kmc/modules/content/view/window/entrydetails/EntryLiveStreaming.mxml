@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	live streaming control tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.SettingsExample;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+			import com.kaltura.vo.KalturaLiveStreamBitrate;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.UIComponent;
+			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
+
+			[Bindable]
+			private var _broadcastingWidth:Number = 270;
+			[Bindable]
+			private var _prefixesWidth:Number = 130;
+
+			[Bindable]
+			private var _bitratese:ArrayCollection = new ArrayCollection(['50', '100', '200', '300', '350',
+																		  '500', '650', '800', '950', '1000',
+																		  '1200', '1500', '1800', '2000',
+																		  '2500', '14000']);
+			[Bindable]
+			private var _selectedEntry:KalturaLiveStreamAdminEntry;
+			[Bindable]
+			private var _bitrates:ArrayCollection;
+			
+			public var rootUrl:String;
+
+
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (value is KalturaLiveStreamAdminEntry) {
+					_selectedEntry = value as KalturaLiveStreamAdminEntry;
+					_bitrates = new ArrayCollection(_selectedEntry.bitrates);
+					// set the selections of combos 
+					setSelectedValueToCombo(bitrateCombo1, bitrate1.selected);
+					setSelectedValueToCombo(bitrateCombo2, bitrate2.selected);
+					setSelectedValueToCombo(bitrateCombo3, bitrate3.selected);
+				}
+			}
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			/**
+			 * build the bitrates array. 
+			 * @return array of <code>KalturaLiveStreamBitrate</code> 
+			 * 		(possibly empty), or null if failed validation
+			 * */
+			private function getBitrates():Array {
+				var arr:Array = new Array();
+				var cb:CheckBox;
+				var combo:ComboBox;
+				var ns:NumericStepper;
+				for (var i:uint = 1; i <= 3; i++) {
+					var uic:UIComponent = this["bitrate" + i];
+					cb = this["bitrate" + i] as CheckBox;
+					if (cb && cb.selected) {
+						// found a selected bitrate checkbox
+						var klsbr:KalturaLiveStreamBitrate = new KalturaLiveStreamBitrate();
+						//get bitrate
+						combo = (this["bitrateCombo" + i] as ComboBox);
+						klsbr.bitrate = int(combo.value);
+						//get width & height
+						ns = (this["bitrate" + i + "Width"] as NumericStepper);
+						klsbr.width = ns.value;
+						ns = (this["bitrate" + i + "Height"] as NumericStepper);
+						klsbr.height = ns.value;
+						//validate 
+						if (!klsbr.width || !klsbr.height) {
+							return null;
+						}
+						else
+							arr.push(klsbr);
+					}
+				}
+				return arr;
+			}
+
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				var bitrates:Array = getBitrates();
+				if (bitrates != null) {
+					(_selectedEntry as KalturaLiveStreamAdminEntry).bitrates = bitrates;
+					
+				}
+				else {
+					//failed validation
+					result.error = EntryDetailsValidationError.BITRATE;
+				}
+				return result;
+			}
+
+			/**
+			 * Recieves a combobox refference and sets its selected to be its value if it findes
+			 * it in the _bitratese values array.
+			 */
+			private function setSelectedValueToCombo(cb:ComboBox, isActive:Boolean):void {
+				// set selected combo value 
+				var i:uint;
+				if (isActive) {
+					for (i = 0; i < _bitratese.length; i++) {
+						if (cb.value == Number(_bitratese[i]))
+							cb.selectedIndex = i;
+					}
+				}
+			}
+
+
+			/**
+			 * returns the full path of the stream.
+			 * the type could be p for primary and b for beckup
+			 * */
+			private function renderUrl(type:String, selectedEntry:String):String {
+				return "rtmp://" + type + ".ep" + selectedEntry + ".i.akamaientrypoint.net/EntryPoint";
+			}
+
+			private var pop:SettingsExample;
+
+
+			private function onRollOver(value:Number):void {
+				pop = new SettingsExample();
+				switch (value) {
+					case 1:
+						pop.stringToShow = ResourceManager.getInstance().getString('cms', 'screenshot1');
+						pop.imageClass = 'url1';
+						pop.imgWidth = 351;
+						pop.imgHeight = 156;
+
+						break;
+					case 2:
+						pop.stringToShow = ResourceManager.getInstance().getString('cms', 'screenshot1');
+						pop.imageClass = 'url2';
+						pop.imgWidth = 278;
+						pop.imgHeight = 191;
+						break;
+					case 3:
+						pop.stringToShow = ResourceManager.getInstance().getString('cms', 'screenshot3') +
+							"\n" + ResourceManager.getInstance().getString('cms', 'screenshot1');
+						pop.imageClass = 'url3';
+						pop.imgWidth = 289;
+						pop.imgHeight = 100;
+						break;
+				}
+				PopUpManager.addPopUp(pop, this, true);
+				PopUpManager.centerPopUp(pop);
+			}
+			private function onHelp():void {
+				navigateToURL( new URLRequest( 'http://' + rootUrl + resourceManager.getString('cms', 'generalHelp') ) );
+			}
+
+
+			private function fmeExport():void {
+				var xml:XML = <flashmedialiveencoder_profile>
+						<preset>
+							<name>Custom</name>
+							<description></description>
+						</preset>
+						<capture>
+							<video>
+								<device></device>
+								<crossbar_input></crossbar_input>
+								<frame_rate></frame_rate>
+								<size>
+									<width></width>
+									<height></height>
+								</size>
+							</video>
+							<audio>
+								<device></device>
+								<crossbar_input></crossbar_input>
+								<sample_rate></sample_rate>
+								<channels></channels>
+								<input_volume></input_volume>
+							</audio>
+						</capture>
+						<encode>
+							<video>
+								<format></format>
+								<datarate></datarate>
+								<outputsize></outputsize>
+								<advanced>
+									<profile></profile>
+									<level></level>
+									<keyframe_frequency></keyframe_frequency>
+								</advanced>
+								<autoadjust>
+									<enable></enable>
+									<maxbuffersize></maxbuffersize>
+									<dropframes>
+										<enable></enable>
+									</dropframes>
+									<degradequality>
+										<enable></enable>
+										<minvideobitrate></minvideobitrate>
+										<preservepfq></preservepfq>
+									</degradequality>
+								</autoadjust>
+							</video>
+							<audio>
+								<format></format>
+								<datarate></datarate>
+							</audio>
+						</encode>
+						<restartinterval>
+							<days></days>
+							<hours></hours>
+							<minutes></minutes>
+						</restartinterval>
+						<reconnectinterval>
+							<attempts></attempts>
+							<interval></interval>
+						</reconnectinterval>
+						<output>
+							<rtmp>
+								<url></url>
+								<backup_url></backup_url>
+								<stream></stream>
+							</rtmp>
+						</output>
+						<metadata>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+							<entry>
+								<key></key>
+								<value></value>
+							</entry>
+						</metadata>
+						<preview>
+							<video>
+								<input>
+									<zoom></zoom>
+								</input>
+								<output>
+									<zoom></zoom>
+								</output>
+							</video>
+							<audio></audio>
+						</preview>
+						<log>
+							<level></level>
+							<directory></directory>
+						</log>
+					</flashmedialiveencoder_profile>;
+
+				//assign outputs 
+				var outputXML:XML = xml.output[0];
+				(outputXML.rtmp.url[0] as XML).appendChild(renderUrl('p', _selectedEntry.streamRemoteId));
+				(outputXML.rtmp.backup_url[0] as
+					XML).appendChild(renderUrl('b', _selectedEntry.streamRemoteId));
+				(outputXML.rtmp.stream[0] as
+					XML).appendChild(_selectedEntry.id + '_%i@' +
+					(_selectedEntry as KalturaLiveStreamAdminEntry).streamRemoteId);
+
+				//assign bitrates
+				var bitratesString:String = "";
+				var dimenssionsStrings:String = "";
+				if (bitrate1.selected) {
+					bitratesString += bitrateCombo1.value.toString() + ";";
+					dimenssionsStrings += bitrate1Width.value.toString() + "x" +
+						bitrate1Height.value.toString() + ";";
+				}
+				if (bitrate2.selected) {
+					bitratesString += bitrateCombo2.value.toString() + ";";
+					dimenssionsStrings += bitrate2Width.value.toString() + "x" +
+						bitrate2Height.value.toString() + ";";
+				}
+				if (bitrate3.selected) {
+					bitratesString += bitrateCombo3.value.toString() + ";";
+					dimenssionsStrings += bitrate3Width.value.toString() + "x" +
+						bitrate3Height.value.toString() + ";";
+				}
+				var encode:XML = xml.encode[0] as XML;
+				(encode.video.datarate[0] as XML).appendChild(bitratesString);
+				(encode.video.outputsize[0] as XML).appendChild(dimenssionsStrings);
+
+				var MyFile:FileReference = new FileReference();
+				MyFile.save(xml.toXMLString(),
+							ResourceManager.getInstance().getString('cms', 'ExportToFme.xml'));
+
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'BroadcastingInfo')}"
+			  styleName="drillDownTitleLabel"/>
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'brodcastingSettings')}" styleName="drillDownLabel"/>
+
+	<mx:Text width="100%" text="{ResourceManager.getInstance().getString('cms', 'broadcastingText')}" selectable="false"/>
+	<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'liveLink')}"
+				   click="{onHelp()}"/>
+
+	<mx:Spacer height="20"/>
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'Broadcastingurls')}" styleName="drillDownLabel"/>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'PrimaryURL')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="primaryUrl" text="{renderUrl('p' , _selectedEntry.streamRemoteId ) }" selectable="true"
+				  width="{_broadcastingWidth}"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'BackupURL')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="backupUrl" text="{renderUrl('b' , _selectedEntry.streamRemoteId)}" selectable="true"
+				  width="{_broadcastingWidth}"/>
+		<mx:Spacer width="30"/>
+		<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'streamName')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="streamName"
+				  text="{_selectedEntry.id+'_%i@'+(_selectedEntry as KalturaLiveStreamAdminEntry).streamRemoteId}"
+				  selectable="true" width="{_broadcastingWidth}"/>
+	</mx:HBox>
+
+	<mx:Spacer height="20"/>
+
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'bitrateConfiguration')}" styleName="drillDownLabel"/>
+	<mx:Text width="100%" text="{ResourceManager.getInstance().getString('cms', 'bitrateText')}"/>
+
+	<mx:Label 
+			  text="{'\t\t '+ResourceManager.getInstance().getString('cms', 'bitRate')+'\t\t\t\t\t'+ResourceManager.getInstance().getString('cms', 'width')+'\t\t\t  '+ResourceManager.getInstance().getString('cms', 'height')}"
+			  styleName="drillDownLabel"/>
+	<mx:HBox width="100%">
+		<mx:CheckBox id="bitrate1" label="1." labelPlacement="left" selected="{_bitrates.getItemAt(0).width}"/>
+		<mx:ComboBox id="bitrateCombo1" editable="true" text="{_bitrates.getItemAt(0).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate1.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate1Width" width="55" maximum="9999" enabled="{bitrate1.selected}"
+						   value="{_bitrates.getItemAt(0).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate1Height" width="55" maximum="9999" enabled="{bitrate1.selected}"
+						   value="{_bitrates.getItemAt(0).height}"/>
+		<mx:Spacer width="30"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:CheckBox id="bitrate2" label="2." labelPlacement="left" selected="{_bitrates.getItemAt(1).width}"/>
+		<mx:ComboBox id="bitrateCombo2" editable="true" text="{_bitrates.getItemAt(1).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate2.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate2Width" width="55" maximum="9999" enabled="{bitrate2.selected}"
+						   value="{_bitrates.getItemAt(1).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate2Height" width="55" maximum="9999" enabled="{bitrate2.selected}"
+						   value="{_bitrates.getItemAt(1).height}"/>
+		<mx:Spacer width="30"/>
+		<mx:Button styleName="help" click="{onRollOver(3)}" buttonMode="true"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:CheckBox id="bitrate3" label="3." labelPlacement="left" selected="{_bitrates.getItemAt(2).width}"/>
+		<mx:ComboBox id="bitrateCombo3" editable="true" text="{_bitrates.getItemAt(2).bitrate}"
+					 dataProvider="{_bitratese}" enabled="{bitrate3.selected}"/>
+		<mx:Label text="Kbps"/>
+		<mx:Spacer width="10"/>
+		<mx:NumericStepper id="bitrate3Width" width="55" maximum="9999" enabled="{bitrate3.selected}"
+						   value="{_bitrates.getItemAt(2).width}"/>
+		<mx:Label text="x"/>
+		<mx:NumericStepper id="bitrate3Height" width="55" maximum="9999" enabled="{bitrate3.selected}"
+						   value="{_bitrates.getItemAt(2).height}"/>
+		<mx:Spacer width="30"/>
+	</mx:HBox>
+
+	<mx:Spacer height="20"/>
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'broadcastinCredential')}"
+			  styleName="drillDownLabel"/>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'userName')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="userName" text="{_selectedEntry.streamUsername}" selectable="true"/>
+		<mx:Spacer width="30"/>
+		<mx:Button styleName="help" click="{onRollOver(2)}" buttonMode="true"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'password')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="password" text="{_selectedEntry.streamPassword}" selectable="true"/>
+	</mx:HBox>
+
+	<mx:Spacer height="20"/>
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'encodingIp')}" styleName="drillDownLabel"/>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'primaryIp')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="primaryIp" text="{_selectedEntry.encodingIP2}" selectable="true"/>
+	</mx:HBox>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'secondaryIp')}" width="{_prefixesWidth}"
+				  styleName="drillDownLabel"/>
+		<mx:Label id="secondaryIp" text="{_selectedEntry.encodingIP2}" selectable="true"/>
+	</mx:HBox>
+	<mx:Button label="{ResourceManager.getInstance().getString('cms', 'exportToFme')}" click="{fmeExport()}"/>
+
+</mx:VBox>

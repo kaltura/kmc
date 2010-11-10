@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 "Manage" part of the content viewstack.
+	 lists all entries, allows filtering, preview and drill-down to entry details.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
+		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+		 creationComplete="vbox1_creationCompleteHandler(event)"
+		 >
+	<mx:states>
+		<mx:State name="noFilterState">
+			<mx:SetProperty target="{vbox1}" name="visible" value="false"/>
+			<mx:SetProperty target="{vbox1}" name="includeInLayout" value="false"/>
+			<mx:RemoveChild target="{filterLabel}"/>
+			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left"/>
+			<mx:SetStyle target="{foldBtn}" name="icon" value="{openFilterImage}"/>
+			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
+		</mx:State>
+	</mx:states>
+	<mx:transitions>
+		<mx:Transition toState="noFilterState">
+			<mx:Sequence targets="{[vbox1]}">
+				<mx:WipeLeft id="wipeLeft" duration="500"/>
+			</mx:Sequence>
+		</mx:Transition>
+		<mx:Transition fromState="noFilterState">
+			<mx:Sequence targets="{[vbox1]}">
+				<mx:WipeRight id="wipeRight" duration="500"/>
+			</mx:Sequence>
+		</mx:Transition>
+	</mx:transitions>
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.FilterEvent;
+			import com.kaltura.kmc.modules.content.events.SearchEvent;
+			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
+			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.vo.ListableVo;
+			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_minimise.png")]
+			private static const closeFilterImage:Class;
+			//TODO extract
+			[Embed(source="assets/content/imgs/ico_expand.png")]
+			private static const openFilterImage:Class;
+			
+			[Bindable]
+			private var _listableVo:ListableVo;
+			
+			/**
+			 * data ordering
+			 * */
+			private var _orderBy:String = KalturaMediaEntryOrderBy.CREATED_AT_DESC;
+			
+			[Bindable]
+			/**
+			 * filtering data
+			 * */
+			public var filterModel:FilterModel;
+			
+			[Bindable]
+			/**
+			 * entries-related data
+			 * */
+			public var entryDetailsModel:EntryDetailsModel;
+
+
+
+			public function init():void {
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				//init as 10 lines 
+				loadEntries();
+			}
+
+
+			private function setEntriesToolbar():void {
+				toolBar.removeController(toolBar.approveSelected);
+				toolBar.removeController(toolBar.rejectSelected);
+			}
+
+
+			public function loadEntries():void {
+				if (paging.pageSize == 10) {
+					entryTableContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10;
+					entryTable.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
+					entryTable.rowCount = 10;
+					vbox1.height = entryTable.height + paging.height + toolBar.height;
+					topContainer.height = entryTableContainer.height + paging.height + toolBar.height;
+				}
+				else {
+					topContainer.percentHeight = 100;
+					entryTableContainer.percentHeight = 100;
+					entryTable.percentHeight = 100;
+					entryTable.rowCount = -1;
+					vbox1.percentHeight = 100;
+				}
+
+				_listableVo = new ListableVo(filter.ps3filter, paging, null);
+				// set the order-by to the filter
+				if (_orderBy)
+					_listableVo.filterVo.orderBy = _orderBy;
+				var cgEvent:SetCurrentListableEvent = new SetCurrentListableEvent(SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL,
+					_listableVo);
+				cgEvent.dispatch();
+
+				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _listableVo);
+				searchEvent.dispatch();
+			}
+
+
+			//paging
+			private function gotoPage():void {
+				loadEntries();
+			}
+
+
+			/**
+			 * controller has selected all entries
+			 */
+			private function onSelectAllEntries(evt:Event):void {
+				entryTable.selectAll();
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+															new ArrayCollection(entryTable.selectedItems));
+				cgEvent.dispatch();
+			}
+
+
+			private function onDeselectAllEntries(evt:Event):void {
+				entryTable.deselectAll();
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+															new ArrayCollection(entryTable.selectedItems));
+				cgEvent.dispatch();
+			}
+
+
+			private function removeColums(event:Event):void {
+				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
+				event.target.removeColumn(resourceManager.getString('cms', 'creator'));
+				event.target.removeColumn(resourceManager.getString('cms', 'playerLoads'));
+				event.target.removeColumn(resourceManager.getString('cms', 'flags'));
+				//			event.target.removeColumn(resourceManager.getString('cms', 'duration'));
+				event.target.removeColumn(resourceManager.getString('cms', 'playlistType'));
+				//		event.target.removeColumn(resourceManager.getString('cms', 'preview'));
+
+
+				event.target.updateDefaultSortColumn();
+				percentWidth = 100;
+				topContainer.percentWidth = 100;
+				vbox2.percentWidth = 100;
+				entryTableContainer.percentWidth = 100;
+				entryTable.percentWidth = 100;
+				paging.percentWidth = 100;
+				toolBar.percentWidth = 100;
+				vbox1.width = 245;
+				filter.percentWidth = 100;
+				validateNow();
+				validateDisplayList()
+			}
+
+
+			/**
+			 * This is a new search called by an action on the filter vo
+			 */
+			private function newSearchhFromFilter():void {
+				paging.selectedPage = 1;
+				loadEntries();
+				updateExpenderLabel();
+			}
+
+
+			private function updateExpenderLabel():void {
+				if (!filter.isFilterOn) {
+					filteredLabel.visible = false;
+				}
+				else {
+					filteredLabel.visible = true;
+				}
+			}
+
+
+			/**
+			 * Create a new manual based playlist based on current selection
+			 */
+			private function onNewManualPlaylist():void {
+
+				if (entryTable.selectedItems.length == 0) {
+					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
+					return;
+				}
+				var cgEvent:CairngormEvent;
+				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, null);
+				cgEvent.dispatch();
+
+				// add the selected items to the model 
+				cgEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+										   new ArrayCollection(entryTable.selectedItems));
+				cgEvent.dispatch();
+
+				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
+				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.MANUAL_PLAYLIST);
+				cgEvent.dispatch();
+
+				//open a new manual playlist window to edit this 
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+				cgEvent.dispatch();
+
+			}
+
+
+			/**
+			 * Create a new ruled based playlist based on current filter
+			 */
+			private function onNewRulePlaylist():void {
+				// add the selected filter to the model 
+				var cgEvent:CairngormEvent = new FilterEvent(FilterEvent.SET_FILTER_TO_MODEL,
+															 filter.playlistFilter);
+				cgEvent.dispatch();
+				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
+				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.RULE_BASED_PLAYLIST);
+				cgEvent.dispatch();
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * fold / unfold filter
+			 */
+			private function foldFilter():void {
+				currentState = (currentState == null) ? 'noFilterState' : null;
+			}
+
+
+			/**
+			 * Entry table dispatched an order-by changing
+			 */
+			private function onOrderByChanged():void {
+				_orderBy = entryTable.orderBy;
+				loadEntries();
+			}
+
+
+			private function changeRows():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>Show Rows");
+				gotoPage()
+			}
+
+
+			private function nxtPage():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_NEXT_PAGE +
+					paging.selectedPage);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>NextPage/Page" + paging.selectedPage);
+				gotoPage()
+			}
+
+
+			private function prvPage():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PREV_PAGE +
+					paging.selectedPage);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>PrevPage/Page" + paging.selectedPage);
+				gotoPage()
+			}
+
+
+			private function gotoPageNum():void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE_NUM +
+					paging.selectedPage);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+														  "content>GoToPage/Page" + paging.selectedPage);
+				gotoPage()
+			}
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				setEntriesToolbar();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox styleName="filtersHeadTitleHBox">
+		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
+				  styleName="filterTitleHeader"/>
+		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'entriesTable')}" click="{foldFilter()}"
+					   styleName="expendableButton" icon="{closeFilterImage}"/>
+		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
+				  visible="false"/>
+	</mx:HBox>
+	<mx:HDividedBox id="topContainer" verticalScrollPolicy="off">
+		<mx:VBox id="vbox1">
+			<filter:Filter id="filter" height="100%" width="245" showEffect="{wipeLeft}" 
+						   enableCustomData="{filterModel.enableCustomData}"
+						   metadataProfile="{filterModel.metadataProfile}" 
+						   enablelivestream="{filterModel.enablelivestream}"
+						   categories="{filterModel.categories}" 
+						   catMap="{filterModel.categoriesMap}" 
+						   accessControlProfiles="{filterModel.accessControlProfiles}"
+						   flavorParams="{filterModel.flavorParams}"
+						   newSearch="newSearchhFromFilter()"
+						   showAccordionHeaderButtons="true" />
+		</mx:VBox>
+		<mx:VBox id="vbox2" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
+			<mx:HBox id="entryTableContainer" height="100%">
+				<view:EntryTable id="entryTable" rowCount="10" width="625" dataProvider="{_listableVo.arrayCollection}"
+								 selectedEntry="{entryDetailsModel.selectedEntry}"
+								 orderByChanged="{onOrderByChanged()}" creationComplete="removeColums( event )"/>
+			</mx:HBox>
+
+			<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
+							 rowsInPageChange="changeRows()" nextPage="nxtPage()" prvPage="prvPage()"
+							 getPageNum="gotoPageNum()" totalCount="{entryDetailsModel.totalEntriesCount}"
+							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true"/>
+
+			<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}" 
+								 enablelivestream="{filterModel.enablelivestream}"
+								 selectAllEntries="onSelectAllEntries(event)"
+								 deselectAllEntries="onDeselectAllEntries(event)"
+								 createNewManualPlaylist="onNewManualPlaylist()"
+								 createNewRulePlaylist="onNewRulePlaylist()"/>
+		</mx:VBox>
+	</mx:HDividedBox>
+
+</mx:VBox>

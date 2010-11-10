@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	add new livestream window
+-->
+<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validators="com.kaltura.validators.*"
+				 xmlns="com.kaltura.containers.*" layout="vertical" creationComplete="{setTitle()}"
+				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'liveStreamAnchor')))}"
+				 showCloseButton="true" close="removeMe()">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.vo.StreamVo;
+			
+			import mx.controls.Alert;
+			import mx.resources.ResourceManager;
+
+			[Bindable]
+			private var labelWidth:Number = 180;
+
+
+			private function setTitle():void {
+				title = ResourceManager.getInstance().getString('cms', 'liveStreamTitle');
+			}
+
+
+			/**
+			 * Remove current window command
+			 */
+			private function removeMe():void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * When click on save - validate. if pass - save, if not - alert the user and activate the validators.
+			 */
+			private function onSave():void {
+				var isNameValid:Boolean = streamNameValidator.validate().type == 'valid';
+				var isIp1Valid:Boolean = ipValidator1.validate().type == 'valid';
+				var isIp2Valid:Boolean = ipValidator2.validate().type == 'valid';
+
+				if (isNameValid && isIp1Valid && isIp2Valid) {
+					var streamVo:StreamVo = new StreamVo(streamName.text, streamPrimaryIp.text,
+														 streamSecondaryIp.text, streamBroadcastPassword.text,
+														 streamDescription.text)
+					var cgEv:AddStreamEvent = new AddStreamEvent(AddStreamEvent.ADD_STREAM, streamVo);
+					cgEv.dispatch();
+				}
+				else {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'fillAllMandatoryCorrect'));
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:StringValidator id="streamNameValidator" source="{streamName}" property="text" trigger="{saveButton}"
+						triggerEvent="click" minLength="5" maxLength="20"/>
+	<validators:IPAddressValidator id="ipValidator1" source="{streamPrimaryIp}" trigger="{saveButton}"
+								   triggerEvent="click" property="text"/>
+	<validators:IPAddressValidator id="ipValidator2" source="{streamSecondaryIp}" trigger="{saveButton}"
+								   triggerEvent="click" property="text"/>
+
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'name')+'*'}" width="{labelWidth}"/>
+
+		<mx:TextInput id="streamName" width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'description')}" width="{labelWidth}"/>
+		<mx:TextInput id="streamDescription" width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'primaryIp')+'*'}" width="{labelWidth}"/>
+
+		<mx:TextInput id="streamPrimaryIp" width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'secondaryIp')+'*'}" width="{labelWidth}"/>
+		<mx:TextInput id="streamSecondaryIp" width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'passwordOptional')}" width="{labelWidth}"/>
+		<mx:TextInput id="streamBroadcastPassword" width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button id="saveButton" label="{ResourceManager.getInstance().getString('cms', 'save')}" click="onSave()"/>
+	</mx:HBox>
+
+</HelpTitleWindow>

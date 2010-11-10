@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical"
+				 close="removeMe()" showCloseButton="true" title="{ resourceManager.getString('cms', 'download') }"
+				 help="{ navigateToURL( new URLRequest( 'http://' + CmsModelLocator.getInstance().context.rootUrl + resourceManager.getString('cms', 'helpDownload')) ) }">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.DownloadEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaFlavorParams;
+
+			import mx.collections.ArrayCollection;
+			import mx.core.mx_internal;
+			use namespace mx_internal;
+
+			[ArrayElementType("KalturaBaseEntry")]
+			/**
+			 * list of entries to download
+			 * */
+			public var entries:Array;
+			
+			[Bindable]
+			/**
+			 * list of optional flavours for download
+			 * */
+			public var flavorParams:ArrayCollection;
+
+
+			private function removeMe():void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+
+
+			private function submit():void {
+				var ids:Array = [];
+				for each (var entry:KalturaBaseEntry in entries) {
+					ids.push(entry.id);
+				}
+				var cgEvent:DownloadEvent = new DownloadEvent(DownloadEvent.DOWNLOAD_ENTRY, ids.join(','),
+															  (cb.selectedItem as KalturaFlavorParams).id +
+					'');
+				cgEvent.dispatch();
+				removeMe();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DOWNLOAD);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_DOWNLOAD,
+														  "EntryTable>Download", entry.id);
+			}
+
+
+			/**
+			 * get window text
+			 * */
+			private function getDownloadLabel():String {
+				var result:String;
+				if (entries.length == 1) {
+					result = resourceManager.getString('cms', 'entryToDownload');
+				}
+				else {
+					result = resourceManager.getString('cms', 'entriesToDownload').replace('{NUM}', entries.length);
+				}
+				return result;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{getDownloadLabel()}"/>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms', 'videoDeliveredAs')}"/>
+		<mx:ComboBox id="cb" dataProvider="{flavorParams}" labelField="name"/>
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('cms', 'audioDeliveredAs')}"/>
+	<mx:Label text="{resourceManager.getString('cms', 'imageDeliveredAs')}"/>
+	<mx:HBox width="100%" horizontalAlign="center" verticalAlign="middle" paddingBottom="2" paddingTop="2">
+		<mx:Button label="{resourceManager.getString('cms', 'submit')}" click="{submit()}" buttonMode="true"/>
+	</mx:HBox>
+</HelpTitleWindow>

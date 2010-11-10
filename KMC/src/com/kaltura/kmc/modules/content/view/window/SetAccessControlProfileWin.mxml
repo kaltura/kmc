@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 This panel allows changing access control for entries
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" 
+				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+				 title="{resourceManager.getString('cms', 'setAccessControlTitle')}" layout="vertical"
+				 showCloseButton="true" close="closeWindow(event)" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+
+			[Bindable]
+			private var _accessControlData:ArrayCollection;
+
+			private var _selectedEntries:ArrayCollection;
+			
+			[Bindable]
+			private var _clonedSelectedEntries:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			public var filterModel:FilterModel;
+			
+			
+			[Bindable]
+			public function get accessControlData():ArrayCollection {
+				return _accessControlData;
+			}
+
+
+			public function set accessControlData(accessControlData:ArrayCollection):void {
+				_accessControlData = accessControlData;
+
+			}
+
+
+			public function set selectedEntries(arr:ArrayCollection):void {
+				_selectedEntries = arr;
+				var tempArrCol:ArrayCollection = new ArrayCollection();
+				for (var i:int = 0; i < _selectedEntries.length; i++) {
+					tempArrCol.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+				}
+
+				_clonedSelectedEntries = tempArrCol;
+			}
+
+
+			private function closeWindow(event:Event = null):void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+
+
+			private function saveData(event:Event):void {
+				var seletedAccessControl:Object = entryACP.getSelectedAccessControlProfile();
+				if (seletedAccessControl == null) {
+					Alert.show(resourceManager.getString('cms', 'applyAccessControlAlert'));
+					return;
+				}
+				for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
+					entry.accessControlId = (seletedAccessControl as AccessControlProfileVO).profile.id;
+				}
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES,
+															_clonedSelectedEntries);
+				cgEvent.dispatch();
+
+				for each (var etr:Object in _clonedSelectedEntries) {
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
+															  "setAccessControlProfileIdForEntries", etr.id);
+
+				}
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ACCESS_CONTROL);
+				closeWindow();
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('cms', 'accessControlOverrideMsg')}"/>
+	<entrydetails:EntryAccessControl id="entryACP" selectedEntries="{_clonedSelectedEntries}"
+														  filterModel="{filterModel}"
+														  accessControlData="{accessControlData}"/>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button label="{resourceManager.getString('cms', 'applyAccessControlBtn')}" useHandCursor="true"
+				   buttonMode="true" click="saveData(event)"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	External syndications list in <code>ExternalSyndication</code>.
+-->
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" allowMultipleSelection="true" selectable="true"
+			 itemClick="onItemClick(event)" headerRelease="headerReleaseHandler(event)" rowHeight="25">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.types.KalturaBaseSyndicationFeedOrderBy;
+			import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
+			
+			import mx.events.DataGridEvent;
+
+			public static const ASCENDING:String = "ASC";
+			public static const DESCENDING:String = "DESC";
+
+			private var columnsSortMap:HashMap = new HashMap();
+
+			/**
+			 * the current sort index
+			 * */
+			private var _sortIndex:int = -1;
+
+			/**
+			 * the current sort direction
+			 * */
+			private var _sortDirection:String = DESCENDING;
+
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+
+			[Bindable]
+			override public function set dataProvider(data:Object):void {
+				super.dataProvider = data;
+				setSortIndicator();
+			}
+
+
+			private function setSortIndicator():void {
+				this.mx_internal::sortIndex = _sortIndex;
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+
+
+			private function headerReleaseHandler(event:DataGridEvent):void {
+				event.preventDefault();
+				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
+					var headerText:String = event.itemRenderer.data.headerText;
+					if (!columnsSortMap.containsKey(headerText)) {
+						columnsSortMap.put(headerText, false);
+					}
+
+					var sortDir:Boolean = columnsSortMap.getValue(headerText) as Boolean;
+					var orederByStr:String;
+					switch (headerText) {
+						case resourceManager.getString('cms', 'exsFeedNameColumnHeader'):  {
+							orederByStr = sortDir ? KalturaBaseSyndicationFeedOrderBy.NAME_ASC : KalturaBaseSyndicationFeedOrderBy.NAME_DESC;
+							break;
+						}
+
+						case resourceManager.getString('cms', 'exsFeedTypeColumnHeader'):  {
+							orederByStr = sortDir ? KalturaBaseSyndicationFeedOrderBy.TYPE_ASC : KalturaBaseSyndicationFeedOrderBy.TYPE_DESC;
+							break;
+						}
+
+						case resourceManager.getString('cms', 'exsFeedcontentColumnHeader'):  {
+							orederByStr = sortDir ? KalturaBaseSyndicationFeedOrderBy.PLAYLIST_ID_ASC : KalturaBaseSyndicationFeedOrderBy.PLAYLIST_ID_DESC;
+							break;
+						}
+
+						case resourceManager.getString('cms', 'exsFeedURLColumnHeader'):  {
+							orederByStr = sortDir ? KalturaBaseSyndicationFeedOrderBy.CREATED_AT_ASC : KalturaBaseSyndicationFeedOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+					}
+					// remember the direction and change the sign
+					_sortIndex = event.columnIndex;
+					_sortDirection = sortDir ? ASCENDING : DESCENDING;
+					columnsSortMap.setValue(headerText, !sortDir);
+					setSortIndicator();
+
+					var cEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.SET_SYNDICATION_FEED_FILTER_ORDER);
+					cEvent.data = orederByStr;
+					cEvent.dispatch();
+					
+					var getAllFeedsEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.LIST_EXTERNAL_SYNDICATIONS);
+					getAllFeedsEvent.dispatch();
+
+				}
+
+			}
+
+
+			private function onItemClick(event:Event):void {
+				var esVo:ExternalSyndicationVO;
+				for each (esVo in this.dataProvider) {
+					esVo.selected = false;
+				}
+				for each (esVo in this.selectedItems) {
+					esVo.selected = true;
+					esVo.dispatchEvent(new Event(ExternalSyndicationVO.SELECTED_CHANGED_EVENT));
+				}
+			}
+
+
+			public function dispatchSelection(event:Event):void {
+				var cbEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.MARK_EXTERNAL_SYNDICATION,
+																					!allSelected);
+				cbEvent.dispatch();
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:columns>
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedNameColumnHeader')}" dataField="name"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationNameRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedTypeColumnHeader')}" dataField="type"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationTypeRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedContentColumnHeader')}"
+						   dataField="content"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationContentRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedURLColumnHeader')}" dataField="url"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationURLFeedRenderer"/>
+	</mx:columns>
+</mx:DataGrid>

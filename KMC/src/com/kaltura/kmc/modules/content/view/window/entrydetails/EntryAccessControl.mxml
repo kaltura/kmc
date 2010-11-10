@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 access control tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" initialize="{updateAccessSection()}"
+		 show="{init()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.types.*;
+			import com.kaltura.utils.KCountriesUtil;
+			import com.kaltura.vo.*;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
+
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.collections.SortField;
+			import mx.core.Application;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			import mx.messaging.AbstractConsumer;
+
+			[Bindable]
+			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+
+			private var selectedItemIndex:int = -1;
+
+			public var selectedEntry:KalturaBaseEntry;
+
+			public var selectedEntries:ArrayCollection;
+
+			/**
+			 * filtering parameters
+			 * */
+			public var filterModel:FilterModel;
+
+			[Bindable]
+			private var _accessControlData:ArrayCollection;
+
+
+			[Bindable]
+			public function get accessControlData():ArrayCollection {
+				return _accessControlData;
+			}
+
+
+			public function set accessControlData(accessControlData:ArrayCollection):void {
+				_accessControlData = accessControlData;
+				updateAccessSection();
+			}
+
+
+			private function init():void {
+				if (!filterModel.oneTimeLoadAccessControlLoadedFlag) {
+					//Only one time we should load this configuration per partner
+					filterModel.oneTimeLoadAccessControlLoadedFlag = true;
+					var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+					getAllProfilesEvent.dispatch();
+				}
+				else {
+					updateAccessSection()
+				}
+			}
+
+
+			private function updateAccessSection():void {
+				var acProfiles:ArrayCollection = new ArrayCollection();
+				var itemsCounter:int = 0;
+				selectedItemIndex = 0;
+				var defualtProfile:AccessControlProfileVO;
+				for each (var acProfile:AccessControlProfileVO in _accessControlData) {
+					if (acProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
+						defualtProfile = acProfile;
+					}
+					else {
+						acProfiles.addItem({label: acProfile.profile.name, profile: acProfile});
+					}
+				}
+
+				if (defualtProfile != null) {
+					acProfiles.addItemAt({label: defualtProfile.profile.name, profile: defualtProfile}, 0);
+				}
+
+				for each (var acProfile1:Object in acProfiles) {
+					if (selectedEntry != null) {
+						if ((acProfile1.profile as AccessControlProfileVO).profile.id ==
+							selectedEntry.accessControlId) {
+							selectedItemIndex = itemsCounter;
+						}
+						itemsCounter++;
+					}
+				}
+				accessControlProfliesComboBox.dataProvider = acProfiles;
+				accessControlProfliesComboBox.selectedIndex = selectedItemIndex;
+				accessControlProfliesComboBox.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+			}
+
+
+			private function openNewAccessControlPopUpWindow(event:Event):void {
+				var newProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
+				newProfileWin.currentState = "newProfileState";
+				PopUpManager.addPopUp(newProfileWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(newProfileWin);
+			}
+
+
+			private function onAccessControlChange(event:Event):void {
+				if (accessControlProfliesComboBox.selectedItem == null) {
+					// this only happen because creationPolicy set to all?
+					return;
+				}
+				else {
+					var selectedAC:AccessControlProfileVO = accessControlProfliesComboBox.selectedItem.profile;
+					if (selectedAC == null) {
+						accessControlNameLabel.text = '';
+						accessControlDescriptionLabel.text = '';
+						accessControlAuthoSitesLabel.text = '';
+						accessControlAuthoCountriesLabel.text = '';
+						accessControlAdvancedLabel.text = '';
+						if (selectedEntry != null) {
+							selectedEntry.accessControlId = 0;
+						}
+						else if (selectedEntries != null) {
+							for each (var entry:KalturaBaseEntry in selectedEntries) {
+								entry.accessControlId = 0;
+							}
+						}
+					}
+					else {
+						accessControlNameLabel.text = selectedAC.profile.name;
+						accessControlDescriptionLabel.text = selectedAC.profile.description;
+						accessControlAdvancedLabel.text = "";
+						var foundSitesRestriction:Boolean = false;
+						var foundCountriesRestriction:Boolean = false;
+						var foundKalDirRestriction:Boolean = false;
+						for each (var restriction:KalturaBaseRestriction in selectedAC.profile.restrictions) {
+							if (restriction is KalturaSiteRestriction) {
+								foundSitesRestriction = true;
+								accessControlAuthoSitesLabel.text = (restriction as
+									KalturaSiteRestriction).siteRestrictionType ==
+									KalturaSiteRestrictionType.ALLOW_SITE_LIST ? resourceManager.getString('cms',
+																										   'ALLOW_SITES') +
+									":  " : resourceManager.getString('cms', 'RESTRICT_SITES') + ":  ";
+
+								accessControlAuthoSitesLabel.text += (restriction as
+									KalturaSiteRestriction).siteList;
+							}
+							else if (restriction is KalturaCountryRestriction) {
+								foundCountriesRestriction = true;
+								accessControlAuthoCountriesLabel.text = (restriction as
+									KalturaCountryRestriction).countryRestrictionType ==
+									KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST ? resourceManager.getString('cms',
+																												 'ALLOW_COUNTRIES') +
+									": " : resourceManager.getString('cms', 'RESTRICT_COUNTRIES') + ": ";
+
+								accessControlAuthoCountriesLabel.text += "\n" +
+									getCountriesList((restriction as KalturaCountryRestriction).countryList); 
+							}
+
+							if (restriction is KalturaSessionRestriction) {
+								accessControlAdvancedLabel.text = resourceManager.getString('cms',
+																							'KS_SHORT_CUT') +
+									", ";
+							}
+
+							if (restriction is KalturaPreviewRestriction) {
+								accessControlAdvancedLabel.text += resourceManager.getString('cms', 'PREVIEW');
+								var len:int = (restriction as KalturaPreviewRestriction).previewLength;
+								var min:int = Math.floor(len / 60);
+								var sec:int = len % 60;
+								accessControlAdvancedLabel.text += "(" + min + "m:" + sec + "s)  ";
+							}
+						}
+
+						accessControlAuthoSitesLabel.text = foundSitesRestriction ? accessControlAuthoSitesLabel.text : resourceManager.getString('cms',
+																																				  'ANY_SITE');
+						accessControlAuthoCountriesLabel.text = foundCountriesRestriction ? accessControlAuthoCountriesLabel.text : resourceManager.getString('cms',
+																																							  'ANY_COUNTRY');
+						accessControlAdvancedLabel.text = (accessControlAdvancedLabel.text.length >
+							0) ? accessControlAdvancedLabel.text.substr(0,
+																		accessControlAdvancedLabel.text.length -
+							2) : '';
+
+						if (selectedEntry != null) {
+							selectedEntry.accessControlId = selectedAC.profile.id;
+						}
+						else if (selectedEntries != null) {
+							for each (var entry1:KalturaBaseEntry in selectedEntries) {
+								entry1.accessControlId = selectedAC.profile.id;
+							}
+						}
+					}
+				}
+			}
+
+
+			private function getCountriesList(countriesCodesList:String):String {
+				var cArr:Array = countriesCodesList.split(',');
+				var countriesList:String = '';
+				for each (var countryCode:String in cArr) {
+					countriesList += KCountriesUtil.instance.getCountryName(countryCode) + ', ';
+				}
+
+				return countriesList.substr(0, countriesList.length - 2);
+			}
+
+
+			public function getSelectedAccessControlProfile():AccessControlProfileVO {
+				return (accessControlProfliesComboBox.selectedItem ==
+					null) ? null : accessControlProfliesComboBox.selectedItem.profile;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Grid>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="left" verticalAlign="bottom">
+				<mx:Label text="{resourceManager.getString('cms', 'profileDetailsLabel')}"
+						  styleName="drillDownTitleLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" height="100%">
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="right" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('cms', 'acpSectionTitle')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:ComboBox id='accessControlProfliesComboBox' change="onAccessControlChange(event)" width="200"/>
+				<mx:LinkButton label="{resourceManager.getString('cms', 'addProfileBtn')}"
+							   click="openNewAccessControlPopUpWindow(event)"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('cms', 'nameLabel')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Label width="280" id="accessControlNameLabel" toolTip="{accessControlNameLabel.text}" color="black"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow width="100%">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top">
+				<mx:Label text="{resourceManager.getString('cms', 'descriptionLabel')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:TextArea id="accessControlDescriptionLabel" height="100%" selectable="false" editable="false"
+							 width="100%" wordWrap="true" borderStyle="none" horizontalScrollPolicy="off"
+							 verticalScrollPolicy="off" toolTip="{accessControlDescriptionLabel.text}" color="black"
+							 backgroundAlpha="0"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('cms', 'authoSitesLabel')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Label width="100%" id="accessControlAuthoSitesLabel" color="black"
+						  toolTip="{accessControlAuthoSitesLabel.text}"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="left" verticalAlign="top">
+				<mx:Label text="{resourceManager.getString('cms', 'authoCountries')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:TextArea width="100%" id="accessControlAuthoCountriesLabel" height="100%" selectable="false"
+							 editable="false" wordWrap="true" borderStyle="none" color="black" backgroundAlpha="0"
+							 toolTip="{accessControlAuthoCountriesLabel.text}"/>
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow>
+			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('cms', 'advancedLabel')}" styleName="drillDownLabel"/>
+			</mx:GridItem>
+			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Label width="100%" id="accessControlAdvancedLabel" color="black"/>
+			</mx:GridItem>
+		</mx:GridRow>
+	</mx:Grid>
+
+</mx:VBox>

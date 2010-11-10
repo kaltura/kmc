@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 create new category window.
+	 opened from categories tree when clicking "+" in edit mode.
+-->
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
+				 close="closeWindow(event)" title="{resourceManager.getString('cms','addNewCategoryTitle')}"
+				 minWidth="250">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.vo.KalturaCategory;
+			import mx.utils.StringUtil;
+			import com.kaltura.kmc.modules.content.vo.CategoryVO;
+			import mx.managers.PopUpManager;
+
+			/**
+			 * the vo for the parent category.
+			 * */
+			public var parentCategory:CategoryVO;
+
+
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event = null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function saveNewCategory(event:Event = null):void {
+				var name:String = StringUtil.trim(newCategoryName.text);
+				var newCategory:KalturaCategory = new KalturaCategory();
+				newCategory.name = name;
+				newCategory.parentId = parentCategory.id;
+
+				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+				addNewCategoryEvent.data = newCategory;
+				addNewCategoryEvent.dispatch();
+
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADD_ADMIN_TAGS,
+														  "CategoriesTree>AddNewCategory");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_ADMIN_TAGS);
+				closeWindow();
+			}
+
+
+			private function onNameChange(event:Event = null):void {
+				var name:String = StringUtil.trim(newCategoryName.text);
+				var isOk:Boolean = true;
+				nameValidator.maxLength = 60;
+				isOk = name != '';
+
+				if (!isOk) {
+					nameValidator.requiredFieldError = resourceManager.getString('cms',
+																				 'emptyCategoryNameError');
+				}
+				else {
+					for each (var catChild:CategoryVO in parentCategory.children) {
+						if (name == catChild.name) {
+							isOk = false;
+							nameValidator.maxLength = 1;
+							nameValidator.tooLongError = resourceManager.getString('cms',
+																				   'categoryNameInUseError');
+							break;
+						}
+					}
+				}
+
+				nameValidator.validate();
+				submitBtn.enabled = isOk;
+			}
+
+
+			private function setNameFocus():void {
+				stage.focus = newCategoryName;
+			}
+		]]>
+	</mx:Script>
+	<mx:StringValidator id='nameValidator' source="{newCategoryName}" property="text" trigger="{newCategoryName}"
+						triggerEvent="change" required="true" maxLength="60"/>
+	<mx:TextInput width="100%" id="newCategoryName" maxChars="60" change="onNameChange(event)"
+				  creationComplete="setNameFocus()" enter="saveNewCategory(event)"/>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button label="{resourceManager.getString('cms','addCategory')}" enabled="false" useHandCursor="true"
+				   buttonMode="true" click="saveNewCategory(event)" id="submitBtn"/>
+	</mx:ControlBar>
+
+</HelpTitleWindow>

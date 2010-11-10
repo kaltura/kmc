@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:FlavorAssetRendererBase xmlns="com.kaltura.kmc.modules.content.view.window.entrydetailswindowsections.renderers.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{onCreatoinComplete()}" xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			
+			override public function set data(value:Object):void
+			{
+				super.data = value;
+				onCreatoinComplete();
+				setFlavorFormatLabel();
+			}
+			
+			
+			private function setFlavorFormatLabel():void
+			{
+				flavorFormatLabel.enabled = (data.kalturaFlavorAssetWithParams.flavorAsset != null);
+				if ((data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams 
+					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset
+					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.fileExt )
+					flavorFormatLabel.text = (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.fileExt;
+				else 
+					flavorFormatLabel.text = "";
+				flavorFormatLabel.toolTip = flavorFormatLabel.text;
+				
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label id='flavorFormatLabel' creationComplete="setFlavorFormatLabel()"/>
+</renderers:FlavorAssetRendererBase>

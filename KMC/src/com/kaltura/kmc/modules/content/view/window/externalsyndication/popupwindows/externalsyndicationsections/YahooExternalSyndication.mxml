@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+Yahoo syndication details.
+used as part of <Code>ExternalSyndicationPopUpWindow</code>
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:validators="com.kaltura.validators.*"
+		 implements="com.kaltura.kmc.modules.content.view.interfaces.IExternalSyndicationFeed"
+		 label="{resourceManager.getString('cms', 'yahoo')}"
+		 width="100%" height="100%"
+		 paddingRight="10">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaSyndicationFeedType;
+			import com.kaltura.vo.KalturaBaseSyndicationFeed;
+			import com.kaltura.vo.KalturaFlavorParams;
+			import com.kaltura.vo.KalturaUiConf;
+			import com.kaltura.vo.KalturaYahooSyndicationFeed;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import mx.controls.Alert;
+			import mx.controls.listClasses.ListBase;
+			import mx.events.ValidationResultEvent;
+			import mx.utils.StringUtil;
+			import mx.validators.ValidationResult;
+
+			private var feed:KalturaBaseSyndicationFeed;
+			
+			[Bindable]
+			/**
+			 * optional flavors
+			 * */
+			public var flavorParams:ArrayCollection;
+			
+			[Bindable]
+			/**
+			 * a list of player uiconfs (descriptions)
+			 * */
+			public var players:ArrayCollection; 
+			
+			
+
+
+			public function get syndication():KalturaBaseSyndicationFeed {
+				var yahooFeed:KalturaYahooSyndicationFeed = (feed != null) ? (feed as KalturaYahooSyndicationFeed) : new KalturaYahooSyndicationFeed();
+				yahooFeed.type = KalturaSyndicationFeedType.YAHOO;
+				yahooFeed.landingPage = StringUtil.trim(landingPageInputText.text);
+				yahooFeed.flavorParamId = getFlavorParamID();
+				yahooFeed.addToDefaultConversionProfile = defaultCPCheckBox.selected;
+				yahooFeed.allowEmbed = playBackRadioBtn.selected;
+				if (playBackRadioBtn.selected) {
+					yahooFeed.playerUiconfId = getPlayerUIConfId();
+				}
+				yahooFeed.feedDescription = descriptionTextArea.text;
+				yahooFeed.feedLandingPage = webSiteTextInput.text;
+				yahooFeed.categories = getCategoriesList();
+				return yahooFeed;
+			}
+
+
+			public function set syndication(syndication:KalturaBaseSyndicationFeed):void {
+				feed = syndication as KalturaYahooSyndicationFeed;
+
+				setFeedFlavorAndSettings();
+				setFeedLandingPage();
+
+				playBackRadioBtn.selected = feed.allowEmbed;
+				linkBackRadioBtn.selected = !feed.allowEmbed;
+				if (feed.allowEmbed) {
+					setPlayerUIConf(feed.playerUiconfId);
+				}
+
+				descriptionTextArea.text = feed.feedDescription;
+				webSiteTextInput.text = feed.feedLandingPage;
+				setCategories(feed.categories);
+			}
+
+
+			private function getPlayerUIConfId():int {
+				if (videoPlayerComboBox.selectedItem == null) {
+					Alert.show(resourceManager.getString('cms', 'noPlayersDataErrorMsg'), resourceManager.getString('cms', 'error'));
+				}
+				var selectedPlayer:KalturaUiConf = videoPlayerComboBox.selectedItem as KalturaUiConf;
+				return selectedPlayer.id;
+			}
+
+
+			private function setPlayerUIConf(playerUiconfId:int):void {
+				for each (var uiconf:KalturaUiConf in videoPlayerComboBox.dataProvider) {
+					if (uiconf.id == playerUiconfId) {
+						videoPlayerComboBox.selectedItem = uiconf;
+						break;
+					}
+				}
+			}
+
+
+			private function getCategoriesList():String {
+				var tempArr:Array = [];
+				for each (var cat:String in categoriesList.selectedItems) {
+					tempArr.push(cat.replace(new RegExp('&', 'g'), '&amp;'));
+				}
+
+				return tempArr.join(',');
+			}
+
+
+			private function setCategories(categoriesListStr:String):void {
+				var carArr:Array = categoriesListStr.split(',');
+				var tempArr:Array = [];
+				for each (var cat:String in carArr) {
+					var catStr:String = cat.replace(new RegExp('&amp;', 'g'), '&');
+					//	if(setSelectedItem(categoriesList, catStr))
+					//	{
+					tempArr.push(catStr);
+						//	}
+				}
+
+				if ((tempArr.length > 0) && (tempArr[0] != '')) {
+					categoriesList.selectedItems = tempArr;
+				}
+			}
+
+
+			public function setSelectedItem(control:ListBase, objectToSelect:Object):Boolean {
+				if (control == null || control.dataProvider == null) {
+					return false;
+				}
+				if (objectToSelect == null) {
+					control.selectedItem = null;
+					return false;
+				}
+				var dp:Object = control.dataProvider;
+				if (dp is ListCollectionView) {
+					var selIndex:int = ListCollectionView(control.dataProvider).getItemIndex(objectToSelect);
+					if (selIndex >= 0) {
+						control.selectedIndex = selIndex;
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+				else {
+					trace("Item not found");
+				}
+
+				return false;
+			}
+
+
+			public function validate():Boolean {
+				var isOk:Boolean = true;
+
+				var landingPageValidateResultEvent:ValidationResultEvent = feedLandingPageValidator.validate();
+				if ((landingPageValidateResultEvent.results != null) && (landingPageValidateResultEvent.results.length > 0)) {
+					isOk = !(landingPageValidateResultEvent.results[0] as ValidationResult).isError;
+				}
+
+				if (isOk) {
+					var webSiteValidateResultEvent:ValidationResultEvent = webSiteValidator.validate();
+					if ((webSiteValidateResultEvent.results != null) && (webSiteValidateResultEvent.results.length > 0)) {
+						isOk = !(webSiteValidateResultEvent.results[0] as ValidationResult).isError;
+					}
+				}
+
+				return isOk;
+			}
+
+
+			private function setFeedFlavorAndSettings():void {
+				// flavor param
+				var fpId:int = feed.flavorParamId;
+				for each (var fp:KalturaFlavorParams in flavorsComboBox.dataProvider) {
+					if (fpId == fp.id) {
+						flavorsComboBox.selectedItem = fp;
+						break;
+					}
+				}
+
+				// other settings
+				/* additinalTranscodingCheckBox.selected = feed.transcodeExistingcontent; */
+				defaultCPCheckBox.selected = feed.addToDefaultConversionProfile;
+
+			}
+
+
+			private function setFeedLandingPage():void {
+				landingPageInputText.text = feed.landingPage;
+			}
+
+
+			private function getFlavorParamID():int {
+				return (flavorsComboBox.selectedItem as KalturaFlavorParams).id;
+			}
+		]]>
+	</mx:Script>
+	<validators:URLValidator id='feedLandingPageValidator' 
+							 source="{landingPageInputText}"
+							 property="text" required="true"/>
+	<validators:URLValidator id='webSiteValidator'
+							 source="{webSiteTextInput}"
+							 property="text" required="false"/>
+	<mx:HBox width="100%" styleName="formInnerTitle">
+		<mx:Label text="{resourceManager.getString('cms', 'yahooFeedTitle')}"
+				  styleName="formInnerTitleText"/>
+	</mx:HBox>
+	
+	<mx:Spacer height="10"/>
+	
+	<mx:HBox width="100%" >
+		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:ComboBox id='flavorsComboBox'
+					 dataProvider="{flavorParams}"
+					 labelField="name"/>
+		<mx:CheckBox id='defaultCPCheckBox' selected="true"
+					 label="{resourceManager.getString('cms','addDefaultConversionProfile')}"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%" >
+		<mx:Label text="{resourceManager.getString('cms','landingPageLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:TextInput id="landingPageInputText" text="http://"
+					  restrict="0-9\-\/A-Z\a-z\.\_\?\:\=\#" 
+					  width="100%"/>
+	</mx:HBox>
+	
+	<mx:Text text="{resourceManager.getString('cms','yahooLandingPageDescriptionLabel')}"
+			 width="100%" styleName="syndicationNote" />
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'playbackFromYahoo')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:VBox width="100%" >
+			<mx:RadioButtonGroup id='playBackRadioBtnsGroup'/>
+			<mx:RadioButton id="playBackRadioBtn" selected="true"
+							label="{resourceManager.getString('cms', 'yesAndUsePlayerRadioBtn')}"
+							groupName="playBackRadioBtnsGroup" />
+			<mx:ComboBox id="videoPlayerComboBox"
+						 dataProvider="{players}"
+						 labelField="name" width="385"
+						 itemRenderer="mx.controls.Label"
+						 enabled="{playBackRadioBtn.selected}"/>
+			<mx:Text text="{resourceManager.getString('cms', 'yahooPlayerDescription')}"
+					 enabled="{playBackRadioBtn.selected}"/>
+			<mx:RadioButton id="linkBackRadioBtn" 
+							label="{resourceManager.getString('cms', 'noAndLinkBack')}"
+							groupName="playBackRadioBtnsGroup"/>
+		</mx:VBox>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{'*' + resourceManager.getString('cms', 'webSiteLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:TextInput id='webSiteTextInput'
+					  restrict="0-9\-\/A-Z\a-z\.\_\?\:"
+					  width="100%" text="http://" />
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'feedDescriptionLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:TextArea id='descriptionTextArea'
+					 width="100%" wordWrap="true"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms', 'categoriesLabel')}"
+				  width="180" styleName="feedParamLabel"/>
+		<mx:List id='categoriesList'
+				 allowMultipleSelection="true"
+				 rowCount="6" width="100%" >
+			<mx:dataProvider>
+						{[  resourceManager.getString('cms', 'yahooCategory_Action'), 
+					     resourceManager.getString('cms', 'yahooCategory_ArtAndAnimation'),
+					     resourceManager.getString('cms', 'yahooCategory_EntertainmentAndTV'),
+					     resourceManager.getString('cms', 'yahooCategory_Food'),
+					     resourceManager.getString('cms', 'yahooCategory_Games'),
+					     resourceManager.getString('cms', 'yahooCategory_HowTo'),
+					     resourceManager.getString('cms', 'yahooCategory_Music'),
+					     resourceManager.getString('cms', 'yahooCategory_PeopleAndVlogs'),
+					     resourceManager.getString('cms', 'yahooCategory_ScienceAndEnvironment'),
+					     resourceManager.getString('cms', 'yahooCategory_Transportation'),
+					     resourceManager.getString('cms', 'yahooCategory_Animals'),
+					     resourceManager.getString('cms', 'yahooCategory_Commercials'),
+					     resourceManager.getString('cms', 'yahooCategory_Family'),
+					     resourceManager.getString('cms', 'yahooCategory_FunnyVideos'),
+					     resourceManager.getString('cms', 'yahooCategory_HealthAndBeauty'),
+					     resourceManager.getString('cms', 'yahooCategory_MoviesAndShorts'),
+					     resourceManager.getString('cms', 'yahooCategory_NewsAndPolitics'),
+					     resourceManager.getString('cms', 'yahooCategory_ProductsAndTech'),
+					     resourceManager.getString('cms', 'yahooCategory_Sports'),
+					     resourceManager.getString('cms', 'yahooCategory_Travel')
+						]}
+			</mx:dataProvider>
+		</mx:List>
+	</mx:HBox>
+</mx:VBox>

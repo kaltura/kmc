@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="4">
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.model.IModelLocator;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
+			import com.kaltura.vo.KalturaPlaylist;
+
+			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+
+			public override function set data(value:Object):void {
+				var vo:ExternalSyndicationVO = value as ExternalSyndicationVO;
+
+				var plId:String = vo.kSyndicationFeed.playlistId;
+				if ((plId != null) && (plId != '')) {
+					for each (var pl:KalturaPlaylist in _model.extSynModel.generalPlayListdata) {
+						if (plId == pl.id) {
+							contentLabel.text = resourceManager.getString('cms', 'onlyPlayList') + ' ' +
+								pl.name;
+							break;
+						}
+					}
+				}
+				else {
+					contentLabel.text = resourceManager.getString('cms', 'allcontent');
+				}
+
+				contentLabel.toolTip = contentLabel.text;
+				super.data = value;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label id='contentLabel'/>
+</mx:HBox>
+
+

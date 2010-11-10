@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"
+				 help="{navigateToURL(new URLRequest(fullUrlHost+resourceManager.getString('cms','helpRemoveTags')))}"
+				 xmlns="com.kaltura.containers.*" layout="vertical" showCloseButton="true" close="{removeMe()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.adobe.utils.ArrayUtil;
+
+			import mx.collections.ArrayCollection;
+			import mx.core.mx_internal;
+			import mx.utils.StringUtil;
+			use namespace mx_internal;
+
+			private var _selectedEntries:ArrayCollection = new ArrayCollection();
+			private var _selectedChangedEntries:ArrayCollection = new ArrayCollection();
+
+			[Bindable]
+			private var _listDP:ArrayCollection = new ArrayCollection();
+			private var _isAdminTag:Boolean = false;
+
+
+			private function init():void {
+				if (_isAdminTag) {
+					this.title = resourceManager.getString('cms', 'removeAdminTags');
+					removeTagsText.text = resourceManager.getString('cms', 'removeAdminTagsDescription');
+				}
+				else {
+					this.title = resourceManager.getString('cms', 'removeTags');
+					removeTagsText.text = resourceManager.getString('cms', 'removeTagsDescription');
+				}
+			}
+
+
+			private function removeMe():void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+
+
+			private function removeTags():void {
+				for (var i:int = 0; i < _selectedChangedEntries.length; i++) {
+					for (var j:int = 0; j < list.selectedItems.length; j++) {
+						if (_isAdminTag)
+							_selectedChangedEntries[i].adminTags = String(_selectedChangedEntries[i].adminTags).replace(list.selectedItems[j],
+																														'');
+						else
+							_selectedChangedEntries[i].tags = String(_selectedChangedEntries[i].tags).replace(list.selectedItems[j],
+																											  '');
+					}
+
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_REMOVE_TAGS,
+															  "Entry>RemoveTagsWindow",
+															  _selectedChangedEntries[i].id);
+				}
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REMOVE_TAGS);
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES,
+															_selectedChangedEntries);
+				cgEvent.dispatch();
+
+			}
+
+
+			public function get selectedEntries():ArrayCollection {
+				return _selectedEntries;
+			}
+
+
+			public function set selectedEntries(arrCol:ArrayCollection):void {
+				_selectedEntries = arrCol;
+				for (var i:int = 0; i < _selectedEntries.length; i++) {
+					_selectedChangedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+
+					var newArr:Array;
+					if (_isAdminTag && (_selectedEntries[i].adminTags != null))
+						newArr = String(_selectedEntries[i].adminTags).split(',');
+					else if (_selectedEntries[i].tags != null)
+						newArr = String(_selectedEntries[i].tags).split(',');
+
+					if (newArr != null) {
+						for (var j:int = 0; j < newArr.length; j++) {
+							if (newArr[j] == " " || newArr[j] == "" || newArr[j] == ",")
+								ArrayUtil.removeValueFromArray(newArr, newArr[j]);
+							else
+								newArr[j] = StringUtil.trim(newArr[j]);
+						}
+
+						_listDP.source = (_listDP.source).concat(newArr);
+					}
+				}
+
+				var uniqeArr:Array = ArrayUtil.createUniqueCopy(_listDP.source);
+				uniqeArr.sort();
+				_listDP = new ArrayCollection(uniqeArr);
+			}
+
+
+			public function set isAdminTag(isIt:Boolean):void {
+				_isAdminTag = isIt;
+			}
+
+
+			public function get isAdminTag():Boolean {
+				return _isAdminTag;
+			}
+		]]>
+	</mx:Script>
+	<mx:Text id="removeTagsText" text="{resourceManager.getString('cms', 'removeTagsDescription')}"/>
+	<mx:List id="list" minWidth="150" width="100%" dataProvider="{_listDP}" allowMultipleSelection="true"/>
+	<mx:ControlBar>
+		<mx:Button label="{resourceManager.getString('cms', 'remove')}" enabled="{list.selectedItems.length > 0}"
+				   click="removeTags()" buttonMode="true"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

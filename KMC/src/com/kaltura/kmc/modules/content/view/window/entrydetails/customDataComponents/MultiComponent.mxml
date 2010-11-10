@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.MetadataDataObject;
+			import com.kaltura.kmc.modules.content.utils.FormBuilder;
+			
+			private var _childXML:XML;
+			private var _metadataProperty:String;
+			
+			/**
+			 * the bound object that listens to the inserted metadata
+			 * */
+			public var metadataObject:MetadataDataObject;// = CmsModelLocator.getInstance().metadataInfo.metadataDataObject;
+			
+			override public function addChild(child:DisplayObject):DisplayObject {
+				if ( child == linkButton )
+					return super.addChild(child);
+				
+				var newChildField:MultiFieldComponent = new MultiFieldComponent();
+				newChildField.addChildAt(child, 0);
+				var index:int = 0;
+				//always adds as the last child (besided the "add" button child)
+				if (this.numChildren > 0) {
+					if (this.getChildByName("linkButton"))
+						index = this.numChildren - 1; //we want to add the child before the button
+					else
+						index = this.numChildren;
+				}
+				
+				return this.addChildAt(newChildField, index);
+			}
+			
+			override public function removeChild(child:DisplayObject):DisplayObject  {
+				//to erase from the metadataDataObject (because of the binding...)
+				(DisplayObjectContainer(child)).getChildAt(0)[_metadataProperty] = null;
+				return super.removeChild(child);
+			}
+
+			/**
+			 * this function adds a nested component,
+			 * it uses the _nestedComponentName in order to create the suitable uiComponent
+			 * it binds the _metadataData property to the model
+			 * */
+			private function addComponent():void {
+				if (!childXML)
+					return;
+				var metadataProperty:String = childXML.@metadataData;
+				var newField:MultiFieldComponent = new MultiFieldComponent();
+				var index:int = this.numChildren - 1;
+				//this will be the key in the metadataDataObject
+				childXML.@name = index;
+				var newComponent:DisplayObject = DisplayObject(FormBuilder.buildComponent(childXML, metadataObject));
+				newComponent[_metadataProperty] = null;
+				newField.addChildAt(newComponent ,0);
+
+				this.addChildAt(newField, index);
+			}
+
+			public function get childXML():XML
+			{
+				return _childXML;
+			}
+
+			public function set childXML(value:XML):void
+			{
+				_childXML = value;
+				_metadataProperty = _childXML.@metadataData;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:LinkButton id="linkButton" label="{resourceManager.getString('cms','MultiAdd')}" click="{addComponent()}"
+				   styleName="multiComponentAddButton"/>
+</mx:VBox>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:DataGrid id="dataGrid" width="100%" headerHeight="25" rowHeight="45"
+				 height="{(_entriesArray.length*dataGrid.rowHeight) + dataGrid.headerHeight}"
+				 dataProvider="{_entriesArray}" verticalScrollPolicy="off" visible="{_entriesArray.length > 0}"
+				 includeInLayout="{_entriesArray.length > 0}" selectable="false" sortableColumns="false">
+		<mx:Script>
+			<![CDATA[
+				import com.adobe.cairngorm.control.CairngormEvent;
+				import com.kaltura.kmc.modules.content.control.CMSController;
+				import com.kaltura.kmc.modules.content.events.EntryEvent;
+				import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
+				import com.kaltura.kmc.modules.content.events.WindowEvent;
+				import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+				import com.kaltura.kmc.modules.content.model.Context;
+				import com.kaltura.kmc.modules.content.model.FilterModel;
+				import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+				import com.kaltura.kmc.modules.content.view.window.ManualPlaylistWindow;
+				import com.kaltura.commands.MultiRequest;
+				import com.kaltura.commands.baseEntry.BaseEntryGet;
+				import com.kaltura.events.KalturaEvent;
+				import com.kaltura.vo.KalturaBaseEntry;
+				
+				import mx.collections.ArrayCollection;
+				import mx.controls.Alert;
+				import mx.managers.PopUpManager;
+
+				public static const OPEN_ENTRY:String = "openEntry";
+				
+				/**
+				 * application context
+				 * */
+				public var context:Context;
+				
+				
+				/**
+				 * data required by filter in manual playlist window
+				 * */
+				public var filterModel:FilterModel;
+				
+				/**
+				 * the selected entry
+				 * */
+				public var selectedEntry:KalturaBaseEntry;
+				
+				private var _maxAllowedValues:int = 0;
+
+				[Bindable]
+				private var _numOfRows:int = 0;
+				
+				[Bindable]
+				private var _entriesArray:ArrayCollection = new ArrayCollection();
+				
+				[Bindable]
+				public var usedForModeration:Boolean = false;
+
+
+				/**
+				 * This function gets an array of entries Id's and sends the server a request
+				 * to get all of these entries
+				 * */
+				public function set dataArray(value:Object):void {
+					var idArray:Array = value as Array;
+					if (idArray) {
+						var multiRequest:MultiRequest = new MultiRequest();
+						for each (var entryId:String in idArray) {
+							var getEntry:BaseEntryGet = new BaseEntryGet(entryId);
+							multiRequest.addAction(getEntry);
+						}
+						multiRequest.addEventListener(KalturaEvent.COMPLETE, listEntriesResult);
+						multiRequest.addEventListener(KalturaEvent.FAILED, listEntriesFault);
+						context.kc.post(multiRequest);
+					}
+				}
+
+
+				/**
+				 * recieves a string represantation of the maximum allowed values and
+				 * parses to _maxAllowedValues field
+				 * */
+				public function set maxAllowedValues(maxValues:String):void {
+					_maxAllowedValues = parseInt(maxValues);
+				}
+
+
+				/**
+				 * handles the result of the entries list request
+				 * */
+				private function listEntriesResult(event:KalturaEvent):void {
+					_entriesArray = new ArrayCollection(event.data as Array);
+					notifyDataChanged(event);
+				}
+
+
+				private function listEntriesFault(event:Event):void {
+					trace("Somehting went terribly wrong.");
+				}
+
+
+				/**
+				 * opens a drill down of the selected entry
+				 * */
+				public function openEditEntry(entry:Object):void {
+					if (entry) {
+						// set selevted entry
+						var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
+																	entry as KalturaBaseEntry);
+						cgEvent.dispatch();
+						// open window
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+						cgEvent.dispatch();
+					}
+					else {
+						Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
+					}
+					dispatchEvent(new Event(OPEN_ENTRY));
+				}
+
+
+				/**
+				 * opens the add linked entries popup
+				 * */
+				private function editExistingList():void {
+					var manualPlaylist:ManualPlaylistWindow = new ManualPlaylistWindow();
+					var model:CmsModelLocator = CmsModelLocator.getInstance();
+					manualPlaylist.selectedEntry = model.entryDetailsModel.selectedEntry;
+					manualPlaylist.playlistModel = model.playlistModel;
+					manualPlaylist.rootUrl = context.rootUrl;
+					manualPlaylist.filterData = filterModel;
+					manualPlaylist.showLinks = false;
+					manualPlaylist.setEntriesListTitle(resourceManager.getString('cms',
+																				 'linkedEntriesSelectedEntries'));
+					manualPlaylist.title = resourceManager.getString('cms', 'editEntry') + " - " +
+						selectedEntry.name + " > " +
+						resourceManager.getString('cms', 'linkedEntriedAddRemove');
+					manualPlaylist.context = ManualPlaylistWindow.EDIT_LINKED_ENTRIES_MODE;
+					if (!_entriesArray) {
+						_entriesArray = new ArrayCollection();
+						manualPlaylist.context = ManualPlaylistWindow.NEW_LINKED_ENTRIES;
+					}
+					manualPlaylist.editLinkedArrayCollection = _entriesArray;
+					manualPlaylist.maxAllowedValues = _maxAllowedValues;
+					manualPlaylist.addEventListener(ManualPlaylistWindow.REFRESH_ENTRIES_LIST,
+													notifyDataChanged)
+
+					PopUpManager.addPopUp(manualPlaylist, this.root, true);
+					PopUpManager.centerPopUp(manualPlaylist);
+				}
+
+
+				/**
+				 * This function will be called with every change in the data provider of this grid.
+				 * Then it will set the bound metadataDataObject with the new array.
+				 * */
+				private function notifyDataChanged(event:Event):void {
+					var cgEvent:CairngormEvent = new MetadataDataEvent(MetadataDataEvent.UPDATE);
+					cgEvent.data = {entries:_entriesArray, tableId:this.id};
+					cgEvent.dispatch();
+				}
+			]]>
+		</mx:Script>
+
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','linkedEntriesTableID')}" dataField="id">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
+								 horizontalAlign="center">
+							<mx:Label text="{data.id}"/>
+						</mx:HBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','thumbnail')}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+							<mx:Image source="{data.thumbnailUrl}" width="40" height="30" maintainAspectRatio="true"
+									  horizontalAlign="center" verticalAlign="middle" horizontalCenter="0"
+									  verticalCenter="0"/>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','name')}">
+
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
+								 horizontalAlign="center">
+							<!-- Must be in a container ( Bug in naked linkbutton in datagrid ) -->
+							<mx:Script>
+								<![CDATA[
+									import com.kaltura.types.KalturaEntryStatus;
+									import com.kaltura.types.KalturaMediaType;
+
+
+									private function getDrillDownEnabled(type:int):Boolean {
+										if (type == KalturaMediaType.LIVE_STREAM_FLASH) {
+											return data.status == KalturaEntryStatus.READY &&
+												!outerDocument.usedForModeration;
+										}
+										else
+											return true;
+									}
+								]]>
+							</mx:Script>
+							<!--mx:LinkButton label="{data.name}"
+								 enabled="{getDrillDownEnabled(data.mediaType)}"
+								 click="{event.stopImmediatePropagation(); outerDocument.openEditEntry(data)}" toolTip="{data.name}" /-->
+							<mx:Label text="{data.name}" toolTip="{data.name}"/>
+						</mx:HBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:HBox>
+		<mx:LinkButton label="{resourceManager.getString('cms','linkedEntriedAddRemove')}" click="{editExistingList()}"
+					   styleName="linkeEntriesButton" textAlign="left"/>
+	</mx:HBox>
+
+</mx:VBox>

@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 horizontalAlign="left"
+		 width="100%" height="100%"
+		 creationComplete="{vbox1_creationCompleteHandler(event)}"
+		 xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
+		 xmlns:controls="com.kaltura.controls.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.modules.content.events.BulkEvent;
+			import com.kaltura.kmc.modules.content.events.ProfileEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.BulkUploadModel;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.model.types.BulkTypes;
+			import com.kaltura.kmc.modules.content.view.controls.FileManager;
+			import com.kaltura.kmc.modules.content.vo.ConversionProfileVO;
+			import com.kaltura.kmc.modules.content.vo.FilterVO;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.utils.pager.Pager;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.FlexEvent;
+			import mx.formatters.DateFormatter;
+
+			[Bindable]
+			/**
+			 * data that only bulkUpload tab uses
+			 * */
+			public var bulkUploadData:BulkUploadModel;
+			
+			[Bindable]
+			/**
+			 * Kaltura Session key, used with EI call.
+			 * */
+			public var ks:String;
+			
+			private var _pager:Pager;
+			
+			private var _fm:FileManager = new FileManager();
+			
+			/**
+			 * optional conversion profiles
+			 * */
+			private var _convProfileData:ArrayCollection;
+			
+			/**
+			 * names of optional conversion profiles
+			 * */
+			private var _convProfileLabels:ArrayCollection;
+			
+			private var _filter:FilterVO = new FilterVO();
+			
+			private var _fileReadyFlag:Boolean = false;
+			
+
+
+			public function init():void {
+				
+				loadEntries();
+				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
+				listConvProfileEvent.dispatch();
+				
+			}
+
+
+
+			private function setFileName(event:Event):void {
+				_fileReadyFlag = true;
+				//fileName.text = _fm.fr.name;
+				var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.ADD_BULK_UPLOAD, _filter, _fm);
+				bulkEvent.dispatch();
+			}
+
+
+			private function submitCSV():void {
+				if (_fileReadyFlag) {
+					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.ADD_BULK_UPLOAD, _filter, _fm);
+					bulkEvent.dispatch();
+					clearUpload();
+
+					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_BULK_UPLOAD);
+				}
+				else
+					Alert.show(resourceManager.getString('cms', 'browseFirst'));
+			}
+
+
+
+			private function clearUpload():void {
+				_fileReadyFlag = false;
+			}
+
+
+			private function openCw():void {
+				var selectedConvProfileIndex:Number = profilesCb.selectedIndex;
+				var selectedConvProfile:ConversionProfileVO = _convProfileData.getItemAt(selectedConvProfileIndex) as ConversionProfileVO;
+				var selectedProfileId:int = selectedConvProfile.profile.id;
+				if (bulkUploadData.openCw) {
+					ExternalInterface.call(bulkUploadData.openCw, ks, selectedProfileId);
+				}
+				else {
+					try {
+						ExternalInterface.call("cwFunction", ks, selectedProfileId);
+					}
+					catch (e:Error) {
+						trace('the openCw is missing, or the JS function does not exist');
+					}
+				}
+
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADMIN_KCW_UPLOAD);
+			}
+
+
+			public function initPaging():void {
+				if (paging && _pager && _pager.allEntries)
+					paging.totalCount = _pager.numPagesTotal * _pager.localPageSize;
+			}
+
+
+			public function loadEntries():void {
+				if (paging)
+					_filter.page = paging.selectedPage;
+
+				var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD, _filter);
+				bulkEvent.dispatch();
+			}
+
+
+			public function addBulk():void {
+				clearUpload();
+				_fm.fr = new FileReference();
+				_fm.fr.addEventListener(Event.SELECT, setFileName);
+				_fm.fr.browse(getTypes());
+			}
+
+
+			private function getTypes():Array {
+				var allTypes:Array = [new FileFilter("CSV Files (*.csv)", "*.csv")];
+				return allTypes;
+			}
+
+
+			public function set pager(pager:Pager):void {
+				_pager = pager;
+				initPaging();
+			}
+
+
+			public function get pager():Pager {
+				return _pager;
+			}
+
+
+
+			private function setConvProfileData(value:ArrayCollection):void {
+				if (value) {
+					_convProfileData = value;
+					_convProfileLabels = new ArrayCollection();
+					var defaultIndex:int = -1;
+					var arr:Array = new Array();
+					for (var i:uint; i < value.length; i++) {
+						arr.push((_convProfileData[i] as ConversionProfileVO).profile.name);
+						if ((_convProfileData[i] as ConversionProfileVO).profile.isDefault)
+							defaultIndex = i;
+					}
+					_convProfileLabels.source = arr;
+					profilesCb.dataProvider = _convProfileLabels;	
+					profilesCb.selectedIndex = defaultIndex;
+				}
+			}
+
+
+			public function getStatus(status:String):String {
+				return BulkTypes.getTypeName(uint(status));
+			}
+
+
+			public function getDate(fileObj:Object):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = resourceManager.getString('cms', 'listdateformat');
+				var dt:Date = new Date();
+				dt.setTime(Number(fileObj.uploadedOn) * 1000);
+				return df.format(dt);
+			}
+
+
+			public function getEntriesNumber(fileObj:Object):String {
+				return (fileObj.numOfEntries == int.MIN_VALUE) ? '' : (fileObj.numOfEntries + '');
+			}
+
+
+
+			public function downloadFile(filePath:String, fileNmae:String):void {
+				_fm.fr = new FileReference();
+				_fm.downloadFile(filePath, "Download", fileNmae);
+			}
+
+
+			/**
+			 * opens a file without separating path from name.
+			 * @param url 	path to file.
+			 * */
+			private function downloadFileDirect(url:String):void {
+				var req:URLRequest = new URLRequest(url);
+				navigateToURL(req);
+			}
+
+
+			private function onPagerCreationComplete(event:Event):void {
+				bulkUploadData.bulkUploadFilterPager = paging.kalturaFilterPager;
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+
+			}
+
+
+			private function gotoPage():void {
+				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
+				init();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE);
+				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
+			}
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox id="maincontent"
+			 width="100%"
+			 styleName="blueBoxContainer">
+		<mx:VBox width="100%"
+				 horizontalAlign="left"
+				 styleName="blueBox">
+			<mx:Label text="{resourceManager.getString('cms', 'upload')}"
+					  styleName="blueBoxTitle"
+					  selectable="false"/>
+			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}"
+					 selectable="false"/>
+			<mx:HBox>
+				<mx:ComboBox id="profilesCb" />
+				<mx:Button label="{resourceManager.getString('cms', 'upload')}"
+						   click="openCw()"
+						   buttonMode="true"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<mx:VBox width="100%"
+				 horizontalAlign="left"
+				 styleName="blueBox">
+			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}"
+					  styleName="blueBoxTitle"
+					  selectable="false"/>
+			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}"
+					 selectable="false"/>
+			<mx:Spacer/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting1',[bulkUploadData.sampleFileUrl])}"
+					  selectable="true"
+					  link="downloadFileDirect(event.text)"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting2')}"
+					  selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}"
+					  selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}"
+					  selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}"
+					  selectable="false"/>
+			<mx:Button label="{resourceManager.getString('cms', 'submitCSV')}"
+					   click="addBulk()"
+					   buttonMode="true"/>
+			<mx:VBox styleName="vGapBox"
+					 width="100%">
+				<mx:DataGrid id="bulkTable"
+							 width="100%"
+							 height="328"
+							 sortableColumns="false"
+							 dataProvider="{bulkUploadData.ps3BulkUploadData}"
+							 headerRelease="{event.preventDefault()}">
+					<mx:columns>
+						<mx:DataGridColumn dataField="uploadedBy"
+										   width="50"
+										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
+										   showDataTips="true"
+										   dataTipField="uploadedBy"/>
+						<mx:DataGridColumn dataField="uploadedOn"
+										   width="60"
+										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
+										   showDataTips="true"
+										   dataTipField="uploadedOn">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{outerDocument.getDate(data)}"
+											  toolTip="{this.text}"
+											  selectable="false"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="numOfEntries"
+										   width="50"
+										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{outerDocument.getEntriesNumber(data)}"
+											  toolTip="{this.text}"
+											  selectable="false"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn width="60"
+										   headerText="{resourceManager.getString('cms', 'status')}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{outerDocument.getStatus(data.status)}"
+											  toolTip="{this.text}"
+											  selectable="false"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="error"
+										   width="100"
+										   headerText="{resourceManager.getString('cms', 'error')}"
+										   showDataTips="true"
+										   dataTipField="error"/>
+						<mx:DataGridColumn width="60"
+										   headerText="{resourceManager.getString('cms', 'logFileUrl')}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:HBox horizontalScrollPolicy="off"
+											 verticalScrollPolicy="off">
+										<mx:Script>
+											<![CDATA[
+												import flash.net.navigateToURL;
+											]]>
+										</mx:Script>
+										<mx:LinkButton label="{data.logFileUrl}"
+													   click="outerDocument.downloadFile(data.logFileUrl,'logFile.csv')"
+													   toolTip="{this.label}"/>
+									</mx:HBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn width="60"
+										   headerText="{resourceManager.getString('cms', 'csvFileUrl')}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:HBox horizontalScrollPolicy="off"
+											 verticalScrollPolicy="off">
+										<mx:Script>
+											<![CDATA[
+												import flash.net.navigateToURL;
+											]]>
+										</mx:Script>
+										<mx:LinkButton label="{data.csvFileUrl}"
+													   click="outerDocument.downloadFile(data.csvFileUrl, 'csvFile.csv')"
+													   toolTip="{this.label}"/>
+									</mx:HBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+				<controls:Paging id="paging"
+								 width="100%"
+								 styleName="paging"
+								 rowsInPageChange="gotoPage()"
+								 nextPage="gotoPage()"
+								 prvPage="gotoPage()"
+								 getPageNum="gotoPage()"
+								 showRowsInPage="true"
+								 showNextFlag="true"
+								 showPrvFlag="true"
+								 creationComplete="onPagerCreationComplete(event)"
+								 totalCount="{bulkUploadData.bulkUploadTotalCount}"/>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:VBox>

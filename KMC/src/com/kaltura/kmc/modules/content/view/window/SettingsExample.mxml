@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+This class shows an image with example settings for live streaming
+-->
+<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	backgroundAlpha="1" backgroundColor="0xFFFFFF" showCloseButton="true" close="onClose()"
+	xmlns="com.kaltura.containers.*" layout="vertical" paddingLeft="20" paddingRight="20"
+	width="500" height="320" verticalAlign="top" horizontalAlign="center">
+<mx:Script>
+	<![CDATA[
+		import mx.managers.PopUpManager;
+		import mx.resources.ResourceManager; ResourceManager;
+		import mx.core.UIComponent;
+		import mx.binding.utils.BindingUtils;
+		import mx.core.FlexVersion;
+		import mx.controls.Button;
+		
+		[Bindable]
+		/**
+		 * window message
+		 */
+		public var stringToShow:String;
+		
+		[Bindable]
+		/**
+		 * image to show, as declared in style sheet
+		 */
+		public var imageClass:String;
+		
+		[Bindable]
+		/**
+		 * image width
+		 * */
+		public var imgWidth:Number;
+		
+		
+		[Bindable]
+		/**
+		 * image height
+		 * */
+		public var imgHeight:Number;
+		
+		/**
+		 * remove popup
+		 * */
+		protected function onClose():void
+		{
+			PopUpManager.removePopUp(this);	
+		}
+		
+		/**
+		 * set content sizes
+		 * */
+		override protected function onCreationCompleteHelpWindow():void
+		{
+				this.mx_internal::closeButton.height = _titleBtnHeight;
+				this.mx_internal::closeButton.width = _titleBtnWidth;
+				this.mx_internal::closeButton.buttonMode = true;
+				var titleBar : UIComponent = this.mx_internal::getTitleBar();
+				titleBar.height = 20;
+		}
+		
+	]]>
+</mx:Script>
+	<mx:Text text="{stringToShow}" width="100%" />
+	<mx:Spacer height="50%" />
+	<mx:VBox width="{imgWidth}" height="{imgHeight}" styleName="{imageClass}" />
+	<mx:Spacer height="50%" />
+</HelpTitleWindow>
