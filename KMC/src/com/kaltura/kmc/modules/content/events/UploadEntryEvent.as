@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class UploadEntryEvent extends CairngormEvent
 	{
-		public static const UPLOAD_THUMBNAIL : String = "uploadThumbnail";
+		public static const UPLOAD_THUMBNAIL : String = "content_uploadThumbnail";
 		
 		public var fileReferance:FileReference;
 		public var entryId:String;

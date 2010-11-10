@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.events
 	
 	public class UIConfEvent extends CairngormEvent
 	{
-		public static const LIST_UI_CONFS : String = "listUIConfs";
+		public static const LIST_UI_CONFS : String = "content_listUIConfs";
 		
 		public var uiConfFilter:KalturaUiConfFilter;
 		

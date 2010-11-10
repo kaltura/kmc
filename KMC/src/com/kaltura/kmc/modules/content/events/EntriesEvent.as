@@ -7,11 +7,11 @@ package com.kaltura.kmc.modules.content.events {
 	 * this class represents an event concerning a group of entries 
 	 */	
 	public class EntriesEvent extends CairngormEvent {
-		public static const SET_SELECTED_ENTRIES:String = "setSelectedEntries";
-		public static const SET_SELECTED_ENTRIES_FOR_PLAYLIST:String = "setSelectedEntriesForPlaylist";
-		public static const UPDATE_ENTRIES:String = "updateEntries";
-		public static const UPDATE_PLAYLISTS:String = "updatePlaylists";
-		public static const DELETE_ENTRIES:String = "deleteEntries";
+		public static const SET_SELECTED_ENTRIES:String = "content_setSelectedEntries";
+		public static const SET_SELECTED_ENTRIES_FOR_PLAYLIST:String = "content_setSelectedEntriesForPlaylist";
+		public static const UPDATE_ENTRIES:String = "content_updateEntries";
+		public static const UPDATE_PLAYLISTS:String = "content_updatePlaylists";
+		public static const DELETE_ENTRIES:String = "content_deleteEntries";
 		
 		/**
 		 * entries relevant for this event.

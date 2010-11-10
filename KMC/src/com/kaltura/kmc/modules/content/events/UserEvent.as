@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class UserEvent extends CairngormEvent
 	{
-		public static const BAN_USER : String = "banUser";
+		public static const BAN_USER : String = "content_banUser";
 		public var userVo : UserVO;
 		
 		public function UserEvent(type:String, userVo : UserVO, bubbles:Boolean=false, cancelable:Boolean=false)

@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class FilterEvent extends CairngormEvent
 	{
-		public static const SET_FILTER_TO_MODEL : String = "setFilterToModel";
+		public static const SET_FILTER_TO_MODEL : String = "content_setFilterToModel";
 		
 		private var _filterVo : KalturaMediaEntryFilterForPlaylist;
 		

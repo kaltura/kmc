@@ -6,8 +6,8 @@ package com.kaltura.kmc.modules.content.events
 
 	public class NewFilterEvent extends Event
 	{
-		static public const NEW_PLAYLIST_FILTER:String = "newPlaylistFilter";
-		static public const EMPTY_PLAYLIST_FILTER:String = "emptyPlaylistFilter";
+		static public const NEW_PLAYLIST_FILTER:String = "content_newPlaylistFilter";
+		static public const EMPTY_PLAYLIST_FILTER:String = "content_emptyPlaylistFilter";
 		
 		private var _ruleVo:KalturaMediaEntryFilterForPlaylist;
 		

@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class SelectionEvent extends CairngormEvent
 	{
-		public static const SELECTION_CHANGED : String = "selectionChanged";
+		public static const SELECTION_CHANGED : String = "content_selectionChanged";
 		
 		private var _entries : Array;
 		

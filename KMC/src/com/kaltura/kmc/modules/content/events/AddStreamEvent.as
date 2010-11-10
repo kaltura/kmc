@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class AddStreamEvent extends CairngormEvent
 	{
-		public static const ADD_STREAM:String = "addStream";
+		public static const ADD_STREAM:String = "content_addStream";
 		private var _streamVo:StreamVo;
 		
 		public function AddStreamEvent(type:String , streamVo:StreamVo , bubbles:Boolean=false, cancelable:Boolean=false)

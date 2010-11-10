@@ -4,8 +4,8 @@ package com.kaltura.kmc.modules.content.events
 
 	public class ModerationsEvent extends CairngormEvent
 	{
-		public static const HANDLE_MODERATION : String = "handleModeration";
-		public static const UPDATE_ENTRY_MODERATION : String = "updateEntryModeration";
+		public static const HANDLE_MODERATION : String = "content_handleModeration";
+		public static const UPDATE_ENTRY_MODERATION : String = "content_updateEntryModeration";
 		
 		public static const APPROVE:int = 1;
 		public static const REJECT:int = 2;

@@ -4,12 +4,12 @@ package com.kaltura.kmc.modules.content.events
 	
 	public class ExternalSyndicationEvent extends CairngormEvent
 	{
-		public static const LIST_EXTERNAL_SYNDICATIONS : String = "listSyndications";
-		public static const UPDATE_EXTERNAL_SYNDICATION_CHANGES : String = "updateSyndicationChanges";
-		public static const ADD_NEW_EXTERNAL_SYNDICATION : String = "addNewSyndication";
-		public static const DELETE_EXTERNAL_SYNDICATION : String = "deleteCheckedSyndication";
-		public static const MARK_EXTERNAL_SYNDICATION : String = "markSyndications";
-		public static const SET_SYNDICATION_FEED_FILTER_ORDER : String = "setSyndicationFeedFilterOrder";
+		public static const LIST_EXTERNAL_SYNDICATIONS : String = "content_listSyndications";
+		public static const UPDATE_EXTERNAL_SYNDICATION_CHANGES : String = "content_updateSyndicationChanges";
+		public static const ADD_NEW_EXTERNAL_SYNDICATION : String = "content_addNewSyndication";
+		public static const DELETE_EXTERNAL_SYNDICATION : String = "content_deleteCheckedSyndication";
+		public static const MARK_EXTERNAL_SYNDICATION : String = "content_markSyndications";
+		public static const SET_SYNDICATION_FEED_FILTER_ORDER : String = "content_setSyndicationFeedFilterOrder";
 		
 		private var _selected : Boolean;
 		

@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class SetCurrentListableEvent extends CairngormEvent
 	{
-		public static const SET_NEW_LIST_TO_MODEL:String ="setNewListToModel"; 
+		public static const SET_NEW_LIST_TO_MODEL:String ="content_setNewListToModel"; 
 		
 		private var _listableVo:ListableVo;
 		

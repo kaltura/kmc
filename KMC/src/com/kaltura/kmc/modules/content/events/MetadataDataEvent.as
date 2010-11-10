@@ -9,9 +9,9 @@ package com.kaltura.kmc.modules.content.events
 	 */
 	public class MetadataDataEvent extends CairngormEvent
 	{
-		public static const ADD : String = "add";
-		public static const LIST : String = "list";
-		public static const UPDATE : String = "update";
+		public static const ADD : String = "content_add";
+		public static const LIST : String = "content_list";
+		public static const UPDATE : String = "content_update";
 
 		/**
 		 * Constructs a new MetadataDataEvent 

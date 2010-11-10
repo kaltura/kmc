@@ -2,8 +2,8 @@ package com.kaltura.kmc.modules.content.events {
 	import com.adobe.cairngorm.control.CairngormEvent;
 
 	public class WindowEvent extends CairngormEvent {
-		public static const CLOSE:String = "close";
-		public static const OPEN:String = "open";
+		public static const CLOSE:String = "content_close";
+		public static const OPEN:String = "content_open";
 
 		private var _windowState:String = null;
 

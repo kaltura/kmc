@@ -8,8 +8,8 @@ package com.kaltura.kmc.modules.content.events
 
 	public class BulkEvent extends CairngormEvent
 	{
-		public static const LIST_BULK_UPLOAD : String = "listBulkUpload";
-		public static const ADD_BULK_UPLOAD : String = "addBulkUpload";
+		public static const LIST_BULK_UPLOAD : String = "content_listBulkUpload";
+		public static const ADD_BULK_UPLOAD : String = "content_addBulkUpload";
 		
 		public var filterVO : FilterVO;
 		public var fm : FileManager;

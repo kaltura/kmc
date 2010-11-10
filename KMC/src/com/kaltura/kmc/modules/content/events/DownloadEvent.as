@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.events
 
 	public class DownloadEvent extends CairngormEvent
 	{
-		public static const DOWNLOAD_ENTRY : String = "downloadEntry";
+		public static const DOWNLOAD_ENTRY : String = "content_downloadEntry";
 		public var entriesIds : String; 
 		public var flavorParamId : String;
 		

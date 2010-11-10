@@ -5,9 +5,9 @@ package com.kaltura.kmc.modules.content.events
 
 	public class SearchEvent extends CairngormEvent
 	{
-		public static const SEARCH_ENTRIES : String = "searchEntries";
-		public static const SEARCH_PLAYLIST : String = "searchPlaylists";
-		public static const SEARCH_BULK_LOG : String = "searchBulkLog";
+		public static const SEARCH_ENTRIES : String = "content_searchEntries";
+		public static const SEARCH_PLAYLIST : String = "content_searchPlaylists";
+		public static const SEARCH_BULK_LOG : String = "content_searchBulkLog";
 		
 		private var _listableVo : ListableVo;
 		
