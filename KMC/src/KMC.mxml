@@ -4,6 +4,7 @@
 				paddingLeft="0" paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
+			import com.flexspy.FlexSpy;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.uiConf.UiConfGet;
@@ -20,8 +21,6 @@
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaUiConf;
-			
-			import com.flexspy.FlexSpy;
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -213,6 +212,9 @@
 				var ml:ModuleLoader = getModuleParent(moduleName);
 				if (ml) {
 					mainViewStack.selectedChild = ml;
+					// tell html
+					ExternalInterface.call("writeUrlHash", moduleName, subtab);	//TODO probably need the name from the locale
+					ExternalInterface.call("setTab", moduleName);
 				}
 			}
 			
@@ -260,17 +262,18 @@
 			 * */
 			private function showHelp(e:KmcHelpEvent):void {
 				//TODO implement showHelp
+				Alert.show("help bla bla.. " + e.anchor, "Imagine Help", Alert.OK);
 			}
 
-			protected function combobox1_changeHandler(event:ListEvent):void
-			{
-				gotoPage(switchCombo.selectedLabel, null);
-			}
+//			protected function combobox1_changeHandler(event:ListEvent):void
+//			{
+//				gotoPage(switchCombo.selectedLabel, null);
+//			}
 
 		]]>
 	</mx:Script>
 	<mx:HBox height="32">
-		<mx:ComboBox id="switchCombo" change="combobox1_changeHandler(event)">
+		<!--<mx:ComboBox id="switchCombo" change="combobox1_changeHandler(event)">
 			<mx:dataProvider>
 				<mx:String>dashboard</mx:String>
 				<mx:String>content</mx:String>
@@ -278,7 +281,7 @@
 				<mx:String>analytics</mx:String>
 				<mx:String>studio</mx:String>
 			</mx:dataProvider>
-		</mx:ComboBox>
+		</mx:ComboBox>-->
 		<mx:Button label="FlexSpy" click="FlexSpy.show()" />
 	</mx:HBox>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>
