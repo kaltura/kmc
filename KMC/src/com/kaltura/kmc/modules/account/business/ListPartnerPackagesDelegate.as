@@ -29,7 +29,7 @@ package com.kaltura.kmc.modules.account.business
 		
 		private function getSupportType( type : int ) : String
 		{
-			//TODO: BREAK THE BITWISE OPPERATIONS
+			// BREAK THE BITWISE OPPERATIONS
 			switch( type )
 			{
 				case 1: return ResourceManager.getInstance().getString('account','communtySupport'); break;

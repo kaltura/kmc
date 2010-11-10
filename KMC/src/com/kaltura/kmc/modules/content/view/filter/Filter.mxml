@@ -493,12 +493,6 @@
 				_dynamicFilterData = new Object();
 
 				_ready = true;
-				if (!stage) {
-					addEventListener(Event.ADDED_TO_STAGE, addKeyListeners)
-				}
-				else {
-					addKeyListeners();
-				}
 				accordion.addEventListener(FilterAccordionHeader.EDIT_CATEGORIES_MODE_EVENT, onEditCategories);
 
 				updateImageButton(schedulingContainer.buttons);
@@ -521,15 +515,6 @@
 				additional.enabled = !catTree.isInEditMode;
 
 				accordion.selectedIndex = catTree.isInEditMode ? 2 : accordion.selectedIndex;
-			}
-
-
-			/**
-			 * add listeners to keyboard
-			 * */
-			private function addKeyListeners(evt:Event = null):void {
-				stage.addEventListener(KeyboardEvent.KEY_UP, onKeyUp, false, 0, true);
-				stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
 			}
 
 
@@ -868,29 +853,6 @@
 				return result;
 			}
 
-
-			/**
-			 * Handle the control key release.
-			 */
-			private function onKeyUp(evt:KeyboardEvent):void {
-				if (evt.keyCode == Keyboard.CONTROL && _controlIsDown && _waitForSearch) {
-					dispatchEvent(new Event(NEW_SEARCH));
-					_controlIsDown = false;
-					_waitForSearch = false;
-					//TODO Atar: _waitForSearch is never true
-					/*  making this whole function redundant. as a matter of fact,
-					 * the whole keyboard referencing here doesn't seem very useful.	*/
-				}
-			}
-
-
-			/**
-			 * remember the control key if it is pressed
-			 * */
-			private function onKeyDown(evt:KeyboardEvent):void {
-				if (evt.keyCode == Keyboard.CONTROL)
-					_controlIsDown = true;
-			}
 
 
 			/**
