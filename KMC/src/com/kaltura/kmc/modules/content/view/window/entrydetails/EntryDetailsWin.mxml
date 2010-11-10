@@ -8,7 +8,7 @@
 				 height="540" width="930" layout="horizontal"
 				 horizontalScrollPolicy="off" paddingTop="18" 
 				 showCloseButton="true" close="{areYouSure()}"
-				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'helpEntryDrilDown')))}"
+				 help="{onHelp()}"
 				 xmlns="com.kaltura.containers.*" 
 				 xmlns:view="com.kaltura.kmc.modules.content.view.*"
 				 xmlns:controls="com.kaltura.controls.*" 
@@ -21,6 +21,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -99,6 +100,10 @@
 			 * */
 			public var openPlayerFunc:String;
 
+			
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'helpEntryDrilDown')));
+			}
 			
 			/**
 			 * reorder tabs and show only relevant tabs for normal entries

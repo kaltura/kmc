@@ -5,17 +5,14 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.view.window.SettingsExample;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
 			
-			import flash.utils.setTimeout;
-			
 			import mx.collections.ArrayCollection;
-			import mx.controls.Alert;
-			import mx.core.IFlexDisplayObject;
 			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
@@ -157,8 +154,9 @@
 				PopUpManager.addPopUp(pop, this, true);
 				PopUpManager.centerPopUp(pop);
 			}
+			
 			private function onHelp():void {
-				navigateToURL( new URLRequest( 'http://' + rootUrl + resourceManager.getString('cms', 'generalHelp') ) );
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'generalHelp')));
 			}
 
 

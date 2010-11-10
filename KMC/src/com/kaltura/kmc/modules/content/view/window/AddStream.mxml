@@ -4,11 +4,12 @@
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:validators="com.kaltura.validators.*"
 				 xmlns="com.kaltura.containers.*" layout="vertical" creationComplete="{setTitle()}"
-				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'liveStreamAnchor')))}"
+				 help="{onHelp()}"
 				 showCloseButton="true" close="removeMe()">
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.vo.StreamVo;
@@ -24,6 +25,9 @@
 				title = ResourceManager.getInstance().getString('cms', 'liveStreamTitle');
 			}
 
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'liveStreamAnchor')));
+			}
 
 			/**
 			 * Remove current window command

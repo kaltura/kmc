@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"
-				 help="{navigateToURL(new URLRequest(fullUrlHost+resourceManager.getString('cms','helpRemoveTags')))}"
+				 help="{onHelp()}"
 				 xmlns="com.kaltura.containers.*" layout="vertical" showCloseButton="true" close="{removeMe()}">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.adobe.utils.ArrayUtil;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.mx_internal;
 			import mx.utils.StringUtil;
@@ -37,6 +38,9 @@
 				}
 			}
 
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'helpRemoveTags')));
+			}
 
 			private function removeMe():void {
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);

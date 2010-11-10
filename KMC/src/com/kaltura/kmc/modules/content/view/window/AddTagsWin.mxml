@@ -4,7 +4,7 @@
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.kaltura.containers.*"
 				 layout="vertical" creationComplete="{setTexts()}"
-				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'helpAddTags') ) ) }"
+				 help="{onHelp()}"
 				 showCloseButton="true" close="{removeMe()}" >
 
 	<mx:Script>
@@ -12,6 +12,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -37,7 +38,10 @@
 			 * @copy #isAdminTag
 			 * */
 			private var _isAdminTag:Boolean = false;
-
+			
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'helpAddTags')));
+			}
 
 			private function setTexts():void {
 				if (_isAdminTag) {

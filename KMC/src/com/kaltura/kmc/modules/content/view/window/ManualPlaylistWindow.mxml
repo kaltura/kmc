@@ -10,13 +10,13 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
-			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.PlaylistModel;
 			import com.kaltura.kmc.modules.content.view.interfaces.IListable;
@@ -25,7 +25,6 @@
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.Compare;
-			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
@@ -160,8 +159,7 @@
 
 
 			private function onHelp():void {
-				navigateToURL(new URLRequest('http://' + rootUrl +
-					resourceManager.getString('cms', 'generalHelp')));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'generalHelp')));
 			}
 
 

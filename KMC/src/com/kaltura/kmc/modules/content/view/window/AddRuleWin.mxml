@@ -7,10 +7,11 @@
 				 xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
 				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" showCloseButton="true" 
 				 creationComplete="onCreationComplete()"
-				 help="{navigateToURL(new URLRequest(fullUrlHost + resourceManager.getString('cms', 'helpAddDynamicFilter')))}"
+				 help="{onHelp()}"
 				 close="onClose()" height="540" width="780">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
@@ -24,7 +25,10 @@
 
 			public static const REMOVE_ME:String = "removeMe";
 
-
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'helpAddDynamicFilter')));
+			}
+			
 			private function onCreationComplete():void {
 				singleRule.advancedBtn.visible = false;
 				singleRule.advancedBtn.includeInLayout = false;
