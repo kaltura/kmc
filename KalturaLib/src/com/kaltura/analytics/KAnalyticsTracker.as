@@ -2,7 +2,6 @@ package com.kaltura.analytics
 {
 //	import com.adobe.crypto.MD5;
 	import com.kaltura.KalturaClient;
-	import com.kaltura.commands.stats.StatsCollect;
 	import com.kaltura.commands.stats.StatsKmcCollect;
 	import com.kaltura.vo.KalturaStatsKmcEvent;
 	
