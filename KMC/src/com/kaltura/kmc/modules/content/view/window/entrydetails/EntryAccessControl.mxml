@@ -6,15 +6,15 @@
 		 show="{init()}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
-			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.types.*;
 			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
 			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -105,9 +105,28 @@
 				newProfileWin.currentState = "newProfileState";
 				PopUpManager.addPopUp(newProfileWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(newProfileWin);
+				
+				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc );
+				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc );
+				
 			}
-
-
+			
+			private function saveUpdatedProfileFunc(event:Event):void
+			{
+				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+				saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+				saveProfileChangesEvent.dispatch();
+			}
+			
+			/**
+			 * 
+			 */ 
+			private function saveNewProfileFunc(event:Event):void
+			{
+				var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+				addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+				addNewProfileEvent.dispatch(); 
+			}
 			private function onAccessControlChange(event:Event):void {
 				if (accessControlProfliesComboBox.selectedItem == null) {
 					// this only happen because creationPolicy set to all?

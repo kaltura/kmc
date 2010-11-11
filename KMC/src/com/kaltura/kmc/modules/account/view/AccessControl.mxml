@@ -121,7 +121,31 @@
 			addNewProfileWin.currentState = 'newProfileState';
 			PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
 			PopUpManager.centerPopUp(addNewProfileWin);
+			
+			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc );
+			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc );
+			
 		}
+			
+		private function saveUpdatedProfileFunc(event:Event):void
+		{
+			var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+			saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+			saveProfileChangesEvent.dispatch();
+		}
+		
+		/**
+		 * 
+		 */ 
+		private function saveNewProfileFunc(event:Event):void
+		{
+			var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+			addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+			addNewProfileEvent.dispatch(); 
+		}
+			
+			
+			
 		
 		private function onDeleteCheckedProfileClick(event:Event):void
 		{
