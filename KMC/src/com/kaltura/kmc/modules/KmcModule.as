@@ -203,11 +203,7 @@ package com.kaltura.kmc.modules {
 			_context = context;
 
 			loadUiconf(uiconfid);
-			if (!_cm)
-				var cm:ContextMenu = new ContextMenu();
 
-			_cm.hideBuiltInItems();
-			
 			var moduleVersion:ContextMenuItem = new ContextMenuItem(getModuleName()+" : "+getModuleVersion());
 			_cm.customItems.push(moduleVersion);
 			
