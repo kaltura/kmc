@@ -23,34 +23,41 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			import mx.events.CloseEvent;
-			import flexlib.scheduling.scheduleClasses.lineRenderer.Line;
-			import com.kaltura.utils.KArrayUtil;
-			import com.kaltura.types.KalturaNullableBoolean;
-			import mx.controls.LinkButton;
-			import mx.resources.IResourceManager;
-			import mx.resources.ResourceManager;
-			import mx.resources.ResourceBundle;
 			import com.kaltura.events.AccessControlProfileEvent;
-			import com.kaltura.vo.AccessControlProfileVO;
-			import com.kaltura.vo.KalturaCountryRestriction;
-			import com.kaltura.types.KalturaSessionType;
-			import com.kaltura.vo.KalturaPreviewRestriction;
-			import com.kaltura.types.KalturaDirectoryRestrictionType;
-			import com.kaltura.vo.KalturaDirectoryRestriction;
-			import com.kaltura.vo.KalturaSessionRestriction;
 			import com.kaltura.types.KalturaCountryRestrictionType;
+			import com.kaltura.types.KalturaDirectoryRestrictionType;
+			import com.kaltura.types.KalturaNullableBoolean;
+			import com.kaltura.types.KalturaSessionType;
 			import com.kaltura.types.KalturaSiteRestrictionType;
-			import com.kaltura.vo.KalturaSiteRestriction;
-			import com.kaltura.vo.KalturaBaseRestriction;
-			import mx.collections.ArrayCollection;
-		
+			import com.kaltura.utils.KArrayUtil;
 			import com.kaltura.utils.KCountriesUtil;
+			import com.kaltura.vo.AccessControlProfileVO;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaCountryRestriction;
+			import com.kaltura.vo.KalturaDirectoryRestriction;
+			import com.kaltura.vo.KalturaPreviewRestriction;
+			import com.kaltura.vo.KalturaSessionRestriction;
+			import com.kaltura.vo.KalturaSiteRestriction;
+			
+			import flexlib.scheduling.scheduleClasses.lineRenderer.Line;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.LinkButton;
+			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.resources.ResourceManager;
 			
 			[ResourceBundle("windows")]
 			private static var rb:ResourceBundle;
+
+			
+			// events const
+			public static const SAVE_UPDATED_PROFILE:String = "saveUpdatedProfile";
+			public static const SAVE_NEW_PROFILE:String = "saveNewProfile";
+			
 			
 			[Bindable]
 			private var rm:IResourceManager = ResourceManager.getInstance();
@@ -402,11 +409,11 @@
    			{
    				if(this.currentState == null)
    				{
-   					saveUpdatedProfile();
+   					saveUpdatedProfileFunc();
    				}
    				else
    				{
-   					saveNewProfile();
+   					saveNewProfileFunc();
    				}
    				
    				closeWindow();
@@ -591,21 +598,23 @@
    			/**
 			 * 
 			 */ 
-   			private function saveUpdatedProfile():void
+   			private function saveUpdatedProfileFunc():void
    			{
-   				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+/*    				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
 				saveProfileChangesEvent.data = accessControlProfile;
-				saveProfileChangesEvent.dispatch();
+				saveProfileChangesEvent.dispatch(); */
+				dispatchEvent(new Event(SAVE_UPDATED_PROFILE));
    			}
    			
    			/**
 			 * 
 			 */ 
-   			private function saveNewProfile():void
+   			private function saveNewProfileFunc():void
    			{
-   				var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+/*    			var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
 				addNewProfileEvent.data = accessControlProfile;
-				addNewProfileEvent.dispatch();
+				addNewProfileEvent.dispatch(); */
+				dispatchEvent(new Event(SAVE_NEW_PROFILE));
    			}
    			
    			/**
@@ -623,6 +632,11 @@
    			
 		]]>
 	</mx:Script>
+
+	<mx:Metadata>
+		[Event(name="saveUpdatedProfile", type="mx.events.Event")]
+		[Event(name="saveNewProfile", type="mx.events.Event")]
+	</mx:Metadata>
 	
 	<mx:StringValidator source="{profileNameTextInput}" property="text" 
         trigger="{profileNameTextInput}" triggerEvent="change" required="true" requiredFieldError="{rm.getString('windows', 'profileNameErrorMsg')}"
