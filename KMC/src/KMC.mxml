@@ -60,15 +60,40 @@
 			 * */
 			private var _uiconf:XML;
 
+			/**
+			 * Global Context menu
+			 * */
+			private var _cm:ContextMenu;
+			
+			/**
+			 * KMC version
+			 * */
+			public var VERSION:String = "3.0.0";
 			// ==============================================================================
 			// methods
 			// ==============================================================================
 			
 			/**
 			 * process flashvars and load KMC uiconf
-			 * */
+			 **/
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				Security.allowDomain('*');
+				//TODO replace when doing white labeling 
+				_cm = new ContextMenu();
+				_cm.hideBuiltInItems();
+				
+				var version:ContextMenuItem = new ContextMenuItem( "KMC version:"+VERSION);
+				_cm.customItems.push(version);
+				
+				//TODO - remove before release
+				var flexSpy:ContextMenuItem = new ContextMenuItem("flex spy");
+				flexSpy.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,onFlexSpy);
+				_cm.customItems.push(flexSpy);
+				
+				this.contextMenu = _cm;
+				
+				
+				
 				
 				// listen to module requests
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
@@ -119,6 +144,12 @@
 			}
 
 
+			/**
+			 * UiConf failed to load, alert user
+			 */
+			protected function onFlexSpy(event:*):void {
+				FlexSpy.show();
+			}
 			/**
 			 * UiConf failed to load, alert user
 			 */
@@ -185,6 +216,7 @@
 				
 				// the uiconf id this module should load:
 				var uiconfid:String = moduleList.(@id == moduleid)[0].@uiconf;
+				mod.cm = _cm;
 				mod.init(KmcModelLocator.getInstance().kalturaClient, uiconfid, _flashvars);
 			}
 
