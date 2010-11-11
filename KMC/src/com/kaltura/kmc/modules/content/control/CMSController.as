@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.control
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.events.*;
 	import com.kaltura.events.AccessControlProfileEvent;
-	import com.kaltura.events.MetadataProfileEvent;
+	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 
 	public class CMSController extends FrontController
 	{

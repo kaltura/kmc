@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.account.events
 	 */	
 	public class AddMetadataFieldEvent extends Event
 	{
-		public static const ADD:String = "addNewField";
+		public static const ADD:String = "account_addNewField";
 		public var metadataField:MetadataFieldVO;
 		
 		/**

@@ -1,8 +1,6 @@
 package com.kaltura.kmc.modules.account.control
 {
 	import com.adobe.cairngorm.control.FrontController;
-	import com.kaltura.events.AccessControlProfileEvent;
-	import com.kaltura.events.MetadataProfileEvent;
 	import com.kaltura.kmc.modules.account.command.*;
 	import com.kaltura.kmc.modules.account.events.*;
 	

@@ -1,4 +1,4 @@
-package com.kaltura.events
+package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
@@ -9,9 +9,9 @@ package com.kaltura.events
 	 */
 	public class MetadataProfileEvent extends CairngormEvent
 	{
-		public static const LIST : String = "listMetadataProfile";
-		public static const ADD : String = "addMetadataProfile";
-		public static const UPDATE : String = "updateMetadataProfile";
+		public static const LIST : String = "content_listMetadataProfile";
+		public static const ADD : String = "content_addMetadataProfile";
+		public static const UPDATE : String = "content_updateMetadataProfile";
 		
 		public function MetadataProfileEvent( type:String,
 									 bubbles:Boolean=false, 
