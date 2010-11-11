@@ -7,7 +7,8 @@ package com.kaltura.kmc.modules.content.model
 	 * Defines the second level navigation in <code>Content.secTln</code> 
 	 */	
 	public class TabsData
-	{																 
+	{						
+		[Bindable]
 		public var contentTabs : ArrayCollection = new ArrayCollection([ ResourceManager.getInstance().getString('cms','entriesTitle'),
 																	     ResourceManager.getInstance().getString('cms','moderation'),
 																	     ResourceManager.getInstance().getString('cms','playlistTitle'),
