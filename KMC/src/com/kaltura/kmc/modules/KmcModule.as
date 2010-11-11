@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules {
 	
 	import flash.events.IEventDispatcher;
 	import flash.ui.ContextMenu;
+	import flash.ui.ContextMenuItem;
 	import flash.utils.getQualifiedClassName;
 	
 	import mx.events.FlexEvent;
@@ -61,6 +62,8 @@ package com.kaltura.kmc.modules {
 		 * @copy #kc
 		 * */
 		protected var _kc:KalturaClient;
+		
+		private var _cm:ContextMenu;
 		
 		[Bindable]
 		/**
@@ -194,13 +197,26 @@ package com.kaltura.kmc.modules {
 			_context = context;
 
 			loadUiconf(uiconfid);
+			if (!_cm)
+				var cm:ContextMenu = new ContextMenu();
+
+			_cm.hideBuiltInItems();
 			
-			var cm:ContextMenu = new ContextMenu();
-			cm.hideBuiltInItems();
-			this.contextMenu = cm;
+			var moduleVersion:ContextMenuItem = new ContextMenuItem(getModuleName()+" : "+getModuleVersion());
+			_cm.customItems.push(moduleVersion);
+			
+			this.contextMenu = _cm;
 
 		}
 		
+		
+		/**
+		 * The version returned by this method will be the version of the module in KMC.
+		 * Each module must implement this method to return the right version.  
+		 */		
+		public function getModuleVersion():String {
+			throw new Error(getQualifiedClassName(this) + ".getModuleVersion() must be implemented");
+		}
 		
 		/**
 		 * The name returned by this method will be the ID of the module in KMC.
@@ -227,6 +243,14 @@ package com.kaltura.kmc.modules {
 		// getters / setters
 		// =====================================================
 
+
+		/**
+		 * Global Context Menu 
+		 */
+		public function set cm(value:ContextMenu):void
+		{
+			_cm = value;
+		}
 
 
 	}
