@@ -36,7 +36,6 @@ package com.kaltura.kmc.modules.account.command
 			var updateAdminPsw:AdminUserUpdatePassword = new AdminUserUpdatePassword(oldEmail, oldPassword, newEmail, newPassword);
 			updateAdminPsw.addEventListener(KalturaEvent.COMPLETE, result);
 			updateAdminPsw.addEventListener(KalturaEvent.FAILED, fault);
-			//TODO make only this call secured
 //			_model.context.kc.protocol = "https://";
 			_model.context.kc.post(updateAdminPsw); 
 //			_model.context.kc.protocol = "http://";

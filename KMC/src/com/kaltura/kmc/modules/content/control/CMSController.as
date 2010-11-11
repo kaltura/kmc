@@ -89,7 +89,6 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(UserEvent.BAN_USER , BanUserCommand );
 			
 			// Access Control Events
-			//TODO Atar - why are these in Kalturalib?
 			addCommand(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
 			addCommand(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
 			
