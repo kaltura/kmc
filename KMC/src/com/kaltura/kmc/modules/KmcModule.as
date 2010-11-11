@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules {
 	import flash.ui.ContextMenuItem;
 	import flash.utils.getQualifiedClassName;
 	
+	import mx.controls.Alert;
 	import mx.events.FlexEvent;
 	import mx.events.ResourceEvent;
 	import mx.modules.Module;
@@ -136,6 +137,7 @@ package com.kaltura.kmc.modules {
 		protected function loadLocale(localePath:String, language:String):void {
 			_localeCode = language;
 			var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
+			eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
 			eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 		}
 
@@ -147,6 +149,10 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected function localeLoadCompleteHandler(event:ResourceEvent):void {
 			event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+			event.target.removeEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
+			if (event.type == ResourceEvent.ERROR) {
+				Alert.show(event.errorText, "Locale Error", Alert.OK);
+			}
 			var chain:Array;
 			if (_localeCode == FALLBACK_LOCALE) {
 				chain = [_localeCode];
