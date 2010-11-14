@@ -40,7 +40,10 @@
 			override public function getModuleVersion():String {
 				return VERSION;
 			}
-
+			
+			override public function showSubtab(subtab:String):void {
+				// studio don't have tabs, empty implementation
+			}
 
 			/**
 			 * player edit/creation window
@@ -135,7 +138,7 @@
 			 * and templates data
 			 * */
 			private function loadedAppstudioUiconf(evt:KalturaEvent):void {
-				playerList.startApsPlayerList();
+				playerList.refresh();
 				_swfUrl = (evt.data as KalturaUiConf).swfUrl;
 
 				// if need to load local templates file 
@@ -169,10 +172,13 @@
 			}
 
 
-			private function onNavigateToPlayersList(evt:ApsNavigationEvent):void {
+			private function closeWizard(evt:ApsNavigationEvent):void {
 				this.enabled = true;
+				// close wizard window
 				PopUpManager.removePopUp(_wizard);
 				_wizard = null;
+				// refresh players list
+				playerList.refresh();
 			}
 
 
@@ -202,7 +208,8 @@
 				else
 					_wizard.title = "Edit Player";
 
-				_wizard.addEventListener(ApsNavigationEvent.NAVIGATE_TO_PLAYERS_LIST, onNavigateToPlayersList);
+//(not used?)	_wizard.addEventListener(ApsNavigationEvent.NAVIGATE_TO_PLAYERS_LIST, closeWizard);
+				_wizard.addEventListener(ApsNavigationEvent.CLOSE_WIZARD, closeWizard);
 				PopUpManager.addPopUp(_wizard, this);
 				PopUpManager.centerPopUp(_wizard);
 				this.enabled = false;
