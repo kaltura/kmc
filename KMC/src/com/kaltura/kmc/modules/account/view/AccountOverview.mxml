@@ -6,6 +6,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.AdminEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
@@ -106,7 +107,7 @@
 			
 			public function savePartnerInfo( force : Boolean ) : void
 			{
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,"Account>Change Partner Info");
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,"Account>Change Partner Info");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				
 				if( ! partnerData.equals( _clonedPartnerData ) || force )
@@ -126,7 +127,7 @@
 					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.UPDATE_PARTNER );
 					partnerEvent.dispatch();
 					
-					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,
 															  "AccountSettings>PartnerInfo>SaveChangesBtn");
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				}
@@ -134,7 +135,7 @@
 			
 			public function saveLoginInfo( force : Boolean ) : void
 			{
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				if( ! adminData.equals( _clonedAdminData ) || force)
 				{
@@ -158,7 +159,7 @@
 					_clonedAdminData = adminData.clone();
 					var adminEvent : AdminEvent = new AdminEvent( AdminEvent.UPDATE_ADMIN_PASSWORD );
 					adminEvent.dispatch();
-					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
 															  "AccountSettings>LofinInfo>SaveChangesBtn");
 				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				}

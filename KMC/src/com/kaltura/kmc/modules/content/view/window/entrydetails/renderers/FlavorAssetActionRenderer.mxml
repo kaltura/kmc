@@ -8,15 +8,17 @@
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.controls.tabbar.OverlappingTabBar;
-			import mx.controls.Button;
-			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.kmc.modules.content.events.FlavorAssetEvent;
-			import mx.controls.Alert;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
+			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
+			
+			import mx.controls.Alert;
+			import mx.controls.Button;
 
 			[Embed(source="assets/content/flash/loaderwhite.swf")]
 			private static const progressImage:Class;
@@ -127,14 +129,10 @@
 						break;
 					}
 					case resourceManager.getString('cms', 'downloadActionLabel'):  {
-						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET,
-																			(this.data as
-							FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET,(this.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
 						dlEvent.dispatch();
-						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_DOWNLOAD,
-																  "EntryDrillDown>FlavorTab>DownloadAsset",
-																  (data as
-							FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.entryId);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DOWNLOAD,
+																  "EntryDrillDown>FlavorTab>DownloadAsset",(data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.entryId);
 
 						break;
 					}

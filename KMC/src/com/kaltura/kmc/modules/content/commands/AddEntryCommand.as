@@ -5,11 +5,12 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.analytics.GoogleAnalyticsConsts;
 	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.analytics.KAnalyticsTracker;
+	import com.kaltura.analytics.KAnalyticsTrackerConsts;
+	import com.kaltura.commands.playlist.PlaylistAdd;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.events.SearchEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
-	import com.kaltura.commands.playlist.PlaylistAdd;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.SoManager;
 	import com.kaltura.vo.KalturaPlaylist;
@@ -77,12 +78,12 @@ package com.kaltura.kmc.modules.content.commands
 			cgEvent.dispatch();	 
 			
 			if(_playListType==10){
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "RuleBasedPlayList>AddPlayList"+">"+data.data.id);	
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "RuleBasedPlayList>AddPlayList"+">"+data.data.id);	
 	            GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_RULEBASED_PLAYLIST+"/PlayList_id="+data.data.id,GoogleAnalyticsConsts.CONTENT);
 			}
 			else if (_playListType==3)
 			{
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "ManuallPlayList>AddPlayList"+">"+data.data.id);	
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "ManuallPlayList>AddPlayList"+">"+data.data.id);	
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_PLAYLIST+"/PlayList_id="+data.data.id,GoogleAnalyticsConsts.CONTENT);
 			}
 			

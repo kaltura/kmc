@@ -10,6 +10,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
@@ -273,7 +274,7 @@
 			private function gotoPage():void {
 				loadEntries();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 														  "content>Show Rows");
 			}
 
@@ -419,7 +420,7 @@
 						var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS,
 																		 new ArrayCollection([_editPlaylist]));
 						entriesEvent.dispatch();
-						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
 																  "ManuallPlayList>EditPlayList" + ">" +
 							_editPlaylist.id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST +

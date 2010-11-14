@@ -21,6 +21,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
@@ -253,7 +254,7 @@
 						(_undoToEntry is KalturaMixEntry));
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED,
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED,
 					"content>Open Preview and Embed");
 				
 				//First time funnel
@@ -285,7 +286,7 @@
 			private function onPaging():void {
 				loadEntries();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE ,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 														  "content>Show Rows");
 			}
 
@@ -380,7 +381,7 @@
 																new ArrayCollection([_undoToEntry]));
 					cgEvent.dispatch();
 
-					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
 															  "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY +
 						">entryID>" + _undoToEntry.id,GoogleAnalyticsConsts.CONTENT);

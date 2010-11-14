@@ -11,6 +11,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.modules.content.events.BulkEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
 			import com.kaltura.kmc.modules.content.model.BulkUploadModel;
@@ -83,7 +84,7 @@
 					bulkEvent.dispatch();
 					clearUpload();
 
-					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_BULK_UPLOAD,GoogleAnalyticsConsts.CONTENT);
 				}
 				else
@@ -113,7 +114,7 @@
 					}
 				}
 
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADMIN_KCW_UPLOAD,GoogleAnalyticsConsts.CONTENT);
 			}
 
@@ -225,7 +226,7 @@
 				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
 				init();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
 			protected function vbox1_creationCompleteHandler(event:FlexEvent):void

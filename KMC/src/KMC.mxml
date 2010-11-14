@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.view.*" layout="absolute"
-				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)" 
+				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)"  preinitialize="onPreinitialize(event)"
 				paddingLeft="0" paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
@@ -25,9 +25,11 @@
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.core.Container;
+			import mx.core.FlexBitmap;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.events.ModuleEvent;
+			import mx.events.StyleEvent;
 			import mx.modules.ModuleLoader;
 
 			// ==============================================================================
@@ -73,10 +75,35 @@
 			// methods
 			// ==============================================================================
 			
+			protected function onPreinitialize (event:FlexEvent):void 
+			{
+				//load skin dynamically
+				var eventDispatcher : IEventDispatcher = StyleManager.loadStyleDeclarations ("http://localhost/kmc/KMC/bin-debug/workspaces/kmc/KMC/assets/kmc_skin.swf");
+				eventDispatcher.addEventListener (StyleEvent.COMPLETE, onStyleComplete);
+				eventDispatcher.addEventListener (StyleEvent.ERROR, onStyleComplete);
+			}
+			
+			
+			/**
+			 * Skin loaded 
+			 */
+			private function onStyleComplete (event : StyleEvent) : void
+			{
+				super.initialized = true;
+			}
+			/**
+			 * Don't init app untill the skin is loaded 
+			 */
+			override public function set initialized (value : Boolean) :void
+			{
+				// wait until the style swf is done loading!
+			}
+		
 			/**
 			 * process flashvars and load KMC uiconf
 			 **/
-			protected function creationCompleteHandler(event:FlexEvent):void {
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
 				Security.allowDomain('*');
 				//TODO replace when doing white labeling 
 				_cm = new ContextMenu();
@@ -96,12 +123,12 @@
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
 				this.addEventListener(KmcErrorEvent.ERROR, showError);
 				this.addEventListener(KmcHelpEvent.HELP, showHelp);
-
+				
 				// save flashvars
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam);
 				_flashvars = objParam;
-
+				
 				if (objParam.modulespath) {
 					_modulesFolder = objParam.modulespath;
 				}
@@ -110,7 +137,7 @@
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("gotoPage", gotoPage);
 				}
-
+				
 				// create KalturaClient:
 				var configuration:KalturaConfig = new KalturaConfig();
 				configuration.partnerId = objParam.partnerid;
@@ -119,7 +146,7 @@
 				configuration.domain = KUtils.hostFromCode(objParam.host);
 				configuration.srvUrl = objParam.srvurl;
 				configuration.clientTag = "kmc";
-
+				
 				_modelLocator.kalturaClient = new KalturaClient(configuration);
 				_modelLocator.kalturaClient.ks = objParam.ks;
 				
@@ -127,7 +154,7 @@
 				_kmcModuleLoader = new KmcModuleLoader();
 				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR, onModuleLoadError);
 				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOADED, onModuleReady);
-
+				
 				// load KMC uiconf and roles and permission uiConf  
 				var mr:MultiRequest = new MultiRequest();
 				

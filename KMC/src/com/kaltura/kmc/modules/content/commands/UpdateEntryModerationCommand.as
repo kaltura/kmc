@@ -5,13 +5,14 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.analytics.GoogleAnalyticsConsts;
 	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.analytics.KAnalyticsTracker;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.ModerationsEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.analytics.KAnalyticsTrackerConsts;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryApprove;
 	import com.kaltura.commands.baseEntry.BaseEntryReject;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.ModerationsEvent;
+	import com.kaltura.kmc.modules.content.events.SearchEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
@@ -91,7 +92,7 @@ package com.kaltura.kmc.modules.content.commands
 					for each (var baseEntryApprove:BaseEntryApprove in data.currentTarget.actions )
 					{
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_APPROVE_MODERATION+"/entry_id="+baseEntryApprove.args.entryId,GoogleAnalyticsConsts.CONTENT);
-				        KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_APPROVE_MODERATION,
+				        KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_APPROVE_MODERATION,
 																  "Moderation>ApproveSelected");
 					}
 					break;
@@ -99,7 +100,7 @@ package com.kaltura.kmc.modules.content.commands
 					for each (var baseEntryReject:BaseEntryReject in data.currentTarget.actions )
 					{
 				    	GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REJECT_MODERATION+"/entry_id="+baseEntryReject.args.entryId,GoogleAnalyticsConsts.CONTENT);
-						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_REJECT_MODERATION,
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_REJECT_MODERATION,
 															  "Moderation>RejectSelected");
 					}
 					break;
