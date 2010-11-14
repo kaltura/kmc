@@ -51,6 +51,15 @@
 			private var uiconfGet:UiConfGet;
 			private var mgrm:MixingGetReadyMediaEntries;
 			/////////////////////////////////////
+			
+			/**
+			 * in case we want to start from a tab other than the
+			 * first, name of the initial tab 
+			 * */
+			private var _initialTab:String;
+			//TODO figure out what the values should be
+			
+			
 			public var urchinNumber:String;
 			
 			private static const VERSION:String = "2.0";
@@ -66,6 +75,16 @@
 			}
 			override public function getModuleVersion():String {
 				return VERSION;
+			}
+			
+			
+			override public function showSubtab(subtab:String):void {
+				_initialTab = subtab;
+				// if already added to stage, just go there
+				if (stage) {
+					showTab(_initialTab);
+				}
+				// otherwise we'll have _initialTab when we get addedToStage, and we'll switch there.
 			}
 			
 			
@@ -168,8 +187,8 @@
 				
 				// show different initial tab if provided
 				/* this must happen after trackers have been initialized because it logs something */
-				if (_flashvars.subnavtab) {
-					showTab(_flashvars.subnavtab);
+				if (_initialTab) {
+					showTab(_initialTab);
 				}
 			}
 			

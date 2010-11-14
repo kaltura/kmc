@@ -27,6 +27,11 @@ package com.kaltura.kmc.modules.studio.events
 		 */
 		public static const EDIT_PLAYER:String = "editPlayer";
 		
+		/**
+		 * The constant defines the value of the type property of a closeWizard event object. 
+		 */
+		public static const CLOSE_WIZARD:String = "closeWizard";
+		
 		
 		
 		public function ApsNavigationEvent(	type:String,

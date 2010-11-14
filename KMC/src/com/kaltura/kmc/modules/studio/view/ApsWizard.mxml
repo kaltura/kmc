@@ -24,6 +24,7 @@ The main window for new player wizard.
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.studio.business.wizard.ApsWizardXmlController;
+			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.vo.KeyValVo;
 			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
@@ -486,9 +487,10 @@ The main window for new player wizard.
 			private function onCloseHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					this.enabled = false;
-					//TODO HTML API
 					//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
-					navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
+//					navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
+					// close wizard
+					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.CLOSE_WIZARD));
 				}
 			}
 
@@ -644,7 +646,6 @@ The main window for new player wizard.
 				this.enabled = true;
 				var isPlaylist:String = "false";
 				if (_playerUiConfVO.isSinglePlaylist) {
-
 					ExternalInterface.call("playlistAdded");
 					isPlaylist = "true";
 				}
@@ -655,10 +656,8 @@ The main window for new player wizard.
 					isPlaylist = "true";
 				}
 				ExternalInterface.call("kmc.preview_embed.updateList", isPlaylist);
-				//TODO HTML API
-				//navigateToURL( new URLRequest("javascript: kmc.preview_embed.updateList("+isMulty+")") , "_self");
-				navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
-
+				
+				dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.CLOSE_WIZARD));
 			}
 
 

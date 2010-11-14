@@ -22,6 +22,8 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaUiConf;
 			
+			import flash.net.navigateToURL;
+			
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.core.Container;
@@ -68,6 +70,13 @@
 			private var _cm:ContextMenu;
 			
 			/**
+			 * url of the help page. it is concatenated to all help requests,
+			 * so the help event supplies only the anchor in the help page.
+			 * */
+			private var _helpBaseUrl:String;
+			
+			
+			/**
 			 * KMC version
 			 * */
 			public var VERSION:String = "1.0.0";
@@ -79,7 +88,7 @@
 			{
 				//load skin dynamically
 				
-				//TODO remove after deployment 
+				//TODO . remove after deployment 
 				if (!path)
 					path = "http://localhost/kmc/KMC/bin-debug/workspaces/kmc/KMC/assets/kmc_skin.swf";
 				var eventDispatcher : IEventDispatcher = StyleManager.loadStyleDeclarations (path);
@@ -119,7 +128,7 @@
 				var version:ContextMenuItem = new ContextMenuItem( "KMC version:"+VERSION);
 				_cm.customItems.push(version);
 				
-				//TODO - remove before release
+				//TODO . remove before release
 				var flexSpy:ContextMenuItem = new ContextMenuItem("flex spy");
 				flexSpy.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,onFlexSpy);
 				_cm.customItems.push(flexSpy);
@@ -181,6 +190,8 @@
 			protected function onFlexSpy(event:*):void {
 				FlexSpy.show();
 			}
+			
+			
 			/**
 			 * UiConf failed to load, alert user
 			 */
@@ -201,15 +212,21 @@
 			 * Kmc uiConf loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
+				// loaded data
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
-				//TODO load skin
+				// help url
+				_helpBaseUrl = _uiconf.helpPage.text().toString();
 				
-				//TODO insert the getting of all the partners list and users list + substract 
+				// permissions:
 				var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
 				var parser:PermissionsParser = new PermissionsParser();
 				_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
 				
+				//TODO get user's permissions, substract and apply 
+				
 				var hideTabsArray:Array = parser.getTabsToHide();
+				
+				// load skin
 				loadSkin(_uiconf.skinPath.toString());
 			}
 
@@ -244,16 +261,22 @@
 			 * Switch to a different KMC module (tab).
 			 * Can also include subtab on the new module.
 			 * This method can be triggered from JS using ExternalInterface.
+			 * @param o		{moduleName, subtab, extradata..}
 			 * -------------------------------------
 			 * @test	requires a loaded module in KMC viewstack
 			 * */
-			protected function gotoPage(moduleName:String, subtab:String, ...args):void {
-				var ml:ModuleLoader = getModuleParent(moduleName);
+			protected function gotoPage(o:Object):void {
+				var ml:ModuleLoader = getModuleParent(o.moduleName);
 				if (ml) {
 					mainViewStack.selectedChild = ml;
+					if (o.subtab) {
+						(ml.child as KmcModule).showSubtab(o.subtab);
+						//TODO pass extra data to the module..
+					}
+						
 					// tell html
-					ExternalInterface.call("kmc.mediator.writeUrlHash", moduleName, subtab);
-					ExternalInterface.call("kmc.mediator.setTab", moduleName);
+					ExternalInterface.call("kmc.mediator.writeUrlHash", o.moduleName, o.subtab);
+					ExternalInterface.call("kmc.mediator.setTab", o.moduleName);
 				}
 			}
 			
@@ -284,7 +307,8 @@
 			 * @param e		event holding navigation request info.
 			 * */
 			protected function navigateToModule(e:KmcNavigationEvent):void {
-				gotoPage(e.module, e.subtab);
+				var o:Object = {moduleName:e.module, subtab:e.subtab, extra:e.data};
+				gotoPage(o);
 			}
 			
 			
@@ -299,17 +323,14 @@
 			
 			
 			/**
-			 * open the relevant help page, based on the anchor in the event.
+			 * open the relevant help page on a new browser window, 
+			 * based on the anchor in the event.
+			 * @param e	help request dispatched by anything on the displayList.
 			 * */
 			private function showHelp(e:KmcHelpEvent):void {
-				//TODO implement showHelp
-				Alert.show("help bla bla.. " + e.anchor, "Imagine Help", Alert.OK);
+				var url:String = _flashvars.host + _helpBaseUrl + e.anchor;
+				navigateToURL(new URLRequest(url), "_blank");
 			}
-
-//			protected function combobox1_changeHandler(event:ListEvent):void
-//			{
-//				gotoPage(switchCombo.selectedLabel, null);
-//			}
 
 		]]>
 	</mx:Script>

@@ -63,6 +63,12 @@
 			public var urchinNumber:String;
 
 			private var _paypalWin:PayPalFormWin;
+			
+			/**
+			 * in case we want to start from a tab other than the
+			 * first, name of the initial tab 
+			 * */
+			private var _initialTab:String;
 
 
 			override public function getModuleName():String {
@@ -70,6 +76,34 @@
 			}
 			override public function getModuleVersion():String {
 				return VERSION;
+			}
+			
+			override public function showSubtab(subtab:String):void {
+				_initialTab = subtab;
+				if (stage) {
+					switchToTab(_initialTab);
+				}
+			}
+			
+			private function switchToTab(tab:String):void {
+				//		Alert.show(objParam.subnavtab, "objParam.subnavtab");
+				switch (tab) {
+					case resourceManager.getString('account', 'accountOverview'):
+						contentView.selectedIndex = 0;
+						break;
+					case resourceManager.getString('account', 'serverSettings'):
+						contentView.selectedIndex = 1;
+						break;
+					case resourceManager.getString('account', 'accessControl'):
+						contentView.selectedIndex = 2;
+						break;
+					case resourceManager.getString('account', 'transcodingSettings'):
+						contentView.selectedIndex = 3;
+						break;
+					case resourceManager.getString('account', 'accountUpgrade'):
+						contentView.selectedIndex = 4;
+						break;
+				}
 			}
 
 
@@ -138,6 +172,10 @@
 				}
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(_model.context.kc.partnerId, _model.context.userId, this, "KMC_ANDROMEDA", urchinNumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+				
+				if (_initialTab) {
+					switchToTab(_initialTab);
+				}
 			}
 
 
@@ -166,26 +204,6 @@
 					}
 				}
 
-				if (objParam.subnavtab) {
-					//		Alert.show(objParam.subnavtab, "objParam.subnavtab");
-					switch (objParam.subnavtab.toString()) {
-						case resourceManager.getString('account', 'accountOverview'):
-							contentView.selectedIndex = 0;
-							break;
-						case resourceManager.getString('account', 'serverSettings'):
-							contentView.selectedIndex = 1;
-							break;
-						case resourceManager.getString('account', 'accessControl'):
-							contentView.selectedIndex = 2;
-							break;
-						case resourceManager.getString('account', 'transcodingSettings'):
-							contentView.selectedIndex = 3;
-							break;
-						case resourceManager.getString('account', 'accountUpgrade'):
-							contentView.selectedIndex = 4;
-							break;
-					}
-				}
 			}
 
 

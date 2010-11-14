@@ -17,6 +17,7 @@
 			import com.kaltura.commands.uiConf.UiConfUpdate;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
 			import com.kaltura.kmc.modules.studio.model.types.UIConfType;
@@ -81,14 +82,11 @@
 				_dateFormatter.formatString = "DD-MMM H:NN";
 			}
 
-
-
-
 			
 			/**
 			 * gets a list of existing players
 			 * */
-			public function startApsPlayerList():void {
+			public function refresh():void {
 				loadList();
 			}
 
@@ -133,7 +131,7 @@
 					mr.addRequestParam("2:uiConf:name", resourceManager.getString('aps', 'newPlayerPrefix') + uint(Math.random() * 1000));
 					mr.addAction(updateUiConf);
 					//complete the MultiRequest
-					mr.addEventListener(KalturaEvent.COMPLETE, reloadList);
+					mr.addEventListener(KalturaEvent.COMPLETE, duplicationComplete);
 					mr.addEventListener(KalturaEvent.FAILED, fault);
 					Studio.kc.post(mr);
 				}
@@ -229,10 +227,13 @@
 			}
 
 
-			private function reloadList(evt:Event):void {
+			/**
+			 * reload players list and notify JS of the change.
+			 * */
+			private function duplicationComplete(evt:Event):void {
 				loadList();
 
-				//TODO: Remmember what to refresh player or playlist and not to call both
+				//TODO: Remember what to refresh player or playlist and not to call both
 				ExternalInterface.call("playlistAdded");
 				ExternalInterface.call("playerAdded");
 
@@ -295,9 +296,10 @@
 					case resourceManager.getString('aps', 'selectContent'):
 						var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
 						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
-						//TODO HTML API
 						//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
-						navigateToURL(new URLRequest("javascript: selectPlaylistContent(" + JSON.encode({playerId: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}) + ")"), "_self");
+//						navigateToURL(new URLRequest("javascript: selectPlaylistContent(" + JSON.encode({playerId: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}) + ")"), "_self");
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
+															{playerId: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
 						break;
 					case resourceManager.getString('aps', 'previewAndEmbed'):
 						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString());

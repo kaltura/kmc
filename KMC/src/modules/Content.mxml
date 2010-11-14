@@ -109,7 +109,10 @@
 			 * */
 			private var _initialTab:String;
 			
-			
+			/**
+			 * indicates start() has finished executing so all initial
+			 * data is present, and children can be created safely.
+			 * */
 			protected var _ready:Boolean = false;
 			
 			/**
@@ -126,6 +129,13 @@
 			override public function getModuleVersion():String
 			{
 				return VERSION;
+			}
+			
+			override public function showSubtab(subtab:String):void {
+				_initialTab = subtab;
+				if (_ready) {
+					switchToTab(_initialTab);
+				}
 			}
 
 			override protected function createChildren():void {
@@ -181,7 +191,7 @@
 //				plst.init();	
 				
 				// switch tab if asked
-				switchToInitialTab(_flashvars.subnavtab);
+				switchToTab(_initialTab);
 			}
 
 
@@ -317,7 +327,7 @@
 			/**
 			 * fix race condition, application added or tab switch from initial flashvar
 			 */
-			private function switchToInitialTab(initialTab:String = ""):void {
+			private function switchToTab(initialTab:String = ""):void {
 				switch (initialTab) {
 					case resourceManager.getString('cms', 'entries'):
 						secTln.selectedIndex = 0;

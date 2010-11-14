@@ -146,7 +146,6 @@ package com.kaltura.kmc.modules.content.commands {
 		 */
 		private function refresh(event:CloseEvent):void {
 			var searchEvent:SearchEvent;
-			//TODO - check why need this switch (Eitan) 
 			if (_model.listableVo.filterVo is KalturaMediaEntryFilterForPlaylist) {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();

@@ -124,19 +124,19 @@ $(function(){
 //					alert("tab="+tab);
 					switch(tab) {
 						case "dashboard" :
-							go_to = { module : "dashboard", subtab : "" };
+							go_to = { moduleName : "dashboard", subtab : "" };
 							break;
 						case "content" :
-							go_to = { module : "content", subtab : "Manage" };
+							go_to = { moduleName : "content", subtab : "Manage" };
 							break;
 						case "studio" :
-							go_to = { module : "studio", subtab : "players_list" };
+							go_to = { moduleName : "studio", subtab : "players_list" };
 							break;
 						case "account" :
-							go_to = { module : "account", subtab : "Account_Settings" };
+							go_to = { moduleName : "account", subtab : "Account_Settings" };
 							break;
 						case "analytics" :
-							go_to = { module : "analytics", subtab : "Bandwidth Usage Reports" };
+							go_to = { moduleName : "analytics", subtab : "Bandwidth Usage Reports" };
 							break;
 //						case "Advertising" :
 //							go_to = "tremor";
@@ -159,8 +159,7 @@ $(function(){
 //					}
 //					else {
 					//kmc.mediator.setState(go_to);
-					$("#kcms")[0].gotoPage(go_to.module, go_to.subtab); //!!!
-					// KMC.gotoPage allows as many parameters as needed, but it doesn't receive an object.
+					$("#kcms")[0].gotoPage(go_to); //!!!
 					return false;
 				});
 			}
