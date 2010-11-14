@@ -251,13 +251,12 @@
 			 * @test	requires a loaded module in KMC viewstack
 			 * */
 			protected function gotoPage(moduleName:String, subtab:String, ...args):void {
-				trace("KMC going to", moduleName, subtab != null ? "> " + subtab : "");
 				var ml:ModuleLoader = getModuleParent(moduleName);
 				if (ml) {
 					mainViewStack.selectedChild = ml;
 					// tell html
-					ExternalInterface.call("writeUrlHash", moduleName, subtab);	//TODO probably need the name from the locale
-					ExternalInterface.call("setTab", moduleName);
+					ExternalInterface.call("kmc.mediator.writeUrlHash", moduleName, subtab);	//TODO probably need the name from the locale
+					ExternalInterface.call("kmc.mediator.setTab", moduleName);
 				}
 			}
 			
