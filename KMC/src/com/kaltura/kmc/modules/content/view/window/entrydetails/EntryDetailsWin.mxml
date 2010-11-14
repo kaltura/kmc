@@ -252,13 +252,13 @@
 						cutTo512Chars(_undoToEntry.description), false, null,
 						(_undoToEntry is KalturaMixEntry));
 				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED,
 					"content>Open Preview and Embed");
 				
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED))
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED ,GoogleAnalyticsConsts.CONTENT);
 			}
 
 
@@ -284,7 +284,7 @@
 
 			private function onPaging():void {
 				loadEntries();
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE ,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 														  "content>Show Rows");
 			}
@@ -383,7 +383,7 @@
 					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
 															  "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY +
-						">entryID>" + _undoToEntry.id);
+						">entryID>" + _undoToEntry.id,GoogleAnalyticsConsts.CONTENT);
 					removeMe();
 				}
 			}

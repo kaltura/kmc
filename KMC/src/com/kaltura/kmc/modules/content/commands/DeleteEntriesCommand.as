@@ -97,21 +97,21 @@ package com.kaltura.kmc.modules.content.commands {
 																  "Playlists>DeletePlaylist",
 																  _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_PLAYLIST +
-							"/entry_id=" + _model.selectedEntries[i].id);
+							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT );
 					}
 					else if (_model.selectedEntries[i] is KalturaMixEntry) {
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_DELETE_MIX,
 																  "Delete Mix",
 																  _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MIX +
-							"/entry_id=" + _model.selectedEntries[i].id);
+							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT);
 					}
 					else {
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_DELETE_ITEM,
 																  "Delete Entry",
 																  _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM +
-							"/entry_id=" + _model.selectedEntries[i].id);
+							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT);
 					}
 				}
 

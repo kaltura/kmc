@@ -39,7 +39,7 @@ package com.kaltura.kmc.modules.content.commands
 			    _playListType=e.entryVo.playlistType;
 			    //first time funnel
 				if(!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_CREATION))
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_CREATION);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_CREATION,GoogleAnalyticsConsts.CONTENT);
 			}
 			else
 			{
@@ -78,12 +78,12 @@ package com.kaltura.kmc.modules.content.commands
 			
 			if(_playListType==10){
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "RuleBasedPlayList>AddPlayList"+">"+data.data.id);	
-	            GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_RULEBASED_PLAYLIST+"/PlayList_id="+data.data.id)
+	            GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_RULEBASED_PLAYLIST+"/PlayList_id="+data.data.id,GoogleAnalyticsConsts.CONTENT);
 			}
 			else if (_playListType==3)
 			{
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "ManuallPlayList>AddPlayList"+">"+data.data.id);	
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_PLAYLIST+"/PlayList_id="+data.data.id)
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_PLAYLIST+"/PlayList_id="+data.data.id,GoogleAnalyticsConsts.CONTENT);
 			}
 			
 		}

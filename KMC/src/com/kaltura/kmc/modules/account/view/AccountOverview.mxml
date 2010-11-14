@@ -107,11 +107,11 @@
 			public function savePartnerInfo( force : Boolean ) : void
 			{
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,"Account>Change Partner Info");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				
 				if( ! partnerData.equals( _clonedPartnerData ) || force )
 				{
-					emailValidator.source = pEmail;
+					emailValidator.source = pEmail; 
 					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
 					urlValidator.source = pWebsite;
 					if( (urlValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
@@ -128,14 +128,14 @@
 					
 					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_PARTNER_INFO,
 															  "AccountSettings>PartnerInfo>SaveChangesBtn");
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				}
 			}
 			
 			public function saveLoginInfo( force : Boolean ) : void
 			{
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				if( ! adminData.equals( _clonedAdminData ) || force)
 				{
 					//validation
@@ -160,7 +160,7 @@
 					adminEvent.dispatch();
 					KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
 															  "AccountSettings>LofinInfo>SaveChangesBtn");
-				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO);
+				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
 				}
 			}
 			
