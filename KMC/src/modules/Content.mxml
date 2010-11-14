@@ -393,7 +393,7 @@
 				edw.filterModel = _model.filterModel;
 				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN)
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN,GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 				return edw;
 			}
@@ -566,7 +566,7 @@
 
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED,GoogleAnalyticsConsts.CONTENT);
 				}
 			}
 
@@ -581,7 +581,7 @@
 					ExternalInterface.call(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), true);
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED,GoogleAnalyticsConsts.CONTENT);
 					}
 				}
 			}
@@ -597,7 +597,7 @@
 				}
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED,GoogleAnalyticsConsts.CONTENT);
 				}
 			}
 
@@ -650,25 +650,25 @@
 				switch (label) {
 					case "Manage":
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'));
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'),GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "Upload":
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'));
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'),GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "Playlists":
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'));
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'),GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "Moderate":
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'))
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'),GoogleAnalyticsConsts.CONTENT)
 						break;
 					case "Syndicate":
 						KAnalyticsTracker.getInstance().sendEvent(KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'));
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'),GoogleAnalyticsConsts.CONTENT);
 						break;
-				}
+				} 
 
 				ExternalInterface.call("kmc.mediator.writeUrlHash", "content", label);
 
