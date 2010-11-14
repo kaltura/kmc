@@ -44,7 +44,7 @@ package com.kaltura.analytics
         	analyticsEvent.kmcEventActionPath = eventPath;
 //        	analyticsEvent.sessionId = _sessionId;
         	analyticsEvent.partnerId = int(_kc.partnerId);
-        	analyticsEvent.clientVer = "1.0:" + _swfName + ":" + _clientVersion;
+        	analyticsEvent.clientVer = "1.0:" + moduleName + ":" + _clientVersion;
         	analyticsEvent.userId = _userId;
         	analyticsEvent.eventTimestamp = (new Date().time)/1000;
         	analyticsEvent.uiconfId = uiconfId; // when manipulating uiconfs
