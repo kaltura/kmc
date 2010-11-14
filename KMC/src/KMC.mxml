@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.view.*" layout="absolute"
-				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)"  preinitialize="onPreinitialize(event)"
+				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)" 
 				paddingLeft="0" paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
@@ -75,10 +75,14 @@
 			// methods
 			// ==============================================================================
 			
-			protected function onPreinitialize (event:FlexEvent):void 
+			protected function loadSkin (path:String=""):void 
 			{
 				//load skin dynamically
-				var eventDispatcher : IEventDispatcher = StyleManager.loadStyleDeclarations ("http://localhost/kmc/KMC/bin-debug/workspaces/kmc/KMC/assets/kmc_skin.swf");
+				
+				//TODO remove after deployment 
+				if (!path)
+					path = "http://localhost/kmc/KMC/bin-debug/workspaces/kmc/KMC/assets/kmc_skin.swf";
+				var eventDispatcher : IEventDispatcher = StyleManager.loadStyleDeclarations (path);
 				eventDispatcher.addEventListener (StyleEvent.COMPLETE, onStyleComplete);
 				eventDispatcher.addEventListener (StyleEvent.ERROR, onStyleComplete);
 			}
@@ -89,15 +93,18 @@
 			 */
 			private function onStyleComplete (event : StyleEvent) : void
 			{
-				super.initialized = true;
+				// load modules :
+				var moduleList:XMLList = _uiconf.modules.module;
+				var total:int = moduleList.length();
+				var mInfo:XML;
+				for (var i:int = 0; i < total; i++) {
+					mInfo = moduleList[i];
+					var url:String = _modulesFolder + "/" + mInfo.@id + ".swf";
+					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
+					mainViewStack.addChild(ml);
+				}
 			}
-			/**
-			 * Don't init app untill the skin is loaded 
-			 */
-			override public function set initialized (value : Boolean) :void
-			{
-				// wait until the style swf is done loading!
-			}
+
 		
 			/**
 			 * process flashvars and load KMC uiconf
@@ -203,17 +210,7 @@
 				_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
 				
 				var hideTabsArray:Array = parser.getTabsToHide();
-				
-				// load modules :
-				var moduleList:XMLList = _uiconf.modules.module;
-				var total:int = moduleList.length();
-				var mInfo:XML;
-				for (var i:int = 0; i < total; i++) {
-					mInfo = moduleList[i];
-					var url:String = _modulesFolder + "/" + mInfo.@id + ".swf";
-					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
-					mainViewStack.addChild(ml);
-				}
+				loadSkin(_uiconf.skinPath.toString());
 			}
 
 
