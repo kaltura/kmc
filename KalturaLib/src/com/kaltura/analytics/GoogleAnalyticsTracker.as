@@ -32,16 +32,18 @@ package com.kaltura.analytics
         
         public function init(partnerId:String, userId:String, parentDisplayObject:DisplayObject,kmcVersion:String,urchinNumber:String, langCode:String, debug:Boolean):void
         {
-        	_kmcVersion=kmcVersion;
+        	_kmcVersion = kmcVersion;
         	_urchinNumber = urchinNumber;
         	_partnerId = partnerId;
         	_userId = userId;
         	tracker = new GATracker( parentDisplayObject, _urchinNumber, langCode, debug );
         }
         
-        public function sendToGA(eventTracked:String):void
+        public function sendToGA(eventTracked:String,modulePath:String):void
         {
-        	tracker.trackPageview(_kmcVersion+"/"+ eventTracked+"/"+"partner_id=" + _partnerId + "/user_id=" + _userId );
+			if(!modulePath)
+				modulePath = _kmcVersion;
+        	tracker.trackPageview(modulePath+"/"+ eventTracked+"/"+"partner_id=" + _partnerId + "/user_id=" + _userId );
         }
 	}
 }

@@ -88,5 +88,15 @@ package com.kaltura.analytics
 	    public static const REPORTS_AND_ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION : String = "Content Reports>Content Drill Down Interaction"; 
 	    public static const REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF : String = "Content Reports>Video Drill Down Dropoff"; 
 	
+		
+		
+		// modules
+	    public static const ANALYTICS : String = "KMC_ANDROMEDA/Reports and Analytics"; 
+	    public static const CONTENT : String = "KMC_ANDROMEDA/Content"; 
+	    public static const STUDIO : String = "KMC_ANDROMEDA/Studio"; 
+	    public static const ACCOUNT : String = "KMC_ANDROMEDA/Account"; 
+	    public static const DASHBOARD : String = "KMC_ANDROMEDA/Dashboard"; 
+		
+		
 	}
 }
