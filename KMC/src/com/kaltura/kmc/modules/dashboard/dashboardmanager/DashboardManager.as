@@ -56,6 +56,11 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
      	[Bindable]public var totalPercentSoFar:String = '0';
      	[Bindable]public var hostingGB:String = '0';
 		
+		/**
+		 * call this js function to show contibution wizard
+		 * */
+		public var openKcwFunction:String;
+		
 		
 		public function get kc():KalturaClient
 		{
@@ -247,6 +252,22 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 			}
 		}
 		
+		/**
+		 * open the contribution wizard
+		 * */
+		public function openKcw():void {
+			if (openKcwFunction) {
+				ExternalInterface.call(openKcwFunction, _kc.ks);
+			}
+			else {
+				try {
+					ExternalInterface.call("cwFunction", _kc.ks);
+				}
+				catch (e:Error) {
+					trace('the openCw is missing, or the JS function does not exist');
+				}
+			}
+		}
 		
 		
 		/**
@@ -254,7 +275,6 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 		 * @param url 	address to open
 		 */
 		public function launchExactOuterLink(url:String):void {
-			//TODO HTML API
 			var urlr:URLRequest = new URLRequest(url);
 			navigateToURL(urlr, "_blank");
 		}
