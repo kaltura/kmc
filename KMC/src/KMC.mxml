@@ -11,7 +11,7 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
-			import com.kaltura.kmc.business.PermissionParser;
+			import com.kaltura.kmc.business.PermissionsParser;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcModuleEvent;
@@ -68,7 +68,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "3.0.0";
+			public var VERSION:String = "1.0.0";
 			// ==============================================================================
 			// methods
 			// ==============================================================================
@@ -91,9 +91,6 @@
 				_cm.customItems.push(flexSpy);
 				
 				this.contextMenu = _cm;
-				
-				
-				
 				
 				// listen to module requests
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
@@ -170,17 +167,15 @@
 			 * Kmc uiConf loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
-				
-				
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				//TODO load skin
 				
-				//TODO - insert the getting of all the partners list and users list + substract 
+				//TODO insert the getting of all the partners list and users list + substract 
 				var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
-				var parser:PermissionParser = new PermissionParser();
-				_modelLocator.permissionManager.permissions = parser.parsePermission(permissionXml);
+				var parser:PermissionsParser = new PermissionsParser();
+				_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
 				
-				var hideTabsArray:Array = parser.hiddenTabs();
+				var hideTabsArray:Array = parser.getTabsToHide();
 				
 				// load modules :
 				var moduleList:XMLList = _uiconf.modules.module;
@@ -225,8 +220,10 @@
 			 * Switch to a different KMC module (tab).
 			 * Can also include subtab on the new module.
 			 * This method can be triggered from JS using ExternalInterface.
+			 * -------------------------------------
+			 * @test	requires a loaded module in KMC viewstack
 			 * */
-			private function gotoPage(moduleName:String, subtab:String, ...args):void {
+			protected function gotoPage(moduleName:String, subtab:String, ...args):void {
 				trace("KMC going to", moduleName, subtab != null ? "> " + subtab : "");
 				var ml:ModuleLoader = getModuleParent(moduleName);
 				if (ml) {
@@ -243,8 +240,10 @@
 			 * mainViewstack holds ModuleLoader instances, not modules.
 			 * @param	name (id) of desired module.
 			 * @return 	ml holding the given module. 
+			 * -------------------------------------
+			 * @test	requires a loaded KMC module in KMC viewstack
 			 * */
-			private function getModuleParent(moduleName:String):ModuleLoader {
+			protected function getModuleParent(moduleName:String):ModuleLoader {
 				var children:int = mainViewStack.numChildren;
 				var ml:ModuleLoader;
 				for (var i:int = 0; i<children; i++) {
@@ -261,7 +260,7 @@
 			 * Trigger module switching
 			 * @param e		event holding navigation request info.
 			 * */
-			private function navigateToModule(e:KmcNavigationEvent):void {
+			protected function navigateToModule(e:KmcNavigationEvent):void {
 				gotoPage(e.module, e.subtab);
 			}
 			

@@ -64,7 +64,7 @@ package com.kaltura.kmc.business {
 		 * This method does not actually load the module, it will be loaded
 		 * automatically when it becomes visible on screen.
 		 * @param url 	the path to the loaded module
-		 * @param uiconfid	id of the uiconf this module should use
+		 * @param id	id of this module
 		 * @return	the ModuleLoader instance that will load this module
 		 */
 		public function loadKmcModule(url:String, id:String):ModuleLoader {
@@ -89,6 +89,8 @@ package com.kaltura.kmc.business {
 		 * retrieve the id that was initialy passed for a module.  
 		 * @param ml	the <code>ModuleLoader</code> instance that loaded the module in question.
 		 * @return 		id of the module loaded by <code>ml</code>.
+		 * -----------------------------------
+		 * @test	requires a loaded module
 		 */		
 		public function getModuleId(ml:ModuleLoader):String {
 			return _modulesInfo[ml.url];
@@ -110,6 +112,8 @@ package com.kaltura.kmc.business {
 
 		/**
 		 * notify listeners that loaded module is ready.
+		 * -----------------------------------
+		 * @test 	no requirements
 		 */
 		protected function onModuleReady(event:ModuleEvent):void {
 			var ml:ModuleLoader = event.currentTarget as ModuleLoader;
@@ -119,6 +123,8 @@ package com.kaltura.kmc.business {
 
 		/**
 		 * notify listeners that a module has encountered problems while loading. 
+		 * -----------------------------------
+		 * @test 	no requirements
 		 */		
 		protected function onModuleError(event:ModuleEvent):void {
 			var ml:ModuleLoader = event.currentTarget as ModuleLoader;
