@@ -37,7 +37,7 @@ package com.kaltura.analytics
         	_swfName = swfName;
         }
         
-        public function sendEvent(eventCode:int, eventPath:String, entryId:String=null, uiconfId:int=int.MIN_VALUE, widgetId:String=null):void
+        public function sendEvent(moduleName:String , eventCode:int, eventPath:String, entryId:String=null, uiconfId:int=int.MIN_VALUE, widgetId:String=null):void
         {
         	var analyticsEvent:KalturaStatsKmcEvent = new KalturaStatsKmcEvent();
         	analyticsEvent.kmcEventType = eventCode;
