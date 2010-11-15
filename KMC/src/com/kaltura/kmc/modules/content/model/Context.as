@@ -6,7 +6,6 @@ package com.kaltura.kmc.modules.content.model
 	public class Context
 	{
 		public static const DEFAULT_UI_CONFIG_ID:String = "10000";
-		public static const KALTURA_SERVICES_URL : String = "index.php/partnerservices2"; //"index.php/partnerservices2"; //"kaltura_dev.php/partnerservices2" ; // ; 
 		
  		public var userId:String;
 		public var isAnonymous:Boolean;

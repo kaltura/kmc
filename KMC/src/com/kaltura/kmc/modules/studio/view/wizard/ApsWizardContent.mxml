@@ -99,7 +99,6 @@
  					plstVo.entryId = playlist.id;
 					plstVo.name = playlist.name.split("'").join("´");
 					plstVo.mediaType = playlist.playlistType.toString();
-					var cc:String = executePlaylistService.url;
 					var playlistUrl:String = "http://"+Studio.flashvars.host+ "/index.php/partnerservices2/executeplaylist?playlist_id=" + playlist.id + "&partner_id=" + playlist.partnerId + "&subp_id=" + (Number(playlist.partnerId)*100).toString() + "&format=8" + "&ks={ks}";
 					plstVo.playlistUrl = encodeURIComponent(playlistUrl);
 					plstVo.createAtAsString = _dateFormatter.format( new Date( int(playlist.createdAt) * 1000 ) );
@@ -277,18 +276,6 @@
 				}
 			}
 
-			//setter & getter
-			////////////////////////////////////////////
-			public function set srvFullUrl( srvFullUrl : String ) : void
-			{
-				_srvFullUrl = srvFullUrl;
-			}
-
-			public function get srvFullUrl() : String
-			{
-				return _srvFullUrl;
-			}
-
 		]]>
 	</mx:Script>
 
@@ -297,19 +284,6 @@
 		[Event(name="groupPlaylistChange", type="flash.events.Event")]
 	</mx:Metadata>
 
-<!--	<mx:HTTPService id="listPlaylistService"
-    	url="{_srvFullUrl}/{LIST_PLAYLIST}"
-    	result="onListPlaylistResult( event )"
-    	fault="onListPlaylistFault( event )"
-    	showBusyCursor="true"
-    	method="POST"
-    	resultFormat="e4x"/>-->
-
-    <mx:HTTPService id="executePlaylistService"
-    	url="{_srvFullUrl}/{EXECUTE_PLAYLIST}"
-    	showBusyCursor="true"
-    	method="POST"
-    	resultFormat="e4x"/>
 
 	<mx:HBox>
 		<mx:VBox width="{_tableWidth}" height="{_tableHieght}" styleName="lineGap">
