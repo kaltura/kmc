@@ -158,7 +158,8 @@
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 				setStyle("backgroundColor", 0xFFFFFF);
 
-				// flashvars processing
+				// flashvars and uiconf vars processing
+				saveUiconfVars();
 				initModelContext(_flashvars);
 				initModel(_flashvars);
 
@@ -275,6 +276,22 @@
 
 				ka.init(_model.context.kc, "content", VERSION, _model.context.userId);
 			}
+			
+			/**
+			 * saves value of vars passed via uiconf
+			 * */
+			private function saveUiconfVars():void {
+				var confFile:XML = new XML(_uiconf.confFile);
+				
+				// context:
+				_model.context.moderationUiconf = confFile.uiconf.kdp.moderation.text().toString(); 
+				_model.context.drilldownUiconf = confFile.uiconf.kdp.drilldown.text().toString();
+				
+				// model:
+				_model.entryDetailsModel.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
+				_model.bulkUploadModel.sampleFileUrl = confFile.bulkupload.text().toString();
+				
+			}
 
 
 			/**
@@ -296,10 +313,6 @@
 					_model.openPlayer = objParam.openplayer;
 				}
 
-				if (objParam.metadataviewuiconf) {
-					_model.entryDetailsModel.metadataDefaultUiconf = parseInt(objParam.metadataviewuiconf);
-				}
-
 				// is this partner allowed to view liveStream
 				if (objParam.enablelivestream && objParam.enablelivestream == "true") {
 					_model.filterModel.enablelivestream = true;
@@ -310,10 +323,6 @@
 					_model.filterModel.enableCustomData = true;
 				}
 
-				if (objParam.samplefileurl) {
-					_model.bulkUploadModel.sampleFileUrl = objParam.samplefileurl;
-				}
-
 			}
 
 
@@ -322,10 +331,9 @@
 			 * @param objParam	"lowercased" parameters object
 			 * */
 			private function initModelContext(objParam:Object):void {
+				// flashvars:
 				_model.context.userId = objParam.uid;
 				_model.context.subpId = objParam.subpid;
-				_model.context.moderationUiconf = objParam.moderationuiconf;
-				_model.context.drilldownUiconf = objParam.drilldownuiconf;
 				_model.context.rootUrl = KUtils.hostFromCode(objParam.host);
 				_model.context.cdnHost = objParam.cdnhost ? objParam.cdnhost : _model.context.rootUrl;
 				_model.context.kc = _kc;
