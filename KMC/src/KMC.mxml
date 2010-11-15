@@ -175,11 +175,11 @@
 				var mr:MultiRequest = new MultiRequest();
 				
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
-				var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
+				//var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler);
 				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler);
 				mr.addAction(uiconf);
-				mr.addAction(uiconf2);
+				//mr.addAction(uiconf2);
 				_modelLocator.kalturaClient.post(mr);
 			}
 
@@ -209,7 +209,7 @@
 
 
 			/**
-			 * Kmc uiConf loaded. Parse it and load skin and relevant modules.
+			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
 				// loaded data
@@ -218,13 +218,12 @@
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 				
 				// permissions:
-				var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
-				var parser:PermissionsParser = new PermissionsParser();
-				_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
+				//var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
+				//var parser:PermissionsParser = new PermissionsParser();
+				//_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
 				
 				//TODO get user's permissions, substract and apply 
-				
-				var hideTabsArray:Array = parser.getTabsToHide();
+				//var hideTabsArray:Array = parser.getTabsToHide();
 				
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
