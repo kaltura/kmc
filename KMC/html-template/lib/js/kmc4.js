@@ -127,16 +127,16 @@ $(function(){
 							go_to = { moduleName : "dashboard", subtab : "" };
 							break;
 						case "content" :
-							go_to = { moduleName : "content", subtab : "Manage" };
+							go_to = { moduleName : "content", subtab : "manage" };
 							break;
 						case "studio" :
-							go_to = { moduleName : "studio", subtab : "players_list" };
+							go_to = { moduleName : "studio", subtab : "playersList" };
 							break;
 						case "account" :
-							go_to = { moduleName : "account", subtab : "Account_Settings" };
+							go_to = { moduleName : "account", subtab : "overview" };
 							break;
 						case "analytics" :
-							go_to = { moduleName : "analytics", subtab : "Bandwidth Usage Reports" };
+							go_to = { moduleName : "analytics", subtab : "usageTabTitle" };
 							break;
 //						case "Advertising" :
 //							go_to = "tremor";
@@ -388,7 +388,7 @@ $(function(){
 		},
 		 selectContent : function(uiconf_id,is_playlist) { // called by selectPlaylistContent which is caled from appstudio
 //			alert("selectContent("+uiconf_id+","+is_playlist+")");
-			var subtab = is_playlist ? "Playlists" : "Manage";
+			var subtab = is_playlist ? "Playlists" : "entries";
 //			kmc.vars.current_uiconf = uiconf_id; // used by doPreviewEmbed
 			kmc.vars.current_uiconf = { "uiconf_id" : uiconf_id , "is_playlist" : is_playlist }; // used by doPreviewEmbed
 			kmc.mediator.setState( { module : "content", subtab : subtab } );
