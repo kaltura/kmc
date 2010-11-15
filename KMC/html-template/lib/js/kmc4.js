@@ -25,21 +25,16 @@
 //			* In p&e, if mix, show only message box for jw (Yaron)
 //			* Full copy to clipboard
 //			* Flavors preview to display based on flavor size with logic for not exceeding available screen area
-
+ 
 /* WResize: plugin for fixing the IE window resize bug (http://noteslog.com/) */
 (function($){$.fn.wresize=function(f){version='1.1';wresize={fired:false,width:0};function resizeOnce(){if($.browser.msie){if(!wresize.fired){wresize.fired=true}else{var version=parseInt($.browser.version,10);wresize.fired=false;if(version<7){return false}else if(version==7){var width=$(window).width();if(width!=wresize.width){wresize.width=width;return false}}}}return true}function handleWResize(e){if(resizeOnce()){return f.apply(this,[e])}}this.each(function(){if(this==window){$(this).resize(handleWResize)}else{$(this).resize(f)}});return this}})(jQuery);
 
-$(function(){
-//	alert("dom ready:  setState("+kmc.mediator.readUrlHash()[0]+","+kmc.mediator.readUrlHash()[1]+")");
-///	kmc.mediator.setState(kmc.mediator.readUrlHash());
-//	alert("done setState");
+$(window).load(function(){
+//	$("#kcms")[0].gotoPage(kmc.mediator.readUrlHash());
 	kmc.utils.activateHeader(true);
-//	alert("done activateHeader");
  
 	$(window).wresize(kmc.utils.resize);
 	kmc.modules.isLoadedInterval = setInterval("kmc.utils.isModuleLoaded()",200);
-//	content_resize();
-
 });
 
 /* kmc and kmc.vars defined in script block in kmc2success.php */
@@ -127,16 +122,16 @@ $(function(){
 							go_to = { moduleName : "dashboard", subtab : "" };
 							break;
 						case "content" :
-							go_to = { moduleName : "content", subtab : "manage" };
+							go_to = { moduleName : "content", subtab : "Manage" };
 							break;
 						case "studio" :
-							go_to = { moduleName : "studio", subtab : "playersList" };
+							go_to = { moduleName : "studio", subtab : "players_list" };
 							break;
 						case "account" :
-							go_to = { moduleName : "account", subtab : "overview" };
+							go_to = { moduleName : "account", subtab : "Account_Settings" };
 							break;
 						case "analytics" :
-							go_to = { moduleName : "analytics", subtab : "usageTabTitle" };
+							go_to = { moduleName : "analytics", subtab : "Bandwidth Usage Reports" };
 							break;
 //						case "Advertising" :
 //							go_to = "tremor";
@@ -227,7 +222,7 @@ $(function(){
                 data: { "ks": kmc.vars.ks },
                 dataType: "json",
                 complete: function() {
-                        window.location = kmc.vars.service_url + "/index.php/kmc/kmc#" + state.module + "|" + state.subtab;
+                        window.location = kmc.vars.service_url + "/index.php/kmc/kmc#" + state.moduleName + "|" + state.subtab;
                 }
 			});
 		},
@@ -384,11 +379,11 @@ $(function(){
 				module = hash[0];
 				subtab = hash[1];
 			}
-			return { "module" : module, "subtab" : subtab };
+			return { "moduleName" : module, "subtab" : subtab };
 		},
 		 selectContent : function(uiconf_id,is_playlist) { // called by selectPlaylistContent which is caled from appstudio
 //			alert("selectContent("+uiconf_id+","+is_playlist+")");
-			var subtab = is_playlist ? "Playlists" : "entries";
+			var subtab = is_playlist ? "Playlists" : "Manage";
 //			kmc.vars.current_uiconf = uiconf_id; // used by doPreviewEmbed
 			kmc.vars.current_uiconf = { "uiconf_id" : uiconf_id , "is_playlist" : is_playlist }; // used by doPreviewEmbed
 			kmc.mediator.setState( { module : "content", subtab : subtab } );
@@ -428,29 +423,19 @@ $(function(){
 			swf_url : kmc.vars.flash_dir + "/kmc/dashboard/"   + kmc.vars.versions.dashboard + "/dashboard.swf",
 			flashvars : {
 				userName			: kmc.vars.screen_name,
-				firstLogin			: kmc.vars.first_login,
-				uploadDocLink		: kmc.vars.quickstart_guide + "page=3",
-				embedDocLink		: kmc.vars.quickstart_guide + "page=5",
-				customizeDocLink	: kmc.vars.quickstart_guide + "page=52" // bf=37
+				firstLogin			: kmc.vars.first_login
 			}
 		},
 		content : {
 			swf_url : kmc.vars.flash_dir + "/kmc/content/" + kmc.vars.versions.content + "/content.swf",
 			flashvars : {
-				moderationKDPVersion : "v3.3.4",
-				drillDownKDPVersion  : "v3.3.4",
-				moderationUiconf	: kmc.vars.content_moderate_uiconf,
-				drilldownUiconf		: kmc.vars.content_drilldown_uiconf,
 				refreshPlayerList	: "refreshPlayerList", // @todo: ???!!!
 				refreshPlaylistList : "refreshPlaylistList", // @todo: ???!!!
 				openPlayer			: "kmc.preview_embed.doPreviewEmbed", // @todo: remove for 2.0.9 ?
 				openPlaylist		: "kmc.preview_embed.doPreviewEmbed",
 				email				: kmc.vars.email,
-				visibleCT			: kmc.vars.paying_partner,
 				openCw				: "kmc.functions.openKcw",
-				enableLiveStream	: kmc.vars.enable_live,
-				sampleFileUrl		: "/content/docs/csv/kaltura_batch_upload_andromeda.csv",
-				metadataViewUiconf	: kmc.vars.metadata_view_uiconf
+				enableLiveStream	: kmc.vars.enable_live
 			}
 		},
 		appstudio : {
@@ -458,42 +443,20 @@ $(function(){
 			playlist_url :	'http%3A%2F%2F' + kmc.vars.host + '%2Findex.php%2Fpartnerservices2%2Fexecuteplaylist%3Fuid%3D%26partner_id%3D' +
 							kmc.vars.partner_id + '%26subp_id%3D' +  kmc.vars.partner_id + '00%26format%3D8%26ks%3D%7Bks%7D%26playlist_id%3D',
 			flashvars : {
-				entryId					: kmc.vars.appStudioExampleEntry ,
-				"playlistAPI.kpl0Name"	: "playlist1",
-				"playlistAPI.kpl0Url"	: '',
-				"playlistAPI.kpl1Name"	: "playlist2",
-				"playlistAPI.kpl1Url"	: '',
-				inapplicationstudio		: "true",
-				Appstudiouiconfid		: kmc.vars.appstudio_uiconfid,
-				//kdpUrl					: kmc.vars.flash_dir + "/kdp3/v3.3.4/kdp3.swf",
-				servicesPath			: "index.php/partnerservices2/",
-				serverPath				: "http://"+kmc.vars.host,
-				partner_id				: kmc.vars.partner_id,
-				subp_id					: kmc.vars.subp_id,
-				templatesXmlUrl			: kmc.vars.appstudio_templatesXmlUrl || "",
-				enableAds				: kmc.vars.enableAds,
-				enableCustomData		: kmc.vars.enable_custom_data
-//				widget_id				: "_" + kmc.vars.partner_id
+				enableAds				: kmc.vars.enableAds
 			}
 		},
 		settings : { // formerly "account""
 			swf_url : kmc.vars.flash_dir + "/kmc/account/"   + kmc.vars.versions.account + "/account.swf",
 			flashvars: {
-				email				: kmc.vars.email,
-				showUsage			: kmc.vars.show_usage
 			}
 		},
 		reports : {
 			swf_url : kmc.vars.flash_dir + "/kmc/analytics/"   + kmc.vars.versions.reports + "/ReportsAndAnalytics.swf",
 			flashvars : {
-				drillDownKdpVersion	: "v3.3.4",
-				drillDownKdpUiconf	: kmc.vars.reports_drilldown,
-				serverPath			: kmc.vars.service_url
 			}
 		}
 	}
-	kmc.utils.mergeJson(kmc.modules.appstudio.flashvars,{ "playlistAPI.kpl0Url"	: kmc.modules.appstudio.playlist_url + kmc.vars.appStudioExamplePlayList0, "playlistAPI.kpl1Url" : kmc.modules.appstudio.playlist_url + kmc.vars.appStudioExamplePlayList1 });
-//	kmc.modules.studio = kmc.modules.appstudio;
 
 	kmc.preview_embed = {
 
@@ -1115,10 +1078,9 @@ $(function(){
 
 // Maintain support for old kmc2 functions:
 
-function openCw (ks ,conversion_quality) {
-		alert("ssss echtek");
-	kmc.functions.openKcw();
- }
+//function openCw (ks ,conversion_quality) {
+//	kmc.functions.openKcw();
+// }
  function expiredF() { // @todo: change all modules
 	kmc.utils.expired();
  }
@@ -1137,7 +1099,7 @@ function openCw (ks ,conversion_quality) {
  function refreshSWF() {
 //	alert("refreshSWF()");
 	var state = kmc.mediator.readUrlHash();
-	kmc.mediator.loadModule(state.module,state.subtab);
+	kmc.mediator.loadModule(state.moduleName,state.subtab);
  }
  function openPlayer(emptystring, width, height, uiconf_id) { // for catching appstudio p&e
 //	 alert("received call to openPlayer(emptystring="+emptystring+", "+"width="+width+", "+"height="+height+", uiconf_id="+uiconf_id+")");
@@ -1200,36 +1162,7 @@ kmc.vars.kmc_swf = {
 		
 		// path to modules (optional):
 		modules_path:"http://localhost/kmc/KMC/bin-debug/modules",
-	
-		// partner id:
-		 partner_id:"569",
-	
-		// sub partner id:
-		 subp_id:"56900",
-	
-		// widget id:
-	 	 widget_id:"_569",	
-	
-		// user id:
-		 uid:"569",
-	
-		// kaltura session key:
-		 ks:"YTFlYWNkYTFmOTlmZDgwY2MwZWNiNTY2NzU2YWRhYTJkZWM1NzExNHw1Njk7NTY5OzEyODk5MDAzNzA7MjsxMjg3MzA4MzcwLjcyO19fQURNSU5fXzA7Kjs=",					 						 
-		
-		// work with this server
-		 host:"kaldev.kaltura.com",
-	
-		// services url:
-	 	 srvurl:"api_v3/index.php",
-	
-		// debugMode for loaded KDPs (true | false)
-	     kdpDebugMode:"false",
-	
-		// debugMode for modules
-	     debugMode:"true",
-	
-		 // google tracker id: 
-	     urchinNumber:"UA-12055206-1"
+
     }
 }
 kmc.mediator.loadKmc = function() {
@@ -1239,8 +1172,15 @@ kmc.mediator.loadKmc = function() {
 			data : kmc.vars.kmc_swf.url,
 			id : "kcms"
 	}
+	var flashvars = kmc.utils.mergeJson(kmc.vars.kmc_swf.flashvars,
+			kmc.modules.shared.flashvars,
+			kmc.modules.dashboard.flashvars,
+			kmc.modules.appstudio.flashvars,
+			kmc.modules.settings.flashvars,
+			kmc.modules.reports.flashvars,
+			kmc.modules.content.flashvars); 
 	var params = {
-			flashvars: kmc.utils.jsonToQuerystring(kmc.vars.kmc_swf.flashvars)
+			flashvars: kmc.utils.jsonToQuerystring(flashvars)
 	} 
 	// attruib, params, 
 	window.kmc_module = swfobject.createSWF(attributes, params, "kcms");
