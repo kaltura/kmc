@@ -131,21 +131,24 @@
 				return VERSION;
 			}
 			
-			override public function showSubtab(subtab:String):void {
+			override public function showSubtab(subtab:String):void 
+			{
 				_initialTab = subtab;
 				if (_ready) {
 					switchToTab(_initialTab);
 				}
 			}
 
-			override protected function createChildren():void {
+			override protected function createChildren():void 
+			{
 				if (_ready) {
 					super.createChildren();
 				}
 			}
 			
 			
-			override protected function start():void {
+			override protected function start():void 
+			{
 				trace("=================");
 				trace("KMC VERSION   " + VERSION);
 				trace("=================");
@@ -184,9 +187,10 @@
 			/**
 			 * init the panels in the view after all data is ready
 			 * */
-			private function initChildren(e:FlexEvent):void {
+			private function initChildren(e:FlexEvent):void 
+			{
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-				entries.init();
+				manage.init();
 //				moderation.init();
 //				plst.init();	
 				
@@ -198,7 +202,8 @@
 			/**
 			 * set Alert locale for all this application
 			 * */
-			private function setAlert():void {
+			private function setAlert():void 
+			{
 				Alert.yesLabel = resourceManager.getString('cms', 'yes');
 				Alert.noLabel = resourceManager.getString('cms', 'no');
 				Alert.okLabel = resourceManager.getString('cms', 'ok');
@@ -209,7 +214,8 @@
 			/**
 			 * dispatches events that trigger data loading
 			 * */
-			private function loadData():void {
+			private function loadData():void 
+			{
 				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				getCategoriesList.dispatch();
 
@@ -233,7 +239,8 @@
 			/**
 			 * I have no idea what this function (or this flag) do.
 			 * */
-			private function onExternalTabChange():void {
+			private function onExternalTabChange():void 
+			{
 				ExternalInterface.call("onTabChange");
 			}
 
@@ -241,7 +248,8 @@
 			/**
 			 * bring any visible popups to the center of the screen
 			 * */
-			private function centerPopups(event:Event = null):void {
+			private function centerPopups(event:Event = null):void 
+			{
 				if (_popup)
 					PopUpManager.centerPopUp(_popup);
 
@@ -327,21 +335,21 @@
 			/**
 			 * fix race condition, application added or tab switch from initial flashvar
 			 */
-			private function switchToTab(initialTab:String = ""):void {
-				switch (initialTab) {
-					case resourceManager.getString('cms', 'entries'):
+			private function switchToTab(tab:String = ""):void {
+				switch (tab) {
+					case 'manage':
 						secTln.selectedIndex = 0;
 						break;
-					case resourceManager.getString('cms', 'moderation'):
+					case 'moderation':
 						secTln.selectedIndex = 1;
 						break;
-					case resourceManager.getString('cms', 'playlistTitle'):
+					case 'playlists':
 						secTln.selectedIndex = 2;
 						break;
-					case resourceManager.getString('cms', 'externalSyndication'):
+					case 'syndication':
 						secTln.selectedIndex = 3;
 						break;
-					case resourceManager.getString('cms', 'bulkUpload'):
+					case  'upload':
 						secTln.selectedIndex = 4;
 						break;
 					default:
@@ -657,25 +665,25 @@
 			 * track tab changes in analytics and URL hash
 			 * */
 			private function trackTabChange(evt:Event):void {
-				var label:String = (evt as ItemClickEvent).label.toString()
+				var label:String = contentView.selectedChild.id;
 				switch (label) {
-					case "Manage":
+					case "manage":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'),GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "Upload":
+					case "upload":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'),GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "Playlists":
+					case "playlists":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'),GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "Moderate":
+					case "moderate":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'),GoogleAnalyticsConsts.CONTENT)
 						break;
-					case "Syndicate":
+					case "syndication":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'),GoogleAnalyticsConsts.CONTENT);
 						break;
@@ -692,7 +700,7 @@
 				var tab:DisplayObject = contentView.selectedChild;
 				var anchor:String;
 				switch (tab) {
-					case entries:  {
+					case manage:  {
 						anchor = resourceManager.getString('cms', 'helpEntries');
 						break;
 					}
@@ -700,7 +708,7 @@
 						anchor = resourceManager.getString('cms', 'helpModeration');
 						break;
 					}
-					case plst:  {
+					case playlists:  {
 						anchor = resourceManager.getString('cms', 'helpPlaylist');
 						break;
 					}
@@ -708,7 +716,7 @@
 						anchor = resourceManager.getString('cms', 'generalHelp');
 						break;
 					}
-					case bulkupload:  {
+					case upload:  {
 						anchor = resourceManager.getString('cms', 'helpBulkUpload');
 						break;
 					}
@@ -745,16 +753,16 @@
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelected(event)">
-			<content:Entries id="entries" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
+			<content:Entries id="manage" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
 							 filterModel="{_model.filterModel}"/>
 			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"
 								selectedEntry="{_model.entryDetailsModel.selectedEntry}"
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"/>
-			<playlist:Playlist id="plst" width="100%" styleName="pageStyle"
+			<playlist:Playlist id="playlists" width="100%" styleName="pageStyle"
 							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"/>
 			<content:ExternalSyndication id="syndication" styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
-			<content:BulkUpload id="bulkupload" width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
+			<content:BulkUpload id="upload" width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
 								bulkUploadData="{_model.bulkUploadModel}"/>
 		</mx:ViewStack>
 
