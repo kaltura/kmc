@@ -86,24 +86,31 @@
 			}
 			
 			private function switchToTab(tab:String):void {
-				//		Alert.show(objParam.subnavtab, "objParam.subnavtab");
-				switch (tab) {
-					case resourceManager.getString('account', 'accountOverview'):
-						contentView.selectedIndex = 0;
-						break;
-					case resourceManager.getString('account', 'serverSettings'):
-						contentView.selectedIndex = 1;
-						break;
-					case resourceManager.getString('account', 'accessControl'):
-						contentView.selectedIndex = 2;
-						break;
-					case resourceManager.getString('account', 'transcodingSettings'):
-						contentView.selectedIndex = 3;
-						break;
-					case resourceManager.getString('account', 'accountUpgrade'):
-						contentView.selectedIndex = 4;
-						break;
+				var doc:Container = contentView.getChildByName(tab) as Container;
+				if (doc) {
+					contentView.selectedChild = doc;
 				}
+				else {
+					// if couldn't find matching tab, show the first one.
+					contentView.selectedIndex = 0;
+				}
+//				switch (tab) {
+//					case resourceManager.getString('account', 'accountOverview'):
+//						contentView.selectedIndex = 0;
+//						break;
+//					case resourceManager.getString('account', 'serverSettings'):
+//						contentView.selectedIndex = 1;
+//						break;
+//					case resourceManager.getString('account', 'accessControl'):
+//						contentView.selectedIndex = 2;
+//						break;
+//					case resourceManager.getString('account', 'transcodingSettings'):
+//						contentView.selectedIndex = 3;
+//						break;
+//					case resourceManager.getString('account', 'accountUpgrade'):
+//						contentView.selectedIndex = 4;
+//						break;
+//				}
 			}
 
 
@@ -131,9 +138,9 @@
 				_model.adminData = adminVo;
 				
 				// after we have the client, initialize the different panels
-				ao.init();
-				ss.init();
-				cs.init();
+				overview.init();
+				server.init();
+				transcoding.init();
 
 				/// set Alert locale for all this application
 				Alert.yesLabel = resourceManager.getString('account', 'yes');
@@ -327,19 +334,19 @@
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500">
-			<view:AccountOverview id="ao" width="100%" label="{resourceManager.getString('account','accountOverview')}"
+			<view:AccountOverview id="overview" width="100%" label="{resourceManager.getString('account','accountOverview')}"
 								  styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								  partnerData="{_model.partnerData}" adminData="{_model.adminData}"/>
-			<view:ServerSettings id="ss" width="100%" label="{resourceManager.getString('account','serverSettings')}"
+			<view:ServerSettings id="server" width="100%" label="{resourceManager.getString('account','serverSettings')}"
 								 styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								 partnerData="{_model.partnerData}"/>
-			<view:AccessControl label="{resourceManager.getString('account','accessControl')}"
+			<view:AccessControl id="access" label="{resourceManager.getString('account','accessControl')}"
 								rootUrl="{_model.context.rootUrl}" accessControlsList="{_model.accessControlData}"
 								styleName="pageStyle"/>
-			<view:ConversionSettings id="cs" label="{resourceManager.getString('account','transcodingSettings')}"
+			<view:ConversionSettings id="transcoding" label="{resourceManager.getString('account','transcodingSettings')}"
 									 rootUrl="{_model.context.rootUrl}" conversionData="{_model.conversionData}"
 									 flavorParamData="{_model.flavorsData}" styleName="pageStyle"/>
-			<view:Packages width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
+			<view:Packages id="packages" width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
 						   label="{resourceManager.getString('account','accountUpgrade')}" styleName="pageStyle"/>
 		</mx:ViewStack>
 
