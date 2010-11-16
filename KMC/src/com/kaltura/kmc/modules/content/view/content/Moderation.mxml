@@ -34,6 +34,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 
 
@@ -202,6 +203,8 @@
 
 			private function clearKdp(event:MouseEvent = null):void {
 				entryTable.selectedIndex = -1;
+				if (_kdp3SwfLoader && _kdp3SwfLoader.content)
+					_kdp3SwfLoader.content["sendNotification"]("cleanMedia");
 			}
 
 
@@ -405,7 +408,7 @@
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
 					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
 					kdp3LoaderParent.addChildAt(_kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
-					kdp3LoaderParent.removeChild(kdp3Loader);
+					//kdp3LoaderParent.removeChild(kdp3Loader);
 					_kdp3SwfLoader.content["sendNotification"]('changeMedia', {entryId: (data as KalturaBaseEntry).id});
 						//Change media
 				}
@@ -448,6 +451,12 @@
 				_pager = value.entriesSearchData.searchResults.pager;
 				initPaging();
 			}
+
+			protected function paging_creationCompleteHandler(event:FlexEvent):void
+			{
+				paging.pageSize = 25;
+			}
+
 		]]>
 	</mx:Script>
 	<mx:WipeLeft id="wipeLeft" duration="400"/>
@@ -501,7 +510,7 @@
 				</mx:Panel>
 			</mx:HBox>
 
-			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="{mainCont.width}"
+			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="{mainCont.width}"  creationComplete="paging_creationCompleteHandler(event)"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"
 							 showNextFlag="true" showPrvFlag="true"/>
 
