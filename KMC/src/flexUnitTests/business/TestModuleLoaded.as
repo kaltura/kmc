@@ -35,7 +35,7 @@ package flexUnitTests.business
 		[Test(async, description="return the id a module was loaded with")]
 		public function testGetModuleId():void
 		{
-			Assert.assertEquals(_kmcModuleLoader.getModuleId(_ml), "dashboard");
+			Assert.assertEquals(_kmcModuleLoader.getModuleLoadId(_ml), "dashboard");
 		}
 		
 		

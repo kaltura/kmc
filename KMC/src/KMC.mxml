@@ -77,6 +77,12 @@
 			
 			
 			/**
+			 * the module KMC should start with, as determined by the url hash
+			 * */
+			private var _startModule:Object;
+			
+			
+			/**
 			 * KMC version
 			 * */
 			public var VERSION:String = "1.0.0";
@@ -84,25 +90,40 @@
 			// methods
 			// ==============================================================================
 			
+			/**
+			 * load skin dynamically
+			 * @param path	path to skin .swf file 
+			 * */
 			protected function loadSkin (path:String=""):void 
 			{
-				//load skin dynamically
-				
 				//TODO . remove after deployment 
 				if (!path)
 					path = "http://localhost/kmc/KMC/bin-debug/workspaces/kmc/KMC/assets/kmc_skin.swf";
 				var eventDispatcher : IEventDispatcher = StyleManager.loadStyleDeclarations (path);
-				eventDispatcher.addEventListener (StyleEvent.COMPLETE, onStyleComplete);
-				eventDispatcher.addEventListener (StyleEvent.ERROR, onStyleComplete);
+				eventDispatcher.addEventListener (StyleEvent.COMPLETE, onSkinLoaded, false, 0, true);
+				eventDispatcher.addEventListener (StyleEvent.ERROR, onSkinLoaded, false, 0, true);
 			}
 			
 			
 			/**
-			 * Skin loaded 
+			 * Skin loaded or load error. </br>
+			 * We go on anyway, alerting the user if skin load failed.
+			 * */
+			protected function onSkinLoaded(event:StyleEvent):void {
+				if (event.type == StyleEvent.ERROR) {
+					alert(event.errorText, "Skin Load Error");
+				}
+				loadModules();
+				// switch to needed tab
+				_startModule = ExternalInterface.call("kmc.mediator.readUrlHash");
+			}
+			
+			
+			/**
+			 * Load modules
 			 */
-			private function onStyleComplete (event : StyleEvent) : void
+			private function loadModules () : void
 			{
-				// load modules :
 				var moduleList:XMLList = _uiconf.modules.module;
 				var total:int = moduleList.length();
 				var mInfo:XML;
@@ -112,6 +133,7 @@
 					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
 					mainViewStack.addChild(ml);
 				}
+				
 			}
 
 		
@@ -121,7 +143,7 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				Security.allowDomain('*');
-				//TODO replace when doing white labeling 
+				//TODO . replace when doing white labeling 
 				_cm = new ContextMenu();
 				_cm.hideBuiltInItems();
 				
@@ -130,14 +152,14 @@
 				
 				//TODO . remove before release
 				var flexSpy:ContextMenuItem = new ContextMenuItem("flex spy");
-				flexSpy.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT,onFlexSpy);
+				flexSpy.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onFlexSpy, false, 0, true);
 				_cm.customItems.push(flexSpy);
 				
 				this.contextMenu = _cm;
 				
 				// listen to module requests
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
-				this.addEventListener(KmcErrorEvent.ERROR, showError);
+				this.addEventListener(KmcErrorEvent.ERROR, alert);
 				this.addEventListener(KmcHelpEvent.HELP, showHelp);
 				
 				// save flashvars
@@ -152,6 +174,7 @@
 				// hook ExternalInterface:
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("gotoPage", gotoPage);
+					ExternalInterface.addCallback("alert", alert);
 				}
 				
 				// create KalturaClient:
@@ -168,16 +191,16 @@
 				
 				// create a module loader:
 				_kmcModuleLoader = new KmcModuleLoader();
-				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR, onModuleLoadError);
-				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOADED, onModuleReady);
+				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR, onModuleLoadError, false, 0, true);
+				_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOADED, onModuleReady, false, 0, true);
 				
 				// load KMC uiconf and roles and permission uiConf  
 				var mr:MultiRequest = new MultiRequest();
 				
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
 				//var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
-				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler);
-				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler);
+				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
+				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
 				mr.addAction(uiconf);
 				//mr.addAction(uiconf2);
 				_modelLocator.kalturaClient.post(mr);
@@ -185,7 +208,7 @@
 
 
 			/**
-			 * UiConf failed to load, alert user
+			 * show flexspy
 			 */
 			protected function onFlexSpy(event:*):void {
 				FlexSpy.show();
@@ -196,7 +219,8 @@
 			 * UiConf failed to load, alert user
 			 */
 			protected function uiconfFailedHandler(event:KalturaEvent):void {
-				throw new Error("KMC.mxml, KMC uiconf load failed: " + event.error.errorMsg);
+				var s:String = "KMC.mxml, KMC uiconf load failed: " + event.error.errorMsg;
+				alert(s, "Error");
 			}
 
 
@@ -204,7 +228,8 @@
 			 * module failed to load, alert user
 			 */
 			protected function onModuleLoadError(event:KmcModuleEvent):void {
-				throw new Error("KMC.mxml, Module load failed: " + event.errorText);
+				 var s:String = "KMC.mxml, Module load failed: " + event.errorText;
+				alert(s, "Error");
 			}
 
 
@@ -222,7 +247,7 @@
 				//var parser:PermissionsParser = new PermissionsParser();
 				//_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
 				
-				//TODO get user's permissions, substract and apply 
+				//TODO . get user's permissions, substract and apply 
 				//var hideTabsArray:Array = parser.getTabsToHide();
 				
 				// load skin
@@ -237,8 +262,8 @@
 				// the moduleLoader
 				var ml:ModuleLoader = event.moduleLoader;
 				
-				// the loaded module's id:
-				var moduleid:String = _kmcModuleLoader.getModuleId(ml);
+				// the loaded module's load identifier:
+				var moduleid:String = _kmcModuleLoader.getModuleLoadId(ml);
 				
 				// a list of all modules:
 				var moduleList:XMLList = _uiconf.modules.module;
@@ -247,12 +272,19 @@
 				var mod:KmcModule = ml.child as KmcModule;
 				mod.percentHeight = 100;
 				mod.percentWidth = 100;
-				mod.id = moduleid;
+				mod.id = mod.getModuleName();
 				
 				// the uiconf id this module should load:
 				var uiconfid:String = moduleList.(@id == moduleid)[0].@uiconf;
 				mod.cm = _cm;
 				mod.init(KmcModelLocator.getInstance().kalturaClient, uiconfid, _flashvars);
+				
+				// if we need to start with a module, see if it's this one
+				if (_startModule && _startModule.moduleName == mod.id) {
+					//TODO see why getModuleParent fails
+					gotoPage(_startModule);
+					_startModule = null;
+				}
 			}
 
 
@@ -293,7 +325,7 @@
 				var ml:ModuleLoader;
 				for (var i:int = 0; i<children; i++) {
 					ml = mainViewStack.getChildAt(i) as ModuleLoader;
-					if ((ml.child as KmcModule).getModuleName() == moduleName) {
+					if (ml.child && (ml.child as KmcModule).getModuleName() == moduleName) {
 						break;
 					}
 				}
@@ -313,11 +345,20 @@
 			
 			/**
 			 * Show an error with the text on the error event.
-			 * This text should alresy be localized by the module
+			 * This text should already be localized by the module
 			 * which dispatched this event.
 			 * */
-			private function showError(e:KmcErrorEvent):void {
-				Alert.show(e.error);
+			private function onError(e:KmcErrorEvent):void {
+				alert(e.error, "Error");
+			}
+			
+			
+			/**
+			 * show an alert with the default "ok" button.
+			 * @param 
+			 * */
+			private function alert(text:String, header:String = ""):void {
+				Alert.show(text, header);
 			}
 			
 			
