@@ -40,7 +40,7 @@ package com.kaltura.kmc.business {
 		 * @param permissionXml
 		 * @return list of instructions in an array
 		 */
-		public function getInstructions(permissionXml:XML):Array {
+		protected function getInstructions(permissionXml:XML):Array {
 			var arr:Array = new Array();
 			// parse and build the instructions  
 			var uiXmls:XMLList = permissionXml.children();
