@@ -402,6 +402,7 @@ $(window).load(function(){
 				allowNetworking		: "all",
 				allowFullScreen		: "false",
 				bgcolor				: "#F7F7F7",
+				
 				autoPlay			: "true"//,
 //				wmode				: "opaque"
 			},
@@ -415,6 +416,7 @@ $(window).load(function(){
 				ks					: kmc.vars.ks,
 				entryId				: "-1",
 				kshowId				: "-1",
+				debugmode			: "true",
 				widget_id			: "_" + kmc.vars.partner_id,
 				enableCustomData	: kmc.vars.enable_custom_data,
 				urchinNumber		: kmc.vars.google_analytics_account // "UA-12055206-1""
