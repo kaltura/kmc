@@ -103,7 +103,12 @@
 				// save playlists info
 				for (var i:int = 0; i<pls; i++) {
 					_media["kpl" + i + "Name"] = plsts[i].name[0].text().toString();
-					_media["kpl" + i + "Url"] = plsts[i].url[0].text().toString();
+					//TODO replace pid & subpid
+					var s:String = "http://" + _flashvars.host + plsts[i].url[0].text().toString();
+					s = s.replace("{pid}", _flashvars.partnerid);
+					s = s.replace("{spid}", _flashvars.subpartnerid);
+					_media["kpl" + i + "Url"] = s;
+					
 				}
 				
 				// get templates info:
