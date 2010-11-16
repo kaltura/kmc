@@ -64,7 +64,7 @@ package com.kaltura.kmc.business {
 		 * This method does not actually load the module, it will be loaded
 		 * automatically when it becomes visible on screen.
 		 * @param url 	the path to the loaded module
-		 * @param id	id of this module
+		 * @param id	load id for this module, used later to retreive it's uiconf id.
 		 * @return	the ModuleLoader instance that will load this module
 		 */
 		public function loadKmcModule(url:String, id:String):ModuleLoader {
@@ -86,13 +86,14 @@ package com.kaltura.kmc.business {
 		
 		
 		/**
-		 * retrieve the id that was initialy passed for a module.  
+		 * retrieve the load id that was initialy passed for a module. 
+		 * NOTE: this is not the module's id in KMC, it is just a name it was loaded with. 
 		 * @param ml	the <code>ModuleLoader</code> instance that loaded the module in question.
 		 * @return 		id of the module loaded by <code>ml</code>.
 		 * -----------------------------------
 		 * @test	requires a loaded module
 		 */		
-		public function getModuleId(ml:ModuleLoader):String {
+		public function getModuleLoadId(ml:ModuleLoader):String {
 			return _modulesInfo[ml.url];
 		}
 
