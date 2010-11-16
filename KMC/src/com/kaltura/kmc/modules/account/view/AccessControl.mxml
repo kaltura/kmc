@@ -7,12 +7,13 @@
 	
 	<mx:Script>
 		<![CDATA[
+			
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
@@ -71,7 +72,7 @@
 	   	
 	   		
 	   	
-	   		var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+	   		var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
 			getAllProfilesEvent.dispatch();
 	   }
 				
@@ -130,7 +131,7 @@
 			
 		private function saveUpdatedProfileFunc(event:Event):void
 		{
-			var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+			var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE);
 			saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
 			saveProfileChangesEvent.dispatch();
 		}
@@ -140,7 +141,7 @@
 		 */ 
 		private function saveNewProfileFunc(event:Event):void
 		{
-			var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+			var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE);
 			addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
 			addNewProfileEvent.dispatch(); 
 		}
@@ -197,7 +198,7 @@
 						ids.push(acp.profile.id);
 					}
 				}
-				var deleteProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.DELETE_ACCESS_CONTROL_PROFILES);
+				var deleteProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
 				deleteProfilesEvent.data = ids;
 				deleteProfilesEvent.dispatch();
 			}

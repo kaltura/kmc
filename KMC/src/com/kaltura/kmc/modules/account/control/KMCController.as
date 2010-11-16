@@ -39,11 +39,11 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(UsageGraphEvent.USAGE_GRAPH, GetUsageGraphCommand);
 			
 			// Access Control Events
-			addCommand(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
-			addCommand(AccessControlProfileEvent.DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
-			addCommand(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
-			addCommand(AccessControlProfileEvent.MARK_PROFILES, MarkAccessControlProfilesCommand);
-			addCommand(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
+			addCommand(AccessControlProfileEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
+			addCommand(AccessControlProfileEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
+			addCommand(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
+			addCommand(AccessControlProfileEvent.ACCOUNT_MARK_PROFILES, MarkAccessControlProfilesCommand);
+			addCommand(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
 			
 		/* 	// External Syndication Events
 			addCommand(ExternalSyndicationEvent.ADD_NEW_EXTERNAL_SYNDICATION, AddNewExternalSyndicationCommand);

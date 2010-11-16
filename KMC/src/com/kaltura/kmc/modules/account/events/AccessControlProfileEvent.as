@@ -4,11 +4,11 @@ package com.kaltura.kmc.modules.account.events
 	
 	public class AccessControlProfileEvent extends CairngormEvent {
 		
-		public static const LIST_ACCESS_CONTROLS_PROFILES : String = "account_listAllAccessControlProfiles";
-		public static const DELETE_ACCESS_CONTROL_PROFILES : String = "account_deleteAccessControlProfiles";
-		public static const ADD_NEW_ACCESS_CONTROL_PROFILE : String = "account_addNewAccessControlProfile";
-		public static const UPDATE_ACCESS_CONTROL_PROFILE : String = "account_updateAccessControlProfile";
-		public static const MARK_PROFILES : String = "account_markProfiles";
+		public static const ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES : String = "accountListAllAccessControlProfiles";
+		public static const ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES : String = "accountDeleteAccessControlProfiles";
+		public static const ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE : String = "accountAddNewAccessControlProfile";
+		public static const ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE : String = "accountUpdateAccessControlProfile";
+		public static const ACCOUNT_MARK_PROFILES : String = "accountMarkProfiles";
 		
 		public var selected : Boolean;
 		
