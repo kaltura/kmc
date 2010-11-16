@@ -122,16 +122,16 @@ $(window).load(function(){
 							go_to = { moduleName : "dashboard", subtab : "" };
 							break;
 						case "content" :
-							go_to = { moduleName : "content", subtab : "Manage" };
+							go_to = { moduleName : "content", subtab : "manage" };
 							break;
 						case "studio" :
-							go_to = { moduleName : "studio", subtab : "players_list" };
+							go_to = { moduleName : "studio", subtab : "playersList" };
 							break;
 						case "account" :
-							go_to = { moduleName : "account", subtab : "Account_Settings" };
+							go_to = { moduleName : "account", subtab : "overview" };
 							break;
 						case "analytics" :
-							go_to = { moduleName : "analytics", subtab : "Bandwidth Usage Reports" };
+							go_to = { moduleName : "analytics", subtab : "usage" };
 							break;
 //						case "Advertising" :
 //							go_to = "tremor";
@@ -347,21 +347,22 @@ $(window).load(function(){
 		},
 		writeUrlHash : function(module,subtab){
 //	alert("writeUrlHash");
-			if(module == "account")
-				module = "Settings";
+//			if(module == "account")
+//				module = "Settings";
 			location.hash = module + "|" + subtab;
-			document.title = "KMC > " + module.charAt(0).toUpperCase() + module.slice(1) + ((subtab && subtab != "") ? " > " + subtab + " |" : "");
+			document.title = "KMC > " + module + ((subtab && subtab != "") ? " > " + subtab + " |" : "");
+//			document.title = "KMC > " + module.charAt(0).toUpperCase() + module.slice(1) + ((subtab && subtab != "") ? " > " + subtab + " |" : "");
 		},
 		setTab : function(module){
-			if(module == "reports") {
-				module = "Analytics";
-			}
-			else if(module == "account"){
-				module = "Settings";
-			}
-			else {
-				module = module.substring(0,1).toUpperCase() + module.substring(1); // capitalize 1st letter
-			}
+//			if(module == "reports") {
+//				module = "Analytics";
+//			}
+//			else if(module == "account"){
+//				module = "Settings";
+//			}
+//			else {
+//				module = module.substring(0,1).toUpperCase() + module.substring(1); // capitalize 1st letter
+//			}
 			$("#kmcHeader ul li a").removeClass("active");
 			$("a#" + module).addClass("active");
 		},
@@ -383,7 +384,7 @@ $(window).load(function(){
 		},
 		 selectContent : function(uiconf_id,is_playlist) { // called by selectPlaylistContent which is caled from appstudio
 //			alert("selectContent("+uiconf_id+","+is_playlist+")");
-			var subtab = is_playlist ? "Playlists" : "Manage";
+			var subtab = is_playlist ? "playlists" : "manage";
 //			kmc.vars.current_uiconf = uiconf_id; // used by doPreviewEmbed
 			kmc.vars.current_uiconf = { "uiconf_id" : uiconf_id , "is_playlist" : is_playlist }; // used by doPreviewEmbed
 			kmc.mediator.setState( { module : "content", subtab : subtab } );
