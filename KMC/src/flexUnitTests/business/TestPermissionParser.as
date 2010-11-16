@@ -53,7 +53,7 @@ package flexUnitTests.business
 				<ui id="content.manage.entriesList.controlBar.playlistComboBox"
 					visible="false" includeInLayout="false"/>
 			</permission>;
-			var arr:Array = _permissionsPArser.getInstructions(xml);
+			var arr:Array = getInstructions(xml);
 			// we got 3 objects:
 			Assert.assertEquals(arr.length, 3);
 			// the 2nd object's contents:
