@@ -112,7 +112,7 @@ $(window).load(function(){
 	kmc.utils = {
 		activateHeader : function(on) { // supports turning menu off if needed - just uncomment else clause
 			if(on) {
-//				$("a").unbind("click");
+				$("a").unbind("click");
 				$("a").click(function(e) {
 					var go_to,
 					tab = (e.target.tagName == "A") ? e.target.id : $(e.target).parent().attr("id");
@@ -158,12 +158,12 @@ $(window).load(function(){
 					return false;
 				});
 			}
-//			else {
-//				$("a").unbind("click")
-//					  .click(function(){
-//						return false;
-//					  });
-//			}
+			else {
+				$("a").unbind("click")
+					  .click(function(){
+						return false;
+					  });
+			}
 		},
 		openSupport : function(href) {
 			kalturaCloseModalBox();

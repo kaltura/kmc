@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.vo.KalturaUiConf;
 	
 	import flash.events.IEventDispatcher;
+	import flash.external.ExternalInterface;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.getQualifiedClassName;
@@ -237,6 +238,15 @@ package com.kaltura.kmc.modules {
 		 * */
 		public function showSubtab(subtab:String, data:Object = null):void {
 			throw new Error(getQualifiedClassName(this) + ".showSubtab() must be implemented");
+		}
+		
+		
+		/**
+		 * enables / disables html tabs 
+		 * @param enable	if true enables, if false disables
+		 */
+		protected function enableHtmlTabs(enable:Boolean):void {
+			ExternalInterface.call("kmc.utils.activateHeader", enable);
 		}
 		
 		
