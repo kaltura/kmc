@@ -298,8 +298,15 @@
 						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
 						//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
 //						navigateToURL(new URLRequest("javascript: selectPlaylistContent(" + JSON.encode({playerId: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}) + ")"), "_self");
-						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
-															{playerId: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
+						if (isPlaylist) {
+							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", 
+															{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+						}
+						else {
+							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
+															{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+						}
 						break;
 					case resourceManager.getString('aps', 'previewAndEmbed'):
 						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString());
