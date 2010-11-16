@@ -237,6 +237,11 @@
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
+				if (event.data[0].error) {
+					alert(event.data[0].error.code, "Error");
+					ExternalInterface.call("kmc.utils.expired");
+					return;
+				}
 				// loaded data
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
