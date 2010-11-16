@@ -233,8 +233,9 @@ package com.kaltura.kmc.modules {
 		 * Navigate to a subtab in the module.
 		 * Each module should implement this method according to its inner structure.
 		 * @param subtab	name (id) of the required subtab.
+		 * @param data		object with data the subtab should use.
 		 * */
-		public function showSubtab(subtab:String):void {
+		public function showSubtab(subtab:String, data:Object):void {
 			throw new Error(getQualifiedClassName(this) + ".showSubtab() must be implemented");
 		}
 		
