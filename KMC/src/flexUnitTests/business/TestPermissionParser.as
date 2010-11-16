@@ -6,7 +6,7 @@ package flexUnitTests.business
 	
 	import org.flexunit.asserts.assertEquals;
 	
-	public class TestPermissionParser
+	public class TestPermissionParser extends PermissionsParser
 	{		
 		private var _permissionsPArser:PermissionsParser;
 		[Before]
@@ -61,6 +61,19 @@ package flexUnitTests.business
 			
 			Assert.assertObjectEquals(arr[1].attributes, {visible:"false", includeInLayout:"false"});
 		}
+		
+//		[Test]
+//		public function testGetInstructionsWithoutUI():void
+//		{
+//			var xml:XML = <permission text="analytics" hide="true" id="4534"/>;
+//			var arr:Array = _permissionsPArser.getInstructions(xml);
+//			// we got 3 objects:
+//			Assert.assertEquals(arr.length, 3);
+//			// the 2nd object's contents:
+//			Assert.assertEquals(arr[1].path, "content.playlist.createRulebasedBtn");
+//			
+//			Assert.assertObjectEquals(arr[1].attributes, {visible:"false", includeInLayout:"false"});
+//		}
 		
 	}
 }
