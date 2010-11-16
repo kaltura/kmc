@@ -4,8 +4,8 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.accessControl.AccessControlDelete;
-	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
 	
 	import flash.external.ExternalInterface;
@@ -49,7 +49,7 @@ package com.kaltura.kmc.modules.account.command
 				{
 					Alert.show(ResourceManager.getInstance().getString('account', 'deleteAccessProfileDoneMsg'));
 				}
-				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
