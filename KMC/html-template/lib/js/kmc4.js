@@ -783,7 +783,7 @@ $(window).load(function(){
 					break;
 				}
 			}
-			alert("getUiconfDetails error: uiconf_id "+uiconf_id+" not found in " + ((is_playlist) ? "kmc.vars.playlists_list" : "kmc.vars.players_list"));
+			$("#kcms")[0].alert("getUiconfDetails error: uiconf_id "+uiconf_id+" not found in " + ((is_playlist) ? "kmc.vars.playlists_list" : "kmc.vars.players_list"));
 			return false;
 		},
 		setCacheStartTime : function() {
