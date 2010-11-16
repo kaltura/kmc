@@ -23,8 +23,6 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 
-			[Bindable]
-			private var _accessControlData:ArrayCollection;
 
 			private var _selectedEntries:ArrayCollection;
 			
@@ -35,18 +33,6 @@
 			public var filterModel:FilterModel;
 			
 			
-			[Bindable]
-			public function get accessControlData():ArrayCollection {
-				return _accessControlData;
-			}
-
-
-			public function set accessControlData(accessControlData:ArrayCollection):void {
-				_accessControlData = accessControlData;
-
-			}
-
-
 			public function set selectedEntries(arr:ArrayCollection):void {
 				_selectedEntries = arr;
 				var tempArrCol:ArrayCollection = new ArrayCollection();
@@ -90,7 +76,7 @@
 	<mx:Label text="{resourceManager.getString('cms', 'accessControlOverrideMsg')}"/>
 	<entrydetails:EntryAccessControl id="entryACP" selectedEntries="{_clonedSelectedEntries}"
 														  filterModel="{filterModel}"
-														  accessControlData="{accessControlData}"/>
+														  accessControlData="{filterModel.accessControlProfiles}"/>
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
 				   paddingTop="2">
 		<mx:Button label="{resourceManager.getString('cms', 'applyAccessControlBtn')}" useHandCursor="true"
