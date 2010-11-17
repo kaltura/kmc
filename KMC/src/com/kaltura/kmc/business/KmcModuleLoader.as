@@ -7,6 +7,7 @@ package com.kaltura.kmc.business {
 	import mx.events.ModuleEvent;
 	import mx.modules.Module;
 	import mx.modules.ModuleLoader;
+	import mx.modules.ModuleManager;
 
 	/**
 	 * KmcModuleLoader is responsible for loading the different modules required by KMC.
@@ -41,9 +42,15 @@ package com.kaltura.kmc.business {
 		
 
 		/**
-		 * keeps module ids with module urls
+		 * keeps module urls with module ids
 		 */
-		private var _modulesInfo:Object;
+		private var _urlToId:Object;
+		
+		
+		/**
+		 * keeps module urls with the moduleLoader instances which loaded them
+		 */
+		private var _urlToMl:Object;
 
 		
 		// ==============================================================================
@@ -55,32 +62,38 @@ package com.kaltura.kmc.business {
 		 * Initialize the modules info dictionary. 
 		 */		
 		public function KmcModuleLoader() {
-			_modulesInfo = new Object();
+			_urlToId = new Object();
+			_urlToMl = new Object();
 		}
 
 		
 		/**
-		 * Set a module for loading.
-		 * This method does not actually load the module, it will be loaded
-		 * automatically when it becomes visible on screen.
+		 * Load a KMC module, or return the instance of the module already loaded.
 		 * @param url 	the path to the loaded module
 		 * @param id	load id for this module, used later to retreive it's uiconf id.
 		 * @return	the ModuleLoader instance that will load this module
 		 */
 		public function loadKmcModule(url:String, id:String):ModuleLoader {
-			// save module info
-			_modulesInfo[url] = id;
-			
-			// set module for load
-			var moduleLoader:ModuleLoader = new ModuleLoader();
-//			moduleLoader.applicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
-//			moduleLoader.applicationDomain = new ApplicationDomain();
-			moduleLoader.applicationDomain = ApplicationDomain.currentDomain;
-			moduleLoader.addEventListener(ModuleEvent.READY, onModuleReady);
-			moduleLoader.addEventListener(ModuleEvent.PROGRESS, onModuleProgress);
-			moduleLoader.addEventListener(ModuleEvent.ERROR, onModuleError);
-			moduleLoader.url = url;
-			
+			var moduleLoader:ModuleLoader ;
+			if (_urlToMl[url]) {
+				moduleLoader = _urlToMl[url]; 
+			}
+			else {
+				
+				// set module for load
+				moduleLoader = new ModuleLoader();
+//				moduleLoader.applicationDomain = new ApplicationDomain(ApplicationDomain.currentDomain);
+//				moduleLoader.applicationDomain = new ApplicationDomain();
+				moduleLoader.applicationDomain = ApplicationDomain.currentDomain;
+				moduleLoader.addEventListener(ModuleEvent.READY, onModuleReady);
+				moduleLoader.addEventListener(ModuleEvent.PROGRESS, onModuleProgress);
+				moduleLoader.addEventListener(ModuleEvent.ERROR, onModuleError);
+				moduleLoader.url = url;
+				
+				// save module info
+				_urlToId[url] = id;
+				_urlToMl[url] = moduleLoader;
+			}
 			return moduleLoader;
 		}
 		
@@ -94,7 +107,7 @@ package com.kaltura.kmc.business {
 		 * @test	requires a loaded module
 		 */		
 		public function getModuleLoadId(ml:ModuleLoader):String {
-			return _modulesInfo[ml.url];
+			return _urlToId[ml.url];
 		}
 
 		

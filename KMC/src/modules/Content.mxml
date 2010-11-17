@@ -606,6 +606,7 @@
 				if (_model.openPlayer) {
 					//id, name, description, is_playlist, uiconf_id 
 					ExternalInterface.call(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), false, _attic.previewuiconf, bitrates);
+					_attic.previewuiconf = null;
 				}
 
 				//First time funnel
@@ -623,6 +624,7 @@
 				if (_model.openPlaylist) {
 					var pl:KalturaPlaylist = entry as KalturaPlaylist;
 					ExternalInterface.call(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), true, _attic.previewuiconf);
+					_attic.previewuiconf = null;
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED,GoogleAnalyticsConsts.CONTENT);
@@ -639,6 +641,7 @@
 				if (_model.openPlayer) {
 					//kmc.preview_embed.doPreviewEmbed( entry/playlist id, description, true/ false (or nothing or "" or null), uiconf id, live_bitrates obj or boolean, is_mix);
 					ExternalInterface.call(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), false, _attic.previewuiconf, (entry is KalturaMixEntry));
+					_attic.previewuiconf = null;
 				}
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {

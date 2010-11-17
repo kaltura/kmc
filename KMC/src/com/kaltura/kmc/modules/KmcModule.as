@@ -65,7 +65,6 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected var _kc:KalturaClient;
 		
-		private var _cm:ContextMenu;
 		
 		[Bindable]
 		/**
@@ -195,9 +194,10 @@ package com.kaltura.kmc.modules {
 		 * Initialize the module.
 		 * @param kc	KalturaClient for server API calls
 		 * @param uiconfid	Id of uiconf that the module has to load.
+		 * @param cm	the global context menu, to add its version.
 		 * @param context	Application context
 		 * */
-		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, context:Context = null):void {
+		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, cm:ContextMenu, context:Context = null):void {
 			_kc = kc;
 			_uiconfId = uiconfid;
 			_flashvars = flashvars;
@@ -206,9 +206,9 @@ package com.kaltura.kmc.modules {
 			loadUiconf(uiconfid);
 
 			var moduleVersion:ContextMenuItem = new ContextMenuItem(getModuleName()+" : "+getModuleVersion());
-			_cm.customItems.push(moduleVersion);
+			cm.customItems.push(moduleVersion);
 			
-			this.contextMenu = _cm;
+			this.contextMenu = cm;
 
 		}
 		
@@ -257,13 +257,6 @@ package com.kaltura.kmc.modules {
 		// =====================================================
 
 
-		/**
-		 * Global Context Menu 
-		 */
-		public function set cm(value:ContextMenu):void
-		{
-			_cm = value;
-		}
 
 
 	}
