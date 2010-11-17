@@ -86,7 +86,6 @@
 			}
 			
 			private function switchToTab(tab:String):void {
-				trace(tab);
 				var doc:Container = contentView.getChildByName(tab) as Container;
 				if (doc) {
 					contentView.selectedChild = doc;
@@ -95,23 +94,6 @@
 					// if couldn't find matching tab, show the first one.
 					contentView.selectedIndex = 0;
 				}
-//				switch (tab) {
-//					case resourceManager.getString('account', 'accountOverview'):
-//						contentView.selectedIndex = 0;
-//						break;
-//					case resourceManager.getString('account', 'serverSettings'):
-//						contentView.selectedIndex = 1;
-//						break;
-//					case resourceManager.getString('account', 'accessControl'):
-//						contentView.selectedIndex = 2;
-//						break;
-//					case resourceManager.getString('account', 'transcodingSettings'):
-//						contentView.selectedIndex = 3;
-//						break;
-//					case resourceManager.getString('account', 'accountUpgrade'):
-//						contentView.selectedIndex = 4;
-//						break;
-//				}
 			}
 
 
@@ -140,7 +122,7 @@
 				
 				// after we have the client, initialize the different panels
 				overview.init();
-				serverSettings.init();
+				integration.init();
 				transcoding.init();
 
 				/// set Alert locale for all this application
@@ -205,7 +187,8 @@
 					var customDataView:CustomData = new CustomData();
 					customDataView.label = resourceManager.getString('account', 'customData');
 					customDataView.setStyle("styleName", "pageStyle");
-					customDataView.id = "metaData";
+					customDataView.id = "metadata";
+					customDataView.name = "metadata";
 					contentView.addChild(customDataView);
 
 					if (objParam.metadataprofilename) {
@@ -336,16 +319,16 @@
 			<view:AccountOverview id="overview" width="100%" label="{resourceManager.getString('account','accountOverview')}"
 								  styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								  partnerData="{_model.partnerData}" adminData="{_model.adminData}"/>
-			<view:ServerSettings id="serverSettings" width="100%" label="{resourceManager.getString('account','serverSettings')}"
+			<view:Integration id="integration" width="100%" label="{resourceManager.getString('account','serverSettings')}"
 								 styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
 								 partnerData="{_model.partnerData}"/>
 			<view:AccessControl id="accessControl" label="{resourceManager.getString('account','accessControl')}"
 								rootUrl="{_model.context.rootUrl}" accessControlsList="{_model.accessControlData}"
 								styleName="pageStyle"/>
-			<view:ConversionSettings id="transcoding" label="{resourceManager.getString('account','transcodingSettings')}"
+			<view:Transcoding id="transcoding" label="{resourceManager.getString('account','transcodingSettings')}"
 									 rootUrl="{_model.context.rootUrl}" conversionData="{_model.conversionData}"
 									 flavorParamData="{_model.flavorsData}" styleName="pageStyle"/>
-			<view:Packages id="packages" width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
+			<view:Upgrade id="upgrade" width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
 						   label="{resourceManager.getString('account','accountUpgrade')}" styleName="pageStyle"/>
 		</mx:ViewStack>
 
