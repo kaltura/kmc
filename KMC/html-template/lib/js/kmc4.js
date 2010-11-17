@@ -111,8 +111,7 @@ $(window).load(function(){
 
 	kmc.utils = {
 		activateHeader : function(on) { // supports turning menu off if needed - just uncomment else clause
-			if(on) {
-				$("a").unbind("click");
+			//if(on) {
 				$("a").click(function(e) {
 					var go_to,
 					tab = (e.target.tagName == "A") ? e.target.id : $(e.target).parent().attr("id");
@@ -149,6 +148,10 @@ $(window).load(function(){
 							return false;
 					}
 //					console.log(go_to);
+
+					alert("kmc.utils.maskHeader(false2)");
+					kmc.utils.maskHeader(false);
+					
 //					if(go_to == "tremor") {
 //						$("#flash_wrap").html('<iframe src="http://publishers.adap.tv/osclient/" scrolling="no" frameborder="0" marginheight="0" marginwidth="0" width="100%" height="' + $("#main").height() + '"></iframe>');
 //					}
@@ -157,13 +160,15 @@ $(window).load(function(){
 					$("#kcms")[0].gotoPage(go_to); //!!!
 					return false;
 				});
-			}
-			else {
-				$("a").unbind("click")
-					  .click(function(){
-						return false;
-					  });
-			}
+		//	}
+		//	else {
+		//		alert("kmc.utils.maskHeader(true)");
+		//		kmc.utils.maskHeader(true);
+		//		$("a").unbind("click")
+		//			  .click(function(){
+		//					return false;
+		//		  });
+		//	}
 		},
 		openSupport : function(href) {
 			kalturaCloseModalBox();
@@ -272,6 +277,22 @@ $(window).load(function(){
 			$("#flash_wrap").css("visibility","visible");
 			return false;
 	}
+	
+//hide header function
+
+	kmc.utils.maskHeader = function(show) {
+		if(show) {
+			alert("Show = true");
+			
+			$("#kmcHeader").append('<div id="mask"></div>');
+		}
+		else {
+			alert("Show = false");
+			$("#mask").remove();
+		}
+	} 
+		
+	
 
 	kmc.mediator =  {
 		/*
