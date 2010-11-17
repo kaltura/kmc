@@ -112,7 +112,7 @@
 					alert(event.errorText, "Skin Load Error");
 				}
 				// switch to needed tab
-				_startModule = ExternalInterface.call("kmc.mediator.readUrlHash");
+				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
 			}
 
 
@@ -284,22 +284,19 @@
 				var mInfo:XML = _uiconf.modules.module.(@id == o.moduleName)[0];
 				var url:String = _modulesFolder + "/" + mInfo.@path;
 				var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
-				if (ml) {
-					if (!ml.parent) {
-						// add to the viewstack if needed
-						trace("adding ml ", mainViewStack.numChildren);
-						mainViewStack.addChild(ml);
-					}
-					mainViewStack.selectedChild = ml;
-					_startModule = o;
-					if (ml.child && o.subtab) {
-						(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
-					}
-
-					// tell html
-					ExternalInterface.call("kmc.mediator.writeUrlHash", o.moduleName, o.subtab);
-					ExternalInterface.call("kmc.mediator.setTab", o.moduleName);
+				if (!ml.parent) {
+					// add to the viewstack if needed
+					mainViewStack.addChild(ml);
 				}
+				mainViewStack.selectedChild = ml;
+				_startModule = o;
+				if (ml.child && o.subtab) {
+					(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
+				}
+
+				// tell html
+				ExternalInterface.call("kmc.mediator.writeUrlHash", o.moduleName, o.subtab);
+				ExternalInterface.call("kmc.mediator.setTab", o.moduleName);
 			}
 
 
