@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:adobe="http://www.adobe.com/2006/fc"
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*" styleName="filter" paddingTop="0" paddingBottom="0"
-		 horizontalScrollPolicy="off" verticalScrollPolicy="off" creationComplete="init()" 
-		 width="100%" height="100%" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" creationComplete="init()" width="100%" height="100%"
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
-			import com.kaltura.kmc.modules.content.vo.CategoryVO;
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.modules.content.vo.CategoryVO;
 			import com.kaltura.types.KalturaDurationType;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
@@ -37,18 +37,18 @@
 			private const emptyImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("emptyImg");
 			private const searchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("searchImg");
 			private const clearSearchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("clearSearchImg");
-			
+
 
 			/**
 			 * value of the type property of the filterChanged event dispatched by inner tabs.
 			 * */
-			public static const FILTER_CHANGED:String = "filterChanged"; 
-			
+			public static const FILTER_CHANGED:String = "filterChanged";
+
 			/**
 			 * value of the type property of the newSearch event
 			 * */
 			public static const NEW_SEARCH:String = 'newSearch';
-			
+
 			/**
 			 * name of the no-metadata flex application state
 			 * */
@@ -64,9 +64,9 @@
 			 * categories list
 			 * */
 			public var catMap:HashMap;
-			
-			
-			
+
+
+
 			[Bindable]
 			/**
 			 * dataprovider for the categories tree
@@ -213,7 +213,7 @@
 			private var _currentEndOld:Date = null;
 
 			private var _waitForSearch:Boolean;
-			
+
 
 
 			/**
@@ -237,6 +237,7 @@
 
 
 
+
 			/**
 			 * generate a KalturaMediaEntryFilterVo or KalturaMediaEntryFilterForPlaylist from current view
 			 * */
@@ -249,31 +250,77 @@
 					currentFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
 				}
 
-
-				// filter by durations with the server limitation logic 
-				var durationString:String = "";
-				//if non of the items are selected or all selected
-				if ((shortDuration.selected && mediumDuration.selected && longDuration.selected) ||
-					(!shortDuration.selected && !mediumDuration.selected && !longDuration.selected)) {
-					durationString = "";
-				}
-				else {
-					if (shortDuration.selected) {
-						durationString += KalturaDurationType.SHORT + ",";
-					}
-					if (mediumDuration.selected) {
-						durationString += KalturaDurationType.MEDIUM + ",";
-					}
-					if (longDuration.selected) {
-						durationString += KalturaDurationType.LONG + ",";
-					}
-					//remove last , 
-					durationString = durationString.slice(0, durationString.length - 1);
-				}
-				currentFilter.durationTypeMatchOr = durationString;
-
+				// duration filter:
+				currentFilter.durationTypeMatchOr = getDurationFilter();
 
 				// filter by media types
+				currentFilter.mediaTypeIn = getMediaTypesFilter();
+
+				// filter by moderation
+				currentFilter.moderationStatusIn = moderationStatusContainer.getModerationString();
+
+				// filter by conversion status	
+				currentFilter.statusIn = getConversionStatusFilter();
+
+				// name & tags 
+				if (searchFilter.text != resourceManager.getString('cms', 'searchEntries')) {
+					var trimmedText:String = StringUtil.trim(searchFilter.text);
+					currentFilter.freeText = trimmedText;
+				}
+				else {
+					currentFilter.freeText = '';
+				}
+
+				// scheduling 
+				schedulingContainer.setSchedulingData(currentFilter);
+
+				// access control profiles
+				var idsStr:String = getAccessControlFilter();
+				if (idsStr != "") {
+					currentFilter.accessControlIdIn = idsStr;
+				}
+
+				// flavor params
+				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = getFlavorParamsFilter();
+				
+				// set metadata filters
+				if (metadataProfile) {
+					getMetadataFilters(currentFilter);
+				}
+
+				/// category build
+				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
+
+				updateFilterStatus(currentFilter);
+			}
+
+			
+			/**
+			 * filter by flavor params
+			 * */
+			private function getFlavorParamsFilter():String {
+				var fps:Array = _dynamicFilterData["flavorParams"];
+				var fpIds:Array = new Array();
+				for each (var btn1:Button in fps) {
+					if (btn1.selected) {
+						var fpId:String = (btn1.data as String).split(' - ')[1];
+						if (fpId == '-1') {
+							fpIds = new Array();
+							break;
+						}
+						else {
+							fpIds.push(fpId);
+						}
+					}
+				}
+				return fpIds.join(',');
+			}
+			
+
+			/**
+			 * filter by media types
+			 * */
+			private function getMediaTypesFilter():String {
 				var mediaTypeString:String = '';
 				if (videoType.selected)
 					mediaTypeString += KalturaMediaType.VIDEO + ",";
@@ -290,61 +337,47 @@
 				//remove the last ,				 
 				mediaTypeString = mediaTypeString.slice(0, mediaTypeString.length - 1);
 				//if the select all media types is selected - add all media types
-				if (selectAllTypesBtn.selected)
-					mediaTypeString = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
-						KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
-				currentFilter.mediaTypeIn = mediaTypeString;
+				if (selectAllTypesBtn.selected) {
+					mediaTypeString = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
+				}
+				return mediaTypeString;
+			}
 
 
-				// filter by moderation
-				currentFilter.moderationStatusIn = moderationStatusContainer.getModerationString();
-				
-				// filter by conversion status	
+			/**
+			 * filter by conversion status
+			 * */
+			private function getConversionStatusFilter():String {
 				var convStatusArray:Array = [];
 
 				if (allConversionStatusBtn.selected) {
-					convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING,
-										 KalturaEntryStatus.ERROR_IMPORTING);
+					convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING);
 					convStatusArray.push(KalturaEntryStatus.IMPORT);
 					convStatusArray.push(KalturaEntryStatus.PRECONVERT);
 					convStatusArray.push(KalturaEntryStatus.READY);
 				}
 				else {
 					if (convErrorBtn.selected) { // for error
-						convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING,
-											 KalturaEntryStatus.ERROR_IMPORTING);
+						convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING);
 					}
-
 					if (convUploadingBtn.selected) { // for uploading 
 						convStatusArray.push(KalturaEntryStatus.IMPORT);
 					}
-
 					if (convConvertingBtn.selected) { // for converting
 						convStatusArray.push(KalturaEntryStatus.PRECONVERT);
 					}
-
 					if (convReadyBtn.selected) { // for ready 
 						convStatusArray.push(KalturaEntryStatus.READY);
 					}
 				}
-				currentFilter.statusIn = convStatusArray.join(',');
+				return convStatusArray.join(',');
+			}
 
 
-				// name & tags 
-				if (searchFilter.text != resourceManager.getString('cms', 'searchEntries')) {
-					var trimmedText:String = StringUtil.trim(searchFilter.text);
-					//var commaSeperated:String = trimmedText.split(" ").join();
-					currentFilter.freeText = trimmedText;
-				}
-				else {
-					currentFilter.freeText = '';
-				}
-				
-				// scheduling 
-				schedulingContainer.setSchedulingData(currentFilter);
-				
-
-				// access control profiles
+			/**
+			 * filter by access control profiles
+			 * */
+			private function getAccessControlFilter():String {
 				var acps:Array = _dynamicFilterData["convProfile"];
 				var ids:Array = new Array();
 				for each (var btn:Button in acps) {
@@ -359,87 +392,84 @@
 						}
 					}
 				}
-				var idsStr:String = ids.join(',');
-				if (idsStr != "") {
-					currentFilter.accessControlIdIn = idsStr;
+				return ids.join(',');
+			}
+
+
+			/**
+			 * filter by durations with the server limitation logic
+			 * */
+			private function getDurationFilter():String {
+				var durationString:String = "";
+				//if non of the items are selected or all selected
+				if ((shortDuration.selected && mediumDuration.selected && longDuration.selected) || (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected)) {
+					durationString = "";
 				}
-
-
-				// flavor params
-				var fps:Array = _dynamicFilterData["flavorParams"];
-				var fpIds:Array = new Array();
-				for each (var btn1:Button in fps) {
-					if (btn1.selected) {
-						var fpId:String = (btn1.data as String).split(' - ')[1];
-						if (fpId == '-1') {
-							fpIds = new Array();
-							break;
-						}
-						else {
-							fpIds.push(fpId);
-						}
+				else {
+					if (shortDuration.selected) {
+						durationString += KalturaDurationType.SHORT + ",";
 					}
+					if (mediumDuration.selected) {
+						durationString += KalturaDurationType.MEDIUM + ",";
+					}
+					if (longDuration.selected) {
+						durationString += KalturaDurationType.LONG + ",";
+					}
+					//remove last , 
+					durationString = durationString.slice(0, durationString.length - 1);
 				}
+				return durationString;
+			}
 
-				var fpIdsStr:String = fpIds.join(',');
-				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = fpIdsStr;
 
+			/**
+			 * get metadata filters
+			 * */
+			private function getMetadataFilters(currentFilter:KalturaBaseEntryFilter):void {
+				var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+				mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
+				mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
 
-				if (metadataProfile) {
-					//Set the metadata filters here 
-					//TODO: extract to function
-					/////////////////////////////////////////////////////////////////////////////////////////////////
-					var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
-					mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
-					mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+				//Setting the advanced filter when one change the filter of the metadata
+				for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
+					var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+					fieldKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
+					fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
 
-					//Setting the advanced filter when one change the filter of the metadata
-					for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
-						var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
-						fieldKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
-						fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+					//get a reference to the current media field vo
+					var metadataFieldVo:MetadataFieldVO = metadataProfile.metadataFieldVOArray[i];
 
-						//get a reference to the current media field vo
-						var metadataFieldVo:MetadataFieldVO = metadataProfile.metadataFieldVOArray[i];
+					//recive the buttons array according to the list fiels vo that saved if not saved return null
+					//and bypass
+					var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
 
-						//recive the buttons array according to the list fiels vo that saved if not saved return null
-						//and bypass
-						var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
-
-						//if this filter exist
-						if (btnArr) {
-
-							//if the title selected we don't need to pass the metadata filter 
-							//but if it's not we will dive to check what values selected
-							if (!btnArr[0].selected) {
-								for (var j:int = 1; j < btnArr.length; j++) {
-									var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
-
-									if (btnArr[j].selected) {
-										fieldValueSearchCondition.field = metadataFieldVo.xpath;
-										fieldValueSearchCondition.value = btnArr[j].label;
-										fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
-										fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
-									}
+					//if this filter exist
+					if (btnArr) {
+						//if the title selected we don't need to pass the metadata filter 
+						//but if it's not we will dive to check what values selected
+						if (!btnArr[0].selected) {
+							for (var j:int = 1; j < btnArr.length; j++) {
+								var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
+								if (btnArr[j].selected) {
+									fieldValueSearchCondition.field = metadataFieldVo.xpath;
+									fieldValueSearchCondition.value = btnArr[j].label;
+									fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
+									fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
 								}
 							}
 						}
-
-						//if we have items in the array add them to main filter
-						if (fieldKalturaMetadataSearchItem.items.length > 0)
-							mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
 					}
 
-					if (currentFilter is KalturaMediaEntryFilter)
-						(currentFilter as
-							KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
-						/////////////////////////////////////////////////////////////////////////////////////////////////
+					//if we have items in the array add them to main filter
+					if (fieldKalturaMetadataSearchItem.items.length > 0) {
+						mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
+					}
 				}
 
-				/// category build
-				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
+				if (currentFilter is KalturaMediaEntryFilter) {
+					(currentFilter as KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
+				}
 
-				updateFilterStatus(currentFilter);
 			}
 
 
@@ -450,19 +480,9 @@
 			 *  @TODO: what is better? - for future needs.
 			 * */
 			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
-				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) ||
-					(currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) ||
-					(currentFilter.durationTypeMatchOr != '') ||
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') ||
 					// (currentFilter.mediaTypeIn != '')  ||
-					(!selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') ||
-					(!allConversionStatusBtn.selected) || (currentFilter.freeText != '') ||
-					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) ||
-					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) ||
-					(currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) ||
-					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) ||
-					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) ||
-					(currentFilter.accessControlIdIn != null) ||
-					(currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
+					(!selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!allConversionStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
 			}
 
 
@@ -490,7 +510,7 @@
 
 				updateImageButton(schedulingContainer.buttons);
 				updateImageButton(moderationStatusContainer.buttons);
-				
+
 				if ((_flavorParams != null) && (_flavorParams.length != 0)) {
 					buildFlavorParamList();
 				}
@@ -529,10 +549,7 @@
 							arr.push({name: metadataFieldVo.optionalValues[i]});
 						}
 
-						var listButtonsArr:Array = createButtonsGroup(metadataFieldVo.displayedLabel,
-																	  StringUtil.trim(metadataFieldVo.name),
-																	  arr, "name", onDynamicTitleClicked,
-																	  onDynamicMemberClicked);
+						var listButtonsArr:Array = createButtonsGroup(metadataFieldVo.displayedLabel, StringUtil.trim(metadataFieldVo.name), arr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
 
 						_metadataFilters[StringUtil.trim(metadataFieldVo.name)] = listButtonsArr;
 						injectGroupToContainer(container, listButtonsArr);
@@ -599,8 +616,7 @@
 
 				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
 					//if appear in search is true and we need to create additinal filter
-					var mfvo:MetadataFieldVO = kmcMetadataProfileVO.metadataFieldVOArray[i] as
-						MetadataFieldVO;
+					var mfvo:MetadataFieldVO = kmcMetadataProfileVO.metadataFieldVOArray[i] as MetadataFieldVO;
 					if (mfvo && mfvo.appearInSearch) {
 						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i]);
 
@@ -627,9 +643,7 @@
 				for each (var kfp:KalturaFlavorParams in _flavorParams) {
 					arr.push({id: kfp.id, name: kfp.name});
 				}
-				var flvorParamsArr:Array = createButtonsGroup(resourceManager.getString('cms', 'allFlavorsBtn'),
-																"flavorParams", arr, "name", onAutoTitleClick,
-																onAutoMemberClick);
+				var flvorParamsArr:Array = createButtonsGroup(resourceManager.getString('cms', 'allFlavorsBtn'), "flavorParams", arr, "name", onAutoTitleClick, onAutoMemberClick);
 				_dynamicFilterData["flavorParams"] = flvorParamsArr;
 				injectGroupToContainer(transcodingFlavorContainer, flvorParamsArr);
 			}
@@ -641,9 +655,7 @@
 				for each (var acp:AccessControlProfileVO in accessControlProfiles) {
 					arr.push({id: acp.profile.id, name: acp.profile.name});
 				}
-				var conv_profile:Array = createButtonsGroup(resourceManager.getString('cms', 'allAccessControlBtn'),
-															"convProfile", arr, "name", onAutoTitleClick,
-															onAutoMemberClick);
+				var conv_profile:Array = createButtonsGroup(resourceManager.getString('cms', 'allAccessControlBtn'), "convProfile", arr, "name", onAutoTitleClick, onAutoMemberClick);
 				_dynamicFilterData["convProfile"] = conv_profile;
 				injectGroupToContainer(accessControlContainer, conv_profile);
 
@@ -662,8 +674,7 @@
 				}
 				if (validateTypes()) {
 					selectAllTypesBtn.selected = true;
-					updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType,
-									   streamType]);
+					updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType, streamType]);
 				}
 				else {
 					updateImageButton([mixType, videoType, imageType, audioType, streamType]);
@@ -689,8 +700,7 @@
 			 */
 			private function validateTypes():Boolean {
 				var result:Boolean = false;
-				if (!mixType.selected && !videoType.selected && !imageType.selected && !audioType.selected &&
-					!streamType.selected) {
+				if (!mixType.selected && !videoType.selected && !imageType.selected && !audioType.selected && !streamType.selected) {
 					result = true;
 				}
 				return result;
@@ -721,15 +731,11 @@
 			private function validateSearchText():Boolean {
 				var result:Boolean = true;
 				if (_invalidCharsRegexp.test(searchFilter.text)) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'),
-																	   ResourceManager.getInstance().getString('cms',
-																											   'invalidInputTitle'));
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'), ResourceManager.getInstance().getString('cms', 'invalidInputTitle'));
 					result = false;
 				}
 				if ((searchFilter.text.length > 0) && (searchFilter.text.length < MAX_SEARCH_CHARS)) {
-					Alert.show(resourceManager.getString('cms', 'min3chars'),
-														 resourceManager.getString('cms',
-																				   'invalidInputTitle'));
+					Alert.show(resourceManager.getString('cms', 'min3chars'), resourceManager.getString('cms', 'invalidInputTitle'));
 					result = false;
 				}
 				return result;
@@ -819,8 +825,7 @@
 				if (validateConversionStatus()) {
 					allConversionStatusBtn.selected = true;
 				}
-				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn,
-								   convUploadingBtn]);
+				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
 				preformNewSearch();
 			}
 
@@ -830,8 +835,7 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateConversionStatus():Boolean {
-				return !convConvertingBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected &&
-					!convUploadingBtn.selected;
+				return !convConvertingBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
 			}
 
 
@@ -863,9 +867,7 @@
 			 *
 			 * @return Array - return the Array of Buttons
 			 */
-			private function createButtonsGroup(titleLabel:String, groupName:String, buttonsData:Array,
-												buttonLabelField:String, titleClickFunc:Function,
-												memberClickFunc:Function):Array {
+			private function createButtonsGroup(titleLabel:String, groupName:String, buttonsData:Array, buttonLabelField:String, titleClickFunc:Function, memberClickFunc:Function):Array {
 				var btn:Button;
 				var array:Array = new Array();
 				//select all button
@@ -980,8 +982,7 @@
 					return;
 
 				if (searchBtn.data == 'v') {
-					if ((StringUtil.trim(searchFilter.text) != '') &&
-						(searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
+					if ((StringUtil.trim(searchFilter.text) != '') && (searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
 						searchBtn.data = 'x';
 						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
 					}
@@ -1018,10 +1019,8 @@
 
 			private function currentDatesChange(event:Event):void {
 				if (validateDates(fromDate, toDate)) {
-					_currentStartOld = (fromDate.selectedDate !=
-						null) ? new Date((fromDate.selectedDate as Date).time) : null;
-					_currentEndOld = (toDate.selectedDate !=
-						null) ? new Date((toDate.selectedDate as Date).time) : null;
+					_currentStartOld = (fromDate.selectedDate != null) ? new Date((fromDate.selectedDate as Date).time) : null;
+					_currentEndOld = (toDate.selectedDate != null) ? new Date((toDate.selectedDate as Date).time) : null;
 				}
 				else {
 					Alert.show(resourceManager.getString('cms', 'fromToDateAlert'));
@@ -1032,10 +1031,11 @@
 				}
 				preformNewSearch();
 			}
-			
+
+
 			/**
 			 * validate start date is before end date.
-			 * @param fromDate	starting date 
+			 * @param fromDate	starting date
 			 * @param toDate	end date
 			 * @return true if dates are valid, false otherwise.
 			 * */
@@ -1062,8 +1062,7 @@
 				updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType, streamType]);
 				updateImageButton([allDurationBtn, shortDuration, mediumDuration, longDuration]);
 				updateImageButton(moderationStatusContainer.buttons);
-				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn,
-								   convUploadingBtn]);
+				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
 			}
 
 
@@ -1086,13 +1085,12 @@
 					return;
 
 				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
-																							   'clearFreeSearchToolTip');
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
 				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
 				sendNewSearch();
 			}
 
-			
+
 			/**
 			 * update button icons and start a search with new data
 			 * */
@@ -1101,38 +1099,34 @@
 				updateImageButton(btns);
 				preformNewSearch();
 			}
-			
+
+
 			/**
-			 * Creates an object with keys as media types, 
+			 * Creates an object with keys as media types,
 			 * later used for easy access while parsing this data.
 			 * The optional keys are enumerated in <code>KalturaMediaType</code>
-			 * @param mediaTypes	the string that represents media 
+			 * @param mediaTypes	the string that represents media
 			 * 						types on a filter
 			 * @return an object like {1:true, 201:true, ..}
 			 * */
 			protected function mediaTypesToObject(mediaTypes:String):Object {
 				var result:Object = {};
 				var mediaTypesArray:Array = mediaTypes.split(",");
-				for (var i:int = 0; i<mediaTypesArray.length; i++) {
+				for (var i:int = 0; i < mediaTypesArray.length; i++) {
 					result[mediaTypesArray[i]] = true;
 				}
 				return result;
 			}
-			
-			
+
+
 			/**
-			 * media types: check if there is an empty filter or if all 
-			 * types are in, select buttons accordingly. 
+			 * media types: check if there is an empty filter or if all
+			 * types are in, select buttons accordingly.
 			 * */
 			protected function showMediaTypesData(filterVo:KalturaMediaEntryFilter):void {
 				// filterVo.mediaTypeIn is a list of KalturaMediaType-s separated by ",".
 				var mediaTypes:Object = mediaTypesToObject(filterVo.mediaTypeIn);
-				if (filterVo.mediaTypeIn == "" ||
-					(mediaTypes[KalturaMediaType.VIDEO] && 
-						mediaTypes[6] &&
-						mediaTypes[KalturaMediaType.AUDIO] &&
-						mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] &&
-						mediaTypes[KalturaMediaType.IMAGE])) {
+				if (filterVo.mediaTypeIn == "" || (mediaTypes[KalturaMediaType.VIDEO] && mediaTypes[6] && mediaTypes[KalturaMediaType.AUDIO] && mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] && mediaTypes[KalturaMediaType.IMAGE])) {
 					// all types selected
 					selectAllTypesBtn.selected = true;
 					mixType.selected = false;
@@ -1144,7 +1138,7 @@
 				}
 				else {
 					selectAllTypesBtn.selected = false;
-					
+
 					if (mediaTypes[KalturaMediaType.VIDEO])
 						videoType.selected = true;
 					if (mediaTypes[6])
@@ -1157,14 +1151,13 @@
 						streamType.selected = true;
 				}
 			}
-			
-			
+
+
 			/**
 			 * show dates filtering data on filter
 			 * */
 			protected function showDatesData(filterVo:KalturaMediaEntryFilter):void {
-				if (filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE &&
-					filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+				if (filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE && filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
 					// no dates
 					fromDate.data = null;
 					toDate.data = null
@@ -1181,19 +1174,16 @@
 						date.time = filterVo.createdAtLessThanOrEqual * 1000;
 						toDate.selectedDate = date;
 					}
-					
+
 				}
 			}
-			
-			
+
+
 			/**
 			 * show duration data on filter
 			 * */
 			protected function showDurationData(filterVo:KalturaMediaEntryFilter):void {
-				if (filterVo.durationTypeMatchOr == null || String(filterVo.durationTypeMatchOr) == "" ||
-					(String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1 &&
-						String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1 &&
-						String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1)) {
+				if (filterVo.durationTypeMatchOr == null || String(filterVo.durationTypeMatchOr) == "" || (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1)) {
 					// no duration 
 					allDurationBtn.selected = true;
 					shortDuration.selected = false;
@@ -1204,22 +1194,19 @@
 					//set all duration to unselected
 					allDurationBtn.selected = false;
 					//short or non duration is selecred
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) >
-						-1) {
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1) {
 						shortDuration.selected = true;
 					}
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) >
-						-1) {
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1) {
 						mediumDuration.selected = true;
 					}
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) >
-						-1) {
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1) {
 						longDuration.selected = true;
 					}
 				}
 			}
-			
-			
+
+
 			/**
 			 * show Conversion status data on filter
 			 * */
@@ -1239,25 +1226,25 @@
 							case KalturaEntryStatus.ERROR_IMPORTING:
 								convErrorBtn.selected = true;
 								break;
-							
+
 							case KalturaEntryStatus.IMPORT:
 								convUploadingBtn.selected = true;
 								break;
-							
+
 							case KalturaEntryStatus.PRECONVERT:
 								convConvertingBtn.selected = true;
 								break;
-							
+
 							case KalturaEntryStatus.READY:
 								convReadyBtn.selected = true;
 								break;
-							
+
 						}
 					}
 				}
 			}
-			
-			
+
+
 			/**
 			 * fill current view with the new filter values
 			 */
@@ -1268,13 +1255,13 @@
 					addEventListener(FlexEvent.CREATION_COMPLETE, onReady);
 					return;
 				}
-				
+
 				showMediaTypesData(filterVo);
-				
+
 				showDatesData(filterVo);
-				
+
 				showDurationData(filterVo);
-				
+
 				// moderation
 				moderationStatusContainer.setModerationStatus(filterVo);
 
@@ -1293,10 +1280,7 @@
 					filterVo.freeText = filterVo.tagsMultiLikeOr;
 				}
 
-				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull ==
-					filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull ==
-					filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull ==
-					filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
+				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
 					schedulingContainer.allSchedulingBtn.selected = true;
 				}
 
@@ -1311,8 +1295,7 @@
 							var currentValue:String = subItem["value"];
 							var currentXpath:String = subItem["field"];
 							var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
-							var parentName:String = currentXpath.substring(startIndex,
-																		   currentXpath.length - 2);
+							var parentName:String = currentXpath.substring(startIndex, currentXpath.length - 2);
 							var btnName:String = parentName + "_" + currentValue;
 							for each (var btn:Button in _metadataButtons) {
 								if (btn.id == btnName) {
@@ -1449,7 +1432,7 @@
 	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2">
 		<mx:headerRenderer>
 			<mx:Component>
-				<filter:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}" />
+				<filter:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}"/>
 			</mx:Component>
 		</mx:headerRenderer>
 		<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%"
@@ -1485,8 +1468,7 @@
 				<mx:Button id="mixType" width="100%" selected="false"
 						   label="{resourceManager.getString('cms', 'videoMix')}" buttonMode="true" toggle="true"
 						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-				<mx:Button id="streamType" width="100%" 
-						   selected="false"
+				<mx:Button id="streamType" width="100%" selected="false"
 						   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}" buttonMode="true"
 						   toggle="true" visible="{enablelivestream}" includeInLayout="{enablelivestream}"
 						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
@@ -1530,14 +1512,15 @@
 						   icon="{emptyImg}"/>
 			</mx:VBox>
 			<filter:SchedulingTab id="schedulingContainer" width="100%" styleName="bottomSchedulingVBox"
-								  filterChanged="{onTabChanged(event)}"
-								  visible="{showSchedulingOptions}" includeInLayout="{showSchedulingOptions}" />
-			<filter:ModerationStatusTab id="moderationStatusContainer" label="{resourceManager.getString('cms', 'status')}"
+								  filterChanged="{onTabChanged(event)}" visible="{showSchedulingOptions}"
+								  includeInLayout="{showSchedulingOptions}"/>
+			<filter:ModerationStatusTab id="moderationStatusContainer"
+										label="{resourceManager.getString('cms', 'status')}"
 										filterChanged="{onTabChanged(event)}"
 										showPendingModerationOption="{showPendingModerationOption}"
-										showRejectedOption="{showRejectedOption}" showApprovedOption="{showApprovedOption}"
-										styleName="moderationVBox" 
-										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}" />
+										showRejectedOption="{showRejectedOption}"
+										showApprovedOption="{showApprovedOption}" styleName="moderationVBox"
+										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}"/>
 			<mx:VBox id="accessControlContainer" width="100%" styleName="accessControlVBox"
 					 visible="{showAccessControlOptions}" includeInLayout="{showAccessControlOptions}">
 			</mx:VBox>
@@ -1552,8 +1535,9 @@
 		<mx:Canvas id="vbox1" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%" height="100%"
 				   styleName="categoriesTreeVBox">
 			<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>
-			<view:CategoriesTree id="catTree" dataProvider="{categories}" catMap="{catMap}" dragEnter="onDragEnter(event)"
-								 newSearch="preformNewSearch()" styleName="categoriesTree" mask="{maskCanvas}" />
+			<view:CategoriesTree id="catTree" dataProvider="{categories}" catMap="{catMap}"
+								 dragEnter="onDragEnter(event)" newSearch="preformNewSearch()"
+								 styleName="categoriesTree" mask="{maskCanvas}"/>
 		</mx:Canvas>
 	</mx:Accordion>
 </mx:VBox>
