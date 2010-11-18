@@ -34,22 +34,6 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 
-			
-			// =============================================
-			// graphic assets
-			// =============================================
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_minimise.png")]
-			private static const closeFilterImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_expand.png")]
-			private static const openFilterImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/btn_search.png")]
-			private static const searchImg:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/btn_x.png")]
-			private static const clearSearchImg:Class;
 
 			// =============================================
 			// fields
@@ -284,7 +268,6 @@
 				filterLabel.visible = flag;
 				filterLabel.includeInLayout = flag;
 
-				foldBtn.setStyle('icon', flag ? closeFilterImage : openFilterImage);
 				foldBtn.labelPlacement = flag ? 'right' : 'left';
 
 			}
@@ -351,7 +334,7 @@
 
 			private function updateSearchButtonMode():void {
 				if (searchBtn.data == 'v') {
-
+					searchBtn.selected = true;
 					if ((StringUtil.trim(searchFilter.text) != '') &&
 						(searchFilter.text != resourceManager.getString('cms', 'searchPlaylists'))) {
 						searchBtn.data = 'x';
@@ -359,13 +342,12 @@
 					}
 				}
 				else {
+					searchBtn.selected = false;
 					searchFilter.text = resourceManager.getString('cms', 'searchPlaylists');
 					searchBtn.data = 'v';
 					searchBtn.toolTip = null;
 				}
 
-
-				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
 				preformNewSearch();
 			}
 
@@ -378,7 +360,6 @@
 				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
 																							   'clearFreeSearchToolTip');
 
-				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
 			}
 
 
@@ -413,7 +394,7 @@
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
 		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'playlistTable')}" click="{foldFilter()}"
-					   styleName="expendableButton" icon="{closeFilterImage}"/>
+					   toggle="true" styleName="expendableButtonWithCloseIcon" />
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
 	</mx:HBox>

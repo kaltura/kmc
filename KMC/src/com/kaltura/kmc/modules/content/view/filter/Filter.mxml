@@ -33,20 +33,11 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 
+			private const checkedImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("checkedImg");
+			private const emptyImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("emptyImg");
+			private const searchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("searchImg");
+			private const clearSearchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("clearSearchImg");
 			
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_check.png")]
-			private static const checkedImg:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/emptyIcon.png")]
-			private static const emptyImg:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/btn_search.png")]
-			private static const searchImg:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/btn_x.png")]
-			private static const clearSearchImg:Class;
-
 
 			/**
 			 * value of the type property of the filterChanged event dispatched by inner tabs.
@@ -93,6 +84,7 @@
 			 * show "approved" option in <code>moderationStatusContainer</code>
 			 * */
 			public var showApprovedOption:Boolean = true;
+
 
 			[Bindable]
 			/**
@@ -221,6 +213,7 @@
 			private var _currentEndOld:Date = null;
 
 			private var _waitForSearch:Boolean;
+			
 
 
 			/**
@@ -683,6 +676,7 @@
 			 * show correct button icon (image)
 			 * */
 			private function updateImageButton(btnsList:Array):void {
+				var o:*;
 				for each (var btn:Button in btnsList) {
 					btn.setStyle('icon', btn.selected ? checkedImg : emptyImg);
 				}
@@ -883,7 +877,7 @@
 				btn.id = groupName;
 				btn.selected = true;
 				btn.styleName = "mainFilterGroupButton";
-				btn.setStyle('icon', checkedImg);
+				btn.setStyle('icon', StyleManager.getStyleDeclaration(".imageBank").getStyle("checkedImg"));
 				btn.addEventListener(MouseEvent.CLICK, titleClickFunc);
 				array.push(btn);
 				_metadataButtons.addItem(btn);
@@ -895,7 +889,7 @@
 					btn.label = buttonsData[i][buttonLabelField];
 					btn.data = groupName + ' - ' + buttonsData[i]['id'];
 					btn.selected = false;
-					btn.setStyle('icon', emptyImg);
+					btn.setStyle('icon', StyleManager.getStyleDeclaration(".imageBank").getStyle("emptyImg"));
 					btn.styleName = "innerFilterGroupButton";
 					btn.id = groupName + "_" + buttonsData[i][buttonLabelField];
 					btn.addEventListener(MouseEvent.CLICK, memberClickFunc);

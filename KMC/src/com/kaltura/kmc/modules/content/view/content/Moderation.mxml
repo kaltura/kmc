@@ -38,16 +38,6 @@
 			import mx.events.ListEvent;
 
 
-			// =============================================
-			// graphic assets
-			// =============================================
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_minimise.png")]
-			private static const closeFilterImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_expand.png")]
-			private static const openFilterImage:Class;
-
 			// ===============================================
 			// fields
 			// ===============================================
@@ -347,7 +337,10 @@
 				filterLabel.visible = flag;
 				filterLabel.includeInLayout = flag;
 
-				foldBtn.setStyle('icon', flag ? closeFilterImage : openFilterImage);
+//				foldBtn.setStyle('icon', flag ? closeFilterImage : openFilterImage);
+//				foldBtn.styleName = flag ? "expendableButtonWithCloseIcon" : "expendableButtonWithOpenIcon";
+				
+				
 				foldBtn.labelPlacement = flag ? 'right' : 'left';
 			}
 
@@ -467,8 +460,8 @@
 	<mx:HBox>
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
-		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'moderationEntriesTable')}"
-					   click="{foldFilter()}" styleName="expendableButton" icon="{closeFilterImage}"/>
+		<mx:LinkButton id="foldBtn"  toggle="true" label="{resourceManager.getString('cms', 'moderationEntriesTable')}"
+					   click="{foldFilter()}" styleName="expendableButtonWithCloseIcon" />
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
 	</mx:HBox>

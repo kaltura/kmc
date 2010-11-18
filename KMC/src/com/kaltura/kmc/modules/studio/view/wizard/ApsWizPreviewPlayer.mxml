@@ -80,6 +80,14 @@
 
 			private var _kdpFirstTimeLoad:Boolean = true;
 
+			private function traceKdpSize(n:int):void {
+				trace("trace: ", n);
+				trace(kdp3Loader.height);
+				if (kdp3Loader.content) {
+					trace(kdp3Loader.content.height);
+				}
+				trace("------------------------");
+			}
 
 			/**
 			 * unload the KDP
@@ -125,7 +133,9 @@
 				kdp3Loader.trustContent = true;
 				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
 				// if we don't set size here wierd things happen.
-				changePlayerSize();
+				kdp3Loader.width = kdpWidth.value;
+				kdp3Loader.height = kdpHeight.value;
+				kdp3Loader.visible = false;
 				kdp3Loader.load(url);
 			}
 
@@ -134,8 +144,6 @@
 			 * change the dimensions of preview KDP 
 			 * */
 			private function changePlayerSize():void {
-				kdp3Loader.width = kdpWidth.value;
-				kdp3Loader.height = kdpHeight.value;
 				if (kdp3Loader.content) {
 					kdp3Loader.content.width = kdpWidth.value;
 					kdp3Loader.content.height = kdpHeight.value;
@@ -202,6 +210,7 @@
 				params.loop = "false";
 				params.autoRewind = "false";
 				params.sourceType = "entryId";
+//				params.debugMode = "true";
 
 				//check if this ui already has a playlist in it and show defaults if no playlist 
 				if (!_tempUiConf.uiVars.children().(attribute("key") == "playlistAPI.kpl0Name").length()) {
@@ -234,6 +243,7 @@
 				kdp3Loader.content.addEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
 				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
 				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+				kdp3Loader.content.addEventListener(KdpEventTypes.MEDIA_READY, onKDPMediaReady);
 				// set KDP flashvars
 				kdp3Loader.content["flashvars"] = params; 
 
@@ -262,6 +272,11 @@
 			}
 			
 
+			private function onKDPMediaReady(event:Event):void {
+				kdp3Loader.visible = true;
+				
+			}
+			
 			private function onKDPReady(event:Event):void {
 				changePlayerSize();
 				dispatchEvent(new Event(FINISH_LOADING));

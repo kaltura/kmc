@@ -13,7 +13,6 @@
 			<mx:SetProperty target="{vbox1}" name="includeInLayout" value="false"/>
 			<mx:RemoveChild target="{filterLabel}"/>
 			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left"/>
-			<mx:SetStyle target="{foldBtn}" name="icon" value="{openFilterImage}"/>
 			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
@@ -55,12 +54,6 @@
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_minimise.png")]
-			private static const closeFilterImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_expand.png")]
-			private static const openFilterImage:Class;
 			
 			[Bindable]
 			private var _listableVo:ListableVo;
@@ -304,7 +297,7 @@
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
 		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'entriesTable')}" click="{foldFilter()}"
-					   styleName="expendableButton" icon="{closeFilterImage}"/>
+					   toggle="true" styleName="expendableButtonWithCloseIcon" />
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
 	</mx:HBox>

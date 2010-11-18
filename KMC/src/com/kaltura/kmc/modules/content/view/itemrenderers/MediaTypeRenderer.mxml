@@ -6,26 +6,9 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.resources.ResourceManager;
 			import com.kaltura.types.KalturaMediaType;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_vid.png")]
-			private static const videoImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_audio.png")]
-			private static const audioImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_remix.png")]
-			private static const remoxImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_img.png")]
-			private static const imgImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_doc.png")]
-			private static const docImage:Class;
-			//TODO extract
-			[Embed(source="assets/content/imgs/ico_live.png")]
-			private static const docLive:Class;
+			
+			import mx.resources.ResourceManager;
 			
 			private function setImage(data:Object):void
 			{
@@ -34,45 +17,45 @@
 			
 				if (type == "2")
 				{
-					 mediaTypeImage.source = remoxImage;
-					 mediaTypeImage.toolTip = resourceManager.getString('cms', 'videoMix');
-					 return;
+					mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("remoxImage");
+					mediaTypeImage.toolTip = resourceManager.getString('cms', 'videoMix');
+					return;
 				}
-				switch(mediaType)  // TODO: replace codes with server enums
+				switch(mediaType)  
 				{
-					case "1":
+					case KalturaMediaType.VIDEO.toString():
 					{
-						mediaTypeImage.source = videoImage;
+						mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("videoImage");
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'video'); 
 						break;
 					} 
-					case "2": 
+					case KalturaMediaType.IMAGE.toString(): 
 					{
-						 mediaTypeImage.source = imgImage;
+						mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("imgImage"); 
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'image'); 
 						break;
 					}
-					case "5": 
+					case KalturaMediaType.AUDIO.toString(): 
 					{
-						 mediaTypeImage.source = audioImage;
+						mediaTypeImage.source =StyleManager.getStyleDeclaration(".imageBank").getStyle("audioImage"); 
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'audio');
 						break;
 					}
-					case "6": 
+					case "6":	// this is not a real server media type, so it's a number 
 					{
-						 mediaTypeImage.source = remoxImage;
+						mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("remoxImage"); 
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'videoMix'); 
 						break;
 					}
-					case "10": 
+					case "10": // and I don't know what's up with this, maybe our client isn't up to date.
 					{
-						mediaTypeImage.source = docImage;
+						mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("docImage"); 
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'xml'); 
 						break;
 					}
 					case KalturaMediaType.LIVE_STREAM_FLASH.toString(): 
 					{
-						mediaTypeImage.source = docLive;
+						mediaTypeImage.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("docLive"); 
 						mediaTypeImage.toolTip = resourceManager.getString('cms', 'live'); 
 						break;
 					}

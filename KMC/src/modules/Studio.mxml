@@ -72,12 +72,10 @@
 			// =====================================
 			private const VERSION:String = "3.0";
 
-
 			// =====================================
 
 			override protected function start():void {
 				Security.allowDomain('*');
-				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 				
 				// make flashvars accessible for all module
 				Studio.flashvars = _flashvars;
@@ -121,24 +119,6 @@
 
 
 			/**
-			 * when a user changes tab in HTML, JS triggers this function to 
-			 * allow a "save changes" dialog (currently not implemented).
-			 * show confirm: Save your changes before exiting ? [Yes] [No] [Cancel]
-			 *	- Yes = save and return true to html js function (to continue with tab change)
-			 *	- No = return true to html js function (without saving)
-			 *	- Cancel = return false to html js function, thereby canceling tab change
-			 * 
-			 * triggers js function to change tab. <br>
-			 * linked to ExternalInterface
-			 * */
-			private function onExternalTabChange():void {
-				//TODO show "discard changes" dialog box, return value as said above
-				//TODO HTML API
-				navigateToURL(new URLRequest("javascript: onTabChange()"), "_self");
-			}
-
-
-			/**
 			 * loaded the uiconf that holds the kdp flash version
 			 * and templates data
 			 * */
@@ -147,9 +127,8 @@
 				_swfUrl = (evt.data as KalturaUiConf).swfUrl;
 
 				// if need to load local templates file 
-				var objParam:Object = _flashvars;
-				if (objParam.templatesxmlurl) {
-					getAllTemplates.url = objParam.templatesxmlurl;
+				if (_flashvars.templatesxmlurl) {
+					getAllTemplates.url = _flashvars.templatesxmlurl;
 					getAllTemplates.send();
 				}
 				else {
