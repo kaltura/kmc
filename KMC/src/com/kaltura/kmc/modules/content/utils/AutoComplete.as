@@ -157,8 +157,7 @@ package com.kaltura.kmc.modules.content.utils
 				// Check to see if the replacement code is found in the new format string
 				if (_promptFormat.indexOf("[prompt]") < 0)
 				{
-					// TODO: Log error with the logging framework, or just use trace?
-					//trace( "PromptingTextInput warning: prompt format does not contain [prompt] replacement code." );
+					trace( "PromptingTextInput warning: prompt format does not contain [prompt] replacement code." );
 				}
 				
 				invalidateDisplayList();
