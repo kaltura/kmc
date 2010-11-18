@@ -1,5 +1,8 @@
 package com.kaltura.kmc.utils
 {
+	import flash.net.getClassByAlias;
+	import flash.utils.describeType;
+
 	/**
 	 * This class is a util that allows to change a value of a component by it's path in the layout.  
 	 * @author Eitan
@@ -22,18 +25,27 @@ package com.kaltura.kmc.utils
 		 * @param componentProperty
 		 * @param newValue
 		 */
-		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:Object):void
+		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:*):void
 		{
 			var chain:Array = compoentPath.split(".");
 			var o:Object = startComponent;
-			for (var i:uint; i<chain.length;i++)
-			{
+			for (var i:uint; i<chain.length;i++) {
 				// next in chain
 				o=o[chain[i]];
 			}
-			//TODO: consider try & catch  
-			o[componentProperty] = newValue;
-			
+			var dt:XML = describeType(o);
+			if(dt.@isDynamic.toString() == "true") {
+				// dynamic type, always assign.
+				o[componentProperty] = newValue;
+			} 
+			else if (o.hasOwnProperty(componentProperty)) {
+				// statics type, only assign if attribute exists
+				o[componentProperty] = newValue;
+			}
+			else {
+				trace("cannot push attribute " +  componentProperty + 
+					"to component of type " + dt.@name.toString());
+			}
 		}
 		
 
