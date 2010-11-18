@@ -149,8 +149,6 @@ $(window).load(function(){
 					}
 //					console.log(go_to);
 
-					alert("kmc.utils.maskHeader(false2)");
-					kmc.utils.maskHeader(false);
 					
 //					if(go_to == "tremor") {
 //						$("#flash_wrap").html('<iframe src="http://publishers.adap.tv/osclient/" scrolling="no" frameborder="0" marginheight="0" marginwidth="0" width="100%" height="' + $("#main").height() + '"></iframe>');
@@ -279,16 +277,12 @@ $(window).load(function(){
 	}
 	
 //hide header function
-
-	kmc.utils.maskHeader = function(show) {
-		if(show) {
-			alert("Show = true");
-			
-			$("#kmcHeader").append('<div id="mask"></div>');
+	kmc.utils.maskHeader = function(hide) {
+		if(hide) {
+			$("#mask").remove();
 		}
 		else {
-			alert("Show = false");
-			$("#mask").remove();
+			$("#kmcHeader").append('<div id="mask"></div>');
 		}
 	} 
 		
