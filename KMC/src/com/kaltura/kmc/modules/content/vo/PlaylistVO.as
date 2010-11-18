@@ -14,7 +14,7 @@ package com.kaltura.kmc.modules.content.vo
 			parts.knownTotalPagesSize = true;
 		}
 		
-		public var dynamicFilters : ArrayCollection = new ArrayCollection(); //TODO: REFACTOR TO STATIC PLAYLIST AND DYNAMIC PLAYLIST
+		public var dynamicFilters : ArrayCollection = new ArrayCollection(); 
 		public var imageDuration : Number = 2;
 		public var playlistEntriesNum : Number = 50;
 		
