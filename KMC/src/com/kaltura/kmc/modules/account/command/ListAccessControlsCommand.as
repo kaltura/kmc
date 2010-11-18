@@ -69,7 +69,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			_model.loadingFlag = false;
-			Alert.show(ResourceManager.getInstance().getString('kmc', 'notLoadAccessControl') + "\n\t" + info.error.errorMsg, ResourceManager.getInstance().getString('kmc', 'error'));
+			Alert.show(ResourceManager.getInstance().getString('account', 'notLoadAccessControl') + "\n\t" + info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
 		}
 		
 

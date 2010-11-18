@@ -82,7 +82,7 @@ package com.kaltura.kmc.modules.content.commands {
 
 		override public function fault(info:Object):void {
 			Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadPartnerData'),
-															   ResourceManager.getInstance().getString('kmc',
+															   ResourceManager.getInstance().getString('cms',
 																									   'error'));
 			_model.decreaseLoadCounter();
 		}
