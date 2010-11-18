@@ -1,9 +1,6 @@
 package com.kaltura.kmc.modules.content.commands
 {
-	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.vo.FilterVO;
 	import com.kaltura.commands.bulkUpload.BulkUploadList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaBulkUpload;
@@ -12,7 +9,6 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.collections.ArrayCollection;
-	import mx.rpc.IResponder;
 
 	public class ListBulkUplaodCommand extends KalturaCommand
 	{

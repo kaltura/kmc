@@ -1,7 +1,6 @@
 package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.vo.FilterVO;
 	import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 
 	public class FilterEvent extends CairngormEvent
