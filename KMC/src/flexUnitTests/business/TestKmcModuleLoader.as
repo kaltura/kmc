@@ -5,6 +5,8 @@ package flexUnitTests.business {
 	
 	import flash.system.ApplicationDomain;
 	
+	import mx.containers.HBox;
+	import mx.controls.ComboBox;
 	import mx.events.ModuleEvent;
 	import mx.modules.ModuleLoader;
 	
@@ -29,7 +31,7 @@ package flexUnitTests.business {
 
 		[Test(async, description="if module loaded, say so")]
 		public function testOnModuleReady():void {
-			KmcModule;
+			KmcModule;HBox;ComboBox;
 			var asyncHandler:Function = Async.asyncHandler(this, handleSuccess, 5000, null, handleTimeout);
 			_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOADED, asyncHandler, false, 0, true);
 			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("modules/Dashboard.swf", "dashboard");
@@ -39,8 +41,8 @@ package flexUnitTests.business {
 
 		[Test(async, description="if error loading module, catch the error")]
 		public function testOnModuleError():void {
-			KmcModule;
-			var asyncHandler:Function = Async.asyncHandler(this, handleSuccess, 5000, null, handleTimeout);
+			KmcModule; 
+			var asyncHandler:Function = Async.asyncHandler(this, handleSuccess, 10000, null, handleTimeout);
 			_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR, asyncHandler, false, 0, true);
 			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("modules/Dashboard1.swf", "dashboard");
 			ml.loadModule();
