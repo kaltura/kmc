@@ -246,7 +246,6 @@ package com.kaltura.kmc.modules {
 		 * @param enable	if true enables, if false disables
 		 */
 		protected function enableHtmlTabs(enable:Boolean):void {
-			trace("enableHtmlTabs",enable);
 			ExternalInterface.call("kmc.utils.maskHeader", enable);
 		}
 		
