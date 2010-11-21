@@ -6,6 +6,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*" 
 		 xmlns:controls="com.kaltura.controls.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 creationComplete="onCreationComplete()"
 		 verticalScrollPolicy="off">
 
@@ -22,11 +23,13 @@
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.view.content.IContentPanel;
 			import com.kaltura.kmc.modules.content.vo.ListableVo;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			
 			import mx.collections.ArrayCollection;
@@ -99,14 +102,37 @@
 					filteredLabel.visible = true;
 				}
 			}
+			
+			
+			/**
+			 * set filter data. 
+			 * this method doesn't trigger data load, only local data change.
+			 * */
+			protected function initFilter(plf:KalturaPlaylistFilter):void {
+				// text search
+				if (plf.freeText) {
+					searchFilter.text = plf.freeText;
+				}
+				// dates
+				if (plf.createdAtGreaterThanOrEqual != int.MIN_VALUE) {
+					fromDate.selectedDate = new Date(null, null, null, null, null, null, plf.createdAtGreaterThanOrEqual * 1000);
+				}
+				if (plf.createdAtLessThanOrEqual != int.MIN_VALUE) {
+					toDate.selectedDate = new Date(null, null, null, null, null, null, plf.createdAtLessThanOrEqual * 1000);
+				}
+				filter.validateNow();
+			}
 
 
 			/**
-			 * initialize panel
+			 * @inheritDoc
 			 * */
-			public function init():void {
-//				if (initialized)
-					loadEntries();
+			public function init(kbef:KalturaBaseEntryFilter = null):void {
+				if (kbef is KalturaPlaylistFilter ) {
+					// init filter : 
+					initFilter(kbef as KalturaPlaylistFilter);
+				}
+				loadEntries();
 				paging.kalturaFilterPager.pageIndex = 0;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 			}

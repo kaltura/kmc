@@ -6,7 +6,10 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:externalsyndication="com.kaltura.kmc.modules.content.view.window.externalsyndication.*"
-		 xmlns:controls="com.kaltura.controls.*" width="100%" height="100%">
+		 xmlns:controls="com.kaltura.controls.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 width="100%" height="100%"
+		 >
 
 	<mx:Script>
 		<![CDATA[
@@ -22,13 +25,13 @@
 			import com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.ExternalSyndicationPopUpWindow;
 			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 
 			[Bindable]
@@ -61,8 +64,11 @@
 				updateBtnStatus();
 			}
 
-
-			public function init():void {
+			/**
+			 * this panel does not support initial filtering data, the kmef param is ignored.
+			 * @inheritDoc
+			 * */
+			public function init(kmef:KalturaBaseEntryFilter = null):void {
 				BindingUtils.bindSetter(setExternalSyndicationData, extSynModel, "externalSyndicationData");
 				BindingUtils.bindSetter(playlistReady, extSynModel, "generalPlayListdata");
 				// load playlists

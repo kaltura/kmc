@@ -394,8 +394,14 @@ $(window).load(function(){
 			if(!nohash && hash[0]!="") {
 				module = hash[0];
 				subtab = hash[1];
+				extra = {};
+				var tmp = hash[2].split("&");
+				for (var i = 0; i<tmp.length; i++) {
+					var tmp2 = tmp[i].split(":");
+					extra[tmp2[0]] = tmp2[1];
+				}
 			}
-			return { "moduleName" : module, "subtab" : subtab };
+			return { "moduleName" : module, "subtab" : subtab, "extra" : extra };
 		},
 		 selectContent : function(uiconf_id,is_playlist) { // called by selectPlaylistContent which is caled from appstudio
 //			alert("selectContent("+uiconf_id+","+is_playlist+")");

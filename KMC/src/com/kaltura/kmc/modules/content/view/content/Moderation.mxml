@@ -6,7 +6,9 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}"
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*" verticalScrollPolicy="off"
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
-		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*" creationComplete="init()">
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 creationComplete="init()">
 
 	<mx:Script>
 		<![CDATA[
@@ -30,6 +32,8 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -95,6 +99,8 @@
 			 * used to initialize after both external data is ready and creationComplete
 			 * */
 			private var _ready:Boolean = false;
+			
+			private var _initialFilter:KalturaMediaEntryFilter;
 
 
 			// ===============================================
@@ -106,12 +112,16 @@
 			 * only after all data is present, and also after creationComplete,
 			 * so we trigger it manualy (through init())
 			 * */
-			public function init():void {
+			public function init(entryFilter:KalturaBaseEntryFilter = null):void {
+				if (entryFilter && entryFilter is KalturaMediaEntryFilter) {
+					_initialFilter = entryFilter as KalturaMediaEntryFilter;
+				}
 				if (_ready) {
 					setEntriesToolbar();
 
 					toolBar.approveSelected.addEventListener(MouseEvent.CLICK, clearKdp);
 					toolBar.rejectSelected.addEventListener(MouseEvent.CLICK, clearKdp);
+					//TODO clean up.. ?
 					toolBar.removeCombos();
 
 					//setting defaults to view only pending and flagged and Status Ready.
@@ -132,6 +142,11 @@
 
 					paging.kalturaFilterPager.pageIndex = 0;
 					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+					
+					if (_initialFilter) {
+						filter.ps3filter = _initialFilter;
+						filter.validateNow();
+					}
 					loadEntries();
 					loadKDP();
 
@@ -139,8 +154,6 @@
 					paging.kalturaFilterPager.pageIndex = 0;
 					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 
-					if (this.initialized)
-						loadEntries();
 				}
 				else {
 					_ready = true;
@@ -468,8 +481,7 @@
 	<mx:HDividedBox id="topContainer">
 		<mx:VBox id='filterContainer'>
 			<filter:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
-						   enableCustomData="{filterModel.enableCustomData}"
-						   metadataProfile="{filterModel.metadataProfile}"
+						   enableCustomData="{filterModel.enableCustomData}" metadataProfile="{filterModel.metadataProfile}"
 						   enablelivestream="{filterModel.enablelivestream}" flavorParams="{filterModel.flavorParams}"
 						   catMap="{filterModel.categoriesMap}"
 						   accessControlProfiles="{filterModel.accessControlProfiles}"

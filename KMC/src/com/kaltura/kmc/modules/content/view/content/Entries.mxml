@@ -5,6 +5,7 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
 		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel" 
 		 creationComplete="vbox1_creationCompleteHandler(event)"
 		 >
 	<mx:states>
@@ -16,18 +17,6 @@
 			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
-	<mx:transitions>
-		<mx:Transition toState="noFilterState">
-			<mx:Sequence targets="{[vbox1]}">
-				<mx:WipeLeft id="wipeLeft" duration="500"/>
-			</mx:Sequence>
-		</mx:Transition>
-		<mx:Transition fromState="noFilterState">
-			<mx:Sequence targets="{[vbox1]}">
-				<mx:WipeRight id="wipeRight" duration="500"/>
-			</mx:Sequence>
-		</mx:Transition>
-	</mx:transitions>
 
 	<mx:Script>
 		<![CDATA[
@@ -49,6 +38,8 @@
 			import com.kaltura.kmc.modules.content.vo.ListableVo;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -76,13 +67,22 @@
 			public var entryDetailsModel:EntryDetailsModel;
 
 
-
-			public function init():void {
+			/**
+			 * initialize the panel.
+			 * @param initFilter	filter for initial entry loading.
+			 * */
+			public function init(initFilter:KalturaBaseEntryFilter = null):void {
 				paging.kalturaFilterPager.pageIndex = 0;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 				//init as 10 lines 
+				if (initFilter && initFilter is KalturaMediaEntryFilter) {
+					filter.ps3filter = initFilter as KalturaMediaEntryFilter;
+					filter.validateNow();
+				}
 				loadEntries();
 			}
+			
+			
 
 
 			private function setEntriesToolbar():void {
@@ -303,7 +303,7 @@
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">
-			<filter:Filter id="filter" height="100%" width="245" showEffect="{wipeLeft}" 
+			<filter:Filter id="filter" height="100%" width="245"
 						   enableCustomData="{filterModel.enableCustomData}"
 						   metadataProfile="{filterModel.metadataProfile}" 
 						   enablelivestream="{filterModel.enablelivestream}"

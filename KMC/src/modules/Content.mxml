@@ -30,6 +30,7 @@
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.utils.StringUtil;
+			import com.kaltura.kmc.modules.content.view.content.IContentPanel;
 			import com.kaltura.kmc.modules.content.view.window.AddStream;
 			import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.DownloadWin;
@@ -46,11 +47,14 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.utils.SoManager;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
 			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
+			import com.kaltura.vo.KalturaPlaylistFilter;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -63,6 +67,7 @@
 			import mx.events.ItemClickEvent;
 			import mx.managers.CursorManager;
 			import mx.managers.PopUpManager;
+			import mx.utils.Base64Decoder;
 
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
@@ -143,7 +148,7 @@
 				// show the tab
 				_initialTab = subtab;
 				if (_ready) {
-					switchToTab(_initialTab);
+					switchToTab(subtab);
 				}
 			}
 
@@ -158,11 +163,10 @@
 			override protected function start():void 
 			{
 				trace("=================");
-				trace("KMC VERSION   " + VERSION);
+				trace("Content VERSION   " + VERSION);
 				trace("=================");
 
 				Security.allowDomain('*');
-				//ResourceManager.getInstance().localeChain = ["de_DE_kaltura","en_US_kaltura"];
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 				setStyle("backgroundColor", 0xFFFFFF);
 
@@ -191,6 +195,7 @@
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 			}
+			
 
 			/**
 			 * put things on the attic object.
@@ -206,18 +211,25 @@
 				}
 			}
 			
+			
 			/**
 			 * init the panels in the view after all data is ready
 			 * */
-			private function initChildren(e:FlexEvent):void 
-			{
+			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-				manage.init();
-//				moderation.init();
-//				plst.init();	
+				var kmef:KalturaBaseEntryFilter ;
+				if (_attic.filter ) {
+					kmef = createFilterFromString(_attic.filter);
+					_attic.filter = null;
+				}
 				
-				// switch tab if asked
-				switchToTab(_initialTab);
+				if (_initialTab) {
+					_attic.kmef = kmef;
+					// switch tab if asked
+					switchToTab(_initialTab);
+				} else {
+					manage.init(kmef);
+				}
 			}
 
 
@@ -230,6 +242,43 @@
 				Alert.noLabel = resourceManager.getString('cms', 'no');
 				Alert.okLabel = resourceManager.getString('cms', 'ok');
 				Alert.cancelLabel = resourceManager.getString('cms', 'cancel');
+			}
+			
+			/**
+			 * creates a KalturaMediaEntryFilter from encoded data
+			 * @param filter	encoded filter data
+			 * */
+			private function createFilterFromString(filter:String):KalturaBaseEntryFilter {
+				var dec:Base64Decoder = new Base64Decoder();
+				dec.decode(filter);
+				var filterString:String = dec.toByteArray().toString();
+				var filterArray:Array = filterString.split("&");
+				
+				// distinguish between playlist and entry:
+				var kmef:KalturaBaseEntryFilter;
+				for (var j:int = 0; j<filterArray.length; j++) {
+					if (filterArray[j].indexOf("objectType") == 0) {
+						var cls:String = filterArray[j].split("=")[1];
+						if (cls == "KalturaPlaylistFilter") {
+							kmef = new KalturaPlaylistFilter();
+						}
+						else {
+							kmef = new KalturaMediaEntryFilter();
+						}
+						break;
+					}
+				}
+				
+				var att:Array;
+				for (var i:int = 0; i<filterArray.length; i++) {
+					att = filterArray[i].split("=");
+					if (att[1]) {
+						// KalturaMediaEntryFilter is dynamic, ok to put all values without testing
+						kmef[att[0]] = att[1];
+					}
+				}
+				
+				return kmef;
 			}
 
 
@@ -760,7 +809,8 @@
 			 * initialize the selected view
 			 * */
 			protected function initSelected(event:IndexChangedEvent):void {
-				contentView.getChildAt(event.newIndex)['init']();
+				// initialize the new panel with filter saved in the attic, if any.
+				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_attic.kmef);
 			}
 		]]>
 	</mx:Script>
