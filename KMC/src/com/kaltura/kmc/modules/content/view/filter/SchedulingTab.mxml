@@ -11,6 +11,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
 			import mx.controls.Alert;
 
@@ -24,6 +25,40 @@
 			 * */
 			private var _scheduldEndDate:Date = null;
 
+			
+			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
+				var now:Number = new Date().time / 1000; 
+				
+				finishedBtn.selected = filterVo.endDateLessThanOrEqual < now;
+				
+				liveBtn.selected = filterVo.startDateLessThanOrEqualOrNull < now && 
+									filterVo.endDateGreaterThanOrEqualOrNull > now;
+				
+				futureBtn.selected = filterVo.startDateGreaterThanOrEqual > now;
+				
+				var sched:Boolean = false;
+				if (filterVo.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) {
+					schedFromDate.selectedDate = new Date(null, null, null, null, null, null, filterVo.endDateGreaterThanOrEqualOrNull * 1000);
+					sched = true;
+				}
+				if (filterVo.startDateLessThanOrEqualOrNull != int.MIN_VALUE) {
+					schedToDate.selectedDate = new Date(null, null, null, null, null, null, filterVo.startDateLessThanOrEqualOrNull * 1000);
+					sched = true;
+				}
+				scheduledBtn.selected = sched;
+				
+				allSchedulingBtn.selected = finishedBtn.selected && liveBtn.selected && futureBtn.selected && scheduledBtn.selected;
+				
+				if (allSchedulingBtn.selected) {
+					finishedBtn.selected = false;
+					liveBtn.selected = false; 
+					futureBtn.selected = false;
+					scheduledBtn.selected = false;
+				}
+				
+			}
+			
+			
 
 			/**
 			 * scheduling buttons click handler:
@@ -136,15 +171,22 @@
 				dispatchEvent(new Event(Filter.FILTER_CHANGED));
 			}
 
+			/**
+			 * empty implementation - this panel has more than one string.
+			 * use 
+			 * */
+			public function getFilterString():String {
+				return '';
+			}
 
 			/**
-			 * set scheduling data according to tab data
+			 * set scheduling data on filter object, according to tab data.
 			 * @param filter	filter object to update
 			 * */
-			public function setSchedulingData(filter:KalturaBaseEntryFilter):void {
+			public function getSchedulingData(filter:KalturaBaseEntryFilter):void {
 				var now:Number;
 
-				// sechduling
+				// scheduling
 				if (allSchedulingBtn.selected) {
 					// do nothing
 				}

@@ -8,9 +8,6 @@
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.modules.content.vo.CategoryVO;
-			import com.kaltura.types.KalturaDurationType;
-			import com.kaltura.types.KalturaEntryStatus;
-			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaSearchOperatorType;
 			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KMCMetadataProfileVO;
@@ -26,6 +23,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.containers.Canvas;
 			import mx.controls.Alert;
+			import mx.controls.Button;
 			import mx.core.Container;
 			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
@@ -55,7 +53,7 @@
 			public static const NO_METADATA:String = 'noMetadata';
 
 			private const XPATH_PREFIX:String = "local-name()='";
-			private const MAX_SEARCH_CHARS:int = 3;
+			
 			public static const DATE_FIELD_WIDTH:Number = 80;
 
 
@@ -155,10 +153,7 @@
 			 * */
 			private var _isFilterOn:Boolean = false;
 
-			/**
-			 * regex to test search text validity.
-			 * */
-			private var _invalidCharsRegexp:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
+			
 
 			/**
 			 * filter initialization flag
@@ -250,29 +245,24 @@
 					currentFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
 				}
 
-				// duration filter:
-				currentFilter.durationTypeMatchOr = getDurationFilter();
+				// duration :
+				currentFilter.durationTypeMatchOr = durationStatusContainer.getFilterString();
 
-				// filter by media types
-				currentFilter.mediaTypeIn = getMediaTypesFilter();
+				// media types
+				currentFilter.mediaTypeIn = mediaTypesContainer.getFilterString();
 
-				// filter by moderation
-				currentFilter.moderationStatusIn = moderationStatusContainer.getModerationString();
+				// moderation
+				currentFilter.moderationStatusIn = moderationStatusContainer.getFilterString();
 
-				// filter by conversion status	
-				currentFilter.statusIn = getConversionStatusFilter();
+				// conversion status	
+				currentFilter.statusIn = conversionStatusContainer.getFilterString();
 
-				// name & tags 
-				if (searchFilter.text != resourceManager.getString('cms', 'searchEntries')) {
-					var trimmedText:String = StringUtil.trim(searchFilter.text);
-					currentFilter.freeText = trimmedText;
-				}
-				else {
-					currentFilter.freeText = '';
-				}
+				
+				currentFilter.freeText = searchBox.getFilterString();
+				
 
 				// scheduling 
-				schedulingContainer.setSchedulingData(currentFilter);
+				schedulingContainer.getSchedulingData(currentFilter);
 
 				// access control profiles
 				var idsStr:String = getAccessControlFilter();
@@ -282,7 +272,7 @@
 
 				// flavor params
 				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = getFlavorParamsFilter();
-				
+
 				// set metadata filters
 				if (metadataProfile) {
 					getMetadataFilters(currentFilter);
@@ -294,7 +284,7 @@
 				updateFilterStatus(currentFilter);
 			}
 
-			
+
 			/**
 			 * filter by flavor params
 			 * */
@@ -315,63 +305,9 @@
 				}
 				return fpIds.join(',');
 			}
-			
-
-			/**
-			 * filter by media types
-			 * */
-			private function getMediaTypesFilter():String {
-				var mediaTypeString:String = '';
-				if (videoType.selected)
-					mediaTypeString += KalturaMediaType.VIDEO + ",";
-				if (imageType.selected)
-					mediaTypeString += KalturaMediaType.IMAGE + ",";
-				if (audioType.selected)
-					mediaTypeString += KalturaMediaType.AUDIO + ",";
-				if (streamType.selected)
-					mediaTypeString += KalturaMediaType.LIVE_STREAM_FLASH + ",";
-				if (mixType.selected) {
-					// mix is not in the enum, so it's hardcoded
-					mediaTypeString += "6,";
-				}
-				//remove the last ,				 
-				mediaTypeString = mediaTypeString.slice(0, mediaTypeString.length - 1);
-				//if the select all media types is selected - add all media types
-				if (selectAllTypesBtn.selected) {
-					mediaTypeString = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
-				}
-				return mediaTypeString;
-			}
 
 
-			/**
-			 * filter by conversion status
-			 * */
-			private function getConversionStatusFilter():String {
-				var convStatusArray:Array = [];
 
-				if (allConversionStatusBtn.selected) {
-					convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING);
-					convStatusArray.push(KalturaEntryStatus.IMPORT);
-					convStatusArray.push(KalturaEntryStatus.PRECONVERT);
-					convStatusArray.push(KalturaEntryStatus.READY);
-				}
-				else {
-					if (convErrorBtn.selected) { // for error
-						convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING);
-					}
-					if (convUploadingBtn.selected) { // for uploading 
-						convStatusArray.push(KalturaEntryStatus.IMPORT);
-					}
-					if (convConvertingBtn.selected) { // for converting
-						convStatusArray.push(KalturaEntryStatus.PRECONVERT);
-					}
-					if (convReadyBtn.selected) { // for ready 
-						convStatusArray.push(KalturaEntryStatus.READY);
-					}
-				}
-				return convStatusArray.join(',');
-			}
 
 
 			/**
@@ -396,30 +332,7 @@
 			}
 
 
-			/**
-			 * filter by durations with the server limitation logic
-			 * */
-			private function getDurationFilter():String {
-				var durationString:String = "";
-				//if non of the items are selected or all selected
-				if ((shortDuration.selected && mediumDuration.selected && longDuration.selected) || (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected)) {
-					durationString = "";
-				}
-				else {
-					if (shortDuration.selected) {
-						durationString += KalturaDurationType.SHORT + ",";
-					}
-					if (mediumDuration.selected) {
-						durationString += KalturaDurationType.MEDIUM + ",";
-					}
-					if (longDuration.selected) {
-						durationString += KalturaDurationType.LONG + ",";
-					}
-					//remove last , 
-					durationString = durationString.slice(0, durationString.length - 1);
-				}
-				return durationString;
-			}
+
 
 
 			/**
@@ -474,15 +387,10 @@
 
 
 			/**
-			 *
-			 *  Use the data(vo) or the UI to check if the filter is on
-			 *
-			 *  @TODO: what is better? - for future needs.
+			 * Use the data(vo) and the UI to check if the filter is on.
 			 * */
 			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
-				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') ||
-					// (currentFilter.mediaTypeIn != '')  ||
-					(!selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!allConversionStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') || (!mediaTypesContainer.selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!conversionStatusContainer.allConversionStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
 			}
 
 
@@ -500,7 +408,7 @@
 			 * initialize the different filters and panels
 			 * */
 			private function init():void {
-				//if enableCustomData is false and metadata is exsit remove the metadata filter header
+				//if enableCustomData is false and metadata exists remove the metadata filter header
 				setMetadataVisibility();
 
 				_dynamicFilterData = new Object();
@@ -662,193 +570,25 @@
 			}
 
 
-			/**
-			 * check if one of the types is selected. if not - select the 'all types' button
-			 * if one of the types is selected - start a new search
-			 */
-			private function validateTypesAndSend(evt:Event = null):void {
-				// if the click is a select click - deselect the alltypes button
-				if ((evt.target as Button).selected) {
-					selectAllTypesBtn.selected = false;
-					updateImageButton([selectAllTypesBtn, (evt.target as Button)]);
-				}
-				if (validateTypes()) {
-					selectAllTypesBtn.selected = true;
-					updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType, streamType]);
-				}
-				else {
-					updateImageButton([mixType, videoType, imageType, audioType, streamType]);
-				}
-				preformNewSearch();
-			}
 
 
 			/**
 			 * show correct button icon (image)
 			 * */
 			private function updateImageButton(btnsList:Array):void {
-				var o:*;
 				for each (var btn:Button in btnsList) {
 					btn.setStyle('icon', btn.selected ? checkedImg : emptyImg);
 				}
 			}
 
 
-			/**
-			 * check if all types are selected - if non is selected return true
-			 * if one of them is selected - return false
-			 */
-			private function validateTypes():Boolean {
-				var result:Boolean = false;
-				if (!mixType.selected && !videoType.selected && !imageType.selected && !audioType.selected && !streamType.selected) {
-					result = true;
-				}
-				return result;
-			}
 
 
 			/**
 			 * first validate the search text and only if valid will call sendNewSearch
 			 * */
 			private function preformNewSearch():void {
-				if (validateSearchText()) {
-					sendNewSearch();
-				}
-			}
-
-
-			/**
-			 * dispatch the new search event
-			 * */
-			private function sendNewSearch():void {
 				dispatchEvent(new Event(NEW_SEARCH));
-			}
-
-
-			/**
-			 * checks if text contains only valid chars and at least MAX_SEARCH_CHARS characters
-			 * */
-			private function validateSearchText():Boolean {
-				var result:Boolean = true;
-				if (_invalidCharsRegexp.test(searchFilter.text)) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'), ResourceManager.getInstance().getString('cms', 'invalidInputTitle'));
-					result = false;
-				}
-				if ((searchFilter.text.length > 0) && (searchFilter.text.length < MAX_SEARCH_CHARS)) {
-					Alert.show(resourceManager.getString('cms', 'min3chars'), resourceManager.getString('cms', 'invalidInputTitle'));
-					result = false;
-				}
-				return result;
-			}
-
-
-			/**
-			 * select all type of entries
-			 */
-			public function selectAllTypes(evt:Event):void {
-				var isSelected:Boolean = evt.target.selected;
-				if (isSelected) {
-					mixType.selected = false;
-					videoType.selected = false;
-					audioType.selected = false;
-					imageType.selected = false;
-					streamType.selected = false;
-					updateImageButton([evt.target, mixType, videoType, imageType, audioType, streamType]);
-					preformNewSearch();
-				}
-				else {
-					evt.target.selected = true;
-					updateImageButton([evt.target]);
-				}
-			}
-
-
-			/**
-			 * a duration button was clicked
-			 */
-			private function onDurationChanged(evt:Event):void {
-				//if a duration button was selected deselect the 'allDurationBtn' status 
-				if ((evt.target as Button).selected) {
-					allDurationBtn.selected = false;
-				}
-				//if non is selected - highlight the 'allDurationBtn' button
-				if (validateDuration()) {
-					allDurationBtn.selected = true;
-				}
-				updateImageButton([allDurationBtn, shortDuration, mediumDuration, longDuration]);
-				preformNewSearch();
-			}
-
-
-			/**
-			 * the 'allDurationBtn' was clicked
-			 */
-			private function allDuration(evt:Event):void {
-				var isSelected:Boolean = evt.target.selected;
-				if (!isSelected) {
-					(evt.target as Button).selected = true;
-					shortDuration.selected = false;
-					mediumDuration.selected = false;
-					longDuration.selected = false;
-					updateImageButton([evt.target, shortDuration, mediumDuration, longDuration]);
-					preformNewSearch();
-				}
-			}
-
-
-			/**
-			 * user select to choose all conversion status
-			 */
-			private function onAllConversionStatusClicked(evt:Event):void {
-				var isSelected:Boolean = evt.target.selected;
-				if (!isSelected) {
-					(evt.target as Button).selected = true;
-					convConvertingBtn.selected = false;
-					convErrorBtn.selected = false;
-					convReadyBtn.selected = false;
-					convUploadingBtn.selected = false;
-					updateImageButton([evt.target, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
-					preformNewSearch();
-				}
-			}
-
-
-			/**
-			 * one of the conversion status buttons was clicked
-			 */
-			private function changeConversionStatusFilter(evt:Event):void {
-				//if a moderation button was selected deselect the all moderation status 
-				if ((evt.target as Button).selected) {
-					allConversionStatusBtn.selected = false;
-				}
-				//if non is selected - highlight the 'allModeration' button
-				if (validateConversionStatus()) {
-					allConversionStatusBtn.selected = true;
-				}
-				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
-				preformNewSearch();
-			}
-
-
-			/**
-			 * check if all conversion status buttons are selected - if non is selected return true
-			 * if one of them is selected - return false
-			 */
-			private function validateConversionStatus():Boolean {
-				return !convConvertingBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
-			}
-
-
-			/**
-			 * check if all duration buttons are selected - if non is selected return true
-			 * if one of them is selected - return false
-			 */
-			private function validateDuration():Boolean {
-				var result:Boolean = false;
-				if (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected) {
-					result = true;
-				}
-				return result;
 			}
 
 
@@ -977,36 +717,6 @@
 			}
 
 
-			private function updateSearchButtonMode():void {
-				if (!validateSearchText())
-					return;
-
-				if (searchBtn.data == 'v') {
-					if ((StringUtil.trim(searchFilter.text) != '') && (searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
-						searchBtn.data = 'x';
-						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
-					}
-				}
-				else {
-					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
-					searchBtn.data = 'v';
-					searchBtn.toolTip = null;
-				}
-
-				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
-				sendNewSearch();
-			}
-
-
-			private function onSearchTextChange(event:Event):void {
-				if ((StringUtil.trim(searchFilter.text) == '')) {
-					searchBtn.data = 'v';
-				}
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
-				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
-			}
-
-
 			private function clearDates():void {
 				fromDate.selectedDate = null;
 				toDate.selectedDate = null;
@@ -1059,36 +769,12 @@
 				super.validateNow();
 				if (categories)
 					catTree.dataProvider = categories;
-				updateImageButton([selectAllTypesBtn, mixType, videoType, imageType, audioType, streamType]);
-				updateImageButton([allDurationBtn, shortDuration, mediumDuration, longDuration]);
+				updateImageButton(mediaTypesContainer.buttons);
+				updateImageButton(durationStatusContainer.buttons);
 				updateImageButton(moderationStatusContainer.buttons);
-				updateImageButton([allConversionStatusBtn, convConvertingBtn, convErrorBtn, convReadyBtn, convUploadingBtn]);
+				updateImageButton(conversionStatusContainer.buttons);
 			}
 
-
-			private function onFoucsInSearchEvent(event:FocusEvent):void {
-				if (searchFilter.text == resourceManager.getString('cms', 'searchEntries')) {
-					searchFilter.text = '';
-				}
-			}
-
-
-			private function onFoucsOutSearchEvent(event:FocusEvent):void {
-				if (StringUtil.trim(searchFilter.text) == '') {
-					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
-				}
-			}
-
-
-			private function onSearchEnterClick(event:Event):void {
-				if (!validateSearchText())
-					return;
-
-				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
-				searchBtn.setStyle('skin', (searchBtn.data == 'v') ? searchImg : clearSearchImg);
-				sendNewSearch();
-			}
 
 
 			/**
@@ -1100,57 +786,6 @@
 				preformNewSearch();
 			}
 
-
-			/**
-			 * Creates an object with keys as media types,
-			 * later used for easy access while parsing this data.
-			 * The optional keys are enumerated in <code>KalturaMediaType</code>
-			 * @param mediaTypes	the string that represents media
-			 * 						types on a filter
-			 * @return an object like {1:true, 201:true, ..}
-			 * */
-			protected function mediaTypesToObject(mediaTypes:String):Object {
-				var result:Object = {};
-				var mediaTypesArray:Array = mediaTypes.split(",");
-				for (var i:int = 0; i < mediaTypesArray.length; i++) {
-					result[mediaTypesArray[i]] = true;
-				}
-				return result;
-			}
-
-
-			/**
-			 * media types: check if there is an empty filter or if all
-			 * types are in, select buttons accordingly.
-			 * */
-			protected function showMediaTypesData(filterVo:KalturaMediaEntryFilter):void {
-				// filterVo.mediaTypeIn is a list of KalturaMediaType-s separated by ",".
-				var mediaTypes:Object = mediaTypesToObject(filterVo.mediaTypeIn);
-				if (filterVo.mediaTypeIn == "" || (mediaTypes[KalturaMediaType.VIDEO] && mediaTypes[6] && mediaTypes[KalturaMediaType.AUDIO] && mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] && mediaTypes[KalturaMediaType.IMAGE])) {
-					// all types selected
-					selectAllTypesBtn.selected = true;
-					mixType.selected = false;
-					audioType.selected = false;
-					videoType.selected = false;
-					imageType.selected = false;
-					imageType.selected = false;
-					streamType.selected = false;
-				}
-				else {
-					selectAllTypesBtn.selected = false;
-
-					if (mediaTypes[KalturaMediaType.VIDEO])
-						videoType.selected = true;
-					if (mediaTypes[6])
-						mixType.selected = true;
-					if (mediaTypes[KalturaMediaType.AUDIO])
-						audioType.selected = true;
-					if (mediaTypes[KalturaMediaType.IMAGE])
-						imageType.selected = true;
-					if (mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH])
-						streamType.selected = true;
-				}
-			}
 
 
 			/**
@@ -1180,72 +815,6 @@
 
 
 			/**
-			 * show duration data on filter
-			 * */
-			protected function showDurationData(filterVo:KalturaMediaEntryFilter):void {
-				if (filterVo.durationTypeMatchOr == null || String(filterVo.durationTypeMatchOr) == "" || (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1)) {
-					// no duration 
-					allDurationBtn.selected = true;
-					shortDuration.selected = false;
-					mediumDuration.selected = false;
-					longDuration.selected = false;
-				}
-				else {
-					//set all duration to unselected
-					allDurationBtn.selected = false;
-					//short or non duration is selecred
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1) {
-						shortDuration.selected = true;
-					}
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1) {
-						mediumDuration.selected = true;
-					}
-					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1) {
-						longDuration.selected = true;
-					}
-				}
-			}
-
-
-			/**
-			 * show Conversion status data on filter
-			 * */
-			protected function showConversionStatusData(filterVo:KalturaMediaEntryFilter):void {
-				if (!filterVo.statusIn) {
-					allConversionStatusBtn.selected = true;
-					convConvertingBtn.selected = false;
-					convErrorBtn.selected = false;
-					convReadyBtn.selected = false;
-					convUploadingBtn.selected = false;
-				}
-				else {
-					var convStatusArr:Array = filterVo.statusIn.split(',');
-					for each (var convCode:String in convStatusArr) {
-						switch (convCode) {
-							case KalturaEntryStatus.ERROR_CONVERTING:
-							case KalturaEntryStatus.ERROR_IMPORTING:
-								convErrorBtn.selected = true;
-								break;
-
-							case KalturaEntryStatus.IMPORT:
-								convUploadingBtn.selected = true;
-								break;
-
-							case KalturaEntryStatus.PRECONVERT:
-								convConvertingBtn.selected = true;
-								break;
-
-							case KalturaEntryStatus.READY:
-								convReadyBtn.selected = true;
-								break;
-
-						}
-					}
-				}
-			}
-
-
-			/**
 			 * fill current view with the new filter values
 			 */
 			public function set ps3filter(filterVo:KalturaMediaEntryFilter):void {
@@ -1255,30 +824,20 @@
 					addEventListener(FlexEvent.CREATION_COMPLETE, onReady);
 					return;
 				}
-
-				showMediaTypesData(filterVo);
+				mediaTypesContainer.setFilter(filterVo);
 
 				showDatesData(filterVo);
 
-				showDurationData(filterVo);
+				// duration
+				durationStatusContainer.setFilter(filterVo);
 
 				// moderation
-				moderationStatusContainer.setModerationStatus(filterVo);
+				moderationStatusContainer.setFilter(filterVo);
 
-				showConversionStatusData(filterVo);
+				conversionStatusContainer.setFilter(filterVo);
 
-				//search
-				if (filterVo.freeText) {
-					//searchFilter.text = filterVo.freeText.split(",").join(" ");
-					searchFilter.text = filterVo.freeText;
-				}
-				else if (filterVo.tagsMultiLikeOr) {
-					//bugfix backwords competability
-					//searchFilter.text = filterVo.tagsMultiLikeOr.split(",").join(" ");
-					searchFilter.text = filterVo.tagsMultiLikeOr;
-					//for future saving, set the freeTextOr value
-					filterVo.freeText = filterVo.tagsMultiLikeOr;
-				}
+				// free text
+				searchBox.setFilter(filterVo);
 
 				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
 					schedulingContainer.allSchedulingBtn.selected = true;
@@ -1419,16 +978,9 @@
 		</mx:State>
 	</mx:states>
 
-	<mx:HBox id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
-			 label="{resourceManager.getString('cms', 'searchFilter')}" width="100%">
-		<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
-					  text="{resourceManager.getString('cms', 'searchEntries')}" focusIn="onFoucsInSearchEvent(event)"
-					  change='onSearchTextChange(event)' buttonMode="true"
-					  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}" styleName="searchTextInput"
-					  focusOut="onFoucsOutSearchEvent(event)"/>
-		<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true" click="updateSearchButtonMode()"
-				   buttonMode="true"/>
-	</mx:HBox>
+	<filter:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
+			 label="{resourceManager.getString('cms', 'searchFilter')}" width="100%" 
+			 filterChanged="{onTabChanged(event)}"/>
 	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2">
 		<mx:headerRenderer>
 			<mx:Component>
@@ -1452,65 +1004,15 @@
 				<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
 							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
 			</mx:VBox>
-			<mx:VBox width="100%" styleName="typesVBox">
-				<mx:Button id="selectAllTypesBtn" width="100%" selected="true"
-						   label="{resourceManager.getString('cms', 'allMediaTypes')}" buttonMode="true" toggle="true"
-						   click="{selectAllTypes(event)}" styleName="mainFilterGroupButton" icon="{checkedImg}"/>
-				<mx:Button id="videoType" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'videoSingle')}" buttonMode="true" toggle="true"
-						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-				<mx:Button id="imageType" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'image')}" buttonMode="true" toggle="true"
-						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-				<mx:Button id="audioType" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'audio')}" buttonMode="true" toggle="true"
-						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-				<mx:Button id="mixType" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'videoMix')}" buttonMode="true" toggle="true"
-						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-				<mx:Button id="streamType" width="100%" selected="false"
-						   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}" buttonMode="true"
-						   toggle="true" visible="{enablelivestream}" includeInLayout="{enablelivestream}"
-						   click="{validateTypesAndSend(event)}" styleName="innerFilterGroupButton" icon="{emptyImg}"/>
-			</mx:VBox>
-			<mx:VBox id="statusContainer" label="{resourceManager.getString('cms', 'status')}" width="100%"
-					 styleName="moderationVBox" visible="{showStatusOptions}" includeInLayout="{showStatusOptions}">
-				<mx:Button id="allConversionStatusBtn" width="100%" selected="true"
-						   label="{resourceManager.getString('cms', 'allConversionStatus')}" buttonMode="true"
-						   click="{onAllConversionStatusClicked(event)}" styleName="mainFilterGroupButton"
-						   icon="{checkedImg}"/>
-				<mx:Button id="convReadyBtn" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'readyBtn')}" buttonMode="true" toggle="true"
-						   styleName="innerFilterGroupButton" icon="{emptyImg}"
-						   click="{changeConversionStatusFilter(event)}"/>
-				<mx:Button id="convUploadingBtn" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'uploadingBtn')}" buttonMode="true" toggle="true"
-						   styleName="innerFilterGroupButton" icon="{emptyImg}"
-						   click="{changeConversionStatusFilter(event)}"/>
-				<mx:Button id="convConvertingBtn" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'convertingBtn')}" buttonMode="true" toggle="true"
-						   styleName="innerFilterGroupButton" icon="{emptyImg}"
-						   click="{changeConversionStatusFilter(event)}"/>
-				<mx:Button id="convErrorBtn" width="100%" selected="false"
-						   label="{resourceManager.getString('cms', 'convertErrorBtn')}" buttonMode="true" toggle="true"
-						   styleName="innerFilterGroupButton" icon="{emptyImg}"
-						   click="{changeConversionStatusFilter(event)}"/>
-			</mx:VBox>
-			<mx:VBox id="durationStatusContainer" width="100%"
-					 label="{resourceManager.getString('cms', 'durationLabel')}" styleName="durationVBox">
-				<mx:Button id="allDurationBtn" width="100%"
-						   label="{resourceManager.getString('cms', 'allDurationsBtn')}" selected="true"
-						   click="{allDuration(event)}" styleName="mainFilterGroupButton" icon="{checkedImg}"/>
-				<mx:Button id="shortDuration" width="100%" label="{resourceManager.getString('cms', 'shortduration')}"
-						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
-						   icon="{emptyImg}"/>
-				<mx:Button id="mediumDuration" width="100%" label="{resourceManager.getString('cms', 'mediumduration')}"
-						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
-						   icon="{emptyImg}"/>
-				<mx:Button id="longDuration" width="100%" label="{resourceManager.getString('cms', 'longduration')}"
-						   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"
-						   icon="{emptyImg}"/>
-			</mx:VBox>
+			<filter:MediaTypesTab id="mediaTypesContainer" width="100%" styleName="typesVBox"
+								  enablelivestream="{enablelivestream}" filterChanged="{onTabChanged(event)}"/>
+			<filter:ConversionStatusTab id="conversionStatusContainer" width="100%" styleName="moderationVBox"
+										label="{resourceManager.getString('cms', 'status')}"
+										visible="{showStatusOptions}" includeInLayout="{showStatusOptions}"
+										filterChanged="{onTabChanged(event)}"/>
+			<filter:DurationTab id="durationStatusContainer" width="100%" styleName="durationVBox"
+								label="{resourceManager.getString('cms', 'durationLabel')}"
+								filterChanged="{onTabChanged(event)}"/>
 			<filter:SchedulingTab id="schedulingContainer" width="100%" styleName="bottomSchedulingVBox"
 								  filterChanged="{onTabChanged(event)}" visible="{showSchedulingOptions}"
 								  includeInLayout="{showSchedulingOptions}"/>
@@ -1522,16 +1024,12 @@
 										showApprovedOption="{showApprovedOption}" styleName="moderationVBox"
 										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}"/>
 			<mx:VBox id="accessControlContainer" width="100%" styleName="accessControlVBox"
-					 visible="{showAccessControlOptions}" includeInLayout="{showAccessControlOptions}">
-			</mx:VBox>
-
+					 visible="{showAccessControlOptions}" includeInLayout="{showAccessControlOptions}"/>
 			<mx:VBox id="transcodingFlavorContainer" width="100%" styleName="transcodingFlavorVBox"
-					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}">
-			</mx:VBox>
+					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}"/>
 		</mx:VBox>
 		<mx:VBox id="metadataTab" label="{resourceManager.getString('cms', 'metadataTab')}" width="100%" height="100%"
-				 styleName="additinalFilterVBox">
-		</mx:VBox>
+				 styleName="additinalFilterVBox"/>
 		<mx:Canvas id="vbox1" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%" height="100%"
 				   styleName="categoriesTreeVBox">
 			<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>

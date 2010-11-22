@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 implements="com.kaltura.kmc.modules.content.view.filter.IFilterTab">
+	<mx:Metadata>
+		[Event(name="filterChanged", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+			
+			import mx.controls.Alert;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+			
+			private const MIN_SEARCH_CHARS:int = 3;
+			
+			
+			/**
+			 * regex to test search text validity.
+			 * */
+			private var _invalidCharsRegexp:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
+			
+			public function getFilterString():String {
+				var res:String = '';
+				if (searchFilter.text != resourceManager.getString('cms', 'searchEntries')) {
+					var trimmedText:String = StringUtil.trim(searchFilter.text);
+					res = trimmedText;
+				}
+				return res;
+			}
+			
+			
+			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
+				if (filterVo.freeText) {
+					//searchFilter.text = filterVo.freeText.split(",").join(" ");
+					searchFilter.text = filterVo.freeText;
+				}
+				else if (filterVo.tagsMultiLikeOr) {
+					//bugfix backwords competability
+					//searchFilter.text = filterVo.tagsMultiLikeOr.split(",").join(" ");
+					searchFilter.text = filterVo.tagsMultiLikeOr;
+					//for future saving, set the freeTextOr value
+					filterVo.freeText = filterVo.tagsMultiLikeOr;
+				}
+				setSearchButtonAppearance(null);
+			}
+			
+			
+			private function updateSearchButtonMode():void {
+				if (!validateSearchText())
+					return;
+				
+				if (searchBtn.data == 'v') {
+					if ((StringUtil.trim(searchFilter.text) != '') && (searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
+						searchBtn.data = 'x';
+						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
+					}
+				}
+				else {
+					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
+					searchBtn.data = 'v';
+					searchBtn.toolTip = null;
+				}
+				
+				searchBtn.selected = (searchBtn.data == 'x');
+				if (validateSearchText()) {
+					dispatchEvent(new Event(Filter.FILTER_CHANGED));
+				}
+			}
+			
+			
+			private function onFoucsOutSearchEvent(event:FocusEvent):void {
+				if (StringUtil.trim(searchFilter.text) == '') {
+					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
+				}
+			}
+			
+			private function onFoucsInSearchEvent(event:FocusEvent):void {
+				if (searchFilter.text == resourceManager.getString('cms', 'searchEntries')) {
+					searchFilter.text = '';
+				}
+			}
+			
+			
+			/**
+			 * checks if text contains only valid chars and at least MAX_SEARCH_CHARS characters
+			 * */
+			private function validateSearchText():Boolean {
+				var result:Boolean = true;
+				if (_invalidCharsRegexp.test(searchFilter.text)) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'), ResourceManager.getInstance().getString('cms', 'invalidInputTitle'));
+					result = false;
+				}
+				if ((searchFilter.text.length > 0) && (searchFilter.text.length < MIN_SEARCH_CHARS)) {
+					Alert.show(resourceManager.getString('cms', 'min3chars'), resourceManager.getString('cms', 'invalidInputTitle'));
+					result = false;
+				}
+				return result;
+			}
+			
+			
+			private function onSearchEnterClick(event:Event):void {
+				if (!validateSearchText())
+					return;
+				
+				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
+				searchBtn.selected = searchBtn.data == 'x';
+				if (validateSearchText()) {
+					dispatchEvent(new Event(Filter.FILTER_CHANGED));
+				}
+			}
+			
+			
+			private function setSearchButtonAppearance(event:Event):void {
+				if ((StringUtil.trim(searchFilter.text) == '')) {
+					searchBtn.data = 'v';
+				}
+				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
+				searchBtn.selected = (searchBtn.data == 'x');
+			}
+			
+			/**
+			 * empty implementation, this panel doesn't have buttons.
+			 * @inheritDoc
+			 * */
+			public function get buttons():Array {
+				return [];
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
+				  text="{resourceManager.getString('cms', 'searchEntries')}" focusIn="onFoucsInSearchEvent(event)"
+				  change='setSearchButtonAppearance(event)' buttonMode="true"
+				  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}" styleName="searchTextInput"
+				  focusOut="onFoucsOutSearchEvent(event)"/>
+	<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true" click="updateSearchButtonMode()"
+			   buttonMode="true"/>
+</mx:HBox>

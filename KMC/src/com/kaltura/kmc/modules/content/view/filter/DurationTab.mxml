@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
+		 implements="com.kaltura.kmc.modules.content.view.filter.IFilterTab">
+	<mx:Metadata>
+		[Event(name="filterChanged", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaDurationType;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+
+
+			/**
+			 * filter by durations with the server limitation logic
+			 * */
+			public function getFilterString():String {
+				var durationString:String = "";
+				//if non of the items are selected or all selected
+				if ((shortDuration.selected && mediumDuration.selected && longDuration.selected) || (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected)) {
+					durationString = "";
+				}
+				else {
+					if (shortDuration.selected) {
+						durationString += KalturaDurationType.SHORT + ",";
+					}
+					if (mediumDuration.selected) {
+						durationString += KalturaDurationType.MEDIUM + ",";
+					}
+					if (longDuration.selected) {
+						durationString += KalturaDurationType.LONG + ",";
+					}
+					//remove last , 
+					durationString = durationString.slice(0, durationString.length - 1);
+				}
+				return durationString;
+			}
+
+
+			/**
+			 * show duration data on filter
+			 * */
+			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
+				if (filterVo.durationTypeMatchOr == null || String(filterVo.durationTypeMatchOr) == "" || (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1 && String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1)) {
+					// no duration 
+					allDurationBtn.selected = true;
+					shortDuration.selected = false;
+					mediumDuration.selected = false;
+					longDuration.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allDurationBtn.selected = false;
+					//short or non duration is selecred
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.SHORT) > -1) {
+						shortDuration.selected = true;
+					}
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.MEDIUM) > -1) {
+						mediumDuration.selected = true;
+					}
+					if (String(filterVo.durationTypeMatchOr).indexOf(KalturaDurationType.LONG) > -1) {
+						longDuration.selected = true;
+					}
+				}
+			}
+
+
+			/**
+			 * a duration button was clicked
+			 */
+			private function onDurationChanged(evt:Event):void {
+				//if a duration button was selected deselect the 'allDurationBtn' status 
+				if ((evt.target as Button).selected) {
+					allDurationBtn.selected = false;
+				}
+				//if non is selected - highlight the 'allDurationBtn' button
+				if (validateDuration()) {
+					allDurationBtn.selected = true;
+				}
+				dispatchEvent(new Event(Filter.FILTER_CHANGED));
+			}
+
+
+			/**
+			 * the 'allDurationBtn' was clicked
+			 */
+			private function allDuration(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (!isSelected) {
+					(evt.target as Button).selected = true;
+					shortDuration.selected = false;
+					mediumDuration.selected = false;
+					longDuration.selected = false;
+				}
+				dispatchEvent(new Event(Filter.FILTER_CHANGED));
+			}
+
+
+			/**
+			 * check if all duration buttons are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateDuration():Boolean {
+				var result:Boolean = false;
+				if (!shortDuration.selected && !mediumDuration.selected && !longDuration.selected) {
+					result = true;
+				}
+				return result;
+			}
+
+
+			public function get buttons():Array {
+				return [allDurationBtn, shortDuration, mediumDuration, longDuration];
+			}
+		]]>
+	</mx:Script>
+	<mx:Button id="allDurationBtn" width="100%" label="{resourceManager.getString('cms', 'allDurationsBtn')}"
+			   selected="true" click="{allDuration(event)}" styleName="mainFilterGroupButton"/>
+	<mx:Button id="shortDuration" width="100%" label="{resourceManager.getString('cms', 'shortduration')}" toggle="true"
+			   click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"/>
+	<mx:Button id="mediumDuration" width="100%" label="{resourceManager.getString('cms', 'mediumduration')}"
+			   toggle="true" click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"/>
+	<mx:Button id="longDuration" width="100%" label="{resourceManager.getString('cms', 'longduration')}" toggle="true"
+			   click="{onDurationChanged(event)}" styleName="innerFilterGroupButton"/>
+</mx:VBox>
