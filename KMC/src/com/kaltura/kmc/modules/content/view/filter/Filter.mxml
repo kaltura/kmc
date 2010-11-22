@@ -33,9 +33,6 @@
 
 			private const checkedImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("checkedImg");
 			private const emptyImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("emptyImg");
-			private const searchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("searchImg");
-			private const clearSearchImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("clearSearchImg");
-
 
 			/**
 			 * value of the type property of the filterChanged event dispatched by inner tabs.
@@ -43,27 +40,24 @@
 			public static const FILTER_CHANGED:String = "filterChanged";
 
 			/**
-			 * value of the type property of the newSearch event
+			 * value of the type property of the newSearch event dispatched by filter
 			 * */
 			public static const NEW_SEARCH:String = 'newSearch';
 
+			public static const DATE_FIELD_WIDTH:Number = 80;
+			
 			/**
 			 * name of the no-metadata flex application state
 			 * */
-			public static const NO_METADATA:String = 'noMetadata';
+			private const NO_METADATA:String = 'noMetadata';
 
 			private const XPATH_PREFIX:String = "local-name()='";
 			
-			public static const DATE_FIELD_WIDTH:Number = 80;
-
-
 			[Bindable]
 			/**
 			 * categories list
 			 * */
 			public var catMap:HashMap;
-
-
 
 			[Bindable]
 			/**
@@ -82,7 +76,6 @@
 			 * show "approved" option in <code>moderationStatusContainer</code>
 			 * */
 			public var showApprovedOption:Boolean = true;
-
 
 			[Bindable]
 			/**
@@ -132,7 +125,6 @@
 			 * */
 			public var enablelivestream:Boolean;
 
-
 			/**
 			 * @copy #accessControlProfiles
 			 * */
@@ -153,12 +145,10 @@
 			 * */
 			private var _isFilterOn:Boolean = false;
 
-			
-
 			/**
-			 * filter initialization flag
+			 * filter initialization flag, set to true on creationComplete
 			 * */
-			private var _ready:Boolean;
+			private var _created:Boolean;
 
 			/**
 			 * A complex object with button lists.
@@ -188,7 +178,7 @@
 			 * data through filter buttons doesn't effect this object - it
 			 * is null while buttons are alive.
 			 * */
-			private var _readyFilter:KalturaMediaEntryFilter;
+			private var _initialFilter:KalturaMediaEntryFilter;
 
 			/**
 			 * metadata
@@ -207,15 +197,12 @@
 			 * */
 			private var _currentEndOld:Date = null;
 
-			private var _waitForSearch:Boolean;
-
-
 
 			/**
 			 * if there are no metadata fields that should appear
 			 * in search, remove the metadata tab from the accordion
 			 * */
-			private function setMetadataVisibility():void {
+			private function setMetadataTabVisibility():void {
 				if (_enableCustomData && _metadataProfile) {
 					var field:MetadataFieldVO;
 					for each (var obj:Object in _metadataProfile.metadataFieldVOArray) {
@@ -226,11 +213,8 @@
 						}
 					}
 				}
-
 				currentState = NO_METADATA;
 			}
-
-
 
 
 			/**
@@ -244,97 +228,60 @@
 				if (toDate && toDate.selectedDate) {
 					currentFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
 				}
-
 				// duration :
-				currentFilter.durationTypeMatchOr = durationStatusContainer.getFilterString();
-
+				currentFilter.durationTypeMatchOr = durationStatus.getFilterString();
 				// media types
-				currentFilter.mediaTypeIn = mediaTypesContainer.getFilterString();
-
+				currentFilter.mediaTypeIn = mediaTypes.getFilterString();
 				// moderation
-				currentFilter.moderationStatusIn = moderationStatusContainer.getFilterString();
-
+				currentFilter.moderationStatusIn = moderationStatus.getFilterString();
 				// conversion status	
-				currentFilter.statusIn = conversionStatusContainer.getFilterString();
-
-				
+				currentFilter.statusIn = conversionStatus.getFilterString();
+				// free text search
 				currentFilter.freeText = searchBox.getFilterString();
-				
-
 				// scheduling 
-				schedulingContainer.getSchedulingData(currentFilter);
-
+				scheduling.getSchedulingData(currentFilter);
 				// access control profiles
-				var idsStr:String = getAccessControlFilter();
+				var idsStr:String = getFilter("convProfile");
 				if (idsStr != "") {
 					currentFilter.accessControlIdIn = idsStr;
 				}
-
 				// flavor params
-				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = getFlavorParamsFilter();
-
-				// set metadata filters
+				(currentFilter as KalturaMediaEntryFilter).flavorParamsIdsMatchOr = getFilter("flavorParams");
+				// metadata filters
 				if (metadataProfile) {
 					getMetadataFilters(currentFilter);
 				}
-
-				/// category build
+				// category build
 				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
-
+				//TODO * see what this is used for
 				updateFilterStatus(currentFilter);
 			}
 
-
+			
 			/**
-			 * filter by flavor params
+			 * filter by given key, for the dynamic filters.
+			 * @param key	the key to get the filter by
+			 * @return a string representing the filter
 			 * */
-			private function getFlavorParamsFilter():String {
-				var fps:Array = _dynamicFilterData["flavorParams"];
-				var fpIds:Array = new Array();
-				for each (var btn1:Button in fps) {
-					if (btn1.selected) {
-						var fpId:String = (btn1.data as String).split(' - ')[1];
-						if (fpId == '-1') {
-							fpIds = new Array();
-							break;
-						}
-						else {
-							fpIds.push(fpId);
-						}
-					}
-				}
-				return fpIds.join(',');
-			}
-
-
-
-
-
-			/**
-			 * filter by access control profiles
-			 * */
-			private function getAccessControlFilter():String {
-				var acps:Array = _dynamicFilterData["convProfile"];
+			private function getFilter(key:String):String {
+				var fd:Array = _dynamicFilterData[key];
 				var ids:Array = new Array();
-				for each (var btn:Button in acps) {
+				for each (var btn:Button in fd) {
 					if (btn.selected) {
-						var id:String = (btn.data as String).split(' - ')[1];
-						if (id == '-1') {
+						var iid:String = (btn.data as String).split(' - ')[1];
+						if (iid == '-1') {
 							ids = new Array();
 							break;
 						}
 						else {
-							ids.push(id);
+							ids.push(iid);
 						}
 					}
 				}
 				return ids.join(',');
 			}
-
-
-
-
-
+			
+			
 			/**
 			 * get metadata filters
 			 * */
@@ -382,7 +329,6 @@
 				if (currentFilter is KalturaMediaEntryFilter) {
 					(currentFilter as KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
 				}
-
 			}
 
 
@@ -390,51 +336,61 @@
 			 * Use the data(vo) and the UI to check if the filter is on.
 			 * */
 			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
-				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') || (!mediaTypesContainer.selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!conversionStatusContainer.allConversionStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '');
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || 
+					(currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || 
+					(currentFilter.durationTypeMatchOr != '') || (!mediaTypes.selectAllTypesBtn.selected) || 
+					(currentFilter.moderationStatusIn != '') ||  (!conversionStatus.allConversionStatusBtn.selected) || 
+					(currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) ||
+					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || 
+					(currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) ||
+					(currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || 
+					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || 
+					(currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || 
+					(currentFilter.categoriesMatchOr != '');
 			}
 
 
 			/**
-			 * filter view is ready and now can fill its data
+			 * triggered on the filter's creationComplete event, if ps3filter was assigned earlier.
+			 * assigns the saved <code>KalturaMediaEntryFilter</code> to <code>ps3filter</code>
 			 * */
-			private function onReady(evt:FlexEvent):void {
-				removeEventListener(FlexEvent.CREATION_COMPLETE, onReady);
-				ps3filter = _readyFilter;
-				_readyFilter = null
+			private function setInitialFilter(evt:FlexEvent):void {
+				removeEventListener(FlexEvent.CREATION_COMPLETE, setInitialFilter);
+				ps3filter = _initialFilter;
+				_initialFilter = null;
 			}
 
 
 			/**
+			 * triggered on the filter's creationComplete event.
 			 * initialize the different filters and panels
 			 * */
 			private function init():void {
-				//if enableCustomData is false and metadata exists remove the metadata filter header
-				setMetadataVisibility();
-
 				_dynamicFilterData = new Object();
-
-				_ready = true;
 				accordion.addEventListener(FilterAccordionHeader.EDIT_CATEGORIES_MODE_EVENT, onEditCategories);
-
-				updateImageButton(schedulingContainer.buttons);
-				updateImageButton(moderationStatusContainer.buttons);
-
+				// flavor params
 				if ((_flavorParams != null) && (_flavorParams.length != 0)) {
 					buildFlavorParamList();
 				}
-
+				// access control
 				if ((accessControlProfiles != null) && (accessControlProfiles.length != 0)) {
 					buildAccessControlList();
 				}
-
+				//if enableCustomData is false and metadata exists remove the metadata filter header
+				setMetadataTabVisibility();
+				// update view
+				validateNow();
+				_created = true;
 			}
 
 
+			/**
+			 * switch between edit / view categories modes
+			 * */
 			private function onEditCategories(evt:Event):void {
 				catTree.isInEditMode = !catTree.isInEditMode;
 				searchBox.enabled = !catTree.isInEditMode;
 				additional.enabled = !catTree.isInEditMode;
-
 				accordion.selectedIndex = catTree.isInEditMode ? 2 : accordion.selectedIndex;
 			}
 
@@ -520,7 +476,7 @@
 
 
 			private function buildeMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO):void {
-				metadataTab.removeAllChildren();
+				metadata.removeAllChildren();
 
 				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
 					//if appear in search is true and we need to create additinal filter
@@ -529,12 +485,12 @@
 						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i]);
 
 						if (container) // if we need to add visual filter
-							metadataTab.addChild(container);
+							metadata.addChild(container);
 					}
 				}
 
 				//if there are no feilds with displayInSearch = true we will hide the metadata accordion header
-				if (metadataTab.numChildren == 0)
+				if (metadata.numChildren == 0)
 					currentState = NO_METADATA;
 
 				//select the last container after rebuild the filter
@@ -546,26 +502,26 @@
 			 * create the flavour buttons group
 			 * */
 			private function buildFlavorParamList():void {
-				transcodingFlavorContainer.removeAllChildren();
+				transcodingFlavor.removeAllChildren();
 				var arr:Array = new Array();
 				for each (var kfp:KalturaFlavorParams in _flavorParams) {
 					arr.push({id: kfp.id, name: kfp.name});
 				}
 				var flvorParamsArr:Array = createButtonsGroup(resourceManager.getString('cms', 'allFlavorsBtn'), "flavorParams", arr, "name", onAutoTitleClick, onAutoMemberClick);
 				_dynamicFilterData["flavorParams"] = flvorParamsArr;
-				injectGroupToContainer(transcodingFlavorContainer, flvorParamsArr);
+				injectGroupToContainer(transcodingFlavor, flvorParamsArr);
 			}
 
 
 			private function buildAccessControlList():void {
-				accessControlContainer.removeAllChildren();
+				accessControl.removeAllChildren();
 				var arr:Array = new Array();
 				for each (var acp:AccessControlProfileVO in accessControlProfiles) {
 					arr.push({id: acp.profile.id, name: acp.profile.name});
 				}
 				var conv_profile:Array = createButtonsGroup(resourceManager.getString('cms', 'allAccessControlBtn'), "convProfile", arr, "name", onAutoTitleClick, onAutoMemberClick);
 				_dynamicFilterData["convProfile"] = conv_profile;
-				injectGroupToContainer(accessControlContainer, conv_profile);
+				injectGroupToContainer(accessControl, conv_profile);
 
 			}
 
@@ -769,10 +725,11 @@
 				super.validateNow();
 				if (categories)
 					catTree.dataProvider = categories;
-				updateImageButton(mediaTypesContainer.buttons);
-				updateImageButton(durationStatusContainer.buttons);
-				updateImageButton(moderationStatusContainer.buttons);
-				updateImageButton(conversionStatusContainer.buttons);
+				updateImageButton(mediaTypes.buttons);
+				updateImageButton(durationStatus.buttons);
+				updateImageButton(moderationStatus.buttons);
+				updateImageButton(conversionStatus.buttons);
+				updateImageButton(scheduling.buttons);
 			}
 
 
@@ -818,29 +775,29 @@
 			 * fill current view with the new filter values
 			 */
 			public function set ps3filter(filterVo:KalturaMediaEntryFilter):void {
-				if (!_ready) {
+				if (!_created) {
 					// filter is not ready for filling the view - wait for it to be ready
-					_readyFilter = filterVo;
-					addEventListener(FlexEvent.CREATION_COMPLETE, onReady);
+					_initialFilter = filterVo;
+					addEventListener(FlexEvent.CREATION_COMPLETE, setInitialFilter);
 					return;
 				}
-				mediaTypesContainer.setFilter(filterVo);
+				mediaTypes.setFilter(filterVo);
 
 				showDatesData(filterVo);
 
 				// duration
-				durationStatusContainer.setFilter(filterVo);
+				durationStatus.setFilter(filterVo);
 
 				// moderation
-				moderationStatusContainer.setFilter(filterVo);
+				moderationStatus.setFilter(filterVo);
 
-				conversionStatusContainer.setFilter(filterVo);
+				conversionStatus.setFilter(filterVo);
 
 				// free text
 				searchBox.setFilter(filterVo);
 
 				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
-					schedulingContainer.allSchedulingBtn.selected = true;
+					scheduling.allSchedulingBtn.selected = true;
 				}
 
 				// set categories here
@@ -887,7 +844,7 @@
 			 * */
 			public function set enableCustomData(value:Boolean):void {
 				_enableCustomData = value;
-				setMetadataVisibility();
+				setMetadataTabVisibility();
 			}
 
 
@@ -899,7 +856,7 @@
 
 			public function set metadataProfile(value:KMCMetadataProfileVO):void {
 				_metadataProfile = value;
-				setMetadataVisibility();
+				setMetadataTabVisibility();
 
 				if (value)
 					buildeMetadataProfileFilter(value);
@@ -974,7 +931,7 @@
 	</mx:Metadata>
 	<mx:states>
 		<mx:State name="noMetadata">
-			<mx:RemoveChild target="{metadataTab}"/>
+			<mx:RemoveChild target="{metadata}"/>
 		</mx:State>
 	</mx:states>
 
@@ -1004,31 +961,31 @@
 				<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
 							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
 			</mx:VBox>
-			<filter:MediaTypesTab id="mediaTypesContainer" width="100%" styleName="typesVBox"
+			<filter:MediaTypesTab id="mediaTypes" width="100%" styleName="typesVBox"
 								  enablelivestream="{enablelivestream}" filterChanged="{onTabChanged(event)}"/>
-			<filter:ConversionStatusTab id="conversionStatusContainer" width="100%" styleName="moderationVBox"
+			<filter:ConversionStatusTab id="conversionStatus" width="100%" styleName="moderationVBox"
 										label="{resourceManager.getString('cms', 'status')}"
 										visible="{showStatusOptions}" includeInLayout="{showStatusOptions}"
 										filterChanged="{onTabChanged(event)}"/>
-			<filter:DurationTab id="durationStatusContainer" width="100%" styleName="durationVBox"
+			<filter:DurationTab id="durationStatus" width="100%" styleName="durationVBox"
 								label="{resourceManager.getString('cms', 'durationLabel')}"
 								filterChanged="{onTabChanged(event)}"/>
-			<filter:SchedulingTab id="schedulingContainer" width="100%" styleName="bottomSchedulingVBox"
+			<filter:SchedulingTab id="scheduling" width="100%" styleName="bottomSchedulingVBox"
 								  filterChanged="{onTabChanged(event)}" visible="{showSchedulingOptions}"
 								  includeInLayout="{showSchedulingOptions}"/>
-			<filter:ModerationStatusTab id="moderationStatusContainer"
+			<filter:ModerationStatusTab id="moderationStatus"
 										label="{resourceManager.getString('cms', 'status')}"
 										filterChanged="{onTabChanged(event)}"
 										showPendingModerationOption="{showPendingModerationOption}"
 										showRejectedOption="{showRejectedOption}"
 										showApprovedOption="{showApprovedOption}" styleName="moderationVBox"
 										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}"/>
-			<mx:VBox id="accessControlContainer" width="100%" styleName="accessControlVBox"
+			<mx:VBox id="accessControl" width="100%" styleName="accessControlVBox"
 					 visible="{showAccessControlOptions}" includeInLayout="{showAccessControlOptions}"/>
-			<mx:VBox id="transcodingFlavorContainer" width="100%" styleName="transcodingFlavorVBox"
+			<mx:VBox id="transcodingFlavor" width="100%" styleName="transcodingFlavorVBox"
 					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}"/>
 		</mx:VBox>
-		<mx:VBox id="metadataTab" label="{resourceManager.getString('cms', 'metadataTab')}" width="100%" height="100%"
+		<mx:VBox id="metadata" label="{resourceManager.getString('cms', 'metadataTab')}" width="100%" height="100%"
 				 styleName="additinalFilterVBox"/>
 		<mx:Canvas id="vbox1" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%" height="100%"
 				   styleName="categoriesTreeVBox">
