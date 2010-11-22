@@ -145,7 +145,7 @@ package flexUnitTests.business
 							        <ui id="content.manage.createRulebasedBtn.label"
 							        	visible="false" includeInLayout="false" />
 							      </permission> ;
-			// no items - regular
+			// no items 
 			var instruction3:XML = <permission text="empty" id="3655">
 							      </permission> ;
 			
@@ -159,12 +159,19 @@ package flexUnitTests.business
 			arr = getInstructions(instruction2);
 			Assert.assertEquals(arr.length,3);
 			//TODO - check if this is OK to asume array order
-			Assert.assertObjectEquals(arr[0].attributes,{enabled:'false'});
 			Assert.assertEquals(arr[0].path,"content.manage.createManualBtn");
-			Assert.assertObjectEquals(arr[1].attributes,{visible:'false',includeInLayout:'false'});
+			Assert.assertObjectEquals(arr[0].attributes,{enabled:'false'});
+			
 			Assert.assertEquals(arr[1].path,"content.manage.createRulebasedBtn");
-			Assert.assertObjectEquals(arr[2].attributes,{visible:'false',includeInLayout:'false'});
+			Assert.assertObjectEquals(arr[1].attributes,{visible:'false',includeInLayout:'false'});
+			
 			Assert.assertEquals(arr[2].path,"content.manage.createRulebasedBtn.label");
+			Assert.assertObjectEquals(arr[2].attributes,{visible:'false',includeInLayout:'false'});
+			
+			arr = getInstructions(instruction3);
+			Assert.assertNull(arr[0]);
+			
+
 
 		}
 	}
