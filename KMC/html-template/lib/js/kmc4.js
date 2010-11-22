@@ -395,10 +395,14 @@ $(window).load(function(){
 				module = hash[0];
 				subtab = hash[1];
 				extra = {};
-				var tmp = hash[2].split("&");
-				for (var i = 0; i<tmp.length; i++) {
-					var tmp2 = tmp[i].split(":");
-					extra[tmp2[0]] = tmp2[1];
+				if (hash[2])
+				{
+					var tmp = hash[2].split("&");
+					for (var i = 0; i<tmp.length; i++) 
+					{
+						var tmp2 = tmp[i].split(":");
+						extra[tmp2[0]] = tmp2[1];
+					}
 				}
 			}
 			return { "moduleName" : module, "subtab" : subtab, "extra" : extra };
