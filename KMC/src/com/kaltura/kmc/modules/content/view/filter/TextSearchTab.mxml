@@ -14,11 +14,11 @@
 			
 			private const MIN_SEARCH_CHARS:int = 3;
 			
-			
 			/**
 			 * regex to test search text validity.
 			 * */
 			private var _invalidCharsRegexp:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
+		
 			
 			public function getFilterString():String {
 				var res:String = '';
@@ -36,45 +36,74 @@
 					searchFilter.text = filterVo.freeText;
 				}
 				else if (filterVo.tagsMultiLikeOr) {
-					//bugfix backwords competability
-					//searchFilter.text = filterVo.tagsMultiLikeOr.split(",").join(" ");
+					// bugfix backwords competability
 					searchFilter.text = filterVo.tagsMultiLikeOr;
 					//for future saving, set the freeTextOr value
 					filterVo.freeText = filterVo.tagsMultiLikeOr;
 				}
-				setSearchButtonAppearance(null);
+				if (filterVo.freeText) {
+					setClearSearchIcon();
+				}
 			}
 			
 			
-			private function updateSearchButtonMode():void {
-				if (!validateSearchText())
-					return;
-				
-				if (searchBtn.data == 'v') {
-					if ((StringUtil.trim(searchFilter.text) != '') && (searchFilter.text != resourceManager.getString('cms', 'searchEntries'))) {
-						searchBtn.data = 'x';
-						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
-					}
-				}
-				else {
+			/**
+			 * when the searcxh text changes, make the button look 
+			 * like magnifier with matching tooltip
+			 * */
+			private function setSearchIcon():void {
+				searchBtn.toolTip = null;
+				searchBtn.selected = false;
+			}
+			
+			
+			/**
+			 * when a search is made, make the button look like "x"
+			 * with matching tooltip
+			 * */
+			private function setClearSearchIcon():void {
+				searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
+				searchBtn.selected = true;
+			}
+			
+			
+			/**
+			 * if legal data, update button and send update event.
+			 * */
+			private function updateFilter():void {
+				// see if need to clear or send search
+				if (searchBtn.selected) {
+					// clear search
 					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
-					searchBtn.data = 'v';
-					searchBtn.toolTip = null;
-				}
-				
-				searchBtn.selected = (searchBtn.data == 'x');
-				if (validateSearchText()) {
+					setSearchIcon();
+					// announce change
 					dispatchEvent(new Event(Filter.FILTER_CHANGED));
 				}
+				else {
+					// if text to search is not valid, do nothing..
+					if (validateSearchText()) {
+						// change icon according to data
+						setClearSearchIcon();
+						// announce change
+						dispatchEvent(new Event(Filter.FILTER_CHANGED));
+					}
+				}
 			}
 			
 			
+			/**
+			 * reset default text
+			 * */
 			private function onFoucsOutSearchEvent(event:FocusEvent):void {
 				if (StringUtil.trim(searchFilter.text) == '') {
 					searchFilter.text = resourceManager.getString('cms', 'searchEntries');
 				}
 			}
 			
+			
+			/**
+			 * remove default text
+			 * */
 			private function onFoucsInSearchEvent(event:FocusEvent):void {
 				if (searchFilter.text == resourceManager.getString('cms', 'searchEntries')) {
 					searchFilter.text = '';
@@ -83,7 +112,7 @@
 			
 			
 			/**
-			 * checks if text contains only valid chars and at least MAX_SEARCH_CHARS characters
+			 * checks if text contains only valid characters and at least MIN_SEARCH_CHARS characters
 			 * */
 			private function validateSearchText():Boolean {
 				var result:Boolean = true;
@@ -99,27 +128,6 @@
 			}
 			
 			
-			private function onSearchEnterClick(event:Event):void {
-				if (!validateSearchText())
-					return;
-				
-				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
-				searchBtn.selected = searchBtn.data == 'x';
-				if (validateSearchText()) {
-					dispatchEvent(new Event(Filter.FILTER_CHANGED));
-				}
-			}
-			
-			
-			private function setSearchButtonAppearance(event:Event):void {
-				if ((StringUtil.trim(searchFilter.text) == '')) {
-					searchBtn.data = 'v';
-				}
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms', 'clearFreeSearchToolTip');
-				searchBtn.selected = (searchBtn.data == 'x');
-			}
-			
 			/**
 			 * empty implementation, this panel doesn't have buttons.
 			 * @inheritDoc
@@ -131,11 +139,11 @@
 			
 		]]>
 	</mx:Script>
-	<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
+	<mx:TextInput id="searchFilter" width="100%" enter="updateFilter()"
 				  text="{resourceManager.getString('cms', 'searchEntries')}" focusIn="onFoucsInSearchEvent(event)"
-				  change='setSearchButtonAppearance(event)' buttonMode="true"
+				  change='setSearchIcon()' buttonMode="true"
 				  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}" styleName="searchTextInput"
 				  focusOut="onFoucsOutSearchEvent(event)"/>
-	<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true" click="updateSearchButtonMode()"
+	<mx:Button id='searchBtn' styleName="searchButton" click="updateFilter()"
 			   buttonMode="true"/>
 </mx:HBox>
