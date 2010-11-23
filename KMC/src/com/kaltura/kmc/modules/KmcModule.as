@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
+	import com.kaltura.kmc.utils.ApplyAttributes;
 	import com.kaltura.kmc.vo.Context;
 	import com.kaltura.vo.KalturaUiConf;
 	
@@ -54,7 +55,10 @@ package com.kaltura.kmc.modules {
 
 		private const FALLBACK_LOCALE:String = "en_US";
 		
-		
+		/**
+		 * ApplyAttributes instance 
+		 */		
+		protected var _applyAttribute:ApplyAttributes = ApplyAttributes.getInstance();
 		/**
 		 * all the flashvars, lowercased with no underscores 
 		 */
