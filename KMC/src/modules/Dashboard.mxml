@@ -17,14 +17,7 @@
 				   xmlns:customizepanel="com.kaltura.kmc.modules.dashboard.components.panels.customizepanel.*" 
 				   xmlns:accountpanel="com.kaltura.kmc.modules.dashboard.components.panels.accountpanel.*"
 				   >
-	<!--mx:states>
-		<mx:State name="firstTimeUserState">
-			<mx:RemoveChild target="{chartspanel1}"/>
-			<mx:AddChild relativeTo="{griditem1}" position="lastChild">
-				<firsttimewelcomepanel:FirstTimeWelcomePanel />
-			</mx:AddChild>
-		</mx:State>
-	</mx:states-->
+
 
 	<mx:Metadata>
 			[ResourceBundle("kdashboard")]
@@ -102,9 +95,9 @@
 				var confFile:XML = new XML(_uiconf.confFile);
 				var links:XMLList = confFile.links.link;
 
-				uploadPnl.quickStartURL = links.(@id == "upload")[0].@path; //_flashvars.uploaddoclink;
-				embedPnl.quickStartURL = links.(@id == "embed")[0].@path; //_flashvars.embeddoclink;
-				customizePnl.quickStartURL = links.(@id == "customize")[0].@path; //_flashvars.customizedoclink;
+				uploadPanel.quickStartURL = links.(@id == "upload")[0].@path; 		//_flashvars.uploaddoclink;
+				embedPanel.quickStartURL = links.(@id == "embed")[0].@path; 		//_flashvars.embeddoclink;
+				customizePanel.quickStartURL = links.(@id == "customize")[0].@path; //_flashvars.customizedoclink;
 
 				DashboardManager.instance.app = this;
 				DashboardManager.instance.getData();
@@ -151,28 +144,18 @@
 				  styleName="titleWelcomeLabelStyle" />
 	</mx:HBox>
 	<mx:HBox width="100%" height="100%" styleName="innerView">
-		<mx:Grid width="100%" height="100%" horizontalGap="4">
-			<mx:GridRow width="100%" height="100%">
-				<mx:GridItem width="65%" height="100%">
-					<uploadpanel:UploadPanel id="uploadPnl" />
-				</mx:GridItem>
-				<mx:GridItem width="35%" height="100%" rowSpan="2" id="griditem1">
-					<chartspanel:ChartsPanel width="100%" height="100%" id="chartspanel1"/>
-				</mx:GridItem>
-			</mx:GridRow>
-			<mx:GridRow width="100%" height="100%">
-				<mx:GridItem width="65%" height="100%">
-					<embedpanel:EmbedPanel id="embedPnl"/>
-				</mx:GridItem>
-			</mx:GridRow>
-			<mx:GridRow width="100%" height="100%">
-				<mx:GridItem width="65%" height="100%">
-					<customizepanel:CustomizePanel id="customizePnl"/>
-				</mx:GridItem>
-				<mx:GridItem width="35%" height="100%">
-					<accountpanel:AccountPanel/>
-				</mx:GridItem>
-			</mx:GridRow>
-		</mx:Grid>
+		
+		<mx:VBox width="65%" height="100%">
+					<uploadpanel:UploadPanel id="uploadPanel" />
+					<embedpanel:EmbedPanel id="embedPanel"/>
+					<customizepanel:CustomizePanel id="customizePanel"/>
+		</mx:VBox>
+		<mx:VBox width="35%" height="100%">
+					<chartspanel:ChartsPanel id="chartsPanel" width="100%" height="65%" />
+					<accountpanel:AccountPanel id="accountPanel" height="35%"/>
+			
+		</mx:VBox>
+		
+
 	</mx:HBox>
 </modules:KmcModule>
