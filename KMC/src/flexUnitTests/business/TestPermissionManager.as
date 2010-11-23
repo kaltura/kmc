@@ -1,12 +1,17 @@
 package flexUnitTests.business
 {
+	import com.kaltura.kmc.business.PermissionManager;
+	
 	import flexunit.framework.Assert;
 	
 	public class TestPermissionManager
 	{		
+		private var pm:PermissionManager = PermissionManager.getInstance();
+		
 		[Before]
 		public function setUp():void
 		{
+			pm.init(TestPermissionParser.test1);
 		}
 		
 		[After]
@@ -25,9 +30,18 @@ package flexUnitTests.business
 		}
 		
 		[Test]
-		public function testApplyPermissions():void
+		public function testInit():void
 		{
-			Assert.fail("Test method Not yet implemented");
+			//test general creation of VOs
+			var arr:Array = pm.instructionVos;
+			Assert.assertEquals(arr.length , 8 );
+			//test permissions
+			arr = pm.permissions;
+			Assert.assertEquals(arr.length , 10 );
+			//test hideTabs
+			arr = pm.hideTabs;
+			Assert.assertEquals(arr.length , 3 );
+
 		}
 	}
 }

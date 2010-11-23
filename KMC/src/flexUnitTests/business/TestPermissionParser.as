@@ -1,6 +1,7 @@
 package flexUnitTests.business
 {
 	import com.kaltura.kmc.business.PermissionsParser;
+	import com.kaltura.kmc.vo.PermissionVo;
 	
 	import flexunit.framework.Assert;
 	
@@ -10,7 +11,7 @@ package flexUnitTests.business
 	{	
 		
 		
-		private	var test1:XML = <root>
+		public static var test1:XML = <root>
 							  <permissions>
 							    <permissionGroup text="Playlist Management">
 							      <permission text="Create Playlists" id="6658">
@@ -88,6 +89,13 @@ package flexUnitTests.business
 			Assert.fail("Test method Not yet implemented");
 		}
 		
+		
+		[Ignore][Test]
+		public function testGetRelevantPermissions():void
+		{
+			Assert.fail("Test method Not yet implemented");
+		}		
+		
 		/**
 		 * The test checks the main parsing function  'parsePermissions'
 		 */
@@ -98,7 +106,7 @@ package flexUnitTests.business
 			//array length
 			Assert.assertEquals(permissionsArray.length, 8);
 			//looking for 2 specific items in the array and checking their attributes: 
-			for each (var o:Object in permissionsArray)
+			for each (var o:PermissionVo in permissionsArray)
 			{
 				//check that content.playlist.createRulebasedBtn has 2 attributes + their values
 				if(o.path == "content.playlist.createRulebasedBtn")
@@ -132,18 +140,18 @@ package flexUnitTests.business
 		{
 			
 			// one item - sub tab
-			var instruction1:XML = <permission text="Moderation" id="4568">
-							        <ui id="content.moderation" remove="true" />
-							      </permission> ;
+			var instruction1:XML = 	<permission text="Moderation" id="4568">
+							        	<ui id="content.moderation" remove="true" />
+							      	</permission> ;
 			
 			// two items - regular
 			var instruction2:XML = <permission text="KCW" id="3321">
-							        <ui id="content.manage.createManualBtn"
-							        	enabled="false" />
-							        <ui id="content.manage.createRulebasedBtn"
-							        	visible="false" includeInLayout="false" />
-							        <ui id="content.manage.createRulebasedBtn.label"
-							        	visible="false" includeInLayout="false" />
+								        <ui id="content.manage.createManualBtn"
+								        	enabled="false" />
+								        <ui id="content.manage.createRulebasedBtn"
+								        	visible="false" includeInLayout="false" />
+								        <ui id="content.manage.createRulebasedBtn.label"
+								        	visible="false" includeInLayout="false" />
 							      </permission> ;
 			// no items 
 			var instruction3:XML = <permission text="empty" id="3655">
@@ -170,9 +178,8 @@ package flexUnitTests.business
 			
 			arr = getInstructions(instruction3);
 			Assert.assertNull(arr[0]);
-			
-
 
 		}
+
 	}
 }
