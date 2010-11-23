@@ -1,4 +1,5 @@
 package com.kaltura.kmc.business {
+	import com.kaltura.kmc.vo.PermissionVo;
 
 	/**
 	 * This parser receives an XML and knows to build instructions.
@@ -7,9 +8,6 @@ package com.kaltura.kmc.business {
 	 *
 	 */
 	public class PermissionsParser {
-
-		private var _permissionXml:XML;
-		private var _permissions:Array = new Array();;
 
 
 		public function PermissionsParser() {
@@ -23,22 +21,19 @@ package com.kaltura.kmc.business {
 		 * @return 	list of instructions in an array
 		 */
 		public function parsePermissions(xml:XML):Array {
-			_permissionXml = xml;
 			var array:Array = new Array();
-			var allPermissions:XMLList = _permissionXml..permission;
+			var allPermissions:XMLList = xml..permission;
 			for each (var permission:XML in allPermissions) {
 				array = array.concat(getInstructions(permission));
-				_permissions.push(permission.@id.toString());
 			}
 			return array;
 		}
 
 
 		/**
-		 * The function receives an XML, parses it and builds an array of objects
-		 * where the id relevant objects and the id is the key
+		 * The function receives an XML, parses it and builds an array of PermissionVo
 		 * @param permissionXml
-		 * @return list of instructions in an array
+		 * @return PermissionVos in an array
 		 */
 		protected function getInstructions(permissionXml:XML):Array {
 			var arr:Array = new Array();
@@ -54,7 +49,7 @@ package com.kaltura.kmc.business {
 				for (var i:uint = 0; i < attributes.length(); i++) {
 					attributesObject[(attributes[i] as XML).localName()] = (attributes[i] as XML).toString();
 				}
-				arr.push({path: uiPath, attributes: attributesObject});
+				arr.push( new PermissionVo(uiPath,attributesObject));
 			}
 			return arr;
 		}
@@ -65,9 +60,9 @@ package com.kaltura.kmc.business {
 		 * from the user because of roles and permissions logic.
 		 * @return	list of tabs and subtabs to hide
 		 */
-		public function getTabsToHide():Array {
+		public function getTabsToHide(permissionXml:XML,permissionsList:Array):Array {
 			var arr:Array = new Array();
-			var uiMapping:XML = _permissionXml..uimapping[0];
+			var uiMapping:XML = permissionXml..uimapping[0];
 			var modules:XMLList = uiMapping..module;
 			//iterate modules 
 			for each (var module:XML in modules) {
@@ -87,7 +82,7 @@ package com.kaltura.kmc.business {
 					for each (var tabPermission:XML in tabsPermissions) {
 						// If one id does not exist in the _permissions - this module 
 						// should not be hidden
-						if (!checkIfPermissionExistInPermissionArray(tabPermission.@id)) {
+						if (!checkIfPermissionExistInPermissionArray(tabPermission.@id , permissionsList)) {
 							//Found one - no need to hide the tab. 
 							hideTab = false;
 							//No need to search for any other permissions
@@ -107,7 +102,7 @@ package com.kaltura.kmc.business {
 						for each (var subTabPermission:XML in subtabPermissions) {
 							//if one id does not exist in the _permissions - this subtab 
 							// should not be hidden
-							if (!checkIfPermissionExistInPermissionArray(subTabPermission.@id)) {
+							if (!checkIfPermissionExistInPermissionArray(subTabPermission.@id ,permissionsList )) {
 								//Found one - no need to hide the tab. 
 								hideSubTab = false;
 								//No need to search for any other permissions
@@ -127,9 +122,9 @@ package com.kaltura.kmc.business {
 			return arr;
 		}
 
-
-		private function checkIfPermissionExistInPermissionArray(id:String):Boolean {
-			for each (var localId:String in _permissions) {
+		
+		protected function checkIfPermissionExistInPermissionArray(id:String , permissionsList:Array):Boolean {
+			for each (var localId:String in permissionsList) {
 				if (localId == id) {
 					return true;
 				}
