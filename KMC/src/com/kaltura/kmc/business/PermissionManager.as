@@ -14,7 +14,7 @@ package com.kaltura.kmc.business
 	public class PermissionManager
 	{
 		
-		
+		//the original XML from the init
 		private var _permissionXml:XML;
 		// list of permissions ids 
 		private var _permissions:Array = new Array();
@@ -24,6 +24,11 @@ package com.kaltura.kmc.business
 		private var _hideTabs:Array;
 		
 	
+		/**
+		 * Get the XML, parse it and keep relevant data in this class 
+		 * @param permissionXml
+		 * 
+		 */		
 		public function init(permissionXml:XML):void
 		{
 			_permissionXml = permissionXml;
@@ -37,7 +42,12 @@ package com.kaltura.kmc.business
 			_hideTabs = permissionParser.getTabsToHide(_permissionXml,_permissions);
 			
 		}
-		
+		/**
+		 * Return only the relevant permission VOs by the component path 
+		 * @param componentPath
+		 * @return 
+		 * 
+		 */		
 		public function getRelevantPermissions(componentPath:String):Array
 		{
 			var arr:Array = new Array();
@@ -54,9 +64,10 @@ package com.kaltura.kmc.business
 		
 		
 		/**
-		 *  
+		 * Search for relevant attributes for this component accourding to path, 
+		 * iterate on them, and try to change their value
 		 * @param startComponent
-		 * @param actions
+		 * @param path
 		 * 
 		 */
 		public function applyAllAttributes(startComponent:Object , path:String):void
@@ -107,25 +118,28 @@ package com.kaltura.kmc.business
 		}
 		
 		/**
-		 * Assign a new value to a property 
-		 * @param o
-		 * @param value
+		 * Assign a new value to a property. This function cast if needed (depend on the 
+		 * target type) to Boolean and to int.
+		 *  
+		 * @param target - the target object
+		 * @param prop - the property name 
+		 * @param value - the new value
 		 * 
 		 */		
-		protected function assignProperty( o:* ,prop:*, value:*):void
+		protected function assignProperty( target:* ,prop:String, value:*):void
 		{
-			if (o[prop] is Boolean)
+			if (target[prop] is Boolean)
 			{
-				o[prop] = CastUtil.castToBoolean(value);
+				target[prop] = CastUtil.castToBoolean(value);
 				return;
 			}
-			if (o[prop] is int)
+			if (target[prop] is int)
 			{
-				o[prop] = (value as int);
+				target[prop] = (value as int);
 				return;
 			}
 			//default behavior
-			o[prop] = value;
+			target[prop] = value;
 		}
 		
 		
