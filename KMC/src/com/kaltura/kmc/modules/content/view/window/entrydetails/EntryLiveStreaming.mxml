@@ -27,6 +27,9 @@
 																		  '500', '650', '800', '950', '1000',
 																		  '1200', '1500', '1800', '2000',
 																		  '2500', '14000']);
+
+			private var pop:SettingsExample;
+			
 			[Bindable]
 			private var _selectedEntry:KalturaLiveStreamAdminEntry;
 			[Bindable]
@@ -115,16 +118,6 @@
 				}
 			}
 
-
-			/**
-			 * returns the full path of the stream.
-			 * the type could be p for primary and b for beckup
-			 * */
-			private function renderUrl(type:String, selectedEntry:String):String {
-				return "rtmp://" + type + ".ep" + selectedEntry + ".i.akamaientrypoint.net/EntryPoint";
-			}
-
-			private var pop:SettingsExample;
 
 
 			private function onRollOver(value:Number):void {
@@ -273,12 +266,11 @@
 
 				//assign outputs 
 				var outputXML:XML = xml.output[0];
-				(outputXML.rtmp.url[0] as XML).appendChild(renderUrl('p', _selectedEntry.streamRemoteId));
+				(outputXML.rtmp.url[0] as XML).appendChild(_selectedEntry.primaryBroadcastingUrl);
 				(outputXML.rtmp.backup_url[0] as
-					XML).appendChild(renderUrl('b', _selectedEntry.streamRemoteId));
+					XML).appendChild(_selectedEntry.secondaryBroadcastingUrl);
 				(outputXML.rtmp.stream[0] as
-					XML).appendChild(_selectedEntry.id + '_%i@' +
-					(_selectedEntry as KalturaLiveStreamAdminEntry).streamRemoteId);
+					XML).appendChild(_selectedEntry.streamName);
 
 				//assign bitrates
 				var bitratesString:String = "";
@@ -323,14 +315,14 @@
 	<mx:HBox width="100%">
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'PrimaryURL')}" width="{_prefixesWidth}"
 				  styleName="drillDownLabel"/>
-		<mx:Label id="primaryUrl" text="{renderUrl('p' , _selectedEntry.streamRemoteId ) }" selectable="true"
+		<mx:Label id="primaryUrl" text="{_selectedEntry.primaryBroadcastingUrl}" selectable="true"
 				  width="{_broadcastingWidth}"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%">
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'BackupURL')}" width="{_prefixesWidth}"
 				  styleName="drillDownLabel"/>
-		<mx:Label id="backupUrl" text="{renderUrl('b' , _selectedEntry.streamRemoteId)}" selectable="true"
+		<mx:Label id="backupUrl" text="{_selectedEntry.secondaryBroadcastingUrl}" selectable="true"
 				  width="{_broadcastingWidth}"/>
 		<mx:Spacer width="30"/>
 		<mx:Button styleName="help" click="{onRollOver(1)}" buttonMode="true"/>
@@ -340,7 +332,7 @@
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'streamName')}" width="{_prefixesWidth}"
 				  styleName="drillDownLabel"/>
 		<mx:Label id="streamName"
-				  text="{_selectedEntry.id+'_%i@'+(_selectedEntry as KalturaLiveStreamAdminEntry).streamRemoteId}"
+				  text="{_selectedEntry.streamName}"
 				  selectable="true" width="{_broadcastingWidth}"/>
 	</mx:HBox>
 
