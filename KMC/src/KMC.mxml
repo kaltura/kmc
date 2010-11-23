@@ -11,6 +11,7 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.business.PermissionsParser;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -86,6 +87,14 @@
 			 * KMC version
 			 * */
 			public var VERSION:String = "1.0.0";
+			
+			
+			
+			/**
+			 * Singletone PermissionManager
+			 **/
+			
+			public var permissionManager:PermissionManager  = PermissionManager.getInstance();
 
 
 			// ==============================================================================
@@ -176,11 +185,11 @@
 				var mr:MultiRequest = new MultiRequest();
 
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
-				//var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
+				var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
 				mr.addAction(uiconf);
-				//mr.addAction(uiconf2);
+				mr.addAction(uiconf2);
 				_modelLocator.kalturaClient.post(mr);
 			}
 
@@ -226,12 +235,8 @@
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
 				// permissions:
-				//var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
-				//var parser:PermissionsParser = new PermissionsParser();
-				//_modelLocator.permissionManager.permissions = parser.parsePermissions(permissionXml);
-
-				//TODO . get user's permissions, substract and apply 
-				//var hideTabsArray:Array = parser.getTabsToHide();
+				var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
+				permissionManager.init(permissionXml);
 
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
