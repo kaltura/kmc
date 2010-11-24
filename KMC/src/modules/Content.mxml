@@ -15,6 +15,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.google.analytics.AnalyticsTracker;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
@@ -25,8 +26,10 @@
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.utils.StringUtil;
@@ -41,10 +44,10 @@
 			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDetailsWin;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
-			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.utils.SoManager;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
@@ -57,14 +60,12 @@
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			
 			import mx.binding.utils.BindingUtils;
-			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.containers.TitleWindow;
 			import mx.controls.Alert;
 			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
-			import mx.events.ItemClickEvent;
 			import mx.managers.CursorManager;
 			import mx.managers.PopUpManager;
 			import mx.utils.Base64Decoder;
@@ -119,7 +120,7 @@
 			 * placeholder for data received via showSubtab().
 			 * when putting things on this object one should make sure he doesn't override 
 			 * irrelevant vars (i.e., don't change the object, add attributes). 
-			 * attributes of this object are lower camel cased with no underscores.
+			 * attributes of this object are lower camel cased with no underscores by convention.
 			 * */
 			protected var _attic:Object;
 			
@@ -234,6 +235,40 @@
 				} else {
 					manage.init(kmef);
 				}
+				// if there is entryid to start with, open the entry drilldown.
+				if (_attic.entryid) {
+					// get the entry
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _attic.entryid);
+					cgEvent.dispatch();
+				}
+			}
+			
+			
+			/**
+			 * start the sequence of commands which will end in opening drilldown 
+			 * window for the given entry.
+			 * @param entry		the entry to drill into.
+			 * */
+			public function requestEntryDrilldown(entry:KalturaBaseEntry):void {
+				var cgEvent:CairngormEvent;
+				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
+				cgEvent.dispatch();
+				if (entry is KalturaPlaylist) {
+					//switch manual / rule base
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
+						// manual list
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+						cgEvent.dispatch();
+					}
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+						cgEvent.dispatch();
+					}
+				}
+				else {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+					cgEvent.dispatch();
+				}
 			}
 
 
@@ -247,6 +282,7 @@
 				Alert.okLabel = resourceManager.getString('cms', 'ok');
 				Alert.cancelLabel = resourceManager.getString('cms', 'cancel');
 			}
+			
 			
 			/**
 			 * creates a KalturaMediaEntryFilter from encoded data
@@ -812,7 +848,7 @@
 			/**
 			 * initialize the selected view
 			 * */
-			protected function initSelected(event:IndexChangedEvent):void {
+			protected function initSelectedTab(event:IndexChangedEvent):void {
 				// initialize the new panel with filter saved in the attic, if any.
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_attic.kmef);
 			}
@@ -833,7 +869,7 @@
 		</mx:HBox>
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
-					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelected(event)">
+					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
 							 filterModel="{_model.filterModel}"/>
 			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"

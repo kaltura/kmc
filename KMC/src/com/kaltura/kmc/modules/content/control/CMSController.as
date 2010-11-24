@@ -1,9 +1,9 @@
 package com.kaltura.kmc.modules.content.control
 {
 	import com.adobe.cairngorm.control.FrontController;
+	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.events.*;
-	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 
 	public class CMSController extends FrontController
@@ -20,6 +20,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( SearchEvent.SEARCH_PLAYLIST , ListPlaylistCommand );
 			
 			//Entry Event
+			addCommand( EntryEvent.GET_ENTRY , GetSingleEntryCommand );
 			addCommand( EntryEvent.SET_SELECTED_ENTRY , SetSelectedEntryCommand );
 			addCommand( EntryEvent.ADD_CHECKED_ENTRY , AddCheckedEntryCommand );
 			addCommand( EntryEvent.REMOVE_CHECKED_ENTRY , RemoveCheckedEntryCommand   );	

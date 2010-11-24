@@ -19,19 +19,29 @@ package com.kaltura.kmc.modules.content.events
 		public static const GET_RULE_BASED_PLAYLIST : String = "content_getRuleBasedPlaylist";
 		public static const RESET_RULE_BASED_DATA : String = "content_resetRuleBasedData";
 		public static const PREVIEW : String = "content_preview";
+		public static const GET_ENTRY : String = "content_get_entry";
+		
 		
 		private var _entryVo : KalturaBaseEntry;
+		private var _entryId : String;
 		
-		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, entryId:String = '',  bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			_entryVo = entryVo;
+			_entryId = entryId;
 		}
 
 		public function get entryVo():KalturaBaseEntry
 		{
 			return _entryVo;
 		}
+
+		public function get entryId():String
+		{
+			return _entryId;
+		}
+
 
 	}
 }

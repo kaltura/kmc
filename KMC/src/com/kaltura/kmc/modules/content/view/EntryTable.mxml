@@ -212,13 +212,11 @@
 			public function openEditEntry(entry:Object):void {
 				if (!showLinks)
 					return;
-
-
 				if (entry) {
 					var cgEvent:CairngormEvent;
+					cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry);
+					cgEvent.dispatch();
 					if (entry is KalturaPlaylist) {
-						cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry);
-						cgEvent.dispatch();
 						//switch manual / rule base
 						if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
 							// manual list
@@ -232,9 +230,6 @@
 						}
 					}
 					else {
-						cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry);
-						cgEvent.dispatch();
-
 						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
 						cgEvent.dispatch();
 					}
