@@ -18,9 +18,9 @@ package com.kaltura.kmc.modules.analytics.vo
 		public function FilterVo()
 		{
 			var today : Date = new Date();
-			var todaysHourInMiliSeconds : Number = (((today.hours)*60 + today.minutes)*60 + today.seconds)*1000 + today.milliseconds;
-			fromDate= new Date( Number(today.time - todaysHourInMiliSeconds) - millisecondsPerDay*31);
-			toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - millisecondsPerDay );
+			var todaysHourInMiliSeconds : Number = (((today.hoursUTC)*60 + today.minutesUTC)*60 + today.secondsUTC)*1000 + today.millisecondsUTC;
+			fromDate = new Date( today.time - todaysHourInMiliSeconds - millisecondsPerDay*31);
+			toDate = new Date( today.time - todaysHourInMiliSeconds - millisecondsPerDay );
 		}
 	}
 }

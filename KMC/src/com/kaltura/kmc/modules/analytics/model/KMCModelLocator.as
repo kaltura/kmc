@@ -20,11 +20,6 @@ package com.kaltura.kmc.modules.analytics.model
 	{
 		
 		/**
-		 * 6 hours * 60 min * 60 sec = 21600
-		 */		
-		public const KALTURA_OFFSET : Number = 21600;
-		
-		/**
 		 * the hour 23:59 in seconds
 		 */		
 		public const END_OF_DAY_IN_SECONDS : Number = 86399; 

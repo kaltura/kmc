@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
 	<mx:Script>
-		<![CDATA[			
+		<![CDATA[
 			import mx.events.CollectionEvent;
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
@@ -15,295 +15,254 @@
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import mx.events.ListEvent;
 			import mx.resources.ResourceManager;
-			
-			public static const APPLY : String = "apply";
-			public static const ONE_DAY : Number = 1000 * 60 * 60 * 24;
-			public var objectIds : String = '';
-			[Bindable]private var selectedCategoriesArr:ArrayCollection = new ArrayCollection();
-			[Bindable] private var _filterVo : FilterVo;
-			
+
+			public static const APPLY:String = "apply";
+			public static const ONE_DAY:Number = 1000 * 60 * 60 * 24;
+			public var objectIds:String = '';
+			[Bindable]
+			private var selectedCategoriesArr:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var _filterVo:FilterVo;
+
+
 			/**
-			 * 
+			 *
 			 * @param filterVo is the current FilterVO that will be applied on the data
-			 * 
-			 */			
-			public function set filterVo( filterVo : FilterVo ) : void 
-			{ 
-				_filterVo = filterVo; 
+			 *
+			 */
+			public function set filterVo(filterVo:FilterVo):void {
+				_filterVo = filterVo;
 				init();
 			}
-			
+
+
 			/**
-			 * 
+			 *
 			 * @return filterVO the current FilterVO that will be applied on the data
-			 * 
-			 */			
-			public function get filterVo() : FilterVo { return _filterVo; }
-			
-			[Bindable] private var _dateRange : Array = [
-															ResourceManager.getInstance().getString('analytics', 'yesterday'),  
-															ResourceManager.getInstance().getString('analytics', 'last7Days'),
-															ResourceManager.getInstance().getString('analytics', 'thisWeek'),
-															ResourceManager.getInstance().getString('analytics', 'lastWeek'),
-															ResourceManager.getInstance().getString('analytics', 'last30Days'),
-															ResourceManager.getInstance().getString('analytics', 'thisMonth'),
-															ResourceManager.getInstance().getString('analytics', 'lastMonth'),
-															ResourceManager.getInstance().getString('analytics', 'last12Months'),
-															ResourceManager.getInstance().getString('analytics', 'thisYear'),
-															ResourceManager.getInstance().getString('analytics', 'custom')
-														 ];
-														 
-			[Bindable] public var dateOnlyFlag : Boolean = false;
-			[Bindable] public var showDrillDownNav : Boolean = false;
-			
-			private var _oldToDate : Date;
-			private var _oldFromDate : Date;
-			
+			 *
+			 */
+			public function get filterVo():FilterVo {
+				return _filterVo;
+			}
+
+			[Bindable]
+			private var _dateRange:Array = [ResourceManager.getInstance().getString('analytics', 'yesterday'), ResourceManager.getInstance().getString('analytics', 'last7Days'), ResourceManager.getInstance().getString('analytics', 'thisWeek'), ResourceManager.getInstance().getString('analytics', 'lastWeek'), ResourceManager.getInstance().getString('analytics', 'last30Days'), ResourceManager.getInstance().getString('analytics', 'thisMonth'), ResourceManager.getInstance().getString('analytics', 'lastMonth'), ResourceManager.getInstance().getString('analytics', 'last12Months'), ResourceManager.getInstance().getString('analytics', 'thisYear'), ResourceManager.getInstance().getString('analytics', 'custom')];
+
+			[Bindable]
+			public var dateOnlyFlag:Boolean = false;
+			[Bindable]
+			public var showDrillDownNav:Boolean = false;
+
+			private var _oldToDate:Date;
+			private var _oldFromDate:Date;
+
+
 			//Private Functions	
-			private function init() : void
-			{
-				if(this.visible)
-				{
-					if(dateCb) dateCb.selectedItem = _filterVo.selectedDate;
+			private function init():void {
+				if (this.visible) {
+					if (dateCb)
+						dateCb.selectedItem = _filterVo.selectedDate;
 					_oldFromDate = _filterVo.fromDate;
 					_oldToDate = _filterVo.toDate;
-					
-					if(_filterVo.categories == null)
-					{
+
+					if (_filterVo.categories == null) {
 						selectedCategoriesArr = new ArrayCollection();
 					}
-					else
-					{
+					else {
 						selectedCategoriesArr = new ArrayCollection(_filterVo.categories.split(','));
 					}
 					onCategoriesChange();
 				}
 				selectedCategoriesArr.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCategoriesChange);
 			}
-			
+
+
 			/**
 			 * This is an event handler that will be called whenever the "fromDate" DateField changes
 			 * @param event is a CalendarLayoutChangeEvent that holds the new date.
-			 * 
-			 */			
-			private function fromDateChanged( event : CalendarLayoutChangeEvent ) : void
-			{
-				if( toDate.selectedDate && event.newDate > toDate.selectedDate )
-				{
+			 */
+			private function fromDateChanged(event:CalendarLayoutChangeEvent):void {
+				// see this is a legal date
+				if (toDate.selectedDate && event.newDate > toDate.selectedDate) {
 					_filterVo.fromDate = _oldFromDate;
-					fromDate.text =  (_filterVo.fromDate.month+1)+"/"+_filterVo.fromDate.date+"/"+_filterVo.fromDate.fullYear;
+					fromDate.text = (_filterVo.fromDate.month + 1) + "/" + _filterVo.fromDate.date + "/" + _filterVo.fromDate.fullYear;
 					Alert.show(resourceManager.getString('analytics', 'fromToDateAlert'));
-					return;	
-				}	
-			
-				_filterVo.fromDate =  new Date(Number(event.newDate.time - (event.newDate.timezoneOffset*60*1000))); // converts event.newDate to universal time
-				_oldFromDate = _filterVo.fromDate; //event.newDate;
+					return;
+				}
+
+				// save the new date
+				_filterVo.fromDate = new Date(Number(event.newDate.time - event.newDate.timezoneOffset * 60000));
+				_oldFromDate = _filterVo.fromDate;
 				changeRangeByDate();
 			}
-			
+
+
 			/**
 			 * This is an event handler that will be called whenever the "toDate" DateField changes
 			 * @param event is a CalendarLayoutChangeEvent that holds the new date.
-			 * 
-			 */			
-			private function toDateChanged( event : CalendarLayoutChangeEvent ) : void
-			{
-				if( fromDate.selectedDate && event.newDate < fromDate.selectedDate )
-				{
+			 *
+			 */
+			private function toDateChanged(event:CalendarLayoutChangeEvent):void {
+				// see this is a legal date
+				if (fromDate.selectedDate && event.newDate < fromDate.selectedDate) {
 					_filterVo.toDate = _oldToDate;
-					toDate.text = (_filterVo.fromDate.month+1)+"/"+_filterVo.toDate.date+"/"+_filterVo.toDate.fullYear;
-					Alert.show(resourceManager.getString('analytics', 'fromToDateAlert'));	
+					toDate.text = (_filterVo.fromDate.month + 1) + "/" + _filterVo.toDate.date + "/" + _filterVo.toDate.fullYear;
+					Alert.show(resourceManager.getString('analytics', 'fromToDateAlert'));
 					return;
 				}
-				_filterVo.toDate =new Date(Number(event.newDate.time - (event.newDate.timezoneOffset*60*1000)));
-				_oldToDate = _filterVo.toDate;//event.newDate;	
+				// save the new date
+				_filterVo.toDate = new Date(Number(event.newDate.time - event.newDate.timezoneOffset * 60000 + ONE_DAY - 1000));
+				_oldToDate = _filterVo.toDate;
 				changeRangeByDate();
 			}
-			
+
+
 			/**
-			 * checks the current range between "fromDate" and "toDate" and updates "dateCB" ComboBox accordingly. 
-			 * 
-			 */			
-			private function changeRangeByDate() : void
-			{
-				var curDate : Date = new Date();
-				var todaysHourInMiliSeconds : Number = (((curDate.hoursUTC)*60 + curDate.minutesUTC)*60 + curDate.secondsUTC)*1000 + curDate.millisecondsUTC;
-				var today : Date = new Date(Number(curDate.time - todaysHourInMiliSeconds - ONE_DAY));
-				
-				if( today.time - _filterVo.fromDate.time >= ONE_DAY && today.time - filterVo.fromDate.time < ONE_DAY*2 &&
-					today.time - _filterVo.toDate.time >= 0 && today.time - filterVo.toDate.time <= ONE_DAY)
-				{
+			 * checks the current range between "fromDate" and "toDate" and updates "dateCB" ComboBox accordingly.
+			 *
+			 */
+			private function changeRangeByDate():void {
+				var curDate:Date = new Date();
+				var todaysHourInMiliSeconds:Number = (((curDate.hoursUTC) * 60 + curDate.minutesUTC) * 60 + curDate.secondsUTC) * 1000 + curDate.millisecondsUTC;
+				var today:Date = new Date(Number(curDate.time - todaysHourInMiliSeconds - ONE_DAY));
+
+				if (today.time - _filterVo.fromDate.time >= ONE_DAY && today.time - filterVo.fromDate.time < ONE_DAY * 2 && today.time - _filterVo.toDate.time >= 0 && today.time - filterVo.toDate.time <= ONE_DAY) {
 					dateCb.selectedItem = resourceManager.getString('analytics', 'yesterday');
 				}
-				else if( today.time - _filterVo.fromDate.time >= ONE_DAY*6 && today.time - _filterVo.fromDate.time < ONE_DAY*7 && 
-						 today.time - _filterVo.toDate.time >= 0 && today.time - toDate.selectedDate.time <= ONE_DAY  )
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'last7Days');				
+				else if (today.time - _filterVo.fromDate.time >= ONE_DAY * 6 && today.time - _filterVo.fromDate.time < ONE_DAY * 7 && today.time - _filterVo.toDate.time >= 0 && today.time - toDate.selectedDate.time <= ONE_DAY) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last7Days');
 				}
-				else if( today.time - _filterVo.fromDate.time >= ((_filterVo.toDate.day) * ONE_DAY) && 
-						 today.time - _filterVo.fromDate.time < ((_filterVo.toDate.day+1) * ONE_DAY) &&
-						 today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY )
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'thisWeek');	
+				else if (today.time - _filterVo.fromDate.time >= ((_filterVo.toDate.day) * ONE_DAY) && today.time - _filterVo.fromDate.time < ((_filterVo.toDate.day + 1) * ONE_DAY) && today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisWeek');
 				}
-				else if( today.time - _filterVo.fromDate.time >= 7*ONE_DAY && today.time - _filterVo.fromDate.time < 14*ONE_DAY &&
-						_filterVo.fromDate.dayUTC == 0 && _filterVo.toDate.dayUTC == 6)
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'lastWeek');	
+				else if (today.time - _filterVo.fromDate.time >= 7 * ONE_DAY && today.time - _filterVo.fromDate.time < 14 * ONE_DAY && _filterVo.fromDate.dayUTC == 0 && _filterVo.toDate.dayUTC == 6) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'lastWeek');
 				}
-				else if(today.time - _filterVo.fromDate.time >= ONE_DAY*30 && today.time - _filterVo.fromDate.time < ONE_DAY*31 && 
-						today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY)
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'last30Days');	
+				else if (today.time - _filterVo.fromDate.time >= ONE_DAY * 30 && today.time - _filterVo.fromDate.time < ONE_DAY * 31 && today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last30Days');
 				}
-				else if(today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY &&
-						_filterVo.fromDate.fullYearUTC == _filterVo.toDate.fullYearUTC && _filterVo.fromDate.monthUTC == _filterVo.toDate.monthUTC && _filterVo.fromDate.dateUTC == 1)
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'thisMonth');	
+				else if (today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY && _filterVo.fromDate.fullYearUTC == _filterVo.toDate.fullYearUTC && _filterVo.fromDate.monthUTC == _filterVo.toDate.monthUTC && _filterVo.fromDate.dateUTC == 1) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisMonth');
 				}
-				else if( _filterVo.toDate.monthUTC+1==today.monthUTC && _filterVo.fromDate.dateUTC == 1 &&
-						_filterVo.fromDate.monthUTC+1==today.monthUTC)  
-				{
-					var tempDate:Date  = new Date(today.time - (today.dateUTC*ONE_DAY) );
+				else if (_filterVo.toDate.monthUTC + 1 == today.monthUTC && _filterVo.fromDate.dateUTC == 1 && _filterVo.fromDate.monthUTC + 1 == today.monthUTC) {
+					var tempDate:Date = new Date(today.time - (today.dateUTC * ONE_DAY));
 					if (_filterVo.toDate.dateUTC == tempDate.dateUTC)
 						dateCb.selectedItem = resourceManager.getString('analytics', 'lastMonth');
 					else
-						dateCb.selectedItem = ResourceManager.getInstance().getString('analytics', 'custom');	
+						dateCb.selectedItem = ResourceManager.getInstance().getString('analytics', 'custom');
 				}
-			//	else if(today.time - toDate.selectedDate.time > ONE_DAY && today.time - toDate.selectedDate.time < ONE_DAY*2 && 
-			//			toDate.selectedDate.fullYear+1 == fromDate.selectedDate.fullYear )
-				else if(_filterVo.toDate.fullYearUTC == _filterVo.fromDate.fullYearUTC+1 && 
-						 _filterVo.toDate.monthUTC == _filterVo.fromDate.monthUTC && _filterVo.toDate.dateUTC==_filterVo.fromDate.dateUTC-1 &&
-						today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY)
-				{
-					dateCb.selectedItem = resourceManager.getString('analytics', 'last12Months');	
+				else if (_filterVo.toDate.fullYearUTC == _filterVo.fromDate.fullYearUTC + 1 && _filterVo.toDate.monthUTC == _filterVo.fromDate.monthUTC && _filterVo.toDate.dateUTC == _filterVo.fromDate.dateUTC - 1 && today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'last12Months');
 				}
-				else if(today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY && 
-						today.fullYearUTC == _filterVo.fromDate.fullYearUTC &&  _filterVo.fromDate.monthUTC == 0 &&  _filterVo.fromDate.dateUTC == 1)
-				{
-					//_filterVo.toDate = new Date( today.time - ONE_DAY);
-					//_filterVo.fromDate = new Date( today.fullYear ,  0 , 1 );
-					dateCb.selectedItem = resourceManager.getString('analytics', 'thisYear');	
+				else if (today.time - _filterVo.toDate.time >= 0 && today.time - _filterVo.toDate.time < ONE_DAY && today.fullYearUTC == _filterVo.fromDate.fullYearUTC && _filterVo.fromDate.monthUTC == 0 && _filterVo.fromDate.dateUTC == 1) {
+					dateCb.selectedItem = resourceManager.getString('analytics', 'thisYear');
 				}
-				else
-				{
+				else {
 					dateCb.selectedItem = ResourceManager.getInstance().getString('analytics', 'custom');
 				}
-				
+
 				dispatchEvent(new Event('apply')); //apply
 			}
-			
+
+
 			/**
-			 * 
-			 * This is an event handler that will be called whenever the "dateCb" ComboBox changes
-			 * @param event is a ListEvent
-			 */			
-			private function changeDateByRange( event : ListEvent  ) : void
-			{
-				var today : Date = new Date();
-				var todaysHourInMiliSeconds : Number = (((today.hoursUTC)*60 + today.minutesUTC)*60 + today.secondsUTC)*1000 + today.millisecondsUTC;
-				var i:int=0;
-				var index:int=0;
-				
+
+			 * This is an event handler that will be called whenever the "dateCb" ComboBox changes.
+			 * it sets to- and from- dates to the filter VO and dispatches an "apply" event.
+			 * @param event	ListEvent
+			 */
+			private function changeDateByRange(event:ListEvent):void {
+				var today:Date = new Date();
+				var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
+				var i:int = 0;
+				var index:int = 0;
+
 				_filterVo.selectedDate = (event.target as ComboBox).selectedItem.toString();
-				
-				switch( (event.target as ComboBox).selectedItem.toString() )
-				{
-					case resourceManager.getString('analytics', 'yesterday'): 			
-						//_filterVo.toDate = new Date( today.time - ONE_DAY );
-						//_filterVo.fromDate = new Date( today.time - 2*ONE_DAY );
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
-						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 2*ONE_DAY );
-					break;
+
+				switch ((event.target as ComboBox).selectedItem.toString()) {
+					case resourceManager.getString('analytics', 'yesterday'):
+						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 2 * ONE_DAY);
+
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
 					case resourceManager.getString('analytics', 'last7Days'):
-						//_filterVo.toDate = new Date( today.time - ONE_DAY);
-						//_filterVo.fromDate = new Date( today.time - ONE_DAY*7);
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
-						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 7*ONE_DAY );
-					break;
+						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 7 * ONE_DAY);
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
 					case resourceManager.getString('analytics', 'thisWeek'):
-						// _filterVo.toDate = new Date( today.time - ONE_DAY);
-						// _filterVo.fromDate = new Date( today.time - ( (_filterVo.toDate.day+1) * ONE_DAY) );
-					    _filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
-						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - (_filterVo.toDate.day+1)*ONE_DAY );
-					break;
-					case resourceManager.getString('analytics', 'lastWeek'): 
-						// _filterVo.toDate = new Date( today.time - ( (today.day+1)  * ONE_DAY ) );
-						// _filterVo.fromDate = new Date(  _filterVo.toDate.time - 6*ONE_DAY );
-						 _filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - (today.day+1)*ONE_DAY);
-						_filterVo.fromDate = new Date( Number( _filterVo.toDate.time) - 6*ONE_DAY );		
-					break;
+						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - (_filterVo.toDate.day + 1) * ONE_DAY);
+
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
+					case resourceManager.getString('analytics', 'lastWeek'):
+						_filterVo.fromDate = new Date(_filterVo.toDate.time - 6 * ONE_DAY);
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - (today.day + 1) * ONE_DAY);
+
+						break;
 					case resourceManager.getString('analytics', 'last30Days'):
-						//_filterVo.toDate = new Date( today.time - ONE_DAY);
-						//_filterVo.fromDate = new Date( today.time - 30*ONE_DAY );
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
-						_filterVo.fromDate = new Date( Number(today.time - todaysHourInMiliSeconds) - 31*ONE_DAY );
-					break;
-					case resourceManager.getString('analytics', 'last12Months'): 
-						//_filterVo.toDate = new Date( today.time - ONE_DAY);
-						//_filterVo.fromDate = new Date( today.fullYear-1 ,  today.month , today.date );
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
+						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 31 * ONE_DAY);
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
+					case resourceManager.getString('analytics', 'last12Months'):
 						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC - 1, today.monthUTC, today.dateUTC);
-					break;
-					case resourceManager.getString('analytics', 'thisMonth'): 
-						//_filterVo.toDate = new Date( today.time - ONE_DAY);
-						//_filterVo.fromDate = new Date( today.fullYear ,  today.month , 1 );
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
+					case resourceManager.getString('analytics', 'thisMonth'):
 						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC, today.monthUTC, 1);
-					break;
-					case resourceManager.getString('analytics', 'lastMonth'): 
-						//_filterVo.toDate = new Date( today.time - (ONE_DAY * today.date));
-						//_filterVo.fromDate = new Date( _filterVo.toDate.fullYear ,  _filterVo.toDate.month , 1 );
-						_filterVo.toDate = new Date( Number( today.time - todaysHourInMiliSeconds) -(ONE_DAY * today.date));
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
+					case resourceManager.getString('analytics', 'lastMonth'):
 						_filterVo.fromDate = adjustDateToUTC(_filterVo.toDate.fullYearUTC, _filterVo.toDate.monthUTC, 1);
-					break;
-					case resourceManager.getString('analytics', 'thisYear'): 
-						//_filterVo.toDate = new Date( today.time - ONE_DAY);
-						//_filterVo.fromDate = new Date( today.fullYear ,  0 , 1 );
-						_filterVo.toDate = new Date( Number(today.time - todaysHourInMiliSeconds) - ONE_DAY);
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - (ONE_DAY * today.date));
+						break;
+					case resourceManager.getString('analytics', 'thisYear'):
 						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC, 0, 1);
-					break;
-					default: return; break;
+						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						break;
+					default:
+						return;
+						break;
 				}
-				
-				dispatchEvent(new Event('apply')); //apply
-			}	
-			
+
+				dispatchEvent(new Event('apply')); 
+			}
+
+
 			/**
-			 * 
+			 *
 			 * converts the date to be according to universal time and not local time
-			 * @return convertedDate the new date according to universal time 
-			 */	
-			private function adjustDateToUTC(fullYearUTC:Number, mothUTC:Number, dayUTC:Number) : Date 
-			{
-				var tempDate:Date = new Date( fullYearUTC ,  mothUTC , dayUTC );
-				var convertedDate:Date = new Date(Number(tempDate.time - (tempDate.timezoneOffset*60*1000)));
-				
+			 * @return convertedDate the new date according to universal time
+			 */
+			private function adjustDateToUTC(fullYearUTC:Number, mothUTC:Number, dayUTC:Number):Date {
+				// arguments to DAte() are assumed to be in local time.
+				var tempDate:Date = new Date(fullYearUTC, mothUTC, dayUTC);
+				var convertedDate:Date = new Date(Number(tempDate.time - (tempDate.timezoneOffset * 60 * 1000)));
+
 				return convertedDate;
 			}
-			
+
+
 			/*private function checkDisableTextField() : void
-			{
-				if(!searchInTags.selected && !searchInAdminTags.selected)
-				{
-					_filterVo.keywords = searchTerm.text = "";
-					searchTerm.enabled = false;
-				}
-				else
-					searchTerm.enabled = true;
-			}*/
-			
-			private function onDrillDown( newState : int ) : void
-			{
-				var drillDownEvent : DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , objectIds , newState); //data.entry_id
+			   {
+			   if(!searchInTags.selected && !searchInAdminTags.selected)
+			   {
+			   _filterVo.keywords = searchTerm.text = "";
+			   searchTerm.enabled = false;
+			   }
+			   else
+			   searchTerm.enabled = true;
+			 }*/
+
+			private function onDrillDown(newState:int):void {
+				var drillDownEvent:DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN, objectIds, newState); //data.entry_id
 				drillDownEvent.dispatch();
 			}
-			
-			private function onCategoriesTreeOpen(event:Event):void
-			{
+
+
+			private function onCategoriesTreeOpen(event:Event):void {
 				var categoryPopUp:CategoriesTreePopUp = new CategoriesTreePopUp();
 				categoryPopUp.selectedCategoriesArr = selectedCategoriesArr;
-				categoryPopUp.addEventListener( "filterByCategories" , onCategoriesSelected );
+				categoryPopUp.addEventListener("filterByCategories", onCategoriesSelected);
 				var p:Point = new Point(categoriesBox.x, categoriesBox.y);
 				var np:Point = contentToGlobal(p);
 				categoryPopUp.x = np.x + categoriesBox.width - 5;
@@ -311,107 +270,116 @@
 				PopUpManager.addPopUp(categoryPopUp, this as DisplayObject, true);
 				PopUpManager.centerPopUp(categoryPopUp);
 			}
-			
-			private function onCategoriesSelected( event : Event ) : void
-			{
-				if( (event.target as CategoriesTreePopUp).selectedCategoriesArr.length > 0)
-					dispatchEvent( new Event('apply') );
+
+
+			private function onCategoriesSelected(event:Event):void {
+				if ((event.target as CategoriesTreePopUp).selectedCategoriesArr.length > 0)
+					dispatchEvent(new Event('apply'));
 				//else
-					//Alert.show( resourceManager.getString('cms','');
+				//Alert.show( resourceManager.getString('cms','');
 			}
-			
-			private function onAllCategoriesSelection(event:Event):void
-			{
+
+
+			private function onAllCategoriesSelection(event:Event):void {
 				selectedCategoriesArr.removeAll();
 			}
-			
-			private function onCategoriesChange(event:Event=null):void
-			{
-				if(selectedCategoriesArr.length == 0)
-				{
+
+
+			private function onCategoriesChange(event:Event = null):void {
+				if (selectedCategoriesArr.length == 0) {
 					allCategoriesBtn.setStyle("color", "#000000");
 					allCategoriesBtn.setStyle("rollOverColor", "#000000");
 					allCategoriesBtn.setStyle("textDecoration", "none");
-					allCategoriesBtn.toolTip = resourceManager.getString('analytics','allCategoriesSelectedToolTip');
-					allCategoriesBtn.removeEventListener( MouseEvent.CLICK , allCategoriesClick);
+					allCategoriesBtn.toolTip = resourceManager.getString('analytics', 'allCategoriesSelectedToolTip');
+					allCategoriesBtn.removeEventListener(MouseEvent.CLICK, allCategoriesClick);
 					//selectedCategoriesBtn.setStyle("color", "#bcbffa");
-					selectedCategoriesBtn.label = resourceManager.getString('analytics','selectCategories');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics','selectCategoriesToolTip');
+					selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectCategories');
+					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectCategoriesToolTip');
 					_filterVo.categories = null;
-					
+
 				}
-				else
-				{
+				else {
 					//allCategoriesBtn.setStyle("color", "#bcbffa");
-					allCategoriesBtn.clearStyle( "color" );
-					allCategoriesBtn.clearStyle( "rollOverColor" );
-					allCategoriesBtn.toolTip = resourceManager.getString('analytics','allCategoriesToolTip');
-					allCategoriesBtn.addEventListener( MouseEvent.CLICK , allCategoriesClick );
+					allCategoriesBtn.clearStyle("color");
+					allCategoriesBtn.clearStyle("rollOverColor");
+					allCategoriesBtn.toolTip = resourceManager.getString('analytics', 'allCategoriesToolTip');
+					allCategoriesBtn.addEventListener(MouseEvent.CLICK, allCategoriesClick);
 					//selectedCategoriesBtn.setStyle("color", "#000000");
-					selectedCategoriesBtn.label =  resourceManager.getString('analytics','selectedCategories') + "(" + selectedCategoriesArr.length + ")";
+					selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + selectedCategoriesArr.length + ")";
 					var catsStr:String = '';
 					var categories:Array = [];
-					for each(var cat:String in  selectedCategoriesArr)
-					{
+					for each (var cat:String in selectedCategoriesArr) {
 						catsStr += cat + "\n";
 						categories.push(cat);
 					}
 					_filterVo.categories = categories.join(',');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics','selectedCategories') +":\n" + catsStr;
+					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + catsStr;
 				}
 			}
-			
-			private function allCategoriesClick( event : MouseEvent ) : void
-			{
-				dispatchEvent( new Event( APPLY ) );
+
+
+			private function allCategoriesClick(event:MouseEvent):void {
+				dispatchEvent(new Event(APPLY));
 			}
-			
 		]]>
 	</mx:Script>
-	
+
 	<mx:Metadata>
 		  [Event(name="apply", type="flash.events.Event")] 
 	</mx:Metadata>
-	
+
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
-		<mx:ComboBox id="dateCb" dataProvider="{_dateRange}" change="changeDateByRange(event)" styleName="analyticsCombo" />
+		<mx:ComboBox id="dateCb" dataProvider="{_dateRange}" change="changeDateByRange(event)"
+					 styleName="analyticsCombo"/>
 		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
-		<mx:DateField id="fromDate" width="100" buttonMode="true"
-			selectedDate="{_filterVo.fromDate}"
-			change="fromDateChanged( event )"/>
-		<mx:DateField id="toDate" width="100" buttonMode="true" 
-			selectedDate="{_filterVo.toDate}" change="toDateChanged( event )"/>
+		<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
+					  change="fromDateChanged( event )"/>
+		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
+					  change="toDateChanged( event )"/>
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
-			buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>	
+				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>
 	</mx:HBox>
-	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}" >
+	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','categoriesTitle')}"/>
-		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('analytics','categoriesAll')}" click="onAllCategoriesSelection(event)" />
-		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}" click="onCategoriesTreeOpen(event)" />
+		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('analytics','categoriesAll')}"
+					   click="onAllCategoriesSelection(event)"/>
+		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
+					   click="onCategoriesTreeOpen(event)"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{dateOnlyFlag}" visible="{dateOnlyFlag}">
-		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','basicDetails')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true"/>
-		<mx:LinkButton id="dropoff" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','dropoff')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true"/>
-		<mx:LinkButton id="interactions" visible="{showDrillDownNav}" label="{resourceManager.getString('analytics','interactions')}" click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"/>
+		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}"
+					   label="{resourceManager.getString('analytics','basicDetails')}"
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true"/>
+		<mx:LinkButton id="dropoff" visible="{showDrillDownNav}"
+					   label="{resourceManager.getString('analytics','dropoff')}"
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true"/>
+		<mx:LinkButton id="interactions" visible="{showDrillDownNav}"
+					   label="{resourceManager.getString('analytics','interactions')}"
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"/>
 	</mx:HBox>
-	
+
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
-		<mx:Label text="{resourceManager.getString('analytics','searchFilter')}" />
-		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}" 
-			change="{_filterVo.keywords = searchTerm.text}" keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}" />
+		<mx:Label text="{resourceManager.getString('analytics','searchFilter')}"/>
+		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
+					  change="{_filterVo.keywords = searchTerm.text}"
+					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}"/>
 		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
 		<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
-			label="{resourceManager.getString('analytics','searchInTags')}"
-			selected="{_filterVo.searchInTags}" change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
-			visible="false" includeInLayout="false"/> <!--  checkDisableTextField() -->
+						label="{resourceManager.getString('analytics','searchInTags')}"
+						selected="{_filterVo.searchInTags}"
+						change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
+						visible="false" includeInLayout="false"/>
+		<!--  checkDisableTextField() -->
 		<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
-			label="{resourceManager.getString('analytics','searchInAdminTags')}" 
-			selected="{_filterVo.searchInAdminTags}" change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
-			visible="false" includeInLayout="false"/><!--  checkDisableTextField() -->
+						label="{resourceManager.getString('analytics','searchInAdminTags')}"
+						selected="{_filterVo.searchInAdminTags}"
+						change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
+						visible="false" includeInLayout="false"/>
+		<!--  checkDisableTextField() -->
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
-			click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" />
+				   click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>
 	</mx:HBox>
 
 </mx:VBox>

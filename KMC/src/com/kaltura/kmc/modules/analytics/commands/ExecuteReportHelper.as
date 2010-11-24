@@ -29,16 +29,14 @@ package com.kaltura.kmc.modules.analytics.commands
 			var today : Date = new Date();
 			if( _model.filter )
 			{
-				//krif.fromDate = Math.ceil(_model.filter.fromDate.time/1000)  + (_model.filter.fromDate.timezoneOffset*60) +_model.KALTURA_OFFSET; //- todaysHourInSeconds
-				krif.fromDate = Math.ceil(_model.filter.fromDate.time/1000) +_model.KALTURA_OFFSET; //- todaysHourInSeconds
-				//krif.toDate = Math.ceil(_model.filter.toDate.time/1000) + (_model.filter.fromDate.timezoneOffset*60) + _model.KALTURA_OFFSET + 86399 ; // - todaysHourInSeconds
-
-				krif.toDate = Math.ceil(_model.filter.toDate.time/1000) + _model.KALTURA_OFFSET + _model.END_OF_DAY_IN_SECONDS ; // - todaysHourInSeconds
-				
+				krif.fromDate = Math.ceil(_model.filter.fromDate.time/1000);
+				krif.toDate = Math.ceil(_model.filter.toDate.time/1000);
 				krif.keywords = _model.filter.keywords;
 				krif.categories = _model.filter.categories;
 				krif.searchInTags =  _model.filter.searchInTags;
 				krif.searchInAdminTags = _model.filter.searchInAdminTags;
+				// add time offset in minutes.
+				krif.timeZoneOffset = new Date().timezoneOffset;
 			}
 			
 			return krif;

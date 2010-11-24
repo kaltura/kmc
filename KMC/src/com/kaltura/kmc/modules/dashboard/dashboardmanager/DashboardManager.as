@@ -163,13 +163,18 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 		 */
 		private function getGraphData():void
 		{
-			var krif:KalturaReportInputFilter = new KalturaReportInputFilter();
+			var ONE_DAY:int = 1000 * 60 * 60 * 24;
+			// server needs date in seconds, UTC
 			var today:Date = new Date();
-		
-			// server needs date in seconds
-			krif.toDate = Math.ceil(TODAY_DATE.time/1000)  + (TODAY_DATE.timezoneOffset*60) + KALTURA_OFFSET;
-			krif.fromDate = Math.ceil(TODAY_DATE.time/1000)  + (TODAY_DATE.timezoneOffset*60) + KALTURA_OFFSET - SECONDES_IN_30_DAYS; // - todaysHourInSeconds
-		    
+			var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
+			var toDate:Date = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+			var fromDate:Date = new Date(today.time - todaysHourInMiliSeconds - 31 * ONE_DAY);
+			
+			var krif:KalturaReportInputFilter = new KalturaReportInputFilter();
+			krif.toDate = Math.ceil(toDate.time/1000);
+			krif.fromDate = Math.ceil(fromDate.time/1000);
+			krif.timeZoneOffset = new Date().timezoneOffset;
+			
 			var reportGetGraphs : ReportGetGraphs = new ReportGetGraphs(1 , krif , 'sum_time_viewed'); //  sum_time_viewed count_plays
 			
 			reportGetGraphs.addEventListener( KalturaEvent.COMPLETE , result );
