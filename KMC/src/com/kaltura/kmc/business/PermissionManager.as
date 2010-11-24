@@ -142,8 +142,25 @@ package com.kaltura.kmc.business
 			target[prop] = value;
 		}
 		
-		
-		
+		/**
+		 * The function returns the relevant sub-tabs to hide 
+		 * @param module
+		 * @return 
+		 * 
+		 */		
+		public function getRelevantSubTabsToHide(module:String):Array
+		{
+			var arr:Array = new Array ();
+			for each (var tabName:String in _hideTabs)
+			{
+				trace (tabName);
+				if (tabName.indexOf(module) > -1 && tabName.indexOf(".")>-1 )
+				{
+					arr.push(tabName.split(".").pop().toString()); //isolate the main tab name
+				}
+			}
+			return arr;
+		}
 
 		
 		////////////////// getters ///////////////////////////

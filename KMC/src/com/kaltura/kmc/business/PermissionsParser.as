@@ -110,9 +110,7 @@ package com.kaltura.kmc.business {
 							}
 						}
 						if (hideSubTab) {
-							//TODO - think if we want the parent of the tab too or if the 
-							//subtab name is good enough
-							arr.push(subtabXml.@id.toString());
+							arr.push(module.@id.toString()+"."+subtabXml.@id.toString());
 						}
 
 					}

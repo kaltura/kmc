@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" xmlns:validators="com.kaltura.validators.*">
+	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
+	xmlns:validators="com.kaltura.validators.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.AdminEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
@@ -38,6 +40,8 @@
 			[Bindable] private var _ctList : Array = [];
 			[Bindable] private var _ctComboBox : Array = [];
 
+			public static const NAME:String = "overview";
+			
 			public function init( event : FlexEvent = null ) : void
 			{
 				//populate the content type list
@@ -52,6 +56,8 @@
 				
 				var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
 				partnerEvent.dispatch();
+				
+				PermissionManager.getInstance().applyAllAttributes(this,NAME);
 			}
 			
 			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
@@ -188,7 +194,7 @@
 		
 	<validators:URLValidator id="urlValidator" required="true" property="text"  />
 	
-	<mx:VBox id="pInfo" width="100%" height="100%" styleName="blueBox" 
+	<mx:VBox id="InfoBox" width="100%" height="100%" styleName="blueBox" 
 		horizontalAlign="left" verticalAlign="top"   >
 		<mx:HBox width="100%">
 			<mx:Label styleName="pageTitle" text="{resourceManager.getString('account', 'partnerInfo')}" />
@@ -243,7 +249,7 @@
 		<mx:Button label="{resourceManager.getString('account', 'saveChanges')}" 
 			click="savePartnerInfo( true )" buttonMode="true" />
 	</mx:VBox>
-	<mx:VBox width="100%" height="100%"  styleName="blueBox" 
+	<mx:VBox id="loginBox" width="100%" height="100%"  styleName="blueBox" 
 		horizontalAlign="left" verticalAlign="top">
 		<mx:HBox width="100%">
 			<mx:Label  styleName="pageTitle" text="{resourceManager.getString('account', 'loginInfo')}"/>
