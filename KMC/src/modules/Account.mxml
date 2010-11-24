@@ -142,6 +142,14 @@
 				else {
 					addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 				}
+				
+	
+				//roles and permissions 
+				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
+				for each (var subtabName:String in tabsToHide)
+				{
+					//contentView.removeChild(this[subtabName]);
+				}
 			}
 
 
@@ -184,19 +192,26 @@
 
 				_model.context.kc = _kc;
 				//displays the custom data tab only when the customFieldsTab flashvar is true
-				if (objParam.enablecustomdata == "true") {
+				
+				
+				//moving to MXML (Eitan)
+				
+				if (objParam.metadataprofilename) {
+					_model.context.metadataProfileName = objParam.metadataprofilename;
+				}
+				/*				
+ 				if (objParam.enablecustomdata == "true") {
+				
 					var customDataView:CustomData = new CustomData();
 					customDataView.label = resourceManager.getString('account', 'customData');
 					customDataView.setStyle("styleName", "pageStyle");
 					customDataView.id = "metadata";
 					customDataView.name = "metadata";
 					contentView.addChild(customDataView);
-
-					if (objParam.metadataprofilename) {
-						_model.context.metadataProfileName = objParam.metadataprofilename;
-					}
 					customDataView.init();
-				}
+				
+				} */
+				
 			}
 
 
@@ -331,6 +346,9 @@
 									 flavorParamData="{_model.flavorsData}" styleName="pageStyle"/>
 			<view:Upgrade id="upgrade" width="100%" packagesList="{_model.listPackages}" partnerPackage="{_model.partnerPackage}"
 						   label="{resourceManager.getString('account','accountUpgrade')}" styleName="pageStyle"/>
+			<view:CustomData id="metadata" name="metadata" label="{resourceManager.getString('account', 'customData')}"
+							 styleName="pageStyle" width="100%" />
+							 
 		</mx:ViewStack>
 
 	</mx:VBox>

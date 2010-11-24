@@ -53,7 +53,7 @@ package com.kaltura.kmc.business
 			var arr:Array = new Array();
 			for each(var vo:PermissionVo in _instructionVos )
 			{
-				if (vo.path.indexOf(componentPath)==0)
+				if (vo.path.indexOf(componentPath)>0)
 				{
 					// found a match
 					arr.push(vo);
@@ -82,8 +82,6 @@ package com.kaltura.kmc.business
 			}
 		}
 		
-		
-		
 		/**
 		 * This function recieves a path to a component IE myCompo1.myCompo2.myButton
 		 * a starting target (instance of a uiComponent),a propery on the target to change
@@ -95,12 +93,20 @@ package com.kaltura.kmc.business
 		 */
 		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:*):void
 		{
-			var chain:Array = compoentPath.split(".");
+			var chainWithoutPrefix:Array = compoentPath.split(startComponent["name"]);
+			//isolate all items after the correct item - drop everything before
+			chainWithoutPrefix.shift();
+			
+			var chain:Array = chainWithoutPrefix.join().split(".");
+			//create the new chain without the dots 
 			var o:Object = startComponent;
-			//TODO: Eitan check if this is needed ? (i=1)
-			for (var i:uint=1; i<chain.length;i++) {
+			//find the current component position in chain
+			
+			//iteratd from the next position 
+			for (var i:uint=0; i<chain.length;i++) {
 				// next in chain
-				o=o[chain[i]];
+				if(chain[i])
+					o=o[chain[i]];
 			}
 			var dt:XML = describeType(o);
 			if(dt.@isDynamic.toString() == "true") {
@@ -131,11 +137,6 @@ package com.kaltura.kmc.business
 			if (target[prop] is Boolean)
 			{
 				target[prop] = CastUtil.castToBoolean(value);
-				return;
-			}
-			if (target[prop] is int)
-			{
-				target[prop] = (value as int);
 				return;
 			}
 			//default behavior

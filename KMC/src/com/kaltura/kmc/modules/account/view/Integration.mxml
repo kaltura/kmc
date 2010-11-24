@@ -8,6 +8,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.vo.NotificationVO;
@@ -28,6 +29,9 @@
 			[Bindable] public var partnerData : PartnerVO;
 			private var _clonedPartnerData : PartnerVO;
 			
+			
+			public static const NAME:String = "integration";
+			
 			/**
 			 * make sure we have both creationComplete and an external call to init()
 			 * */
@@ -44,6 +48,8 @@
 				else {
 					_ready = true;
 				}
+				
+				PermissionManager.getInstance().applyAllAttributes(this,NAME);
 			}
 			
 			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
@@ -345,6 +351,6 @@
 	</mx:HBox>
 	<mx:Spacer height="10" />
 	<mx:HBox width="100%" styleName="centerHBox">
-		<mx:Button label="{resourceManager.getString('account', 'saveChanges')}" click="saveChanges()" buttonMode="true"/>
+		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}" click="saveChanges()" buttonMode="true"/>
 	</mx:HBox>
 </mx:VBox>
