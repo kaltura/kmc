@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.resources.ResourceManager;
+
+			/**
+			 * link to a .corp up-sell link
+			 * */
+			protected function getMoreUsers(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+			
+			/**
+			 * load users according to paging component value
+			 * */
+			private function gotoPage():void {
+				// TODO Auto-generated method stub
+			}
+			
+			
+			/**
+			 * show the "add user" dialog
+			 * */
+			protected function openAddUserDialog(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}"
+				  styleName="pageTitle"/>
+		<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'upgrade')}" click="getMoreUsers(event)"
+					   styleName="LinkButton"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		<mx:VBox id="tableContainer">
+			<view:UsersTable id="table"/>
+			<controls:Paging id="paging" width="{table.width}" styleName="paging"
+							 nextPage="gotoPage()" prvPage="gotoPage()"
+							 getPageNum="gotoPage()" rowsInPageChange="gotoPage()"  
+							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true"/>
+		</mx:VBox>
+	
+		<mx:Spacer width="5"/>
+		
+		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
+			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add')}" 
+					   styleName="addPlst" width="100%" height="30" buttonMode="true" 
+					   click="openAddUserDialog(event)"/>
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

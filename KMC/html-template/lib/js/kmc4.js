@@ -129,6 +129,9 @@ $(window).load(function(){
 						case "account" :
 							go_to = { moduleName : "account", subtab : "overview" };
 							break;
+						case "admin" :
+							go_to = { moduleName : "admin", subtab : "usersTab" };
+							break;
 						case "analytics" :
 							go_to = { moduleName : "analytics", subtab : "usage" };
 							break;
@@ -1183,7 +1186,7 @@ kmc.vars.kmc_swf = {
     url : "http://localhost/kmc/KMC/bin-debug/kmc.swf",
     flashvars : {
 		// kmc configuration
-		kmc_uiconf:"1002409", 
+		kmc_uiconf:"1002510", 
 		
 		//permission uiconf id:
 		permission_uiconf:"1002417", 

@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
+			 allowMultipleSelection="true" rowHeight="36" itemClick="{setSelection(event)}"
+			 change="{setSelection(event)}" dropEnabled="true" dragMoveEnabled="false" 
+			 dragDrop="onDragDrop(event)" dragOver="onDragOver(event)" dragExit="onDragExit(event)"
+			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
+	<mx:Metadata>
+		[Event(name="orderByChanged", type="flash.events.Event")] 
+		[Event(name="drillDown", type="flash.events.Event")] 
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.types.KalturaUserStatus;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.ComboBox;
+			import mx.events.DragEvent;
+			import mx.events.ListEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.CursorManager;
+			import mx.resources.ResourceManager;
+
+			public static const ASCENDING:String = "ASC";
+			public static const DESCENDING:String = "DESC";
+
+			/**
+			 * defines the value of the type property for the <code>orderByChanged</code> event.
+			 * */
+			public static const ORDER_BY_CHANGED:String = "orderByChanged";
+
+			/**
+			 * defines the value of the type property for the <code>openEntry</code> event.
+			 * */
+			public static const OPEN_ENTRY:String = "openEntry";
+
+
+			[Bindable]
+			/**
+			 * the latest selected entry in the table
+			 * */
+			public var selectedEntry:KalturaBaseEntry;
+
+
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+			public var kalturaSorting:Boolean = true;
+
+			/**
+			 * this parameter will show/hide the linkes for the entries names
+			 * */
+			public var showLinks:Boolean = true;
+
+			[Bindable]
+			/**
+			 * used for setting a difference between entries table
+			 * for moderation screen and entry screen
+			 */
+			public var usedForModeration:Boolean = false;
+
+
+			/**
+			 * @copy #orderBy
+			 * */
+			private var _orderBy:String = "";
+
+			private var _columnsSortMap:HashMap = new HashMap();
+
+			/**
+			 * the current sort index
+			 * */
+			private var _sortIndex:int = 4;
+
+			[Bindable]
+			/**
+			 * the current sort direction
+			 * */
+			private var _sortDirection:String = "DESC";
+
+
+			override public function get dataProvider():Object {
+				return super.dataProvider;
+			}
+
+
+			[Bindable]
+			override public function set dataProvider(value:Object):void {
+				super.dataProvider = value;
+				allSelected = isAllSelected();
+				setSortIndicator();
+				markSelectedEntry();
+			}
+
+
+			[Bindable]
+			public function get sortDirection():String {
+				return _sortDirection;
+			}
+
+
+			public function set sortDirection(sortDirection:String):void {
+				_sortDirection = sortDirection;
+			}
+
+
+
+
+			private function markSelectedEntry():void {
+//				if (selectedEntry != null) {
+//					// gotta find the correct entry by its id, because these are new objects.
+//					var n:int = dataProvider.length;
+//					var entries:Array = (dataProvider as ArrayCollection).source;
+//					var entry:KalturaBaseEntry;
+//					for (var i:int = 0; i<n; i++) {
+//						entry = entries[i] as KalturaBaseEntry;
+//						if (entry.id == selectedEntry.id) {
+//							selectedItems = [entry];
+//							break;
+//						}
+//					}
+//					// the selectedEntry is not relevant anymore - should remember the new one
+//					var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
+//					ee.dispatch();
+//				}
+			}
+
+
+			private function dataChanged(data:Object):void {
+				setSortIndicator();
+			}
+
+
+			public function removeColumn(headerTxt:String):void {
+				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
+				for (var i:int = 0; i < arrCol.length; ++i) {
+					if (arrCol[i].headerText == headerTxt) {
+						arrCol.removeItemAt(i);
+						this.columns = arrCol.source;
+						return;
+					}
+				}
+				this.columns = arrCol.source;
+			}
+
+
+			public function toggleCheckbox(event:ListEvent):void {
+//				if (event.itemRenderer.data) {
+//					event.itemRenderer.data.selected = !event.itemRenderer.data.selected;
+//					
+//					var cgEvent:EntryEvent;
+//					if (event.itemRenderer.data.selected)
+//						cgEvent = new EntryEvent(EntryEvent.ADD_CHECKED_ENTRY,
+//							event.itemRenderer.data as KalturaBaseEntry);
+//					else
+//						cgEvent = new EntryEvent(EntryEvent.REMOVE_CHECKED_ENTRY,
+//							event.itemRenderer.data as KalturaBaseEntry);
+//					
+//					cgEvent.dispatch();
+//				}
+//				
+				allSelected = isAllSelected();
+			}
+
+
+			/**
+			 * selection or deselection was made
+			 */
+			public function setSelection(event:ListEvent):void {
+//				if (event.itemRenderer.data) {
+//					var cgEvent:SelectionEvent;
+//					cgEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, this.selectedItems);
+//					cgEvent.dispatch();
+//				}
+			}
+
+
+			private function onDragExit(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(false);
+				}
+			}
+
+
+			private function onDragOver(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(true);
+				}
+			}
+
+
+			private function onDragDrop(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(false);
+				}
+			}
+
+			/**
+			 * Update: Show a reject drop cursor or clear it. Depending on the
+			 * situation one might want to walk up to the parent node to
+			 * get its status in order to show a reject for all child nodes
+			 * of a node that has the rejection.
+			 **/
+			private var rejectCursorID:int;
+
+
+			private function showRejectDropCursor(value:Boolean):void {
+				if (value == true && CursorManager.currentCursorID != rejectCursorID) {
+					var newCursorClass:Class;
+
+					//grab the reject cursor from the dragmanager style declaration
+					var styleSheet:CSSStyleDeclaration = StyleManager.getStyleDeclaration("DragManager");
+					newCursorClass = styleSheet.getStyle("rejectCursor");
+
+					//assign it as top level
+					rejectCursorID = CursorManager.setCursor(newCursorClass, 0);
+
+				}
+				else if (value == false) {
+					//remove our rejectCursorID from the list    
+					CursorManager.removeCursor(rejectCursorID);
+					rejectCursorID = -1;
+				}
+
+			}
+
+
+
+			private function setSortIndicator():void {
+				this.mx_internal::sortIndex = _sortIndex;
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+
+
+			public function preview(entry:Object):void {
+
+			}
+
+
+			public function deselectAll(event:Event = null):void {
+				selectedItems = [];
+			}
+
+
+			public function selectAll(event:Event = null):void {
+				selectedItems = (dataProvider as ArrayCollection).source;
+			}
+
+
+			public function isAllSelected():Boolean {
+				var isIt:Boolean = true;
+
+				if (this.dataProvider.length == 0)
+					isIt = false;
+
+				for (var i:int = 0; i < this.dataProvider.length; i++) {
+					if (!this.dataProvider[i].selected)
+						isIt = false;
+				}
+				return isIt;
+			}
+
+
+			public function getPlaylistMediaTypes(type:int):String {
+
+				return "";
+			}
+
+
+			public function getStatusForModeration(obj:Object):String {
+				return '';
+			}
+
+
+
+			/**
+			 * the function translate status type enum to the natching locale string
+			 * @param status
+			 */
+			public function getStatus(obj:Object):String {
+				return '';
+			}
+
+			
+			/**
+			 * show formatted date
+			 * */
+			private function formatDate(date:Number):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = resourceManager.getString('admin', 'list_date_format');
+				var dt:Date = new Date();
+				dt.setTime(date * 1000);
+				return df.format(dt);
+			};
+
+
+
+			/**
+			 * translate user status to string
+			 * */
+			private function getUserStatus(item:Object, column:DataGridColumn):String {
+				var res:String = '';
+				switch (item.status) {
+					case KalturaUserStatus.ACTIVE:
+						res = ResourceManager.getInstance().getString('admin', 'active');
+					case KalturaUserStatus.BLOCKED:
+						res = ResourceManager.getInstance().getString('admin', 'blocked');
+					case KalturaUserStatus.DELETED:
+						res = ResourceManager.getInstance().getString('admin', 'deleted');
+				}
+				return res;
+			}
+
+
+			/**
+			 * translate last login data to something readable
+			 * */
+			private function getLastLogin(item:Object, column:DataGridColumn):String {
+				//TODO implement getLastLogin when we know what the server data looks like
+				return formatDate(item.lastLoginTime);
+			}
+
+			
+			/**
+			 * translate last login data to something readable
+			 * */
+			private function getUserRole(item:Object, column:DataGridColumn):String {
+				//TODO implement getUserRole when we know what the server data looks like
+				// need to scan all partner's roles list and get the correct one.
+				return item.roleId;
+			}
+			
+			
+			/**
+			 * perform selected action on selected entry
+			 * (used in item renderer)
+			 * */
+			public function onActionSelected(event:ListEvent):void {
+				switch (event.target.selectedItem) {
+					case resourceManager.getString('admin', 'edit'):
+//						onEdit();
+						break;
+					case resourceManager.getString('admin', 'un_block'):
+//						var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
+//						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
+//						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
+//						if (isPlaylist) {
+//							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", 
+//								{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+//						}
+//						else {
+//							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
+//								{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+//						}
+						break;
+					case resourceManager.getString('admin', 'delete'):
+//						onDelete();
+						break;
+				}
+				
+				(event.target as ComboBox).selectedIndex = -1;
+			}
+
+
+			/**
+			 * table ordering, optional values listed in <code>KalturaMediaEntryOrderBy</code>
+			 * */
+			public function get orderBy():String {
+				return _orderBy;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:columns>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="status" labelFunction="{getUserStatus}"
+						   headerText="{resourceManager.getString('admin', 'user_status')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="fullName"
+						   headerText="{resourceManager.getString('admin', 'user_name')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id"
+						   headerText="{resourceManager.getString('admin', 'user_id')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="email"
+						   headerText="{resourceManager.getString('admin', 'user_email')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="roleId" labelFunction="{getUserRole}"
+						   headerText="{resourceManager.getString('admin', 'user_role')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="lastLoginTime" labelFunction="{getLastLogin}"
+						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+						   headerText="{resourceManager.getString('admin', 'user_actions')}"
+						   headerStyleName="centerTableColumnHeader">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
+							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+						<mx:ComboBox width="130" selectedIndex="-1"
+									 prompt="{resourceManager.getString('admin','select_action')}"
+									 change="{outerDocument.onActionSelected(event)}">
+							<mx:dataProvider>
+								<mx:String>{resourceManager.getString('admin','edit')}</mx:String>
+								<mx:String>{resourceManager.getString('admin','un_block')}</mx:String>
+								<mx:String>{resourceManager.getString('admin','delete')}</mx:String>
+							</mx:dataProvider>
+						</mx:ComboBox>
+					</mx:VBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+	</mx:columns>
+</mx:DataGrid>
