@@ -180,6 +180,7 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected function navigate(module:String, subtab:String = ""):void {
 			this.dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, module, subtab));
+			//TODO support extra data object
 		}
 
 
