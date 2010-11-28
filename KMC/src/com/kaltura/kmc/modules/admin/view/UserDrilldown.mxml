@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							width="550" 
+							showCloseButton="true" close="{close()}"
+							>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaUser;
+			
+			import mx.resources.ResourceManager;
+			/* help="{onHelp()}"
+			 */
+			
+			/**
+			 * name of the edit mode
+			 * */
+			public static const EDIT:String = "edit";
+			
+			/**
+			 * name of the add mode.
+			 * */
+			public static const ADD:String = "add";
+			
+			[Bindable]
+			/**
+			 * user data to show in the window
+			 * */
+			public var user:KalturaUser;
+			
+			
+			private var _mode:String = "add";
+			
+			/**
+			 * remove this popup (confirm with changes
+			 * */
+			protected function close():void {
+				//TODO + implement close
+			}
+			
+			
+			/**
+			 * open "new role" window
+			 * */
+			protected function openRoleWindow():void {
+				//TODO + implement openRoleWindow
+			}
+			
+
+			protected function onSave(event:MouseEvent):void
+			{
+				// TODO + Auto-generated method stub
+			}
+			
+			public function set mode(newMode:String):void {
+				_mode = newMode;
+				switch (mode) {
+					case UserDrilldown.ADD:
+						title = ResourceManager.getInstance().getString('admin', 'add_user_title');
+						break;
+					case UserDrilldown.EDIT:
+						title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
+						emailTi.editable = false;
+						firstNameTi.editable = false;
+						lastNameTi.editable = false;
+						break;
+				}
+			}
+			
+			public function get mode():String {
+				return _mode;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" >
+		<mx:HBox styleName="formInnerTitle" width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}" styleName="acpPopUpTitleLabel"/>
+		</mx:HBox>
+		<mx:Form width="100%" textAlign="left" paddingLeft="0">
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'email')}" width="100%" >
+				<mx:TextInput id='emailTi' width="100%" text="{user.email}" />
+			</mx:FormItem>
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%" >
+				<mx:TextInput id='firstNameTi' width="100%" text="{user.fullName}"/>
+				<!--TODO + get first name from server, make sure we can update first or last name -->
+			</mx:FormItem>
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="100%" >
+				<mx:TextInput id='lastNameTi' width="100%" text="{user.lastName}"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:HBox styleName="formInnerTitle" width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'role')}" styleName="acpPopUpTitleLabel"/>
+		</mx:HBox>
+		<mx:Form width="100%" textAlign="left" paddingLeft="0">
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%" >
+				<mx:ComboBox id="roleCb" dataProvider="{}" />
+				<!--TODO + get roles dataprovider -->
+				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add')}" click="openRoleWindow()" />
+			</mx:FormItem>
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'description')}" width="100%" >
+				<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%" horizontalAlign="center" >
+			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="onSave(event)" />
+		</mx:HBox>
+		
+	</mx:VBox>
+</containers:HelpTitleWindow>

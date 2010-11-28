@@ -1,296 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
-			 allowMultipleSelection="true" rowHeight="36" itemClick="{setSelection(event)}"
-			 change="{setSelection(event)}" dropEnabled="true" dragMoveEnabled="false" 
-			 dragDrop="onDragDrop(event)" dragOver="onDragOver(event)" dragExit="onDragExit(event)"
+			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
+			 itemClick="setSelection(event);"
 			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
-		[Event(name="orderByChanged", type="flash.events.Event")] 
 		[Event(name="drillDown", type="flash.events.Event")] 
+		[Event(name="deleteUser", type="flash.events.Event")] 
+		[Event(name="toggleBlock", type="flash.events.Event")] 
+		[Event(name="selectUser", type="flash.events.Event")] 
 	</mx:Metadata>
 
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.types.KalturaUserStatus;
-			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaUser;
 			
-			import mx.collections.ArrayCollection;
-			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.controls.Alert;
 			import mx.controls.ComboBox;
-			import mx.events.DragEvent;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
-			import mx.managers.CursorManager;
 			import mx.resources.ResourceManager;
 
-			public static const ASCENDING:String = "ASC";
-			public static const DESCENDING:String = "DESC";
+			// ==================================================================
+			// constants
+			// ==================================================================
 
 			/**
-			 * defines the value of the type property for the <code>orderByChanged</code> event.
+			 * defines the value of the type property for the <code>drillDown</code> event.
 			 * */
-			public static const ORDER_BY_CHANGED:String = "orderByChanged";
+			public static const DRILL_DOWN:String = "drillDown";
 
 			/**
-			 * defines the value of the type property for the <code>openEntry</code> event.
+			 * defines the value of the type property for the <code>delete</code> event.
 			 * */
-			public static const OPEN_ENTRY:String = "openEntry";
+			public static const DELETE_USER:String = "deleteUser";
 
-
-			[Bindable]
 			/**
-			 * the latest selected entry in the table
+			 * defines the value of the type property for the <code>toggleBlock</code> event.
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
-
-
-			[Bindable]
-			public var allSelected:Boolean = false;
-
-			public var kalturaSorting:Boolean = true;
+			public static const TOGGLE_BLOCK:String = "toggleBlock";
 
 			/**
-			 * this parameter will show/hide the linkes for the entries names
+			 * defines the value of the type property for the <code>selectUser</code> event.
 			 * */
-			public var showLinks:Boolean = true;
-
-			[Bindable]
-			/**
-			 * used for setting a difference between entries table
-			 * for moderation screen and entry screen
-			 */
-			public var usedForModeration:Boolean = false;
+			public static const SELECT_USER:String = "selectUser";
 
 
-			/**
-			 * @copy #orderBy
-			 * */
-			private var _orderBy:String = "";
-
-			private var _columnsSortMap:HashMap = new HashMap();
-
-			/**
-			 * the current sort index
-			 * */
-			private var _sortIndex:int = 4;
-
-			[Bindable]
-			/**
-			 * the current sort direction
-			 * */
-			private var _sortDirection:String = "DESC";
-
-
-			override public function get dataProvider():Object {
-				return super.dataProvider;
-			}
-
-
-			[Bindable]
-			override public function set dataProvider(value:Object):void {
-				super.dataProvider = value;
-				allSelected = isAllSelected();
-				setSortIndicator();
-				markSelectedEntry();
-			}
-
-
-			[Bindable]
-			public function get sortDirection():String {
-				return _sortDirection;
-			}
-
-
-			public function set sortDirection(sortDirection:String):void {
-				_sortDirection = sortDirection;
-			}
-
-
-
-
-			private function markSelectedEntry():void {
-//				if (selectedEntry != null) {
-//					// gotta find the correct entry by its id, because these are new objects.
-//					var n:int = dataProvider.length;
-//					var entries:Array = (dataProvider as ArrayCollection).source;
-//					var entry:KalturaBaseEntry;
-//					for (var i:int = 0; i<n; i++) {
-//						entry = entries[i] as KalturaBaseEntry;
-//						if (entry.id == selectedEntry.id) {
-//							selectedItems = [entry];
-//							break;
-//						}
-//					}
-//					// the selectedEntry is not relevant anymore - should remember the new one
-//					var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
-//					ee.dispatch();
-//				}
-			}
-
-
-			private function dataChanged(data:Object):void {
-				setSortIndicator();
-			}
-
-
-			public function removeColumn(headerTxt:String):void {
-				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
-				for (var i:int = 0; i < arrCol.length; ++i) {
-					if (arrCol[i].headerText == headerTxt) {
-						arrCol.removeItemAt(i);
-						this.columns = arrCol.source;
-						return;
-					}
-				}
-				this.columns = arrCol.source;
-			}
-
-
-			public function toggleCheckbox(event:ListEvent):void {
-//				if (event.itemRenderer.data) {
-//					event.itemRenderer.data.selected = !event.itemRenderer.data.selected;
-//					
-//					var cgEvent:EntryEvent;
-//					if (event.itemRenderer.data.selected)
-//						cgEvent = new EntryEvent(EntryEvent.ADD_CHECKED_ENTRY,
-//							event.itemRenderer.data as KalturaBaseEntry);
-//					else
-//						cgEvent = new EntryEvent(EntryEvent.REMOVE_CHECKED_ENTRY,
-//							event.itemRenderer.data as KalturaBaseEntry);
-//					
-//					cgEvent.dispatch();
-//				}
-//				
-				allSelected = isAllSelected();
-			}
+			// ==================================================================
+			// methods
+			// ==================================================================
 
 
 			/**
 			 * selection or deselection was made
 			 */
 			public function setSelection(event:ListEvent):void {
-//				if (event.itemRenderer.data) {
-//					var cgEvent:SelectionEvent;
-//					cgEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, this.selectedItems);
-//					cgEvent.dispatch();
-//				}
-			}
-
-
-			private function onDragExit(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(false);
+				if (event.itemRenderer.data) {
+					dispatchEvent(new Event(UsersTable.SELECT_USER));
 				}
 			}
-
-
-			private function onDragOver(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(true);
-				}
-			}
-
-
-			private function onDragDrop(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(false);
-				}
-			}
-
-			/**
-			 * Update: Show a reject drop cursor or clear it. Depending on the
-			 * situation one might want to walk up to the parent node to
-			 * get its status in order to show a reject for all child nodes
-			 * of a node that has the rejection.
-			 **/
-			private var rejectCursorID:int;
-
-
-			private function showRejectDropCursor(value:Boolean):void {
-				if (value == true && CursorManager.currentCursorID != rejectCursorID) {
-					var newCursorClass:Class;
-
-					//grab the reject cursor from the dragmanager style declaration
-					var styleSheet:CSSStyleDeclaration = StyleManager.getStyleDeclaration("DragManager");
-					newCursorClass = styleSheet.getStyle("rejectCursor");
-
-					//assign it as top level
-					rejectCursorID = CursorManager.setCursor(newCursorClass, 0);
-
-				}
-				else if (value == false) {
-					//remove our rejectCursorID from the list    
-					CursorManager.removeCursor(rejectCursorID);
-					rejectCursorID = -1;
-				}
-
-			}
-
-
-
-			private function setSortIndicator():void {
-				this.mx_internal::sortIndex = _sortIndex;
-				this.mx_internal::sortDirection = _sortDirection;
-			}
-
-
-			public function preview(entry:Object):void {
-
-			}
-
-
-			public function deselectAll(event:Event = null):void {
-				selectedItems = [];
-			}
-
-
-			public function selectAll(event:Event = null):void {
-				selectedItems = (dataProvider as ArrayCollection).source;
-			}
-
-
-			public function isAllSelected():Boolean {
-				var isIt:Boolean = true;
-
-				if (this.dataProvider.length == 0)
-					isIt = false;
-
-				for (var i:int = 0; i < this.dataProvider.length; i++) {
-					if (!this.dataProvider[i].selected)
-						isIt = false;
-				}
-				return isIt;
-			}
-
-
-			public function getPlaylistMediaTypes(type:int):String {
-
-				return "";
-			}
-
-
-			public function getStatusForModeration(obj:Object):String {
-				return '';
-			}
-
 
 
 			/**
-			 * the function translate status type enum to the natching locale string
-			 * @param status
-			 */
-			public function getStatus(obj:Object):String {
-				return '';
+			 * open the entry drilldown popup
+			 * */
+			private function editEntry():void {
+				dispatchEvent(new Event(UsersTable.DRILL_DOWN));
 			}
 
-			
+
+			/**
+			 * show delete confirmation box
+			 * */
+			private function confirmDelete():void {
+				Alert.show(ResourceManager.getInstance().getString('admin', 'confirm_delete', [selectedUser.fullName]), ResourceManager.getInstance().getString('admin', 'confirm_delete_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
+
+			}
+
+
+			/**
+			 * delete the selected entry
+			 * */
+			private function deleteEntry(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					// request to delete the entry
+					dispatchEvent(new Event(UsersTable.DELETE_USER));
+				}
+			}
+
+
+			/**
+			 * show block toggle confirmation box
+			 * */
+			private function confirmBlock():void {
+				var key:String = "confirm_unblock";
+				if ((selectedItem as KalturaUser).status == KalturaUserStatus.ACTIVE) {
+					key = "confirm_block";
+				}
+				Alert.show(ResourceManager.getInstance().getString('admin', key), ResourceManager.getInstance().getString('admin', key + '_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
+			}
+
+
+			/**
+			 * toggle block / unblock on the selected entry
+			 * */
+			private function toggleBlockEntry(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					// request to toggle user block status
+					dispatchEvent(new Event(UsersTable.TOGGLE_BLOCK));
+				}
+			}
+
+
+			// ==================================================================
+			// item-renderer functions
+			// ==================================================================
+
 			/**
 			 * show formatted date
 			 * */
@@ -301,7 +128,6 @@
 				dt.setTime(date * 1000);
 				return df.format(dt);
 			};
-
 
 
 			/**
@@ -325,21 +151,21 @@
 			 * translate last login data to something readable
 			 * */
 			private function getLastLogin(item:Object, column:DataGridColumn):String {
-				//TODO implement getLastLogin when we know what the server data looks like
+				//TODO + implement getLastLogin when we know what the server data looks like
 				return formatDate(item.lastLoginTime);
 			}
 
-			
+
 			/**
 			 * translate last login data to something readable
 			 * */
 			private function getUserRole(item:Object, column:DataGridColumn):String {
-				//TODO implement getUserRole when we know what the server data looks like
+				//TODO + implement getUserRole when we know what the server data looks like
 				// need to scan all partner's roles list and get the correct one.
 				return item.roleId;
 			}
-			
-			
+
+
 			/**
 			 * perform selected action on selected entry
 			 * (used in item renderer)
@@ -347,36 +173,26 @@
 			public function onActionSelected(event:ListEvent):void {
 				switch (event.target.selectedItem) {
 					case resourceManager.getString('admin', 'edit'):
-//						onEdit();
+						editEntry();
 						break;
 					case resourceManager.getString('admin', 'un_block'):
-//						var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
-//						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
-//						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
-//						if (isPlaylist) {
-//							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", 
-//								{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
-//						}
-//						else {
-//							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
-//								{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
-//						}
+						confirmBlock();
 						break;
 					case resourceManager.getString('admin', 'delete'):
-//						onDelete();
+						confirmDelete();
 						break;
 				}
-				
 				(event.target as ComboBox).selectedIndex = -1;
 			}
+			
+			// ==================================================================
+			// gettesr / setters
+			// ==================================================================
 
-
-			/**
-			 * table ordering, optional values listed in <code>KalturaMediaEntryOrderBy</code>
-			 * */
-			public function get orderBy():String {
-				return _orderBy;
+			public function get selectedUser():KalturaUser {
+				return selectedItem as KalturaUser;
 			}
+			
 		]]>
 	</mx:Script>
 
@@ -399,7 +215,7 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="lastLoginTime" labelFunction="{getLastLogin}"
 						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
 						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4"
 						   headerText="{resourceManager.getString('admin', 'user_actions')}"
 						   headerStyleName="centerTableColumnHeader">
 			<mx:itemRenderer>

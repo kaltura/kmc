@@ -1,12 +1,12 @@
 package com.kaltura.kmc.modules.admin.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 	import com.kaltura.kmc.modules.content.view.window.ForbidenBox;
-
+	
 	import flash.display.DisplayObject;
 	import flash.external.ExternalInterface;
-
+	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.managers.PopUpManager;
@@ -14,14 +14,13 @@ package com.kaltura.kmc.modules.admin.commands {
 	import mx.rpc.IResponder;
 
 	public class BaseCommand implements ICommand, IResponder {
-		protected var _model:CmsModelLocator = CmsModelLocator.getInstance();
+		protected var _model:AdminModelLocator = AdminModelLocator.getInstance();
 
 
 		/**
 		 * @inheritDocs
 		 */
 		public function fault(info:Object):void {
-			_model.decreaseLoadCounter();
 			if (info && info.error && info.error.errorMsg &&
 				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
 				ExternalInterface.call("kmc.functions.expired");
@@ -36,9 +35,7 @@ package com.kaltura.kmc.modules.admin.commands {
 				PopUpManager.centerPopUp(forbiddenBox);
 			}
 			else if (info && info.error && info.error.errorMsg) {
-				var alert:Alert = Alert.show(info.error.errorMsg,
-											 ResourceManager.getInstance().getString('cms', 'error'),
-											 Alert.OK, null, refrehOnClose);
+				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('admin', 'error'));
 			}
 		}
 
@@ -52,9 +49,8 @@ package com.kaltura.kmc.modules.admin.commands {
 		 *
 		 */
 		public function result(data:Object):void {
-			if (data.error && data.error.code == "INVALID_KS") {
-				// redirect to login, or whatever JS does with invalid KS.
-				ExternalInterface.call("kmc.functions.expired");
+			if (data.error) {
+				fault(data);
 			}
 		}
 
@@ -66,9 +62,5 @@ package com.kaltura.kmc.modules.admin.commands {
 			throw new Error("execute() must be implemented");
 		}
 
-
-		protected function refrehOnClose(event:CloseEvent):void {
-			ExternalInterface.call("refreshSWF");
-		}
 	}
 }

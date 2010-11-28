@@ -16,7 +16,7 @@ package com.kaltura.kmc.events
 		private var _error:String;
 		
 		
-		public function KmcErrorEvent(type:String, text:String, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function KmcErrorEvent(type:String, text:String, bubbles:Boolean = true, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 			_error = text;
 		}

@@ -3,54 +3,168 @@
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.containers.HelpTitleWindow;
+			import com.kaltura.kmc.events.KmcErrorEvent;
+			import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
+			import com.kaltura.kmc.modules.admin.control.UserEvent;
+			import com.kaltura.kmc.modules.admin.model.UsersModel;
+			import com.kaltura.types.KalturaUserStatus;
+			import com.kaltura.vo.KalturaFilterPager;
+			import com.kaltura.vo.KalturaUser;
+			import com.kaltura.vo.KalturaUserFilter;
+			
+			import flash.net.navigateToURL;
+			
+			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
+
+			[Bindable]
+			public var model:UsersModel;
+
+
+			
+			/**
+			 * refresh subtab data
+			 * */
+			public function refreshData():void {
+				listUsers(0);
+				// reset selected user
+				var ce:UserEvent;
+				ce = new UserEvent(UserEvent.SELECT_USER, null);
+				ce.dispatch();
+			}
+			
+			
+			/**
+			 * dispatch Cairngorm event to raise a list users command 
+			 * */
+			private function listUsers(pageNumber:int):void {
+				var kfp:KalturaFilterPager = new KalturaFilterPager();
+				if (paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
+					kfp.pageSize = paging.kalturaFilterPager.pageSize;
+				}
+				else {
+					kfp.pageSize = 10;
+				}
+				if (pageNumber) {
+					kfp.pageIndex = pageNumber;
+				}
+				else {
+					kfp.pageIndex = paging.kalturaFilterPager.pageIndex;
+				}
+				
+				var ce:ListUsersEvent;
+				ce = new ListUsersEvent(ListUsersEvent.LIST_USERS, model.filter, kfp);
+				ce.dispatch();
+			}
+
 
 			/**
 			 * link to a .corp up-sell link
 			 * */
 			protected function getMoreUsers(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+				navigateToURL(new URLRequest(model.upgradeLink),"_blank"); 
 			}
-			
+
+
 			/**
 			 * load users according to paging component value
 			 * */
 			private function gotoPage():void {
-				// TODO Auto-generated method stub
+				listUsers(paging.selectedPage);
 			}
 			
 			
 			/**
+			 * open drilldown window with data of currently selected user
+			 * @return the newly created popup window
+			 * */
+			protected function drillToSelectedUser():UserDrilldown {
+				var ud:UserDrilldown = new UserDrilldown();
+				ud.user = model.selectedUser;
+				PopUpManager.addPopUp(ud, this);
+				PopUpManager.centerPopUp(ud);
+				return ud;
+			}
+
+
+			/**
 			 * show the "add user" dialog
 			 * */
 			protected function openAddUserDialog(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+				// set the selected user to a new KalturaUser.
+				var su:UserEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
+				// open drilldown for this user
+				var ud:UserDrilldown = drillToSelectedUser();
+				ud.mode = UserDrilldown.ADD;
+			}
+
+
+			/**
+			 * show the "edit user" dialog
+			 * */
+			protected function openEditUserDialog(event:Event):void {
+				var ud:UserDrilldown = drillToSelectedUser();
+				ud.mode = UserDrilldown.EDIT;
+			}
+			
+
+
+			/**
+			 * delete selected user
+			 * */
+			protected function deleteUser(event:Event):void {
+				var ce:UserEvent = new UserEvent(UserEvent.DELETE_USER, model.selectedUser);
+				ce.dispatch();
+			}
+
+
+			/**
+			 * toggle between blocked / active stauses of the selected user 
+			 * */
+			protected function toggleUserStatus(event:Event):void {
+				if (model.selectedUser.status != KalturaUserStatus.ACTIVE &&
+					model.selectedUser.status != KalturaUserStatus.BLOCKED) {
+					// this user is not active or blocked (probably deleted and shouldn't 
+					// be in the table), so we can't toggle status
+					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, ResourceManager.getInstance().getString('admin', 'cant_toggle')));
+				}
+				var ce:UserEvent = new UserEvent(UserEvent.TOGGLE_USER_STATUS, model.selectedUser);
+				ce.dispatch();
+			}
+
+
+			/**
+			 * select a user
+			 * */
+			protected function setSelectedUser(event:Event):void {
+				var ce:UserEvent = new UserEvent(UserEvent.SELECT_USER, model.selectedUser);
+				ce.dispatch();
 			}
 			
 		]]>
 	</mx:Script>
 	<mx:HBox>
-		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}"
-				  styleName="pageTitle"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="pageTitle"/>
 		<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'upgrade')}" click="getMoreUsers(event)"
 					   styleName="LinkButton"/>
 	</mx:HBox>
-	
-	<mx:HBox>
-		<mx:VBox id="tableContainer">
-			<view:UsersTable id="table"/>
-			<controls:Paging id="paging" width="{table.width}" styleName="paging"
-							 nextPage="gotoPage()" prvPage="gotoPage()"
-							 getPageNum="gotoPage()" rowsInPageChange="gotoPage()"  
-							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true"/>
+
+	<mx:HBox width="100%" >
+		<mx:VBox id="tableContainer" width="100%" >
+			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" rowCount="10"
+							 drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
+							 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" />
+			<controls:Paging id="paging" width="{table.width}" styleName="paging" nextPage="gotoPage()"
+							 prvPage="gotoPage()" getPageNum="gotoPage()" rowsInPageChange="gotoPage()"
+							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true" totalCount="{model.totalUsers}" />
 		</mx:VBox>
-	
+
 		<mx:Spacer width="5"/>
-		
+
 		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
-			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add')}" 
-					   styleName="addPlst" width="100%" height="30" buttonMode="true" 
-					   click="openAddUserDialog(event)"/>
+			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add')}" styleName="addPlst" width="100%"
+					   height="30" buttonMode="true" click="openAddUserDialog(event)"/>
 		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>

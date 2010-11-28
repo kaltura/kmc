@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*" layout="vertical"
-				   minHeight="520" minWidth="950" styleName="mainView"
+<modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*" 
 				   xmlns:control="com.kaltura.kmc.modules.admin.control.*"
-				   xmlns:view="com.kaltura.kmc.modules.admin.view.*">
+				   xmlns:view="com.kaltura.kmc.modules.admin.view.*" 
+				   xmlns:model="com.kaltura.kmc.modules.admin.model.*"
+				   layout="vertical" minHeight="520" minWidth="950" styleName="mainView"
+				   >
 	<mx:Metadata>
 		[ResourceBundle("admin")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
+			
+			import mx.core.IFlexDisplayObject;
 			private static const VERSION:String = "0.1";
 
 			/**
 			 * KMC is responsible to use the value of
 			 * this const as the id of this module.
 			 * */
-			public static const NAME:String = "content";
+			public static const NAME:String = "admin";
+			
+			
+			[Bindable]
+			/**
+			 * module model
+			 * */
+			private var _model:AdminModelLocator = AdminModelLocator.getInstance();
 
 
 			override public function getModuleName():String {
@@ -41,7 +53,15 @@
 
 
 			override protected function start():void {
-				trace("started");
+				trace("start");
+				initModel();
+				users.refreshData();
+			}
+			
+			
+			private function initModel():void {
+				_model.kc = _kc;
+				_model.usersModel.upgradeLink = new XML(_uiconf.confFile).upgradeLink.text().toString();
 			}
 
 
@@ -56,7 +76,8 @@
 		]]>
 	</mx:Script>
 	<!-- the FrontController, containing Commands specific to this appliation -->
-	<control:KMCController/>
+	<control:AdminController/>
+	
 
 	<mx:HBox width="100%" styleName="tabsContainer" enabled="{true}">
 		<mx:TabBar id="secTln" styleName="tln" itemClick="onItemClick(event)" buttonMode="true"
@@ -64,8 +85,10 @@
 	</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
 					  horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}"/>
-			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}"/>
+			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}"
+						width="100%" model="{_model.usersModel}"/>
+			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}"
+						width="100%"/>
 		</mx:ViewStack>
 
 </modules:KmcModule>
