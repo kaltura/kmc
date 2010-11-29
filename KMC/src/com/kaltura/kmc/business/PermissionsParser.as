@@ -64,9 +64,15 @@ package com.kaltura.kmc.business {
 			var arr:Array = new Array();
 			var uiMapping:XML = permissionXml..uimapping[0];
 			var modules:XMLList = uiMapping..module;
+			var minNodes:Number = 1;
 			//iterate modules 
 			for each (var module:XML in modules) {
 				var subtabs:XMLList = module.tab;
+				//support min attribute - minimum amount of nodes
+				//to show this tab
+				minNodes = 1;
+				if (module.attribute("min").toString())
+					minNodes = Number(module.attribute("min"));
 				//check for sub-tabs 
 				if (subtabs.length() == 0) {
 					// this is a main tab that has no su tabs. 
@@ -89,7 +95,7 @@ package com.kaltura.kmc.business {
 							break;
 						}
 					}
-					if (hideTab) {
+					if (hideTab ) { // !! ((minNodes != 1) && minNodes <  ) ) - support min value 
 						arr.push(module.@id.toString());
 					}
 				}
@@ -98,6 +104,13 @@ package com.kaltura.kmc.business {
 					for each (var subtabXml:XML in subtabs) {
 						//get all restrictions of current subtab
 						var subtabPermissions:XMLList = subtabXml.permission;
+						
+						//support min attribute - minimum amount of nodes
+						//to show this tab
+						minNodes = 1;
+						if (module.attribute("min").toString())
+							minNodes = Number(module.attribute("min"));
+						
 						var hideSubTab:Boolean = true;
 						for each (var subTabPermission:XML in subtabPermissions) {
 							//if one id does not exist in the _permissions - this subtab 
