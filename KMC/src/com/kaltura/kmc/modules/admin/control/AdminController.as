@@ -20,9 +20,10 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( UserEvent.SELECT_USER, SelectUserCommand );
 			addCommand( UserEvent.DELETE_USER, DeleteUserCommand );
 			addCommand( UserEvent.TOGGLE_USER_STATUS, ToggleStatusCommand );
+			addCommand( UserEvent.UPDATE_USER, EditUserCommand );
+			addCommand( UserEvent.ADD_USER, AddUserCommand );
 			
-			addCommand( UserEvent.UPDATE_USER, BaseCommand );
-			addCommand( UserEvent.ADD_USER, BaseCommand );
+			addCommand( DrilldownEvent.SET_STATE, SetStateCommand);
 			
 		}
 	}

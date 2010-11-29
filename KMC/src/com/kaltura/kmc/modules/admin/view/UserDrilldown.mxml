@@ -1,110 +1,215 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							width="550" 
-							showCloseButton="true" close="{close()}"
-							>
+							width="550" help="{onHelp()}" showCloseButton="true" close="closeHandler(event)"
+							creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[Event(name="save", type="flash.events.Event")] 
+		[Event(name="close", type="flash.events.Event")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
+			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
-			/* help="{onHelp()}"
-			 */
+
 			
 			/**
-			 * name of the edit mode
+			 * value of the type property for the <code>save</code> event
 			 * */
-			public static const EDIT:String = "edit";
-			
+			public static const SAVE:String = "udd_save";
+
 			/**
-			 * name of the add mode.
+			 * value of the type property for the <code>save</code> event
 			 * */
-			public static const ADD:String = "add";
-			
+			public static const CLOSE:String = "udd_close";
+
+			private var _ready:Boolean;
+
+			/**
+			 * this is the original user entry. after being set it is not touched.
+			 * all changes are being made on <code>_undoUser</code>, which is a 
+			 * copy of this object.
+			 * */
+			private var _user:KalturaUser;
+
 			[Bindable]
 			/**
-			 * user data to show in the window
+			 * make changes to this user, so we can revert easily.
 			 * */
-			public var user:KalturaUser;
-			
-			
-			private var _mode:String = "add";
-			
+			private var _undoUser:KalturaUser;
+
 			/**
-			 * remove this popup (confirm with changes
+			 * @copy #mode
 			 * */
-			protected function close():void {
-				//TODO + implement close
+			private var _mode:String = UserDrilldownMode.ADD;
+
+
+			/**
+			 * dispatch help event with relevant anchor
+			 * */
+			protected function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, ResourceManager.getInstance().getString('admin', 'help_anchor')));
 			}
-			
-			
+
+
 			/**
 			 * open "new role" window
 			 * */
 			protected function openRoleWindow():void {
 				//TODO + implement openRoleWindow
 			}
-			
 
-			protected function onSave(event:MouseEvent):void
-			{
-				// TODO + Auto-generated method stub
-			}
-			
-			public function set mode(newMode:String):void {
-				_mode = newMode;
-				switch (mode) {
-					case UserDrilldown.ADD:
-						title = ResourceManager.getInstance().getString('admin', 'add_user_title');
-						break;
-					case UserDrilldown.EDIT:
-						title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
-						emailTi.editable = false;
-						firstNameTi.editable = false;
-						lastNameTi.editable = false;
-						break;
+
+			/**
+			 * check if any updates were made.
+			 * if so, ask to save new data.
+			 * */
+			protected function requestSave(event:MouseEvent):void {
+				var needSave:Boolean = !ObjectUtil.compareObjects(_user, _undoUser);
+				if (needSave) {
+					dispatchEvent(new Event(UserDrilldown.SAVE));
+				}
+				else {
+					requestClose();
 				}
 			}
 			
+			
+			/**
+			 * dispatch close event
+			 * */
+			protected function requestClose():void {
+				dispatchEvent(new Event(UserDrilldown.CLOSE));
+			}
+			
+			
+			/**
+			 * "x" botton clicked, confirm no changes and close.
+			 * */
+			protected function closeHandler(event:Event):void {
+				var needSave:Boolean = !ObjectUtil.compareObjects(_user, _undoUser);
+				if (needSave) {
+					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), 
+						ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
+				}
+				else {
+					requestClose();
+				}
+			}
+			
+			
+			/**
+			 * close window and discard changes or leave window open
+			 * */
+			protected function messageReleaseHandler(e:CloseEvent):void {
+				if (e.detail == Alert.YES) {
+					requestClose();
+				}
+			}
+
+
+			/**
+			 * current window mode
+			 * */
+			public function set mode(newMode:String):void {
+				_mode = newMode;
+				if (_ready) {
+					switch (newMode) {
+						case UserDrilldownMode.ADD:
+							title = ResourceManager.getInstance().getString('admin', 'add_user_title');
+							break;
+						case UserDrilldownMode.EDIT:
+							title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
+							emailTi.editable = false;
+							firstNameTi.editable = false;
+							lastNameTi.editable = false;
+							break;
+					}
+				}
+			}
+
+
+			/**
+			 * @private
+			 * */
 			public function get mode():String {
 				return _mode;
 			}
 
+
+			/**
+			 * user data shown in the window
+			 * */
+			public function get user():KalturaUser {
+				return _undoUser;
+			}
+
+
+			/**
+			 * @private
+			 * NOTE: when setting this attribute a new User is created and used, 
+			 * so when getting this attribute the NEW entity is returned.
+			 */
+			public function set user(value:KalturaUser):void {
+				_user = value;
+				// create working copy
+				_undoUser = new KalturaUser();
+				var atts:Array = ObjectUtil.getObjectAllKeys(value);
+				for (var i:int = 0; i< atts.length; i++) {
+					_undoUser[atts[i]] = value[atts[i]];
+				}
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_ready = true;
+				// re-trigger the mode setter
+				mode = _mode;
+			}
+
 		]]>
 	</mx:Script>
-	<mx:VBox width="100%" >
+	<mx:VBox width="100%">
 		<mx:HBox styleName="formInnerTitle" width="100%">
-			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}" styleName="acpPopUpTitleLabel"/>
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}"
+					  styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'email')}" width="100%" >
-				<mx:TextInput id='emailTi' width="100%" text="{user.email}" />
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'email')}" width="100%">
+				<mx:TextInput id='emailTi' width="100%" text="{_undoUser.email}"/>
 			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%" >
-				<mx:TextInput id='firstNameTi' width="100%" text="{user.fullName}"/>
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%">
+				<mx:TextInput id='firstNameTi' width="100%" text="{_undoUser.fullName}"/>
 				<!--TODO + get first name from server, make sure we can update first or last name -->
 			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="100%" >
-				<mx:TextInput id='lastNameTi' width="100%" text="{user.lastName}"/>
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="100%">
+				<mx:TextInput id='lastNameTi' width="100%" text="{_undoUser.lastName}"/>
 			</mx:FormItem>
 		</mx:Form>
-		
+
 		<mx:HBox styleName="formInnerTitle" width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'role')}" styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%" >
-				<mx:ComboBox id="roleCb" dataProvider="{}" />
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%">
+				<mx:ComboBox id="roleCb" dataProvider="{}"/>
 				<!--TODO + get roles dataprovider -->
-				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add')}" click="openRoleWindow()" />
+				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add')}"
+							   click="openRoleWindow()"/>
 			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'description')}" width="100%" >
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'description')}" width="100%">
 				<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
 			</mx:FormItem>
 		</mx:Form>
-		<mx:HBox width="100%" horizontalAlign="center" >
-			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="onSave(event)" />
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="requestSave(event)"/>
 		</mx:HBox>
-		
+
 	</mx:VBox>
 </containers:HelpTitleWindow>

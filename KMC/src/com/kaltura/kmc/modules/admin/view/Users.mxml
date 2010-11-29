@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
+		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="bindSetters()">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.user.UserAdd;
+			import com.kaltura.commands.user.UserDelete;
 			import com.kaltura.containers.HelpTitleWindow;
 			import com.kaltura.kmc.events.KmcErrorEvent;
+			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
 			import com.kaltura.kmc.modules.admin.control.UserEvent;
+			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.UsersModel;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaFilterPager;
@@ -15,11 +22,19 @@
 			
 			import flash.net.navigateToURL;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
 			[Bindable]
 			public var model:UsersModel;
+			
+			
+			/**
+			 * a popup window with user details
+			 * */
+			protected var _userDrilldown:UserDrilldown;
+			
 
 
 			
@@ -35,10 +50,33 @@
 			}
 			
 			
+			protected function bindSetters():void {
+				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
+			}
+			
+			
+			/**
+			 * re-load data, close popup, etc.
+			 * */
+			protected function onDrilldownStateChange(value:String):void {
+				switch (value) {
+					case UserDrilldownMode.ADD:
+					case UserDrilldownMode.EDIT:
+						// do nothing
+						break;
+					case UserDrilldownMode.NONE:
+						// if we got here, data save completed successfuly
+						closeUserDrilldown(null);
+						refreshData();
+						break;
+				}
+			}
+			
+			
 			/**
 			 * dispatch Cairngorm event to raise a list users command 
 			 * */
-			private function listUsers(pageNumber:int):void {
+			protected function listUsers(pageNumber:int):void {
 				var kfp:KalturaFilterPager = new KalturaFilterPager();
 				if (paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
 					kfp.pageSize = paging.kalturaFilterPager.pageSize;
@@ -70,8 +108,41 @@
 			/**
 			 * load users according to paging component value
 			 * */
-			private function gotoPage():void {
+			protected function gotoPage():void {
 				listUsers(paging.selectedPage);
+			}
+			
+			
+			/**
+			 * get the edited user and update server
+			 * */
+			protected function saveUserData(e:Event):void {
+				var ue:UserEvent;
+				// need to know if new user or update user.
+				if (model.drilldownMode == UserDrilldownMode.ADD) {
+					// add user
+					ue = new UserEvent(UserEvent.ADD_USER, _userDrilldown.user);
+				}
+				else if (model.drilldownMode == UserDrilldownMode.EDIT) {
+					// edit user
+					ue = new UserEvent(UserEvent.UPDATE_USER, _userDrilldown.user);
+				}
+				ue.dispatch();
+			}
+			
+			
+			/**
+			 * hides and destroys the user drilldown window
+			 * */
+			protected function closeUserDrilldown(e:Event):void {
+				if (_userDrilldown) {
+					PopUpManager.removePopUp(_userDrilldown);
+					_userDrilldown.removeEventListener(UserDrilldown.SAVE, saveUserData);
+					_userDrilldown.removeEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
+					_userDrilldown = null;
+					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.NONE);
+					de.dispatch();
+				}
 			}
 			
 			
@@ -82,21 +153,28 @@
 			protected function drillToSelectedUser():UserDrilldown {
 				var ud:UserDrilldown = new UserDrilldown();
 				ud.user = model.selectedUser;
-				PopUpManager.addPopUp(ud, this);
+				ud.mode = model.drilldownMode;
+				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
+				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
+				PopUpManager.addPopUp(ud, this, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;
 			}
-
+			
 
 			/**
 			 * show the "add user" dialog
 			 * */
 			protected function openAddUserDialog(event:MouseEvent):void {
 				// set the selected user to a new KalturaUser.
-				var su:UserEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
+				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
+				ce.dispatch();
+				
+				ce = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.ADD);
+				ce.dispatch();
+				
 				// open drilldown for this user
-				var ud:UserDrilldown = drillToSelectedUser();
-				ud.mode = UserDrilldown.ADD;
+				_userDrilldown = drillToSelectedUser();
 			}
 
 
@@ -104,8 +182,9 @@
 			 * show the "edit user" dialog
 			 * */
 			protected function openEditUserDialog(event:Event):void {
-				var ud:UserDrilldown = drillToSelectedUser();
-				ud.mode = UserDrilldown.EDIT;
+				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.EDIT);
+				ce.dispatch();
+				_userDrilldown = drillToSelectedUser();
 			}
 			
 
@@ -138,7 +217,7 @@
 			 * select a user
 			 * */
 			protected function setSelectedUser(event:Event):void {
-				var ce:UserEvent = new UserEvent(UserEvent.SELECT_USER, model.selectedUser);
+				var ce:UserEvent = new UserEvent(UserEvent.SELECT_USER, table.selectedUser);
 				ce.dispatch();
 			}
 			

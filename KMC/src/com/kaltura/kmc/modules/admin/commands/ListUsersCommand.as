@@ -20,7 +20,9 @@ package com.kaltura.kmc.modules.admin.commands
 			var ul:UserList = new UserList(e.filter, e.pager);
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
-			_model.kc.post(ul);
+			if (_model.kc) {
+				_model.kc.post(ul);
+			}
 		}
 		
 		
