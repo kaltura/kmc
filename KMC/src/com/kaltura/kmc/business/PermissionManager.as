@@ -53,7 +53,7 @@ package com.kaltura.kmc.business
 			var arr:Array = new Array();
 			for each(var vo:PermissionVo in _instructionVos )
 			{
-				if (vo.path.indexOf(componentPath)>0)
+				if (vo.path.indexOf(componentPath)>-1)
 				{
 					// found a match
 					arr.push(vo);
@@ -93,7 +93,7 @@ package com.kaltura.kmc.business
 		 */
 		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:*):void
 		{
-			var chainWithoutPrefix:Array = compoentPath.split(startComponent["name"]);
+			var chainWithoutPrefix:Array = compoentPath.split(startComponent["id"]);
 			//isolate all items after the correct item - drop everything before
 			chainWithoutPrefix.shift();
 			
