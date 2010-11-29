@@ -25,6 +25,8 @@ package com.kaltura.kmc.modules.admin.control
 			
 			addCommand( DrilldownEvent.SET_STATE, SetStateCommand);
 			
+			addCommand( ListRolesEvent.LIST_ROLES, ListRolesCommand);
+			
 		}
 	}
 }

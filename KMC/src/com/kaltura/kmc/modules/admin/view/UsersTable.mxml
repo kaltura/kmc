@@ -12,9 +12,11 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.admin.stubs.KalturaRole;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaUser;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.ComboBox;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -48,6 +50,17 @@
 			public static const SELECT_USER:String = "selectUser";
 
 
+			// ==================================================================
+			// members
+			// ==================================================================
+			
+			/**
+			 * list of all the roles associated with the current partner
+			 * (KalturaRole objects)
+			 * */
+			public var roles:ArrayCollection;
+			
+			
 			// ==================================================================
 			// methods
 			// ==================================================================
@@ -151,17 +164,20 @@
 			 * translate last login data to something readable
 			 * */
 			private function getLastLogin(item:Object, column:DataGridColumn):String {
-				//TODO + implement getLastLogin when we know what the server data looks like
 				return formatDate(item.lastLoginTime);
 			}
 
 
 			/**
-			 * translate last login data to something readable
+			 * translate role id to role name
 			 * */
 			private function getUserRole(item:Object, column:DataGridColumn):String {
-				//TODO + implement getUserRole when we know what the server data looks like
 				// need to scan all partner's roles list and get the correct one.
+				for (var i:int = 0; i<roles.length; i++) {
+					if ((roles.getItemAt(i) as KalturaRole).id == item.roleId) {
+						return (roles.getItemAt(i) as KalturaRole).name;
+					}
+				}
 				return item.roleId;
 			}
 

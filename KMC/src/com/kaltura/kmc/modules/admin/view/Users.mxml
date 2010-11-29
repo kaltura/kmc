@@ -11,6 +11,7 @@
 			import com.kaltura.containers.HelpTitleWindow;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
 			import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
 			import com.kaltura.kmc.modules.admin.control.UserEvent;
 			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
@@ -42,10 +43,18 @@
 			 * refresh subtab data
 			 * */
 			public function refreshData():void {
+				listRoles();
 				listUsers(0);
 				// reset selected user
 				var ce:UserEvent;
 				ce = new UserEvent(UserEvent.SELECT_USER, null);
+				ce.dispatch();
+			}
+			
+			protected function listRoles():void {
+				//TODO + re-think when this should take place
+				var ce:ListRolesEvent;
+				ce = new ListRolesEvent(ListRolesEvent.LIST_ROLES);
 				ce.dispatch();
 			}
 			
@@ -154,6 +163,7 @@
 				var ud:UserDrilldown = new UserDrilldown();
 				ud.user = model.selectedUser;
 				ud.mode = model.drilldownMode;
+				ud.roles = model.allRoles;
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				PopUpManager.addPopUp(ud, this, true);
@@ -231,7 +241,7 @@
 
 	<mx:HBox width="100%" >
 		<mx:VBox id="tableContainer" width="100%" >
-			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" rowCount="10"
+			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" roles="{model.allRoles}" rowCount="10"
 							 drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
 							 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" />
 			<controls:Paging id="paging" width="{table.width}" styleName="paging" nextPage="gotoPage()"

@@ -40,6 +40,11 @@ package com.kaltura.kmc.modules.admin.model
 		 * */
 		public var drilldownMode:String = UserDrilldownMode.NONE;
 		
+		/**
+		 * array collection with all the roles this partner has
+		 * (KalturaRole objects)
+		 */		
+		public var allRoles:ArrayCollection;
 		
 	}
 }

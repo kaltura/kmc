@@ -13,6 +13,7 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
@@ -49,6 +50,11 @@
 			 * */
 			private var _mode:String = UserDrilldownMode.ADD;
 
+			[Bindable]
+			/**
+			 * list of partner roles
+			 * */
+			public var roles:ArrayCollection;
 
 			/**
 			 * dispatch help event with relevant anchor
@@ -185,8 +191,7 @@
 				<mx:TextInput id='emailTi' width="100%" text="{_undoUser.email}"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%">
-				<mx:TextInput id='firstNameTi' width="100%" text="{_undoUser.fullName}"/>
-				<!--TODO + get first name from server, make sure we can update first or last name -->
+				<mx:TextInput id='firstNameTi' width="100%" text="{(_undoUser.firstName ? _undoUser.firstName : _undoUser.fullName)}"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="100%">
 				<mx:TextInput id='lastNameTi' width="100%" text="{_undoUser.lastName}"/>
@@ -198,7 +203,7 @@
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%">
-				<mx:ComboBox id="roleCb" dataProvider="{}"/>
+				<mx:ComboBox id="roleCb" dataProvider="{roles}" labelField="name"/>
 				<!--TODO + get roles dataprovider -->
 				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add')}"
 							   click="openRoleWindow()"/>
