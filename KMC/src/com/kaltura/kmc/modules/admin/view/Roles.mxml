@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
+		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
+		 implements="com.kaltura.kmc.modules.admin.business.IAdminSubtab">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -27,11 +28,22 @@
 			
 			
 			/**
+			 * refresh subtab data
+			 * */
+			public function refreshData():void {
+				listRoles(0);
+				// reset selected user
+				var ce:RoleEvent;
+				ce = new RoleEvent(RoleEvent.SELECT_ROLE, null);
+				ce.dispatch();
+			}
+			
+			/**
 			 * dispatch Cairngorm event to raise a list roles command 
 			 * */
 			protected function listRoles(pageNumber:int):void {
 				var kfp:KalturaFilterPager = new KalturaFilterPager();
-				if (paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
+				if (paging && paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
 					kfp.pageSize = paging.kalturaFilterPager.pageSize;
 				}
 				else {
@@ -40,8 +52,11 @@
 				if (pageNumber) {
 					kfp.pageIndex = pageNumber;
 				}
-				else {
+				else if (paging) {
 					kfp.pageIndex = paging.kalturaFilterPager.pageIndex;
+				}
+				else {
+					kfp.pageIndex = 0;
 				}
 				
 				var ce:ListRolesEvent;

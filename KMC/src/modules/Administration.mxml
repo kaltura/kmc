@@ -4,15 +4,17 @@
 				   xmlns:view="com.kaltura.kmc.modules.admin.view.*" 
 				   xmlns:model="com.kaltura.kmc.modules.admin.model.*"
 				   layout="vertical" minHeight="520" minWidth="950" styleName="mainView"
-				   >
+				   creationComplete="kmcmodule1_creationCompleteHandler(event)">
 	<mx:Metadata>
 		[ResourceBundle("admin")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.admin.business.IAdminSubtab;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 			
 			import mx.core.IFlexDisplayObject;
+			import mx.events.FlexEvent;
 			private static const VERSION:String = "0.1";
 
 			/**
@@ -27,6 +29,20 @@
 			 * module model
 			 * */
 			private var _model:AdminModelLocator = AdminModelLocator.getInstance();
+			
+			
+			/**
+			 * in case we want to start from a tab other than the
+			 * first, name of the initial tab
+			 * */
+			private var _initialTab:String;
+			
+			
+			/**
+			 * indicates start() has finished executing so all initial
+			 * data is present, as well as cretionComplete.
+			 * */
+			protected var _ready:Boolean = false;
 
 
 			override public function getModuleName():String {
@@ -40,23 +56,48 @@
 
 
 			override public function showSubtab(subtab:String, data:Object = null):void {
-//				// save data in the attic
-//				if (data) {
-//					putInAttic(data);
-//				}
-//				// show the tab
-//				_initialTab = subtab;
-//				if (_ready) {
-//					switchToTab(subtab);
-//				}
+				// show the tab
+				_initialTab = subtab;
+				if (_ready) {
+					switchToTab(subtab);
+				}
+			}
+			
+			protected function kmcmodule1_creationCompleteHandler(event:FlexEvent):void {
+				if (_ready && _initialTab) {
+					switchToTab(_initialTab);
+				}
+				else {
+					_ready = true;
+				}
 			}
 
 
 			override protected function start():void {
-				trace("start");
 				initModel();
-				users.refreshData();
+				if (_ready && _initialTab) {
+					switchToTab(_initialTab);
+				}
+				else {
+					_ready = true;
+				}
 			}
+			
+			
+			private function switchToTab(tab:String = ""):void {
+				switch (tab) {
+					case 'roles':
+						secTln.selectedIndex = 1;
+						roles.refreshData();
+						break;
+					case 'users':
+					default:
+						secTln.selectedIndex = 0;
+						users.refreshData();
+						break;
+				}
+			}
+			
 			
 			
 			private function initModel():void {
@@ -66,12 +107,13 @@
 
 
 			/**
-			 * change view
+			 * change url
 			 * */
 			private function onItemClick(event:Event):void {
-
+				(contentView.selectedChild as IAdminSubtab).refreshData();
+				var label:String = contentView.selectedChild.id;
+				ExternalInterface.call("kmc.mediator.writeUrlHash", Administration.NAME, label);
 			}
-
 
 		]]>
 	</mx:Script>
