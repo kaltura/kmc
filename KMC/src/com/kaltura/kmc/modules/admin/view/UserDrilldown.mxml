@@ -8,8 +8,10 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.hurlant.crypto.symmetric.CBCMode;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
+			import com.kaltura.kmc.modules.admin.stubs.KalturaRole;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			
@@ -30,6 +32,9 @@
 			 * */
 			public static const CLOSE:String = "udd_close";
 
+			/**
+			 * creationComplete event occured in the past?
+			 * */
 			private var _ready:Boolean;
 
 			/**
@@ -54,8 +59,22 @@
 			/**
 			 * list of partner roles
 			 * */
-			public var roles:ArrayCollection;
+			protected var _roles:ArrayCollection;
 
+			
+			/**
+			 * pass initial data.
+			 * since setting a role for edit requires roles 
+			 * data to be set first, we use this method.
+			 * */
+			public function init(roles:ArrayCollection, user:KalturaUser, mode:String):void {
+				_roles = roles;
+				// the following intentionaly use setters. 
+				setUser(user);
+				setMode(mode);
+			}
+			
+			
 			/**
 			 * dispatch help event with relevant anchor
 			 * */
@@ -70,13 +89,27 @@
 			protected function openRoleWindow():void {
 				//TODO + implement openRoleWindow
 			}
+			
+			/**
+			 * update <code>_undoUser</code> with data from the form
+			 * */
+			protected function setUserDataFromForm(event:MouseEvent):void {
+				if (_mode == UserDrilldownMode.ADD) {
+					// also update first part
+					_undoUser.email = emailTi.text;
+					_undoUser.firstName = firstNameTi.text;
+					_undoUser.lastName = lastNameTi.text;
+				}
+				_undoUser.roleId = (roleCb.selectedItem as KalturaRole).id;
+				requestSave();
+			}
 
 
 			/**
 			 * check if any updates were made.
 			 * if so, ask to save new data.
 			 * */
-			protected function requestSave(event:MouseEvent):void {
+			protected function requestSave():void {
 				var needSave:Boolean = !ObjectUtil.compareObjects(_user, _undoUser);
 				if (needSave) {
 					dispatchEvent(new Event(UserDrilldown.SAVE));
@@ -110,6 +143,13 @@
 			}
 			
 			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_ready = true;
+				// re-trigger the mode setter
+				setMode(_mode);
+			}
+
+			
 			/**
 			 * close window and discard changes or leave window open
 			 * */
@@ -118,12 +158,32 @@
 					requestClose();
 				}
 			}
+			
+			/**
+			 * get the item matching the user's roleId
+			 * */
+			protected function findSelectedRole():KalturaRole {
+				var lst:Array = _roles.source;
+				var res:KalturaRole;
+				for (var i:int = 0; i<lst.length; i++) {
+					if ((lst[i] as KalturaRole).id == _undoUser.roleId) {
+						res = (lst[i] as KalturaRole);
+						break;
+					}
+				}
+				return res;
+			}
+			
+			protected function setUserRole(e:Event):void {
+				_undoUser.roleId = (roleCb.selectedItem as KalturaRole).id;
+			}
 
 
 			/**
-			 * current window mode
+			 * set window mode. 
+			 * optional values are listed in <code>UserDrilldownMode</code>.
 			 * */
-			public function set mode(newMode:String):void {
+			protected function setMode(newMode:String):void {
 				_mode = newMode;
 				if (_ready) {
 					switch (newMode) {
@@ -135,14 +195,30 @@
 							emailTi.editable = false;
 							firstNameTi.editable = false;
 							lastNameTi.editable = false;
+							roleCb.selectedItem = findSelectedRole();
 							break;
 					}
+				}
+			}
+			
+			/**
+			 * @private
+			 * NOTE: when setting this attribute a new User is created and used, 
+			 * so when getting this attribute the NEW entity is returned.
+			 */
+			protected function setUser(value:KalturaUser):void {
+				_user = value;
+				// create working copy
+				_undoUser = new KalturaUser();
+				var atts:Array = ObjectUtil.getObjectAllKeys(value);
+				for (var i:int = 0; i< atts.length; i++) {
+					_undoUser[atts[i]] = value[atts[i]];
 				}
 			}
 
 
 			/**
-			 * @private
+			 * current window mode
 			 * */
 			public function get mode():String {
 				return _mode;
@@ -156,28 +232,6 @@
 				return _undoUser;
 			}
 
-
-			/**
-			 * @private
-			 * NOTE: when setting this attribute a new User is created and used, 
-			 * so when getting this attribute the NEW entity is returned.
-			 */
-			public function set user(value:KalturaUser):void {
-				_user = value;
-				// create working copy
-				_undoUser = new KalturaUser();
-				var atts:Array = ObjectUtil.getObjectAllKeys(value);
-				for (var i:int = 0; i< atts.length; i++) {
-					_undoUser[atts[i]] = value[atts[i]];
-				}
-			}
-
-
-			protected function creationCompleteHandler(event:FlexEvent):void {
-				_ready = true;
-				// re-trigger the mode setter
-				mode = _mode;
-			}
 
 		]]>
 	</mx:Script>
@@ -203,9 +257,8 @@
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%">
-				<mx:ComboBox id="roleCb" dataProvider="{roles}" labelField="name"/>
-				<!--TODO + get roles dataprovider -->
-				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add')}"
+				<mx:ComboBox id="roleCb" dataProvider="{_roles}" labelField="name" />
+				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add_role')}"
 							   click="openRoleWindow()"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'description')}" width="100%">
@@ -213,7 +266,7 @@
 			</mx:FormItem>
 		</mx:Form>
 		<mx:HBox width="100%" horizontalAlign="center">
-			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="requestSave(event)"/>
+			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="setUserDataFromForm(event)"/>
 		</mx:HBox>
 
 	</mx:VBox>

@@ -51,8 +51,11 @@
 				ce.dispatch();
 			}
 			
+			
+			/**
+			 * get all roles associated with the current partner
+			 * */
 			protected function listRoles():void {
-				//TODO + re-think when this should take place
 				var ce:ListRolesEvent;
 				ce = new ListRolesEvent(ListRolesEvent.LIST_ROLES);
 				ce.dispatch();
@@ -161,9 +164,7 @@
 			 * */
 			protected function drillToSelectedUser():UserDrilldown {
 				var ud:UserDrilldown = new UserDrilldown();
-				ud.user = model.selectedUser;
-				ud.mode = model.drilldownMode;
-				ud.roles = model.allRoles;
+				ud.init(model.allRoles, model.selectedUser, model.drilldownMode);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				PopUpManager.addPopUp(ud, this, true);
@@ -252,7 +253,7 @@
 		<mx:Spacer width="5"/>
 
 		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
-			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add')}" styleName="addPlst" width="100%"
+			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add_user')}" styleName="addPlst" width="100%"
 					   height="30" buttonMode="true" click="openAddUserDialog(event)"/>
 		</mx:VBox>
 	</mx:HBox>
