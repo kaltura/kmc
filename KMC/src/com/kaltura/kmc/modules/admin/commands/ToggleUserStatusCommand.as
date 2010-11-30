@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.admin.commands
 	
 	import mx.collections.ArrayCollection;
 
-	public class ToggleStatusCommand extends BaseCommand {
+	public class ToggleUserStatusCommand extends BaseCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();

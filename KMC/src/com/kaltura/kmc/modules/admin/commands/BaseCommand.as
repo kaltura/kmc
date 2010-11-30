@@ -49,8 +49,16 @@ package com.kaltura.kmc.modules.admin.commands {
 		 *
 		 */
 		public function result(data:Object):void {
+			// for simple requests
 			if (data.error) {
 				fault(data);
+			}
+			// for multirequests
+			else if (data.data && data.data.length > 0) {
+				var l:int = data.data.length ;
+				for(var i:int = 0; i<l; i++) {
+					result(data.data[i]);
+				}
 			}
 		}
 

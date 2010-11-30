@@ -14,7 +14,7 @@
 			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
 			import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
 			import com.kaltura.kmc.modules.admin.control.UserEvent;
-			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
+			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.UsersModel;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaFilterPager;
@@ -72,11 +72,11 @@
 			 * */
 			protected function onDrilldownStateChange(value:String):void {
 				switch (value) {
-					case UserDrilldownMode.ADD:
-					case UserDrilldownMode.EDIT:
+					case DrilldownMode.ADD:
+					case DrilldownMode.EDIT:
 						// do nothing
 						break;
-					case UserDrilldownMode.NONE:
+					case DrilldownMode.NONE:
 						// if we got here, data save completed successfuly
 						closeUserDrilldown(null);
 						refreshData();
@@ -131,11 +131,11 @@
 			protected function saveUserData(e:Event):void {
 				var ue:UserEvent;
 				// need to know if new user or update user.
-				if (model.drilldownMode == UserDrilldownMode.ADD) {
+				if (model.drilldownMode == DrilldownMode.ADD) {
 					// add user
 					ue = new UserEvent(UserEvent.ADD_USER, _userDrilldown.user);
 				}
-				else if (model.drilldownMode == UserDrilldownMode.EDIT) {
+				else if (model.drilldownMode == DrilldownMode.EDIT) {
 					// edit user
 					ue = new UserEvent(UserEvent.UPDATE_USER, _userDrilldown.user);
 				}
@@ -152,7 +152,7 @@
 					_userDrilldown.removeEventListener(UserDrilldown.SAVE, saveUserData);
 					_userDrilldown.removeEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 					_userDrilldown = null;
-					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.NONE);
+					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
 				}
 			}
@@ -181,7 +181,7 @@
 				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
 				ce.dispatch();
 				
-				ce = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.ADD);
+				ce = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.ADD);
 				ce.dispatch();
 				
 				// open drilldown for this user
@@ -193,7 +193,7 @@
 			 * show the "edit user" dialog
 			 * */
 			protected function openEditUserDialog(event:Event):void {
-				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.EDIT);
+				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.EDIT);
 				ce.dispatch();
 				_userDrilldown = drillToSelectedUser();
 			}

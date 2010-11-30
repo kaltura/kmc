@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.admin.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
-	import com.kaltura.kmc.modules.admin.stubs.KalturaRole;
+	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 	
 	import mx.collections.ArrayCollection;
 

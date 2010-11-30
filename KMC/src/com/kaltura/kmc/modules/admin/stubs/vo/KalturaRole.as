@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.admin.stubs
+package com.kaltura.kmc.modules.admin.stubs.vo
 {
 	/**
 	 * this is a stub for the client KalturaRole object

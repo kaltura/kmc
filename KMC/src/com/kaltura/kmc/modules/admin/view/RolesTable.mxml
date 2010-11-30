@@ -5,11 +5,11 @@
 			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
-		[Event(name="deleteUser", type="flash.events.Event")] 
-		[Event(name="toggleBlock", type="flash.events.Event")] 
-		[Event(name="selectUser", type="flash.events.Event")] 
+		[Event(name="deleteRole", type="flash.events.Event")] 
+		[Event(name="duplicateRole", type="flash.events.Event")] 
+		[Event(name="selectRole", type="flash.events.Event")] 
 	</mx:Metadata>
-
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
@@ -24,115 +24,101 @@
 			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
-
+			
 			// ==================================================================
 			// constants
 			// ==================================================================
-
+			
 			/**
 			 * defines the value of the type property for the <code>drillDown</code> event.
 			 * */
 			public static const DRILL_DOWN:String = "drillDown";
-
+			
 			/**
-			 * defines the value of the type property for the <code>delete</code> event.
+			 * defines the value of the type property for the <code>deleteRole</code> event.
 			 * */
-			public static const DELETE_USER:String = "deleteUser";
-
+			public static const DELETE_ROLE:String = "deleteRole";
+			
 			/**
-			 * defines the value of the type property for the <code>toggleBlock</code> event.
+			 * defines the value of the type property for the <code>duplicateRole</code> event.
 			 * */
-			public static const TOGGLE_BLOCK:String = "toggleBlock";
-
+			public static const DUPLICATE_ROLE:String = "duplicateRole";
+			
 			/**
-			 * defines the value of the type property for the <code>selectUser</code> event.
+			 * defines the value of the type property for the <code>selectRole</code> event.
 			 * */
-			public static const SELECT_USER:String = "selectUser";
-
-
+			public static const SELECT_ROLE:String = "selectRole";
+			
+			
 			// ==================================================================
 			// members
 			// ==================================================================
 			
-			/**
-			 * list of all the roles associated with the current partner
-			 * (KalturaRole objects)
-			 * */
-			public var roles:ArrayCollection;
+			
 			
 			
 			// ==================================================================
 			// methods
 			// ==================================================================
-
-
+			
+			
 			/**
 			 * selection or deselection was made
+			 * @fixed
 			 */
 			public function setSelection(event:ListEvent):void {
 				if (event.itemRenderer.data) {
-					dispatchEvent(new Event(UsersTable.SELECT_USER));
+					dispatchEvent(new Event(RolesTable.SELECT_ROLE));
 				}
 			}
-
-
+			
+			
 			/**
 			 * open the entry drilldown popup
+			 * @fixed		
 			 * */
 			private function editEntry():void {
-				dispatchEvent(new Event(UsersTable.DRILL_DOWN));
+				dispatchEvent(new Event(RolesTable.DRILL_DOWN));
 			}
-
-
+			
+			
 			/**
 			 * show delete confirmation box
+			 * @fixed
 			 * */
 			private function confirmDelete():void {
-				Alert.show(ResourceManager.getInstance().getString('admin', 'confirm_delete', [selectedUser.fullName]), ResourceManager.getInstance().getString('admin', 'confirm_delete_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
-
+				Alert.show(ResourceManager.getInstance().getString('admin', 'confirm_delete_role', [selectedRole.name]), ResourceManager.getInstance().getString('admin', 'confirm_delete_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
+				
 			}
-
-
+			
+			
 			/**
 			 * delete the selected entry
+			 * @fixed
 			 * */
 			private function deleteEntry(e:CloseEvent):void {
 				if (e.detail == Alert.OK) {
 					// request to delete the entry
-					dispatchEvent(new Event(UsersTable.DELETE_USER));
+					dispatchEvent(new Event(RolesTable.DELETE_ROLE));
 				}
 			}
-
-
+			
+			
 			/**
-			 * show block toggle confirmation box
+			 * duplicate the selected entry
 			 * */
-			private function confirmBlock():void {
-				var key:String = "confirm_unblock";
-				if ((selectedItem as KalturaUser).status == KalturaUserStatus.ACTIVE) {
-					key = "confirm_block";
-				}
-				Alert.show(ResourceManager.getInstance().getString('admin', key), ResourceManager.getInstance().getString('admin', key + '_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
+			private function duplicateEntry():void {
+				dispatchEvent(new Event(RolesTable.DUPLICATE_ROLE));
 			}
-
-
-			/**
-			 * toggle block / unblock on the selected entry
-			 * */
-			private function toggleBlockEntry(e:CloseEvent):void {
-				if (e.detail == Alert.OK) {
-					// request to toggle user block status
-					dispatchEvent(new Event(UsersTable.TOGGLE_BLOCK));
-				}
-			}
-
-
+			
+			
 			// ==================================================================
 			// item-renderer functions
 			// ==================================================================
-
+			
 			/**
 			 * show formatted date
+			 * @fixed
 			 * */
 			private function formatDate(date:Number):String {
 				var df:DateFormatter = new DateFormatter();
@@ -141,47 +127,20 @@
 				dt.setTime(date * 1000);
 				return df.format(dt);
 			};
-
-
-			/**
-			 * translate user status to string
-			 * */
-			private function getUserStatus(item:Object, column:DataGridColumn):String {
-				var res:String = '';
-				switch (item.status) {
-					case KalturaUserStatus.ACTIVE:
-						res = ResourceManager.getInstance().getString('admin', 'active');
-					case KalturaUserStatus.BLOCKED:
-						res = ResourceManager.getInstance().getString('admin', 'blocked');
-					case KalturaUserStatus.DELETED:
-						res = ResourceManager.getInstance().getString('admin', 'deleted');
-				}
-				return res;
-			}
-
-
+			
+			
+			
 			/**
 			 * translate last login data to something readable
+			 * @fixed
 			 * */
-			private function getLastLogin(item:Object, column:DataGridColumn):String {
-				return formatDate(item.lastLoginTime);
+			private function getSaveDate(item:Object, column:DataGridColumn):String {
+				return formatDate(item.updatedAt);
 			}
-
-
-			/**
-			 * translate role id to role name
-			 * */
-			private function getUserRole(item:Object, column:DataGridColumn):String {
-				// need to scan all partner's roles list and get the correct one.
-				for (var i:int = 0; i<roles.length; i++) {
-					if ((roles.getItemAt(i) as KalturaRole).id == item.roleId) {
-						return (roles.getItemAt(i) as KalturaRole).name;
-					}
-				}
-				return item.roleId;
-			}
-
-
+			
+			
+			
+			
 			/**
 			 * perform selected action on selected entry
 			 * (used in item renderer)
@@ -191,8 +150,8 @@
 					case resourceManager.getString('admin', 'edit'):
 						editEntry();
 						break;
-					case resourceManager.getString('admin', 'un_block'):
-						confirmBlock();
+					case resourceManager.getString('admin', 'duplicate'):
+						duplicateEntry();
 						break;
 					case resourceManager.getString('admin', 'delete'):
 						confirmDelete();
@@ -204,32 +163,29 @@
 			// ==================================================================
 			// gettesr / setters
 			// ==================================================================
-
-			public function get selectedUser():KalturaUser {
-				return selectedItem as KalturaUser;
+			
+			/**
+			 * @fixed
+			 * */
+			public function get selectedRole():KalturaRole {
+				return selectedItem as KalturaRole;
 			}
 			
 		]]>
 	</mx:Script>
-
+	
 	<mx:columns>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="status" labelFunction="{getUserStatus}"
-						   headerText="{resourceManager.getString('admin', 'user_status')}"
-						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="fullName"
-						   headerText="{resourceManager.getString('admin', 'user_name')}"
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name" 
+						   headerText="{resourceManager.getString('admin', 'role')}"
 						   headerStyleName="centerTableColumnHeader"/>
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id"
 						   headerText="{resourceManager.getString('admin', 'id')}"
 						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="email"
-						   headerText="{resourceManager.getString('admin', 'user_email')}"
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="description"
+						   headerText="{resourceManager.getString('admin', 'description')}"
 						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="roleId" labelFunction="{getUserRole}"
-						   headerText="{resourceManager.getString('admin', 'role')}"
-						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="lastLoginTime" labelFunction="{getLastLogin}"
-						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="email" labelFunction="{getSaveDate}"
+						   headerText="{resourceManager.getString('admin', 'save_date')}"
 						   headerStyleName="centerTableColumnHeader"/>
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4"
 						   headerText="{resourceManager.getString('admin', 'user_actions')}"
@@ -243,7 +199,7 @@
 									 change="{outerDocument.onActionSelected(event)}">
 							<mx:dataProvider>
 								<mx:String>{resourceManager.getString('admin','edit')}</mx:String>
-								<mx:String>{resourceManager.getString('admin','un_block')}</mx:String>
+								<mx:String>{resourceManager.getString('admin','duplicate')}</mx:String>
 								<mx:String>{resourceManager.getString('admin','delete')}</mx:String>
 							</mx:dataProvider>
 						</mx:ComboBox>

@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.admin.model
 	 * the user drilldown mode.
 	 * @author Atar
 	 */	
-	public class UserDrilldownMode {
+	public class DrilldownMode {
 		
 		/**
 		 * edit mode - some fields are ediatble, others are not.

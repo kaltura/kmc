@@ -1,4 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
-	<mx:Label text="Roles Page"/>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
+			import com.kaltura.kmc.modules.admin.control.RoleEvent;
+			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+			import com.kaltura.kmc.modules.admin.model.RolesModel;
+			import com.kaltura.vo.KalturaFilterPager;
+			
+			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
+			
+			
+			[Bindable]
+			public var model:RolesModel;
+			
+			
+			/**
+			 * a popup window with role details
+			 * */
+			protected var _roleDrilldown:RoleDrilldown;
+			
+			
+			
+			/**
+			 * dispatch Cairngorm event to raise a list users command 
+			 * */
+			protected function listUsers(pageNumber:int):void {
+				var kfp:KalturaFilterPager = new KalturaFilterPager();
+				if (paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
+					kfp.pageSize = paging.kalturaFilterPager.pageSize;
+				}
+				else {
+					kfp.pageSize = 10;
+				}
+				if (pageNumber) {
+					kfp.pageIndex = pageNumber;
+				}
+				else {
+					kfp.pageIndex = paging.kalturaFilterPager.pageIndex;
+				}
+				
+				var ce:ListRolesEvent;
+				ce = new ListRolesEvent(ListRolesEvent.LIST_ROLES, model.filter, kfp);
+				ce.dispatch();
+			}
+			
+			/**
+			 * load users according to paging component value
+			 * */
+			protected function gotoPage():void {
+				listUsers(paging.selectedPage);
+			}
+			
+			/**
+			 * get the edited user and update server
+			 * */
+			protected function saveRoleData(e:Event):void {
+				var ue:RoleEvent;
+				// need to know if new user or update user.
+				if (model.drilldownMode == DrilldownMode.ADD) {
+					// add user
+					ue = new RoleEvent(RoleEvent.ADD_ROLE, _roleDrilldown.role);
+				}
+				else if (model.drilldownMode == DrilldownMode.EDIT) {
+					// edit user
+					ue = new RoleEvent(RoleEvent.UPDATE_ROLE, _roleDrilldown.role);
+				}
+				ue.dispatch();
+			}
+			
+			/**
+			 * hides and destroys the user drilldown window
+			 * */
+			protected function closeRoleDrilldown(e:Event):void {
+				if (_roleDrilldown) {
+					PopUpManager.removePopUp(_roleDrilldown);
+					_roleDrilldown.removeEventListener(UserDrilldown.SAVE, saveRoleData);
+					_roleDrilldown.removeEventListener(UserDrilldown.CLOSE, closeRoleDrilldown);
+					_roleDrilldown = null;
+					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.NONE);
+					de.dispatch();
+				}
+			}
+			
+			
+			
+			/**
+			 * open drilldown window with data of currently selected user
+			 * @return the newly created popup window
+			 * */
+			protected function drillToSelectedRole():RoleDrilldown {
+				var ud:RoleDrilldown = new RoleDrilldown();
+				ud.init(model.selectedRole, model.drilldownMode);
+				ud.addEventListener(RoleDrilldown.SAVE, saveRoleData);
+				ud.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
+				PopUpManager.addPopUp(ud, this, true);
+				PopUpManager.centerPopUp(ud);
+				return ud;
+			}
+			
+			
+			/**
+			 * show the "add user" dialog
+			 * */
+			protected function openAddRoleDialog(event:MouseEvent):void {
+//				// set the selected user to a new KalturaUser.
+//				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
+//				ce.dispatch();
+//				
+//				ce = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.ADD);
+//				ce.dispatch();
+//				
+//				// open drilldown for this user
+//				_userDrilldown = drillToSelectedUser();
+			}
+			
+			
+			/**
+			 * show the "edit user" dialog
+			 * */
+			protected function openEditRoleDialog(event:Event):void {
+				//TODO let setStateCommand know state for which model it should set
+				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.EDIT);
+				ce.dispatch();
+				_roleDrilldown = drillToSelectedRole();
+			}
+			
+			
+			/**
+			 * duplicate selected role
+			 * */
+			protected function duplicateRole(event:Event):void {
+//				var ce:RoleEvent = new RoleEvent(RoleEvent.DELETE_USER, model.selectedUser);
+//				ce.dispatch();
+			}
+			
+			/**
+			 * delete selected role
+			 * */
+			protected function deleteRole(event:Event):void {
+				var ce:RoleEvent = new RoleEvent(RoleEvent.DELETE_ROLE, model.selectedRole);
+				ce.dispatch();
+			}
+			
+			
+			/**
+			 * select a role
+			 * */
+			protected function setSelectedRole(event:Event):void {
+				var ce:RoleEvent = new RoleEvent(RoleEvent.SELECT_ROLE, table.selectedRole);
+				ce.dispatch();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="pageTitle"/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%" >
+		<mx:VBox id="tableContainer" width="100%" >
+			<view:RolesTable id="table" width="100%" dataProvider="{model.roles}" rowCount="10"
+							 drillDown="openEditRoleDialog(event)" deleteRole="deleteRole(event)" 
+							 duplicateRole="duplicateRole(event)" selectRole="setSelectedRole(event)" />
+			<controls:Paging id="paging" width="{table.width}" styleName="paging" nextPage="gotoPage()"
+							 prvPage="gotoPage()" getPageNum="gotoPage()" rowsInPageChange="gotoPage()"
+							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true" totalCount="{model.totalRoles}" />
+		</mx:VBox>
+		
+		<mx:Spacer width="5"/>
+		
+		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
+			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add_user')}" styleName="addPlst" width="100%"
+					   height="30" buttonMode="true" click="openAddRoleDialog(event)"/>
+		</mx:VBox>
+	</mx:HBox>
 </mx:VBox>

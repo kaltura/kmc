@@ -38,7 +38,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * user drilldown mode, either <code>UserDrilldownMode.ADD</code>, 
 		 * <code>UserDrilldownMode.EDIT</code> or  <code>UserDrilldownMode.NONE</code>.
 		 * */
-		public var drilldownMode:String = UserDrilldownMode.NONE;
+		public var drilldownMode:String = DrilldownMode.NONE;
 		
 		/**
 		 * array collection with all the roles this partner has

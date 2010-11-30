@@ -19,13 +19,20 @@ package com.kaltura.kmc.modules.admin.control
 			// User Events
 			addCommand( UserEvent.SELECT_USER, SelectUserCommand );
 			addCommand( UserEvent.DELETE_USER, DeleteUserCommand );
-			addCommand( UserEvent.TOGGLE_USER_STATUS, ToggleStatusCommand );
+			addCommand( UserEvent.TOGGLE_USER_STATUS, ToggleUserStatusCommand );
 			addCommand( UserEvent.UPDATE_USER, EditUserCommand );
 			addCommand( UserEvent.ADD_USER, AddUserCommand );
 			
 			addCommand( DrilldownEvent.SET_STATE, SetStateCommand);
 			
 			addCommand( ListRolesEvent.LIST_ROLES, ListRolesCommand);
+			
+			// Role Events
+			addCommand( RoleEvent.SELECT_ROLE, SelectRoleCommand);
+			addCommand( RoleEvent.DELETE_ROLE, DeleteRoleCommand);
+			addCommand( RoleEvent.ADD_ROLE, AddRoleCommand);
+			addCommand( RoleEvent.UPDATE_ROLE, EditRoleCommand);
+			addCommand( RoleEvent.DUPLICATE_ROLE, BaseCommand);
 			
 		}
 	}

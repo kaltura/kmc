@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
+							width="550"  showCloseButton="true" close="closeHandler(event)"
+							creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[Event(name="save", type="flash.events.Event")] 
+		[Event(name="close", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
+			import com.kaltura.utils.ObjectUtil;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			
+			
+			/**
+			 * value of the type property for the <code>save</code> event
+			 * */
+			public static const SAVE:String = "rdd_save";
+			
+			/**
+			 * value of the type property for the <code>save</code> event
+			 * */
+			public static const CLOSE:String = "rdd_close";
+			
+			/**
+			 * creationComplete event occured in the past?
+			 * */
+			private var _ready:Boolean;
+			
+			/**
+			 * @copy #role
+			 * */
+			private var _role:KalturaRole;
+			
+			
+			[Bindable]
+			/**
+			 * make changes to this user, so we can revert easily.
+			 * */
+			private var _undoRole:KalturaRole;
+			
+			
+			/**
+			 * @copy #mode
+			 * */
+			private var _mode:String = DrilldownMode.ADD;
+			
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_ready = true;
+				// re-trigger the mode setter
+				setMode(_mode);
+			}
+			
+			/**
+			 * "x" botton clicked, confirm no changes and close.
+			 * */
+			protected function closeHandler(event:Event):void {
+				var needSave:Boolean = !ObjectUtil.compareObjects(_role, _undoRole);
+				if (needSave) {
+					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), 
+						ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
+				}
+				else {
+					requestClose();
+				}
+			}
+			
+			
+			/**
+			 * close window and discard changes or leave window open
+			 * */
+			protected function messageReleaseHandler(e:CloseEvent):void {
+				if (e.detail == Alert.YES) {
+					requestClose();
+				}
+			}
+			
+			
+			/**
+			 * dispatch close event
+			 * */
+			protected function requestClose():void {
+				dispatchEvent(new Event(RoleDrilldown.CLOSE));
+			}
+			
+			
+			
+			/**
+			 * pass initial data.
+			 * */
+			public function init(role:KalturaRole, mode:String):void {
+				// the following intentionaly use setters. 
+				setRole(role);
+				setMode(mode);
+			}
+			
+			
+			/**
+			 * set window mode. 
+			 * optional values are listed in <code>DrilldownMode</code>.
+			 * */
+			protected function setMode(newMode:String):void {
+				_mode = newMode;
+				if (_ready) {
+					switch (newMode) {
+						case DrilldownMode.ADD:
+							title = ResourceManager.getInstance().getString('admin', 'add_user_title');
+							break;
+						case DrilldownMode.EDIT:
+							title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
+							break;
+					}
+				}
+			}
+			
+			
+			/**
+			 * @private
+			 * NOTE: when setting this attribute a new Role is created and used, 
+			 * so when getting this attribute the NEW entity is returned.
+			 */
+			protected function setRole(value:KalturaRole):void {
+				_role = value;
+				// create working copy
+				_undoRole = new KalturaRole();
+				var atts:Array = ObjectUtil.getObjectAllKeys(value);
+				for (var i:int = 0; i< atts.length; i++) {
+					_undoRole[atts[i]] = value[atts[i]];
+				}
+			}
+
+			/**
+			 * this is the original role entry. after being set it is not touched.
+			 * all changes are being made on <code>_undoRole</code>, which is a 
+			 * copy of this object.
+			 * */
+			public function get role():KalturaRole
+			{
+				return _role;
+			}
+			
+			
+			/**
+			 * current window mode
+			 * */
+			public function get mode():String {
+				return _mode;
+			}
+
+			
+		]]>
+	</mx:Script>
+	
+</containers:HelpTitleWindow>

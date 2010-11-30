@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.admin.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.user.UserUpdate;
 	import com.kaltura.kmc.modules.admin.control.UserEvent;
-	import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
+	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUser;
 
 	public class EditUserCommand extends BaseCommand {
@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.admin.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
-				_model.usersModel.drilldownMode = UserDrilldownMode.NONE;
+				_model.usersModel.drilldownMode = DrilldownMode.NONE;
 			}
 		}
 	}

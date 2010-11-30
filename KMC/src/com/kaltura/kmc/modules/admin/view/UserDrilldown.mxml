@@ -10,8 +10,8 @@
 		<![CDATA[
 			import com.hurlant.crypto.symmetric.CBCMode;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.admin.model.UserDrilldownMode;
-			import com.kaltura.kmc.modules.admin.stubs.KalturaRole;
+			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			
@@ -53,7 +53,7 @@
 			/**
 			 * @copy #mode
 			 * */
-			private var _mode:String = UserDrilldownMode.ADD;
+			private var _mode:String = DrilldownMode.ADD;
 
 			[Bindable]
 			/**
@@ -94,7 +94,7 @@
 			 * update <code>_undoUser</code> with data from the form
 			 * */
 			protected function setUserDataFromForm(event:MouseEvent):void {
-				if (_mode == UserDrilldownMode.ADD) {
+				if (_mode == DrilldownMode.ADD) {
 					// also update first part
 					_undoUser.email = emailTi.text;
 					_undoUser.firstName = firstNameTi.text;
@@ -181,16 +181,16 @@
 
 			/**
 			 * set window mode. 
-			 * optional values are listed in <code>UserDrilldownMode</code>.
+			 * optional values are listed in <code>DrilldownMode</code>.
 			 * */
 			protected function setMode(newMode:String):void {
 				_mode = newMode;
 				if (_ready) {
 					switch (newMode) {
-						case UserDrilldownMode.ADD:
+						case DrilldownMode.ADD:
 							title = ResourceManager.getInstance().getString('admin', 'add_user_title');
 							break;
-						case UserDrilldownMode.EDIT:
+						case DrilldownMode.EDIT:
 							title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
 							emailTi.editable = false;
 							firstNameTi.editable = false;
@@ -241,7 +241,7 @@
 					  styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'email')}" width="100%">
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'udd_email')}" width="100%">
 				<mx:TextInput id='emailTi' width="100%" text="{_undoUser.email}"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%">
@@ -261,7 +261,7 @@
 				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add_role')}"
 							   click="openRoleWindow()"/>
 			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'description')}" width="100%">
+			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'udd_description')}" width="100%">
 				<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
 			</mx:FormItem>
 		</mx:Form>

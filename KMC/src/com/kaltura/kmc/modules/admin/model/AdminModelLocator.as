@@ -17,6 +17,11 @@ package com.kaltura.kmc.modules.admin.model {
 		public var usersModel:UsersModel;
 
 		/**
+		 * data model for the users management subtab
+		 * */
+		public var rolesModel:RolesModel;
+
+		/**
 		 * API v3 client
 		 */
 		public var kc:KalturaClient;
@@ -38,6 +43,17 @@ package com.kaltura.kmc.modules.admin.model {
 		private function initModel():void {
 			usersModel = initUsersModel();
 		}
+		
+		
+		/**
+		 * create and initialize the roles subtab model
+		 * */
+		private function initRolesModel():RolesModel {
+			var roles:RolesModel = new RolesModel();
+			
+			return roles;
+		}
+		
 		
 		/**
 		 * create and initialize the users subtab model

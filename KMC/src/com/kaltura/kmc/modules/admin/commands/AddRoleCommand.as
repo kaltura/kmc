@@ -1,21 +1,21 @@
 package com.kaltura.kmc.modules.admin.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.commands.user.UserAdd;
-	import com.kaltura.kmc.modules.admin.control.UserEvent;
+	import com.kaltura.kmc.modules.admin.control.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleAdd;
 
-	public class AddUserCommand extends BaseCommand {
+	public class AddRoleCommand extends BaseCommand {
 		
 		override public function execute(event:CairngormEvent):void {
-			var ua:UserAdd = new UserAdd((event as UserEvent).user);
+			var ua:RoleAdd = new RoleAdd((event as RoleEvent).role);
 			_model.kc.post(ua);
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
-				_model.usersModel.drilldownMode = DrilldownMode.NONE;
+				_model.rolesModel.drilldownMode = DrilldownMode.NONE;
 			}
 		}
 	}
