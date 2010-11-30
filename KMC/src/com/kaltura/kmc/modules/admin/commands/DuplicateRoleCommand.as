@@ -22,6 +22,6 @@ package com.kaltura.kmc.modules.admin.commands
 			super.result(data);
 			var response:KalturaRoleListResponse = data.data[1] as KalturaRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
-		}
+		} 
 	}
 }
