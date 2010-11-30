@@ -35,8 +35,7 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( RoleEvent.DELETE_ROLE, DeleteRoleCommand);
 			addCommand( RoleEvent.ADD_ROLE, AddRoleCommand);
 			addCommand( RoleEvent.UPDATE_ROLE, EditRoleCommand);
-			addCommand( RoleEvent.DUPLICATE_ROLE, BaseCommand);
-			//TODO + duplicate role command
+			addCommand( RoleEvent.DUPLICATE_ROLE, DuplicateRoleCommand);
 			
 		}
 	}
