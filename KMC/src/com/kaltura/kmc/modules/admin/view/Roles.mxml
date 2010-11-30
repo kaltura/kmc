@@ -3,11 +3,13 @@
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
 			import com.kaltura.kmc.modules.admin.control.RoleEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.RolesModel;
+			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.vo.KalturaFilterPager;
 			
 			import mx.managers.PopUpManager;
@@ -24,11 +26,10 @@
 			protected var _roleDrilldown:RoleDrilldown;
 			
 			
-			
 			/**
-			 * dispatch Cairngorm event to raise a list users command 
+			 * dispatch Cairngorm event to raise a list roles command 
 			 * */
-			protected function listUsers(pageNumber:int):void {
+			protected function listRoles(pageNumber:int):void {
 				var kfp:KalturaFilterPager = new KalturaFilterPager();
 				if (paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
 					kfp.pageSize = paging.kalturaFilterPager.pageSize;
@@ -48,11 +49,12 @@
 				ce.dispatch();
 			}
 			
+			
 			/**
 			 * load users according to paging component value
 			 * */
 			protected function gotoPage():void {
-				listUsers(paging.selectedPage);
+				listRoles(paging.selectedPage);
 			}
 			
 			/**
@@ -81,7 +83,7 @@
 					_roleDrilldown.removeEventListener(UserDrilldown.SAVE, saveRoleData);
 					_roleDrilldown.removeEventListener(UserDrilldown.CLOSE, closeRoleDrilldown);
 					_roleDrilldown = null;
-					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.NONE);
+					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
 				}
 			}
@@ -107,15 +109,15 @@
 			 * show the "add user" dialog
 			 * */
 			protected function openAddRoleDialog(event:MouseEvent):void {
-//				// set the selected user to a new KalturaUser.
-//				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
-//				ce.dispatch();
-//				
-//				ce = new DrilldownEvent(DrilldownEvent.SET_STATE, UserDrilldownMode.ADD);
-//				ce.dispatch();
-//				
-//				// open drilldown for this user
-//				_userDrilldown = drillToSelectedUser();
+				// set the selected user to a new KalturaUser.
+				var ce:CairngormEvent = new RoleEvent(RoleEvent.SELECT_ROLE, new KalturaRole());
+				ce.dispatch();
+				
+				ce = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.ADD);
+				ce.dispatch();
+				
+				// open drilldown for this user
+				_roleDrilldown = drillToSelectedRole();
 			}
 			
 			
@@ -124,7 +126,7 @@
 			 * */
 			protected function openEditRoleDialog(event:Event):void {
 				//TODO let setStateCommand know state for which model it should set
-				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.SET_STATE, DrilldownMode.EDIT);
+				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.EDIT);
 				ce.dispatch();
 				_roleDrilldown = drillToSelectedRole();
 			}

@@ -6,9 +6,14 @@ package com.kaltura.kmc.modules.admin.commands
 	public class SetStateCommand extends BaseCommand {
 		
 		override public function execute(event:CairngormEvent):void {
-			_model.usersModel.drilldownMode = (event as DrilldownEvent).state;
+			switch (event.type) {
+				case DrilldownEvent.ROLES_SET_STATE:
+						_model.rolesModel.drilldownMode = (event as DrilldownEvent).state;
+					break;
+				case DrilldownEvent.USERS_SET_STATE:
+						_model.usersModel.drilldownMode = (event as DrilldownEvent).state;
+					break;
+			}
 		}
-		
-		
 	}
 }

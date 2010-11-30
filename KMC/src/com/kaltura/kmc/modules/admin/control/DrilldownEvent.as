@@ -4,7 +4,8 @@ package com.kaltura.kmc.modules.admin.control
 	
 	public class DrilldownEvent extends CairngormEvent {
 		
-		public static const SET_STATE:String = "admin_setState";
+		public static const USERS_SET_STATE:String = "admin_usersSetState";
+		public static const ROLES_SET_STATE:String = "admin_rolesSetState";
 		
 		private var _state:String;
 		

@@ -42,6 +42,7 @@ package com.kaltura.kmc.modules.admin.model {
 		 * */
 		private function initModel():void {
 			usersModel = initUsersModel();
+			rolesModel = initRolesModel();
 		}
 		
 		

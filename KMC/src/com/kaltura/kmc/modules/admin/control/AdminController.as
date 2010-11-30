@@ -23,8 +23,11 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( UserEvent.UPDATE_USER, EditUserCommand );
 			addCommand( UserEvent.ADD_USER, AddUserCommand );
 			
-			addCommand( DrilldownEvent.SET_STATE, SetStateCommand);
+			// drilldown events
+			addCommand( DrilldownEvent.USERS_SET_STATE, SetStateCommand);
+			addCommand( DrilldownEvent.ROLES_SET_STATE, SetStateCommand);
 			
+			// listroles events
 			addCommand( ListRolesEvent.LIST_ROLES, ListRolesCommand);
 			
 			// Role Events
@@ -33,6 +36,7 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( RoleEvent.ADD_ROLE, AddRoleCommand);
 			addCommand( RoleEvent.UPDATE_ROLE, EditRoleCommand);
 			addCommand( RoleEvent.DUPLICATE_ROLE, BaseCommand);
+			//TODO duplicate role command
 			
 		}
 	}
