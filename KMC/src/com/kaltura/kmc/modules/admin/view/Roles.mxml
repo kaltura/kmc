@@ -131,7 +131,7 @@
 				ce = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.ADD);
 				ce.dispatch();
 				
-				// open drilldown for this user
+				// open drilldown for this role
 				_roleDrilldown = drillToSelectedRole();
 			}
 			
@@ -140,7 +140,6 @@
 			 * show the "edit user" dialog
 			 * */
 			protected function openEditRoleDialog(event:Event):void {
-				//TODO let setStateCommand know state for which model it should set
 				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.EDIT);
 				ce.dispatch();
 				_roleDrilldown = drillToSelectedRole();
@@ -151,8 +150,8 @@
 			 * duplicate selected role
 			 * */
 			protected function duplicateRole(event:Event):void {
-//				var ce:RoleEvent = new RoleEvent(RoleEvent.DELETE_USER, model.selectedUser);
-//				ce.dispatch();
+				var ce:RoleEvent = new RoleEvent(RoleEvent.DUPLICATE_ROLE, model.selectedRole);
+				ce.dispatch();
 			}
 			
 			/**
