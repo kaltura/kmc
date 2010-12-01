@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{vbox1_creationCompleteHandler(event)}"
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.admin.business.IAdminSubtab">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
 			import com.kaltura.kmc.modules.admin.control.RoleEvent;
@@ -13,6 +14,7 @@
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.vo.KalturaFilterPager;
 			
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
@@ -171,6 +173,12 @@
 				ce.dispatch();
 			}
 			
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				PermissionManager.getInstance().applyAllAttributes(this,id);
+			}
+
 		]]>
 	</mx:Script>
 	<mx:HBox>
@@ -187,7 +195,7 @@
 							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true" totalCount="{model.totalRoles}" />
 		</mx:VBox>
 		
-		<mx:Spacer width="5"/>
+		<mx:Spacer id="boxSpacer" width="5"/>
 		
 		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
 			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add_user')}" styleName="addPlst" width="100%"

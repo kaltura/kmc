@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
-			 itemClick="setSelection(event);"
+			 itemClick="setSelection(event);" creationComplete="datagrid1_creationCompleteHandler(event)"
 			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
@@ -21,6 +21,7 @@
 			import mx.controls.ComboBox;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
@@ -53,6 +54,12 @@
 			// ==================================================================
 			// members
 			// ==================================================================
+			
+			[Bindable]
+			/**
+			 * 
+			 */
+			public var comboDataProvider:ArrayCollection = new ArrayCollection();
 			
 			
 			
@@ -170,7 +177,58 @@
 			public function get selectedRole():KalturaRole {
 				return selectedItem as KalturaRole;
 			}
+
 			
+			/**
+			 * Remove single item from the combobox dataprovider by its id
+			 * @id - the name of the id to remove 
+			 */
+			private function removeItemById(id:String):void
+			{
+				//find the index of the item
+				for (var i:uint=0;i<comboDataProvider.length;i++)
+				{
+					if(comboDataProvider.getItemAt(i).id == id)
+						break;
+				}
+				//protect from an ID it did not find - check if this is the last item 
+				// and if it has not the same id  
+				if(i==comboDataProvider.length && comboDataProvider.getItemAt(i-1) != id )
+					return;
+				//remove the item
+				comboDataProvider.removeItemAt(i); 
+			}
+			
+			/**
+			 * Hide actions from the data provider. 
+			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+			 */
+			public function set comboHideItems(itemsToHide:String):void
+			{
+				var items:Array = itemsToHide.split(",");
+				for each (var str:String in items)
+				{
+					removeItemById(str);
+				}
+			}
+			/**
+			 * @private 
+			 * This is because the apply permission needs to read the comboHideItems function
+			 */
+			public function get comboHideItems():String
+			{
+				return "";
+			}
+
+
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void
+			{
+				//build the dataprovider items list :
+				comboDataProvider.addItem({label:'select content',data:'selectContent',id:'selectContent'});
+				comboDataProvider.addItem({label:'select content1',data:'selectContent1',id:'selectContent1'});
+				comboDataProvider.addItem({label:'select content2',data:'selectContent2',id:'selectContent2'});
+			}
+
 		]]>
 	</mx:Script>
 	
@@ -194,14 +252,15 @@
 				<mx:Component>
 					<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
 							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-						<mx:ComboBox width="130" selectedIndex="-1"
+						<mx:ComboBox width="130" selectedIndex="-1" 
+									 dataProvider="{outerDocument.comboDataProvider}"
 									 prompt="{resourceManager.getString('admin','select_action')}"
 									 change="{outerDocument.onActionSelected(event)}">
-							<mx:dataProvider>
+<!--							<mx:dataProvider>
 								<mx:String>{resourceManager.getString('admin','edit')}</mx:String>
 								<mx:String>{resourceManager.getString('admin','duplicate')}</mx:String>
 								<mx:String>{resourceManager.getString('admin','delete')}</mx:String>
-							</mx:dataProvider>
+							</mx:dataProvider>-->
 						</mx:ComboBox>
 					</mx:VBox>
 				</mx:Component>

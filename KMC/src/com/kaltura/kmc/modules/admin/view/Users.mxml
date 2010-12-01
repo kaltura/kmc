@@ -10,6 +10,7 @@
 			import com.kaltura.commands.user.UserAdd;
 			import com.kaltura.commands.user.UserDelete;
 			import com.kaltura.containers.HelpTitleWindow;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.modules.admin.business.IAdminSubtab;
 			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
@@ -65,7 +66,10 @@
 			
 			
 			protected function bindSetters():void {
+				
 				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
+				
+				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 			
 			
@@ -252,7 +256,7 @@
 							 showRowsInPage="true" showNextFlag="true" showPrvFlag="true" totalCount="{model.totalUsers}" />
 		</mx:VBox>
 
-		<mx:Spacer width="5"/>
+		<mx:Spacer id="boxSpacer" width="5"/>
 
 		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
 			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add_user')}" styleName="addPlst" width="100%"
