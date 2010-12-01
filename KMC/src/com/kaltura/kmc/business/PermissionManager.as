@@ -25,16 +25,29 @@ package com.kaltura.kmc.business
 		
 	
 		/**
-		 * Get the XML, parse it and keep relevant data in this class 
+		 * Get the partner XML and the users permissions list (comma seperate array)
+		 * parse it and keep relevant data in this class. 
 		 * @param permissionXml
+		 * @param rolePermission
 		 * 
 		 */		
-		public function init(permissionXml:XML):void
+		public function init(permissionXml:XML , rolePermissions:String=""):void
 		{
-			_permissionXml = permissionXml;
+			_permissionXml = permissionXml.copy();
+			var allRolePermissions:Array =  rolePermissions.split(",");
+			// remove from permissions list the granted permissions ids and leave the once that 
+			// are forbidden 
+			if (allRolePermissions.length > 0 && allRolePermissions[0] != "")
+			{
+				for each (var permission:String in allRolePermissions)
+				{
+					delete _permissionXml..descendants().(attribute("id") == permission)[0] ;
+				}
+			}
+			
 			var permissionParser:PermissionsParser = new PermissionsParser();
 			_instructionVos = permissionParser.parsePermissions(_permissionXml);
-			var permissions:XMLList = permissionXml..permission.attribute("id");
+			var permissions:XMLList = _permissionXml..permission.attribute("id");
 			for each (var xml:XML in permissions )
 			{
 				_permissions.push(xml.toString());

@@ -188,6 +188,7 @@
 				var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
+				//TODO insert role fetching here too 
 				mr.addAction(uiconf);
 				mr.addAction(uiconf2);
 				_modelLocator.kalturaClient.post(mr);
@@ -232,14 +233,19 @@
 					ExternalInterface.call("kmc.utils.expired");
 					return;
 				}
+				
+				
 				// loaded data
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
 				// permissions:
-				var permissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile);
-				permissionManager.init(permissionXml);
+				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
+				//TODO insert role fetching here too. right now this is just for developing  
+				//var roleOfCurrentUser:String = "SYNDICATION_DELETE,ADVERTISING_UPDATE_SETTINGS,ACCOUNT_UPDATE_SETTINGS,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA" 
+				var roleOfCurrentUser:String = ""; 
+				permissionManager.init(partnerPermissionXml ,roleOfCurrentUser );
 
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
