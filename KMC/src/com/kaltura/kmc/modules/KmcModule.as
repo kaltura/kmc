@@ -172,15 +172,14 @@ package com.kaltura.kmc.modules {
 
 		/**
 		 * Tell KMC to switch to another module.
-		 * @param module	name of module to show, should match the values listed in
-		 * 					<code>events.NavigationEvent</code> class.
+		 * @param module	name of module to show, should match the NAME the module declares.
 		 * @param subtab	name of subtab of the module to show. If <code>subtab</code> is supplied and the
 		 * 					module has a subtab with the same name it should show the matching subtab.
 		 * 					Otherwise it is up to the module to decide which subtab to show.
+		 * @param extra		a generic object with data to be passed to the module.
 		 * */
-		protected function navigate(module:String, subtab:String = ""):void {
-			this.dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, module, subtab));
-			//TODO support extra data object
+		protected function navigate(module:String, subtab:String = "", extra:Object = null):void {
+			this.dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, module, subtab, extra));
 		}
 
 
