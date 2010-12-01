@@ -3,8 +3,9 @@
 							width="550" help="{onHelp()}" showCloseButton="true" close="closeHandler(event)"
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
-		[Event(name="save", type="flash.events.Event")] 
-		[Event(name="close", type="flash.events.Event")] 
+		[Event(name="udd_save", type="flash.events.Event")] 
+		[Event(name="udd_close", type="flash.events.Event")] 
+		[Event(name="udd_addRole", type="flash.events.Event")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
@@ -23,14 +24,19 @@
 
 			
 			/**
-			 * value of the type property for the <code>save</code> event
+			 * value of the type property for the <code>udd_save</code> event
 			 * */
 			public static const SAVE:String = "udd_save";
 
 			/**
-			 * value of the type property for the <code>save</code> event
+			 * value of the type property for the <code>udd_close</code> event
 			 * */
 			public static const CLOSE:String = "udd_close";
+			
+			/**
+			 * value of the type property for the <code>udd_addRole</code> event
+			 * */
+			public static const ADD_ROLE:String = "udd_addRole";
 
 			/**
 			 * creationComplete event occured in the past?
@@ -87,8 +93,9 @@
 			 * open "new role" window
 			 * */
 			protected function openRoleWindow():void {
-				//TODO + implement openRoleWindow
+				dispatchEvent(new Event(UserDrilldown.ADD_ROLE));
 			}
+			
 			
 			/**
 			 * update <code>_undoUser</code> with data from the form
@@ -174,8 +181,22 @@
 				return res;
 			}
 			
-			protected function setUserRole(e:Event):void {
-				_undoUser.roleId = (roleCb.selectedItem as KalturaRole).id;
+			
+			/**
+			 * set role for the curerent user. if the requested role isn't 
+			 * found in the roles list, the previous role is restored. 
+			 * @param roleId	id of desired role.
+			 * */
+			public function setUserRole(roleId:int):void {
+				var t:int = _undoUser.roleId; 
+				_undoUser.roleId = roleId;
+				var kr:KalturaRole = findSelectedRole();
+				if (kr) {
+					roleCb.selectedItem = kr;
+				}
+				else {
+					_undoUser.roleId = t;
+				}
 			}
 
 
@@ -216,6 +237,14 @@
 				}
 			}
 
+
+			/**
+			 * optional roles for the user
+			 * */
+			public function set roles(value:ArrayCollection):void {
+				_roles = value;
+			}
+			
 
 			/**
 			 * current window mode

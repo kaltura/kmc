@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.admin.commands {
+package com.kaltura.kmc.modules.admin.control.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;

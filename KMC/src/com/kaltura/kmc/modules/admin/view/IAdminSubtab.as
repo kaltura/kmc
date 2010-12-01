@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.admin.business
+package com.kaltura.kmc.modules.admin.view
 {
 	public interface IAdminSubtab {
 		

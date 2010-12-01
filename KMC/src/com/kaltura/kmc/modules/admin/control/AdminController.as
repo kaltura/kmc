@@ -1,7 +1,8 @@
 package com.kaltura.kmc.modules.admin.control
 {
 	import com.adobe.cairngorm.control.FrontController;
-	import com.kaltura.kmc.modules.admin.commands.*;
+	import com.kaltura.kmc.modules.admin.control.commands.*;
+	import com.kaltura.kmc.modules.admin.control.events.*;
 
 	public class AdminController extends FrontController
 	{
@@ -34,6 +35,7 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( RoleEvent.SELECT_ROLE, SelectRoleCommand);
 			addCommand( RoleEvent.DELETE_ROLE, DeleteRoleCommand);
 			addCommand( RoleEvent.ADD_ROLE, AddRoleCommand);
+			addCommand( RoleEvent.ADD_ROLE_FROM_USERS, AddRoleFromUserCommand);
 			addCommand( RoleEvent.UPDATE_ROLE, EditRoleCommand);
 			addCommand( RoleEvent.DUPLICATE_ROLE, DuplicateRoleCommand);
 			

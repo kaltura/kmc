@@ -1,9 +1,9 @@
-package com.kaltura.kmc.modules.admin.commands
+package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.user.UserList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
+	import com.kaltura.kmc.modules.admin.control.events.ListUsersEvent;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserListResponse;

@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.admin.model
 {
+	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserFilter;
 	
@@ -35,16 +36,30 @@ package com.kaltura.kmc.modules.admin.model
 		public var upgradeLink:String;
 		
 		/**
-		 * user drilldown mode, either <code>UserDrilldownMode.ADD</code>, 
-		 * <code>UserDrilldownMode.EDIT</code> or  <code>UserDrilldownMode.NONE</code>.
+		 * user drilldown mode, either <code>DrilldownMode.ADD</code>, 
+		 * <code>DrilldownMode.EDIT</code> or <code>DrilldownMode.NONE</code>.
 		 * */
 		public var drilldownMode:String = DrilldownMode.NONE;
+		
+		/**
+		 * role drilldown mode when opened from this screen, either <code>DrilldownMode.ADD</code>, 
+		 * <code>DrilldownMode.EDIT</code> or <code>DrilldownMode.NONE</code>.
+		 * */
+		public var roleDrilldownMode:String = DrilldownMode.NONE;
 		
 		/**
 		 * array collection with all the roles this partner has
 		 * (KalturaRole objects)
 		 */		
 		public var allRoles:ArrayCollection;
+		
+		
+		/**
+		 * when creating a new role from the user drilldown, need to pass  
+		 * the KalturaRole returned from the server back to the user drilldown   
+		 * window via the model. this object is nullified afterwards.  
+		 */		
+		public var newRole:KalturaRole;
 		
 	}
 }

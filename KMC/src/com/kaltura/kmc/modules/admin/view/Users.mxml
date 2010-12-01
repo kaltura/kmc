@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
-		 implements="com.kaltura.kmc.modules.admin.business.IAdminSubtab"
+		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab"
 		 creationComplete="bindSetters()">
 	<mx:Script>
 		<![CDATA[
@@ -12,13 +12,14 @@
 			import com.kaltura.containers.HelpTitleWindow;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
-			import com.kaltura.kmc.modules.admin.business.IAdminSubtab;
-			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
-			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
-			import com.kaltura.kmc.modules.admin.control.ListUsersEvent;
-			import com.kaltura.kmc.modules.admin.control.UserEvent;
+			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.events.ListRolesEvent;
+			import com.kaltura.kmc.modules.admin.control.events.ListUsersEvent;
+			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
+			import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.UsersModel;
+			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaUser;
@@ -27,6 +28,7 @@
 			import flash.net.navigateToURL;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
@@ -38,6 +40,12 @@
 			 * a popup window with user details
 			 * */
 			protected var _userDrilldown:UserDrilldown;
+
+			
+			/**
+			 * a popup window with user details
+			 * */
+			protected var _roleDrilldown:RoleDrilldown;
 			
 
 
@@ -68,10 +76,31 @@
 			protected function bindSetters():void {
 				
 				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
+				BindingUtils.bindSetter(onRoleDrilldownStateChange, model, "roleDrilldownMode");
+				BindingUtils.bindSetter(onRolesListChange, model, "allRoles");
+				BindingUtils.bindSetter(onNewRoleChange, model, "newRole");
+			}
+			
+			
+			/**
+			 * if a user drilldown is window opened, update the user's role. 
+			 * */
+			protected function onNewRoleChange(value:KalturaRole):void {
+				if (_userDrilldown) {
+					_userDrilldown.setUserRole(value.id);
+				}
 				
 				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 			
+			/**
+			 * if a user drilldown window is opened, update its roles list.
+			 * */
+			protected function onRolesListChange(value:ArrayCollection):void {
+				if (_userDrilldown) {
+					_userDrilldown.roles = value;
+				}
+			}
 			
 			/**
 			 * re-load data, close popup, etc.
@@ -86,6 +115,23 @@
 						// if we got here, data save completed successfuly
 						closeUserDrilldown(null);
 						refreshData();
+						break;
+				}
+			}
+			
+			
+			/**
+			 * close popup.
+			 * */
+			protected function onRoleDrilldownStateChange(value:String):void {
+				switch (value) {
+					case DrilldownMode.ADD:
+					case DrilldownMode.EDIT:
+						// do nothing
+						break;
+					case DrilldownMode.NONE:
+						// if we got here, data save completed successfuly
+						closeRoleDrilldown(null);
 						break;
 				}
 			}
@@ -157,11 +203,46 @@
 					PopUpManager.removePopUp(_userDrilldown);
 					_userDrilldown.removeEventListener(UserDrilldown.SAVE, saveUserData);
 					_userDrilldown.removeEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
+					_userDrilldown.removeEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
 					_userDrilldown = null;
 					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.USERS_SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
 				}
 			}
+			
+			/**
+			 * popup the addrole window
+			 * */
+			protected function openAddRoleDialog(e:Event):void {
+				_roleDrilldown = new RoleDrilldown();
+				_roleDrilldown.init(new KalturaRole(), model.drilldownMode);
+				_roleDrilldown.addEventListener(RoleDrilldown.SAVE, saveRoleData);
+				_roleDrilldown.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
+				PopUpManager.addPopUp(_roleDrilldown, this, true);
+				PopUpManager.centerPopUp(_roleDrilldown);
+			}
+			
+			
+			/**
+			 * hides and destroys the role drilldown window
+			 * */
+			protected function closeRoleDrilldown(e:Event):void {
+				PopUpManager.removePopUp(_roleDrilldown);
+				_roleDrilldown.removeEventListener(UserDrilldown.SAVE, saveRoleData);
+				_roleDrilldown.removeEventListener(UserDrilldown.CLOSE, closeRoleDrilldown);
+				_roleDrilldown = null;
+			}
+			
+			
+			/**
+			 * get the new role data and update server
+			 * */
+			protected function saveRoleData(e:Event):void {
+				var ue:RoleEvent = new RoleEvent(RoleEvent.ADD_ROLE, _roleDrilldown.role);
+				ue.dispatch();
+			}
+			
+			
 			
 			
 			/**
@@ -173,6 +254,7 @@
 				ud.init(model.allRoles, model.selectedUser, model.drilldownMode);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
+				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
 				PopUpManager.addPopUp(ud, this, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;

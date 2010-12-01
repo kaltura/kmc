@@ -1,8 +1,8 @@
-package com.kaltura.kmc.modules.admin.commands
+package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.user.UserUpdate;
-	import com.kaltura.kmc.modules.admin.control.UserEvent;
+	import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUser;
 

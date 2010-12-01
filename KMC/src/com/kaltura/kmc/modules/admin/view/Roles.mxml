@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{vbox1_creationCompleteHandler(event)}"
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
-		 implements="com.kaltura.kmc.modules.admin.business.IAdminSubtab">
+		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.modules.admin.control.DrilldownEvent;
-			import com.kaltura.kmc.modules.admin.control.ListRolesEvent;
-			import com.kaltura.kmc.modules.admin.control.RoleEvent;
+			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.events.ListRolesEvent;
+			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.RolesModel;
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
@@ -18,6 +18,7 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
+			//TODO + the Publisher Administrator role should not be editable. how do we know which one it is?
 			
 			[Bindable]
 			public var model:RolesModel;
@@ -92,7 +93,7 @@
 			}
 			
 			/**
-			 * hides and destroys the user drilldown window
+			 * hides and destroys the role drilldown window
 			 * */
 			protected function closeRoleDrilldown(e:Event):void {
 				if (_roleDrilldown) {

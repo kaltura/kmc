@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.admin.control
+package com.kaltura.kmc.modules.admin.control.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRoleFilter;
