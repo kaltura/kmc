@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.analytics.model
 	import mx.resources.ResourceManager;
 	
 	[Bindable]
-	public class KMCModelLocator implements IModelLocator
+	public class AnalyticsModelLocator implements IModelLocator
 	{
 		
 		/**
@@ -97,16 +97,16 @@ package com.kaltura.kmc.modules.analytics.model
 		
 		//---------------------------------------------------------
 		//singleton methods
-		private static var _modelLocator : KMCModelLocator;
+		private static var _modelLocator : AnalyticsModelLocator;
 		
 		/**
 		 * retreives an instance of the KMCModelLocator class 
 		 */		
-		public static function getInstance() : KMCModelLocator
+		public static function getInstance() : AnalyticsModelLocator
 		{
 			if ( _modelLocator == null )
 			{
-				_modelLocator = new KMCModelLocator(new Enforcer());
+				_modelLocator = new AnalyticsModelLocator(new Enforcer());
 			}
 
 			return _modelLocator;
@@ -115,7 +115,7 @@ package com.kaltura.kmc.modules.analytics.model
 		/**
 		 * Disabled singleton constructor.
 		 */		
-		public function KMCModelLocator(enforcer:Enforcer)
+		public function AnalyticsModelLocator(enforcer:Enforcer)
 		{
 			context = new Context();
 		}

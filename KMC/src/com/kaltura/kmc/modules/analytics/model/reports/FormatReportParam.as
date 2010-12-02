@@ -1,6 +1,6 @@
 package com.kaltura.kmc.modules.analytics.model.reports
 {
-	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.utils.KTimeUtil;
 	

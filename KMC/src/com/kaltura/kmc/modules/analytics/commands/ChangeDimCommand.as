@@ -3,11 +3,11 @@ package com.kaltura.kmc.modules.analytics.commands
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.analytics.control.GraphEvent;
-	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 
 	public class ChangeDimCommand implements ICommand
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 		public function execute(event:CairngormEvent):void
 		{
 			var graphEvent : GraphEvent = event as GraphEvent;	

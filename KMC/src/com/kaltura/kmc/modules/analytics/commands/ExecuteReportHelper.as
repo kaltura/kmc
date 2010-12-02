@@ -1,13 +1,13 @@
 package com.kaltura.kmc.modules.analytics.commands
 {
-	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
 	public class ExecuteReportHelper
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 		
 		public function ExecuteReportHelper(){}
 

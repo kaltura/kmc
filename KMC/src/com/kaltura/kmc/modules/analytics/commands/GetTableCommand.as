@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
-	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reports.FormatReportParam;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.commands.report.ReportGetTable;
@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import mx.rpc.IResponder;
 
 	public class GetTableCommand implements ICommand, IResponder {
-		private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 		private var _executeReportHelper:ExecuteReportHelper = new ExecuteReportHelper();
 
 

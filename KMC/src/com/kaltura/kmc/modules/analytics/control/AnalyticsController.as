@@ -3,9 +3,9 @@ package com.kaltura.kmc.modules.analytics.control
 	import com.adobe.cairngorm.control.FrontController;
 	import com.kaltura.kmc.modules.analytics.commands.*;
 
-	public class KMCController extends FrontController
+	public class AnalyticsController extends FrontController
 	{
-		public function KMCController()
+		public function AnalyticsController()
 		{
 			initializeCommands();
 		}

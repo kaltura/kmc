@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.analytics.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.analytics.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.view.core.FileManager;
 	import com.kaltura.commands.report.ReportGetUrlForReportAsCsv;
 	import com.kaltura.events.KalturaEvent;
@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.analytics.commands
 
 	public class ExportToExcelCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 		private var fm : FileManager = new FileManager();
 		private var _fileUrl : String = "";
 		private var _executeReportHelper : ExecuteReportHelper = new ExecuteReportHelper();
