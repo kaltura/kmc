@@ -23,6 +23,7 @@ package com.kaltura.kmc.modules.content.model.types
 				case PROCESSING: return ResourceManager.getInstance().getString( 'cms' , 'processing' ); break;
 				case FINISHED: return ResourceManager.getInstance().getString( 'cms' , 'finished' ); break; 
 				case ABORTED: return ResourceManager.getInstance().getString( 'cms' , 'aborted' ); break; 
+				case FAILED: return ResourceManager.getInstance().getString( 'cms' , 'failed' ); break; 
 			}
 			return "";
 		}
