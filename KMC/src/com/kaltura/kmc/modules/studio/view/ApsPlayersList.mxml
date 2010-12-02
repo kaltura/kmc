@@ -75,14 +75,34 @@
 			 * date formatter
 			 * */
 			private var _dateFormatter:DateFormatter;
-
+			[Bindable]
+			/**
+			 * dataprovider for the combobox 
+			 */
+			public var comboDataProviderNormal:ArrayCollection = new ArrayCollection();
+			public var comboDataProviderMulti:ArrayCollection = new ArrayCollection();
 
 			private function onCreationComplete():void {
 				_dateFormatter = new DateFormatter();
 				_dateFormatter.formatString = "DD-MMM H:NN";
+				
+				comboDataProviderNormal = new ArrayCollection();
+				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','edit'),id:'edit'});
+				comboDataProviderNormal.addItem({label:resourceManager.getString('aps', 'selectContent') ,id:'selectContent'});
+				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','duplicate'),id:'duplicate'});
+				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','delete'),id:'delete'});
+				
+				comboDataProviderMulti = new ArrayCollection();
+				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','edit'),id:'edit'});
+				comboDataProviderMulti.addItem({label:resourceManager.getString('aps', 'previewAndEmbed') ,id:'previewAndEmbed'});
+				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','duplicate'),id:'duplicate'});
+				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','delete'),id:'delete'});
+				
+				
+				
 			}
 
-			
+
 			/**
 			 * gets a list of existing players
 			 * */
@@ -338,18 +358,22 @@
 
 
 			/**
-			 * retreives the text for the content-related action of a player
+			 * Assign the proper array collection to the row in the table. A multiplaylist
+			 * data provider (with the p&e action) or normal for playlist & single (with select content)
 			 * @param data	player data
 			 * */
-			public function getUinconfContentText(data:Object):String {
+			public function isMulti(data:Object):ArrayCollection {
 				if (data) {
 					var xml:XML = XML(data.confFile.toString());
-					if (xml.attribute('isPlaylist')[0] == 'multi')  
-						return resourceManager.getString('aps', 'previewAndEmbed');
+					if (xml.attribute('isPlaylist')[0] == 'multi')
+					{
+						return comboDataProviderMulti;
+						
+					}
 				}
-
-				return resourceManager.getString('aps', 'selectContent');
+				return comboDataProviderNormal;
 			}
+
 
 
 			/**
@@ -432,6 +456,65 @@
 					btn.buttonMode = true;
 					templatesHolder.addChild(btn);
 				}
+			}
+			
+			// removing items from the combo dataproviders 
+			
+			/**
+			 * Remove single item from the combobox dataprovider by its id
+			 * @id - the name of the id to remove 
+			 */
+			private function removeItemById(id:String):void
+			{
+				//find the index of the item
+				for (var i:uint=0;i<comboDataProviderMulti.length;i++)
+				{
+					if(comboDataProviderMulti.getItemAt(i).id == id)
+						break;
+				}
+				//protect from an ID it did not find - check if this is the last item 
+				// and if it has not the same id  
+				if(i==comboDataProviderMulti.length && comboDataProviderMulti.getItemAt(i-1) != id )
+				{
+				} else
+					comboDataProviderMulti.removeItemAt(i); 
+				
+				
+				
+				//find the index of the item
+				for (var j:uint=0;j<comboDataProviderNormal.length;j++)
+				{
+					if(comboDataProviderNormal.getItemAt(j).id == id)
+						break;
+				}
+				//protect from an ID it did not find - check if this is the last item 
+				// and if it has not the same id  
+				if(j==comboDataProviderNormal.length && comboDataProviderNormal.getItemAt(j-1) != id )
+				{
+				}
+				else
+					comboDataProviderNormal.removeItemAt(j); 
+			}
+			
+			/**
+			 * Hide actions from the data provider. 
+			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+			 */
+			public function set comboHideItems(itemsToHide:String):void
+			{
+				var items:Array = itemsToHide.split(",");
+				for each (var str:String in items)
+				{
+					removeItemById(str);
+				}
+			}
+			/**
+			 * @private 
+			 * This is because the apply permission needs to read the comboHideItems function
+			 */
+			public function get comboHideItems():String
+			{
+				return "";
 			}
 		]]>
 	</mx:Script>
@@ -569,16 +652,35 @@
 										 paddingLeft="2"
 										 horizontalScrollPolicy="off"
 										 verticalScrollPolicy="off">
+									<mx:Script>
+										<![CDATA[
+											import mx.collections.ArrayCollection;
+											import mx.events.FlexEvent;
+
+						/* 					protected function combobox1_creationCompleteHandler(event:FlexEvent,data:*):void
+											{
+												if(outerDocument.isMulti(data))
+												{
+													
+													trace("found multi");													
+													(event.target as ComboBox).dataProvider = outerDocument.comboDataProviderMulti;
+												}
+												else
+												{
+													trace("found normal");													
+													(event.target as ComboBox).dataProvider = outerDocument.comboDataProviderNormal;
+												}
+													
+											} */
+
+										]]>
+									</mx:Script>
 									<mx:ComboBox width="130"
-												 selectedIndex="-1"
+												 selectedIndex="-1" 
 												 prompt="{resourceManager.getString('aps','selectAction')}"
+												 dataProvider="{outerDocument.isMulti(data)}"
 												 change="{outerDocument.onActionChange(event)}">
-										<mx:dataProvider>
-											<mx:String>{resourceManager.getString('aps','edit')}</mx:String>
-											<mx:String>{outerDocument.getUinconfContentText(data)}</mx:String>
-											<mx:String>{resourceManager.getString('aps','duplicate')}</mx:String>
-											<mx:String>{resourceManager.getString('aps','delete')}</mx:String>
-										</mx:dataProvider>
+												
 									</mx:ComboBox>
 								</mx:VBox>
 							</mx:Component>
