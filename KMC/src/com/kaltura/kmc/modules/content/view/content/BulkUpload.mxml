@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-		 xmlns:controls="com.kaltura.controls.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
-		 horizontalAlign="left" width="100%" height="100%"
-		 creationComplete="{vbox1_creationCompleteHandler(event)}"
-		 >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
+		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 horizontalAlign="left" width="100%" height="100%" creationComplete="{vbox1_creationCompleteHandler(event)}">
 
 	<mx:Script>
 		<![CDATA[
@@ -23,7 +19,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -35,31 +31,31 @@
 			 * data that only bulkUpload tab uses
 			 * */
 			public var bulkUploadData:BulkUploadModel;
-			
+
 			[Bindable]
 			/**
 			 * Kaltura Session key, used with EI call.
 			 * */
 			public var ks:String;
-			
+
 			private var _pager:Pager;
-			
+
 			private var _fm:FileManager = new FileManager();
-			
+
 			/**
 			 * optional conversion profiles
 			 * */
 			private var _convProfileData:ArrayCollection;
-			
+
 			/**
 			 * names of optional conversion profiles
 			 * */
 			private var _convProfileLabels:ArrayCollection;
-			
+
 			private var _filter:FilterVO = new FilterVO();
-			
+
 			private var _fileReadyFlag:Boolean = false;
-			
+
 
 
 			/**
@@ -70,7 +66,7 @@
 				loadEntries();
 				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
 				listConvProfileEvent.dispatch();
-				
+
 			}
 
 
@@ -89,8 +85,8 @@
 					bulkEvent.dispatch();
 					clearUpload();
 
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_BULK_UPLOAD,GoogleAnalyticsConsts.CONTENT);
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_BULK_UPLOAD, GoogleAnalyticsConsts.CONTENT);
 				}
 				else
 					Alert.show(resourceManager.getString('cms', 'browseFirst'));
@@ -119,8 +115,8 @@
 					}
 				}
 
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADMIN_KCW_UPLOAD,GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADMIN_KCW_UPLOAD, GoogleAnalyticsConsts.CONTENT);
 			}
 
 
@@ -177,7 +173,7 @@
 							defaultIndex = i;
 					}
 					_convProfileLabels.source = arr;
-					profilesCb.dataProvider = _convProfileLabels;	
+					profilesCb.dataProvider = _convProfileLabels;
 					profilesCb.selectedIndex = defaultIndex;
 				}
 			}
@@ -231,117 +227,79 @@
 				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
 				init();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
-			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
 			}
-
 		]]>
 	</mx:Script>
-	<mx:VBox id="maincontent"
-			 width="100%"
-			 styleName="blueBoxContainer">
-		<mx:VBox width="100%"
-				 horizontalAlign="left"
-				 styleName="blueBox">
-			<mx:Label text="{resourceManager.getString('cms', 'upload')}"
-					  styleName="blueBoxTitle"
-					  selectable="false"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}"
-					 selectable="false"/>
+	<mx:VBox id="maincontent" width="100%" styleName="blueBoxContainer">
+		<mx:VBox id="kcwBox" width="100%" horizontalAlign="left" styleName="blueBox">
+			<mx:Label text="{resourceManager.getString('cms', 'upload')}" styleName="blueBoxTitle" selectable="false"/>
+			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}" selectable="false"/>
 			<mx:HBox>
-				<mx:ComboBox id="profilesCb" />
-				<mx:Button label="{resourceManager.getString('cms', 'upload')}"
-						   click="openCw()"
-						   buttonMode="true"/>
+				<mx:ComboBox id="profilesCb"/>
+				<mx:Button label="{resourceManager.getString('cms', 'upload')}" click="openCw()" buttonMode="true"/>
 			</mx:HBox>
 		</mx:VBox>
 
-		<mx:VBox width="100%"
-				 horizontalAlign="left"
-				 styleName="blueBox">
-			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}"
-					  styleName="blueBoxTitle"
+		<mx:VBox id="bulkUploadBox" width="100%" horizontalAlign="left" styleName="blueBox">
+			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="blueBoxTitle"
 					  selectable="false"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}"
-					 selectable="false"/>
+			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" selectable="false"/>
 			<mx:Spacer/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting1',[bulkUploadData.sampleFileUrl])}"
-					  selectable="true"
-					  link="downloadFileDirect(event.text)"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting2')}"
-					  selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}"
-					  selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}"
-					  selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}"
-					  selectable="false"/>
-			<mx:Button label="{resourceManager.getString('cms', 'submitCSV')}"
-					   click="addBulk()"
-					   buttonMode="true"/>
-			<mx:VBox styleName="vGapBox"
-					 width="100%">
-				<mx:DataGrid id="bulkTable"
-							 width="100%"
-							 height="328"
-							 sortableColumns="false"
-							 dataProvider="{bulkUploadData.ps3BulkUploadData}"
-							 headerRelease="{event.preventDefault()}">
+			<mx:Label 
+					  htmlText="{resourceManager.getString('cms', 'importFromExistingHosting1',[bulkUploadData.sampleFileUrl])}"
+					  selectable="true" link="downloadFileDirect(event.text)"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting2')}" selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}" selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}" selectable="false"/>
+			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}" selectable="false"/>
+			<mx:Button label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
+			<mx:VBox styleName="vGapBox" width="100%">
+				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
+							 dataProvider="{bulkUploadData.ps3BulkUploadData}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
-						<mx:DataGridColumn dataField="uploadedBy"
-										   width="50"
+						<mx:DataGridColumn dataField="uploadedBy" width="50"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
-										   showDataTips="true"
-										   dataTipField="uploadedBy"/>
-						<mx:DataGridColumn dataField="uploadedOn"
-										   width="60"
+										   showDataTips="true" dataTipField="uploadedBy"/>
+						<mx:DataGridColumn dataField="uploadedOn" width="60"
 										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
-										   showDataTips="true"
-										   dataTipField="uploadedOn">
+										   showDataTips="true" dataTipField="uploadedOn">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getDate(data)}"
-											  toolTip="{this.text}"
+									<mx:Label text="{outerDocument.getDate(data)}" toolTip="{this.text}"
 											  selectable="false"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn dataField="numOfEntries"
-										   width="50"
+						<mx:DataGridColumn dataField="numOfEntries" width="50"
 										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getEntriesNumber(data)}"
-											  toolTip="{this.text}"
+									<mx:Label text="{outerDocument.getEntriesNumber(data)}" toolTip="{this.text}"
 											  selectable="false"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn width="60"
-										   headerText="{resourceManager.getString('cms', 'status')}">
+						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'status')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getStatus(data.status)}"
-											  toolTip="{this.text}"
+									<mx:Label text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}"
 											  selectable="false"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn dataField="error"
-										   width="100"
-										   headerText="{resourceManager.getString('cms', 'error')}"
-										   showDataTips="true"
+						<mx:DataGridColumn dataField="error" width="100"
+										   headerText="{resourceManager.getString('cms', 'error')}" showDataTips="true"
 										   dataTipField="error"/>
-						<mx:DataGridColumn width="60"
-										   headerText="{resourceManager.getString('cms', 'logFileUrl')}">
+						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'logFileUrl')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:HBox horizontalScrollPolicy="off"
-											 verticalScrollPolicy="off">
+									<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off">
 										<mx:Script>
 											<![CDATA[
 												import flash.net.navigateToURL;
@@ -354,12 +312,10 @@
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn width="60"
-										   headerText="{resourceManager.getString('cms', 'csvFileUrl')}">
+						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'csvFileUrl')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:HBox horizontalScrollPolicy="off"
-											 verticalScrollPolicy="off">
+									<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off">
 										<mx:Script>
 											<![CDATA[
 												import flash.net.navigateToURL;
@@ -374,16 +330,9 @@
 						</mx:DataGridColumn>
 					</mx:columns>
 				</mx:DataGrid>
-				<controls:Paging id="paging"
-								 width="100%"
-								 styleName="paging"
-								 rowsInPageChange="gotoPage()"
-								 nextPage="gotoPage()"
-								 prvPage="gotoPage()"
-								 getPageNum="gotoPage()"
-								 showRowsInPage="true"
-								 showNextFlag="true"
-								 showPrvFlag="true"
+				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()"
+								 showRowsInPage="true" showNextFlag="true" showPrvFlag="true"
 								 creationComplete="onPagerCreationComplete(event)"
 								 totalCount="{bulkUploadData.bulkUploadTotalCount}"/>
 			</mx:VBox>

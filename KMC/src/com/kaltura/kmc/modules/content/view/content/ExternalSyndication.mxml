@@ -5,7 +5,7 @@
 	 syndications and editing them.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:externalsyndication="com.kaltura.kmc.modules.content.view.window.externalsyndication.*"
+		 xmlns:es="com.kaltura.kmc.modules.content.view.window.externalsyndication.*"
 		 xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 width="100%" height="100%"
@@ -189,9 +189,8 @@
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox id='tableContainer' width="100%" horizontalAlign="center" styleName="entriesTablePagerAndButtonsVbox">
-			<externalsyndication:ExternalSyndicationTable id='feedsTable'
-																 dataProvider="{extSynModel.externalSyndicationData}"
-																 allSelected="{allSelected}" rowCount="10"/>
+			<es:ExternalSyndicationTable id='feedsTable' allSelected="{allSelected}" rowCount="10" 
+										 dataProvider="{extSynModel.externalSyndicationData}"/>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{extSynModel.externalSyndicationFeedsTotalCount}" nextPage="gotoPage()"
 							 prvPage="gotoPage()" getPageNum="gotoPage()" visible="true" showRowsInPage="true"
@@ -206,7 +205,7 @@
 
 		</mx:VBox>
 		<mx:VBox id='actionsBox' height="100%" styleName="listActionsBox">
-			<mx:Button label="{resourceManager.getString('cms', 'addExternalSyndicationButton')}" useHandCursor="true"
+			<mx:Button id="addBtn" label="{resourceManager.getString('cms', 'addExternalSyndicationButton')}" useHandCursor="true"
 					   buttonMode="true" click="showNewVideoFeedWindow(event)" styleName="listActionButton"/>
 		</mx:VBox>
 	</mx:HBox>
