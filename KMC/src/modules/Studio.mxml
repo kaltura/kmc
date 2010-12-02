@@ -11,6 +11,7 @@
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
@@ -114,6 +115,8 @@
 				uiconf.addEventListener(KalturaEvent.COMPLETE, loadedAppstudioUiconf);
 				uiconf.addEventListener(KalturaEvent.FAILED, failed);
 				kc.post(uiconf);
+				
+				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 
 
