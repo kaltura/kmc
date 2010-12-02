@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
-							verticalScrollPolicy="off"
-							height="540" width="400"  showCloseButton="true" close="closeHandler(event)" layout="vertical"
-							creationComplete="creationCompleteHandler(event)" >
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							verticalScrollPolicy="off" height="540" width="400" showCloseButton="true"
+							close="closeHandler(event)" layout="vertical"
+							creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="save", type="flash.events.Event")] 
 		[Event(name="close", type="flash.events.Event")] 
@@ -12,7 +12,7 @@
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.utils.ObjectUtil;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.containers.VBox;
 			import mx.controls.Alert;
@@ -22,248 +22,239 @@
 			import mx.resources.ResourceManager;
 
 			private var allCheckboxes:Array = new Array();
-			
-			protected var xml:XML = <root>
-							  <permissions>
-								<!-- -->
-								<permissionGroup text="Content ingestion"
-								id="CONTENT_INGEST_BASE">
-								  <permission text="KCW" id="CONTENT_INGEST_UPLOAD">
-								  </permission>
-								  <permission text="Bulk upload"
-								  id="CONTENT_INGEST_BULK_UPLOAD"></permission>
-								  <permission text="create remix" id="CONTENT_INGEST_ADD_MIX">
-								  </permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Content Management"
-								id="CONTENT_MANAGE_BASE">
-								  <permission text="modify metadata"
-								  id="CONTENT_MANAGE_METADATA"></permission>
-								  <permission text="modify categories"
-								  id="CONTENT_MANAGE_ASSIGN_CATEGORIES"></permission>
-								  <permission text="modify thumbnail"
-								  id="CONTENT_MANAGE_THUMBNAIL"></permission>
-								  <permission text="modify schedual"
-								  id="CONTENT_MANAGE_SCHEDULE"></permission>
-								  <permission text="modify modify access control profile"
-								  id="CONTENT_MANAGE_ACCESS_CONTROL"></permission>
-								  <permission text="delete content"
-								  id="CONTENT_MANAGE_CUSTOM_DATA"></permission>
-								  <permission text="grab embed code"
-								  id="CONTENT_MANAGE_EMBED_CODE"></permission>
-								  <permission text="reconvert flavors"
-								  id="CONTENT_MANAGE_RECONVERT"></permission>
-								  <permission text="manage live stream"
-								  id="CONTENT_MANAGE_ADD_LIVE"></permission>
-								  <permission text="edit categories"
-								  id="CONTENT_MANAGE_EDIT_CATEGORIES"></permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Content Moderation"
-									id="CONTENT_MODERATE_BASE">
-								  <permission text="Moderate metadata"
-								  id="CONTENT_MODERATE_METADATA"></permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Playlist management" id="PLAYLIST_BASE">
-								  <permission text="create playlist" id="PLAYLIST_ADD">
-								  </permission>
-								  <permission text="modify playlist" id="PLAYLIST_UPDATE">
-								  </permission>
-								  <permission text="delete playlist" id="PLAYLIST_DELETE">
-								  </permission>
-								  <permission text="grab playlist embed code"
-								  id="PLAYLIST_EMBED_CODE"></permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Syndication management"
-								id="SYNDICATION_BASE">
-								  <permission text="create syndication feeds"
-								  id="SYNDICATION_ADD"></permission>
-								  <permission text="modify syndication feeds"
-								  id="SYNDICATION_UPDATE"></permission>
-								  <permission text="delete syndication feeds"
-								  id="SYNDICATION_DELETE"></permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Studio" id="STUDIO_BASE">
-								  <permission text="create player" id="STUDIO_ADD_UICONF">
-								  </permission>
-								  <permission text="modify players" id="STUDIO_UPDATE_UICONF">
-								  </permission>
-								  <permission text="delete players" id="STUDIO_DELETE_UICONF">
-								  </permission>
-								  <permission text="Set advertising settings"
-								  id="ADVERTISING_UPDATE_SETTINGS"></permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Account settings" id="ACCOUNT_BASE">
-								  <permission text="account" 
-									id="ACCOUNT_UPDATE_SETTINGS" />
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Integration settings"
-								id="INTEGRATION_BASE">
-								  <permission text="integration" 
-								  id="INTEGRATION_UPDATE_SETTINGS" />
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Access control settings"
-								id="ACCESS_CONTROL_BASE">
-								  <permission text="Create" id="ACCESS_CONTROL_ADD">
-								  </permission>
-								  <permission text="modify" id="ACCESS_CONTROL_UPDATE">
-								  </permission>
-								  <permission text="delete" id="ACCESS_CONTROL_DELETE">
-								  </permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Transcoding settings"
-								id="TRANSCODING_BASE">
-								  <permission text="Create" id="TRANSCODING_ADD"></permission>
-								  <permission text="modify" id="TRANSCODING_UPDATE">
-								  </permission>
-								  <permission text="delete" id="TRANSCODING_DELETE">
-								  </permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Custom data settings"
-								id="CUSTOM_DATA_PROFILE_BASE">
-								  <permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
-								  </permission>
-								  <permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
-								  </permission>
-								  <permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
-								  </permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Administration" id="ADMIN_BASE">
-								  <permission text="Create users" id="ADMIN _USER_ADD">
-								  </permission>
-								  <permission text="modify users" id="ADMIN _USER_UPDATE">
-								  </permission>
-								  <permission text="delete users" id="ADMIN _USER_DELETE">
-								  </permission>
-								  <permission text="Create roles" id="ADMIN _ROLE_ADD">
-								  </permission>
-								  <permission text="modify roles" id="ADMIN _ROLE_UPDATE">
-								  </permission>
-								  <permission text="delete roles" id="ADMIN _ROLE_DELETE">
-								  </permission>
-								</permissionGroup>
-								<!-- -->
-								<permissionGroup text="Video Analytics" id="ANALYTICS_BASE">
-								</permissionGroup>
-								<!-- -->
-							  </permissions>
-							  
-							  <!-- -->
-							  <!-- -->
-							  <!-- -->
-							  
-							  <uimapping>
-								<module id="content">
-								  <tab id="upload">
-									<permission id="" />
-									<permission id="" />
-								  </tab>
-								  <tab id="moderation">
-									<permission id="" />
-								  </tab>
-								</module>
-								<module id="analytics">
-								  <permission id="44" />
-								</module>
-								<!-- this module requres 4 of 5 boxes -->
-								<module id="dashboard" min="4">
-								  <!-- embed player -->
-								  <permission id="13" />
-								  <!-- studio permission -->
-								  <permission id="23" />
-								  <!-- analytics permission -->
-								  <permission id="44" />
-								  <!-- upload permission -->
-								  <permission id="2" />
-								  <!-- account and billing permission -->
-								  <permission id="32" />
-								</module>
-							  </uimapping>
-							</root>;
 
-			
-			
+			protected var xml:XML = <root>
+					<permissions>
+						<!-- -->
+						<permissionGroup text="Content ingestion"
+							id="CONTENT_INGEST_BASE">
+							<permission text="KCW" id="CONTENT_INGEST_UPLOAD">
+							</permission>
+							<permission text="Bulk upload"
+								id="CONTENT_INGEST_BULK_UPLOAD"></permission>
+							<permission text="create remix" id="CONTENT_INGEST_ADD_MIX">
+							</permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Content Management"
+							id="CONTENT_MANAGE_BASE">
+							<permission text="modify metadata"
+								id="CONTENT_MANAGE_METADATA"></permission>
+							<permission text="modify categories"
+								id="CONTENT_MANAGE_ASSIGN_CATEGORIES"></permission>
+							<permission text="modify thumbnail"
+								id="CONTENT_MANAGE_THUMBNAIL"></permission>
+							<permission text="modify schedual"
+								id="CONTENT_MANAGE_SCHEDULE"></permission>
+							<permission text="modify modify access control profile"
+								id="CONTENT_MANAGE_ACCESS_CONTROL"></permission>
+							<permission text="delete content"
+								id="CONTENT_MANAGE_CUSTOM_DATA"></permission>
+							<permission text="grab embed code"
+								id="CONTENT_MANAGE_EMBED_CODE"></permission>
+							<permission text="reconvert flavors"
+								id="CONTENT_MANAGE_RECONVERT"></permission>
+							<permission text="manage live stream"
+								id="CONTENT_MANAGE_ADD_LIVE"></permission>
+							<permission text="edit categories"
+								id="CONTENT_MANAGE_EDIT_CATEGORIES"></permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Content Moderation"
+							id="CONTENT_MODERATE_BASE">
+							<permission text="Moderate metadata"
+								id="CONTENT_MODERATE_METADATA"></permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Playlist management" id="PLAYLIST_BASE">
+							<permission text="create playlist" id="PLAYLIST_ADD">
+							</permission>
+							<permission text="modify playlist" id="PLAYLIST_UPDATE">
+							</permission>
+							<permission text="delete playlist" id="PLAYLIST_DELETE">
+							</permission>
+							<permission text="grab playlist embed code"
+								id="PLAYLIST_EMBED_CODE"></permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Syndication management"
+							id="SYNDICATION_BASE">
+							<permission text="create syndication feeds"
+								id="SYNDICATION_ADD"></permission>
+							<permission text="modify syndication feeds"
+								id="SYNDICATION_UPDATE"></permission>
+							<permission text="delete syndication feeds"
+								id="SYNDICATION_DELETE"></permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Studio" id="STUDIO_BASE">
+							<permission text="create player" id="STUDIO_ADD_UICONF">
+							</permission>
+							<permission text="modify players" id="STUDIO_UPDATE_UICONF">
+							</permission>
+							<permission text="delete players" id="STUDIO_DELETE_UICONF">
+							</permission>
+							<permission text="Set advertising settings"
+								id="ADVERTISING_UPDATE_SETTINGS"></permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Account settings" id="ACCOUNT_BASE">
+							<permission text="account" 
+								id="ACCOUNT_UPDATE_SETTINGS" />
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Integration settings"
+							id="INTEGRATION_BASE">
+							<permission text="integration" 
+								id="INTEGRATION_UPDATE_SETTINGS" />
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Access control settings"
+							id="ACCESS_CONTROL_BASE">
+							<permission text="Create" id="ACCESS_CONTROL_ADD">
+							</permission>
+							<permission text="modify" id="ACCESS_CONTROL_UPDATE">
+							</permission>
+							<permission text="delete" id="ACCESS_CONTROL_DELETE">
+							</permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Transcoding settings"
+							id="TRANSCODING_BASE">
+							<permission text="Create" id="TRANSCODING_ADD"></permission>
+							<permission text="modify" id="TRANSCODING_UPDATE">
+							</permission>
+							<permission text="delete" id="TRANSCODING_DELETE">
+							</permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Custom data settings"
+							id="CUSTOM_DATA_PROFILE_BASE">
+							<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
+							</permission>
+							<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
+							</permission>
+							<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
+							</permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Administration" id="ADMIN_BASE">
+							<permission text="Create users" id="ADMIN _USER_ADD">
+							</permission>
+							<permission text="modify users" id="ADMIN _USER_UPDATE">
+							</permission>
+							<permission text="delete users" id="ADMIN _USER_DELETE">
+							</permission>
+							<permission text="Create roles" id="ADMIN _ROLE_ADD">
+							</permission>
+							<permission text="modify roles" id="ADMIN _ROLE_UPDATE">
+							</permission>
+							<permission text="delete roles" id="ADMIN _ROLE_DELETE">
+							</permission>
+						</permissionGroup>
+						<!-- -->
+						<permissionGroup text="Video Analytics" id="ANALYTICS_BASE">
+						</permissionGroup>
+						<!-- -->
+					</permissions>
+
+					<!-- -->
+					<!-- -->
+					<!-- -->
+
+					<uimapping>
+						<module id="content">
+							<tab id="upload">
+								<permission id="" />
+								<permission id="" />
+							</tab>
+							<tab id="moderation">
+								<permission id="" />
+							</tab>
+						</module>
+						<module id="analytics">
+							<permission id="44" />
+						</module>
+						<!-- this module requres 4 of 5 boxes -->
+						<module id="dashboard" min="4">
+							<!-- embed player -->
+							<permission id="13" />
+							<!-- studio permission -->
+							<permission id="23" />
+							<!-- analytics permission -->
+							<permission id="44" />
+							<!-- upload permission -->
+							<permission id="2" />
+							<!-- account and billing permission -->
+							<permission id="32" />
+						</module>
+					</uimapping>
+				</root>;
+
+
+
 			/**
 			 * value of the type property for the <code>save</code> event
 			 * */
 			public static const SAVE:String = "rdd_save";
-			
+
 			/**
 			 * value of the type property for the <code>save</code> event
 			 * */
 			public static const CLOSE:String = "rdd_close";
-			
+
 			/**
 			 * creationComplete event occured in the past?
 			 * */
 			private var _ready:Boolean;
-			
+
 			/**
 			 * @copy #role
 			 * */
 			private var _role:KalturaRole;
-			
-			
+
+
 			[Bindable]
 			/**
 			 * make changes to this user, so we can revert easily.
 			 * */
 			private var _undoRole:KalturaRole;
-			
-			
+
+
 			/**
 			 * @copy #mode
 			 * */
 			private var _mode:String = DrilldownMode.ADD;
-			
-			
-			
+
+
+
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_ready = true;
 				// re-trigger the mode setter
 				setMode(_mode);
-				
-				var groups:XMLList = xml..permissionGroup; 
-				
-				for each (var group:XML in groups)
-				{
+
+				var groups:XMLList = xml..permissionGroup;
+				//TODO get partner permissions and remove any features current partner doesn't have.
+				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
 				}
 			}
-			
-			
-			
-			
-			
-			
-			
-			
-			
+
+
 			/**
 			 * "x" botton clicked, confirm no changes and close.
 			 * */
 			protected function closeHandler(event:Event):void {
 				var needSave:Boolean = !ObjectUtil.compareObjects(_role, _undoRole);
 				if (needSave) {
-					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), 
-						ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
+					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
 				}
 				else {
 					requestClose();
-				} 
+				}
 			}
-			
-			
+
+
 			/**
 			 * close window and discard changes or leave window open
 			 * */
@@ -272,16 +263,16 @@
 					requestClose();
 				}
 			}
-			
-			
+
+
 			/**
 			 * dispatch close event
 			 * */
 			protected function requestClose():void {
 				dispatchEvent(new Event(RoleDrilldown.CLOSE));
 			}
-			
-			
+
+
 			/**
 			 * check if any updates were made.
 			 * if so, ask to save new data.
@@ -295,9 +286,9 @@
 					requestClose();
 				}
 			}
-			
-			
-			
+
+
+
 			/**
 			 * pass initial data.
 			 * */
@@ -306,146 +297,130 @@
 				setRole(role);
 				setMode(mode);
 			}
-			
-			
+
+
 			/**
-			 * The function gets an XML of a group, and builds a Vbox with a checkbox for the group name 
+			 * The function gets an XML of a group, and builds a Vbox with a checkbox for the group name
 			 * and its children checkboxes (if needed). All checkboxs are pusehd to a member array - allCheckboxes
-			 * The checkbox id is its permision id, also checkboxes without childrens. Inner checkboxes has as their data 
-			 * the instance of their parent. 
+			 * The checkbox id is its permision id, also checkboxes without childrens. Inner checkboxes has as their data
+			 * the instance of their parent.
 			 */
-			private function buildGroup(group:XML,debug:Boolean = true):VBox
-			{
+			private function buildGroup(group:XML, debug:Boolean = true):VBox {
 				var vb:VBox = new VBox();
-				vb.maxWidth = myForm.width-10;
+				vb.maxWidth = myForm.width - 10;
 				vb.id = group..@text.toString().split(" ").join();
 				//build the top level checkbox
 				var groupCb:CheckBox = new CheckBox();
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
-				if(debug)
+				if (debug)
 					groupCb.toolTip = group.attribute("id")[0].toString()
 				allCheckboxes.push(groupCb);
 				vb.addChild(groupCb);
-				groupCb.maxWidth = myForm.width-10;
+				groupCb.maxWidth = myForm.width - 10;
 				var cb:CheckBox;
 				var permissions:XMLList = group..permission;
-				
+
 				//special case for group without children (base only)
-				if (permissions.length() == 0)
-				{
-					return vb;						
+				if (permissions.length() == 0) {
+					return vb;
 				}
 				//only if it has inner childrens 
 				if (permissions.length() > 1)
-					groupCb.addEventListener(Event.CHANGE , unCheckChildren);
-				
-				
+					groupCb.addEventListener(Event.CHANGE, unCheckChildren);
+
+
 				//build the inner checkboxes 
-				for each (var permission:XML in permissions)
-				{
+				for each (var permission:XML in permissions) {
 					//special case for groups that has one child 
-					if (permissions.length() == 1 ) 
-					{
+					if (permissions.length() == 1) {
 						// override the group id with the inner id
 						groupCb.id = permission.attribute("id")[0].toString();
 						continue;
 					}
-					
+
 					cb = new CheckBox();
 					cb.maxWidth = 250
-					cb.label = permission.attribute("text")[0].toString() ;
-					cb.setStyle("paddingLeft" , "10");
-					if(debug)
+					cb.label = permission.attribute("text")[0].toString();
+					cb.setStyle("paddingLeft", "10");
+					if (debug)
 						cb.toolTip = permission.attribute("id")[0].toString()
 					cb.id = permission.attribute("id")[0].toString();
 					cb.data = groupCb; //pointer to the group id
-					
+
 					BindingUtils.bindProperty(cb, "visible", groupCb, "selected");
 					BindingUtils.bindProperty(cb, "includeInLayout", groupCb, "selected");
-					
+
 					vb.addChild(cb);
 					allCheckboxes.push(cb);
 				}
 				return vb;
 			}
-			
-			
+
+
 			/**
-			 * if the selected checkbox is a parent checkbox and it is unchecked it will uncheck all its children 
+			 * if the selected checkbox is a parent checkbox and it is unchecked it will uncheck all its children
 			 */
-			protected function unCheckChildren(event:Event):void
-			{
+			protected function unCheckChildren(event:Event):void {
 				var groupCb:CheckBox = (event.target as CheckBox);
-				if(groupCb.selected == false)
-				{
+				if (groupCb.selected == false) {
 					// search for children checkboxes and uncheck them 
-					for each (var cb:CheckBox in allCheckboxes)
-					{
-						if (cb.data == groupCb )
-						{
+					for each (var cb:CheckBox in allCheckboxes) {
+						if (cb.data == groupCb) {
 							cb.selected = false;
 						}
 					}
 				}
 			}
-			
-			
+
+
 			/**
-			 * Simulate a get all selected items action 
+			 * Simulate a get all selected items action
 			 */
-			protected function button1_clickHandler(event:MouseEvent):void
-			{
+			protected function button1_clickHandler(event:MouseEvent):void {
 				//TODO + insert add/edit stuff here 
 				Alert.show(getSelectedPermissions().join());
 			}
-			
-			
+
+
 			/**
 			 * Return an array of the selected checkboxes
 			 */
-			protected function getSelectedPermissions():Array
-			{
+			protected function getSelectedPermissions():Array {
 				var arr:Array = new Array();
-				for each (var cb:CheckBox in allCheckboxes) 
-				{
-					if ((cb as CheckBox).selected == true)
-					{
-						var id:String = (cb as CheckBox).id ;
-						if(id)
+				for each (var cb:CheckBox in allCheckboxes) {
+					if ((cb as CheckBox).selected == true) {
+						var id:String = (cb as CheckBox).id;
+						if (id)
 							arr.push(id);
 					}
 				}
 				return arr;
 			}
-			
-			
+
+
 			/**
 			 * Comma seperated list of permission to show. This function must run only after the form was
-			 * build by the partner full permission id. It sets the relevant checkboxes and also their parent 
+			 * build by the partner full permission id. It sets the relevant checkboxes and also their parent
 			 */
-			protected function fillPermissions(permissionList:String):void
-			{
+			protected function fillPermissions(permissionList:String):void {
 				var SelectedPermissionIds:Array = permissionList.split(",");
-				for each(var permission:String in SelectedPermissionIds)
-				{
-					for each (var cb:CheckBox in allCheckboxes)
-					{
-						if (cb.id == permission)
-						{
+				for each (var permission:String in SelectedPermissionIds) {
+					for each (var cb:CheckBox in allCheckboxes) {
+						if (cb.id == permission) {
 							cb.selected = true;
-							if(cb.data && cb.data is CheckBox)
-								(cb.data as CheckBox).selected = true; 
+							if (cb.data && cb.data is CheckBox)
+								(cb.data as CheckBox).selected = true;
 						}
 					}
 				}
-				
+
 			}
 
-			
-			
+
+
 			/**
-			 * set window mode. 
+			 * set window mode.
 			 * optional values are listed in <code>DrilldownMode</code>.
 			 * */
 			protected function setMode(newMode:String):void {
@@ -461,11 +436,11 @@
 					}
 				}
 			}
-			
-			
+
+
 			/**
 			 * @private
-			 * NOTE: when setting this attribute a new Role is created and used, 
+			 * NOTE: when setting this attribute a new Role is created and used,
 			 * so when getting this attribute the NEW entity is returned.
 			 */
 			protected function setRole(value:KalturaRole):void {
@@ -473,30 +448,28 @@
 				// create working copy
 				_undoRole = new KalturaRole();
 				var atts:Array = ObjectUtil.getObjectAllKeys(value);
-				for (var i:int = 0; i< atts.length; i++) {
+				for (var i:int = 0; i < atts.length; i++) {
 					_undoRole[atts[i]] = value[atts[i]];
 				}
 			}
 
+
 			/**
 			 * this is the original role entry. after being set it is not touched.
-			 * all changes are being made on <code>_undoRole</code>, which is a 
+			 * all changes are being made on <code>_undoRole</code>, which is a
 			 * copy of this object.
 			 * */
-			public function get role():KalturaRole
-			{
+			public function get role():KalturaRole {
 				return _role;
 			}
-			
-			
+
+
 			/**
 			 * current window mode
 			 * */
 			public function get mode():String {
 				return _mode;
 			}
-
-			
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%">
@@ -510,10 +483,11 @@
 			</mx:FormItem>
 		</mx:Form>
 	</mx:VBox>
-	<mx:HRule width="100%" />
-	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}" />
-	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" />
+	<mx:HRule width="100%"/>
+	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
+	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310"/>
 	<mx:HBox width="100%" horizontalAlign="center" height="30">
-		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="button1_clickHandler(event)"/>
+		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}"
+				   click="button1_clickHandler(event)"/>
 	</mx:HBox>
 </containers:HelpTitleWindow>
