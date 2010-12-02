@@ -17,6 +17,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
@@ -38,9 +39,10 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.IFlexDisplayObject;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
@@ -203,6 +205,8 @@
 				}
 				loadEntries();
 				PopUpManager.centerPopUp(this);
+				
+				PermissionManager.getInstance().applyAllAttributes(this, "drilldown");
 			}
 
 
@@ -408,6 +412,33 @@
 			private function setUntrackableChange():void {
 				_untrackableChangeFlag = true;
 			}
+			
+			
+			/**
+			 * list of tabs to remove from the drilldown window, separated by ",".
+			 * */
+			public function set hideTabs(tabs:String):void {
+				var tabsList:Array = tabs.split(",");
+				var l:int = tabsList.length;
+				var tab:DisplayObject;
+				for (var i:int = 0; i<l; i++) {
+					tab = viewStack.getChildByName(tabsList[i]);
+					if (tab) {
+						viewStack.removeChild(tab);
+					}
+				}
+			}
+			
+			
+			/**
+			 * @private
+			 * need the getter because applyPermission reads 
+			 * the hideTabs value before it sets it.
+			 * */
+			public function get hideTabs():String {
+				return '';
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
