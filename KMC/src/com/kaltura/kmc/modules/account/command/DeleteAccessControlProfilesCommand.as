@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.accessControl.AccessControlDelete;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	
 	import flash.external.ExternalInterface;
 	
@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class DeleteAccessControlProfilesCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		private var multiProfiles:Boolean = false;
 		public function execute(event:CairngormEvent):void
 		{

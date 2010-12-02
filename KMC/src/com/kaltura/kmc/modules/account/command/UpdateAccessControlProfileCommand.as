@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.accessControl.AccessControlUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.vo.AccessControlProfileVO;
 	
 	import flash.external.ExternalInterface;
@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class UpdateAccessControlProfileCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

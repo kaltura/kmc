@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 	import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.MetadataFieldVO;
 	
@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class EditMetadataFieldCommand implements ICommand
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

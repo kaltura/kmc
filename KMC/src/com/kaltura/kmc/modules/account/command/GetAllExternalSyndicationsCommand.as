@@ -2,13 +2,13 @@ package com.kaltura.kmc.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	
 	import mx.rpc.IResponder;
 	
 	public class GetAllExternalSyndicationsCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

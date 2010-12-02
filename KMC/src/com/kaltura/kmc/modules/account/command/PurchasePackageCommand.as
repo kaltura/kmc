@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.account.business.PurchasePackageDelegate;
 	import com.kaltura.kmc.modules.account.events.ModalWindowEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PaymentDetailsVO;
@@ -19,7 +19,7 @@ package com.kaltura.kmc.modules.account.command
 
 	public class PurchasePackageCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;

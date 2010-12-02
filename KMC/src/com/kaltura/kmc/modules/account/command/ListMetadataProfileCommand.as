@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -28,7 +28,7 @@ package com.kaltura.kmc.modules.account.command
 	 */	
 	public class ListMetadataProfileCommand implements ICommand, IResponder {
 	
-		private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 		
 
 		/**

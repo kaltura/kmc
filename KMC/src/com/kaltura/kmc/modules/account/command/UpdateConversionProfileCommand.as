@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.conversionProfile.ConversionProfileUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.vo.KalturaConversionProfile;
 	
@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class UpdateConversionProfileCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

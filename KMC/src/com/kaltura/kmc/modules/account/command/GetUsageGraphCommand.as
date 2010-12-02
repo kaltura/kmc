@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.AccountUsageVO;
 	import com.kaltura.vo.KalturaPartnerUsage;
 	
@@ -14,7 +14,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class GetUsageGraphCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

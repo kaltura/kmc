@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileUpdate;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KalturaMetadataProfile;
 	
@@ -21,7 +21,7 @@ package com.kaltura.kmc.modules.account.command
 	 */	
 	public class UpdateMetadataProfileCommand implements ICommand, IResponder {
 		
-		private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 		
 		/**
 		 * This function will send an update profile request to the server, with the current profile id and the current XSD 

@@ -15,7 +15,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
-			import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
@@ -219,7 +219,7 @@
 		
 		private function onPagerCreationComplete(event:Event):void
 		{
-			KMCModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
+			AccountModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
 			paging.kalturaFilterPager.pageIndex = 0;
 			paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 			loadAccessControlsList();
@@ -254,7 +254,7 @@
 	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">
 			<accesscontrolwindow:AccessControlProfilesTable id='accessControlProfilesTable' dataProvider="{accessControlsList}" allSelected="{allSelected}"/>
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" totalCount="{KMCModelLocator.getInstance().accessControlProfilesTotalCount}"
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
 								nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
 								showRowsInPage="true" showNextFlag="true" showPrvFlag="true" creationComplete="onPagerCreationComplete(event)" 
 								rowsInPage="{[10, 15, 20, 25]}"/>

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.adminUser.AdminUserUpdatePassword;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.vo.KalturaAdminUser;
 	
 	import flash.external.ExternalInterface;
@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.account.command
 
 	public class UpdateAdminPasswordCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;

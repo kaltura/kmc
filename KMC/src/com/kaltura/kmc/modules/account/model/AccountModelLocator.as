@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.account.model
 	import mx.collections.ArrayCollection;
 	
 	[Bindable]
-	public class KMCModelLocator extends EventDispatcher implements IModelLocator
+	public class AccountModelLocator extends EventDispatcher implements IModelLocator
 	{
 		public static const USAGE_GRAPH_RESULT : String = "usageGraphResult";
 		public static const USAGE_GRAPH_FAULT : String = "usageGraphFault";
@@ -65,18 +65,18 @@ package com.kaltura.kmc.modules.account.model
 		
 		//---------------------------------------------------------
 		//singleton methods
-		private static var _modelLocator : KMCModelLocator;
-		public static function getInstance() : KMCModelLocator
+		private static var _modelLocator : AccountModelLocator;
+		public static function getInstance() : AccountModelLocator
 		{
 			if ( _modelLocator == null )
 			{
-				_modelLocator = new KMCModelLocator(new Enforcer());
+				_modelLocator = new AccountModelLocator(new Enforcer());
 			}
 
 			return _modelLocator;
 		}
 
-		public function KMCModelLocator(enforcer:Enforcer)
+		public function AccountModelLocator(enforcer:Enforcer)
 		{
 			context = new Context();
 			uiConfigVo = new UIConfVO();

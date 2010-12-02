@@ -5,9 +5,9 @@ package com.kaltura.kmc.modules.account.control
 	import com.kaltura.kmc.modules.account.events.*;
 	
 	
-	public class KMCController extends FrontController
+	public class AccountController extends FrontController
 	{
-		public function KMCController()
+		public function AccountController()
 		{
 			initializeCommands();
 		}

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileAdd;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KalturaMetadataProfile;
@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.account.command
 	 */	
 	public class AddMetadataProfileCommand implements ICommand, IResponder {
 		
-		private var _model:KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 		
 		/**
 		 * Will send a MetadataProfileAdd request with the current XSD. 

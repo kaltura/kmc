@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.accessControl.AccessControlList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.vo.AccessControlProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
 	import com.kaltura.vo.KalturaAccessControlListResponse;
@@ -18,7 +18,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	public class ListAccessControlsCommand implements ICommand, IResponder
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{

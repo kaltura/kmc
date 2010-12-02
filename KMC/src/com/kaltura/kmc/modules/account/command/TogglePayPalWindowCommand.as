@@ -3,13 +3,13 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.account.events.ModalWindowEvent;
-	import com.kaltura.kmc.modules.account.model.KMCModelLocator;
+	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	
 	public class TogglePayPalWindowCommand implements ICommand
 	{
-		private var _model : KMCModelLocator = KMCModelLocator.getInstance();
+		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		
 		public function execute(event:CairngormEvent):void
 		{
