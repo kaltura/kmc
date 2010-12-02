@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab"
-		 creationComplete="bindSetters()">
+		 creationComplete="creationCompleteHandler()">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -73,24 +73,28 @@
 			}
 			
 			
-			protected function bindSetters():void {
-				
+			/**
+			 * bind setters and apply permissions 
+			 * */
+			protected function creationCompleteHandler():void {
 				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
 				BindingUtils.bindSetter(onRoleDrilldownStateChange, model, "roleDrilldownMode");
 				BindingUtils.bindSetter(onRolesListChange, model, "allRoles");
 				BindingUtils.bindSetter(onNewRoleChange, model, "newRole");
+				
+				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 			
 			
 			/**
-			 * if a user drilldown is window opened, update the user's role. 
+			 * if a user drilldown window is opened, update the user's role. 
 			 * */
 			protected function onNewRoleChange(value:KalturaRole):void {
-				if (_userDrilldown) {
-					_userDrilldown.setUserRole(value.id);
+				if (value) {
+					if (_userDrilldown) {
+						_userDrilldown.setUserRole(value.id);
+					}
 				}
-				
-				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 			
 			/**

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{vbox1_creationCompleteHandler(event)}"
-		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.admin.view.*"
+		 xmlns:controls="com.kaltura.controls.*" width="100%" height="100%"
+		 creationComplete="creationCompleteHandler(event)"
 		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab">
 	<mx:Script>
 		<![CDATA[
@@ -14,6 +15,7 @@
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.vo.KalturaFilterPager;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
@@ -29,6 +31,14 @@
 			 * */
 			protected var _roleDrilldown:RoleDrilldown;
 			
+			
+			/**
+			 * bind setters and apply permissions
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				BindingUtils.bindSetter(onNewRoleChanged, model, "newRole");
+				PermissionManager.getInstance().applyAllAttributes(this,id);
+			}
 			
 			/**
 			 * refresh subtab data
@@ -75,6 +85,7 @@
 				listRoles(paging.selectedPage);
 			}
 			
+			
 			/**
 			 * get the edited user and update server
 			 * */
@@ -92,6 +103,7 @@
 				ue.dispatch();
 			}
 			
+			
 			/**
 			 * hides and destroys the role drilldown window
 			 * */
@@ -105,7 +117,6 @@
 					de.dispatch();
 				}
 			}
-			
 			
 			
 			/**
@@ -174,11 +185,17 @@
 				ce.dispatch();
 			}
 			
-
-			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
-				PermissionManager.getInstance().applyAllAttributes(this,id);
+			/**
+			 * open drilldown for the selected role.
+			 * 
+			 * */
+			protected function onNewRoleChanged(value:KalturaRole):void {
+				if (value) {
+					openEditRoleDialog(null);
+				}
 			}
+
+			
 
 		]]>
 	</mx:Script>

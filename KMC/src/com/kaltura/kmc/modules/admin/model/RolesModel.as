@@ -34,5 +34,13 @@ package com.kaltura.kmc.modules.admin.model
 		 * <code>DrilldownMode.EDIT</code> or  <code>DrilldownMode.NONE</code>.
 		 * */
 		public var drilldownMode:String = DrilldownMode.NONE;
+		
+		
+		/**
+		 * when duplications a role from the roles table, need to open a 
+		 * drilldown window for it. since the only way to trigger ui actions
+		 * is via binding, we'll use this propoerty.    
+		 */		
+		public var newRole:KalturaRole;
 	}
 }

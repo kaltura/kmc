@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleClone;
 	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleList;
+	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRoleListResponse;
 	import com.kaltura.net.KalturaCall;
 	
@@ -29,6 +30,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function result(data:Object):void {
 			super.result(data);
+			// select the new role
+			_model.rolesModel.selectedRole = data.data[0] as KalturaRole;
+			// open drilldown for returned KalturaRole
+			_model.rolesModel.newRole = data.data[0] as KalturaRole;
+			_model.rolesModel.newRole = null;
+			
 			var response:KalturaRoleListResponse = data.data[1] as KalturaRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
 		} 

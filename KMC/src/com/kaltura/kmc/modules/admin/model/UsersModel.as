@@ -57,7 +57,7 @@ package com.kaltura.kmc.modules.admin.model
 		/**
 		 * when creating a new role from the user drilldown, need to pass  
 		 * the KalturaRole returned from the server back to the user drilldown   
-		 * window via the model. this object is nullified afterwards.  
+		 * window via the model. 
 		 */		
 		public var newRole:KalturaRole;
 		
