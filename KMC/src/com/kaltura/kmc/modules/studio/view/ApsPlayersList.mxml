@@ -75,11 +75,16 @@
 			 * date formatter
 			 * */
 			private var _dateFormatter:DateFormatter;
+			
 			[Bindable]
 			/**
-			 * dataprovider for the combobox 
+			 * dataprovider for the combobox of player and playlists 
 			 */
 			public var comboDataProviderNormal:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			/**
+			 * dataprovider for the combobox of multi playlist
+			 */
 			public var comboDataProviderMulti:ArrayCollection = new ArrayCollection();
 
 			private function onCreationComplete():void {
@@ -97,9 +102,6 @@
 				comboDataProviderMulti.addItem({label:resourceManager.getString('aps', 'previewAndEmbed') ,id:'previewAndEmbed'});
 				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','duplicate'),id:'duplicate'});
 				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','delete'),id:'delete'});
-				
-				
-				
 			}
 
 
@@ -473,11 +475,14 @@
 						break;
 				}
 				//protect from an ID it did not find - check if this is the last item 
-				// and if it has not the same id  
-				if(i==comboDataProviderMulti.length && comboDataProviderMulti.getItemAt(i-1) != id )
+				// and if it has not the same id
+				if (comboDataProviderMulti.length !=0)
 				{
-				} else
-					comboDataProviderMulti.removeItemAt(i); 
+					if(i==comboDataProviderMulti.length && comboDataProviderMulti.getItemAt(i-1) != id )
+					{
+					} else
+						comboDataProviderMulti.removeItemAt(i); 
+				}
 				
 				
 				
@@ -489,11 +494,16 @@
 				}
 				//protect from an ID it did not find - check if this is the last item 
 				// and if it has not the same id  
-				if(j==comboDataProviderNormal.length && comboDataProviderNormal.getItemAt(j-1) != id )
+				
+				if(comboDataProviderNormal.length != 0)
 				{
+					if(j==comboDataProviderNormal.length && comboDataProviderNormal.getItemAt(j-1) != id )
+					{
+					}
+					else
+						comboDataProviderNormal.removeItemAt(j); 
 				}
-				else
-					comboDataProviderNormal.removeItemAt(j); 
+				
 			}
 			
 			/**
