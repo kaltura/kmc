@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 
-	public class KalturaEvent extends CairngormEvent
+	public class ContactEvent extends CairngormEvent
 	{
 		public static const CONTACT_US : String = "account_contactUs";
 		public var userName : String = "";
@@ -10,7 +10,7 @@ package com.kaltura.kmc.modules.account.events
 		public var userComment : String = "";
 		public var services : String = "";
 		
-		public function KalturaEvent( type:String,
+		public function ContactEvent( type:String,
 									  userName:String,
 									  userPhone:String,
 									  userComment:String,

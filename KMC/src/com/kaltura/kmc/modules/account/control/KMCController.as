@@ -30,7 +30,7 @@ package com.kaltura.kmc.modules.account.control
 			addCommand( PackageEvent.PURCHASE_PARTNER_PACKAGE ,PurchasePackageCommand);
 			
 			// Kaltura Events
-			 addCommand( KalturaEvent.CONTACT_US , ContactSalesForceCommand );
+			 addCommand( ContactEvent.CONTACT_US , ContactSalesForceCommand );
 			 
 			// Modal Window Events
 			addCommand( ModalWindowEvent.OPEN_PAYPAL_WINDOW , TogglePayPalWindowCommand );
