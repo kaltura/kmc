@@ -2,20 +2,15 @@
 <!---
 	 entry drill-down screen.
 -->
-<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
-				 creationComplete="{onCreationComplete()}"
-				 title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" 
-				 height="540" width="930" layout="horizontal"
-				 horizontalScrollPolicy="off" paddingTop="18" 
-				 showCloseButton="true" close="{areYouSure()}"
-				 help="{onHelp()}"
-				 xmlns="com.kaltura.containers.*" 
-				 xmlns:view="com.kaltura.kmc.modules.content.view.*"
-				 xmlns:controls="com.kaltura.controls.*" 
-				 xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
-				 xmlns:adobe="http://www.adobe.com/2006/fc" 
-				 >
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="{onCreationComplete()}"
+							title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" height="540"
+							width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
+							showCloseButton="true" close="{areYouSure()}" help="{onHelp()}"
+							xmlns:containers="com.kaltura.containers.*"
+							xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
+							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
+							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+							xmlns:adobe="http://www.adobe.com/2006/fc">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -43,14 +38,14 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
-			
+
 
 
 
@@ -68,7 +63,7 @@
 			 * */
 			private var _isLiveStream:Boolean;
 
-			
+
 
 			/**
 			 * if somthing that we can't track changes happen
@@ -100,89 +95,61 @@
 			 * */
 			public var openPlayerFunc:String;
 
-			
+
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('cms', 'helpEntryDrilDown')));
 			}
-			
+
+
 			/**
 			 * reorder tabs and show only relevant tabs for normal (not mix) entries
 			 * */
 			private function showNormalSetup():void {
 				viewStack.removeChild(liveStream);
-				if (filterModel.enableCustomData)
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms', 'accessControl'),
-						resourceManager.getString('cms', 'scheduling'),
-						resourceManager.getString('cms', 'videoFiles'),
-						resourceManager.getString('cms', 'mixesTab'),
-						ResourceManager.getInstance().getString('cms','customData')];
-				else {
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms','accessControl'),
-						resourceManager.getString('cms','scheduling'),
-						resourceManager.getString('cms','videoFiles'),
-						resourceManager.getString('cms','mixesTab')];
+				if (!filterModel.enableCustomData) {
 					viewStack.removeChild(customData);
 				}
+				// for mix/content tab, show "mixesTab" header
+				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
+				
 			}
-			
-			
+
+
 			/**
 			 * reorder tabs and show only relevant tabs for mix entries
 			 * */
 			private function showMixSetup():void {
 				viewStack.removeChild(entryAsstes);
 				viewStack.removeChild(liveStream);
-				// show custom metadata tab only if needed:
-				if (filterModel.enableCustomData) {
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms', 'accessControl'),
-						resourceManager.getString('cms', 'scheduling'),
-						resourceManager.getString('cms', 'content'),
-						ResourceManager.getInstance().getString('cms','customData')];
-				}
-				else {
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms', 'accessControl'),
-						resourceManager.getString('cms', 'scheduling'),
-						resourceManager.getString('cms','content')];
+				
+				if (!filterModel.enableCustomData) {
 					viewStack.removeChild(customData);
 				}
+				// for mix/content tab, show "mixesTab" header
+				contentTab.label = ResourceManager.getInstance().getString('cms', 'content');
 			}
-			
-			
+
+
 			/**
 			 * reorder tabs and show only relevant tabs for live Entries
 			 * */
 			private function showLiveStreamSetup():void {
 				viewStack.removeChild(entryAsstes);
 				viewStack.removeChild(contentTab);
-				viewStack.addChildAt(liveStream, 3);
-				
-				// show custom metadata tab only if needed:
-				if (filterModel.enableCustomData)
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms', 'accessControl'),
-						resourceManager.getString('cms', 'scheduling'),
-						ResourceManager.getInstance().getString('cms', 'broadcasting'),
-						ResourceManager.getInstance().getString('cms', 'customData')];
-				else {
-					dtn.dataProvider = [resourceManager.getString('cms', 'metadata'),
-						resourceManager.getString('cms', 'accessControl'),
-						resourceManager.getString('cms', 'scheduling'),
-						ResourceManager.getInstance().getString('cms', 'broadcasting')];
+
+				if (!filterModel.enableCustomData) {
 					viewStack.removeChild(customData);
 				}
 			}
-			
+
+
 			/**
 			 * save a working copy of the selected entry
 			 * @return a copy entry
 			 * */
 			private function createWorkingCopy(entry:KalturaBaseEntry):KalturaBaseEntry {
 				var copy:KalturaBaseEntry;
-				
+
 				if (entry is KalturaPlaylist) {
 					copy = Cloner.cloneKalturaPlaylist(entry as KalturaPlaylist);
 				}
@@ -199,16 +166,16 @@
 				}
 				return copy;
 			}
-			
-			
+
+
 			/**
 			 * set screen contents according to data
 			 * */
 			private function onCreationComplete():void {
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
-				
+
 				_undoToEntry = createWorkingCopy(selectedEntry);
-				
+
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 					_isLiveStream = true;
 				}
@@ -217,18 +184,16 @@
 				if (!_undoToEntry is KalturaMixEntry) {
 					partsTable.text = resourceManager.getString('cms', 'usageInMixes');
 				}
-				
+
 				// init the top panel
 				entryMetaData.init();
 
+				// show correct panels according to entry type
 				// live entry
 				if (_isLiveStream) {
 					showLiveStreamSetup();
 				}
-				else if (/* (selectedEntry is KalturaMediaEntry &&
-					((selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.VIDEO) &&
-					((selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.AUDIO)) || */
-					selectedEntry is KalturaMixEntry) {
+				else if (selectedEntry is KalturaMixEntry) {
 					//this is a mix
 					showMixSetup();
 				}
@@ -236,9 +201,7 @@
 					// this entry is a regular video/image/audio
 					showNormalSetup();
 				}
-				//bypass the loading of mix entries or mixes that uses this entry
-//				if (!_isLiveStream)
-					loadEntries();
+				loadEntries();
 				PopUpManager.centerPopUp(this);
 			}
 
@@ -248,17 +211,14 @@
 			 * */
 			private function openPreview(e:Event):void {
 				if (openPlayerFunc) {
-					ExternalInterface.call(openPlayerFunc, _undoToEntry.id, _undoToEntry.name,
-						cutTo512Chars(_undoToEntry.description), false, null,
-						(_undoToEntry is KalturaMixEntry));
+					ExternalInterface.call(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), false, null, (_undoToEntry is KalturaMixEntry));
 				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED,
-					"content>Open Preview and Embed");
-				
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");
+
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED))
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED ,GoogleAnalyticsConsts.CONTENT);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED, GoogleAnalyticsConsts.CONTENT);
 			}
 
 
@@ -268,14 +228,12 @@
 			private function loadEntries():void {
 				if (_undoToEntry is KalturaMixEntry) {
 					//get all mix entries
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES,
-															entryDetailsModel.selectedEntry);
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, entryDetailsModel.selectedEntry);
 					cgEvent.dispatch();
 				}
 				else if (!_isLiveStream) {
 					//get all entries that uses this mix 
-					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS,
-																 entryDetailsModel.selectedEntry);
+					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, entryDetailsModel.selectedEntry);
 					getRoughcuts.dispatch();
 				}
 
@@ -284,9 +242,8 @@
 
 			private function onPaging():void {
 				loadEntries();
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE ,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>Show Rows");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
 
@@ -296,8 +253,7 @@
 				var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfile;
 
 				if (metadataProfile && metadataProfile.profile && metadataInfo) {
-					var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject,
-																			  metadataProfile);
+					var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
 					if (metadataInfo.metadata) {
 						var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
 						if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
@@ -310,10 +266,8 @@
 					}
 				}
 
-			if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
-					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'),
-														 resourceManager.getString('cms', 'undoEntryDetailsTitle'),
-														 Alert.YES | Alert.NO, null, removeMe);
+				if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
+					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
 				}
 				else
 					removeMe();
@@ -340,7 +294,7 @@
 			}
 
 
-			
+
 			private function save():void {
 				// validation:
 				var validationResult:EntryDetailsValidationError = entryMetaData.save();
@@ -354,21 +308,19 @@
 						}
 					}
 				}
-				
+
 				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
 					// Atar: need to alert no name? there's validation on the TF itself 
-				} else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
-					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg'),
-						resourceManager.getString('cms', 'categoriesErrorTitle'));
+				}
+				else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
+					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg'), resourceManager.getString('cms', 'categoriesErrorTitle'));
 				}
 				// scheduling validation:
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
-					Alert.show(resourceManager.getString('cms', 'scedualingStartDateError'),
-								resourceManager.getString('cms', 'scedualingErrorTitle'));
+					Alert.show(resourceManager.getString('cms', 'scedualingStartDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
 				}
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_END_DATE) {
-					Alert.show(resourceManager.getString('cms', 'scedualingEndDateError'),
-								resourceManager.getString('cms', 'scedualingErrorTitle'));
+					Alert.show(resourceManager.getString('cms', 'scedualingEndDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
 				}
 				// livestream validation:
 				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
@@ -376,14 +328,11 @@
 				}
 				else {
 					// if we got here, all panels validation passed ok, the error was null.	
-					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES,
-																new ArrayCollection([_undoToEntry]));
+					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
 					cgEvent.dispatch();
 
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
-															  "EditedtDrillDown", _undoToEntry.id);
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY +
-						">entryID>" + _undoToEntry.id,GoogleAnalyticsConsts.CONTENT);
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 					removeMe();
 				}
 			}
@@ -452,70 +401,65 @@
 				return result;
 			};
 
-			
+
 			/**
 			 * sets the untrackable change flag to true
 			 * */
 			private function setUntrackableChange():void {
 				_untrackableChangeFlag = true;
 			}
-
 		]]>
 	</mx:Script>
-	
-	<navigation:DTN id="dtn" width="140" height="100%"
-					dataProvider="{[resourceManager.getString('cms', 'metadata'), 
-						resourceManager.getString('cms', 'accessControl'), 
-						resourceManager.getString('cms', 'scheduling'), 
-						resourceManager.getString('cms', 'videoFiles'), 
-						resourceManager.getString('cms', 'mixesTab'),
-						ResourceManager.getInstance().getString('cms', 'liveStream'), 
-						ResourceManager.getInstance().getString('cms', 'customData') ]}"/>
+	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
+			   useHandCursor="true" buttonMode="true" tabHeight="25"/>
+
 	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{entryMetaData.pausePreview()}" creationPolicy="all"
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack">
 		<!-- Metadata Tab -->
-		<entrydetails:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
-									selectedEntry="{_undoToEntry}"
-									isLiveStream="{_isLiveStream}"
-									context="{context}"
-									entryDetailsModel="{entryDetailsModel}"
-									untrackableChange="{setUntrackableChange()}"
-									openPreview="{openPreview(event)}"
-									/>
-			
+		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
+						  label="{ResourceManager.getInstance().getString('cms', 'metadata')}"
+						  selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}" context="{context}"
+						  entryDetailsModel="{entryDetailsModel}" untrackableChange="{setUntrackableChange()}"
+						  openPreview="{openPreview(event)}"/>
 
 		<!-- Access Control Tab -->
-		<entrydetails:EntryAccessControl id='entryAcp' styleName="accessControlVbox" selectedEntry="{_undoToEntry}"
-										 filterModel="{filterModel}"
-										 accessControlData="{filterModel.accessControlProfiles}"/>
+		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
+							   label="{ResourceManager.getInstance().getString('cms', 'accessControl')}"
+							   selectedEntry="{_undoToEntry}" filterModel="{filterModel}"
+							   accessControlData="{filterModel.accessControlProfiles}"/>
 
 		<!-- Scheduling Tab -->
-		<entrydetails:EntryScheduling id='entrySch' selectedEntry="{_undoToEntry}"/>
+		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('cms', 'scheduling')}"
+							selectedEntry="{_undoToEntry}"/>
 
 		<!-- Flavor Assets Tab -->
-		<entrydetails:EntryFlavors id="entryAsstes" styleName="flavorsVbox" selectedEntry="{_undoToEntry}"
-								   flavorAssets="{entryDetailsModel.flavorParamsAndAssetsByEntryId}"/>
-
+		<ed:EntryFlavors id="entryAsstes" styleName="flavorsVbox"
+						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
+						 selectedEntry="{_undoToEntry}"
+						 flavorAssets="{entryDetailsModel.flavorParamsAndAssetsByEntryId}"/>
 
 		<!-- content Tab -->
-		<mx:VBox id="contentTab" width="100%" height="100%" styleName="contentVbox">
+		<mx:VBox id="contentTab" width="100%" height="100%" styleName="contentVbox"
+				 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}">
 			<mx:Label id="partsTable" styleName="drillDownTitleLabel"/>
 			<view:EntryTable width="100%" height="100%" dataProvider="{entryDetailsModel.selectedEntry.parts}"
-							 creationComplete="{removeColums( event )}" sortableColumns="false"/>
+							 creationComplete="{removeColums(event)}" sortableColumns="false"/>
 			<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" getPageNum="onPaging()"
 							 showRowsInPage="false" showNextFlag="true" showPrvFlag="true"/>
 		</mx:VBox>
 
 		<!-- Live stream -->
-		<entrydetails:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}" selectedEntry="{_undoToEntry}"/>
+		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
+							   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}"
+							   selectedEntry="{_undoToEntry}"/>
 
 		<!-- Custom Data -->
-		<entrydetails:EntryCustomData id="customData" filterModel="{filterModel}"
-									  entryDetailsModel="{entryDetailsModel}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"
+							filterModel="{filterModel}" entryDetailsModel="{entryDetailsModel}"/>
 
 	</mx:ViewStack>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="save()"
 				   buttonMode="true"/>
 	</mx:ControlBar>
-</HelpTitleWindow>
+</containers:HelpTitleWindow>
