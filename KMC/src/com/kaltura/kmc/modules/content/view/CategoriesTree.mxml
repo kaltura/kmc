@@ -5,7 +5,7 @@
 		 focusEnabled="false"
 		 itemEditor="com.kaltura.kmc.modules.content.view.itemrenderers.CategoriesTreeEditorRenderer"
 		 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.CategoriesTreeItemRenderer"
-		 itemEditBegin="onItemEditBegin(event)" itemEditBeginning="disableEditing(event)"
+		 itemEditBegin="disableEditing(event)" itemEditBeginning="disableEditing(event)"
 		 itemEditEnd="onItemEndEdit(event)" allowMultipleSelection="true" dropEnabled="false" 
 		 allowDragSelection="false"
 		 dragMoveEnabled="false" dragEnabled="false" borderThickness="3" 
@@ -403,6 +403,7 @@
 					var overVo:CategoryVO = _lastNodeOver.data as CategoryVO;
 					event.currentTarget.hideDropFeedback(event);
 					showRejectDropCursor(false);
+					// if dragging an entry to a category
 					if (dragSource is EntryTable) {
 						var clonedEntriesArr:ArrayCollection = new ArrayCollection();
 						var entries:Array = (dragSource as EntryTable).selectedItems;
@@ -476,6 +477,7 @@
 							cgEvent.dispatch();
 						}
 					}
+					// else dragging a category onto another category
 					else {
 						if (overVo.id == 0) {
 							event.preventDefault();
@@ -488,6 +490,7 @@
 					}
 				}
 				else {
+					// no relevant drop target
 					showRejectDropCursor(false);
 					event.currentTarget.hideDropFeedback(event);
 					event.preventDefault();
@@ -539,20 +542,11 @@
 			}
 
 
-			private function onItemEditBegin(event:ListEvent):void {
-				if (!_isInRenameMode) {
-					event.preventDefault();
-				}
-			}
-
-
 			private function disableEditing(event:ListEvent):void {
 				if (!_isInRenameMode) {
 					event.preventDefault();
 				}
 			}
-
-			
 
 
 			override protected function mouseDoubleClickHandler(event:MouseEvent):void {
@@ -617,8 +611,7 @@
 					// if new name is empty
 					TextInput(this.itemEditorInstance).text = editedCategory.name;
 					Alert.show(resourceManager.getString('cms', 'emptyCategoryNameError'),
-														 resourceManager.getString('cms',
-																				   'renameCategoryErrorTitle'));
+														 resourceManager.getString('cms', 'renameCategoryErrorTitle'));
 					event.preventDefault();
 				}
 				else {
@@ -631,8 +624,7 @@
 								nameFound = true;
 								TextInput(this.itemEditorInstance).text = editedCategory.name;
 								Alert.show(resourceManager.getString('cms', 'categoryNameInUseError'),
-																	 resourceManager.getString('cms',
-																							   'renameCategoryErrorTitle'));
+																	 resourceManager.getString('cms', 'renameCategoryErrorTitle'));
 								event.preventDefault();
 								return;
 							}

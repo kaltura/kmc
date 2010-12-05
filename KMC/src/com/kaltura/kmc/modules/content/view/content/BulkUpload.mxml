@@ -9,6 +9,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.events.BulkEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
 			import com.kaltura.kmc.modules.content.model.BulkUploadModel;
@@ -19,7 +20,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -233,6 +234,7 @@
 
 			protected function vbox1_creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
 		]]>
 	</mx:Script>
@@ -242,7 +244,7 @@
 			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}" selectable="false"/>
 			<mx:HBox>
 				<mx:ComboBox id="profilesCb"/>
-				<mx:Button label="{resourceManager.getString('cms', 'upload')}" click="openCw()" buttonMode="true"/>
+				<mx:Button id="kcwBtn" label="{resourceManager.getString('cms', 'upload')}" click="openCw()" buttonMode="true"/>
 			</mx:HBox>
 		</mx:VBox>
 
@@ -258,7 +260,7 @@
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}" selectable="false"/>
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}" selectable="false"/>
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}" selectable="false"/>
-			<mx:Button label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
+			<mx:Button id="submitBtn" label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
 			<mx:VBox styleName="vGapBox" width="100%">
 				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
 							 dataProvider="{bulkUploadData.ps3BulkUploadData}" headerRelease="{event.preventDefault()}">
