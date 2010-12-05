@@ -55,6 +55,7 @@ package com.kaltura.kmc.business
 			_hideTabs = permissionParser.getTabsToHide(_permissionXml,_permissions);
 			
 		}
+		
 		/**
 		 * Return only the relevant permission VOs by the component path 
 		 * @param componentPath
@@ -107,15 +108,22 @@ package com.kaltura.kmc.business
 		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:*):void
 		{
 			var chainWithoutPrefix:Array = compoentPath.split(startComponent["id"]);
-			//isolate all items after the correct item - drop everything before
-			chainWithoutPrefix.shift();
+			// isolate all items after the correct item 
+			if (chainWithoutPrefix.length > 1) {
+				// - drop everything before
+				chainWithoutPrefix.shift();
+			}
+			// if length == 1 we have a path starting from the middle, like drilldown windows.
 			
 			var chain:Array = chainWithoutPrefix.join().split(".");
 			//create the new chain without the dots 
 			var o:Object = startComponent;
+			if (o.id != chain[0]) {
+				// path starting from the middle: drop the first name because it referes to startComponent
+				chain.shift();
+			}
 			//find the current component position in chain
-			
-			//iteratd from the next position 
+			//iterate from the next position 
 			for (var i:uint=0; i<chain.length;i++) {
 				// next in chain
 				if(chain[i])
@@ -132,7 +140,7 @@ package com.kaltura.kmc.business
 			}
 			else {
 				trace("cannot push attribute " +  componentProperty + 
-					"to component of type " + dt.@name.toString());
+					" to component of type " + dt.@name.toString());
 			}
 		}
 		
@@ -175,7 +183,26 @@ package com.kaltura.kmc.business
 			}
 			return arr;
 		}
-
+		
+		/**
+		 * if there is a permission vo associated with the component, and that vo
+		 * has a definition for the given attribute, return the value.
+		 * @param componentPath path to component
+		 * @param attribute		the attribute whose value we want
+		 * @return the value for the desired attribute
+		 */		
+		public function getValue(componentPath:String, attribute:String):* {
+			var relevantPermissions:Array = getRelevantPermissions(componentPath);
+			for each (var o:PermissionVo in relevantPermissions ) {
+				for (var att:Object in o.attributes) {
+					if (att.toString() == attribute) {
+						return o.attributes[att];
+					}
+				}
+			}
+			//TODO what should the default value be?
+		}
+		
 		
 		////////////////// getters ///////////////////////////
 

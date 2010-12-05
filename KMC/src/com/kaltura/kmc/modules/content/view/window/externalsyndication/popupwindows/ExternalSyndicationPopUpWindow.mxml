@@ -19,7 +19,7 @@ This is the window in which you add a new syndication.
 		<mx:State name="editFeedSate">
 			<mx:SetProperty name="title"
 							value="{resourceManager.getString('cms','editFeedTitle')}"/>
-			<mx:SetProperty target="{button1}"
+			<mx:SetProperty target="{submitBtn}"
 							name="label"
 							value="{resourceManager.getString('cms','saveChangesBtn')}"/>
 			<mx:SetProperty target="{feedTypeComboBox}"
@@ -29,6 +29,7 @@ This is the window in which you add a new syndication.
 	</states>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
@@ -114,6 +115,7 @@ This is the window in which you add a new syndication.
 					var syndicationFeedTemplate:IExternalSyndicationFeed = syndicationTypeOptions.selectedChild as IExternalSyndicationFeed;
 					syndicationFeedTemplate.syndication = selectedExSynVo.kSyndicationFeed;
 				}
+				PermissionManager.getInstance().applyAllAttributes(this, "externalSyndicationDrilldown");
 			}
 			
 			
@@ -207,6 +209,23 @@ This is the window in which you add a new syndication.
 				saveEditedFeedEvent.dispatch();
 			}
 			
+			public function set editable(value:Boolean):void {
+				if (generalFeedNameTextInput) {
+					generalFeedNameTextInput.editable = false;
+					allcontentRadioBtn.enabled = false;
+					playlistsRadioBtn.enabled = false;
+					playListComboBox.enabled = false;
+					feedTypeComboBox.enabled = false;
+					syndicationTypeOptions.selectedChild.enabled = false;
+					submitBtn.enabled = false;
+					
+				}	
+			}
+			
+			public function get editable():Boolean{
+				return submitBtn.enabled;
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:StringValidator id="feedNameValidator"
@@ -228,7 +247,7 @@ This is the window in which you add a new syndication.
 			<mx:Label text="{resourceManager.getString('cms','selectedContentLabel')}"
 					  width="180" styleName="feedParamLabel" />
 			<mx:VBox width="100%" height="100%">
-				<mx:RadioButtonGroup id='contentRadioBtnsGroup'/>
+				<mx:RadioButtonGroup id='contentRadioBtnsGroup' />
 				<mx:RadioButton id="allcontentRadioBtn"
 								label="{resourceManager.getString('cms','allContentRadioBtn')}"
 								groupName="contentRadioBtnsGroup"
@@ -271,7 +290,7 @@ This is the window in which you add a new syndication.
 	<mx:ControlBar horizontalAlign="center" paddingBottom="6" paddingLeft="2" 
 				   paddingRight="2" paddingTop="6" verticalAlign="middle">
 		<mx:Button label="{resourceManager.getString('cms','addNewFeedBtn')}"
-				   useHandCursor="true" buttonMode="true" id="button1"
+				   useHandCursor="true" buttonMode="true" id="submitBtn"
 				   click="onSubmit(event)"/>
 	</mx:ControlBar>
 </HelpTitleWindow>

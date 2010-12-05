@@ -15,6 +15,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -32,6 +33,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.validators.ValidationResult;
@@ -124,7 +126,7 @@
 					}
 					simpleRule.runRule();
 				}
-
+				PermissionManager.getInstance().applyAllAttributes(this, "ruleBasedPlaylistDrilldown");
 
 			}
 
@@ -423,6 +425,40 @@
 				summary += resourceManager.getString('cms', "mediaType") + mediaTypesString;
 				return summary;
 			}
+			
+			public function get editable():Boolean {
+				return saveBtn.enabled;
+			}
+			
+			public function set editable(value:Boolean):void {
+				playlistName.enabled = value;
+				playlistDescription.enabled = value;
+				simpleRule.editable = value;
+				advancedBtn.enabled = value;
+				advancedBtn.buttonMode = value;
+				// advanced panel
+				if (addRuleBtn) {
+					addRuleBtn.enabled = value;
+					addRuleBtn.buttonMode = value;
+					removeRuleBtn.enabled = value;
+					removeRuleBtn.buttonMode = value;
+					editRuleBtn.enabled = value;
+					editRuleBtn.buttonMode = value;
+					upBtn.enabled = value;
+					upBtn.buttonMode = value;
+					downBtn.enabled = value;
+					downBtn.buttonMode = value;
+				}
+				saveBtn.enabled = value;
+				saveBtn.buttonMode = value;
+			}
+
+			protected function setPermissions(event:FlexEvent):void
+			{
+				// trigger the editable setter again
+				editable = editable;
+			}
+
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='playListValidator' source="{playlistName}" property="text" trigger="{playlistName}"
@@ -456,7 +492,7 @@
 						   toolTip="{resourceManager.getString('cms','switchToAdvanceModeTooltip')}"
 						   click="{onAdvanceMode()}"/>
 		</mx:VBox>
-		<mx:VBox id="advancedModeContainer" width="100%" height="100%">
+		<mx:VBox id="advancedModeContainer" width="100%" height="100%" >
 			<mx:DataGrid id="filtersList" dataProvider="{_filters}" width="100%" height="100%" rowHeight="60"
 						 headerRelease="{event.preventDefault()}">
 				<mx:columns>
@@ -485,7 +521,7 @@
 					</mx:DataGridColumn>
 				</mx:columns>
 			</mx:DataGrid>
-			<mx:HBox verticalAlign="middle">
+			<mx:HBox verticalAlign="middle" creationComplete="setPermissions(event)">
 				<mx:Button buttonMode="true" id="addRuleBtn" click="{popRule()}"
 						   label="{resourceManager.getString('cms','addRule')}"/>
 				<mx:Button buttonMode="true" id="removeRuleBtn" label="{resourceManager.getString('cms','removeRule')}"
@@ -493,8 +529,8 @@
 				<mx:Button buttonMode="true" id="editRuleBtn" click="{editRule()}"
 						   label="{resourceManager.getString('cms','editRule')}"/>
 				<mx:VBox verticalGap="0">
-					<mx:Button buttonMode="true" styleName="movUpBtn" click="{moveItemUp()}"/>
-					<mx:Button buttonMode="true" styleName="movDownBtn" click="{moveItemDown()}"/>
+					<mx:Button id="upBtn" buttonMode="true" styleName="movUpBtn" click="{moveItemUp()}"/>
+					<mx:Button id="downBtn" buttonMode="true" styleName="movDownBtn" click="{moveItemDown()}"/>
 				</mx:VBox>
 				<mx:Label text="{resourceManager.getString('cms','length')}"/>
 				<mx:Label text="{rulePlaylistData.ruleBasedDuration}"/>
@@ -504,6 +540,6 @@
 		</mx:VBox>
 	</mx:ViewStack>
 	<mx:ControlBar>
-		<mx:Button label="{resourceManager.getString('cms','save')}" click="{save()}"/>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>
 	</mx:ControlBar>
 </HelpTitleWindow>

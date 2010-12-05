@@ -133,6 +133,20 @@
 			numericStepperTimer = null;
 			changedData();
 		}
+		
+		public function get editable():Boolean {
+			return upBtn.enabled;
+		}
+		
+		public function set editable(value:Boolean):void {
+			upBtn.enabled = value;
+			upBtn.buttonMode = value;
+			downBtn.enabled = value;
+			downBtn.buttonMode = value;
+			ruleBasedPlaylistOrderBy.enabled = value;
+			maxEntriesInPlaylist.enabled = value;
+		}
+		
 	]]>
 </mx:Script>
 <mx:Metadata>
@@ -159,8 +173,8 @@
 			</mx:HBox>
 		</mx:HBox>
 		<mx:VBox id="upDownContainer" styleName="upDownButtonsBox">
-			<mx:Button buttonMode="true" styleName="movUpBtn" click="{dispatchEvent(new Event(MOVE_ITEM_UP))}"/>
-			<mx:Button buttonMode="true" styleName="movDownBtn" click="{dispatchEvent(new Event(MOVE_ITEM_DOWN))}"/>
+			<mx:Button id="upBtn" buttonMode="true" styleName="movUpBtn" click="{dispatchEvent(new Event(MOVE_ITEM_UP))}"/>
+			<mx:Button id="downBtn" buttonMode="true" styleName="movDownBtn" click="{dispatchEvent(new Event(MOVE_ITEM_DOWN))}"/>
 		</mx:VBox>
 	</mx:HBox>
 	<mx:HBox id="ruleBaseBar" width="100%" styleName="DataGridActions">

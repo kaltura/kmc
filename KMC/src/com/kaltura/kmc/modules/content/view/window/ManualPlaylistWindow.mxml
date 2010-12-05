@@ -11,6 +11,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
@@ -247,7 +248,7 @@
 				}
 				loadEntries();
 				filter.validateNow();
-
+				PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown");
 			}
 
 
@@ -522,6 +523,23 @@
 					}
 				}
 			}
+			
+			public function get editable():Boolean {
+				return playlistName.enabled;
+			}
+			
+			public function set editable(value:Boolean):void {
+				playlistName.enabled = value;
+				playlistDescription.enabled = value;
+				filter.enabled = value;
+				removeBtn.enabled = value;
+				removeBtn.buttonMode = value;
+				addBtn.enabled = value;
+				addBtn.buttonMode = value;
+				entries.editable = value;
+				saveBtn.enabled = value;
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -577,8 +595,8 @@
 		</mx:VBox>
 
 		<mx:HBox id="addRemoveContainer" styleName="plstAddRemoveCont">
-			<mx:Button buttonMode="true" styleName="removeLeftBtn" click="remove()"/>
-			<mx:Button buttonMode="true" styleName="addRightBtn" click="addToPlaylist()"/>
+			<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="remove()"/>
+			<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtn" click="addToPlaylist()"/>
 		</mx:HBox>
 
 		<playlist:PlaylistEntries id="entries" width="100%" height="400" dataProvider="{_playlistArrayCollection}"
@@ -588,6 +606,6 @@
 		</playlist:PlaylistEntries>
 	</mx:HBox>
 	<mx:ControlBar>
-		<mx:Button label="{resourceManager.getString('cms','save')}" click="{save()}"/>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>
 	</mx:ControlBar>
 </HelpTitleWindow>
