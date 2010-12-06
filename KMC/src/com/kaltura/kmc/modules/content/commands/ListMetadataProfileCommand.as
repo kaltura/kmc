@@ -2,10 +2,9 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.utils.FormBuilder;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.utils.FormBuilder;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -27,7 +26,11 @@ package com.kaltura.kmc.modules.content.commands
 	 * 
 	 */		
 	public class ListMetadataProfileCommand extends KalturaCommand {
-	
+		
+		/**
+		 * only if a metadata profile view contains layout with this name it will be used 
+		 */		
+		public static const KMC_LAYOUT_NAME:String = "KMC";
 		
 		/**
 		 * This command requests the server for the last created metadata profile 
@@ -83,32 +86,44 @@ package com.kaltura.kmc.modules.content.commands
 				_model.filterModel.metadataProfile = metadataProfile;
 				
 				if (recievedProfile.views) {
-					_model.filterModel.metadataProfile.viewXML = new XML(recievedProfile.views);
+					try {
+						var recievedView:XML = new XML(recievedProfile.views);
+					}
+					catch (e:Error) {
+						//invalid view xmls
+						return;
+					}
+					for each (var layout:XML in recievedView.children()) {
+						if (layout.@id == KMC_LAYOUT_NAME) {
+							_model.filterModel.metadataProfile.viewXML = layout;
+							return;
+							
+						}
+					}
 				}
-				else {
-					//will set the default uiconf XML
-					FormBuilder.setViewXML(_model.entryDetailsModel.metadataDefaultUiconf);
-				}
+				
+				//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
+				FormBuilder.setViewXML(_model.entryDetailsModel.metadataDefaultUiconf);
 			} 
-
+			
 		}
 		
-//		/**
-//		 * This function will be called if the request failed
-//		 * @param info the info returned from the server
-//		 * 
-//		 */		
-//		public function fault(info:Object):void
-//		{
-//			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
-//			{
-//				ExternalInterface.call("kmc.functions.expired");
-//				return;
-//			}
-//			_model.decreaseLoadCounter();
-//			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-//
-//		}
+		//		/**
+		//		 * This function will be called if the request failed
+		//		 * @param info the info returned from the server
+		//		 * 
+		//		 */		
+		//		public function fault(info:Object):void
+		//		{
+		//			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
+		//			{
+		//				ExternalInterface.call("kmc.functions.expired");
+		//				return;
+		//			}
+		//			_model.decreaseLoadCounter();
+		//			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+		//
+		//		}
 		
 	}
 }

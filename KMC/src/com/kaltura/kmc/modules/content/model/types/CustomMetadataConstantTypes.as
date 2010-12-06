@@ -15,6 +15,8 @@ package com.kaltura.kmc.modules.content.model.types
 		public static const ENTRY_LINK_TABLE : String = "entryLinkTable";
 		public static const MULTI : String = "multiVBox";
 		public static const VBox : String = "VBox";
+		public static const CONTAINER : String = "container";
+		public static const UNIQUE_ID : String = "uniqueId";
 
 	}
 }

@@ -1,16 +1,16 @@
 package com.kaltura.kmc.modules.content.utils
 {
+	import com.kaltura.base.types.MetadataCustomFieldMaxOcuursTypes;
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.model.MetadataDataObject;
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.kmc.modules.content.model.MetadataDataObject;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.MetadataFieldVO;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.DateField;
-
+	
 	/**
 	 * This static class provides different functionalities to handle metadataDataObject  
 	 * @author Michal
@@ -18,6 +18,7 @@ package com.kaltura.kmc.modules.content.utils
 	 */	
 	public class MetadataDataParser
 	{
+		public static const METADATA_ROOT:String = "<metadata/>";
 		/**
 		 * This function transforms a given metadataDataObject to a valid metadataData XML
 		 * by handling different cases for different field types 
@@ -26,30 +27,15 @@ package com.kaltura.kmc.modules.content.utils
 		 * 
 		 */		
 		public static function toMetadataXML(metadataObject:MetadataDataObject, metadataProfile:KMCMetadataProfileVO):XML {
-			var result:XML = new XML("<metadata/>");
-
+			var result:XML = new XML(METADATA_ROOT);
+			
 			for each (var curField:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
 				var attr:String = curField.name;
 				if (metadataObject[attr]) {
-					if (metadataObject[attr] is MetadataDataObject) {
-						var nestedMetadata:MetadataDataObject = MetadataDataObject(metadataObject[attr]);
-						var attributes:Array = sortAttributes(nestedMetadata);
-						for each (var nestedAttr:String in attributes) {
-							addNode(nestedAttr, nestedMetadata, result, attr);
-						}
-					}
-					
-					else if (curField.type == MetadataCustomFieldTypes.OBJECT)
-					{
-						handleEntryIdList(attr, metadataObject[attr], result);
-					}
-					else 
-					{
-						addNode(attr, metadataObject, result);
-					}
+					addNode(attr, metadataObject, curField, result);
 				}
 			}
-
+			
 			return result;
 		}
 		
@@ -59,7 +45,7 @@ package com.kaltura.kmc.modules.content.utils
 		 * @return the sorted attributes in an array
 		 * 
 		 */		
-		private static function sortAttributes(metadataObject:MetadataDataObject):Array {
+		public static function sortAttributes(metadataObject:MetadataDataObject):Array {
 			var attributes:Array = new Array();
 			for (var attr:String in metadataObject) {
 				attributes.push(attr);
@@ -76,19 +62,76 @@ package com.kaltura.kmc.modules.content.utils
 		 * 	 otherwise the name will be the attribute name
 		 * 
 		 */		
-		private static function addNode(attr:String ,metadataObject:MetadataDataObject, parent:XML, parentAttr:String = null):void {
+		private static function addNode(attr:String ,metadataObject:MetadataDataObject, currField:MetadataFieldVO, result:XML,parentAttr:String=null):void {
 			var node:XML;
-			if (parentAttr)
-				node= new XML("<"+parentAttr+"/>");
+			
+			if (currField.type == MetadataCustomFieldTypes.OBJECT)
+			{
+				handleEntryIdList(attr, metadataObject[attr], result);
+			}
+			else if (metadataObject[attr] is MetadataDataObject) {
+				var nestedMetadata:MetadataDataObject = MetadataDataObject(metadataObject[attr]);
+				var attributes:Array = sortAttributes(nestedMetadata);
+				
+				if (currField.nestedFieldsArray && currField.nestedFieldsArray.length>0) {
+					if (currField.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.UNBOUND) {
+						for each (var attribute:String in attributes) {
+							node = getNode(attr, parentAttr);	
+							result.appendChild(node);
+							setNodesForFieldsArray(attribute, nestedMetadata[attribute], currField.nestedFieldsArray, node);
+							if (node.children().length()==0) {
+								var indexToDelete:int = node.childIndex();
+								delete (result.children()[indexToDelete]);
+							}
+						}
+					}
+					else {
+						node = getNode(attr, parentAttr);	
+						result.appendChild(node);
+						setNodesForFieldsArray(attr, nestedMetadata, currField.nestedFieldsArray, node);
+						if (node.children().length()==0) {
+							var index:int = node.childIndex();
+							delete (result.children()[index]);
+						}
+					}
+					
+				}
+				else
+				{				
+					for each (var nestedAttr:String in attributes) {
+						addNode(nestedAttr, nestedMetadata, currField, result, attr);
+					}
+				}
+			}
 			else 
-				node= new XML("<"+attr+"/>");
-			var value:String = getSuitableString(metadataObject[attr], attr);
-			//empty field won't be added
-			if (!value)
-				return;
-			else 
-				node.appendChild(value);
-			parent.appendChild(node);
+			{
+				var valueNode:XML= getNode(attr, parentAttr);
+				var value:String = getSuitableString(metadataObject[attr], attr);
+				//empty field won't be added
+				if (!value)
+					return;
+				else 
+					valueNode.appendChild(value);
+				
+				result.appendChild(valueNode);
+			}
+			
+		}
+		
+		private static function getNode(attribute:String, parentAttribute:String):XML {
+			var nodeName:String = parentAttribute ? parentAttribute : attribute;
+			var xml:XML =  new XML("<"+nodeName+"/>");
+			return xml;
+		}
+		
+		private static function setNodesForFieldsArray(attributeName:String, metadataObject:MetadataDataObject, fieldsArray:ArrayCollection, result:XML):void {	
+			for each (var nestedField:MetadataFieldVO in fieldsArray) {
+				var nestedAttribute:String = nestedField.name;
+				
+				if (metadataObject[nestedAttribute]) {
+					addNode(nestedAttribute, metadataObject, nestedField, result);
+				}
+			}
 		}
 		
 		/**
@@ -123,20 +166,20 @@ package com.kaltura.kmc.modules.content.utils
 				var time:Number =  (input.time)/1000;
 				validString = time.toString();
 			}
-			//list of checkBoxes
+				//list of checkBoxes
 			else if (input is Boolean){
 				//will add only if value was true
 				if (input) {
-				//	validString = HtmlEncodeDecode.encode(attrName);
-				validString = attrName;
+					//	validString = HtmlEncodeDecode.encode(attrName);
+					validString = attrName;
 				}
 			}
 			else if (input is String) {
 				//var check:String = escape(input as String);
-			//	validString = HtmlEncodeDecode.encode(input as String);
+				//	validString = HtmlEncodeDecode.encode(input as String);
 				validString = (input as String);
 			}
-
+			
 			return validString;
 		}
 		
@@ -151,11 +194,21 @@ package com.kaltura.kmc.modules.content.utils
 			{
 				var currentField:String = node.localName();
 				var updatedArray:Array = new Array();
+				
 				if (dataValues.containsKey(currentField)) 
 				{
 					updatedArray = dataValues.getValue(currentField);
-				}			
-				updatedArray.push(node.text().toString());
+				}	
+				
+				var value:String = node.text().toString();
+				
+				//case of nested metadata
+				if (value=="" && node.children().length()>0) {
+					updatedArray.push(getMetadataDataValues(node));
+				}
+				else	
+					updatedArray.push(value);
+				
 				dataValues.put(currentField, updatedArray);
 			}
 			
@@ -175,6 +228,17 @@ package com.kaltura.kmc.modules.content.utils
 			var data1:HashMap = getMetadataDataValues(xml1);
 			var data2:HashMap = getMetadataDataValues(xml2);
 			
+			return compareMetadataHashMaps(data1, data2);
+		}
+		
+		/**
+		 * this function compares between two given hashmaps. also compares complex hashmaps, i.e nested hashmaps 
+		 * @param data1 the first hashmap to compare
+		 * @param data2 the second hashmap to compare
+		 * @return true if the two are identical, otherwhise false
+		 * 
+		 */		
+		private static function compareMetadataHashMaps(data1:HashMap, data2:HashMap):Boolean {
 			//run on obj1, check if the value exist in ob2 and check its value
 			for (var o:String in data1)
 			{
@@ -182,14 +246,25 @@ package com.kaltura.kmc.modules.content.utils
 				{	
 					var arr1:ArrayCollection = new ArrayCollection(data1.getValue(o));
 					var arr2:ArrayCollection = new ArrayCollection(data2.getValue(o));
-					for each (var val:String in arr1) {
-						if (!arr2.contains(val))
+					for each (var val:Object in arr1) {
+						//nested metadata
+						if (val is HashMap) {
+							if (!compareNestedHashMaps((val as HashMap), arr2))
+								return false;
+						}
+						else if (!arr2.contains(val))
 							return false;
 					}
-					for each (var val2:String in arr2) {
-						if (!arr1.contains(val2))
+					
+					for each (var val2:Object in arr2) {
+						//nested metadata
+						if (val2 is HashMap) {
+							if (!compareNestedHashMaps((val2 as HashMap), arr1))
+								return false;
+						}
+						else if (!arr1.contains(val2))
 							return false;
-					}
+					}	
 				}
 				else 
 				{
@@ -203,12 +278,29 @@ package com.kaltura.kmc.modules.content.utils
 				{
 					return false;	
 				}
-
+				
 			} 
 			
 			return true;
 		}
 		
-
-	}
+		/**
+		 * This function checks if the given hashmap exists in the given array
+		 * @param value the given hashmap to check
+		 * @param arrayToSearch the given array to look for the hashmap in
+		 * @return true if exists, otherwhise false
+		 * 
+		 */		
+		private static function compareNestedHashMaps(value:HashMap, arrayToSearch:ArrayCollection):Boolean {
+			for each (var hashMapVal:Object in arrayToSearch) {
+				if ((hashMapVal is HashMap) && compareMetadataHashMaps(value, (hashMapVal as HashMap))) {
+					return true;
+				}
+				
+			}
+			
+			return false;
+		}
+	}	
+	
 }

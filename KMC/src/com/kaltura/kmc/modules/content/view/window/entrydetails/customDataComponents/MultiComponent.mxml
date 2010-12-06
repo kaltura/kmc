@@ -4,14 +4,21 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.MetadataDataObject;
 			import com.kaltura.kmc.modules.content.utils.FormBuilder;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.Container;
+			import mx.core.UIComponent;
 			
 			private var _childXML:XML;
-			private var _metadataProperty:String;
+			
+			//nested fields in children of type container
+			public var nestedFieldsArray:ArrayCollection = new ArrayCollection();
 			
 			/**
 			 * the bound object that listens to the inserted metadata
 			 * */
-			public var metadataObject:MetadataDataObject;// = CmsModelLocator.getInstance().metadataInfo.metadataDataObject;
+			public var metadataObject:MetadataDataObject;
 			
 			override public function addChild(child:DisplayObject):DisplayObject {
 				if ( child == linkButton )
@@ -32,11 +39,20 @@
 			}
 			
 			override public function removeChild(child:DisplayObject):DisplayObject  {
-				//to erase from the metadataDataObject (because of the binding...)
-				(DisplayObjectContainer(child)).getChildAt(0)[_metadataProperty] = null;
+				if (child == linkButton)
+					return super.removeChild(linkButton);
+				//reset metadataData object, so the saved data will be erased
+				if (child is Container)
+					metadataObject[(child as Container).getChildAt(0).name] = new MetadataDataObject();
+				else 
+					metadataObject[child.name] = new MetadataDataObject();
+				
+				//if we are now removing the last child, we will also remove the "Add" button
+				if (this.numChildren == 2)
+					super.removeChild(linkButton);
 				return super.removeChild(child);
 			}
-
+			
 			/**
 			 * this function adds a nested component,
 			 * it uses the _nestedComponentName in order to create the suitable uiComponent
@@ -45,29 +61,64 @@
 			private function addComponent():void {
 				if (!childXML)
 					return;
-				var metadataProperty:String = childXML.@metadataData;
 				var newField:MultiFieldComponent = new MultiFieldComponent();
 				var index:int = this.numChildren - 1;
-				//this will be the key in the metadataDataObject
-				childXML.@name = index;
-				var newComponent:DisplayObject = DisplayObject(FormBuilder.buildComponent(childXML, metadataObject));
-				newComponent[_metadataProperty] = null;
+				var newChildXML:XML = childXML.copy();
+				newChildXML.@name = this.name+index;
+				newChildXML.@parentName = this.name;
+				resetAllXMLFields(newChildXML);
+				
+				var newComponent:UIComponent = FormBuilder.buildComponent(newChildXML, metadataObject, nestedFieldsArray);
+				
 				newField.addChildAt(newComponent ,0);
-
+				
 				this.addChildAt(newField, index);
 			}
-
+			
+			/**
+			 * this function resets all metadata data attributes in the given XML
+			 * */
+			private function resetAllXMLFields(xml:XML) : void {
+				if (xml.children().length() > 0) {
+					for each (var child:XML in xml.children()) {
+						resetAllXMLFields(child);
+					}
+				}
+				else 
+					resetMetadataData(xml);
+				
+			}
+			
+			/**
+			 * reset the metadataData attribute in the given node
+			 * */
+			private function resetMetadataData(xml:XML):void {
+				var propertyName:String = xml.@metadataData.toString();
+				if (propertyName != "") {
+					delete xml.@[propertyName];
+				}
+			}
+			
+			/**
+			 * returns the xml that represents the uicomponent that will be added with
+			 * every click on "add" buttno
+			 * */
 			public function get childXML():XML
 			{
 				return _childXML;
 			}
-
+			
+			/**
+			 * sets the XML that represents that uicomponent that will be added with every 
+			 * click on "add" button.
+			 * also sets _metadataProperty from the given XML, or _metadataPropertyArray in case of nested fields inside the childXML
+			 * */
 			public function set childXML(value:XML):void
 			{
 				_childXML = value;
-				_metadataProperty = _childXML.@metadataData;
 			}
-
+			
+			
 		]]>
 	</mx:Script>
 	<mx:LinkButton id="linkButton" label="{resourceManager.getString('cms','MultiAdd')}" click="{addComponent()}"

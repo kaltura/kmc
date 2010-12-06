@@ -163,6 +163,9 @@ package com.kaltura.kmc.modules.content.commands {
 						Alert.show(ResourceManager.getInstance().getString('cms', 'error') + ": " +
 							((data.data as Array)[i] as KalturaError).errorMsg);
 					}
+					else if ((data.data as Array)[i].hasOwnProperty("error")) {
+						Alert.show((data.data as Array)[i].error.message, ResourceManager.getInstance().getString('cms', 'error'));
+					} 
 				}
 			}
 

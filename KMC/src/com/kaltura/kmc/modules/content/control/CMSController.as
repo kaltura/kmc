@@ -116,7 +116,6 @@ package com.kaltura.kmc.modules.content.control
 			//metadata Events
 			addCommand(MetadataProfileEvent.LIST, ListMetadataProfileCommand);
 			addCommand(MetadataDataEvent.LIST, ListMetadataDataCommand);
-			addCommand(MetadataDataEvent.UPDATE, UpdateMetadataDataCommand);
 		}
 	}
 }
