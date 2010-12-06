@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 creationComplete="init()"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable">
-		<mx:Script>
+	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
@@ -14,165 +13,175 @@
 			import com.kaltura.kmc.modules.account.vo.NotificationVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.controls.List;
 			import mx.events.ListEvent;
-		
-			[Bindable] public var rootUrl : String;
-			
-			[Bindable] private var _lblWidth : Number = 170;
-			[Bindable] private var _maxWidth : Number = 300;
-			[Bindable] private var _textWidth : Number = 190;
-			
-			[Bindable] public var partnerData : PartnerVO;
-			private var _clonedPartnerData : PartnerVO;
-			
-			
+
+			[Bindable]
+			public var rootUrl:String;
+
+			[Bindable]
+			private var _lblWidth:Number = 170;
+			[Bindable]
+			private var _maxWidth:Number = 300;
+			[Bindable]
+			private var _textWidth:Number = 190;
+
+			[Bindable]
+			public var partnerData:PartnerVO;
+			private var _clonedPartnerData:PartnerVO;
+
+
 			public static const NAME:String = "integration";
-			
+
 			/**
 			 * make sure we have both creationComplete and an external call to init()
 			 * */
 			private var _ready:Boolean = false;
-			
-			public function init() : void
-			{
+
+
+			public function init():void {
 				if (_ready) {
-					BindingUtils.bindSetter( onPartnerDataLoaded , this , "partnerData" );
-					
-					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_INFO );
+					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
+
+					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 					partnerEvent.dispatch();
+					PermissionManager.getInstance().applyAllAttributes(this,NAME);
 				}
 				else {
 					_ready = true;
 				}
-				
-				//PermissionManager.getInstance().applyAllAttributes(this,NAME);
+
 			}
-			
-			private function onPartnerDataLoaded( pvo : PartnerVO ) : void
-			{
-				if(pvo)
-				{
+
+
+			private function onPartnerDataLoaded(pvo:PartnerVO):void {
+				if (pvo) {
 					_clonedPartnerData = pvo.clone();
-					
-					if(partnerData.notify)
+
+					if (partnerData.notify)
 						yesGetNoti.selected = true;
 					else
-						noGetNoti.selected = true;	
-					
+						noGetNoti.selected = true;
+
 					partnerData.allowQuickEdit ? appendEntry.selectedIndex = 0 : appendEntry.selectedIndex = 1;
 					//partnerData.shouldForceUniqueKshow ? createUniqeMixId.selectedIndex = 0 : createUniqeMixId.selectedIndex = 1;
 					//partnerData.returnDuplicateKshow ? returnDuplicateMix.selectedIndex = 0 : returnDuplicateMix.selectedIndex = 1;
 					partnerData.mergeEntryLists ? returnListOfUserClips.selectedIndex = 0 : returnListOfUserClips.selectedIndex = 1;
-					
-					switch(partnerData.appearInSearch)
-					{
-						case 2: appearInUploader.selectedIndex = 0; break;
-						case 1: appearInUploader.selectedIndex = 1; break;
-						case 0: appearInUploader.selectedIndex = 2; break;
+
+					switch (partnerData.appearInSearch) {
+						case 2:
+							appearInUploader.selectedIndex = 0;
+							break;
+						case 1:
+							appearInUploader.selectedIndex = 1;
+							break;
+						case 0:
+							appearInUploader.selectedIndex = 2;
+							break;
 					}
-					
+
 					/*switch(partnerData.notificationsConfig)
-					{
-						case "*=0": break;
-						case "*=1": break;
-						case "*=3": break;
-					}*/
+					   {
+					   case "*=0": break;
+					   case "*=1": break;
+					   case "*=3": break;
+					 }*/
 				}
 			}
-			
-			public function undo() : void
-			{
+
+
+			public function undo():void {
 				partnerData = _clonedPartnerData.clone();
 			}
-					
-			public function isChanged() : Boolean
-			{
-				return ( ! partnerData.equals( _clonedPartnerData ) );
+
+
+			public function isChanged():Boolean {
+				return (!partnerData.equals(_clonedPartnerData));
 			}
-			
-			public function saveChanges() : void
-			{
+
+
+			public function saveChanges():void {
 				savePartnerInfo();
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_SAVE_SERVER_SETTINGS,"Account>Save Server Settings");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_SEVER_SETTINGS,GoogleAnalyticsConsts.ACCOUNT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_SAVE_SERVER_SETTINGS, "Account>Save Server Settings");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_SEVER_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 			}
-			
-			public function resetClonedData() : void
-			{
+
+
+			public function resetClonedData():void {
 				_clonedPartnerData = partnerData.clone();
 			}
-			
-			public function savePartnerInfo() : void
-			{
-				if( ! partnerData.equals( _clonedPartnerData ) )
-				{				
+
+
+			public function savePartnerInfo():void {
+				if (!partnerData.equals(_clonedPartnerData)) {
 					_clonedPartnerData = partnerData.clone();
 					//do save
-					var partnerEvent : PartnerEvent = new PartnerEvent( PartnerEvent.UPDATE_PARTNER );
+					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.UPDATE_PARTNER);
 					partnerEvent.dispatch();
-					
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,
-														KalturaStatsKmcEventType.ACCOUNT_UPDATE_SERVER_SETTINGS,
-														"serverSettingScreen>saveUpdateBtn");
-														
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_UPDATE_SERVER_SETTINGS,GoogleAnalyticsConsts.ACCOUNT);
-																
+
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_UPDATE_SERVER_SETTINGS, "serverSettingScreen>saveUpdateBtn");
+
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_UPDATE_SERVER_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
+
 				}
 			}
-			
-			private function toggoleAdvanced() : void
-			{
-				if( advCont.visible )
-				{
+
+
+			private function toggoleAdvanced():void {
+				if (advCont.visible) {
 					advCont.visible = false;
 					openCloseAdv.styleName = "openCloseBtnOpen";
 				}
-				else
-				{
+				else {
 					advCont.visible = true;
 					openCloseAdv.styleName = "openCloseBtnClose";
-				}	
-			}
-			
-			private function onAppearInUploaderChange( event : ListEvent ) : void
-			{ 
-				switch( (event.target as ComboBox).selectedIndex )
-				{
-					case 0: partnerData.appearInSearch = 2; break;
-					case 1: partnerData.appearInSearch = 1; break;
-					case 2: partnerData.appearInSearch = 0; break;
 				}
 			}
-			
-			private function onNotificationsConfigChange( event : Event ) : void
-			{
-				if( event.target == yesGetNoti )
+
+
+			private function onAppearInUploaderChange(event:ListEvent):void {
+				switch ((event.target as ComboBox).selectedIndex) {
+					case 0:
+						partnerData.appearInSearch = 2;
+						break;
+					case 1:
+						partnerData.appearInSearch = 1;
+						break;
+					case 2:
+						partnerData.appearInSearch = 0;
+						break;
+				}
+			}
+
+
+			private function onNotificationsConfigChange(event:Event):void {
+				if (event.target == yesGetNoti)
 					partnerData.notify = true;
 				else
 					partnerData.notify = false;
 			}
-			
-			private function verifyHttp():void
-			{
-				if(recieveServerNoti.text != "" && 
-					recieveServerNoti.text.indexOf("http")>-1)
-				pingUrlSrv.send()
-			else
-				Alert.show(resourceManager.getString('account', 'httpverify'))
+
+
+			private function verifyHttp():void {
+				if (recieveServerNoti.text != "" && recieveServerNoti.text.indexOf("http") > -1)
+					pingUrlSrv.send()
+				else
+					Alert.show(resourceManager.getString('account', 'httpverify'))
 			}
-			
+
+
 			private function help():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'helpServerSettings') ));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'helpServerSettings')));
 			}
-			
+
+
 			/**
-			 * helper function to decide if a checkbox on the client list should 
-			 * be checked or not. checkboxes which are disabled can not be checked - 
-			 * they are disabled becuase these notifications are not available for the client. 
+			 * helper function to decide if a checkbox on the client list should
+			 * be checked or not. checkboxes which are disabled can not be checked -
+			 * they are disabled becuase these notifications are not available for the client.
 			 * */
 			public function determineSelected(data:Object):Boolean {
 				var nvo:NotificationVO = data as NotificationVO;
@@ -184,88 +193,89 @@
 					return false;
 				}
 			}
-			
 		]]>
 	</mx:Script>
 	<!-- Service -->
-	<mx:HTTPService id="pingUrlSrv" 
-		url="{recieveServerNoti.text}" 
-		resultFormat="text"
-		result="{Alert.show(resourceManager.getString('account', 'pingSuccessful'))}"
-		fault="{Alert.show(resourceManager.getString('account', 'pingFailed'))}"
-		method="POST" 
-		showBusyCursor="true"/>
-		
+	<mx:HTTPService id="pingUrlSrv" url="{recieveServerNoti.text}" resultFormat="text"
+					result="{Alert.show(resourceManager.getString('account', 'pingSuccessful'))}"
+					fault="{Alert.show(resourceManager.getString('account', 'pingFailed'))}" method="POST"
+					showBusyCursor="true"/>
+
 	<!-- Effects -->
-	<mx:WipeUp id="wipeOut" />
-	<mx:WipeDown id="wipeIn" />
+	<mx:WipeUp id="wipeOut"/>
+	<mx:WipeDown id="wipeIn"/>
 	<!-- <mx:HBox width="100%" horizontalAlign="right">
-		<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}" 
-				click="toggoleAdvanced()" styleName="openCloseBtnOpen" />	
-	</mx:HBox> -->
+		 <mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}"
+		 click="toggoleAdvanced()" styleName="openCloseBtnOpen" />
+		 </mx:HBox> -->
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox width="100%" height="100%">
-			<mx:VBox id="details" width="100%" height="100%" horizontalAlign="left"  styleName="blueBox" >
+			<mx:VBox id="details" width="100%" height="100%" horizontalAlign="left" styleName="blueBox"
+					 disabledOverlayAlpha="0">
 				<mx:Label text="{resourceManager.getString('account', 'partnerInfo')}" styleName="pageTitle"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'partnerIdB')} {partnerData.pId}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'subPartnerIdB')} {partnerData.subPId}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'adminSeceretB')} {partnerData.adminSecret}" selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'userSeceretB')} {partnerData.secret}" selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'partnerIdB')} {partnerData.pId}"
+						  selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'subPartnerIdB')} {partnerData.subPId}"
+						  selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'adminSeceretB')} {partnerData.adminSecret}"
+						  selectable="true"/>
+				<mx:Label htmlText="{resourceManager.getString('account', 'userSeceretB')} {partnerData.secret}"
+						  selectable="true"/>
 				<mx:HBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
-					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}" 
-							click="toggoleAdvanced()" styleName="openCloseBtnOpen" />	
+					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}"
+								   click="toggoleAdvanced()" styleName="openCloseBtnOpen"/>
 				</mx:HBox>
 			</mx:VBox>
-			<mx:VBox id="advCont" width="100%" height="100%" horizontalAlign="left" styleName="blueBox" visible="false"
-				hideEffect="{wipeOut}" showEffect="{wipeIn}">
+			<mx:VBox id="advCont" width="100%" height="100%" horizontalAlign="left" styleName="blueBox"
+					 disabledOverlayAlpha="0" visible="false" hideEffect="{wipeOut}" showEffect="{wipeIn}">
 				<mx:Label text="{resourceManager.getString('account', 'entryManagment')}" styleName="pageTitle"/>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}" />
-					<mx:ComboBox id="appendEntry" 
-						change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}">
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}"/>
+					<mx:ComboBox id="appendEntry"
+								 change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}">
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
 				<!-- <mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'createUniqeMixId')}" />
-					<mx:ComboBox id="createUniqeMixId" 
-						change="{partnerData.shouldForceUniqueKshow = createUniqeMixId.selectedIndex == 0 ? true : false}">
-						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
-						</mx:dataProvider>
-					</mx:ComboBox>
-				</mx:HBox>
+					 <mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'createUniqeMixId')}" />
+					 <mx:ComboBox id="createUniqeMixId"
+					 change="{partnerData.shouldForceUniqueKshow = createUniqeMixId.selectedIndex == 0 ? true : false}">
+					 <mx:dataProvider>
+					 <mx:String>{resourceManager.getString('account', 'true')}</mx:String>
+					 <mx:String>{resourceManager.getString('account', 'false')}</mx:String>
+					 </mx:dataProvider>
+					 </mx:ComboBox>
+					 </mx:HBox>
+					 <mx:HBox>
+					 <mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnDuplicateMix')}" />
+					 <mx:ComboBox id="returnDuplicateMix"
+					 change="{partnerData.returnDuplicateKshow = returnDuplicateMix.selectedIndex == 0 ? true : false}">
+					 <mx:dataProvider>
+					 <mx:String>{resourceManager.getString('account', 'true')}</mx:String>
+					 <mx:String>{resourceManager.getString('account', 'false')}</mx:String>
+					 </mx:dataProvider>
+					 </mx:ComboBox>
+					 </mx:HBox> -->
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnDuplicateMix')}" />
-					<mx:ComboBox id="returnDuplicateMix" 
-						change="{partnerData.returnDuplicateKshow = returnDuplicateMix.selectedIndex == 0 ? true : false}"> 
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appearInUploader')}"/>
+					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )">
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
-							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>	
-						</mx:dataProvider>
-					</mx:ComboBox>
-				</mx:HBox> -->
-				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appearInUploader')}" />
-					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )" >
-						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('account', 'kalturaNetwork')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'kalturaNetwork')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'siteSearch')}</mx:String>
-							<mx:String>{resourceManager.getString('account', 'doesntAppearInCW')}</mx:String>		
+							<mx:String>{resourceManager.getString('account', 'doesntAppearInCW')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnListOfUserClips')}" />
-					<mx:ComboBox id="returnListOfUserClips" 
-						change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}" > 
+					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnListOfUserClips')}"/>
+					<mx:ComboBox id="returnListOfUserClips"
+								 change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}">
 						<mx:dataProvider>
-							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>	
+							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
 						</mx:dataProvider>
 					</mx:ComboBox>
@@ -273,71 +283,70 @@
 				<mx:Label text="{resourceManager.getString('account', 'misc')}" styleName="pageTitle"/>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userPageUrlFormat')}"/>
-					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}" 
-						change="{partnerData.userLandingPage = userLandingPage.text}"/>
+					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}"
+								  change="{partnerData.userLandingPage = userLandingPage.text}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'mediaPageUrlFormat')}"/>
-					<mx:TextInput id="landingPage" text="{partnerData.landingPage}" 
-						change="{partnerData.landingPage = landingPage.text}"/>
+					<mx:TextInput id="landingPage" text="{partnerData.landingPage}"
+								  change="{partnerData.landingPage = landingPage.text}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userUploadLimit')}"/>
-					<mx:NumericStepper id="maxUploadSize" minimum="0" maximum="10000" value="{partnerData.maxUploadSize}" 
-						change="{partnerData.maxUploadSize = maxUploadSize.value}" />
+					<mx:NumericStepper id="maxUploadSize" minimum="0" maximum="10000"
+									   value="{partnerData.maxUploadSize}"
+									   change="{partnerData.maxUploadSize = maxUploadSize.value}"/>
 					<mx:Label text="{resourceManager.getString('account', 'mb')}"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:VBox>
 		<mx:VBox width="100%" height="100%">
-			<mx:VBox id="notifications" width="100%"  height="100%" maxHeight="{details.height}" horizontalAlign="left"  styleName="blueBox" >
-				<mx:HBox width="100%" >
+			<mx:VBox id="notifications" width="100%" height="100%" maxHeight="{details.height}" horizontalAlign="left"
+					 styleName="blueBox" disabledOverlayAlpha="0">
+				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="pageTitle"/>
-					<mx:Spacer width="100%" />
-					<mx:Button styleName="help" buttonMode="true" 
-						click="{help()}"/>
+					<mx:Spacer width="100%"/>
+					<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}" />
-					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}" groupName="getNoti" 
-						change="onNotificationsConfigChange( event )" />
-					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}" groupName="getNoti" 
-						change="onNotificationsConfigChange( event )" />
+					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}"/>
+					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}"
+									groupName="getNoti" change="onNotificationsConfigChange( event )"/>
+					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}"
+									groupName="getNoti" change="onNotificationsConfigChange( event )"/>
 				</mx:HBox>
-				
-				<mx:HBox >
+
+				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'notificationUrl')}:"/>
 					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
-						change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected}"/>
-					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" 
-						click="{verifyHttp()}" enabled="{yesGetNoti.selected}"
-						buttonMode="true"/>
+								  change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected}"/>
+					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" click="{verifyHttp()}"
+							   enabled="{yesGetNoti.selected}" buttonMode="true"/>
 				</mx:HBox>
 			</mx:VBox>
-			<mx:VBox id="notificationsTable" width="100%" height="100%" maxHeight="{advCont.height}"  horizontalAlign="left"  styleName="blueBox" 
-				enabled="{!noGetNoti.selected}">
-				<mx:DataGrid width="100%" height="100%" 
-					rowHeight="30" 
-					dataProvider="{partnerData.notifications}"
-					selectable="false">
+			<mx:VBox id="notificationsTable" width="100%" height="100%" maxHeight="{advCont.height}"
+					 horizontalAlign="left" styleName="blueBox" disabledOverlayAlpha="0" enabled="{!noGetNoti.selected}">
+				<mx:DataGrid width="100%" height="100%" rowHeight="30" dataProvider="{partnerData.notifications}"
+							 selectable="false">
 					<mx:columns>
 						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('account', 'notiName')}"
-							dataField="name" dataTipField="name" />
-						<mx:DataGridColumn width="60" 
-							headerText="{resourceManager.getString('account', 'availableInClient')}"
-							textAlign="center"
-							dataField="availableInClient" dataTipField="availableInClient">
+										   dataField="name" dataTipField="name"/>
+						<mx:DataGridColumn width="60"
+										   headerText="{resourceManager.getString('account', 'availableInClient')}"
+										   textAlign="center" dataField="availableInClient"
+										   dataTipField="availableInClient">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:CheckBox enabled="{data.clientEnabled}" selected="{outerDocument.determineSelected(data)}"
-										click="{data.availableInClient = this.selected}"/> 
+									<mx:CheckBox enabled="{data.clientEnabled}"
+												 selected="{outerDocument.determineSelected(data)}"
+												 click="{data.availableInClient = this.selected}"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn width="60" 
-							headerText="{resourceManager.getString('account', 'availableInServer')}"
-							 textAlign="center"
-							dataField="availableInServer" dataTipField="availableInServer">
+						<mx:DataGridColumn width="60"
+										   headerText="{resourceManager.getString('account', 'availableInServer')}"
+										   textAlign="center" dataField="availableInServer"
+										   dataTipField="availableInServer">
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:CheckBox click="{data.availableInServer = this.selected}"/>
@@ -349,8 +358,9 @@
 			</mx:VBox>
 		</mx:VBox>
 	</mx:HBox>
-	<mx:Spacer height="10" />
+	<mx:Spacer height="10"/>
 	<mx:HBox width="100%" styleName="centerHBox">
-		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}" click="saveChanges()" buttonMode="true"/>
+		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
+				   click="saveChanges()" buttonMode="true"/>
 	</mx:HBox>
 </mx:VBox>
