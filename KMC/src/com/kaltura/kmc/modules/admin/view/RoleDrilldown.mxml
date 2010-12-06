@@ -11,12 +11,16 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
+			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.utils.ObjectUtil;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
+			import mx.controls.LinkButton;
+			import mx.controls.Spacer;
+			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
@@ -307,17 +311,32 @@
 			 */
 			private function buildGroup(group:XML, debug:Boolean = true):VBox {
 				var vb:VBox = new VBox();
-				vb.maxWidth = myForm.width - 10;
+				vb.percentWidth = 100;
 				vb.id = group..@text.toString().split(" ").join();
 				//build the top level checkbox
 				var groupCb:CheckBox = new CheckBox();
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
 				if (debug)
-					groupCb.toolTip = group.attribute("id")[0].toString()
+					groupCb.toolTip = group.attribute("id")[0].toString();
 				allCheckboxes.push(groupCb);
-				vb.addChild(groupCb);
-				groupCb.maxWidth = myForm.width - 10;
+				
+				//create a container for the group and the option button 
+				var hbox:HBox = new HBox
+				vb.addChild(hbox);
+				hbox.percentWidth = 100; 
+				hbox.addChild(groupCb);
+				
+				var spacer:Spacer = new Spacer();
+				hbox.addChild(spacer);
+				spacer.percentWidth = 100;
+				
+				var linkBtn:LinkButton = new LinkButton();
+				linkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'advanced' );
+				linkBtn.data = groupCb;
+				hbox.addChild(linkBtn);
+				
+				//groupCb.maxWidth = myForm.width - 10;
 				var cb:CheckBox;
 				var permissions:XMLList = group..permission;
 
@@ -325,11 +344,11 @@
 				if (permissions.length() == 0) {
 					return vb;
 				}
-				//only if it has inner childrens 
+/* 				//only if it has inner childrens 
 				if (permissions.length() > 1)
-					groupCb.addEventListener(Event.CHANGE, unCheckChildren);
+					groupCb.addEventListener(Event.CHANGE, unCheckChildren); */
 
-
+				var innerCbArray:Array = new Array();
 				//build the inner checkboxes 
 				for each (var permission:XML in permissions) {
 					//special case for groups that has one child 
@@ -347,13 +366,24 @@
 						cb.toolTip = permission.attribute("id")[0].toString()
 					cb.id = permission.attribute("id")[0].toString();
 					cb.data = groupCb; //pointer to the group id
-
-					BindingUtils.bindProperty(cb, "visible", groupCb, "selected");
-					BindingUtils.bindProperty(cb, "includeInLayout", groupCb, "selected");
+/* 					BindingUtils.bindProperty(cb, "visible", groupCb, "selected");
+					BindingUtils.bindProperty(cb, "includeInLayout", groupCb, "selected"); */
 
 					vb.addChild(cb);
+					innerCbArray.push(cb);
 					allCheckboxes.push(cb);
 				}
+				var closeLinkBtn:LinkButton = new LinkButton();
+				closeLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'close' )
+				closeLinkBtn.data = groupCb;
+				
+/* 				BindingUtils.bindProperty(linkBtn, "visible", groupCb, "selected");
+				BindingUtils.bindProperty(linkBtn, "includeInLayout", groupCb, "selected"); */
+				
+				vb.addChild(closeLinkBtn);
+				
+				var permissionGroupManager:PermissionGroupManager = new PermissionGroupManager(	groupCb , innerCbArray , closeLinkBtn , linkBtn); 
+				
 				return vb;
 			}
 
