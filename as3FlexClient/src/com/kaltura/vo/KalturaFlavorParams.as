@@ -1,25 +1,10 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.vo.KalturaAssetParams;
+
 	[Bindable]
-	public dynamic class KalturaFlavorParams extends BaseFlexVo
+	public dynamic class KalturaFlavorParams extends KalturaAssetParams
 	{
-		public var id : int = int.MIN_VALUE;
-
-		public var partnerId : int = int.MIN_VALUE;
-
-		public var name : String;
-
-		public var description : String;
-
-		public var createdAt : int = int.MIN_VALUE;
-
-		public var isSystemDefault : int = int.MIN_VALUE;
-
-		public var tags : String;
-
-		public var format : String;
-
 		public var videoCodec : String;
 
 		public var videoBitrate : int = int.MIN_VALUE;
@@ -54,14 +39,10 @@ package com.kaltura.vo
 
 		public var engineVersion : int = int.MIN_VALUE;
 
-public function getUpdateableParamKeys():Array
+override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
-			arr.push('name');
-			arr.push('description');
-			arr.push('tags');
-			arr.push('format');
+			arr = super.getUpdateableParamKeys();
 			arr.push('videoCodec');
 			arr.push('videoBitrate');
 			arr.push('audioCodec');

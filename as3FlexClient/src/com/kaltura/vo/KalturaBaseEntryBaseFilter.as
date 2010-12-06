@@ -43,13 +43,13 @@ package com.kaltura.vo
 
 		public var categoriesIdsMatchOr : String;
 
-		public var statusEqual : int = int.MIN_VALUE;
+		public var statusEqual : String;
 
-		public var statusNotEqual : int = int.MIN_VALUE;
+		public var statusNotEqual : String;
 
 		public var statusIn : String;
 
-		public var statusNotIn : int = int.MIN_VALUE;
+		public var statusNotIn : String;
 
 		public var moderationStatusEqual : int = int.MIN_VALUE;
 
@@ -57,9 +57,9 @@ package com.kaltura.vo
 
 		public var moderationStatusIn : String;
 
-		public var moderationStatusNotIn : int = int.MIN_VALUE;
+		public var moderationStatusNotIn : String;
 
-		public var typeEqual : int = int.MIN_VALUE;
+		public var typeEqual : String;
 
 		public var typeIn : String;
 

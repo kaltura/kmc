@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		public var entryIdEqual : String;
 
-		public var jobTypeEqual : int = int.MIN_VALUE;
+		public var jobTypeEqual : String;
 
 		public var jobTypeIn : String;
 
-		public var jobTypeNotIn : int = int.MIN_VALUE;
+		public var jobTypeNotIn : String;
 
 		public var jobSubTypeEqual : int = int.MIN_VALUE;
 

@@ -16,6 +16,8 @@ package com.kaltura.vo
 
 		public var categories : String;
 
+		public var timeZoneOffset : int = int.MIN_VALUE;
+
 public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -26,6 +28,7 @@ public function getUpdateableParamKeys():Array
 			arr.push('searchInTags');
 			arr.push('searchInAdminTags');
 			arr.push('categories');
+			arr.push('timeZoneOffset');
 			return arr;
 		}
 	}

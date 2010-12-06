@@ -8,5 +8,6 @@ package com.kaltura.types
 		public static const READY : int = 2;
 		public static const DELETED : int = 3;
 		public static const NOT_APPLICABLE : int = 4;
+		public static const TEMP : int = 5;
 	}
 }

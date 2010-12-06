@@ -22,7 +22,7 @@ package com.kaltura.vo
 
 		public var description : String;
 
-		public var commercialUse : String;
+		public var commercialUse : int = int.MIN_VALUE;
 
 		public var landingPage : String;
 

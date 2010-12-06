@@ -2,34 +2,34 @@ package com.kaltura.types
 {
 	public class KalturaBatchJobType
 	{
-		public static const CONVERT : int = 0;
-		public static const IMPORT : int = 1;
-		public static const DELETE : int = 2;
-		public static const FLATTEN : int = 3;
-		public static const BULKUPLOAD : int = 4;
-		public static const DVDCREATOR : int = 5;
-		public static const DOWNLOAD : int = 6;
-		public static const OOCONVERT : int = 7;
-		public static const CONVERT_PROFILE : int = 10;
-		public static const POSTCONVERT : int = 11;
-		public static const PULL : int = 12;
-		public static const REMOTE_CONVERT : int = 13;
-		public static const EXTRACT_MEDIA : int = 14;
-		public static const MAIL : int = 15;
-		public static const NOTIFICATION : int = 16;
-		public static const CLEANUP : int = 17;
-		public static const SCHEDULER_HELPER : int = 18;
-		public static const BULKDOWNLOAD : int = 19;
-		public static const DB_CLEANUP : int = 20;
-		public static const PROVISION_PROVIDE : int = 21;
-		public static const CONVERT_COLLECTION : int = 22;
-		public static const STORAGE_EXPORT : int = 23;
-		public static const PROVISION_DELETE : int = 24;
-		public static const STORAGE_DELETE : int = 25;
-		public static const EMAIL_INGESTION : int = 26;
-		public static const METADATA_IMPORT : int = 27;
-		public static const METADATA_TRANSFORM : int = 28;
-		public static const FILESYNC_IMPORT : int = 29;
-		public static const PROJECT : int = 1000;
+		public static const CONVERT : String = '0';
+		public static const IMPORT : String = '1';
+		public static const DELETE : String = '2';
+		public static const FLATTEN : String = '3';
+		public static const BULKUPLOAD : String = '4';
+		public static const DVDCREATOR : String = '5';
+		public static const DOWNLOAD : String = '6';
+		public static const OOCONVERT : String = '7';
+		public static const CONVERT_PROFILE : String = '10';
+		public static const POSTCONVERT : String = '11';
+		public static const PULL : String = '12';
+		public static const REMOTE_CONVERT : String = '13';
+		public static const EXTRACT_MEDIA : String = '14';
+		public static const MAIL : String = '15';
+		public static const NOTIFICATION : String = '16';
+		public static const CLEANUP : String = '17';
+		public static const SCHEDULER_HELPER : String = '18';
+		public static const BULKDOWNLOAD : String = '19';
+		public static const DB_CLEANUP : String = '20';
+		public static const PROVISION_PROVIDE : String = '21';
+		public static const CONVERT_COLLECTION : String = '22';
+		public static const STORAGE_EXPORT : String = '23';
+		public static const PROVISION_DELETE : String = '24';
+		public static const STORAGE_DELETE : String = '25';
+		public static const EMAIL_INGESTION : String = '26';
+		public static const METADATA_IMPORT : String = '27';
+		public static const METADATA_TRANSFORM : String = '28';
+		public static const FILESYNC_IMPORT : String = '29';
+		public static const CAPTURE_THUMB : String = '30';
 	}
 }

@@ -7,7 +7,7 @@ package com.kaltura.commands.baseEntry
 	public class BaseEntryAddFromUploadedFile extends KalturaCall
 	{
 		public var filterFields : String;
-		public function BaseEntryAddFromUploadedFile( entry : KalturaBaseEntry,uploadTokenId : String,type : int=-1 )
+		public function BaseEntryAddFromUploadedFile( entry : KalturaBaseEntry,uploadTokenId : String,type : String='null' )
 		{
 			service= 'baseentry';
 			action= 'addFromUploadedFile';

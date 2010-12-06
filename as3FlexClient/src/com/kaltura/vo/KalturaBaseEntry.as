@@ -22,13 +22,13 @@ package com.kaltura.vo
 
 		public var categoriesIds : String;
 
-		public var status : int = int.MIN_VALUE;
+		public var status : String;
 
 		public var moderationStatus : int = int.MIN_VALUE;
 
 		public var moderationCount : int = int.MIN_VALUE;
 
-		public var type : int = int.MIN_VALUE;
+		public var type : String;
 
 		public var createdAt : int = int.MIN_VALUE;
 

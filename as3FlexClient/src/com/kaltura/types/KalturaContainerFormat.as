@@ -16,5 +16,6 @@ package com.kaltura.types
 		public static const WEBM : String = 'webm';
 		public static const SWF : String = 'swf';
 		public static const PDF : String = 'pdf';
+		public static const JPG : String = 'jpg';
 	}
 }
