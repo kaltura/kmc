@@ -2,22 +2,17 @@
 <!---
 	 graphic interface for setting advertizing configurations.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:wizard="com.kaltura.kmc.modules.studio.view.wizard.*"
-		 xmlns:form="com.kaltura.kmc.modules.studio.view.form.*"
-		 xmlns:controls="com.kaltura.controls.*" 
-		 xmlns:validators="com.kaltura.validators.*"
-		 width="100%" minWidth="620" horizontalScrollPolicy="off"
-		 backgroundColor="#F7F7F7"
-		 hide="update()"
-		 show="onShow()" >
-	
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:wizard="com.kaltura.kmc.modules.studio.view.wizard.*"
+		 xmlns:form="com.kaltura.kmc.modules.studio.view.form.*" xmlns:controls="com.kaltura.controls.*"
+		 xmlns:validators="com.kaltura.validators.*" width="100%" minWidth="620" horizontalScrollPolicy="off"
+		 backgroundColor="#F7F7F7" hide="update()" show="onShow()">
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			import com.kaltura.kmc.modules.studio.vo.ads.AdSourceVo;
 			import com.kaltura.kmc.modules.studio.vo.ads.AdvertizingVo;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.ComboBox;
 			import mx.events.ListEvent;
@@ -25,7 +20,7 @@
 			import mx.resources.ResourceManager;
 			import mx.validators.ValidationResult;
 
-			
+
 			/**
 			 * the same string as the data for vast ad server item in combobox
 			 * */
@@ -40,17 +35,17 @@
 			private var _playerUiconfVO:PlayerUiConfVo;
 
 			/**
-			 * used to trigger <code>showValues</code> only once, after both <code>creationComplete()</code> and set of <code>playerUIConfVO</code> 
+			 * used to trigger <code>showValues</code> only once, after both <code>creationComplete()</code> and set of <code>playerUIConfVO</code>
 			 * */
 			private var _initValuesOnce:Boolean = false;
-			
+
 			/**
 			 * if this screen was never introduces and <code>showValues()</code> wasn't triggered,
 			 * update() shouldn't set new values to <code>playerUIConfVO.advertising</code>
 			 * */
 			private var _changed:Boolean = false;
 
-			
+
 			/**
 			 * update screen data
 			 * */
@@ -62,6 +57,7 @@
 					_initValuesOnce = true;
 				}
 			}
+
 
 //
 //			/**
@@ -81,7 +77,7 @@
 //				}
 //			}
 
-			
+
 			/**
 			 * creates generic objects with keys relative to xml attributes
 			 * @param xmllst	list of xml-ed objects
@@ -92,10 +88,10 @@
 				var xml:XML;
 				var atts:XMLList;
 				var o:Object;
-				for (var i:uint = 0; i< xmllst.length(); i++) {
+				for (var i:uint = 0; i < xmllst.length(); i++) {
 					o = new Object();
 					atts = xmllst[i].attributes();
-					for (var j:uint = 0; j< atts.length(); j++) {
+					for (var j:uint = 0; j < atts.length(); j++) {
 						o[(atts[j] as XML).localName()] = atts[j];
 //						trace("attribute :", (atts[j] as XML).localName() , " with value:",(atts[j] as XML)  )
 					}
@@ -103,8 +99,8 @@
 				}
 				return new ArrayCollection(ar);
 			}
-			
-			
+
+
 			/**
 			 * show the new values on screen.
 			 * */
@@ -115,25 +111,26 @@
 				adsourceCB.selectedItem = _playerUiconfVO.advertizing.adSource;
 				flashCompanions.adLocations = _playerUiconfVO.advertizing.flashCompanionLocations;
 				showCompanions();
-				
+
 //(real binding)tiSrcUrl.text = adsourceCB.selectedItem.url;
 //(real binding)tiTagUrl.text = adsourceCB.selectedItem.url;
 				if (adsourceCB.selectedItem.extra != "") {
 					tiPlayerKv.text = adsourceCB.selectedItem.extra;
-				} else {
+				}
+				else {
 					// show default value
 					tiPlayerKv.text = ResourceManager.getInstance().getString("advertising", "keyval");
 				}
-				
+
 				ynNotice.selected = _playerUiconfVO.advertizing.noticeEnabled;
 				tiNotice.text = _playerUiconfVO.advertizing.noticeText;
 				ynSkip.selected = _playerUiconfVO.advertizing.skipEnabled;
 				tiSkip.text = _playerUiconfVO.advertizing.skipText;
 				tiTimeout.text = _playerUiconfVO.advertizing.timeout.toString();
-				
+
 				// show timeline tab according to selected ad source
 				adsourceCB_changeHandler();
-				
+
 				// preroll
 				ynPreroll.selected = _playerUiconfVO.advertizing.preroll.enabled;
 				cbPreNads.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.nads.item);
@@ -148,19 +145,19 @@
 				else {
 					tiPrerollUrl.text = ResourceManager.getInstance().getString("advertising", "defaulturl");
 				}
-				
+
 				// bumper
 				ynBumper.selected = _playerUiconfVO.advertizing.bumperEnabled;
 				tiBumperEntry.text = _playerUiconfVO.advertizing.bumperEntry;
 				tiBumperUrl.text = _playerUiconfVO.advertizing.bumperUrl;
-				
+
 				// overlay
 				ynOverlay.selected = _playerUiconfVO.advertizing.overlay.enabled;
-				var time:Object = getTimeAsObject(_playerUiconfVO.advertizing.overlay.start); 
+				var time:Object = getTimeAsObject(_playerUiconfVO.advertizing.overlay.start);
 				fsFirstOverlay.hour = time.hour;
 				fsFirstOverlay.minute = time.minute;
 				fsFirstOverlay.second = time.second;
-				time = getTimeAsObject(_playerUiconfVO.advertizing.overlay.frequency); 
+				time = getTimeAsObject(_playerUiconfVO.advertizing.overlay.frequency);
 				fsFrequencyOverlay.hour = time.hour;
 				fsFrequencyOverlay.minute = time.minute;
 				fsFrequencyOverlay.second = time.second;
@@ -174,7 +171,7 @@
 				else {
 					tiOverlayUrl.text = ResourceManager.getInstance().getString("advertising", "defaulturl");
 				}
-				
+
 				// postroll
 				ynPostroll.selected = _playerUiconfVO.advertizing.postroll.enabled;
 				cbPostNads.dataProvider = createArrayCollection(_playerUiconfVO.advertizing.linearAdsValues.nads.item);
@@ -222,7 +219,7 @@
 				flashCompanions.dataProvider = flashAds;
 			}
 
-			
+
 			/**
 			 * return the index of a given <code>item.data</code> in a list.
 			 * @param item	the data to look for
@@ -230,13 +227,14 @@
 			 * */
 			private function getItemIndex(item:String, list:ArrayCollection):int {
 				var l:int = list.length;
-				for (var i:int = 0; i<l; i++) {
+				for (var i:int = 0; i < l; i++) {
 					if (list[i].data == item) {
 						return i;
 					}
-				}	
+				}
 				return -1;
 			}
+
 
 			/**
 			 * validates there's a value for bumper entry
@@ -245,7 +243,7 @@
 				bumperEntryValidator.source = tiBumperEntry;
 				bumperEntryValidator.property = "text";
 				bumperEntryValidator.required = true;
-				
+
 				var vre:ValidationResultEvent = bumperEntryValidator.validate();
 				if (vre.results != null && vre.results.length > 0) {
 					// something failed
@@ -253,8 +251,8 @@
 				}
 				return true;
 			}
-			
-						
+
+
 			/**
 			 * validates custom swf url.
 			 * @return true if validation passed ok, false otherwise.
@@ -271,22 +269,25 @@
 				}
 				return isOk;
 			}
-			
+
+
 			/**
 			 * gather data from the different form fields and save them in the advertising vo.
 			 * @return update success. if false, advertizing values are not valid.
 			 * */
 			public function update():void {
 				// if the screen didn't update, keep old values.
-				if (!_changed) return ;
-				
+				if (!_changed)
+					return;
+
 				var advo:AdvertizingVo = _playerUiconfVO.advertizing;
 				advo.adsEnabled = ynAds.selected;
-				
+
 				advo.adSource = adsourceCB.selectedItem as AdSourceVo;
 				if (advo.adSource.id == VAST) {
 					advo.adSource.url = "";
-				} else {
+				}
+				else {
 					advo.adSource.url = tiSrcUrl.text;
 				}
 				if (tiPlayerKv.text != ResourceManager.getInstance().getString("advertising", "keyval")) {
@@ -296,35 +297,35 @@
 					advo.adSource.extra = ""
 				}
 				// id and label can't change.
-				
+
 				advo.timeout = parseFloat(tiTimeout.text);
-				
+
 				advo.noticeEnabled = ynNotice.selected;
-				
+
 				advo.noticeText = tiNotice.text;
-				
+
 				advo.skipEnabled = ynSkip.selected;
-				
+
 				advo.skipText = tiSkip.text;
-				
+
 				// get companion ads from both html and flash lists
 				var companions:Array = new Array();
-				var dp:ArrayCollection = htmlCompanions.dataProvider; 
+				var dp:ArrayCollection = htmlCompanions.dataProvider;
 				var i:int, l:int = dp.length;
-				for (i = 0; i<l; i++) {
+				for (i = 0; i < l; i++) {
 					companions.push(dp.getItemAt(i));
 				}
 				dp = flashCompanions.dataProvider;
 				l = dp.length;
-				for (i = 0; i<l; i++) {
+				for (i = 0; i < l; i++) {
 					companions.push(dp.getItemAt(i));
 				}
 				advo.companions = companions;
-				
+
 				advo.bumperEnabled = ynBumper.selected;
 				advo.bumperEntry = tiBumperEntry.text;
 				advo.bumperUrl = tiBumperUrl.text;
-				
+
 				advo.preroll.enabled = ynPreroll.selected;
 				if (ynPreroll.selected) {
 					advo.preroll.nAds = cbPreNads.selectedItem.data;
@@ -337,7 +338,7 @@
 						advo.preroll.url = "";
 					}
 				}
-				
+
 				advo.postroll.enabled = ynPostroll.selected;
 				if (ynPostroll.selected) {
 					advo.postroll.nAds = cbPostNads.selectedItem.data;
@@ -351,12 +352,12 @@
 						advo.postroll.url = "";
 					}
 				}
-				
+
 				advo.overlay.enabled = ynOverlay.selected;
 				if (ynOverlay.selected) {
 					advo.overlay.start = getTimeAsSeconds(fsFirstOverlay.timeValue);
 					advo.overlay.frequency = getTimeAsSeconds(fsFrequencyOverlay.timeValue);
-					advo.overlay.nAds = getTimeAsSeconds(fsDurationOverlay.timeValue);	//NOTE: misusing nAds param!!!
+					advo.overlay.nAds = getTimeAsSeconds(fsDurationOverlay.timeValue); //NOTE: misusing nAds param!!!
 					if (tiOverlayUrl.text != ResourceManager.getInstance().getString("advertising", "defaulturl")) {
 						advo.overlay.url = tiOverlayUrl.text;
 					}
@@ -365,23 +366,23 @@
 					}
 				}
 			}
-			
-			
+
+
 			/**
 			 * transform time from object properties to a single secnods value.
-			 * @param o		object with <code>{hour, minute, second}</code> attributes as return by <code>SM_TimeEntry.getTime()</code> 
+			 * @param o		object with <code>{hour, minute, second}</code> attributes as return by <code>SM_TimeEntry.getTime()</code>
 			 * */
 			private function getTimeAsSeconds(o:Object):int {
 				var h:int = o.hour * 3600; // 60 * 60 = 3600
 				var m:int = o.minute * 60;
 				return o.second + m; // + h; (no hours)
 			}
-			
-			
+
+
 			/**
-			 * transforms time from a single (seconds) value to an object 
+			 * transforms time from a single (seconds) value to an object
 			 * @param time	the time in seconds
-			 * @return an object with <code>{hour, minute, second}</code> attributes. 
+			 * @return an object with <code>{hour, minute, second}</code> attributes.
 			 * */
 			private function getTimeAsObject(time:int):Object {
 				var o:Object = new Object();
@@ -395,15 +396,16 @@
 				o.second = s;
 				return o;
 			}
-			
-			
+
+
 			/**
-			 * actions to perform before closing  
+			 * actions to perform before closing
 			 * */
 			public function dispose():void {
 				// nothing here so far :)
 			}
-			
+
+
 			/**
 			 * validate data in this panel: </br>
 			 * - URLs
@@ -411,10 +413,11 @@
 			 * */
 			public function validate():Boolean {
 				// we assume the loaded values are legit.
-				if (!_changed) return true;
+				if (!_changed)
+					return true;
 				// if values were changed, we check the new values.
 				update();
-				var advo:AdvertizingVo = _playerUiconfVO.advertizing; 
+				var advo:AdvertizingVo = _playerUiconfVO.advertizing;
 				switch (advo.adSource.id) {
 					case VAST:
 						if (advo.preroll.enabled && !validateUrl(tiPrerollUrl)) {
@@ -427,16 +430,16 @@
 							return false;
 						}
 						break;
-					
+
 					case CUSTOM:
 						if (!validateUrl(tiSrcUrl)) {
 							return false;
 						}
 						break;
-					
+
 					// don't care about fixed custom plugins
 				}
-				
+
 				// bumper
 				if (advo.bumperEnabled) {
 					// entry id
@@ -444,16 +447,17 @@
 						return false;
 					}
 					// url
-				 	if (advo.bumperUrl != "" && !validateUrl(tiBumperUrl)) {
+					if (advo.bumperUrl != "" && !validateUrl(tiBumperUrl)) {
 						return false;
 					}
 				}
-				
+
 				return true;
-			}	
+			}
+
 
 			/**
-			 * player data 
+			 * player data
 			 * */
 			public function get playerUiconfVo():PlayerUiConfVo {
 				return _playerUiconfVO;
@@ -473,7 +477,7 @@
 				}
 			}
 
-			
+
 			/**
 			 * show correct timeline tab
 			 * */
@@ -492,7 +496,7 @@
 				}
 			}
 
-			
+
 			/**
 			 * clear url validation of the relevant field
 			 * */
@@ -513,9 +517,10 @@
 				}
 			}
 
+
 			/**
 			 * shows selected timeline panel and nav button
-			 * @param o		mouse event or button 
+			 * @param o		mouse event or button
 			 * */
 			protected function selectTimelinePanel(o:*):void {
 				var btn:Button;
@@ -529,7 +534,7 @@
 					// if the value passed is not a button or event - forget about it.
 					return;
 				}
-				
+
 				// show correct child of timeline
 				if (btn == btnPre) {
 					timeline.selectedChild = pre;
@@ -546,8 +551,8 @@
 				// unselect the rest of the buttons
 				selectOne(btn);
 			}
-			
-			
+
+
 			/**
 			 * selects only one button out of the timeline buttons
 			 * @param btn	the button to select.
@@ -567,250 +572,198 @@
 				}
 				btn.selected = true;
 			}
-
-
-
 		]]>
 	</mx:Script>
-	<mx:Validator id="bumperEntryValidator" />
-	<validators:URLValidator id="urlValidator" />
-	<mx:Label text="{resourceManager.getString('advertising', 'adstatus')}"
-			  styleName="pageTitle"/>
-	<form:YesNoQuestion id="ynAds" labelWidth="180"
-						yesLabel="Yes" noLabel="No"
-						text="{resourceManager.getString('advertising', 'requestAds')}:"/>
-	<mx:Spacer height="10"/>
-	<mx:VBox id="allContent" visible="{ynAds.selected}" includeInLayout="{ynAds.selected}"	
-			 >
-		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- - - - - - - - - - - - - - - adsource config - - - - - - - - - - - - - - -->
-		<mx:Label text="{resourceManager.getString('advertising', 'adsrcConfig')}"
-				  styleName="pageTitle"/>
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('advertising', 'adsrc')}:"
-					  width="180"/>
-			<mx:ComboBox id="adsourceCB" change="adsourceCB_changeHandler(event)" width="400"/>
-		</mx:HBox>
-		<form:DisablableBox id="customswfView" direction="vertical" enabled="{adsourceCB.selectedItem.id != VAST}" width="100%">
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('advertising', 'swfurl')}:" 
-						  width="180"/>
-				<mx:TextInput id="tiSrcUrl" text="{adsourceCB.selectedItem.url}"
-							  enabled="{adsourceCB.selectedItem.id == CUSTOM}"
-							  width="400"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:VBox>
-					<mx:Text width="180" 
-							 htmlText="{resourceManager.getString('advertising', 'keyValue')}:&lt;br&gt;{resourceManager.getString('advertising', 'separate')}"/>
-					<!--<mx:Label text="{resourceManager.getString('advertising', 'keyValue')}:"
-							  width="180"/>
-					<mx:Label text="{resourceManager.getString('advertising', 'separate')}"
-							  width="180"/>-->
-				</mx:VBox>
-				<mx:TextArea id="tiPlayerKv"
-							  width="400" height="100%"/>
-			</mx:HBox>
-		</form:DisablableBox>
+	<mx:Validator id="bumperEntryValidator"/>
+	<validators:URLValidator id="urlValidator"/>
+	<mx:VBox id="all" disabledOverlayAlpha="0">
+		<mx:Label text="{resourceManager.getString('advertising', 'adstatus')}" styleName="pageTitle"/>
+		<form:YesNoQuestion id="ynAds" labelWidth="180" yesLabel="Yes" noLabel="No"
+							text="{resourceManager.getString('advertising', 'requestAds')}:"/>
 		<mx:Spacer height="10"/>
-		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-		<!-- - - - - - - - - - - - - - - player config - - - - - - - - - - - - - - - -->
-		<form:DisablableBox direction="vertical" enabled="{(adsourceCB.selectedItem.id == VAST)}" width="100%">
-			<mx:Label text="{resourceManager.getString('advertising', 'playerConfig')}"
-					  styleName="pageTitle"/>
-			<form:YesNoQuestion id="ynNotice" labelWidth="180"
-								yesLabel="Yes" noLabel="No"
-								text="{resourceManager.getString('advertising', 'notice')}:"/>
+		<mx:VBox id="allContent" visible="{ynAds.selected}" includeInLayout="{ynAds.selected}">
+			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+			<!-- - - - - - - - - - - - - - - adsource config - - - - - - - - - - - - - - -->
+			<mx:Label text="{resourceManager.getString('advertising', 'adsrcConfig')}" styleName="pageTitle"/>
 			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('advertising', 'noticeText')}:"
-						  width="180"/>
-				<mx:TextInput id="tiNotice"
-							  width="400"
-							  enabled="{ynNotice.selected}"/>
+				<mx:Label text="{resourceManager.getString('advertising', 'adsrc')}:" width="180"/>
+				<mx:ComboBox id="adsourceCB" change="adsourceCB_changeHandler(event)" width="400"/>
 			</mx:HBox>
-			<form:YesNoQuestion id="ynSkip" labelWidth="180"
-								yesLabel="Yes" noLabel="No"
-								text="{resourceManager.getString('advertising', 'skip')}:"/>
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('advertising', 'skipText')}:"
-						  width="180"/>
-				<mx:TextInput id="tiSkip"
-							  width="400"
-							  enabled="{ynSkip.selected}"/>
-			</mx:HBox>
-			<mx:HBox>
-				<mx:Text htmlText="{resourceManager.getString('advertising', 'timeout',['&lt;br&gt;'])}"
-						  width="180"/>
-				<mx:TextInput id="tiTimeout"
-							  width="400"/>
-			</mx:HBox>
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('advertising', 'companions', ['HTML'])}"
-						  width="180"/>
-				<form:AdsCollection id="htmlCompanions" type="html"
-									width="100%" addLabel="{resourceManager.getString('advertising', 'addCompanionDiv')}"/>
-			</mx:HBox>
-			<mx:HBox>
-				<mx:Label text="{resourceManager.getString('advertising', 'companions', ['Flash'])}"
-						  width="180"/>
-				<form:AdsCollection id="flashCompanions" type="flash"
-									width="100%" addLabel="{resourceManager.getString('advertising', 'addCompanionElement')}"/>
-			</mx:HBox>
-			<mx:Spacer height="10"/>
-		</form:DisablableBox>
-		<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
-		<!-- - - - - - - - - - - - - - - - timeline - - - - - - - - - - - - - - - - -->
-		<mx:Label text="{resourceManager.getString('advertising', 'timeline')}"
-				  styleName="pageTitle"/>
-		<mx:VBox id="none" visible="{(adsourceCB.selectedItem.id != VAST)}" 
-				 includeInLayout="{(adsourceCB.selectedItem.id != VAST)}"
-				 width="100%">
-			<mx:Label text="{resourceManager.getString('advertising', 'referToAdSource')}"/>
-		</mx:VBox>
-		<mx:VBox horizontalAlign="center">
-			
-			<form:DisablableBox id="timelineNavigation" direction="horizontal" 
-								verticalAlign="middle" horizontalGap="20"
-								enabled="{(adsourceCB.selectedItem.id == VAST)}" >
-				<mx:Button id="btnPre" label="{pre.label}" styleName="timeline" 
-						   click="selectTimelinePanel(event)" buttonMode="{(adsourceCB.selectedItem.id == VAST)}" />
-				<mx:Canvas styleName="timelineArrow" width="9" height="13" />
-				<mx:Button id="btnBumper" label="{bumper.label}" styleName="timelineBumper" 
-						   click="selectTimelinePanel(event)" buttonMode="{(adsourceCB.selectedItem.id == VAST)}" />
-				<mx:Canvas styleName="timelineArrow" width="9" height="13" />
-				<mx:Button id="btnOver" label="{over.label}" styleName="timelineOverlay" paddingBottom="0" paddingTop="50"
-						   click="selectTimelinePanel(event)" buttonMode="{(adsourceCB.selectedItem.id == VAST)}" />
-				<mx:Canvas styleName="timelineArrow" width="9" height="13" />
-				<mx:Button id="btnPost" label="{post.label}" styleName="timeline" 
-						   click="selectTimelinePanel(event)" buttonMode="{(adsourceCB.selectedItem.id == VAST)}" />
+			<form:DisablableBox id="customswfView" direction="vertical" enabled="{adsourceCB.selectedItem.id != VAST}"
+								width="100%">
+				<mx:HBox>
+					<mx:Label text="{resourceManager.getString('advertising', 'swfurl')}:" width="180"/>
+					<mx:TextInput id="tiSrcUrl" text="{adsourceCB.selectedItem.url}"
+								  enabled="{adsourceCB.selectedItem.id == CUSTOM}" width="400"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:VBox>
+						<mx:Text width="180"
+								 htmlText="{resourceManager.getString('advertising', 'keyValue')}:&lt;br&gt;{resourceManager.getString('advertising', 'separate')}"/>
+						<!--<mx:Label text="{resourceManager.getString('advertising', 'keyValue')}:"
+							 width="180"/>
+							 <mx:Label text="{resourceManager.getString('advertising', 'separate')}"
+							 width="180"/>-->
+					</mx:VBox>
+					<mx:TextArea id="tiPlayerKv" width="400" height="100%"/>
+				</mx:HBox>
 			</form:DisablableBox>
-			
-			<mx:ViewStack id="timeline" creationPolicy="all"
-						  resizeToContent="true"
-						  width="100%" height="200">
-				<!-- - - - - - - - - - - - - - - - preroll - - - - - - - - - - - - - - - - -->
-				<mx:VBox id="pre" label="{resourceManager.getString('advertising', 'preroll')}:"
-						 width="100%">
-					<form:YesNoQuestion id="ynPreroll" labelWidth="180"
-										yesLabel="{resourceManager.getString('advertising', 'enabled')}"
-										noLabel="{resourceManager.getString('advertising', 'disabled')}"
-										text="{resourceManager.getString('advertising', 'request', ['PreRoll'])}"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" 
-								  width="180"/>
-						<mx:TextInput id="tiPrerollUrl" width="400"
-									  enabled="{ynPreroll.selected}"/>
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
-						<mx:ComboBox id="cbPreNads" labelField="label" 
-									 enabled="{ynPreroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'before')}"/>
-						<mx:ComboBox id="cbPreFrequency" labelField="label" 
-									 enabled="{ynPreroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
-						<mx:ComboBox id="cbPreStart" labelField="label"
-									 enabled="{ynPreroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
-					</mx:HBox>
-				</mx:VBox>
-				<!-- - - - - - - - - - - - - - - - bumper - - - - - - - - - - - - - - - - -->
-				<mx:VBox id="bumper" label="{resourceManager.getString('advertising', 'bumper')}:"
-						 width="100%">
-					<form:YesNoQuestion id="ynBumper" labelWidth="180"
-										yesLabel="{resourceManager.getString('advertising', 'enabled')}"
-										noLabel="{resourceManager.getString('advertising', 'disabled')}" 
-										change="yn_changeHandler(event)"
-										text="{resourceManager.getString('advertising', 'showBumper')}:"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'entryid')}:" 
-								  width="180" />
-						<mx:TextInput id="tiBumperEntry" width="400" 
-									  enabled="{ynBumper.selected}"/>
-					</mx:HBox>
-					
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'clickurl')}:" 
-								  width="180" />
-						<mx:TextInput id="tiBumperUrl" width="400" 
-									  enabled="{ynBumper.selected}"/>
-					</mx:HBox>
-				</mx:VBox>
-				<!-- - - - - - - - - - - - - - - - overlay - - - - - - - - - - - - - - - - -->
-				<mx:VBox id="over" label="{resourceManager.getString('advertising', 'overlay')}:"
-						 width="100%" >
-					<form:YesNoQuestion id="ynOverlay" labelWidth="180"
-										yesLabel="{resourceManager.getString('advertising', 'enabled')}"
-										noLabel="{resourceManager.getString('advertising', 'disabled')}"
-										text="{resourceManager.getString('advertising', 'request', ['Overlay'])}"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" 
-								  width="180"/>
-						<mx:TextInput id="tiOverlayUrl" width="400" 
-									  enabled="{ynOverlay.selected}"/>
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'firstOverlay')}" width="180"/>
-						<controls:TimeStepper id="fsFirstOverlay" 
-											   showAMPMLabel="false" showHours="false" showSeconds="true" 
-											   enabled="{ynOverlay.selected}"
-											   minimum="20"
-											   height="25" styleName="timeEntry" /> 
-						<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
-						
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'frequencyOverlay')}"  width="180"/>
-						<controls:TimeStepper id="fsFrequencyOverlay" 
-											   showAMPMLabel="false" showHours="false" showSeconds="true" 
-											   enabled="{ynOverlay.selected}"
-											   minimum="30"
-											   height="25" styleName="timeEntry" /> 
-						<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'durationOverlay')}" width="180"/>
-						<controls:TimeStepper id="fsDurationOverlay" 
-											   showAMPMLabel="false" showHours="false" showSeconds="true" 
-											   enabled="{ynOverlay.selected}"
-											   minimum="5"
-											   height="25" styleName="timeEntry" />
-						<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
-					</mx:HBox>
-				</mx:VBox>
-				<!-- - - - - - - - - - - - - - - - postroll - - - - - - - - - - - - - - - - -->
-				<mx:VBox id="post" label="{resourceManager.getString('advertising', 'postroll')}:"
-						 width="100%">
-					<form:YesNoQuestion id="ynPostroll" labelWidth="180"
-										yesLabel="{resourceManager.getString('advertising', 'enabled')}"
-										noLabel="{resourceManager.getString('advertising', 'disabled')}"
-										text="{resourceManager.getString('advertising', 'request', ['PostRoll'])}"/>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" 
-								  width="180"/>
-						<mx:TextInput id="tiPostrollUrl" width="400"
-									  enabled="{ynPostroll.selected}" />
-					</mx:HBox>
-					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
-						<mx:ComboBox id="cbPostNads" labelField="label"
-									 enabled="{ynPostroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'after')}"/>
-						<mx:ComboBox id="cbPostFrequency" labelField="label"
-									 enabled="{ynPostroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
-						<mx:ComboBox id="cbPostStart" labelField="label"
-									 enabled="{ynPostroll.selected}"/>
-						<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
-					</mx:HBox>
-				</mx:VBox>
-			</mx:ViewStack>
+			<mx:Spacer height="10"/>
+			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+			<!-- - - - - - - - - - - - - - - player config - - - - - - - - - - - - - - - -->
+			<form:DisablableBox direction="vertical" enabled="{(adsourceCB.selectedItem.id == VAST)}" width="100%">
+				<mx:Label text="{resourceManager.getString('advertising', 'playerConfig')}" styleName="pageTitle"/>
+				<form:YesNoQuestion id="ynNotice" labelWidth="180" yesLabel="Yes" noLabel="No"
+									text="{resourceManager.getString('advertising', 'notice')}:"/>
+				<mx:HBox>
+					<mx:Label text="{resourceManager.getString('advertising', 'noticeText')}:" width="180"/>
+					<mx:TextInput id="tiNotice" width="400" enabled="{ynNotice.selected}"/>
+				</mx:HBox>
+				<form:YesNoQuestion id="ynSkip" labelWidth="180" yesLabel="Yes" noLabel="No"
+									text="{resourceManager.getString('advertising', 'skip')}:"/>
+				<mx:HBox>
+					<mx:Label text="{resourceManager.getString('advertising', 'skipText')}:" width="180"/>
+					<mx:TextInput id="tiSkip" width="400" enabled="{ynSkip.selected}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Text htmlText="{resourceManager.getString('advertising', 'timeout',['&lt;br&gt;'])}" width="180"/>
+					<mx:TextInput id="tiTimeout" width="400"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="{resourceManager.getString('advertising', 'companions', ['HTML'])}" width="180"/>
+					<form:AdsCollection id="htmlCompanions" type="html" width="100%"
+										addLabel="{resourceManager.getString('advertising', 'addCompanionDiv')}"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="{resourceManager.getString('advertising', 'companions', ['Flash'])}" width="180"/>
+					<form:AdsCollection id="flashCompanions" type="flash" width="100%"
+										addLabel="{resourceManager.getString('advertising', 'addCompanionElement')}"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+			</form:DisablableBox>
+			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  -->
+			<!-- - - - - - - - - - - - - - - - timeline - - - - - - - - - - - - - - - - -->
+			<mx:Label text="{resourceManager.getString('advertising', 'timeline')}" styleName="pageTitle"/>
+			<mx:VBox id="none" visible="{(adsourceCB.selectedItem.id != VAST)}"
+					 includeInLayout="{(adsourceCB.selectedItem.id != VAST)}" width="100%">
+				<mx:Label text="{resourceManager.getString('advertising', 'referToAdSource')}"/>
+			</mx:VBox>
+			<mx:VBox horizontalAlign="center">
+
+				<form:DisablableBox id="timelineNavigation" direction="horizontal" verticalAlign="middle"
+									horizontalGap="20" enabled="{(adsourceCB.selectedItem.id == VAST)}">
+					<mx:Button id="btnPre" label="{pre.label}" styleName="timeline" click="selectTimelinePanel(event)"
+							   buttonMode="{(adsourceCB.selectedItem.id == VAST)}"/>
+					<mx:Canvas styleName="timelineArrow" width="9" height="13"/>
+					<mx:Button id="btnBumper" label="{bumper.label}" styleName="timelineBumper"
+							   click="selectTimelinePanel(event)" buttonMode="{(adsourceCB.selectedItem.id == VAST)}"/>
+					<mx:Canvas styleName="timelineArrow" width="9" height="13"/>
+					<mx:Button id="btnOver" label="{over.label}" styleName="timelineOverlay" paddingBottom="0"
+							   paddingTop="50" click="selectTimelinePanel(event)"
+							   buttonMode="{(adsourceCB.selectedItem.id == VAST)}"/>
+					<mx:Canvas styleName="timelineArrow" width="9" height="13"/>
+					<mx:Button id="btnPost" label="{post.label}" styleName="timeline" click="selectTimelinePanel(event)"
+							   buttonMode="{(adsourceCB.selectedItem.id == VAST)}"/>
+				</form:DisablableBox>
+
+				<mx:ViewStack id="timeline" creationPolicy="all" resizeToContent="true" width="100%" height="200">
+					<!-- - - - - - - - - - - - - - - - preroll - - - - - - - - - - - - - - - - -->
+					<mx:VBox id="pre" label="{resourceManager.getString('advertising', 'preroll')}:" width="100%">
+						<form:YesNoQuestion id="ynPreroll" labelWidth="180"
+											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
+											noLabel="{resourceManager.getString('advertising', 'disabled')}"
+											text="{resourceManager.getString('advertising', 'request', ['PreRoll'])}"/>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
+							<mx:TextInput id="tiPrerollUrl" width="400" enabled="{ynPreroll.selected}"/>
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
+							<mx:ComboBox id="cbPreNads" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'before')}"/>
+							<mx:ComboBox id="cbPreFrequency" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
+							<mx:ComboBox id="cbPreStart" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
+						</mx:HBox>
+					</mx:VBox>
+					<!-- - - - - - - - - - - - - - - - bumper - - - - - - - - - - - - - - - - -->
+					<mx:VBox id="bumper" label="{resourceManager.getString('advertising', 'bumper')}:" width="100%">
+						<form:YesNoQuestion id="ynBumper" labelWidth="180"
+											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
+											noLabel="{resourceManager.getString('advertising', 'disabled')}"
+											change="yn_changeHandler(event)"
+											text="{resourceManager.getString('advertising', 'showBumper')}:"/>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'entryid')}:" width="180"/>
+							<mx:TextInput id="tiBumperEntry" width="400" enabled="{ynBumper.selected}"/>
+						</mx:HBox>
+
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'clickurl')}:" width="180"/>
+							<mx:TextInput id="tiBumperUrl" width="400" enabled="{ynBumper.selected}"/>
+						</mx:HBox>
+					</mx:VBox>
+					<!-- - - - - - - - - - - - - - - - overlay - - - - - - - - - - - - - - - - -->
+					<mx:VBox id="over" label="{resourceManager.getString('advertising', 'overlay')}:" width="100%">
+						<form:YesNoQuestion id="ynOverlay" labelWidth="180"
+											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
+											noLabel="{resourceManager.getString('advertising', 'disabled')}"
+											text="{resourceManager.getString('advertising', 'request', ['Overlay'])}"/>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
+							<mx:TextInput id="tiOverlayUrl" width="400" enabled="{ynOverlay.selected}"/>
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'firstOverlay')}" width="180"/>
+							<controls:TimeStepper id="fsFirstOverlay" showAMPMLabel="false" showHours="false"
+												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="20"
+												  height="25" styleName="timeEntry"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
+
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'frequencyOverlay')}" width="180"/>
+							<controls:TimeStepper id="fsFrequencyOverlay" showAMPMLabel="false" showHours="false"
+												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="30"
+												  height="25" styleName="timeEntry"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'durationOverlay')}" width="180"/>
+							<controls:TimeStepper id="fsDurationOverlay" showAMPMLabel="false" showHours="false"
+												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="5"
+												  height="25" styleName="timeEntry"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
+						</mx:HBox>
+					</mx:VBox>
+					<!-- - - - - - - - - - - - - - - - postroll - - - - - - - - - - - - - - - - -->
+					<mx:VBox id="post" label="{resourceManager.getString('advertising', 'postroll')}:" width="100%">
+						<form:YesNoQuestion id="ynPostroll" labelWidth="180"
+											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
+											noLabel="{resourceManager.getString('advertising', 'disabled')}"
+											text="{resourceManager.getString('advertising', 'request', ['PostRoll'])}"/>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
+							<mx:TextInput id="tiPostrollUrl" width="400" enabled="{ynPostroll.selected}"/>
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
+							<mx:ComboBox id="cbPostNads" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'after')}"/>
+							<mx:ComboBox id="cbPostFrequency" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
+							<mx:ComboBox id="cbPostStart" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
+						</mx:HBox>
+					</mx:VBox>
+				</mx:ViewStack>
+			</mx:VBox>
 		</mx:VBox>
-	</mx:VBox>
-	<mx:VBox id="noContent"	
-			 visible="{!ynAds.selected}" includeInLayout="{!ynAds.selected}"
-			 verticalAlign="middle" horizontalAlign="center">
-		<mx:Label text="{resourceManager.getString('advertising', 'noAds')}"/>
+		<mx:VBox id="noContent" visible="{!ynAds.selected}" includeInLayout="{!ynAds.selected}" verticalAlign="middle"
+				 horizontalAlign="center">
+			<mx:Label text="{resourceManager.getString('advertising', 'noAds')}"/>
+		</mx:VBox>
 	</mx:VBox>
 </mx:VBox>
 

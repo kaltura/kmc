@@ -107,15 +107,24 @@ package com.kaltura.kmc.business
 		 */
 		public function apply(startComponent:Object ,compoentPath:String , componentProperty:String , newValue:*):void
 		{
-			var chainWithoutPrefix:Array = compoentPath.split(startComponent["id"]);
-			// isolate all items after the correct item 
-			if (chainWithoutPrefix.length > 1) {
-				// - drop everything before
-				chainWithoutPrefix.shift();
+			var idIndex:int = compoentPath.indexOf(startComponent["id"]);
+			var chain:Array;
+			if (idIndex > -1) {
+				var str:String = compoentPath.substring(idIndex + startComponent["id"].length);
+				chain = str.split(".");
 			}
+			else {
+				chain = compoentPath.split(".");
+			}
+//			var chainWithoutPrefix:Array = compoentPath.split(startComponent["id"]);
+//			// isolate all items after the correct item 
+//			if (chainWithoutPrefix.length > 1) {
+//				// - drop everything before
+//				chainWithoutPrefix.shift();
+//			}
 			// if length == 1 we have a path starting from the middle, like drilldown windows.
 			
-			var chain:Array = chainWithoutPrefix.join().split(".");
+//			var chain:Array = chainWithoutPrefix.join().split(".");
 			//create the new chain without the dots 
 			var o:Object = startComponent;
 			if (o.id != chain[0]) {

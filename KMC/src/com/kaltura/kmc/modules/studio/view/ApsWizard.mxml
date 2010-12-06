@@ -6,11 +6,10 @@
 -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 							xmlns:wv="com.kaltura.kmc.modules.studio.view.wizard.*"
-							xmlns:containers="com.kaltura.containers.*" 
-							showCloseButton="true" close="onWizardCancel()" help="{help()}" 
-							creationComplete="{onCreationComplete()}" resize="{onResize()}" width="100%"
+							xmlns:containers="com.kaltura.containers.*" showCloseButton="true" close="onWizardCancel()"
+							help="{help()}" creationComplete="{onCreationComplete()}" resize="{onResize()}" width="100%"
 							height="100%" minWidth="980" minHeight="510" horizontalScrollPolicy="off"
-							verticalScrollPolicy="off" layout="horizontal">
+							verticalScrollPolicy="off" layout="horizontal" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.commands.uiConf.UiConfAdd;
@@ -52,6 +51,10 @@
 			 * */
 			public var enableAdsTab:Boolean;
 
+//			/**
+//			 * @copy #editable
+//			 * */
+//			private var _editable:Boolean;
 
 			/**
 			 * flag to know if the content page was changed or not - so we save playlist rendering after each change
@@ -314,19 +317,6 @@
 				fullUiconfGet.addEventListener(KalturaEvent.FAILED, fault);
 				Studio.kc.post(fullUiconfGet)
 			}
-
-
-//			/**
-//			 * load data of an existing player
-//			 * @param playerId	id of player to load data for
-//			 * */
-//			private function loadPlayerInstance(playerId:String):void {
-//				cursorManager.setBusyCursor();
-//				var uiconfGet:UiConfGet = new UiConfGet(int(playerId));
-//				uiconfGet.addEventListener(KalturaEvent.COMPLETE, onfullPlayerUiConfLoaded);
-//				uiconfGet.addEventListener(KalturaEvent.FAILED, fault);
-//				applicationstudio.kc.post(uiconfGet);
-//			}
 
 
 			/**
@@ -921,8 +911,6 @@
 			}
 
 
-
-
 			/**
 			 * list of tabs to remove from the drilldown window, separated by ",".
 			 * */
@@ -947,6 +935,7 @@
 			public function get hideTabs():String {
 				return '';
 			}
+
 		]]>
 	</mx:Script>
 	<mx:TabBar id="linkDtn" width="140" dataProvider="{wizardViewStack}" direction="vertical" styleName="dtn"
@@ -956,38 +945,36 @@
 		<mx:HBox width="{workaroundContainer.width}" height="{workaroundContainer.height}" horizontalGap="0"
 				 backgroundColor="#f7f7f7" backgroundAlpha="1">
 			<mx:ViewStack id="wizardViewStack" width="100%" resizeToContent="true" styleName="plstBoxCont"
-						  creationPolicy="all"
-						  change="resizeWizardViewStack(event)" selectedIndex="{linkDtn.selectedIndex}">
-				<wv:ApsWizTemplate id="templatePage" height="100%"
-										   label="{resourceManager.getString('aps','template')}"
-										   alertUser="{alertUser(event)}"/>
+						  creationPolicy="all" change="resizeWizardViewStack(event)"
+						  selectedIndex="{linkDtn.selectedIndex}">
+				<wv:ApsWizTemplate id="templatePage" height="100%" label="{resourceManager.getString('aps','template')}"
+								   alertUser="{alertUser(event)}"/>
 
 				<wv:ApsWizFeatures id="featurePage" height="{previewPlayerPage.height - 35}"
-										   refreshKdp="onFeatureChanged()" playerUiconfVo="{_playerUiConfVO}"
-										   label="{resourceManager.getString('aps','featureTab')}"
-										   alertUser="{alertUser(event)}"/>
+								   refreshKdp="onFeatureChanged()" playerUiconfVo="{_playerUiConfVO}"
+								   label="{resourceManager.getString('aps','featureTab')}"
+								   alertUser="{alertUser(event)}"/>
 
 				<wv:ApsWizAdvertizing id="advertizingPage" playerUiconfVo="{_playerUiConfVO}"
-											  label="{resourceManager.getString('aps','advertising')}"/>
+									  label="{resourceManager.getString('aps','advertising')}"/>
 
 				<wv:ApsWizStyle id="stylePage" height="100%" refreshKdp="onFeatureChanged()"
-										label="{resourceManager.getString('aps','style')}"/>
+								label="{resourceManager.getString('aps','style')}"/>
 
-				<wv:ApsWizardContent id="contentPage" height="100%" width="100%"
-											 creationComplete="{onContentCreationComplete()}" verticalAlign="top"
-											 horizontalAlign="center" groupPlaylistChange="onContentGroupChange()"
-											 isSingleContent="{_playerUiConfVO.isSinglePlaylist}" ks="{_context.ks}"
-											 uid="{_context.uid}" partnerId="{_context.partner_id}"
-											 label="{resourceManager.getString('aps','content')}"
-											 alertUser="{alertUser(event)}"/>
+				<wv:ApsWizardContent id="contentPage" height="100%" width="100%" 
+									 creationComplete="{onContentCreationComplete()}" verticalAlign="top"
+									 horizontalAlign="center" groupPlaylistChange="onContentGroupChange()"
+									 isSingleContent="{_playerUiConfVO.isSinglePlaylist}" ks="{_context.ks}"
+									 uid="{_context.uid}" partnerId="{_context.partner_id}" 
+									 label="{resourceManager.getString('aps','content')}" alertUser="{alertUser(event)}"/>
 			</mx:ViewStack>
 			<wv:ApsWizPreviewPlayer id="previewPlayerPage" autoPreviewChanged="onAutoPreviewChanged()"
-											firstTimeLoad="onFirstTimeLoaded()" finishLoading="onFinishLoading()"
-											alertUser="{alertUser(event)}" visible="false" includeInLayout="false"
-											height="100%" width="100%" context="{_context}" content="{media}"
-											playerUiConfVo="{_playerUiConfVO}" openPreview="openPreview()"
-											closePreview="closePreview()" verticalAlign="top" horizontalAlign="left"
-											styleName="plstBoxCont"/>
+									firstTimeLoad="onFirstTimeLoaded()" finishLoading="onFinishLoading()"
+									alertUser="{alertUser(event)}" visible="false" includeInLayout="false" height="100%"
+									width="100%" context="{_context}" content="{media}"
+									playerUiConfVo="{_playerUiConfVO}" openPreview="openPreview()"
+									closePreview="closePreview()" verticalAlign="top" horizontalAlign="left"
+									styleName="plstBoxCont"/>
 		</mx:HBox>
 	</mx:Canvas>
 	<mx:ControlBar id="contBar" width="100%">

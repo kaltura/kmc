@@ -40,6 +40,11 @@
 			private var _lastNumeric:NumericStepper;
 			private var _lastInput:TextInput;
 			private var _inputTimer:Timer;
+			
+			[Bindable]
+			private var _editable:Boolean = true;
+			
+			
 
 			private function onCreationComplete():void {
 				_numericTimer = new Timer(400, 1);
@@ -111,28 +116,39 @@
 			}
 
 
-			private function addFormControllers(stractureXml:XML, parentComponent:UIComponent = null):void {
-				var children:XMLList = stractureXml.children();
+			/**
+			 * build the form recoursively.
+			 * @param structureXml form description
+			 * @param parentComponent	the component to which we add the new components.
+			 * */
+			private function addFormControllers(structureXml:XML, parentComponent:UIComponent = null):void {
+				var children:XMLList = structureXml.children();
 				var xml:XML;
 				var uiComponent:UIComponent;
 
 				for (var i:uint = 0; i < children.length(); i++) {
 					xml = XML(children[i]);
 					uiComponent = factoryUiComponents(xml, parentComponent);
-					// manage only components that have id
+					
+					// manage only components that have id (not labels, spacers, etc)
 					if (xml.@id.toString() != "") {
 						_componentsArray.push(new ApsOptionItemVo(xml, xml.name().toString(), uiComponent, xml.@id.toString()));
 					}
+					// add the component to the form
 					if (uiComponent != null)
 						featureForm.addChild(uiComponent);
+					
 					if (xml.name().toString() == "CheckBox") {
+						// add sub-checkboxes 
 						if (xml.children().length() > 0) {
 							addFormControllers(xml, uiComponent);
 						}
 					}
-					if (xml.@enabled.toString() == "false") {
+					
+					if (xml.@enabled.toString() == "false" || !_editable) {
 						uiComponent.enabled = false;
 					}
+					
 					if (xml.@aps_visible.toString() == "false") {
 						uiComponent.visible = false;
 						uiComponent.includeInLayout = false;
@@ -378,19 +394,30 @@
 				_componentsArray = new Array();
 				applyBtn.removeEventListener(MouseEvent.CLICK, saveFeature);
 			}
+
+			
+			public function get editable():Boolean
+			{
+				return _editable;
+			}
+
+			public function set editable(value:Boolean):void
+			{
+				_editable = value;
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Metadata>
 		[Event(name="savedFeature", type="flash.events.Event")] 
 	</mx:Metadata>
 
-
-	<mx:VBox id="featureForm" width="100%" backgroundColor="#f7f7f7" verticalGap="3">
-	</mx:VBox>
+	<!--- a box that holds all components of the form -->
+	<mx:VBox id="featureForm" width="100%" backgroundColor="#f7f7f7" verticalGap="3" />
 	<mx:Spacer height="20"/>
 	<mx:HRule width="90%"/>
 	<mx:HBox id="buttonsContainer">
-		<mx:Button id="applyBtn" label="Apply" buttonMode="true"/>
+		<mx:Button id="applyBtn" label="Apply" buttonMode="true" visible="{_editable}" includeInLayout="{_editable}"/>
 		<mx:Button id="cancelBtn" label="Cancel" buttonMode="true"/>
 	</mx:HBox>
 </mx:VBox>

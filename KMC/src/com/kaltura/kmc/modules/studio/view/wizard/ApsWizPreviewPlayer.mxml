@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
-		 horizontalAlign="center" creationComplete="onCreationComplete()"
-		 xmlns:view="com.kaltura.kmc.modules.studio.view.*" >
+		 xmlns:view="com.kaltura.kmc.modules.studio.view.*"
+		 horizontalAlign="center" disabledOverlayAlpha="0"
+		 creationComplete="onCreationComplete()">
 	
 	<mx:Metadata>
 		[Event(name="finishLoading", type="flash.events.Event")] 
@@ -240,6 +241,7 @@
 				
 				kdp3Loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
 				kdp3Loader.loaderInfo.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
+				kdp3Loader.content.addEventListener(Event.RESIZE, stopPropagation);
 				kdp3Loader.content.addEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
 				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
 				kdp3Loader.content.addEventListener(KdpEventTypes.KDP_READY, onKDPReady);
@@ -259,6 +261,9 @@
 					dispatchEvent(new Event(PREVIEW_PLAYER_READY));
 			}
 
+			private function stopPropagation(e:Event):void {
+				e.stopImmediatePropagation();
+			}
 			
 			/**
 			 * handles KDP errors - tells user to fix additional parameters
@@ -335,14 +340,13 @@
 			}
 		]]>
 	</mx:Script>
-
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Button id="openClosePreview" styleName="closePreview" click="toggolePreview()" buttonMode="true"/>
 		<mx:Label text="{resourceManager.getString('aps','preview')}" styleName="pageTitle"/>
 		<mx:Spacer width="100%"/>
 	</mx:HBox>
 
-	<mx:VBox>
+	<mx:VBox id="controls" disabledOverlayAlpha="0">
 		<mx:HBox id="resizeContainer">
 			<mx:Label text="{resourceManager.getString('aps','playerSize')}"/>
 			<mx:NumericStepper id="kdpWidth" width="60" value="500" maximum="2300" minimum="100"/>

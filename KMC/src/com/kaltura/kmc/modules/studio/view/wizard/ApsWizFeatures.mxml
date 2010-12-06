@@ -5,7 +5,8 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
 		   xmlns:wizardCode="com.kaltura.kmc.modules.studio.business.wizard.*"
 		   xmlns:wizardView="com.kaltura.kmc.modules.studio.view.wizard.*"
-		   height="100%" width="100%" horizontalScrollPolicy="off" >
+		   height="100%" width="100%" horizontalScrollPolicy="off"
+		   disabledOverlayAlpha="0">
 	
 	<mx:Metadata>
 		[Event(name="alertUser", type="flash.events.ErrorEvent")]
@@ -33,9 +34,14 @@
 			private var _featuresXML:XML;
 			private var _screenAsset:XML;
 			private var _playerUiconfVo:PlayerUiConfVo;
-			private var _ir:XML;
-			private var _irCopy:XML;
+			private var _itemRenderer:XML;
 			private var _selectedFeatureData:XML = null;
+			
+			/**
+			 * @copy #editable
+			 * */
+			private var _editable:Boolean;
+			
 			
 			/**
 			 * The constant defines the value of the type property of a refreshKdp event object.
@@ -44,7 +50,8 @@
 
 			
 			/**
-			 * Add or remove a feature. This function is called when a features checkbox is being changed
+			 * Add or remove a feature. 
+			 * This function is called when a features checkbox is being changed.
 			 */
 			private function enableDisableFeature(evt:ApsFeatureEvent):void {
 				var ftName:String = _selectedFeatureData.@id.toString();
@@ -58,9 +65,9 @@
 				if (xmlIdToGet) {
 					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
 					var irScreenXML:XML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
-					ir = irScreenXML;
+					itemRenderer = irScreenXML;
 					var disabledFeaturesIds:XMLList = featuresListCollection.source.(attribute("selected") == "false").@id;
-					var irCopy:XML = new XML(_ir);
+					var irCopy:XML = new XML(_itemRenderer);
 					var irCopyDecendants:XMLList = irCopy.descendants();
 					for each (var disabledFeatureId:String in disabledFeaturesIds) {
 						var disabledFeatureIdManipulated:String = disabledFeatureId + "IrScreen";
@@ -83,10 +90,13 @@
 			}
 
 
+			/**
+			 * Open the options screen with data relevant to the selected feature.
+			 * In response to click on the "options" button
+			 * */
 			private function openOptionScreen(evt:ApsFeatureEvent):void {
 				featureScreen.initFeature(_selectedFeatureData as XML);
 
-				featureScreen.dispose();
 				featureScreen.featureFormXML = _selectedFeatureData;
 
 				var xmlIdToGet:String = featureScreen.featureFormXML.(attribute("customXmlId"));
@@ -100,12 +110,6 @@
 			}
 
 
-//			public function onUpdatedPrefix(evt:ApsPrefixEvent):void {
-//				var prefix:String = evt.data.prefix;
-//				var featureName:String = evt.data.featureName;
-//				var myFeatureXml:XML = evt.data.featureXML;
-//			}
-
 
 			/**
 			 * validate data in this panel: </br>
@@ -117,6 +121,10 @@
 			}
 
 
+			/**
+			 * create the contents of the accordion according to the features list
+			 * @param featuresXML features file contents.
+			 * */
 			public function setFeatureList(featuresXML:XML):void {
 				_featuresXML = featuresXML;
 				featuresListCollection.source = featuresXML..feature;
@@ -127,6 +135,7 @@
 				var boxedList:BoxedList;
 				for (var i:int = 0; i < lc.length; i++) {
 					showCheckbox = lc[i].attribute("showCheckbox").toString();
+					lc[i].@rpEnabled = _editable.toString();
 					if (showCheckbox == "false") {
 						//if this is not the first loop
 						if (currentFeatureXML) {
@@ -141,7 +150,7 @@
 						boxedList.percentWidth = 100;
 						boxedList.styleName = "accordiContainer";
 						boxedList.label = lc[i].attribute("featureLabel").toString();
-						boxedList.addEventListener(FlexEvent.CREATION_COMPLETE, boxedListCreationCompleate);
+						boxedList.addEventListener(FlexEvent.CREATION_COMPLETE, addBboxedListListeners);
 						accordi.addChild(boxedList);
 					}
 					else {
@@ -157,6 +166,10 @@
 			}
 
 
+			/***
+			 * add the "features that require additional config" label 
+			 * at the bottom of the box 
+			 * */
 			private function addLblToEndOfTheList(currentBoxedList:BoxedList):void {
 				var lbl:Label = new Label();
 				lbl.text = resourceManager.getString('aps', 'additionalConfig');
@@ -164,7 +177,10 @@
 			}
 
 
-			private function boxedListCreationCompleate(event:Event):void {
+			/**
+			 * add listeners to the list
+			 * */
+			private function addBboxedListListeners(event:Event):void {
 				var boxedList:BoxedList = event.target as BoxedList;
 				boxedList.bList.styleName = "accordionList";
 				boxedList.bList.addEventListener(ApsFeatureEvent.FEATURE_DISELECTED, enableDisableFeature);
@@ -174,6 +190,9 @@
 			}
 
 
+			/**
+			 * remember the selected feature from the list.
+			 * */
 			private function setSelectedFeature(event:ListEvent):void {
 				_selectedFeatureData = (event.target as List).selectedItem as XML;
 			}
@@ -182,10 +201,9 @@
 			/**
 			 * this allows to set the ir xml only once
 			 * */
-			private function set ir(xml:XML):void {
-				if (!_ir) {
-					_ir = xml;
-					_irCopy = xml;
+			private function set itemRenderer(xml:XML):void {
+				if (!_itemRenderer) {
+					_itemRenderer = xml;
 				}
 			}
 
@@ -287,6 +305,24 @@
 				}
 				return kvXml;
 			}
+
+			[Bindable]
+			/**
+			 * is the form editable or view only 
+			 */
+			public function get editable():Boolean
+			{
+				return _editable;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set editable(value:Boolean):void
+			{
+				_editable = value;
+			}
+
 		]]>
 	</mx:Script>
 
@@ -301,10 +337,10 @@
 		</mx:VBox>
 	</mx:HBox>
 	<mx:XMLListCollection id="featuresListCollection"/>
-	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%"
+	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%" editable="{editable}"
 									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));"/>
 	<mx:VBox id="keyValueBox" visible="false" width="100%" height="90%" paddingLeft="5" paddingRight="5"
-			 horizontalScrollPolicy="off" includeInLayout="false">
+			 horizontalScrollPolicy="off" includeInLayout="false" disabledOverlayAlpha="0" enabled="{editable}">
 		<mx:Spacer height="10"/>
 		<mx:Text width="100%" selectable="false" text="{ResourceManager.getInstance().getString('aps','addMoreParam')}"/>
 		<mx:Text text="{ResourceManager.getInstance().getString('aps','pastePluginLine')}" width="100%"/>
