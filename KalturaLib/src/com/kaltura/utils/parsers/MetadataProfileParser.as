@@ -184,55 +184,70 @@ package com.kaltura.utils.parsers
 			var xPathRoot:String = buildXpath(root.@name);
 			var	elements:XMLList = root.children()[0].children()[0].children();
 			for each (var element:XML in elements) {
-				var field:MetadataFieldVO = new MetadataFieldVO(element.@id);
-				field.name = element.@name;
-				field.maxNumberOfValues = element.@maxOccurs == XSDConstants.MAX_OCCURS_SINGLE? 
-					MetadataCustomFieldMaxOcuursTypes.SINGLE : MetadataCustomFieldMaxOcuursTypes.UNBOUND;
-				field.type = setFieldType(element.@type);
-				field.xpath = xPathRoot + buildXpath(element.@name); 
-				
-				var appInfo:XMLList = element.children()[0].children();
-				
-				for each (var info:XML in appInfo) {
-					var childsName:String = info.localName();
-					if (childsName =="documentation") {
-						field.fullDescription = info.text();
-					}
-					else {
-						for each (var node:XML in info.children()) {
-							var name:String = node.name();
-							switch (name) {
-								case "label":
-									field.displayedLabel = node.text();
-								case "key":
-									field.defaultLabel = node.text();
-									break;
-								case "searchable":
-									field.appearInSearch = node.text() == "true";
-									break;
-								case "description":
-									field.description = node.text();
-									break;
-							}
-						}
-					}
-				}
-				//checking for restrictions
-				if (field.type == MetadataCustomFieldTypes.LIST) {
-					var children:XMLList = element.children();
-					if (children.length()>1) {
-						var enumerations:XMLList = children[1].children()[0].children();
-						for each (var enum:XML in enumerations) {
-							var newEnum:String = enum.@value;
-							field.optionalValues.push(newEnum);
-						}
-					}
-				}
-
-				fieldsArray.addItem(field);	
+				fieldsArray.addItem(fromXSDToField(element, xPathRoot));	
 			}
 			
 			return fieldsArray;
+		}
+		
+		private static function fromXSDToField(element:XML, xPathRoot:String):MetadataFieldVO {
+			
+			var field:MetadataFieldVO = new MetadataFieldVO(element.@id);
+			field.name = element.@name;
+			field.maxNumberOfValues = element.@maxOccurs == XSDConstants.MAX_OCCURS_SINGLE? 
+				MetadataCustomFieldMaxOcuursTypes.SINGLE : MetadataCustomFieldMaxOcuursTypes.UNBOUND;
+			field.type = setFieldType(element.@type);
+			field.xpath = xPathRoot + buildXpath(element.@name); 
+			
+			var appInfo:XMLList = element.children()[0].children();
+			
+			for each (var info:XML in appInfo) {
+				var childsName:String = info.localName();
+				if (childsName =="documentation") {
+					field.fullDescription = info.text();
+				}
+				else {
+					for each (var node:XML in info.children()) {
+						var name:String = node.name();
+						switch (name) {
+							case "label":
+								field.displayedLabel = node.text();
+							case "key":
+								field.defaultLabel = node.text();
+								break;
+							case "searchable":
+								field.appearInSearch = node.text() == "true";
+								break;
+							case "description":
+								field.description = node.text();
+								break;
+						}
+					}
+				}
+			}
+			var children:XMLList = element.children();
+			if (children.length()>1) {
+				//nested elments
+				if (XML(children[1]).name().localName == XSDConstants.COMPLEX_TYPE) {
+					var sequence:XML = children[1].children()[0];
+					if (sequence.name().localName == XSDConstants.SEQUENCE_TYPE) {
+						for each (var nestedElement:XML in sequence.children()) {
+							var nestedField:MetadataFieldVO = fromXSDToField(nestedElement, field.xpath);
+							field.nestedFieldsArray.addItem(nestedField);
+						}
+					}
+				}
+				else if (field.type == MetadataCustomFieldTypes.LIST) {
+					var enumerations:XMLList = children[1].children()[0].children();
+					for each (var enum:XML in enumerations) {
+						var newEnum:String = enum.@value;
+						field.optionalValues.push(newEnum);
+					}
+				}
+				
+			}
+			
+			return field;
 		}
 		
 		/**

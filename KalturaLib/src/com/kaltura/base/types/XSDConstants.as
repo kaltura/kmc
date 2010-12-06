@@ -10,6 +10,8 @@ package com.kaltura.base.types
 		public static const XSD_STRING_TYPE:String = "xsd:string";
 		public static const XSD_LONG_TYPE:String = "xsd:long";
 		
+		public static const COMPLEX_TYPE:String = "complexType";
+		public static const SEQUENCE_TYPE:String = "sequence";
 		public static const TEXT_TYPE:String = "textType";
 		public static const DATE_TYPE:String = "dateType";
 		public static const LIST_TYPE:String = "listType";

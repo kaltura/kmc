@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.kaltura.vo
 {
 	import com.adobe.cairngorm.vo.IValueObject;
-
+	import mx.collections.ArrayCollection;
 	/**
 	 *	This class represents a custom metadata field 
 	 * @author Michal
@@ -43,6 +43,7 @@ package com.kaltura.vo
 		public var fullDescription:String = "";
 		public var description:String = "";
 		public var xpath:String = "";
+		public var nestedFieldsArray:ArrayCollection;
 		
 		/**
 		 * Constructs a new MetadataFieldVO 
@@ -52,6 +53,7 @@ package com.kaltura.vo
 		public function MetadataFieldVO (id:String):void
 		{
 			this.id = id;
+			nestedFieldsArray = new ArrayCollection();
 		}
 		
 		public function Clone():MetadataFieldVO {
@@ -65,6 +67,7 @@ package com.kaltura.vo
 			newField.fullDescription = this.fullDescription;
 			newField.description = this.description;
 			newField.xpath = this.xpath;
+			newField.nestedFieldsArray = new ArrayCollection(this.nestedFieldsArray.source.concat());
 
 			var newValues:Array = new Array();
 			for each (var value:String in this.optionalValues) {
