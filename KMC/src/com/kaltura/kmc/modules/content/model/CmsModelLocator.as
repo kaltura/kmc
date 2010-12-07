@@ -85,12 +85,6 @@ package com.kaltura.kmc.modules.content.model {
 		
 		
 		/**
-		 * defines the second level navigation in <code>Content.secTln</code>. 	<br>
-		 * values are hardcoded in the constructor.
-		 * */
-		public var tabsData:TabsData = new TabsData();
-		
-		/**
 		 * the data being presented on the current screen,
 		 * makes it easier to share data across screens (?)
 		 * */
