@@ -57,6 +57,7 @@ package com.kaltura.kmc.modules.account.model
 		//Flags 
 		public var devFlag : Boolean = false;
 		public var loadingFlag : Boolean = false;
+		public var customDataDisabled : Boolean = false;
 		public var partnerInfoLoaded : Boolean = false;
 		public var openPayPalWindowFlag : Boolean = false; 
 		public var saveAndExitFlag : Boolean = false;

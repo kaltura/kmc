@@ -70,6 +70,11 @@ package com.kaltura.kmc.modules.account.command
 
 					_model.metadataProfile = metadataProfile;
 				}
+				//custom profile
+				else {
+					_model.customDataDisabled = true;
+					
+				}
 			} 
 		}
 		
