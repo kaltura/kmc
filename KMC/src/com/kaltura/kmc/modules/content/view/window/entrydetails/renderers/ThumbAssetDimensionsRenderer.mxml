@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+
+
+			private var _width:int;
+			private var _height:int;
+			[Bindable]
+			private var _dimensionsString:String;
+			
+			override public function set data(value:Object):void {
+				var thumbDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				_width = thumbDimensions.width;
+				_height = thumbDimensions.height;
+				_dimensionsString = getDimensionsString();
+			}
+			
+			private function getDimensionsString():String {
+				return (_width + " X " + _height);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="{_dimensionsString}"/>
+</mx:HBox>

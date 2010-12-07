@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var _distributionProfilesListString:String;
+			
+			override public function set data(value:Object):void {
+				var thumbWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				_distributionProfilesListString = getDistributionsListString(thumbWithDimensions.usedDistributionProfilesArray);
+			}
+			
+			private function getDistributionsListString(distributionsArray:Array):String {
+				if (!distributionsArray)
+					return "";
+				var distributionsList:String = distributionsArray.join(",");
+				return distributionsList;
+			}
+		]]>
+	</mx:Script>
+	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{_distributionProfilesListString}"/>
+	
+</mx:HBox>

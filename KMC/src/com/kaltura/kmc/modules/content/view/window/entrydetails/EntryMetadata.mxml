@@ -22,6 +22,7 @@
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KTimeUtil;
@@ -334,9 +335,9 @@
 			/**
 			 * Mix action - create a mix from this entry or open editor
 			 */
-			private function mix(mediaType:String, type:int, editorType:int):void {
+			private function mix(mediaType:String, type:String, editorType:int):void {
 				dispatchEvent(new Event(EntryMetadata.UNTRACKABLE_CHANGE));
-				if (type == 2) {
+				if (type == KalturaEntryType.MIX) {
 					//this is a mix
 					var mixEditorType:String = (selectedEntry as KalturaMixEntry).editorType.toString();
 					// arguments: entryId, name , editorType , isNewMix (true: create a mix and then
@@ -405,8 +406,8 @@
 			/**
 			 * return a matching value - to edit current mix or create a new mix from this entry
 			 */
-			private function labelMix(mediaType:String, type:int):String {
-				if (type == 2) {
+			private function labelMix(mediaType:String, type:String):String {
+				if (type == KalturaEntryType.MIX) {
 					return resourceManager.getString('cms', 'editmix');
 				}
 				switch (mediaType) {
@@ -449,18 +450,18 @@
 			 * @param mediaType
 			 * @param type - special param for mix since mix is type 2 and other types are type 1 with different mediaTypes
 			 */
-			private function getMediaTypes(mediaType:String, type:int):String {
-				if (type == 2) {
+			private function getMediaTypes(mediaType:String, type:String):String {
+				if (type == KalturaEntryType.MIX) {
 					return resourceManager.getString('cms', 'videoMix');
 				}
 				switch (mediaType) {
-					case "1":
+					case KalturaMediaType.VIDEO:
 						return resourceManager.getString('cms', 'video');
 						break;
-					case "2":
+					case KalturaMediaType.IMAGE:
 						return resourceManager.getString('cms', 'image');
 						break;
-					case "5":
+					case KalturaMediaType.AUDIO:
 						return resourceManager.getString('cms', 'audio');
 						break;
 					case "6":

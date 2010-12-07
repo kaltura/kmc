@@ -39,5 +39,15 @@ package com.kaltura.kmc.modules.content.model
 		 * uiconf used with metadata
 		 * */
 		public var metadataDefaultUiconf:int;
+		
+		
+		/**
+		 * TODO: change later to arrive from permissions!!!!!!!!!
+		 * */
+		public var enableDistribution:Boolean = true;
+		
+		public var listDistributionProfilesRequired:Boolean = true;
+		
+		public var distributionProfileInfo:DistributionProfileInfo = new DistributionProfileInfo();
 	}
 }

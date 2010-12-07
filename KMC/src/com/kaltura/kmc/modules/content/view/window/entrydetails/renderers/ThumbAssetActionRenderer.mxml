@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			[Bindable]
+			private var _thumbAssetId:String;
+			
+			override public function set data(value:Object):void {
+				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				if (thumbsWithDimensions.thumbAsset)
+					_thumbAssetId = thumbsWithDimensions.thumbAsset.id;
+			}
+			
+
+			protected function setDefaultClickHandler(event:MouseEvent):void
+			{
+				var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, _thumbAssetId);
+				setDefaultEvent.dispatch();
+			}
+
+			protected function deleteClickHandler(event:MouseEvent):void
+			{
+				var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAssetId);
+				deleteThumbEvent.dispatch();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{(_thumbAssetId!=null)}"/>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(_thumbAssetId!=null)}"/>	
+</mx:VBox>

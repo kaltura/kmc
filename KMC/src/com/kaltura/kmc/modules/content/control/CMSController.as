@@ -116,6 +116,13 @@ package com.kaltura.kmc.modules.content.control
 			//metadata Events
 			addCommand(MetadataProfileEvent.LIST, ListMetadataProfileCommand);
 			addCommand(MetadataDataEvent.LIST, ListMetadataDataCommand);
+			
+			//distribution
+			addCommand(DistributionProfileEvent.LIST, ListDistributionProfilesCommand);
+			//thumb asset
+			addCommand(ThumbnailAssetEvent.LIST, ListThumbnailAssetCommand);
+			//addCommand(ThumbnailAssetEvent.DELETE, DeleteThumbnailAssetCommand);
+			//addCommand(ThumbnailAssetEvent.SET_AS_DEFAULT, SetDefaultThumbnailAssetCommand);
 		}
 	}
 }
