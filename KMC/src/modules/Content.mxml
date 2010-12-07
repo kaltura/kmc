@@ -22,6 +22,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
@@ -68,6 +69,7 @@
 			import mx.events.IndexChangedEvent;
 			import mx.managers.CursorManager;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 			import mx.utils.Base64Decoder;
 
 			private static const VERSION:String = "4";
@@ -198,9 +200,6 @@
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 				
-				
-				//permissionManager.applyAllAttributes(this,NAME);
-				
 			}
 			
 
@@ -242,6 +241,12 @@
 					// get the entry
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _attic.entryid);
 					cgEvent.dispatch();
+				}
+				
+				// roles and permissions 
+				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
+				for each (var subtabName:String in tabsToHide) {
+					contentView.removeChild(this[subtabName]);
 				}
 			}
 			
@@ -869,7 +874,7 @@
 
 		<mx:HBox width="100%" styleName="tabsContainer">
 			<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
-					   dataProvider="{_model.tabsData.contentTabs}">
+					   dataProvider="{contentView}">
 			</mx:TabBar>
 			<mx:Spacer width="100%"/>
 			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
@@ -878,16 +883,21 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
-							 filterModel="{_model.filterModel}"/>
+							 filterModel="{_model.filterModel}"
+							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"/>
 			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"
 								selectedEntry="{_model.entryDetailsModel.selectedEntry}"
-								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"/>
+								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
+								label="{ResourceManager.getInstance().getString('cms','moderation')}"/>
 			<playlist:Playlist id="playlists" width="100%" styleName="pageStyle"
-							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"/>
+							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
 			<content:ExternalSyndication id="syndication" styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
-										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
+										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
+										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
 			<content:BulkUpload id="upload" width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"
-								bulkUploadData="{_model.bulkUploadModel}"/>
+								bulkUploadData="{_model.bulkUploadModel}"
+								label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"/>
 		</mx:ViewStack>
 	</mx:VBox>
 </modules:KmcModule>
