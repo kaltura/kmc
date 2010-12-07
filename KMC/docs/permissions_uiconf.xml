@@ -83,6 +83,7 @@
 				<ui id="content.syndication.deleteExSynBtn" visible="false" />
 			</permission>
 		</permissionGroup>
+		
 		<!-- Studio -->
 		<permissionGroup text="Studio" id="STUDIO_BASE">
 			<permission text="create player" id="STUDIO_ADD_UICONF">
@@ -129,9 +130,15 @@
 		</permissionGroup>
 		<!-- Access control settings -->
 		<permissionGroup text="Access control settings" id="ACCESS_CONTROL_BASE">
-			<permission text="Create" id="ACCESS_CONTROL_ADD"></permission>
-			<permission text="modify" id="ACCESS_CONTROL_UPDATE"></permission>
-			<permission text="delete" id="ACCESS_CONTROL_DELETE"></permission>
+			<permission text="Create" id="ACCESS_CONTROL_ADD">
+				<ui id="account.accessControl.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="ACCESS_CONTROL_UPDATE">
+				<ui id="acDrilldown" editable="false" />
+			</permission>
+			<permission text="delete" id="ACCESS_CONTROL_DELETE">
+				<ui id="account.accessControl.deleteProfilesBtn" visible="false" />
+			</permission>
 		</permissionGroup>
 		<!-- Transcoding settings -->
 		<permissionGroup text="Transcoding settings" id="TRANSCODING_BASE">
@@ -168,29 +175,58 @@
 	
 	<uimapping>
 		<module id="content">
-			<tab id="upload">
-				<permission id="CONTENT_INGEST_UPLOAD"/>
-				<permission id="CONTENT_INGEST_BULK_UPLOAD"/>
+			<tab id="moderation">
+				<permission id="CONTENT_MODERATE_BASE"/>
+				<permission id="CONTENT_MODERATE_METADATA"/>
+			</tab>
+			<tab id="playlists">
+				<permission id="PLAYLIST_BASE"/>
+				<permission id="PLAYLIST_ADD"/>
+				<permission id="PLAYLIST_UPDATE"/>
+				<permission id="PLAYLIST_DELETE"/>
 			</tab>
 			<tab id="syndication">
+				<permission id="SYNDICATION_BASE"/>
 				<permission id="SYNDICATION_ADD"/>
 				<permission id="SYNDICATION_UPDATE"/>
 				<permission id="SYNDICATION_DELETE"/>
 			</tab>
+			<tab id="upload">
+				<permission id="CONTENT_INGEST_BASE"/>
+				<permission id="CONTENT_INGEST_UPLOAD"/>
+				<permission id="CONTENT_INGEST_BULK_UPLOAD"/>
+			</tab>
+		</module>
+		<module id="studio">
+			<permission id="STUDIO_BASE"/>
+			<permission id="STUDIO_ADD_UICONF"/>
+			<permission id="STUDIO_UPDATE_UICONF"/>
+			<permission id="STUDIO_DELETE_UICONF"/>
+			<permission id="ADVERTISING_UPDATE_SETTINGS"/>
 		</module>
 		<module id="analytics">
-			<permission id="44"/>
+			<permission id="ANALYTICS_BASE"/>
+		</module>
+		<module id="account">
+			<tab id="overview">
+				<permission id="ACCOUNT_BASE"/>
+				<permission id="ACCOUNT_UPDATE_SETTINGS"/>
+			</tab>
+			<tab id="integration">
+				<permission id="INTEGRATION_BASE"/>
+				<permission id="INTEGRATION_UPDATE_SETTINGS"/>
+			</tab>
 		</module>
 		<!-- this module requres 4 of 5 boxes -->
 		<module id="dashboard" min="4">
 			<!-- embed player -->
 			<permission id="13"/>
 			<!-- studio permission -->
-			<permission id="23"/>
+			<permission id="STUDIO_BASE"/>
 			<!-- analytics permission -->
-			<permission id="44"/>
+			<permission id="ANALYTICS_BASE"/>
 			<!-- upload permission -->
-			<permission id="2"/>
+			<permission id="CONTENT_INGEST_BASE"/>
 			<!-- account and billing permission -->
 			<permission id="32"/>
 		</module>

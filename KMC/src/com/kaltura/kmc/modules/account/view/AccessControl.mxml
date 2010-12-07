@@ -20,7 +20,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.AccessControlProfileVO;
-			import com.kaltura.windows.popUpWindows.AccessControlProfilePopUpWindow;
+			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -123,14 +123,25 @@
 		private function onAddNewProfileClick(event:Event):void
 		{
 			var addNewProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
+//			addNewProfileWin.addEventListener(FlexEvent.CREATION_COMPLETE, setPermissions);
 			addNewProfileWin.rootUrl = rootUrl;
 			addNewProfileWin.currentState = 'newProfileState';
+			
 			PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
 			PopUpManager.centerPopUp(addNewProfileWin);
 			
 			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc );
 			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc );
 			
+		}
+			
+		/**
+		 * run the permissions manager.
+		 * this is done here and not inside because the popup class is from kalturalib
+		 * and therefore doesn't know the permissions manager.
+		 * */
+		private function setPermissions(e:Event):void {
+			PermissionManager.getInstance().applyAllAttributes(e.target, "acDrilldown");
 		}
 			
 		private function saveUpdatedProfileFunc(event:Event):void
@@ -245,7 +256,7 @@
 
 		]]>
 	</mx:Script>
-	 <mx:Text styleName="expendableButton" text="{resourceManager.getString('account','accessControlProfiles')}" />
+	<mx:Text styleName="expendableButton" text="{resourceManager.getString('account','accessControlProfiles')}" />
 	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10">
 		<mx:Text styleName="featureDescriptionTitleText" text="{resourceManager.getString('account','accessControlIntroText')}" width="100%" id="accessControlIntroText"/>
 		<mx:Button styleName="help" buttonMode="true" 

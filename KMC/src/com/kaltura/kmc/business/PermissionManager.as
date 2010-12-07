@@ -4,6 +4,8 @@ package com.kaltura.kmc.business
 	import com.kaltura.utils.CastUtil;
 	
 	import flash.utils.describeType;
+	
+	import mx.events.IndexChangedEvent;
 
 	/**
 	 * This class will apply all permission to the UI by receiving a target screen to work with, 
@@ -35,15 +37,29 @@ package com.kaltura.kmc.business
 		{
 			_permissionXml = permissionXml.copy();
 			var allRolePermissions:Array =  rolePermissions.split(",");
-			// remove from permissions list the granted permissions ids and leave the once that 
-			// are forbidden 
+			// remove from permissions list the granted permissions and leave the ones that are forbidden.
+			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "")
 			{
 				for each (var permission:String in allRolePermissions)
 				{
-					delete _permissionXml..descendants().(attribute("id") == permission)[0] ;
+					if ((_permissionXml.permissions..descendants().(attribute("id") == permission)[0] as XML).localName() == "permissionGroup")
+					{
+						// if we move groups now we will actually remove permissions we need
+						continue;	
+					}
+					delete _permissionXml.permissions..descendants().(attribute("id") == permission)[0] ;
 				}
 			}
+			
+			//TODO scan permissionGroups that need to be removed and remove them if they are empty
+			
+			// we want to keep these groups:
+			var lst:XMLList = _permissionXml.permissions.permissionGroup.(children().length() > 0 || rolePermissions.indexOf(@id) == -1);
+			delete _permissionXml.permissions[0];
+			
+			_permissionXml.appendChild(XML(<permissions/>).appendChild(lst));
+			
 			
 			var permissionParser:PermissionsParser = new PermissionsParser();
 			_instructionVos = permissionParser.parsePermissions(_permissionXml);
@@ -116,15 +132,6 @@ package com.kaltura.kmc.business
 			else {
 				chain = compoentPath.split(".");
 			}
-//			var chainWithoutPrefix:Array = compoentPath.split(startComponent["id"]);
-//			// isolate all items after the correct item 
-//			if (chainWithoutPrefix.length > 1) {
-//				// - drop everything before
-//				chainWithoutPrefix.shift();
-//			}
-			// if length == 1 we have a path starting from the middle, like drilldown windows.
-			
-//			var chain:Array = chainWithoutPrefix.join().split(".");
 			//create the new chain without the dots 
 			var o:Object = startComponent;
 			if (o.id != chain[0]) {

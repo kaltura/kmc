@@ -22,7 +22,7 @@ package com.kaltura.kmc.business {
 		 */
 		public function parsePermissions(xml:XML):Array {
 			var array:Array = new Array();
-			var allPermissions:XMLList = xml..permission;
+			var allPermissions:XMLList = xml.permissions..permission;
 			for each (var permission:XML in allPermissions) {
 				array = array.concat(getInstructions(permission));
 			}
