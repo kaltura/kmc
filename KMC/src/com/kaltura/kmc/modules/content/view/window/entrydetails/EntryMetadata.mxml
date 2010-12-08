@@ -3,7 +3,6 @@
 		 xmlns:utils="com.kaltura.kmc.modules.content.utils.*"
 		 >
 	<mx:Metadata>
-		
 		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
 	</mx:Metadata>
@@ -35,6 +34,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.formatters.DateFormatter;
+			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 			
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
@@ -478,6 +478,69 @@
 				return "";
 			}
 
+			[Bindable]
+			private var _simpleEditorEnable:Boolean = true;
+			[Bindable]
+			private var _advancedEditorEnable:Boolean = true;
+			[Bindable]
+			private var _previewEnable:Boolean = true;
+			[Bindable]
+			private var _previewOnly:Boolean = false;
+			
+			
+			
+			public function booleanAnd(val1:Boolean , val2:Boolean):Boolean
+			{
+				return val1 && val2;
+			}
+
+			public function get simpleEditorEnable():Boolean
+			{
+				return _simpleEditorEnable;
+			}
+
+			public function set simpleEditorEnable(value:Boolean):void
+			{
+				_simpleEditorEnable = value;
+			}
+
+			public function get advancedEditorEnable():Boolean
+			{
+				return _advancedEditorEnable;
+			}
+
+			public function set advancedEditorEnable(value:Boolean):void
+			{
+				_advancedEditorEnable = value;
+			}
+
+			public function get previewEnable():Boolean
+			{
+				return _previewEnable;
+			}
+
+			public function set previewEnable(value:Boolean):void
+			{
+				_previewEnable = value;
+			}
+			[Bindable]
+			public var previewLabel:String = ResourceManager.getInstance().getString('cms','previewAndEmbed');
+			
+			/**
+			 * @copy #_previewOnly
+			 */
+			public function set previewOnly(value:Boolean):void
+			{
+				_previewOnly = value;
+				if (_previewOnly)
+					previewLabel = resourceManager.getString('cms','previewOnly');
+			}
+			public function get previewOnly():Boolean
+			{
+				return _previewOnly;
+			}
+
+
 			
 		]]>
 	</mx:Script>
@@ -594,24 +657,24 @@
 				<mx:HBox width="100%">
 					<mx:Label paddingTop="3" text="{resourceManager.getString('cms','embed')}:"
 							  width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
-					<mx:LinkButton label="{resourceManager.getString('cms','previewAndEmbed')}"
+					<mx:LinkButton id="previewAndEmbed" label="{previewLabel}"
 								   click="{openPreview()}" width="100%"
-								   enabled="{selectedEntry.status == KalturaEntryStatus.READY}"/>
+								   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
 				</mx:HBox>
 				<mx:HBox width="100%" horizontalGap="0"
 						 toolTip="{resourceManager.getString('cms','createmixfromentryTooltip')}"
 						 visible="{!isLiveStream}" includeInLayout="{!isLiveStream}">
 					<mx:Label paddingTop="3" width="{LABEL_WIDTH}" styleName="drillDownLabel"
 							  text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
-					<mx:LinkButton enabled="{checkIfNotAdvanced(selectedEntry)}"
+					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY)}"
 								   label="{resourceManager.getString('cms','simpleEditor')}"
 								   click="{onStandardClick()}"
-								   buttonMode="{selectedEntry.status == KalturaEntryStatus.READY}"/>
+								   buttonMode="{booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY)}"/>
 					<mx:Label text="|" textAlign="center"/>
-					<mx:LinkButton label="{resourceManager.getString('cms','advancedEditor')}"
+					<mx:LinkButton id="editWithAdvanced" label="{resourceManager.getString('cms','advancedEditor')}"
 								   click="onAdvancedEditor()"
-								   enabled="{selectedEntry.status == KalturaEntryStatus.READY}"
-								   buttonMode="{selectedEntry.status == KalturaEntryStatus.READY}"/>
+								   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable)}"
+								   buttonMode="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable)}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('cms','rating')}:" width="{LABEL_WIDTH}"

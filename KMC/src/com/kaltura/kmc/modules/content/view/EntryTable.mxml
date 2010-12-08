@@ -2,7 +2,7 @@
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" itemClick="{ setSelection ( event ) }"
 			 change="{setSelection ( event )}" headerRelease="{ headerReleaseHandler( event ) }" dragEnabled="true"
-			 dropEnabled="true" dragMoveEnabled="false" dragDrop="onDragDrop(event)" dragOver="onDragOver(event)"
+			 dropEnabled="true" dragMoveEnabled="false" dragDrop="onDragDrop(event)" dragOver="onDragOver(event)" creationComplete="datagrid1_creationCompleteHandler(event)"
 			 dragExit="onDragExit(event)" xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		[Event(name="orderByChanged", type="flash.events.Event")] 
@@ -12,13 +12,14 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.commands.SetSelectedEntryCommand;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
-			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
@@ -35,9 +36,11 @@
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DataGridEvent;
 			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.managers.CursorManager;
+			import mx.resources.ResourceManager;
 
 			public static const ASCENDING:String = "ASC";
 			public static const DESCENDING:String = "DESC";
@@ -51,7 +54,12 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
-
+			
+			[Bindable]
+			/**
+			 * For RnP, we need to seperate the preview and the previewAndEmbed cases 
+			 */ 
+			private var _previewOnly:Boolean = false;
 			
 			[Bindable]
 			/**
@@ -59,6 +67,8 @@
 			 * */
 			public var selectedEntry:KalturaBaseEntry;
 			
+			[Bindable]	
+			public var previewLabel:String = ResourceManager.getInstance().getString('cms', 'previewAndEmbed');			
 			
 			[Bindable]
 			public var allSelected:Boolean = false;
@@ -759,6 +769,30 @@
 			public function get orderBy():String {
 				return _orderBy;
 			}
+	
+			
+			/**
+			 * @copy #_previewOnly
+			 */
+			public function set previewOnly(value:Boolean):void
+			{
+				_previewOnly = value;
+				if (_previewOnly)
+					previewLabel = resourceManager.getString('cms','previewOnly');
+			}
+			public function get previewOnly():Boolean
+			{
+				return _previewOnly;
+			}
+			
+			
+			/**
+			 * Roles and permission 
+			 */
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void
+			{
+				PermissionManager.getInstance().applyAllAttributes(this , id);
+			}
 
 		]]>
 	</mx:Script>
@@ -898,7 +932,7 @@
 								import com.kaltura.types.KalturaEntryStatus;
 							]]>
 						</mx:Script>
-						<mx:LinkButton label="{resourceManager.getString('cms', 'previewAndEmbed')}"
+						<mx:LinkButton label="{outerDocument.previewLabel}"
 									   textDecoration="underline"
 									   click="{outerDocument.preview(data);event.stopImmediatePropagation();}"
 									   visible="{outerDocument.and((data.status == KalturaEntryStatus.READY), !outerDocument.usedForModeration)}"
