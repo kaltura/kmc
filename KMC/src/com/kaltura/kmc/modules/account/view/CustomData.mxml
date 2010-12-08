@@ -2,12 +2,13 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
 		 xmlns:dataGrid="com.kaltura.kmc.view.dataGrid.*"
-		 xmlns:customdatawindow="com.kaltura.kmc.modules.account.view.windows.customdatawindow.*"
-		 initialize="onInit(event)">
+		 xmlns:cdw="com.kaltura.kmc.modules.account.view.windows.customdatawindow.*"
+		 creationComplete="onInit(event)">
 
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
@@ -39,6 +40,7 @@
 			private function onInit(event:FlexEvent):void
 			{
 				BindingUtils.bindSetter( disableTab , _model , "customDataDisabled" );
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
 			
 			public function disableTab( customDataDisabled : Boolean ) : void {
@@ -140,9 +142,8 @@
 		<mx:VBox width="100%" height="100%" id='tableContainer' styleName="tableAndPagerContainerStyle"
 				 horizontalAlign="center">
 			<mx:HBox width="100%" height="100%">
-				<customdatawindow:CustomDataFieldsTable id="customFieldsTable" allowMultipleSelection="true"
-														dataProvider="{_model.metadataProfile.metadataFieldVOArray}"
-														selectable="true"/>
+				<cdw:CustomDataFieldsTable id="customFieldsTable" allowMultipleSelection="true" selectable="true"
+										   dataProvider="{_model.metadataProfile.metadataFieldVOArray}"/>
 				<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
 					<mx:Button id="addFieldButton" label="{resourceManager.getString('account', 'customFieldsAddField')}" useHandCursor="true"
 							   buttonMode="true" click="openAddFieldPopup(event)" styleName="listActionButton"/>

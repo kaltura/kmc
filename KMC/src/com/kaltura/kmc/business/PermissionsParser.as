@@ -17,12 +17,11 @@ package com.kaltura.kmc.business {
 
 		/**
 		 * builds a list of instruction objects from permissions XML
-		 * @param xml	list of permissions
-		 * @return 	list of instructions in an array
+		 * @param allPermissions	list of permissions
+		 * @return 	list of instructions (PermissionVo) in an array
 		 */
-		public function parsePermissions(xml:XML):Array {
+		public function parsePermissions(allPermissions:XMLList):Array {
 			var array:Array = new Array();
-			var allPermissions:XMLList = xml.permissions..permission;
 			for each (var permission:XML in allPermissions) {
 				array = array.concat(getInstructions(permission));
 			}
@@ -58,83 +57,94 @@ package com.kaltura.kmc.business {
 		/**
 		 * The function creates an array of tabs and sub-tabs that should be hidden
 		 * from the user because of roles and permissions logic.
-		 * @return	list of tabs and subtabs to hide
+		 * @param uimapping				ui mapping part of the permissions uiconf
+		 * @param permissionsList		role permission ids
+		 * @return	list of modules and subtabs to hide (String)
 		 */
-		public function getTabsToHide(permissionXml:XML,permissionsList:Array):Array {
+		public function getTabsToHide(uimapping:XML, permissionsList:Array):Array {
 			var arr:Array = new Array();
-			var uiMapping:XML = permissionXml..uimapping[0];
-			var modules:XMLList = uiMapping..module;
-			var minNodes:Number = 1;
-			//iterate modules 
+			var modules:XMLList = uimapping..module;
+			
+			// iterate modules 
 			for each (var module:XML in modules) {
-				var subtabs:XMLList = module.tab;
-				//support min attribute - minimum amount of nodes
-				//to show this tab
-				minNodes = 1;
+				var hideTab:Boolean = true;
+				var subtabsList:XMLList = module.tab;
+				// support min attribute - minimum amount of nodes to show this tab
+				var subtabs:int = subtabsList.length();
+				var minNodes:int = 1;
 				if (module.attribute("min").toString())
 					minNodes = Number(module.attribute("min"));
-				//check for sub-tabs 
-				if (subtabs.length() == 0) {
-					// this is a main tab that has no su tabs. 
-					// if all its permissions are in the _permissionArray
-					// it needs to be removed
-					var tabsPermissions:XMLList = module.permission;
-					if (!tabsPermissions.length()) {
-						//no inner permission - move to next tab
-						break;
+				// check for sub-tabs 
+				if (subtabs == 0) {
+					// count the permissions needed to show the tab
+					var count:int = 0;
+					// this is a main tab that has no subtabs. 
+					var modulePermissions:XMLList = module.permission;
+					if (!modulePermissions.length()) {
+						// no inner permission - move to next module
+						continue;
 					}
-					//found permission - check its ids  
-					var hideTab:Boolean = true;
-					for each (var tabPermission:XML in tabsPermissions) {
-						// If one id does not exist in the _permissions - this module 
-						// should not be hidden
-						if (!checkIfPermissionExistInPermissionArray(tabPermission.@id , permissionsList)) {
-							//Found one - no need to hide the tab. 
-							hideTab = false;
-							//No need to search for any other permissions
-							break;
+					// found permission - check its id
+					for each (var permission:XML in modulePermissions) {
+						// If one id is in the permissionsList - this module should not be hidden
+						if (isStringInArray(permission.@id , permissionsList)) {
+							// Found one - count it. 
+							count ++;
+							
+							// if already have enough, no need to continue.
+							if (count >= minNodes) {
+								break;
+							}
 						}
 					}
-					if (hideTab ) { // !! ((minNodes != 1) && minNodes <  ) ) - support min value 
-						arr.push(module.@id.toString());
+					// need at least minNodes non-denied permissions to show the tab
+					if (count >= minNodes) {
+						hideTab = false;
 					}
 				}
 				else {
-					// this top tab has sub-tabs and we need to scan each subtab
-					for each (var subtabXml:XML in subtabs) {
+					// this top tab has sub-tabs and we need to scan each subtab.
+					// if no subtabs are left, we also hide the module.
+					for each (var subtabXml:XML in subtabsList) {
 						//get all restrictions of current subtab
 						var subtabPermissions:XMLList = subtabXml.permission;
 						
-						//support min attribute - minimum amount of nodes
-						//to show this tab
-						minNodes = 1;
-						if (module.attribute("min").toString())
-							minNodes = Number(module.attribute("min"));
-						
 						var hideSubTab:Boolean = true;
 						for each (var subTabPermission:XML in subtabPermissions) {
-							//if one id does not exist in the _permissions - this subtab 
-							// should not be hidden
-							if (!checkIfPermissionExistInPermissionArray(subTabPermission.@id ,permissionsList )) {
-								//Found one - no need to hide the tab. 
+							//if one id is in the permissionsList - this subtab should not be hidden
+							if (isStringInArray(subTabPermission.@id ,permissionsList )) {
+								//Found one - no need to hide the subtab or the tab. 
 								hideSubTab = false;
 								//No need to search for any other permissions
 								break;
 							}
 						}
 						if (hideSubTab) {
+							// remember the subtab to hide:
 							arr.push(module.@id.toString()+"."+subtabXml.@id.toString());
+							// this subtab will be hidden, one less visible one:
+							subtabs--;
 						}
-
+						else {
+							hideTab = false;
+						}
 					}
 				}
-
+				if (hideTab) {
+					arr.push(module.@id.toString());
+				}
 			}
 			return arr;
 		}
 
 		
-		protected function checkIfPermissionExistInPermissionArray(id:String , permissionsList:Array):Boolean {
+		/**
+		 * see if the given string is in the given array 
+		 * @param id
+		 * @param permissionsList
+		 * @return true if the string is in the array, false otherwise
+		 */		
+		protected function isStringInArray(id:String , permissionsList:Array):Boolean {
 			for each (var localId:String in permissionsList) {
 				if (localId == id) {
 					return true;

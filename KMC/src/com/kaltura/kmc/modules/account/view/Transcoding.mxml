@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
-		 xmlns:conversionsettingswindow="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
-		 >
+		 xmlns:csw="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*">
 	<mx:states>
 		<mx:State name="advanceModeState">
 			<mx:SetProperty target="{titleText}" name="htmlText"
@@ -13,11 +12,10 @@
 							value="{resourceManager.getString('account', 'transcodingSettingsAdvancedModeIntroText')}">
 			</mx:SetProperty>
 			<mx:AddChild relativeTo="{vbox1}" position="before">
-				<conversionsettingswindow:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%"
-																		  height="100%" selectable="true"
-																		  allowMultipleSelection="true"
-																		  dataProvider="{conversionData}"
-																		  creationComplete="{setConversionProfilesTableHeight()}"/>
+				<csw:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%"
+													 selectable="true" allowMultipleSelection="true"
+													 dataProvider="{conversionData}"
+													 creationComplete="{setConversionProfilesTableHeight()}"/>
 			</mx:AddChild>
 			<mx:RemoveChild target="{conversionSettingsTable1}"/>
 			<mx:RemoveChild target="{saveButton}"/>
@@ -29,7 +27,6 @@
 							   styleName="listActionButton"/>
 				</mx:VBox>
 			</mx:AddChild>
-			<!--<mx:SetProperty target="{hbox1}" name="height" value="50"/>-->
 			<mx:AddChild relativeTo="{vbox2}" position="lastChild">
 				<mx:Button label="{resourceManager.getString('account', 'disabledDeleteButton')}" useHandCursor="true"
 						   buttonMode="true" id='deleteProfileBtn' click="onDeleteConversionProfiles(event)"/>
@@ -49,7 +46,7 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -242,8 +239,8 @@
 
 
 			private function onSaveProfileClick(event:Event):void {
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_SAVE_TRANSCODING_SETTINGS, "Account>Save transcoding Settings");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS,GoogleAnalyticsConsts.ACCOUNT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_SAVE_TRANSCODING_SETTINGS, "Account>Save transcoding Settings");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (conversionSettingsTable1.isFlavorsSelected() && (conversionSettingsTable1.cProfile.profile.flavorParamsIds != null)) {
 					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionSettingsTable1.cProfile);
@@ -253,9 +250,10 @@
 					Alert.show(resourceManager.getString('account', 'oneFlvorSelection'), resourceManager.getString('account', 'missingFlavorTitle'));
 				}
 			}
-			
+
+
 			private function help():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp') ));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp')));
 			}
 
 
@@ -293,15 +291,16 @@
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox width="100%" height="100%" id='subVbox' verticalGap="0">
-			<conversionsettingswindow:ConversionSettingsTable id="conversionSettingsTable1" 
-															  allSelected="{allFlavorsSelected}"
-															  dataProvider="{flavorParamData}"/>
+			<csw:ConversionSettingsTable id="conversionSettingsTable1" allSelected="{allFlavorsSelected}"
+										 dataProvider="{flavorParamData}"/>
 			<mx:HBox width="100%" id="vbox1" styleName="DataGridActions">
 				<mx:VBox width="40%" height="100%" verticalAlign="middle">
-					<mx:LinkButton id="switchModeBtn" label="{resourceManager.getString('account','switchToAdvanceMode')}" 								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
+					<mx:LinkButton id="switchModeBtn"
+								   label="{resourceManager.getString('account','switchToAdvanceMode')}"
+								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
 				</mx:VBox>
 				<mx:VBox width="60%" height="100%" verticalAlign="middle" id="vbox2">
-					<mx:Button id="saveButton" label="{resourceManager.getString('account','saveChangesButton')}" 
+					<mx:Button id="saveButton" label="{resourceManager.getString('account','saveChangesButton')}"
 							   useHandCursor="true" buttonMode="true" click="onSaveProfileClick(event)"/>
 				</mx:VBox>
 			</mx:HBox>
