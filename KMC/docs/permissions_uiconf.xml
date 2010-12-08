@@ -122,9 +122,9 @@
 		<!-- Integration settings -->
 		<permissionGroup text="Integration settings" id="INTEGRATION_BASE">
 			<permission text="integration" id="INTEGRATION_UPDATE_SETTINGS">
+				<ui id="account.integration" enableNotificationsTable="false" />
 				<ui id="account.integration.advCont" enabled="false" />
 				<ui id="account.integration.notifications" enabled="false" />
-				<ui id="account.integration.notificationsTable" enabled="false" />
 				<ui id="account.integration.saveChangesBtn" visible="false" />
 			</permission>
 		</permissionGroup>
@@ -148,9 +148,15 @@
 		</permissionGroup>
 		<!-- Custom data settings -->
 		<permissionGroup text="Custom data settings" id="CUSTOM_DATA_PROFILE_BASE">
-			<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD"></permission>
-			<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE"></permission>
-			<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE"></permission>
+			<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
+				<ui id="account.metadata.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
+				<ui id="account.metadata.customFieldsTable" hideColumns="positions" />
+			</permission>
+			<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+			</permission>
 		</permissionGroup>
 		<!-- Administration -->
 		<permissionGroup text="Administration" id="ADMIN_BASE">
@@ -215,6 +221,12 @@
 			<tab id="integration">
 				<permission id="INTEGRATION_BASE"/>
 				<permission id="INTEGRATION_UPDATE_SETTINGS"/>
+			</tab>
+			<tab id="accessControl">
+				<permission id="ACCESS_CONTROL_BASE"/>
+				<permission id="ACCESS_CONTROL_ADD"/>
+				<permission id="ACCESS_CONTROL_UPDATE"/>
+				<permission id="ACCESS_CONTROL_DELETE"/>
 			</tab>
 		</module>
 		<!-- this module requres 4 of 5 boxes -->
