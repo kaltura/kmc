@@ -74,7 +74,11 @@
 
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
-
+			[Bindable]
+			/**
+			 * For RnP, we need to seperate the preview and the previewAndEmbed cases 
+			 */ 
+			private var _previewOnly:Boolean = false;
 			[Bindable]
 			/**
 			 * application model
@@ -199,6 +203,8 @@
 				_ready = true;
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
+				
+				permissionManager.applyAllAttributes(this , this.id);
 				
 			}
 			
@@ -704,7 +710,7 @@
 
 				if (_model.openPlayer) {
 					//id, name, description, is_playlist, uiconf_id 
-					ExternalInterface.call(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), false, _attic.previewuiconf, bitrates);
+					ExternalInterface.call(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description),_previewOnly, false, _attic.previewuiconf, bitrates);
 					_attic.previewuiconf = null;
 				}
 
@@ -722,7 +728,7 @@
 				// open playlist preview
 				if (_model.openPlaylist) {
 					var pl:KalturaPlaylist = entry as KalturaPlaylist;
-					ExternalInterface.call(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), true, _attic.previewuiconf);
+					ExternalInterface.call(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description),_previewOnly, true, _attic.previewuiconf);
 					_attic.previewuiconf = null;
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
@@ -739,7 +745,7 @@
 				// open regular entry preview
 				if (_model.openPlayer) {
 					//kmc.preview_embed.doPreviewEmbed( entry/playlist id, description, true/ false (or nothing or "" or null), uiconf id, live_bitrates obj or boolean, is_mix);
-					ExternalInterface.call(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), false, _attic.previewuiconf, (entry is KalturaMixEntry));
+					ExternalInterface.call(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description),_previewOnly, false, _attic.previewuiconf, (entry is KalturaMixEntry));
 					_attic.previewuiconf = null;
 				}
 				//First time funnel
@@ -863,6 +869,21 @@
 			protected function initSelectedTab(event:IndexChangedEvent):void {
 				// initialize the new panel with filter saved in the attic, if any.
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_attic.kmef);
+			}
+			
+			
+			
+			
+			/**
+			 * @copy #_previewOnly
+			 */
+			public function set previewOnly(value:Boolean):void
+			{
+				_previewOnly = value;
+			}
+			public function get previewOnly():Boolean
+			{
+				return _previewOnly;
 			}
 		]]>
 	</mx:Script>
