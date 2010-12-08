@@ -2,13 +2,14 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.liveStream.LiveStreamAdd;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 	import com.kaltura.kmc.modules.content.events.SearchEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.vo.StreamVo;
-	import com.kaltura.commands.liveStream.LiveStreamAdd;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.types.KalturaMediaType;
+	import com.kaltura.types.KalturaSourceType;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 	
 	import mx.controls.Alert;
@@ -44,7 +45,7 @@ package com.kaltura.kmc.modules.content.commands
 
 			liveStremEntry.mediaType = KalturaMediaType.LIVE_STREAM_FLASH;
 												
-			var addNewLiveStream:LiveStreamAdd = new LiveStreamAdd(liveStremEntry);
+			var addNewLiveStream:LiveStreamAdd = new LiveStreamAdd(liveStremEntry,KalturaSourceType.AKAMAI_LIVE);
             addNewLiveStream.addEventListener(KalturaEvent.COMPLETE,result);
 	        addNewLiveStream.addEventListener(KalturaEvent.FAILED,fault);
 	        _model.increaseLoadCounter();
