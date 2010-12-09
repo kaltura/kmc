@@ -9,9 +9,9 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
-			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.utils.ObjectUtil;
 			
 			import mx.binding.utils.BindingUtils;
@@ -27,7 +27,7 @@
 
 			private var allCheckboxes:Array = new Array();
 
-			protected var xml:XML = <root>
+			protected var _partnerPermissions:XML = <root>
 					<permissions>
 						<!-- -->
 						<permissionGroup text="Content ingestion"
@@ -237,7 +237,7 @@
 				// re-trigger the mode setter
 				setMode(_mode);
 
-				var groups:XMLList = xml..permissionGroup;
+				var groups:XMLList = _partnerPermissions..permissionGroup;
 				//TODO + get partner permissions and remove any features current partner doesn't have.
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
@@ -295,8 +295,12 @@
 
 			/**
 			 * pass initial data.
+			 * @param role 		the role to edit / create
+			 * @param mode		edit / add mode
+			 * @param partnerPermissions	all partner's permissions (used for editing roles)
 			 * */
-			public function init(role:KalturaRole, mode:String):void {
+			public function init(role:KalturaRole, mode:String, partnerPermissions:XML):void {
+				_partnerPermissions = partnerPermissions;
 				// the following intentionaly use setters. 
 				setRole(role);
 				setMode(mode);

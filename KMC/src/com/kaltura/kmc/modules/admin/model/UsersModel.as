@@ -61,5 +61,11 @@ package com.kaltura.kmc.modules.admin.model
 		 */		
 		public var newRole:KalturaRole;
 		
+		
+		/**
+		 * all partner's permissions uiconf 
+		 */
+		public var partnerPermissions:XML;
+		
 	}
 }

@@ -4,7 +4,7 @@
 				   xmlns:view="com.kaltura.kmc.modules.admin.view.*" 
 				   xmlns:model="com.kaltura.kmc.modules.admin.model.*"
 				   layout="vertical" minHeight="520" minWidth="950" styleName="mainView"
-				   creationComplete="kmcmodule1_creationCompleteHandler(event)">
+				   creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[ResourceBundle("admin")]
 	</mx:Metadata>
@@ -63,7 +63,7 @@
 				}
 			}
 			
-			protected function kmcmodule1_creationCompleteHandler(event:FlexEvent):void {
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (_ready && _initialTab) {
 					switchToTab(_initialTab);
 				}
@@ -103,6 +103,8 @@
 			private function initModel():void {
 				_model.kc = _kc;
 				_model.usersModel.upgradeLink = new XML(_uiconf.confFile).upgradeLink.text().toString();
+				_model.rolesModel.partnerPermissions = permissionManager.partnerPermissions;
+				_model.usersModel.partnerPermissions = permissionManager.partnerPermissions;
 			}
 
 

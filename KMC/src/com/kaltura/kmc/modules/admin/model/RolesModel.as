@@ -42,5 +42,11 @@ package com.kaltura.kmc.modules.admin.model
 		 * is via binding, we'll use this propoerty.    
 		 */		
 		public var newRole:KalturaRole;
+		
+		
+		/**
+		 * all partner's permissions uiconf 
+		 */
+		public var partnerPermissions:XML;
 	}
 }

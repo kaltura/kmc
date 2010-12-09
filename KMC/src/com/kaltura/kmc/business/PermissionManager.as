@@ -1,9 +1,9 @@
 package com.kaltura.kmc.business {
 	import com.kaltura.kmc.vo.PermissionVo;
 	import com.kaltura.utils.CastUtil;
-
+	
 	import flash.utils.describeType;
-
+	
 	import mx.events.IndexChangedEvent;
 
 	/**
@@ -18,6 +18,12 @@ package com.kaltura.kmc.business {
 		 * role permissions (original XML from <code>init()</code> transformed)
 		 */
 		private var _permissionXml:XML;
+		
+		
+		/**
+		 * @copy #partnerPermissions 
+		 */
+		private var _partnerPermissions:XML;
 
 		/**
 		 * list of permission ids that are denied
@@ -43,17 +49,22 @@ package com.kaltura.kmc.business {
 		 *
 		 */
 		public function init(partnerPermissionsXml:XML, rolePermissions:String = ""):void {
+			_partnerPermissions = partnerPermissionsXml.copy();
 			_permissionXml = partnerPermissionsXml.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
 			// remove from permissions list the granted permissions and leave the ones that are forbidden.
 			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "") {
 				for each (var permission:String in allRolePermissions) {
-					if ((_permissionXml.permissions..descendants().(attribute("id") == permission)[0] as XML).localName() == "permissionGroup") {
-						// if we move groups now we will actually remove permissions we need
-						continue;
+					var permit:XML = _permissionXml.permissions..descendants().(attribute("id") == permission)[0];
+					// if such permission exists
+					if (permit) {
+						if (permit.localName() == "permissionGroup") {
+							// if we remove groups now we will actually remove permissions we need.
+							continue;
+						}
+						delete _permissionXml.permissions..descendants().(attribute("id") == permission)[0];
 					}
-					delete _permissionXml.permissions..descendants().(attribute("id") == permission)[0];
 				}
 			}
 
@@ -271,6 +282,14 @@ package com.kaltura.kmc.business {
 				_instance = new PermissionManager(new Enforcer());
 			}
 			return _instance;
+		}
+
+		/**
+		 * all partner's permissions uiconf 
+		 */
+		public function get partnerPermissions():XML
+		{
+			return _partnerPermissions;
 		}
 
 
