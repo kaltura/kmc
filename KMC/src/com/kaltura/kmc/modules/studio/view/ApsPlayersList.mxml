@@ -65,6 +65,11 @@
 			 * */
 			private var _pageSize:Number = 10;
 
+			[Bindable]
+			/**
+			 * For RnP, we need to seperate the preview and the previewAndEmbed cases 
+			 */ 
+			private var _previewOnly:Boolean = false;
 			
 			/**
 			 * application context
@@ -306,6 +311,17 @@
 			
 			
 			/**
+			 * @copy #_previewOnly
+			 */
+			public function set previewOnly(value:Boolean):void
+			{
+				_previewOnly = value;
+			}
+			public function get previewOnly():Boolean
+			{
+				return _previewOnly;
+			}
+			/**
 			 * perform selected action on selected player
 			 * (used in item renderer)
 			 * */
@@ -328,7 +344,7 @@
 						}
 						break;
 					case resourceManager.getString('aps', 'previewAndEmbed'):
-						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString());
+						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(),_previewOnly);
 						break;
 					case resourceManager.getString('aps', 'duplicate'):
 						onDuplicate();
@@ -662,29 +678,7 @@
 										 paddingLeft="2"
 										 horizontalScrollPolicy="off"
 										 verticalScrollPolicy="off">
-									<mx:Script>
-										<![CDATA[
-											import mx.collections.ArrayCollection;
-											import mx.events.FlexEvent;
-
-						/* 					protected function combobox1_creationCompleteHandler(event:FlexEvent,data:*):void
-											{
-												if(outerDocument.isMulti(data))
-												{
-													
-													trace("found multi");													
-													(event.target as ComboBox).dataProvider = outerDocument.comboDataProviderMulti;
-												}
-												else
-												{
-													trace("found normal");													
-													(event.target as ComboBox).dataProvider = outerDocument.comboDataProviderNormal;
-												}
-													
-											} */
-
-										]]>
-									</mx:Script>
+		
 									<mx:ComboBox width="130"
 												 selectedIndex="-1" 
 												 prompt="{resourceManager.getString('aps','selectAction')}"
