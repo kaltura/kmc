@@ -17,7 +17,8 @@ package com.kaltura.kmc.modules.admin.business
 		public static const STATUS_ALL:String = "statusAll";
 		public static const STATUS_PARTIAL:String = "statusPartial";
 		
-		public var _isOpen:Boolean;
+		public var _isOpen:Boolean = false;
+		public var _isOpenRevers:Boolean = true;
 		private var _status:String;
 		
 		public var groupCheckbox:CheckBox;
@@ -38,14 +39,23 @@ package com.kaltura.kmc.modules.admin.business
 			this.openLinkButton.addEventListener(MouseEvent.CLICK , onAdvancedClicked);
 			this.closeLinkButton.addEventListener(MouseEvent.CLICK , onGroupClosed);
 			groupCheckboxString = groupCheckbox.label;
+			
 			BindingUtils.bindProperty(this.closeLinkButton, "visible", this , "_isOpen");
 			BindingUtils.bindProperty(this.closeLinkButton, "includeInLayout", this , "_isOpen"); 
+			
+			BindingUtils.bindProperty(this.openLinkButton, "visible", this,"_isOpenRevers");
+			BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this,"_isOpenRevers"); 
 
 			for each (var cb:CheckBox in innerCheckBoxes) {
 				BindingUtils.bindProperty(cb, "visible", this , "_isOpen");
 				BindingUtils.bindProperty(cb, "includeInLayout", this , "_isOpen"); 
 				cb.addEventListener(Event.CHANGE , innerCheckboxChanged);
 			}
+		}
+		
+		public function revers(val:Boolean):Boolean
+		{
+			return !val;
 		}
 		
 		protected function onGroupChanged (event:MouseEvent):void
@@ -130,6 +140,7 @@ package com.kaltura.kmc.modules.admin.business
 		public function set isOpen(value:Boolean):void
 		{
 			_isOpen = value;
+			_isOpenRevers = !_isOpen;
 		}
 
 

@@ -327,6 +327,16 @@
 				hbox.percentWidth = 100; 
 				hbox.addChild(groupCb);
 				
+				
+				//groupCb.maxWidth = myForm.width - 10;
+				var permissions:XMLList = group..permission;
+				
+				//special case for group without children (base only)
+				if (permissions.length() == 0) {
+					
+					return vb;
+				}
+				
 				var spacer:Spacer = new Spacer();
 				hbox.addChild(spacer);
 				spacer.percentWidth = 100;
@@ -336,28 +346,16 @@
 				linkBtn.data = groupCb;
 				hbox.addChild(linkBtn);
 				
-				//groupCb.maxWidth = myForm.width - 10;
-				var cb:CheckBox;
-				var permissions:XMLList = group..permission;
-
-				//special case for group without children (base only)
-				if (permissions.length() == 0) {
-					return vb;
-				}
-/* 				//only if it has inner childrens 
-				if (permissions.length() > 1)
-					groupCb.addEventListener(Event.CHANGE, unCheckChildren); */
-
+				var closeLinkBtn:LinkButton = new LinkButton();
+				closeLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'close' )
+				closeLinkBtn.data = groupCb;
+				hbox.addChild(closeLinkBtn);
+				
+				
 				var innerCbArray:Array = new Array();
 				//build the inner checkboxes 
+				var cb:CheckBox;
 				for each (var permission:XML in permissions) {
-					//special case for groups that has one child 
-					if (permissions.length() == 1) {
-						// override the group id with the inner id
-						groupCb.id = permission.attribute("id")[0].toString();
-						continue;
-					}
-
 					cb = new CheckBox();
 					cb.maxWidth = 250
 					cb.label = permission.attribute("text")[0].toString();
@@ -366,21 +364,11 @@
 						cb.toolTip = permission.attribute("id")[0].toString()
 					cb.id = permission.attribute("id")[0].toString();
 					cb.data = groupCb; //pointer to the group id
-/* 					BindingUtils.bindProperty(cb, "visible", groupCb, "selected");
-					BindingUtils.bindProperty(cb, "includeInLayout", groupCb, "selected"); */
 
 					vb.addChild(cb);
 					innerCbArray.push(cb);
 					allCheckboxes.push(cb);
 				}
-				var closeLinkBtn:LinkButton = new LinkButton();
-				closeLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'close' )
-				closeLinkBtn.data = groupCb;
-				
-/* 				BindingUtils.bindProperty(linkBtn, "visible", groupCb, "selected");
-				BindingUtils.bindProperty(linkBtn, "includeInLayout", groupCb, "selected"); */
-				
-				vb.addChild(closeLinkBtn);
 				
 				var permissionGroupManager:PermissionGroupManager = new PermissionGroupManager(	groupCb , innerCbArray , closeLinkBtn , linkBtn); 
 				
