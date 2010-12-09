@@ -1,6 +1,6 @@
 package com.kaltura.kmc.business {
 	import com.kaltura.kmc.business.PermissionManager;
-
+	
 	import flexunit.framework.Assert;
 
 	public class TestPermissionManager {
@@ -67,12 +67,28 @@ package com.kaltura.kmc.business {
 
 		private static var pm:PermissionManager;
 
+		
 
 		[BeforeClass]
 		public static function setUp():void {
 			pm = PermissionManager.getInstance();
 			pm.init(test1);
 		}
+		
+		
+		
+		
+		
+
+		[Test]
+		/**
+		 * try to get the modules that should be dropped
+		 */
+		public function testGetModulesToHide():void {
+			var arr:Array = pm.getRelevantSubTabsToHide();
+			Assert.assertEquals(3, arr.length);
+		}
+		
 
 		[Test]
 		/**
@@ -101,6 +117,21 @@ package com.kaltura.kmc.business {
 		public function testNumberOfInstructionVos():void {
 			var arr:Array = pm.instructionVos;
 			Assert.assertEquals(8, arr.length);
+		}
+		
+		[Ignore]
+		[Test]
+		/**
+		 * test initialization with a permissions that doesn't exist
+		 * (running this test causes the others to fail because of the input)
+		 */
+		public function testIgnoreNonexistingPermission():void {
+			try {
+				pm.init(test1, "atar");
+			} catch (e:Error) {
+				Assert.fail("Init() crashed, probably problematic input.");
+			}
+			
 		}
 	}
 }
