@@ -1,11 +1,10 @@
 package com.kaltura.delegates.media
 {
-	import com.kaltura.commands.media.MediaAddFromUrl;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class MediaAddFromUrlDelegate extends WebDelegateBase
 	{

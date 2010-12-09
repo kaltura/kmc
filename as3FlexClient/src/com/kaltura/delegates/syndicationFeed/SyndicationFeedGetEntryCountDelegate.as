@@ -1,11 +1,10 @@
 package com.kaltura.delegates.syndicationFeed
 {
-	import com.kaltura.commands.syndicationFeed.SyndicationFeedGetEntryCount;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class SyndicationFeedGetEntryCountDelegate extends WebDelegateBase
 	{

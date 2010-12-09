@@ -4,12 +4,11 @@ package com.kaltura.delegates.thumbAsset
 
 	import com.kaltura.core.KClassFactory;
 
-	import com.kaltura.commands.thumbAsset.ThumbAssetGetByEntryId;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class ThumbAssetGetByEntryIdDelegate extends WebDelegateBase
 	{

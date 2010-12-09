@@ -1,11 +1,10 @@
 package com.kaltura.delegates.partner
 {
-	import com.kaltura.commands.partner.PartnerGetSecrets;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class PartnerGetSecretsDelegate extends WebDelegateBase
 	{

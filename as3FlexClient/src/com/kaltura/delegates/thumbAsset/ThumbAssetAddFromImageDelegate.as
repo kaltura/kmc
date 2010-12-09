@@ -1,16 +1,17 @@
 package com.kaltura.delegates.thumbAsset
 {
-	import com.kaltura.commands.thumbAsset.ThumbAssetAddFromImage;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import com.kaltura.errors.KalturaError;
-	import com.kaltura.net.KalturaCall;
-	
+	import com.kaltura.commands.thumbAsset.ThumbAssetAddFromImage;
+
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.net.URLRequest;
-	import flash.utils.getDefinitionByName;
-	
+
 	import ru.inspirit.net.MultipartURLLoader;
 
 	public class ThumbAssetAddFromImageDelegate extends WebDelegateBase

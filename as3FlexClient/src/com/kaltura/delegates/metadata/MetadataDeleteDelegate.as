@@ -1,11 +1,10 @@
 package com.kaltura.delegates.metadata
 {
-	import com.kaltura.commands.metadata.MetadataDelete;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class MetadataDeleteDelegate extends WebDelegateBase
 	{

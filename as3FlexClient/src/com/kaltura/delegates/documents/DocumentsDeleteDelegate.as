@@ -1,11 +1,10 @@
 package com.kaltura.delegates.documents
 {
-	import com.kaltura.commands.documents.DocumentsDelete;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class DocumentsDeleteDelegate extends WebDelegateBase
 	{

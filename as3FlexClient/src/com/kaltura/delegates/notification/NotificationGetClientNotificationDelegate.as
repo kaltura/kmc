@@ -1,11 +1,10 @@
 package com.kaltura.delegates.notification
 {
-	import com.kaltura.commands.notification.NotificationGetClientNotification;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class NotificationGetClientNotificationDelegate extends WebDelegateBase
 	{

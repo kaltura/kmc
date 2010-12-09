@@ -1,56 +1,46 @@
 package com.kaltura.delegates.baseEntry
 {
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.core.KClassFactory;
+	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import com.kaltura.errors.KalturaError;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.net.KalturaFileCall;
-	
+	import com.kaltura.commands.baseEntry.BaseEntryUpdateThumbnailJpeg;
+
+	import flash.events.DataEvent;
 	import flash.events.Event;
-	import flash.net.URLLoaderDataFormat;
-	import flash.utils.getDefinitionByName;
-	
-	import mx.utils.UIDUtil;
-	
+	import flash.net.URLRequest;
+
 	import ru.inspirit.net.MultipartURLLoader;
-	
+
 	public class BaseEntryUpdateThumbnailJpegDelegate extends WebDelegateBase
 	{
 		protected var mrloader:MultipartURLLoader;
-		
+
 		public function BaseEntryUpdateThumbnailJpegDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
 		}
 
-		override public function parse( result : XML ) : *
-		{
-			var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.objectType) as Class;
-			var obj : * = (new KClassFactory( cls )).newInstanceFromXML( result.result );
-			return obj;
-		}
-		
 		override protected function sendRequest():void {
 			//construct the loader
 			createURLLoader();
-
+			
 			//create the service request for normal calls
 			var variables:String = decodeURIComponent(call.args.toString());
-			var req:String = _config.protocol + _config.domain +"/"+_config.srvUrl+"?service="+call.service+"&action="+call.action +'&'+variables;
-			mrloader.addFile((call as KalturaFileCall).bytes, UIDUtil.createUID(), 'fileData');
-
-			mrloader.dataFormat = URLLoaderDataFormat.TEXT;
-			mrloader.load(req);
+			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "?service=" + call.service + "&action=" + call.action + "&" + variables;
+			(call as BaseEntryUpdateThumbnailJpeg).fileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
+			var urlRequest:URLRequest = new URLRequest(req);
+			(call as BaseEntryUpdateThumbnailJpeg).fileData.upload(urlRequest,"fileData");
 		}
 
 		// Event Handlers
 		override protected function onDataComplete(event:Event):void {
 			try{
-				handleResult( XML(event.target.loader.data) );
+				handleResult( XML(event["data"]) );
 			}
-			catch( e:Error )
-			{
+			catch( e:Error ){
 				var kErr : KalturaError = new KalturaError();
 				kErr.errorCode = String(e.errorID);
 				kErr.errorMsg = e.message;

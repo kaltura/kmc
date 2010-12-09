@@ -1,17 +1,24 @@
 package com.kaltura.commands.baseEntry
 {
-	import com.kaltura.delegates.baseEntry.BaseEntryUpdateThumbnailJpegDelegate;
+	import flash.net.FileReference;
 	import com.kaltura.net.KalturaFileCall;
-	import flash.utils.ByteArray;
+	import com.kaltura.delegates.baseEntry.BaseEntryUpdateThumbnailJpegDelegate;
 
 	public class BaseEntryUpdateThumbnailJpeg extends KalturaFileCall
 	{
-		public function BaseEntryUpdateThumbnailJpeg( entryId : String, fileData : ByteArray )
+		public var fileData:FileReference;
+		public function BaseEntryUpdateThumbnailJpeg( entryId : String,fileData : FileReference )
 		{
-			service= 'baseEntry';
+			service= 'baseentry';
 			action= 'updateThumbnailJpeg';
-			applySchema(['entryId'] , [entryId]);
-			bytes = fileData;
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push( 'entryId' );
+			valueArr.push( entryId );
+			this.fileData = fileData;
+			applySchema( keyArr , valueArr );
 		}
 
 		override public function execute() : void

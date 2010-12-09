@@ -1,11 +1,10 @@
 package com.kaltura.delegates.bulkUpload
 {
-	import com.kaltura.commands.bulkUpload.BulkUploadList;
+	import flash.utils.getDefinitionByName;
+
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
-
-	import flash.utils.getDefinitionByName;
 
 	public class BulkUploadListDelegate extends WebDelegateBase
 	{
