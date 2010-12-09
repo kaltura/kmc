@@ -1,9 +1,12 @@
 package com.kaltura.delegates.uploadToken
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.uploadToken.UploadTokenAdd;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class UploadTokenAddDelegate extends WebDelegateBase
 	{
 		public function UploadTokenAddDelegate(call:KalturaCall, config:KalturaConfig)

@@ -1,9 +1,12 @@
 package com.kaltura.delegates.metadata
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.metadata.MetadataUpdate;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class MetadataUpdateDelegate extends WebDelegateBase
 	{
 		public function MetadataUpdateDelegate(call:KalturaCall, config:KalturaConfig)

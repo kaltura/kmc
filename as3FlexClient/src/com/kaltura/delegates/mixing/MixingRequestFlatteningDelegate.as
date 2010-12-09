@@ -1,9 +1,12 @@
 package com.kaltura.delegates.mixing
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.mixing.MixingRequestFlattening;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class MixingRequestFlatteningDelegate extends WebDelegateBase
 	{
 		public function MixingRequestFlatteningDelegate(call:KalturaCall, config:KalturaConfig)

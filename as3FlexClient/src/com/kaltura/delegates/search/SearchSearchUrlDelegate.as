@@ -1,9 +1,12 @@
 package com.kaltura.delegates.search
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.search.SearchSearchUrl;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class SearchSearchUrlDelegate extends WebDelegateBase
 	{
 		public function SearchSearchUrlDelegate(call:KalturaCall, config:KalturaConfig)

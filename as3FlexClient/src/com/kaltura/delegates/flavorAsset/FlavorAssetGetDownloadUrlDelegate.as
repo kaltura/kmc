@@ -1,9 +1,12 @@
 package com.kaltura.delegates.flavorAsset
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.flavorAsset.FlavorAssetGetDownloadUrl;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class FlavorAssetGetDownloadUrlDelegate extends WebDelegateBase
 	{
 		public function FlavorAssetGetDownloadUrlDelegate(call:KalturaCall, config:KalturaConfig)

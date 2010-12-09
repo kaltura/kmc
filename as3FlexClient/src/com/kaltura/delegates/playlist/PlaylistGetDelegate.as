@@ -1,9 +1,12 @@
 package com.kaltura.delegates.playlist
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.playlist.PlaylistGet;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class PlaylistGetDelegate extends WebDelegateBase
 	{
 		public function PlaylistGetDelegate(call:KalturaCall, config:KalturaConfig)

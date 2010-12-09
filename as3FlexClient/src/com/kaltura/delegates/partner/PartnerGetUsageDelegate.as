@@ -1,9 +1,12 @@
 package com.kaltura.delegates.partner
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class PartnerGetUsageDelegate extends WebDelegateBase
 	{
 		public function PartnerGetUsageDelegate(call:KalturaCall, config:KalturaConfig)

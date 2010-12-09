@@ -1,9 +1,12 @@
 package com.kaltura.delegates.thumbParams
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.thumbParams.ThumbParamsAdd;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class ThumbParamsAddDelegate extends WebDelegateBase
 	{
 		public function ThumbParamsAddDelegate(call:KalturaCall, config:KalturaConfig)

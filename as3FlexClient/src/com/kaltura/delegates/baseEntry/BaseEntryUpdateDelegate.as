@@ -1,9 +1,12 @@
 package com.kaltura.delegates.baseEntry
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class BaseEntryUpdateDelegate extends WebDelegateBase
 	{
 		public function BaseEntryUpdateDelegate(call:KalturaCall, config:KalturaConfig)

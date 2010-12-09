@@ -1,9 +1,12 @@
 package com.kaltura.delegates.widget
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.widget.WidgetClone;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class WidgetCloneDelegate extends WebDelegateBase
 	{
 		public function WidgetCloneDelegate(call:KalturaCall, config:KalturaConfig)

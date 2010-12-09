@@ -1,9 +1,12 @@
 package com.kaltura.delegates.user
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.user.UserNotifyBan;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class UserNotifyBanDelegate extends WebDelegateBase
 	{
 		public function UserNotifyBanDelegate(call:KalturaCall, config:KalturaConfig)

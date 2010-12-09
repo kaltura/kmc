@@ -1,9 +1,12 @@
 package com.kaltura.delegates.documents
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.documents.DocumentsConvert;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class DocumentsConvertDelegate extends WebDelegateBase
 	{
 		public function DocumentsConvertDelegate(call:KalturaCall, config:KalturaConfig)

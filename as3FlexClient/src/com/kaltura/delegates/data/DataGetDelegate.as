@@ -1,9 +1,12 @@
 package com.kaltura.delegates.data
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.data.DataGet;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class DataGetDelegate extends WebDelegateBase
 	{
 		public function DataGetDelegate(call:KalturaCall, config:KalturaConfig)

@@ -1,9 +1,12 @@
 package com.kaltura.delegates.mixing
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.mixing.MixingDelete;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class MixingDeleteDelegate extends WebDelegateBase
 	{
 		public function MixingDeleteDelegate(call:KalturaCall, config:KalturaConfig)

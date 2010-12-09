@@ -1,9 +1,12 @@
 package com.kaltura.delegates.category
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.category.CategoryAdd;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class CategoryAddDelegate extends WebDelegateBase
 	{
 		public function CategoryAddDelegate(call:KalturaCall, config:KalturaConfig)

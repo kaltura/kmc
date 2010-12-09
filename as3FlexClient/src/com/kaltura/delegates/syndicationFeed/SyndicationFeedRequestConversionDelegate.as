@@ -1,9 +1,12 @@
 package com.kaltura.delegates.syndicationFeed
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.syndicationFeed.SyndicationFeedRequestConversion;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class SyndicationFeedRequestConversionDelegate extends WebDelegateBase
 	{
 		public function SyndicationFeedRequestConversionDelegate(call:KalturaCall, config:KalturaConfig)

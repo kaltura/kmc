@@ -1,9 +1,12 @@
 package com.kaltura.delegates.system
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.system.SystemPing;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class SystemPingDelegate extends WebDelegateBase
 	{
 		public function SystemPingDelegate(call:KalturaCall, config:KalturaConfig)

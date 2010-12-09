@@ -1,9 +1,12 @@
 package com.kaltura.delegates.mixing
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.mixing.MixingGet;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class MixingGetDelegate extends WebDelegateBase
 	{
 		public function MixingGetDelegate(call:KalturaCall, config:KalturaConfig)

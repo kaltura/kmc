@@ -1,9 +1,12 @@
 package com.kaltura.delegates.session
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.session.SessionImpersonate;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class SessionImpersonateDelegate extends WebDelegateBase
 	{
 		public function SessionImpersonateDelegate(call:KalturaCall, config:KalturaConfig)

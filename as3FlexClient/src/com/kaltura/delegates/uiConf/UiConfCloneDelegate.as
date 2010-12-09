@@ -1,9 +1,12 @@
 package com.kaltura.delegates.uiConf
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.uiConf.UiConfClone;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class UiConfCloneDelegate extends WebDelegateBase
 	{
 		public function UiConfCloneDelegate(call:KalturaCall, config:KalturaConfig)

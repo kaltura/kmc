@@ -4,10 +4,13 @@ package com.kaltura.delegates.flavorAsset
 
 	import com.kaltura.core.KClassFactory;
 
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.flavorAsset.FlavorAssetGetByEntryId;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class FlavorAssetGetByEntryIdDelegate extends WebDelegateBase
 	{
 		public function FlavorAssetGetByEntryIdDelegate(call:KalturaCall, config:KalturaConfig)

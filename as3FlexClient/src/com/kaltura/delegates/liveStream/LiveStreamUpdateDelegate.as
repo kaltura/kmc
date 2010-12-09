@@ -1,9 +1,12 @@
 package com.kaltura.delegates.liveStream
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.liveStream.LiveStreamUpdate;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class LiveStreamUpdateDelegate extends WebDelegateBase
 	{
 		public function LiveStreamUpdateDelegate(call:KalturaCall, config:KalturaConfig)

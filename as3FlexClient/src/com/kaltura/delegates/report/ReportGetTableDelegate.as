@@ -1,9 +1,12 @@
 package com.kaltura.delegates.report
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.report.ReportGetTable;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class ReportGetTableDelegate extends WebDelegateBase
 	{
 		public function ReportGetTableDelegate(call:KalturaCall, config:KalturaConfig)

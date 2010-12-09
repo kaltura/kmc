@@ -1,9 +1,12 @@
 package com.kaltura.delegates.session
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.session.SessionEnd;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class SessionEndDelegate extends WebDelegateBase
 	{
 		public function SessionEndDelegate(call:KalturaCall, config:KalturaConfig)

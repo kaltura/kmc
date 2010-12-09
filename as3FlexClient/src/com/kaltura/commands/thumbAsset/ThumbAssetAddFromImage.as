@@ -1,13 +1,13 @@
 package com.kaltura.commands.thumbAsset
 {
-	import com.kaltura.vo.File;
+	import flash.net.FileReference;
+	import com.kaltura.net.KalturaFileCall;
 	import com.kaltura.delegates.thumbAsset.ThumbAssetAddFromImageDelegate;
-	import com.kaltura.net.KalturaCall;
 
-	public class ThumbAssetAddFromImage extends KalturaCall
+	public class ThumbAssetAddFromImage extends KalturaFileCall
 	{
-		public var filterFields : String;
-		public function ThumbAssetAddFromImage( entryId : String,fileData : file )
+		public var fileData:FileReference;
+		public function ThumbAssetAddFromImage( entryId : String,fileData : FileReference )
 		{
 			service= 'thumbasset';
 			action= 'addFromImage';
@@ -17,9 +17,7 @@ package com.kaltura.commands.thumbAsset
 			var keyValArr : Array = new Array();
 			keyArr.push( 'entryId' );
 			valueArr.push( entryId );
- 			keyValArr = kalturaObject2Arrays(fileData,'fileData');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
+			this.fileData = fileData;
 			applySchema( keyArr , valueArr );
 		}
 

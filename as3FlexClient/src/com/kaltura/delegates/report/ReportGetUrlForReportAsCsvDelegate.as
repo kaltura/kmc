@@ -1,9 +1,12 @@
 package com.kaltura.delegates.report
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.report.ReportGetUrlForReportAsCsv;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class ReportGetUrlForReportAsCsvDelegate extends WebDelegateBase
 	{
 		public function ReportGetUrlForReportAsCsvDelegate(call:KalturaCall, config:KalturaConfig)

@@ -1,9 +1,12 @@
 package com.kaltura.delegates.stats
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.stats.StatsCollect;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class StatsCollectDelegate extends WebDelegateBase
 	{
 		public function StatsCollectDelegate(call:KalturaCall, config:KalturaConfig)

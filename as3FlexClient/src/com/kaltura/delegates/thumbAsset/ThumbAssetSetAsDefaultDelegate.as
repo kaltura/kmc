@@ -1,9 +1,12 @@
 package com.kaltura.delegates.thumbAsset
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.thumbAsset.ThumbAssetSetAsDefault;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class ThumbAssetSetAsDefaultDelegate extends WebDelegateBase
 	{
 		public function ThumbAssetSetAsDefaultDelegate(call:KalturaCall, config:KalturaConfig)

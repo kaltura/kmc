@@ -1,9 +1,12 @@
 package com.kaltura.delegates.storageProfile
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.storageProfile.StorageProfileListByPartner;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class StorageProfileListByPartnerDelegate extends WebDelegateBase
 	{
 		public function StorageProfileListByPartnerDelegate(call:KalturaCall, config:KalturaConfig)

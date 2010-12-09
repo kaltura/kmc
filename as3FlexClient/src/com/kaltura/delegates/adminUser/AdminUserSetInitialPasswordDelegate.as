@@ -1,9 +1,12 @@
 package com.kaltura.delegates.adminUser
 {
-	import flash.utils.getDefinitionByName;
+	import com.kaltura.commands.adminUser.AdminUserSetInitialPassword;
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+
+	import flash.utils.getDefinitionByName;
+
 	public class AdminUserSetInitialPasswordDelegate extends WebDelegateBase
 	{
 		public function AdminUserSetInitialPasswordDelegate(call:KalturaCall, config:KalturaConfig)
