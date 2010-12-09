@@ -492,10 +492,11 @@ $(window).load(function(){
 	kmc.preview_embed = {
 
 		// called from p&e dropdown, from content.swf and from appstudio.swf
-		doPreviewEmbed : function(id, name, description, previewOnly, is_playlist, uiconf_id, live_bitrates) {
+		doPreviewEmbed : function(id, name, description,previewOnly, is_playlist, uiconf_id, live_bitrates) {
 		// entry/playlist id, description, true/ false (or nothing or "" or null), uiconf id, live_bitrates obj or boolean, is_mix
 //			alert("doPreviewEmbed: id="+id+", name="+name+", description="+description+", is_playlist="+is_playlist+", uiconf_id="+uiconf_id);
-
+		 if (previewOnly==true)
+			 alert('previewOnly from content');
 			if(id != "multitab_playlist") {
 
 				name = kmc.utils.escapeQuotes(name);
@@ -1132,9 +1133,11 @@ $(window).load(function(){
 	var state = kmc.mediator.readUrlHash();
 	kmc.mediator.loadModule(state.moduleName,state.subtab);
  }
- function openPlayer(emptystring, width, height, uiconf_id) { // for catching appstudio p&e
+ function openPlayer(emptystring, width, height, uiconf_id,previewOnly) { // for catching appstudio p&e
 //	 alert("received call to openPlayer(emptystring="+emptystring+", "+"width="+width+", "+"height="+height+", uiconf_id="+uiconf_id+")");
-	 kmc.preview_embed.doPreviewEmbed("multitab_playlist", null, null, true, uiconf_id); // id, name, description, is_playlist, uiconf_id
+	 if (previewOnly==true)
+		 alert('previewOnly from studio');
+	 kmc.preview_embed.doPreviewEmbed("multitab_playlist", null, null, null, true, uiconf_id); // id, name, description, is_playlist, uiconf_id
  }
 // function openPlayer(id, name, description, is_playlist, uiconf_id) {
 //	kmc.preview_embed.doPreviewEmbed(id, name, description, is_playlist, uiconf_id);
