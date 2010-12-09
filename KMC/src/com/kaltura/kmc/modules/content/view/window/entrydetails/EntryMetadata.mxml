@@ -227,12 +227,14 @@
 			}
 			private function onStandardClick():void {
 				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.SIMPLE);
+				deleayEditors();
 				pausePreview();
 			}
 			
 			
 			private function onAdvancedEditor():void {
 				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.ADVANCED);
+				deleayEditors();
 				pausePreview();
 			}
 			
@@ -478,6 +480,15 @@
 				return "";
 			}
 
+			
+			
+			[Bindable]
+			private var _simpleEditorTimer:Boolean = true;
+			[Bindable]
+			private var _advancedEditorTimer:Boolean = true;
+			
+			
+			
 			[Bindable]
 			private var _simpleEditorEnable:Boolean = true;
 			[Bindable]
@@ -539,8 +550,27 @@
 			{
 				return _previewOnly;
 			}
-
-
+			/**
+			 * This function prevents the user from re-click the editors for 5 sec because it takse time to open 
+			 * the HTML editors and users re-click the editors. 
+			 */
+			protected function deleayEditors():void
+			{
+				var t:Timer = new Timer(5000,1);
+				t.addEventListener(TimerEvent.TIMER_COMPLETE,onDelayDone);
+				_simpleEditorTimer = false;
+				_advancedEditorTimer = false;
+				t.start();
+			}
+			/**
+			 * 5 sec over - return the ability to the editor buttons
+			 */
+			protected function onDelayDone(event:TimerEvent):void
+			{
+				event.target.removeEventListener(TimerEvent.TIMER_COMPLETE,onDelayDone);
+				_simpleEditorTimer = true;
+				_advancedEditorTimer = true;
+			}
 			
 		]]>
 	</mx:Script>
@@ -666,15 +696,15 @@
 						 visible="{!isLiveStream}" includeInLayout="{!isLiveStream}">
 					<mx:Label paddingTop="3" width="{LABEL_WIDTH}" styleName="drillDownLabel"
 							  text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
-					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY)}"
+					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"
 								   label="{resourceManager.getString('cms','simpleEditor')}"
 								   click="{onStandardClick()}"
-								   buttonMode="{booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY)}"/>
+								   buttonMode="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"/>
 					<mx:Label text="|" textAlign="center"/>
 					<mx:LinkButton id="editWithAdvanced" label="{resourceManager.getString('cms','advancedEditor')}"
 								   click="onAdvancedEditor()"
-								   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable)}"
-								   buttonMode="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable)}"/>
+								   enabled="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"
+								   buttonMode="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('cms','rating')}:" width="{LABEL_WIDTH}"
