@@ -1,9 +1,14 @@
 package com.kaltura.kmc.business {
+	import com.google.analytics.debug.Alert;
+	import com.kaltura.errors.KalturaError;
+	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.vo.PermissionVo;
 	import com.kaltura.utils.CastUtil;
 	
+	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
 	
+	import mx.controls.Alert;
 	import mx.events.IndexChangedEvent;
 
 	/**
@@ -12,7 +17,7 @@ package com.kaltura.kmc.business {
 	 * @author Eitan
 	 *
 	 */
-	public class PermissionManager {
+	public class PermissionManager extends EventDispatcher {
 
 		/**
 		 * role permissions (original XML from <code>init()</code> transformed)
@@ -125,33 +130,40 @@ package com.kaltura.kmc.business {
 		 * This function recieves a path to a component IE myCompo1.myCompo2.myButton
 		 * a starting target (instance of a uiComponent),a propery on the target to change
 		 * and a new value.
-		 * @param startComponent
-		 * @param compoentPath
-		 * @param componentProperty
-		 * @param newValue
+		 * @param startComponent	the component from which to calculate path
+		 * @param compoentPath		path to the component to act on
+		 * @param componentProperty	the property of the target component to be changed
+		 * @param newValue			new value for <code>componentProperty</code> 
 		 */
-		public function apply(startComponent:Object, compoentPath:String, componentProperty:String, newValue:*):void {
-			var idIndex:int = compoentPath.indexOf(startComponent["id"]);
+		public function apply(startComponent:Object, componentPath:String, componentProperty:String, newValue:*):void {
+			var idIndex:int = componentPath.indexOf(startComponent["id"]);
 			var chain:Array;
 			if (idIndex > -1) {
-				var str:String = compoentPath.substring(idIndex + startComponent["id"].length);
+				var str:String = componentPath.substring(idIndex + startComponent["id"].length);
 				chain = str.split(".");
 			}
 			else {
-				chain = compoentPath.split(".");
+				chain = componentPath.split(".");
 			}
-			//create the new chain without the dots 
+			// create the new chain without the dots 
 			var o:Object = startComponent;
 			if (o.id != chain[0]) {
 				// path starting from the middle: drop the first name because it referes to startComponent
 				chain.shift();
 			}
-			//find the current component position in chain
-			//iterate from the next position 
+			// find the current component position in chain
+			// iterate from the next position 
 			for (var i:uint = 0; i < chain.length; i++) {
 				// next in chain
-				if (chain[i])
-					o = o[chain[i]];
+				if (chain[i]) {
+					if (o.hasOwnProperty(chain[i])) {
+						o = o[chain[i]];
+					}
+					else {
+						dispatchError("component " + o.id + " doesn't have property " + chain[i]);
+						return;
+					}
+				}
 			}
 			var dt:XML = describeType(o);
 			if (dt.@isDynamic.toString() == "true") {
@@ -163,8 +175,18 @@ package com.kaltura.kmc.business {
 				assignProperty(o, componentProperty, newValue);
 			}
 			else {
-				trace("cannot push attribute " + componentProperty + " to component of type " + dt.@name.toString());
+				dispatchError("cannot push attribute " + componentProperty + " to component of type " + dt.@name.toString());
 			}
+		}
+		
+		
+		/**
+		 * dispatch an error event 
+		 * @param errorString	error text to present to the user
+		 */		
+		protected function dispatchError(errorString:String):void {
+			var kee:KmcErrorEvent = new KmcErrorEvent(KmcErrorEvent.ERROR, errorString);
+			dispatchEvent(kee);
 		}
 
 
@@ -193,12 +215,22 @@ package com.kaltura.kmc.business {
 		 * @return
 		 *
 		 */
-		public function getRelevantSubTabsToHide(module:String):Array {
+		public function getRelevantSubTabsToHide(module:String = null):Array {
 			var arr:Array = new Array();
-			for each (var tabName:String in _hideTabs) {
-//				trace (tabName);
-				if (tabName.indexOf(module) > -1 && tabName.indexOf(".") > -1) {
-					arr.push(tabName.split(".").pop().toString()); //isolate the main tab name
+			var tabName:String;
+			if (module) {
+				for each (tabName in _hideTabs) {
+					if (tabName.indexOf(module) > -1 && tabName.indexOf(".") > -1) {
+						arr.push(tabName.split(".").pop().toString()); //isolate the main tab name
+					}
+				}
+			}
+			else {
+				// this is the KMC module dropping thingy
+				for each (tabName in _hideTabs) {
+					if (tabName.indexOf(".") == -1) {
+						arr.push(tabName); 
+					}
 				}
 			}
 			return arr;

@@ -209,10 +209,10 @@ package com.kaltura.kmc.modules {
 
 			loadUiconf(uiconfid);
 
-			var moduleVersion:ContextMenuItem = new ContextMenuItem(getModuleName()+" : "+getModuleVersion());
-			cm.customItems.push(moduleVersion);
-			
-			this.contextMenu = cm;
+//			var moduleVersion:ContextMenuItem = new ContextMenuItem(getModuleName()+" : "+getModuleVersion());
+//			cm.customItems.push(moduleVersion);
+//			
+//			this.contextMenu = cm;
 
 		}
 		

@@ -4,7 +4,6 @@
 				paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
-			import com.flexspy.FlexSpy;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.uiConf.UiConfGet;
@@ -12,7 +11,6 @@
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.business.PermissionsParser;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcModuleEvent;
@@ -23,15 +21,9 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaUiConf;
 			
-			import flash.net.navigateToURL;
-			
 			import mx.controls.Alert;
 			import mx.core.Application;
-			import mx.core.Container;
-			import mx.core.FlexBitmap;
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
-			import mx.events.ModuleEvent;
 			import mx.events.StyleEvent;
 			import mx.modules.ModuleLoader;
 
@@ -93,8 +85,7 @@
 			/**
 			 * Singletone PermissionManager
 			 **/
-			
-			public var permissionManager:PermissionManager  = PermissionManager.getInstance();
+			public var permissionManager:PermissionManager;
 
 
 			// ==============================================================================
@@ -120,8 +111,25 @@
 				if (event.type == StyleEvent.ERROR) {
 					alert(event.errorText, "Skin Load Error");
 				}
+				
+				// remove modules that should not be loaded from the KMC uiconf
+				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(null);
+				for each (var moduleName:String in tabsToHide) {
+					removeModule(_uiconf, moduleName);
+				}
+				
 				// switch to needed tab
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
+			}
+			
+			/**
+			 * remove a module from the KMC uiconf
+			 * @param moduleId	id of module to remove
+			 * */
+			protected function removeModule(uiconf:XML, moduleId:String):void {
+				if (uiconf.modules.module.(@id == moduleId).length() > 0) {
+					delete uiconf.modules.module.(@id == moduleId)[0];
+				}
 			}
 
 
@@ -136,11 +144,6 @@
 
 				var version:ContextMenuItem = new ContextMenuItem("KMC version:" + VERSION);
 				_cm.customItems.push(version);
-
-				//TODO . remove before release
-				var flexSpy:ContextMenuItem = new ContextMenuItem("flex spy");
-				flexSpy.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, onFlexSpy, false, 0, true);
-				_cm.customItems.push(flexSpy);
 
 				this.contextMenu = _cm;
 
@@ -185,21 +188,13 @@
 				var mr:MultiRequest = new MultiRequest();
 
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
-				var uiconf2:UiConfGet = new UiConfGet(objParam.permissionuiconf);
+				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
-				//TODO insert role fetching here too 
+				//TODO + insert role fetching here too 
 				mr.addAction(uiconf);
-				mr.addAction(uiconf2);
+				mr.addAction(permissions);
 				_modelLocator.kalturaClient.post(mr);
-			}
-
-
-			/**
-			 * show flexspy
-			 */
-			protected function onFlexSpy(event:*):void {
-				FlexSpy.show();
 			}
 
 
@@ -234,7 +229,6 @@
 					return;
 				}
 				
-				
 				// loaded data
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
@@ -242,12 +236,12 @@
 
 				// permissions:
 				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
-				//TODO insert role fetching here. right now this is just for developing  
-				var roleOfCurrentUser:String = "CONTENT_INGEST_BASE,CONTENT_INGEST_UPLOAD,CONTENT_INGEST_BULK_UPLOAD,CONTENT_INGEST_ADD_MIX," +
+				//TODO + insert role fetching here. right now this is just for developing  
+				var roleOfCurrentUser:String = //"CONTENT_INGEST_BASE,CONTENT_INGEST_UPLOAD,CONTENT_INGEST_BULK_UPLOAD,CONTENT_INGEST_ADD_MIX," +
 					// content management
 					"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL," +
 					"CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE," +
-					"CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_EDIT_CATEGORIES," +
+					"CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_EDIT_CATEGORIES," + //CONTENT_MANAGE_EMBED_CODE,
 					// content moderation
 					"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA," +
 					// playlist
@@ -265,11 +259,14 @@
 					//TODO + transcoding settings (screens are not ready)
 					"TRANSCODING_BASE,TRANSCODING_ADD,TRANSCODING_UPDATE,TRANSCODING_DELETE," +
 					// custom metadata
-					"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," +
+					"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
 					// administration
-					"ADMIN_BASE,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE";//ADMIN_USER_ADD,
+					"ADMIN_BASE,ADMIN_USER_UPDATE,ADMIN_USER_ADD,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE" +
+					// analytics
+					"ANALYTICS_BASE";
 					
-				
+				permissionManager = PermissionManager.getInstance();
+				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				permissionManager.init(partnerPermissionXml, roleOfCurrentUser);
 
 				// load skin
@@ -330,6 +327,11 @@
 					// take the first on the KMC uiconf
 					mInfo = _uiconf.modules.module[0];
 					o = {moduleName : mInfo.@id.toString()};
+				}
+				if (!mInfo) {
+					var s:String = "module " + o.moduleName + " not available";
+					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, s));
+					return;
 				}
 				var url:String = _modulesFolder + "/" + mInfo.@path;
 				var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);

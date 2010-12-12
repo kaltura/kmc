@@ -1,11 +1,11 @@
 package com.kaltura.kmc.modules.content.model {
 	import com.adobe.cairngorm.model.IModelLocator;
+	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.kmc.modules.content.model.search.SearchData;
 	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.kmc.modules.content.vo.ListableVo;
-	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseSyndicationFeedFilter;
@@ -76,8 +76,10 @@ package com.kaltura.kmc.modules.content.model {
 		 */
 		public var openPlayer:String = "openPlayer";
 		
-		
-		
+		/**
+		 * on preview & embed, should player embedcode be presented 
+		 */		
+		public var showEmbedCode:Boolean = true;
 		
 		// ------------------------------------------------------------
 		// current view

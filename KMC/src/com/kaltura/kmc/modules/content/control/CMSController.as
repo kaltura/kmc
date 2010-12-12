@@ -119,10 +119,14 @@ package com.kaltura.kmc.modules.content.control
 			
 			//distribution
 			addCommand(DistributionProfileEvent.LIST, ListDistributionProfilesCommand);
+			
 			//thumb asset
 			addCommand(ThumbnailAssetEvent.LIST, ListThumbnailAssetCommand);
 			//addCommand(ThumbnailAssetEvent.DELETE, DeleteThumbnailAssetCommand);
 			//addCommand(ThumbnailAssetEvent.SET_AS_DEFAULT, SetDefaultThumbnailAssetCommand);
+			
+			//embed status
+			addCommand(EmbedStatusEvent.SET_EMBED_STATUS, SetEmbedStatusCommand);
 		}
 	}
 }
