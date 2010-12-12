@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="40" styleName="pagerTopBox">
+
+	<mx:Metadata>
+
+		[Style(name="pagerLastBtn",type="String")]
+		[Style(name="pagerFirstBtn",type="String")]
+		[Style(name="pagerBtn",type="String")]
+		[Style(name="pagerBox",type="String")]
+		[Style(name="pagerTopBox",type="String")]
+		
+		[Event(name="change",type="flash.events.Event")]
+		[Event(name="nextPage", type="com.kaltura.events.PagingEvent")]
+		[Event(name="prvPage", type="com.kaltura.events.PagingEvent")]
+		[Event(name="firstPage", type="com.kaltura.events.PagingEvent")]
+		[Event(name="lastPage", type="com.kaltura.events.PagingEvent")]
+		[Event(name="getPageNum", type="com.kaltura.events.PagingEvent")]
+		[Event(name="rowsInPageChange", type="com.kaltura.events.PagingEvent")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.events.PagingEvent;
+			import com.kaltura.vo.KalturaFilterPager;
+			
+			import mx.controls.Button;
+			import mx.controls.LinkButton;
+			import mx.events.ListEvent;
+			
+			public var prevString:String = "<<";
+			public var nextString:String = ">>";
+			
+			public var firstString:String = "|<";
+			public var lastString:String = ">|";
+			
+			
+			
+			// ciel ( total entries count / page size );
+			private var _totalPageCount : int; 
+			
+			// the current selected page
+			private var _selectedPage : int = 1;
+			
+			[Bindable] public var kalturaFilterPager:KalturaFilterPager = new KalturaFilterPager();
+			[Bindable] private var _rowsInPage : Array = [10,25,50,100,250,500];
+			[Bindable] public var showRowsInPage : Boolean = true;
+			
+			[Bindable] public function get selectedPage() : int { return _selectedPage; }
+			
+			public function set selectedPage( value : int ) : void
+			{
+				if( _selectedPage == value ) return;
+				
+				_selectedPage = value;
+				updatePaging();
+				
+				dispatchEvent( new Event( Event.CHANGE ) ); 
+			}
+			
+			// the total count of the entries that the pager represent
+			private var _totalCount : int; 
+			[Bindable] public function get totalCount() : int { return _totalCount; }
+			public function set totalCount( value : int ) : void 
+			{ 
+				if( _totalCount == value ) return;
+				
+				_totalCount = value;
+				_totalPageCount = Math.ceil(_totalCount/_pageSize);
+				updatePaging();
+			}
+			
+			private var _pageSize : int = 10;
+			[Bindable] public function get pageSize() : int { return _pageSize; }
+			public function set pageSize( value : int ) : void 
+			{ 
+				if( _pageSize == value ) return;
+				
+				_pageSize = value;
+				_totalPageCount = Math.ceil(_totalCount/_pageSize);
+				updatePaging(); 
+			}
+			 
+			
+			
+			// the left and right links count will be set by it	
+			private var _sideLinkCount : int = 2;
+			
+			private var doubleEnd : Boolean = true;
+			
+			[Bindable] public function get sideLinkCount() : int { return _sideLinkCount; }
+			public function set sideLinkCount( value : int ) : void { _sideLinkCount = value }
+				 
+			// this is the main function to draw the paging
+			private function updatePaging() : void
+			{
+				pagingContainer.removeAllChildren();
+				
+				if(_selectedPage > 1)
+				{
+					//add previous button
+					var btn : Button = new LinkButton();
+					btn.label = prevString;
+					btn.styleName = "pagerFirstBtn";
+					btn.addEventListener( MouseEvent.CLICK , previous );
+					pagingContainer.addChild( btn );
+				}
+				
+				var min:int = 0;// = _selectedPage-_sideLinkCount;
+				var max:int = _totalPageCount; // = _selectedPage+_sideLinkCount;
+				// case end / begin 
+				if (doubleEnd)
+				{
+					var total:int = _sideLinkCount*2+1;
+					
+					for (var j:uint=1;j<=total;j++)
+					{
+ 						if (Math.abs(max-min) == total-1)
+							break; 
+						
+						if (_selectedPage+j <= _totalPageCount )
+							max = _selectedPage+j;
+						if (_selectedPage-j>=1 )
+							min = _selectedPage-j;
+					}
+					
+					// handle end case of selected is 1
+					if (_selectedPage == 1 && max < _totalPageCount &&  max < total)
+						max = total;
+				}
+				
+
+				
+				
+				for( var i:int=min; i<=max ; i++ )
+				{
+					//paging must be positive and less the total page count
+					if(i>0 && i<= _totalPageCount)
+					{
+						var linkBtn : LinkButton = new LinkButton();
+						linkBtn.toggle = true;
+						linkBtn.label = i.toString();
+						linkBtn.styleName = "pagerBtn";
+						
+						if( i == _selectedPage )
+						{
+							linkBtn.selected = true;
+							linkBtn.enabled = false;
+						}
+						else
+							linkBtn.addEventListener( MouseEvent.CLICK , setNewPage );
+							
+						pagingContainer.addChild( linkBtn );
+					}
+				}
+				
+				if(_selectedPage < _totalPageCount)
+				{
+					//add previous button
+					var btn2 : Button = new LinkButton();
+					btn2.label = nextString;
+					btn2.styleName = "pagerLastBtn";
+					btn2.addEventListener( MouseEvent.CLICK , next );
+					pagingContainer.addChild( btn2 );
+				}
+				
+				
+			}
+			
+			private function setNewPage( event : MouseEvent ) : void
+			{
+				selectedPage = int( (event.target as LinkButton).label );
+				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
+			}
+			
+			/**
+			 * change the page size - dispatches an event PagingEvent.ROWS_IN_PAGE_CHANGE
+			 */
+			private function resultSizeChange( event : ListEvent ) : void
+			{
+				
+				pageSize = int(rowInPageCb.selectedItem);
+				selectedPage = 1;
+				
+				kalturaFilterPager.pageSize = pageSize;
+				kalturaFilterPager.pageIndex = 1;
+				
+				dispatchEvent(new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE));
+			}
+			// PUBLIC FUNCTIONS
+			//////////////////////////////////////////////////////////////////
+			
+			public function previous( event : MouseEvent = null ) : void
+			{
+				if(_selectedPage > 1)
+				{
+					selectedPage = _selectedPage-1;
+					dispatchEvent(new PagingEvent(PagingEvent.PRV_PAGE));
+				}
+			}
+			
+			public function next( event : MouseEvent = null ) : void
+			{
+				if( _selectedPage < _totalPageCount )
+				{
+					selectedPage = _selectedPage+1;
+					dispatchEvent(new PagingEvent(PagingEvent.NEXT_PAGE));
+				}
+			}
+			////////////////////////////////////////////////////////////////////
+		]]>
+	</mx:Script>
+	<mx:HBox id="pagingContainer" height="100%" styleName="pagerBox" />
+	
+	<mx:ComboBox id="rowInPageCb"  
+				 visible="{showRowsInPage}" includeInLayout="{showRowsInPage}"
+				 dataProvider="{_rowsInPage}" 
+				 rowCount="{_rowsInPage.length}" 
+				 change="{resultSizeChange(event)}" /> 
+</mx:HBox>

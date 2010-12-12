@@ -3,15 +3,17 @@
 	verticalAlign="middle" height="40">
     <mx:Script>
     	<![CDATA[
-    		import mx.resources.IResourceManager;
-    		import mx.resources.ResourceManager;
-    		import mx.resources.ResourceBundle;
-    		import com.kaltura.vo.KalturaFilterPager;
     		import com.kaltura.events.PagingEvent;
     		import com.kaltura.utils.pager.PagerEvent;
+    		import com.kaltura.vo.KalturaFilterPager;
+    		
+    		import flash.events.TextEvent;
+    		
     		import mx.events.ItemClickEvent;
     		import mx.events.ListEvent;
-			import flash.events.TextEvent; 
+    		import mx.resources.IResourceManager;
+    		import mx.resources.ResourceBundle;
+    		import mx.resources.ResourceManager; 
 			
 			[ResourceBundle("windows")]
 			private static var rb:ResourceBundle;
@@ -49,7 +51,21 @@
     			kalturaFilterPager.pageIndex = selectedPage;
     			if( _selectedPage<=_lastPage && _selectedPage>=_firstPage)
     			{		
-    				numbers.htmlText = getCurrentPaging(_selectedPage-_oneSizeDelta,_selectedPage+_oneSizeDelta,_selectedPage);
+					var from:Number = _selectedPage-_oneSizeDelta;
+					var to:Number = _selectedPage+_oneSizeDelta;
+					
+/* 					trace("BEFORE >>> from:\t\t\t",from,"to:",to , "selected:",_selectedPage);
+					
+					if ( from < 1  )
+						to = Math.min(6,_lastPage);
+					
+					trace("BETWEEN >>> from:\t\t\t",from,"to:",to , "selected:",_selectedPage);
+ 					if ( to > _lastPage-2  )
+						from = Math.max(from,_lastPage-5); 
+
+					trace("AFTER >>> from:\t\t\t",from,"to:",to , "selected:",_selectedPage); */
+					
+    				numbers.htmlText = getCurrentPaging(from,to,_selectedPage);
     				
 				    if(selectedPage == _firstPage)
 				    {
