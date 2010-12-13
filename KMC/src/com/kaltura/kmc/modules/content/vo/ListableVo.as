@@ -20,14 +20,14 @@ package com.kaltura.kmc.modules.content.vo
 		/**
 		 * paging for current data 
 		 */		
-		public var pagingComponent:*;
+		public var pagingComponent:Paging;
 		
 		/**
 		 * @copy #parentCaller 
 		 */		
 		private var _parentCaller:Object;
 		
-		public function ListableVo(filter:Object,pagingComponent:*,arrayCollection:ArrayCollection, parentCaller:Object=null)
+		public function ListableVo(filter:Object,pagingComponent:Paging,arrayCollection:ArrayCollection, parentCaller:Object=null)
 		{
 			this.arrayCollection = arrayCollection;
 			this.pagingComponent = pagingComponent;
