@@ -12,6 +12,7 @@
 		[Style(name="pagerBtn",type="String")]
 		[Style(name="pagerBox",type="String")]
 		[Style(name="pagerTopBox",type="String")]
+		[Style(name="selectRowsLable",type="String")]
 		
 		[Event(name="change",type="flash.events.Event")]
 		[Event(name="nextPage", type="com.kaltura.events.PagingEvent")]
@@ -42,7 +43,11 @@
 			public var firstString:String = rm.getString('windows', 'first');
 			public var lastString:String = rm.getString('windows', 'last');
 			
+			[Bindable]
+			public var rowsComboLabel:String = rm.getString('windows', 'rowsInPage');
 			
+			[Bindable]
+			protected var _visible:Boolean = false; 
 			/**
 			 * Show the last & first buttons
 			 */
@@ -81,7 +86,7 @@
 			 * in case of page 1 and last page, to show only half of the list or full 
 			 * IE  doubleEnd = true with selected 1 would show 12345 and with false 123
 			 */
-			protected var doubleEnd : Boolean = true;
+			public var doubleEnd : Boolean = true;
 			
 			[Bindable] 
 			public var kalturaFilterPager:KalturaFilterPager = new KalturaFilterPager();
@@ -228,6 +233,7 @@
 						
 						pagingContainer.addChild( linkBtn );
 					}
+					_visible = true;
 				}
 				
 				if(_selectedPage < _totalPageCount)
@@ -330,10 +336,15 @@
 		]]>
 	</mx:Script>
 	<mx:HBox id="pagingContainer" height="100%" styleName="pagerBox" />
-	
-	<mx:ComboBox id="rowInPageCb"  
-				 visible="{showRowsInPage}" includeInLayout="{showRowsInPage}"
-				 dataProvider="{rowsInPage}" 
-				 rowCount="{rowsInPage.length}" 
-				 change="{resultSizeChange(event)}" /> 
+	<mx:HBox visible="{_visible}" includeInLayout="{_visible}" verticalAlign="middle" >
+		<mx:Label id="rowInPageLbl" text="{rowsComboLabel}" 
+				  visible="{showRowsInPage}" 
+				  styleName="selectRowsLable"
+				 />
+		<mx:ComboBox id="rowInPageCb" 
+					 visible="{showRowsInPage}" includeInLayout="{showRowsInPage}"
+					 dataProvider="{rowsInPage}" 
+					 rowCount="{rowsInPage.length}" 
+					 change="{resultSizeChange(event)}" /> 
+	</mx:HBox>
 </mx:HBox>
