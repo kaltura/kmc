@@ -10,6 +10,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.hurlant.crypto.symmetric.CBCMode;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
@@ -154,6 +155,7 @@
 				_ready = true;
 				// re-trigger the mode setter
 				setMode(_mode);
+				PermissionManager.getInstance().applyAllAttributes(this, "userDrilldown");
 			}
 
 			
@@ -247,7 +249,8 @@
 			
 
 			/**
-			 * current window mode
+			 * current window mode.
+			 * optional values are listed in <code>DrilldownMode</code> class
 			 * */
 			public function get mode():String {
 				return _mode;
@@ -288,14 +291,15 @@
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%">
 				<mx:ComboBox id="roleCb" dataProvider="{_roles}" labelField="name" />
 				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add_role')}"
-							   click="openRoleWindow()"/>
+							   id="addRoleBtn" click="openRoleWindow()"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'udd_description')}" width="100%">
 				<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
 			</mx:FormItem>
 		</mx:Form>
 		<mx:HBox width="100%" horizontalAlign="center">
-			<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" click="setUserDataFromForm(event)"/>
+			<mx:Button id="saveBtn" click="setUserDataFromForm(event)"
+					   label="{ResourceManager.getInstance().getString('admin', 'save')}" />
 		</mx:HBox>
 
 	</mx:VBox>

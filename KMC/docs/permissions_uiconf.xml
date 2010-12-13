@@ -2,7 +2,7 @@
 	<permissions>
 		<!-- Content Ingestion -->
 		<permissionGroup text="Content Ingestion" id="CONTENT_INGEST_BASE">
-			<permission text="KCW" id="CONTENT_INGEST_UPLOAD">
+			<permission text="Upload Files" id="CONTENT_INGEST_UPLOAD">
 				<ui id="content.upload.profilesCb" enabled="false"/>
 				<ui id="content.upload.kcwBtn" enabled="false" buttonMode="false"/>
 			</permission>
@@ -66,6 +66,7 @@
 		<permissionGroup text="Playlist management" id="PLAYLIST_BASE">
 			<permission text="create playlist" id="PLAYLIST_ADD">
 				<ui id="content.playlists.actionsBox" visible="false" includeInLayout="false" />
+				<ui id="content.manage.toolBar.playlistCombo" visible="false" includeInLayout="false" />
 			</permission>
 			<permission text="modify playlist" id="PLAYLIST_UPDATE">
 				<ui id="ruleBasedPlaylistDrilldown" editable="false" />
@@ -74,7 +75,9 @@
 			<permission text="delete playlist" id="PLAYLIST_DELETE">
 				<ui id="content.playlists.toolBar.deleteBtn" visible="false" />
 			</permission>
-			<permission text="grab playlist embed code" id="PLAYLIST_EMBED_CODE"></permission>
+			<permission text="grab playlist embed code" id="PLAYLIST_EMBED_CODE">
+				<ui id="content.generalPermissions" showEmbedCode="false" />
+			</permission>
 		</permissionGroup>
 		<!-- Syndication management -->
 		<permissionGroup text="Syndication management" id="SYNDICATION_BASE">
@@ -181,14 +184,29 @@
 				<ui id="admin.users.actionButtonsContainer" visible="false" includeInLayout="false"/>
 			</permission>
 			<permission text="modify users" id="ADMIN_USER_UPDATE">
-				<ui id="admin.users.table" comboHideItems="edit"/>
+				<ui id="admin.users.table" comboHideItems="unblock"/>
+				<ui id="userDrilldown.emailTi" enabled="false"/>
+				<ui id="userDrilldown.firstNameTi" enabled="false"/>
+				<ui id="userDrilldown.lastNameTi" enabled="false"/>
+				<ui id="userDrilldown.roleCb" enabled="false"/>
+				<ui id="userDrilldown.addRoleBtn" visible="false"/>
+				<ui id="userDrilldown.saveBtn" visible="false" includeInLayout="false"/>
 			</permission>
 			<permission text="delete users" id="ADMIN_USER_DELETE">
 				<ui id="admin.users.table" comboHideItems="delete"/>
 			</permission>
-			<permission text="Create roles" id="ADMIN_ROLE_ADD"></permission>
-			<permission text="modify roles" id="ADMIN_ROLE_UPDATE"></permission>
-			<permission text="delete roles" id="ADMIN_ROLE_DELETE"></permission>
+			<permission text="Create roles" id="ADMIN_ROLE_ADD">
+				<ui id="admin.roles.actionButtonsContainer" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify roles" id="ADMIN_ROLE_UPDATE">
+				<ui id="userDrilldown.nameTi" enabled="false"/>
+				<ui id="userDrilldown.descriptionTi" enabled="false"/>
+				<ui id="userDrilldown.saveBtn" visible="false"/>
+				<ui id="userDrilldown.myForm" visible="false"/>
+			</permission>
+			<permission text="delete roles" id="ADMIN_ROLE_DELETE">
+				<ui id="admin.role.table" comboHideItems="delete"/>
+			</permission>
 		</permissionGroup>
 		<!-- Video Analytics -->
 		<permissionGroup text="Video Analytics" id="ANALYTICS_BASE">
