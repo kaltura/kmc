@@ -37,5 +37,14 @@ package com.kaltura.utils
 			}
 			return hostUrl;
 		}
+		
+		
+		public static function logicalAnd(exp1:Boolean, exp2:Boolean):Boolean {
+			return exp1 && exp2;
+		}
+		
+		public static function logicalOr(exp1:Boolean, exp2:Boolean):Boolean {
+			return exp1 || exp2;
+		}
 	}
 }
