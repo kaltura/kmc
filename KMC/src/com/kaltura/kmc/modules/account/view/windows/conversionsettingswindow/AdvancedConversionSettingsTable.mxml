@@ -1,67 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" rowHeight="40" 
-	headerRelease="headerReleaseHandler(event)" itemClick="dispatchSelection(event)" change="onSelectionsChange(event)"
-	>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" rowHeight="40"
+			 headerRelease="headerReleaseHandler(event)" itemClick="dispatchSelection(event)"
+			 change="onSelectionsChange(event)" creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
-			
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionProfilePopUpWindow;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+
+			import mx.core.Application;
 			import mx.events.DataGridEvent;
-			
-	//		[Bindable]public var allSelected:Boolean = false;
-			
-			private function headerReleaseHandler(event:DataGridEvent):void
-			{
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+
+			/**
+			 * value for the type property of the <code>editProfile</code> event
+			 * */
+			public static const EDIT_PROFILE:String = "editProfile";
+
+
+			/**
+			 * prevent built in sorting 
+			 * */
+			protected function headerReleaseHandler(event:DataGridEvent):void {
 				event.preventDefault();
 			}
-			
-			public function dispatchSelection(event:Event):void
-			{
-				for each(var cpVo1:ConversionProfileVO in this.dataProvider)
-				{
+
+
+			protected function dispatchSelection(event:Event):void {
+				for each (var cpVo1:ConversionProfileVO in this.dataProvider) {
 					cpVo1.selected = false;
 				}
-				for each(var cpVo:ConversionProfileVO in this.selectedItems)
-				{
+				for each (var cpVo:ConversionProfileVO in this.selectedItems) {
 					cpVo.selected = true && !cpVo.profile.isDefault;
 					cpVo.dispatchEvent(new Event(ConversionSettingsEvent.MARK_CONVERSION_PROFILES));
-				}	
+				}
 			}
-			
-			private function onSelectionsChange(event:Event):void
-			{
+
+
+			protected function onSelectionsChange(event:Event):void {
 				var cpVo:ConversionProfileVO = this.selectedItem as ConversionProfileVO;
-				if(cpVo != null)
-				{
-					if(cpVo.profile.isDefault)
-					{
+				if (cpVo != null) {
+					if (cpVo.profile.isDefault) {
 						this.selectedItem = null;
 					}
 				}
 			}
-			
-			
-			
+
+			/**
+			 * open drilldown window
+			 * */
+			protected function openProfileDrilldown(e:Event):void {
+				var editConversionProfileWin:ConversionProfilePopUpWindow = new ConversionProfilePopUpWindow();
+				editConversionProfileWin.currentState = ConversionProfilePopUpWindow.EDIT_STATE;
+				editConversionProfileWin.conversionProfile = (e.target.data as ConversionProfileVO).clone();
+				PopUpManager.addPopUp(editConversionProfileWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(editConversionProfileWin);
+			}
+
+			/**
+			 * listen to ItemRenderer's events
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(AdvancedConversionSettingsTable.EDIT_PROFILE, openProfileDrilldown);
+			}
 		]]>
 	</mx:Script>
-	
-	
+
+
 	<mx:columns>
-		<!--<mx:DataGridColumn editorDataField="selected" width="40" dataField="selected" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileSelectionRenderer">
-			<mx:headerRenderer>
-					<mx:Component>
-						<mx:HBox horizontalAlign="center" verticalAlign="middle">
-							<mx:CheckBox id="hcb" buttonMode="true" 
-								selected="{outerDocument.allSelected}" 
-								change="{outerDocument.dispatchSelection(event)}"/>
-						</mx:HBox>
-					</mx:Component>
-			</mx:headerRenderer>
-		</mx:DataGridColumn>-->
-		<mx:DataGridColumn width="45" headerText="{resourceManager.getString('account','id')}" dataField="id" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileIdRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','transNameCol')}" dataField="name" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileNameRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','transDescCol')}" dataField="description" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileDescriptionRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','transFlavSelcetedCol')}" dataField="flavors" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileFlavorsRenderer"/>
+		<mx:DataGridColumn width="45" headerText="{resourceManager.getString('account','id')}" dataField="id"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileIdRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','transNameCol')}" dataField="name"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileNameRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','transDescCol')}" dataField="description"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileDescriptionRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','transFlavSelcetedCol')}"
+						   dataField="flavors"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.ConversionProfileFlavorsRenderer"/>
 	</mx:columns>
 </mx:DataGrid>

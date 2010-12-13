@@ -43,7 +43,7 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function result(event:Object):void
 		{
-			event.toLocaleString();
+			trace("now got data");
 			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
 			var kEvent:KalturaEvent = event as KalturaEvent;
 			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;

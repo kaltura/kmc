@@ -14,8 +14,12 @@ package com.kaltura.kmc.modules.account.vo
 		
 		private var _selected:Boolean = false;
 		public var kFlavor:KalturaFlavorParams = new KalturaFlavorParams();
+		
+		/**
+		 * should the line in the conversion settings table representing this item be editable
+		 * */
+		public var editable:Boolean = true;
 				
-		public function FlavorVO(){}
 		
 		public function get selected():Boolean
 		{

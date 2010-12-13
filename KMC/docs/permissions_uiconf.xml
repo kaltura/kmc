@@ -144,9 +144,20 @@
 		</permissionGroup>
 		<!-- Transcoding settings -->
 		<permissionGroup text="Transcoding settings" id="TRANSCODING_BASE">
-			<permission text="Create" id="TRANSCODING_ADD"></permission>
-			<permission text="modify" id="TRANSCODING_UPDATE"></permission>
-			<permission text="delete" id="TRANSCODING_DELETE"></permission>
+			<permission text="Create" id="TRANSCODING_ADD">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="TRANSCODING_UPDATE">
+				<ui id="account.transcoding.simpleTable" dataEditable="false" />
+				<ui id="account.transcoding.saveButton" visible="false" />
+				<ui id="conversionProfileDrilldown.conversionNameTextInput" enabled="false" />
+				<ui id="conversionProfileDrilldown.conversionDescTextArea" enabled="false" />
+				<ui id="conversionProfileDrilldown.flavorsTable" dataEditable="false" />
+				<ui id="conversionProfileDrilldown.submitBtn" visible="false" />
+			</permission>
+			<permission text="delete" id="TRANSCODING_DELETE">
+				<ui id="account.transcoding.deleteProfileBtn" visible="false" />
+			</permission>
 		</permissionGroup>
 		<!-- Custom data settings -->
 		<permissionGroup text="Custom data settings" id="CUSTOM_DATA_PROFILE_BASE">
@@ -225,6 +236,9 @@
 				<permission id="ACCOUNT_BASE"/>
 				<permission id="ACCOUNT_UPDATE_SETTINGS"/>
 			</tab>
+			<tab id="upgrade">
+				<permission id="UPGRADE_BASE"/>
+			</tab>
 			<tab id="integration">
 				<permission id="INTEGRATION_BASE"/>
 				<permission id="INTEGRATION_UPDATE_SETTINGS"/>
@@ -236,7 +250,7 @@
 				<permission id="ACCESS_CONTROL_DELETE"/>
 			</tab>
 		</module>
-		<!-- this module requres 3 of 4 boxes -->
+		<!-- this module requires 3 of 4 boxes -->
 		<module id="dashboard" min="3">
 			<!-- embed player -->
 			<permission id="CONTENT_MANAGE_EMBED_CODE"/>

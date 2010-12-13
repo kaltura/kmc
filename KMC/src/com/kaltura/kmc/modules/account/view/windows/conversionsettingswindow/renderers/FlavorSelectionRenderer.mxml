@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center"
 		 verticalAlign="middle" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-		 creationComplete="setSelectionCBox()" paddingLeft="4">
+		 paddingLeft="4">
 	<mx:Script>
 		<![CDATA[
-			import mx.utils.StringUtil;
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.ConversionSettingsTable;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
+			
+			import mx.utils.StringUtil;
 
 
-			private function onSelectionChaged(event:Event):void {
+			override public function set data(value:Object):void {
+				super.data = value;
+				setSelectionCBox();
+			}
+			
+			private function onSelectionChanged(event:Event):void {
 				var flavorObj:FlavorVO = data as FlavorVO;
 				flavorObj.selected = selectionCBox.selected;
 				updateFlavorsList();
@@ -64,7 +70,7 @@
 			}
 
 
-			public function setSelectionCBox():void {
+			private function setSelectionCBox():void {
 				selectionCBox.selected = false;
 				var cProfile:ConversionProfileVO = (this.parent.parent as ConversionSettingsTable).cProfile;
 				if ((cProfile == null) || (cProfile.profile.flavorParamsIds == null)) {
@@ -93,7 +99,7 @@
 		]]>
 	</mx:Script>
 
-
-	<mx:CheckBox id='selectionCBox' buttonMode="true" selected="{data.selected}" change="onSelectionChaged(event)"/>
+	<mx:CheckBox id='selectionCBox' buttonMode="{data.editable}" selected="{data.selected}" 
+				 change="onSelectionChanged(event)" enabled="{data.editable}"/>
 
 </mx:HBox>
