@@ -14,15 +14,22 @@
 			</permission>
 		</permissionGroup>
 		<!-- live stream-->
-		<permissionGroup text="manage live stream" id="CONTENT_MANAGE_ADD_LIVE_BASE" hideGroup="true">
+		<permissionGroup text="live stream" id="CONTENT_MANAGE_LIVE_BASE" hideGroup="true">
 			<permission text="manage live stream" id="CONTENT_MANAGE_ADD_LIVE">
 				<ui id="content.manage.toolBar.newStreamBtn" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="manage live stream" id="CONTENT_MANAGE_UPDATE_LIVE">
+				<ui id="entryDrilldown.liveStream.bitrate1Info" enabled="false" />
+				<ui id="entryDrilldown.liveStream.bitrate2Info" enabled="false" />
+				<ui id="entryDrilldown.liveStream.bitrate3Info" enabled="false" />
+				<ui id="entryDrilldown.liveStream.exportBtn" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
 		<!-- mix -->
 		<permissionGroup text="Create Remix" id="CONTENT_INGEST_ADD_MIX_BASE" hideGroup="true">
 			<permission text="Create Remix" id="CONTENT_INGEST_ADD_MIX">
-				
+				<ui id="entryDrilldown.entryMetaData" simpleEditorEnabled="false" />
+				<ui id="entryDrilldown.entryMetaData" advancedEditorEnabled="false" />
 			</permission>
 		</permissionGroup>
 		<!-- Content Management -->
@@ -50,7 +57,7 @@
 				<ui id="entryDrilldown.entryAcp.addBtn" visible="false"/>
 			</permission>
 			<permission text="Manage Custom Data" id="CONTENT_MANAGE_CUSTOM_DATA">
-				<ui id="entryDrilldown.customData" enabled="false"/>
+				<ui id="entryDrilldown.customData.all" enabled="false"/>
 			</permission>
 			<permission text="Delete Content" id="CONTENT_MANAGE_DELETE">
 				<ui id="content.manage.toolBar.deleteBtn" enabled="false" includeInLayout="false"/>
@@ -71,6 +78,9 @@
 				<ui id="entryDrilldown.entryMetaData.name_input" editable="false"/>
 				<ui id="entryDrilldown.entryMetaData.descriptionTi" editable="false"/>
 				<ui id="entryDrilldown.entryMetaData.tagsTi" editable="false"/>
+			</permission>
+			<permission text="Moderate metadata" id="CONTENT_MODERATE_CUSTOM_DATA">
+				<ui id="entryDrilldown.customData.all" enabled="false"/>
 			</permission>
 		</permissionGroup>
 		<!-- Playlist management -->
@@ -110,7 +120,6 @@
 			</permission>
 			<permission text="modify players" id="STUDIO_UPDATE_UICONF">
 				<ui id="wizard.stylePage.all" enabled="false" />
-				<ui id="wizard.advertizingPage.all" enabled="false" />
 				<ui id="wizard.templatePage.all" enabled="false" />
 				<ui id="wizard.previewPlayerPage.controls" enabled="false" />
 				<ui id="wizard.contentPage.removeBtn" enabled="false" />
@@ -123,10 +132,16 @@
 			<permission text="delete players" id="STUDIO_DELETE_UICONF">
 				<ui id="studio.playerList" comboHideItems="delete"/>
 			</permission>
+			<permission text="Select player content" id="STUDIO_SELECT_CONTENT">
+				<ui id="studio.playerList" comboHideItems="selectContent"/>
+				<ui id="wizard" hideTabs="contentPage"/>
+			</permission>
 		</permissionGroup>
-		<permissionGroup text="Studio" id="ADVERTISING_UPDATE_SETTINGS_BASE" hideGroup="true">
+		<!-- advertising -->
+		<permissionGroup text="Set advertising settings" id="ADVERTISING_UPDATE_SETTINGS_BASE" hideGroup="true">
 			<permission text="Set advertising settings" id="ADVERTISING_UPDATE_SETTINGS">
-				<ui id="wizard" hideTabs="advertizingPage"/>
+				<!--ui id="wizard" hideTabs="advertizingPage"/-->
+				<ui id="wizard.advertizingPage.all" enabled="false" />
 			</permission>
 		</permissionGroup>
 		<!-- Account settings -->
@@ -230,16 +245,40 @@
 	<!-- -->
 	
 	<uimapping>
+		<module id="admin">
+			<permission id="ADMIN_BASE"/>
+			<permission id="ADMIN_USER_ADD"/>
+			<permission id="ADMIN_USER_UPDATE"/>
+			<permission id="ADMIN_USER_DELETE"/>
+			<permission id="ADMIN_ROLE_ADD"/>
+			<permission id="ADMIN_ROLE_UPDATE"/>
+			<permission id="ADMIN_ROLE_DELETE"/>
+		</module>
 		<module id="content">
+			<tab id="manage">
+				<permission id="CONTENT_MANAGE_BASE"/>
+				<permission id="CONTENT_MANAGE_METADATA"/>
+				<permission id="CONTENT_MANAGE_ASSIGN_CATEGORIES"/>
+				<permission id="CONTENT_MANAGE_THUMBNAIL"/>
+				<permission id="CONTENT_MANAGE_SCHEDULE"/>
+				<permission id="CONTENT_MANAGE_ACCESS_CONTROL"/>
+				<permission id="CONTENT_MANAGE_CUSTOM_DATA"/>
+				<permission id="CONTENT_MANAGE_EMBED_CODE"/>
+				<permission id="CONTENT_MANAGE_DELETE"/>
+				<permission id="CONTENT_MANAGE_RECONVERT"/>
+				<permission id="CONTENT_MANAGE_EDIT_CATEGORIES"/>
+			</tab>
 			<tab id="moderation">
 				<permission id="CONTENT_MODERATE_BASE"/>
 				<permission id="CONTENT_MODERATE_METADATA"/>
+				<permission id="CONTENT_MODERATE_CUSTOM_DATA"/>
 			</tab>
 			<tab id="playlists">
 				<permission id="PLAYLIST_BASE"/>
 				<permission id="PLAYLIST_ADD"/>
 				<permission id="PLAYLIST_UPDATE"/>
 				<permission id="PLAYLIST_DELETE"/>
+				<permission id="PLAYLIST_EMBED_CODE"/>
 			</tab>
 			<tab id="syndication">
 				<permission id="SYNDICATION_BASE"/>
@@ -280,7 +319,20 @@
 				<permission id="ACCESS_CONTROL_UPDATE"/>
 				<permission id="ACCESS_CONTROL_DELETE"/>
 			</tab>
+			<tab id="transcoding">
+				<permission id="TRANSCODING_BASE"/>
+				<permission id="TRANSCODING_ADD"/>
+				<permission id="TRANSCODING_UPDATE"/>
+				<permission id="TRANSCODING_DELETE"/>
+			</tab>
+			<tab id="metadata">
+				<permission id="CUSTOM_DATA_PROFILE_BASE"/>
+				<permission id="CUSTOM_DATA_PROFILE_ADD"/>
+				<permission id="CUSTOM_DATA_PROFILE_UPDATE"/>
+				<permission id="CUSTOM_DATA_PROFILE_DELETE"/>
+			</tab>
 		</module>
+		
 		<!-- this module requires 3 of 4 boxes -->
 		<module id="dashboard" min="3">
 			<!-- embed player -->
