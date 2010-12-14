@@ -20,7 +20,7 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionProfilePopUpWindow;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
@@ -71,8 +71,7 @@
 			 * get data
 			 * */
 			public function init():void {
-				trace("now asking for data");
-				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				var getAllData:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				getAllData.dispatch();
 			}
 
@@ -194,7 +193,7 @@
 						}
 					}
 
-					var deletetProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
+					var deletetProfilesEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.DELETE_CONVERSION_PROFILE);
 					deletetProfilesEvent.data = ids;
 					deletetProfilesEvent.dispatch();
 				}
@@ -206,7 +205,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (simpleTable.isFlavorsSelected() && (simpleTable.cProfile.profile.flavorParamsIds != null)) {
-					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, simpleTable.cProfile);
+					var updateProfileEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, simpleTable.cProfile);
 					updateProfileEvent.dispatch();
 				}
 				else {

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.conversionProfile.ConversionProfileAdd;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	
@@ -30,7 +30,7 @@ package com.kaltura.kmc.modules.account.command
 		public function result(data:Object):void
 		{
 			_model.loadingFlag = false;
-			var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
+			var getAllProfilesEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES);
 			getAllProfilesEvent.dispatch();
 		}
 		

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.conversionProfile.ConversionProfileUpdate;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.vo.KalturaConversionProfile;
@@ -50,7 +50,7 @@ package com.kaltura.kmc.modules.account.command
 				Alert.show(ResourceManager.getInstance().getString('account', 'changesSaved'));
 			}
 			
-			var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
+			var getAllProfilesEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES);
 			getAllProfilesEvent.dispatch();
 		}
 		
@@ -65,7 +65,7 @@ package com.kaltura.kmc.modules.account.command
 				} else {
 					Alert.show(info && info.error && info.error.errorMsg);
 					
-					var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
+					var getAllProfilesEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES);
 					getAllProfilesEvent.dispatch();
 				}
 			}

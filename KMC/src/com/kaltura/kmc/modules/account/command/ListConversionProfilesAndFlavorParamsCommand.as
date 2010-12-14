@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.conversionProfile.ConversionProfileList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;
@@ -43,10 +44,10 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function result(event:Object):void
 		{
-			trace("now got data");
 			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
 			var kEvent:KalturaEvent = event as KalturaEvent;
 			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
+			
 			for each(var kFlavor:Object in flavorsRespones.objects)
 			{
 				if (kFlavor is KalturaFlavorParams) {
@@ -55,8 +56,6 @@ package com.kaltura.kmc.modules.account.command
 					flvorsTmpArrCol.addItem(flavor);
 				}
 			}
-			_model.flavorsData = flvorsTmpArrCol;
-			
 			var convProfilesTmpArrCol:ArrayCollection = new ArrayCollection();
 			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[1] as KalturaConversionProfileListResponse;
 			for each(var cProfile:KalturaConversionProfile in convsProfilesRespones.objects)
@@ -74,7 +73,26 @@ package com.kaltura.kmc.modules.account.command
 				}
 				
 			}
+			var selectedItems:Array = (convProfilesTmpArrCol[0] as ConversionProfileVO).profile.flavorParamsIds.split(",");
+			for each (var flavora:String in selectedItems)
+			{
+				trace(flavora);
+				for each (var flavorVO:FlavorVO in flvorsTmpArrCol )
+				{
+					if (flavora == flavorVO.kFlavor.id.toString()) 
+						flavorVO.selected = true;
+				}
+			}
+			
+
+			
+			
+			_model.flavorsData = flvorsTmpArrCol;
 			_model.conversionData = convProfilesTmpArrCol;
+			
+/*			var tsEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.MARK_FLAVORS, false);
+			tsEvent.dispatch();*/
+			
 			_model.loadingFlag = false;
 	
 			_model.partnerInfoLoaded = true;

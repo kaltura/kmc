@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	public class ConversionSettingsEvent extends CairngormEvent
+	public class ConversionSettingsAccountEvent extends CairngormEvent
 	{
 		public static const ADD_NEW_CONVERSION_PROFILE : String = "account_addNewConversionProfile";
 		public static const DELETE_CONVERSION_PROFILE : String = "account_deleteConversionProfile";
@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.account.events
 		
 		public var selected : Boolean;
 		
-		public function ConversionSettingsEvent(type:String, 
+		public function ConversionSettingsAccountEvent(type:String, 
 												selected:Boolean=false, 
 												data:Object=null,
 										  		bubbles:Boolean=false, 

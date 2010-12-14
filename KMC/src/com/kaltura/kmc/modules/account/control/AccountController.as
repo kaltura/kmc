@@ -54,14 +54,14 @@ package com.kaltura.kmc.modules.account.control
 			
 			
 			// Conversion Profile Events
-			addCommand(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);
-			addCommand(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
-			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
-			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
-			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
-			addCommand(ConversionSettingsEvent.MARK_FLAVORS, MarkFlavorsCommand);
-			addCommand(ConversionSettingsEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
-			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
+			addCommand(ConversionSettingsAccountEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);
+			addCommand(ConversionSettingsAccountEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
+			addCommand(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
+			addCommand(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
+			addCommand(ConversionSettingsAccountEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
+			addCommand(ConversionSettingsAccountEvent.MARK_FLAVORS, MarkFlavorsCommand);
+			addCommand(ConversionSettingsAccountEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
+			addCommand(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
 			
 			//metadata profile events
 			addCommand(MetadataProfileEvent.LIST , ListMetadataProfileCommand);
