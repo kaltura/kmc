@@ -78,7 +78,7 @@ package com.kaltura.kmc.modules.admin.business
 		 * A group close (fold) button was clicked
 		 * 
 		 */
-		protected function  onGroupClosed (event:MouseEvent):void
+		protected function onGroupClosed (event:MouseEvent):void
 		{
 			isOpen = false;
 		}

@@ -20,7 +20,8 @@ package com.kaltura.kmc.business {
 	public class PermissionManager extends EventDispatcher {
 
 		/**
-		 * role permissions (original XML from <code>init()</code> transformed)
+		 * role permissions (original XML from <code>init()</code> transformed).
+		 * it holds the effects on UI of permissions this role doesn't have.
 		 */
 		private var _permissionXml:XML;
 		
@@ -47,11 +48,10 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * Get the partner XML and the users permissions list (comma seperate list),
+		 * Get the partner permissions XML and the users permissions list (comma-seperated list),
 		 * parse them and keep relevant data in this class.
 		 * @param permissionXml		all partner's permissions
 		 * @param rolePermission	a comma-separated-string of ids of the role's permissions
-		 *
 		 */
 		public function init(partnerPermissionsXml:XML, rolePermissions:String = ""):void {
 			_partnerPermissions = partnerPermissionsXml.copy();
@@ -60,22 +60,22 @@ package com.kaltura.kmc.business {
 			// remove from permissions list the granted permissions and leave the ones that are forbidden.
 			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "") {
-				for each (var permission:String in allRolePermissions) {
-					var permit:XML = _permissionXml.permissions..descendants().(attribute("id") == permission)[0];
-					// if such permission exists
-					if (permit) {
-						if (permit.localName() == "permissionGroup") {
-							// if we remove groups now we will actually remove permissions we need.
+				for each (var permissionId:String in allRolePermissions) {
+					var permissionData:XML = _permissionXml.permissions..descendants().(attribute("id") == permissionId)[0];
+					// if such permission exists (permission or permissionGroup)
+					if (permissionData) {
+						if (permissionData.localName() == "permissionGroup") {
+							// if we remove groups now we will actually remove permissions we may need to ban.
 							continue;
 						}
-						delete _permissionXml.permissions..descendants().(attribute("id") == permission)[0];
+						delete _permissionXml.permissions..descendants().(attribute("id") == permissionId)[0];
 					}
 				}
 			}
 
 			// scan permissionGroups that need to be removed and remove them if they are empty.
 			// we want to keep these groups:
-			var permissionsToKeep:XMLList = _permissionXml.permissions.permissionGroup.(children().length() > 0 || rolePermissions.indexOf(@id) == -1);
+			var permissionsToKeep:XMLList = _permissionXml.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
 			// replace the original permissions node with the "clean" one
 			delete _permissionXml.permissions[0];
 			_permissionXml.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
@@ -92,12 +92,11 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * Return only the relevant permission VOs by the component path
-		 * @param componentPath
-		 * @return
-		 *
+		 * get a list of permission VOs that is relevant to the component specified by componentPath. 
+		 * @param componentPath 	path to component
+		 * @return	list of permissionVo-s 
 		 */
-		public function getRelevantPermissions(componentPath:String):Array {
+		protected function getRelevantPermissions(componentPath:String):Array {
 			var arr:Array = new Array();
 			for each (var vo:PermissionVo in _instructionVos) {
 				if (vo.path.indexOf(componentPath) > -1) {
