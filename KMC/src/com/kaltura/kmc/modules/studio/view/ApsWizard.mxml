@@ -47,14 +47,14 @@
 
 			/**
 			 * A flag saying if advertising tab should be displayed.
-			 * The value is passed via flashvars, then adjusted by player data.
+			 * @internal legacy from the flashvars attitude - should probably re-write and remove
 			 * */
-			public var enableAdsTab:Boolean;
-
-//			/**
-//			 * @copy #editable
-//			 * */
-//			private var _editable:Boolean;
+			private var _enableAdsTab:Boolean = true;
+//			if (!isNew) {
+//					// edit player - check template's advertising data
+//					_wizard.enableAdsTab = _wizard.enableAdsTab && playerUiConfVo.snapshot.advertising.length() > 0;
+//					// on new player playerUiConfVo.snapshot is null.
+//				}
 
 			/**
 			 * flag to know if the content page was changed or not - so we save playlist rendering after each change
@@ -118,9 +118,6 @@
 				// remove / add tabs according to roles and permissions
 				if (!_playerUiConfVO.isMultiPlaylistTemplate) {
 					wizardViewStack.removeChild(contentPage);
-				}
-				if (!enableAdsTab) {
-					wizardViewStack.removeChild(advertizingPage);
 				}
 				if (!_isNewPlayer) {
 					linkDtn.selectedIndex = 1; //Select Features First	
@@ -195,8 +192,6 @@
 
 				if (_playerUiConfVO.isSinglePlaylist || _playerUiConfVO.isMultiPlaylistTemplate)
 					templatePage.playlistFeatures.visible = true;
-
-//				Application.application.parameters.uiconfId = _playerUiConfVO.fullTemplateId;
 
 				// show the loaded data in the difefrrent panels
 				setupData();
@@ -477,8 +472,6 @@
 			private function onCloseHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					this.enabled = false;
-					//call navigateToURL to create Async command in JS so when the JS will kill this Application Chrome & Safari won't crash
-//					navigateToURL(new URLRequest("javascript: refreshSWF()"), "_self");
 					// close wizard
 					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.CLOSE_WIZARD));
 				}
@@ -535,7 +528,7 @@
 					linkDtn.selectedIndex = wizardViewStack.getChildIndex(contentPage);
 					return false;
 				}
-				if (enableAdsTab && !advertizingPage.validate()) {
+				if (_enableAdsTab && !advertizingPage.validate()) {
 					linkDtn.selectedIndex = wizardViewStack.getChildIndex(advertizingPage);
 					return false;
 				}
@@ -558,7 +551,7 @@
 				template.playerName = template.playerName.split("'").join("´");
 
 				// update ads:
-				if (enableAdsTab) {
+				if (_enableAdsTab) {
 					advertizingPage.update();
 				}
 
@@ -920,6 +913,9 @@
 				var tab:DisplayObject;
 				for (var i:int = 0; i < l; i++) {
 					tab = wizardViewStack.getChildByName(tabsList[i]);
+					if (tabsList[i] == advertizingPage.id) {
+						_enableAdsTab = false;
+					}
 					if (tab) {
 						wizardViewStack.removeChild(tab);
 					}

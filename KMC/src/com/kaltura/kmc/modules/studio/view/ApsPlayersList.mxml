@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:playerlist="com.kaltura.kmc.modules.studio.business.playerlist.*"
-		 xmlns:view="com.kaltura.kmc.modules.studio.view.*"
-		 xmlns:controls="com.kaltura.controls.*"
-		 creationComplete="onCreationComplete()"
-		 width="100%" height="100%"
-		 horizontalGap="0" verticalGap="0" >
+		 xmlns:view="com.kaltura.kmc.modules.studio.view.*" xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="onCreationComplete()" width="100%" height="100%" horizontalGap="0" verticalGap="0">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.serialization.json.JSON;
@@ -30,9 +27,9 @@
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUiConfFilter;
 			import com.kaltura.vo.KalturaUiConfListResponse;
-			
+
 			import modules.Studio;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.ComboBox;
@@ -52,13 +49,13 @@
 			 * total number of players
 			 * */
 			private var _count:Number;
-			
+
 			[Bindable]
 			/**
 			 * current paging
 			 * */
 			private var _currentPage:uint;
-			
+
 			[Bindable]
 			/**
 			 * paging ammount
@@ -67,23 +64,23 @@
 
 			[Bindable]
 			/**
-			 * For RnP, we need to seperate the preview and the previewAndEmbed cases 
-			 */ 
+			 * For RnP, we need to seperate the preview and the previewAndEmbed cases
+			 */
 			private var _previewOnly:Boolean = false;
-			
+
 			/**
 			 * application context
 			 * */
 			private var _context:Context;
-			
+
 			/**
 			 * date formatter
 			 * */
 			private var _dateFormatter:DateFormatter;
-			
+
 			[Bindable]
 			/**
-			 * dataprovider for the combobox of player and playlists 
+			 * dataprovider for the combobox of player and playlists
 			 */
 			public var comboDataProviderNormal:ArrayCollection = new ArrayCollection();
 			[Bindable]
@@ -92,21 +89,22 @@
 			 */
 			public var comboDataProviderMulti:ArrayCollection = new ArrayCollection();
 
+
 			private function onCreationComplete():void {
 				_dateFormatter = new DateFormatter();
 				_dateFormatter.formatString = "DD-MMM H:NN";
-				
+
 				comboDataProviderNormal = new ArrayCollection();
-				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','edit'),id:'edit'});
-				comboDataProviderNormal.addItem({label:resourceManager.getString('aps', 'selectContent') ,id:'selectContent'});
-				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','duplicate'),id:'duplicate'});
-				comboDataProviderNormal.addItem({label:resourceManager.getString('aps','delete'),id:'delete'});
-				
+				comboDataProviderNormal.addItem({label: resourceManager.getString('aps', 'edit'), id: 'edit'});
+				comboDataProviderNormal.addItem({label: resourceManager.getString('aps', 'selectContent'), id: 'selectContent'});
+				comboDataProviderNormal.addItem({label: resourceManager.getString('aps', 'duplicate'), id: 'duplicate'});
+				comboDataProviderNormal.addItem({label: resourceManager.getString('aps', 'delete'), id: 'delete'});
+
 				comboDataProviderMulti = new ArrayCollection();
-				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','edit'),id:'edit'});
-				comboDataProviderMulti.addItem({label:resourceManager.getString('aps', 'previewAndEmbed') ,id:'previewAndEmbed'});
-				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','duplicate'),id:'duplicate'});
-				comboDataProviderMulti.addItem({label:resourceManager.getString('aps','delete'),id:'delete'});
+				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'edit'), id: 'edit'});
+				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'previewAndEmbed'), id: 'previewAndEmbed'});
+				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'duplicate'), id: 'duplicate'});
+				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'delete'), id: 'delete'});
 			}
 
 
@@ -125,13 +123,13 @@
 				if (playerListDg.selectedItem) {
 					// player id:
 					var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
-					
+
 					// uiconf.xml contents
 					var ui:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
-					
+
 					// player options + selected data
 					var snapshot:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFileFeatures);
-					
+
 					var playerUiConfVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, ui, snapshot, playerListDg.selectedItem.name);
 					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.EDIT_PLAYER, playerUiConfVo));
 				}
@@ -286,8 +284,9 @@
 				this.enabled = false;
 			}
 
+
 			/**
-			 * retreives a readble version of the player's creation mode 
+			 * retreives a readble version of the player's creation mode
 			 * (manual, wizard, advanced) for use in item renderer
 			 * */
 			public function getCreationModeLabel(item:Object, column:DataGridColumn):String {
@@ -308,19 +307,21 @@
 				}
 				return creationType;
 			}
-			
-			
+
+
 			/**
 			 * @copy #_previewOnly
 			 */
-			public function set previewOnly(value:Boolean):void
-			{
+			public function set previewOnly(value:Boolean):void {
 				_previewOnly = value;
 			}
-			public function get previewOnly():Boolean
-			{
+
+
+			public function get previewOnly():Boolean {
 				return _previewOnly;
 			}
+
+
 			/**
 			 * perform selected action on selected player
 			 * (used in item renderer)
@@ -335,16 +336,14 @@
 						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
 						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
 						if (isPlaylist) {
-							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", 
-															{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", {previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
 						}
 						else {
-							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", 
-															{previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
+							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
 						}
 						break;
 					case resourceManager.getString('aps', 'previewAndEmbed'):
-						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(),_previewOnly);
+						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(), _previewOnly);
 						break;
 					case resourceManager.getString('aps', 'duplicate'):
 						onDuplicate();
@@ -357,16 +356,17 @@
 				(event.target as ComboBox).selectedIndex = -1;
 			}
 
-			
+
 			/**
-			 * fix rowheight to correct onscreen presentation. 
+			 * fix rowheight to correct onscreen presentation.
 			 * */
 			private function onTableResize():void {
 				if (playerListDg && playerListDg.dataProvider && playerListDg.dataProvider.length > 0) {
 					playerListDg.rowHeight = (playerListDg.height / _pageSize) - (playerListDg.headerHeight / _pageSize) - 0.5;
 				}
 			}
-			
+
+
 			/**
 			 * dispatch help event with relevant data
 			 * */
@@ -383,10 +383,9 @@
 			public function isMulti(data:Object):ArrayCollection {
 				if (data) {
 					var xml:XML = XML(data.confFile.toString());
-					if (xml.attribute('isPlaylist')[0] == 'multi')
-					{
+					if (xml.attribute('isPlaylist')[0] == 'multi') {
 						return comboDataProviderMulti;
-						
+
 					}
 				}
 				return comboDataProviderNormal;
@@ -395,7 +394,7 @@
 
 
 			/**
-			 * retreive the locale version for uiconf type (player, 
+			 * retreive the locale version for uiconf type (player,
 			 * playlist, multiplaylist) for display in item renderer
 			 * */
 			public function getTemplateName(data:Object):String {
@@ -415,9 +414,9 @@
 
 				return result;
 			}
-			
-			
-			
+
+
+
 			/**
 			 * formats a date object for display in the item renderer
 			 * */
@@ -427,12 +426,14 @@
 				return str;
 			}
 
+
 			/**
 			 * @private
 			 * */
 			public function set context(context:Context):void {
 				_context = context;
 			}
+
 
 			/**
 			 * application context
@@ -441,8 +442,8 @@
 				return _context;
 			}
 
-			
-			
+
+
 			[Bindable]
 			/**
 			 * a list of optional player templates. <br>
@@ -450,14 +451,14 @@
 			public function get appStudioTemplates():XML {
 				return _appStudioTemplates;
 			}
-			
-			
+
+
 			/**
 			 * @private
 			 * */
 			public function set appStudioTemplates(value:XML):void {
 				_appStudioTemplates = value;
-				
+
 				// build the buttons on the right menu. each template gets a button.
 				var playerTemplates:XMLList = _appStudioTemplates.children();
 				var btn:Button;
@@ -475,71 +476,66 @@
 					templatesHolder.addChild(btn);
 				}
 			}
-			
+
+
 			// removing items from the combo dataproviders 
-			
+
 			/**
 			 * Remove single item from the combobox dataprovider by its id
-			 * @id - the name of the id to remove 
+			 * @id - the name of the id to remove
 			 */
-			private function removeItemById(id:String):void
-			{
+			private function removeItemById(id:String):void {
 				//find the index of the item
-				for (var i:uint=0;i<comboDataProviderMulti.length;i++)
-				{
-					if(comboDataProviderMulti.getItemAt(i).id == id)
+				for (var i:uint = 0; i < comboDataProviderMulti.length; i++) {
+					if (comboDataProviderMulti.getItemAt(i).id == id)
 						break;
 				}
 				//protect from an ID it did not find - check if this is the last item 
 				// and if it has not the same id
-				if (comboDataProviderMulti.length !=0)
-				{
-					if(i==comboDataProviderMulti.length && comboDataProviderMulti.getItemAt(i-1) != id )
-					{
-					} else
-						comboDataProviderMulti.removeItemAt(i); 
+				if (comboDataProviderMulti.length != 0) {
+					if (i == comboDataProviderMulti.length && comboDataProviderMulti.getItemAt(i - 1) != id) {
+					}
+					else
+						comboDataProviderMulti.removeItemAt(i);
 				}
-				
-				
-				
+
+
+
 				//find the index of the item
-				for (var j:uint=0;j<comboDataProviderNormal.length;j++)
-				{
-					if(comboDataProviderNormal.getItemAt(j).id == id)
+				for (var j:uint = 0; j < comboDataProviderNormal.length; j++) {
+					if (comboDataProviderNormal.getItemAt(j).id == id)
 						break;
 				}
 				//protect from an ID it did not find - check if this is the last item 
 				// and if it has not the same id  
-				
-				if(comboDataProviderNormal.length != 0)
-				{
-					if(j==comboDataProviderNormal.length && comboDataProviderNormal.getItemAt(j-1) != id )
-					{
+
+				if (comboDataProviderNormal.length != 0) {
+					if (j == comboDataProviderNormal.length && comboDataProviderNormal.getItemAt(j - 1) != id) {
 					}
 					else
-						comboDataProviderNormal.removeItemAt(j); 
+						comboDataProviderNormal.removeItemAt(j);
 				}
-				
+
 			}
-			
+
+
 			/**
-			 * Hide actions from the data provider. 
-			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+			 * Hide actions from the data provider.
+			 * @param itemsToHide	a comma seperated strings of items (edit,unblock,delete)
 			 */
-			public function set comboHideItems(itemsToHide:String):void
-			{
+			public function set comboHideItems(itemsToHide:String):void {
 				var items:Array = itemsToHide.split(",");
-				for each (var str:String in items)
-				{
+				for each (var str:String in items) {
 					removeItemById(str);
 				}
 			}
+
+
 			/**
-			 * @private 
+			 * @private
 			 * This is because the apply permission needs to read the comboHideItems function
 			 */
-			public function get comboHideItems():String
-			{
+			public function get comboHideItems():String {
 				return "";
 			}
 		]]>
@@ -551,140 +547,96 @@
 
 	<mx:VBox width="100%">
 		<mx:HBox width="100%">
-			<mx:Text width="100%"
-					 text="{resourceManager.getString('aps','playerListDecription')}"/>
+			<mx:Text width="100%" text="{resourceManager.getString('aps','playerListDecription')}"/>
 			<mx:Spacer width="100%"/>
-			<mx:Button styleName="help"
-					   buttonMode="true"
-					   click="{help()}"/>
+			<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 		</mx:HBox>
 
 	</mx:VBox>
-	<mx:HBox width="100%"
-			 height="100%"
-			 styleName="moderationHBox">
-		<mx:VBox height="100%"
-				 width="100%"
-				 id="listContainer"
-				 verticalGap="0">
-			<mx:DataGrid id="playerListDg"
-						 width="100%"
-						 height="100%"
-						 verticalScrollPolicy="off"
-						 resize="onTableResize()"
-						 draggableColumns="false"
-						 sortableColumns="false">
+	<mx:HBox width="100%" height="100%" styleName="moderationHBox">
+		<mx:VBox height="100%" width="100%" id="listContainer" verticalGap="0">
+			<mx:DataGrid id="playerListDg" width="100%" height="100%" verticalScrollPolicy="off"
+						 resize="onTableResize()" draggableColumns="false" sortableColumns="false">
 				<mx:columns>
 					<mx:DataGridColumn id="playerName"
-									   headerText="{resourceManager.getString('aps','playlistNameCollumn')}"
-									   width="120">
+									   headerText="{resourceManager.getString('aps','playlistNameCollumn')}" width="120">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 paddingLeft="2"
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="2"
 										 verticalAlign="middle">
-									<mx:Label textAlign="left"
-											  text="{data.name}"/>
+									<mx:Label textAlign="left" text="{data.name}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="playerId"
-									   headerText="{resourceManager.getString('aps','playlistidCollumn')}"
+					<mx:DataGridColumn id="playerId" headerText="{resourceManager.getString('aps','playlistidCollumn')}"
 									   width="50">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 verticalAlign="middle"
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
 										 paddingLeft="2">
-									<mx:Label textAlign="left"
-											  text="{data.id}"
-											  selectable="true"/>
+									<mx:Label textAlign="left" text="{data.id}" selectable="true"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
 					<mx:DataGridColumn id="playerDate"
-									   headerText="{resourceManager.getString('aps','playlistDateCollumn')}"
-									   width="120">
+									   headerText="{resourceManager.getString('aps','playlistDateCollumn')}" width="120">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 paddingLeft="2"
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="2"
 										 verticalAlign="middle">
-									<mx:Label textAlign="left"
-											  text="{outerDocument.formatUiconfDate(data.updatedAt)}"
+									<mx:Label textAlign="left" text="{outerDocument.formatUiconfDate(data.updatedAt)}"
 											  selectable="true"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('aps','playlistSizeCollumn')}"
-									   width="50">
+					<mx:DataGridColumn headerText="{resourceManager.getString('aps','playlistSizeCollumn')}" width="50">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox verticalGap="2"
-										 horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 paddingLeft="2"
-										 verticalAlign="middle">
+								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+										 paddingLeft="2" verticalAlign="middle">
 									<mx:Label text="{data.width}x{data.height}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="mode"
-									   headerText="{resourceManager.getString('aps','playlistModeCollumn')}"
+					<mx:DataGridColumn id="mode" headerText="{resourceManager.getString('aps','playlistModeCollumn')}"
 									   width="70">
 						<!-- labelFunction="getCreationModeLabel"   -->
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox verticalGap="2"
-										 horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 paddingLeft="2"
-										 verticalAlign="middle">
+								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+										 paddingLeft="2" verticalAlign="middle">
 									<mx:Label text="{outerDocument.getCreationModeLabel(data,outerDocument.mode)}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="template"
-									   headerText="{resourceManager.getString('aps','template')}"
+					<mx:DataGridColumn id="template" headerText="{resourceManager.getString('aps','template')}"
 									   width="70">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox verticalGap="2"
-										 horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off"
-										 paddingLeft="2"
-										 verticalAlign="middle">
+								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+										 paddingLeft="2" verticalAlign="middle">
 									<mx:Label text="{outerDocument.getTemplateName(data)}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="actions"
-									   width="150"
+					<mx:DataGridColumn id="actions" width="150"
 									   headerText="{resourceManager.getString('aps','actions')}">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox width="100%"
-										 height="100%"
-										 verticalAlign="middle"
-										 paddingLeft="2"
-										 horizontalScrollPolicy="off"
-										 verticalScrollPolicy="off">
-		
-									<mx:ComboBox width="130"
-												 selectedIndex="-1" 
+								<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
+										 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+									<mx:ComboBox width="130" selectedIndex="-1"
 												 prompt="{resourceManager.getString('aps','selectAction')}"
 												 dataProvider="{outerDocument.isMulti(data)}"
 												 change="{outerDocument.onActionChange(event)}">
-												
+
 									</mx:ComboBox>
 								</mx:VBox>
 							</mx:Component>
@@ -692,24 +644,12 @@
 					</mx:DataGridColumn>
 				</mx:columns>
 			</mx:DataGrid>
-			<controls:Paging id="paging"
-							 width="100%"
-							 rowsInPageChange="{gotoPage()}"
-							 nextPage="{gotoPage()}"
-							 prvPage="{gotoPage()}"
-							 getPageNum="{gotoPage()}"
-							 showRowsInPage="false"
-							 pageSize="{_pageSize}"
-							 totalCount="{_count}"
-							 selectedPage="{_currentPage}"/>
+			<controls:Paging id="paging" width="100%" rowsInPageChange="{gotoPage()}" nextPage="{gotoPage()}"
+							 prvPage="{gotoPage()}" getPageNum="{gotoPage()}" showRowsInPage="false"
+							 pageSize="{_pageSize}" totalCount="{_count}" selectedPage="{_currentPage}"/>
 		</mx:VBox>
 		<mx:Spacer width="5"/>
-		<mx:VBox height="100%"
-				 id="templatesHolder"
-				 styleName="blueBox"
-				 horizontalAlign="left">
-		</mx:VBox>
+		<mx:VBox height="100%" id="templatesHolder" styleName="blueBox" horizontalAlign="left" />
 	</mx:HBox>
-	<mx:DateFormatter id="gridDateFormatter"
-					  formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:DateFormatter id="gridDateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
 </mx:VBox>

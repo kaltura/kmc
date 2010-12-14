@@ -183,20 +183,12 @@
 				_wizard.media = _media;
 				_wizard.playerUiConfVO = playerUiConfVo;
 				_wizard.appStudioTemplates = _appStudioTemplates;
-				_wizard.enableAdsTab = (_flashvars.hasOwnProperty("enableads") && _flashvars.enableads == "true");
-
-				if (!isNew) {
-					// edit player - check template's advertising data
-					_wizard.enableAdsTab = _wizard.enableAdsTab && playerUiConfVo.snapshot.advertising.length() > 0;
-					// on new player playerUiConfVo.snapshot is null.
-				}
 
 				if (isNew)
 					_wizard.title = "Create New Player";
 				else
 					_wizard.title = "Edit Player";
 
-//(not used?)	_wizard.addEventListener(ApsNavigationEvent.NAVIGATE_TO_PLAYERS_LIST, closeWizard);
 				_wizard.addEventListener(ApsNavigationEvent.CLOSE_WIZARD, closeWizard);
 				enableHtmlTabs(false);
 				PopUpManager.addPopUp(_wizard, this);
