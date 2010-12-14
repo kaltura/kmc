@@ -26,8 +26,15 @@
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 
+			/**
+			 * All PermissionGroupManagers array 
+			 */
+			private var allPermissionGroupManagers:Array = new Array();
+			
+			/**
+			 * All checkboxes array 
+			 */
 			private var allCheckboxes:Array = new Array();
-
 			
 			/**
 			 * partner's permissions uiconf
@@ -82,6 +89,10 @@
 					myForm.addChild(buildGroup(group));
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown");
+				
+				//in edit mode - fill checkboxes This is a test and will need to get the date from the server 
+/* 				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
+				fillPermissions(temp); */
 			}
 
 
@@ -164,6 +175,8 @@
 				if (debug)
 					groupCb.toolTip = group.attribute("id")[0].toString();
 				allCheckboxes.push(groupCb);
+				groupCb.data = {isGroup:true};
+
 				
 				//create a container for the group and the option button 
 				var hbox:HBox = new HBox
@@ -183,29 +196,41 @@
 				hbox.addChild(spacer);
 				spacer.percentWidth = 100;
 				
-				var linkBtn:LinkButton = new LinkButton();
-				linkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'advanced' );
-				linkBtn.data = groupCb;
-				hbox.addChild(linkBtn);
+				var openLinkBtn:LinkButton = new LinkButton();
+				openLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'advanced' );
+				hbox.addChild(openLinkBtn);
 				
 				var closeLinkBtn:LinkButton = new LinkButton();
 				closeLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'close' )
-				closeLinkBtn.data = groupCb;
 				hbox.addChild(closeLinkBtn);
 				// -----------------
 				
 				var innerCbArray:Array = new Array();
 				// build the inner checkboxes 
 				var cb:CheckBox;
-				for each (var permission:XML in permissions) {
-					cb = createInnerCheckbox(permission, groupCb, debug);
+				var showButtons:Boolean = true;
+				// override groups that has one item inside and marked with hideGroup="true"
+				if (group.attribute("hideGroup").toString()=="true")
+				{
+					// asuming group has 1 child, it will override its own text & id from its child.   
+					groupCb.label = group.children()[0].attribute("text")[0].toString();
+					if (debug)
+						groupCb.toolTip = group.children()[0].attribute("id")[0].toString();
+					groupCb.id = group.children()[0].attribute("id")[0].toString();
+					showButtons = false;
 					
-					vb.addChild(cb);
-					innerCbArray.push(cb);
-					allCheckboxes.push(cb);
+				}else
+				{
+					for each (var permission:XML in permissions) {
+						cb = createInnerCheckbox(permission, groupCb, debug);
+						
+						vb.addChild(cb);
+						innerCbArray.push(cb);
+						allCheckboxes.push(cb);
+					}
 				}
 				
-				var permissionGroupManager:PermissionGroupManager = new PermissionGroupManager(	groupCb , innerCbArray , closeLinkBtn , linkBtn); 
+				allPermissionGroupManagers.push(new PermissionGroupManager(	groupCb , innerCbArray , closeLinkBtn , openLinkBtn , showButtons)); 
 				
 				return vb;
 			}
@@ -230,23 +255,6 @@
 				return cb;
 			}
 			
-			
-			/**
-			 * if the selected checkbox is a parent checkbox and it is unchecked it will uncheck all its children
-			 */
-			protected function unCheckChildren(event:Event):void {
-				var groupCb:CheckBox = (event.target as CheckBox);
-				if (groupCb.selected == false) {
-					// search for children checkboxes and uncheck them 
-					for each (var cb:CheckBox in allCheckboxes) {
-						if (cb.data == groupCb) {
-							cb.selected = false;
-						}
-					}
-				}
-			}
-
-
 			/**
 			 * Simulate a get all selected items action
 			 */
@@ -278,6 +286,7 @@
 			 */
 			protected function fillPermissions(permissionList:String):void {
 				var SelectedPermissionIds:Array = permissionList.split(",");
+				// setting the selected / not selected checkboxes
 				for each (var permission:String in SelectedPermissionIds) {
 					for each (var cb:CheckBox in allCheckboxes) {
 						if (cb.id == permission) {
@@ -286,6 +295,11 @@
 								(cb.data as CheckBox).selected = true;
 						}
 					}
+				}
+				// applying the half-selected style
+				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
+				{
+					pm.init();
 				}
 
 			}

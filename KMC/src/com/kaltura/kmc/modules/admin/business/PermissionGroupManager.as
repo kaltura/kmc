@@ -28,7 +28,7 @@ package com.kaltura.kmc.modules.admin.business
 		public var closeLinkButton:LinkButton;
 		public var openLinkButton:LinkButton;
 		
-		public function PermissionGroupManager(groupCheckbox:CheckBox,innerCheckBoxes:Array , closeLinkButton:LinkButton , openLinkButton:LinkButton)
+		public function PermissionGroupManager(groupCheckbox:CheckBox,innerCheckBoxes:Array , closeLinkButton:LinkButton , openLinkButton:LinkButton , showButtons:Boolean)
 		{
 			this.closeLinkButton = closeLinkButton;
 			this.openLinkButton = openLinkButton;
@@ -39,17 +39,44 @@ package com.kaltura.kmc.modules.admin.business
 			this.openLinkButton.addEventListener(MouseEvent.CLICK , onAdvancedClicked);
 			this.closeLinkButton.addEventListener(MouseEvent.CLICK , onGroupClosed);
 			groupCheckboxString = groupCheckbox.label;
-			
-			BindingUtils.bindProperty(this.closeLinkButton, "visible", this , "_isOpen");
-			BindingUtils.bindProperty(this.closeLinkButton, "includeInLayout", this , "_isOpen"); 
-			
-			BindingUtils.bindProperty(this.openLinkButton, "visible", this,"_isOpenRevers");
-			BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this,"_isOpenRevers"); 
+			if (showButtons)
+			{
+				BindingUtils.bindProperty(this.closeLinkButton, "visible", this , "_isOpen");
+				BindingUtils.bindProperty(this.closeLinkButton, "includeInLayout", this , "_isOpen"); 
+				
+				BindingUtils.bindProperty(this.openLinkButton, "visible", this,"_isOpenRevers");
+				BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this,"_isOpenRevers"); 
+			} else 
+			{
+				closeLinkButton.includeInLayout = false;
+				openLinkButton.includeInLayout = false;
+				closeLinkButton.visible = false;
+				openLinkButton.visible = false;
+			}
 
-			for each (var cb:CheckBox in innerCheckBoxes) {
+			for each (var cb:CheckBox in innerCheckBoxes) 
+			{
 				BindingUtils.bindProperty(cb, "visible", this , "_isOpen");
 				BindingUtils.bindProperty(cb, "includeInLayout", this , "_isOpen"); 
 				cb.addEventListener(Event.CHANGE , innerCheckboxChanged);
+			}
+		}
+		
+		
+		/**
+		 * In case of editing, 
+		 */ 
+		public function init():void
+		{
+			if (innerCheckBoxes.length && groupCheckbox.selected  )
+			{
+				var allSelected:Boolean = true;
+				for each(var cb:CheckBox in innerCheckBoxes)
+				{
+					allSelected = allSelected&&cb.selected;
+				}
+				if (!allSelected)
+					groupCheckbox.styleName = "partial";
 			}
 		}
 		
