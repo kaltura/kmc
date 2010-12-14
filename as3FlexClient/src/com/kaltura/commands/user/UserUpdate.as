@@ -7,7 +7,7 @@ package com.kaltura.commands.user
 	public class UserUpdate extends KalturaCall
 	{
 		public var filterFields : String;
-		public function UserUpdate( userId : String,user : KalturaUser )
+		public function UserUpdate( userId : String,user : KalturaUser,allUserPartners : Boolean=false )
 		{
 			service= 'user';
 			action= 'update';
@@ -20,6 +20,8 @@ package com.kaltura.commands.user
  			keyValArr = kalturaObject2Arrays(user,'user');
 			keyArr = keyArr.concat( keyValArr[0] );
 			valueArr = valueArr.concat( keyValArr[1] );
+			keyArr.push( 'allUserPartners' );
+			valueArr.push( allUserPartners );
 			applySchema( keyArr , valueArr );
 		}
 

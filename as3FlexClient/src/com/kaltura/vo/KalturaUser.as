@@ -50,6 +50,20 @@ package com.kaltura.vo
 
 		public var password : String;
 
+		public var firstName : String;
+
+		public var lastName : String;
+
+		public var isAdmin : Boolean;
+
+		public var lastLoginTime : int = int.MIN_VALUE;
+
+		public var statusUpdatedAt : int = int.MIN_VALUE;
+
+		public var deletedAt : int = int.MIN_VALUE;
+
+		public var loginEnabled : Boolean;
+
 public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -72,7 +86,9 @@ public function getUpdateableParamKeys():Array
 			arr.push('partnerData');
 			arr.push('indexedPartnerDataInt');
 			arr.push('indexedPartnerDataString');
-			arr.push('password');
+			arr.push('firstName');
+			arr.push('lastName');
+			arr.push('isAdmin');
 			return arr;
 		}
 	}

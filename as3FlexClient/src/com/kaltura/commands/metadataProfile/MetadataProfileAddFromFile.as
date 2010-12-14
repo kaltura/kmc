@@ -1,11 +1,11 @@
 package com.kaltura.commands.metadataProfile
 {
-	import com.kaltura.vo.KalturaMetadataProfile;
-	import flash.net.FileReference;
-	import com.kaltura.net.KalturaFileCall;
-	import flash.net.FileReference;
-	import com.kaltura.net.KalturaFileCall;
 	import com.kaltura.delegates.metadataProfile.MetadataProfileAddFromFileDelegate;
+	import com.kaltura.net.KalturaFileCall;
+	import com.kaltura.vo.KalturaMetadataProfile;
+	
+	import flash.net.FileReference;
+
 
 	public class MetadataProfileAddFromFile extends KalturaFileCall
 	{
@@ -22,7 +22,8 @@ package com.kaltura.commands.metadataProfile
  			keyValArr = kalturaObject2Arrays(metadataProfile,'metadataProfile');
 			keyArr = keyArr.concat( keyValArr[0] );
 			valueArr = valueArr.concat( keyValArr[1] );
-			this.xsdFile = xsdFile;
+//			this.xsdFile = xsdFile;
+			//Atar: commented this out because the project doesn't compile
 			this.viewsFile = viewsFile;
 			applySchema( keyArr , valueArr );
 		}

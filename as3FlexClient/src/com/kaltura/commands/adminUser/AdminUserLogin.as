@@ -6,7 +6,7 @@ package com.kaltura.commands.adminUser
 	public class AdminUserLogin extends KalturaCall
 	{
 		public var filterFields : String;
-		public function AdminUserLogin( email : String,password : String )
+		public function AdminUserLogin( email : String,password : String,partnerId : int=undefined )
 		{
 			service= 'adminuser';
 			action= 'login';
@@ -18,6 +18,8 @@ package com.kaltura.commands.adminUser
 			valueArr.push( email );
 			keyArr.push( 'password' );
 			valueArr.push( password );
+			keyArr.push( 'partnerId' );
+			valueArr.push( partnerId );
 			applySchema( keyArr , valueArr );
 		}
 
