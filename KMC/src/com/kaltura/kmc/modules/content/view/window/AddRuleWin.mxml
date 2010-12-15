@@ -4,13 +4,14 @@
 	 opened from <code>RulePlaylistWindow</code>
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.kaltura.containers.*"
-				 xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
-				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" showCloseButton="true" 
-				 creationComplete="onCreationComplete()"
-				 help="{onHelp()}"
-				 close="onClose()" height="540" width="780">
+				 xmlns:view="com.kaltura.kmc.modules.content.view.*" 
+				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
+				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" 
+				 showCloseButton="true" close="onClose()" help="{onHelp()}" 
+				 creationComplete="onCreationComplete()" height="540" width="780" >
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
@@ -33,7 +34,8 @@
 				singleRule.advancedBtn.visible = false;
 				singleRule.advancedBtn.includeInLayout = false;
 				//async call to the kaltura server to run the rule filter 
-				singleRule.runRule(); 
+				singleRule.runRule();
+				PermissionManager.getInstance().applyAllAttributes(this, "addRuleWin");
 			}
 
 
@@ -60,6 +62,6 @@
 						filterData="{_model.filterModel}" />
 	</mx:HBox>
 	<mx:ControlBar>
-		<mx:Button label="{resourceManager.getString('cms', 'saveChanges')}" buttonMode="true" click="save()"/>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" buttonMode="true" click="save()"/>
 	</mx:ControlBar>
 </HelpTitleWindow>

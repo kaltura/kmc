@@ -125,8 +125,9 @@ package com.kaltura.kmc.modules.content.control
 			//addCommand(ThumbnailAssetEvent.DELETE, DeleteThumbnailAssetCommand);
 			//addCommand(ThumbnailAssetEvent.SET_AS_DEFAULT, SetDefaultThumbnailAssetCommand);
 			
-			//embed status
-			addCommand(EmbedStatusEvent.SET_EMBED_STATUS, SetEmbedStatusCommand);
+			//roles and permissions stuff
+			addCommand(ChangeModelEvent.SET_EMBED_STATUS, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_LIVESTREAM_ENABLED, ChangeModelValueCommand);
 		}
 	}
 }
