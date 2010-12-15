@@ -16,9 +16,9 @@ package com.kaltura.kmc.modules.content.model
 		
 		/**
 		 * this partner is allowed to see metadata related stuff.
-		 * value is set via flashvars
+		 * value is set via roles and permissions
 		 * */
-		public var enableCustomData:Boolean = false;
+		public var enableCustomData:Boolean = true;
 		
 		/**
 		 * the root of a category hierarchy. 

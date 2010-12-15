@@ -11,6 +11,9 @@ package com.kaltura.kmc.modules.content.commands
 				case ChangeModelEvent.SET_EMBED_STATUS:
 					_model.showEmbedCode = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.SET_CUSTOM_METADATA:
+					_model.filterModel.enableCustomData = (event as ChangeModelEvent).newValue;
+					break;
 			}
 		}	
 	}

@@ -130,26 +130,49 @@ package com.kaltura.kmc.business {
 		 * a starting target (instance of a uiComponent),a propery on the target to change
 		 * and a new value.
 		 * @param startComponent	the component from which to calculate path
-		 * @param compoentPath		path to the component to act on
+		 * @param componentPath		path to the component to act on
 		 * @param componentProperty	the property of the target component to be changed
 		 * @param newValue			new value for <code>componentProperty</code> 
 		 */
 		public function apply(startComponent:Object, componentPath:String, componentProperty:String, newValue:*):void {
-			var idIndex:int = componentPath.indexOf(startComponent["id"]);
-			var chain:Array;
-			if (idIndex > -1) {
-				var str:String = componentPath.substring(idIndex + startComponent["id"].length);
-				chain = str.split(".");
+			var o:Object = getWorkComponent(startComponent, componentPath);
+			
+			if (o) {
+				var dt:XML = describeType(o);
+				if (dt.@isDynamic.toString() == "true") {
+					// dynamic type, always assign.
+					assignProperty(o, componentProperty, newValue);
+				}
+				else if (o.hasOwnProperty(componentProperty)) {
+					// statics type, only assign if attribute exists
+					assignProperty(o, componentProperty, newValue);
+				}
+				else {
+					dispatchError("cannot push attribute " + componentProperty + " to component of type " + dt.@name.toString());
+				}
+			}
+		}
+
+		/**
+		 * select the component to act on.
+		 * @param startComponent	the component from which to calculate path
+		 * @param componentPath		path to the component to act on
+		 * @return 		the component to which componentPath directs.
+		 */
+		protected function getWorkComponent(startComponent:Object, componentPath:String):Object {
+			var o:Object = startComponent;
+			var chain:Array = componentPath.split(".");
+			var ind:int = stringIndex(startComponent.id, chain); 
+			if (ind > -1) {
+				// remove everything before, including.
+				/*chain = */chain.splice(0, ind + 1);
 			}
 			else {
-				chain = componentPath.split(".");
-			}
-			// create the new chain without the dots 
-			var o:Object = startComponent;
-			if (o.id != chain[0]) {
-				// path starting from the middle: drop the first name because it referes to startComponent
+				// in this case we assume this is one of the popup windows, so we 
+				// need to remove the meaningless first item
 				chain.shift();
 			}
+			
 			// find the current component position in chain
 			// iterate from the next position 
 			for (var i:uint = 0; i < chain.length; i++) {
@@ -160,23 +183,13 @@ package com.kaltura.kmc.business {
 					}
 					else {
 						dispatchError("component " + o.id + " doesn't have property " + chain[i]);
-						return;
+						return null;
 					}
 				}
 			}
-			var dt:XML = describeType(o);
-			if (dt.@isDynamic.toString() == "true") {
-				// dynamic type, always assign.
-				assignProperty(o, componentProperty, newValue);
-			}
-			else if (o.hasOwnProperty(componentProperty)) {
-				// statics type, only assign if attribute exists
-				assignProperty(o, componentProperty, newValue);
-			}
-			else {
-				dispatchError("cannot push attribute " + componentProperty + " to component of type " + dt.@name.toString());
-			}
+			return o;
 		}
+
 		
 		
 		/**
@@ -255,7 +268,24 @@ package com.kaltura.kmc.business {
 			//TODO what should the default value be?
 		}
 
-
+		
+		/**
+		 * see if the given string is in the given array 
+		 * @param str
+		 * @param array
+		 * @return true if the string is in the array, false otherwise
+		 */		
+		protected function stringIndex(str:String , array:Array):int {
+			var l:int = array.length;
+			for (var i:int = 0; i<l; i++) {
+				if (array[i] == str) {
+					return i;
+				}
+			}
+			return -1;
+		}
+		
+		
 		////////////////// getters ///////////////////////////
 
 		/**
@@ -287,6 +317,15 @@ package com.kaltura.kmc.business {
 		public function get hideTabs():Array {
 			return _hideTabs;
 		}
+		
+		
+		/**
+		 * all partner's permissions uiconf 
+		 */
+		public function get partnerPermissions():XML
+		{
+			return _partnerPermissions;
+		}
 
 
 		////////////////////////////////////////////////singleton code
@@ -315,13 +354,6 @@ package com.kaltura.kmc.business {
 			return _instance;
 		}
 
-		/**
-		 * all partner's permissions uiconf 
-		 */
-		public function get partnerPermissions():XML
-		{
-			return _partnerPermissions;
-		}
 
 
 	}

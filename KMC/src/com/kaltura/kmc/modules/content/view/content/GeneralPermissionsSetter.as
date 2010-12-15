@@ -28,6 +28,29 @@ package com.kaltura.kmc.modules.content.view.content
 		}
 		
 		
+		
+		/**
+		 * allow roles and permissions to decide if user should 
+		 * see custom metadata related things.
+		 */
+		public function set enableCustomData(value:Boolean):void
+		{
+			// raise a command to change the model
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_EMBED_STATUS, value);
+			cge.dispatch();
+		}
+		
+		
+		/**
+		 * @private
+		 * permission manager needs the getter to get the parameter type,
+		 * NOTE: the value is never changed!!
+		 * */
+		public function get enableCustomData():Boolean
+		{
+			return true;
+			//TODO * return the real value from the model ?
+		}
 		/**
 		 * allow roles and permissions to decide if user should 
 		 * see embed code.
