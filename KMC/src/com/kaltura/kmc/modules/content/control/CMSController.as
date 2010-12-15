@@ -127,7 +127,6 @@ package com.kaltura.kmc.modules.content.control
 			
 			//roles and permissions stuff
 			addCommand(ChangeModelEvent.SET_EMBED_STATUS, ChangeModelValueCommand);
-			addCommand(ChangeModelEvent.SET_LIVESTREAM_ENABLED, ChangeModelValueCommand);
 		}
 	}
 }
