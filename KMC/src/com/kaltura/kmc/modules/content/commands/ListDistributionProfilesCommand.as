@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.content.model.DistributionProfileInfo;
 	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+	import com.kaltura.vo.KalturaDistributionProfile;
 	
 	import mx.collections.ArrayCollection;
 
@@ -11,15 +12,26 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function execute(event:CairngormEvent):void
 		{
-			trace ("will send distribution profiles list");
-			//erase later, just for testing
-			var dimensionsArray:ArrayCollection = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArrayCol;
+			//!!!!erase later, just for testing
+			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = new Array();
+			var profilesArray:Array = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
 
 			for (var i:int = 0; i<5; i++) {
-				var dimensions:ThumbnailWithDimensions = new ThumbnailWithDimensions(1*i, 2*i);
-				dimensions.usedDistributionProfilesArray = new Array("bla","bbbblllllllllllllllllllllllllllllllllllllllla", "michak");
-				dimensionsArray.addItem(dimensions);
+				var bla:KalturaDistributionProfile = new KalturaDistributionProfile();
+				bla.width = 1;
+				bla.height = 2;
+				bla.name = "NAME NAME " + i;
+				profilesArray.push(bla);
+
+		
 			}
+			
+			var bla1:KalturaDistributionProfile = new KalturaDistributionProfile();
+			bla1.width = 90;
+			bla1.height = 90;
+			bla1.name = "ProfileName";
+			profilesArray.push(bla1);
+			///erase later
 		}
 	}
 }

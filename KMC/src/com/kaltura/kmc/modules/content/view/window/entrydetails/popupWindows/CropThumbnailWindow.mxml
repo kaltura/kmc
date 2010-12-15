@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical" styleName="TitleWindowType2"
+				showCloseButton="true"
+				close="{closeWindow(event)}"
+				creationComplete="{onCreationComplete(event)}"
+				horizontalAlign="center">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.utils.imageCropper.CropBox;
+			import com.kaltura.utils.imageCropper.ImageCrop;
+			import com.kaltura.utils.pager.Pager;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaThumbAsset;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			public static const NUM_OF_PAGES:int = 3;
+			public static const IMG_MAX_WIDTH:int = 600;
+			public static const IMG_MAX_HEIGHT:int = 550;
+			public static const DEFAULT_CROP_WIDTH:int = 90
+			public static const DEFAULT_CROP_HEIGHT:int = 90
+			
+			private var _selectedEntry:KalturaBaseEntry;
+			[Bindable]
+			private var _pager:Pager;
+			[Bindable]
+			private var _presetSizeList:Array;
+			[Bindable]
+			private var _isPreSize:Boolean = true;
+			[Bindable]
+			private var _selectedThumbnail:ThumbnailWithDimensions;
+			private var _imageCrop:ImageCrop;
+			private var _isDirty:Boolean;
+			
+			private function onCreationComplete(event:Event):void {
+				imgList.selectedIndex = 0;
+				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
+
+				setCropperImage();
+			}
+			
+			/**
+			 * loads the _selectedThumbnail img to the cropper tool
+			 * */
+			private function setCropperImage():void {
+				_imageCrop = new ImageCrop();
+				_isDirty = false;
+				_imageCrop.loadImage(_selectedThumbnail.thumbUrl);
+				imageBox.addChild(_imageCrop);
+				var cropBox:CropBox = _imageCrop.cropBox;
+				cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
+				cropBox.cropX = _imageCrop.x;
+				cropBox.cropY = _imageCrop.y;
+				cropBox.cropWidth = _isPreSize ? ((presetComboBox.selectedItem["data"] as ThumbnailWithDimensions).width) : DEFAULT_CROP_WIDTH;
+				cropBox.cropHeight = _isPreSize ? ((presetComboBox.selectedItem["data"] as ThumbnailWithDimensions).height) : DEFAULT_CROP_HEIGHT;
+				_imageCrop.cropBox.keepAspectRatio = _isPreSize;
+				_imageCrop.maxImageHeight = IMG_MAX_HEIGHT;
+				_imageCrop.maxImageWidth = IMG_MAX_WIDTH;	
+				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);			
+			}
+			
+			/**
+			 * this function will be called when a new image was loaded to the cropper tool
+			 * */
+			private function onCroppedImgLoaded(event:Event):void {
+				if (_imageCrop.image)
+					setPreviewBitmap(_imageCrop.cropBox.cropX, _imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
+			}
+			
+			/**
+			 * adjust the preview image according to the current cropping box
+			 * */
+			private function setPreviewBitmap(x:int, y:int, width:int, height:int):void {
+				if (width>0 && height>0 && _imageCrop.image) 
+				{
+					var bitmapData:BitmapData = new BitmapData(width, height);
+					bitmapData.draw(_imageCrop.image, new Matrix(1,0,0,1, -1*x, -1*y), null, null, new Rectangle(0,0, width, height));
+					var bitmap:Bitmap = new Bitmap(bitmapData);
+					previewImg.source = bitmap;	
+				}
+			}
+			
+			/**
+			 * this function will be called with every change in the cropping box size
+			 * will set the new values to the suitable text inputs
+			 * will update the preview image with the new values
+			 * */
+			private function onCropChanged(event:Event):void {
+				if (_imageCrop.cropBox != null) {
+					leftTextInput.text = _imageCrop.cropBox.cropX.toString();
+					topTextInput.text = _imageCrop.cropBox.cropY.toString();
+					widthTextInput.text = _imageCrop.cropBox.cropWidth.toString();
+					heightTextInput.text = _imageCrop.cropBox.cropHeight.toString();
+					
+					setPreviewBitmap(_imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
+					if (!_isDirty)
+						_isDirty = true;
+				}
+			}
+			
+			/**
+			 * returns the current visible data in the thumbnails tile list
+			 * */
+			public function get thumbnailsList():Array
+			{
+				return _pager.visiblePageData;
+			}
+
+			/**
+			 * set the thumbnails list according to the given array. will save only thumbnails that contain thumbAsset
+			 * */
+			public function set thumbnailsList(value:Array):void
+			{
+				//saves only thumbnails with assets
+				var thumbnailsList:Array = new Array();
+				_presetSizeList = new Array();
+				for (var i:int = 0; i<value.length; i++) {
+					var currentThumb:ThumbnailWithDimensions = value[i] as ThumbnailWithDimensions;
+					if (currentThumb.thumbAsset)
+						thumbnailsList.push(currentThumb);
+					if (currentThumb.usedDistributionProfilesArray.length>0) 
+						_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data:currentThumb});
+				}
+				if (_presetSizeList.length>0)
+					_isPreSize = true;
+				_pager = new Pager();
+				_pager.localPageSize = NUM_OF_PAGES;
+				_pager.addDataSet(thumbnailsList); 		
+			}
+
+			/**
+			 * returns selected entry
+			 * */
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+
+			/**
+			 * sets the selected entry and builds the window title accrodingly
+			 * */
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				_selectedEntry = value;
+				buildTitle();
+			}
+
+			/**
+			 * build the string for the window title
+			 * */
+			private function buildTitle():void {
+				this.title = resourceManager.getString('cms','editEntry') + " - " + _selectedEntry.name + " - " + resourceManager.getString('cms','createThumb');
+			}
+			
+			/**
+			 * on close function
+			 * */
+			private function closeWindow(event:Event):void {
+				if (_isDirty)
+					Alert.show(resourceManager.getString('cms','cancelCrop'),resourceManager.getString('cms','cancelCropTitle'), Alert.YES | Alert.NO, null, closeHandler);
+				else
+					PopUpManager.removePopUp(this);
+			}
+			
+			private function closeHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES)
+					PopUpManager.removePopUp(this);
+			}
+			
+			private function onSave():void {
+				//bla bla do save
+				_isDirty = false;
+			}
+			
+			/**
+			 * page to the previous page
+			 * */
+			private function onPrevClick():void {
+				_pager.prevPage();
+			}
+			
+			/***
+			 * pages to the next page
+			 * */
+			private function onNextClick():void {
+				_pager.nextPage();
+			}
+		
+			/**
+			 * selecting a new thumbnail to edit
+			 * */
+			private function onImgItemClick(event:Event):void {
+				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
+				imageBox.removeChild(_imageCrop);
+				setCropperImage();
+			}
+			
+			/**
+			 * on preset check box change
+			 * */
+			private function onPresetCBChange(event:Event):void {
+				_isPreSize = !_isPreSize;
+				_imageCrop.cropBox.keepAspectRatio = _isPreSize;		
+			}
+			
+			private function onFocusOut(event:Event):void {
+				if (!_imageCrop.cropBox)
+					return;
+				if (event.target==topTextInput)
+					_imageCrop.cropBox.cropY = Number(topTextInput.text);
+				else if (event.target==leftTextInput)
+					_imageCrop.cropBox.cropX = Number(leftTextInput.text);
+				else if (event.target==widthTextInput)
+					_imageCrop.cropBox.cropWidth = Number(widthTextInput.text);
+				else if (event.target==heightTextInput)
+					_imageCrop.cropBox.cropHeight = Number(heightTextInput.text);
+			}
+			
+			private function onKeyDown(event:KeyboardEvent):void {
+				if (event.keyCode== Keyboard.ENTER)
+					onFocusOut(event);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" paddingTop="0" paddingBottom="0" horizontalAlign="center">
+		<mx:Image id="previewImg" width="100" height="80"/>
+		<mx:VBox>
+			<mx:HBox width="100%" height="100%">
+				<mx:Button id="prevBtn" label="b" enabled="{!_pager.isFirstPage}" click="{onPrevClick()}" width="5"/>
+				<mx:TileList id="imgList" 
+							 columnCount="{NUM_OF_PAGES}"
+							 rowCount="1" dataProvider="{_pager.visiblePageData}" 
+							 selectable="true" borderStyle="none" 
+							 itemClick="{onImgItemClick(event)}" enabled="true" themeColor="#009DFF">
+							<!-- itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbsTileListItemRenderer"-->
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:VBox horizontalAlign="center" verticalAlign="middle" buttonMode="true">							
+								<mx:Image source="{data.thumbUrl}" width="70" height="70"/>
+							</mx:VBox>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:TileList>
+				<mx:Button id="nextBtn" label="n" enabled="{!_pager.isLastPage}" click="{onNextClick()}" width="5"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:CheckBox id="presetCheckBox" selected="true" change="{onPresetCBChange(event)}"/>
+				<mx:Label enabled="{_isPreSize}" text="{resourceManager.getString('cms','presetSizeText')}"/>
+				<mx:ComboBox id="presetComboBox" enabled="{_isPreSize}" dataProvider="{_presetSizeList}"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:HBox paddingLeft="5">
+			<mx:VBox width="50" height="100%" paddingTop="0" paddingBottom="0" verticalGap="0" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('cms','positionTitle')}" width="50"/>
+				<mx:Label text="{resourceManager.getString('cms','cropTitle')}"/>
+			</mx:VBox>
+			
+			<mx:VBox height="100%" paddingTop="0" paddingBottom="0" >
+				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms','leftTitle')}" width="50" textAlign="right"/>
+					<mx:TextInput id="leftTextInput" restrict="[0-9]" width="45" 
+								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms','widthTitle')}" width="50" textAlign="right" enabled="{!_isPreSize}"/>
+					<mx:TextInput id="widthTextInput" restrict="[0-9]" width="45" text="{_selectedThumbnail.width}" 
+								  enabled="{!_isPreSize}" editable="{!_isPreSize}"
+								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+			<mx:VBox height="100%" paddingTop="0" paddingBottom="0" >
+				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms','topTitle')}" width="50" textAlign="right"/>
+					<mx:TextInput id="topTextInput" restrict="[0-9]" width="45" 
+								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('cms','heightTitle')}" width="50" textAlign="right" enabled="{!_isPreSize}"/>
+					<mx:TextInput id="heightTextInput" restrict="[0-9]" width="45" text="{_selectedThumbnail.height}" 
+								  enabled="{!_isPreSize}" editable="{!_isPreSize}"
+								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+			</mx:VBox>
+			
+		</mx:HBox>
+
+	</mx:HBox>
+	
+	<mx:HBox id="imageBox" width="100%" height="100%" horizontalAlign="center"/>
+	<mx:Button label="{resourceManager.getString('cms','saveChanges')}"/>
+	
+</mx:TitleWindow>

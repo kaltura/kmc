@@ -1,4 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			
+			import mx.controls.Image;
+			
+			public static const DEFAULT_THUMB:String = "default_thumb";
 	
-</mx:Canvas>
+			[Bindable]
+			private var thumbAssetExist:Boolean = false;
+			[Bindable]
+			private var isDefault:Boolean = false;
+			[Bindable]
+			private var imageSource:String;
+			
+
+			override public function set data(value:Object):void {
+				var thumb:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				if (thumb.thumbAsset) {
+					thumbAssetExist = true;
+					imageSource = thumb.thumbUrl;
+					
+					if (thumb.thumbAsset.tags == DEFAULT_THUMB)
+						isDefault = true;
+					else
+						isDefault = false;
+				}
+				else {
+					thumbAssetExist = false;
+					imageSource = null;
+					isDefault = false;
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox visible="{!thumbAssetExist}" includeInLayout="{!thumbAssetExist}" width="90" height="90" verticalAlign="middle" horizontalAlign="center">
+		<mx:Label text="{resourceManager.getString('cms', 'noThumbnails')}" />	
+	</mx:VBox>
+	<mx:HBox verticalAlign="middle">	
+		<mx:Label text="default"  visible="{isDefault}" includeInLayout="{isDefault}"/>
+		<mx:Image source="{imageSource}" visible="{thumbAssetExist}" includeInLayout="{thumbAssetExist}" width="90" height="90"/>
+	</mx:HBox>
+	
+</mx:HBox>

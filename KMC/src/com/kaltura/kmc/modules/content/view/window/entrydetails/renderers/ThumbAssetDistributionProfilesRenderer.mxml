@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.vo.KalturaDistributionProfile;
 			
 			import mx.collections.ArrayCollection;
 			
@@ -15,13 +16,18 @@
 			}
 			
 			private function getDistributionsListString(distributionsArray:Array):String {
-				if (!distributionsArray)
-					return "";
-				var distributionsList:String = distributionsArray.join(",");
+				if ((!distributionsArray) || (distributionsArray.length==0))
+					return resourceManager.getString('cms', 'thumbanilNotRequired');
+				
+				var profileNameArray:Array = new Array();
+				for each (var profile:KalturaDistributionProfile in distributionsArray) {
+					profileNameArray.push(profile.name);
+				}
+				var distributionsList:String = profileNameArray.join(",");
 				return distributionsList;
 			}
 		]]>
 	</mx:Script>
-	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{_distributionProfilesListString}"/>
+	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{_distributionProfilesListString}" height="100%" width="100%"/>
 	
 </mx:HBox>

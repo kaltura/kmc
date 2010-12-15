@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
 
 	public class ThumbnailAssetEvent extends CairngormEvent
 	{
@@ -8,11 +9,11 @@ package com.kaltura.kmc.modules.content.events
 		public static const SET_AS_DEFAULT:String = "content_setAsDefaultThumbAsset";
 		public static const DELETE:String = "content_deleteThumbnailAsset";
 		
-		public var thumbnailAssetId:String;
+		public var thumbnailAsset:ThumbnailWithDimensions;
 		
-		public function ThumbnailAssetEvent(type:String, thumbAssetId:String = null, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function ThumbnailAssetEvent(type:String, thumbAsset:ThumbnailWithDimensions = null, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
-			thumbnailAssetId = thumbAssetId;
+			this.thumbnailAsset = thumbAsset;
 			super(type, bubbles, cancelable);
 		}
 	}

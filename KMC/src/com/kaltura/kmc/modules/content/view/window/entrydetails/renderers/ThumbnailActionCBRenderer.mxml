@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:LinkButton label="{data}" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" click="itemRendererClickHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.UploadFromImageThumbAssetEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.CropThumbnailWindow;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.GrabFromVideoWindow;
+			
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			
+			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
+			private var _fileReference:FileReference;
+
+			private function itemRendererClickHandler(event:Event):void {
+				switch (data) {
+					case resourceManager.getString('cms','upload'):
+						uploadNewThumbnail();
+						break;
+					case resourceManager.getString('cms','grabFromVideo'):
+						openGrabFromVideoPopup();
+						break;
+					case resourceManager.getString('cms','cropNewThumbnail'):
+						openCropThumbPopup();
+						break;
+				}
+			}
+			
+			private function uploadNewThumbnail():void
+			{
+				_fileReference = new FileReference();
+				_fileReference.addEventListener(Event.SELECT, onThumbnailSelected);
+				_fileReference.browse(new Array(getImageTypeFilter()));
+			}
+			
+			private function getImageTypeFilter():FileFilter {
+				return new FileFilter("Images (" + IMAGE_TYPES+ ")" , IMAGE_TYPES );
+			}
+			
+			private function onThumbnailSelected(event:Event):void {
+				var uploadThumbnailEvent:UploadFromImageThumbAssetEvent = 
+					new UploadFromImageThumbAssetEvent(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE,parentDocument.selectedEntry.id, _fileReference);
+				uploadThumbnailEvent.dispatch();
+			}
+			
+			private function openGrabFromVideoPopup():void {
+				var grabWindow:GrabFromVideoWindow = new GrabFromVideoWindow();
+				PopUpManager.addPopUp(grabWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(grabWindow);
+			}
+			
+			private function openCropThumbPopup():void {
+				var cropNewWindow:CropThumbnailWindow = new CropThumbnailWindow();
+				cropNewWindow.thumbnailsList = parentDocument.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				cropNewWindow.selectedEntry = parentDocument.selectedEntry;
+				cropNewWindow.width = this.stage.width-3;
+				cropNewWindow.height = this.stage.height;
+				PopUpManager.addPopUp(cropNewWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(cropNewWindow);
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:LinkButton>

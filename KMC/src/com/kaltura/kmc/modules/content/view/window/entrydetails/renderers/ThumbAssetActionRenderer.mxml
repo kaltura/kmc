@@ -5,29 +5,32 @@
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
 			[Bindable]
-			private var _thumbAssetId:String;
+			private var _thumbAsset:ThumbnailWithDimensions;
 			
 			override public function set data(value:Object):void {
 				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumbsWithDimensions.thumbAsset)
-					_thumbAssetId = thumbsWithDimensions.thumbAsset.id;
+					_thumbAsset = thumbsWithDimensions;
+				else 
+					_thumbAsset = null;
+
 			}
 			
 
 			protected function setDefaultClickHandler(event:MouseEvent):void
 			{
-				var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, _thumbAssetId);
+				var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, _thumbAsset);
 				setDefaultEvent.dispatch();
 			}
 
 			protected function deleteClickHandler(event:MouseEvent):void
 			{
-				var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAssetId);
+				var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
 				deleteThumbEvent.dispatch();
 			}
 
 		]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{(_thumbAssetId!=null)}"/>
-	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(_thumbAssetId!=null)}"/>	
+	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{(_thumbAsset!=null)}"/>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(_thumbAsset!=null)}"/>	
 </mx:VBox>

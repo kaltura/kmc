@@ -8,8 +8,11 @@ package com.kaltura.kmc.modules.content.model
 	 * @author Michal
 	 * 
 	 */	
+	[Bindable]
 	public class ThumbnailWithDimensions
 	{
+		public static var serveURL:String = "/api_v3/index.php?service=thumbasset&action=serve";
+		
 		//the height of the thubnail
 		public var height:int;
 		//the width of the thumbnail
@@ -18,6 +21,8 @@ package com.kaltura.kmc.modules.content.model
 		public var usedDistributionProfilesArray:Array;
 		//represents the thumbnail asset
 		public var thumbAsset:KalturaThumbAsset;
+		//thumb url
+		public var thumbUrl:String;
 		
 		
 		/**

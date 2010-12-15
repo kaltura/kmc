@@ -2,21 +2,36 @@
 <!---
 Thumbnails tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
+
 			
 			[Bindable]
 			private var _selectedEntry:KalturaBaseEntry;	
 			private var _entryDetailsModel:EntryDetailsModel;
+			private var _context:Context;
 			[Bindable]
-			private var _dimensionsArray:ArrayCollection;
+			private var _dimensionsArray:Array;
+			
+			public function get context():Context
+			{
+				return _context;
+			}
+
+			public function set context(value:Context):void
+			{
+				_context = value;
+			}
 
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -28,13 +43,23 @@ Thumbnails tab of EntryDetailsWin
 				_entryDetailsModel = value;
 				if (!_entryDetailsModel)
 					return;
-				_dimensionsArray = _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArrayCol;
-				//should be sent only once
-				if (_entryDetailsModel.listDistributionProfilesRequired) {
-					var listDistributionProfilesEvent:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-					listDistributionProfilesEvent.dispatch();
-					_entryDetailsModel.listDistributionProfilesRequired = false;
+				BindingUtils.bindSetter(setDimensionsArray, _entryDetailsModel.distributionProfileInfo, "thumbnailDimensionsArray");
+				if (_entryDetailsModel.enableDistribution) {
+					var columnsArray:Array = dataGrid.columns;
+					columnsArray.splice(2,0, partnersCol);
+					dataGrid.columns = columnsArray;
+					//should be sent only once
+					if (_entryDetailsModel.listDistributionProfilesRequired) {
+						var listDistributionProfilesEvent:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+						listDistributionProfilesEvent.dispatch();
+						_entryDetailsModel.listDistributionProfilesRequired = false;
+					}
 				}
+				
+			}
+			
+			public function setDimensionsArray(array:Array):void {
+				_dimensionsArray = array;
 			}
 
 			public function get selectedEntry():KalturaBaseEntry
@@ -48,46 +73,26 @@ Thumbnails tab of EntryDetailsWin
 					return;
 				_selectedEntry = value;
 				//TODO: unify to a multirequest??
-				//var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
-				//listThumbsEvent.dispatch();
+				var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+				listThumbsEvent.dispatch();
 				
 				
-			}
-
-
-			protected function uploadClickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-			}
-
-
-			protected function grabFromVideoclickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
-			}
-
-			protected function cropClickHandler(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
 			}
 
 		]]>
 	</mx:Script>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','addThumbnail')}"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','upload')}" click="uploadClickHandler(event)"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','grabFromVideo')}" click="grabFromVideoclickHandler(event)"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','cropNewThumbnail')}" click="cropClickHandler(event)"/>
-	</mx:HBox>
-	
-	<mx:DataGrid width="100%" height="100%" dataProvider="{_dimensionsArray}" sortableColumns="false" draggableColumns="false" 
-				selectable="false">
-		<mx:columns>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','thumbnailCol')}"/>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','dimensionsCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDimensionsRenderer"/>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','distributionPartnersCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer" />
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actionCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetActionRenderer"/>
-		</mx:columns>
-	</mx:DataGrid>
+		<mx:DataGridColumn id="partnersCol" headerText="{resourceManager.getString('cms','distributionPartnersCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer" />
+		<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('cms','addThumbnail')}"
+					 dataProvider="{new Array(resourceManager.getString('cms','upload'),resourceManager.getString('cms','grabFromVideo'), resourceManager.getString('cms','cropNewThumbnail'))}"
+					 itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbnailActionCBRenderer"/>
+
+		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" sortableColumns="false" draggableColumns="false" 
+					 selectable="false">
+			<mx:columns>
+				<mx:DataGridColumn id="thumbCol" headerText="{resourceManager.getString('cms','thumbnailCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetRenderer"/>
+				<mx:DataGridColumn id="dimensionsCol" headerText="{resourceManager.getString('cms','dimensionsCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDimensionsRenderer"/>
+				<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetActionRenderer"/>
+			</mx:columns>
+		</mx:DataGrid>
 	
 </mx:VBox>

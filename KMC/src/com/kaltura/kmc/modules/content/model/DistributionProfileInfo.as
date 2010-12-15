@@ -7,18 +7,40 @@ package com.kaltura.kmc.modules.content.model
 	 * @author Michal
 	 * 
 	 */
+	[Bindable]
 	public class DistributionProfileInfo
 	{
 		//array of distribution profiels configured for current partner
-		public var kalturaDistributionProfilesArrayCol:ArrayCollection;
+		private var _kalturaDistributionProfilesArray:Array;
 		//array of thumbnail dimensions, required by the distribution profiles
-		public var thumbnailDimensionsArrayCol:ArrayCollection;
+		private var _thumbnailDimensionsArray:Array;
 		
 		public function DistributionProfileInfo()
 		{
-			kalturaDistributionProfilesArrayCol = new ArrayCollection();
-			thumbnailDimensionsArrayCol = new ArrayCollection();
+			_kalturaDistributionProfilesArray = new Array();
+			_thumbnailDimensionsArray = new Array();
 			
 		}
+
+		public function get thumbnailDimensionsArray():Array
+		{
+			return _thumbnailDimensionsArray;
+		}
+
+		public function set thumbnailDimensionsArray(value:Array):void
+		{
+			_thumbnailDimensionsArray = value;
+		}
+
+		public function get kalturaDistributionProfilesArray():Array
+		{
+			return _kalturaDistributionProfilesArray;
+		}
+
+		public function set kalturaDistributionProfilesArray(value:Array):void
+		{
+			_kalturaDistributionProfilesArray = value;
+		}
+
 	}
 }
