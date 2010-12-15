@@ -13,10 +13,6 @@ package com.kaltura.kmc.modules.content.model
 	 */	
 	public class FilterModel {
 		
-		/**
-		 * should livestream entries be listed.
-		 * */
-		public var enablelivestream:Boolean = true;
 		
 		/**
 		 * this partner is allowed to see metadata related stuff.

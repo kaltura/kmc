@@ -7,9 +7,6 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_EMBED_STATUS:String = "content_setEmbedStatus";
 		
-		public static const SET_LIVESTREAM_ENABLED:String = "content_setLivestreamEnabled";
-		
-		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

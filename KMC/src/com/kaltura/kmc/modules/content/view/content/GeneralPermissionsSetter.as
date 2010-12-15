@@ -27,27 +27,6 @@ package com.kaltura.kmc.modules.content.view.content
 			PermissionManager.getInstance().applyAllAttributes(this, this.id);
 		}
 		
-		/**
-		 * allow roles and permissions to decide if user should 
-		 * see livestream related issues.
-		 */
-		public function set enableLivestream(value:Boolean):void
-		{
-			// raise a command to change the model
-			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_LIVESTREAM_ENABLED, value);
-			cge.dispatch();
-		}
-		
-		
-		/**
-		 * @private
-		 * permission manager needs the getter to get the parameter type,
-		 * NOTE: the value is never changed!!
-		 * */
-		public function get enableLivestream():Boolean
-		{
-			return true;
-		}
 		
 		/**
 		 * allow roles and permissions to decide if user should 

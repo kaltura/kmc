@@ -11,9 +11,6 @@ package com.kaltura.kmc.modules.content.commands
 				case ChangeModelEvent.SET_EMBED_STATUS:
 					_model.showEmbedCode = (event as ChangeModelEvent).newValue;
 					break;
-				case ChangeModelEvent.SET_LIVESTREAM_ENABLED:
-					_model.filterModel.enablelivestream = (event as ChangeModelEvent).newValue;
-					break;
 			}
 		}	
 	}
