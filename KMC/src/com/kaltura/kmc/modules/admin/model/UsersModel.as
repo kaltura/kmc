@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.admin.model
 {
 	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
+	import com.kaltura.types.KalturaUserStatus;
 	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserFilter;
 	
@@ -8,6 +9,14 @@ package com.kaltura.kmc.modules.admin.model
 
 	[Bindable]
 	public class UsersModel {
+		
+		public function UsersModel() {
+			// init filter - only admin users who have access to KMC and are either active or blocked.
+			filter = new KalturaUserFilter();
+			filter.isAdminEqual = true;
+			filter.loginEnabledEqual = true;
+			filter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
+		}
 		
 		/**
 		 * the active user entry.
@@ -28,7 +37,6 @@ package com.kaltura.kmc.modules.admin.model
 		 * the filter used for listing users. 
 		 */		
 		public var filter:KalturaUserFilter;
-		//TODO + filter by status - we don't want the deleted ones
 		
 		/**
 		 * link to upgrade page on corp website
@@ -66,6 +74,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * all partner's permissions uiconf 
 		 */
 		public var partnerPermissions:XML;
+		
 		
 	}
 }
