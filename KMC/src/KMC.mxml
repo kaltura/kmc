@@ -7,6 +7,8 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.commands.user.UserGet;
+			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
@@ -17,9 +19,12 @@
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
 			import com.kaltura.kmc.modules.KmcModule;
+			import com.kaltura.kmc.vo.UserVO;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.vo.KalturaUiConf;
+			import com.kaltura.vo.KalturaUser;
+			import com.kaltura.vo.KalturaUserRole;
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -189,11 +194,20 @@
 
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
 				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
-				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
-				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
-				//TODO + insert role fetching here too 
+				
+				//TODO get user id
+				var userid:String = "abc";
+				var userget:UserGet = new UserGet(userid);
+				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
+				var roleGet:UserRoleGet = new UserRoleGet(null);
+				
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
+				mr.addAction(userget);
+				mr.addAction(roleGet);
+				
+				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
+				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
 				_modelLocator.kalturaClient.post(mr);
 			}
 
@@ -229,7 +243,7 @@
 					return;
 				}
 				
-				// loaded data
+				// KMC uiconf:
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
@@ -279,6 +293,12 @@
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				permissionManager.init(partnerPermissionXml, roleOfCurrentUser);
 
+				// user and role:
+				var uvo:UserVO = new UserVO();
+				uvo.user = event.data[2] as KalturaUser;
+				uvo.role = event.data[3] as KalturaUserRole;
+				_modelLocator.userInfo = uvo;
+				
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
 			}
@@ -305,7 +325,7 @@
 				var uiconfid:String = _uiconf.modules.module.(@id == moduleid)[0].@uiconf;
 				
 				// init:
-				mod.init(KmcModelLocator.getInstance().kalturaClient, uiconfid, _flashvars, _cm);
+				mod.init(_modelLocator.kalturaClient, uiconfid, _flashvars, _modelLocator.userInfo, _cm);
 
 				// if we need to start with a module, see if it's this one
 				if (_startModule && _startModule.moduleName == mod.id) {

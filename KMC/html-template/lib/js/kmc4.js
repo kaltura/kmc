@@ -106,6 +106,15 @@ $(window).load(function(){
 			modal = null;
 			kmc.vars.kcw_open = false;
 			// nullify flash object inside div kcw
+		},
+		openChangePwd : function() {
+			$("#kcms")[0].alert("openChangePwd");
+		},
+		openChangeEmail : function() {
+			$("#kcms")[0].alert("openChangeEmail");
+		},
+		openChangeName : function() {
+			$("#kcms")[0].alert("openChangeName");
 		}
 	}
 

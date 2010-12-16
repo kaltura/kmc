@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.vo.Context;
+	import com.kaltura.kmc.vo.UserVO;
 	import com.kaltura.vo.KalturaUiConf;
 	
 	import flash.events.IEventDispatcher;
@@ -68,6 +69,12 @@ package com.kaltura.kmc.modules {
 		 * @copy #kc
 		 * */
 		protected var _kc:KalturaClient;
+		
+	
+		/**
+		 * @copy #userInfo
+		 * */
+		protected var _userInfo:UserVO;
 		
 		
 		[Bindable]
@@ -198,13 +205,16 @@ package com.kaltura.kmc.modules {
 		 * Initialize the module.
 		 * @param kc	KalturaClient for server API calls
 		 * @param uiconfid	Id of uiconf that the module has to load.
+		 * @param flashvars	application flashvars - any data passed from the wrapper
+		 * @param user	current user info
 		 * @param cm	the global context menu, to add its version.
 		 * @param context	Application context
 		 * */
-		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, cm:ContextMenu, context:Context = null):void {
+		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, user:UserVO, cm:ContextMenu, context:Context = null):void {
 			_kc = kc;
 			_uiconfId = uiconfid;
 			_flashvars = flashvars;
+			_userInfo = user;
 			_context = context;
 
 			loadUiconf(uiconfid);
@@ -251,6 +261,22 @@ package com.kaltura.kmc.modules {
 		 */
 		protected function enableHtmlTabs(enable:Boolean):void {
 			ExternalInterface.call("kmc.utils.maskHeader", enable);
+		}
+
+		/**
+		 * information about the current user and their role
+		 * */
+		public function get userInfo():UserVO
+		{
+			return _userInfo;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set userInfo(value:UserVO):void
+		{
+			_userInfo = value;
 		}
 		
 		

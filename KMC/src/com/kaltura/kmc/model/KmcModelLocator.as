@@ -3,6 +3,7 @@ package com.kaltura.kmc.model {
 	import com.google.analytics.core.ga_internal;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.kmc.business.PermissionManager;
+	import com.kaltura.kmc.vo.UserVO;
 	
 	import flash.events.EventDispatcher;
 
@@ -31,6 +32,8 @@ package com.kaltura.kmc.model {
 		 * Flashvars of the main app wrapped in one object. The items are  
 		 */		
 		public var flashvars:Object;
+		
+		public var userInfo:UserVO;
 		
 		
 		/**

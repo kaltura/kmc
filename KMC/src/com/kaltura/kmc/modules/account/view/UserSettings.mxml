@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.vo.UserVO;
+			private const _lblWidth : Number = 80;
+			private const _textWidth : Number = 190;
+			
+			[Bindable]
+			public var userInfo:UserVO;
+			
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, resourceManager.getString('account', 'generalHelp') ));
+			}
+			
+
+			protected function clickHandler(event:MouseEvent):void
+			{
+				switch (event.target) {
+					case editNameBtn:
+						ExternalInterface.call("kmc.functions.openChangeName");
+						break;
+					case changePwdBtn:
+						ExternalInterface.call("kmc.functions.openChangePwd");
+						break;
+					case editEmailBtn:
+						ExternalInterface.call("kmc.functions.openChangeEmail");
+						break;
+				}
+			}
+
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="infoBox" width="100%" height="100%" styleName="blueBox" disabledOverlayAlpha="0"
+			 horizontalAlign="left" >
+		<mx:HBox width="100%">
+			<mx:Label styleName="pageTitle" text="{resourceManager.getString('account', 'user_page_title')}" />
+			<mx:Spacer width="100%" />
+			<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
+		</mx:HBox>
+		<mx:Text id="partnerInfoText" width="100%" height="40" 
+				 text="{resourceManager.getString('account', 'partnerInfoText')}"/>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'user_name')}"/>
+			<mx:Label width="{_textWidth}" text="{userInfo.user.fullName}" />
+			<mx:LinkButton id="editNameBtn" click="clickHandler(event)"
+						   label="{resourceManager.getString('account', 'user_edit')}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'user_id')}"/>
+			<mx:Label width="{_textWidth}" text="{userInfo.user.id}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'user_email')}"/>
+			<mx:Label width="{_textWidth}" text="{userInfo.user.email}" />
+			<mx:LinkButton id="editEmailBtn" click="clickHandler(event)" 
+						   label="{resourceManager.getString('account', 'user_edit')}" />
+			<mx:LinkButton id="changePwdBtn" click="clickHandler(event)" 
+						   label="{resourceManager.getString('account', 'user_change_pwd')}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'user_role')}" />
+			<mx:Label width="{_textWidth}" text="{userInfo.role.name}" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'user_role_desc')}"/>
+			<mx:Text width="{_textWidth}" text="{userInfo.role.description}" />
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>
