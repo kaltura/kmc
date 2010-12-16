@@ -11,5 +11,6 @@ package com.kaltura.types
 		public static const PENDING : String = '4';
 		public static const MODERATE : String = '5';
 		public static const BLOCKED : String = '6';
+		public static const INFECTED : String = 'virusScan.Infected';
 	}
 }

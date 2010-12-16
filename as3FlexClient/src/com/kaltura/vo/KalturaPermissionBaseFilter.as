@@ -9,6 +9,10 @@ package com.kaltura.vo
 
 		public var idIn : String;
 
+		public var typeEqual : int = int.MIN_VALUE;
+
+		public var typeIn : String;
+
 		public var nameEqual : String;
 
 		public var nameIn : String;
@@ -24,6 +28,10 @@ package com.kaltura.vo
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
 		public var partnerIdIn : String;
+
+		public var dependsOnPermissionNamesMultiLikeOr : String;
+
+		public var dependsOnPermissionNamesMultiLikeAnd : String;
 
 		public var tagsMultiLikeOr : String;
 
@@ -43,6 +51,8 @@ override public function getUpdateableParamKeys():Array
 			arr = super.getUpdateableParamKeys();
 			arr.push('idEqual');
 			arr.push('idIn');
+			arr.push('typeEqual');
+			arr.push('typeIn');
 			arr.push('nameEqual');
 			arr.push('nameIn');
 			arr.push('friendlyNameLike');
@@ -51,6 +61,8 @@ override public function getUpdateableParamKeys():Array
 			arr.push('statusIn');
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
+			arr.push('dependsOnPermissionNamesMultiLikeOr');
+			arr.push('dependsOnPermissionNamesMultiLikeAnd');
 			arr.push('tagsMultiLikeOr');
 			arr.push('tagsMultiLikeAnd');
 			arr.push('createdAtGreaterThanOrEqual');

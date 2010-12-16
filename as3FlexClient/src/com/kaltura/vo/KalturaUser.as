@@ -64,6 +64,8 @@ package com.kaltura.vo
 
 		public var loginEnabled : Boolean;
 
+		public var roleIds : String;
+
 public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -89,6 +91,7 @@ public function getUpdateableParamKeys():Array
 			arr.push('firstName');
 			arr.push('lastName');
 			arr.push('isAdmin');
+			arr.push('roleIds');
 			return arr;
 		}
 	}

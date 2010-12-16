@@ -5,6 +5,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserBaseFilter extends KalturaFilter
 	{
+		public var idEqual : String;
+
+		public var idIn : String;
+
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
 		public var screenNameLike : String;
@@ -19,6 +23,10 @@ package com.kaltura.vo
 
 		public var tagsMultiLikeAnd : String;
 
+		public var statusEqual : int = int.MIN_VALUE;
+
+		public var statusIn : String;
+
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
@@ -29,6 +37,8 @@ override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('idEqual');
+			arr.push('idIn');
 			arr.push('partnerIdEqual');
 			arr.push('screenNameLike');
 			arr.push('screenNameStartsWith');
@@ -36,6 +46,8 @@ override public function getUpdateableParamKeys():Array
 			arr.push('emailStartsWith');
 			arr.push('tagsMultiLikeOr');
 			arr.push('tagsMultiLikeAnd');
+			arr.push('statusEqual');
+			arr.push('statusIn');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('isAdminEqual');

@@ -6,6 +6,8 @@ package com.kaltura.vo
 	{
 		public var id : int = int.MIN_VALUE;
 
+		public var type : int = int.MIN_VALUE;
+
 		public var name : String;
 
 		public var friendlyName : String;
@@ -16,7 +18,11 @@ package com.kaltura.vo
 
 		public var partnerId : int = int.MIN_VALUE;
 
+		public var dependsOnPermissionNames : String;
+
 		public var tags : String;
+
+		public var permissionItemsIds : String;
 
 		public var createdAt : int = int.MIN_VALUE;
 
@@ -26,11 +32,14 @@ public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('type');
 			arr.push('name');
 			arr.push('friendlyName');
 			arr.push('description');
 			arr.push('status');
+			arr.push('dependsOnPermissionNames');
 			arr.push('tags');
+			arr.push('permissionItemsIds');
 			return arr;
 		}
 	}
