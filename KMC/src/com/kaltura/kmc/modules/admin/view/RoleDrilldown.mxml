@@ -91,8 +91,10 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown");
 				
 				//in edit mode - fill checkboxes This is a test and will need to get the date from the server 
-/* 				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
-				fillPermissions(temp); */
+				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
+				fillPermissions(temp); 
+				var hidePermissions:String = "a,b,c";
+				disablePermission();
 			}
 
 
@@ -296,6 +298,26 @@
 							cb.selected = true;
 							if (cb.data && cb.data is CheckBox)
 								(cb.data as CheckBox).selected = true;
+						}
+					}
+				}
+				// applying the half-selected style
+				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
+				{
+					pm.init();
+				}
+
+			}
+			/**
+			 * Comma seperated list of permission to disable sinc the partner does not have this feature. 
+			 */
+			protected function disablePermission(permissionList:String):void {
+				var disablePermission:Array = permissionList.split(",");
+				// setting the selected / not selected checkboxes
+				for each (var permission:String in disablePermission) {
+					for each (var cb:CheckBox in allCheckboxes) {
+						if (cb.id == permission) {
+							cb.enabled = false;
 						}
 					}
 				}
