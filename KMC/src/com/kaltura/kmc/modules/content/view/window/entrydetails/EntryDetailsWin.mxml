@@ -213,6 +213,14 @@
 				PopUpManager.centerPopUp(this);
 				
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
+				
+				// roles and permissions 
+				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
+				for each (var subtabName:String in tabsToHide) {
+					if (viewStack.getChildByName(subtabName)) {
+						viewStack.removeChild(this[subtabName]);
+					}
+				}
 			}
 
 

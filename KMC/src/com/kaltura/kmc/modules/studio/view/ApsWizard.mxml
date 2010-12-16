@@ -129,6 +129,14 @@
 				previewPlayerPage.addEventListener(ApsWizPreviewPlayer.REFRESH_KDP, previewKdp);
 
 				PermissionManager.getInstance().applyAllAttributes(this, "wizard");
+				
+				// roles and permissions 
+				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("wizard");
+				for each (var subtabName:String in tabsToHide) {
+					if (wizardViewStack.getChildByName(subtabName)) {
+						wizardViewStack.removeChild(this[subtabName]);
+					}
+				}
 			}
 
 
