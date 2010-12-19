@@ -17,8 +17,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var mr:MultiRequest = new MultiRequest();
 			var call:KalturaCall = new UserRoleAdd((event as RoleEvent).role);
 			mr.addAction(call);
-			//TODO + add filters to RoleList
-			call = new UserRoleList();
+			call = new UserRoleList(_model.rolesModel.filter);
 			mr.addAction(call);
 			_model.kc.post(mr);
 		}

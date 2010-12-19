@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 //			call = new UserRoleClone((event as RoleEvent).role.id);
 //			mr.addAction(call);
 			// list
-			call = new UserRoleList();
+			call = new UserRoleList(_model.rolesModel.filter);
 			mr.addAction(call);
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
