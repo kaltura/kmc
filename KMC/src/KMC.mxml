@@ -6,6 +6,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.commands.MultiRequest;
+			import com.kaltura.commands.permission.PermissionList;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.user.UserGet;
 			import com.kaltura.commands.userRole.UserRoleGet;
@@ -23,6 +24,8 @@
 			import com.kaltura.kmc.vo.UserVO;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.vo.KalturaPermission;
+			import com.kaltura.vo.KalturaPermissionListResponse;
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
@@ -202,11 +205,13 @@
 				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(null);
+				var perms:PermissionList = new PermissionList();
 				
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
 				mr.addAction(userget);
 				mr.addAction(roleGet);
+				mr.addAction(perms);
 				
 				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
@@ -240,20 +245,20 @@
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
 				if (event.data[0].error) {
-					alert(event.data[0].error.code, "Error");
+					alert(event.data[0].error.errorMsg, "Error");
 					ExternalInterface.call("kmc.utils.expired");
 					return;
 				}
 				
-				// KMC uiconf:
+				// [0] KMC uiconf:
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
-				// permissions:
+				// [1] permissions:
 				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
 				
-				// user and role:
+				// [2, 3] user and role:
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[2] as KalturaUser;
 				uvo.role = event.data[3] as KalturaUserRole;
@@ -299,13 +304,35 @@
 					"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE" + 
 					// analytics
 					"ANALYTICS_BASE"; 
-					
+				
+				//TODO [4] partner permissions list
+				/* event.data[4] as KalturaPermissionListResponse
+				we want to get all the partner permissions id into a 
+				string and pass that to the permission manager */
+				var perms:String = parsePartnerPermissions(event.data[4] as KalturaPermissionListResponse);
+				
 				permissionManager = PermissionManager.getInstance();
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
-				permissionManager.init(partnerPermissionXml, roleOfCurrentUser);
+				permissionManager.init(partnerPermissionXml, roleOfCurrentUser, perms);
 
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
+			}
+			
+			
+			/**
+			 * parse the permissions list response
+			 * @param klr	the permissions list response
+			 * @return a comma separated string of partner permission ids.
+			 * */
+			protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):String {
+				var result:String;
+				for each (var kperm:KalturaPermission in klr) {
+					result += kperm.id + ",";
+				}
+				// remove last ","
+				result = result.substring(0, result.length - 1);
+				return result;
 			}
 
 
