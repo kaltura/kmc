@@ -80,7 +80,7 @@ package com.kaltura.kmc.business {
 					// found permission - check its id
 					for each (var permission:XML in modulePermissions) {
 						// If one id is in the permissionsList - this module should not be hidden
-						if (isStringInArray(permission.@id , permissionsList)) {
+						if (permissionsList.indexOf(permission.@id ) > -1) {
 							// Found one - count it. 
 							count ++;
 							
@@ -105,7 +105,7 @@ package com.kaltura.kmc.business {
 						var hideSubTab:Boolean = true;
 						for each (var subTabPermission:XML in subtabPermissions) {
 							//if one id is in the permissionsList - this subtab should not be hidden
-							if (isStringInArray(subTabPermission.@id ,permissionsList )) {
+							if (permissionsList.indexOf(subTabPermission.@id) > -1) {
 								//Found one - no need to hide the subtab or the tab. 
 								hideSubTab = false;
 								//No need to search for any other permissions
@@ -128,22 +128,6 @@ package com.kaltura.kmc.business {
 				}
 			}
 			return arr;
-		}
-
-		
-		/**
-		 * see if the given string is in the given array 
-		 * @param id
-		 * @param permissionsList
-		 * @return true if the string is in the array, false otherwise
-		 */		
-		protected function isStringInArray(id:String , permissionsList:Array):Boolean {
-			for each (var localId:String in permissionsList) {
-				if (localId == id) {
-					return true;
-				}
-			}
-			return false;
 		}
 	}
 }
