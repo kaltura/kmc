@@ -54,6 +54,9 @@
 				var ce:UserEvent;
 				ce = new UserEvent(UserEvent.SELECT_USER, null);
 				ce.dispatch();
+				
+				var cg:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cg.dispatch();
 			}
 			
 			
@@ -153,6 +156,7 @@
 					case DrilldownMode.NONE:
 						// if we got here, data save completed successfuly
 						closeRoleDrilldown(null);
+						refreshData();
 						break;
 				}
 			}
@@ -313,11 +317,13 @@
 
 
 			/**
-			 * delete selected user
+			 * delete selected user, refresh quota data.
 			 * */
 			protected function deleteUser(event:Event):void {
 				var ce:UserEvent = new UserEvent(UserEvent.DELETE_USER, model.selectedUser);
 				ce.dispatch();
+				var cg:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cg.dispatch();
 			}
 
 

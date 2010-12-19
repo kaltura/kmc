@@ -19,7 +19,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var call:KalturaCall = new UserDelete((event as UserEvent).user.id);
 			mr.addAction(call);
 			// list
-			call = new UserList();
+			call = new UserList(_model.usersModel.usersFilter);
 			mr.addAction(call);
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
