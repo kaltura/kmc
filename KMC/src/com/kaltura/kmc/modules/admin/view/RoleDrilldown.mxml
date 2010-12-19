@@ -9,6 +9,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
@@ -29,8 +30,9 @@
 			 */
 			private var allPermissionGroupManagers:Array = new Array();
 			
+			[ArrayElementType("CheckBox")]
 			/**
-			 * All checkboxes array 
+			 * All checkboxes array (<code>CheckBox</code> instances)
 			 */
 			private var allCheckboxes:Array = new Array();
 			
@@ -88,7 +90,7 @@
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown");
 				
-				//in edit mode - fill checkboxes This is a test and will need to get the date from the server 
+				//TODO in edit mode - fill checkboxes. This is a test and will need to get the data from server 
 				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
 				fillPermissions(temp); 
 				// disable feature that the partner do not have but show them in the UI. 
@@ -256,37 +258,52 @@
 				return cb;
 			}
 			
+			
 			/**
-			 * Simulate a get all selected items action
+			 * update _undoRole.permissionNames
+			 * NOTE: when editing role, make sure NOT TO OVERRIDE permissions
+			 * that are not relevant to KMC.
 			 */
 			protected function saveBtn_clickHandler(event:MouseEvent):void {
-				//TODO + insert add/edit stuff here 
-				/* NOTE: when editing role, make sure NOT TO OVERRIDE permissions 
-				 * that are not relevant to KMC. */
-				
-				Alert.show(getSelectedPermissions().join());
+				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
+				requestSave();
 			}
-
-
+			
+			
 			/**
-			 * Return an array of the selected checkboxes
-			 */
-			protected function getSelectedPermissions():Array {
-				var arr:Array = new Array();
+			 * processes the forms and returns a new permissions string for the
+			 * role, without changing non-kmc permissions
+			 * @param perms  initial permissions list
+			 * @return updated permission list
+			 * */
+			protected function getUpdatedPermissions(perms:String):String {
+				// current permissions list
+				var updatedPerms:Array = perms.split(",");
+				
+				// check what needs to stay / go
 				for each (var cb:CheckBox in allCheckboxes) {
-					if ((cb as CheckBox).selected == true) {
-						var id:String = (cb as CheckBox).id;
-						if (id)
-							arr.push(id);
+					if (cb.selected) {
+						// add to / keep in array
+						if(updatedPerms.indexOf(cb.id) == -1) {
+							updatedPerms.push(cb.id);
+						}
+					}
+					else {
+						// remove from array
+						if(updatedPerms.indexOf(cb.id) > -1) {
+							ArrayUtil.removeValueFromArray(updatedPerms, cb.id);
+						}
 					}
 				}
-				return arr;
+				// return comma separated string
+				return updatedPerms.join(",");
 			}
 
 
 			/**
-			 * Comma seperated list of permission to show. This function must run only after the form was
-			 * build by the partner full permission id. It sets the relevant checkboxes and also their parent
+			 * This function sets the relevant checkboxes and also their parent. 
+			 * It must run only after the form was built by the partner full permission id. 
+			 * @param permissionList Comma seperated list of permissions to show. 
 			 */
 			protected function fillPermissions(permissionList:String):void {
 				var SelectedPermissionIds:Array = permissionList.split(",");
@@ -305,8 +322,10 @@
 				{
 					pm.init();
 				}
-
 			}
+			
+			
+			
 			/**
 			 * Comma seperated list of permission to disable sinc the partner does not have this feature. 
 			 */
