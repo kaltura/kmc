@@ -79,8 +79,8 @@
 			 * the module KMC should start with, as determined by the url hash
 			 * */
 			private var _startModule:Object;
-
-
+			
+			
 			/**
 			 * KMC version
 			 * */
@@ -252,8 +252,17 @@
 
 				// permissions:
 				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
-				//TODO + insert role fetching here. right now this is just for developing  
-				var roleOfCurrentUser:String = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
+				
+				// user and role:
+				var uvo:UserVO = new UserVO();
+				uvo.user = event.data[2] as KalturaUser;
+				uvo.role = event.data[3] as KalturaUserRole;
+				_modelLocator.userInfo = uvo;
+				
+				var roleOfCurrentUser:String = uvo.role.permissionNames; 
+				
+				//TODO + use real role info (comment out the full list)  
+				roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
 					"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
 					// live stream
 					"LIVE_FEATURE,CONTENT_MANAGE_LIVE_BASE,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_UPDATE_LIVE," +
@@ -263,7 +272,7 @@
 					"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL," +
 					"CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_DELETE," +
 					"CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MANAGE_EMBED_CODE," +
-//					"CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
+					"CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
 					// content moderation
 					"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
 					// playlist
@@ -273,7 +282,7 @@
 					// studio
 					"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
 					// advertising
-//					"ADVERTISING_FEATURE,ADVERTISING_UPDATE_SETTINGS_BASE,ADVERTISING_UPDATE_SETTINGS," +
+					"ADVERTISING_FEATURE,ADVERTISING_UPDATE_SETTINGS_BASE,ADVERTISING_UPDATE_SETTINGS," +
 					// account overview
 					"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
 					// integration settings
@@ -295,12 +304,6 @@
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				permissionManager.init(partnerPermissionXml, roleOfCurrentUser);
 
-				// user and role:
-				var uvo:UserVO = new UserVO();
-				uvo.user = event.data[2] as KalturaUser;
-				uvo.role = event.data[3] as KalturaUserRole;
-				_modelLocator.userInfo = uvo;
-				
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
 			}
@@ -347,8 +350,6 @@
 			 * Can also include subtab on the new module.
 			 * This method can be triggered from JS using ExternalInterface.
 			 * @param o		{moduleName:String, subtab:String, extra:Object}
-			 * -------------------------------------
-			 * @test	requires a loaded module in KMC viewstack
 			 * */
 			protected function gotoPage(o:Object):void {
 				var mInfo:XML;
@@ -392,8 +393,6 @@
 			 * mainViewstack holds ModuleLoader instances, not modules.
 			 * @param	name (id) of desired module.
 			 * @return 	ml holding the given module.
-			 * -------------------------------------
-			 * @test	requires a loaded KMC module in KMC viewstack
 			 * */
 			protected function getModuleParent(moduleName:String):ModuleLoader {
 				var children:int = mainViewStack.numChildren;
