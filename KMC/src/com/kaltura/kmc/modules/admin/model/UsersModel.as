@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.admin.model
 			filter.isAdminEqual = true;
 			filter.loginEnabledEqual = true;
 			filter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
-//TODO			filter.orderBy = KalturaUserOrderBy.
+//TODO	+		filter.orderBy = KalturaUserOrderBy.
 		}
 		
 		/**
