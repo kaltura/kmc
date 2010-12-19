@@ -371,6 +371,34 @@
 				}
 			}
 
+			/**
+			 * get the default page for this user according to their permissions:
+			 * the first module in the KMCUiconf that is not hidden.
+			 * @return 	an object {moduleName:String}, where moduleName is an id of 
+			 * 			a module this user is allowed to see.
+			 * */
+			protected function getDefaultPage():Object {
+				var o:Object = {};
+				var modules:XMLList = _uiconf.modules.module;
+				var moduleid:String;
+				var hideModule:Boolean;
+				for each (var module:XML in modules) {
+					moduleid = module.@id.toString(); 
+					for (var s:String in permissionManager.hideTabs) {
+						if (moduleid == s) {
+							// this module is hidden
+							hideModule = true;
+							break;
+						}
+					}
+					if (!hideModule) {
+						// return this module name
+						o.moduleName = moduleid;
+						break;
+					}
+				} 
+				return o;
+			}
 
 			/**
 			 * Switch to a different KMC module (tab).
@@ -391,6 +419,7 @@
 				if (!mInfo) {
 					var s:String = "module " + o.moduleName + " not available";
 					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, s));
+					gotoPage(getDefaultPage());
 					return;
 				}
 				var url:String = _modulesFolder + "/" + mInfo.@path;
