@@ -83,7 +83,7 @@ package com.kaltura.kmc.modules.admin.model
 		/**
 		 * all partner's permissions uiconf 
 		 */
-		public var partnerPermissions:XML;
+		public var partnerPermissionsUiconf:XML;
 		
 		
 	}
