@@ -1,15 +1,10 @@
 package com.kaltura.kmc.business {
-	import com.google.analytics.debug.Alert;
-	import com.kaltura.errors.KalturaError;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.vo.PermissionVo;
 	import com.kaltura.utils.CastUtil;
 	
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
-	
-	import mx.controls.Alert;
-	import mx.events.IndexChangedEvent;
 
 	/**
 	 * This class will apply all permission to the UI by receiving a target screen to work with,
