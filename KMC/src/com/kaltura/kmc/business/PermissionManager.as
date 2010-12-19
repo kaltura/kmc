@@ -45,6 +45,9 @@ package com.kaltura.kmc.business {
 		 * list of tabs and subtabs to hide
 		 */
 		private var _hideTabs:Array;
+		/**
+		 * List of features that the partner does not have (IE live stream , custom metadata , 508 etc') 
+		 */
 		private var _hideFeatures:Array;
 
 
@@ -53,11 +56,13 @@ package com.kaltura.kmc.business {
 		 * parse them and keep relevant data in this class.
 		 * @param permissionXml		all partner's permissions
 		 * @param rolePermission	a comma-separated-string of ids of the role's permissions
+		 * @param allPartnersPermission	a comma-separated-string of ids of partners permissions
 		 */
-		public function init(partnerPermissionsXml:XML, rolePermissions:String = ""):void {
+		public function init(partnerPermissionsXml:XML, rolePermissions:String = "" , allPartnersPermission:String=""):void {
 			_partnerPermissions = partnerPermissionsXml.copy();
 			_permissionXml = partnerPermissionsXml.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
+			
 			// remove from permissions list the granted permissions and leave the ones that are forbidden.
 			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "") {
@@ -77,8 +82,10 @@ package com.kaltura.kmc.business {
 			// scan permissionGroups that need to be removed and remove them if they are empty.
 			// we want to keep these groups:
 			var permissionsToKeep:XMLList = _permissionXml.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
+			
 			// replace the original permissions node with the "clean" one
 			delete _permissionXml.permissions[0];
+			
 			_permissionXml.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
 
 			var permissionParser:PermissionsParser = new PermissionsParser();
@@ -89,6 +96,18 @@ package com.kaltura.kmc.business {
 				_deniedPermissions.push(xml.toString());
 			}
 			_hideTabs = permissionParser.getTabsToHide(_permissionXml..uimapping[0], allRolePermissions);
+			// parse features that the partner does not have, and combine them with the current users permissions 
+			var partnerPermissionsList:Array = allPartnersPermission.split(",");
+			for each (var partnerPermission:String in partnerPermissionsList)
+			{
+				
+				if (partnerPermission)
+				{
+					// search for existing permissions in the Vos and delete them if the partner does 
+					// not have these permissions 
+					
+				}	
+			}
 			
 			_hideFeatures = [];
 		}
@@ -322,14 +341,22 @@ package com.kaltura.kmc.business {
 		}
 		
 		
+
 		/**
-		 * All partner's permissions uiconf 
+		 * @copy #_partnerPermissions
 		 */
 		public function get partnerPermissions():XML
 		{
 			return _partnerPermissions;
 		}
 
+		/**
+		 * @copy #_hideFeatures
+		 */
+		public function get hideFeatures():Array
+		{
+			return _hideFeatures;
+		}
 
 		////////////////////////////////////////////////singleton code
 		/**
@@ -357,13 +384,7 @@ package com.kaltura.kmc.business {
 			return _instance;
 		}
 
-		/**
-		 * List of features that the partner does not have (IE live stream , custom metadata , 508 etc') 
-		 */
-		public function get hideFeatures():Array
-		{
-			return _hideFeatures;
-		}
+
 
 
 	}
