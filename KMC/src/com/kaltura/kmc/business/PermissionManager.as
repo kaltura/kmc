@@ -45,6 +45,7 @@ package com.kaltura.kmc.business {
 		 * list of tabs and subtabs to hide
 		 */
 		private var _hideTabs:Array;
+		private var _hideFeatures:Array;
 
 
 		/**
@@ -88,11 +89,13 @@ package com.kaltura.kmc.business {
 				_deniedPermissions.push(xml.toString());
 			}
 			_hideTabs = permissionParser.getTabsToHide(_permissionXml..uimapping[0], allRolePermissions);
+			
+			_hideFeatures = [];
 		}
 
 
 		/**
-		 * get a list of permission VOs that is relevant to the component specified by componentPath. 
+		 * Get a list of permission VOs that is relevant to the component specified by componentPath. 
 		 * @param componentPath 	path to component
 		 * @return	list of permissionVo-s 
 		 */
@@ -154,7 +157,7 @@ package com.kaltura.kmc.business {
 		}
 
 		/**
-		 * select the component to act on.
+		 * Select the component to act on.
 		 * @param startComponent	the component from which to calculate path
 		 * @param componentPath		path to the component to act on
 		 * @return 		the component to which componentPath directs.
@@ -250,7 +253,7 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * if there is a permission vo associated with the component, and that vo
+		 * If there is a permission vo associated with the component, and that vo
 		 * has a definition for the given attribute, return the value.
 		 * @param componentPath path to component
 		 * @param attribute		the attribute whose value we want
@@ -270,7 +273,7 @@ package com.kaltura.kmc.business {
 
 		
 		/**
-		 * see if the given string is in the given array 
+		 * See if the given string is in the given array 
 		 * @param str
 		 * @param array
 		 * @return true if the string is in the array, false otherwise
@@ -320,7 +323,7 @@ package com.kaltura.kmc.business {
 		
 		
 		/**
-		 * all partner's permissions uiconf 
+		 * All partner's permissions uiconf 
 		 */
 		public function get partnerPermissions():XML
 		{
@@ -330,7 +333,7 @@ package com.kaltura.kmc.business {
 
 		////////////////////////////////////////////////singleton code
 		/**
-		 * singleton instance
+		 * Singleton instance
 		 */
 		private static var _instance:PermissionManager;
 
@@ -344,7 +347,7 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * singleton means of retreiving an instance of the
+		 * Singleton means of retreiving an instance of the
 		 * <code>PermissionManager</code> class.
 		 */
 		public static function getInstance():PermissionManager {
@@ -354,6 +357,13 @@ package com.kaltura.kmc.business {
 			return _instance;
 		}
 
+		/**
+		 * List of features that the partner does not have (IE live stream , custom metadata , 508 etc') 
+		 */
+		public function get hideFeatures():Array
+		{
+			return _hideFeatures;
+		}
 
 
 	}
