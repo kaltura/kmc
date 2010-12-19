@@ -1,0 +1,50 @@
+package com.kaltura.kmc.modules.admin.control.commands
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.permission.PermissionList;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.vo.KalturaPermission;
+	import com.kaltura.vo.KalturaPermissionListResponse;
+	
+	public class ListPartnerPermissionsCommand extends BaseCommand {
+		
+		/**
+		 * @inheritDocs
+		 */
+		override public function execute(event:CairngormEvent):void {
+			var ul:PermissionList = new PermissionList();
+			ul.addEventListener(KalturaEvent.COMPLETE, result);
+			ul.addEventListener(KalturaEvent.FAILED, fault);
+			if (_model.kc) {
+				_model.kc.post(ul);
+			}
+		}
+		
+		
+		/**
+		 * set received data on model
+		 * @param data data returned from server.
+		 */
+		override public function result(data:Object):void {
+			super.result(data);
+			var response:KalturaPermissionListResponse = data.data as KalturaPermissionListResponse;
+			_model.rolesModel.partnerPermissions = parsePartnerPermissions(response);
+		}
+		
+		
+		/**
+		 * parse the permissions list response
+		 * @param klr	the permissions list response
+		 * @return a comma separated string of partner permission ids.
+		 * */
+		protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):String {
+			var result:String;
+			for each (var kperm:KalturaPermission in klr) {
+				result += kperm.id + ",";
+			}
+			// remove last ","
+			result = result.substring(0, result.length - 1);
+			return result;
+		}
+	}
+}

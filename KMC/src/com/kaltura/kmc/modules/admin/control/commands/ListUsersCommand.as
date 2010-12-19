@@ -3,9 +3,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.user.UserList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.admin.control.events.ListUsersEvent;
-	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
-	import com.kaltura.vo.KalturaUser;
+	import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
+	import com.kaltura.vo.KalturaUserFilter;
 	import com.kaltura.vo.KalturaUserListResponse;
 	
 	import mx.collections.ArrayCollection;
@@ -16,8 +15,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * @inheritDocs
 		 */
 		override public function execute(event:CairngormEvent):void {
-			var e:ListUsersEvent = event as ListUsersEvent;
-			var ul:UserList = new UserList(e.filter, e.pager);
+			var e:ListItemsEvent = event as ListItemsEvent;
+			var ul:UserList = new UserList(e.filter as KalturaUserFilter, e.pager);
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {

@@ -10,6 +10,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			
@@ -99,13 +101,18 @@
 			}
 			
 			
-			
+			/**
+			 * initialize administration model
+			 * */
 			private function initModel():void {
 				_model.kc = _kc;
 				var uiConf:XML = XML(_uiconf.confFile)
 				_model.usersModel.usersUpgradeLink =  uiConf.upgradeUsersPage.text().toString();
-				_model.rolesModel.partnerPermissionsUiconf = permissionManager.partnerPermissions;
 				_model.usersModel.partnerPermissionsUiconf = permissionManager.partnerPermissions;
+				_model.rolesModel.partnerPermissionsUiconf = permissionManager.partnerPermissions;
+				// list partner permissions
+				var cge:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cge.dispatch();
 			}
 
 

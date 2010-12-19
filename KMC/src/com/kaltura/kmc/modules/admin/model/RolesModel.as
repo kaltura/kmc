@@ -60,8 +60,8 @@ package com.kaltura.kmc.modules.admin.model
 		public var partnerPermissionsUiconf:XML;
 		
 		/**
-		 * a list of permissions ids from the partner data 
+		 * a list of permissions ids from the KalturaPartner data 
 		 */
-		public var partnerPermissions:Vector.<String>;
+		public var partnerPermissions:String;
 	}
 }

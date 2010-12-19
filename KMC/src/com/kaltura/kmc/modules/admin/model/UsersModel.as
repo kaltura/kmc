@@ -40,6 +40,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * total number of users the partner may use 
 		 */
 		public var loginUsersQuota:int;
+		//TODO hook
 		
 		/**
 		 * the filter used for listing users. 
@@ -81,10 +82,9 @@ package com.kaltura.kmc.modules.admin.model
 		
 		
 		/**
-		 * all partner's permissions uiconf 
+		 * all partner's permissions ui config 
 		 */
 		public var partnerPermissionsUiconf:XML;
-		
 		
 	}
 }

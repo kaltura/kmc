@@ -14,8 +14,10 @@ package com.kaltura.kmc.modules.admin.control
 		public function initializeCommands() : void
 		{
 			
-			// ListUser Events
-			addCommand( ListUsersEvent.LIST_USERS, ListUsersCommand );
+			// ListItems Events
+			addCommand( ListItemsEvent.LIST_USERS, ListUsersCommand );
+			addCommand( ListItemsEvent.LIST_ROLES, ListRolesCommand);
+			addCommand( ListItemsEvent.LIST_PARTNER_PERMISSIONS, ListPartnerPermissionsCommand);
 			
 			// User Events
 			addCommand( UserEvent.SELECT_USER, SelectUserCommand );
@@ -27,9 +29,6 @@ package com.kaltura.kmc.modules.admin.control
 			// drilldown events
 			addCommand( DrilldownEvent.USERS_SET_STATE, SetStateCommand);
 			addCommand( DrilldownEvent.ROLES_SET_STATE, SetStateCommand);
-			
-			// listroles events
-			addCommand( ListRolesEvent.LIST_ROLES, ListRolesCommand);
 			
 			// Role Events
 			addCommand( RoleEvent.SELECT_ROLE, SelectRoleCommand);
