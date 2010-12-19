@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.vo.KalturaUserRole;
 	
 	import mx.collections.ArrayCollection;
 
@@ -39,21 +40,21 @@ package com.kaltura.kmc.modules.admin.control.commands
 		private function generateAllRoles():ArrayCollection {
 			var ar:Array = new Array();
 				
-			var role:KalturaRole = new KalturaRole();
+			var role:KalturaUserRole = new KalturaUserRole();
 			role.id = 1;
 			role.name = "my First Role";
 			role.description = "Description of my first role";
 			role.permissions = "1,2,3";
 			ar.push(role);
 			
-			role = new KalturaRole();
+			role = new KalturaUserRole();
 			role.id = 2;
 			role.name = "my second Role";
 			role.description = "Description of my second role";
 			role.permissions = "23,40,33";
 			ar.push(role);
 			
-			role = new KalturaRole();
+			role = new KalturaUserRole();
 			role.id = 2;
 			role.name = "my Third Role";
 			role.description = "Description of my THIRD role";

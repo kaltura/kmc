@@ -6,6 +6,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaUserRole;
+	import com.kaltura.vo.KalturaUserRoleListResponse;
 	
 	import mx.collections.ArrayCollection;
 
@@ -13,9 +15,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
-			// clone
-			var call:KalturaCall = new UserRoleClone((event as RoleEvent).role.id);
-			mr.addAction(call);
+			//TODO + clone - get from server
+			var call:KalturaCall;
+//			call = new UserRoleClone((event as RoleEvent).role.id);
+//			mr.addAction(call);
 			// list
 			call = new UserRoleList();
 			mr.addAction(call);
@@ -28,12 +31,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			// select the new role
-			_model.rolesModel.selectedRole = data.data[0] as KalturaRole;
+			_model.rolesModel.selectedRole = data.data[0] as KalturaUserRole;
 			// open drilldown for returned KalturaRole
-			_model.rolesModel.newRole = data.data[0] as KalturaRole;
+			_model.rolesModel.newRole = data.data[0] as KalturaUserRole;
 			_model.rolesModel.newRole = null;
 			
-			var response:KalturaRoleListResponse = data.data[1] as KalturaRoleListResponse;
+			var response:KalturaUserRoleListResponse = data.data[1] as KalturaUserRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
 		} 
 	}

@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
 			// delete
-			var call:KalturaCall = new UserRoleDelete((event as RoleEvent).role.id.toString());
+			var call:KalturaCall = new UserRoleDelete((event as RoleEvent).role.id());
 			mr.addAction(call);
 			// list
 			call = new UserRoleList();

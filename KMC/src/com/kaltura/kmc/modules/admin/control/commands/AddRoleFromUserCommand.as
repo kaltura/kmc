@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaUserRole;
 	
 	import mx.collections.ArrayCollection;
 
@@ -30,7 +31,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 				// update the roles combobox dataprovider 
 				_model.usersModel.allRoles = new ArrayCollection(data.data[1]);
 				// trigger the setter to use the returned object as the role for current user
-				_model.usersModel.newRole = data.data[0] as KalturaRole;
+				_model.usersModel.newRole = data.data[0] as KalturaUserRole;
 			}
 		}
 	}
