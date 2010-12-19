@@ -19,6 +19,7 @@
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
 			import com.kaltura.kmc.modules.KmcModule;
+			import com.kaltura.kmc.utils.KSUtil;
 			import com.kaltura.kmc.vo.UserVO;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
@@ -195,10 +196,11 @@
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
 				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				
-				//TODO get user id
-				var userid:String = "abc";
+				//TODO get user id from service, if server decides to give it..
+				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
 				var userget:UserGet = new UserGet(userid);
 				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
+				//TODO + ask eitan howto..
 				var roleGet:UserRoleGet = new UserRoleGet(null);
 				
 				mr.addAction(uiconf);

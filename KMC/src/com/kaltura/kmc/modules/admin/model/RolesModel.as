@@ -1,17 +1,26 @@
 package com.kaltura.kmc.modules.admin.model
 {
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRoleFilter;
+	import com.kaltura.types.KalturaUserRoleOrderBy;
+	import com.kaltura.types.KalturaUserRoleStatus;
+	import com.kaltura.vo.KalturaUserRole;
+	import com.kaltura.vo.KalturaUserRoleFilter;
 	
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
 	public class RolesModel {
 		
+		public function RolesModel(){
+			// get only active roles (not deleted)
+			filter = new KalturaUserRoleFilter();
+			filter.statusEqual = KalturaUserRoleStatus.ACTIVE;
+			filter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
+		}
+		
 		/**
 		 * the active role entry.
 		 * */
-		public var selectedRole:KalturaRole;
+		public var selectedRole:KalturaUserRole;
 		
 		/**
 		 * list of all roles (KalturaRole objects) 
@@ -26,8 +35,8 @@ package com.kaltura.kmc.modules.admin.model
 		/**
 		 * the filter used for listing roles. 
 		 */		
-		public var filter:KalturaRoleFilter;
-		//TODO + filter only kmc-relevant roles
+		public var filter:KalturaUserRoleFilter;
+		
 		
 		/**
 		 * role drilldown mode, either <code>DrilldownMode.ADD</code>, 
@@ -41,7 +50,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * drilldown window for it. since the only way to trigger ui actions
 		 * is via binding, we'll use this propoerty.    
 		 */		
-		public var newRole:KalturaRole;
+		public var newRole:KalturaUserRole;
 		
 		
 		/**

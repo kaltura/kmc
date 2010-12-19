@@ -6,10 +6,6 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
-			import com.kaltura.KalturaClient;
-			import com.kaltura.commands.user.UserAdd;
-			import com.kaltura.commands.user.UserDelete;
-			import com.kaltura.containers.HelpTitleWindow;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
@@ -19,13 +15,10 @@
 			import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.kmc.modules.admin.model.UsersModel;
-			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaUser;
-			import com.kaltura.vo.KalturaUserFilter;
-			
-			import flash.net.navigateToURL;
+			import com.kaltura.vo.KalturaUserRole;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -89,7 +82,7 @@
 			/**
 			 * if a user drilldown window is opened, update the user's role. 
 			 * */
-			protected function onNewRoleChange(value:KalturaRole):void {
+			protected function onNewRoleChange(value:KalturaUserRole):void {
 				if (value) {
 					if (_userDrilldown) {
 						_userDrilldown.setUserRole(value.id);
@@ -220,7 +213,7 @@
 			 * */
 			protected function openAddRoleDialog(e:Event):void {
 				_roleDrilldown = new RoleDrilldown();
-				_roleDrilldown.init(new KalturaRole(), model.drilldownMode, model.partnerPermissions);
+				_roleDrilldown.init(new KalturaUserRole(), model.drilldownMode, model.partnerPermissions);
 				_roleDrilldown.addEventListener(RoleDrilldown.SAVE, saveRoleData);
 				_roleDrilldown.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
 				PopUpManager.addPopUp(_roleDrilldown, this, true);

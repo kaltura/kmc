@@ -9,13 +9,12 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.hurlant.crypto.symmetric.CBCMode;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
-			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
+			import com.kaltura.vo.KalturaUserRole;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -108,7 +107,7 @@
 					_undoUser.firstName = firstNameTi.text;
 					_undoUser.lastName = lastNameTi.text;
 				}
-				_undoUser.roleId = (roleCb.selectedItem as KalturaRole).id;
+				_undoUser.roleId = (roleCb.selectedItem as KalturaUserRole).id;
 				requestSave();
 			}
 
@@ -171,12 +170,12 @@
 			/**
 			 * get the item matching the user's roleId
 			 * */
-			protected function findSelectedRole():KalturaRole {
+			protected function findSelectedRole():KalturaUserRole {
 				var lst:Array = _roles.source;
-				var res:KalturaRole;
+				var res:KalturaUserRole;
 				for (var i:int = 0; i<lst.length; i++) {
-					if ((lst[i] as KalturaRole).id == _undoUser.roleId) {
-						res = (lst[i] as KalturaRole);
+					if ((lst[i] as KalturaUserRole).id == _undoUser.roleId) {
+						res = (lst[i] as KalturaUserRole);
 						break;
 					}
 				}
@@ -192,7 +191,7 @@
 			public function setUserRole(roleId:int):void {
 				var t:int = _undoUser.roleId; 
 				_undoUser.roleId = roleId;
-				var kr:KalturaRole = findSelectedRole();
+				var kr:KalturaUserRole = findSelectedRole();
 				if (kr) {
 					roleCb.selectedItem = kr;
 				}

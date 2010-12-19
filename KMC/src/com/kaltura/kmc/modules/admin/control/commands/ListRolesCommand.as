@@ -1,10 +1,6 @@
 package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.admin.control.events.ListRolesEvent;
-	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleList;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 	
 	import mx.collections.ArrayCollection;
 
@@ -16,7 +12,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 */
 		override public function execute(event:CairngormEvent):void {
 //			var e:ListRolesEvent = event as ListRolesEvent;
-//			var ul:RoleList = new RoleList(e.filter, e.pager);
+//			var ul:UserRoleList = new UserRoleList(e.filter, e.pager);
 //			ul.addEventListener(KalturaEvent.COMPLETE, result);
 //			ul.addEventListener(KalturaEvent.FAILED, fault);
 //			if (_model.kc) {

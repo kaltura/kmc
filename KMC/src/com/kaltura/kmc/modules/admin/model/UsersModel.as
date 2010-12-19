@@ -1,9 +1,10 @@
 package com.kaltura.kmc.modules.admin.model
 {
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
+	import com.kaltura.types.KalturaUserOrderBy;
 	import com.kaltura.types.KalturaUserStatus;
 	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserFilter;
+	import com.kaltura.vo.KalturaUserRole;
 	
 	import mx.collections.ArrayCollection;
 
@@ -16,6 +17,7 @@ package com.kaltura.kmc.modules.admin.model
 			filter.isAdminEqual = true;
 			filter.loginEnabledEqual = true;
 			filter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
+//TODO			filter.orderBy = KalturaUserOrderBy.
 		}
 		
 		/**
@@ -67,7 +69,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * the KalturaRole returned from the server back to the user drilldown   
 		 * window via the model. 
 		 */		
-		public var newRole:KalturaRole;
+		public var newRole:KalturaUserRole;
 		
 		
 		/**

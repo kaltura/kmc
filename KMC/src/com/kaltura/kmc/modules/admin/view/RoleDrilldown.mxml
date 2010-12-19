@@ -12,16 +12,14 @@
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
-			import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 			import com.kaltura.utils.ObjectUtil;
+			import com.kaltura.vo.KalturaUserRole;
 			
-			import mx.binding.utils.BindingUtils;
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
 			import mx.controls.LinkButton;
 			import mx.controls.Spacer;
-			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
@@ -61,14 +59,14 @@
 			/**
 			 * @copy #role
 			 * */
-			private var _role:KalturaRole;
+			private var _role:KalturaUserRole;
 
 
 			[Bindable]
 			/**
 			 * make changes to this user, so we can revert easily.
 			 * */
-			private var _undoRole:KalturaRole;
+			private var _undoRole:KalturaUserRole;
 
 
 			/**
@@ -153,7 +151,7 @@
 			 * @param mode		edit / add mode
 			 * @param partnerPermissions	all partner's permissions (used for editing roles)
 			 * */
-			public function init(role:KalturaRole, mode:String, partnerPermissions:XML):void {
+			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML):void {
 				_formData = partnerPermissions;
 				// the following intentionaly use setters. 
 				setRole(role);
@@ -356,10 +354,10 @@
 			 * NOTE: when setting this attribute a new Role is created and used,
 			 * so when getting this attribute the NEW entity is returned.
 			 */
-			protected function setRole(value:KalturaRole):void {
+			protected function setRole(value:KalturaUserRole):void {
 				_role = value;
 				// create working copy
-				_undoRole = new KalturaRole();
+				_undoRole = new KalturaUserRole();
 				var atts:Array = ObjectUtil.getObjectAllKeys(value);
 				for (var i:int = 0; i < atts.length; i++) {
 					_undoRole[atts[i]] = value[atts[i]];
@@ -372,7 +370,7 @@
 			 * all changes are being made on <code>_undoRole</code>, which is a
 			 * copy of this object.
 			 * */
-			public function get role():KalturaRole {
+			public function get role():KalturaUserRole {
 				return _role;
 			}
 

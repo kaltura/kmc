@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.admin.control.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
+	import com.kaltura.vo.KalturaUserRole;
 	
 	public class RoleEvent extends CairngormEvent {
 		
@@ -13,16 +13,16 @@ package com.kaltura.kmc.modules.admin.control.events
 		public static const SELECT_ROLE:String = "admin_selectRole";
 		
 		
-		private var _role:KalturaRole;
+		private var _role:KalturaUserRole;
 		
 		
-		public function RoleEvent(type:String, role:KalturaRole = null, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function RoleEvent(type:String, role:KalturaUserRole = null, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			_role = role;
 		}
 		
-		public function get role():KalturaRole
+		public function get role():KalturaUserRole
 		{
 			return _role;
 		}

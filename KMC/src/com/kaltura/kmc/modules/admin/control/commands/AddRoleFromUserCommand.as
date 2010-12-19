@@ -2,11 +2,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
+	import com.kaltura.commands.userRole.UserRoleAdd;
+	import com.kaltura.commands.userRole.UserRoleList;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
-	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleAdd;
-	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleList;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
 	import com.kaltura.net.KalturaCall;
 	
 	import mx.collections.ArrayCollection;
@@ -15,10 +14,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
-			var call:KalturaCall = new RoleAdd((event as RoleEvent).role);
+			var call:KalturaCall = new UserRoleAdd((event as RoleEvent).role);
 			mr.addAction(call);
 			//TODO + add filters to RoleList
-			call = new RoleList();
+			call = new UserRoleList();
 			mr.addAction(call);
 			_model.kc.post(mr);
 		}

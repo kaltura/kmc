@@ -2,12 +2,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
+	import com.kaltura.commands.userRole.UserRoleList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
-	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleClone;
-	import com.kaltura.kmc.modules.admin.stubs.commands.role.RoleList;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRole;
-	import com.kaltura.kmc.modules.admin.stubs.vo.KalturaRoleListResponse;
 	import com.kaltura.net.KalturaCall;
 	
 	import mx.collections.ArrayCollection;
@@ -17,10 +14,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
 			// clone
-			var call:KalturaCall = new RoleClone((event as RoleEvent).role.id);
+			var call:KalturaCall = new UserRoleClone((event as RoleEvent).role.id);
 			mr.addAction(call);
 			// list
-			call = new RoleList();
+			call = new UserRoleList();
 			mr.addAction(call);
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
