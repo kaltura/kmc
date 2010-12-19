@@ -9,6 +9,7 @@ package com.kaltura.kmc.business
 	{
 		public var test1:com.kaltura.kmc.business.TestPermissionManager;
 		public var test2:com.kaltura.kmc.business.TestPermissionParser;
+		public var test3:com.kaltura.kmc.business.TestPermissionManagerNoInit;
 		
 	}
 }

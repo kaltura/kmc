@@ -119,19 +119,5 @@ package com.kaltura.kmc.business {
 			Assert.assertEquals(8, arr.length);
 		}
 		
-		[Ignore]
-		[Test]
-		/**
-		 * test initialization with a permissions that doesn't exist
-		 * (running this test causes the others to fail because of the input)
-		 */
-		public function testIgnoreNonexistingPermission():void {
-			try {
-				pm.init(test1, "atar");
-			} catch (e:Error) {
-				Assert.fail("Init() crashed, probably problematic input.");
-			}
-			
-		}
 	}
 }

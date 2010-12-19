@@ -1,9 +1,9 @@
 package com.kaltura.kmc.business {
 	import com.kaltura.kmc.business.PermissionsParser;
 	import com.kaltura.kmc.vo.PermissionVo;
-	
+
 	import flexunit.framework.Assert;
-	
+
 	import org.flexunit.asserts.assertEquals;
 
 	public class TestPermissionParser extends PermissionsParser {
@@ -68,7 +68,7 @@ package com.kaltura.kmc.business {
 		[Test]
 		/**
 		 * we deny all permissions needed for content.moderation subtab
-		 * so it should be removed (appear in the returned list). 
+		 * so it should be removed (appear in the returned list).
 		 */
 		public function testHideSingleSubTab():void {
 			var permits:String = "CONTENT_INGEST_BASE,CONTENT_INGEST_UPLOAD,CONTENT_INGEST_BULK_UPLOAD,ANALYTICS_BASE,STUDIO_BASE,13,32";
@@ -76,11 +76,67 @@ package com.kaltura.kmc.business {
 			Assert.assertEquals(1, tabs.length);
 			Assert.assertEquals("content.moderation", tabs[0]);
 		}
-		
+
+
+		[Test]
+		/**
+		 * we need Account > upgrade to always be available. test the module is
+		 * not dropped even if all relevant action-permissions are not granted.
+		 */
+		public function testNoHideModule():void {
+			var uimapping:XML = <uimapping>
+					<module id="content">
+						<tab id="upload">
+							<permission id="CONTENT_INGEST_BASE" />
+							<permission id="CONTENT_INGEST_UPLOAD" />
+							<permission id="CONTENT_INGEST_BULK_UPLOAD" />
+						</tab>
+						<tab id="moderation">
+							<permission id="CONTENT_MODERATE_BASE" />
+							<permission id="CONTENT_MODERATE_METADATA" />
+						</tab>
+					</module>
+					<module id="analytics">
+						<permission id="ANALYTICS_BASE" />
+					</module>
+					<module id="account">
+						<tab id="upgrade">
+							<permission id="UPGRADE_BASE"/>
+						</tab>
+						<tab id="overview">
+							<permission id="ACCOUNT_BASE"/>
+							<permission id="ACCOUNT_UPDATE_SETTINGS"/>
+						</tab>
+						<tab id="integration">
+							<permission id="INTEGRATION_BASE"/>
+							<permission id="INTEGRATION_UPDATE_SETTINGS"/>
+						</tab>
+						<tab id="accessControl">
+							<permission id="ACCESS_CONTROL_BASE"/>
+							<permission id="ACCESS_CONTROL_ADD"/>
+							<permission id="ACCESS_CONTROL_UPDATE"/>
+							<permission id="ACCESS_CONTROL_DELETE"/>
+						</tab>
+					</module>
+				</uimapping>
+			var permits:String = "ANALYTICS_BASE,STUDIO_BASE,13,32,UPGRADE_BASE";
+			var tabs:Array = getTabsToHide(uimapping, permits.split(","));
+			var result:Boolean = false;
+			var n:int = tabs.length;
+			for (var i:int = 0; i < n; i++) {
+				if (tabs[i] == "account") {
+					result = true;
+					break;
+				}
+			}
+			Assert.assertFalse(result);
+		}
+
+
 		[Test]
 		/**
 		 * we deny all permissions needed for content module (both tabs)
-		 * so content module should be removed (appear in the returned list).  
+		 * so content module should be removed (appear in the returned list).
 		 */
 		public function testHideModule():void {
 			var noPermits:String = "ANALYTICS_BASE,STUDIO_BASE,13,32";
@@ -88,7 +144,7 @@ package com.kaltura.kmc.business {
 			Assert.assertEquals(3, tabs.length);
 			var result:Boolean = false;
 			var n:int = tabs.length;
-			for (var i:int = 0; i<n; i++) {
+			for (var i:int = 0; i < n; i++) {
 				if (tabs[i] == "content") {
 					result = true;
 					break;
@@ -96,18 +152,19 @@ package com.kaltura.kmc.business {
 			}
 			Assert.assertTrue(result);
 		}
-		
+
+
 		[Test]
 		/**
 		 * the dashboard module requires 4 out of 5 permissions to show.
-		 * we only give 2, so it should be removed (appear in the returned list). 
+		 * we only give 2, so it should be removed (appear in the returned list).
 		 */
 		public function testHideModuleMinTabs():void {
 			var permits:String = "ANALYTICS_BASE,STUDIO_BASE";
 			var tabs:Array = getTabsToHide(test1.uimapping[0], permits.split(","));
 			var result:Boolean = false;
 			var n:int = tabs.length;
-			for (var i:int = 0; i<n; i++) {
+			for (var i:int = 0; i < n; i++) {
 				if (tabs[i] == "dashboard") {
 					result = true;
 					break;
@@ -115,12 +172,12 @@ package com.kaltura.kmc.business {
 			}
 			Assert.assertTrue(result);
 		}
-		
-		
+
+
 		[Test]
 		/**
 		 * the dashboard module requires 4 out of 5 permissions to show.
-		 * we give 4, so it should not be removed (shouldn't appear 
+		 * we give 4, so it should not be removed (shouldn't appear
 		 * in the returned list).
 		 */
 		public function testNoHideModuleMinTabs():void {
@@ -128,7 +185,7 @@ package com.kaltura.kmc.business {
 			var tabs:Array = getTabsToHide(test1.uimapping[0], permits.split(","));
 			var result:Boolean = false;
 			var n:int = tabs.length;
-			for (var i:int = 0; i<n; i++) {
+			for (var i:int = 0; i < n; i++) {
 				if (tabs[i] == "dashboard") {
 					result = true;
 					break;
@@ -137,11 +194,11 @@ package com.kaltura.kmc.business {
 			Assert.assertFalse(result);
 		}
 
-		
+
 		[Test]
 		/**
-		 * analytics module has no tabs, we deny its permissions 
-		 * so it should be removed. 
+		 * analytics module has no tabs, we deny its permissions
+		 * so it should be removed.
 		 */
 		public function testHideModuleWithNoTabs():void {
 			var permits:String = "CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_INGEST_BASE,CONTENT_INGEST_UPLOAD,CONTENT_INGEST_BULK_UPLOAD,STUDIO_BASE,13,32";
@@ -154,13 +211,13 @@ package com.kaltura.kmc.business {
 		[Test]
 		/**
 		 * test the util method that checks if a string is in a strings array.
-		 * the string is in the array. 
+		 * the string is in the array.
 		 */
 		public function testPermissionInPermissionArray():void {
 			Assert.assertTrue(isStringInArray("Atar", ["Eitan", "Michal", "Hila", "Atar"]));
 		}
-		
-		
+
+
 		[Test]
 		/**
 		 * test the util method that checks if a string is in a strings array.
@@ -169,7 +226,7 @@ package com.kaltura.kmc.business {
 		public function testPermissionNotInPermissionArray():void {
 			Assert.assertFalse(isStringInArray("Boaz", ["Eitan", "Michal", "Hila", "Atar"]));
 		}
-		
+
 
 		/**
 		 * The test checks the main parsing function  'parsePermissions'
