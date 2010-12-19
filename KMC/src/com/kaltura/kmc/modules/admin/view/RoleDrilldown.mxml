@@ -76,6 +76,11 @@
 			 * */
 			private var _mode:String = DrilldownMode.ADD;
 
+			//TODO: remove hard coded 
+			/**
+			 * A list of special features that the partner has (IE live stream, ads,custom Data)
+			 */
+			private var _partnerFeatures:Array = ['CUSTOM_DATA_FEATURE' , "ADVERTISING_FEATURE" , 'LIVE_FEATURE'];
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
@@ -93,9 +98,6 @@
 				//TODO in edit mode - fill checkboxes. This is a test and will need to get the data from server 
 				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
 				fillPermissions(temp); 
-				// disable feature that the partner do not have but show them in the UI. 
-				var disablePermissions:String = "STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF";
-				disablePermission(disablePermissions);
 			}
 
 
@@ -175,6 +177,10 @@
 				var groupCb:CheckBox = new CheckBox();
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
+				if (group.attribute("dependsOnFeature").toString().length > 0)
+				{
+					groupCb.enabled = checkIfPartnerHasFeature(group.attribute("dependsOnFeature").toString());
+				}
 				if (debug)
 					groupCb.toolTip = group.attribute("id")[0].toString();
 				allCheckboxes.push(groupCb);
@@ -226,7 +232,8 @@
 				{
 					for each (var permission:XML in permissions) {
 						cb = createInnerCheckbox(permission, groupCb, debug);
-						
+						if (permission.attribute("dependsOnFeature").toString().length > 0)
+							cb.enabled = checkIfPartnerHasFeature(permission.attribute("dependsOnFeature").toString());
 						vb.addChild(cb);
 						innerCbArray.push(cb);
 						allCheckboxes.push(cb);
@@ -238,6 +245,21 @@
 				return vb;
 			}
 			
+			/**
+			 * Check if the partner has a permission to a plugin feature (Metadata,live etc')
+			 * @feature - the feature name from the dependsOnFeature attribute
+			 */
+			protected function checkIfPartnerHasFeature(feature:String):Boolean
+			{
+				var hasFeature:Boolean = false;
+				for each (var specialPermission:String in _partnerFeatures)
+				{
+					if (feature ==  specialPermission)
+						return true;
+				}
+				
+				return hasFeature
+			}
 
 			/**
 			 * create the inner checkboxes of a group
@@ -325,30 +347,6 @@
 			}
 			
 			
-			
-			/**
-			 * Comma seperated list of permission to disable sinc the partner does not have this feature. 
-			 */
-			protected function disablePermission(permissionList:String):void {
-				var disablePermission:Array = permissionList.split(",");
-				// setting the selected / not selected checkboxes
-				for each (var permission:String in disablePermission) {
-					for each (var cb:CheckBox in allCheckboxes) {
-						if (cb.id == permission) {
-							cb.enabled = false;
-						}
-					}
-				}
-				// applying the half-selected style
-				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
-				{
-					pm.init();
-				}
-
-			}
-
-
-
 			/**
 			 * set window mode.
 			 * optional values are listed in <code>DrilldownMode</code>.
