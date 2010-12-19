@@ -100,9 +100,11 @@
 					// plural
 					user_s = ResourceManager.getInstance().getString('admin', 'users_quota_users');
 				}
-				var left:String = (model.loginUsersQuota - model.totalUsers).toString();
+				var left:int = (model.loginUsersQuota - model.totalUsers);
 				// users_quota = {0} KMC {1} already in use. {2} still available. 
-				var s:String = ResourceManager.getInstance().getString('admin', 'users_quota', [model.totalUsers, user_s, left]); 
+				var s:String = ResourceManager.getInstance().getString('admin', 'users_quota', [model.totalUsers, user_s, left.toString()]);
+				usersQuota.text = s;
+				usersQuotaBtn.enabled = left > 0;
 			}
 			
 			
@@ -355,8 +357,8 @@
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="pageTitle"/>
 	<mx:HBox styleName="usersTitleHbox">
 		<mx:Label id="usersQuota" />
-		<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'upgrade')}" click="getMoreUsers(event)"
-					   styleName="LinkButton"/>
+		<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'upgrade')}" 
+					   id="usersQuotaBtn" click="getMoreUsers(event)" styleName="LinkButton"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%" >
