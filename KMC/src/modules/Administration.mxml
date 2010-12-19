@@ -10,8 +10,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
+			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			
 			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
@@ -102,7 +102,8 @@
 			
 			private function initModel():void {
 				_model.kc = _kc;
-				_model.usersModel.upgradeLink = new XML(_uiconf.confFile).upgradeLink.text().toString();
+				var uiConf:XML = XML(_uiconf.confFile)
+				_model.usersModel.upgradeLink =  uiConf.upgradeUsersPage.text().toString();
 				_model.rolesModel.partnerPermissions = permissionManager.partnerPermissions;
 				_model.usersModel.partnerPermissions = permissionManager.partnerPermissions;
 			}
@@ -130,7 +131,7 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
 					  horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}"
-						width="100%" model="{_model.usersModel}" />
+						width="100%" model="{_model.usersModel}"  />
 			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}"
 						width="100%" model="{_model.rolesModel}" />
 		</mx:ViewStack>
