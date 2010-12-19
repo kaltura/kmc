@@ -1,13 +1,13 @@
 package com.kaltura.kmc.business {
 	import com.kaltura.kmc.vo.PermissionVo;
-
+	
 	/**
 	 * This parser receives an XML and knows to build instructions.
 	 * also the parser knows to provide a list of tabs and sub-tabs to hide.
 	 * @author Eitan
 	 */
 	public class PermissionsParser {
-
+		
 		/**
 		 * builds a list of instruction objects from permissions XML
 		 * @param allPermissions	list of permissions
@@ -20,8 +20,8 @@ package com.kaltura.kmc.business {
 			}
 			return array;
 		}
-
-
+		
+		
 		/**
 		 * The function receives an XML, parses it and builds an array of PermissionVo
 		 * @param permissionXml
@@ -45,8 +45,8 @@ package com.kaltura.kmc.business {
 			}
 			return arr;
 		}
-
-
+		
+		
 		/**
 		 * The function creates an array of tabs and sub-tabs that should be hidden
 		 * from the user because of roles and permissions logic.
@@ -80,7 +80,7 @@ package com.kaltura.kmc.business {
 					// found permission - check its id
 					for each (var permission:XML in modulePermissions) {
 						// If one id is in the permissionsList - this module should not be hidden
-						if (permissionsList.indexOf(permission.@id ) > -1) {
+						if (isStringInArray(permission.@id , permissionsList)) {
 							// Found one - count it. 
 							count ++;
 							
@@ -105,7 +105,7 @@ package com.kaltura.kmc.business {
 						var hideSubTab:Boolean = true;
 						for each (var subTabPermission:XML in subtabPermissions) {
 							//if one id is in the permissionsList - this subtab should not be hidden
-							if (permissionsList.indexOf(subTabPermission.@id) > -1) {
+							if (isStringInArray(subTabPermission.@id ,permissionsList )) {
 								//Found one - no need to hide the subtab or the tab. 
 								hideSubTab = false;
 								//No need to search for any other permissions
@@ -128,6 +128,22 @@ package com.kaltura.kmc.business {
 				}
 			}
 			return arr;
+		}
+		
+		
+		/**
+		 * see if the given string is in the given array 
+		 * @param id
+		 * @param permissionsList
+		 * @return true if the string is in the array, false otherwise
+		 */		
+		protected function isStringInArray(id:String , permissionsList:Array):Boolean {
+			for each (var localId:String in permissionsList) {
+				if (localId == id) {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
