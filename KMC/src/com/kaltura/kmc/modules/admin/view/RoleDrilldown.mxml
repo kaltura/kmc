@@ -89,6 +89,18 @@
 				setMode(_mode);
 
 				var groups:XMLList = _formData..permissionGroup;
+				
+				
+				var collapseAll:LinkButton = new LinkButton();
+				var expandAll:LinkButton = new LinkButton();
+				collapseAll.label = ResourceManager.getInstance().getString( 'admin' , 'collapse' );
+				expandAll.label = ResourceManager.getInstance().getString( 'admin' , 'expand' );
+				collapseAll.addEventListener(MouseEvent.CLICK , onCollapseAll);
+				expandAll.addEventListener(MouseEvent.CLICK , onExpandAll);
+				
+				colapsExpand.addChild(collapseAll);
+				colapsExpand.addChild(expandAll);
+				
 				//TODO + get partner permissions and remove any features current partner doesn't have.
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
@@ -100,6 +112,20 @@
 				fillPermissions(temp); 
 			}
 
+			protected function onCollapseAll(event:MouseEvent):void 
+			{
+				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
+				{
+					pm.isOpen = false;
+				}
+			}
+			protected function onExpandAll(event:MouseEvent):void 
+			{
+				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
+				{
+					pm.isOpen = true;
+				}
+			}
 
 			/**
 			 * "x" botton clicked, confirm no changes and close.
@@ -413,6 +439,7 @@
 	</mx:VBox>
 	<mx:HRule width="100%"/>
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
+	<mx:HBox width="100%" id="colapsExpand" />
 	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" disabledOverlayAlpha="0"/>
 	<mx:HBox width="100%" horizontalAlign="center" height="30">
 		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}"
