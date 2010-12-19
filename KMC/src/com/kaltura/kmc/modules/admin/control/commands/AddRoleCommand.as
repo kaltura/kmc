@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var ua:UserRoleAdd = new UserRoleAdd((event as RoleEvent).role);
+			//TODO also re-check users quota
 			_model.kc.post(ua);
 		}
 		

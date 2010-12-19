@@ -13,10 +13,10 @@ package com.kaltura.kmc.modules.admin.model
 		
 		public function UsersModel() {
 			// init filter - only admin users who have access to KMC and are either active or blocked.
-			filter = new KalturaUserFilter();
-			filter.isAdminEqual = true;
-			filter.loginEnabledEqual = true;
-			filter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
+			usersFilter = new KalturaUserFilter();
+			usersFilter.isAdminEqual = true;
+			usersFilter.loginEnabledEqual = true;
+			usersFilter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
 //TODO	+		filter.orderBy = KalturaUserOrderBy.
 		}
 		
@@ -25,6 +25,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * */
 		public var selectedUser:KalturaUser;
 		
+		[ArrayElementType("KalturaUser")]
 		/**
 		 * a list of all users (KalturaUser objects)
 		 * */
@@ -36,14 +37,19 @@ package com.kaltura.kmc.modules.admin.model
 		public var totalUsers:int;
 		
 		/**
+		 * total number of users the partner may use 
+		 */
+		public var loginUsersQuota:int;
+		
+		/**
 		 * the filter used for listing users. 
 		 */		
-		public var filter:KalturaUserFilter;
+		public var usersFilter:KalturaUserFilter;
 		
 		/**
 		 * link to upgrade page on corp website
 		 * */
-		public var upgradeLink:String;
+		public var usersUpgradeLink:String;
 		
 		/**
 		 * user drilldown mode, either <code>DrilldownMode.ADD</code>, 
@@ -57,16 +63,18 @@ package com.kaltura.kmc.modules.admin.model
 		 * */
 		public var roleDrilldownMode:String = DrilldownMode.NONE;
 		
+		
+		[ArrayElementType("KalturaUserRole")]
 		/**
 		 * array collection with all the roles this partner has
-		 * (KalturaRole objects)
+		 * (KalturaUserRole objects)
 		 */		
 		public var allRoles:ArrayCollection;
 		
 		
 		/**
 		 * when creating a new role from the user drilldown, need to pass  
-		 * the KalturaRole returned from the server back to the user drilldown   
+		 * the KalturaUserRole returned from the server back to the user drilldown   
 		 * window via the model. 
 		 */		
 		public var newRole:KalturaUserRole;

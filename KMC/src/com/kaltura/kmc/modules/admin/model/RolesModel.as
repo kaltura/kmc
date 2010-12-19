@@ -12,9 +12,9 @@ package com.kaltura.kmc.modules.admin.model
 		
 		public function RolesModel(){
 			// get only active roles (not deleted)
-			filter = new KalturaUserRoleFilter();
-			filter.statusEqual = KalturaUserRoleStatus.ACTIVE;
-			filter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
+			rolesFilter = new KalturaUserRoleFilter();
+			rolesFilter.statusEqual = KalturaUserRoleStatus.ACTIVE;
+			rolesFilter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
 		}
 		
 		/**
@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.admin.model
 		 * */
 		public var selectedRole:KalturaUserRole;
 		
+		[ArrayElementType("KalturaUserRole")]
 		/**
 		 * list of all roles (KalturaRole objects) 
 		 */
@@ -35,7 +36,7 @@ package com.kaltura.kmc.modules.admin.model
 		/**
 		 * the filter used for listing roles. 
 		 */		
-		public var filter:KalturaUserRoleFilter;
+		public var rolesFilter:KalturaUserRoleFilter;
 		
 		
 		/**
@@ -56,6 +57,11 @@ package com.kaltura.kmc.modules.admin.model
 		/**
 		 * all partner's permissions uiconf 
 		 */
-		public var partnerPermissions:XML;
+		public var partnerPermissionsUiconf:XML;
+		
+		/**
+		 * a list of permissions ids from the partner data 
+		 */
+		public var partnerPermissions:Vector.<String>;
 	}
 }

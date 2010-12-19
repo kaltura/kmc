@@ -19,8 +19,10 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var call:KalturaCall = new UserRoleDelete((event as RoleEvent).role.id());
 			mr.addAction(call);
 			// list
-			call = new UserRoleList(_model.rolesModel.filter);
+			call = new UserRoleList(_model.rolesModel.rolesFilter);
 			mr.addAction(call);
+			
+			//TODO also recheck quota
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
