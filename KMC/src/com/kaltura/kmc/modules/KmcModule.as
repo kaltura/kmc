@@ -71,6 +71,7 @@ package com.kaltura.kmc.modules {
 		protected var _kc:KalturaClient;
 		
 	
+		[Bindable]
 		/**
 		 * @copy #userInfo
 		 * */
