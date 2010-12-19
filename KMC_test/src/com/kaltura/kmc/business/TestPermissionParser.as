@@ -208,26 +208,6 @@ package com.kaltura.kmc.business {
 		}
 
 
-		[Test]
-		/**
-		 * test the util method that checks if a string is in a strings array.
-		 * the string is in the array.
-		 */
-		public function testPermissionInPermissionArray():void {
-			Assert.assertTrue(isStringInArray("Atar", ["Eitan", "Michal", "Hila", "Atar"]));
-		}
-
-
-		[Test]
-		/**
-		 * test the util method that checks if a string is in a strings array.
-		 * the string is not in the array.
-		 */
-		public function testPermissionNotInPermissionArray():void {
-			Assert.assertFalse(isStringInArray("Boaz", ["Eitan", "Michal", "Hila", "Atar"]));
-		}
-
-
 		/**
 		 * The test checks the main parsing function  'parsePermissions'
 		 */
