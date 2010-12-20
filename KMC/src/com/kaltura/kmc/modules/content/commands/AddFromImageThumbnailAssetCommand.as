@@ -48,9 +48,8 @@ package com.kaltura.kmc.modules.content.commands
 			
 			thumbsArray.push(newThumb);
 			//for data binding
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
-
-			
+			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();	
 		}
+		
 	}
 }

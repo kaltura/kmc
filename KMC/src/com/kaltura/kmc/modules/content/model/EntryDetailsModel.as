@@ -44,10 +44,12 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * TODO: change later to arrive from permissions!!!!!!!!!
 		 * */
-		public var enableDistribution:Boolean = true;
+		public var enableDistribution:Boolean = false;
 		
 		public var listDistributionProfilesRequired:Boolean = true;
 		
 		public var distributionProfileInfo:DistributionProfileInfo = new DistributionProfileInfo();
+		
+		public var loadingFlag:Boolean = false;
 	}
 }

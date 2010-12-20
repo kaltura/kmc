@@ -18,8 +18,8 @@ package com.kaltura.kmc.modules.content.commands
 
 			for (var i:int = 0; i<5; i++) {
 				var bla:KalturaDistributionProfile = new KalturaDistributionProfile();
-				bla.width = 1;
-				bla.height = 2;
+				bla.width = 400;
+				bla.height = 300;
 				bla.name = "NAME NAME " + i;
 				profilesArray.push(bla);
 

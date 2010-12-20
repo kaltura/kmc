@@ -4,6 +4,9 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			[Bindable]
 			private var _thumbAsset:ThumbnailWithDimensions;
 			
@@ -25,8 +28,14 @@
 
 			protected function deleteClickHandler(event:MouseEvent):void
 			{
-				var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
-				deleteThumbEvent.dispatch();
+				Alert.show(resourceManager.getString('cms','deleteThumbnailMsg'), resourceManager.getString('cms','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);	
+			}
+			
+			private function deleteHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
+					deleteThumbEvent.dispatch();
+				}
 			}
 
 		]]>

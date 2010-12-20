@@ -7,14 +7,25 @@ Thumbnails tab of EntryDetailsWin
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.events.UploadFromImageThumbAssetEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.CropThumbnailWindow;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.GrabFromVideoWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaMixEntry;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
 
+			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
+			private var _fileReference:FileReference;
 			
 			[Bindable]
 			private var _selectedEntry:KalturaBaseEntry;	
@@ -22,6 +33,8 @@ Thumbnails tab of EntryDetailsWin
 			private var _context:Context;
 			[Bindable]
 			private var _dimensionsArray:Array;
+			[Bindable]
+			private var _uploadThumbnailActionsDP:Array;
 			
 			public function get context():Context
 			{
@@ -44,6 +57,7 @@ Thumbnails tab of EntryDetailsWin
 				if (!_entryDetailsModel)
 					return;
 				BindingUtils.bindSetter(setDimensionsArray, _entryDetailsModel.distributionProfileInfo, "thumbnailDimensionsArray");
+				//will add the "profiles" column
 				if (_entryDetailsModel.enableDistribution) {
 					var columnsArray:Array = dataGrid.columns;
 					columnsArray.splice(2,0, partnersCol);
@@ -72,19 +86,87 @@ Thumbnails tab of EntryDetailsWin
 				if (!value)
 					return;
 				_selectedEntry = value;
-				//TODO: unify to a multirequest??
+				
+				//set the available operations for current entry
+				_uploadThumbnailActionsDP = new Array(resourceManager.getString('cms','upload'));
+				if ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))
+					_uploadThumbnailActionsDP.push(resourceManager.getString('cms','grabFromVideo'));
+				//if (checkForSources(entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray))
+				_uploadThumbnailActionsDP.push(resourceManager.getString('cms','cropNewThumbnail'));
+				
 				var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
-				listThumbsEvent.dispatch();
-				
-				
+				listThumbsEvent.dispatch();	
+			}			
+			
+			private function onActionCBItemClick(event:Event):void {
+				switch (actionCB.selectedItem) {
+					case resourceManager.getString('cms','upload'):
+						uploadNewThumbnail();
+						break;
+					case resourceManager.getString('cms','grabFromVideo'):
+						openGrabFromVideoPopup();
+						break;
+					case resourceManager.getString('cms','cropNewThumbnail'):
+						openCropThumbPopup();
+						break;
+				}
+				//to set the prompt back
+				actionCB.selectedIndex = -1;
 			}
+			
+			private function uploadNewThumbnail():void
+			{
+				_fileReference = new FileReference();
+				_fileReference.addEventListener(Event.SELECT, onThumbnailSelected);
+				_fileReference.browse(new Array(getImageTypeFilter()));
+			}
+			
+			private function getImageTypeFilter():FileFilter {
+				return new FileFilter("Images (" + IMAGE_TYPES+ ")" , IMAGE_TYPES );
+			}
+			
+			private function onThumbnailSelected(event:Event):void {
+				var uploadThumbnailEvent:UploadFromImageThumbAssetEvent = 
+					new UploadFromImageThumbAssetEvent(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE,selectedEntry.id, _fileReference);
+				uploadThumbnailEvent.dispatch();
+			}
+			
+			private function openGrabFromVideoPopup():void {
+				var grabWindow:GrabFromVideoWindow = new GrabFromVideoWindow();
+				grabWindow.selectedEntry = _selectedEntry;
+				grabWindow.context = _context;
+				PopUpManager.addPopUp(grabWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(grabWindow);
+			}
+			
+			private function openCropThumbPopup():void {
+				var cropNewWindow:CropThumbnailWindow = new CropThumbnailWindow();
+				cropNewWindow.thumbnailsList = entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				cropNewWindow.selectedEntry = selectedEntry;
+				cropNewWindow.width = this.stage.width-3;
+				cropNewWindow.height = this.stage.height;
+				PopUpManager.addPopUp(cropNewWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(cropNewWindow);
+			}
+			
+			/**
+			 * checks if at least one thumbnail source exists
+			 * */
+		/*	private function checkForSources(thumbsArray:Array):Boolean {
+				for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
+					if (thumb.thumbAsset)
+						return true;
+				}
+				
+				return false;
+			}*/
 
 		]]>
 	</mx:Script>
 		<mx:DataGridColumn id="partnersCol" headerText="{resourceManager.getString('cms','distributionPartnersCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer" />
 		<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('cms','addThumbnail')}"
-					 dataProvider="{new Array(resourceManager.getString('cms','upload'),resourceManager.getString('cms','grabFromVideo'), resourceManager.getString('cms','cropNewThumbnail'))}"
-					 itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbnailActionCBRenderer"/>
+					 dataProvider="{_uploadThumbnailActionsDP}"
+					 change="{onActionCBItemClick(event)}" selectedIndex="-1"/>
 
 		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" sortableColumns="false" draggableColumns="false" 
 					 selectable="false">

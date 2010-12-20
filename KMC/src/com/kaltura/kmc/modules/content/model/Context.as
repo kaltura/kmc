@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.model
 	public class Context
 	{
 		public static const DEFAULT_UI_CONFIG_ID:String = "10000";
-		
+	
  		public var userId:String;
 		public var isAnonymous:Boolean;
 	//	public var partnerId:String;
@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.model
 		public var uiConfigId:String = DEFAULT_UI_CONFIG_ID;
 		public var moderationUiconf:String = DEFAULT_UI_CONFIG_ID;
 		public var drilldownUiconf:String = DEFAULT_UI_CONFIG_ID;
+		public var captureThumbnailUiconf:String;
 		public var permissions:int = -1;
 		public var groupId:String;
 		public var debugMode:Boolean = false;

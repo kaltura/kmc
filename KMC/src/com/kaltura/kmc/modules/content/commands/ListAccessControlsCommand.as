@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function execute(event:CairngormEvent):void
 		{
+			_model.increaseLoadCounter();
 			var filter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
 			filter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
