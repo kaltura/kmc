@@ -350,19 +350,19 @@ package com.kaltura.utils.imageCropper {
 			return (heightRatio > 0) ? (_cropHeight / heightRatio) : _cropHeight;
 		}
 		public function set cropX(i:Number):void {
-			_cropX = i;
+			_cropX = (widthRatio) ? i*widthRatio : i;
 			moveHandles();
 		}
 		public function set cropY(i:Number):void {
-			_cropY = i;
+			_cropY = heightRatio ? i* heightRatio : i;
 			moveHandles();
 		}
 		public function set cropWidth(i:Number):void {
-			_cropWidth = i;
+			_cropWidth = widthRatio? i*widthRatio : i;
 			moveHandles();
 		}
 		public function set cropHeight(i:Number):void {
-			_cropHeight = i;
+			_cropHeight = heightRatio ? i*heightRatio : i;
 			moveHandles();
 		}
 		
