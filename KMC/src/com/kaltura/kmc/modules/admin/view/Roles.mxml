@@ -7,6 +7,7 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
@@ -193,15 +194,20 @@
 					openEditRoleDialog(null);
 				}
 			}
-
+			
+			protected function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section45'));
+			}
 			
 
 		]]>
 	</mx:Script>
-	<mx:VBox>
+	<mx:HBox width="100%" >
 		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_tab')}" styleName="pageTitle"/>
-		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_page_description')}" />
-	</mx:VBox>
+		<mx:Spacer width="100%" />
+		<mx:Button styleName="help" buttonMode="true" click="{onHelp()}"/>
+	</mx:HBox>
+	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_page_description')}" />
 	
 	<mx:HBox width="100%" >
 		<mx:VBox id="tableContainer" width="100%" >

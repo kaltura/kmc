@@ -8,6 +8,7 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
@@ -362,9 +363,17 @@
 				ce.dispatch();
 			}
 			
+			protected function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section43'));
+			}
+			
 		]]>
 	</mx:Script>
-	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="pageTitle"/>
+	<mx:HBox width="100%">
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="pageTitle"/>
+		<mx:Spacer width="100%" />
+		<mx:Button styleName="help" buttonMode="true" click="{onHelp()}"/>
+	</mx:HBox>
 	<mx:HBox styleName="usersTitleHbox">
 		<mx:Label id="usersQuota" />
 		<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'upgrade')}" 
