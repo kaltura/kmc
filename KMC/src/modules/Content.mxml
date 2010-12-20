@@ -6,7 +6,8 @@
 				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" layout="vertical"
 				   minHeight="520" minWidth="950" backgroundColor="#034F57" backgroundAlpha="1" borderThickness="0"
 				   borderStyle="solid" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
-				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}">
+				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}"
+				   >
 
 	<mx:Metadata>
 		[ResourceBundle("cms")]
@@ -154,6 +155,9 @@
 				if (_ready) {
 					switchToTab(subtab);
 				}
+				//loads data that might have changed from a different tab
+				if (_ready)
+					loadChangableData();
 			}
 
 			override protected function createChildren():void 
@@ -216,7 +220,7 @@
 					_attic[prop] = o[prop];
 				}
 			}
-			
+
 			
 			/**
 			 * init the panels in the view after all data is ready
@@ -329,7 +333,6 @@
 				return kmef;
 			}
 
-
 			/**
 			 * dispatches events that trigger data loading
 			 * */
@@ -338,16 +341,25 @@
 				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				getCategoriesList.dispatch();
 
+				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+				getPartnerInfoEvent.dispatch();
+				
+				loadChangableData();
+			}
+			
+			/**
+			 * dispatches events that trigger data loading, for data that can be changed from other
+			 * tabs such as "settings"
+			 * */
+			private function loadChangableData():void {
+
 				//to populate the filter
 				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
 				getAllFlavorParams.dispatch();
 
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
-
-				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
-				getPartnerInfoEvent.dispatch();
-
+				
 				if (_model.filterModel.enableCustomData) {
   					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 					listMetadataProfile.dispatch();  
