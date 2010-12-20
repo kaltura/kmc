@@ -202,9 +202,9 @@
 				//TODO get user id from service, if server decides to give it..
 				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
 				var userget:UserGet = new UserGet(userid);
-				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
+//				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
 				// get null, the real role id param is passed from the multirequest
-				var roleGet:UserRoleGet = new UserRoleGet(null);
+				var roleGet:UserRoleGet = new UserRoleGet(1);
 				var perms:PermissionList = new PermissionList();
 				
 				mr.addAction(uiconf);
@@ -264,51 +264,54 @@
 				uvo.role = event.data[3] as KalturaUserRole;
 				_modelLocator.userInfo = uvo;
 				
-				var roleOfCurrentUser:String = uvo.role.permissionNames; 
+				var roleOfCurrentUser:String;
+				if (uvo.role) {
+					// real data
+					roleOfCurrentUser = uvo.role.permissionNames; 
+				}
+				else {
+					// manual permissions
+					//TODO + use real role info (comment out the full list)  
+					roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
+						"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
+						// live stream
+						"LIVE_FEATURE,LIVE_STREAM_BASE,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_UPDATE_LIVE," +
+						// mix
+						"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
+						// content management
+						"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL," +
+						"CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_DELETE," +
+						"CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MANAGE_EMBED_CODE," +
+						"CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
+						// content moderation
+						"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
+						// playlist
+						"PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE," +
+						// syndication
+						"SYNDICATION_BASE,SYNDICATION_ADD,SYNDICATION_UPDATE,SYNDICATION_DELETE," +
+						// studio
+						"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
+						// advertising
+						"ADVERTISING_FEATURE,ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
+						// account overview
+						"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
+						// integration settings
+						"INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS," +
+						// account upgrade
+						"UPGRADE_BASE," +
+						// access control
+						"ACCESS_CONTROL_BASE,ACCESS_CONTROL_ADD,ACCESS_CONTROL_UPDATE,ACCESS_CONTROL_DELETE," +
+						// transcoding settings 
+						"TRANSCODING_BASE,TRANSCODING_ADD,TRANSCODING_DELETE,TRANSCODING_UPDATE," + 
+						// custom metadata
+						"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
+						// administration
+						"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE" + 
+						// analytics
+						"ANALYTICS_BASE"; 
+				}
 				
-				//TODO + use real role info (comment out the full list)  
-				roleOfCurrentUser = "CONTENT_UPLOAD_BASE,CONTENT_UPLOAD," +
-					"CONTENT_BULK_UPLOAD_BASE,CONTENT_BULK_UPLOAD," +
-					// live stream
-					"LIVE_FEATURE,LIVE_STREAM_BASE,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_UPDATE_LIVE," +
-					// mix
-					"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
-					// content management
-					"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL," +
-					"CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_DELETE," +
-					"CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MANAGE_EMBED_CODE," +
-					"CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
-					// content moderation
-					"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
-					// playlist
-					"PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE," +
-					// syndication
-					"SYNDICATION_BASE,SYNDICATION_ADD,SYNDICATION_UPDATE,SYNDICATION_DELETE," +
-					// studio
-					"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
-					// advertising
-					"ADVERTISING_FEATURE,ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
-					// account overview
-					"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
-					// integration settings
-					"INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS," +
-					// account upgrade
-					"UPGRADE_BASE," +
-					// access control
-					"ACCESS_CONTROL_BASE,ACCESS_CONTROL_ADD,ACCESS_CONTROL_UPDATE,ACCESS_CONTROL_DELETE," +
-					// transcoding settings 
-					"TRANSCODING_BASE,TRANSCODING_ADD,TRANSCODING_DELETE,TRANSCODING_UPDATE," + 
-					// custom metadata
-					"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
-					// administration
-					"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE" + 
-					// analytics
-					"ANALYTICS_BASE"; 
-				
-				//TODO [4] partner permissions list
-				/* event.data[4] as KalturaPermissionListResponse
-				we want to get all the partner permissions id into a 
-				string and pass that to the permission manager */
+				// [4] partner permissions list
 				var perms:String = parsePartnerPermissions(event.data[4] as KalturaPermissionListResponse);
 				
 				permissionManager = PermissionManager.getInstance();

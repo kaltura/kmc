@@ -23,7 +23,7 @@
 			 * @copy #selectedEntries
 			 * */
 			private var _selectedEntries:ArrayCollection;
-			
+
 
 			/**
 			 * close the window
@@ -40,13 +40,13 @@
 			private function saveData(event:Event):void {
 				var startTime:int = entryShec.getStartTime();
 				var endTime:int = entryShec.getEndTime();
-				
+
 				// we edit dummy entries, not the original (fuck me if I know why)
 				var clonedSelectedEntries:ArrayCollection = new ArrayCollection();
 				for (var i:int = 0; i < _selectedEntries.length; i++) {
 					clonedSelectedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
 				}
-			
+
 				// set sheduling of each entry:
 				for each (var entry:KalturaBaseEntry in clonedSelectedEntries) {
 					entry.startDate = startTime;
@@ -59,13 +59,13 @@
 
 				// stats:
 				for each (var etr:Object in clonedSelectedEntries) {
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
-															  "setSchedulingForEntries", etr.id);
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "setSchedulingForEntries", etr.id);
 				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING,GoogleAnalyticsConsts.CONTENT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING, GoogleAnalyticsConsts.CONTENT);
 				closeWindow();
 			}
-			
+
+
 			/**
 			 * a list of entries to edit
 			 * */
@@ -75,8 +75,7 @@
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'schedulingOverrideMsg')}"/>
-	<entrydetails:EntryScheduling id="entryShec"
-													   currentState="{EntryScheduling.POP_UP_MODE}"/>
+	<entrydetails:EntryScheduling id="entryShec" currentState="{EntryScheduling.POP_UP_MODE}"/>
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
 				   paddingTop="2">
 		<mx:Button label="{resourceManager.getString('cms', 'applySechdulingBtn')}" useHandCursor="true"

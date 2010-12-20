@@ -14,7 +14,7 @@
 							width="700" height="550" xmlns:containers="com.kaltura.containers.*"
 							xmlns:controllers="com.adobe.controllers.*" xmlns:controls="com.kaltura.controls.*"
 							verticalScrollPolicy="off"
-							help="{navigateToURL( new URLRequest( 'http://'+rootUrl+'/'+ resourceManager.getString('kmc', 'generalHelp') ) )}">
+							help="onHelp(event)">
 	<containers:states>
 		<mx:State name="newProfileState">
 			<mx:SetProperty name="title" value="{rm.getString('windows', 'newAccessControlTitle')}"/>
@@ -27,6 +27,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.types.KalturaCountryRestrictionType;
 			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.types.KalturaSiteRestrictionType;
@@ -638,6 +639,12 @@
 
 				submitBtn.enabled = isValid;
 			}
+
+			protected function onHelp(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "generalHelp"));
+			}
+
 		]]>
 	</mx:Script>
 
