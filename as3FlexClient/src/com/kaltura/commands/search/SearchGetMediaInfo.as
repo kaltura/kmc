@@ -7,6 +7,9 @@ package com.kaltura.commands.search
 	public class SearchGetMediaInfo extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param searchResult KalturaSearchResult
+		 **/
 		public function SearchGetMediaInfo( searchResult : KalturaSearchResult )
 		{
 			service= 'search';
@@ -15,15 +18,15 @@ package com.kaltura.commands.search
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(searchResult,'searchResult');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+ 			keyValArr = kalturaObject2Arrays(searchResult, 'searchResult');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new SearchGetMediaInfoDelegate( this , config );
 		}
 	}

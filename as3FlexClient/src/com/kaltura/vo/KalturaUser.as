@@ -64,6 +64,8 @@ package com.kaltura.vo
 
 		public var loginEnabled : Boolean;
 
+		public var isRootAdmin : Boolean;
+
 		public var roleIds : String;
 
 public function getUpdateableParamKeys():Array

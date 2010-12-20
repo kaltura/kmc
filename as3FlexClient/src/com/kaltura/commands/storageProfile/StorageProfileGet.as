@@ -6,6 +6,9 @@ package com.kaltura.commands.storageProfile
 	public class StorageProfileGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param storageProfileId int
+		 **/
 		public function StorageProfileGet( storageProfileId : int )
 		{
 			service= 'storageprofile_storageprofile';
@@ -14,14 +17,14 @@ package com.kaltura.commands.storageProfile
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'storageProfileId' );
-			valueArr.push( storageProfileId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('storageProfileId');
+			valueArr.push(storageProfileId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new StorageProfileGetDelegate( this , config );
 		}
 	}

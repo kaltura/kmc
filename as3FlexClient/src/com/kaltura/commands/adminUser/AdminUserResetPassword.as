@@ -6,6 +6,9 @@ package com.kaltura.commands.adminUser
 	public class AdminUserResetPassword extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param email String
+		 **/
 		public function AdminUserResetPassword( email : String )
 		{
 			service= 'adminuser';
@@ -14,14 +17,14 @@ package com.kaltura.commands.adminUser
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'email' );
-			valueArr.push( email );
-			applySchema( keyArr , valueArr );
+			keyArr.push('email');
+			valueArr.push(email);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new AdminUserResetPasswordDelegate( this , config );
 		}
 	}

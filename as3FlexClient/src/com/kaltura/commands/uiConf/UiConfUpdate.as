@@ -7,6 +7,10 @@ package com.kaltura.commands.uiConf
 	public class UiConfUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id int
+		 * @param uiConf KalturaUiConf
+		 **/
 		public function UiConfUpdate( id : int,uiConf : KalturaUiConf )
 		{
 			service= 'uiconf';
@@ -15,17 +19,17 @@ package com.kaltura.commands.uiConf
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
- 			keyValArr = kalturaObject2Arrays(uiConf,'uiConf');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('id');
+			valueArr.push(id);
+ 			keyValArr = kalturaObject2Arrays(uiConf, 'uiConf');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UiConfUpdateDelegate( this , config );
 		}
 	}

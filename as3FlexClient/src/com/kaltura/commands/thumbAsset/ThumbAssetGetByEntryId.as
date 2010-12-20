@@ -6,6 +6,9 @@ package com.kaltura.commands.thumbAsset
 	public class ThumbAssetGetByEntryId extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryId String
+		 **/
 		public function ThumbAssetGetByEntryId( entryId : String )
 		{
 			service= 'thumbasset';
@@ -14,14 +17,14 @@ package com.kaltura.commands.thumbAsset
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryId' );
-			valueArr.push( entryId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new ThumbAssetGetByEntryIdDelegate( this , config );
 		}
 	}

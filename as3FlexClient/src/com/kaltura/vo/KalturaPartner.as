@@ -62,6 +62,8 @@ package com.kaltura.vo
 
 		public var allowMultiNotification : int = int.MIN_VALUE;
 
+		public var loginUsersQuota : int = int.MIN_VALUE;
+
 public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

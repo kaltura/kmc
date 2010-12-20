@@ -6,6 +6,9 @@ package com.kaltura.commands.mixing
 	public class MixingDelete extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryId String
+		 **/
 		public function MixingDelete( entryId : String )
 		{
 			service= 'mixing';
@@ -14,14 +17,14 @@ package com.kaltura.commands.mixing
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryId' );
-			valueArr.push( entryId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MixingDeleteDelegate( this , config );
 		}
 	}

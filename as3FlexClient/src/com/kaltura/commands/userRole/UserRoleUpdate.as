@@ -7,6 +7,10 @@ package com.kaltura.commands.userRole
 	public class UserRoleUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param userRoleId int
+		 * @param userRole KalturaUserRole
+		 **/
 		public function UserRoleUpdate( userRoleId : int,userRole : KalturaUserRole )
 		{
 			service= 'userrole';
@@ -15,17 +19,17 @@ package com.kaltura.commands.userRole
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'userRoleId' );
-			valueArr.push( userRoleId );
- 			keyValArr = kalturaObject2Arrays(userRole,'userRole');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('userRoleId');
+			valueArr.push(userRoleId);
+ 			keyValArr = kalturaObject2Arrays(userRole, 'userRole');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UserRoleUpdateDelegate( this , config );
 		}
 	}

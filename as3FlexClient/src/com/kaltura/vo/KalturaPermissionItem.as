@@ -18,7 +18,6 @@ public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('type');
 			arr.push('tags');
 			return arr;
 		}

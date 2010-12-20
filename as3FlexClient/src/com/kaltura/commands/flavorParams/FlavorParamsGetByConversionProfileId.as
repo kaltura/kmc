@@ -6,6 +6,9 @@ package com.kaltura.commands.flavorParams
 	public class FlavorParamsGetByConversionProfileId extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param conversionProfileId int
+		 **/
 		public function FlavorParamsGetByConversionProfileId( conversionProfileId : int )
 		{
 			service= 'flavorparams';
@@ -14,14 +17,14 @@ package com.kaltura.commands.flavorParams
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'conversionProfileId' );
-			valueArr.push( conversionProfileId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('conversionProfileId');
+			valueArr.push(conversionProfileId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new FlavorParamsGetByConversionProfileIdDelegate( this , config );
 		}
 	}

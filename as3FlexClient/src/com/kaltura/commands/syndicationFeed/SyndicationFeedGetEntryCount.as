@@ -6,6 +6,9 @@ package com.kaltura.commands.syndicationFeed
 	public class SyndicationFeedGetEntryCount extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param feedId String
+		 **/
 		public function SyndicationFeedGetEntryCount( feedId : String )
 		{
 			service= 'syndicationfeed';
@@ -14,14 +17,14 @@ package com.kaltura.commands.syndicationFeed
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'feedId' );
-			valueArr.push( feedId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('feedId');
+			valueArr.push(feedId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new SyndicationFeedGetEntryCountDelegate( this , config );
 		}
 	}

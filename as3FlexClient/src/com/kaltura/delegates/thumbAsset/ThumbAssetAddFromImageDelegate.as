@@ -1,18 +1,21 @@
 package com.kaltura.delegates.thumbAsset
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.commands.thumbAsset.ThumbAssetAddFromImage;
 
+	import ru.inspirit.net.MultipartURLLoader;
+	import mx.utils.UIDUtil;
+
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.net.URLRequest;
-
-	import ru.inspirit.net.MultipartURLLoader;
+	import flash.net.FileReference;
+	import flash.net.URLLoaderDataFormat;
+	import flash.utils.ByteArray;
+	import flash.utils.getDefinitionByName;
 
 	public class ThumbAssetAddFromImageDelegate extends WebDelegateBase
 	{
@@ -30,9 +33,16 @@ package com.kaltura.delegates.thumbAsset
 			//create the service request for normal calls
 			var variables:String = decodeURIComponent(call.args.toString());
 			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "?service=" + call.service + "&action=" + call.action + "&" + variables;
-			(call as ThumbAssetAddFromImage).fileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
-			var urlRequest:URLRequest = new URLRequest(req);
-			(call as ThumbAssetAddFromImage).fileData.upload(urlRequest,"fileData");
+			if ((call as ThumbAssetAddFromImage).fileData is FileReference) {
+				(call as ThumbAssetAddFromImage).fileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
+				var urlRequest:URLRequest = new URLRequest(req);
+				((call as ThumbAssetAddFromImage).fileData as FileReference).upload(urlRequest,"fileData");
+			}
+			else{
+				mrloader.addFile(((call as ThumbAssetAddFromImage).fileData as ByteArray), UIDUtil.createUID(), 'fileData');	
+				mrloader.dataFormat = URLLoaderDataFormat.TEXT;
+				mrloader.load(req);
+			}
 		}
 
 		// Event Handlers

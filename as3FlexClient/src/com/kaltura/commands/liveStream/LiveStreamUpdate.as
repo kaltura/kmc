@@ -7,6 +7,10 @@ package com.kaltura.commands.liveStream
 	public class LiveStreamUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryId String
+		 * @param liveStreamEntry KalturaLiveStreamAdminEntry
+		 **/
 		public function LiveStreamUpdate( entryId : String,liveStreamEntry : KalturaLiveStreamAdminEntry )
 		{
 			service= 'livestream';
@@ -15,17 +19,17 @@ package com.kaltura.commands.liveStream
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryId' );
-			valueArr.push( entryId );
- 			keyValArr = kalturaObject2Arrays(liveStreamEntry,'liveStreamEntry');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+ 			keyValArr = kalturaObject2Arrays(liveStreamEntry, 'liveStreamEntry');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new LiveStreamUpdateDelegate( this , config );
 		}
 	}

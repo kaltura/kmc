@@ -6,6 +6,9 @@ package com.kaltura.commands.uploadToken
 	public class UploadTokenGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param uploadTokenId String
+		 **/
 		public function UploadTokenGet( uploadTokenId : String )
 		{
 			service= 'uploadtoken';
@@ -14,14 +17,14 @@ package com.kaltura.commands.uploadToken
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'uploadTokenId' );
-			valueArr.push( uploadTokenId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('uploadTokenId');
+			valueArr.push(uploadTokenId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UploadTokenGetDelegate( this , config );
 		}
 	}

@@ -1,10 +1,9 @@
 package com.kaltura.delegates.report
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
 	public class ReportGetUrlForReportAsCsvDelegate extends WebDelegateBase
 	{
@@ -13,7 +12,7 @@ package com.kaltura.delegates.report
 			super(call, config);
 		}
 
-		override public function parse( result : XML ) : *
+		override public function parse(result:XML) : *
 		{
 			return result.result.toString();
 		}

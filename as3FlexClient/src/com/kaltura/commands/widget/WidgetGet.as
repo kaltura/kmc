@@ -6,6 +6,9 @@ package com.kaltura.commands.widget
 	public class WidgetGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id String
+		 **/
 		public function WidgetGet( id : String )
 		{
 			service= 'widget';
@@ -14,14 +17,14 @@ package com.kaltura.commands.widget
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
-			applySchema( keyArr , valueArr );
+			keyArr.push('id');
+			valueArr.push(id);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new WidgetGetDelegate( this , config );
 		}
 	}

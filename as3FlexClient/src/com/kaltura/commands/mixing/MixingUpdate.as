@@ -7,6 +7,10 @@ package com.kaltura.commands.mixing
 	public class MixingUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryId String
+		 * @param mixEntry KalturaMixEntry
+		 **/
 		public function MixingUpdate( entryId : String,mixEntry : KalturaMixEntry )
 		{
 			service= 'mixing';
@@ -15,17 +19,17 @@ package com.kaltura.commands.mixing
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryId' );
-			valueArr.push( entryId );
- 			keyValArr = kalturaObject2Arrays(mixEntry,'mixEntry');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+ 			keyValArr = kalturaObject2Arrays(mixEntry, 'mixEntry');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MixingUpdateDelegate( this , config );
 		}
 	}

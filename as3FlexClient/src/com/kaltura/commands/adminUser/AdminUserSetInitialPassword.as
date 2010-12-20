@@ -6,6 +6,10 @@ package com.kaltura.commands.adminUser
 	public class AdminUserSetInitialPassword extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param hashKey String
+		 * @param newPassword String
+		 **/
 		public function AdminUserSetInitialPassword( hashKey : String,newPassword : String )
 		{
 			service= 'adminuser';
@@ -14,16 +18,16 @@ package com.kaltura.commands.adminUser
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'hashKey' );
-			valueArr.push( hashKey );
-			keyArr.push( 'newPassword' );
-			valueArr.push( newPassword );
-			applySchema( keyArr , valueArr );
+			keyArr.push('hashKey');
+			valueArr.push(hashKey);
+			keyArr.push('newPassword');
+			valueArr.push(newPassword);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new AdminUserSetInitialPasswordDelegate( this , config );
 		}
 	}

@@ -6,7 +6,10 @@ package com.kaltura.commands.permission
 	public class PermissionGet extends KalturaCall
 	{
 		public var filterFields : String;
-		public function PermissionGet( permissionId : int )
+		/**
+		 * @param permissionName String
+		 **/
+		public function PermissionGet( permissionName : String )
 		{
 			service= 'permission';
 			action= 'get';
@@ -14,14 +17,14 @@ package com.kaltura.commands.permission
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'permissionId' );
-			valueArr.push( permissionId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('permissionName');
+			valueArr.push(permissionName);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new PermissionGetDelegate( this , config );
 		}
 	}

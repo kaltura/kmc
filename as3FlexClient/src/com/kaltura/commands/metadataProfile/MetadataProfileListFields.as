@@ -6,6 +6,9 @@ package com.kaltura.commands.metadataProfile
 	public class MetadataProfileListFields extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param metadataProfileId int
+		 **/
 		public function MetadataProfileListFields( metadataProfileId : int )
 		{
 			service= 'metadata_metadataprofile';
@@ -14,14 +17,14 @@ package com.kaltura.commands.metadataProfile
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'metadataProfileId' );
-			valueArr.push( metadataProfileId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('metadataProfileId');
+			valueArr.push(metadataProfileId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MetadataProfileListFieldsDelegate( this , config );
 		}
 	}

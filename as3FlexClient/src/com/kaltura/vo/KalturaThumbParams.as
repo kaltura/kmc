@@ -29,6 +29,8 @@ package com.kaltura.vo
 
 		public var backgroundColor : String;
 
+		public var sourceParamsId : int = int.MIN_VALUE;
+
 override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -45,6 +47,7 @@ override public function getUpdateableParamKeys():Array
 			arr.push('scaleWidth');
 			arr.push('scaleHeight');
 			arr.push('backgroundColor');
+			arr.push('sourceParamsId');
 			return arr;
 		}
 	}

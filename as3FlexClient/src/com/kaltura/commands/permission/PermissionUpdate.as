@@ -7,7 +7,11 @@ package com.kaltura.commands.permission
 	public class PermissionUpdate extends KalturaCall
 	{
 		public var filterFields : String;
-		public function PermissionUpdate( permissionId : int,permission : KalturaPermission )
+		/**
+		 * @param permissionName String
+		 * @param permission KalturaPermission
+		 **/
+		public function PermissionUpdate( permissionName : String,permission : KalturaPermission )
 		{
 			service= 'permission';
 			action= 'update';
@@ -15,17 +19,17 @@ package com.kaltura.commands.permission
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'permissionId' );
-			valueArr.push( permissionId );
- 			keyValArr = kalturaObject2Arrays(permission,'permission');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('permissionName');
+			valueArr.push(permissionName);
+ 			keyValArr = kalturaObject2Arrays(permission, 'permission');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new PermissionUpdateDelegate( this , config );
 		}
 	}

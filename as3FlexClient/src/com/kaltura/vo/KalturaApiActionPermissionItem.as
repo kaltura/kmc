@@ -9,15 +9,12 @@ package com.kaltura.vo
 
 		public var action : String;
 
-		public var partnerGroup : String;
-
 override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('service');
 			arr.push('action');
-			arr.push('partnerGroup');
 			return arr;
 		}
 	}

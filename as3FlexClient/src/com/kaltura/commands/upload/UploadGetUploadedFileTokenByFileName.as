@@ -6,6 +6,9 @@ package com.kaltura.commands.upload
 	public class UploadGetUploadedFileTokenByFileName extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param fileName String
+		 **/
 		public function UploadGetUploadedFileTokenByFileName( fileName : String )
 		{
 			service= 'upload';
@@ -14,14 +17,14 @@ package com.kaltura.commands.upload
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'fileName' );
-			valueArr.push( fileName );
-			applySchema( keyArr , valueArr );
+			keyArr.push('fileName');
+			valueArr.push(fileName);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UploadGetUploadedFileTokenByFileNameDelegate( this , config );
 		}
 	}

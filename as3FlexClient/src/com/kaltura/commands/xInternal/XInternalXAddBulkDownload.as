@@ -6,6 +6,10 @@ package com.kaltura.commands.xInternal
 	public class XInternalXAddBulkDownload extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryIds String
+		 * @param flavorParamsId String
+		 **/
 		public function XInternalXAddBulkDownload( entryIds : String,flavorParamsId : String='' )
 		{
 			service= 'xinternal';
@@ -14,16 +18,16 @@ package com.kaltura.commands.xInternal
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryIds' );
-			valueArr.push( entryIds );
-			keyArr.push( 'flavorParamsId' );
-			valueArr.push( flavorParamsId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryIds');
+			valueArr.push(entryIds);
+			keyArr.push('flavorParamsId');
+			valueArr.push(flavorParamsId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new XInternalXAddBulkDownloadDelegate( this , config );
 		}
 	}

@@ -7,6 +7,11 @@ package com.kaltura.commands.metadataProfile
 	public class MetadataProfileAdd extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param metadataProfile KalturaMetadataProfile
+		 * @param xsdData String
+		 * @param viewsData String
+		 **/
 		public function MetadataProfileAdd( metadataProfile : KalturaMetadataProfile,xsdData : String,viewsData : String='' )
 		{
 			service= 'metadata_metadataprofile';
@@ -15,19 +20,19 @@ package com.kaltura.commands.metadataProfile
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(metadataProfile,'metadataProfile');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			keyArr.push( 'xsdData' );
-			valueArr.push( xsdData );
-			keyArr.push( 'viewsData' );
-			valueArr.push( viewsData );
-			applySchema( keyArr , valueArr );
+ 			keyValArr = kalturaObject2Arrays(metadataProfile, 'metadataProfile');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('xsdData');
+			valueArr.push(xsdData);
+			keyArr.push('viewsData');
+			valueArr.push(viewsData);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MetadataProfileAddDelegate( this , config );
 		}
 	}

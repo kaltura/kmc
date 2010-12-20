@@ -6,6 +6,10 @@ package com.kaltura.commands.documents
 	public class DocumentsGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param entryId String
+		 * @param version int
+		 **/
 		public function DocumentsGet( entryId : String,version : int=-1 )
 		{
 			service= 'document_documents';
@@ -14,16 +18,16 @@ package com.kaltura.commands.documents
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'entryId' );
-			valueArr.push( entryId );
-			keyArr.push( 'version' );
-			valueArr.push( version );
-			applySchema( keyArr , valueArr );
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			keyArr.push('version');
+			valueArr.push(version);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new DocumentsGetDelegate( this , config );
 		}
 	}

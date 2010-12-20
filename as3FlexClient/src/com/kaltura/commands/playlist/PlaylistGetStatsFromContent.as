@@ -6,6 +6,10 @@ package com.kaltura.commands.playlist
 	public class PlaylistGetStatsFromContent extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param playlistType int
+		 * @param playlistContent String
+		 **/
 		public function PlaylistGetStatsFromContent( playlistType : int,playlistContent : String )
 		{
 			service= 'playlist';
@@ -14,16 +18,16 @@ package com.kaltura.commands.playlist
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'playlistType' );
-			valueArr.push( playlistType );
-			keyArr.push( 'playlistContent' );
-			valueArr.push( playlistContent );
-			applySchema( keyArr , valueArr );
+			keyArr.push('playlistType');
+			valueArr.push(playlistType);
+			keyArr.push('playlistContent');
+			valueArr.push(playlistContent);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new PlaylistGetStatsFromContentDelegate( this , config );
 		}
 	}

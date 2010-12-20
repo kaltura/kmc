@@ -6,6 +6,10 @@ package com.kaltura.commands.mixing
 	public class MixingGetReadyMediaEntries extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param mixId String
+		 * @param version int
+		 **/
 		public function MixingGetReadyMediaEntries( mixId : String,version : int=-1 )
 		{
 			service= 'mixing';
@@ -14,16 +18,16 @@ package com.kaltura.commands.mixing
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'mixId' );
-			valueArr.push( mixId );
-			keyArr.push( 'version' );
-			valueArr.push( version );
-			applySchema( keyArr , valueArr );
+			keyArr.push('mixId');
+			valueArr.push(mixId);
+			keyArr.push('version');
+			valueArr.push(version);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MixingGetReadyMediaEntriesDelegate( this , config );
 		}
 	}

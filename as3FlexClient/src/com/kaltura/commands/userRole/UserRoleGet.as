@@ -6,6 +6,9 @@ package com.kaltura.commands.userRole
 	public class UserRoleGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param userRoleId int
+		 **/
 		public function UserRoleGet( userRoleId : int )
 		{
 			service= 'userrole';
@@ -14,14 +17,14 @@ package com.kaltura.commands.userRole
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'userRoleId' );
-			valueArr.push( userRoleId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('userRoleId');
+			valueArr.push(userRoleId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UserRoleGetDelegate( this , config );
 		}
 	}

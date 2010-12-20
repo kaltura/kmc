@@ -1,10 +1,9 @@
 package com.kaltura.delegates.media
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
 	public class MediaListFlagsDelegate extends WebDelegateBase
 	{

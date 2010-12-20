@@ -6,6 +6,9 @@ package com.kaltura.commands.mixing
 	public class MixingGetMixesByMediaId extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param mediaEntryId String
+		 **/
 		public function MixingGetMixesByMediaId( mediaEntryId : String )
 		{
 			service= 'mixing';
@@ -14,14 +17,14 @@ package com.kaltura.commands.mixing
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'mediaEntryId' );
-			valueArr.push( mediaEntryId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('mediaEntryId');
+			valueArr.push(mediaEntryId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MixingGetMixesByMediaIdDelegate( this , config );
 		}
 	}

@@ -6,6 +6,9 @@ package com.kaltura.commands.user
 	public class UserGetByLoginId extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param loginId String
+		 **/
 		public function UserGetByLoginId( loginId : String )
 		{
 			service= 'user';
@@ -14,14 +17,14 @@ package com.kaltura.commands.user
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'loginId' );
-			valueArr.push( loginId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('loginId');
+			valueArr.push(loginId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new UserGetByLoginIdDelegate( this , config );
 		}
 	}
