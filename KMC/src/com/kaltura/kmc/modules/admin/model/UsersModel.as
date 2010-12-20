@@ -65,26 +65,12 @@ package com.kaltura.kmc.modules.admin.model
 		public var roleDrilldownMode:String = DrilldownMode.NONE;
 		
 		
-		[ArrayElementType("KalturaUserRole")]
-		/**
-		 * array collection with all the roles this partner has
-		 * (KalturaUserRole objects)
-		 */		
-		public var allRoles:ArrayCollection;
-		
-		
 		/**
 		 * when creating a new role from the user drilldown, need to pass  
 		 * the KalturaUserRole returned from the server back to the user drilldown   
 		 * window via the model. 
 		 */		
 		public var newRole:KalturaUserRole;
-		
-		
-		/**
-		 * all partner's permissions ui config 
-		 */
-		public var partnerPermissionsUiconf:XML;
 		
 	}
 }

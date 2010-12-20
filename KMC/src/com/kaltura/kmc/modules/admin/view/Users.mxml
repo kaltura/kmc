@@ -13,6 +13,7 @@
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 			import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
+			import com.kaltura.kmc.modules.admin.model.RolesModel;
 			import com.kaltura.kmc.modules.admin.model.UsersModel;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaFilterPager;
@@ -25,7 +26,16 @@
 			import mx.resources.ResourceManager;
 
 			[Bindable]
+			/**
+			 * users related part of the main model
+			 * */
 			public var model:UsersModel;
+			
+			[Bindable]
+			/**
+			 * roles related part of the main model
+			 * */
+			public var rolesModel:RolesModel;
 
 
 			
@@ -243,7 +253,7 @@
 			 * */
 			protected function openAddRoleDialog(e:Event):void {
 				_roleDrilldown = new RoleDrilldown();
-				_roleDrilldown.init(new KalturaUserRole(), model.drilldownMode, model.partnerPermissionsUiconf);
+				_roleDrilldown.init(new KalturaUserRole(), model.drilldownMode, rolesModel.partnerPermissionsUiconf, rolesModel.partnerPermissions);
 				_roleDrilldown.addEventListener(RoleDrilldown.SAVE, saveRoleData);
 				_roleDrilldown.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
 				PopUpManager.addPopUp(_roleDrilldown, this, true);
@@ -281,7 +291,7 @@
 			 * */
 			protected function drillToSelectedUser():UserDrilldown {
 				var ud:UserDrilldown = new UserDrilldown();
-				ud.init(model.allRoles, model.selectedUser, model.drilldownMode);
+				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
@@ -363,7 +373,7 @@
 
 	<mx:HBox width="100%" >
 		<mx:VBox id="tableContainer" width="100%" >
-			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" roles="{model.allRoles}" rowCount="10"
+			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" roles="{rolesModel.roles}" rowCount="10"
 							 drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
 							 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" />
 			<controls:Paging id="paging" width="{table.width}" styleName="paging" nextPage="gotoPage()"

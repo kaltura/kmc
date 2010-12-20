@@ -15,7 +15,7 @@
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
-			
+
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -26,24 +26,6 @@
 			import mx.resources.ResourceManager;
 
 			/**
-			 * All PermissionGroupManagers array 
-			 */
-			private var allPermissionGroupManagers:Array = new Array();
-			
-			[ArrayElementType("CheckBox")]
-			/**
-			 * All checkboxes array (<code>CheckBox</code> instances)
-			 */
-			private var allCheckboxes:Array = new Array();
-			
-			/**
-			 * partner's permissions uiconf
-			 * */
-			protected var _formData:XML;
-
-
-
-			/**
 			 * value of the type property for the <code>save</code> event
 			 * */
 			public static const SAVE:String = "rdd_save";
@@ -52,6 +34,22 @@
 			 * value of the type property for the <code>save</code> event
 			 * */
 			public static const CLOSE:String = "rdd_close";
+
+			/**
+			 * All PermissionGroupManagers array
+			 */
+			private var _allPermissionGroupManagers:Array = new Array();
+
+			[ArrayElementType("CheckBox")]
+			/**
+			 * All checkboxes array (<code>CheckBox</code> instances)
+			 */
+			private var _allCheckboxes:Array = new Array();
+
+			/**
+			 * partner's permissions uiconf
+			 * */
+			protected var _formData:XML;
 
 			/**
 			 * creationComplete event occured in the past?
@@ -80,7 +78,7 @@
 			/**
 			 * A list of special features that the partner has (IE live stream, ads,custom Data)
 			 */
-			private var _partnerFeatures:Array = ['CUSTOM_DATA_FEATURE' , "ADVERTISING_FEATURE" , 'LIVE_FEATURE'];
+			private var _partnerFeatures:Array;// = ['CUSTOM_DATA_FEATURE', "ADVERTISING_FEATURE", 'LIVE_FEATURE'];
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
@@ -89,43 +87,42 @@
 				setMode(_mode);
 
 				var groups:XMLList = _formData..permissionGroup;
-				
-				
+
+
 				var collapseAll:LinkButton = new LinkButton();
 				var expandAll:LinkButton = new LinkButton();
-				collapseAll.label = ResourceManager.getInstance().getString( 'admin' , 'collapse' );
-				expandAll.label = ResourceManager.getInstance().getString( 'admin' , 'expand' );
-				collapseAll.addEventListener(MouseEvent.CLICK , onCollapseAll);
-				expandAll.addEventListener(MouseEvent.CLICK , onExpandAll);
-				
+				collapseAll.label = ResourceManager.getInstance().getString('admin', 'collapse');
+				expandAll.label = ResourceManager.getInstance().getString('admin', 'expand');
+				collapseAll.addEventListener(MouseEvent.CLICK, onCollapseAll);
+				expandAll.addEventListener(MouseEvent.CLICK, onExpandAll);
+
 				colapsExpand.addChild(collapseAll);
 				colapsExpand.addChild(expandAll);
-				
-				//TODO + get partner permissions and remove any features current partner doesn't have.
+
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown");
-				
+
 				//TODO in edit mode - fill checkboxes. This is a test and will need to get the data from server 
 				var temp:String = "CONTENT_INGEST_BULK_UPLOAD,CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_CUSTOM_DATA,CONTENT_MANAGE_DELETE,CONTENT_MANAGE_EMBED_CODE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MODERATE_BASE,PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE,STUDIO_BASE,STUDIO_UPDATE_UICONF,STUDIO_SELECT_CONTENT,ADVERTISING_UPDATE_SETTINGS,INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS";
-				fillPermissions(temp); 
+				fillPermissions(temp);
 			}
 
-			protected function onCollapseAll(event:MouseEvent):void 
-			{
-				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
-				{
+
+			protected function onCollapseAll(event:MouseEvent):void {
+				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.isOpen = false;
 				}
 			}
-			protected function onExpandAll(event:MouseEvent):void 
-			{
-				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
-				{
+
+
+			protected function onExpandAll(event:MouseEvent):void {
+				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.isOpen = true;
 				}
 			}
+
 
 			/**
 			 * "x" botton clicked, confirm no changes and close.
@@ -180,9 +177,11 @@
 			 * @param role 		the role to edit / create
 			 * @param mode		edit / add mode
 			 * @param partnerPermissions	all partner's permissions (used for editing roles)
+			 * @param partnerFeatures		special features the partner has
 			 * */
-			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML):void {
+			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML, partnerFeatures:String):void {
 				_formData = partnerPermissions;
+				_partnerFeatures = partnerFeatures.split(",");
 				// the following intentionaly use setters. 
 				setRole(role);
 				setMode(mode);
@@ -192,7 +191,7 @@
 			/**
 			 * This function takes an XML of a group and builds a Vbox with a checkbox for the group name
 			 * and its children checkboxes (if needed). All checkboxs are pushed to a member array - allCheckboxes.
-			 * The checkbox id is its permission id, for checkboxes without children as well. 
+			 * The checkbox id is its permission id, for checkboxes without children as well.
 			 * Inner checkboxes has the instance of their parent as their data.
 			 */
 			private function buildGroup(group:XML, debug:Boolean = true):VBox {
@@ -203,89 +202,87 @@
 				var groupCb:CheckBox = new CheckBox();
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
-				if (group.attribute("dependsOnFeature").toString().length > 0)
-				{
+				if (group.attribute("dependsOnFeature").toString().length > 0) {
 					groupCb.enabled = checkIfPartnerHasFeature(group.attribute("dependsOnFeature").toString());
 				}
 				if (debug)
 					groupCb.toolTip = group.attribute("id")[0].toString();
-				allCheckboxes.push(groupCb);
-				groupCb.data = {isGroup:true};
+				_allCheckboxes.push(groupCb);
+				groupCb.data = {isGroup: true};
 
-				
+
 				//create a container for the group and the option button 
 				var hbox:HBox = new HBox
 				vb.addChild(hbox);
-				hbox.percentWidth = 100; 
+				hbox.percentWidth = 100;
 				hbox.addChild(groupCb);
-				
+
 				var permissions:XMLList = group..permission;
-				
+
 				//special case for group without children (base only)
 				if (permissions.length() == 0) {
 					return vb;
 				}
-				
+
 				// add Group Controls (hbox, groupcb):
 				var spacer:Spacer = new Spacer();
 				hbox.addChild(spacer);
 				spacer.percentWidth = 100;
-				
+
 				var openLinkBtn:LinkButton = new LinkButton();
-				openLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'advanced' );
+				openLinkBtn.label = ResourceManager.getInstance().getString('admin', 'advanced');
 				hbox.addChild(openLinkBtn);
-				
+
 				var closeLinkBtn:LinkButton = new LinkButton();
-				closeLinkBtn.label = ResourceManager.getInstance().getString( 'admin' , 'close' )
+				closeLinkBtn.label = ResourceManager.getInstance().getString('admin', 'close')
 				hbox.addChild(closeLinkBtn);
 				// -----------------
-				
+
 				var innerCbArray:Array = new Array();
 				// build the inner checkboxes 
 				var cb:CheckBox;
 				var showButtons:Boolean = true;
 				// override groups that has one item inside and marked with hideGroup="true"
-				if (group.attribute("hideGroup").toString()=="true")
-				{
+				if (group.attribute("hideGroup").toString() == "true") {
 					// asuming group has 1 child, it will override its own text & id from its child.   
 					groupCb.label = group.children()[0].attribute("text")[0].toString();
 					if (debug)
 						groupCb.toolTip = group.children()[0].attribute("id")[0].toString();
 					groupCb.id = group.children()[0].attribute("id")[0].toString();
 					showButtons = false;
-					
-				}else
-				{
+
+				}
+				else {
 					for each (var permission:XML in permissions) {
 						cb = createInnerCheckbox(permission, groupCb, debug);
 						if (permission.attribute("dependsOnFeature").toString().length > 0)
 							cb.enabled = checkIfPartnerHasFeature(permission.attribute("dependsOnFeature").toString());
 						vb.addChild(cb);
 						innerCbArray.push(cb);
-						allCheckboxes.push(cb);
+						_allCheckboxes.push(cb);
 					}
 				}
-				
-				allPermissionGroupManagers.push(new PermissionGroupManager(	groupCb , innerCbArray , closeLinkBtn , openLinkBtn , showButtons)); 
-				
+
+				_allPermissionGroupManagers.push(new PermissionGroupManager(groupCb, innerCbArray, closeLinkBtn, openLinkBtn, showButtons));
+
 				return vb;
 			}
-			
+
+
 			/**
 			 * Check if the partner has a permission to a plugin feature (Metadata,live etc')
-			 * @feature - the feature name from the dependsOnFeature attribute
+			 * @feature 	the feature name from the dependsOnFeature attribute
 			 */
-			protected function checkIfPartnerHasFeature(feature:String):Boolean
-			{
+			protected function checkIfPartnerHasFeature(featureId:String):Boolean {
 				var hasFeature:Boolean = false;
-				for each (var specialPermission:String in _partnerFeatures)
-				{
-					if (feature ==  specialPermission)
+				for each (var specialPermission:String in _partnerFeatures) {
+					if (featureId == specialPermission)
 						return true;
 				}
-				
+
 				return hasFeature
 			}
+
 
 			/**
 			 * create the inner checkboxes of a group
@@ -305,8 +302,8 @@
 				cb.data = groupCb; //pointer to the group id
 				return cb;
 			}
-			
-			
+
+
 			/**
 			 * update _undoRole.permissionNames
 			 * NOTE: when editing role, make sure NOT TO OVERRIDE permissions
@@ -316,8 +313,8 @@
 				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
 				requestSave();
 			}
-			
-			
+
+
 			/**
 			 * processes the forms and returns a new permissions string for the
 			 * role, without changing non-kmc permissions
@@ -327,18 +324,18 @@
 			protected function getUpdatedPermissions(perms:String):String {
 				// current permissions list
 				var updatedPerms:Array = perms.split(",");
-				
+
 				// check what needs to stay / go
-				for each (var cb:CheckBox in allCheckboxes) {
+				for each (var cb:CheckBox in _allCheckboxes) {
 					if (cb.selected) {
 						// add to / keep in array
-						if(updatedPerms.indexOf(cb.id) == -1) {
+						if (updatedPerms.indexOf(cb.id) == -1) {
 							updatedPerms.push(cb.id);
 						}
 					}
 					else {
 						// remove from array
-						if(updatedPerms.indexOf(cb.id) > -1) {
+						if (updatedPerms.indexOf(cb.id) > -1) {
 							ArrayUtil.removeValueFromArray(updatedPerms, cb.id);
 						}
 					}
@@ -349,15 +346,15 @@
 
 
 			/**
-			 * This function sets the relevant checkboxes and also their parent. 
-			 * It must run only after the form was built by the partner full permission id. 
-			 * @param permissionList Comma seperated list of permissions to show. 
+			 * This function sets the relevant checkboxes and also their parent.
+			 * It must run only after the form was built by the partner full permission id.
+			 * @param permissionList Comma seperated list of permissions to show.
 			 */
 			protected function fillPermissions(permissionList:String):void {
 				var SelectedPermissionIds:Array = permissionList.split(",");
 				// setting the selected / not selected checkboxes
 				for each (var permission:String in SelectedPermissionIds) {
-					for each (var cb:CheckBox in allCheckboxes) {
+					for each (var cb:CheckBox in _allCheckboxes) {
 						if (cb.id == permission) {
 							cb.selected = true;
 							if (cb.data && cb.data is CheckBox)
@@ -366,13 +363,12 @@
 					}
 				}
 				// applying the half-selected style
-				for each (var pm:PermissionGroupManager in allPermissionGroupManagers )
-				{
+				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.init();
 				}
 			}
-			
-			
+
+
 			/**
 			 * set window mode.
 			 * optional values are listed in <code>DrilldownMode</code>.
@@ -429,8 +425,8 @@
 	<mx:VBox width="100%">
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
 			<mx:FormItem width="100%" label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
-				<mx:TextInput text="{ResourceManager.getInstance().getString('admin', 'role_name_default')}"
-							  id="nameTi" width="100%"/>
+				<mx:TextInput text="{ResourceManager.getInstance().getString('admin', 'role_name_default')}" id="nameTi"
+							  width="100%"/>
 			</mx:FormItem>
 			<mx:FormItem width="100%" label="{ResourceManager.getInstance().getString('admin', 'rdd_description')}">
 				<mx:TextArea id="descriptionTi" width="100%"/>
@@ -439,10 +435,10 @@
 	</mx:VBox>
 	<mx:HRule width="100%"/>
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
-	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox" />
+	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox"/>
 	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" disabledOverlayAlpha="0"/>
 	<mx:HBox width="100%" horizontalAlign="center" height="30">
-		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}"
-				   id="saveBtn" click="saveBtn_clickHandler(event)"/>
+		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" id="saveBtn"
+				   click="saveBtn_clickHandler(event)"/>
 	</mx:HBox>
 </containers:HelpTitleWindow>
