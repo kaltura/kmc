@@ -5,13 +5,14 @@
 <HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" 
 				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 				 title="{resourceManager.getString('cms', 'setAccessControlTitle')}" layout="vertical"
-				 showCloseButton="true" close="closeWindow(event)" >
+				 showCloseButton="true" close="closeWindow(event)" help="onHelp(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -71,6 +72,11 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ACCESS_CONTROL,GoogleAnalyticsConsts.CONTENT);
 				closeWindow();
 			}
+
+			protected function onHelp(event:Event):void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "help_anchore"));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'accessControlOverrideMsg')}"/>

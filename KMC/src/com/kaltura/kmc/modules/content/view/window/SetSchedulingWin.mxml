@@ -2,7 +2,7 @@
 <HelpTitleWindow xmlns="com.kaltura.containers.*" layout="vertical"
 				 title="{resourceManager.getString('cms', 'setSchedulingTitle')}"
 				 xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" close="closeWindow(event)"
-				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*">
+				 xmlns:entrydetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" help="onHelp(event)">
 
 	<mx:Script>
 		<![CDATA[
@@ -10,6 +10,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -63,6 +64,10 @@
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING, GoogleAnalyticsConsts.CONTENT);
 				closeWindow();
+			}
+			
+			protected function onHelp(event:Event):void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "help_anchore"));
 			}
 
 

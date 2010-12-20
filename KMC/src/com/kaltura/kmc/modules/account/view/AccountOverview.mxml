@@ -140,42 +140,42 @@
 				}
 			}
 			
-			public function saveLoginInfo( force : Boolean ) : void
-			{
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO,GoogleAnalyticsConsts.ACCOUNT);
-				if( ! adminData.equals( _clonedAdminData ) || force)
-				{
-					//validation
-					///////////////////////////////////////
-					emailValidator.source = aEmail;
-					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
-					passwordValidator.source = oldPass;
-					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-					passwordValidator.source = newPass;
-					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-					passwordValidator.source = confPass;
-					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-					if(confPass.text != newPass.text)
-					{
-						Alert.show( resourceManager.getString('account', 'passwordNoMatch') );
-						return;
-					}
-					////////////////////////////////////////
-					
-					_clonedAdminData = adminData.clone();
-					var adminEvent : AdminEvent = new AdminEvent( AdminEvent.UPDATE_ADMIN_PASSWORD );
-					adminEvent.dispatch();
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
-															  "AccountSettings>LofinInfo>SaveChangesBtn");
-				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
-				}
-			}
+//			public function saveLoginInfo( force : Boolean ) : void
+//			{
+//				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
+//				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO,GoogleAnalyticsConsts.ACCOUNT);
+//				if( ! adminData.equals( _clonedAdminData ) || force)
+//				{
+//					//validation
+//					///////////////////////////////////////
+//					emailValidator.source = aEmail;
+//					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
+//					passwordValidator.source = oldPass;
+//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+//					passwordValidator.source = newPass;
+//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+//					passwordValidator.source = confPass;
+//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
+//					if(confPass.text != newPass.text)
+//					{
+//						Alert.show( resourceManager.getString('account', 'passwordNoMatch') );
+//						return;
+//					}
+//					////////////////////////////////////////
+//					
+//					_clonedAdminData = adminData.clone();
+//					var adminEvent : AdminEvent = new AdminEvent( AdminEvent.UPDATE_ADMIN_PASSWORD );
+//					adminEvent.dispatch();
+//					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
+//															  "AccountSettings>LofinInfo>SaveChangesBtn");
+//				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
+//				}
+//			}
 			
 			public function saveChanges() : void
 			{
 				savePartnerInfo( false );
-				saveLoginInfo( false );
+//				saveLoginInfo( false );
 			}
 			
 			public function resetClonedData() : void
@@ -250,7 +250,7 @@
 		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}" 
 			click="savePartnerInfo( true )" buttonMode="true" />
 	</mx:VBox>
-	<mx:VBox id="loginBox" width="100%" height="100%"  styleName="blueBox" disabledOverlayAlpha="0"
+<!--	<mx:VBox id="loginBox" width="100%" height="100%"  styleName="blueBox" disabledOverlayAlpha="0"
 		horizontalAlign="left" verticalAlign="top">
 		<mx:HBox width="100%">
 			<mx:Label  styleName="pageTitle" text="{resourceManager.getString('account', 'loginInfo')}"/>
@@ -288,5 +288,5 @@
 		</mx:HBox>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('account', 'saveChanges')}" 
 			click="saveLoginInfo( true )" buttonMode="true" />
-	</mx:VBox>
+	</mx:VBox>-->
 </mx:HBox>

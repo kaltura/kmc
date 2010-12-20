@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							verticalScrollPolicy="off" height="540" width="400" showCloseButton="true"
-							close="closeHandler(event)" layout="vertical"
+							close="closeHandler(event)" layout="vertical" help="{onHelp()}"
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="save", type="flash.events.Event")] 
@@ -11,11 +11,12 @@
 		<![CDATA[
 			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
-
+			
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -366,6 +367,14 @@
 				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.init();
 				}
+			}
+			
+			
+			/**
+			 * dispatch help event with relevant anchor
+			 * */
+			protected function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, ResourceManager.getInstance().getString('admin', 'help_anchor')));
 			}
 
 
