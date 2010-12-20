@@ -32,7 +32,6 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			var response:KalturaUserRoleListResponse = data.data as KalturaUserRoleListResponse;
-			_model.usersModel.allRoles = new ArrayCollection(response.objects);
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
 			_model.rolesModel.totalRoles = response.totalCount;
 		}
