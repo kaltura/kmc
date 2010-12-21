@@ -193,8 +193,7 @@
 					kfp.pageIndex = paging.kalturaFilterPager.pageIndex;
 				}
 				
-				var ce:ListItemsEvent;
-				ce = new ListItemsEvent(ListItemsEvent.LIST_USERS, model.usersFilter, kfp);
+				var ce:ListItemsEvent = new ListItemsEvent(ListItemsEvent.LIST_USERS, model.usersFilter, kfp);
 				ce.dispatch();
 			}
 
@@ -307,7 +306,11 @@
 			 * */
 			protected function openAddUserDialog(event:MouseEvent):void {
 				// set the selected user to a new KalturaUser.
-				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, new KalturaUser());
+				var usr:KalturaUser = new KalturaUser();
+				// kmc user definitions:
+				usr.isAdmin = true;
+				usr.loginEnabled = true;
+				var ce:CairngormEvent = new UserEvent(UserEvent.SELECT_USER, usr);
 				ce.dispatch();
 				
 				ce = new DrilldownEvent(DrilldownEvent.USERS_SET_STATE, DrilldownMode.ADD);

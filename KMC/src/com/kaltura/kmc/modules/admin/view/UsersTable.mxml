@@ -159,10 +159,13 @@
 				switch (item.status) {
 					case KalturaUserStatus.ACTIVE:
 						res = ResourceManager.getInstance().getString('admin', 'active');
+						break;
 					case KalturaUserStatus.BLOCKED:
 						res = ResourceManager.getInstance().getString('admin', 'blocked');
+						break;
 					case KalturaUserStatus.DELETED:
 						res = ResourceManager.getInstance().getString('admin', 'deleted');
+						break;
 				}
 				return res;
 			}
@@ -181,6 +184,7 @@
 			 * */
 			private function getUserRole(item:Object, column:DataGridColumn):String {
 				// need to scan all partner's roles list and get the correct one.
+				//TODO + delay until after roles data is loaded
 				for (var i:int = 0; i<roles.length; i++) {
 					if ((roles.getItemAt(i) as KalturaUserRole).id == item.roleId) {
 						return (roles.getItemAt(i) as KalturaUserRole).name;
