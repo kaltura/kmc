@@ -147,7 +147,6 @@
 			 **/
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				Security.allowDomain('*');
-				//TODO . replace when doing white labeling 
 				_cm = new ContextMenu();
 				_cm.hideBuiltInItems();
 
@@ -199,10 +198,10 @@
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
 				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
 				
-				//TODO get user id from service, if server decides to give it..
+				// get user id from service, if server decides to give it..
 				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
 				var userget:UserGet = new UserGet(userid);
-//				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
+				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
 				var perms:PermissionList = new PermissionList();
@@ -270,7 +269,10 @@
 					roleOfCurrentUser = uvo.role.permissionNames; 
 				}
 				else {
-					// manual permissions
+					// manual permissions (enumerated in KalturaPermissionName)
+//					ANNOTATION_PLUGIN_PERMISSION
+//					AUDIT_PLUGIN_PERMISSION
+//					METADATA_PLUGIN_PERMISSION
 					//TODO + use real role info (comment out the full list)  
 					roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
 						"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
@@ -279,10 +281,10 @@
 						// mix
 						"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
 						// content management
-						"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES,CONTENT_MANAGE_THUMBNAIL," +
-						"CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL,CONTENT_MANAGE_DELETE," +
-						"CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES,CONTENT_MANAGE_EMBED_CODE," +
-						"CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
+						"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES," + 
+						"CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL," +
+						"CONTENT_MANAGE_DELETE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES," +
+						"CONTENT_MANAGE_EMBED_CODE,CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
 						// content moderation
 						"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
 						// playlist
