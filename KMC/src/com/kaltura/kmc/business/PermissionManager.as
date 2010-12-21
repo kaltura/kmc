@@ -104,8 +104,8 @@ package com.kaltura.kmc.business {
 			var partnerPermissionsList:Array = partnerPermissions.split(",");
 			for each (var partnerPermission:String in partnerPermissionsList) {
 				if (partnerPermission) {
-					//TODO search for existing permissions in the Vos and delete them if the partner does 
-					// not have these permissions 
+					//TODO search for existing permissions in the Vos and delete them 
+					// if the partner does not have these permissions 
 					/* we don't want the feature data to be part of the permissions, because it's not user permission
 					 * so if the partner data changes we will have to scan the DB to remove the permision.*/
 					
