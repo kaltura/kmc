@@ -10,13 +10,39 @@ package com.kaltura.kmc.business {
 		
 		/**
 		 * builds a list of instruction objects from permissions XML
+		 * @param allPermissions	list of permissions by groups
+		 * @return 	list of instructions (PermissionVo) in an array
+		 */
+		public function parseAllPermissions(allPermissions:XMLList):Array {
+			var array:Array = parseSinglePermissions(allPermissions..permission);
+			array = array.concat(parsePermissionGroups(allPermissions));
+			return array;
+		}
+		
+		/**
+		 * builds a list of instruction objects from permissions XML
 		 * @param allPermissions	list of permissions
 		 * @return 	list of instructions (PermissionVo) in an array
 		 */
-		public function parsePermissions(allPermissions:XMLList):Array {
+		protected function parseSinglePermissions(allPermissions:XMLList):Array {
 			var array:Array = new Array();
 			for each (var permission:XML in allPermissions) {
-				array = array.concat(getInstructions(permission));
+				array = array.concat(getInstructions(permission.ui));
+			}
+			return array;
+		}
+		
+		/**
+		 * need to get only the ui elements from the permissionGroup element
+		 * and convert it to permissionVos.
+		 */
+		protected function parsePermissionGroups(permissionGroups:XMLList):Array {
+//			<permissionGroup text="Video Analytics" id="ANALYTICS_BASE">
+//				<ui id="dashboard.chartsPanel" visible="false"/>
+//			</permissionGroup>
+			var array:Array = new Array();
+			for each (var group:XML in permissionGroups) {
+				array = array.concat(getInstructions(group.ui));
 			}
 			return array;
 		}
@@ -24,13 +50,15 @@ package com.kaltura.kmc.business {
 		
 		/**
 		 * The function receives an XML, parses it and builds an array of PermissionVo
-		 * @param permissionXml
+		 * @param uiXmls <ui id="admin.roles" enabled="false" />
+		 * 				 <ui id="admin.users" visible="false" includeInLayout="false"/>
+		 * 				 <ui id="admin.roles.actionButtonsContainer" editable="false" />
 		 * @return PermissionVos in an array
 		 */
-		protected function getInstructions(permissionXml:XML):Array {
+		protected function getInstructions(uiXmls:XMLList):Array {
 			var arr:Array = new Array();
 			// parse and build the instructions  
-			var uiXmls:XMLList = permissionXml.children();
+//			var uiXmls:XMLList = permissionXml.children();
 			for each (var uiXml:XML in uiXmls) {
 				var uiPath:String = uiXml.@id;
 				delete uiXml.@id;
