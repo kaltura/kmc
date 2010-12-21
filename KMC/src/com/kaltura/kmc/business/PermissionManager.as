@@ -18,8 +18,13 @@ package com.kaltura.kmc.business {
 		 * role permissions (original XML from <code>init()</code> transformed).
 		 * it holds the effects on UI of permissions this role doesn't have.
 		 */
-		private var _permissionXml:XML;
+		private var _deniedPermissionsXml:XML;
 		
+		/**
+		 * nodes from the uiconf of permissions a user has.  
+		 * (not groups, only permissions which may have ui elements)
+		 */
+		private var _grantedPermissions:XML = <permissions/>;
 		
 		/**
 		 * @copy #partnerPermissions 
@@ -55,42 +60,46 @@ package com.kaltura.kmc.business {
 		 */
 		public function init(partnerPermissionsXml:XML, rolePermissions:String = "" , allPartnersPermission:String=""):void {
 			_partnerPermissions = partnerPermissionsXml.copy();
-			_permissionXml = partnerPermissionsXml.copy();
+			_deniedPermissionsXml = partnerPermissionsXml.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
 			
 			// remove from permissions list the granted permissions and leave the ones that are forbidden.
 			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "") {
 				for each (var permissionId:String in allRolePermissions) {
-					var permissionData:XML = _permissionXml.permissions..descendants().(attribute("id") == permissionId)[0];
+					var permissionData:XML = _deniedPermissionsXml.permissions..descendants().(attribute("id") == permissionId)[0];
 					// if such permission exists (permission or permissionGroup)
 					if (permissionData) {
 						if (permissionData.localName() == "permissionGroup") {
 							// if we remove groups now we will actually remove permissions we may need to ban.
 							continue;
 						}
-						delete _permissionXml.permissions..descendants().(attribute("id") == permissionId)[0];
+						delete _deniedPermissionsXml.permissions..descendants().(attribute("id") == permissionId)[0];
+						_grantedPermissions.appendChild(permissionData);
 					}
 				}
 			}
 
 			// scan permissionGroups that need to be removed and remove them if they are empty.
 			// we want to keep these groups:
-			var permissionsToKeep:XMLList = _permissionXml.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
+			var permissionsToKeep:XMLList = _deniedPermissionsXml.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
 			
 			// replace the original permissions node with the "clean" one
-			delete _permissionXml.permissions[0];
+			delete _deniedPermissionsXml.permissions[0];
 			
-			_permissionXml.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
+			_deniedPermissionsXml.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
+			
+			// remove colliding attributes between granted and denied permissions
+			removeCollisions(_grantedPermissions, _deniedPermissionsXml.permissions[0]); 
 
 			var permissionParser:PermissionsParser = new PermissionsParser();
 			_instructionVos = permissionParser.parsePermissions(permissionsToKeep..permission);
 			
-			var permissionIdList:XMLList = _permissionXml.permissions.descendants().attribute("id");
+			var permissionIdList:XMLList = _deniedPermissionsXml.permissions.descendants().attribute("id");
 			for each (var xml:XML in permissionIdList) {
 				_deniedPermissions.push(xml.toString());
 			}
-			_hideTabs = permissionParser.getTabsToHide(_permissionXml..uimapping[0], allRolePermissions);
+			_hideTabs = permissionParser.getTabsToHide(_deniedPermissionsXml..uimapping[0], allRolePermissions);
 			// parse features that the partner does not have, and combine them with the current users permissions 
 			var partnerPermissionsList:Array = allPartnersPermission.split(",");
 			for each (var partnerPermission:String in partnerPermissionsList)
@@ -98,14 +107,45 @@ package com.kaltura.kmc.business {
 				
 				if (partnerPermission)
 				{
-					// search for existing permissions in the Vos and delete them if the partner does 
+					//TODO search for existing permissions in the Vos and delete them if the partner does 
 					// not have these permissions 
-					
+					/* we don't want the feature data to be part of the permissions, because it's not user permission
+					 * so if the partner data changes we will have to scan the DB to remove the permision.*/
 				}	
 			}
 			
 			_hideFeatures = [];
 		}
+
+		/**
+		 * remove the attributes on ui nodes that have values on both the granted and denied lists.
+		 * this method alters the denied list. 
+		 * @param granted	permissions that the user has
+		 * @param denied	permissions that the user doesn't have
+		 */
+		protected function removeCollisions(granted:XML, denied:XML):void {
+			var grantedui:XMLList = granted..ui;
+			var gl:int = grantedui.length();
+			var deniedui:XMLList = denied..ui;
+			var dl:int = deniedui.length();
+			var uiid:String;
+			var atts:XMLList;
+			for (var i:int =0; i< gl; i++) {
+				uiid = grantedui[i].@id;
+				for each (var uixml:XML in deniedui) {
+					if (uixml.@id == uiid) {
+						// remove the matching attributes from the denied permission
+						atts = grantedui[i].attributes();
+						for (var j:int = 0; j<atts.length(); j++) {
+							if (atts[j].localName() != "id" && uixml.attribute(atts[j].localName())) {
+								delete uixml.@[atts[j].localName()];
+							}
+						}
+					}
+				}
+			}
+		}
+
 
 
 		/**
@@ -309,7 +349,7 @@ package com.kaltura.kmc.business {
 		 * @copy #_permissionXml
 		 */
 		public function get permissionXml():XML {
-			return _permissionXml;
+			return _deniedPermissionsXml;
 		}
 
 
