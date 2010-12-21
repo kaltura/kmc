@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.userRole.UserRoleAdd;
 	import com.kaltura.commands.userRole.UserRoleList;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.net.KalturaCall;
@@ -15,6 +16,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
+			mr.addEventListener(KalturaEvent.COMPLETE, result);
+			mr.addEventListener(KalturaEvent.FAILED, fault);
 			var call:KalturaCall = new UserRoleAdd((event as RoleEvent).role);
 			mr.addAction(call);
 			call = new UserRoleList(_model.rolesModel.rolesFilter);

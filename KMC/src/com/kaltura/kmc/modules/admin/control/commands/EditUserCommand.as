@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.user.UserUpdate;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUser;
@@ -11,6 +12,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var user:KalturaUser = (event as UserEvent).user;
 			var uu:UserUpdate = new UserUpdate(user.id, user);
+			uu.addEventListener(KalturaEvent.COMPLETE, result);
+			uu.addEventListener(KalturaEvent.FAILED, fault);
 			_model.kc.post(uu);
 		}
 		

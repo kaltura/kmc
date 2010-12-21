@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.userRole.UserRoleUpdate;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUserRole;
@@ -11,6 +12,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var role:KalturaUserRole = (event as RoleEvent).role;
 			var uu:UserRoleUpdate = new UserRoleUpdate(role.id, role);
+			uu.addEventListener(KalturaEvent.COMPLETE, result);
+			uu.addEventListener(KalturaEvent.FAILED, fault);
 			_model.kc.post(uu);
 		}
 		

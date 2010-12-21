@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.userRole.UserRoleAdd;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 
@@ -9,7 +10,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var ua:UserRoleAdd = new UserRoleAdd((event as RoleEvent).role);
-			//TODO also re-check users quota
+			ua.addEventListener(KalturaEvent.COMPLETE, result);
+			ua.addEventListener(KalturaEvent.FAILED, fault);
+			//TODO + also re-check users quota
 			_model.kc.post(ua);
 		}
 		
