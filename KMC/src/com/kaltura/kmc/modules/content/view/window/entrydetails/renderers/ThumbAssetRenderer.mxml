@@ -3,8 +3,12 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
 			
 			import mx.controls.Image;
+			
+			[Embed(source="assets/flash/loaderwhite.swf")]
+			private static const progressImage:Class;
 			
 			public static const DEFAULT_THUMB:String = "default_thumb";
 	
@@ -12,24 +16,30 @@
 			private var thumbAssetExist:Boolean = false;
 			[Bindable]
 			private var isDefault:Boolean = false;
-			[Bindable]
-			private var imageSource:String;
 			
 
 			override public function set data(value:Object):void {
 				var thumb:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumb.thumbAsset) {
 					thumbAssetExist = true;
-					imageSource = thumb.thumbUrl;
-					
-					if (thumb.thumbAsset.tags == DEFAULT_THUMB)
-						isDefault = true;
+					if ((thumb.thumbAsset.status == KalturaFlavorAssetStatus.CONVERTING) ||
+						(thumb.thumbAsset.status == KalturaFlavorAssetStatus.QUEUED)) 
+					{
+						thumbImage.source = progressImage;
+					}
 					else
-						isDefault = false;
+					{
+						thumbImage.source = thumb.thumbUrl;
+						
+						if (thumb.thumbAsset.tags == DEFAULT_THUMB)
+							isDefault = true;
+						else
+							isDefault = false;	
+					}			
 				}
 				else {
 					thumbAssetExist = false;
-					imageSource = null;
+					thumbImage.source = null;
 					isDefault = false;
 				}
 			}
@@ -41,7 +51,7 @@
 	</mx:VBox>
 	<mx:HBox verticalAlign="middle">	
 		<mx:Label text="default"  visible="{isDefault}" includeInLayout="{isDefault}"/>
-		<mx:Image source="{imageSource}" visible="{thumbAssetExist}" includeInLayout="{thumbAssetExist}" width="90" height="90"/>
+		<mx:Image id="thumbImage" visible="{thumbAssetExist}" includeInLayout="{thumbAssetExist}" width="90" height="90"/>
 	</mx:HBox>
 	
 </mx:HBox>

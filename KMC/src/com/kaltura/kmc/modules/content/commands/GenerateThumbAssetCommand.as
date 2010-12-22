@@ -11,8 +11,8 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
-			var thumbParams:KalturaThumbParams = (event as GenerateThumbAssetEvent).thumbParams;
-			var generateThumbAsset:ThumbAssetGenerate = new ThumbAssetGenerate(_model.entryDetailsModel.selectedEntry.id, thumbParams);
+			var generateThumbEvent:GenerateThumbAssetEvent = event as GenerateThumbAssetEvent;
+			var generateThumbAsset:ThumbAssetGenerate = new ThumbAssetGenerate(_model.entryDetailsModel.selectedEntry.id, generateThumbEvent.thumbParams, generateThumbEvent.thumbSourceId);
 			generateThumbAsset.addEventListener(KalturaEvent.COMPLETE, result);
 			generateThumbAsset.addEventListener(KalturaEvent.FAILED, fault);
 			
@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			_model.entryDetailsModel.thumbnailSaved = true;
 		}
 	}
 }

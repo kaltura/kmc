@@ -10,8 +10,8 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.GenerateThumbAssetEvent;
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
-			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbDimensionsCBRenderer;
 			import com.kaltura.utils.imageCropper.CropBox;
 			import com.kaltura.utils.imageCropper.ImageCrop;
 			import com.kaltura.utils.pager.Pager;
@@ -24,11 +24,26 @@
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			
+			/**
+			 * number of thumbnails to display in thumbnails tile list
+			 * */
 			public static const NUM_OF_PAGES:int = 3;
-			public static const IMG_MAX_HEIGHT:int = 500;
+			/**
+			 * max height for the image to crop
+			 * */
+			public static const IMG_OFFSET:int = 30;
+			/**
+			 * default cropper width
+			 * */
 			public static const DEFAULT_CROP_WIDTH:int = 160;
+			/**
+			 * default croppper height
+			 * */
 			public static const DEFAULT_CROP_HEIGHT:int = 120;
 			
+			[Bindable]
+			private var _maxImageHeight:int;
+			private var _entryDetailsModel:EntryDetailsModel;
 			private var _selectedEntry:KalturaBaseEntry;
 			[Bindable]
 			private var _pager:Pager;
@@ -44,14 +59,18 @@
 			private var _selectedImgRatio:Number;
 			private var _lastSelectedDimensiontIndex:int = -1;
 			
+			
 			private function onCreationComplete(event:Event):void {
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
-				//no sources
+				//no sources to crop from
 				if (!_selectedThumbnail) {
 					Alert.show(resourceManager.getString('cms','unavailableCropMsg'),resourceManager.getString('cms','unavalilableCropTitle'), Alert.OK, null, alertOkHandler);
 					return;
 				}
+				
+				BindingUtils.bindSetter(onThumbSaved, _entryDetailsModel, "thumbnailSaved");
+				_maxImageHeight = this.height - this.titleBar.height - controlHbox.height - saveBtn.height - 3*IMG_OFFSET ;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
 				previewImg.width = previewImg.height*_selectedImgRatio
 				if (_isPreSize) {
@@ -61,6 +80,17 @@
 
 				setCropperImage();
 			}
+			
+			public function get entryDetailsModel():EntryDetailsModel
+			{
+				return _entryDetailsModel;
+			}
+			
+			public function set entryDetailsModel(value:EntryDetailsModel):void
+			{
+				_entryDetailsModel = value;
+			}
+
 			
 			/**
 			 * loads the _selectedThumbnail img to the cropper tool
@@ -73,8 +103,8 @@
 				var cropBox:CropBox = _imageCrop.cropBox;
 				cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
 				
-				_imageCrop.maxImageHeight = IMG_MAX_HEIGHT;
-				_imageCrop.maxImageWidth = IMG_MAX_HEIGHT*_selectedImgRatio;	
+				_imageCrop.maxImageHeight = _maxImageHeight;
+				_imageCrop.maxImageWidth = _maxImageHeight*_selectedImgRatio;	
 				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);			
 			}
 			
@@ -113,9 +143,9 @@
 					_imageCrop.cropBox.cropX = 0;
 					_imageCrop.cropBox.cropY = 0;
 					newCropY = 0;
-					Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
 					if (_isPreSize)
 						presetComboBox.selectedIndex = _lastSelectedDimensiontIndex;
+					displayInvalidAlert();
 					
 				}
 				//the cropper will be in the middle
@@ -251,17 +281,38 @@
 					PopUpManager.removePopUp(this);
 			}
 			
+			/**
+			 * on saving the new crop
+			 * */
 			private function onSave():void {
 				var thumbParams:KalturaThumbParams = new KalturaThumbParams();
-				//thumbParams.source??
 				thumbParams.cropWidth = _imageCrop.cropBox.cropWidth;
-				thumbParams.cropHeight = _imageCrop.cropBox.cropHeight;
+				thumbParams.cropHeight = _imageCrop.cropBox.cropHeight;				
 				thumbParams.cropX = _imageCrop.cropBox.cropX;
 				thumbParams.cropY = _imageCrop.cropBox.cropY;
-				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams);
+				if (_isPreSize) {
+					if (!presetComboBox.selectedItem) {
+						displayInvalidAlert();
+						return;
+					}
+					//will save on the selected dimensions
+					var selectedDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
+					thumbParams.scaleWidth = selectedDimensions.width/thumbParams.cropWidth;
+					thumbParams.scaleHeight = selectedDimensions.width/thumbParams.cropHeight;
+				}
+				_entryDetailsModel.thumbnailSaved = false;
+				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
 				generateThumbEvent.dispatch();
 
 				_isDirty = false;
+			}
+			
+			
+			public function onThumbSaved(value:Boolean):void {
+				if (value) {
+					Alert.show(resourceManager.getString('cms','savedMessage'),resourceManager.getString('cms','savedTitle'), Alert.OK, null, alertOkHandler);
+					entryDetailsModel.thumbnailSaved = false;
+				}	
 			}
 			
 			/**
@@ -307,6 +358,10 @@
 				getCropperValues();		
 			}
 			
+			/**
+			 * will be called when changing any text input (top/left/width/height)
+			 * and will update the cropper if needed
+			 * */
 			private function onKeyDown(event:KeyboardEvent):void {
 				if (event.keyCode== Keyboard.ENTER) {
 					if (!_imageCrop.cropBox)
@@ -343,7 +398,7 @@
 					}
 					
 					if (invalidInput) {
-						Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
+						displayInvalidAlert();
 					}
 				}
 			}
@@ -357,9 +412,16 @@
 				}
 			}
 			
+			/**
+			 * displays invalid  dimensions and position alert message
+			 * */
+			private function displayInvalidAlert():void {
+				Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
+			}
+			
 		]]>
 	</mx:Script>
-	<mx:HBox width="100%" paddingTop="0" paddingBottom="0" horizontalAlign="center">
+	<mx:HBox id="controlHbox" width="100%" paddingTop="0" paddingBottom="0" horizontalAlign="center">
 		<mx:Image id="previewImg" height="80"/>
 		<mx:VBox>
 			<mx:HBox width="100%" height="100%">
@@ -425,6 +487,6 @@
 
 	</mx:HBox>
 
-	<mx:HBox id="imageBox" width="100%" horizontalAlign="center" height="{IMG_MAX_HEIGHT + 30}" paddingBottom="15" paddingTop="15"/>
-	<mx:Button label="{resourceManager.getString('cms','saveChanges')}" click="{onSave()}"/>
+	<mx:HBox id="imageBox" width="100%" horizontalAlign="center" height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}"/>
+	<mx:Button id="saveBtn" label="{resourceManager.getString('cms','saveChanges')}" click="{onSave()}"/>
 </mx:TitleWindow>

@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.conversionProfile.ConversionProfileList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
+	import com.kaltura.commands.thumbParams.ThumbParamsList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -15,6 +16,8 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
+	import com.kaltura.vo.KalturaThumbParams;
+	import com.kaltura.vo.KalturaThumbParamsListResponse;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -31,6 +34,9 @@ package com.kaltura.kmc.modules.account.command
 			
 			_model.loadingFlag = true;
 			
+			var getListThumbParams:ThumbParamsList = new ThumbParamsList();
+			mr.addAction(getListThumbParams);
+			
 			var getListFlavorParams:FlavorParamsList = new FlavorParamsList();
 			mr.addAction(getListFlavorParams);
 			
@@ -44,10 +50,12 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function result(event:Object):void
 		{
-			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
 			var kEvent:KalturaEvent = event as KalturaEvent;
-			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
+			var thumbRespones:KalturaThumbParamsListResponse = (kEvent.data as Array)[0] as KalturaThumbParamsListResponse;
+			_model.thumbsData = new ArrayCollection(thumbRespones.objects);
 			
+			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
+			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[1] as KalturaFlavorParamsListResponse;
 			for each(var kFlavor:Object in flavorsRespones.objects)
 			{
 				if (kFlavor is KalturaFlavorParams) {
@@ -57,7 +65,7 @@ package com.kaltura.kmc.modules.account.command
 				}
 			}
 			var convProfilesTmpArrCol:ArrayCollection = new ArrayCollection();
-			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[1] as KalturaConversionProfileListResponse;
+			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[2] as KalturaConversionProfileListResponse;
 			for each(var cProfile:KalturaConversionProfile in convsProfilesRespones.objects)
 			{
 				var cp:ConversionProfileVO = new ConversionProfileVO();

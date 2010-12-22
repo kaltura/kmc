@@ -44,12 +44,26 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * TODO: change later to arrive from permissions!!!!!!!!!
 		 * */
-		public var enableDistribution:Boolean = false;
+		public var enableDistribution:Boolean = true;
 		
+		/**
+		 * indicates if we should send the listDistributionProfiles
+		 * */
 		public var listDistributionProfilesRequired:Boolean = true;
 		
+		/**
+		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 
+		 */		
 		public var distributionProfileInfo:DistributionProfileInfo = new DistributionProfileInfo();
 		
+		/**
+		 * indicates data is being retrieved from server at the moment 
+		 */		
 		public var loadingFlag:Boolean = false;
+		
+		/**
+		 * inidicates if generate new thumbnail asset request returned valid result 
+		 */		
+		public var thumbnailSaved:Boolean = false;
 	}
 }

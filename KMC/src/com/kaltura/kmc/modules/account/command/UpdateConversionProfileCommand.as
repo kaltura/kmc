@@ -38,7 +38,7 @@ package com.kaltura.kmc.modules.account.command
 			updatePofile.name = profile.name;
 			updatePofile.description = profile.description;
 			updatePofile.flavorParamsIds = profile.flavorParamsIds;
-			
+		
 			return updatePofile;
 		}
 		

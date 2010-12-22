@@ -6,20 +6,33 @@
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
-
+			import com.kaltura.vo.KalturaThumbParams;
+			
+			import mx.collections.ArrayCollection;
 			import mx.events.DataGridEvent;
 
 			[Bindable]
 			private var _allSelected:Boolean = false;
 			[Bindable]
 			private var _cProfile:ConversionProfileVO;
-
+			[Bindable]
+			private var _thumbParamsData:ArrayCollection;
 
 			/**
 			 * @copy #editable
 			 * */
 			private var _dataEditable:Boolean = true;
 
+			public function get thumbParamsData():ArrayCollection
+			{
+				return _thumbParamsData;
+			}
+
+			public function set thumbParamsData(value:ArrayCollection):void
+			{
+				_thumbParamsData = value;
+				validateProfileFlavors();
+			}
 
 			[Bindable]
 			public function get cProfile():ConversionProfileVO {
@@ -29,6 +42,7 @@
 
 			public function set cProfile(cProfile:ConversionProfileVO):void {
 				_cProfile = cProfile;
+				validateProfileFlavors();
 			}
 
 
@@ -43,13 +57,29 @@
 
 
 			private function validateProfileFlavors():void {
+				if (!cProfile || !dataProvider || !thumbParamsData)
+					return;
+				
 				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
 				var currentFlavors:Array = new Array();
 				var vo:FlavorVO;
+				var isFlavor:Boolean;
+				
 				for each (var id:String in idsArr) {
+					isFlavor = false;
 					for each (vo in dataProvider) {
 						if (vo.kFlavor.id == int(id)) {
 							currentFlavors.push(id);
+							isFlavor = true;
+							break;
+						}
+					}
+					if (!isFlavor) {
+						for each (var thumbParam:KalturaThumbParams in thumbParamsData) {
+							if (int(id)==thumbParam.id) {
+								currentFlavors.push(id);
+								break;
+							}
 						}
 					}
 				}

@@ -48,6 +48,7 @@ package com.kaltura.kmc.modules.account.model
 		
 		public var conversionData:ArrayCollection = new ArrayCollection();
 		public var flavorsData:ArrayCollection = new ArrayCollection();
+		public var thumbsData:ArrayCollection = new ArrayCollection();
 		public var cpFilter:KalturaConversionProfileFilter;
 	    //---------------------------------------------------------
 	    //states
