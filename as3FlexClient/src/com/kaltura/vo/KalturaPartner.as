@@ -4,6 +4,9 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPartner extends BaseFlexVo
 	{
+		
+		public var accountOwnerId : String;
+		
 		public var id : int = int.MIN_VALUE;
 
 		public var name : String;
