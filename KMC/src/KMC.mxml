@@ -11,6 +11,7 @@
 			import com.kaltura.commands.user.UserGet;
 			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.errors.KalturaError;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.business.PermissionManager;
@@ -19,6 +20,7 @@
 			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
+			import com.kaltura.kmc.model.types.KalturaErrorCode;
 			import com.kaltura.kmc.modules.KmcModule;
 			import com.kaltura.kmc.utils.KSUtil;
 			import com.kaltura.kmc.vo.UserVO;
@@ -238,27 +240,34 @@
 				}
 			}
 
+			protected function isError(errorObj:Object):Boolean {
+				if (errorObj) {
+					alert(errorObj.message, "Error");
+					if (errorObj.code == KalturaErrorCode.INVALID_KS) {
+						ExternalInterface.call("kmc.utils.expired");
+					}
+					return true;
+				}
+				return false;
+			}
 
 			/**
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function uiconfLoadHandler(event:KalturaEvent):void {
-				if (event.data[0].error) {
-					//TODO check other parts of the MR
-					alert(event.data[0].error.message, "Error");
-					ExternalInterface.call("kmc.utils.expired");
-					return;
-				}
-				
 				// [0] KMC uiconf:
+				if (isError(event.data[0].error)) return;
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
 				// [1] permissions:
+				if (isError(event.data[1].error)) return;
 				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
 				
 				// [2, 3] user and role:
+				if (isError(event.data[2].error)) return;
+				if (isError(event.data[3].error)) return;
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[2] as KalturaUser;
 				uvo.role = event.data[3] as KalturaUserRole;
@@ -316,6 +325,7 @@
 				}
 				
 				// [4] partner permissions list
+				if (isError(event.data[4].error)) return;
 				var perms:String = parsePartnerPermissions(event.data[4] as KalturaPermissionListResponse);
 				
 				permissionManager = PermissionManager.getInstance();
