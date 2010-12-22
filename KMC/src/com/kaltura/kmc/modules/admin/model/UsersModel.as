@@ -40,7 +40,6 @@ package com.kaltura.kmc.modules.admin.model
 		 * total number of users the partner may use 
 		 */
 		public var loginUsersQuota:int;
-		//TODO hook
 		
 		/**
 		 * the filter used for listing users. 
