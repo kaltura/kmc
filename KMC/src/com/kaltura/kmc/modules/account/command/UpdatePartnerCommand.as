@@ -18,57 +18,20 @@ package com.kaltura.kmc.modules.account.command
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
-	public class UpdatePartnerCommand implements ICommand, IResponder
+	public class UpdatePartnerCommand implements ICommand
 	{
 		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;
-			
-	//		var params : Object = _model.context.defaultUrlVars;
-			
-	//		params.partner_url2 = _model.partnerData.url2;		 
-	//		params.partner_url1	= _model.partnerData.url1;	
-	//		params.partner_notificationsConfig = getNotificationsConfig(_model.partnerData.notifications);	
-	//		params.partner_allowMultiNotification = _model.partnerData.allowMultiNotification;	
-			
-	//		params.partner_appearInSearch = _model.partnerData.appearInSearch;	 
-	//		params.partner_adminName = _model.partnerData.adminName;
-	//		params.partner_adminEmail = _model.partnerData.adminEmail;		 
-	//		params.partner_description = _model.partnerData.description;	
-			
-	//		params.partner_contentCategories = _model.partnerData.contentCategories;
-	//		params.partner_type = _model.partnerData.type;
-	//		params.partner_phone = _model.partnerData.phone;		 
-	//		params.partner_describeYourself = _model.partnerData.describeYourself;
-	//		params.partner_adultContent = _model.partnerData.adultContent ? 1 : 0;
-			
-	//		params.partner_defConversionProfileType = _model.partnerData.defConversionProfileType; 
-	//		params.partner_notify = _model.partnerData.notify ? 1 : 0;  
-	//		params.partner_shouldForceUniqueKshow = _model.partnerData.shouldForceUniqueKshow ? 1 : 0;  
-	//		params.partner_returnDuplicateKshow = _model.partnerData.returnDuplicateKshow ? 1 : 0;    
-	//		params.partner_allowQuickEdit = _model.partnerData.allowQuickEdit ? 1 : 0;
-	//		params.partner_mergeEntryLists = _model.partnerData.mergeEntryLists ? 1 : 0;
-	//		params.partner_userLandingPage = _model.partnerData.userLandingPage;
-	//		params.partner_landingPage = _model.partnerData.landingPage;   
-	//		params.partner_maxUploadSize = _model.partnerData.maxUploadSize; 
-	//		params.allow_empty_field = "1"; //Must send the whole object when use allow_empty_field=1
-
-		/* 	var delegate : UpdatePartnerDelegate = new UpdatePartnerDelegate( this );
-			delegate.updatePartner( params );
-			 */
 			 
 			var kp:KalturaPartner = new KalturaPartner();
 			kp.adminEmail = _model.partnerData.adminEmail;	
 			kp.adminName = _model.partnerData.adminName;
-	//		kp.adminSecret = 
 			kp.adultContent = _model.partnerData.adultContent;
 			kp.allowQuickEdit = _model.partnerData.allowQuickEdit ? 1 : 0;
 			kp.appearInSearch = _model.partnerData.appearInSearch;	
-	//		kp.cmsPassword = _model.partnerData.
-	//		kp.commercialUse = _model.partnerData.commercialUse; 
 			kp.contentCategories = _model.partnerData.contentCategories;
-	// 		kp.createdAt = _model.partnerData.createdAt;
 			kp.defConversionProfileType = _model.partnerData.defConversionProfileType;
 			kp.describeYourself = _model.partnerData.describeYourself;
 			kp.description = _model.partnerData.description;
@@ -88,6 +51,7 @@ package com.kaltura.kmc.modules.account.command
 			kp.uid =  _model.partnerData.subPId;
 			kp.userLandingPage = _model.partnerData.userLandingPage;
 			kp.website = _model.partnerData.url1;
+			kp.accountOwnerId = _model.partnerData.accountOwnerId;
 			
 			
 			var updatePartner:PartnerUpdate = new PartnerUpdate(kp, true);
@@ -118,12 +82,12 @@ package com.kaltura.kmc.modules.account.command
 			return str;
 		}
 		
-		public function closeAlert( alertRef : Alert ) : void
-		{
-			PopUpManager.removePopUp( alertRef );
-		}
+//		public function closeAlert( alertRef : Alert ) : void
+//		{
+//			PopUpManager.removePopUp( alertRef );
+//		}
 		
-		public function result(data:Object):void
+		private function result(data:Object):void
 		{
 			KalturaPartner(data.data);
 			_model.loadingFlag = false;
@@ -134,10 +98,10 @@ package com.kaltura.kmc.modules.account.command
 			}
 			
 			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('account', 'changesSaved') );
-			setTimeout( closeAlert , 3000 , alert);
+//			setTimeout( closeAlert , 3000 , alert);
 		}
 		
-		public function fault(info:Object):void
+		private function fault(info:Object):void
 		{
 			_model.loadingFlag = false;			
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
@@ -146,7 +110,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			var alert : Alert =  Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-			setTimeout( closeAlert , 3000 , alert);
+//			setTimeout( closeAlert , 3000 , alert);
 		}
 	}
 }

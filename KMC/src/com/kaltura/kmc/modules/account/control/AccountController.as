@@ -21,6 +21,8 @@ package com.kaltura.kmc.modules.account.control
 			// Partner Events
 			addCommand( PartnerEvent.GET_PARTNER_INFO , GetPartnerInfoCommand );
 			addCommand( PartnerEvent.UPDATE_PARTNER , UpdatePartnerCommand );
+			// user events
+			addCommand( UserEvent.LIST_USERS, ListUsersCommand );
 			
 			// Admin Events
 			addCommand( AdminEvent.UPDATE_ADMIN_PASSWORD , UpdateAdminPasswordCommand );

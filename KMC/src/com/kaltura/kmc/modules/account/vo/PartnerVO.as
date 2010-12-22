@@ -44,6 +44,7 @@ package com.kaltura.kmc.modules.account.vo
 		public var createdDay : uint = 1;
 		public var partnerPackage : uint = 0;
 		public var status : uint = 0;
+		public var accountOwnerId : String = "";
 		
 			
 		public function PartnerVO()
@@ -98,6 +99,7 @@ package com.kaltura.kmc.modules.account.vo
 			newPVo.createdYear = this.createdYear;
 			newPVo.partnerPackage = this.partnerPackage;
 			newPVo.status = this.status;
+			newPVo.accountOwnerId = this.accountOwnerId;
 			newPVo.notifications = new ArrayCollection(new Array(int(this.notifications.length)));
 			
 			for( var i:int = 0 ; i < this.notifications.length ; i++)
@@ -155,6 +157,7 @@ package com.kaltura.kmc.modules.account.vo
 			if( newPVo.createdDay != this.createdDay) isIt = false;		
 			if( newPVo.createdMonth != this.createdMonth) isIt = false;		
 			if( newPVo.createdYear != this.createdYear) isIt = false;
+			if( newPVo.accountOwnerId != this.accountOwnerId) isIt = false;
 			if( newPVo.status != this.status) isIt = false;			
 
 			for( var i:int = 0 ; i < this.notifications.length ; i++)
