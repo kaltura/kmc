@@ -14,17 +14,11 @@
 	<mx:Script>
 		<![CDATA[
 			import com.google.analytics.AnalyticsTracker;
-			import com.google.analytics.GATracker;
-			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.config.KalturaConfig;
-			import com.kaltura.kmc.modules.account.events.PartnerEvent;
-			import com.kaltura.kmc.modules.account.model.Context;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-			import com.kaltura.kmc.modules.account.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.account.view.CustomData;
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
 			import com.kaltura.kmc.modules.account.view.modalWindows.PayPalFormWin;
@@ -32,13 +26,11 @@
 			import com.kaltura.kmc.modules.account.vo.PackagesVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KUtils;
-			import com.kaltura.utils.ObjectHelpers;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.core.Container;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
 			import mx.events.ItemClickEvent;
 			import mx.managers.PopUpManager;
 
@@ -49,9 +41,14 @@
 			public static const NAME:String = "account";
 
 			private static const VERSION:String = "4.0";
+			
 			[Bindable]
+			/**
+			 * application data
+			 * */
 			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
+			//TODO never initialized???
 			private var _tracker:AnalyticsTracker;
 
 			private var _oldSelectedTab:int = 0;
@@ -91,8 +88,8 @@
 					contentView.selectedChild = doc;
 				}
 				else {
-					//TODO + if couldn't find matching tab, show the first one (that the user is allowed to see).
-					contentView.selectedIndex = 0;
+					// if couldn't find matching tab, show the user settings tab (which is always there).
+					contentView.selectedChild = user;
 				}
 			}
 
@@ -332,7 +329,7 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500">
 			<view:AccountOverview id="overview" width="100%" label="{resourceManager.getString('account','accountOverview')}"
-								  styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
+								  styleName="pageStyle" users="{_model.usersList}"
 								  partnerData="{_model.partnerData}" adminData="{_model.adminData}"/>
 			<view:Integration id="integration" width="100%" label="{resourceManager.getString('account','serverSettings')}"
 								 styleName="pageStyle" rootUrl="{_model.context.rootUrl}"
