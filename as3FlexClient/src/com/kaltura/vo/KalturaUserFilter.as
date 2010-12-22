@@ -5,9 +5,9 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserFilter extends KalturaUserBaseFilter
 	{
-		//public var idEqual : String;
+	//	public var idEqual : String;
 
-		//public var idIn : String;
+	//	public var idIn : String;
 
 		public var loginEnabledEqual : Boolean;
 

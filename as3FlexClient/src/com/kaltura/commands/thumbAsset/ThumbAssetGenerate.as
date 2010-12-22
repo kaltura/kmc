@@ -10,8 +10,9 @@ package com.kaltura.commands.thumbAsset
 		/**
 		 * @param entryId String
 		 * @param thumbParams KalturaThumbParams
+		 * @param sourceAssetId String
 		 **/
-		public function ThumbAssetGenerate( entryId : String,thumbParams : KalturaThumbParams )
+		public function ThumbAssetGenerate( entryId : String,thumbParams : KalturaThumbParams,sourceAssetId : String='' )
 		{
 			service= 'thumbasset';
 			action= 'generate';
@@ -24,6 +25,8 @@ package com.kaltura.commands.thumbAsset
  			keyValArr = kalturaObject2Arrays(thumbParams, 'thumbParams');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('sourceAssetId');
+			valueArr.push(sourceAssetId);
 			applySchema(keyArr, valueArr);
 		}
 
