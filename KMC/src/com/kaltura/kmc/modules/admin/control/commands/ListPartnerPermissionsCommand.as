@@ -25,7 +25,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * set received data on model
 		 * @param data data returned from server.
 		 */
-		override public function result(data:Object):void {
+		override protected function result(data:Object):void {
 			super.result(data);
 			var response:KalturaPermissionListResponse = data.data as KalturaPermissionListResponse;
 			_model.rolesModel.partnerPermissions = parsePartnerPermissions(response);

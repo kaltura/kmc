@@ -25,7 +25,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			_model.kc.post(mr);
 		}
 		
-		override public function result(data:Object):void {
+		override protected function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
 				// change the flag to close the role drilldown

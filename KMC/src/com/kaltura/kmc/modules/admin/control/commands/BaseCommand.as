@@ -13,14 +13,14 @@ package com.kaltura.kmc.modules.admin.control.commands {
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
-	public class BaseCommand implements ICommand, IResponder {
+	public class BaseCommand implements ICommand {
 		protected var _model:AdminModelLocator = AdminModelLocator.getInstance();
 
 
 		/**
-		 * @inheritDocs
+		 * default implementation for service fault response
 		 */
-		public function fault(info:Object):void {
+		protected function fault(info:Object):void {
 			if (info && info.error && info.error.errorMsg &&
 				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
 				ExternalInterface.call("kmc.functions.expired");
@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 		 * @param data data returned from server.
 		 *
 		 */
-		public function result(data:Object):void {
+		protected function result(data:Object):void {
 			// for simple requests
 			if (data.error) {
 				fault(data);

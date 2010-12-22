@@ -27,7 +27,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			_model.kc.post(mr);
 		}
 		
-		override public function result(data:Object):void {
+		override protected function result(data:Object):void {
 			super.result(data);
 			var response:KalturaUserListResponse = data.data[1] as KalturaUserListResponse;
 			_model.usersModel.users = new ArrayCollection(response.objects);

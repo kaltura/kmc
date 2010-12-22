@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			_model.kc.post(uu);
 		}
 		
-		override public function result(data:Object):void {
+		override protected function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
 				_model.rolesModel.drilldownMode = DrilldownMode.NONE;
