@@ -256,6 +256,7 @@
 				}
 				return false;
 			}
+			
 
 			/**
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
@@ -269,7 +270,7 @@
 
 				// [1] permissions:
 				if (isError(event.data[1].error)) return;
-				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
+				var uidefinition:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
 				
 				//TODO [2, 3] user and role:
 				if (isError(event.data[2].error)) return;
@@ -286,14 +287,11 @@
 				}
 				else {
 					// manual permissions (enumerated in KalturaPermissionName)
-//					ANNOTATION_PLUGIN_PERMISSION
-//					AUDIT_PLUGIN_PERMISSION
-//					METADATA_PLUGIN_PERMISSION
 					//TODO + use real role info (comment out the full list)  
 					roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
 						"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
 						// live stream
-						"LIVE_FEATURE,LIVE_STREAM_BASE,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_UPDATE_LIVE," +
+						"LIVE_STREAM_BASE,CONTENT_MANAGE_ADD_LIVE,CONTENT_MANAGE_UPDATE_LIVE," +
 						// mix
 						"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
 						// content management
@@ -308,9 +306,9 @@
 						// syndication
 						"SYNDICATION_BASE,SYNDICATION_ADD,SYNDICATION_UPDATE,SYNDICATION_DELETE," +
 						// studio
-//						"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
+						"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
 						// advertising
-						"ADVERTISING_FEATURE,ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
+						"ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
 						// account overview
 						"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
 						// integration settings
@@ -331,31 +329,17 @@
 				
 				// [4] partner permissions list
 				if (isError(event.data[4].error)) return;
-				var perms:String = parsePartnerPermissions(event.data[4] as KalturaPermissionListResponse);
 				
 				permissionManager = PermissionManager.getInstance();
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
-				permissionManager.init(partnerPermissionXml, roleOfCurrentUser, perms);
+				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
 				// load skin
 				loadSkin(_uiconf.skinPath.toString());
 			}
 			
 			
-			/**
-			 * parse the permissions list response
-			 * @param klr	the permissions list response
-			 * @return a comma separated string of partner permission ids.
-			 * */
-			protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):String {
-				var result:String;
-				for each (var kperm:KalturaPermission in klr.objects) {
-					result += kperm.id + ",";
-				}
-				// remove last ","
-				result = result.substring(0, result.length - 1);
-				return result;
-			}
+		
 
 
 			/**

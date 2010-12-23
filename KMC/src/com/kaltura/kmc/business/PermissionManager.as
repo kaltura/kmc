@@ -2,7 +2,9 @@ package com.kaltura.kmc.business {
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.vo.PermissionVo;
 	import com.kaltura.utils.CastUtil;
-
+	import com.kaltura.vo.KalturaPermission;
+	import com.kaltura.vo.KalturaPermissionListResponse;
+	
 	import flash.events.EventDispatcher;
 	import flash.utils.describeType;
 
@@ -56,9 +58,9 @@ package com.kaltura.kmc.business {
 		 * parse them and keep relevant data in this class.
 		 * @param uiDefinitions		all partner's permissions
 		 * @param rolePermission	a comma-separated-string of ids of the role's permissions
-		 * @param allPartnerPermissions	a comma-separated-string of ids of partners permissions
+		 * @param partnerPermissions	partners permissions as returned from the server
 		 */
-		public function init(uiDefinitions:XML, rolePermissions:String = "", partnerPermissions:String = ""):void {
+		public function init(uiDefinitions:XML, rolePermissions:String = "", partnerPermissions:KalturaPermissionListResponse = ""):void {
 			_partnerUIDefinitions = uiDefinitions.copy();
 			_deniedPermissions = uiDefinitions.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
@@ -101,7 +103,7 @@ package com.kaltura.kmc.business {
 			}
 			_hideTabs = permissionParser.getTabsToHide(_deniedPermissions..uimapping[0], allRolePermissions);
 			// parse features that the partner does not have, and combine them with the current users permissions 
-			var partnerPermissionsList:Array = partnerPermissions.split(",");
+			var partnerPermissionsList:Array = parsePartnerPermissions(partnerPermissions);
 			for each (var partnerPermission:String in partnerPermissionsList) {
 				if (partnerPermission) {
 					//TODO + search for existing permissions in the Vos and delete them 
@@ -112,6 +114,22 @@ package com.kaltura.kmc.business {
 				}
 			}
 			_hideFeatures = [];
+		}
+		
+		
+		/**
+		 * parse the permissions list response
+		 * @param klr	the permissions list response
+		 * @return an array of partner permission ids.
+		 * */
+		protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):Array {
+			var result:String;
+			for each (var kperm:KalturaPermission in klr.objects) {
+				result += kperm.id + ",";
+			}
+			// remove last ","
+			result = result.substring(0, result.length - 1);
+			return result.split(",");
 		}
 
 
