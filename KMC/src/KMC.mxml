@@ -59,11 +59,6 @@
 			 * */
 			private var _kmcModuleLoader:KmcModuleLoader;
 
-//			/**
-//			 * path from KMC.swf to module swfs.
-//			 * */
-//			private var _modulesFolder:String = "modules";
-
 			/**
 			 * KMC UIConf
 			 * */
@@ -90,7 +85,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "4.0";
+			public var VERSION:String = "4.0b";
 			
 			
 			
@@ -167,10 +162,6 @@
 				var objParam:Object = Application.application.parameters;
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam);
 				_flashvars = objParam;
-
-//				if (objParam.modulespath) {
-//					_modulesFolder = objParam.modulespath;
-//				}
 
 				// hook ExternalInterface:
 				if (ExternalInterface.available) {
@@ -281,7 +272,7 @@
 				_modelLocator.userInfo = uvo;
 				
 				var roleOfCurrentUser:String;
-				if (/* uvo.role */false) {
+				if (/* uvo.role  */false) {
 					// real data
 					roleOfCurrentUser = uvo.role.permissionNames; 
 				}
@@ -335,7 +326,7 @@
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
 				// load skin
-				loadSkin(_uiconf.skinPath.toString());
+				loadSkin(getUrl(_uiconf.skinPath.toString()));
 			}
 			
 			

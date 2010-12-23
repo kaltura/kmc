@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.kmc.vo.UserVO;
 	import com.kaltura.vo.KalturaUiConf;
 	
+	import flash.display.LoaderInfo;
 	import flash.events.IEventDispatcher;
 	import flash.external.ExternalInterface;
 	import flash.ui.ContextMenu;
@@ -16,6 +17,7 @@ package com.kaltura.kmc.modules {
 	import flash.utils.getQualifiedClassName;
 	
 	import mx.controls.Alert;
+	import mx.core.Application;
 	import mx.events.FlexEvent;
 	import mx.events.ResourceEvent;
 	import mx.modules.Module;
@@ -116,6 +118,25 @@ package com.kaltura.kmc.modules {
 			_kc.post(uiconf);
 		}
 
+		/**
+		 * decide if should use relative or absolute url.
+		 * if the given path is ablsolute, return the same string.
+		 * if the given path is relative, concatenate it to the swf url.
+		 * @param	given path
+		 * @return	path to use
+		 * */
+		protected function getLoadUrl(path:String):String {
+			var url:String;
+			if (path.indexOf("http") == 0) {
+				url = path;
+			}
+			else {
+				var li:String = Application.application.loaderInfo.url; 
+				var base:String = li.substr(0, li.lastIndexOf("/"));  
+				url = base + "/" + path;
+			}
+			return url;
+		}
 
 
 		/**
@@ -126,7 +147,7 @@ package com.kaltura.kmc.modules {
 			_uiconf = e.data as KalturaUiConf;
 			var confFile:XML = new XML(_uiconf.confFile);
 
-			loadLocale(confFile.locale.path.toString(), confFile.locale.language.toString());
+			loadLocale(getLoadUrl(confFile.locale.path.toString()), confFile.locale.language.toString());
 		}
 
 
