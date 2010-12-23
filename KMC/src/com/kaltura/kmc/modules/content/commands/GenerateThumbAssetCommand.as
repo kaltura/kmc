@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.thumbAsset.ThumbAssetGenerate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.GenerateThumbAssetEvent;
+	import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 	import com.kaltura.vo.KalturaThumbParams;
 
 	public class GenerateThumbAssetCommand extends KalturaCommand
@@ -22,6 +23,10 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			
+			var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+			listThumbsEvent.dispatch();
+			
 			_model.entryDetailsModel.thumbnailSaved = true;
 		}
 	}

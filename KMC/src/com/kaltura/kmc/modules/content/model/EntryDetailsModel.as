@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * TODO: change later to arrive from permissions!!!!!!!!!
 		 * */
-		public var enableDistribution:Boolean = true;
+		public var enableDistribution:Boolean = false;
 		
 		/**
 		 * indicates if we should send the listDistributionProfiles

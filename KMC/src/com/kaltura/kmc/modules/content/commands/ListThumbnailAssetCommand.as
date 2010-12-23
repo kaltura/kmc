@@ -90,7 +90,9 @@ package com.kaltura.kmc.modules.content.commands
 				leftUsedProfiles.push(profile);
 			}
 			
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
+			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
+			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC);
+			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
 		}
 		
 	}

@@ -1,6 +1,8 @@
 package com.kaltura.kmc.modules.content.model
 {
 	import com.kaltura.vo.KalturaThumbAsset;
+	
+	import flash.events.EventDispatcher;
 
 	/**
 	 * This class represents thumbnail dimensions. containes width, height, and which distribution profiles
@@ -9,7 +11,7 @@ package com.kaltura.kmc.modules.content.model
 	 * 
 	 */	
 	[Bindable]
-	public class ThumbnailWithDimensions
+	public class ThumbnailWithDimensions extends EventDispatcher
 	{
 		public static var serveURL:String = "/api_v3/index.php?service=thumbasset&action=serve";
 		

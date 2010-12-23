@@ -12,6 +12,7 @@
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.utils.imageCropper.CropBox;
 			import com.kaltura.utils.imageCropper.ImageCrop;
 			import com.kaltura.utils.pager.Pager;
@@ -22,8 +23,10 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
-			import mx.managers.PopUpManager;
-			
+			/**
+			 * will be sent when the window closes
+			 * */
+			public static const WINDOW_CLOSE:String = "windowClose";
 			/**
 			 * number of thumbnails to display in thumbnails tile list
 			 * */
@@ -57,10 +60,26 @@
 			private var _isDirty:Boolean;
 			[Bindable]
 			private var _selectedImgRatio:Number;
-			private var _lastSelectedDimensiontIndex:int = -1;
+			private var _upscaleMultiplier:Number = 1;
 			
+			
+			/**
+			 * !erase later!!!! only for QA tests
+			 * */
+			private function createDemoDimensions():void {
+				var dimensions1:ThumbnailWithDimensions = new ThumbnailWithDimensions(400, 300);
+				var dimensions2:ThumbnailWithDimensions = new ThumbnailWithDimensions(640, 480);
+				var dimensions3:ThumbnailWithDimensions = new ThumbnailWithDimensions(1024, 768);
+				
+				_presetSizeList.push({label: dimensions1.width + ' X ' + dimensions1.height, data:dimensions1});
+				_presetSizeList.push({label: dimensions2.width + ' X ' + dimensions2.height, data:dimensions2});
+				_presetSizeList.push({label: dimensions3.width + ' X ' + dimensions3.height, data:dimensions3});
+				_isPreSize = true;
+				
+			}
 			
 			private function onCreationComplete(event:Event):void {
+				createDemoDimensions(); //erase later! for QA tests
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				//no sources to crop from
@@ -75,7 +94,6 @@
 				previewImg.width = previewImg.height*_selectedImgRatio
 				if (_isPreSize) {
 					presetComboBox.selectedIndex = 0;
-					_lastSelectedDimensiontIndex = 0;
 				}
 
 				setCropperImage();
@@ -125,7 +143,7 @@
 						cropHeight = DEFAULT_CROP_HEIGHT
 					}
 
-					setCropValues(cropWidth, cropHeight);		
+					setCropValues(cropWidth, cropHeight, false);		
 					_imageCrop.cropBox.keepAspectRatio = _isPreSize;
 					setPreviewBitmap(_imageCrop.cropBox.cropX, _imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
 				}
@@ -135,29 +153,34 @@
 			 * this function will set the crop x and y to the center of the image,
 			 * unless it will get out of image bounds. In this case the x and y will be set to (0,0)
 			 * */
-			private function setCropValues(cropWidth:Number, cropHeight:Number):void {
-				//the cropper will be on the entire image
+			private function setCropValues(cropWidth:Number, cropHeight:Number, displayAlert:Boolean = true):void {
+				//dimensions are too big
 				if (cropWidth > _selectedThumbnail.width || cropHeight > _selectedThumbnail.height) {
-					_imageCrop.cropBox.cropWidth = _imageCrop.image.width;
-					_imageCrop.cropBox.cropHeight = _imageCrop.image.height;
-					_imageCrop.cropBox.cropX = 0;
-					_imageCrop.cropBox.cropY = 0;
-					newCropY = 0;
-					if (_isPreSize)
-						presetComboBox.selectedIndex = _lastSelectedDimensiontIndex;
-					displayInvalidAlert();
-					
+					if (_isPreSize) {
+						Alert.show(resourceManager.getString('cms', 'warningMessage'),resourceManager.getString('cms','warningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
+					}
+					else {
+						_imageCrop.cropBox.cropWidth = _imageCrop.image.width;
+						_imageCrop.cropBox.cropHeight = _imageCrop.image.height;
+						_imageCrop.cropBox.cropX = 0;
+						_imageCrop.cropBox.cropY = 0;
+						if (displayAlert)
+							displayInvalidAlert();
+					}
 				}
 				//the cropper will be in the middle
 				else {
+					_upscaleMultiplier = 1;
 					_imageCrop.cropBox.cropWidth = cropWidth;
 					_imageCrop.cropBox.cropHeight = cropHeight;
 					//get the center of the image
 					var newCropX:Number = _selectedThumbnail.width/2 - cropWidth/2;
 					var newCropY:Number = _selectedThumbnail.height/2 - cropHeight/2;
 					
-					if ((newCropX + cropWidth) < _selectedThumbnail.width
-						&& (newCropY + cropHeight) < _selectedThumbnail.height) {
+					if ((newCropX + cropWidth) > 0
+						&& (newCropX + cropWidth) < _selectedThumbnail.width
+						&& (newCropY + cropHeight) < _selectedThumbnail.height
+						&& (newCropY + cropHeight) > 0) {
 						_imageCrop.cropBox.cropX = newCropX;
 						_imageCrop.cropBox.cropY = newCropY;
 					}
@@ -165,8 +188,40 @@
 						_imageCrop.cropBox.cropX = 0;
 						_imageCrop.cropBox.cropY = 0;
 					}
+				}	
+			}
+			
+			private function warningCloseHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var requestedDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
+					adjustPresetDimensions(_selectedThumbnail.width, _selectedThumbnail.height, requestedDimensions.width, requestedDimensions.height);
+				}
+				else {
+					presetComboBox.selectedIndex = -1;
+				}
+			}
+												 
+			
+			/**
+			 * this function will recieve requested values that are larger than the max values, and
+			 * will try to set the cropper with the maximum values while keeping aspet ratio
+			 * */
+			private function adjustPresetDimensions(maxWidth:int, maxHeight:int, requestedWidth:int, requestedHeight:int):void {
+				var ratio:Number = maxWidth/requestedWidth; //must be < 1 since max < requested
+				_upscaleMultiplier = ratio;
+				var tempWidth:Number = maxWidth;
+				var tempHeight:Number = requestedHeight * ratio; //will keep the ratio between requested width and height since we multiplied them in the same number
+				if (tempHeight > maxHeight) {
+					var secondRatio:Number = maxHeight/tempHeight;
+					_upscaleMultiplier = ratio * secondRatio;
+					tempWidth = tempWidth * secondRatio;
+					tempHeight = maxHeight;
 				}
 				
+				_imageCrop.cropBox.cropWidth = tempWidth;
+				_imageCrop.cropBox.cropHeight = tempHeight;
+				_imageCrop.cropBox.cropX = 0;
+				_imageCrop.cropBox.cropY = 0;
 			}
 			
 			/**
@@ -200,10 +255,10 @@
 			 * updates the text inputs with the current cropping values
 			 * */
 			private function getCropperValues():void {
-				leftTextInput.text = _imageCrop.cropBox.cropX.toString();
-				topTextInput.text = _imageCrop.cropBox.cropY.toString();
-				widthTextInput.text = _imageCrop.cropBox.cropWidth.toString();
-				heightTextInput.text = _imageCrop.cropBox.cropHeight.toString();
+				leftTextInput.text = (Math.floor(_imageCrop.cropBox.cropX / _upscaleMultiplier)).toString();;
+				topTextInput.text = (Math.floor(_imageCrop.cropBox.cropY / _upscaleMultiplier)).toString();;
+				widthTextInput.text = (Math.floor(_imageCrop.cropBox.cropWidth / _upscaleMultiplier)).toString();
+				heightTextInput.text = (Math.floor(_imageCrop.cropBox.cropHeight / _upscaleMultiplier)).toString();
 			}
 			
 			/**
@@ -224,7 +279,7 @@
 				_presetSizeList = new Array();
 				for (var i:int = 0; i<value.length; i++) {
 					var currentThumb:ThumbnailWithDimensions = value[i] as ThumbnailWithDimensions;
-					if (currentThumb.thumbAsset)
+					if (currentThumb.thumbAsset && currentThumb.thumbAsset.status == KalturaFlavorAssetStatus.READY)
 						thumbnailsList.push(currentThumb);
 					if (currentThumb.usedDistributionProfilesArray.length>0) 
 						_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data:currentThumb});
@@ -233,13 +288,14 @@
 				if (_presetSizeList.length>0) {
 					_isPreSize = true;
 				}
+			
 				_pager = new Pager();
 				_pager.localPageSize = NUM_OF_PAGES;
 				_pager.addDataSet(thumbnailsList); 		
 			}
 			
 			private function alertOkHandler(event:CloseEvent): void {
-				PopUpManager.removePopUp(this);
+				dispatchCloseEvent();
 			}
 
 			/**
@@ -273,12 +329,12 @@
 				if (_isDirty)
 					Alert.show(resourceManager.getString('cms','cancelCrop'),resourceManager.getString('cms','cancelCropTitle'), Alert.YES | Alert.NO, null, closeHandler);
 				else
-					PopUpManager.removePopUp(this);
+					dispatchCloseEvent();
 			}
 			
 			private function closeHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES)
-					PopUpManager.removePopUp(this);
+					dispatchCloseEvent();
 			}
 			
 			/**
@@ -298,7 +354,7 @@
 					//will save on the selected dimensions
 					var selectedDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 					thumbParams.scaleWidth = selectedDimensions.width/thumbParams.cropWidth;
-					thumbParams.scaleHeight = selectedDimensions.width/thumbParams.cropHeight;
+					thumbParams.scaleHeight = selectedDimensions.height/thumbParams.cropHeight;
 				}
 				_entryDetailsModel.thumbnailSaved = false;
 				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
@@ -335,7 +391,6 @@
 			private function onImgItemClick(event:Event):void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
-				_lastSelectedDimensiontIndex = -1;
 				previewImg.width = previewImg.height * _selectedImgRatio;
 				imageBox.removeChild(_imageCrop);
 				setCropperImage();
@@ -347,6 +402,7 @@
 			private function onPresetCBChange(event:Event):void {
 				_isPreSize = !_isPreSize;
 				_imageCrop.cropBox.keepAspectRatio = _isPreSize;
+				_upscaleMultiplier = 1;
 				if (_isPreSize && presetComboBox.selectedItem) {
 					var currentDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 					setCropValues(currentDimensions.width, currentDimensions.height);
@@ -403,12 +459,10 @@
 				}
 			}
 			
-			
 			private function onPresetSizeChange(event:Event):void {
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 				if (_imageCrop && _imageCrop.cropBox) {
 					setCropValues(selectedSize.width, selectedSize.height);
-					_lastSelectedDimensiontIndex = presetComboBox.selectedIndex;
 				}
 			}
 			
@@ -419,13 +473,20 @@
 				Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
 			}
 			
+			/**
+			 * dispatches window close event
+			 * */
+			private function dispatchCloseEvent():void {
+				this.dispatchEvent(new Event(WINDOW_CLOSE));
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:HBox id="controlHbox" width="100%" paddingTop="0" paddingBottom="0" horizontalAlign="center">
-		<mx:Image id="previewImg" height="80"/>
+		<mx:Image id="previewImg" height="90" width="90"/>
 		<mx:VBox>
 			<mx:HBox width="100%" height="100%">
-				<mx:Button id="prevBtn" label="b" enabled="{!_pager.isFirstPage}" click="{onPrevClick()}" width="5"/>
+				<mx:LinkButton id="prevBtn" enabled="{!_pager.isFirstPage}" click="{onPrevClick()}" styleName="moveLeftButton"/>
 				<mx:TileList id="imgList" 
 							 columnCount="{NUM_OF_PAGES}"
 							 rowCount="1" dataProvider="{_pager.visiblePageData}" 
@@ -440,10 +501,10 @@
 						</mx:Component>
 					</mx:itemRenderer>
 				</mx:TileList>
-				<mx:Button id="nextBtn" label="n" enabled="{!_pager.isLastPage}" click="{onNextClick()}" width="5"/>
+				<mx:LinkButton id="nextBtn" enabled="{!_pager.isLastPage}" click="{onNextClick()}" styleName="moveRightButton"/>
 			</mx:HBox>
 			<mx:HBox>
-				<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}"/>
+				<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}" enabled="{_isPreSize}"/>
 				<mx:Label enabled="{_isPreSize}" text="{resourceManager.getString('cms','presetSizeText')}"/>
 				<mx:ComboBox id="presetComboBox" prompt="{resourceManager.getString('cms', 'selectValidDimensionsMsg')}"
 							 enabled="{_isPreSize}" dataProvider="{_presetSizeList}" change="{onPresetSizeChange(event)}"/>

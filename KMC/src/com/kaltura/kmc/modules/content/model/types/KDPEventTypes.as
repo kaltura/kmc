@@ -8,7 +8,11 @@ package com.kaltura.kmc.modules.content.model.types
 		
 		public static const KDP_READY:String = "kdpReady";
 		
+		public static const ENTRY_READY:String = "entryReady";
+		
 		public static const THUMBNAIL_SAVED:String = "thumbnailSaved";
+		
+		public static const CAPTURE_THUMBNAIL:String = "captureThumbnail";
 
 		public static const CHANGE_MEDIA:String = "changeMedia";
 		

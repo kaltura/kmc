@@ -10,12 +10,15 @@
 				creationComplete="{onCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.types.KDPEventTypes;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
+			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _refreshRequired:Boolean = false;
 			private static var _kdp3SwfLoader:SWFLoader;
 			public var context:Context;
 			
@@ -30,6 +33,10 @@
 			}
 
 			private function closeWindow(event:Event):void {
+				if (_refreshRequired){
+					var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+					listThumbs.dispatch();
+				}
 				PopUpManager.removePopUp(this);
 			}
 			
@@ -47,19 +54,22 @@
 					//listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
 					//because this is static KDP (due to performance issue that we fixed)
 					_kdp3SwfLoader.visible = false;
-					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.MEDIA_READY, showKDP);
+					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
 					_kdp3SwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA,
 						{entryId: _selectedEntry.id});
 				}
 				else {
-					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.captureThumbnailUiconf + "/nowrapper/1";
+					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.captureThumbnailUiconf + "/nowrapper/1/a";
+					//var newUrl:String = "http://localhost/kdp3.swf";
 					kdp3Loader.scaleContent = false;
 					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
 					kdp3Loader.load(newUrl);
 				}
 			}
+		
 			
 			private function showKDP(event:Event = null):void {
+				trace ("show kdp");
 				_kdp3SwfLoader.visible = true;
 			}
 			
@@ -68,7 +78,7 @@
 			 */
 			private function onKDP3Loaded(event:Event):void {
 				_kdp3SwfLoader = kdp3Loader;
-				
+
 				//set kdp params
 				var params:Object = new Object();
 				params.widgetId = "_" + context.kc.partnerId;
@@ -87,15 +97,15 @@
 				
 				//				params.cdnUrl = context.rootUrl;
 				params.debugMode = context.debugMode;
-				
+				_kdp3SwfLoader.content.addEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_kdp3SwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp3SwfLoader.content["init"]();
-				_kdp3SwfLoader.addEventListener(KDPEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
+
 			}
 			
 			private function onThumbnailSaved(event:Event):void {
-				
+				_refreshRequired = true;
 			}
 		]]>
 	</mx:Script>

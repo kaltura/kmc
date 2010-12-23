@@ -126,6 +126,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ThumbnailAssetEvent.SET_AS_DEFAULT, SetAsDefaultThumbnailAsset);
 			addCommand(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE, AddFromImageThumbnailAssetCommand);
 			addCommand(GenerateThumbAssetEvent.GENERATE, GenerateThumbAssetCommand);
+			addCommand(ThumbnailAssetEvent.GET, GetThumbAssetCommand);
 			
 			//roles and permissions stuff
 			addCommand(ChangeModelEvent.SET_EMBED_STATUS, ChangeModelValueCommand);
