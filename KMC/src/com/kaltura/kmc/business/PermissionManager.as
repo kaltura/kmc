@@ -104,7 +104,7 @@ package com.kaltura.kmc.business {
 			var partnerPermissionsList:Array = partnerPermissions.split(",");
 			for each (var partnerPermission:String in partnerPermissionsList) {
 				if (partnerPermission) {
-					//TODO search for existing permissions in the Vos and delete them 
+					//TODO + search for existing permissions in the Vos and delete them 
 					// if the partner does not have these permissions 
 					/* we don't want the feature data to be part of the permissions, because it's not user permission
 					 * so if the partner data changes we will have to scan the DB to remove the permision.*/
@@ -314,6 +314,7 @@ package com.kaltura.kmc.business {
 		 * @return the value for the desired attribute
 		 */
 		public function getValue(componentPath:String, attribute:String):* {
+			var result:* = null;
 			var relevantPermissions:Array = getRelevantPermissions(componentPath);
 			for each (var o:PermissionVo in relevantPermissions) {
 				for (var att:Object in o.attributes) {
@@ -322,7 +323,7 @@ package com.kaltura.kmc.business {
 					}
 				}
 			}
-			//TODO what should the default value be?
+			return null;
 		}
 
 
