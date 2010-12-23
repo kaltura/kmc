@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
-			 itemClick="setSelection(event);" creationComplete="datagrid1_creationCompleteHandler(event)"
+			 itemClick="setSelection(event);" creationComplete="creationCompleteHandler(event)"
 			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
@@ -69,7 +69,6 @@
 			
 			/**
 			 * selection or deselection was made
-			 * @fixed
 			 */
 			public function setSelection(event:ListEvent):void {
 				if (event.itemRenderer.data) {
@@ -80,7 +79,6 @@
 			
 			/**
 			 * open the entry drilldown popup
-			 * @fixed		
 			 * */
 			private function editEntry():void {
 				dispatchEvent(new Event(RolesTable.DRILL_DOWN));
@@ -89,7 +87,6 @@
 			
 			/**
 			 * show delete confirmation box
-			 * @fixed
 			 * */
 			private function confirmDelete():void {
 				Alert.show(ResourceManager.getInstance().getString('admin', 'confirm_delete_role', [selectedRole.name]), ResourceManager.getInstance().getString('admin', 'confirm_delete_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
@@ -99,7 +96,6 @@
 			
 			/**
 			 * delete the selected entry
-			 * @fixed
 			 * */
 			private function deleteEntry(e:CloseEvent):void {
 				if (e.detail == Alert.OK) {
@@ -123,7 +119,6 @@
 			
 			/**
 			 * show formatted date
-			 * @fixed
 			 * */
 			private function formatDate(date:Number):String {
 				var df:DateFormatter = new DateFormatter();
@@ -137,7 +132,6 @@
 			
 			/**
 			 * translate last login data to something readable
-			 * @fixed
 			 * */
 			private function getSaveDate(item:Object, column:DataGridColumn):String {
 				return formatDate(item.updatedAt);
@@ -151,14 +145,14 @@
 			 * (used in item renderer)
 			 * */
 			public function onActionSelected(event:ListEvent):void {
-				switch (event.target.selectedItem) {
-					case resourceManager.getString('admin', 'edit'):
+				switch (event.target.selectedItem.id) {
+					case RolesTable.DRILL_DOWN:
 						editEntry();
 						break;
-					case resourceManager.getString('admin', 'duplicate'):
+					case RolesTable.DUPLICATE_ROLE:
 						duplicateEntry();
 						break;
-					case resourceManager.getString('admin', 'delete'):
+					case RolesTable.DELETE_ROLE:
 						confirmDelete();
 						break;
 				}
@@ -170,7 +164,7 @@
 			// ==================================================================
 			
 			/**
-			 * @fixed
+			 * 
 			 * */
 			public function get selectedRole():KalturaUserRole {
 				return selectedItem as KalturaUserRole;
@@ -219,12 +213,12 @@
 			}
 
 
-			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void
+			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				//build the dataprovider items list :
-				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','duplicate'),id:'duplicate'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
+				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:RolesTable.DRILL_DOWN});
+				comboDataProvider.addItem({label:resourceManager.getString('admin','duplicate'),id:RolesTable.DUPLICATE_ROLE});
+				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:RolesTable.DELETE_ROLE});
 			}
 
 		]]>
