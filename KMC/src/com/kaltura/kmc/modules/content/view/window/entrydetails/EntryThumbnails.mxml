@@ -14,6 +14,7 @@ Thumbnails tab of EntryDetailsWin
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.CropThumbnailWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.GrabFromVideoWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMixEntry;
@@ -35,6 +36,7 @@ Thumbnails tab of EntryDetailsWin
 			private var _dimensionsArray:Array;
 			[Bindable]
 			private var _uploadThumbnailActionsDP:Array;
+			private var _cropperWindow:CropThumbnailWindow;
 			
 			public function get context():Context
 			{
@@ -75,7 +77,7 @@ Thumbnails tab of EntryDetailsWin
 			public function setDimensionsArray(array:Array):void {
 				_dimensionsArray = array;
 			}
-
+			
 			public function get selectedEntry():KalturaBaseEntry
 			{
 				return _selectedEntry;
@@ -89,10 +91,11 @@ Thumbnails tab of EntryDetailsWin
 				
 				//set the available operations for current entry
 				_uploadThumbnailActionsDP = new Array(resourceManager.getString('cms','upload'));
-				if ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))
+				if ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)) {
 					_uploadThumbnailActionsDP.push(resourceManager.getString('cms','grabFromVideo'));
-				//if (checkForSources(entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray))
-				_uploadThumbnailActionsDP.push(resourceManager.getString('cms','cropNewThumbnail'));
+					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
+						_uploadThumbnailActionsDP.push(resourceManager.getString('cms','cropNewThumbnail'));
+				}
 				
 				var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
 				listThumbsEvent.dispatch();	
@@ -140,27 +143,20 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			private function openCropThumbPopup():void {
-				var cropNewWindow:CropThumbnailWindow = new CropThumbnailWindow();
-				cropNewWindow.thumbnailsList = entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
-				cropNewWindow.entryDetailsModel = _entryDetailsModel;
-				cropNewWindow.selectedEntry = selectedEntry;
-				cropNewWindow.width = this.stage.width-3;
-				cropNewWindow.height = this.stage.height;
-				PopUpManager.addPopUp(cropNewWindow, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(cropNewWindow);
+				_cropperWindow= new CropThumbnailWindow();
+				_cropperWindow.thumbnailsList = entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				_cropperWindow.entryDetailsModel = _entryDetailsModel;
+				_cropperWindow.selectedEntry = selectedEntry;
+				_cropperWindow.width = this.stage.width-3;
+				_cropperWindow.height = this.stage.height;
+				_cropperWindow.addEventListener(CropThumbnailWindow.WINDOW_CLOSE, onCropperClosed);
+				PopUpManager.addPopUp(_cropperWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(_cropperWindow);
 			}
 			
-			/**
-			 * checks if at least one thumbnail source exists
-			 * */
-		/*	private function checkForSources(thumbsArray:Array):Boolean {
-				for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
-					if (thumb.thumbAsset)
-						return true;
-				}
-				
-				return false;
-			}*/
+			private function onCropperClosed(event:Event):void {
+				PopUpManager.removePopUp(_cropperWindow);
+			}
 
 		]]>
 	</mx:Script>
