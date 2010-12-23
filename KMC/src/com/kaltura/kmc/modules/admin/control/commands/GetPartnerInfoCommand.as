@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
-				_model.usersModel.loginUsersQuota = (data.data as KalturaPartner).loginUsersQuota;
+				_model.usersModel.loginUsersQuota = (data.data as KalturaPartner).adminLoginUsersQuota;
 			}
 		}
 	}
