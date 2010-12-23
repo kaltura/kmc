@@ -328,11 +328,15 @@ package com.kaltura.utils.imageCropper {
 						newHeight = newHeightAspect;
 					}
 				}
-						
-				_cropX = newX;
-				_cropY = newY;
-				_cropWidth = newWidth;
-				_cropHeight = newHeight;
+				
+				if ((0 <= newX) && (newX <= this.width))
+					_cropX = newX;
+				if ((0 <= newY) && (newY <= this.height))
+					_cropY = newY;
+				if ((0 <= newWidth) && (newWidth <= this.width))
+					_cropWidth = newWidth;
+				if ((0 <= newHeight) && (newHeight <= this.height))
+					_cropHeight = newHeight;
 				moveHandles();
 			}
 		}
