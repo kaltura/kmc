@@ -20,7 +20,7 @@
 			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
-			import com.kaltura.kmc.model.types.KalturaErrorCode;
+			import com.kaltura.kmc.model.types.APIErrorCode;
 			import com.kaltura.kmc.modules.KmcModule;
 			import com.kaltura.kmc.utils.KSUtil;
 			import com.kaltura.kmc.vo.UserVO;
@@ -35,6 +35,7 @@
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
+			import mx.events.IndexChangedEvent;
 			import mx.events.StyleEvent;
 			import mx.modules.ModuleLoader;
 
@@ -58,10 +59,10 @@
 			 * */
 			private var _kmcModuleLoader:KmcModuleLoader;
 
-			/**
-			 * path from KMC.swf to module swfs.
-			 * */
-			private var _modulesFolder:String = "modules";
+//			/**
+//			 * path from KMC.swf to module swfs.
+//			 * */
+//			private var _modulesFolder:String = "modules";
 
 			/**
 			 * KMC UIConf
@@ -89,7 +90,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "1.0.0";
+			public var VERSION:String = "4.0";
 			
 			
 			
@@ -167,9 +168,9 @@
 				objParam = ObjectHelpers.lowerNoUnderscore(objParam);
 				_flashvars = objParam;
 
-				if (objParam.modulespath) {
-					_modulesFolder = objParam.modulespath;
-				}
+//				if (objParam.modulespath) {
+//					_modulesFolder = objParam.modulespath;
+//				}
 
 				// hook ExternalInterface:
 				if (ExternalInterface.available) {
@@ -240,10 +241,15 @@
 				}
 			}
 
+			/**
+			 * check if the given object is an error object and respond.
+			 * @param  errorObj	server response, object to check
+			 * @return true if the given object is a generic error object, false otherwise
+			 * */
 			protected function isError(errorObj:Object):Boolean {
 				if (errorObj) {
 					alert(errorObj.message, "Error");
-					if (errorObj.code == KalturaErrorCode.INVALID_KS) {
+					if (errorObj.code == APIErrorCode.INVALID_KS) {
 						ExternalInterface.call("kmc.utils.expired");
 					}
 					return true;
@@ -265,9 +271,9 @@
 				if (isError(event.data[1].error)) return;
 				var partnerPermissionXml:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
 				
-				// [2, 3] user and role:
+				//TODO [2, 3] user and role:
 				if (isError(event.data[2].error)) return;
-				if (isError(event.data[3].error)) return;
+				isError(event.data[3].error); 
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[2] as KalturaUser;
 				uvo.role = event.data[3] as KalturaUserRole;
@@ -319,9 +325,8 @@
 						"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
 						// administration
 						"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE," +
-						"";
 						// analytics
-//						"ANALYTICS_BASE"; 
+						"ANALYTICS_BASE"; 
 				}
 				
 				// [4] partner permissions list
@@ -416,6 +421,25 @@
 				} 
 				return o;
 			}
+			
+			/**
+			 * decide if should use relative or absolute url.
+			 * if the given path is ablsolute, return the same string.
+			 * if the given path is relative, concatenate it to the swf url.
+			 * @param	given path
+			 * @return	path to use
+			 * */
+			protected function getUrl(path:String):String {
+				var url:String;
+				if (path.indexOf("http") == 0) {
+					url = path;
+				}
+				else {
+					var base:String = loaderInfo.url.substr(0, loaderInfo.url.lastIndexOf("/"));  
+					url = base + "/" + path;
+				}
+				return url;
+			}
 
 			/**
 			 * Switch to a different KMC module (tab).
@@ -439,7 +463,8 @@
 					gotoPage(getDefaultPage());
 					return;
 				}
-				var url:String = _modulesFolder + "/" + mInfo.@path;
+				
+				var url:String = getUrl(mInfo.@path.toString());
 				var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
 				if (!ml.parent) {
 					// this is the first time we load this module.
