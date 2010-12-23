@@ -12,10 +12,5 @@ package com.kaltura.delegates.thumbAsset
 			super(call, config);
 		}
 
-		override public function parse(result:XML) : *
-		{
-			return result.result.toString();
-		}
-
 	}
 }

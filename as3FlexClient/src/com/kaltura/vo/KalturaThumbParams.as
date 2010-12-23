@@ -23,9 +23,9 @@ package com.kaltura.vo
 
 		public var height : int = int.MIN_VALUE;
 
-		public var scaleWidth : int = int.MIN_VALUE;
+		public var scaleWidth : Number = NaN;
 
-		public var scaleHeight : int = int.MIN_VALUE;
+		public var scaleHeight : Number = NaN;
 
 		public var backgroundColor : String;
 

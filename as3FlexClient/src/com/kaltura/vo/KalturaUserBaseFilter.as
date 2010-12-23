@@ -5,10 +5,6 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserBaseFilter extends KalturaFilter
 	{
-		public var idEqual : String;
-
-		public var idIn : String;
-
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
 		public var screenNameLike : String;
@@ -37,8 +33,6 @@ override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('idEqual');
-			arr.push('idIn');
 			arr.push('partnerIdEqual');
 			arr.push('screenNameLike');
 			arr.push('screenNameStartsWith');
