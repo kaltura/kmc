@@ -42,6 +42,9 @@ package com.kaltura.kmc.modules.content.commands
 			
 		}
 		
+		/**
+		 * this function will aggregate profiles that use the same dimensions with an entry of the same dimensions
+		 * */
 		private function buildThumbsWithDimensionsArray(thumbsWithDimensionsArray:Array, profilesArray:Array, thumbsArray:Array):void {
 			
 			for each (var currentThumb:KalturaThumbAsset in thumbsArray) {
@@ -50,7 +53,11 @@ package com.kaltura.kmc.modules.content.commands
 				for each (var existingThumb:ThumbnailWithDimensions in thumbsWithDimensionsArray) {
 					if ((currentThumb.width==existingThumb.width) && (currentThumb.height==existingThumb.height)) {
 						curUsedProfiles = existingThumb.usedDistributionProfilesArray;
-						curThumbExist = true;
+						if (!existingThumb.thumbAsset) {
+							existingThumb.thumbAsset = currentThumb;
+							existingThumb.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + currentThumb.id;
+							curThumbExist = true;
+						}
 						break;
 					}
 				}
@@ -58,7 +65,8 @@ package com.kaltura.kmc.modules.content.commands
 					var newThumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions (currentThumb.width,currentThumb.height, currentThumb);
 					newThumbToAdd.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumbToAdd.thumbAsset.id;
 					thumbsWithDimensionsArray.push(newThumbToAdd);
-					curUsedProfiles = newThumbToAdd.usedDistributionProfilesArray;
+					if (!curUsedProfiles)
+						curUsedProfiles = newThumbToAdd.usedDistributionProfilesArray;
 				}
 				
 				for (var i:int=profilesArray.length-1; i>=0; i--) {
