@@ -29,7 +29,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		}
 		
 		override protected function result(data:Object):void {
-			//TODO note the optional response of "still have users associated with role"
+			//TODO + note the optional response of "still have users associated with role"
 			super.result(data);
 			var response:KalturaUserRoleListResponse = data.data[1] as KalturaUserRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
