@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.admin.control.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 	import com.kaltura.kmc.modules.content.view.window.ForbidenBox;
 	
@@ -21,10 +22,12 @@ package com.kaltura.kmc.modules.admin.control.commands {
 		 * default implementation for service fault response
 		 */
 		protected function fault(info:Object):void {
+			// invalid KS
 			if (info && info.error && info.error.errorMsg &&
-				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
+				info.error.errorCode == APIErrorCode.INVALID_KS) {
 				ExternalInterface.call("kmc.functions.expired");
 			}
+			// forbidden service
 			else if (info && info.error && info.error.errorCode &&
 				info.error.errorCode.toString() == "SERVICE_FORBIDDEN") {
 				// added the support of non closable window
@@ -34,6 +37,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 				PopUpManager.addPopUp(forbiddenBox, (_model.app as DisplayObject), true);
 				PopUpManager.centerPopUp(forbiddenBox);
 			}
+			// other errors
 			else if (info && info.error && info.error.errorMsg) {
 				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('admin', 'error'));
 			}
