@@ -1,6 +1,5 @@
 package com.kaltura.kmc.model {
 	import com.adobe.cairngorm.model.IModelLocator;
-	import com.google.analytics.core.ga_internal;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.kmc.business.PermissionManager;
 	import com.kaltura.kmc.vo.UserVO;
@@ -26,7 +25,7 @@ package com.kaltura.kmc.model {
 		/**
 		 * The instance of a PermissionManager. 
 		 */		
-		public var permissionManager:PermissionManager = PermissionManager.getInstance();
+		public var permissionManager:PermissionManager;
 		
 		/**
 		 * Flashvars of the main app wrapped in one object. The items are  
@@ -43,6 +42,7 @@ package com.kaltura.kmc.model {
 		public static function getInstance():KmcModelLocator {
 			if (_instance == null) {
 				_instance = new KmcModelLocator(new Enforcer());
+				
 			}
 			return _instance;
 		}
@@ -54,7 +54,7 @@ package com.kaltura.kmc.model {
 		 */		
 		public function KmcModelLocator(enforcer:Enforcer) 
 		{
-
+			permissionManager = PermissionManager.getInstance();
 		}
 
 

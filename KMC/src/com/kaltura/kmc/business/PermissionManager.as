@@ -60,7 +60,7 @@ package com.kaltura.kmc.business {
 		 * @param rolePermission	a comma-separated-string of ids of the role's permissions
 		 * @param partnerPermissions	partners permissions as returned from the server
 		 */
-		public function init(uiDefinitions:XML, rolePermissions:String = "", partnerPermissions:KalturaPermissionListResponse = ""):void {
+		public function init(uiDefinitions:XML, rolePermissions:String = "", partnerPermissions:KalturaPermissionListResponse = null):void {
 			_partnerUIDefinitions = uiDefinitions.copy();
 			_deniedPermissions = uiDefinitions.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
@@ -418,7 +418,7 @@ package com.kaltura.kmc.business {
 		 */
 		private static var _instance:PermissionManager;
 
-		CONFIG::realBuild {
+//		CONFIG::realBuild {
 			/**
 			 * @param enforcer	singleton garantee
 			 */
@@ -437,28 +437,28 @@ package com.kaltura.kmc.business {
 				}
 				return _instance;
 			}
-		}
+//		}
 
-		CONFIG::unitTestingBuild {
-			/**
-			 * @param enforcer	singleton garantee
-			 */
-			public function PermissionManager() {
-
-			}
-
-
-			/**
-			 * Singleton means of retreiving an instance of the
-			 * <code>PermissionManager</code> class.
-			 */
-			public static function getInstance():PermissionManager {
-				if (_instance == null) {
-					_instance = new PermissionManager();
-				}
-				return _instance;
-			}
-		}
+//		CONFIG::unitTestingBuild {
+//			/**
+//			 * @param enforcer	singleton garantee
+//			 */
+//			public function PermissionManager() {
+//
+//			}
+//
+//
+//			/**
+//			 * Singleton means of retreiving an instance of the
+//			 * <code>PermissionManager</code> class.
+//			 */
+//			public static function getInstance():PermissionManager {
+//				if (_instance == null) {
+//					_instance = new PermissionManager();
+//				}
+//				return _instance;
+//			}
+//		}
 
 	}
 }
