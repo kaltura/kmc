@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
-			 itemClick="setSelection(event);" creationComplete="datagrid1_creationCompleteHandler(event)"
+			 itemClick="setSelection(event);" creationComplete="creationCompleteHandler(event)"
 			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
@@ -60,13 +60,14 @@
 			/**
 			 * dataprovider for the combobox 
 			 */
-			public var comboDataProvider:ArrayCollection = new ArrayCollection();
+			public var comboDataProvider:ArrayCollection;
 			
+			
+			[ArrayElementType("KalturaUserRole")]
 			/**
-			 * list of all the roles associated with the current partner
-			 * (KalturaRole objects)
+			 * @copy #roles
 			 * */
-			public var roles:ArrayCollection;
+			private var _roles:ArrayCollection;
 			
 			
 			// ==================================================================
@@ -133,6 +134,15 @@
 					dispatchEvent(new Event(UsersTable.TOGGLE_BLOCK));
 				}
 			}
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				comboDataProvider = new ArrayCollection();
+				//build the dataprovider items list :
+				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
+				comboDataProvider.addItem({label:resourceManager.getString('admin','un_block'),id:'unblock'});
+				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
+			}
 
 
 			// ==================================================================
@@ -183,15 +193,17 @@
 			 * translate role id to role name
 			 * */
 			private function getUserRole(item:Object, column:DataGridColumn):String {
+				if (!_roles) return '';
 				// need to scan all partner's roles list and get the correct one.
 				//TODO + delay until after roles data is loaded
-				for (var i:int = 0; i<roles.length; i++) {
-					if ((roles.getItemAt(i) as KalturaUserRole).id == item.roleId) {
-						return (roles.getItemAt(i) as KalturaUserRole).name;
+				for (var i:int = 0; i<_roles.length; i++) {
+					if ((_roles.getItemAt(i) as KalturaUserRole).id == item.roleId) {
+						return (_roles.getItemAt(i) as KalturaUserRole).name;
 					}
 				}
 				return item.roleId;
 			}
+			
 
 			/**
 			 * Remove single item from the combobox dataprovider by its id
@@ -261,15 +273,16 @@
 				return "";
 			}
 
-			
-			
-			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void
-			{
-				//build the dataprovider items list :
-				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','un_block'),id:'unblock'});
-				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
+			/**
+			 * list of all the roles associated with the current partner
+			 * (KalturaUserRole objects)
+			 * */
+			public function set roles(value:ArrayCollection):void {
+				_roles = value;
+				dataProvider = dataProvider;
 			}
+			
+			
 
 		]]>
 	</mx:Script>

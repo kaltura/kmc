@@ -38,6 +38,9 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( RoleEvent.UPDATE_ROLE, EditRoleCommand);
 			addCommand( RoleEvent.DUPLICATE_ROLE, DuplicateRoleCommand);
 			
+			// partner events
+			addCommand( PartnerEvent.GET_PARTNER_DATA, GetPartnerInfoCommand);
+			
 		}
 	}
 }

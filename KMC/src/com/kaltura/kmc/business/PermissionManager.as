@@ -123,6 +123,9 @@ package com.kaltura.kmc.business {
 		 * @return an array of partner permission ids.
 		 * */
 		protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):Array {
+			if (!klr) {
+				return null;
+			}
 			var result:String;
 			for each (var kperm:KalturaPermission in klr.objects) {
 				result += kperm.id + ",";

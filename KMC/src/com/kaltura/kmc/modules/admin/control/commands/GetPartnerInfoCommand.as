@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			_model.kc.post(getPartnerInfo);	
 		}
 		
-		override public function result(data:Object):void {
+		override protected function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
 				_model.usersModel.loginUsersQuota = (data.data as KalturaPartner).adminLoginUsersQuota;

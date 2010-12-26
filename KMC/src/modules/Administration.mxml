@@ -12,6 +12,7 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
+			import com.kaltura.kmc.modules.admin.control.events.PartnerEvent;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			
@@ -113,6 +114,8 @@
 				_model.rolesModel.partnerPermissionsUiconf = permissionManager.partnerUIDefinitions;
 				// list partner permissions
 				var cge:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cge.dispatch();
+				cge = new PartnerEvent(PartnerEvent.GET_PARTNER_DATA);
 				cge.dispatch();
 			}
 
