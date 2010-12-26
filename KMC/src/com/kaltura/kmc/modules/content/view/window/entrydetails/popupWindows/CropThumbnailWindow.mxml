@@ -61,7 +61,8 @@
 			[Bindable]
 			private var _selectedImgRatio:Number;
 			private var _upscaleMultiplier:Number = 1;
-			
+			[Bindable]
+			private var _presetSizesExist:Boolean = false;
 			
 			/**
 			 * !erase later!!!! only for QA tests
@@ -93,6 +94,7 @@
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
 				previewImg.width = previewImg.height*_selectedImgRatio
 				if (_isPreSize) {
+					_presetSizesExist = true;
 					presetComboBox.selectedIndex = 0;
 				}
 
@@ -140,7 +142,7 @@
 					}
 					else{
 						cropWidth = DEFAULT_CROP_WIDTH;
-						cropHeight = DEFAULT_CROP_HEIGHT
+						cropHeight = DEFAULT_CROP_HEIGHT;
 					}
 
 					setCropValues(cropWidth, cropHeight, false);		
@@ -160,10 +162,7 @@
 						Alert.show(resourceManager.getString('cms', 'warningMessage'),resourceManager.getString('cms','warningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
 					}
 					else {
-						_imageCrop.cropBox.cropWidth = _imageCrop.image.width;
-						_imageCrop.cropBox.cropHeight = _imageCrop.image.height;
-						_imageCrop.cropBox.cropX = 0;
-						_imageCrop.cropBox.cropY = 0;
+						setCropperOnEntireImage();
 						if (displayAlert)
 							displayInvalidAlert();
 					}
@@ -198,9 +197,19 @@
 				}
 				else {
 					presetComboBox.selectedIndex = -1;
+					setCropperOnEntireImage();
 				}
 			}
-												 
+			
+			/**
+			 * set the cropper box on the entire image
+			 * */
+			private function setCropperOnEntireImage():void {
+				_imageCrop.cropBox.cropX = 0;
+				_imageCrop.cropBox.cropY = 0;
+				_imageCrop.cropBox.cropWidth = _imageCrop.image.width;
+				_imageCrop.cropBox.cropHeight = _imageCrop.image.height;
+			}
 			
 			/**
 			 * this function will recieve requested values that are larger than the max values, and
@@ -428,25 +437,25 @@
 						invalidInput = true;
 					else {
 						if (event.currentTarget==topTextInput) {
-							if ((_imageCrop.cropBox.cropHeight + input) > _imageCrop.image.height)
+							if ((_imageCrop.cropBox.cropHeight + input) > _selectedThumbnail.height)
 								invalidInput = true;
 							else
 								_imageCrop.cropBox.cropY = input;
 						}
 						else if (event.currentTarget==leftTextInput) {
-							if ((_imageCrop.cropBox.cropWidth + input) > _imageCrop.image.width)
+							if ((_imageCrop.cropBox.cropWidth + input) > _selectedThumbnail.width)
 								invalidInput = true;
 							else
 								_imageCrop.cropBox.cropX = input;
 						}
 						else if (event.currentTarget==widthTextInput) {
-							if ((_imageCrop.cropBox.cropX + input) > _imageCrop.image.width)
+							if ((_imageCrop.cropBox.cropX + input) > _selectedThumbnail.width)
 								invalidInput = true;
 							else
 								_imageCrop.cropBox.cropWidth = input;
 						}
 						else if (event.currentTarget==heightTextInput) {
-							if ((_imageCrop.cropBox.cropY + input) > _imageCrop.image.height)
+							if ((_imageCrop.cropBox.cropY + input) > _selectedThumbnail.height)
 								invalidInput = true;
 							else
 								_imageCrop.cropBox.cropHeight = input;
@@ -504,8 +513,8 @@
 				<mx:LinkButton id="nextBtn" enabled="{!_pager.isLastPage}" click="{onNextClick()}" styleName="moveRightButton"/>
 			</mx:HBox>
 			<mx:HBox>
-				<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}" enabled="{_isPreSize}"/>
-				<mx:Label enabled="{_isPreSize}" text="{resourceManager.getString('cms','presetSizeText')}"/>
+				<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}" enabled="{_presetSizesExist}"/>
+				<mx:Label enabled="{_presetSizesExist}" text="{resourceManager.getString('cms','presetSizeText')}"/>
 				<mx:ComboBox id="presetComboBox" prompt="{resourceManager.getString('cms', 'selectValidDimensionsMsg')}"
 							 enabled="{_isPreSize}" dataProvider="{_presetSizeList}" change="{onPresetSizeChange(event)}"/>
 			</mx:HBox>
