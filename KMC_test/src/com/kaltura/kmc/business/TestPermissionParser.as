@@ -213,7 +213,7 @@ package com.kaltura.kmc.business {
 		 */
 		[Test]
 		public function testParsePermissions():void {
-			var permissionsArray:Array = super.parsePermissions(test1.permissions..permission);
+			var permissionsArray:Array = super.parseSinglePermissions(test1.permissions..permission);
 			//array length
 			Assert.assertEquals(permissionsArray.length, 8);
 			//looking for 2 specific items in the array and checking their attributes: 
@@ -241,6 +241,143 @@ package com.kaltura.kmc.business {
 
 
 		/**
+		 * get the permission vos from permissionGroups that have only permission nodes 
+		 */
+		[Test]
+		public function testGetEmptyGroupInstructions():void {
+			var instruction1:XML = <permissions>
+				<permissionGroup text="Transcoding settings" id="TRANSCODING_BASE">
+			<permission text="Create" id="TRANSCODING_ADD">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="TRANSCODING_UPDATE">
+				<ui id="account.transcoding.simpleTable" dataEditable="false" />
+				<ui id="account.transcoding.saveButton" visible="false" />
+				<ui id="conversionProfileDrilldown.conversionNameTextInput" enabled="false" />
+				<ui id="conversionProfileDrilldown.conversionDescTextArea" enabled="false" />
+				<ui id="conversionProfileDrilldown.flavorsTable" dataEditable="false" />
+				<ui id="conversionProfileDrilldown.submitBtn" visible="false" />
+			</permission>
+			<permission text="delete" id="TRANSCODING_DELETE">
+				<ui id="account.transcoding.deleteProfileBtn" visible="false" />
+			</permission>
+		</permissionGroup>
+		<!-- Custom data settings -->
+		<permissionGroup text="Custom data settings" id="CUSTOM_DATA_PROFILE_BASE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+			<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
+				<ui id="account.metadata.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
+				<ui id="account.metadata.customFieldsTable" hideColumns="customFieldsPositions" />
+				<ui id="customDataDrilldown" editable="false" />
+			</permission>
+			<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+			</permission>
+		</permissionGroup>
+	</permissions>;
+			var arr:Array = parsePermissionGroups(instruction1.permissionGroup);
+			Assert.assertEquals(0, arr.length);
+		}
+			
+		
+		/**
+		 * get the permission vos from permissionGroups that have permission nodes
+		 * and ui nodes 
+		 */
+		[Test]
+		public function testParsePermissionGroups():void {
+
+			// one item - sub tab
+			var instruction1:XML = <permissions>
+				<permissionGroup text="Transcoding settings" id="TRANSCODING_BASE">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			<permission text="Create" id="TRANSCODING_ADD">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="TRANSCODING_UPDATE">
+				<ui id="account.transcoding.simpleTable" dataEditable="false" />
+				<ui id="account.transcoding.saveButton" visible="false" />
+				<ui id="conversionProfileDrilldown.conversionNameTextInput" enabled="false" />
+				<ui id="conversionProfileDrilldown.conversionDescTextArea" enabled="false" />
+				<ui id="conversionProfileDrilldown.flavorsTable" dataEditable="false" />
+				<ui id="conversionProfileDrilldown.submitBtn" visible="false" />
+			</permission>
+			<permission text="delete" id="TRANSCODING_DELETE">
+				<ui id="account.transcoding.deleteProfileBtn" visible="false" />
+			</permission>
+		</permissionGroup>
+		<!-- Custom data settings -->
+		<permissionGroup text="Custom data settings" id="CUSTOM_DATA_PROFILE_BASE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+			<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
+				<ui id="account.metadata.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
+				<ui id="account.metadata.customFieldsTable" hideColumns="customFieldsPositions" />
+				<ui id="customDataDrilldown" editable="false" />
+			</permission>
+			<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+			</permission>
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+		</permissionGroup>
+	</permissions>;
+
+			var arr:Array = parsePermissionGroups(instruction1.permissionGroup);
+			Assert.assertEquals(2, arr.length);
+		}
+		
+		
+		/**
+		 * get the permission vos from permissionGroups that have permission nodes
+		 * and ui nodes 
+		 */
+		[Test]
+		public function testParseAllPermissions():void {
+
+			// one item - sub tab
+			var instruction1:XML = <permissions>
+				<permissionGroup text="Transcoding settings" id="TRANSCODING_BASE">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			<permission text="Create" id="TRANSCODING_ADD">
+				<ui id="account.transcoding.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="TRANSCODING_UPDATE">
+				<ui id="account.transcoding.simpleTable" dataEditable="false" />
+				<ui id="account.transcoding.saveButton" visible="false" />
+				<ui id="conversionProfileDrilldown.conversionNameTextInput" enabled="false" />
+				<ui id="conversionProfileDrilldown.conversionDescTextArea" enabled="false" />
+				<ui id="conversionProfileDrilldown.flavorsTable" dataEditable="false" />
+				<ui id="conversionProfileDrilldown.submitBtn" visible="false" />
+			</permission>
+			<permission text="delete" id="TRANSCODING_DELETE">
+				<ui id="account.transcoding.deleteProfileBtn" visible="false" />
+			</permission>
+		</permissionGroup>
+		<!-- Custom data settings -->
+		<permissionGroup text="Custom data settings" id="CUSTOM_DATA_PROFILE_BASE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+			<permission text="Create" id="CUSTOM_DATA_PROFILE_ADD">
+				<ui id="account.metadata.actionBox" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="modify" id="CUSTOM_DATA_PROFILE_UPDATE">
+				<ui id="account.metadata.customFieldsTable" hideColumns="customFieldsPositions" />
+				<ui id="customDataDrilldown" editable="false" />
+			</permission>
+			<permission text="delete" id="CUSTOM_DATA_PROFILE_DELETE">
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+			</permission>
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
+		</permissionGroup>
+	</permissions>;
+
+
+			var arr:Array = parseAllPermissions(instruction1.permissionGroup);
+			Assert.assertEquals(14, arr.length);
+		}
+		
+		
+		
+		/**
 		 * This test check the inner function 'getInstructions'
 		 */
 		[Test]
@@ -261,12 +398,12 @@ package com.kaltura.kmc.business {
 			var instruction3:XML = <permission text="empty" id="3655">
 				</permission>;
 
-			var arr:Array = getInstructions(instruction1);
+			var arr:Array = getInstructions(instruction1.ui);
 			Assert.assertObjectEquals(arr[0].attributes, {remove: 'true'});
 			Assert.assertEquals(arr.length, 1);
 
 
-			arr = getInstructions(instruction2);
+			arr = getInstructions(instruction2.ui);
 			Assert.assertEquals(arr.length, 3);
 			//TODO - check if this is OK to asume array order
 			Assert.assertEquals(arr[0].path, "content.manage.createManualBtn");
@@ -278,7 +415,7 @@ package com.kaltura.kmc.business {
 			Assert.assertEquals(arr[2].path, "content.manage.createRulebasedBtn.label");
 			Assert.assertObjectEquals(arr[2].attributes, {visible: 'false', includeInLayout: 'false'});
 
-			arr = getInstructions(instruction3);
+			arr = getInstructions(instruction3.ui);
 			Assert.assertNull(arr[0]);
 
 		}

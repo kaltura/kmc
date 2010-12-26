@@ -19,7 +19,7 @@ package com.kaltura.kmc.business
 		{
 			_kmcModuleLoader = new KmcModuleLoader();
 			_ml = _kmcModuleLoader.loadKmcModule("modules/Dashboard.swf", "dashboard");
-			Async.proceedOnEvent( this, _kmcModuleLoader, KmcModuleEvent.MODULE_LOADED, 1000 );
+			Async.proceedOnEvent( this, _kmcModuleLoader, KmcModuleEvent.MODULE_LOADED, 2000 );
 			UIImpersonator.addChild( _ml );
 		}
 		
