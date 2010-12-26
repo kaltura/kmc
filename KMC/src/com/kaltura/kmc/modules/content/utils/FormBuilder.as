@@ -35,7 +35,7 @@ package com.kaltura.kmc.modules.content.utils {
 		//padding left for each hierarich level
 		private static const FIELD_INDENT:int = 12;
 		private static var _model:CmsModelLocator = CmsModelLocator.getInstance();
-		
+		private static var _isInvalidView:Boolean = false;
 		
 		/**
 		 * go through the view xml and duplicates fields if neccessary, according to metadata data
@@ -328,6 +328,8 @@ package com.kaltura.kmc.modules.content.utils {
 				var child:UIComponent = buildLayoutItem(field, fieldsArray);
 				if (child)
 					newLayout.addChild(child);
+				else if (_isInvalidView)
+					break;
 				
 				var spacer:Spacer = new Spacer();
 				spacer.height = FIELDS_GAP;
@@ -374,7 +376,10 @@ package com.kaltura.kmc.modules.content.utils {
 				var child:UIComponent = buildComponent(field, boundObject, fieldsArray );
 			}
 			catch (e:Error) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidViewComponents'),ResourceManager.getInstance().getString('cms', 'error'));
+				if (!_isInvalidView) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidViewComponents'),ResourceManager.getInstance().getString('cms', 'error'));
+					_isInvalidView = true;					
+				}
 				return null;
 			}
 			
@@ -483,6 +488,8 @@ package com.kaltura.kmc.modules.content.utils {
 						}
 					}
 					nestedChild = buildLayoutItem(nestedField, currentField.nestedFieldsArray, boundObject);
+					if (_isInvalidView)
+						break;
 				}
 				else {
 					nestedField.@parentName = field.@name;

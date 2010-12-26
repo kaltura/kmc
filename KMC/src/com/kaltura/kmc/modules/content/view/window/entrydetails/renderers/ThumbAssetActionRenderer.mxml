@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="5">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
@@ -37,6 +37,12 @@
 				Alert.show(resourceManager.getString('cms','deleteThumbnailMsg'), resourceManager.getString('cms','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);	
 			}
 			
+			protected function downloadClickHandler(event:MouseEvent):void
+			{
+				var urlRequest:URLRequest = new URLRequest(_thumbAsset.thumbUrl);
+				navigateToURL(urlRequest , '_self');
+			}
+			
 			private function deleteHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
@@ -48,4 +54,5 @@
 	</mx:Script>
 	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{_enableActions}"/>
 	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{_enableActions}"/>	
+	<mx:LinkButton label="{resourceManager.getString('cms', 'download')}" click="downloadClickHandler(event)" enabled="{_enableActions}"/>	
 </mx:VBox>

@@ -31,6 +31,8 @@
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaEntryType;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.utils.SoManager;
@@ -122,6 +124,10 @@
 				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
 				
 			}
+			
+			private function removeThumbnailsTab():void {
+				viewStack.removeChild(entryThumbnails);
+			}
 
 
 			/**
@@ -209,7 +215,11 @@
 				else {
 					// this entry is a regular video/image/audio
 					showNormalSetup();
+					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
+						removeThumbnailsTab();
+					}
 				}
+				
 				loadEntries();
 				PopUpManager.centerPopUp(this);
 				
@@ -469,7 +479,7 @@
 						  openPreview="{openPreview(event)}" viewStack="{viewStack}"
 						 previewOnly="{previewOnly}"/>
 		<!-- Thumbnails Tab -->
-		<ed:EntryThumbnails id="entryThumnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
+		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
 							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" context="{context}"/>
 
 		<!-- Access Control Tab -->
