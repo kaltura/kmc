@@ -1,6 +1,5 @@
 package com.kaltura.kmc.modules.dashboard.dashboardmanager
 {
-	import com.adobe.serialization.json.JSON;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.commands.report.ReportGetGraphs;
@@ -8,7 +7,7 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.modules.KmcModule;
-	import com.kaltura.kmc.modules.dashboard.components.panels.ForbidenBox;
+	import com.kaltura.kmc.view.ForbidenBox;
 	import com.kaltura.vo.KalturaPartnerUsage;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
@@ -21,7 +20,6 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.core.Application;
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 
@@ -244,6 +242,7 @@ package com.kaltura.kmc.modules.dashboard.dashboardmanager
 					{
 						// added the support of non closable window
 						var forbiddenBox:ForbidenBox = new ForbidenBox();
+						forbiddenBox.text = ResourceManager.getInstance().getString('kdashboard','forbiddenError');
 						//de-activate the HTML tabs
 						ExternalInterface.call("kmc.utils.activateHeader",false);
 						PopUpManager.addPopUp(forbiddenBox , app , true);

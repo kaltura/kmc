@@ -121,7 +121,7 @@
 				if ((selectedItem as KalturaUser).status == KalturaUserStatus.ACTIVE) {
 					key = "confirm_block";
 				}
-				Alert.show(ResourceManager.getInstance().getString('admin', key), ResourceManager.getInstance().getString('admin', key + '_title'), Alert.OK | Alert.CANCEL, null, deleteEntry);
+				Alert.show(ResourceManager.getInstance().getString('admin', key), ResourceManager.getInstance().getString('admin', key + '_title'), Alert.OK | Alert.CANCEL, null, toggleBlockEntry);
 			}
 
 
@@ -197,11 +197,11 @@
 				// need to scan all partner's roles list and get the correct one.
 				//TODO + delay until after roles data is loaded
 				for (var i:int = 0; i<_roles.length; i++) {
-					if ((_roles.getItemAt(i) as KalturaUserRole).id == item.roleId) {
+					if ((_roles.getItemAt(i) as KalturaUserRole).id == item.roleIds) {
 						return (_roles.getItemAt(i) as KalturaUserRole).name;
 					}
 				}
-				return item.roleId;
+				return item.roleIds;
 			}
 			
 
@@ -300,7 +300,7 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="email"
 						   headerText="{resourceManager.getString('admin', 'user_email')}"
 						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="roleId" labelFunction="{getUserRole}"
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="roleIds" labelFunction="{getUserRole}"
 						   headerText="{resourceManager.getString('admin', 'role')}"
 						   headerStyleName="centerTableColumnHeader"/>
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="lastLoginTime" labelFunction="{getLastLogin}"

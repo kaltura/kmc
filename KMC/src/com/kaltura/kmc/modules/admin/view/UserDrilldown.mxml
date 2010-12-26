@@ -113,7 +113,7 @@
 				else {
 					_undoUser.id = emailTi.text;
 				}
-				_undoUser.roleId = (roleCb.selectedItem as KalturaUserRole).id;
+				_undoUser.roleIds = (roleCb.selectedItem as KalturaUserRole).id.toString();
 				requestSave();
 			}
 
@@ -180,7 +180,7 @@
 				var lst:Array = _roles.source;
 				var res:KalturaUserRole;
 				for (var i:int = 0; i<lst.length; i++) {
-					if ((lst[i] as KalturaUserRole).id == _undoUser.roleId) {
+					if ((lst[i] as KalturaUserRole).id.toString() == _undoUser.roleIds) {
 						res = (lst[i] as KalturaUserRole);
 						break;
 					}
@@ -194,15 +194,15 @@
 			 * found in the roles list, the previous role is restored. 
 			 * @param roleId	id of desired role.
 			 * */
-			public function setUserRole(roleId:int):void {
-				var t:int = _undoUser.roleId; 
-				_undoUser.roleId = roleId;
+			public function setUserRole(roleId:String):void {
+				var t:String = _undoUser.roleIds; 
+				_undoUser.roleIds = roleId;
 				var kr:KalturaUserRole = findSelectedRole();
 				if (kr) {
 					roleCb.selectedItem = kr;
 				}
 				else {
-					_undoUser.roleId = t;
+					_undoUser.roleIds = t;
 				}
 			}
 

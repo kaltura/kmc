@@ -19,6 +19,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var mr:MultiRequest = new MultiRequest();
 			// toggle
 			var usr:KalturaUser = (event as UserEvent).user;
+			usr.setUpdatedFieldsOnly(true);
 			if (usr.status == KalturaUserStatus.ACTIVE) {
 				usr.status = KalturaUserStatus.BLOCKED;
 			}
@@ -28,7 +29,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var call:KalturaCall = new UserUpdate(usr.id, usr);
 			mr.addAction(call);
 			// list
-			call = new UserList();
+			call = new UserList(_model.usersModel.usersFilter);
 			mr.addAction(call);
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
