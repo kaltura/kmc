@@ -418,7 +418,7 @@ package com.kaltura.kmc.business {
 		 */
 		private static var _instance:PermissionManager;
 
-//		CONFIG::realBuild {
+		CONFIG::realBuild {
 			/**
 			 * @param enforcer	singleton garantee
 			 */
@@ -437,28 +437,28 @@ package com.kaltura.kmc.business {
 				}
 				return _instance;
 			}
-//		}
+		}
 
-//		CONFIG::unitTestingBuild {
-//			/**
-//			 * @param enforcer	singleton garantee
-//			 */
-//			public function PermissionManager() {
-//
-//			}
-//
-//
-//			/**
-//			 * Singleton means of retreiving an instance of the
-//			 * <code>PermissionManager</code> class.
-//			 */
-//			public static function getInstance():PermissionManager {
-//				if (_instance == null) {
-//					_instance = new PermissionManager();
-//				}
-//				return _instance;
-//			}
-//		}
+		CONFIG::unitTestingBuild {
+			/**
+			 * @param enforcer	singleton garantee
+			 */
+			public function PermissionManager() {
+
+			}
+
+
+			/**
+			 * Singleton means of retreiving an instance of the
+			 * <code>PermissionManager</code> class.
+			 */
+			public static function getInstance():PermissionManager {
+				if (_instance == null) {
+					_instance = new PermissionManager();
+				}
+				return _instance;
+			}
+		}
 
 	}
 }
