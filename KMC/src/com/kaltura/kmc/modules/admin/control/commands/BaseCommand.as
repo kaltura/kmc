@@ -41,6 +41,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 			else if (info && info.error && info.error.errorMsg) {
 				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('admin', 'error'));
 			}
+			_model.decreaseLoadCounter();
 		}
 
 
@@ -64,6 +65,8 @@ package com.kaltura.kmc.modules.admin.control.commands {
 					result(data.data[i]);
 				}
 			}
+			// do not call _model.decreaseLoading(); here, because this is might be
+			// called more than once per command (i.e. inner recursion) 
 		}
 
 

@@ -33,6 +33,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
+			_model.increaseLoadCounter();
 			_model.kc.post(mr);
 		}
 		
@@ -40,6 +41,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			super.result(data);
 			var response:KalturaUserListResponse = data.data[1] as KalturaUserListResponse;
 			_model.usersModel.users = new ArrayCollection(response.objects);
+			_model.decreaseLoadCounter();
 		}
 	}
 }

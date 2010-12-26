@@ -20,6 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {
+				_model.increaseLoadCounter();
 				_model.kc.post(ul);
 			}
 		}
@@ -34,6 +35,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var response:KalturaUserRoleListResponse = data.data as KalturaUserRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
 			_model.rolesModel.totalRoles = response.totalCount;
+			_model.decreaseLoadCounter();
 		}
 		
 	}

@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var getPartnerInfo:PartnerGetInfo = new PartnerGetInfo();
 			getPartnerInfo.addEventListener(KalturaEvent.COMPLETE, result);
 			getPartnerInfo.addEventListener(KalturaEvent.FAILED, fault);
+			_model.increaseLoadCounter();
 			_model.kc.post(getPartnerInfo);	
 		}
 		
@@ -19,6 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			if (data.success) {
 				_model.usersModel.loginUsersQuota = (data.data as KalturaPartner).adminLoginUsersQuota;
 			}
+			_model.decreaseLoadCounter();
 		}
 	}
 }

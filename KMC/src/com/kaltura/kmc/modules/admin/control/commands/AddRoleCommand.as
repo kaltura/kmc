@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var ua:UserRoleAdd = new UserRoleAdd((event as RoleEvent).role);
 			ua.addEventListener(KalturaEvent.COMPLETE, result);
 			ua.addEventListener(KalturaEvent.FAILED, fault);
+			_model.increaseLoadCounter();
 			_model.kc.post(ua);
 		}
 		
@@ -20,6 +21,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			if (data.success) {
 				_model.rolesModel.drilldownMode = DrilldownMode.NONE;
 			}
+			_model.decreaseLoadCounter();
 		}
 	}
 }

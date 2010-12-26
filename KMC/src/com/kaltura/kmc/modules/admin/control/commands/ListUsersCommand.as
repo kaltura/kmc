@@ -20,6 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {
+				_model.increaseLoadCounter();
 				_model.kc.post(ul);
 			}
 		}
@@ -35,6 +36,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var response:KalturaUserListResponse = data.data as KalturaUserListResponse;
 			_model.usersModel.users = new ArrayCollection(response.objects);
 			_model.usersModel.totalUsers = response.totalCount;
+			_model.decreaseLoadCounter();
 		}
 	}
 }

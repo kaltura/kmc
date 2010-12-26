@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			mr.addAction(call);
 			call = new UserRoleList(_model.rolesModel.rolesFilter);
 			mr.addAction(call);
+			_model.increaseLoadCounter();
 			_model.kc.post(mr);
 		}
 		
@@ -35,6 +36,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 				// trigger the setter to use the returned object as the role for current user
 				_model.usersModel.newRole = data.data[0] as KalturaUserRole;
 			}
+			_model.decreaseLoadCounter();
 		}
 	}
 }

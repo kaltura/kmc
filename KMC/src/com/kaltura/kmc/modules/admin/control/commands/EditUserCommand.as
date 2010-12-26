@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var uu:UserUpdate = new UserUpdate(user.id, user);
 			uu.addEventListener(KalturaEvent.COMPLETE, result);
 			uu.addEventListener(KalturaEvent.FAILED, fault);
+			_model.increaseLoadCounter();
 			_model.kc.post(uu);
 		}
 		
@@ -22,6 +23,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			if (data.success) {
 				_model.usersModel.drilldownMode = DrilldownMode.NONE;
 			}
+			_model.decreaseLoadCounter();
 		}
 	}
 }

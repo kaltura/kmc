@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {
+				_model.increaseLoadCounter();
 				_model.kc.post(ul);
 			}
 		}
@@ -29,6 +30,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			super.result(data);
 			var response:KalturaPermissionListResponse = data.data as KalturaPermissionListResponse;
 			_model.rolesModel.partnerPermissions = parsePartnerPermissions(response);
+			_model.decreaseLoadCounter();
 		}
 		
 		
