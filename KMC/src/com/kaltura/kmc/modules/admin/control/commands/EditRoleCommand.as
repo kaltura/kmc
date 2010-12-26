@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			var role:KalturaUserRole = (event as RoleEvent).role;
+			role.setUpdatedFieldsOnly(true);
 			var uu:UserRoleUpdate = new UserRoleUpdate(role.id, role);
 			uu.addEventListener(KalturaEvent.COMPLETE, result);
 			uu.addEventListener(KalturaEvent.FAILED, fault);
