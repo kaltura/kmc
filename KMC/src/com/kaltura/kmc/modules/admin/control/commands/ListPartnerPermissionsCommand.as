@@ -42,7 +42,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):String {
 			var result:String;
 			for each (var kperm:KalturaPermission in klr.objects) {
-				result += kperm.id + ",";
+				result += kperm.name + ",";
 			}
 			// remove last ","
 			result = result.substring(0, result.length - 1);
