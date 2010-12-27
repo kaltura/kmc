@@ -40,7 +40,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * @return a comma separated string of partner permission ids.
 		 * */
 		protected function parsePartnerPermissions(klr:KalturaPermissionListResponse):String {
-			var result:String;
+			var result:String = '';
 			for each (var kperm:KalturaPermission in klr.objects) {
 				result += kperm.name + ",";
 			}
