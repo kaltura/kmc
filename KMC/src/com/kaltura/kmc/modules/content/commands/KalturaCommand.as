@@ -1,15 +1,14 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.errors.KalturaError;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.view.ForbidenBox;
-
-	import flash.display.DisplayObject;
+	
 	import flash.external.ExternalInterface;
-
+	
 	import mx.controls.Alert;
-	import mx.events.CloseEvent;
-	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
@@ -22,25 +21,25 @@ package com.kaltura.kmc.modules.content.commands {
 		 */
 		public function fault(info:Object):void {
 			_model.decreaseLoadCounter();
-			if (info && info.error && info.error.errorMsg &&
-				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
+			var er:KalturaError = (info as KalturaEvent).error;
+			if (!er) return;
+			if (er.errorCode == APIErrorCode.INVALID_KS) {
 				ExternalInterface.call("kmc.functions.expired");
 			}
-			else if (info && info.error && info.error.errorCode &&
-				info.error.errorCode.toString() == "SERVICE_FORBIDDEN") {
+			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 				// added the support of non closable window
-				var forbiddenBox:ForbidenBox = new ForbidenBox();
-				forbiddenBox.text = ResourceManager.getInstance().getString('cms','forbiddenError');
+				Alert.show(ResourceManager.getInstance().getString('cms','forbiddenError'), 
+					ResourceManager.getInstance().getString('cms', 'error'), Alert.OK, null, logout);
 				//de-activate the HTML tabs
-				ExternalInterface.call("kmc.utils.activateHeader", false);
-				PopUpManager.addPopUp(forbiddenBox, (_model.app as DisplayObject), true);
-				PopUpManager.centerPopUp(forbiddenBox);
+//				ExternalInterface.call("kmc.utils.activateHeader", false);
 			}
-			else if (info && info.error && info.error.errorMsg) {
-				var alert:Alert = Alert.show(info.error.errorMsg,
-											 ResourceManager.getInstance().getString('cms', 'error'),
-											 Alert.OK, null, refrehOnClose);
+			else if (er.errorMsg) {
+				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 			}
+		}
+		
+		protected function logout(e:Object):void {
+			ExternalInterface.call("kmc.functions.expired");
 		}
 
 
@@ -53,7 +52,8 @@ package com.kaltura.kmc.modules.content.commands {
 		 *
 		 */
 		public function result(data:Object):void {
-			if (data.error && data.error.code == "INVALID_KS") {
+			var er:KalturaError = (data as KalturaEvent).error;
+			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
 				// redirect to login, or whatever JS does with invalid KS.
 				ExternalInterface.call("kmc.functions.expired");
 			}
@@ -68,8 +68,5 @@ package com.kaltura.kmc.modules.content.commands {
 		}
 
 
-		protected function refrehOnClose(event:CloseEvent):void {
-			ExternalInterface.call("refreshSWF");
-		}
 	}
 }

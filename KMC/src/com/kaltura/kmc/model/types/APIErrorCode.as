@@ -6,7 +6,11 @@ package com.kaltura.kmc.model.types {
 	 */
 	public class APIErrorCode {
 
-		//
+		/**
+		 * The access to this service is forbidden 
+		 */
+		public static const SERVICE_FORBIDDEN:String = "SERVICE_FORBIDDEN";
+		
 		/**
 		 * Internal server error occured 
 		 */

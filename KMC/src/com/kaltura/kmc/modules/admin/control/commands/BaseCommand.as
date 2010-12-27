@@ -3,13 +3,10 @@ package com.kaltura.kmc.modules.admin.control.commands {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
-	import com.kaltura.kmc.view.ForbidenBox;
 	
-	import flash.display.DisplayObject;
 	import flash.external.ExternalInterface;
 	
 	import mx.controls.Alert;
-	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 
 	public class BaseCommand implements ICommand {
@@ -21,26 +18,27 @@ package com.kaltura.kmc.modules.admin.control.commands {
 		 */
 		protected function fault(info:Object):void {
 			// invalid KS
-			if (info && info.error && info.error.errorMsg &&
-				info.error.errorCode == APIErrorCode.INVALID_KS) {
+			if (info && info.error && info.error.errorCode == APIErrorCode.INVALID_KS) {
 				ExternalInterface.call("kmc.functions.expired");
 			}
 			// forbidden service
 			else if (info && info.error && info.error.errorCode &&
 				info.error.errorCode.toString() == "SERVICE_FORBIDDEN") {
 				// added the support of non closable window
-				var forbiddenBox:ForbidenBox = new ForbidenBox();
-				forbiddenBox.text = ResourceManager.getInstance().getString('cms','forbiddenError');
+				Alert.show(ResourceManager.getInstance().getString('admin','forbiden_error'), 
+					ResourceManager.getInstance().getString('admin', 'error'), Alert.OK, null, logout);
 				//de-activate the HTML tabs
-				ExternalInterface.call("kmc.utils.activateHeader", false);
-				PopUpManager.addPopUp(forbiddenBox, (_model.app as DisplayObject), true);
-				PopUpManager.centerPopUp(forbiddenBox);
+//				ExternalInterface.call("kmc.utils.activateHeader", false);
 			}
 			// other errors
 			else if (info && info.error && info.error.errorMsg) {
 				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('admin', 'error'));
 			}
 			_model.decreaseLoadCounter();
+		}
+		
+		protected function logout(e:Object):void {
+			ExternalInterface.call("kmc.functions.expired");
 		}
 
 
