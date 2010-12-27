@@ -43,6 +43,10 @@
 			 * default croppper height
 			 * */
 			public static const DEFAULT_CROP_HEIGHT:int = 120;
+			/**
+			 * default height for the preview image
+			 * */
+			public static const DEFAULT_PREVIEW_HEIGHT:int = 90;
 			
 			[Bindable]
 			private var _maxImageHeight:int;
@@ -68,13 +72,23 @@
 			 * !erase later!!!! only for QA tests
 			 * */
 			private function createDemoDimensions():void {
-				var dimensions1:ThumbnailWithDimensions = new ThumbnailWithDimensions(400, 300);
-				var dimensions2:ThumbnailWithDimensions = new ThumbnailWithDimensions(640, 480);
-				var dimensions3:ThumbnailWithDimensions = new ThumbnailWithDimensions(1024, 768);
+				var dimensions1:ThumbnailWithDimensions = new ThumbnailWithDimensions(60, 45);
+				var dimensions2:ThumbnailWithDimensions = new ThumbnailWithDimensions(64, 48);
+				var dimensions3:ThumbnailWithDimensions = new ThumbnailWithDimensions(72, 92);
+				var dimensions4:ThumbnailWithDimensions = new ThumbnailWithDimensions(92, 69);
+				var dimensions5:ThumbnailWithDimensions = new ThumbnailWithDimensions(100, 75);
+				var dimensions6:ThumbnailWithDimensions = new ThumbnailWithDimensions(105, 105);
+				var dimensions7:ThumbnailWithDimensions = new ThumbnailWithDimensions(136, 102);
+				var dimensions8:ThumbnailWithDimensions = new ThumbnailWithDimensions(1280, 720);
 				
 				_presetSizeList.push({label: dimensions1.width + ' X ' + dimensions1.height, data:dimensions1});
 				_presetSizeList.push({label: dimensions2.width + ' X ' + dimensions2.height, data:dimensions2});
 				_presetSizeList.push({label: dimensions3.width + ' X ' + dimensions3.height, data:dimensions3});
+				_presetSizeList.push({label: dimensions4.width + ' X ' + dimensions4.height, data:dimensions4});
+				_presetSizeList.push({label: dimensions5.width + ' X ' + dimensions5.height, data:dimensions5});
+				_presetSizeList.push({label: dimensions6.width + ' X ' + dimensions6.height, data:dimensions6});
+				_presetSizeList.push({label: dimensions7.width + ' X ' + dimensions7.height, data:dimensions7});
+				_presetSizeList.push({label: dimensions8.width + ' X ' + dimensions8.height, data:dimensions8});
 				_isPreSize = true;
 				
 			}
@@ -92,7 +106,7 @@
 				BindingUtils.bindSetter(onThumbSaved, _entryDetailsModel, "thumbnailSaved");
 				_maxImageHeight = this.height - this.titleBar.height - controlHbox.height - saveBtn.height - 3*IMG_OFFSET ;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
-				previewImg.width = previewImg.height*_selectedImgRatio
+				previewImg.width = (_selectedImgRatio < 2) ? previewImg.height*_selectedImgRatio : (DEFAULT_PREVIEW_HEIGHT*2);
 				if (_isPreSize) {
 					_presetSizesExist = true;
 					presetComboBox.selectedIndex = 0;
@@ -489,10 +503,11 @@
 				this.dispatchEvent(new Event(WINDOW_CLOSE));
 			}
 			
+			
 		]]>
 	</mx:Script>
 	<mx:HBox id="controlHbox" width="100%" paddingTop="0" paddingBottom="0" horizontalAlign="center">
-		<mx:Image id="previewImg" height="90" width="90"/>
+		<mx:Image id="previewImg" height="{DEFAULT_PREVIEW_HEIGHT}" width="{DEFAULT_PREVIEW_HEIGHT*2}"/>
 		<mx:VBox>
 			<mx:HBox width="100%" height="100%">
 				<mx:LinkButton id="prevBtn" enabled="{!_pager.isFirstPage}" click="{onPrevClick()}" styleName="moveLeftButton"/>
