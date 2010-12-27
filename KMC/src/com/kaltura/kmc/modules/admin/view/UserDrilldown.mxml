@@ -15,14 +15,14 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 
-			
+
 			/**
 			 * value of the type property for the <code>udd_save</code> event
 			 * */
@@ -32,11 +32,13 @@
 			 * value of the type property for the <code>udd_close</code> event
 			 * */
 			public static const CLOSE:String = "udd_close";
-			
+
 			/**
 			 * value of the type property for the <code>udd_addRole</code> event
 			 * */
 			public static const ADD_ROLE:String = "udd_addRole";
+
+			private const _lblWidth:int = 100;
 
 			/**
 			 * creationComplete event occured in the past?
@@ -45,7 +47,7 @@
 
 			/**
 			 * this is the original user entry. after being set it is not touched.
-			 * all changes are being made on <code>_undoUser</code>, which is a 
+			 * all changes are being made on <code>_undoUser</code>, which is a
 			 * copy of this object.
 			 * */
 			private var _user:KalturaUser;
@@ -67,10 +69,10 @@
 			 * */
 			protected var _roles:ArrayCollection;
 
-			
+
 			/**
 			 * pass initial data.
-			 * since setting a role for edit requires roles 
+			 * since setting a role for edit requires roles
 			 * data to be set first, we use this method.
 			 * */
 			public function init(roles:ArrayCollection, user:KalturaUser, mode:String):void {
@@ -79,8 +81,8 @@
 				setUser(user);
 				setMode(mode);
 			}
-			
-			
+
+
 			/**
 			 * dispatch help event with relevant anchor
 			 * */
@@ -95,8 +97,8 @@
 			protected function openRoleWindow():void {
 				dispatchEvent(new Event(UserDrilldown.ADD_ROLE));
 			}
-			
-			
+
+
 			/**
 			 * update <code>_undoUser</code> with data from the form
 			 * */
@@ -131,31 +133,30 @@
 					requestClose();
 				}
 			}
-			
-			
+
+
 			/**
 			 * dispatch close event
 			 * */
 			protected function requestClose():void {
 				dispatchEvent(new Event(UserDrilldown.CLOSE));
 			}
-			
-			
+
+
 			/**
 			 * "x" botton clicked, confirm no changes and close.
 			 * */
 			protected function closeHandler(event:Event):void {
 				var needSave:Boolean = !ObjectUtil.compareObjects(_user, _undoUser);
 				if (needSave) {
-					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), 
-						ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
+					Alert.show(ResourceManager.getInstance().getString('admin', 'discard_changes'), ResourceManager.getInstance().getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, messageReleaseHandler);
 				}
 				else {
 					requestClose();
 				}
 			}
-			
-			
+
+
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_ready = true;
 				// re-trigger the mode setter
@@ -163,7 +164,7 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "userDrilldown");
 			}
 
-			
+
 			/**
 			 * close window and discard changes or leave window open
 			 * */
@@ -172,14 +173,15 @@
 					requestClose();
 				}
 			}
-			
+
+
 			/**
 			 * get the item matching the user's roleId
 			 * */
 			protected function findSelectedRole():KalturaUserRole {
 				var lst:Array = _roles.source;
 				var res:KalturaUserRole;
-				for (var i:int = 0; i<lst.length; i++) {
+				for (var i:int = 0; i < lst.length; i++) {
 					if ((lst[i] as KalturaUserRole).id.toString() == _undoUser.roleIds) {
 						res = (lst[i] as KalturaUserRole);
 						break;
@@ -187,15 +189,15 @@
 				}
 				return res;
 			}
-			
-			
+
+
 			/**
-			 * set role for the curerent user. if the requested role isn't 
-			 * found in the roles list, the previous role is restored. 
+			 * set role for the curerent user. if the requested role isn't
+			 * found in the roles list, the previous role is restored.
 			 * @param roleId	id of desired role.
 			 * */
 			public function setUserRole(roleId:String):void {
-				var t:String = _undoUser.roleIds; 
+				var t:String = _undoUser.roleIds;
 				_undoUser.roleIds = roleId;
 				var kr:KalturaUserRole = findSelectedRole();
 				if (kr) {
@@ -208,7 +210,7 @@
 
 
 			/**
-			 * set window mode. 
+			 * set window mode.
 			 * optional values are listed in <code>DrilldownMode</code>.
 			 * */
 			protected function setMode(newMode:String):void {
@@ -228,10 +230,11 @@
 					}
 				}
 			}
-			
+
+
 			/**
 			 * @private
-			 * NOTE: when setting this attribute a new User is created and used, 
+			 * NOTE: when setting this attribute a new User is created and used,
 			 * so when getting this attribute the NEW entity is returned.
 			 */
 			protected function setUser(value:KalturaUser):void {
@@ -239,7 +242,7 @@
 				// create working copy
 				_undoUser = new KalturaUser();
 				var atts:Array = ObjectUtil.getObjectAllKeys(value);
-				for (var i:int = 0; i< atts.length; i++) {
+				for (var i:int = 0; i < atts.length; i++) {
 					_undoUser[atts[i]] = value[atts[i]];
 				}
 			}
@@ -251,7 +254,7 @@
 			public function set roles(value:ArrayCollection):void {
 				_roles = value;
 			}
-			
+
 
 			/**
 			 * current window mode.
@@ -268,8 +271,6 @@
 			public function get user():KalturaUser {
 				return _undoUser;
 			}
-
-
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%">
@@ -277,29 +278,33 @@
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}"
 					  styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
-		<mx:Form width="100%" textAlign="left" paddingLeft="0">
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'udd_email')}" width="100%">
-				<mx:TextInput id='emailTi' width="100%" text="{_undoUser.email}"/>
-			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="100%">
-				<mx:TextInput id='firstNameTi' width="100%" text="{(_undoUser.firstName ? _undoUser.firstName : _undoUser.fullName)}"/>
-			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="100%">
-				<mx:TextInput id='lastNameTi' width="100%" text="{_undoUser.lastName}"/>
-			</mx:FormItem>
-			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_id')}" width="100%">
-				<mx:TextInput id='idTi' width="100%" text="{_undoUser.id}"/>
-			</mx:FormItem>
-		</mx:Form>
+
+		<mx:HBox width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'udd_email')}" width="{_lblWidth}"/>
+			<mx:TextInput id='emailTi' width="100%" text="{_undoUser.email}"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'first_name')}" width="{_lblWidth}"/>
+			<mx:TextInput id='firstNameTi' width="100%"
+						  text="{(_undoUser.firstName ? _undoUser.firstName : _undoUser.fullName)}"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'last_name')}" width="{_lblWidth}"/>
+			<mx:TextInput id='lastNameTi' width="100%" text="{_undoUser.lastName}"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Text text="{ResourceManager.getInstance().getString('admin', 'user_id')}" width="{_lblWidth}"/>
+			<mx:TextInput id='idTi' width="100%" text="{_undoUser.id}"/>
+		</mx:HBox>
 
 		<mx:HBox styleName="formInnerTitle" width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'role')}" styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="100%">
-				<mx:ComboBox id="roleCb" dataProvider="{_roles}" labelField="name" />
-				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add_role')}"
-							   id="addRoleBtn" click="openRoleWindow()"/>
+				<mx:ComboBox id="roleCb" dataProvider="{_roles}" labelField="name"/>
+				<mx:LinkButton label="{ResourceManager.getInstance().getString('admin', 'add_role')}" id="addRoleBtn"
+							   click="openRoleWindow()"/>
 			</mx:FormItem>
 			<mx:FormItem label="{ResourceManager.getInstance().getString('admin', 'udd_description')}" width="100%">
 				<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
@@ -307,7 +312,7 @@
 		</mx:Form>
 		<mx:HBox width="100%" horizontalAlign="center">
 			<mx:Button id="saveBtn" click="setUserDataFromForm(event)"
-					   label="{ResourceManager.getInstance().getString('admin', 'save')}" />
+					   label="{ResourceManager.getInstance().getString('admin', 'save')}"/>
 		</mx:HBox>
 
 	</mx:VBox>
