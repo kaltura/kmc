@@ -2,12 +2,9 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.UserEvent;
 	import com.kaltura.commands.user.UserNotifyBan;
-	import com.kaltura.commands.user.UserUpdate;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.types.KalturaUserStatus;
-	import com.kaltura.vo.KalturaUser;
+	import com.kaltura.kmc.modules.content.events.UserEvent;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
