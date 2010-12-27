@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
@@ -34,7 +34,7 @@ package com.kaltura.utils.imageCropper {
 	
 	public class CropBox extends UIComponent {
 		public static var EVENT_CHANGED:String = "crop.changed";
-
+		
 		public var cropMaxHeight:int = 0;
 		public var cropMinHeight:int = 0;
 		public var cropMaxWidth:int = 0;
@@ -49,13 +49,13 @@ package com.kaltura.utils.imageCropper {
 		private var _cropY:Number = -1;
 		private var _cropWidth:Number = 0;
 		private var _cropHeight:Number = 0;
-
+		
 		private var handleNw:CropHandle = new CropHandle();
 		private var handleNe:CropHandle = new CropHandle();
 		private var handleSw:CropHandle = new CropHandle();
 		private var handleSe:CropHandle = new CropHandle();
 		private var _handleSize:Number = 5;
-
+		
 		private var activeHandle:CropHandle;
 		private var boxMoving:Boolean = false;
 		
@@ -70,20 +70,20 @@ package com.kaltura.utils.imageCropper {
 			this.addChild(handleNe);
 			this.addChild(handleSw);
 			this.addChild(handleSe);
-
+			
 			handleNw.addEventListener(MouseEvent.MOUSE_DOWN, handleDownEvent);
-
+			
 			handleNe.addEventListener(MouseEvent.MOUSE_DOWN, handleDownEvent);
-
+			
 			handleSw.addEventListener(MouseEvent.MOUSE_DOWN, handleDownEvent);
-
+			
 			handleSe.addEventListener(MouseEvent.MOUSE_DOWN, handleDownEvent);
 			
 			addEventListener(MouseEvent.MOUSE_DOWN, boxDownEvent);
-			addEventListener(MouseEvent.MOUSE_UP, mouseUpEvent);
 			addEventListener(Event.MOUSE_LEAVE, mouseUpEvent);
 			
 			addEventListener(Event.ADDED_TO_STAGE, function( e:Event ):void {
+				stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpEvent);
 				stage.addEventListener(KeyboardEvent.KEY_DOWN, keyboardDownEvent);
 				stage.addEventListener(KeyboardEvent.KEY_UP, keyboardUpEvent);
 			});
@@ -105,30 +105,30 @@ package com.kaltura.utils.imageCropper {
 			if (activeHandle != null) {
 				return;
 			}
-
+			
 			/*
 			ExternalInterface.call("console.log", "boxDownEvent " +
-				"mouseX:" + mouseX +
-				" cropX:" + cropX +
-				" mouseY:" + mouseY +
-				" cropY:" + cropY +
-				" cropWidth:" + cropWidth +
-				" cropHeight:" + cropHeight);
+			"mouseX:" + mouseX +
+			" cropX:" + cropX +
+			" mouseY:" + mouseY +
+			" cropY:" + cropY +
+			" cropWidth:" + cropWidth +
+			" cropHeight:" + cropHeight);
 			*/
-
+			
 			if (mouseX >= _cropX &&
 				mouseX <= _cropX + _cropWidth &&
 				mouseY >= _cropY &&
 				mouseY <= _cropY + _cropHeight) {
-					
+				
 				boxMoving = true;
-	
+				
 				lastMouseX = mouseX;
 				lastMouseY = mouseY;
 				addEventListener(MouseEvent.MOUSE_MOVE, mouseBoxMoveEvent);
 				me.stopPropagation();
 			} else {
-			/*	//removed, to disable dragging outside the cropper
+				/*	//removed, to disable dragging outside the cropper
 				cropX = mouseX;
 				cropY = mouseY;
 				cropWidth = 0;
@@ -144,13 +144,13 @@ package com.kaltura.utils.imageCropper {
 				shiftIsPressed = true;
 			}
 		}
-
+		
 		public function keyboardUpEvent(ke:KeyboardEvent):void {
 			if (!ke.shiftKey) {
 				shiftIsPressed = false;
 			}
 		}
-
+		
 		public function mouseBoxMoveEvent(me:MouseEvent):void {
 			if (!boxMoving) {
 				return;
@@ -175,7 +175,7 @@ package com.kaltura.utils.imageCropper {
 				
 				moveHandles();
 			}
-
+			
 			lastMouseX = mouseX;
 			lastMouseY = mouseY;
 		}
@@ -186,19 +186,19 @@ package com.kaltura.utils.imageCropper {
 			}
 			var changeMouseX:Number = lastMouseX - mouseX;
 			var changeMouseY:Number = lastMouseY - mouseY;
-
-
+			
+			
 			// keep the square
-//			if (activeHandle == handleNw || activeHandle == handleSe) {
-//				changeMouseX = changeMouseY = (Math.abs(changeMouseX) > Math.abs(changeMouseY)) ? changeMouseX : changeMouseY;
-//			} else {
-//				if (Math.abs(changeMouseX) > Math.abs(changeMouseY)) {
-//					changeMouseY = -1 * changeMouseX;
-//				} else {
-//					changeMouseX = -1 * changeMouseY;
-//				}
-//			}
-
+			//			if (activeHandle == handleNw || activeHandle == handleSe) {
+			//				changeMouseX = changeMouseY = (Math.abs(changeMouseX) > Math.abs(changeMouseY)) ? changeMouseX : changeMouseY;
+			//			} else {
+			//				if (Math.abs(changeMouseX) > Math.abs(changeMouseY)) {
+			//					changeMouseY = -1 * changeMouseX;
+			//				} else {
+			//					changeMouseX = -1 * changeMouseY;
+			//				}
+			//			}
+			
 			var newMouseX:Number = activeHandle.x - changeMouseX;
 			var newMouseY:Number = activeHandle.y - changeMouseY;
 			
@@ -206,9 +206,9 @@ package com.kaltura.utils.imageCropper {
 			if (newMouseX<0 || newMouseX>width || newMouseY<0 || newMouseY>height)
 				return;
 			//ExternalInterface.call("console.log", "move event changeX:" + changeMouseX + " changeY:" + changeMouseY + " newMouseX:" + newMouseX + " newMouseY:" + newMouseY);
-
-
-
+			
+			
+			
 			//ExternalInterface.call("console.log", "move event changeX:" + changeMouseX + " changeY:" + changeMouseY + " newMouseX:" + newMouseX + " newMouseY:" + newMouseY);
 			
 			if (activeHandle == handleNw) {
@@ -230,14 +230,14 @@ package com.kaltura.utils.imageCropper {
 			if (activeHandle != null) {
 				//activeHandle.stopDrag();
 				activeHandle = null;
-				removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEvent);
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEvent);
 			}
 			if (boxMoving) {
 				boxMoving = false;
-				removeEventListener(MouseEvent.MOUSE_MOVE, mouseBoxMoveEvent);
+				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseBoxMoveEvent);
 			}
 		}
-
+		
 		private function setHandleHeld(handle:CropHandle):void {
 			if (boxMoving) {
 				return;
@@ -248,7 +248,7 @@ package com.kaltura.utils.imageCropper {
 			addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEvent);
 			addEventListener(MouseEvent.MOUSE_UP, mouseUpEvent);
 		}
-
+		
 		private function handleDownEvent(me:MouseEvent):void {
 			if (boxMoving) {
 				return;
@@ -257,10 +257,10 @@ package com.kaltura.utils.imageCropper {
 			lastMouseX = mouseX;
 			lastMouseY = mouseY;
 			addEventListener(MouseEvent.MOUSE_MOVE, mouseMoveEvent);
-			addEventListener(MouseEvent.MOUSE_UP, mouseUpEvent);
+			stage.addEventListener(MouseEvent.MOUSE_UP, mouseUpEvent);
 			me.stopPropagation();
 		}
-
+		
 		//
 		// NW
 		//
@@ -270,7 +270,7 @@ package com.kaltura.utils.imageCropper {
 			
 			resizeCrop(newMouseX, newMouseY, newWidth, newHeight);
 		}
-
+		
 		//
 		// NE
 		//
@@ -280,7 +280,7 @@ package com.kaltura.utils.imageCropper {
 			
 			resizeCrop(_cropX, newMouseY, newWidth, newHeight);
 		}
-
+		
 		//
 		// SW
 		//
@@ -290,7 +290,7 @@ package com.kaltura.utils.imageCropper {
 			
 			resizeCrop(newMouseX, _cropY, newWidth, newHeight);
 		}
-
+		
 		//
 		// SE
 		//
@@ -303,14 +303,14 @@ package com.kaltura.utils.imageCropper {
 		
 		private function resizeCrop(newX:Number, newY:Number, newWidth:Number, newHeight:Number):void {
 			if (newWidth >= cropMinWidth &&
-					newHeight >= cropMinHeight &&
-					newX >= 0 &&
-					newX <= width &&
-					newY >= 0 &&
-					newY <= height &&
-					(cropMaxWidth == 0 || newWidth <= cropMaxWidth)
-					) {
-
+				newHeight >= cropMinHeight &&
+				newX >= 0 &&
+				newX <= width &&
+				newY >= 0 &&
+				newY <= height &&
+				(cropMaxWidth == 0 || newWidth <= cropMaxWidth)
+			) {
+				
 				if (keepAspectRatio || shiftIsPressed) {
 					var aspectRatio:Number = _cropWidth / _cropHeight;
 					var newWidthAspect:Number = newHeight * aspectRatio;
@@ -333,14 +333,14 @@ package com.kaltura.utils.imageCropper {
 					_cropX = newX;
 				if ((0 <= newY) && (newY <= this.height))
 					_cropY = newY;
-				if ((0 <= newWidth) && (newWidth <= this.width))
+				if ((0 <= newWidth) && (newWidth + _cropX <= this.width))
 					_cropWidth = newWidth;
-				if ((0 <= newHeight) && (newHeight <= this.height))
+				if ((0 <= newHeight) && (newHeight + _cropY<= this.height))
 					_cropHeight = newHeight;
 				moveHandles();
 			}
 		}
-
+		
 		public function get cropX():Number {
 			return (widthRatio > 0) ? (_cropX / widthRatio) : _cropX;
 		}
@@ -374,18 +374,18 @@ package com.kaltura.utils.imageCropper {
 			
 			handleNw.x = _cropX;
 			handleNw.y = _cropY;
-
+			
 			handleNe.x = _cropX + _cropWidth;
 			handleNe.y = _cropY;
-		
+			
 			handleSw.x = _cropX;
 			handleSw.y = _cropY + _cropHeight;
-		
+			
 			handleSe.x = _cropX + _cropWidth;
 			handleSe.y = _cropY + _cropHeight;
-
+			
 			dispatchEvent(new Event(EVENT_CHANGED));
-
+			
 			this.invalidateDisplayList();
 		}
 		
@@ -393,7 +393,7 @@ package com.kaltura.utils.imageCropper {
 			//ExternalInterface.call("console.log", "crop x:" + cropX + " y:" + cropY + " height:" + cropHeight + " width:" + cropWidth);
 			super.updateDisplayList(param1, param2);
 			graphics.clear();
-
+			
 			graphics.beginFill(0x000000, 0); // zero fill so we have something for the mouse to grab
 			graphics.drawRect(0, 0, width, height);
 			graphics.endFill();
@@ -403,17 +403,17 @@ package com.kaltura.utils.imageCropper {
 				graphics.beginFill(0x000000, .5);
 				graphics.drawRect(0, 0, width, _cropY);
 				graphics.endFill();
-	
+				
 				// left mask
 				graphics.beginFill(0x000000, .5);
 				graphics.drawRect(0, _cropY, _cropX, _cropHeight);
 				graphics.endFill();
-	
+				
 				// right mask
 				graphics.beginFill(0x000000, .5);
 				graphics.drawRect(_cropX+_cropWidth, _cropY, width-_cropX-_cropWidth, _cropHeight);
 				graphics.endFill();
-	
+				
 				// bottom mask
 				graphics.beginFill(0x000000, .5);
 				graphics.drawRect(0, _cropY+_cropHeight, width, height-_cropY-_cropHeight);
