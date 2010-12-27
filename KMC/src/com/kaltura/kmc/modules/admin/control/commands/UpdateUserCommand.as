@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUser;
 
-	public class EditUserCommand extends BaseCommand {
+	public class UpdateUserCommand extends BaseCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			var user:KalturaUser = (event as UserEvent).user;

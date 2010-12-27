@@ -7,7 +7,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUserRole;
 
-	public class EditRoleCommand extends BaseCommand {
+	/**
+	 * update a role after editing it. 
+	 * @author Atar
+	 * 
+	 */	
+	public class UpdateRoleCommand extends BaseCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			var role:KalturaUserRole = (event as RoleEvent).role;
@@ -19,9 +24,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 			_model.kc.post(uu);
 		}
 		
+		
 		override protected function result(data:Object):void {
 			super.result(data);
 			if (data.success) {
+				// no need to explicitly call list roles, as 
+				// data is refreshed when the window closes. 
 				_model.rolesModel.drilldownMode = DrilldownMode.NONE;
 			}
 			_model.decreaseLoadCounter();

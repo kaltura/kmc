@@ -34,6 +34,7 @@
 			 * bind setters and apply permissions
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
 				BindingUtils.bindSetter(onNewRoleChanged, model, "newRole");
 				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
@@ -99,6 +100,23 @@
 					ue = new RoleEvent(RoleEvent.UPDATE_ROLE, _roleDrilldown.role);
 				}
 				ue.dispatch();
+			}
+			
+			/**
+			 * re-load data, close popup, etc.
+			 * */
+			protected function onDrilldownStateChange(value:String):void {
+				switch (value) {
+					case DrilldownMode.ADD:
+					case DrilldownMode.EDIT:
+						// do nothing
+						break;
+					case DrilldownMode.NONE:
+						// if we got here, data save completed successfuly
+						closeRoleDrilldown(null);
+						refreshData();
+						break;
+				}
 			}
 			
 			
