@@ -11,6 +11,8 @@
 			private static const progressImage:Class;
 			[Embed(source="assets/images/thumb_error.png")]
 			private static const errorImage:Class;
+			[Embed(source="assets/images/ico_yes.png")]
+			private static const defaultIcon:Class;
 			
 			public static const DEFAULT_THUMB:String = "default_thumb";
 			public static const THUMB_WIDTH:int = 90;
@@ -21,7 +23,7 @@
 			[Bindable]
 			private var isDefault:Boolean = false;
 			
-
+			
 			override public function set data(value:Object):void {
 				var thumb:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumb.thumbAsset) {
@@ -62,10 +64,10 @@
 	<mx:VBox visible="{!thumbAssetExist}" includeInLayout="{!thumbAssetExist}" width="{THUMB_WIDTH}" height="{THUMB_HEIGHT}" verticalAlign="middle" horizontalAlign="center">
 		<mx:Label text="{resourceManager.getString('cms', 'noThumbnails')}" fontWeight="bold"/>	
 	</mx:VBox>
-	<mx:HBox verticalAlign="middle" width="{THUMB_WIDTH+60}" height="{THUMB_WIDTH}" horizontalAlign="center">	
-		<!-- change to an icon later -->
-		<mx:Label text="default"  visible="{isDefault}" includeInLayout="{isDefault}"/>
+	<mx:HBox verticalAlign="middle" horizontalAlign="center">
+		<mx:Spacer width="{defaultImg.width}"/>
 		<mx:Image id="thumbImage" visible="{thumbAssetExist}" includeInLayout="{thumbAssetExist}" width="{THUMB_WIDTH}" height="{THUMB_WIDTH}"/>
+		<mx:Image id="defaultImg" source="{defaultIcon}" visible="{isDefault}" includeInLayout="{thumbAssetExist}"/>
 	</mx:HBox>
 	
 </mx:HBox>

@@ -24,7 +24,7 @@ Thumbnails tab of EntryDetailsWin
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
-
+			
 			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
 			private var _fileReference:FileReference;
 			
@@ -42,17 +42,17 @@ Thumbnails tab of EntryDetailsWin
 			{
 				return _context;
 			}
-
+			
 			public function set context(value:Context):void
 			{
 				_context = value;
 			}
-
+			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
 				return _entryDetailsModel;
 			}
-
+			
 			public function set entryDetailsModel(value:EntryDetailsModel):void
 			{
 				_entryDetailsModel = value;
@@ -65,11 +65,11 @@ Thumbnails tab of EntryDetailsWin
 					columnsArray.splice(2,0, partnersCol);
 					dataGrid.columns = columnsArray;
 					//should be sent only once
-					if (_entryDetailsModel.listDistributionProfilesRequired) {
-						var listDistributionProfilesEvent:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-						listDistributionProfilesEvent.dispatch();
-						_entryDetailsModel.listDistributionProfilesRequired = false;
-					}
+					/*	if (_entryDetailsModel.listDistributionProfilesRequired) {
+					var listDistributionProfilesEvent:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+					listDistributionProfilesEvent.dispatch();
+					_entryDetailsModel.listDistributionProfilesRequired = false;
+					}*/
 				}
 				
 			}
@@ -82,7 +82,7 @@ Thumbnails tab of EntryDetailsWin
 			{
 				return _selectedEntry;
 			}
-
+			
 			public function set selectedEntry(value:KalturaBaseEntry):void
 			{
 				if (!value)
@@ -157,22 +157,22 @@ Thumbnails tab of EntryDetailsWin
 			private function onCropperClosed(event:Event):void {
 				PopUpManager.removePopUp(_cropperWindow);
 			}
-
+			
 		]]>
 	</mx:Script>
-		<mx:DataGridColumn id="partnersCol" headerText="{resourceManager.getString('cms','distributionPartnersCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer" />
-		<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('cms','addThumbnail')}"
-					 dataProvider="{_uploadThumbnailActionsDP}"
-					 change="{onActionCBItemClick(event)}" selectedIndex="-1"/>
-
-		<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" sortableColumns="false" draggableColumns="false" 
-					 selectable="false">
-			<mx:columns>
-				<mx:DataGridColumn id="thumbCol" headerText="{resourceManager.getString('cms','thumbnailCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetRenderer"/>
-				<mx:DataGridColumn id="dimensionsCol" headerText="{resourceManager.getString('cms','dimensionsCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDimensionsRenderer"/>				
-				<mx:DataGridColumn id="statusCol" headerText="{resourceManager.getString('cms','statusCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetStatusRenderer"/>
-				<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetActionRenderer"/>
-			</mx:columns>
-		</mx:DataGrid>
+	<mx:DataGridColumn id="partnersCol" headerText="{resourceManager.getString('cms','distributionPartnersCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer" />
+	<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('cms','addThumbnail')}"
+				 dataProvider="{_uploadThumbnailActionsDP}"
+				 change="{onActionCBItemClick(event)}" selectedIndex="-1"/>
+	
+	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" sortableColumns="false" draggableColumns="false" 
+				 selectable="false" rowHeight="100">
+		<mx:columns>
+			<mx:DataGridColumn id="thumbCol" headerText="{resourceManager.getString('cms','thumbnailCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetRenderer"/>
+			<mx:DataGridColumn id="dimensionsCol" headerText="{resourceManager.getString('cms','dimensionsCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDimensionsRenderer"/>				
+			<mx:DataGridColumn id="statusCol" headerText="{resourceManager.getString('cms','statusCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetStatusRenderer"/>
+			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetActionRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
 	
 </mx:VBox>
