@@ -151,9 +151,15 @@ package com.kaltura.kmc.business {
 						}
 					}
 				}
-				if (hideTab) {
+				// may this module be removed ?
+				var keepOnEmpty:Boolean = module.attribute("keepOnEmpty").length() > 0;
+				keepOnEmpty &&= module.attribute("keepOnEmpty").toString() == "true"; 
+				
+				// remove module if needed
+				if (hideTab && !keepOnEmpty) {
 					arr.push(module.@id.toString());
 				}
+				
 			}
 			return arr;
 		}
