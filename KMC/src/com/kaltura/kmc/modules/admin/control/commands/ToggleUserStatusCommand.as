@@ -26,7 +26,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			else if(usr.status == KalturaUserStatus.BLOCKED) {
 				usr.status = KalturaUserStatus.ACTIVE;
 			}
-			var call:KalturaCall = new UserUpdate(usr.id, usr, true);
+			var call:KalturaCall = new UserUpdate(usr.id, usr);
 			mr.addAction(call);
 			// list
 			call = new UserList(_model.usersModel.usersFilter);

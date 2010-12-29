@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var user:KalturaUser = (event as UserEvent).user;
 			user.setUpdatedFieldsOnly(true);
-			var uu:UserUpdate = new UserUpdate(_model.usersModel.selectedUser.id, user, true);
+			var uu:UserUpdate = new UserUpdate(_model.usersModel.selectedUser.id, user);
 			uu.addEventListener(KalturaEvent.COMPLETE, result);
 			uu.addEventListener(KalturaEvent.FAILED, fault);
 			_model.increaseLoadCounter();
