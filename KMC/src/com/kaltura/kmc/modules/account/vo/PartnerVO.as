@@ -12,13 +12,29 @@ package com.kaltura.kmc.modules.account.vo
 		public var subPId : String = "";
 		public var secret : String = "";
 		public var adminSecret : String = "";
+		
+		/**
+		 * publisher / company name 
+		 */
 		public var name : String = "";
 		public var url1 : String = "";
 		public var url2 : String = "";
 		public var appearInSearch : int = 0;
 		public var createdAt : String = "";
+		
+		/**
+		 * name of partner admin 
+		 */
 		public var adminName : String = "";
+		
+		/**
+		 * email of partner admin 
+		 */
 		public var adminEmail : String = "";
+		
+		/**
+		 * contact phone (?)
+		 */
 		public var phone : String = "";
 		public var description : String = "";
 		public var commercialUse : int;
@@ -44,6 +60,10 @@ package com.kaltura.kmc.modules.account.vo
 		public var createdDay : uint = 1;
 		public var partnerPackage : uint = 0;
 		public var status : uint = 0;
+		
+		/**
+		 * the user id of the account owner 
+		 */
 		public var accountOwnerId : String = "";
 		
 			

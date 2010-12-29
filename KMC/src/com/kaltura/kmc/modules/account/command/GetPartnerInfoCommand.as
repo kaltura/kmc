@@ -87,6 +87,8 @@ package com.kaltura.kmc.modules.account.command
 				pvo.url2 = resultKp.notificationUrl;
 				pvo.userLandingPage = resultKp.userLandingPage;
 				
+				// 31 items
+				
 				_model.partnerData = pvo;
 			}
 			_model.partnerInfoLoaded = true;
