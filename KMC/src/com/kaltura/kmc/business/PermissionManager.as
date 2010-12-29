@@ -97,25 +97,50 @@ package com.kaltura.kmc.business {
 			var permissionParser:PermissionsParser = new PermissionsParser();
 			_instructionVos = permissionParser.parseAllPermissions(_deniedPermissions.permissions.permissionGroup);
 
+			//TODO + parse partner permissions
+			var partnerPermissionsUi:XMLList = getPartnerPermissionsUi(_deniedPermissions.partnerPermissions[0], partnerPermissions);
+			_instructionVos = _instructionVos.concat(permissionParser.parseAllPermissions(partnerPermissionsUi));
+			
 			var permissionIdList:XMLList = _deniedPermissions.permissions.descendants().attribute("id");
 			for each (var xml:XML in permissionIdList) {
 				_deniedPermissionsIds.push(xml.toString());
 			}
-			_hideTabs = permissionParser.getTabsToHide(_deniedPermissions..uimapping[0], allRolePermissions);
-			// parse features that the partner does not have, and combine them with the current users permissions 
+			
 			var partnerPermissionsList:Array = parsePartnerPermissions(partnerPermissions);
+			var roleAndPartnerPermissionNames:Array = allRolePermissions.concat(partnerPermissionsList);
+			
+			_hideTabs = permissionParser.getTabsToHide(_deniedPermissions..uimapping[0], roleAndPartnerPermissionNames); 
+			// parse features that the partner does not have, and combine them with the current users permissions 
 			for each (var partnerPermission:String in partnerPermissionsList) {
 				if (partnerPermission) {
 					//TODO + search for existing permissions in the Vos and delete them 
 					// if the partner does not have these permissions 
 					/* we don't want the feature data to be part of the permissions, because it's not user permission
 					 * so if the partner data changes we will have to scan the DB to remove the permision.*/
-					
+					// i.e if partner doesn't have custom metadata feature, make sure all metadata-related permissions are denied
 				}
 			}
 			_hideFeatures = [];
 		}
 		
+		/**
+		 * get the partner level permissions the current partner doesn't have 
+		 * @param uidefs	ui definitions concerning partner-level permissions
+		 * @param partnerPermissions	server response for partner permissions list
+		 * @return 		denied permissions in partner level
+		 * 
+		 */
+		protected function getPartnerPermissionsUi(uidefs:XML, partnerPermissions:KalturaPermissionListResponse):XMLList {
+			// remove nodes from uidefs whose id is the same as anything in partnerPermissions
+			for each (var feature:KalturaPermission in partnerPermissions.objects) {
+				var fname:String = feature.name;
+				var xml:XML = uidefs.permissionGroup.(@id == fname)[0];
+				if (xml) {
+					delete uidefs.permissionGroup.(@id == fname)[0];
+				}
+			}
+			return uidefs.permissionGroup;
+		}
 		
 		/**
 		 * parse the permissions list response
@@ -126,9 +151,9 @@ package com.kaltura.kmc.business {
 			if (!klr) {
 				return null;
 			}
-			var result:String;
+			var result:String = '';
 			for each (var kperm:KalturaPermission in klr.objects) {
-				result += kperm.id + ",";
+				result += kperm.name + ",";
 			}
 			// remove last ","
 			result = result.substring(0, result.length - 1);

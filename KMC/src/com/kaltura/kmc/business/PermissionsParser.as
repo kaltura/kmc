@@ -19,6 +19,7 @@ package com.kaltura.kmc.business {
 			return array;
 		}
 		
+		
 		/**
 		 * builds a list of instruction objects from permissions XML
 		 * @param allPermissions	list of permissions
@@ -79,7 +80,7 @@ package com.kaltura.kmc.business {
 		 * The function creates an array of tabs and sub-tabs that should be hidden
 		 * from the user because of roles and permissions logic.
 		 * @param uimapping				ui mapping part of the permissions uiconf
-		 * @param permissionsList		role permission ids
+		 * @param permissionsList		role + partner permission ids
 		 * @return	list of modules and subtabs to hide (String)
 		 */
 		public function getTabsToHide(uimapping:XML, permissionsList:Array):Array {
