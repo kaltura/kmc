@@ -47,7 +47,7 @@
 			 * default height for the preview image
 			 * */
 			public static const DEFAULT_PREVIEW_HEIGHT:int = 90;
-			
+			private static var enterClicked:Boolean = false;
 			[Bindable]
 			private var _maxImageHeight:int;
 			private var _entryDetailsModel:EntryDetailsModel;
@@ -434,7 +434,11 @@
 			}
 			
 			private function onFocusOut(event:Event):void {
-				getCropperValues();		
+				//to avoid double validation, if enter was clicked than validation was already made
+				if (enterClicked)
+					enterClicked = false;
+				else
+					validateTextInputs(event);		
 			}
 			
 			/**
@@ -443,44 +447,50 @@
 			 * */
 			private function onKeyDown(event:KeyboardEvent):void {
 				if (event.keyCode== Keyboard.ENTER) {
-					if (!_imageCrop.cropBox)
-						return;
-					var invalidInput:Boolean = false;
-					var input:Number = Number(event.currentTarget.text);
-					if (input < 0)
-						invalidInput = true;
-					else {
-						if (event.currentTarget==topTextInput) {
-							if ((_imageCrop.cropBox.cropHeight + input) > _selectedThumbnail.height)
-								invalidInput = true;
-							else
-								_imageCrop.cropBox.cropY = input;
-						}
-						else if (event.currentTarget==leftTextInput) {
-							if ((_imageCrop.cropBox.cropWidth + input) > _selectedThumbnail.width)
-								invalidInput = true;
-							else
-								_imageCrop.cropBox.cropX = input;
-						}
-						else if (event.currentTarget==widthTextInput) {
-							if ((_imageCrop.cropBox.cropX + input) > _selectedThumbnail.width)
-								invalidInput = true;
-							else
-								_imageCrop.cropBox.cropWidth = input;
-						}
-						else if (event.currentTarget==heightTextInput) {
-							if ((_imageCrop.cropBox.cropY + input) > _selectedThumbnail.height)
-								invalidInput = true;
-							else
-								_imageCrop.cropBox.cropHeight = input;
-						}
-					}
-					
-					if (invalidInput) {
-						displayInvalidAlert();
-					}
+					enterClicked = true;
+					validateTextInputs(event);
 				}
 			}
+			
+			private function validateTextInputs(event:Event):void {
+				if (!_imageCrop.cropBox)
+					return;
+				var invalidInput:Boolean = false;
+				var input:Number = Number(event.currentTarget.text);
+				if (input < 0)
+					invalidInput = true;
+				else {
+					if (event.currentTarget==topTextInput) {
+						if ((_imageCrop.cropBox.cropHeight + input) > _selectedThumbnail.height)
+							invalidInput = true;
+						else
+							_imageCrop.cropBox.cropY = input;
+					}
+					else if (event.currentTarget==leftTextInput) {
+						if ((_imageCrop.cropBox.cropWidth + input) > _selectedThumbnail.width)
+							invalidInput = true;
+						else
+							_imageCrop.cropBox.cropX = input;
+					}
+					else if (event.currentTarget==widthTextInput) {
+						if ((_imageCrop.cropBox.cropX + input) > _selectedThumbnail.width)
+							invalidInput = true;
+						else
+							_imageCrop.cropBox.cropWidth = input;
+					}
+					else if (event.currentTarget==heightTextInput) {
+						if ((_imageCrop.cropBox.cropY + input) > _selectedThumbnail.height)
+							invalidInput = true;
+						else
+							_imageCrop.cropBox.cropHeight = input;
+					}
+				}
+				
+				if (invalidInput) {
+					displayInvalidAlert();
+				}
+			}
+
 			
 			private function onPresetSizeChange(event:Event):void {
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
@@ -501,6 +511,16 @@
 			 * */
 			private function dispatchCloseEvent():void {
 				this.dispatchEvent(new Event(WINDOW_CLOSE));
+			}
+			
+			override public function set width(value:Number):void {
+				var newWidth:Number = value * 0.9; //making it a bit shorter than the whole stage
+				super.width = newWidth;
+			}
+			
+			override public function set height(value:Number):void {
+				var newHeight:Number = value * 0.98; //to see this is a window
+				super.height = newHeight;
 			}
 			
 			
@@ -558,7 +578,7 @@
 				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
 					<mx:Label text="{resourceManager.getString('cms','topTitle')}" width="50" textAlign="right"/>
 					<mx:TextInput id="topTextInput" restrict="0-9" width="45" 
-								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}" />
 				</mx:HBox>
 				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
 					<mx:Label text="{resourceManager.getString('cms','heightTitle')}" width="50" textAlign="right" enabled="{!_isPreSize}"/>
