@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.dashboard.dashboardmanager {
+package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.commands.report.ReportGetGraphs;
