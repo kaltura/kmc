@@ -27,10 +27,11 @@ package com.kaltura.types
 		public static const CONTENT_MANAGE_ANNOTATION : String = 'CONTENT_MANAGE_ANNOTATION';
 		public static const CONTENT_MANAGE_SHARE : String = 'CONTENT_MANAGE_SHARE';
 		public static const LIVE_STREAM_BASE : String = 'LIVE_STREAM_BASE';
-		public static const LIVE_STREAM_ADD : String = 'CONTENT_MANAGE_ADD_LIVE';
-		public static const LIVE_STREAM_UPDATE : String = 'CONTENT_MANAGE_UPDATE_LIVE';
+		public static const LIVE_STREAM_ADD : String = 'LIVE_STREAM_ADD';
+		public static const LIVE_STREAM_UPDATE : String = 'LIVE_STREAM_UPDATE';
 		public static const CONTENT_MODERATE_BASE : String = 'CONTENT_MODERATE_BASE';
 		public static const CONTENT_MODERATE_METADATA : String = 'CONTENT_MODERATE_METADATA';
+		public static const CONTENT_MODERATE_CUSTOM_DATA : String = 'CONTENT_MODERATE_CUSTOM_DATA';
 		public static const PLAYLIST_BASE : String = 'PLAYLIST_BASE';
 		public static const PLAYLIST_ADD : String = 'PLAYLIST_ADD';
 		public static const PLAYLIST_UPDATE : String = 'PLAYLIST_UPDATE';

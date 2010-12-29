@@ -10,9 +10,8 @@ package com.kaltura.commands.user
 		/**
 		 * @param userId String
 		 * @param user KalturaUser
-		 * @param allUserPartners Boolean
 		 **/
-		public function UserUpdate( userId : String,user : KalturaUser,allUserPartners : Boolean=false )
+		public function UserUpdate( userId : String,user : KalturaUser )
 		{
 			service= 'user';
 			action= 'update';
@@ -25,8 +24,6 @@ package com.kaltura.commands.user
  			keyValArr = kalturaObject2Arrays(user, 'user');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
-			keyArr.push('allUserPartners');
-			valueArr.push(allUserPartners);
 			applySchema(keyArr, valueArr);
 		}
 

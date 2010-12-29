@@ -5,7 +5,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaMediaFlavorParamsBaseFilter extends KalturaFlavorParamsFilter
 	{
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

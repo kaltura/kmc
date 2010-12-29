@@ -38,7 +38,7 @@ package com.kaltura.vo
 
 		public var requiredThumbDimensions : Array = new Array();
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

@@ -8,7 +8,7 @@ package com.kaltura.vo
 
 		public var value : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

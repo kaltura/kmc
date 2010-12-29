@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		public var comparison : int = int.MIN_VALUE;
 
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

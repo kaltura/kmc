@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		public var loginEnabledEqual : Boolean;
 
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

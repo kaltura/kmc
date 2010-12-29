@@ -12,7 +12,7 @@ package com.kaltura.vo
 
 		public var errorDescription : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

@@ -28,7 +28,9 @@ package com.kaltura.vo
 
 		public var updatedAt : int = int.MIN_VALUE;
 
-public function getUpdateableParamKeys():Array
+		public var partnerGroup : String;
+
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
@@ -40,6 +42,7 @@ public function getUpdateableParamKeys():Array
 			arr.push('dependsOnPermissionNames');
 			arr.push('tags');
 			arr.push('permissionItemsIds');
+			arr.push('partnerGroup');
 			return arr;
 		}
 	}

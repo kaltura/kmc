@@ -109,7 +109,7 @@ package com.kaltura.vo
 
 		public var tagsAdminTagsNameMultiLikeAnd : String;
 
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

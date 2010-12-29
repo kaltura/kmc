@@ -28,7 +28,7 @@ package com.kaltura.vo
 
 		public var description : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

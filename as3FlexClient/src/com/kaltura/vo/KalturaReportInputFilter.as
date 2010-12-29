@@ -18,7 +18,7 @@ package com.kaltura.vo
 
 		public var timeZoneOffset : int = int.MIN_VALUE;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

@@ -4,9 +4,6 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPartner extends BaseFlexVo
 	{
-		
-		public var accountOwnerId : String;
-		
 		public var id : int = int.MIN_VALUE;
 
 		public var name : String;
@@ -67,7 +64,9 @@ package com.kaltura.vo
 
 		public var adminLoginUsersQuota : int = int.MIN_VALUE;
 
-public function getUpdateableParamKeys():Array
+		public var adminUserId : String;
+
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
@@ -75,8 +74,6 @@ public function getUpdateableParamKeys():Array
 			arr.push('website');
 			arr.push('notificationUrl');
 			arr.push('appearInSearch');
-			arr.push('adminName');
-			arr.push('adminEmail');
 			arr.push('description');
 			arr.push('commercialUse');
 			arr.push('landingPage');
@@ -92,6 +89,7 @@ public function getUpdateableParamKeys():Array
 			arr.push('mergeEntryLists');
 			arr.push('notificationsConfig');
 			arr.push('maxUploadSize');
+			arr.push('adminUserId');
 			return arr;
 		}
 	}

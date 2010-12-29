@@ -25,7 +25,7 @@ package com.kaltura.vo
 
 		public var flashPlaybackType : String;
 
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
