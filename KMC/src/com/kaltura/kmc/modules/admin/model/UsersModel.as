@@ -71,5 +71,13 @@ package com.kaltura.kmc.modules.admin.model
 		 */		
 		public var newRole:KalturaUserRole;
 		
+		[ArrayElementType("String")]
+		/**
+		 * users that in users table don't have destructive actions 
+		 * (user ids separated by ',') 
+		 */		
+		public var crippledUsers:Array;
+	
+		
 	}
 }

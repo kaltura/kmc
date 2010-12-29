@@ -62,6 +62,19 @@
 			 */
 			public var comboDataProvider:ArrayCollection;
 			
+			[Bindable]
+			/**
+			 * dp for current user and account administrator, only "edit" action.
+			 * */
+			private var crippledComboDataProvider:ArrayCollection;
+			
+			[Bindable][ArrayElementType("String")]
+			/**
+			 * ids of users who should get the cripled actions DP
+			 * */
+			public var crippledUsersIds:Array;
+			
+			
 			
 			[ArrayElementType("KalturaUserRole")]
 			/**
@@ -142,6 +155,10 @@
 				comboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
 				comboDataProvider.addItem({label:resourceManager.getString('admin','un_block'),id:'unblock'});
 				comboDataProvider.addItem({label:resourceManager.getString('admin','delete'),id:'delete'});
+				
+				crippledComboDataProvider = new ArrayCollection();
+				crippledComboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
+				
 			}
 
 
@@ -149,6 +166,17 @@
 			// item-renderer functions
 			// ==================================================================
 
+			public function getActionsDP(data:Object):ArrayCollection {
+				var usr:KalturaUser = data as KalturaUser;
+				for each (var uid:String in crippledUsersIds) {
+					if (uid == usr.id) {
+						return crippledComboDataProvider;
+					}
+				} 
+				return comboDataProvider;
+			}
+			
+			
 			/**
 			 * show formatted date
 			 * */
@@ -314,7 +342,7 @@
 					<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
 							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
 						<mx:ComboBox width="130" selectedIndex="-1"
-									 dataProvider="{outerDocument.comboDataProvider}"
+									 dataProvider="{outerDocument.getActionsDP(data)}"
 									 prompt="{resourceManager.getString('admin','select_action')}"
 									 change="{outerDocument.onActionSelected(event)}">
 
