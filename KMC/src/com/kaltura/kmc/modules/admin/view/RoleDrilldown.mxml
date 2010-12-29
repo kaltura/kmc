@@ -16,7 +16,7 @@
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
-
+			
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -78,7 +78,13 @@
 			/**
 			 * A list of special features that the partner has (IE live stream, ads,custom Data)
 			 */
-			private var _partnerFeatures:Array; // = ['CUSTOM_DATA_FEATURE', "ADVERTISING_FEATURE", 'LIVE_FEATURE'];
+			private var _partnerFeatures:Array; 
+			
+			[Bindable]
+			/**
+			 * is the partner missing any features
+			 * */
+			private var _isMissingFeature:Boolean = false;
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
@@ -96,8 +102,6 @@
 				descriptionTi.text = _undoRole.description;
 
 				// create form:
-				createCollapseExpandButtons();
-				
 				var groups:XMLList = _formData..permissionGroup;
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
@@ -107,21 +111,6 @@
 				fillPermissions(_undoRole.permissionNames);
 			}
 
-
-			/**
-			 * create the "collapse all" and "expand all" buttons
-			 */
-			protected function createCollapseExpandButtons():void {
-				var collapseAll:LinkButton = new LinkButton();
-				var expandAll:LinkButton = new LinkButton();
-				collapseAll.label = ResourceManager.getInstance().getString('admin', 'collapse');
-				expandAll.label = ResourceManager.getInstance().getString('admin', 'expand');
-				collapseAll.addEventListener(MouseEvent.CLICK, onCollapseAll);
-				expandAll.addEventListener(MouseEvent.CLICK, onExpandAll);
-
-				colapsExpand.addChild(collapseAll);
-				colapsExpand.addChild(expandAll);
-			}
 
 
 
@@ -204,7 +193,7 @@
 
 
 			/**
-			 * This function takes an XML of a group and builds a Vbox with a checkbox for the group name
+			 * This function takes an XML of a group and builds a VBox with a checkbox for the group name
 			 * and its children checkboxes (if needed). All checkboxs are pushed to a member array - allCheckboxes.
 			 * The checkbox id is its permission id, for checkboxes without children as well.
 			 * Inner checkboxes has the instance of their parent as their data.
@@ -218,7 +207,11 @@
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
 				if (group.attribute("dependsOnFeature").toString().length > 0) {
-					groupCb.enabled = checkIfPartnerHasFeature(group.attribute("dependsOnFeature").toString());
+					var res:Boolean = checkIfPartnerHasFeature(group.attribute("dependsOnFeature").toString());
+					groupCb.enabled = res;
+					if (!res) {
+						_isMissingFeature = true;
+					}
 				}
 				if (debug)
 					groupCb.toolTip = group.attribute("id")[0].toString();
@@ -466,9 +459,16 @@
 			</mx:FormItem>
 		</mx:Form>
 	</mx:VBox>
+	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" visible="{_isMissingFeature}" includeInLayout="{_isMissingFeature}"/>
 	<mx:HRule width="100%"/>
-	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
-	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox"/>
+	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox">
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
+		<mx:Spacer width="100%" />
+		<mx:LinkButton id="collapseAllBtn" label="{ResourceManager.getInstance().getString('admin', 'collapse')}"
+					   click="onCollapseAll(event)" />
+		<mx:LinkButton id="expandAllBtn" label="{ResourceManager.getInstance().getString('admin', 'expand')}"
+					   click="onExpandAll(event)" />
+	</mx:HBox>
 	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" disabledOverlayAlpha="0"/>
 	<mx:HBox width="100%" horizontalAlign="center" height="30">
 		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" id="saveBtn"
