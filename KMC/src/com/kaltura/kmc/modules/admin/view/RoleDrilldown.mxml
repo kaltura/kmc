@@ -102,7 +102,7 @@
 				descriptionTi.text = _undoRole.description;
 
 				// create form:
-				var groups:XMLList = _formData..permissionGroup;
+				var groups:XMLList = _formData.permissions.permissionGroup;
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
 				}
@@ -369,12 +369,13 @@
 			 * @param permissionList Comma seperated list of permissions to show.
 			 */
 			protected function fillPermissions(permissionList:String):void {
+				var cb:CheckBox;
 				// new roles have a null value for permissionNames, so we test here (default value doesn't work with null):
 				if (permissionList) {
 					var SelectedPermissionIds:Array = permissionList.split(",");
 					// setting the selected / not selected checkboxes
 					for each (var permission:String in SelectedPermissionIds) {
-						for each (var cb:CheckBox in _allCheckboxes) {
+						for each (cb in _allCheckboxes) {
 							if (cb.id == permission) {
 								cb.selected = true;
 								if (cb.data && cb.data is CheckBox)
@@ -385,6 +386,17 @@
 					// applying the half-selected style
 					for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 						pm.init();
+					}
+				}
+				else {
+					// for new roles, the default value is all permissions selected.
+					for each (cb in _allCheckboxes) {
+						// if the partner doesn't have the feature, don't check the box
+						if (cb.enabled) {
+							cb.selected = true;
+							if (cb.data && cb.data is CheckBox)
+								(cb.data as CheckBox).selected = true;
+						}
 					}
 				}
 			}
