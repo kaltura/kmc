@@ -463,8 +463,8 @@
 			[Bindable]
 			private var _advancedEditorTimer:Boolean = true;
 			
-			
-			
+			[Bindable]
+			private var _showEditorLinks:Boolean = true;
 			[Bindable]
 			private var _simpleEditorEnable:Boolean = true;
 			[Bindable]
@@ -565,6 +565,21 @@
 			private function onChangeThumbnailClick(event:MouseEvent):void {
 				_viewStack.selectedChild = _viewStack.getChildByName("entryThumnails") as Container;
 			}
+
+
+			/**
+			 * show the editor links box 
+			 * */
+			public function get showEditorLinks():Boolean
+			{
+				return _showEditorLinks;
+			}
+
+			public function set showEditorLinks(value:Boolean):void
+			{
+				_showEditorLinks = value;
+			}
+
 			
 		]]>
 	</mx:Script>
@@ -682,9 +697,9 @@
 								   click="{openPreview()}" width="100%"
 								   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
 				</mx:HBox>
-				<mx:HBox width="100%" horizontalGap="0"
+				<mx:HBox width="100%" horizontalGap="0" id="editorsBox"
 						 toolTip="{resourceManager.getString('cms','createmixfromentryTooltip')}"
-						 visible="{!isLiveStream}" includeInLayout="{!isLiveStream}">
+						 visible="{booleanAnd(!isLiveStream, _showEditorLinks)}" includeInLayout="{booleanAnd(!isLiveStream, _showEditorLinks)}">
 					<mx:Label paddingTop="3" width="{LABEL_WIDTH}" styleName="drillDownLabel"
 							  text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
 					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"
