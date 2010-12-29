@@ -10,12 +10,7 @@
 				   verticalAlign="top" styleName="mainView"
 				   minHeight="520" minWidth="950" 
 				   verticalGap="0"
-				   xmlns:firsttimewelcomepanel="com.kaltura.kmc.modules.dashboard.components.panels.firsttimewelcomepanel.*" 
-				   xmlns:uploadpanel="com.kaltura.kmc.modules.dashboard.components.panels.uploadpanel.*" 
-				   xmlns:chartspanel="com.kaltura.kmc.modules.dashboard.components.panels.chartspanel.*" 
-				   xmlns:embedpanel="com.kaltura.kmc.modules.dashboard.components.panels.embedpanel.*" 
-				   xmlns:customizepanel="com.kaltura.kmc.modules.dashboard.components.panels.customizepanel.*" 
-				   xmlns:accountpanel="com.kaltura.kmc.modules.dashboard.components.panels.accountpanel.*"
+				   xmlns:panels="com.kaltura.kmc.modules.dashboard.panels.*" 
 				   >
 
 
@@ -27,7 +22,7 @@
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.kmc.modules.dashboard.dashboardmanager.DashboardManager;
+			import com.kaltura.kmc.modules.dashboard.DashboardManager;
 			
 			import mx.controls.Alert;
 			import mx.resources.IResourceManager;
@@ -49,17 +44,17 @@
 			 * readable user name
 			 * */
 			private var _userName:String = '';
-
+			
 
 			/**
 			 * user name for google analytics
 			 * */
-			private var _userId:String;
+			private var _gaUserId:String;
 
 			/**
 			 * google analytics identifier
 			 * */
-			private var _urchinNumber:String;
+			private var _gaUrchinNumber:String;
 
 			
 			override public function getModuleName():String {
@@ -82,10 +77,10 @@
 				trace("=========================");
 				Security.allowDomain('*');
 
-				_urchinNumber = _flashvars.urchinnumber;
+				_gaUrchinNumber = _flashvars.urchinnumber;
 
-				_userName = _flashvars.username;
-				_userId = _flashvars.uid;
+				_userName = _userInfo.user.fullName;
+				_gaUserId = _flashvars.uid;
 
 				if (_flashvars.firstlogin == 'true') {
 					currentState = 'firstTimeUserState';
@@ -111,7 +106,7 @@
 				Alert.cancelLabel = rm.getString('kdashboard', 'cancel');
 
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
-				ka.init(DashboardManager.instance.kc, "Dashboard", VERSION, _userId);
+				ka.init(DashboardManager.instance.kc, "Dashboard", VERSION, _gaUserId);
 				
 				if (stage) {
 					initGoogleTracker(null);
@@ -131,8 +126,8 @@
 			 * */
 			private function initGoogleTracker(event:Event):void {
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
-				ga.init(DashboardManager.instance.kc.partnerId, _userId, this, "KMC/Dashboard",
-						_urchinNumber, "AS3",
+				ga.init(DashboardManager.instance.kc.partnerId, _gaUserId, this, "KMC/Dashboard",
+						_gaUrchinNumber, "AS3",
 						_flashvars.gadebug == "true" ? true : false);
 			}
 		]]>
@@ -140,19 +135,19 @@
 
 	<mx:HBox width="100%" styleName="tabsContainer" height="39" verticalScrollPolicy="off">
 		<mx:Label text="{_userName + ','}" id="userNameLabel" styleName="nameLabelStyle"/>
-		<mx:Label text="{resourceManager.getString('kdashboard','main_screen_welcome_title')}" id="welcomeLable"
-				  styleName="titleWelcomeLabelStyle" />
+		<mx:Label text="{resourceManager.getString('kdashboard','main_screen_welcome_title',[_userInfo.role.name, DashboardManager.instance.publisherName])}" 
+				  id="welcomeLable" styleName="titleWelcomeLabelStyle" />
 	</mx:HBox>
 	<mx:HBox width="100%" height="100%" styleName="innerView">
 		
 		<mx:VBox width="65%" height="100%">
-					<uploadpanel:UploadPanel id="uploadPanel" />
-					<embedpanel:EmbedPanel id="embedPanel"/>
-					<customizepanel:CustomizePanel id="customizePanel"/>
+					<panels:UploadPanel id="uploadPanel" />
+					<panels:EmbedPanel id="embedPanel"/>
+					<panels:CustomizePanel id="customizePanel"/>
 		</mx:VBox>
 		<mx:VBox width="35%" height="100%">
-					<chartspanel:ChartsPanel id="chartsPanel" width="100%" height="65%" />
-					<accountpanel:AccountPanel id="accountPanel" height="35%"/>
+					<panels:ChartsPanel id="chartsPanel" width="100%" height="65%" />
+					<panels:AccountPanel id="accountPanel" height="35%"/>
 			
 		</mx:VBox>
 		

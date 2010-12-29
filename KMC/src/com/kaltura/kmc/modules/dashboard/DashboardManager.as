@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.KalturaClient;
+	import com.kaltura.commands.partner.PartnerGetInfo;
 	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.commands.report.ReportGetGraphs;
 	import com.kaltura.dataStructures.HashMap;
@@ -7,6 +8,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.KmcModule;
+	import com.kaltura.vo.KalturaPartner;
 	import com.kaltura.vo.KalturaPartnerUsage;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
@@ -55,6 +57,14 @@ package com.kaltura.kmc.modules.dashboard {
 		public var totalPercentSoFar:String = '0';
 		[Bindable]
 		public var hostingGB:String = '0';
+		
+		
+		[Bindable]
+		/**
+		 * publisher name for welcome message
+		 * */
+		public var publisherName:String;
+		//TODO get value
 
 		/**
 		 * call this js function to show contibution wizard
@@ -112,8 +122,22 @@ package com.kaltura.kmc.modules.dashboard {
 		public function getData():void {
 			getGraphData();
 			getUsageData();
+			getPartnerData();
+		}
+		
+		
+		private function getPartnerData():void {
+			var getPartnerInfo:PartnerGetInfo = new PartnerGetInfo();
+			getPartnerInfo.addEventListener(KalturaEvent.COMPLETE, onPartnerInfo);
+			getPartnerInfo.addEventListener(KalturaEvent.FAILED, fault);
+			kc.post(getPartnerInfo);	
 		}
 
+		
+		private function onPartnerInfo(ke:KalturaEvent):void {
+			publisherName = (ke.data as KalturaPartner).name;
+		}
+		
 
 		/**
 		 * Calling for the Account usage data from the server
@@ -132,13 +156,8 @@ package com.kaltura.kmc.modules.dashboard {
 
 		/**
 		 * In case the usage data call has errors
-		 *
 		 */
 		private function onSrvFlt(fault:Object):void {
-
-
-
-
 			Alert.show(ResourceManager.getInstance().getString('kdashboard', 'usageErrorMsg') + ":\n" + fault.error.errorMsg, ResourceManager.getInstance().getString('kdashboard', 'error'));
 		}
 
@@ -157,8 +176,6 @@ package com.kaltura.kmc.modules.dashboard {
 
 		/**
 		 * Calling for the graph's data from the server
-		 *
-		 *
 		 */
 		private function getGraphData():void {
 			var ONE_DAY:int = 1000 * 60 * 60 * 24;
