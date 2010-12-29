@@ -6,6 +6,8 @@ package com.kaltura.kmc.model.types {
 	 */
 	public class APIErrorCode {
 
+		
+		
 		/**
 		 * The access to this service is forbidden 
 		 */
@@ -532,5 +534,14 @@ package com.kaltura.kmc.model.types {
 		 */
 		public static const USER_LOGIN_ALREADY_DISABLED:String = 'USER_LOGIN_ALREADY_DISABLED';
 
+		/*
+		* User service
+		*/
+		
+		/**
+		 * The data you entered is invalid 
+		 */		
+		public static const LOGIN_DATA_NOT_FOUND:String = "LOGIN_DATA_NOT_FOUND";
+		
 	}
 }

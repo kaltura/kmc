@@ -25,7 +25,8 @@
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-//TODO get the current user and the account owner ids and pass them to the table so they won't be deletable / blockable
+
+			
 			[Bindable]
 			/**
 			 * users related part of the main model
@@ -221,8 +222,8 @@
 				var ue:UserEvent;
 				// need to know if new user or update user.
 				if (model.drilldownMode == DrilldownMode.ADD) {
-					// add user
-					ue = new UserEvent(UserEvent.ADD_USER, _userDrilldown.user);
+					// see if login data for this user already exist (add user will be triggered in the response)
+					ue = new UserEvent(UserEvent.CHECK_USER_EXIST, _userDrilldown.user);
 				}
 				else if (model.drilldownMode == DrilldownMode.EDIT) {
 					// edit user

@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.admin.control.events
 	
 	public class UserEvent extends CairngormEvent {
 		
+		public static const CHECK_USER_EXIST:String = "admin_checkUserExist";
 		public static const ADD_USER:String = "admin_addUser";
 		public static const UPDATE_USER:String = "admin_updateUser";
 		public static const DELETE_USER:String = "admin_deleteUser";

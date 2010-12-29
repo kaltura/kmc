@@ -25,6 +25,7 @@ package com.kaltura.kmc.modules.admin.control
 			addCommand( UserEvent.TOGGLE_USER_STATUS, ToggleUserStatusCommand );
 			addCommand( UserEvent.UPDATE_USER, UpdateUserCommand );
 			addCommand( UserEvent.ADD_USER, AddUserCommand );
+			addCommand( UserEvent.CHECK_USER_EXIST, CheckUserExistCommand );
 			
 			// drilldown events
 			addCommand( DrilldownEvent.USERS_SET_STATE, SetStateCommand);
