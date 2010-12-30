@@ -82,7 +82,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "4.0.1a";
+			public var VERSION:String = "4.0.1b";
 			
 			
 			
@@ -195,7 +195,7 @@
 				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
-				var perms:PermissionList = new PermissionList();	//TODO add filter for special_features
+				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter);	
 				
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
@@ -260,9 +260,9 @@
 				if (isError(event.data[1].error)) return;
 				var uidefinition:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
 				
-				//TODO [2, 3] user and role:
+				// [2, 3] user and role:
 				if (isError(event.data[2].error)) return;
-				isError(event.data[3].error); 
+				if (isError(event.data[3].error)) return; 
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[2] as KalturaUser;
 				uvo.role = event.data[3] as KalturaUserRole;
@@ -270,51 +270,50 @@
 				
 				var roleOfCurrentUser:String;
 //				if (/* uvo.role  */false) {
-				if (uvo.role) {
+//				if (uvo.role) {
 					// real data
 					roleOfCurrentUser = uvo.role.permissionNames; 
-				}
-				else {
-					// manual permissions (enumerated in KalturaPermissionName)
-					//TODO + use real role info (comment out the full list)  
-					roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
-						"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
-						// live stream
-						"LIVE_STREAM_BASE,LIVE_STREAM_ADD,LIVE_STREAM_UPDATE," +
-						// mix
-						"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
-						// content management
-						"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES," + 
-						"CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL," +
-						"CONTENT_MANAGE_DELETE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES," +
-						"CONTENT_MANAGE_EMBED_CODE,CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
-						// content moderation
-						"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
-						// playlist
-						"PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE," +
-						// syndication
-						"SYNDICATION_BASE,SYNDICATION_ADD,SYNDICATION_UPDATE,SYNDICATION_DELETE," +
-						// studio
-						"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
-						// advertising
-						"ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
-						// account overview
-						"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
-						// integration settings
-						"INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS," +
-						// account upgrade
-						"UPGRADE_BASE," +
-						// access control
-						"ACCESS_CONTROL_BASE,ACCESS_CONTROL_ADD,ACCESS_CONTROL_UPDATE,ACCESS_CONTROL_DELETE," +
-						// transcoding settings 
-						"TRANSCODING_BASE,TRANSCODING_ADD,TRANSCODING_DELETE,TRANSCODING_UPDATE," + 
-						// custom metadata
-						"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
-						// administration
-						"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE," +
-						// analytics
-						"ANALYTICS_BASE"; 
-				}
+//				}
+//				else {
+//					// manual permissions (enumerated in KalturaPermissionName)
+//					roleOfCurrentUser = "CONTENT_INGEST_UPLOAD_BASE,CONTENT_INGEST_UPLOAD," +
+//						"CONTENT_INGEST_BULK_UPLOAD_BASE,CONTENT_INGEST_BULK_UPLOAD," +
+//						// live stream
+//						"LIVE_STREAM_BASE,LIVE_STREAM_ADD,LIVE_STREAM_UPDATE," +
+//						// mix
+//						"CONTENT_MANAGE_MIX_BASE,CONTENT_MANAGE_MIX," + 
+//						// content management
+//						"CONTENT_MANAGE_BASE,CONTENT_MANAGE_METADATA,CONTENT_MANAGE_ASSIGN_CATEGORIES," + 
+//						"CONTENT_MANAGE_THUMBNAIL,CONTENT_MANAGE_SCHEDULE,CONTENT_MANAGE_ACCESS_CONTROL," +
+//						"CONTENT_MANAGE_DELETE,CONTENT_MANAGE_RECONVERT,CONTENT_MANAGE_EDIT_CATEGORIES," +
+//						"CONTENT_MANAGE_EMBED_CODE,CUSTOM_DATA_FEATURE,CONTENT_MANAGE_CUSTOM_DATA," +
+//						// content moderation
+//						"CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA," +
+//						// playlist
+//						"PLAYLIST_BASE,PLAYLIST_ADD,PLAYLIST_UPDATE,PLAYLIST_DELETE,PLAYLIST_EMBED_CODE," +
+//						// syndication
+//						"SYNDICATION_BASE,SYNDICATION_ADD,SYNDICATION_UPDATE,SYNDICATION_DELETE," +
+//						// studio
+//						"STUDIO_BASE,STUDIO_ADD_UICONF,STUDIO_UPDATE_UICONF,STUDIO_DELETE_UICONF,STUDIO_SELECT_CONTENT," +
+//						// advertising
+//						"ADVERTISING_BASE,ADVERTISING_UPDATE_SETTINGS," +
+//						// account overview
+//						"ACCOUNT_BASE,ACCOUNT_UPDATE_SETTINGS," +
+//						// integration settings
+//						"INTEGRATION_BASE,INTEGRATION_UPDATE_SETTINGS," +
+//						// account upgrade
+//						"UPGRADE_BASE," +
+//						// access control
+//						"ACCESS_CONTROL_BASE,ACCESS_CONTROL_ADD,ACCESS_CONTROL_UPDATE,ACCESS_CONTROL_DELETE," +
+//						// transcoding settings 
+//						"TRANSCODING_BASE,TRANSCODING_ADD,TRANSCODING_DELETE,TRANSCODING_UPDATE," + 
+//						// custom metadata
+//						"CUSTOM_DATA_PROFILE_BASE,CUSTOM_DATA_PROFILE_ADD,CUSTOM_DATA_PROFILE_UPDATE,CUSTOM_DATA_PROFILE_DELETE," + 
+//						// administration
+//						"ADMIN_BASE,ADMIN_USER_ADD,ADMIN_USER_UPDATE,ADMIN_USER_DELETE,ADMIN_ROLE_ADD,ADMIN_ROLE_UPDATE,ADMIN_ROLE_DELETE," +
+//						// analytics
+//						"ANALYTICS_BASE"; 
+//				}
 				
 				// [4] partner permissions list
 				if (isError(event.data[4].error)) return;
