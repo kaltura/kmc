@@ -3,6 +3,9 @@ package com.kaltura.kmc.model {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.kmc.business.PermissionManager;
 	import com.kaltura.kmc.vo.UserVO;
+	import com.kaltura.types.KalturaPermissionStatus;
+	import com.kaltura.types.KalturaPermissionType;
+	import com.kaltura.vo.KalturaPermissionFilter;
 	
 	import flash.events.EventDispatcher;
 
@@ -34,6 +37,8 @@ package com.kaltura.kmc.model {
 		
 		public var userInfo:UserVO;
 		
+		public var permissionsListFilter:KalturaPermissionFilter;
+		
 		
 		/**
 		 * singleton means of retreiving an instance of the 
@@ -55,6 +60,10 @@ package com.kaltura.kmc.model {
 		public function KmcModelLocator(enforcer:Enforcer) 
 		{
 			permissionManager = PermissionManager.getInstance();
+			
+			permissionsListFilter = new KalturaPermissionFilter();
+			permissionsListFilter.typeEqual = KalturaPermissionType.SPECIAL_FEATURE;
+			permissionsListFilter.statusEqual = KalturaPermissionStatus.ACTIVE;
 		}
 
 

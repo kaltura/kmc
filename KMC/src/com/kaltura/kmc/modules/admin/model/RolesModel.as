@@ -1,7 +1,10 @@
 package com.kaltura.kmc.modules.admin.model
 {
+	import com.kaltura.types.KalturaPermissionStatus;
+	import com.kaltura.types.KalturaPermissionType;
 	import com.kaltura.types.KalturaUserRoleOrderBy;
 	import com.kaltura.types.KalturaUserRoleStatus;
+	import com.kaltura.vo.KalturaPermissionFilter;
 	import com.kaltura.vo.KalturaUserRole;
 	import com.kaltura.vo.KalturaUserRoleFilter;
 	
@@ -15,6 +18,10 @@ package com.kaltura.kmc.modules.admin.model
 			rolesFilter = new KalturaUserRoleFilter();
 			rolesFilter.statusEqual = KalturaUserRoleStatus.ACTIVE;
 			rolesFilter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
+			// only get speacial, non-deleted features
+			permissionsFilter = new KalturaPermissionFilter();
+			permissionsFilter.typeIn = KalturaPermissionType.SPECIAL_FEATURE.toString();//TODO + ',' + KalturaPermissionType.PLUGIN;
+			permissionsFilter.statusEqual = KalturaPermissionStatus.ACTIVE;
 		}
 		
 		/**
@@ -37,6 +44,12 @@ package com.kaltura.kmc.modules.admin.model
 		 * the filter used for listing roles. 
 		 */		
 		public var rolesFilter:KalturaUserRoleFilter;
+		
+		/**
+		 * the filter used for listing partner permissions
+		 * (only get speacial features). 
+		 */		
+		public var permissionsFilter:KalturaPermissionFilter;
 		
 		
 		/**

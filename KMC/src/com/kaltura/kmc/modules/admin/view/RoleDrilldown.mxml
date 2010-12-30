@@ -12,6 +12,7 @@
 			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
@@ -24,6 +25,7 @@
 			import mx.controls.Spacer;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
 			/**
@@ -186,7 +188,6 @@
 			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML, partnerFeatures:String):void {
 				_formData = partnerPermissions;
 				_partnerFeatures = partnerFeatures.split(",");
-				// the following intentionaly use setters. 
 				setRole(role);
 				setMode(mode);
 			}
@@ -311,6 +312,14 @@
 				return cb;
 			}
 
+			/**
+			 * put values from the form into the _undoUser object
+			 * */
+			protected function updateUndoRoleFromForm():void {
+				_undoRole.name = nameTi.text;
+				_undoRole.description = descriptionTi.text;
+				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
+			}
 
 			/**
 			 * update _undoRole.permissionNames
@@ -318,10 +327,48 @@
 			 * that are not relevant to KMC.
 			 */
 			protected function saveBtn_clickHandler(event:MouseEvent):void {
-				_undoRole.name = nameTi.text;
-				_undoRole.description = descriptionTi.text;
-				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
+				updateUndoRoleFromForm();
 				requestSave();
+			}
+			
+			
+			/**
+			 * navigate to account>upgrade.
+			 * */
+			protected function label1_linkHandler(event:TextEvent):void
+			{
+				/* When clicking the contact us link the user should be moved to the account upgrade page. 
+				in case he is clicking this link after making changes in new/existing role settings a popup 
+				message of "Discard changes" should appear with OK (go to account upgrade page), Cancel 
+				(stay in this window)options. */
+				updateUndoRoleFromForm();
+				var needSave:Boolean = !ObjectUtil.compareObjects(_role, _undoRole);
+				if (needSave) {
+					var rm:IResourceManager = ResourceManager.getInstance();
+					Alert.show(rm.getString('admin', 'discard_changes'), 
+								rm.getString('admin', 'discard_changes_title'),
+								Alert.YES|Alert.NO, null, navToUpgradeHandler); 
+				}
+				else {
+					// go to account>upgrade
+					dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));
+				}
+			}
+			
+			
+			/**
+			 * handle user "discard changes" prompt before navigating to account>upgrade
+			 * */
+			protected function navToUpgradeHandler(e:CloseEvent):void {
+				switch (e.detail) {
+					case Alert.YES:
+						// go to account>upgrade
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));	
+						break;
+					case Alert.NO:
+						// do nothing.
+						break;
+				}
 			}
 
 
@@ -385,7 +432,7 @@
 					}
 					// applying the half-selected style
 					for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
-						pm.init();
+						pm.setState();
 					}
 				}
 				else {
@@ -397,6 +444,13 @@
 							if (cb.data && cb.data is CheckBox)
 								(cb.data as CheckBox).selected = true;
 						}
+						else {
+							cb.selected = false;
+						}
+					}
+					// applying the half-selected style
+					for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
+						pm.setState();
 					}
 				}
 			}
@@ -459,6 +513,7 @@
 			public function get mode():String {
 				return _mode;
 			}
+
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%">
@@ -471,7 +526,8 @@
 			</mx:FormItem>
 		</mx:Form>
 	</mx:VBox>
-	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" visible="{_isMissingFeature}" includeInLayout="{_isMissingFeature}"/>
+	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" selectable="true" 
+			  visible="{_isMissingFeature}" includeInLayout="{_isMissingFeature}" link="label1_linkHandler(event)"/>
 	<mx:HRule width="100%"/>
 	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox">
 		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>

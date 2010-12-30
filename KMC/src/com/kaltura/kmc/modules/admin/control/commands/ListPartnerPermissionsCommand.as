@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		 * @inheritDocs
 		 */
 		override public function execute(event:CairngormEvent):void {
-			var ul:PermissionList = new PermissionList();
+			var ul:PermissionList = new PermissionList(_model.rolesModel.permissionsFilter);
 			ul.addEventListener(KalturaEvent.COMPLETE, result);
 			ul.addEventListener(KalturaEvent.FAILED, fault);
 			if (_model.kc) {

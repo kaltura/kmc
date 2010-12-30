@@ -8,6 +8,7 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
@@ -37,6 +38,14 @@
 				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
 				BindingUtils.bindSetter(onNewRoleChanged, model, "newRole");
 				PermissionManager.getInstance().applyAllAttributes(this,id);
+			}
+
+			private function onNavigate(event:KmcNavigationEvent):void
+			{
+				// close drilldown 
+				closeRoleDrilldown(null);
+				// navigate
+				dispatchEvent(new KmcNavigationEvent(event.type, event.module, event.subtab, event.data, event.bubbles, event.cancelable));
 			}
 			
 			/**
@@ -128,6 +137,7 @@
 					PopUpManager.removePopUp(_roleDrilldown);
 					_roleDrilldown.removeEventListener(UserDrilldown.SAVE, saveRoleData);
 					_roleDrilldown.removeEventListener(UserDrilldown.CLOSE, closeRoleDrilldown);
+					_roleDrilldown.removeEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
 					_roleDrilldown = null;
 					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
@@ -144,6 +154,7 @@
 				ud.init(model.selectedRole, model.drilldownMode, model.partnerPermissionsUiconf, model.partnerPermissions);
 				ud.addEventListener(RoleDrilldown.SAVE, saveRoleData);
 				ud.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
+				ud.addEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
 				PopUpManager.addPopUp(ud, this, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;

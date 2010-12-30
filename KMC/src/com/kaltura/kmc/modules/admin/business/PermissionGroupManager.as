@@ -18,14 +18,30 @@ package com.kaltura.kmc.modules.admin.business
 		public static const STATUS_PARTIAL:String = "statusPartial";
 		
 		public var _isOpen:Boolean = false;
-		public var _isOpenRevers:Boolean = true;
+		public var _isOpenReverse:Boolean = true;
 		private var _status:String;
 		
+		/**
+		 * main CheckBox for this group 
+		 */		
 		public var groupCheckbox:CheckBox;
+		
 		private var groupCheckboxString:String;
+		
+		[ArrayElementType("CheckBox")]
+		/**
+		 * list sub-checkboxes of this group 
+		 */
 		public var innerCheckBoxes:Array;
 		
+		/**
+		 * button that collapses this group 
+		 */		
 		public var closeLinkButton:LinkButton;
+		
+		/**
+		 * button that expands this group 
+		 */		
 		public var openLinkButton:LinkButton;
 		
 		public function PermissionGroupManager(groupCheckbox:CheckBox,innerCheckBoxes:Array , closeLinkButton:LinkButton , openLinkButton:LinkButton , showButtons:Boolean)
@@ -34,18 +50,18 @@ package com.kaltura.kmc.modules.admin.business
 			this.openLinkButton = openLinkButton;
 			this.innerCheckBoxes = innerCheckBoxes;
 			this.groupCheckbox = groupCheckbox ;
-			this.groupCheckbox.addEventListener(MouseEvent.CLICK , onGroupChanged);
+			this.groupCheckbox.addEventListener(MouseEvent.CLICK , onGroupChanged, false, 0, true);
 			
-			this.openLinkButton.addEventListener(MouseEvent.CLICK , onAdvancedClicked);
-			this.closeLinkButton.addEventListener(MouseEvent.CLICK , onGroupClosed);
+			this.openLinkButton.addEventListener(MouseEvent.CLICK , onAdvancedClicked, false, 0, true);
+			this.closeLinkButton.addEventListener(MouseEvent.CLICK , onGroupClosed, false, 0, true);
 			groupCheckboxString = groupCheckbox.label;
 			if (showButtons)
 			{
 				BindingUtils.bindProperty(this.closeLinkButton, "visible", this , "_isOpen");
 				BindingUtils.bindProperty(this.closeLinkButton, "includeInLayout", this , "_isOpen"); 
 				
-				BindingUtils.bindProperty(this.openLinkButton, "visible", this,"_isOpenRevers");
-				BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this,"_isOpenRevers"); 
+				BindingUtils.bindProperty(this.openLinkButton, "visible", this,"_isOpenReverse");
+				BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this,"_isOpenReverse"); 
 			} else 
 			{
 				closeLinkButton.includeInLayout = false;
@@ -58,29 +74,33 @@ package com.kaltura.kmc.modules.admin.business
 			{
 				BindingUtils.bindProperty(cb, "visible", this , "_isOpen");
 				BindingUtils.bindProperty(cb, "includeInLayout", this , "_isOpen"); 
-				cb.addEventListener(Event.CHANGE , innerCheckboxChanged);
+				cb.addEventListener(Event.CHANGE , innerCheckboxChanged, false, 0, true);
 			}
 		}
 		
 		
 		/**
-		 * In case of editing, 
+		 * set main checkbox state according to inner checkboxes
 		 */ 
-		public function init():void
+		public function setState():void
 		{
 			if (innerCheckBoxes.length && groupCheckbox.selected  )
 			{
 				var allSelected:Boolean = true;
 				for each(var cb:CheckBox in innerCheckBoxes)
 				{
-					allSelected = allSelected&&cb.selected;
+					allSelected = allSelected && cb.selected;
 				}
 				if (!allSelected)
 					groupCheckbox.styleName = "partial";
 			}
+			if (!groupCheckbox.enabled) {
+				closeLinkButton.enabled = false;
+				openLinkButton.enabled = false;
+			}
 		}
 		
-		public function revers(val:Boolean):Boolean
+		public function reverse(val:Boolean):Boolean
 		{
 			return !val;
 		}
@@ -97,7 +117,7 @@ package com.kaltura.kmc.modules.admin.business
 		 * A group option button was clicked
 		 * 
 		 */
-		protected function  onAdvancedClicked (event:MouseEvent):void
+		protected function onAdvancedClicked (event:MouseEvent):void
 		{
 			isOpen = true;
 		}
@@ -167,7 +187,7 @@ package com.kaltura.kmc.modules.admin.business
 		public function set isOpen(value:Boolean):void
 		{
 			_isOpen = value;
-			_isOpenRevers = !_isOpen;
+			_isOpenReverse = !_isOpen;
 		}
 
 
