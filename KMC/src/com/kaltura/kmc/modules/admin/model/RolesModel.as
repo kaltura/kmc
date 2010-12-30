@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.admin.model
 			rolesFilter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
 			// only get speacial, non-deleted features
 			permissionsFilter = new KalturaPermissionFilter();
-			permissionsFilter.typeIn = KalturaPermissionType.SPECIAL_FEATURE.toString();//TODO + ',' + KalturaPermissionType.PLUGIN;
+			permissionsFilter.typeIn = KalturaPermissionType.SPECIAL_FEATURE + ',' + KalturaPermissionType.PLUGIN;
 			permissionsFilter.statusEqual = KalturaPermissionStatus.ACTIVE;
 		}
 		
