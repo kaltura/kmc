@@ -604,8 +604,8 @@
 
 
 			/**
-			 * the function translate status type enum to the natching locale string
-			 * @param status
+			 * the function translate status type enum to the matching locale string
+			 * @param obj	data object for the itemrenderer
 			 */
 			public function getStatus(obj:Object):String {
 				var entry:KalturaBaseEntry = obj as KalturaBaseEntry;
@@ -669,12 +669,8 @@
 						switch (schedulingType) {
 							case SCHEDULING_ALL_OR_IN_FRAME:  {
 								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'liveStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'liveStatus');
-									}
+									case KalturaEntryModerationStatus.APPROVED:  
+									case KalturaEntryModerationStatus.AUTO_APPROVED:  
 									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
 										return resourceManager.getString('cms', 'liveStatus');
 									}
@@ -689,12 +685,8 @@
 							}
 							case SCHEDULING_BEFORE_FRAME:  {
 								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'scheduledStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'scheduledStatus');
-									}
+									case KalturaEntryModerationStatus.APPROVED:  
+									case KalturaEntryModerationStatus.AUTO_APPROVED:  
 									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
 										return resourceManager.getString('cms', 'scheduledStatus');
 									}
@@ -709,12 +701,8 @@
 							}
 							case SCHEDULING_AFTER_FRAME:  {
 								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'finishedStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'finishedStatus');
-									}
+									case KalturaEntryModerationStatus.APPROVED:  
+									case KalturaEntryModerationStatus.AUTO_APPROVED:  
 									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
 										return resourceManager.getString('cms', 'finishedStatus');
 									}
@@ -910,10 +898,8 @@
 			<mx:itemRenderer>
 				<mx:Component>
 					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
-
-						<mx:Label id="lbl"
-								  text="{ outerDocument.usedForModeration ? outerDocument.getStatusForModeration(data) : outerDocument.getStatus(data)}"
-								  toolTip="{lbl.text}"/>
+						<mx:Label id="lbl" toolTip="{lbl.text}"
+								  text="{outerDocument.usedForModeration ? outerDocument.getStatusForModeration(data) : outerDocument.getStatus(data)}" />
 					</mx:HBox>
 				</mx:Component>
 			</mx:itemRenderer>
