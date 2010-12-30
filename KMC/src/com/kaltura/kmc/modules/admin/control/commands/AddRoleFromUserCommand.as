@@ -30,11 +30,13 @@ package com.kaltura.kmc.modules.admin.control.commands
 			super.result(data);
 			if (data.success) {
 				// change the flag to close the role drilldown
-				_model.usersModel.roleDrilldownMode = DrilldownMode.NONE;
 				// update the roles combobox dataprovider 
-				_model.rolesModel.roles = new ArrayCollection(data.data[1]);
+				_model.rolesModel.roles = new ArrayCollection(data.data[1].objects);
 				// trigger the setter to use the returned object as the role for current user
 				_model.usersModel.newRole = data.data[0] as KalturaUserRole;
+				// just to trigger the closing:
+				_model.usersModel.roleDrilldownMode = DrilldownMode.ADD;
+				_model.usersModel.roleDrilldownMode = DrilldownMode.NONE;
 			}
 			_model.decreaseLoadCounter();
 		}
