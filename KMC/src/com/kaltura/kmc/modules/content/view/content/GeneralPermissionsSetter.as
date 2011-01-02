@@ -36,7 +36,7 @@ package com.kaltura.kmc.modules.content.view.content
 		public function set enableCustomData(value:Boolean):void
 		{
 			// raise a command to change the model
-			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_EMBED_STATUS, value);
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_CUSTOM_METADATA, value);
 			cge.dispatch();
 		}
 		
