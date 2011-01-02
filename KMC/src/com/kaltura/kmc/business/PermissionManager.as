@@ -97,7 +97,6 @@ package com.kaltura.kmc.business {
 			var permissionParser:PermissionsParser = new PermissionsParser();
 			_instructionVos = permissionParser.parseAllPermissions(_deniedPermissions.permissions.permissionGroup);
 
-			//TODO + parse partner permissions
 			var partnerPermissionsUi:XMLList = getPartnerPermissionsUi(_deniedPermissions.partnerPermissions[0], partnerPermissions);
 			_instructionVos = _instructionVos.concat(permissionParser.parseAllPermissions(partnerPermissionsUi));
 			
