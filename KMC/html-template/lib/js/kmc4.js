@@ -121,6 +121,11 @@ $(window).load(function(){
 	kmc.utils = {
 		activateHeader : function(on) { // supports turning menu off if needed - just uncomment else clause
 			//if(on) {
+//			if ($("#kcms")[0].alert) {
+//				$("#kcms")[0].alert("activateHeader");
+//			}
+				
+				
 				$("a").click(function(e) {
 					var go_to,
 					tab = (e.target.tagName == "A") ? e.target.id : $(e.target).parent().attr("id");
@@ -272,7 +277,7 @@ $(window).load(function(){
 				console.info(" partner_id: ",kmc.vars.partner_id);
 			}
 			catch(err) {}
-		}()
+		},
 
 		/*,
 		cookies : {
@@ -280,23 +285,25 @@ $(window).load(function(){
 			get		: function(){},
 			kill	: function(){}
 		}*/
-	}
+	
 //};
-	kmc.utils.closeModal = function() {
+		closeModal : function() {
 			kalturaCloseModalBox();
 			$("#flash_wrap").css("visibility","visible");
 			return false;
-	}
+		},
 	
 //hide header function
-	kmc.utils.maskHeader = function(hide) {
-		if(hide) {
-			$("#mask").remove();
+		maskHeader : function(hide) {
+//			$("#kcms")[0].alert("maskHeader");
+			if(hide) {
+				$("#mask").remove();
+			}
+			else {
+				$("#kmcHeader").append('<div id="mask"></div>');
+			}
 		}
-		else {
-			$("#kmcHeader").append('<div id="mask"></div>');
-		}
-	} 
+	}
 		
 	
 
