@@ -64,7 +64,6 @@ package com.kaltura.kmc.modules.dashboard {
 		 * publisher name for welcome message
 		 * */
 		public var publisherName:String;
-		//TODO get value
 
 		/**
 		 * call this js function to show contibution wizard
