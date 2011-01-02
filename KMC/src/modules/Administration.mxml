@@ -11,6 +11,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.PartnerEvent;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
@@ -79,6 +80,7 @@
 
 
 			override protected function start():void {
+				Security.allowDomain('*');
 				initModel();
 				if (_ready && _initialTab) {
 					switchToTab(_initialTab);
@@ -129,6 +131,16 @@
 				ExternalInterface.call("kmc.mediator.writeUrlHash", Administration.NAME, label);
 			}
 
+
+			/**
+			 * event handler that allows the inner panels to enable or disable HTML headers
+			 * */
+			protected function enableHeaderHandler(event:GeneralEvent):void
+			{
+				var bEnable:Boolean = event.data;
+				enableHtmlTabs(bEnable);
+			}
+
 		]]>
 	</mx:Script>
 	<!-- the FrontController, containing Commands specific to this appliation -->
@@ -141,9 +153,9 @@
 	</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
 					  horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}"
+			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}" enableHeader="enableHeaderHandler(event)"
 						width="100%" model="{_model.usersModel}"  rolesModel="{_model.rolesModel}"/>
-			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}"
+			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}" enableHeader="enableHeaderHandler(event)"
 						width="100%" model="{_model.rolesModel}" />
 		</mx:ViewStack>
 
