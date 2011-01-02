@@ -3,6 +3,9 @@
 		 xmlns:controls="com.kaltura.controls.*" width="100%" height="100%"
 		 creationComplete="creationCompleteHandler(event)"
 		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab">
+	<mx:Metadata >
+		[Event(name="enableHeader",type="com.kaltura.kmc.modules.admin.control.events.GeneralEvent")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -10,6 +13,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
@@ -141,6 +145,7 @@
 					_roleDrilldown = null;
 					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
+					dispatchEvent(new GeneralEvent("enableHeader", true));
 				}
 			}
 			
@@ -157,6 +162,7 @@
 				ud.addEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
 				PopUpManager.addPopUp(ud, this, true);
 				PopUpManager.centerPopUp(ud);
+				dispatchEvent(new GeneralEvent("enableHeader", false));
 				return ud;
 			}
 			

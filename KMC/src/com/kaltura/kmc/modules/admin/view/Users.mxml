@@ -3,6 +3,9 @@
 		 xmlns:view="com.kaltura.kmc.modules.admin.view.*" xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.admin.view.IAdminSubtab"
 		 creationComplete="creationCompleteHandler()">
+	<mx:Metadata >
+		[Event(name="enableHeader",type="com.kaltura.kmc.modules.admin.control.events.GeneralEvent")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -11,6 +14,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
+			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 			import com.kaltura.kmc.modules.admin.control.events.UserEvent;
@@ -235,8 +239,8 @@
 			private function onNavigate(event:KmcNavigationEvent):void
 			{
 				// close drilldowns 
-				closeUserDrilldown(null);
 				closeRoleDrilldown(null);
+				closeUserDrilldown(null);
 				// navigate
 				dispatchEvent(new KmcNavigationEvent(event.type, event.module, event.subtab, event.data, event.bubbles, event.cancelable));
 			}
@@ -253,6 +257,7 @@
 					_userDrilldown = null;
 					var de:DrilldownEvent = new DrilldownEvent(DrilldownEvent.USERS_SET_STATE, DrilldownMode.NONE);
 					de.dispatch();
+					dispatchEvent(new GeneralEvent("enableHeader", true));
 				}
 			}
 			
@@ -301,6 +306,7 @@
 			 * @return the newly created popup window
 			 * */
 			protected function drillToSelectedUser():UserDrilldown {
+				dispatchEvent(new GeneralEvent("enableHeader", false));
 				var ud:UserDrilldown = new UserDrilldown();
 				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
