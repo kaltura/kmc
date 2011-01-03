@@ -7,41 +7,50 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.vo.KalturaThumbParams;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.events.DataGridEvent;
 
 			[Bindable]
 			private var _allSelected:Boolean = false;
-			[Bindable]
+			
+			/**
+			 * @copy #cProfile
+			 * */
 			private var _cProfile:ConversionProfileVO;
+			
 			[Bindable]
 			private var _thumbParamsData:ArrayCollection;
 
 			/**
-			 * @copy #editable
+			 * @copy #dataEditable
 			 * */
 			private var _dataEditable:Boolean = true;
 
-			public function get thumbParamsData():ArrayCollection
-			{
+
+			public function get thumbParamsData():ArrayCollection {
 				return _thumbParamsData;
 			}
 
-			public function set thumbParamsData(value:ArrayCollection):void
-			{
+
+			public function set thumbParamsData(value:ArrayCollection):void {
 				_thumbParamsData = value;
 				validateProfileFlavors();
 			}
 
+
 			[Bindable]
+			/**
+			 * the conversion profile the table is currently showing
+			 * */
 			public function get cProfile():ConversionProfileVO {
 				return _cProfile;
 			}
 
 
-			public function set cProfile(cProfile:ConversionProfileVO):void {
-				_cProfile = cProfile;
+			public function set cProfile(val:ConversionProfileVO):void {
+				trace("setting _cProfile to", val.toString());
+				_cProfile = val;
 				validateProfileFlavors();
 			}
 
@@ -57,14 +66,14 @@
 
 
 			private function validateProfileFlavors():void {
-				if (!cProfile || !dataProvider || !thumbParamsData)
+				if (!_cProfile || !dataProvider || !thumbParamsData)
 					return;
-				
-				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
+
+				var idsArr:Array = _cProfile.profile.flavorParamsIds.split(',');
 				var currentFlavors:Array = new Array();
 				var vo:FlavorVO;
 				var isFlavor:Boolean;
-				
+
 				for each (var id:String in idsArr) {
 					isFlavor = false;
 					for each (vo in dataProvider) {
@@ -76,7 +85,7 @@
 					}
 					if (!isFlavor) {
 						for each (var thumbParam:KalturaThumbParams in thumbParamsData) {
-							if (int(id)==thumbParam.id) {
+							if (int(id) == thumbParam.id) {
 								currentFlavors.push(id);
 								break;
 							}
@@ -85,7 +94,7 @@
 				}
 
 				var ids:String = currentFlavors.length == 0 ? null : currentFlavors.join(',');
-				cProfile.profile.flavorParamsIds = ids;
+				_cProfile.profile.flavorParamsIds = ids;
 			}
 
 

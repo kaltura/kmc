@@ -8,7 +8,7 @@
 			<mx:SetProperty target="{titleText}" name="htmlText"
 							value="{resourceManager.getString('account', 'transcodingProfiles')}"/>
 			<mx:SetProperty target="{introText}" name="text"
-							value="{resourceManager.getString('account', 'transcodingSettingsAdvancedModeIntroText')}" />
+							value="{resourceManager.getString('account', 'transcodingSettingsAdvancedModeIntroText')}"/>
 		</mx:State>
 	</mx:states>
 
@@ -25,7 +25,7 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -35,39 +35,39 @@
 
 			[Bindable]
 			private var _conversionData:ArrayCollection;
-			
+
 			private var _flavorParamData:ArrayCollection;
 			private var _thumbParamData:ArrayCollection;
-			
-			
-			public function get thumbParamData():ArrayCollection
-			{
+
+
+			public function get thumbParamData():ArrayCollection {
 				return _thumbParamData;
 			}
-			
+
+
 			[Bindable]
-			public function set thumbParamData(value:ArrayCollection):void
-			{
+			public function set thumbParamData(value:ArrayCollection):void {
 				_thumbParamData = value;
 			}
 
+
 			[Bindable]
-			public function set flavorParamData (value:ArrayCollection):void {
+			public function set flavorParamData(value:ArrayCollection):void {
 				_flavorParamData = value;
 				setFlavorsTableHeight();
-				
+
 			}
-			public function get flavorParamData ():ArrayCollection {
+
+
+			public function get flavorParamData():ArrayCollection {
 				return _flavorParamData;
 			}
-			
+
 			[Bindable]
 			public var allFlavorsSelected:Boolean = false;
-			[Bindable]
-			public var rootUrl:String;
 
 
-			[Bindable]
+			[Bindable][ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
 			public function get conversionData():ArrayCollection {
 				return _conversionData;
 			}
@@ -91,7 +91,7 @@
 
 
 			private function setData():void {
-				for each (var profile:ConversionProfileVO in conversionData) {
+				for each (var profile:ConversionProfileVO in _conversionData) {
 					if (profile.profile.isDefault) {
 						simpleTable.cProfile = profile.clone();
 					}
@@ -248,11 +248,10 @@
 			public function resetClonedData():void {
 			}
 
-			protected function creationCompleteHandler(event:FlexEvent):void
-			{
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
-
 		]]>
 	</mx:Script>
 	<mx:Label styleName="expendableButton" width="100%" id="titleText"
@@ -268,8 +267,9 @@
 	<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
 		<!-- simple mode -->
 		<mx:VBox width="100%" height="100%" verticalGap="0">
-			<csw:ConversionSettingsTable id="simpleTable" allSelected="{allFlavorsSelected}" 
-										 dataProvider="{flavorParamData}" thumbParamsData="{thumbParamData}" creationComplete="setFlavorsTableHeight()"/>
+			<csw:ConversionSettingsTable id="simpleTable" allSelected="{allFlavorsSelected}"
+										 dataProvider="{flavorParamData}" thumbParamsData="{thumbParamData}"
+										 creationComplete="setData()"/>
 			<mx:HBox width="100%" styleName="DataGridActions">
 				<mx:VBox width="40%" height="100%" verticalAlign="middle">
 					<mx:LinkButton id="advancedModeBtn"
@@ -282,13 +282,14 @@
 				</mx:VBox>
 			</mx:HBox>
 		</mx:VBox>
-		
+
 		<!-- advanced mode -->
-		<mx:HBox  width="100%" height="100%" >
-			<mx:VBox id="subVbox" width="100%" >
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox id="subVbox" width="100%">
 				<csw:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%"
-						selectable="true" allowMultipleSelection="true" dataProvider="{conversionData}"
-						creationComplete="{setConversionProfilesTableHeight()}"/>
+													 selectable="true" allowMultipleSelection="true"
+													 dataProvider="{conversionData}"
+													 creationComplete="{setConversionProfilesTableHeight()}"/>
 				<mx:HBox width="100%" styleName="DataGridActions">
 					<mx:VBox width="40%" height="100%" verticalAlign="middle">
 						<mx:LinkButton id="simpleModeBtn"
@@ -296,9 +297,9 @@
 									   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
 					</mx:VBox>
 					<mx:VBox width="60%" height="100%" verticalAlign="middle">
-						<mx:Button id="deleteProfileBtn" click="onDeleteConversionProfiles(event)" 
+						<mx:Button id="deleteProfileBtn" click="onDeleteConversionProfiles(event)"
 								   label="{resourceManager.getString('account', 'disabledDeleteButton')}"
-								   useHandCursor="true" buttonMode="true" />
+								   useHandCursor="true" buttonMode="true"/>
 					</mx:VBox>
 				</mx:HBox>
 			</mx:VBox>
