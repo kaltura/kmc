@@ -66,13 +66,20 @@ package com.kaltura.kmc.modules.account.model {
 		//---------------------------------------------------------
 		//Flags 
 		public var devFlag:Boolean = false;
+		
+		/**
+		 * any pending server requests
+		 */
 		public var loadingFlag:Boolean = false;
+		
+		/**
+		 * the custom metadata tab is disabled
+		 * */
 		public var customDataDisabled:Boolean = false;
+		
 		public var partnerInfoLoaded:Boolean = false;
 		public var openPayPalWindowFlag:Boolean = false;
 		public var saveAndExitFlag:Boolean = false;
-
-		public var displayCustomFieldsTab:Boolean = false;
 
 		//---------------------------------------------------------
 		//singleton methods
