@@ -183,7 +183,6 @@
 			}
 
 
-			//
 			private function onGATrack(gaTrackUrl:String):void {
 				if (gaTrackUrl)
 					_tracker.trackPageview(gaTrackUrl);
@@ -193,29 +192,18 @@
 			private function initModelContext(objParam:Object):void {
 				_model.context.userId = objParam.uid;
 				_model.context.subpId = objParam.subpid;
-				_model.context.rootUrl = KUtils.hostFromCode(objParam.host);
+				if (objParam.protocol) {
+					_model.context.rootUrl = objParam.protocol + objParam.host;
+				}
+				else {
+					_model.context.rootUrl = "http://" + objParam.host;
+				}
 
 				_model.context.kc = _kc;
-				//displays the custom data tab only when the customFieldsTab flashvar is true
-				
-				
-				//moving to MXML (Eitan)
 				
 				if (objParam.metadataprofilename) {
 					_model.context.metadataProfileName = objParam.metadataprofilename;
 				}
-				/*				
- 				if (objParam.enablecustomdata == "true") {
-				
-					var customDataView:CustomData = new CustomData();
-					customDataView.label = resourceManager.getString('account', 'customData');
-					customDataView.setStyle("styleName", "pageStyle");
-					customDataView.id = "metadata";
-					customDataView.name = "metadata";
-					contentView.addChild(customDataView);
-					customDataView.init();
-				
-				} */
 				
 			}
 
