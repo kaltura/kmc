@@ -71,7 +71,6 @@ package com.kaltura.kmc.business
 		[Test]
 		/**
 		 * test that colliding attributes are removed from the denied list
-		 * NOTE: this method tests the function below it, not the actual code!!
 		 */
 		public function testRemoveCollisions():void {
 			var granted:XML = 	<permissions> 
@@ -114,6 +113,45 @@ package com.kaltura.kmc.business
 			else if (ui.@enabled != "false") {
 				Assert.fail("attribute value changed");
 			}
+		}
+		
+		[Test]
+		/**
+		 * test removing of role permissions which depend on missing partner permissions (features). 
+		 */
+		public function testRemoveRestrictedPermissions():void {
+			var uiDefinitions:XML = <permissions><permissionGroup text="Content Moderation" id="CONTENT_MODERATE_BASE">
+			<permission text="Moderate metadata" id="CONTENT_MODERATE_METADATA">
+				<ui id="entryDrilldown.entryMetaData.name_input" editable="false"/>
+				<ui id="entryDrilldown.entryMetaData.descriptionTi" editable="false"/>
+				<ui id="entryDrilldown.entryMetaData.tagsTi" editable="false"/>
+			</permission>
+			<permission text="Moderate custom metadata" id="CONTENT_MODERATE_CUSTOM_DATA" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+				<ui id="entryDrilldown.customData.all" enabled="false"/>
+			</permission>
+		</permissionGroup></permissions>;
+			var rolePermissions:Array = "CONTENT_MODERATE_BASE,CONTENT_MODERATE_METADATA,CONTENT_MODERATE_CUSTOM_DATA".split(",");
+			
+			var partnerPermissions:KalturaPermissionListResponse = new KalturaPermissionListResponse();
+			
+			var ar:Array = removeRestrictedPermissions(uiDefinitions, rolePermissions, partnerPermissions);
+			
+			var CONTENT_MODERATE_METADATA:Boolean = false;
+			var CONTENT_MODERATE_BASE:Boolean = false;
+			
+			for each (var str:String in ar) {
+				if (str == 'CONTENT_MODERATE_CUSTOM_DATA') {
+					Assert.fail('failed to remove CONTENT_MODERATE_CUSTOM_DATA');
+				}
+				if (str == 'CONTENT_MODERATE_METADATA') {
+					CONTENT_MODERATE_METADATA = true;
+				}
+				if (str == 'CONTENT_MODERATE_BASE') {
+					CONTENT_MODERATE_BASE = true;
+				}
+			}
+			Assert.assertTrue(CONTENT_MODERATE_METADATA);
+			Assert.assertTrue(CONTENT_MODERATE_BASE);
 		}
 		
 	}

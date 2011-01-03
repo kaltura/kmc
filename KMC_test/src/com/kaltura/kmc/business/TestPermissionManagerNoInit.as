@@ -1,28 +1,10 @@
 package com.kaltura.kmc.business {
+	import com.kaltura.vo.KalturaPermissionListResponse;
+	
 	import flexunit.framework.Assert;
 
 	public class TestPermissionManagerNoInit {
 
-//		[Before]
-//		public function setUp():void
-//		{
-//		}
-//		
-//		[After]
-//		public function tearDown():void
-//		{
-//		}
-
-//		[BeforeClass]
-//		public static function setUpBeforeClass():void
-//		{
-//		}
-//		
-//		[AfterClass]
-//		public static function tearDownAfterClass():void
-//		{
-//		}
-		
 
 		[Test]
 		/**
@@ -58,7 +40,7 @@ package com.kaltura.kmc.business {
 						</permissionGroup>
 						<permissionGroup text="Video Analytics" id="ANALYTICS_BASE" />
 					</permissions>
-
+					<partnerPermissions/>
 					<uimapping>
 						<module id="content">
 							<tab id="upload">
@@ -83,39 +65,9 @@ package com.kaltura.kmc.business {
 						</module>
 					</uimapping>
 				</root>;
-			PermissionManager.getInstance().init(test1, "atar");
+			PermissionManager.getInstance().init(test1, "atar", new KalturaPermissionListResponse());
 		}
 
-
-
-
-
-		[Ignore]
-		[Test]
-		public function testApply():void {
-			Assert.fail("Test method Not yet implemented");
-		}
-
-
-		[Ignore]
-		[Test]
-		public function testApplyAllAttributes():void {
-			Assert.fail("Test method Not yet implemented");
-		}
-
-
-		[Ignore]
-		[Test]
-		public function testGetRelevantSubTabsToHide():void {
-			Assert.fail("Test method Not yet implemented");
-		}
-
-
-		[Ignore]
-		[Test]
-		public function testGetValue():void {
-			Assert.fail("Test method Not yet implemented");
-		}
 	}
 }
 

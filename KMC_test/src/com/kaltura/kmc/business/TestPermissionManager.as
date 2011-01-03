@@ -1,5 +1,6 @@
 package com.kaltura.kmc.business {
 	import com.kaltura.kmc.business.PermissionManager;
+	import com.kaltura.vo.KalturaPermissionListResponse;
 	
 	import flexunit.framework.Assert;
 
@@ -33,6 +34,8 @@ package com.kaltura.kmc.business {
 					</permissionGroup>
 					<permissionGroup text="Video Analytics" id="ANALYTICS_BASE" />
 				</permissions>
+				
+				<partnerPermissions/>
 
 				<uimapping>
 					<module id="content">
@@ -72,7 +75,7 @@ package com.kaltura.kmc.business {
 		[BeforeClass]
 		public static function setUp():void {
 			pm = PermissionManager.getInstance();
-			pm.init(test1);
+			pm.init(test1, 'CONTENT_INGEST_BASE,CONTENT_INGEST_UPLOAD,CONTENT_INGEST_BULK_UPLOAD,ANALYTICS_BASE', new KalturaPermissionListResponse());
 		}
 		
 		
@@ -83,37 +86,37 @@ package com.kaltura.kmc.business {
 		 */
 		public function testGetModulesToHide():void {
 			var arr:Array = pm.getRelevantSubTabsToHide();
-			Assert.assertEquals(3, arr.length);
+			Assert.assertEquals(1, arr.length);
 		}
 		
-
+		[ignore]
 		[Test]
 		/**
 		 * test hideTabs
 		 */
 		public function testNumberOfTabsToHide():void {
 			var arr:Array = pm.hideTabs;
-			Assert.assertEquals(5, arr.length);
+			Assert.assertEquals(2, arr.length);
 		}
 
-
+		[ignore]
 		[Test]
 		/**
 		 * test permissions
 		 */
 		public function testNumberOfPermissions():void {
 			var arr:Array = pm.deniedPermissions;
-			Assert.assertEquals(9, arr.length);
+			Assert.assertEquals(5, arr.length);
 		}
 
-
+		[ignore]
 		[Test]
 		/**
 		 * test general creation of VOs
 		 */
 		public function testNumberOfInstructionVos():void {
 			var arr:Array = pm.instructionVos;
-			Assert.assertEquals(8, arr.length);
+			Assert.assertEquals(4, arr.length);
 		}
 		
 	}
