@@ -117,11 +117,6 @@
 				adminVo.oldEmail = adminVo.newEmail = _flashvars.email;
 				_model.adminData = adminVo;
 				
-				// after we have the client, initialize the different panels
-				overview.init();
-				integration.init();
-				transcoding.init();
-				metadata.init();
 			
 				/// set Alert locale for all this application
 				Alert.yesLabel = resourceManager.getString('account', 'yes');
@@ -145,6 +140,20 @@
 				for each (var subtabName:String in tabsToHide)
 				{
 					contentView.removeChild(this[subtabName]);
+				}
+				
+				// after we have the client, initialize the different panels
+				if (overview.parent) {
+					overview.init();
+				}
+				if (integration.parent) {
+					integration.init();
+				}
+				if (transcoding.parent) {
+					transcoding.init();
+				}
+				if (metadata.parent) {
+					metadata.init();
 				}
 			}
 
