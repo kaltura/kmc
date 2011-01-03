@@ -54,9 +54,41 @@ package com.kaltura.kmc.business {
 
 
 		/**
+		 * remove any role permissions that depend on permissions the partner doesn't have,
+		 * i.e if partner doesn't have custom metadata feature, make sure all metadata-related permissions are denied
+		 * @param uiDefinitions		all partner's permissions ui defs (permissions uiconf)
+		 * @param allRolePermissions	a list of the role's permission names
+		 * @param partnerPermissions	partners permissions as returned from the server
+		 * @return array of permission names the role has after filtering
+		 */
+		protected function removeRestrictedPermissions(uiDefinitions:XML, allRolePermissions:Array, partnerPermissions:KalturaPermissionListResponse):Array {
+			var partnerPermissionsList:Array = parsePartnerPermissions(partnerPermissions);
+			var depended:XMLList = uiDefinitions.descendants().(hasOwnProperty( "@dependsOnFeature" ));
+			// scan the ui definitions and for each permission that depends on another, see if the partner has that permission.
+			for each (var pXml:XML in depended) {
+				var bPartnerHasPermission:Boolean = false;
+				for each (var partnerPermission:KalturaPermission in partnerPermissions.objects) {
+					if (pXml.@dependsOnFeature == partnerPermission.name) {
+						bPartnerHasPermission = true;
+						break;
+					}
+				}
+				// if the partner doesn't have the permission, see if the role has it, and if so - remove it.
+				if (!bPartnerHasPermission) {
+					var i:int = stringIndex(pXml.@id, allRolePermissions);
+					if (i > -1) {
+						allRolePermissions.splice(i, 1);
+					}
+				}
+			}
+			return allRolePermissions;
+		}
+		
+		
+		/**
 		 * Get the partner permissions XML and the users permissions list (comma-seperated list),
 		 * parse them and keep relevant data in this class.
-		 * @param uiDefinitions		all partner's permissions
+		 * @param uiDefinitions		all partner's permissions ui defs (permissions uiconf)
 		 * @param rolePermission	a comma-separated-string of ids of the role's permissions
 		 * @param partnerPermissions	partners permissions as returned from the server
 		 */
@@ -64,7 +96,8 @@ package com.kaltura.kmc.business {
 			_partnerUIDefinitions = uiDefinitions.copy();
 			_deniedPermissions = uiDefinitions.copy();
 			var allRolePermissions:Array = rolePermissions.split(",");
-
+			allRolePermissions = removeRestrictedPermissions(uiDefinitions, allRolePermissions, partnerPermissions);
+			var partnerPermissionsList:Array = parsePartnerPermissions (partnerPermissions); 
 			// remove from permissions list the granted permissions and leave the ones that are forbidden.
 			// first remove only sub-permissions (not groups)
 			if (allRolePermissions.length > 0 && allRolePermissions[0] != "") {
@@ -88,7 +121,6 @@ package com.kaltura.kmc.business {
 
 			// replace the original permissions node with the "clean" one
 			delete _deniedPermissions.permissions[0];
-
 			_deniedPermissions.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
 
 			// remove colliding attributes between granted and denied permissions
@@ -105,21 +137,12 @@ package com.kaltura.kmc.business {
 				_deniedPermissionsIds.push(xml.toString());
 			}
 			
-			var partnerPermissionsList:Array = parsePartnerPermissions(partnerPermissions);
+			
 			var roleAndPartnerPermissionNames:Array = allRolePermissions.concat(partnerPermissionsList);
 			
 			_hideTabs = permissionParser.getTabsToHide(_deniedPermissions..uimapping[0], roleAndPartnerPermissionNames); 
-			// parse features that the partner does not have, and combine them with the current users permissions 
-			for each (var partnerPermission:String in partnerPermissionsList) {
-				if (partnerPermission) {
-					//TODO + search for existing permissions in the Vos and delete them 
-					// if the partner does not have these permissions 
-					/* we don't want the feature data to be part of the permissions, because it's not user permission
-					 * so if the partner data changes we will have to scan the DB to remove the permision.*/
-					// i.e if partner doesn't have custom metadata feature, make sure all metadata-related permissions are denied
-				}
-			}
-			_hideFeatures = [];
+		
+			_hideFeatures = [];		//TODO + implement hideFeatures when we need it
 		}
 		
 		/**
@@ -324,10 +347,9 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * The function returns the relevant sub-tabs to hide
-		 * @param module
-		 * @return
-		 *
+		 * get tabs whose names include the given module name
+		 * @param module	name of the module for which we want to hide tabs
+		 * @return relevant sub-tabs to hide
 		 */
 		public function getRelevantSubTabsToHide(module:String = null):Array {
 			var arr:Array = new Array();
@@ -376,7 +398,7 @@ package com.kaltura.kmc.business {
 		 * See if the given string is in the given array
 		 * @param str
 		 * @param array
-		 * @return true if the string is in the array, false otherwise
+		 * @return the index of the string in the array
 		 */
 		protected function stringIndex(str:String, array:Array):int {
 			var l:int = array.length;
@@ -400,7 +422,7 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * @copy #_permissions
+		 * @copy #_deniedPermissionsIds
 		 */
 		public function get deniedPermissions():Array {
 			return _deniedPermissionsIds;
