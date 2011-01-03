@@ -20,7 +20,8 @@ package com.kaltura.kmc.modules.content.commands
 			flavorDetails.asset_id = obj.flavorAsset.id;
 			flavorDetails.flavor_name = obj.flavorParams.name;
 			flavorDetails.format = obj.flavorParams.format;
-			flavorDetails.codec = obj.flavorParams.videoCodec;
+			flavorDetails.codec = obj.flavorAsset.videoCodecId;	// this is right
+//			flavorDetails.codec = obj.flavorParams.videoCodec;  // this is wrong!!
 			flavorDetails.bitrate = obj.flavorAsset.bitrate;
 			
 			var dimensions:Object = new Object();
