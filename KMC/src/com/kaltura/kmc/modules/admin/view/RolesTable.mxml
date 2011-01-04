@@ -225,31 +225,24 @@
 	</mx:Script>
 	
 	<mx:columns>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"  
-						   headerText="{resourceManager.getString('admin', 'role')}"
-						   headerStyleName="centerTableColumnHeader"/>
-		<!--<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id"
-						   headerText="{resourceManager.getString('admin', 'id')}"
-						   headerStyleName="centerTableColumnHeader"/>-->
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="description"
-						   headerText="{resourceManager.getString('admin', 'description')}"
-						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="email" labelFunction="{getSaveDate}"
-						   headerText="{resourceManager.getString('admin', 'save_date')}"
-						   headerStyleName="centerTableColumnHeader"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4"
-						   headerText="{resourceManager.getString('admin', 'user_actions')}"
-						   headerStyleName="centerTableColumnHeader">
+		<mx:DataGridColumn dataField="name" headerStyleName="adminTableColumn"
+						   headerText="{resourceManager.getString('admin', 'role')}"/>
+		<!--<mx:DataGridColumn dataField="id" headerStyleName="adminTableColumn"
+						   headerText="{resourceManager.getString('admin', 'id')}" />-->
+		<mx:DataGridColumn dataField="description" headerStyleName="adminTableColumn"
+						   headerText="{resourceManager.getString('admin', 'description')}"/>
+		<mx:DataGridColumn dataField="email" labelFunction="{getSaveDate}" headerStyleName="adminTableColumn"
+						   headerText="{resourceManager.getString('admin', 'save_date')}"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('admin', 'user_actions')}"
+						   headerStyleName="adminTableCenteredColumn">
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
+					<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
 							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-						<mx:ComboBox width="130" selectedIndex="-1" 
+						<mx:ComboBox width="130" selectedIndex="-1" enabled="{data.partnerId != 0}"
 									 dataProvider="{outerDocument.comboDataProvider}"
 									 prompt="{resourceManager.getString('admin','select_action')}"
-									 change="{outerDocument.onActionSelected(event)}"
-									 enabled="{data.partnerId != 0}">
-						</mx:ComboBox>
+									 change="{outerDocument.onActionSelected(event)}" />
 					</mx:VBox>
 				</mx:Component>
 			</mx:itemRenderer>
