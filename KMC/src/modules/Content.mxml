@@ -27,6 +27,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
@@ -344,6 +345,11 @@
 
 				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 				getPartnerInfoEvent.dispatch();
+				
+				if (_model.entryDetailsModel.enableDistribution) {
+					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+					listDistribution.dispatch();
+				}
 				
 				loadChangableData();
 			}

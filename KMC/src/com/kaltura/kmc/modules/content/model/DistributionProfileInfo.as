@@ -14,12 +14,24 @@ package com.kaltura.kmc.modules.content.model
 		private var _kalturaDistributionProfilesArray:Array;
 		//array of thumbnail dimensions, required by the distribution profiles
 		private var _thumbnailDimensionsArray:Array;
+		private var _entryDistributionArray:Array;
 		
 		public function DistributionProfileInfo()
 		{
 			_kalturaDistributionProfilesArray = new Array();
 			_thumbnailDimensionsArray = new Array();
+			_entryDistributionArray = new Array();
 			
+		}
+
+		public function get entryDistributionArray():Array
+		{
+			return _entryDistributionArray;
+		}
+
+		public function set entryDistributionArray(value:Array):void
+		{
+			_entryDistributionArray = value;
 		}
 
 		public function get thumbnailDimensionsArray():Array
