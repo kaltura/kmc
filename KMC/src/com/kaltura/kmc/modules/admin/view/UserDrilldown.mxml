@@ -15,7 +15,7 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -69,15 +69,27 @@
 			 * list of partner roles
 			 * */
 			protected var _roles:ArrayCollection;
+			
+			
+			/**
+			 * whether the user's role can be chagned
+			 * */
+			protected var _allowSetRole:Boolean;
+			
 
 
 			/**
 			 * pass initial data.
 			 * since setting a role for edit requires roles
 			 * data to be set first, we use this method.
+			 * @param roles	optional roles 
+			 * @param user	the user to edit
+			 * @param mode	add / edit
+			 * @param allowSetRole	if the user's role can be chagned
 			 * */
-			public function init(roles:ArrayCollection, user:KalturaUser, mode:String):void {
+			public function init(roles:ArrayCollection, user:KalturaUser, mode:String, allowSetRole:Boolean):void {
 				_roles = roles;
+				_allowSetRole = allowSetRole;
 				// the following intentionaly use setters. 
 				setUser(user);
 				setMode(mode);
@@ -227,6 +239,9 @@
 							firstNameTi.editable = false;
 							lastNameTi.editable = false;
 							roleCb.selectedItem = findSelectedRole();
+							if (!_allowSetRole) {
+								roleCb.editable = false;
+							}
 							break;
 					}
 				}

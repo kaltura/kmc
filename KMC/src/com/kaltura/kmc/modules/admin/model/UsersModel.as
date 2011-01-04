@@ -77,6 +77,12 @@ package com.kaltura.kmc.modules.admin.model
 		 * (user ids separated by ',') 
 		 */		
 		public var crippledUsers:Array;
+		
+		
+		/**
+		 * the partner's admin user id. 
+		 */
+		public var adminUserId:String;
 	
 		
 	}
