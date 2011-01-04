@@ -86,8 +86,8 @@ package com.kaltura.kmc.modules.account.command
 				pvo.url1 = resultKp.website;
 				pvo.url2 = resultKp.notificationUrl;
 				pvo.userLandingPage = resultKp.userLandingPage;
+				pvo.accountOwnerId = resultKp.adminUserId;
 				
-				// 31 items
 				
 				_model.partnerData = pvo;
 			}

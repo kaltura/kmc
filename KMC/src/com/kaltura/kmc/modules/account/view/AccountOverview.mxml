@@ -38,11 +38,11 @@
 			public var adminData:AdminVO;
 
 
-			[Bindable][ArrayElementType("com.kaltura.vo.KalturaUser")]
+			[ArrayElementType("com.kaltura.vo.KalturaUser")]
 			/**
-			 * admin users for the current partner
+			 * @copy #users
 			 * */
-			public var users:ArrayCollection;
+			private var _users:ArrayCollection;
 
 
 			/**
@@ -127,6 +127,7 @@
 			public function undo():void {
 				adminData = _clonedAdminData.clone();
 				partnerData = _clonedPartnerData.clone();
+				pOwner.selectedIndex = getAccountOwner();
 			}
 
 
@@ -162,41 +163,9 @@
 			}
 
 
-//			public function saveLoginInfo( force : Boolean ) : void
-//			{
-//				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,"Account>Change Login Info");
-//				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_LOGIN_INFO,GoogleAnalyticsConsts.ACCOUNT);
-//				if( ! adminData.equals( _clonedAdminData ) || force)
-//				{
-//					//validation
-//					///////////////////////////////////////
-//					emailValidator.source = aEmail;
-//					if( (emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID) return;
-//					passwordValidator.source = oldPass;
-//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-//					passwordValidator.source = newPass;
-//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-//					passwordValidator.source = confPass;
-//					if( (passwordValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID ) return;
-//					if(confPass.text != newPass.text)
-//					{
-//						Alert.show( resourceManager.getString('account', 'passwordNoMatch') );
-//						return;
-//					}
-//					////////////////////////////////////////
-//					
-//					_clonedAdminData = adminData.clone();
-//					var adminEvent : AdminEvent = new AdminEvent( AdminEvent.UPDATE_ADMIN_PASSWORD );
-//					adminEvent.dispatch();
-//					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_CHANGE_LOGIN_INFO,
-//															  "AccountSettings>LofinInfo>SaveChangesBtn");
-//				    GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO,GoogleAnalyticsConsts.ACCOUNT);
-//				}
-//			}
 
 			public function saveChanges():void {
 				savePartnerInfo(false);
-//				saveLoginInfo( false );
 			}
 
 
@@ -214,8 +183,8 @@
 			private function getAccountOwner():int {
 				var uid:String = partnerData.accountOwnerId;
 				var result:int = -1;
-				for (var i:int = 0; i < users.length; i++) {
-					if ((users[i] as KalturaUser).id == uid) {
+				for (var i:int = 0; i < _users.length; i++) {
+					if ((_users[i] as KalturaUser).id == uid) {
 						result = i;
 						break;
 					}
@@ -230,6 +199,27 @@
 			protected function changeAccountOwner(event:ListEvent):void {
 				partnerData.accountOwnerId = (event.target.selectedItem as KalturaUser).id;
 			}
+
+
+			[Bindable]
+			/**
+			 * admin users for the current partner
+			 * */
+			public function get users():ArrayCollection
+			{
+				return _users;
+			}
+
+			/**
+			 * @private
+			 * */
+			public function set users(value:ArrayCollection):void
+			{
+				_users = value;
+				pOwner.dataProvider = value;
+				pOwner.selectedIndex = getAccountOwner();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:EmailValidator id="emailValidator" required="true" property="text"/>
@@ -254,7 +244,7 @@
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'owner_name')}*"/>
-			<mx:ComboBox id="pOwner" width="{TXT_WIDTH}" selectedIndex="{getAccountOwner()}" dataProvider="{users}"
+			<mx:ComboBox id="pOwner" width="{TXT_WIDTH}"
 						 change="changeAccountOwner(event)" labelField="fullName"/>
 		</mx:HBox>
 		<mx:HBox>

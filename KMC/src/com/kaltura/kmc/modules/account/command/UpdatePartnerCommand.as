@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.account.command
 			kp.uid =  _model.partnerData.subPId;
 			kp.userLandingPage = _model.partnerData.userLandingPage;
 			kp.website = _model.partnerData.url1;
-			kp.accountOwnerId = _model.partnerData.accountOwnerId;
+			kp.adminUserId = _model.partnerData.accountOwnerId;
 			
 			
 			var updatePartner:PartnerUpdate = new PartnerUpdate(kp, true);
