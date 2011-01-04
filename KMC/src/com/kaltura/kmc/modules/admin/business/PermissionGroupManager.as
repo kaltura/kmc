@@ -79,26 +79,6 @@ package com.kaltura.kmc.modules.admin.business
 		}
 		
 		
-		/**
-		 * set main checkbox state according to inner checkboxes
-		 */ 
-		public function setState():void
-		{
-			if (innerCheckBoxes.length && groupCheckbox.selected  )
-			{
-				var allSelected:Boolean = true;
-				for each(var cb:CheckBox in innerCheckBoxes)
-				{
-					allSelected = allSelected && cb.selected;
-				}
-				if (!allSelected)
-					groupCheckbox.styleName = "partial";
-			}
-			if (!groupCheckbox.enabled) {
-				closeLinkButton.enabled = false;
-				openLinkButton.enabled = false;
-			}
-		}
 		
 		public function reverse(val:Boolean):Boolean
 		{
@@ -107,12 +87,42 @@ package com.kaltura.kmc.modules.admin.business
 		
 		protected function onGroupChanged (event:MouseEvent):void
 		{
-			var wasSelected:Boolean = (event.target as CheckBox).selected;
-			for each (var cb:CheckBox in innerCheckBoxes) {
-				cb.selected = wasSelected;
+			if (_status == STATUS_ALL)
+			{
+				groupCheckbox.selected = true;
+				//turn off all inner checkboxes
+				for each (var cb:CheckBox in innerCheckBoxes) {
+					cb.selected = false;
+				}
+				innerCheckboxChanged();
+				_status = STATUS_PARTIAL;
+				
+			}else if (_status == STATUS_PARTIAL)
+			{
+				groupCheckbox.selected = false;
+				//turn off all inner checkboxes
+				for each (var cb:CheckBox in innerCheckBoxes) {
+					cb.selected = false;
+				}
+				innerCheckboxChanged();
+				_status = STATUS_NONE;
+				
+			} else 
+			{
+				groupCheckbox.selected = true;
+				//turn on all inner checkboxes
+				for each (var cb:CheckBox in innerCheckBoxes) {
+					cb.selected = true;
+				}
+				innerCheckboxChanged();
+				_status = STATUS_ALL;
+				
 			}
-			innerCheckboxChanged();
+			
 		}
+		
+		
+		
 		/**
 		 * A group option button was clicked
 		 * 
@@ -163,14 +173,16 @@ package com.kaltura.kmc.modules.admin.business
 				
 			} else if (n == innerCheckBoxes.length)
 			{
+				//none of children selected 
 				_status = STATUS_NONE;
 				groupCheckbox.styleName = "";
 			} else
 			{
+				//real partial 
 				_status = STATUS_PARTIAL;
 				groupCheckbox.styleName = "partial";
 			}
-			
+			//view only
 			if (_status == STATUS_NONE && groupCheckbox.selected == true)
 			{
 				groupCheckbox.label = groupCheckboxString + ResourceManager.getInstance().getString( 'admin' , 'viewOnly' );
