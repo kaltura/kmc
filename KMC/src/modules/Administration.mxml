@@ -2,8 +2,8 @@
 <modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*" 
 				   xmlns:control="com.kaltura.kmc.modules.admin.control.*"
 				   xmlns:view="com.kaltura.kmc.modules.admin.view.*" 
-				   xmlns:model="com.kaltura.kmc.modules.admin.model.*"
-				   layout="vertical" minHeight="520" minWidth="950" styleName="mainView"
+				   xmlns:model="com.kaltura.kmc.modules.admin.model.*" styleName="adminModuleMain"
+				   layout="vertical" minHeight="520" minWidth="950" 
 				   creationComplete="creationCompleteHandler(event)" enabled="{!_model.isLoading}">
 	<mx:Metadata>
 		[ResourceBundle("admin")]
@@ -151,12 +151,12 @@
 		<mx:TabBar id="secTln" styleName="tln" itemClick="onItemClick(event)" buttonMode="true"
 				   dataProvider="contentView"/>
 	</mx:HBox>
-		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
-					  horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}" enableHeader="enableHeaderHandler(event)"
-						width="100%" model="{_model.usersModel}"  rolesModel="{_model.rolesModel}"/>
-			<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}" enableHeader="enableHeaderHandler(event)"
-						width="100%" model="{_model.rolesModel}" />
-		</mx:ViewStack>
+	<mx:ViewStack id="contentView" width="100%" height="100%" styleName="adminViewstack"
+				  horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<view:Users id="users" label="{resourceManager.getString('admin','users_tab')}" enableHeader="enableHeaderHandler(event)"
+					width="100%" model="{_model.usersModel}" rolesModel="{_model.rolesModel}"/>
+		<view:Roles id="roles" label="{resourceManager.getString('admin','roles_tab')}" enableHeader="enableHeaderHandler(event)"
+					width="100%" model="{_model.rolesModel}" />
+	</mx:ViewStack>
 
 </modules:KmcModule>
