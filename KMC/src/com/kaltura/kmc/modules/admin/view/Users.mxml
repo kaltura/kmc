@@ -28,7 +28,9 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
 			
@@ -232,6 +234,8 @@
 				else if (model.drilldownMode == DrilldownMode.EDIT) {
 					// edit user
 					ue = new UserEvent(UserEvent.UPDATE_USER, _userDrilldown.user);
+					var rm:IResourceManager = ResourceManager.getInstance();
+					Alert.show(rm.getString('admin', 'after_user_edit')); 
 				}
 				ue.dispatch();
 			}
