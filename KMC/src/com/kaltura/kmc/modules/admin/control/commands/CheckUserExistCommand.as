@@ -54,6 +54,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		// override fault to handle correctly
 		override protected function fault(info:Object):void {
 			handleFault(info.error as KalturaError);
+			_model.decreaseLoadCounter();
 		}
 		
 		
