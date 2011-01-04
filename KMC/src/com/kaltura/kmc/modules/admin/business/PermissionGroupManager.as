@@ -87,11 +87,12 @@ package com.kaltura.kmc.modules.admin.business
 		
 		protected function onGroupChanged (event:MouseEvent):void
 		{
+			var cb:CheckBox;
 			if (_status == STATUS_ALL)
 			{
 				groupCheckbox.selected = true;
 				//turn off all inner checkboxes
-				for each (var cb:CheckBox in innerCheckBoxes) {
+				for each (cb in innerCheckBoxes) {
 					cb.selected = false;
 				}
 				innerCheckboxChanged();
@@ -101,7 +102,7 @@ package com.kaltura.kmc.modules.admin.business
 			{
 				groupCheckbox.selected = false;
 				//turn off all inner checkboxes
-				for each (var cb:CheckBox in innerCheckBoxes) {
+				for each (cb in innerCheckBoxes) {
 					cb.selected = false;
 				}
 				innerCheckboxChanged();
@@ -111,7 +112,7 @@ package com.kaltura.kmc.modules.admin.business
 			{
 				groupCheckbox.selected = true;
 				//turn on all inner checkboxes
-				for each (var cb:CheckBox in innerCheckBoxes) {
+				for each (cb in innerCheckBoxes) {
 					cb.selected = true;
 				}
 				innerCheckboxChanged();
