@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							width="550" help="{onHelp()}" showCloseButton="true" close="closeHandler(event)"
+							width="594" height="514" help="{onHelp()}" showCloseButton="true" close="closeHandler(event)"
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="udd_save", type="flash.events.Event")] 
@@ -322,7 +322,7 @@
 	<mx:StringValidator id='validator' property="text" required="true"
 						requiredFieldError="{resourceManager.getString('admin', 'mandatoryField')}"/>
 	<mx:VBox width="100%">
-		<mx:HBox styleName="formInnerTitle" width="100%">
+		<mx:HBox styleName="adminFormInnerTitle" width="100%" >
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}"
 					  styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
@@ -341,7 +341,7 @@
 			<mx:TextInput id='lastNameTi' width="100%" text="{_undoUser.lastName}"/>
 		</mx:HBox>
 
-		<mx:HBox styleName="formInnerTitle" width="100%">
+		<mx:HBox styleName="adminFormInnerTitle" width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'account_details')}" styleName="acpPopUpTitleLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
@@ -351,17 +351,17 @@
 		<mx:HBox width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'user_role')}" width="{_lblWidth}" />
 			<mx:ComboBox id="roleCb" dataProvider="{_roles}" labelField="name"/>
-			<mx:LinkButton id="addRoleBtn" click="openRoleWindow()"
+			<mx:LinkButton id="addRoleBtn" click="openRoleWindow()" styleName="multiComponentAddButton"
 						   label="{ResourceManager.getInstance().getString('admin', 'add_role')}"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'udd_description')}" width="{_lblWidth}"/>
 			<mx:Text id='descriptionTxt' width="100%" text="{roleCb.selectedItem.description}"/>
 		</mx:HBox>
-		<mx:HBox width="100%" horizontalAlign="center">
-			<mx:Button id="saveBtn" click="setUserDataFromForm(event)"
-					   label="{ResourceManager.getInstance().getString('admin', 'save')}"/>
-		</mx:HBox>
 
 	</mx:VBox>
+	<mx:ControlBar>
+		<mx:Button id="saveBtn" click="setUserDataFromForm(event)"
+				   label="{ResourceManager.getInstance().getString('admin', 'save')}"/>
+	</mx:ControlBar>
 </containers:HelpTitleWindow>

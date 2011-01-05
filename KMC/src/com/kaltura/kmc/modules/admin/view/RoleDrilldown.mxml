@@ -209,6 +209,7 @@
 				var groupCb:CheckBox = new CheckBox();
 				groupCb.label = group.attribute("text");
 				groupCb.id = group.attribute("id")[0].toString();
+				groupCb.setStyle("styleName", "adminMainCheckbox");
 				if (group.attribute("dependsOnFeature").toString().length > 0) {
 					var res:Boolean = checkIfPartnerHasFeature(group.attribute("dependsOnFeature").toString());
 					groupCb.enabled = res;
@@ -306,7 +307,7 @@
 				var cb:CheckBox = new CheckBox();
 				cb.maxWidth = 250
 				cb.label = permission.attribute("text")[0].toString();
-				cb.setStyle("paddingLeft", "10");
+				cb.setStyle("styleName", "adminSubCheckbox");
 				if (addTooltip)
 					cb.toolTip = permission.attribute("id")[0].toString()
 				cb.id = permission.attribute("id")[0].toString();
@@ -543,29 +544,28 @@
 	<mx:StringValidator id='validator' property="text" required="true"
 						requiredFieldError="{resourceManager.getString('admin', 'mandatoryField')}"/>
 	<mx:VBox width="100%">
-		<mx:Form width="100%" textAlign="left" paddingLeft="0">
-			<mx:FormItem width="100%" label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
-				<mx:TextInput id="nameTi" width="100%"/>
+		<mx:Form width="100%" textAlign="left" paddingLeft="0" >
+			<mx:FormItem width="100%" fontWeight="bold" label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
+				<mx:TextInput id="nameTi" width="100%" fontWeight="normal"/>
 			</mx:FormItem>
-			<mx:FormItem width="100%" label="{ResourceManager.getInstance().getString('admin', 'rdd_description')}">
-				<mx:TextArea id="descriptionTi" width="100%"/>
+			<mx:FormItem width="100%" fontWeight="bold" label="{ResourceManager.getInstance().getString('admin', 'rdd_description')}">
+				<mx:TextArea id="descriptionTi" width="100%" fontWeight="normal"/>
 			</mx:FormItem>
 		</mx:Form>
 	</mx:VBox>
 	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" selectable="true" 
 			  visible="{_isMissingFeature}" includeInLayout="{_isMissingFeature}" link="label1_linkHandler(event)"/>
-	<mx:HRule width="100%"/>
-	<mx:HBox width="100%" id="colapsExpand" styleName="colapsExpandHbox">
-		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}"/>
+	<mx:HBox width="100%" id="colapsExpand" styleName="gradientHBox">
+		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}" fontWeight="bold"/>
 		<mx:Spacer width="100%" />
 		<mx:LinkButton id="collapseAllBtn" label="{ResourceManager.getInstance().getString('admin', 'collapse')}"
 					   click="onCollapseAll(event)" />
 		<mx:LinkButton id="expandAllBtn" label="{ResourceManager.getInstance().getString('admin', 'expand')}"
 					   click="onExpandAll(event)" />
 	</mx:HBox>
-	<mx:VBox id="myForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" disabledOverlayAlpha="0"/>
-	<mx:HBox width="100%" horizontalAlign="center" height="30">
+	<mx:VBox id="myForm" styleName="adminForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" />
+	<mx:ControlBar>
 		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" id="saveBtn"
 				   click="saveBtn_clickHandler(event)"/>
-	</mx:HBox>
+	</mx:ControlBar>
 </containers:HelpTitleWindow>
