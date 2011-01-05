@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var response:KalturaUserListResponse = data.data[1] as KalturaUserListResponse;
 			_model.usersModel.users = new ArrayCollection(response.objects);
 			// users quota
-			_model.usersModel.loginUsersQuota = response.totalCount;
+			_model.usersModel.totalUsers = response.totalCount;
 			_model.decreaseLoadCounter();
 		}
 	}
