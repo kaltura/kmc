@@ -7,6 +7,9 @@ package com.kaltura.commands.contentDistributionBatch
 	public class ContentDistributionBatchGetQueueSize extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param workerQueueFilter KalturaWorkerQueueFilter
+		 **/
 		public function ContentDistributionBatchGetQueueSize( workerQueueFilter : KalturaWorkerQueueFilter )
 		{
 			service= 'contentdistribution_contentdistributionbatch';
@@ -15,15 +18,15 @@ package com.kaltura.commands.contentDistributionBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(workerQueueFilter,'workerQueueFilter');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+ 			keyValArr = kalturaObject2Arrays(workerQueueFilter, 'workerQueueFilter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new ContentDistributionBatchGetQueueSizeDelegate( this , config );
 		}
 	}

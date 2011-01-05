@@ -1,18 +1,21 @@
 package com.kaltura.delegates.genericDistributionProviderAction
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.commands.genericDistributionProviderAction.GenericDistributionProviderActionAddMrssValidateFromFile;
 
+	import ru.inspirit.net.MultipartURLLoader;
+	import mx.utils.UIDUtil;
+
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.net.URLRequest;
-
-	import ru.inspirit.net.MultipartURLLoader;
+	import flash.net.FileReference;
+	import flash.net.URLLoaderDataFormat;
+	import flash.utils.ByteArray;
+	import flash.utils.getDefinitionByName;
 
 	public class GenericDistributionProviderActionAddMrssValidateFromFileDelegate extends WebDelegateBase
 	{
@@ -30,9 +33,16 @@ package com.kaltura.delegates.genericDistributionProviderAction
 			//create the service request for normal calls
 			var variables:String = decodeURIComponent(call.args.toString());
 			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "?service=" + call.service + "&action=" + call.action + "&" + variables;
-			(call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
-			var urlRequest:URLRequest = new URLRequest(req);
-			(call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile.upload(urlRequest,"xsdFile");
+			if ((call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile is FileReference) {
+				(call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
+				var urlRequest:URLRequest = new URLRequest(req);
+				((call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile as FileReference).upload(urlRequest,"xsdFile");
+			}
+			else{
+				mrloader.addFile(((call as GenericDistributionProviderActionAddMrssValidateFromFile).xsdFile as ByteArray), UIDUtil.createUID(), 'xsdFile');	
+				mrloader.dataFormat = URLLoaderDataFormat.TEXT;
+				mrloader.load(req);
+			}
 		}
 
 		// Event Handlers

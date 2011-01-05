@@ -6,6 +6,8 @@ package com.kaltura.commands.filesyncImportBatch
 	public class FilesyncImportBatchCleanExclusiveJobs extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 **/
 		public function FilesyncImportBatchCleanExclusiveJobs(  )
 		{
 			service= 'multicenters_filesyncimportbatch';
@@ -14,12 +16,12 @@ package com.kaltura.commands.filesyncImportBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			applySchema( keyArr , valueArr );
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new FilesyncImportBatchCleanExclusiveJobsDelegate( this , config );
 		}
 	}

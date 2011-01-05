@@ -44,19 +44,14 @@ package com.kaltura.vo
 
 		public var errorDescription : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			arr.push('thumbAssetIds');
 			arr.push('flavorAssetIds');
-			arr.push('remoteId');
-			arr.push('plays');
-			arr.push('views');
-			arr.push('validationErrors');
-			arr.push('errorType');
-			arr.push('errorNumber');
-			arr.push('errorDescription');
+			arr.push('sunrise');
+			arr.push('sunset');
 			return arr;
 		}
 	}

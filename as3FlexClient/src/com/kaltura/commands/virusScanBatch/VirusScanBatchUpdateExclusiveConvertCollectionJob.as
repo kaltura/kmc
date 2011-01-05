@@ -8,6 +8,12 @@ package com.kaltura.commands.virusScanBatch
 	public class VirusScanBatchUpdateExclusiveConvertCollectionJob extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id int
+		 * @param lockKey KalturaExclusiveLockKey
+		 * @param job KalturaBatchJob
+		 * @param flavorsData Array
+		 **/
 		public function VirusScanBatchUpdateExclusiveConvertCollectionJob( id : int,lockKey : KalturaExclusiveLockKey,job : KalturaBatchJob,flavorsData : Array=null )
 		{
 			if(flavorsData== null)flavorsData= new Array();
@@ -17,23 +23,23 @@ package com.kaltura.commands.virusScanBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
- 			keyValArr = kalturaObject2Arrays(lockKey,'lockKey');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
- 			keyValArr = kalturaObject2Arrays(job,'job');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
+			keyArr.push('id');
+			valueArr.push(id);
+ 			keyValArr = kalturaObject2Arrays(lockKey, 'lockKey');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			keyValArr = kalturaObject2Arrays(job, 'job');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
  			keyValArr = extractArray(flavorsData,'flavorsData');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new VirusScanBatchUpdateExclusiveConvertCollectionJobDelegate( this , config );
 		}
 	}

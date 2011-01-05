@@ -7,6 +7,9 @@ package com.kaltura.commands.auditTrail
 	public class AuditTrailAdd extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param auditTrail KalturaAuditTrail
+		 **/
 		public function AuditTrailAdd( auditTrail : KalturaAuditTrail )
 		{
 			service= 'audit_audittrail';
@@ -15,15 +18,15 @@ package com.kaltura.commands.auditTrail
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(auditTrail,'auditTrail');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+ 			keyValArr = kalturaObject2Arrays(auditTrail, 'auditTrail');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new AuditTrailAddDelegate( this , config );
 		}
 	}

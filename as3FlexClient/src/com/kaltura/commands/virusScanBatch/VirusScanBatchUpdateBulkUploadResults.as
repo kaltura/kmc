@@ -6,6 +6,9 @@ package com.kaltura.commands.virusScanBatch
 	public class VirusScanBatchUpdateBulkUploadResults extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param bulkUploadJobId int
+		 **/
 		public function VirusScanBatchUpdateBulkUploadResults( bulkUploadJobId : int )
 		{
 			service= 'virusscan_virusscanbatch';
@@ -14,14 +17,14 @@ package com.kaltura.commands.virusScanBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'bulkUploadJobId' );
-			valueArr.push( bulkUploadJobId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('bulkUploadJobId');
+			valueArr.push(bulkUploadJobId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new VirusScanBatchUpdateBulkUploadResultsDelegate( this , config );
 		}
 	}

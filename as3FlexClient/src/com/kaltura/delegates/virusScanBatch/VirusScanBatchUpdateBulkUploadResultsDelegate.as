@@ -1,10 +1,9 @@
 package com.kaltura.delegates.virusScanBatch
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
 	public class VirusScanBatchUpdateBulkUploadResultsDelegate extends WebDelegateBase
 	{
@@ -13,7 +12,7 @@ package com.kaltura.delegates.virusScanBatch
 			super(call, config);
 		}
 
-		override public function parse( result : XML ) : *
+		override public function parse(result:XML) : *
 		{
 			return result.result.toString();
 		}

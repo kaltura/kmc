@@ -12,5 +12,9 @@ package com.kaltura.types
 		public static const FFMPEG_AUX : String = '99';
 		public static const PDF2SWF : String = '201';
 		public static const PDF_CREATOR : String = '202';
+		public static const QUICK_TIME_PLAYER_TOOLS : String = 'quickTimeTools.QuickTimeTools';
+		public static const FAST_START : String = 'fastStart.FastStart';
+		public static const EXPRESSION_ENCODER : String = 'expressionEncoder.ExpressionEncoder';
+		public static const AVIDEMUX : String = 'avidemux.Avidemux';
 	}
 }

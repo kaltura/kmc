@@ -1,10 +1,9 @@
 package com.kaltura.delegates.virusScanProfile
 {
-	import flash.utils.getDefinitionByName;
-
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
 	public class VirusScanProfileScanDelegate extends WebDelegateBase
 	{
@@ -13,7 +12,7 @@ package com.kaltura.delegates.virusScanProfile
 			super(call, config);
 		}
 
-		override public function parse( result : XML ) : *
+		override public function parse(result:XML) : *
 		{
 			return result.result.toString();
 		}

@@ -19,7 +19,7 @@ package com.kaltura.vo
 
 		public var flavors : Array = new Array();
 
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

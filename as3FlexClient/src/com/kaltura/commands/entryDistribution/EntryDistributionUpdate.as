@@ -7,6 +7,10 @@ package com.kaltura.commands.entryDistribution
 	public class EntryDistributionUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id int
+		 * @param entryDistribution KalturaEntryDistribution
+		 **/
 		public function EntryDistributionUpdate( id : int,entryDistribution : KalturaEntryDistribution )
 		{
 			service= 'contentdistribution_entrydistribution';
@@ -15,17 +19,17 @@ package com.kaltura.commands.entryDistribution
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
- 			keyValArr = kalturaObject2Arrays(entryDistribution,'entryDistribution');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+			keyArr.push('id');
+			valueArr.push(id);
+ 			keyValArr = kalturaObject2Arrays(entryDistribution, 'entryDistribution');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new EntryDistributionUpdateDelegate( this , config );
 		}
 	}

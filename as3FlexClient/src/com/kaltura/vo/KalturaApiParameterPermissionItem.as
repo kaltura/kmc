@@ -9,7 +9,7 @@ package com.kaltura.vo
 
 		public var parameter : String;
 
-		public var action : int = int.MIN_VALUE;
+		public var action : String;
 
 		override public function getUpdateableParamKeys():Array
 		{

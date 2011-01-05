@@ -66,7 +66,7 @@ package com.kaltura.vo
 
 		public var multiStream : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

@@ -52,9 +52,9 @@ package com.kaltura.vo
 
 		public var defThumbOffset : int = int.MIN_VALUE;
 
-		public var loginUsersQuota : int = int.MIN_VALUE;
+		public var adminLoginUsersQuota : int = int.MIN_VALUE;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
@@ -82,7 +82,7 @@ public function getUpdateableParamKeys():Array
 			arr.push('enableAuditTrail');
 			arr.push('enableAnnotation');
 			arr.push('defThumbOffset');
-			arr.push('loginUsersQuota');
+			arr.push('adminLoginUsersQuota');
 			return arr;
 		}
 	}

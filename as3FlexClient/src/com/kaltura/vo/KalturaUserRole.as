@@ -16,6 +16,8 @@ package com.kaltura.vo
 
 		public var permissionNames : String;
 
+		public var tags : String;
+
 		public var createdAt : int = int.MIN_VALUE;
 
 		public var updatedAt : int = int.MIN_VALUE;
@@ -28,6 +30,7 @@ package com.kaltura.vo
 			arr.push('description');
 			arr.push('status');
 			arr.push('permissionNames');
+			arr.push('tags');
 			return arr;
 		}
 	}

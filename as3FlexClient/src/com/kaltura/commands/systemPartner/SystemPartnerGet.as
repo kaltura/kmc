@@ -6,6 +6,9 @@ package com.kaltura.commands.systemPartner
 	public class SystemPartnerGet extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param partnerId int
+		 **/
 		public function SystemPartnerGet( partnerId : int )
 		{
 			service= 'systempartner_systempartner';
@@ -14,14 +17,14 @@ package com.kaltura.commands.systemPartner
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'partnerId' );
-			valueArr.push( partnerId );
-			applySchema( keyArr , valueArr );
+			keyArr.push('partnerId');
+			valueArr.push(partnerId);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new SystemPartnerGetDelegate( this , config );
 		}
 	}

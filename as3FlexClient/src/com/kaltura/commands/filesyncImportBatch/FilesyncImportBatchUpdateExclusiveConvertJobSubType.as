@@ -7,6 +7,11 @@ package com.kaltura.commands.filesyncImportBatch
 	public class FilesyncImportBatchUpdateExclusiveConvertJobSubType extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id int
+		 * @param lockKey KalturaExclusiveLockKey
+		 * @param subType int
+		 **/
 		public function FilesyncImportBatchUpdateExclusiveConvertJobSubType( id : int,lockKey : KalturaExclusiveLockKey,subType : int )
 		{
 			service= 'multicenters_filesyncimportbatch';
@@ -15,19 +20,19 @@ package com.kaltura.commands.filesyncImportBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
- 			keyValArr = kalturaObject2Arrays(lockKey,'lockKey');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			keyArr.push( 'subType' );
-			valueArr.push( subType );
-			applySchema( keyArr , valueArr );
+			keyArr.push('id');
+			valueArr.push(id);
+ 			keyValArr = kalturaObject2Arrays(lockKey, 'lockKey');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('subType');
+			valueArr.push(subType);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new FilesyncImportBatchUpdateExclusiveConvertJobSubTypeDelegate( this , config );
 		}
 	}

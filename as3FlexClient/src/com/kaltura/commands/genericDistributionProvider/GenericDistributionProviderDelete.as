@@ -6,6 +6,9 @@ package com.kaltura.commands.genericDistributionProvider
 	public class GenericDistributionProviderDelete extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param id int
+		 **/
 		public function GenericDistributionProviderDelete( id : int )
 		{
 			service= 'contentdistribution_genericdistributionprovider';
@@ -14,14 +17,14 @@ package com.kaltura.commands.genericDistributionProvider
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'id' );
-			valueArr.push( id );
-			applySchema( keyArr , valueArr );
+			keyArr.push('id');
+			valueArr.push(id);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new GenericDistributionProviderDeleteDelegate( this , config );
 		}
 	}

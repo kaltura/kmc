@@ -6,6 +6,10 @@ package com.kaltura.commands.contentDistributionBatch
 	public class ContentDistributionBatchLogConversion extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param flavorAssetId String
+		 * @param data String
+		 **/
 		public function ContentDistributionBatchLogConversion( flavorAssetId : String,data : String )
 		{
 			service= 'contentdistribution_contentdistributionbatch';
@@ -14,16 +18,16 @@ package com.kaltura.commands.contentDistributionBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push( 'flavorAssetId' );
-			valueArr.push( flavorAssetId );
-			keyArr.push( 'data' );
-			valueArr.push( data );
-			applySchema( keyArr , valueArr );
+			keyArr.push('flavorAssetId');
+			valueArr.push(flavorAssetId);
+			keyArr.push('data');
+			valueArr.push(data);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new ContentDistributionBatchLogConversionDelegate( this , config );
 		}
 	}

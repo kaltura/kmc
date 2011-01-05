@@ -7,6 +7,9 @@ package com.kaltura.commands.contentDistributionBatch
 	public class ContentDistributionBatchAddMediaInfo extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 * @param mediaInfo KalturaMediaInfo
+		 **/
 		public function ContentDistributionBatchAddMediaInfo( mediaInfo : KalturaMediaInfo )
 		{
 			service= 'contentdistribution_contentdistributionbatch';
@@ -15,15 +18,15 @@ package com.kaltura.commands.contentDistributionBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(mediaInfo,'mediaInfo');
-			keyArr = keyArr.concat( keyValArr[0] );
-			valueArr = valueArr.concat( keyValArr[1] );
-			applySchema( keyArr , valueArr );
+ 			keyValArr = kalturaObject2Arrays(mediaInfo, 'mediaInfo');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new ContentDistributionBatchAddMediaInfoDelegate( this , config );
 		}
 	}

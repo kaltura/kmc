@@ -5,7 +5,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDistributionProfileFilter extends KalturaDistributionProfileBaseFilter
 	{
-override public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();

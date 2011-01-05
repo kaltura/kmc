@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		public var filter : KalturaBatchJobFilter;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

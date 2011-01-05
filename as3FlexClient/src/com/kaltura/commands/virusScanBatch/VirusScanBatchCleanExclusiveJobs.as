@@ -6,6 +6,8 @@ package com.kaltura.commands.virusScanBatch
 	public class VirusScanBatchCleanExclusiveJobs extends KalturaCall
 	{
 		public var filterFields : String;
+		/**
+		 **/
 		public function VirusScanBatchCleanExclusiveJobs(  )
 		{
 			service= 'virusscan_virusscanbatch';
@@ -14,12 +16,12 @@ package com.kaltura.commands.virusScanBatch
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			applySchema( keyArr , valueArr );
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
-			setRequestArgument('filterFields',filterFields);
+			setRequestArgument('filterFields', filterFields);
 			delegate = new VirusScanBatchCleanExclusiveJobsDelegate( this , config );
 		}
 	}

@@ -8,14 +8,17 @@ package com.kaltura.vo
 
 		public var errorType : int = int.MIN_VALUE;
 
+		public var data : String;
+
 		public var description : String;
 
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			arr.push('action');
 			arr.push('errorType');
+			arr.push('data');
 			arr.push('description');
 			return arr;
 		}

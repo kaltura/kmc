@@ -4,7 +4,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaJobData extends BaseFlexVo
 	{
-public function getUpdateableParamKeys():Array
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();

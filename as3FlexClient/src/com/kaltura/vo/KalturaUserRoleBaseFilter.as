@@ -23,9 +23,9 @@ package com.kaltura.vo
 
 		public var partnerIdIn : String;
 
-		public var permissionNamesMultiLikeOr : String;
+		public var tagsMultiLikeOr : String;
 
-		public var permissionNamesMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String;
 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
@@ -48,8 +48,8 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
-			arr.push('permissionNamesMultiLikeOr');
-			arr.push('permissionNamesMultiLikeAnd');
+			arr.push('tagsMultiLikeOr');
+			arr.push('tagsMultiLikeAnd');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
