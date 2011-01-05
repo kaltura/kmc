@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:controls="com.kaltura.controls.*"
 				layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true"
 				close="{closeWindow(event)}"
@@ -326,6 +327,7 @@
 				if (_presetSizeList.length>0) {
 					_isPreSize = true;
 				}	
+				
 			}
 			
 			private function alertOkHandler(event:CloseEvent): void {
@@ -536,41 +538,52 @@
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%">
-		<mx:VBox id="controlVBox" styleName="cropperControlsVBox" width="220" height="{_maxImageHeight + IMG_OFFSET}">
-			<mx:HBox paddingLeft="10">
-				<mx:Label text="{resourceManager.getString('cms','chooseThumbnail')}" styleName="cropperLabel" width="100%"/>		
-			</mx:HBox>
-			<mx:VBox width="100%" horizontalAlign="center" paddingTop="0" verticalCenter="0">		
-				<mx:HRule width="100%"/>
-				<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick(event)}" 
-						 enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
-						 verticalScrollPolicy="on"  allowMultipleSelection="false" width="130" height="140">
-					<mx:itemRenderer>
-						<mx:Component>
-							<mx:VBox horizontalAlign="center" verticalAlign="middle" buttonMode="true" width="80" height="80" backgroundColor="white"
-									 verticalScrollPolicy="off" horizontalScrollPolicy="off">							
-								<mx:Image source="{data.thumbUrl}" width="80" height="80" horizontalAlign="center" verticalAlign="middle"/>
-							</mx:VBox>
-						</mx:Component>
-					</mx:itemRenderer>
-				</mx:List>
+		<mx:VBox id="controlVBox" paddingLeft="0" width="220" height="{imageBox.height}" verticalGap="0" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+			<mx:VBox id="listBox" styleName="cropperControlsVBox" width="100%">
+				<mx:HBox paddingLeft="10" styleName="gradientHBox">
+					<mx:Label text="{resourceManager.getString('cms','chooseThumbnail')}" styleName="cropperLabel" width="100%"/>		
+				</mx:HBox>
+				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0" verticalCenter="0" 
+						 horizontalScrollPolicy="off" verticalScrollPolicy="off">		
+					<mx:HRule width="100%"/>
+					<!--controls:SmoothScrollingList id="imgList"
+					width="90" height="100%"
+					dragMoveEnabled="false" dragEnabled="false" dropEnabled="false"
+					dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick(event)}"
+					enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
+					verticalScrollPolicy="off"
+					itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbnailListItemRenderer"/-->
+					
+					
+					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick(event)}"
+							 enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
+							 allowMultipleSelection="false" width="100%" height="140">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:VBox horizontalAlign="center" verticalAlign="middle" buttonMode="true" width="80" height="80" backgroundColor="white"
+										 verticalScrollPolicy="off" horizontalScrollPolicy="off">							
+									<mx:Image source="{data.thumbUrl}" width="80" height="80" horizontalAlign="center" verticalAlign="middle"/>
+								</mx:VBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:List>
+				</mx:VBox>
 			</mx:VBox>
-			<mx:HRule width="100%"/>
-			<mx:HBox paddingLeft="10">
-				<mx:Label text="{resourceManager.getString('cms','positionAndSize')}" styleName="cropperLabel" width="100%"/>
-			</mx:HBox>
-			<mx:HRule width="100%"/>
-			<mx:Spacer height="100%"/>
-			<mx:VBox paddingLeft="10" verticalScrollPolicy="off" horizontalScrollPolicy="off">	
+			
+			<mx:VBox id="labelVbox"  width="100%" height="32" styleName="cropperLabelVBox">
+				<mx:HBox paddingLeft="10" styleName="gradientHBox">
+					<mx:Label text="{resourceManager.getString('cms','positionAndSize')}" styleName="cropperLabel" width="100%"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox borderStyle="solid" width="100%" height="{controlVBox.height - listBox.height - labelVbox.height}" paddingLeft="10" paddingRight="10" verticalScrollPolicy="on" horizontalScrollPolicy="off" >	
 				<mx:VBox verticalGap="0">
-					<mx:HBox width="100%">
+					<mx:HBox paddingTop="5" width="100%">
 						<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}" enabled="{_presetSizesExist}"/>
 						<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{resourceManager.getString('cms','presetSizeText')}" width="110" wordWrap="true" fontWeight="bold"/>
 					</mx:HBox>
 					<mx:ComboBox id="presetComboBox" prompt="{resourceManager.getString('cms', 'selectValidDimensionsMsg')}"
 								 enabled="{_isPreSize}" dataProvider="{_presetSizeList}" change="{onPresetSizeChange(event)}"/>					
 				</mx:VBox>
-				<mx:Spacer height="100%"/>
 				<mx:Label text="{resourceManager.getString('cms','positionTitle')}" fontWeight="bold"/>
 				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
 					<mx:Label text="{resourceManager.getString('cms','leftTitle')}" width="50" textAlign="right"/>
@@ -595,12 +608,14 @@
 								  enabled="{!_isPreSize}" editable="{!_isPreSize}"
 								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
 				</mx:HBox>
-				<mx:Spacer height="100%"/>
 				<mx:Label text="{resourceManager.getString('cms','thumbnailPreview')}" fontWeight="bold"/>
 				<mx:HBox width="100%" height="100" paddingBottom="0" paddingTop="0" horizontalAlign="center" verticalAlign="middle">
 					<mx:Image id="previewImg" height="{MAX_PREVIEW_HEIGHT}" width="{MAX_PREVIEW_WIDTH}"/>
 				</mx:HBox>
 			</mx:VBox>
+			
+			
+			
 			
 		</mx:VBox>
 		<mx:HBox id="imageBox" width="100%" verticalAlign="middle" horizontalAlign="center" height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}" backgroundColor="#e5e5e5"/>
