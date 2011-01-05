@@ -258,7 +258,7 @@
 				_imageCrop.cropBox.cropWidth = tempWidth;
 				_imageCrop.cropBox.cropHeight = tempHeight;
 				_imageCrop.cropBox.cropX = xPos;
-				_imageCrop.cropBox.cropY = xPos;
+				_imageCrop.cropBox.cropY = yPos;
 			}
 			
 			/**
@@ -499,11 +499,12 @@
 				}
 			}
 			
-			
 			private function onPresetSizeChange(event:Event):void {
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 				if (_imageCrop && _imageCrop.cropBox) {
-					setCropValues(selectedSize.width, selectedSize.height);
+					var newRatio:Number = selectedSize.height/selectedSize.width;
+					var requestedHeight:Number = _imageCrop.cropBox.cropWidth * newRatio;
+					adjustPresetDimensions(_imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight, _imageCrop.cropBox.cropWidth, requestedHeight, _imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY);
 				}
 			}
 			
