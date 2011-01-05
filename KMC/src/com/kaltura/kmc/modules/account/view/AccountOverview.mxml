@@ -141,11 +141,14 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (!partnerData.equals(_clonedPartnerData) || force) {
-					emailValidator.source = pEmail;
-					if ((emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
+//					emailValidator.source = pEmail;
+//					if ((emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
+//						return;
+					nameValidator.source = pName;
+					if ((urlValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
 						return;
 					urlValidator.source = pWebsite;
-					if ((urlValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
+					if ((nameValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
 						return;
 
 					if (cctList.selectedItems.length < 0) {
@@ -222,7 +225,7 @@
 
 		]]>
 	</mx:Script>
-	<mx:EmailValidator id="emailValidator" required="true" property="text"/>
+	<!--<mx:EmailValidator id="emailValidator" required="true" property="text"/>-->
 	<mx:StringValidator id="passwordValidator" required="true" property="text" minLength="4" maxLength="20"/>
 	<mx:StringValidator id="nameValidator" required="true" property="text" minLength="4" maxLength="20"/>
 
