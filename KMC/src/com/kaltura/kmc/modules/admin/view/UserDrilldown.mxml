@@ -20,7 +20,9 @@
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.resources.ResourceManager;
+			import mx.validators.ValidationResult;
 
 
 			/**
@@ -129,7 +131,34 @@
 					_undoUser.id = emailTi.text;
 				}
 				_undoUser.roleIds = (roleCb.selectedItem as KalturaUserRole).id.toString();
-				requestSave();
+				
+				if (validateInput()) {
+					requestSave();
+				}
+			}
+			
+			/**
+			 * validate required fields
+			 * */
+			protected function validateInput():Boolean {
+				var isOk:Boolean;
+				validator.source = emailTi;
+				var vre:ValidationResultEvent = validator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					isOk = !(vre.results[0] as ValidationResult).isError;
+				}
+				validator.source = firstNameTi;
+				vre = validator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					isOk &&= !(vre.results[0] as ValidationResult).isError;
+				}
+				validator.source = lastNameTi;
+				vre = validator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					isOk &&= !(vre.results[0] as ValidationResult).isError;
+				}
+				
+				return isOk;
 			}
 
 
@@ -290,6 +319,8 @@
 			}
 		]]>
 	</mx:Script>
+	<mx:StringValidator id='validator' property="text" required="true"
+						requiredFieldError="{resourceManager.getString('admin', 'mandatoryField')}"/>
 	<mx:VBox width="100%">
 		<mx:HBox styleName="formInnerTitle" width="100%">
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'personal_details')}"
