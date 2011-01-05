@@ -5,8 +5,10 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.GenerateThumbAssetEvent;
 	import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+	import com.kaltura.vo.KalturaThumbAsset;
 	import com.kaltura.vo.KalturaThumbParams;
-
+	
 	public class GenerateThumbAssetCommand extends KalturaCommand
 	{
 		override public function execute(event:CairngormEvent):void
@@ -23,9 +25,28 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
-			
-			var listThumbsEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
-			listThumbsEvent.dispatch();
+			var newThumb:KalturaThumbAsset =  data.data as KalturaThumbAsset;
+			var thumbsArray:Array = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			var curUsedProfiles:Array = new Array();
+			var thumbExist:Boolean = false;
+			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
+				if ((newThumb.width == thumb.width) && (newThumb.height == thumb.height)) {
+					if (!thumb.thumbAsset) {
+						thumb.thumbAsset = newThumb;
+						thumb.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumb.id;
+						thumbExist = true;
+						break;
+					}
+					curUsedProfiles = thumb.usedDistributionProfilesArray;
+				}
+			}
+			if (!thumbExist) {
+				var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(newThumb.width, newThumb.height, newThumb);
+				thumbToAdd.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumb.id;
+				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
+				thumbsArray.splice(0,0,thumbToAdd);
+			}
+			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
 			
 			_model.entryDetailsModel.thumbnailSaved = true;
 		}
