@@ -25,8 +25,10 @@
 			import mx.controls.Spacer;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
+			import mx.validators.ValidationResult;
 
 			/**
 			 * value of the type property for the <code>save</code> event
@@ -320,6 +322,25 @@
 				_undoRole.description = descriptionTi.text;
 				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
 			}
+			
+			/**
+			 * validate required fields
+			 * */
+			protected function validateInput():Boolean {
+				var isOk:Boolean;
+				validator.source = nameTi;
+				var vre:ValidationResultEvent = validator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					isOk = !(vre.results[0] as ValidationResult).isError;
+				}
+				validator.source = descriptionTi;
+				vre = validator.validate();
+				if (vre.results != null && vre.results.length > 0) {
+					isOk &&= !(vre.results[0] as ValidationResult).isError;
+				}
+				
+				return isOk;
+			}
 
 			/**
 			 * update _undoRole.permissionNames
@@ -328,7 +349,9 @@
 			 */
 			protected function saveBtn_clickHandler(event:MouseEvent):void {
 				updateUndoRoleFromForm();
-				requestSave();
+				if (validateInput()) {
+					requestSave();
+				}
 			}
 			
 			
@@ -517,6 +540,8 @@
 
 		]]>
 	</mx:Script>
+	<mx:StringValidator id='validator' property="text" required="true"
+						requiredFieldError="{resourceManager.getString('admin', 'mandatoryField')}"/>
 	<mx:VBox width="100%">
 		<mx:Form width="100%" textAlign="left" paddingLeft="0">
 			<mx:FormItem width="100%" label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
