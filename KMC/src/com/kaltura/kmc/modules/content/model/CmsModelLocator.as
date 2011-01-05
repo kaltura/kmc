@@ -88,7 +88,7 @@ package com.kaltura.kmc.modules.content.model {
 		
 		/**
 		 * the data being presented on the current screen,
-		 * makes it easier to share data across screens (?)
+		 * makes it easier to share data across screens 
 		 * */
 		public var listableVo:ListableVo;
 
