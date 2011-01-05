@@ -62,7 +62,11 @@
 			protected var _roleDrilldown:RoleDrilldown;
 			
 			
-			
+			/**
+			 * should data be refreshed. 
+			 * used to tell if data should be reloaded when closing user drilldown.
+			 * */
+			protected var _needToRefreshData:Boolean;
 			/**
 			 * refresh subtab data
 			 * */
@@ -159,7 +163,10 @@
 					case DrilldownMode.NONE:
 						// if we got here, data save completed successfuly
 						closeUserDrilldown(null);
-						refreshData();
+						if (_needToRefreshData) {
+							refreshData();
+							_needToRefreshData = false;
+						}
 						break;
 				}
 			}
@@ -238,6 +245,7 @@
 					var rm:IResourceManager = ResourceManager.getInstance();
 					Alert.show(rm.getString('admin', 'after_user_edit')); 
 				}
+				_needToRefreshData = true;
 				ue.dispatch();
 			}
 			
@@ -313,7 +321,7 @@
 			protected function drillToSelectedUser():UserDrilldown {
 				dispatchEvent(new GeneralEvent("enableHeader", false));
 				var ud:UserDrilldown = new UserDrilldown();
-				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, model.selectedUser.id == model.adminUserId);
+				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, model.selectedUser.id != model.adminUserId);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
