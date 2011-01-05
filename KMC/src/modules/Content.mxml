@@ -516,11 +516,13 @@
 			 * */
 			private function closePopup():void {
 				if (_secondPopup) {
+					_secondPopup.removeEventListener(KmcHelpEvent.HELP, onHelp);
 					PopUpManager.removePopUp(_secondPopup);
 					_model.has2OpenedPopups = false;
 					_secondPopup = null;
 				}
 				else if (_popup) {
+					_popup.removeEventListener(KmcHelpEvent.HELP, onHelp);
 					PopUpManager.removePopUp(_popup);
 					_popup = null;
 					enableHtmlTabs(true);
@@ -571,6 +573,10 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN,GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 				return edw;
+			}
+			
+			private function onHelp(e:KmcHelpEvent):void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
 			}
 
 
@@ -703,6 +709,7 @@
 			 * adds a popup window to the screen
 			 * */
 			private function addPopup(currentPopUp:TitleWindow):void {
+				currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp);
 				// remember the new window
 				if (_popup) {
 					_secondPopup = currentPopUp;
