@@ -1,16 +1,19 @@
 package com.kaltura.kmc.modules.content.view.itemrenderers {
+	import com.kaltura.kmc.events.KmcHelpEvent;
 	import com.kaltura.kmc.modules.content.view.CategoriesTree;
 	import com.kaltura.kmc.modules.content.view.window.AddNewCategoryWin;
 	import com.kaltura.kmc.modules.content.view.window.DeleteCategoryWin;
 	import com.kaltura.kmc.modules.content.vo.CategoryVO;
-
+	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-
+	
 	import mx.containers.HBox;
 	import mx.controls.LinkButton;
 	import mx.controls.treeClasses.TreeItemRenderer;
+	import mx.core.Application;
+	import mx.core.Container;
 	import mx.events.ResizeEvent;
 	import mx.managers.PopUpManager;
 
@@ -64,10 +67,15 @@ package com.kaltura.kmc.modules.content.view.itemrenderers {
 			var dataVo:CategoryVO = data as CategoryVO;
 			var addCategoryPopUp:AddNewCategoryWin = new AddNewCategoryWin();
 			addCategoryPopUp.parentCategory = dataVo;
-			PopUpManager.addPopUp(addCategoryPopUp, this as DisplayObject, true);
+//			// the window closes itself on x so we can't remove the listener.
+//			addCategoryPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
+			PopUpManager.addPopUp(addCategoryPopUp, (Application.application as Container), true);
 			PopUpManager.centerPopUp(addCategoryPopUp);
 		}
 
+//		private function onHelp(e:KmcHelpEvent):void {
+//			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+//		}
 
 		/**
 		 * Override the set method for the data property
