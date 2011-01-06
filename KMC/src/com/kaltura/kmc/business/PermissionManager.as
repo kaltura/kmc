@@ -222,7 +222,7 @@ package com.kaltura.kmc.business {
 		protected function getRelevantPermissions(componentPath:String):Array {
 			var arr:Array = new Array();
 			for each (var vo:PermissionVo in _instructionVos) {
-				if (vo.path.indexOf(componentPath) > -1) {
+				if (vo.path.indexOf(componentPath + ".") == 0 || vo.path.indexOf("." + componentPath + ".") > -1) {
 					// found a match
 					arr.push(vo);
 				}
