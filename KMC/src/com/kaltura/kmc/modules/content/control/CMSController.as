@@ -119,6 +119,7 @@ package com.kaltura.kmc.modules.content.control
 			
 			//distribution
 			addCommand(DistributionProfileEvent.LIST, ListDistributionProfilesCommand);
+			addCommand(EntryDistributionEvent.LIST, ListEntryDistributionCommand);
 			
 			//thumb asset
 			addCommand(ThumbnailAssetEvent.LIST, ListThumbnailAssetCommand);

@@ -12,6 +12,8 @@
 			private var _thumbAsset:ThumbnailWithDimensions;
 			[Bindable]
 			private var _enableActions:Boolean;
+			[Bindable]
+			private var _enableDelete:Boolean;
 			
 			override public function set data(value:Object):void {
 				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
@@ -21,8 +23,14 @@
 						_enableActions = true;
 						return;
 					}
+					if (_thumbAsset.thumbAsset.status == KalturaFlavorAssetStatus.ERROR) {
+						_enableDelete = true;
+						_enableActions = false;
+						return;
+					}
 				}
 				
+				_enableDelete = false;
 				_enableActions = false;
 			}
 			
@@ -56,5 +64,5 @@
 	
 	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{_enableActions}" styleName="setDefaultLinkButton"/>
 	<mx:LinkButton label="{resourceManager.getString('cms', 'download')}" click="downloadClickHandler(event)" enabled="{_enableActions}" styleName="downloadThumbLinkButton"/>	
-	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{_enableActions}" styleName="deleteThumbLinkButton"/>	
+	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(_enableActions || _enableDelete)}" styleName="deleteThumbLinkButton"/>	
 </mx:VBox>

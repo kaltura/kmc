@@ -325,8 +325,18 @@
 				
 				if (_presetSizeList.length>0) {
 					_isPreSize = true;
-				}	
+				}
 				
+				
+				if (presetComboBox) {
+					//for qa!!!!! erase later!!!!!!!!!!
+					createDemoDimensions();
+					presetComboBox.selectedIndex = 0;
+				}
+				if (imgList) {
+					imgList.selectedItem = _thumbnailsList[0];
+					onImgItemClick();
+				}
 			}
 			
 			private function alertOkHandler(event:CloseEvent): void {
@@ -409,7 +419,7 @@
 			/**
 			 * selecting a new thumbnail to edit
 			 * */
-			private function onImgItemClick(event:Event):void {
+			private function onImgItemClick():void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
 				//setPreviewImgDim();
@@ -539,7 +549,7 @@
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox id="controlVBox" paddingLeft="0" width="216" height="{imageBox.height}" verticalGap="0" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 			<mx:VBox id="listBox" styleName="cropperControlsVBox" width="100%">
-				<mx:HBox paddingLeft="12" styleName="gradientHBox">
+				<mx:HBox paddingLeft="12">
 					<mx:Label text="{resourceManager.getString('cms','chooseThumbnail')}" styleName="cropperLabel" width="100%"/>		
 				</mx:HBox>
 				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0" verticalCenter="0" 
@@ -554,7 +564,7 @@
 					itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbnailListItemRenderer"/-->
 					
 					
-					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick(event)}"
+					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick()}"
 							 enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
 							 allowMultipleSelection="false" width="100%" height="140">
 						<mx:itemRenderer>
@@ -570,7 +580,7 @@
 			</mx:VBox>
 			
 			<mx:VBox id="labelVbox"  width="100%" height="32" styleName="cropperLabelVBox">
-				<mx:HBox paddingLeft="12" styleName="gradientHBox">
+				<mx:HBox paddingLeft="12">
 					<mx:Label text="{resourceManager.getString('cms','positionAndSize')}" styleName="cropperLabel" width="100%"/>
 				</mx:HBox>
 			</mx:VBox>

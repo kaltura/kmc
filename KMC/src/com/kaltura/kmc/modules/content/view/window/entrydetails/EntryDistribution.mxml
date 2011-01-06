@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+Distribution tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.SelectDistributorsWindow;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			private var _selectedEntry:KalturaBaseEntry;
+			private var _entryDetailsModel:EntryDetailsModel;
+			[Bindable]
+			private var _entryDistributions:Array;
+			
+			public function get entryDetailsModel():EntryDetailsModel
+			{
+				return _entryDetailsModel;
+			}
+			
+			public function set entryDetailsModel(value:EntryDetailsModel):void
+			{
+				_entryDetailsModel = value;
+			}
+			
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				if (!value || !_entryDetailsModel.enableDistribution)
+					return;
+				BindingUtils.bindSetter(setEntryDistributions, _entryDetailsModel.distributionProfileInfo, "entryDistributionArray");
+				_selectedEntry = value;
+				var listEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
+				listEntryDistribution.dispatch();
+			}
+			
+			public function setEntryDistributions(entryDistributions:Array): void {
+				_entryDistributions = entryDistributions;
+			}
+			
+			private function selectDistributorsClick():void {
+				var selectDistributorWin:SelectDistributorsWindow = new SelectDistributorsWindow();
+				selectDistributorWin.buildDistributorsWindow(entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray, entryDetailsModel.distributionProfileInfo.entryDistributionArray);
+				PopUpManager.addPopUp(selectDistributorWin, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(selectDistributorWin);
+			}
+			
+			private function compareSunrise(distribution1:EntryDistributionWithProfile, distribution2:EntryDistributionWithProfile):int {
+				return compareDates(distribution1.kalturaEntryDistribution.sunrise, distribution2.kalturaEntryDistribution.sunrise);
+			}
+			
+			private function compareSunset(distribution1:EntryDistributionWithProfile, distribution2:EntryDistributionWithProfile):int {
+				return compareDates(distribution1.kalturaEntryDistribution.sunset, distribution2.kalturaEntryDistribution.sunset);
+			}
+			
+			private function compareDates(date1:int, date2:int):int {
+				if (date1 < date2)
+					return -1;
+				if (date1 == date2)
+					return 0;
+				return 1;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms','editDistributors')}" styleName="titleLabel"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button label="{resourceManager.getString('cms','selectDistributors')}" click="selectDistributorsClick()"/>
+	</mx:HBox>
+	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_entryDistributions}" draggableColumns="false" 
+				 sortableColumns="true" selectable="false">
+		<mx:columns>
+			<mx:DataGridColumn id="distributorCol" headerText="{resourceManager.getString('cms','distributorCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributorRenderer" width="110" sortable="false"/>			
+			<mx:DataGridColumn id="startDateCol" headerText="{resourceManager.getString('cms','startDateCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SunriseRenderer" sortable="true" width="85" sortCompareFunction="compareSunrise"/>
+			<mx:DataGridColumn id="endDateCol" headerText="{resourceManager.getString('cms','endDateCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SunsetRenderer" sortable="true" width="80"  sortCompareFunction="compareSunset"/>
+			<mx:DataGridColumn id="submissionsStatusCol" headerText="{resourceManager.getString('cms','submissionsStatusCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SubmissionStatusRenderer" width="330" sortable="false"/>
+			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionAvailableCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributionActionRenderer" width="150" sortable="false"/>
+			
+		</mx:columns>
+	</mx:DataGrid>
+	
+</mx:VBox>

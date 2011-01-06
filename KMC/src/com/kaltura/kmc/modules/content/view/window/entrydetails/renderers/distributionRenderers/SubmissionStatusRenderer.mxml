@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" horizontalAlign="left" paddingLeft="6" horizontalGap="0"
+		 creationComplete="creationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.vo.KalturaDistributionValidationError;
+			import com.kaltura.vo.KalturaDistributionValidationErrorInvalidMetadata;
+			import com.kaltura.vo.KalturaDistributionValidationErrorMissingFlavor;
+			import com.kaltura.vo.KalturaDistributionValidationErrorMissingMetadata;
+			import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			
+			import mx.controls.Button;
+	
+			
+			private static const READY_FOR_DISTRIBUTION:String = "readyForDistribution";
+			private static const APPROVED_FOR_DISTRIBUTION:String = "approvedForDistribution";
+			private static const DISTRIBUTED:String = "distributed";
+			private static const UPDATE_REQUIRED:String = "updateRequired";
+			private static const DELETED:String = "deleted";
+			private static const SUBMITTING:String = "submitting";
+			private static const REMOVING:String = "removing";
+			private static const UPDATING:String = "updating";
+			private static const DISTRIBUTION_ERROR:String = "distributionError";
+
+			[Bindable]
+			private var _errorsVisible:Boolean = false;
+			[Bindable]
+			private var _thumbErrorVisible:Boolean = false;
+			[Bindable]
+			private var _flavorErrorVisible:Boolean = false;
+			[Bindable]
+			private var _metadataErrorVisible:Boolean = false;
+			[Bindable]
+			private var _statusVisible:Boolean = false;
+			private var thumbErrorsArray:Array;
+			private var flavorErrorsArray:Array;
+			private var metadataErrorsArray:Array;
+			private var  thumbnail:String;
+			private var  flavor:String;
+			private var  metadata:String;
+			private var  missing:String;
+			
+			private function creationComplete():void {
+				thumbnail = resourceManager.getString('cms','thumbnail');
+				flavor = resourceManager.getString('cms','flavor');
+				metadata = resourceManager.getString('cms','metadata');
+				missing = resourceManager.getString('cms','missing') + " ";
+			}
+
+			
+			override public function set data(value:Object):void {
+				var entryDis:KalturaEntryDistribution = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
+				var status:String;
+				var status2:String;
+	
+				switch (entryDis.status) {
+					case KalturaEntryDistributionStatus.PENDING:
+						status = READY_FOR_DISTRIBUTION;
+						break;
+					case KalturaEntryDistributionStatus.QUEUED:
+						status = APPROVED_FOR_DISTRIBUTION;
+						break;
+					case KalturaEntryDistributionStatus.SUBMITTING:
+						status = SUBMITTING;
+						break;
+					case KalturaEntryDistributionStatus.UPDATING:
+						status = UPDATING;
+						break;
+					case KalturaEntryDistributionStatus.DELETING:
+						status = REMOVING;
+						break;
+					case KalturaEntryDistributionStatus.ERROR_DELETING:
+					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
+					case KalturaEntryDistributionStatus.ERROR_UPDATING:
+						status = DISTRIBUTION_ERROR;
+						break;
+					case KalturaEntryDistributionStatus.READY:
+						status = DISTRIBUTED;
+						status2 = UPDATE_REQUIRED;
+						break;
+				}
+				
+				statusLabel.text = resourceManager.getString('cms',status);
+				if (status2) {
+					statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
+				}
+				
+				if (status == DISTRIBUTION_ERROR) {
+					_statusVisible = false;
+					_errorsVisible = false;
+				}
+				else if (entryDis.validationErrors.length > 0 ) 
+				{
+					_errorsVisible = true;
+					_statusVisible = true;
+					statusLabel.text = statusLabel.text + ", ";
+					parseErrors(entryDis.validationErrors);
+					setErrosTexts(); 
+				}
+				else {
+					_errorsVisible = false;
+					_statusVisible = true;
+				}
+			}
+			
+			/**
+			 * sets suitable texts on error buttons
+			 * */
+			private function setErrosTexts():void {
+				if (_thumbErrorVisible)
+				{
+					if (_flavorErrorVisible || _metadataErrorVisible)
+						thumbErrorLink.label = missing + thumbnail + ",";
+					else
+						thumbErrorLink.label = missing + thumbnail;
+					if (_flavorErrorVisible) {
+						if (_metadataErrorVisible) {
+							flavorErrorLink.label =  flavor + ",";
+							metadataErrorLink.label = metadata;								
+						}
+						else
+							flavorErrorLink.label = flavor;
+					}
+				}
+				else if (_flavorErrorVisible)
+				{
+					if (_metadataErrorVisible) {
+						flavorErrorLink.label = missing + flavor + ",";
+						metadataErrorLink.label = metadata						
+					}
+					else
+						flavorErrorLink.label = missing + flavor;
+				}		
+				else if (_metadataErrorVisible) 
+					metadataErrorLink.label = missing + metadata;
+				else
+					metadataErrorLink.label = metadata;
+				
+			}
+			
+			private function parseErrors(errors:Array):void {
+				thumbErrorsArray = new Array();
+				flavorErrorsArray = new Array();
+				metadataErrorsArray = new Array();	
+				
+				for (var i:int = 0; i<errors.length; i++) {
+					if ((errors[i] is KalturaDistributionValidationErrorInvalidMetadata) ||
+						(errors[i] is KalturaDistributionValidationErrorMissingMetadata)) {
+						metadataErrorsArray.push(errors[i]);
+						_metadataErrorVisible = true;						
+					}
+					else if (errors[i] is KalturaDistributionValidationErrorMissingFlavor) {
+						flavorErrorsArray.push(errors[i]);
+						_flavorErrorVisible = true;
+					}
+					else if (errors[i] is KalturaDistributionValidationErrorMissingThumbnail) {
+						thumbErrorsArray.push(errors[i]);
+						_thumbErrorVisible = true;
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" paddingLeft="0" paddingRight="0"/>
+	<mx:LinkButton id="distributionErrorLink" paddingLeft="0" paddingRight="0" label="{resourceManager.getString('cms','distributionError')}" visible="{!_statusVisible}" includeInLayout="{!_statusVisible}" styleName="distributionError"/>
+	<mx:LinkButton id="thumbErrorLink" paddingLeft="0" paddingRight="0" visible="{(_errorsVisible &amp;&amp; _thumbErrorVisible)}" includeInLayout="{thumbErrorLink.visible}" styleName="distributionError"/>	
+	<mx:LinkButton id="flavorErrorLink"  paddingLeft="0" paddingRight="0" visible="{(_errorsVisible &amp;&amp; _flavorErrorVisible)}" includeInLayout="{flavorErrorLink.visible}" styleName="distributionError"/>
+	<mx:LinkButton id="metadataErrorLink" paddingLeft="0" paddingRight="0" visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" includeInLayout="{metadataErrorLink.visible}" styleName="distributionError"/>
+</mx:HBox>

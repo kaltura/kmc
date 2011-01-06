@@ -23,36 +23,36 @@ package com.kaltura.kmc.modules.content.model
 			_entryDistributionArray = new Array();
 			
 		}
-
+		
 		public function get entryDistributionArray():Array
 		{
 			return _entryDistributionArray;
 		}
-
+		
 		public function set entryDistributionArray(value:Array):void
 		{
 			_entryDistributionArray = value;
 		}
-
+		
 		public function get thumbnailDimensionsArray():Array
 		{
 			return _thumbnailDimensionsArray;
 		}
-
+		
 		public function set thumbnailDimensionsArray(value:Array):void
 		{
 			_thumbnailDimensionsArray = value;
 		}
-
+		
 		public function get kalturaDistributionProfilesArray():Array
 		{
 			return _kalturaDistributionProfilesArray;
 		}
-
+		
 		public function set kalturaDistributionProfilesArray(value:Array):void
 		{
 			_kalturaDistributionProfilesArray = value;
 		}
-
+		
 	}
 }

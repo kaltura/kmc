@@ -4,19 +4,20 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
-	
+			
 			[Bindable]
-			private var _size:String;
+			private var _size:int;
 			
 			override public function set data(value:Object):void {
 				var thumbDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumbDimensions.thumbAsset)
-					_size = thumbDimensions.thumbAsset.size.toString();
+					_size = thumbDimensions.thumbAsset.size
 				else
-					_size = "-";
+					_size = -1;
 			}
 		]]>
 	</mx:Script>
 	
-	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{_size}" width="100%" textAlign="center"/>
+	<mx:NumberFormatter id="numberFormatter" thousandsSeparatorFrom=","/>
+	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{(_size >=0 ) ? numberFormatter.format(_size) : '-'}" width="100%" textAlign="center" editable="false"/>
 </mx:HBox>

@@ -46,9 +46,9 @@ package com.kaltura.kmc.modules.content.commands
 				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
 				thumbsArray.splice(0,0,thumbToAdd);
 			}
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
 			
 			_model.entryDetailsModel.thumbnailSaved = true;
+			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
 		}
 	}
 }

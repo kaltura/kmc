@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="400" creationComplete="onCreationComplete()"
+				title="{resourceManager.getString('cms','selectDistributors')}" layout="vertical" styleName="TitleWindowType2"
+				showCloseButton="true" close="onClose()"
+				paddingLeft="15">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.protocols.dict.events.DisconnectedEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.DistributorComponent;
+			import com.kaltura.types.KalturaDistributionProfileActionStatus;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaDistributionProfile;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.CheckBox;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var isReady:Boolean = false;
+			//change later to arrive from server!!!!!!
+			[Bindable]
+			public var showQC:Boolean = true;
+			private var _unusedDistributionProfiles:ArrayCollection;
+			private var _entryDistributions:Array;
+			
+			private function onCreationComplete():void {
+				isReady = true;
+			}
+			
+			public function buildDistributors(value:Boolean):void {
+				if (!value)
+					return;
+				
+				for each (var distribution:EntryDistributionWithProfile in _entryDistributions) {
+					var qc:CheckBox =  addQualityControlCB(distribution.kalturaDistributionProfile);
+		
+					var disCompontnet:DistributorComponent = new DistributorComponent();
+					disCompontnet.distributorName = distribution.kalturaDistributionProfile.name;
+					if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.QUEUED ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_DELETING ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_SUBMITTING ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_UPDATING) 
+					{
+						disCompontnet.cbSelected = true;
+						qc.selected = false;
+						qc.enabled = false;
+					}
+					else if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.DELETING ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.UPDATING ||
+						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.SUBMITTING)
+					{
+						disCompontnet.cbSelected = true;
+						disCompontnet.cbEnabled = false;
+					}
+					
+					//required?
+					/*	if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.DELETED) {
+					disCompontnet.distributorCB.selected = false;
+					}
+					else if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.PENDING)
+					{
+					
+					}*/
+					
+					_unusedDistributionProfiles.removeItemAt(_unusedDistributionProfiles.getItemIndex(distribution.kalturaDistributionProfile));
+					distributorsVbox.addChild(disCompontnet);					
+				}
+				
+				for each (var profile:KalturaDistributionProfile in _unusedDistributionProfiles) {
+					var disProfileComponent:DistributorComponent = new DistributorComponent();
+					disProfileComponent.distributorName = profile.name;
+					addQualityControlCB(profile);
+					distributorsVbox.addChild(disProfileComponent);
+				}
+			}
+			
+			private function onClose():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * adds a checkbox according to the given distribution profile
+			 * returns the new checkBox
+			 * */
+			private function addQualityControlCB(profile:KalturaDistributionProfile):CheckBox {
+				var qc:CheckBox = new CheckBox();
+				if (profile.submitEnabled == KalturaDistributionProfileActionStatus.MANUAL) {
+					qc.selected = true;
+					qc.enabled = false;
+				}
+				qcVbox.addChild(qc);
+				
+				return qc;
+			}
+			
+			public function buildDistributorsWindow(distributionProfiles:Array, entryDistributions:Array):void {
+				//containes all profiles that entries weren't distributed to them yet
+				_unusedDistributionProfiles = new ArrayCollection(distributionProfiles.concat());
+				_entryDistributions = entryDistributions;
+				
+				BindingUtils.bindSetter(buildDistributors, this, "isReady");	
+			} 
+			
+			private function apply():void {
+				//var newDistributions:Array = new Array();
+				//for each (var distribution:
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('cms','distributors')}" styleName="titleLabel"/>
+	<mx:HBox width="100%">
+		<mx:VBox id="distributorsVbox" verticalGap="7">
+			<mx:Label text="{resourceManager.getString('cms','distributorName')}" styleName="distributorsSubTitleLabel"/>
+		</mx:VBox>
+		<mx:Spacer width="100"/>
+		<mx:VBox id="qcVbox" verticalGap="9" visible="{showQC}">
+			<mx:Label text="{resourceManager.getString('cms','manualQC')}" styleName="distributorsSubTitleLabel"/>	
+		</mx:VBox>
+	</mx:HBox>
+	<mx:ControlBar>
+		<mx:Button id="applyBtn" label="{resourceManager.getString('cms', 'apply')}" click="apply()"
+				   buttonMode="true"/>
+	</mx:ControlBar>
+</mx:TitleWindow>
