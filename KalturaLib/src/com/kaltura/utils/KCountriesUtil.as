@@ -2,7 +2,10 @@ package com.kaltura.utils
 {
 	import com.kaltura.dataStructures.HashMap;
 	
+	import flash.display.DisplayObjectContainer;
+	
 	import mx.collections.ArrayCollection;
+	import mx.core.Application;
 	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
 	
@@ -28,7 +31,7 @@ package com.kaltura.utils
 		 * 
 		 */
 
-		[Embed(source="/com/kaltura/assets/images/flags/af.gif")]
+		/*[Embed(source="/com/kaltura/assets/images/flags/af.gif")]
 		private static const _af:Class;
 		
 		[Embed(source="/com/kaltura/assets/images/flags/al.gif")]
@@ -755,7 +758,7 @@ package com.kaltura.utils
 		private static const _zm:Class;
 		
 		[Embed(source="/com/kaltura/assets/images/flags/zw.gif")]
-		private static const _zw:Class;
+		private static const _zw:Class;*/
 
     	
 		/**
@@ -1063,11 +1066,34 @@ package com.kaltura.utils
 		}
 		
 		/**
+		 * decide if should use relative or absolute url.
+		 * if the given path is ablsolute, return the same string.
+		 * if the given path is relative, concatenate it to the swf url.
+		 * @param	given path
+		 * @return	path to use
+		 * */
+		protected function getLoadUrl(path:String):String {
+			var url:String;
+			if (path.indexOf("http") == 0) {
+				url = path;
+			}
+			else {
+				var li:String = Application.application.loaderInfo.url; 
+				var base:String = li.substr(0, li.lastIndexOf("/"));  
+				url = base + "/" + path;
+			}
+			return url;
+		}
+		
+		/**
 		 * INit countries map
 		 * 
 		 */
 		private function initCountriesFlagsMap():void
 		{
+			var li:String = Application.application.loaderInfo.url; 
+			var base:String = li.substr(0, li.lastIndexOf("/"));  
+			base = base.substr(0, base.lastIndexOf("/"));  
 			//-----------------------
 			// New codes without flag
 			// ----------------------
@@ -1079,240 +1105,250 @@ package com.kaltura.utils
 			//--------------
 			// Existing list
 			//--------------
-			countriesFlagsMap.put('af', _af);
-			countriesFlagsMap.put('al', _al);			
-			countriesFlagsMap.put('dz', _dz);			
-			countriesFlagsMap.put('as', _as);			
-			countriesFlagsMap.put('ad', _ad);			
-			countriesFlagsMap.put('ao', _ao);			
-			countriesFlagsMap.put('ai', _ai);			
-			countriesFlagsMap.put('aq', _aq);
-			countriesFlagsMap.put('ag', _ag);			
-			countriesFlagsMap.put('ar', _ar);			
-			countriesFlagsMap.put('am', _am);			
-			countriesFlagsMap.put('aw', _aw);			
-			countriesFlagsMap.put('au', _au);			
-			countriesFlagsMap.put('at', _at);			
-			countriesFlagsMap.put('az', _az);			
-			countriesFlagsMap.put('bs', _bs);			
-			countriesFlagsMap.put('bh', _bh);			
-			countriesFlagsMap.put('bd', _bd);			
-			countriesFlagsMap.put('bb', _bb);			
-			countriesFlagsMap.put('by', _by);			
-			countriesFlagsMap.put('be', _be);			
-			countriesFlagsMap.put('bz', _bz);			
-			countriesFlagsMap.put('bj', _bj);			
-			countriesFlagsMap.put('bm', _bm);			
-			countriesFlagsMap.put('bt', _bt);			
-			countriesFlagsMap.put('bo', _bo);			
-			countriesFlagsMap.put('ba', _ba);			
-			countriesFlagsMap.put('bw', _bw);			
-			countriesFlagsMap.put('bv', _bv);			
-			countriesFlagsMap.put('br', _br);			
-			countriesFlagsMap.put('io', _io);			
-			countriesFlagsMap.put('bn', _bn);			
-			countriesFlagsMap.put('bg', _bg);			
-			countriesFlagsMap.put('bf', _bf);			
-			countriesFlagsMap.put('bi', _bi);			
-			countriesFlagsMap.put('kh', _kh);			
-			countriesFlagsMap.put('cm', _cm);			
-			countriesFlagsMap.put('ca', _ca);			
-			countriesFlagsMap.put('cv', _cv);			
-			countriesFlagsMap.put('ky', _ky);			
-			countriesFlagsMap.put('cf', _cf);			
-	 		countriesFlagsMap.put('td', _td);			 
-			countriesFlagsMap.put('cl', _cl);
-			countriesFlagsMap.put('cn', _cn);			
-			countriesFlagsMap.put('co', _co);			
-			countriesFlagsMap.put('km', _km);			
-			countriesFlagsMap.put('cg', _cg);			
-			countriesFlagsMap.put('cd', _cd);			
-			countriesFlagsMap.put('ck', _ck);			
-			countriesFlagsMap.put('cr', _cr);			
-			countriesFlagsMap.put('ci', _ci);			
-			countriesFlagsMap.put('hr', _hr);			
-			countriesFlagsMap.put('cu', _cu);			
-			countriesFlagsMap.put('cy', _cy);			
-			countriesFlagsMap.put('cz', _cz);			
-			countriesFlagsMap.put('dk', _dk);			
-			countriesFlagsMap.put('dj', _dj);			
-			countriesFlagsMap.put('dm', _dm);			
-			countriesFlagsMap.put('do', _do);			
-			countriesFlagsMap.put('ec', _ec);			
-			countriesFlagsMap.put('eg', _eg);			
-			countriesFlagsMap.put('sv', _sv);			
-			countriesFlagsMap.put('gq', _gq);			
-			countriesFlagsMap.put('er', _er);			
-			countriesFlagsMap.put('ee', _ee);			
-			countriesFlagsMap.put('et', _et);			
-			countriesFlagsMap.put('fk', _fk);			
-			countriesFlagsMap.put('fo', _fo);			
-			countriesFlagsMap.put('fj', _fj);			
-			countriesFlagsMap.put('fi', _fi);			
-			countriesFlagsMap.put('fr', _fr);			
-			countriesFlagsMap.put('gf', _gf);			
-			countriesFlagsMap.put('pf', _pf);			
-			countriesFlagsMap.put('tf', _tf);			
-			countriesFlagsMap.put('ga', _ga);			
-			countriesFlagsMap.put('gm', _gm);			
-			countriesFlagsMap.put('ge', _ge);			
-			countriesFlagsMap.put('de', _de);			
-			countriesFlagsMap.put('gh', _gh);			
-			countriesFlagsMap.put('gi', _gi);			
-			countriesFlagsMap.put('gr', _gr);			
-			countriesFlagsMap.put('gl', _gl);			
-			countriesFlagsMap.put('gd', _gd);			
-			countriesFlagsMap.put('gp', _gp);			
-	 		countriesFlagsMap.put('gu', _gu);		 
-			countriesFlagsMap.put('gt', _gt);			
-			countriesFlagsMap.put('gg', _gg); 		
-			countriesFlagsMap.put('gn', _gn);			
-			countriesFlagsMap.put('gw', _gw);			
-			countriesFlagsMap.put('gy', _gy);			
-			countriesFlagsMap.put('ht', _ht);			
-			countriesFlagsMap.put('hm', _hm);			
-			countriesFlagsMap.put('hn', _hn);			
-			countriesFlagsMap.put('hk', _hk);			
-			countriesFlagsMap.put('hu', _hu);			
-			countriesFlagsMap.put('is', _is);			
-			countriesFlagsMap.put('in', _in);			
-			countriesFlagsMap.put('id', _id);			
-			countriesFlagsMap.put('ir', _ir);			
-			countriesFlagsMap.put('iq', _iq);			
-			countriesFlagsMap.put('ie', _ie);			
-			countriesFlagsMap.put('im', _im); 		
-			countriesFlagsMap.put('il', _il);			
-			countriesFlagsMap.put('it', _it);			
-			countriesFlagsMap.put('jm', _jm);			
-			countriesFlagsMap.put('jp', _jp);			
-			countriesFlagsMap.put('je', _je); 			
-			countriesFlagsMap.put('jo', _jo);			
-			countriesFlagsMap.put('kz', _kz);			
-			countriesFlagsMap.put('ke', _ke);			
-			countriesFlagsMap.put('ki', _ki);			
-			countriesFlagsMap.put('kr', _kr);			
-			countriesFlagsMap.put('kw', _kw);			
-			countriesFlagsMap.put('kg', _kg);			
-			countriesFlagsMap.put('la', _la);			
-			countriesFlagsMap.put('lv', _lv);			
-			countriesFlagsMap.put('lb', _lb);			
-			countriesFlagsMap.put('ls', _ls);			
-			countriesFlagsMap.put('lr', _lr);			
-			countriesFlagsMap.put('ly', _ly);			
-			countriesFlagsMap.put('li', _li);			
-			countriesFlagsMap.put('lt', _lt);			
-			countriesFlagsMap.put('lu', _lu);			
-			countriesFlagsMap.put('mo', _mo);			
-			countriesFlagsMap.put('mk', _mk);			
-			countriesFlagsMap.put('mg', _mg);			
-			countriesFlagsMap.put('mw', _mw);			
-			countriesFlagsMap.put('my', _my);			
-			countriesFlagsMap.put('mv', _mv);			
-			countriesFlagsMap.put('ml', _ml);			
-			countriesFlagsMap.put('mt', _mt);			
-			countriesFlagsMap.put('mh', _mh);			
-			countriesFlagsMap.put('mq', _mq);			
-			countriesFlagsMap.put('mr', _mr);			
-			countriesFlagsMap.put('mu', _mu);			
-			countriesFlagsMap.put('yt', _yt);			
-			countriesFlagsMap.put('mx', _mx);			
-			countriesFlagsMap.put('fm', _fm);			
-			countriesFlagsMap.put('md', _md);			
-			countriesFlagsMap.put('mc', _mc);			
-			countriesFlagsMap.put('mn', _mn);			
-			countriesFlagsMap.put('ms', _ms);			
-			countriesFlagsMap.put('ma', _ma);			
-			countriesFlagsMap.put('mz', _mz);			
-			countriesFlagsMap.put('mm', _mm);			
-			countriesFlagsMap.put('na', _na);			
-			countriesFlagsMap.put('nr', _nr);			
-			countriesFlagsMap.put('np', _np);			
-			countriesFlagsMap.put('nl', _nl);			
-			countriesFlagsMap.put('an', _an);			
-			countriesFlagsMap.put('nc', _nc);			
-			countriesFlagsMap.put('nz', _nz);			
-			countriesFlagsMap.put('ni', _ni);			
-			countriesFlagsMap.put('ne', _ne);			
-			countriesFlagsMap.put('ng', _ng);			
-			countriesFlagsMap.put('nu', _nu);			
-			countriesFlagsMap.put('nf', _nf);			
-			countriesFlagsMap.put('kp', _kp);			
-			countriesFlagsMap.put('mp', _mp);			
-			countriesFlagsMap.put('no', _no);			
-			countriesFlagsMap.put('om', _om);			
-			countriesFlagsMap.put('pk', _pk);			
-			countriesFlagsMap.put('pw', _pw);			
-			countriesFlagsMap.put('pa', _pa);			
-			countriesFlagsMap.put('pg', _pg);			
-			countriesFlagsMap.put('py', _py);			
-			countriesFlagsMap.put('pe', _pe);			
-			countriesFlagsMap.put('ph', _ph);			
-			countriesFlagsMap.put('pn', _pn);			
-			countriesFlagsMap.put('pl', _pl);			
-			countriesFlagsMap.put('pt', _pt);			
-			countriesFlagsMap.put('pr', _pr);			
-			countriesFlagsMap.put('qa', _qa);			
-			countriesFlagsMap.put('re', _re);			
-			countriesFlagsMap.put('ro', _ro);			
-			countriesFlagsMap.put('ru', _ru);			
-			countriesFlagsMap.put('rw', _rw);			
-			countriesFlagsMap.put('ws', _ws);			
-			countriesFlagsMap.put('sm', _sm);			
-			countriesFlagsMap.put('st', _st);			
-			countriesFlagsMap.put('sa', _sa);			
-			countriesFlagsMap.put('sn', _sn);			
-			countriesFlagsMap.put('sc', _sc);			
-			countriesFlagsMap.put('sl', _sl);			
-			countriesFlagsMap.put('sg', _sg);			
-			countriesFlagsMap.put('sk', _sk);			
-			countriesFlagsMap.put('si', _si);			
-			countriesFlagsMap.put('sb', _sb);			
-			countriesFlagsMap.put('so', _so);			
-			countriesFlagsMap.put('za', _za);			
-			countriesFlagsMap.put('gs', _gs);			
-			countriesFlagsMap.put('es', _es);			
-			countriesFlagsMap.put('lk', _lk);			
-			countriesFlagsMap.put('kn', _kn);			
-			countriesFlagsMap.put('lc', _lc);			
-			countriesFlagsMap.put('pm', _pm);			
-			countriesFlagsMap.put('vc', _vc);			
-			countriesFlagsMap.put('sd', _sd);			
-			countriesFlagsMap.put('sr', _sr);			
-			countriesFlagsMap.put('sz', _sz);			
-			countriesFlagsMap.put('se', _se);			
-			countriesFlagsMap.put('ch', _ch);			
-			countriesFlagsMap.put('sy', _sy);			
-			countriesFlagsMap.put('tw', _tw);			
-			countriesFlagsMap.put('tj', _tj);			
-			countriesFlagsMap.put('tz', _tz);			
-			countriesFlagsMap.put('th', _th);			
-			countriesFlagsMap.put('tg', _tg);			
-			countriesFlagsMap.put('tk', _tk);			
-			countriesFlagsMap.put('to', _to);			
-			countriesFlagsMap.put('tt', _tt);			
-			countriesFlagsMap.put('tn', _tn);			
-			countriesFlagsMap.put('tr', _tr);			
-			countriesFlagsMap.put('tm', _tm);			
-			countriesFlagsMap.put('tc', _tc);			
-			countriesFlagsMap.put('tv', _tv);			
-			countriesFlagsMap.put('ug', _ug);			
-			countriesFlagsMap.put('ua', _ua);			
-			countriesFlagsMap.put('ae', _ae);			
-			countriesFlagsMap.put('uk', _uk); 			
-			countriesFlagsMap.put('us', _us);			
-			countriesFlagsMap.put('um', _um);			
-			countriesFlagsMap.put('uy', _uy);			
-			countriesFlagsMap.put('uz', _uz);			
-			countriesFlagsMap.put('vu', _vu);			
-			countriesFlagsMap.put('va', _va);			
-			countriesFlagsMap.put('ve', _ve);			
-			countriesFlagsMap.put('vn', _vn);			
-			countriesFlagsMap.put('vi', _vi);			
-			countriesFlagsMap.put('vg', _vg);			
-			countriesFlagsMap.put('wf', _wf);			
-			countriesFlagsMap.put('ye', _ye);			
-			countriesFlagsMap.put('zm', _zm);			
-			countriesFlagsMap.put('zw', _zw);
+			countriesFlagsMap.put('af', base + "/assets/flags/af.gif");
+			countriesFlagsMap.put('al', base + "/assets/flags/al.gif");
+			countriesFlagsMap.put('dz', base + "/assets/flags/dz.gif");
+			countriesFlagsMap.put('as', base + "/assets/flags/as.gif");
+			countriesFlagsMap.put('ad', base + "/assets/flags/ad.gif");
+			countriesFlagsMap.put('ao', base + "/assets/flags/ao.gif");
+			countriesFlagsMap.put('ai', base + "/assets/flags/ai.gif");
+			countriesFlagsMap.put('aq', base + "/assets/flags/aq.gif");
+			countriesFlagsMap.put('ag', base + "/assets/flags/ag.gif");
+			countriesFlagsMap.put('ar', base + "/assets/flags/ar.gif");
+			countriesFlagsMap.put('am', base + "/assets/flags/am.gif");
+			countriesFlagsMap.put('aw', base + "/assets/flags/aw.gif");
+			countriesFlagsMap.put('ac', base + "/assets/flags/ac.gif");
+			countriesFlagsMap.put('au', base + "/assets/flags/au.gif");
+			countriesFlagsMap.put('at', base + "/assets/flags/at.gif");
+			countriesFlagsMap.put('az', base + "/assets/flags/az.gif");
+			countriesFlagsMap.put('bs', base + "/assets/flags/bs.gif");
+			countriesFlagsMap.put('bh', base + "/assets/flags/bh.gif");
+			countriesFlagsMap.put('bd', base + "/assets/flags/bd.gif");
+			countriesFlagsMap.put('bb', base + "/assets/flags/bb.gif");
+			countriesFlagsMap.put('by', base + "/assets/flags/by.gif");
+			countriesFlagsMap.put('be', base + "/assets/flags/be.gif");
+			countriesFlagsMap.put('bz', base + "/assets/flags/bz.gif");
+			countriesFlagsMap.put('bj', base + "/assets/flags/bj.gif");
+			countriesFlagsMap.put('bm', base + "/assets/flags/bm.gif");
+			countriesFlagsMap.put('bt', base + "/assets/flags/bt.gif");
+			countriesFlagsMap.put('bo', base + "/assets/flags/bo.gif");
+			countriesFlagsMap.put('ba', base + "/assets/flags/ba.gif");
+			countriesFlagsMap.put('bw', base + "/assets/flags/bw.gif");
+			countriesFlagsMap.put('bv', base + "/assets/flags/bv.gif");
+			countriesFlagsMap.put('br', base + "/assets/flags/br.gif");
+			countriesFlagsMap.put('io', base + "/assets/flags/io.gif");
+			countriesFlagsMap.put('bn', base + "/assets/flags/bn.gif");
+			countriesFlagsMap.put('bg', base + "/assets/flags/bg.gif");
+			countriesFlagsMap.put('bf', base + "/assets/flags/bf.gif");
+			countriesFlagsMap.put('bi', base + "/assets/flags/bi.gif");
+			countriesFlagsMap.put('kh', base + "/assets/flags/kh.gif");
+			countriesFlagsMap.put('cm', base + "/assets/flags/cm.gif");
+			countriesFlagsMap.put('ca', base + "/assets/flags/ca.gif");
+			countriesFlagsMap.put('cv', base + "/assets/flags/cv.gif");
+			countriesFlagsMap.put('ky', base + "/assets/flags/ky.gif");
+			countriesFlagsMap.put('cf', base + "/assets/flags/cf.gif");
+			countriesFlagsMap.put('td', base + "/assets/flags/td.gif");
+			countriesFlagsMap.put('cl', base + "/assets/flags/cl.gif");
+			countriesFlagsMap.put('cn', base + "/assets/flags/cn.gif");
+			countriesFlagsMap.put('cx', base + "/assets/flags/cx.gif");
+			countriesFlagsMap.put('cc', base + "/assets/flags/cc.gif");
+			countriesFlagsMap.put('co', base + "/assets/flags/co.gif");
+			countriesFlagsMap.put('km', base + "/assets/flags/km.gif");
+			countriesFlagsMap.put('cg', base + "/assets/flags/cg.gif");
+			countriesFlagsMap.put('cd', base + "/assets/flags/cd.gif");
+			countriesFlagsMap.put('ck', base + "/assets/flags/ck.gif");
+			countriesFlagsMap.put('cr', base + "/assets/flags/cr.gif");
+			countriesFlagsMap.put('ci', base + "/assets/flags/ci.gif");
+			countriesFlagsMap.put('hr', base + "/assets/flags/hr.gif");
+			countriesFlagsMap.put('cu', base + "/assets/flags/cu.gif");
+			countriesFlagsMap.put('cy', base + "/assets/flags/cy.gif");
+			countriesFlagsMap.put('cz', base + "/assets/flags/cz.gif");
+			countriesFlagsMap.put('dk', base + "/assets/flags/dk.gif");
+			countriesFlagsMap.put('dj', base + "/assets/flags/dj.gif");
+			countriesFlagsMap.put('dm', base + "/assets/flags/dm.gif");
+			countriesFlagsMap.put('do', base + "/assets/flags/do.gif");
+			countriesFlagsMap.put('ec', base + "/assets/flags/ec.gif");
+			countriesFlagsMap.put('eg', base + "/assets/flags/eg.gif");
+			countriesFlagsMap.put('sv', base + "/assets/flags/sv.gif");
+			countriesFlagsMap.put('gq', base + "/assets/flags/gq.gif");
+			countriesFlagsMap.put('er', base + "/assets/flags/er.gif");
+			countriesFlagsMap.put('ee', base + "/assets/flags/ee.gif");
+			countriesFlagsMap.put('et', base + "/assets/flags/et.gif");
+			countriesFlagsMap.put('fk', base + "/assets/flags/fk.gif");
+			countriesFlagsMap.put('fo', base + "/assets/flags/fo.gif");
+			countriesFlagsMap.put('fj', base + "/assets/flags/fj.gif");
+			countriesFlagsMap.put('fi', base + "/assets/flags/fi.gif");
+			countriesFlagsMap.put('fr', base + "/assets/flags/fr.gif");
+			countriesFlagsMap.put('gf', base + "/assets/flags/gf.gif");
+			countriesFlagsMap.put('pf', base + "/assets/flags/pf.gif");
+			countriesFlagsMap.put('tf', base + "/assets/flags/tf.gif");
+			countriesFlagsMap.put('ga', base + "/assets/flags/ga.gif");
+			countriesFlagsMap.put('gm', base + "/assets/flags/gm.gif");
+			countriesFlagsMap.put('ge', base + "/assets/flags/ge.gif");
+			countriesFlagsMap.put('de', base + "/assets/flags/de.gif");
+			countriesFlagsMap.put('gh', base + "/assets/flags/gh.gif");
+			countriesFlagsMap.put('gi', base + "/assets/flags/gi.gif");
+			countriesFlagsMap.put('gr', base + "/assets/flags/gr.gif");
+			countriesFlagsMap.put('gl', base + "/assets/flags/gl.gif");
+			countriesFlagsMap.put('gd', base + "/assets/flags/gd.gif");
+			countriesFlagsMap.put('gp', base + "/assets/flags/gp.gif");
+			countriesFlagsMap.put('gu', base + "/assets/flags/gu.gif");
+			countriesFlagsMap.put('gt', base + "/assets/flags/gt.gif");
+			countriesFlagsMap.put('gg', base + "/assets/flags/gg.gif");
+			countriesFlagsMap.put('gn', base + "/assets/flags/gn.gif");
+			countriesFlagsMap.put('gw', base + "/assets/flags/gw.gif");
+			countriesFlagsMap.put('gy', base + "/assets/flags/gy.gif");
+			countriesFlagsMap.put('ht', base + "/assets/flags/ht.gif");
+			countriesFlagsMap.put('hm', base + "/assets/flags/hm.gif");
+			countriesFlagsMap.put('hn', base + "/assets/flags/hn.gif");
+			countriesFlagsMap.put('hk', base + "/assets/flags/hk.gif");
+			countriesFlagsMap.put('hu', base + "/assets/flags/hu.gif");
+			countriesFlagsMap.put('is', base + "/assets/flags/is.gif");
+			countriesFlagsMap.put('in', base + "/assets/flags/in.gif");
+			countriesFlagsMap.put('id', base + "/assets/flags/id.gif");
+			countriesFlagsMap.put('ir', base + "/assets/flags/ir.gif");
+			countriesFlagsMap.put('iq', base + "/assets/flags/iq.gif");
+			countriesFlagsMap.put('ie', base + "/assets/flags/ie.gif");
+			countriesFlagsMap.put('im', base + "/assets/flags/im.gif");
+			countriesFlagsMap.put('il', base + "/assets/flags/il.gif");
+			countriesFlagsMap.put('it', base + "/assets/flags/it.gif");
+			countriesFlagsMap.put('jm', base + "/assets/flags/jm.gif");
+			countriesFlagsMap.put('jp', base + "/assets/flags/jp.gif");
+			countriesFlagsMap.put('je', base + "/assets/flags/je.gif");
+			countriesFlagsMap.put('jo', base + "/assets/flags/jo.gif");
+			countriesFlagsMap.put('kz', base + "/assets/flags/kz.gif");
+			countriesFlagsMap.put('ke', base + "/assets/flags/ke.gif");
+			countriesFlagsMap.put('ki', base + "/assets/flags/ki.gif");
+			countriesFlagsMap.put('kr', base + "/assets/flags/kr.gif");
+			countriesFlagsMap.put('kw', base + "/assets/flags/kw.gif");
+			countriesFlagsMap.put('kg', base + "/assets/flags/kg.gif");
+			countriesFlagsMap.put('la', base + "/assets/flags/la.gif");
+			countriesFlagsMap.put('lv', base + "/assets/flags/lv.gif");
+			countriesFlagsMap.put('lb', base + "/assets/flags/lb.gif");
+			countriesFlagsMap.put('ls', base + "/assets/flags/ls.gif");
+			countriesFlagsMap.put('lr', base + "/assets/flags/lr.gif");
+			countriesFlagsMap.put('ly', base + "/assets/flags/ly.gif");
+			countriesFlagsMap.put('li', base + "/assets/flags/li.gif");
+			countriesFlagsMap.put('lt', base + "/assets/flags/lt.gif");
+			countriesFlagsMap.put('lu', base + "/assets/flags/lu.gif");
+			countriesFlagsMap.put('mo', base + "/assets/flags/mo.gif");
+			countriesFlagsMap.put('mk', base + "/assets/flags/mk.gif");
+			countriesFlagsMap.put('mg', base + "/assets/flags/mg.gif");
+			countriesFlagsMap.put('mw', base + "/assets/flags/mw.gif");
+			countriesFlagsMap.put('my', base + "/assets/flags/my.gif");
+			countriesFlagsMap.put('mv', base + "/assets/flags/mv.gif");
+			countriesFlagsMap.put('ml', base + "/assets/flags/ml.gif");
+			countriesFlagsMap.put('mt', base + "/assets/flags/mt.gif");
+			countriesFlagsMap.put('mh', base + "/assets/flags/mh.gif");
+			countriesFlagsMap.put('mq', base + "/assets/flags/mq.gif");
+			countriesFlagsMap.put('mr', base + "/assets/flags/mr.gif");
+			countriesFlagsMap.put('mu', base + "/assets/flags/mu.gif");
+			countriesFlagsMap.put('yt', base + "/assets/flags/yt.gif");
+			countriesFlagsMap.put('mx', base + "/assets/flags/mx.gif");
+			countriesFlagsMap.put('fm', base + "/assets/flags/fm.gif");
+			countriesFlagsMap.put('md', base + "/assets/flags/md.gif");
+			countriesFlagsMap.put('mc', base + "/assets/flags/mc.gif");
+			countriesFlagsMap.put('mn', base + "/assets/flags/mn.gif");
+			countriesFlagsMap.put('ms', base + "/assets/flags/ms.gif");
+			countriesFlagsMap.put('ma', base + "/assets/flags/ma.gif");
+			countriesFlagsMap.put('mz', base + "/assets/flags/mz.gif");
+			countriesFlagsMap.put('mm', base + "/assets/flags/mm.gif");
+			countriesFlagsMap.put('na', base + "/assets/flags/na.gif");
+			countriesFlagsMap.put('nr', base + "/assets/flags/nr.gif");
+			countriesFlagsMap.put('np', base + "/assets/flags/np.gif");
+			countriesFlagsMap.put('nl', base + "/assets/flags/nl.gif");
+			countriesFlagsMap.put('an', base + "/assets/flags/an.gif");
+			countriesFlagsMap.put('nc', base + "/assets/flags/nc.gif");
+			countriesFlagsMap.put('nz', base + "/assets/flags/nz.gif");
+			countriesFlagsMap.put('ni', base + "/assets/flags/ni.gif");
+			countriesFlagsMap.put('ne', base + "/assets/flags/ne.gif");
+			countriesFlagsMap.put('ng', base + "/assets/flags/ng.gif");
+			countriesFlagsMap.put('nu', base + "/assets/flags/nu.gif");
+			countriesFlagsMap.put('nf', base + "/assets/flags/nf.gif");
+			countriesFlagsMap.put('kp', base + "/assets/flags/kp.gif");
+			countriesFlagsMap.put('mp', base + "/assets/flags/mp.gif");
+			countriesFlagsMap.put('no', base + "/assets/flags/no.gif");
+			countriesFlagsMap.put('om', base + "/assets/flags/om.gif");
+			countriesFlagsMap.put('pk', base + "/assets/flags/pk.gif");
+			countriesFlagsMap.put('pw', base + "/assets/flags/pw.gif");
+			countriesFlagsMap.put('ps', base + "/assets/flags/ps.gif");
+			countriesFlagsMap.put('pa', base + "/assets/flags/pa.gif");
+			countriesFlagsMap.put('pg', base + "/assets/flags/pg.gif");
+			countriesFlagsMap.put('py', base + "/assets/flags/py.gif");
+			countriesFlagsMap.put('pe', base + "/assets/flags/pe.gif");
+			countriesFlagsMap.put('ph', base + "/assets/flags/ph.gif");
+			countriesFlagsMap.put('pn', base + "/assets/flags/pn.gif");
+			countriesFlagsMap.put('pl', base + "/assets/flags/pl.gif");
+			countriesFlagsMap.put('pt', base + "/assets/flags/pt.gif");
+			countriesFlagsMap.put('pr', base + "/assets/flags/pr.gif");
+			countriesFlagsMap.put('qa', base + "/assets/flags/qa.gif");
+			countriesFlagsMap.put('re', base + "/assets/flags/re.gif");
+			countriesFlagsMap.put('ro', base + "/assets/flags/ro.gif");
+			countriesFlagsMap.put('ru', base + "/assets/flags/ru.gif");
+			countriesFlagsMap.put('rw', base + "/assets/flags/rw.gif");
+			countriesFlagsMap.put('ws', base + "/assets/flags/ws.gif");
+			countriesFlagsMap.put('sm', base + "/assets/flags/sm.gif");
+			countriesFlagsMap.put('st', base + "/assets/flags/st.gif");
+			countriesFlagsMap.put('sa', base + "/assets/flags/sa.gif");
+			countriesFlagsMap.put('sn', base + "/assets/flags/sn.gif");
+			countriesFlagsMap.put('yu', base + "/assets/flags/yu.gif");
+			countriesFlagsMap.put('sc', base + "/assets/flags/sc.gif");
+			countriesFlagsMap.put('sl', base + "/assets/flags/sl.gif");
+			countriesFlagsMap.put('sg', base + "/assets/flags/sg.gif");
+			countriesFlagsMap.put('sk', base + "/assets/flags/sk.gif");
+			countriesFlagsMap.put('si', base + "/assets/flags/si.gif");
+			countriesFlagsMap.put('sb', base + "/assets/flags/sb.gif");
+			countriesFlagsMap.put('so', base + "/assets/flags/so.gif");
+			countriesFlagsMap.put('za', base + "/assets/flags/za.gif");
+			countriesFlagsMap.put('gs', base + "/assets/flags/gs.gif");
+			countriesFlagsMap.put('es', base + "/assets/flags/es.gif");
+			countriesFlagsMap.put('lk', base + "/assets/flags/lk.gif");
+			countriesFlagsMap.put('sh', base + "/assets/flags/sh.gif");
+			countriesFlagsMap.put('kn', base + "/assets/flags/kn.gif");
+			countriesFlagsMap.put('lc', base + "/assets/flags/lc.gif");
+			countriesFlagsMap.put('pm', base + "/assets/flags/pm.gif");
+			countriesFlagsMap.put('vc', base + "/assets/flags/vc.gif");
+			countriesFlagsMap.put('sd', base + "/assets/flags/sd.gif");
+			countriesFlagsMap.put('sr', base + "/assets/flags/sr.gif");
+			countriesFlagsMap.put('sj', base + "/assets/flags/sj.gif");
+			countriesFlagsMap.put('sz', base + "/assets/flags/sz.gif");
+			countriesFlagsMap.put('se', base + "/assets/flags/se.gif");
+			countriesFlagsMap.put('ch', base + "/assets/flags/ch.gif");
+			countriesFlagsMap.put('sy', base + "/assets/flags/sy.gif");
+			countriesFlagsMap.put('tw', base + "/assets/flags/tw.gif");
+			countriesFlagsMap.put('tj', base + "/assets/flags/tj.gif");
+			countriesFlagsMap.put('tz', base + "/assets/flags/tz.gif");
+			countriesFlagsMap.put('th', base + "/assets/flags/th.gif");
+			countriesFlagsMap.put('tp', base + "/assets/flags/tp.gif");
+			countriesFlagsMap.put('tg', base + "/assets/flags/tg.gif");
+			countriesFlagsMap.put('tk', base + "/assets/flags/tk.gif");
+			countriesFlagsMap.put('to', base + "/assets/flags/to.gif");
+			countriesFlagsMap.put('tt', base + "/assets/flags/tt.gif");
+			countriesFlagsMap.put('ta', base + "/assets/flags/ta.gif");
+			countriesFlagsMap.put('tn', base + "/assets/flags/tn.gif");
+			countriesFlagsMap.put('tr', base + "/assets/flags/tr.gif");
+			countriesFlagsMap.put('tm', base + "/assets/flags/tm.gif");
+			countriesFlagsMap.put('tc', base + "/assets/flags/tc.gif");
+			countriesFlagsMap.put('tv', base + "/assets/flags/tv.gif");
+			countriesFlagsMap.put('ug', base + "/assets/flags/ug.gif");
+			countriesFlagsMap.put('ua', base + "/assets/flags/ua.gif");
+			countriesFlagsMap.put('ae', base + "/assets/flags/ae.gif");
+			countriesFlagsMap.put('uk', base + "/assets/flags/uk.gif");
+			countriesFlagsMap.put('us', base + "/assets/flags/us.gif");
+			countriesFlagsMap.put('um', base + "/assets/flags/um.gif");
+			countriesFlagsMap.put('uy', base + "/assets/flags/uy.gif");
+			countriesFlagsMap.put('uz', base + "/assets/flags/uz.gif");
+			countriesFlagsMap.put('vu', base + "/assets/flags/vu.gif");
+			countriesFlagsMap.put('va', base + "/assets/flags/va.gif");
+			countriesFlagsMap.put('ve', base + "/assets/flags/ve.gif");
+			countriesFlagsMap.put('vn', base + "/assets/flags/vn.gif");
+			countriesFlagsMap.put('vi', base + "/assets/flags/vi.gif");
+			countriesFlagsMap.put('vg', base + "/assets/flags/vg.gif");
+			countriesFlagsMap.put('wf', base + "/assets/flags/wf.gif");
+			countriesFlagsMap.put('ye', base + "/assets/flags/ye.gif");
+			countriesFlagsMap.put('zm', base + "/assets/flags/zm.gif");
+			countriesFlagsMap.put('zw', base + "/assets/flags/zw.gif");
+
 			/*----------------------
 			/* Deleted country codes
 			/*----------------------
@@ -1325,10 +1361,6 @@ package com.kaltura.utils
 			/*countriesFlagsMap.put('yu', _yu); 
 			/*countriesFlagsMap.put('ps', _ps);	
 			countriesFlagsMap.put('ac', _ac);*/ 			
-			
-			
-			
-			
 			
 		}
 		
@@ -1353,15 +1385,12 @@ package com.kaltura.utils
 		}
 
 		/**
-		 * Getting the image of the country flag of the given contry code
+		 * Get the path to the image of the country flag matching the given contry code
 		 */
-		public function getCountryFlag(countryCode:String):Class
+		public function getCountryFlag(countryCode:String):String
 		{
 			var lcFlagCode:String = countryCode.toLowerCase();
-			
-			var flagSrc:Object = countriesFlagsMap.getValue(lcFlagCode);
-			
-			return flagSrc ? flagSrc as Class : null;
+			return countriesFlagsMap.getValue(lcFlagCode);
 		}
 		
 		/**
