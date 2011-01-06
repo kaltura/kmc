@@ -17,7 +17,7 @@
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
-			
+
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -82,8 +82,8 @@
 			/**
 			 * A list of special features that the partner has (IE live stream, ads,custom Data)
 			 */
-			private var _partnerFeatures:Array; 
-			
+			private var _partnerFeatures:Array;
+
 			[Bindable]
 			/**
 			 * is the partner missing any features
@@ -315,6 +315,7 @@
 				return cb;
 			}
 
+
 			/**
 			 * put values from the form into the _undoUser object
 			 * */
@@ -323,7 +324,8 @@
 				_undoRole.description = descriptionTi.text;
 				_undoRole.permissionNames = getUpdatedPermissions(_undoRole.permissionNames);
 			}
-			
+
+
 			/**
 			 * validate required fields
 			 * */
@@ -339,9 +341,10 @@
 				if (vre.results != null && vre.results.length > 0) {
 					isOk &&= !(vre.results[0] as ValidationResult).isError;
 				}
-				
+
 				return isOk;
 			}
+
 
 			/**
 			 * update _undoRole.permissionNames
@@ -354,32 +357,29 @@
 					requestSave();
 				}
 			}
-			
-			
+
+
 			/**
 			 * navigate to account>upgrade.
 			 * */
-			protected function label1_linkHandler(event:TextEvent):void
-			{
-				/* When clicking the contact us link the user should be moved to the account upgrade page. 
-				in case he is clicking this link after making changes in new/existing role settings a popup 
-				message of "Discard changes" should appear with OK (go to account upgrade page), Cancel 
-				(stay in this window)options. */
+			protected function label1_linkHandler(event:TextEvent):void {
+				/* When clicking the contact us link the user should be moved to the account upgrade page.
+				   in case he is clicking this link after making changes in new/existing role settings a popup
+				   message of "Discard changes" should appear with OK (go to account upgrade page), Cancel
+				 (stay in this window)options. */
 				updateUndoRoleFromForm();
 				var needSave:Boolean = !ObjectUtil.compareObjects(_role, _undoRole);
 				if (needSave) {
 					var rm:IResourceManager = ResourceManager.getInstance();
-					Alert.show(rm.getString('admin', 'discard_changes'), 
-								rm.getString('admin', 'discard_changes_title'),
-								Alert.YES|Alert.NO, null, navToUpgradeHandler); 
+					Alert.show(rm.getString('admin', 'discard_changes'), rm.getString('admin', 'discard_changes_title'), Alert.YES | Alert.NO, null, navToUpgradeHandler);
 				}
 				else {
 					// go to account>upgrade
 					dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));
 				}
 			}
-			
-			
+
+
 			/**
 			 * handle user "discard changes" prompt before navigating to account>upgrade
 			 * */
@@ -387,7 +387,7 @@
 				switch (e.detail) {
 					case Alert.YES:
 						// go to account>upgrade
-						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));	
+						dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));
 						break;
 					case Alert.NO:
 						// do nothing.
@@ -472,7 +472,7 @@
 						else {
 							cb.selected = false;
 						}
-					} 
+					}
 					// applying the half-selected style
 					for each (pm in _allPermissionGroupManagers) {
 						pm.innerCheckboxChanged();
@@ -538,32 +538,35 @@
 			public function get mode():String {
 				return _mode;
 			}
-
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='validator' property="text" required="true"
 						requiredFieldError="{resourceManager.getString('admin', 'mandatoryField')}"/>
 	<mx:VBox width="100%">
-		<mx:Form width="100%" textAlign="left" paddingLeft="0" >
-			<mx:FormItem width="100%" fontWeight="bold" label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
+		<mx:Form width="100%" textAlign="left" paddingLeft="0">
+			<mx:FormItem width="100%" fontWeight="bold"
+						 label="{ResourceManager.getInstance().getString('admin', 'role_name')}">
 				<mx:TextInput id="nameTi" width="100%" fontWeight="normal"/>
 			</mx:FormItem>
-			<mx:FormItem width="100%" fontWeight="bold" label="{ResourceManager.getInstance().getString('admin', 'rdd_description')}">
+			<mx:FormItem width="100%" fontWeight="bold"
+						 label="{ResourceManager.getInstance().getString('admin', 'rdd_description')}">
 				<mx:TextArea id="descriptionTi" width="100%" fontWeight="normal"/>
 			</mx:FormItem>
 		</mx:Form>
 	</mx:VBox>
-	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" selectable="true" 
+	<mx:Label htmlText="{ResourceManager.getInstance().getString('admin', 'disabled_options')}" selectable="true"
 			  visible="{_isMissingFeature}" includeInLayout="{_isMissingFeature}" link="label1_linkHandler(event)"/>
-	<mx:HBox width="100%" id="colapsExpand" styleName="gradientHBox">
-		<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}" fontWeight="bold"/>
-		<mx:Spacer width="100%" />
-		<mx:LinkButton id="collapseAllBtn" label="{ResourceManager.getInstance().getString('admin', 'collapse')}"
-					   click="onCollapseAll(event)" />
-		<mx:LinkButton id="expandAllBtn" label="{ResourceManager.getInstance().getString('admin', 'expand')}"
-					   click="onExpandAll(event)" />
-	</mx:HBox>
-	<mx:VBox id="myForm" styleName="adminForm" width="100%" height="310" verticalScrollPolicy="auto" maxHeight="310" />
+	<mx:VBox verticalGap="0" width="100%">
+		<mx:HBox width="100%" id="colapsExpand" styleName="gradientHBox">
+			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}" fontWeight="bold"/>
+			<mx:Spacer width="100%"/>
+			<mx:LinkButton id="collapseAllBtn" label="{ResourceManager.getInstance().getString('admin', 'collapse')}"
+						   click="onCollapseAll(event)"/>
+			<mx:LinkButton id="expandAllBtn" label="{ResourceManager.getInstance().getString('admin', 'expand')}"
+						   click="onExpandAll(event)"/>
+		</mx:HBox>
+		<mx:VBox id="myForm" styleName="adminForm" width="100%" height="260" verticalScrollPolicy="auto" maxHeight="260"/>
+	</mx:VBox>
 	<mx:ControlBar>
 		<mx:Button label="{ResourceManager.getInstance().getString('admin', 'save')}" id="saveBtn"
 				   click="saveBtn_clickHandler(event)"/>
