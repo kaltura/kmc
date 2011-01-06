@@ -169,14 +169,14 @@ package com.kaltura.kmc.modules.admin.business
 			if (n==0) 
 			{
 				_status = STATUS_ALL;
-				groupCheckbox.styleName = "";
+				groupCheckbox.styleName = "adminMainCheckbox";
 				groupCheckbox.selected = true;
 				
 			} else if (n == innerCheckBoxes.length)
 			{
 				//none of children selected 
 				_status = STATUS_NONE;
-				groupCheckbox.styleName = "";
+				groupCheckbox.styleName = "adminMainCheckbox";
 			} else
 			{
 				//real partial 
