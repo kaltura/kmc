@@ -58,7 +58,7 @@ package com.kaltura.kmc.modules.content.view.itemrenderers {
 			var dataVo:CategoryVO = data as CategoryVO;
 			var deleteCategoryPopUp:DeleteCategoryWin = new DeleteCategoryWin();
 			deleteCategoryPopUp.selectedCategory = dataVo;
-			PopUpManager.addPopUp(deleteCategoryPopUp, this as DisplayObject, true);
+			PopUpManager.addPopUp(deleteCategoryPopUp, (Application.application as Container), true);
 			PopUpManager.centerPopUp(deleteCategoryPopUp);
 		}
 
