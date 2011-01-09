@@ -21,6 +21,7 @@
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -245,7 +246,7 @@
 			 * */
 			private function openPreview(e:Event):void {
 				if (openPlayerFunc) {
-					ExternalInterface.call(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), false, null, (_undoToEntry is KalturaMixEntry));
+					JSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null);
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");

@@ -11,6 +11,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.modules.content.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -320,8 +321,7 @@
 					var mixEditorType:String = (selectedEntry as KalturaMixEntry).editorType.toString();
 					// arguments: entryId, name , editorType , isNewMix (true: create a mix and then
 					// open an editor, false - edit this mix with the matching editor type)
-					ExternalInterface.call("kmc.editors.start", selectedEntry.id, selectedEntry.name,
-						editorType, false);
+					JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, false);
 				}
 				switch (mediaType) {
 					//this is an entry (video image or audio)
@@ -330,8 +330,7 @@
 					case "5":
 						// arguments: entryId, name , editorType , isNewMix (true: create a mix and then open an editor, 
 						//false - edit this mix with the matching editor type)
-						ExternalInterface.call("kmc.editors.start", selectedEntry.id, selectedEntry.name,
-							editorType, true);
+						JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, true);
 						break;
 				}
 				
