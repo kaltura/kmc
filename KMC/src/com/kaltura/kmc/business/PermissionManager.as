@@ -222,8 +222,20 @@ package com.kaltura.kmc.business {
 		protected function getRelevantPermissions(componentPath:String):Array {
 			var arr:Array = new Array();
 			for each (var vo:PermissionVo in _instructionVos) {
-				if (vo.path.indexOf(componentPath + ".") == 0 || vo.path.indexOf("." + componentPath + ".") > -1) {
-					// found a match
+				if (vo.path == componentPath) {
+					// i.e. wizard > hideTabs="advertising"
+					arr.push(vo);
+				}
+				else if (vo.path.indexOf(componentPath + ".") == 0) {
+					// i.e. entryDrilldown.entryThumbnails > editable="false"
+					arr.push(vo);
+				} 
+				else if(vo.path.indexOf("." + componentPath + ".") > -1) {
+					// i.e. content.upload.submitBtn > enabled="false"
+					arr.push(vo);
+				}
+				else if(vo.path.indexOf("." + componentPath) > -1 && vo.path.indexOf("." + componentPath) == (vo.path.length - componentPath.length - 1)) {
+					// i.e. content.manage > showEmbed="false"
 					arr.push(vo);
 				}
 			}
