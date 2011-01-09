@@ -125,14 +125,6 @@
 			protected var _ready:Boolean = false;
 			
 			/**
-			 * placeholder for data received via showSubtab().
-			 * when putting things on this object one should make sure he doesn't override 
-			 * irrelevant vars (i.e., don't change the object, add attributes). 
-			 * attributes of this object are lower camel cased with no underscores by convention.
-			 * */
-			protected var _attic:Object;
-			
-			/**
 			 * KMC is responsible to use the value of
 			 * this const as the id of this module.
 			 * */
@@ -194,7 +186,6 @@
 				//Register Event Listenters
 				addEventListener(Event.RESIZE, centerPopups);
 
-				_attic = new Object();
 				
 				setAlert();
 				
@@ -216,12 +207,12 @@
 			 * don't change the object, add attributes.
 			 * */
 			protected function putInAttic(o:Object):void {
-				if (_attic == null) {
-					_attic = new Object();
+				if (_model.attic == null) {
+					_model.attic = new Object();
 				}
 				o = ObjectHelpers.lowerNoUnderscore(o);
 				for (var prop:String in o) {
-					_attic[prop] = o[prop];
+					_model.attic[prop] = o[prop];
 				}
 			}
 
@@ -232,22 +223,22 @@
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				var kmef:KalturaBaseEntryFilter ;
-				if (_attic.filter ) {
-					kmef = createFilterFromString(_attic.filter);
-					_attic.filter = null;
+				if (_model.attic.filter ) {
+					kmef = createFilterFromString(_model.attic.filter);
+					_model.attic.filter = null;
 				}
 				
 				if (_initialTab && _initialTab != "manage") {
-					_attic.kmef = kmef;
+					_model.attic.kmef = kmef;
 					// switch tab if asked
 					switchToTab(_initialTab);
 				} else {
 					manage.init(kmef);
 				}
 				// if there is entryid to start with, open the entry drilldown.
-				if (_attic.entryid) {
+				if (_model.attic.entryid) {
 					// get the entry
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _attic.entryid);
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
 					cgEvent.dispatch();
 				}
 				
@@ -742,8 +733,8 @@
 
 				if (_model.openPlayer) {
 					//id, name, description, previewonly, is_playlist, uiconf_id 
-					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description),!_model.showEmbedCode, false, _attic.previewuiconf, bitrates);
-					_attic.previewuiconf = null;
+					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description),!_model.showEmbedCode, false, _model.attic.previewuiconf, bitrates, false);
+					_model.attic.previewuiconf = null;
 				}
 
 				//First time funnel
@@ -760,8 +751,8 @@
 				// open playlist preview
 				if (_model.openPlaylist) {
 					var pl:KalturaPlaylist = entry as KalturaPlaylist;
-					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description),!_model.showEmbedCode, true, _attic.previewuiconf, null);
-					_attic.previewuiconf = null;
+					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description),!_model.showEmbedCode, true, _model.attic.previewuiconf, null, false);
+					_model.attic.previewuiconf = null;
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED,GoogleAnalyticsConsts.CONTENT);
@@ -776,8 +767,10 @@
 			private function openEntryPreview(entry:KalturaBaseEntry):void {
 				// open regular entry preview
 				if (_model.openPlayer) {
-					JSGate.doPreviewEmbed(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), !_model.showEmbedCode, false, _attic.previewuiconf, null);
-					_attic.previewuiconf = null;
+//					JSGate.doPreviewEmbed(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), !_model.showEmbedCode, false, _attic.previewuiconf, null);
+//					_attic.previewuiconf = null;
+					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
+					cgEvent.dispatch();
 				}
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
@@ -899,7 +892,7 @@
 			 * */
 			protected function initSelectedTab(event:IndexChangedEvent):void {
 				// initialize the new panel with filter saved in the attic, if any.
-				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_attic.kmef);
+				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_model.attic.kmef);
 			}
 			
 			

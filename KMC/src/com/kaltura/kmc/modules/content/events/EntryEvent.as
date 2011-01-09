@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.events
 		public static const GET_PLAYLIST : String = "content_getPlaylist";
 		public static const GET_FLAVOR_ASSETS : String = "content_getFlavorAssets";
 		public static const GET_FLAVOR_PARAMS : String = "content_getFlavorParams";
+		public static const GET_FLAVOR_ASSETS_FOR_PREVIEW : String = "content_getFlavorAssetsForPreview";
 		public static const ADD_PLAYLIST : String = "content_addPlaylist";
 		public static const GET_PLAYLIST_STATS_FROM_CONTENT : String = "content_getPlaylistStatsFromcontent";
 		public static const GET_RULE_BASED_PLAYLIST : String = "content_getRuleBasedPlaylist";

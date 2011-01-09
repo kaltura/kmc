@@ -60,7 +60,13 @@ package com.kaltura.kmc.modules.content.model {
 		 */		
 		public var playlistModel:PlaylistModel;
 		
-		
+		/**
+		 * placeholder for data received via showSubtab().
+		 * when putting things on this object one should make sure one doesn't override 
+		 * irrelevant vars (i.e., don't change the object, add / remove attributes). 
+		 * attributes of this object are lower camel cased with no underscores by convention.
+		 * */
+		public var attic:Object;
 		
 		// ------------------------------------------------------------
 		// preview players opening
@@ -189,6 +195,8 @@ package com.kaltura.kmc.modules.content.model {
 		 */		
 		public function CmsModelLocator(enforcer:Enforcer) {
 			context = new Context();
+			attic = new Object();
+			
 			filterModel = new FilterModel();
 			entryDetailsModel = new EntryDetailsModel();
 			playlistModel = new PlaylistModel();

@@ -17,6 +17,9 @@ package com.kaltura.kmc.modules.content.model
 		 * */
 		public var categoriesFullNameList:ArrayCollection = new ArrayCollection();
 		
+		/**
+		 * FlavorAssetWithParamsVO objects 
+		 */		
 		public var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
 		
 		

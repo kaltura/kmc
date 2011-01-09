@@ -508,7 +508,7 @@ $(window).load(function(){
 	kmc.preview_embed = {
 
 		// called from p&e dropdown, from content.swf and from appstudio.swf
-		doPreviewEmbed : function(id, name, description,previewOnly, is_playlist, uiconf_id, live_bitrates) {
+		doPreviewEmbed : function(id, name, description,previewOnly, is_playlist, uiconf_id, live_bitrates, hasMobileFlavors) {
 		// entry/playlist id, description, true/ false (or nothing or "" or null), uiconf id, live_bitrates obj or boolean, is_mix
 //			alert("doPreviewEmbed: id="+id+", name="+name+", description="+description+", is_playlist="+is_playlist+", uiconf_id="+uiconf_id);
 		 	if (previewOnly==true) {
