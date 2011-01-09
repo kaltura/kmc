@@ -122,8 +122,41 @@
 					removeModule(_uiconf, moduleName);
 				}
 				
+				setHtmlTabs();
+				
 				// switch to needed tab
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
+			}
+			
+			
+			/**
+			 * show correct tabs in HTML
+			 * */
+			protected function setHtmlTabs():void {
+				// call JS function to set html tabs
+				var jstabs:Array = new Array();
+				var xmltabs:XMLList = _uiconf.modules.module;
+				var jstab:Object;
+				for each (var xmltab:XML in xmltabs) {
+					jstab = new Object();
+					jstab.display_name = xmltab.@displayName.toString();
+					jstab.module_name = xmltab.@id.toString();
+					//					jstab.subtab = xmltab.@subtab;
+					if (xmltab.@htmlUrl) {
+						jstab.html_url = xmltab.@htmlUrl.toString();
+					} 
+					jstabs.push(jstab);
+					//					<module id="dashboard" uiconf="@@DashboardUIConfID@@" path="modules/Dashboard.swf"/>
+				}
+				//					[
+				//					{display_name: "Dashboard", moduleName: "dashboard", subtab: "", extra: null, html_url: false},
+				//					{display_name: "Content", moduleName: "content", subtab: "manage", extra: null, html_url: false},
+				//					{display_name: "Studio", moduleName: "studio", subtab: "playersList", extra: null, html_url: false},
+				//					{display_name: "Settings", moduleName: "account", subtab: "overview", extra: null, html_url: false},
+				//					{display_name: "Analytics", moduleName: "analytics", subtab: "usage", extra: null, html_url: false},
+				//					{display_name: "Administration", moduleName: "admin", subtab: "usersTab", extra: null, html_url: false}
+				//				];
+				ExternalInterface.call("kmc.utils.createTabs", jstabs);
 			}
 			
 			/**
@@ -256,30 +289,6 @@
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
-				// call JS function to set html tabs
-				var jstabs:Array = new Array();
-				var xmltabs:XMLList = _uiconf.modules.module;
-				var jstab:Object;
-				for each (var xmltab:XML in xmltabs) {
-					jstab = new Object();
-					jstab.display_name = xmltab.@displayName.toString();
-					jstab.module_name = xmltab.@id.toString();
-//					jstab.subtab = xmltab.@subtab;
-					if (xmltab.@htmlUrl) {
-						jstab.html_url = xmltab.@htmlUrl.toString();
-					} 
-					jstabs.push(jstab);
-//					<module id="dashboard" uiconf="@@DashboardUIConfID@@" path="modules/Dashboard.swf"/>
-				}
-//					[
-//					{display_name: "Dashboard", moduleName: "dashboard", subtab: "", extra: null, html_url: false},
-//					{display_name: "Content", moduleName: "content", subtab: "manage", extra: null, html_url: false},
-//					{display_name: "Studio", moduleName: "studio", subtab: "playersList", extra: null, html_url: false},
-//					{display_name: "Settings", moduleName: "account", subtab: "overview", extra: null, html_url: false},
-//					{display_name: "Analytics", moduleName: "analytics", subtab: "usage", extra: null, html_url: false},
-//					{display_name: "Administration", moduleName: "admin", subtab: "usersTab", extra: null, html_url: false}
-//				];
-				ExternalInterface.call("kmc.utils.createTabs", jstabs);
 				
 				// [1] permissions:
 				if (isError(event.data[1].error)) return;
