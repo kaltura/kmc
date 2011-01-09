@@ -256,6 +256,31 @@
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
+				// call JS function to set html tabs
+				var jstabs:Array = new Array();
+				var xmltabs:XMLList = _uiconf.modules.module;
+				var jstab:Object;
+				for each (var xmltab:XML in xmltabs) {
+					jstab = new Object();
+					jstab.display_name = xmltab.@displayName.toString();
+					jstab.module_name = xmltab.@id.toString();
+//					jstab.subtab = xmltab.@subtab;
+					if (xmltab.@htmlUrl) {
+						jstab.html_url = xmltab.@htmlUrl.toString();
+					} 
+					jstabs.push(jstab);
+//					<module id="dashboard" uiconf="@@DashboardUIConfID@@" path="modules/Dashboard.swf"/>
+				}
+//					[
+//					{display_name: "Dashboard", moduleName: "dashboard", subtab: "", extra: null, html_url: false},
+//					{display_name: "Content", moduleName: "content", subtab: "manage", extra: null, html_url: false},
+//					{display_name: "Studio", moduleName: "studio", subtab: "playersList", extra: null, html_url: false},
+//					{display_name: "Settings", moduleName: "account", subtab: "overview", extra: null, html_url: false},
+//					{display_name: "Analytics", moduleName: "analytics", subtab: "usage", extra: null, html_url: false},
+//					{display_name: "Administration", moduleName: "admin", subtab: "usersTab", extra: null, html_url: false}
+//				];
+				ExternalInterface.call("kmc.utils.createTabs", jstabs);
+				
 				// [1] permissions:
 				if (isError(event.data[1].error)) return;
 				var uidefinition:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
@@ -392,20 +417,29 @@
 					return;
 				}
 				
-				var url:String = getUrl(mInfo.@path.toString());
-				var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
-				if (!ml.parent) {
-					// this is the first time we load this module.
-					// add to the viewstack if needed
-					mainViewStack.addChild(ml);
-					// show preloader, set its source, bla bla
-					progressbar.source = ml;
-					progressbar.visible = true;
+				// check for HTML tabs
+				if (mInfo.@htmlUrl[0]) {
+					//TODO tell JS it should show a html tab
+					Alert.show(mInfo.@htmlUrl, "going to html page");
+					ExternalInterface.call("kmc.util.openIframe", mInfo.@htmlUrl); 
 				}
-				mainViewStack.selectedChild = ml;
-				_startModule = o;
-				if (ml.child && o.subtab) {
-					(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
+				else {
+					// load KMC module
+					var url:String = getUrl(mInfo.@path.toString());
+					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
+					if (!ml.parent) {
+						// this is the first time we load this module.
+						// add to the viewstack if needed
+						mainViewStack.addChild(ml);
+						// show preloader, set its source, bla bla
+						progressbar.source = ml;
+						progressbar.visible = true;
+					}
+					mainViewStack.selectedChild = ml;
+					_startModule = o;
+					if (ml.child && o.subtab) {
+						(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
+					}
 				}
 
 				// tell html
