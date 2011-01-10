@@ -248,6 +248,7 @@ $(window).load(function(){
 			$(" textarea#embed_code").select();
 		},
 		resize : function() {
+			console.log('resizing...');
 			var doc_height = $(document).height(),
 			offset = $.browser.mozilla ? 37 : 74;
 			doc_height = (doc_height-offset)+"px";
@@ -299,19 +300,19 @@ $(window).load(function(){
 		},
 		
 		createTabs : function(arr) {
-			console.log('createTabs');
 			if(arr) {
 				var module_url = kmc.vars.service_url + '/index.php/kmc/kmc4';
 				var arrLen = arr.length;
 				var tabsHTML = '';
 				for( var i = 0; i < arrLen; i++ ) {
-					tabsHTML += '<li><a id="'+ arr[i].module_name +'" href="'+ module_url + '#' + arr[i].module_name +'"><span>' + arr[i].display_name + '</span></a></li>';
+					tabsHTML += '<li><a id="'+ arr[i].module_name +'" rel="'+ arr[i].subtab +'" href="'+ module_url + '#' + arr[i].module_name +'"><span>' + arr[i].display_name + '</span></a></li>';
 				}
 				
 				$('#hTabs').html(tabsHTML);
 				
 				$('a').click(function(e) {
 					var tab = (e.target.tagName == "A") ? e.target.id : $(e.target).parent().attr("id");
+					var subtab = $(e.target).attr('rel');
 					
 					switch(tab) {
 						case "Quickstart Guide" :
@@ -324,12 +325,12 @@ $(window).load(function(){
 							kmc.utils.openSupport(this);
 							return false;
 						default :
-							go_to = { moduleName : tab, subtab : "" };
+							go_to = { moduleName : tab, subtab : subtab };
 							break;
 							
 					}
 					
-					$("#kcms")[0].gotoPage(go_to); //!!!
+					$("#kcms")[0].gotoPage(go_to); 
 					return false;					
 					
 				});
@@ -337,7 +338,6 @@ $(window).load(function(){
 		},
 		
 		openIframe : function(url) {
-//			alert('ss');
 			$("#kcms")[0].alert('Open Iframe');
 		}
 		
@@ -1179,12 +1179,11 @@ function playerAdded() { // called from appstudio
 /*** end old functions ***/
 
 $(function() {
-	console.log('second loading');
 	kmc.mediator.loadKmc();
 })
 
 kmc.vars.kmc_swf = {
-    url : "kmc.swf",
+    url : kmc.vars.service_url+"/flash/kmc/"+kmc.vars.kmc_version+"/kmc.swf",
     flashvars : {
 		// kmc configuration
 		kmc_uiconf			: kmc.vars.kmc_general_uiconf, 
