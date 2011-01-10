@@ -67,6 +67,18 @@
 			 * dispatch Cairngorm event to raise a list roles command 
 			 * */
 			protected function listRoles(pageNumber:int):void {
+				// set table size
+				if (paging) {
+					if (paging.pageSize == 10) {
+						superTanker.height = (table.rowHeight * 10) + table.headerHeight + paging.height;
+						table.rowCount = 10;
+					}
+					else {
+						superTanker.percentHeight = 100;
+						table.percentHeight = 100;
+					}
+				}
+				// list
 				var kfp:KalturaFilterPager = new KalturaFilterPager();
 				if (paging && paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
 					kfp.pageSize = paging.kalturaFilterPager.pageSize;
@@ -244,8 +256,8 @@
 	</mx:HBox>
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_page_description')}" />
 	
-	<mx:HBox width="100%" >
-		<mx:VBox id="tableContainer" width="100%" styleName="noVGap">
+	<mx:HBox width="100%" id="superTanker">
+		<mx:VBox id="tableContainer" width="100%" styleName="noVGap" height="100%">
 			<view:RolesTable id="table" width="100%" dataProvider="{model.roles}" rowCount="10"
 							 drillDown="openEditRoleDialog(event)" deleteRole="deleteRole(event)" 
 							 duplicateRole="duplicateRole(event)" selectRole="setSelectedRole(event)" sortableColumns="{false}"/>
