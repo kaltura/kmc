@@ -1183,7 +1183,7 @@ $(function() {
 })
 
 kmc.vars.kmc_swf = {
-    url : kmc.vars.service_url+"/flash/kmc/"+kmc.vars.kmc_version+"/kmc.swf",
+    url : "kmc.swf",
     flashvars : {
 		// kmc configuration
 		kmc_uiconf			: kmc.vars.kmc_general_uiconf, 
