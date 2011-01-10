@@ -27,9 +27,9 @@
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUiConfFilter;
 			import com.kaltura.vo.KalturaUiConfListResponse;
-
+			
 			import modules.Studio;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.ComboBox;
@@ -482,7 +482,7 @@
 
 			/**
 			 * Remove single item from the combobox dataprovider by its id
-			 * @id - the name of the id to remove
+			 * @param id 	name of the id to remove
 			 */
 			private function removeItemById(id:String):void {
 				//find the index of the item
@@ -499,8 +499,6 @@
 						comboDataProviderMulti.removeItemAt(i);
 				}
 
-
-
 				//find the index of the item
 				for (var j:uint = 0; j < comboDataProviderNormal.length; j++) {
 					if (comboDataProviderNormal.getItemAt(j).id == id)
@@ -515,29 +513,74 @@
 					else
 						comboDataProviderNormal.removeItemAt(j);
 				}
-
 			}
 
-
+			
 			/**
-			 * Hide actions from the data provider.
-			 * @param itemsToHide	a comma seperated strings of items (edit,unblock,delete)
+			 * remove the "edit" item from the actions combobox 
 			 */
-			public function set comboHideItems(itemsToHide:String):void {
-				var items:Array = itemsToHide.split(",");
-				for each (var str:String in items) {
-					removeItemById(str);
-				}
+			public function set enableEdit(value:Boolean):void {
+				removeItemById("edit");
 			}
-
-
 			/**
 			 * @private
-			 * This is because the apply permission needs to read the comboHideItems function
 			 */
-			public function get comboHideItems():String {
-				return "";
+			public function get enableEdit():Boolean {
+				return false;
 			}
+			
+			/**
+			 * remove the "select Content" item from the actions combobox 
+			 */
+			public function set enableSelectContent(value:Boolean):void {
+				removeItemById("selectContent");
+			}
+			/**
+			 * @private
+			 */
+			public function get enableSelectContent():Boolean {
+				return false;
+			}
+			
+			/**
+			 * remove the "Duplicate" item from the actions combobox 
+			 */
+			public function set enableDuplicate(value:Boolean):void {
+				removeItemById("duplicate");
+			}
+			/**
+			 * @private
+			 */
+			public function get enableDuplicate():Boolean {
+				return false;
+			}
+			
+			/**
+			 * remove the "Delete" item from the actions combobox 
+			 */
+			public function set enableDelete(value:Boolean):void {
+				removeItemById("delete");
+			}
+			/**
+			 * @private
+			 */
+			public function get enableDelete():Boolean {
+				return false;
+			}
+			
+			/**
+			 * remove the "Preview And Embed" item from the actions combobox 
+			 */
+			public function set enablePreviewAndEmbed(value:Boolean):void {
+				removeItemById("previewAndEmbed");
+			}
+			/**
+			 * @private
+			 */
+			public function get enablePreviewAndEmbed():Boolean {
+				return false;
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Metadata>
