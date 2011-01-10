@@ -3,9 +3,9 @@
 	 entry drill-down screen.
 -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="{onCreationComplete()}"
-							title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" height="540"
-							width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
-							showCloseButton="true" close="{areYouSure()}" help="{onHelp()}"
+							title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" 
+							height="540" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
+							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 							xmlns:containers="com.kaltura.containers.*"
 							xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
@@ -75,7 +75,7 @@
 
 			/**
 			 * if somthing that we can't track changes happen
-			 * like mix pressed we need to refreash entires table refrash
+			 * (like mix created) we need to refresh entires table after save.
 			 * */
 			private var _untrackableChangeFlag:Boolean = false;
 
@@ -314,7 +314,10 @@
 			}
 
 
-			private function areYouSure():void {
+			/**
+			 * "x" button clicked - see if need save or just close.
+			 * */
+			private function onClose():void {
 				var metadataChanged:Boolean = false;
 				var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfo;
 				var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfile;
@@ -334,13 +337,19 @@
 				}
 
 				if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
+					// had change, ask for save
 					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
 				}
-				else
+				else {
+					// remove window
 					removeMe();
+				}
 			}
 
 
+			/**
+			 * 
+			 * */
 			private function removeMe(event:CloseEvent = null):void {
 				//if a mix was created or anything that isn't trackable do save so it
 				//will be refreshed
@@ -348,6 +357,7 @@
 					//so we won't have infinate loop
 					_untrackableChangeFlag = false;
 					save();
+					//TODO why save? we just need to refresh the entries list.
 					return;
 				}
 				///////////////////////////////////////////////////////////
@@ -362,6 +372,9 @@
 
 
 
+			/**
+			 * validate all panels, if validation is ok update server.
+			 * */
 			private function save():void {
 				// validation:
 				var validationResult:EntryDetailsValidationError = entryMetaData.save();
@@ -400,7 +413,7 @@
 
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
-					removeMe();
+//					removeMe();
 				}
 			}
 

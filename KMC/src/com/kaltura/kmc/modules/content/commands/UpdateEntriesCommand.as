@@ -80,6 +80,7 @@ package com.kaltura.kmc.modules.content.commands {
 						var updateEntry1:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry1);
 					}
+					
 					var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
 					if (!(e.entries[i] is KalturaPlaylist) && _model.filterModel.metadataProfile &&
 						_model.filterModel.metadataProfile.profile && metadataInfo) {
@@ -154,9 +155,8 @@ package com.kaltura.kmc.modules.content.commands {
 		 * */
 		override public function result(data:Object):void {
 			super.result(data);
-			_model.windowState = WindowsStates.NONE;
 			var searchEvent:SearchEvent;
-
+			// if updated more than 1 entry, check if any result is error
 			if (data.data && data.data is Array) {
 				for (var i:uint = 0; i < (data.data as Array).length; i++) {
 					if ((data.data as Array)[i] is KalturaError) {
@@ -169,22 +169,21 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 			}
 
+			// refresh playlists list
 			if (_isPlaylist) {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
 				cgEvent.dispatch();
 			}
-			else if (_model.has2OpenedPopups == false) {
+			else if (!_model.has2OpenedPopups) {
 				//check if this pop up is a 2nd pop up. if so, do not load the entries
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();
 				var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				categoriesEvent.dispatch();
 			}
-			else {
-				_model.has2OpenedPopups = false;
-			}
+			_model.windowState = WindowsStates.NONE;
 			_model.decreaseLoadCounter();
 		}
 
