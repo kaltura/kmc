@@ -42,8 +42,6 @@ package com.kaltura.kmc.modules.content.business
 			ExternalInterface.call("kmc.mediator.writeUrlHash", "content", subtab);
 		}
 		
-//		editorType , isNewMix (true: create a mix and then open an editor, 
-			//false - edit this mix with the matching editor type)
 		/**
 		 * open an editor for the given entry 
 		 * @param entryId		entry id
