@@ -54,7 +54,56 @@
 			 * */
 			public var entryType:String = "Entry";
 
-
+			[Bindable]
+			private var _moreOptionsDp:Array = [
+				{data:"setAccessControlProfile", label:ResourceManager.getInstance().getString('cms', 'setAccessCOntrolProfile')},
+				{data:"setSchedulingTitle", label:ResourceManager.getInstance().getString('cms', 'setSchedulingTitle')}
+				];
+			
+			
+			
+			/**
+			 * remove the scheduling item from the "more options" dropdown
+			 * */
+			public function get hideScheduling():Boolean {
+				return false;
+			}
+			
+			public function set hideScheduling(value:Boolean):void {
+				for (var i:int = 0; i< _moreOptionsDp.length; i++) {
+					if (_moreOptionsDp[i].data == "setSchedulingTitle") {
+						_moreOptionsDp.splice(i, 1);
+						break;
+					}
+				}
+				if (_moreOptionsDp.length == 0) {
+					moreOption.visible = false;
+					moreOption.includeInLayout = false;
+				}
+			}
+			
+			/**
+			 * remove the access control item from the "more options" dropdown
+			 * */
+			public function get hideAccessControl():Boolean {
+				return false;
+			}
+			
+			public function set hideAccessControl(value:Boolean):void {
+				for (var i:int = 0; i< _moreOptionsDp.length; i++) {
+					if (_moreOptionsDp[i].data == "setAccessControlProfile") {
+						_moreOptionsDp.splice(i, 1);
+						break;
+					}
+				}
+				if (_moreOptionsDp.length == 0) {
+					moreOption.visible = false;
+					moreOption.includeInLayout = false;
+				}
+			}
+			
+				
+			
 			/**
 			 * hide all 3 combos from controller
 			 */
@@ -138,7 +187,7 @@
 			 */
 			private function onMoreOptionChanged(event:Event):void {
 				var cgEvent:WindowEvent;
-				if (moreOption.selectedItem.data == "setAccessCOntrolProfile") {
+				if (moreOption.selectedItem.data == "setAccessControlProfile") {
 					cgEvent = new WindowEvent(WindowEvent.OPEN,
 											  WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW);
 					cgEvent.dispatch();
@@ -210,13 +259,8 @@
 						   label="{resourceManager.getString('cms', 'createRuleBasedPlaylistComboOption')}"/>
 			</mx:Array>
 		</mx:ComboBox>
-		<mx:ComboBox id="moreOption" change="{onMoreOptionChanged(event)}"
+		<mx:ComboBox id="moreOption" change="{onMoreOptionChanged(event)}" dataProvider="{_moreOptionsDp}"
 					 prompt="{resourceManager.getString('cms', 'moreActions')}" selectedIndex="-1">
-			<mx:Array>
-				<mx:Object data="setAccessCOntrolProfile"
-						   label="{resourceManager.getString('cms', 'setAccessCOntrolProfile')}"/>
-				<mx:Object data="setSchedulingTitle" label="{resourceManager.getString('cms', 'setSchedulingTitle')}"/>
-			</mx:Array>
 		</mx:ComboBox>
 		<mx:Button id="addTags" label="{resourceManager.getString('cms', 'addTags')}" visible="false"
 				   includeInLayout="false"
@@ -230,7 +274,7 @@
 				   click="onApproveSelected()" buttonMode="true"/>
 		<mx:Button id="rejectSelected" label="{resourceManager.getString('cms', 'rejectSelected')}"
 				   click="onRejectSelected()" buttonMode="true"/>
-		<mx:Button id="setAccessCOntrolProfile" label="{resourceManager.getString('cms', 'setAccessCOntrolProfile')}"
+		<mx:Button id="setAccessControlProfile" label="{resourceManager.getString('cms', 'setAccessCOntrolProfile')}"
 				   visible="false" includeInLayout="false"
 				   click="{var cgEvent : WindowEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW); cgEvent.dispatch()}"
 				   buttonMode="true"/>
