@@ -135,11 +135,11 @@
 			 */
 			private function onCreationComplete(event:Event):void {
 				if (currentState == null) {
-					accessControlProfile = accessControlProfile.clone();
+					_accessControlProfile = _accessControlProfile.clone();
 					setAccessControlProfileData();
 				}
 				else {
-					accessControlProfile = new AccessControlProfileVO();
+					_accessControlProfile = new AccessControlProfileVO();
 				}
 
 				validateInput();
@@ -165,7 +165,7 @@
 
 
 			private function setDefaultProfileSettings():void {
-				profileNameTi.enabled = !(accessControlProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE);
+				profileNameTi.enabled = !(_accessControlProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE);
 			}
 
 			/**
@@ -186,7 +186,7 @@
 			 */
 			private function setSiteRestrictions():void {
 				var restrictionFound:Boolean = false;
-				for each (var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions) {
+				for each (var restriction:KalturaBaseRestriction in _accessControlProfile.profile.restrictions) {
 					if (restriction is KalturaSiteRestriction) {
 						restrictionFound = true;
 						var arr:ArrayCollection;
@@ -225,7 +225,7 @@
 			 */
 			private function setCountriesRestrictions():void {
 				var restrictionFound:Boolean = false;
-				for each (var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions) {
+				for each (var restriction:KalturaBaseRestriction in _accessControlProfile.profile.restrictions) {
 					if (restriction is KalturaCountryRestriction) {
 						restrictionFound = true;
 						var arr:ArrayCollection;
@@ -252,7 +252,7 @@
 			 */
 			private function setSessionRestriction():void {
 				var restrictionFound:Boolean = false;
-				for each (var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions) {
+				for each (var restriction:KalturaBaseRestriction in _accessControlProfile.profile.restrictions) {
 					if (restriction is KalturaSessionRestriction) {
 						secureKSCBBtn.selected = true;
 						break;
@@ -261,39 +261,14 @@
 			}
 
 
-			/**
-			 *
-			 */
-			/* private function setDirectoryRestrictions():void
-			   {
-			   var restrictionFound:Boolean = false;
-			   for each(var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions)
-			   {
-			   if(restriction is KalturaDirectoryRestriction)
-			   {
-			   restrictionFound = true;
-			   if((restriction as KalturaDirectoryRestriction).directoryRestrictionType == KalturaDirectoryRestrictionType.DONT_DISPLAY)
-			   {
-			   noKalDevRadioBtn.selected = true;
-			   }
-			   else
-			   {
-			   allowLinkToKalDevRadioBtn.selected = true;
-			   }
-
-			   break;
-			   }
-			   }
-
-			   allowDirectToKalDevRadioBtn.selected = !restrictionFound;
-			 } */
+			
 
 			/**
 			 *
 			 */
 			private function setPreviewRestrictions():void {
 				var restrictionFound:Boolean = false;
-				for each (var restriction:KalturaBaseRestriction in accessControlProfile.profile.restrictions) {
+				for each (var restriction:KalturaBaseRestriction in _accessControlProfile.profile.restrictions) {
 					if (restriction is KalturaPreviewRestriction) {
 						freePerviewCBBtn.selected = true;
 						var len:int = (restriction as KalturaPreviewRestriction).previewLength;
@@ -408,9 +383,11 @@
 			 *
 			 */
 			private function saveProfile(event:Event):void {
+				// update
 				updateProperties();
-
+				// validate
 				if (_isCountriesOk && _isSitesOk) {
+					// save
 					saveAndClose();
 				}
 				else {
@@ -463,7 +440,7 @@
 			 *
 			 */
 			private function updateName():void {
-				accessControlProfile.profile.name = profileNameTi.text;
+				_accessControlProfile.profile.name = profileNameTi.text;
 			}
 
 
@@ -471,7 +448,7 @@
 			 *
 			 */
 			private function updateDescription():void {
-				accessControlProfile.profile.description = descriptionTa.text;
+				_accessControlProfile.profile.description = descriptionTa.text;
 			}
 
 
@@ -479,7 +456,7 @@
 			 *
 			 */
 			private function clearRestrictions():void {
-				accessControlProfile.profile.restrictions = new Array();
+				_accessControlProfile.profile.restrictions = new Array();
 			}
 
 
@@ -499,7 +476,7 @@
 
 					if ((list.dataProvider as ArrayCollection).length > 0) {
 						_isSitesOk = true;
-						accessControlProfile.profile.restrictions.push(siteRestriction);
+						_accessControlProfile.profile.restrictions.push(siteRestriction);
 					}
 					else {
 						_isSitesOk = false;
@@ -542,7 +519,7 @@
 
 					if ((list.dataProvider as ArrayCollection).length > 0) {
 						_isCountriesOk = true;
-						accessControlProfile.profile.restrictions.push(countryRestriction);
+						_accessControlProfile.profile.restrictions.push(countryRestriction);
 					}
 					else {
 						_isCountriesOk = false;
@@ -575,7 +552,7 @@
 			private function updateSessionRestrictions():void {
 				if (secureKSCBBtn.selected == true) {
 					var sessionRestriction:KalturaSessionRestriction = new KalturaSessionRestriction();
-					accessControlProfile.profile.restrictions.push(sessionRestriction);
+					_accessControlProfile.profile.restrictions.push(sessionRestriction);
 				}
 			}
 
@@ -588,26 +565,13 @@
 					var previewRestriction:KalturaPreviewRestriction = new KalturaPreviewRestriction();
 					previewRestriction.previewLength = (freePreviewDuration.minute * 60) + freePreviewDuration.second;
 
-					accessControlProfile.profile.restrictions.push(previewRestriction);
+					_accessControlProfile.profile.restrictions.push(previewRestriction);
 				}
 			}
 
 
 			/**
-			 *
-			 */
-			/* private function UpdateDirectoryRestrictions():void
-			   {
-			   if(allowDirectToKalDevRadioBtn.selected != true)
-			   {
-			   var directoryRestriction:KalturaDirectoryRestriction = new KalturaDirectoryRestriction();
-			   directoryRestriction.directoryRestrictionType = (noKalDevRadioBtn.selected == true) ? KalturaDirectoryRestrictionType.DONT_DISPLAY : KalturaDirectoryRestrictionType.DISPLAY_WITH_LINK;
-			   accessControlProfile.profile.restrictions.push(directoryRestriction);
-			   }
-			 }  */
-
-			/**
-			 *
+			 * ask to save the updated profile
 			 */
 			private function saveUpdatedProfileFunc():void {
 				/*    				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);

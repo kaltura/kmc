@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="mainACPvBox"
-	implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%" 
-	xmlns:controls="com.kaltura.controls.*" creationComplete="vbox1_creationCompleteHandler(event)"
-	xmlns:acw="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.*" >
-	
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
+		 xmlns:controls="com.kaltura.controls.*" creationComplete="creationCompleteHandler(event)"
+		 xmlns:acw="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.*">
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -11,15 +11,16 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
+			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.AccessControlProfileVO;
-			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -29,254 +30,241 @@
 			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-		
-		
-		   	[Bindable]private var _accessControlsList:ArrayCollection;
-			[Bindable] public var rootUrl : String;
-		   	[Bindable]public var allSelected:Boolean = false;
-	   
-			public static const NAME:String = "accessControl";
-			
-			
-	   public function set accessControlsList(accessControlsList:ArrayCollection):void
-	   {
-	   		_accessControlsList = accessControlsList;
-	   		setListenerToProfilesData();
-	   }
-	   
-	   [Bindable]public function get accessControlsList():ArrayCollection
-	   {
-	   		return _accessControlsList;
-	   }
-		   
-		   
-	 //  [Bindable]private var _model:KMCModelLocator = ;
-	/*    private function onInit(event:Event):void
-	   {
-	   		BindingUtils.bindSetter(loadProfilesData, accessControlsList, "source");
-	   } */
-	   
-	   private function loadAccessControlsList():void
-	   {
-	   		if (paging.pageSize == 10)
-			{
-				tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height + 15;
-				accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height);//entryTable.rowHeight*11+entryTable.headerHeight;
-				accessControlProfilesTable.rowCount = 10;
-				actionBox.height = accessControlProfilesTable.height + paging.height + bottomActionBox.height;
-			}
-			else
-			{
-				tableContainer.percentHeight = 100;
-				accessControlProfilesTable.percentHeight = 100;
-				accessControlProfilesTable.rowCount = -1;
-				actionBox.percentHeight = 100;
-			}
-	   	
-	   		
-	   	
-	   		var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
-			getAllProfilesEvent.dispatch();
-	   }
-				
-	    private function setListenerToProfilesData():void
-	    {
-	    	for each(var profile:AccessControlProfileVO in accessControlsList)
-			{
-				profile.addEventListener(AccessControlProfileVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
-			}
-			updateBtnStatus();
-	    }
-		   
-	   private function updateBtnStatus(event:Event=null):void
-	   {
-	   		var numSelected:int = 0;
-			for each(var profile:AccessControlProfileVO in accessControlsList)
-			{
-				numSelected += profile.selected ? 1 : 0;
-			}
-			
-		/*	deleteProfilesBtn.enabled = (numSelected != 0);
-			
-			 if(numSelected == 0)
-			{
-				deleteProfilesBtn.label = resourceManager.getString('account','disabledDeleteButton');
-			}
-			else if(numSelected == 1)
-			{
-				deleteProfilesBtn.label = resourceManager.getString('account','deleteAccessControlButton');
-			}
-			else if(numSelected != accessControlsList.length)
-			{
-				deleteProfilesBtn.label = resourceManager.getString('account','deleteAccessControlsButton').replace('NUM_OF_DEL', numSelected);
-			}
-			else
-			{
-				deleteProfilesBtn.label = resourceManager.getString('account','deleteAllAccessControlsButton');
-			} */
-			
-			allSelected = (accessControlsList.length == numSelected);
-	   }
 
-		
-		private function onAddNewProfileClick(event:Event):void
-		{
-			var addNewProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
-//			addNewProfileWin.addEventListener(FlexEvent.CREATION_COMPLETE, setPermissions);
-			addNewProfileWin.rootUrl = rootUrl;
-			addNewProfileWin.currentState = 'newProfileState';
-			
-			PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
-			PopUpManager.centerPopUp(addNewProfileWin);
-			
-			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc );
-			addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc );
-			
-		}
-			
-		/**
-		 * run the permissions manager.
-		 * this is done here and not inside because the popup class is from kalturalib
-		 * and therefore doesn't know the permissions manager.
-		 * */
-		private function setPermissions(e:Event):void {
-			PermissionManager.getInstance().applyAllAttributes(e.target, "acDrilldown");
-		}
-			
-		private function saveUpdatedProfileFunc(event:Event):void
-		{
-			var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE);
-			saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
-			saveProfileChangesEvent.dispatch();
-		}
-		
-		/**
-		 * 
-		 */ 
-		private function saveNewProfileFunc(event:Event):void
-		{
-			var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE);
-			addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
-			addNewProfileEvent.dispatch(); 
-		}
-			
-			
-			
-		
-		private function onDeleteCheckedProfileClick(event:Event):void
-		{
-			KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT,KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE,"Account>Access Control Delete");
-			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE,GoogleAnalyticsConsts.ACCOUNT);
-			var selItems:Array = accessControlProfilesTable.selectedItems;
-			if(selItems.length == 0)
-			{
-				Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
-				return;
+
+			[Bindable]
+			private var _accessControlsList:ArrayCollection;
+			[Bindable]
+			public var rootUrl:String;
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+			public static const NAME:String = "accessControl";
+
+
+			public function set accessControlsList(accessControlsList:ArrayCollection):void {
+				_accessControlsList = accessControlsList;
+				setListenerToProfilesData();
 			}
-			
-			var delStr:String = '';
-			for each(var acp:AccessControlProfileVO in selItems)
-			{
-				if(!acp.profile.isDefault)
-				{
-					delStr += '\n' + acp.profile.name;
+
+
+			[Bindable]
+			public function get accessControlsList():ArrayCollection {
+				return _accessControlsList;
+			}
+
+
+			//  [Bindable]private var _model:KMCModelLocator = ;
+			/*    private function onInit(event:Event):void
+			   {
+			   BindingUtils.bindSetter(loadProfilesData, accessControlsList, "source");
+			 } */
+
+			private function loadAccessControlsList():void {
+				if (paging.pageSize == 10) {
+					tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height + 15;
+					accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					accessControlProfilesTable.rowCount = 10;
+					actionBox.height = accessControlProfilesTable.height + paging.height + bottomActionBox.height;
 				}
+				else {
+					tableContainer.percentHeight = 100;
+					accessControlProfilesTable.percentHeight = 100;
+					accessControlProfilesTable.rowCount = -1;
+					actionBox.percentHeight = 100;
+				}
+
+
+
+				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
+				getAllProfilesEvent.dispatch();
 			}
-			
-			var msg:String = "";
-			var title:String = "";
-			if(accessControlProfilesTable.selectedItems.length == accessControlsList.length)
-			{
-				msg = resourceManager.getString('account','deleteAllAccessControlAlertMsg');
-				title =	resourceManager.getString('account','deleteAllAccessControlAlertTitle');
+
+
+			private function setListenerToProfilesData():void {
+				for each (var profile:AccessControlProfileVO in accessControlsList) {
+					profile.addEventListener(AccessControlProfileVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
+				}
+				updateBtnStatus();
 			}
-			else
-			{
-				msg = resourceManager.getString('account','deleteAccessControlAlertMsg') + delStr + " ?";
-				title = resourceManager.getString('account','deleteAccessControlAlertTitle');	
+
+
+			private function updateBtnStatus(event:Event = null):void {
+				var numSelected:int = 0;
+				for each (var profile:AccessControlProfileVO in accessControlsList) {
+					numSelected += profile.selected ? 1 : 0;
+				}
+
+				allSelected = (accessControlsList.length == numSelected);
 			}
-			
-			Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
-			
-		}
-		
-		private function responeFnc(evt:CloseEvent):void
-		{
-			if(evt.detail == Alert.YES)
-			{
-				var ids:Array = new Array();
-				for each(var acp:AccessControlProfileVO in accessControlProfilesTable.selectedItems)
-				{
-					if(!acp.profile.isDefault)
-					{
-						ids.push(acp.profile.id);
+
+
+			private function onAddNewProfileClick(event:Event):void {
+				var addNewProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
+				addNewProfileWin.rootUrl = rootUrl;
+				addNewProfileWin.currentState = 'newProfileState';
+
+				PopUpManager.addPopUp(addNewProfileWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(addNewProfileWin);
+
+				addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc);
+				addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc);
+
+			}
+
+
+			/**
+			 * run the permissions manager.
+			 * this is done here and not inside because the popup class is from kalturalib
+			 * and therefore doesn't know the permissions manager.
+			 * */
+			private function setPermissions(e:Event):void {
+				PermissionManager.getInstance().applyAllAttributes(e.target, "acDrilldown");
+			}
+
+
+			/**
+			 * save updated profile
+			 * */
+			private function saveUpdatedProfileFunc(event:KmcEvent):void {
+				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE);
+				saveProfileChangesEvent.data = event.data as AccessControlProfileVO;
+				saveProfileChangesEvent.dispatch();
+			}
+
+
+			/**
+			 * add new profile
+			 */
+			private function saveNewProfileFunc(event:Event):void {
+				var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE);
+				addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+				addNewProfileEvent.dispatch();
+			}
+
+
+
+
+			private function onDeleteCheckedProfileClick(event:Event):void {
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE, "Account>Access Control Delete");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE, GoogleAnalyticsConsts.ACCOUNT);
+				var selItems:Array = accessControlProfilesTable.selectedItems;
+				if (selItems.length == 0) {
+					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
+					return;
+				}
+
+				var delStr:String = '';
+				for each (var acp:AccessControlProfileVO in selItems) {
+					if (!acp.profile.isDefault) {
+						delStr += '\n' + acp.profile.name;
 					}
 				}
-				var deleteProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
-				deleteProfilesEvent.data = ids;
-				deleteProfilesEvent.dispatch();
-			}
-		}
-		
-		//paging
-		private function gotoPage() : void
-		{
-			// update filter here
-			paging.kalturaFilterPager.pageIndex = paging.selectedPage;
-			
-			loadAccessControlsList();
-		}
-		
-		private function onPagerCreationComplete(event:Event):void
-		{
-			AccountModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
-			paging.kalturaFilterPager.pageIndex = 0;
-			paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-			loadAccessControlsList();
-		}
-			
-		private function help():void {
-			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section22' ));
-		}
-		
-		
-		public function isChanged():Boolean { return false; }
-		public function undo():void {}
-		public function saveChanges():void {} 
-		public function resetClonedData():void {}
-		
-			
 
+				var msg:String = "";
+				var title:String = "";
+				if (accessControlProfilesTable.selectedItems.length == accessControlsList.length) {
+					msg = resourceManager.getString('account', 'deleteAllAccessControlAlertMsg');
+					title = resourceManager.getString('account', 'deleteAllAccessControlAlertTitle');
+				}
+				else {
+					msg = resourceManager.getString('account', 'deleteAccessControlAlertMsg') + delStr + " ?";
+					title = resourceManager.getString('account', 'deleteAccessControlAlertTitle');
+				}
 
-			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
-				PermissionManager.getInstance().applyAllAttributes(this,NAME);
+				Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
+
 			}
 
+
+			private function responeFnc(evt:CloseEvent):void {
+				if (evt.detail == Alert.YES) {
+					var ids:Array = new Array();
+					for each (var acp:AccessControlProfileVO in accessControlProfilesTable.selectedItems) {
+						if (!acp.profile.isDefault) {
+							ids.push(acp.profile.id);
+						}
+					}
+					var deleteProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
+					deleteProfilesEvent.data = ids;
+					deleteProfilesEvent.dispatch();
+				}
+			}
+
+
+			//paging
+			private function gotoPage():void {
+				// update filter here
+				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
+
+				loadAccessControlsList();
+			}
+
+
+			private function onPagerCreationComplete(event:Event):void {
+				AccountModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				loadAccessControlsList();
+			}
+
+
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section22'));
+			}
+
+
+			public function isChanged():Boolean {
+				return false;
+			}
+
+
+			public function undo():void {
+			}
+
+
+			public function saveChanges():void {
+			}
+
+
+			public function resetClonedData():void {
+			}
+
+
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc);
+				PermissionManager.getInstance().applyAllAttributes(this, NAME);
+			}
 		]]>
 	</mx:Script>
-	<mx:Text styleName="expendableButton" text="{resourceManager.getString('account','accessControlProfiles')}" />
+	<mx:Text styleName="expendableButton" text="{resourceManager.getString('account','accessControlProfiles')}"/>
 	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10">
-		<mx:Text styleName="featureDescriptionTitleText" text="{resourceManager.getString('account','accessControlIntroText')}" width="100%" id="accessControlIntroText"/>
-		<mx:Button styleName="help" buttonMode="true" 
-				click="{help()}"/>
+		<mx:Text styleName="featureDescriptionTitleText"
+				 text="{resourceManager.getString('account','accessControlIntroText')}" width="100%"
+				 id="accessControlIntroText"/>
+		<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 	</mx:HBox>
 	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">
-			<acw:AccessControlProfilesTable id='accessControlProfilesTable' dataProvider="{accessControlsList}" allSelected="{allSelected}"/>
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
-								nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
-								showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"  
-								rowsInPage="{[10, 15, 20, 25]}"/>
+			<acw:AccessControlProfilesTable id='accessControlProfilesTable' dataProvider="{accessControlsList}"
+											allSelected="{allSelected}"/>
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
+							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
+							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"
+							 rowsInPage="{[10, 15, 20, 25]}"/>
 			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
-				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','disabledDeleteButton')}" useHandCursor="true" 
-						   buttonMode="true" click='onDeleteCheckedProfileClick(event)'/>
+				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','disabledDeleteButton')}"
+						   useHandCursor="true" buttonMode="true" click='onDeleteCheckedProfileClick(event)'/>
 			</mx:HBox>
 		</mx:VBox>
 		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
-			<mx:Button id="addAccessControlButton" label="{resourceManager.getString('account','addAccessControlButton')}" useHandCursor="true" 
-				buttonMode="true" click='onAddNewProfileClick(event)' styleName="listActionButton"/>
+			<mx:Button id="addAccessControlButton"
+					   label="{resourceManager.getString('account','addAccessControlButton')}" useHandCursor="true"
+					   buttonMode="true" click='onAddNewProfileClick(event)' styleName="listActionButton"/>
 		</mx:VBox>
 	</mx:HBox>
-	
+
 </mx:VBox>
