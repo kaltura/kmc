@@ -18,6 +18,7 @@ package com.kaltura.kmc.modules.admin.model
 			rolesFilter = new KalturaUserRoleFilter();
 			rolesFilter.statusEqual = KalturaUserRoleStatus.ACTIVE;
 			rolesFilter.orderBy = KalturaUserRoleOrderBy.ID_ASC;
+			rolesFilter.tagsMultiLikeOr = 'kmc';
 			// only get speacial, non-deleted features
 			permissionsFilter = new KalturaPermissionFilter();
 			permissionsFilter.typeIn = KalturaPermissionType.SPECIAL_FEATURE + ',' + KalturaPermissionType.PLUGIN;
