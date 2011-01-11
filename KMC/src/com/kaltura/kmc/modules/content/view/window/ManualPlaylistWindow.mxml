@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:view="com.kaltura.kmc.modules.content.view.*"
-				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" xmlns:controls="com.kaltura.controls.*"
-				 xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.view.interfaces.IListable"
-				 creationComplete="{onCreationComplete()}" showCloseButton="true" close="{onClose()}" help="{onHelp()}"
+<HelpTitleWindow xmlns="com.kaltura.containers.*" 
+				 xmlns:view="com.kaltura.kmc.modules.content.view.*"
+				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
+				 xmlns:controls="com.kaltura.controls.*"
+				 xmlns:mx="http://www.adobe.com/2006/mxml" 
+				 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+				 implements="com.kaltura.kmc.modules.content.view.interfaces.IListable"
+				 creationComplete="{onCreationComplete()}" 
+				 showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 				 verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="980" height="560"
-				 styleName="TitleWindowType2" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
+				 styleName="TitleWindowType2" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -247,7 +252,12 @@
 				}
 				loadEntries();
 				filter.validateNow();
-				PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown");
+				if (_isNewPlaylist) {
+					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_add");
+				}
+				else {
+					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_edit");
+				}
 			}
 
 
