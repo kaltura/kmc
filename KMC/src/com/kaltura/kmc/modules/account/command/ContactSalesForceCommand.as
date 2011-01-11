@@ -1,18 +1,13 @@
 package com.kaltura.kmc.modules.account.command {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.account.business.ContactSalesForceDelegate;
 	import com.kaltura.kmc.modules.account.events.ContactEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	
-	import flash.external.ExternalInterface;
-	import flash.utils.setTimeout;
-	
 	import mx.controls.Alert;
-	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 	import mx.rpc.events.FaultEvent;
 	import mx.rpc.events.ResultEvent;
 	import mx.rpc.http.HTTPService;
@@ -52,7 +47,7 @@ package com.kaltura.kmc.modules.account.command {
 			// if the server returned an error as an answer
 			if (xml.error && xml.error.num_0) {
 				if (xml.error.num_0.code.toString() == APIErrorCode.INVALID_KS) {
-					ExternalInterface.call("kmc.functions.expired");
+					JSGate.expired();
 					return;
 				}
 				Alert.show(xml.error.num_0.desc, ResourceManager.getInstance().getString('account', 'error'));

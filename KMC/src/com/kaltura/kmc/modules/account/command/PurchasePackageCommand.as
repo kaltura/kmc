@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.account.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.business.PurchasePackageDelegate;
 	import com.kaltura.kmc.modules.account.events.ModalWindowEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -9,7 +10,6 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PaymentDetailsVO;
 	
-	import flash.external.ExternalInterface;
 	import flash.utils.setTimeout;
 	
 	import mx.controls.Alert;
@@ -86,7 +86,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));

@@ -18,6 +18,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.CustomData;
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
@@ -173,7 +174,7 @@
 					return;
 				}
 
-				ExternalInterface.call("onTabChange");
+				JSGate.onTabChange();
 			}
 
 
@@ -289,7 +290,7 @@
 				_oldSelectedTab = _newSelectedTab;
 				contentView.selectedIndex = _newSelectedTab;
 				
-				ExternalInterface.call("kmc.mediator.writeUrlHash", "account", contentView.selectedChild.id);
+				JSGate.writeUrlHash("account", contentView.selectedChild.id);
 			}
 
 
@@ -298,7 +299,7 @@
 					(contentView.getChildAt(_oldSelectedTab) as IUndoable).saveChanges();
 				}
 				else
-					ExternalInterface.call("onTabChange");
+					JSGate.onTabChange();
 			}
 
 

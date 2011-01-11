@@ -23,6 +23,7 @@
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.widget.WidgetGet;
 			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.analytics.control.CategoryEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
@@ -227,7 +228,7 @@
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB , GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
 						"Main Menu>Bandwidth Usage Tab");
-					ExternalInterface.call("kmc.mediator.writeUrlHash", Analytics.NAME, BANDWIDTH_USAGE);
+					JSGate.writeUrlHash(Analytics.NAME, BANDWIDTH_USAGE);
 				}
 				if (event.index == 1) {
 					// if we get back to the first subtab we must refresh
@@ -242,7 +243,7 @@
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB, GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB,
 						"Main Menu>Contents and Reports Tab");
-					ExternalInterface.call("kmc.mediator.writeUrlHash", Analytics.NAME, CONTENT);
+					JSGate.writeUrlHash(Analytics.NAME, CONTENT);
 					
 					// Atar - calling this twice on purpose?
 					// seems not to be necessary, every button press triggers onShow.
@@ -255,7 +256,7 @@
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB, GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB,
 						"Main Menu>Users and Community Reports");
-					ExternalInterface.call("kmc.mediator.writeUrlHash", Analytics.NAME, USERS_AND_COMMUNITY);
+					JSGate.writeUrlHash(Analytics.NAME, USERS_AND_COMMUNITY);
 					
 					// if we get back to the first subtab we must refresh because the user
 					// might have changed filter...

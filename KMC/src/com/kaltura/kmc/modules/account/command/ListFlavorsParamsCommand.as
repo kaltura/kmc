@@ -4,12 +4,11 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
-	
-	import flash.external.ExternalInterface;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -58,7 +57,7 @@ package com.kaltura.kmc.modules.account.command
 		{
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			Alert.show(ResourceManager.getInstance().getString('account', 'notLoadFlavors') + "/n/t"  + info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));

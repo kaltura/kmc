@@ -11,16 +11,14 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.PartnerEvent;
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			
-			import mx.core.IFlexDisplayObject;
 			import mx.events.FlexEvent;
-			
-			import org.hamcrest.number.IsLessThanMatcher;
 			private static const VERSION:String = "0.1";
 
 			/**
@@ -128,7 +126,7 @@
 			private function onItemClick(event:Event):void {
 				(contentView.selectedChild as IAdminSubtab).refreshData();
 				var label:String = contentView.selectedChild.id;
-				ExternalInterface.call("kmc.mediator.writeUrlHash", Administration.NAME, label);
+				JSGate.writeUrlHash( Administration.NAME, label);
 			}
 
 

@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.admin.control.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 	
@@ -19,7 +20,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 		protected function fault(info:Object):void {
 			// invalid KS
 			if (info && info.error && info.error.errorCode == APIErrorCode.INVALID_KS) {
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 			}
 			// forbidden service
 			else if (info && info.error && info.error.errorCode &&
@@ -38,7 +39,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 		}
 		
 		protected function logout(e:Object):void {
-			ExternalInterface.call("kmc.functions.expired");
+			JSGate.expired();
 		}
 
 

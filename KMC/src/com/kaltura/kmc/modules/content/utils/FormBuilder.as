@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.commands.uiConf.UiConfGet;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.kmc.modules.content.model.MetadataDataObject;
 	import com.kaltura.kmc.modules.content.model.types.CustomMetadataConstantTypes;
@@ -13,8 +14,6 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.vo.KalturaUiConf;
 	import com.kaltura.vo.MetadataFieldVO;
 	
-	import flash.display.DisplayObject;
-	import flash.external.ExternalInterface;
 	import flash.utils.getDefinitionByName;
 	
 	import mx.binding.utils.BindingUtils;
@@ -453,7 +452,7 @@ package com.kaltura.kmc.modules.content.utils {
 		private static function uiconfFault(info:Object):void {
 			if (info && info.error && info.error.errorMsg &&
 				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			_model.decreaseLoadCounter();

@@ -2,9 +2,8 @@ package com.kaltura.kmc.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-	
-	import flash.external.ExternalInterface;
 	
 	import mx.rpc.IResponder;
 	
@@ -28,7 +27,7 @@ package com.kaltura.kmc.command
 		{
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			_model.loadingFlag = false;

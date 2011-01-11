@@ -14,6 +14,50 @@ package com.kaltura.kmc.business
 	public class JSGate {
 		
 		/**
+		 * ks expired 
+		 */
+		public static function expired():void {
+			ExternalInterface.call("kmc.functions.expired");
+		}
+		
+		/**
+		 * create the HTML tabs
+		 * @param tabs	list of objects that describe the tabs.
+		 * 				{display_name:name to display on tab,
+		 * 				module_name:id to return to kmc for this tab,
+		 * 				subtab:initial subtab to show when switching to this module,
+		 * 				html_url:url of contents of html tabs}
+		 */
+		public static function createTabs(tabs:Array):void {
+			ExternalInterface.call("kmc.utils.createTabs", tabs);
+		}
+		
+		/**
+		 * switch to HTML tab
+		 * @param url url of the html tab contents
+		 */
+		public static function openIframe(url:String):void {
+			ExternalInterface.call("kmc.utils.openIframe", url);
+		}
+		
+		/**
+		 * show the kmc swf
+		 * (used after showing HTML tab to tell js that we need to switch back to flash)
+		 */
+		public static function showFlash():void {
+			ExternalInterface.call("kmc.utils.showFlash");
+		}
+		
+		/**
+		 * set the active tab
+		 * @param module	id of module to mark active 
+		 */
+		public static function setTab(module:String):void {
+			ExternalInterface.call("kmc.utils.setTab", module);
+		}
+		
+		
+		/**
 		 * open preview and embed popup 
 		 * @param functionName		name of the function we need to trigger in js
 		 * @param entryId			entry id

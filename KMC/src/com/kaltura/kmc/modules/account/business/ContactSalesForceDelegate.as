@@ -2,8 +2,6 @@ package com.kaltura.kmc.modules.account.business
 {
 	import com.adobe.cairngorm.business.ServiceLocator;
 	
-	import flash.external.ExternalInterface;
-	
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.http.HTTPService;
@@ -34,7 +32,7 @@ package com.kaltura.kmc.modules.account.business
 				var isExpired : String =  String( data.result.error.num_0.desc.text() );
 				if( isExpired.search( "EXPIRED" ) != -1 )
 				{
-					ExternalInterface.call( "expiredF" );
+					JSGate.expired();
 					return;
 				}	
 				responder.fault( data.result.error.num_0.desc.text() );

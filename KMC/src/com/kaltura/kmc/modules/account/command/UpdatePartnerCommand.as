@@ -4,19 +4,14 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.partner.PartnerUpdate;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.NotificationVO;
-	import com.kaltura.types.KalturaPartnerType;
 	import com.kaltura.vo.KalturaPartner;
-	
-	import flash.external.ExternalInterface;
-	import flash.utils.setTimeout;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 
 	public class UpdatePartnerCommand implements ICommand
 	{
@@ -93,7 +88,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			if(_model.saveAndExitFlag)
 			{
-				ExternalInterface.call("onTabChange");
+				JSGate.onTabChange();
 				return;
 			}
 			
@@ -106,7 +101,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;			
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			var alert : Alert =  Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));

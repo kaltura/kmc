@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
@@ -12,12 +13,8 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.vo.KalturaMetadataProfile;
 	import com.kaltura.vo.KalturaMetadataProfileFilter;
 	import com.kaltura.vo.KalturaMetadataProfileListResponse;
-	import com.kaltura.vo.MetadataFieldVO;
-	
-	import flash.external.ExternalInterface;
 	
 	import mx.controls.Alert;
-	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	
@@ -87,7 +84,7 @@ package com.kaltura.kmc.modules.account.command
 		{
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			_model.loadingFlag = false;

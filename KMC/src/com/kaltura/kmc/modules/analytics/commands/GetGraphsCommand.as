@@ -2,12 +2,13 @@ package com.kaltura.kmc.modules.analytics.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.report.ReportGetGraphs;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
-	import com.kaltura.commands.report.ReportGetGraphs;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
@@ -142,7 +143,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				{
 					if((info as KalturaEvent).error.errorMsg.substr(0,10) == "Invalid KS")
 					{
-						ExternalInterface.call( "expiredF" );
+						JSGate.expired();
 						return;
 					}
 					else

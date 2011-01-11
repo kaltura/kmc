@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.commands.report.ReportGetGraphs;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.KmcModule;
@@ -243,7 +244,7 @@ package com.kaltura.kmc.modules.dashboard {
 		private function fault(info:Object):void {
 			if ((info as KalturaEvent).error) {
 				if (info.error.errorCode == APIErrorCode.INVALID_KS) {
-					ExternalInterface.call("kmc.functions.expired");
+					JSGate.expired();
 				}
 				else if (info.error.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 					// added the support of non closable window
@@ -260,7 +261,7 @@ package com.kaltura.kmc.modules.dashboard {
 		}
 
 		protected function logout(e:Object):void {
-			ExternalInterface.call("kmc.functions.expired");
+			JSGate.expired();
 		}
 
 		/**

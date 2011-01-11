@@ -1,23 +1,15 @@
 package com.kaltura.kmc.modules.content.commands
 {
-	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.utils.FormBuilder;
-	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.commands.metadata.MetadataList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.utils.FormBuilder;
+	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaMetadata;
 	import com.kaltura.vo.KalturaMetadataFilter;
 	import com.kaltura.vo.KalturaMetadataListResponse;
-	
-	import flash.external.ExternalInterface;
-	
-	import mx.controls.Alert;
-	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 	
 	/**
 	 * This class sends a metadata data list request to the server and handles the response 
@@ -79,7 +71,7 @@ package com.kaltura.kmc.modules.content.commands
 //		{
 //			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 //			{
-//				ExternalInterface.call("kmc.functions.expired");
+//				JSGate.expired();
 //				return;
 //			}
 //			_model.decreaseLoadCounter();

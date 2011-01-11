@@ -12,6 +12,7 @@
 			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
@@ -147,7 +148,7 @@
 					} 
 					jstabs.push(jstab);
 				}
-				ExternalInterface.call("kmc.utils.createTabs", jstabs);
+				JSGate.createTabs(jstabs);
 			}
 			
 			/**
@@ -262,7 +263,7 @@
 				if (errorObj) {
 					alert(errorObj.message, "Error");
 					if (errorObj.code == APIErrorCode.INVALID_KS) {
-						ExternalInterface.call("kmc.utils.expired");
+						JSGate.expired();
 					}
 					return true;
 				}
@@ -426,7 +427,7 @@
 				// check for HTML tabs
 				if (mInfo.@htmlUrl[0]) {
 					// tell JS it should show a html tab
-					ExternalInterface.call("kmc.utils.openIframe", mInfo.@htmlUrl.toString()); 
+					JSGate.openIframe(mInfo.@htmlUrl.toString()); 
 				}
 				else {
 					// load KMC module
@@ -445,12 +446,12 @@
 					if (ml.child && o.subtab) {
 						(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
 					}
-					ExternalInterface.call("kmc.utils.showFlash");
+					JSGate.showFlash();
 				}
 
 				// tell html
-				ExternalInterface.call("kmc.mediator.writeUrlHash", o.moduleName, o.subtab);
-				ExternalInterface.call("kmc.mediator.setTab", o.moduleName);
+				JSGate.writeUrlHash(o.moduleName, o.subtab);
+				JSGate.setTab(o.moduleName);
 			}
 
 

@@ -3,10 +3,9 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	
-	import flash.external.ExternalInterface;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -24,7 +23,7 @@ package com.kaltura.kmc.modules.content.commands {
 			var er:KalturaError = (info as KalturaEvent).error;
 			if (!er) return;
 			if (er.errorCode == APIErrorCode.INVALID_KS) {
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 			}
 			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 				// added the support of non closable window
@@ -39,7 +38,7 @@ package com.kaltura.kmc.modules.content.commands {
 		}
 		
 		protected function logout(e:Object):void {
-			ExternalInterface.call("kmc.functions.expired");
+			JSGate.expired();
 		}
 
 
@@ -55,7 +54,7 @@ package com.kaltura.kmc.modules.content.commands {
 			var er:KalturaError = (data as KalturaEvent).error;
 			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
 				// redirect to login, or whatever JS does with invalid KS.
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 			}
 		}
 

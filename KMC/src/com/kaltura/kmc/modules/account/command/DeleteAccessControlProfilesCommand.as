@@ -5,10 +5,9 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.accessControl.AccessControlDelete;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-	
-	import flash.external.ExternalInterface;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -64,7 +63,7 @@ package com.kaltura.kmc.modules.account.command
 		{
 			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
 			{
-				ExternalInterface.call("kmc.functions.expired");
+				JSGate.expired();
 				return;
 			}
 			_model.loadingFlag = false;
