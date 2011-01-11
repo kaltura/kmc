@@ -117,15 +117,20 @@
 
 
 
-
-			protected function onCollapseAll(event:MouseEvent):void {
+			/**
+			 * hide all inner checkboxes 
+			 * */
+			protected function collapseAll(event:MouseEvent):void {
 				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.isOpen = false;
 				}
 			}
 
 
-			protected function onExpandAll(event:MouseEvent):void {
+			/**
+			 * show all inner checkboxes
+			 * */
+			protected function expandAll(event:MouseEvent):void {
 				for each (var pm:PermissionGroupManager in _allPermissionGroupManagers) {
 					pm.isOpen = true;
 				}
@@ -256,7 +261,7 @@
 				var showButtons:Boolean = true;
 				// override groups that has one item inside and marked with hideGroup="true"
 				if (group.attribute("hideGroup").toString() == "true") {
-					// asuming group has 1 child, it will override its own text & id from its child.   
+					// assuming group has 1 child, it will override its own text & id from its child.   
 					groupCb.label = group.children()[0].attribute("text")[0].toString();
 					if (debug)
 						groupCb.toolTip = group.children()[0].attribute("id")[0].toString();
@@ -448,8 +453,9 @@
 					// setting the selected / not selected checkboxes
 					for each (var permission:String in SelectedPermissionIds) {
 						for each (cb in _allCheckboxes) {
-							if (cb.id == permission) {
+							if (cb.enabled && cb.id == permission) {
 								cb.selected = true;
+								// if this is a inner cb, mark the parent as well
 								if (cb.data && cb.data is CheckBox)
 									(cb.data as CheckBox).selected = true;
 							}
@@ -466,6 +472,7 @@
 						// if the partner doesn't have the feature, don't check the box
 						if (cb.enabled) {
 							cb.selected = true;
+							// if this is a inner cb, mark the parent as well
 							if (cb.data && cb.data is CheckBox)
 								(cb.data as CheckBox).selected = true;
 						}
@@ -561,9 +568,9 @@
 			<mx:Label text="{ResourceManager.getInstance().getString('admin', 'set_permissions')}" fontWeight="bold"/>
 			<mx:Spacer width="100%"/>
 			<mx:LinkButton id="collapseAllBtn" label="{ResourceManager.getInstance().getString('admin', 'collapse')}"
-						   click="onCollapseAll(event)"/>
+						   click="collapseAll(event)"/>
 			<mx:LinkButton id="expandAllBtn" label="{ResourceManager.getInstance().getString('admin', 'expand')}"
-						   click="onExpandAll(event)"/>
+						   click="expandAll(event)"/>
 		</mx:HBox>
 		<mx:VBox id="myForm" styleName="adminForm" width="100%" height="260" verticalScrollPolicy="auto" maxHeight="260"/>
 	</mx:VBox>
