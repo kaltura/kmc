@@ -150,10 +150,9 @@
 				_initialTab = subtab;
 				if (_ready) {
 					switchToTab(subtab);
-				}
-				//loads data that might have changed from a different tab
-				if (_ready)
+					//loads data that might have changed from a different tab
 					loadChangableData();
+				}
 			}
 
 			override protected function createChildren():void 
@@ -228,13 +227,6 @@
 					_model.attic.filter = null;
 				}
 				
-				if (_initialTab && _initialTab != "manage") {
-					_model.attic.kmef = kmef;
-					// switch tab if asked
-					switchToTab(_initialTab);
-				} else {
-					manage.init(kmef);
-				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
 					// get the entry
@@ -246,6 +238,14 @@
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
 					contentView.removeChild(this[subtabName]);
+				}
+				if (_initialTab && _initialTab != "manage") {
+					_model.attic.kmef = kmef;
+					// switch tab if asked
+					switchToTab(_initialTab);
+				} else {
+					(contentView.selectedChild as IContentPanel).init(kmef);
+					JSGate.writeUrlHash(contentView.selectedChild.id);
 				}
 				loadData();
 			}
@@ -500,6 +500,9 @@
 						secTln.selectedIndex = 0;
 						break;
 				}
+				// init subtab
+				(contentView.selectedChild as IContentPanel).init();
+				JSGate.writeUrlHash(contentView.selectedChild.id);
 			}
 
 
@@ -847,7 +850,7 @@
 						break;
 				} 
 
-				JSGate.writeUrlHash(label);
+//				JSGate.writeUrlHash(label);
 
 				// reset data when moving between tabs
 				_model.selectedEntries = [];
@@ -893,6 +896,7 @@
 			protected function initSelectedTab(event:IndexChangedEvent):void {
 				// initialize the new panel with filter saved in the attic, if any.
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_model.attic.kmef);
+				JSGate.writeUrlHash(contentView.selectedChild.id);
 			}
 			
 			

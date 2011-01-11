@@ -73,19 +73,31 @@
 			
 			[Bindable]
 			private var _listableVo:ListableVo;
+			
+			/**
+			 * this flag is true if init is requested before the ui is ready.
+			 * */
+			private var _initFlag:Boolean;
+			
+			/**
+			 * initial filter data
+			 * */
+			private var _initialFilter:KalturaPlaylistFilter;
 
 			// =============================================
 			// methods
 			// =============================================
 
 			/**
-			 * initialize the panel
+			 * trigger panel init
 			 * */
 			private function onCreationComplete():void {
-				setEntriesToolbar();
-				toolBar.removeCombos();
-				setButtonsAppearance();
-				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				if (_initFlag) {
+					initPanel();
+				}
+				else {
+					_initFlag = true;
+				}
 			}
 			
 			/**
@@ -132,18 +144,40 @@
 				filter.validateNow();
 			}
 
+			
+			/**
+			 * all actions from both init() and onCreationComplete()
+			 * */
+			private function initPanel():void {
+				// cc:
+				setEntriesToolbar();
+				toolBar.removeCombos();
+				setButtonsAppearance();
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+
+				// init:
+				if (_initialFilter) {
+					// init filter : 
+					initFilter(_initialFilter);
+				}
+				loadEntries();
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+			}
 
 			/**
 			 * @inheritDoc
 			 * */
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
-				if (kbef is KalturaPlaylistFilter ) {
-					// init filter : 
-					initFilter(kbef as KalturaPlaylistFilter);
+				if (kbef && kbef is KalturaPlaylistFilter) {
+					_initialFilter = kbef as KalturaPlaylistFilter;
 				}
-				loadEntries();
-				paging.kalturaFilterPager.pageIndex = 0;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				if (_initFlag) {
+					initPanel();
+				}
+				else {
+					_initFlag = true;
+				}
 			}
 
 
@@ -151,19 +185,21 @@
 			 * load data according to filter
 			 * */
 			private function loadEntries():void {
-				if (paging.pageSize == 10) {
-					entryTableContainer.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
-					playlistTable.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
-					playlistTable.rowCount = 10;
-					filter.height = entryTableContainer.height + paging.height + toolBar.height;
-					actionsBox.height = filter.height;
-				}
-				else {
-					entryTableContainer.percentHeight = 100;
-					playlistTable.percentHeight = 100;
-					playlistTable.rowCount = -1;
-					filter.percentHeight = 100;
-					actionsBox.percentHeight = 100;
+				if (paging) {
+					if (paging.pageSize == 10) {
+						entryTableContainer.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
+						playlistTable.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
+						playlistTable.rowCount = 10;
+						filter.height = entryTableContainer.height + paging.height + toolBar.height;
+						actionsBox.height = filter.height;
+					}
+					else {
+						entryTableContainer.percentHeight = 100;
+						playlistTable.percentHeight = 100;
+						playlistTable.rowCount = -1;
+						filter.percentHeight = 100;
+						actionsBox.percentHeight = 100;
+					}
 				}
 
 				_listableVo = new ListableVo(getFilterVo(), paging, null);

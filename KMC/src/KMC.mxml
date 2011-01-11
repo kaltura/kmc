@@ -369,6 +369,7 @@
 					if (!hideModule) {
 						// return this module name
 						o.moduleName = moduleid;
+						o.subtab = module.@subtab.toString(); 
 						break;
 					}
 				} 
@@ -408,7 +409,7 @@
 				else {
 					// take the first on the KMC uiconf
 					mInfo = _uiconf.modules.module[0];
-					o = {moduleName : mInfo.@id.toString()};
+					o = {moduleName : mInfo.@id.toString(), subtab:mInfo.@subtab.toString()};
 				}
 				if (!mInfo) {
 					var s:String = "module " + o.moduleName + " not available";
@@ -417,10 +418,14 @@
 					return;
 				}
 				
+				// if no subtab supplied, use the one listed in the uiconf
+				if (!o.subtab || o.subtab == "") {
+					o.subtab = mInfo.@subtab.toString();
+				}
+				
 				// check for HTML tabs
 				if (mInfo.@htmlUrl[0]) {
-					//TODO tell JS it should show a html tab
-//					Alert.show(mInfo.@htmlUrl, "going to html page");
+					// tell JS it should show a html tab
 					ExternalInterface.call("kmc.utils.openIframe", mInfo.@htmlUrl.toString()); 
 				}
 				else {
