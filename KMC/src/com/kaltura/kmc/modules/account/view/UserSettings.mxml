@@ -3,6 +3,7 @@
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.vo.UserVO;
 			private const _lblWidth : Number = 80;
@@ -20,13 +21,13 @@
 			{
 				switch (event.target) {
 					case editNameBtn:
-						ExternalInterface.call("kmc.functions.openChangeName");
+						JSGate.openChangeName(userInfo.user.firstName, userInfo.user.lastName);
 						break;
 					case changePwdBtn:
-						ExternalInterface.call("kmc.functions.openChangePwd");
+						JSGate.openChangePwd();
 						break;
 					case editEmailBtn:
-						ExternalInterface.call("kmc.functions.openChangeEmail");
+						JSGate.openChangeEmail(userInfo.user.email);
 						break;
 				}
 			}

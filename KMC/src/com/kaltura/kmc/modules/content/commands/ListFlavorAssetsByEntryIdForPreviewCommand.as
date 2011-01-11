@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.business.JSGate;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
 	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;

@@ -25,7 +25,7 @@
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.business.JSGate;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
@@ -245,7 +245,7 @@
 					switchToTab(_initialTab);
 				} else {
 					(contentView.selectedChild as IContentPanel).init(kmef);
-					JSGate.writeUrlHash(contentView.selectedChild.id);
+					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 				}
 				loadData();
 			}
@@ -502,7 +502,7 @@
 				}
 				// init subtab
 				(contentView.selectedChild as IContentPanel).init();
-				JSGate.writeUrlHash(contentView.selectedChild.id);
+				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
 
 
@@ -896,7 +896,7 @@
 			protected function initSelectedTab(event:IndexChangedEvent):void {
 				// initialize the new panel with filter saved in the attic, if any.
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_model.attic.kmef);
-				JSGate.writeUrlHash(contentView.selectedChild.id);
+				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
 			
 			

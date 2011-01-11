@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.business
+package com.kaltura.kmc.business
 {
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	
@@ -36,9 +36,10 @@ package com.kaltura.kmc.modules.content.business
 		
 		/**
 		 * set url hash text to represent current subtab 
+		 * @param module	name of module (not part of JS API)
 		 * @param subtab	name of subtab to write in url
 		 */
-		public static function writeUrlHash(subtab:String):void {
+		public static function writeUrlHash(module:String, subtab:String):void {
 			ExternalInterface.call("kmc.mediator.writeUrlHash", "content", subtab);
 		}
 		
@@ -52,6 +53,30 @@ package com.kaltura.kmc.modules.content.business
 		 */
 		public static function startEditor(entryId:String, entryName:String, editorType:int, isNewMix:Boolean):void {
 			ExternalInterface.call("kmc.editors.start", entryId, entryName, editorType, isNewMix);
+		}
+		
+		/**
+		 * open the change user name popup window 
+		 * @param fName	user's current first name
+		 * @param lName	user's current last name
+		 */
+		public static function openChangeName(fName:String, lName:String):void {
+			ExternalInterface.call("kmc.functions.openChangeName", fName, lName);
+		}
+		
+		/**
+		 * open the change user password popup window 
+		 */
+		public static function openChangePwd():void {
+			ExternalInterface.call("kmc.functions.openChangePwd");
+		}
+		
+		/**
+		 * open the change user email popup window
+		 * @param mail	user's current email 
+		 */
+		public static function openChangeEmail(mail:String):void {
+			ExternalInterface.call("kmc.functions.openChangeEmail", mail);
 		}
 	}
 }
