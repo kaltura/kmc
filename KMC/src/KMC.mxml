@@ -2,6 +2,9 @@
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.view.*" layout="absolute"
 				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)" paddingLeft="0"
 				paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0">
+	<mx:Metadata>
+		[ResourceBundle("kmc")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -34,8 +37,11 @@
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
+			import mx.events.ResourceEvent;
 			import mx.events.StyleEvent;
 			import mx.modules.ModuleLoader;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
 
 			// ==============================================================================
 			// members
@@ -79,6 +85,11 @@
 			 * */
 			private var _startModule:Object;
 			
+			/**
+			 * currently showing locale code
+			 * */
+			protected var _localeCode:String;
+			
 			
 			/**
 			 * KMC version
@@ -114,7 +125,7 @@
 			 * */
 			protected function onSkinLoaded(event:StyleEvent):void {
 				if (event.type == StyleEvent.ERROR) {
-					alert(event.errorText, "Skin Load Error");
+					alert(event.errorText, ResourceManager.getInstance().getString('kmc', 'skin_load_error_title'));
 				}
 				
 				// remove modules that should not be loaded from the KMC uiconf
@@ -228,8 +239,8 @@
 				mr.addAction(roleGet);
 				mr.addAction(perms);
 				
-				mr.addEventListener(KalturaEvent.COMPLETE, uiconfLoadHandler, false, 0, true);
-				mr.addEventListener(KalturaEvent.FAILED, uiconfFailedHandler, false, 0, true);
+				mr.addEventListener(KalturaEvent.COMPLETE, dataLoadHandler, false, 0, true);
+				mr.addEventListener(KalturaEvent.FAILED, dataLoadFailedHandler, false, 0, true);
 				_modelLocator.kalturaClient.post(mr);
 			}
 
@@ -237,9 +248,10 @@
 			/**
 			 * UiConf failed to load, alert user
 			 */
-			protected function uiconfFailedHandler(event:KalturaEvent):void {
-				var s:String = "KMC.mxml, KMC uiconf load failed: " + event.error.errorMsg;
-				alert(s, "Error");
+			protected function dataLoadFailedHandler(event:KalturaEvent):void {
+				var rm:IResourceManager = ResourceManager.getInstance(); 
+				var s:String = rm.getString('kmc', 'uiconf_load_fail', [event.error.errorMsg]);
+				alert(s, rm.getString('kmc', 'error_title'));
 			}
 
 
@@ -247,8 +259,9 @@
 			 * module failed to load, alert user
 			 */
 			protected function onModuleLoadError(event:KmcModuleEvent):void {
-				var s:String = "KMC.mxml, Module load failed: " + event.errorText;
-				alert(s, "Error");
+				var rm:IResourceManager = ResourceManager.getInstance();
+				var s:String = rm.getString('kmc', 'module_load_fail',[event.errorText]);
+				alert(s, rm.getString('kmc', 'error_title'));
 				if (progressbar.source == event.moduleLoader) {
 					hideProgressBar();
 				}
@@ -261,7 +274,7 @@
 			 * */
 			protected function isError(errorObj:Object):Boolean {
 				if (errorObj) {
-					alert(errorObj.message, "Error");
+					alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'));
 					if (errorObj.code == APIErrorCode.INVALID_KS) {
 						JSGate.expired();
 					}
@@ -274,7 +287,7 @@
 			/**
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
-			protected function uiconfLoadHandler(event:KalturaEvent):void {
+			protected function dataLoadHandler(event:KalturaEvent):void {
 				// [0] KMC uiconf:
 				if (isError(event.data[0].error)) return;
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
@@ -304,12 +317,47 @@
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
-				// load skin
-				loadSkin(getUrl(_uiconf.skinPath.toString()));
+				// load locale
+				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
+				
 			}
 			
 			
-		
+			/**
+			 * Load locale data.
+			 * @param localePath	path to the locale (.swf) file
+			 * @param language		locale code (i.e. en_US)
+			 * */
+			protected function loadLocale(localePath:String, language:String):void {
+				_localeCode = language;
+				var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
+				eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
+				eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+			}
+			
+			/**
+			 * Set use of loaded locale.
+			 * This is also the place to update any values which are not
+			 * bound to resource manager values and have to be set manualy.
+			 * */
+			protected function localeLoadCompleteHandler(event:ResourceEvent):void {
+				event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+				event.target.removeEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
+				if (event.type == ResourceEvent.ERROR) {
+					Alert.show(event.errorText, "Locale Error", Alert.OK);
+				}
+				var chain:Array;
+				if (_localeCode == "en_US") {
+					chain = [_localeCode];
+				}
+				else {
+					chain = [_localeCode, "en_US"];
+				}
+				ResourceManager.getInstance().localeChain = chain;
+				
+				// load skin
+				loadSkin(getUrl(_uiconf.skinPath.toString()));
+			}
 
 
 			/**
@@ -413,7 +461,7 @@
 					o = {moduleName : mInfo.@id.toString(), subtab:mInfo.@subtab.toString()};
 				}
 				if (!mInfo) {
-					var s:String = "module " + o.moduleName + " not available";
+					var s:String = ResourceManager.getInstance().getString('kmc', 'module_unavailable',[o.moduleName]);
 					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, s));
 					gotoPage(getDefaultPage());
 					return;
@@ -495,7 +543,7 @@
 			 * which dispatched this event.
 			 * */
 			private function onError(e:KmcErrorEvent):void {
-				alert(e.error, "Error");
+				alert(e.error, ResourceManager.getInstance().getString('kmc', 'error_title'));
 			}
 
 
