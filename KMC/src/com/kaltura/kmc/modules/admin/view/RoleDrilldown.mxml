@@ -18,6 +18,7 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
 			
+			import mx.collections.ArrayCollection;
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -73,6 +74,11 @@
 			 * */
 			private var _undoRole:KalturaUserRole;
 
+			/**
+			 * all partner's roles
+			 * (KalturaUserRole elements)
+			 * */
+			private var _roles:ArrayCollection;
 
 			/**
 			 * @copy #mode
@@ -197,9 +203,10 @@
 			 * @param partnerPermissions	all partner's permissions (used for editing roles)
 			 * @param partnerFeatures		special features the partner has
 			 * */
-			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML, partnerFeatures:String):void {
+			public function init(role:KalturaUserRole, mode:String, partnerPermissions:XML, partnerFeatures:String, roles:ArrayCollection):void {
 				_formData = partnerPermissions;
 				_partnerFeatures = partnerFeatures.split(",");
+				_roles = roles;
 				setRole(role);
 				setMode(mode);
 			}
@@ -350,6 +357,14 @@
 				vre = validator.validate();
 				if (vre.results != null && vre.results.length > 0) {
 					isOk &&= !(vre.results[0] as ValidationResult).isError;
+				}
+				//TODO make sure this name is not used
+				for each (var role:KalturaUserRole in _roles) {
+					if (role.name == nameTi.text) {
+						isOk = false;
+						var rm:IResourceManager = ResourceManager.getInstance();
+						Alert.show(rm.getString('admin', 'name_in_use'), rm.getString('admin', 'error'));
+					}
 				}
 
 				return isOk;
