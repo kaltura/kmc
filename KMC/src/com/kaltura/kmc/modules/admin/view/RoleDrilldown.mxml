@@ -17,7 +17,7 @@
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaUserRole;
-
+			
 			import mx.containers.VBox;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -110,7 +110,12 @@
 				for each (var group:XML in groups) {
 					myForm.addChild(buildGroup(group));
 				}
-				PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown");
+				if (_mode == DrilldownMode.ADD) {
+					PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown_add");
+				}
+				else {
+					PermissionManager.getInstance().applyAllAttributes(this, "roleDrilldown_edit");
+				}
 
 				fillPermissions(_undoRole.permissionNames);
 			}
