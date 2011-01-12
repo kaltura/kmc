@@ -280,24 +280,53 @@
 			}
 			
 			/**
-			 * Hide actions from the data provider. 
-			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+			 * Hide the Edit action from the data provider. 
+			 * @param value
 			 */
-			public function set comboHideItems(itemsToHide:String):void
+			public function set enableEdit(value:Boolean):void
 			{
-				var items:Array = itemsToHide.split(",");
-				for each (var str:String in items)
-				{
-					removeItemById(str);
-				}
+				removeItemById('edit');
 			}
 			/**
 			 * @private 
-			 * This is because the apply permission needs to read the comboHideItems function
+			 * PermissionsManager has to read the value to know the attribute type
 			 */
-			public function get comboHideItems():String
+			public function get enableEdit():Boolean 
 			{
-				return "";
+				return true;
+			}
+			/**
+			 * Hide the Block/Unblock action from the data provider. 
+			 * @param value
+			 */
+			public function set enableBlock(value:Boolean):void
+			{
+				removeItemById('unblock');
+			}
+			/**
+			 * @private 
+			 * PermissionsManager has to read the value to know the attribute type
+			 */
+			public function get enableBlock():Boolean
+			{
+				return true;
+			}
+			
+			/**
+			 * Hide the Delete action from the data provider. 
+			 * @param value
+			 */
+			public function set enableDelete(value:Boolean):void
+			{
+				removeItemById('delete');
+			}
+			/**
+			 * @private 
+			 * PermissionsManager has to read the value to know the attribute type
+			 */
+			public function get enableDelete():Boolean
+			{
+				return true;
 			}
 
 			/**

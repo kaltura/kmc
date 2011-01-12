@@ -191,25 +191,73 @@
 				comboDataProvider.removeItemAt(i); 
 			}
 			
+//			/**
+//			 * Hide actions from the data provider. 
+//			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+//			 */
+//			public function set comboHideItems(itemsToHide:String):void
+//			{
+//				var items:Array = itemsToHide.split(",");
+//				for each (var str:String in items)
+//				{
+//					removeItemById(str);
+//				}
+//			}
+//			/**
+//			 * @private 
+//			 * This is because the apply permission needs to read the comboHideItems function
+//			 */
+//			public function get comboHideItems():String
+//			{
+//				return "";
+//			}
 			/**
-			 * Hide actions from the data provider. 
-			 * @itemsToHide - a comma seperated strings of items (edit,unblock,delete)
+			 * Hide the Duplicate action from the data provider. 
+			 * @param value
 			 */
-			public function set comboHideItems(itemsToHide:String):void
+			public function set enableDuplicate(value:Boolean):void
 			{
-				var items:Array = itemsToHide.split(",");
-				for each (var str:String in items)
-				{
-					removeItemById(str);
-				}
+				removeItemById(RolesTable.DUPLICATE_ROLE);
 			}
 			/**
 			 * @private 
-			 * This is because the apply permission needs to read the comboHideItems function
+			 * apply permission needs to read the value to know the attribute type
 			 */
-			public function get comboHideItems():String
+			public function get enableDuplicate():Boolean
 			{
-				return "";
+				return false;
+			}
+			/**
+			 * Hide the Delete action from the data provider. 
+			 * @param value
+			 */
+			public function set enableDelete(value:Boolean):void
+			{
+				removeItemById(RolesTable.DELETE_ROLE);
+			}
+			/**
+			 * @private 
+			 * apply permission needs to read the value to know the attribute type
+			 */
+			public function get enableDelete():Boolean
+			{
+				return false;
+			}
+			/**
+			 * Hide the Edit action from the data provider. 
+			 * @param value
+			 */
+			public function set enableEdit(value:Boolean):void
+			{
+				removeItemById(RolesTable.DRILL_DOWN);
+			}
+			/**
+			 * @private 
+			 * apply permission needs to read the value to know the attribute type
+			 */
+			public function get enableEdit():Boolean
+			{
+				return false;
 			}
 
 
