@@ -422,6 +422,7 @@ $(window).load(function(){
 //			alert($("#kcms"));
 		},
 		writeUrlHash : function(module,subtab){
+			console.log(module + ' ' + subtab);
 //	alert("writeUrlHash");
 //			if(module == "account")
 //				module = "Settings";
