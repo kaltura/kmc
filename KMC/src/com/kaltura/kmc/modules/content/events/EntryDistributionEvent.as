@@ -1,20 +1,31 @@
 package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.vo.KalturaEntryDistribution;
 	
 	public class EntryDistributionEvent extends CairngormEvent
 	{
 		public static const LIST:String = "content_listEntryDistribution";
+		public static const UPDATE_LIST:String = "content_updateEntryDistributionList";
 		public static const UPDATE:String = "content_updateEntryDistribution";
+		public static const SUBMIT:String = "content_submitEntryDistribution";
+		public static const DELETE:String = "content_deleteEntryDistribution";
+		public static const RETRY:String = "content_retryEntryDistribution";
 		
-		var entryDistributionArray:Array;
+		public var entryDistribution:KalturaEntryDistribution;
+		public var distributionsWithProfilesToAddArray:Array;
+		public var distributionsToRemoveArray:Array;
 		
 		public function EntryDistributionEvent( type:String, 
-												entryDistributionArray:Array = null,
+												distributionsWithProfilesToAddArray:Array = null,
+												distributionsToRemoveArray:Array = null,
+												entryDistribution: KalturaEntryDistribution = null,
 												bubbles:Boolean=false, 
 												cancelable:Boolean=false)
 		{
-			this.entryDistributionArray = entryDistributionArray;
+			this.distributionsWithProfilesToAddArray = distributionsWithProfilesToAddArray;
+			this.distributionsToRemoveArray = distributionsToRemoveArray;
+			this.entryDistribution = entryDistribution;
 			super(type, bubbles, cancelable);
 		}
 	}

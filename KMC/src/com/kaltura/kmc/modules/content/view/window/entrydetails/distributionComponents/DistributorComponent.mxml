@@ -1,49 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--- represents a distributor for selectDistributors window. contains label and checkBox -->
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalGap="0" verticalGap="0" paddingBottom="0" paddingTop="0">
+<!--- represents a distributor for selectDistributors window -->
+<components:CBLabelComponent xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:components="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.*">
 	<mx:Script>
 		<![CDATA[
-			[Bindable]
-			private var _distributorName:String;
-			[Bindable]
-			private var _cbEnabled:Boolean = true;;
-			[Bindable]
-			private var _cbSelected:Boolean;
-		
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaDistributionProfile;
+			import com.kaltura.vo.KalturaEntryDistribution;
 
-			public function get cbSelected():Boolean
+
+			public var initState:Boolean;
+			public var distribution:KalturaEntryDistribution;
+			private var _distributionProfile:KalturaDistributionProfile;
+			
+			public function get distributionProfile():KalturaDistributionProfile
 			{
-				return _cbSelected;
+				return _distributionProfile;
 			}
 
-			public function set cbSelected(value:Boolean):void
+			public function set distributionProfile(value:KalturaDistributionProfile):void
 			{
-				_cbSelected = value;
+				if (value) {
+					_distributionProfile = value;
+					super.labelText = _distributionProfile.name;
+				}
 			}
-
-			public function get cbEnabled():Boolean
-			{
-				return _cbEnabled;
-			}
-
-			public function set cbEnabled(value:Boolean):void
-			{
-				_cbEnabled = value;
-			}
-
-			public function get distributorName():String
-			{
-				return _distributorName;
-			}
-
-			public function set distributorName(value:String):void
-			{
-				_distributorName = value;
-			}
-
-
 		]]>
 	</mx:Script>
-	<mx:CheckBox id="distributorCB" enabled="{_cbEnabled}" selected="{_cbSelected}" click="{_cbSelected = (!_cbSelected)}"/>
-	<mx:Label text="{_distributorName}" paddingBottom="0" paddingTop="0"/>
-</mx:HBox>
+</components:CBLabelComponent>

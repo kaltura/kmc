@@ -46,8 +46,13 @@ package com.kaltura.kmc.modules.content.commands
 			
 			//will indicate if the requiredthumbs of these profiles exist
 			var isRequiredThumbsExistArray:Array = new Array();
-			for (var j:int = 0 ; j<profilesArray.length ; j++) {
-				isRequiredThumbsExistArray.push(false);
+			//initilize with all false values
+			for each (var currentProfile:KalturaDistributionProfile in profilesArray) {
+				var currentArray:Array = new Array();
+				for each (var currentDimension:KalturaDistributionThumbDimensions in currentProfile.requiredThumbDimensions) {
+					currentArray.push(false);
+				}
+				isRequiredThumbsExistArray.push(currentArray);
 			}
 			
 			for each (var currentThumb:KalturaThumbAsset in thumbsArray) {
@@ -69,13 +74,24 @@ package com.kaltura.kmc.modules.content.commands
 				if (curUsedProfiles.length == 0) {
 					for (var i:int=profilesArray.length-1; i>=0; i--) {
 						var distributionProfile:KalturaDistributionProfile = profilesArray[i] as KalturaDistributionProfile;
-						for each (var dim:KalturaDistributionThumbDimensions in distributionProfile.requiredThumbDimensions) {
+						if (distributionProfile.requiredThumbDimensions) {
+							for (var j:int=0; j<distributionProfile.requiredThumbDimensions.length; j++) {
+								var dim:KalturaDistributionThumbDimensions = distributionProfile.requiredThumbDimensions[j] as KalturaDistributionThumbDimensions;
+								if ((dim.width==currentThumb.width) && (dim.height==currentThumb.height)) {
+									curUsedProfiles.push(distributionProfile);
+									isRequiredThumbsExistArray[i][j] = true;
+									break;
+								}
+							}
+							
+						}
+					/*	for each (var dim:KalturaDistributionThumbDimensions in distributionProfile.requiredThumbDimensions) {
 							if ((dim.width==currentThumb.width) && (dim.height==currentThumb.height)) {
 								curUsedProfiles.push(distributionProfile);
 								isRequiredThumbsExistArray[i] = true;
 								break;
 							}
-						}
+						}*/
 					}
 				}
 				//should create new thumbnailWithDimensions object
@@ -88,32 +104,31 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			
 			var remainingProfilesArray:Array = new Array();
-			//var profilesDictionary:Dictionary = new Dictionary();
 			//go over all profiles that don't have matching thumbs
 			for (var k:int = 0; k < isRequiredThumbsExistArray.length; k++) {
-				if (!isRequiredThumbsExistArray[k]) {
-					var profile:KalturaDistributionProfile = profilesArray[k] as KalturaDistributionProfile;
+				var array:Array = isRequiredThumbsExistArray[k] as Array;
+				for (var l:int=0; l<array.length; l++) {
 					
-					var profileExist:Boolean = false;
-					var requiredDim:Array = profile.requiredThumbDimensions;
-					for each (var require:KalturaDistributionThumbDimensions in requiredDim) {
+					if (!array[l]) {
+						var profile:KalturaDistributionProfile = profilesArray[k] as KalturaDistributionProfile;
+						var requireDimensions:KalturaDistributionThumbDimensions = profile.requiredThumbDimensions[l] as KalturaDistributionThumbDimensions;
+						var profileExist:Boolean = false;
 						var leftUsedProfiles:Array = new Array();
-						profileExist = false;
 						for each (var thumbnail:ThumbnailWithDimensions in remainingProfilesArray) {
-							if ((thumbnail.width==require.width) && (thumbnail.height==require.height)) {
+							if ((thumbnail.width==requireDimensions.width) && (thumbnail.height==requireDimensions.height)) {
 								leftUsedProfiles = thumbnail.usedDistributionProfilesArray;
 								profileExist = true;
 								break;
 							}
 						}
 						if (!profileExist) {
-							var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(require.width, require.height);
+							var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(requireDimensions.width, requireDimensions.height);
 							remainingProfilesArray.push(thumbToAdd);
 							leftUsedProfiles = thumbToAdd.usedDistributionProfilesArray;		
 						}
 						leftUsedProfiles.push(profile);
+						
 					}
-					
 				}
 			}
 			

@@ -40,6 +40,17 @@ package com.kaltura.kmc.modules.content.view.content
 			cge.dispatch();
 		}
 		
+		/**
+		 * allow roles and permissions to decide if user should 
+		 * see distribution related things.
+		 */
+		public function set enableDistribution(value:Boolean):void
+		{
+			// raise a command to change the model
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_DISTRIBUTION, value);
+			cge.dispatch();
+		}
+		
 		
 		/**
 		 * @private
@@ -47,6 +58,16 @@ package com.kaltura.kmc.modules.content.view.content
 		 * NOTE: the value is never changed!!
 		 * */
 		public function get enableCustomData():Boolean
+		{
+			return true;
+			//TODO * return the real value from the model ?
+		}
+		/**
+		 * @private
+		 * permission manager needs the getter to get the parameter type,
+		 * NOTE: the value is never changed!!
+		 * */
+		public function get enableDistribution():Boolean
 		{
 			return true;
 			//TODO * return the real value from the model ?

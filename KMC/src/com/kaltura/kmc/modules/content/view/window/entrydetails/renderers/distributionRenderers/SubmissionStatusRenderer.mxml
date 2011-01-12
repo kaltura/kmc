@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" horizontalAlign="left" paddingLeft="6" horizontalGap="0"
-		 creationComplete="creationComplete()">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" horizontalAlign="left" paddingLeft="6" horizontalGap="0">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.types.KalturaEntryDistributionFlag;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaDistributionValidationError;
@@ -14,6 +14,7 @@
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
 			import mx.controls.Button;
+			import mx.resources.ResourceManager;
 	
 			
 			private static const READY_FOR_DISTRIBUTION:String = "readyForDistribution";
@@ -39,19 +40,11 @@
 			private var thumbErrorsArray:Array;
 			private var flavorErrorsArray:Array;
 			private var metadataErrorsArray:Array;
-			private var  thumbnail:String;
-			private var  flavor:String;
-			private var  metadata:String;
-			private var  missing:String;
-			
-			private function creationComplete():void {
-				thumbnail = resourceManager.getString('cms','thumbnail');
-				flavor = resourceManager.getString('cms','flavor');
-				metadata = resourceManager.getString('cms','metadata');
-				missing = resourceManager.getString('cms','missing') + " ";
-			}
-
-			
+			private var  thumbnail:String = ResourceManager.getInstance().getString('cms','thumbnail');
+			private var  flavor:String = ResourceManager.getInstance().getString('cms','flavor');
+			private var  metadata:String = ResourceManager.getInstance().getString('cms','metadata');
+			private var  missing:String = ResourceManager.getInstance().getString('cms','missing') + " ";
+				
 			override public function set data(value:Object):void {
 				var entryDis:KalturaEntryDistribution = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
 				var status:String;
@@ -80,7 +73,8 @@
 						break;
 					case KalturaEntryDistributionStatus.READY:
 						status = DISTRIBUTED;
-						status2 = UPDATE_REQUIRED;
+						if (entryDis.dirtyStatus == KalturaEntryDistributionFlag.UPDATE_REQUIRED)
+							status2 = UPDATE_REQUIRED;
 						break;
 				}
 				

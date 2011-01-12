@@ -43,8 +43,6 @@ package com.kaltura.kmc.modules.content.commands
 				//fix bug: simpleXmlEncoder not working properly for nested objects
 				if (profile.requiredThumbDimensions is Array)
 					newProfile.requiredThumbDimensions = profile.requiredThumbDimensions;
-				if (profile.requiredFlavorParamsIds is Array)
-					newProfile.requiredFlavorParamsIds = profile.requiredFlavorParamsIds;
 				
 				profilesArray.push(newProfile);
 			}

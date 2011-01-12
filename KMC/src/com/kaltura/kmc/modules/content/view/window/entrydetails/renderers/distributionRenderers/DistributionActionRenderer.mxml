@@ -2,6 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle" horizontalAlign="left" paddingLeft="6">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
 			import com.kaltura.types.KalturaEntryDistributionFlag;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
@@ -12,13 +13,14 @@
 			private static const UPDATE:String = "update";
 			
 			private var _currentAction:String;
+			private var _entryDis:KalturaEntryDistribution;
 			
 			override public function set data(value:Object):void {
-				var entryDis:KalturaEntryDistribution = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
+				_entryDis = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
 				var action:String;
 
-				if (entryDis.validationErrors.length == 0) {
-					switch (entryDis.status) {
+				if (_entryDis.validationErrors.length == 0) {
+					switch (_entryDis.status) {
 						case KalturaEntryDistributionStatus.PENDING:
 							action = DISTRIBUTE;
 							break;
@@ -29,7 +31,7 @@
 							action = RETRY;
 							break;
 						case KalturaEntryDistributionStatus.READY:
-							if (entryDis.dirtyStatus==KalturaEntryDistributionFlag.UPDATE_REQUIRED) //{
+							if (_entryDis.dirtyStatus==KalturaEntryDistributionFlag.UPDATE_REQUIRED)
 								action = UPDATE;
 							break;
 						case KalturaEntryDistributionStatus.DELETING:
@@ -51,8 +53,25 @@
 				_currentAction = action;
 				
 			}
+
+			protected function actionBtn_clickHandler(event:MouseEvent):void
+			{
+				var actionEvent:EntryDistributionEvent;
+				if (_currentAction == DISTRIBUTE) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT, null, null, _entryDis);
+				}
+				else if (_currentAction == RETRY) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.RETRY, null,null, _entryDis);
+				}
+				else if (_currentAction == UPDATE) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null,null, _entryDis);
+				}
+				
+				actionEvent.dispatch();
+			}
+
 		]]>
 	</mx:Script>
 
-	<mx:Button id="actionBtn" styleName="distributionButton"/>
+	<mx:Button id="actionBtn" styleName="distributionButton" click="actionBtn_clickHandler(event)"/>
 </mx:HBox>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="500"
+				layout="vertical" styleName="TitleWindowType2"
+				showCloseButton="true"
+				close="{closeWindow()}"
+				xmlns:controls="com.kaltura.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			
+			import mx.managers.PopUpManager;
+			[Bindable]
+			private var _entryDis:EntryDistributionWithProfile;
+			private var _entryDetailsModel:EntryDetailsModel;
+			[Bindable]
+			private var _destinationName:String;
+			
+			public function get entryDetailsModel():EntryDetailsModel
+			{
+				return _entryDetailsModel;
+			}
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void
+			{
+				_entryDetailsModel = value;
+				buildTitle();
+			}
+
+			public function get entryDis():EntryDistributionWithProfile
+			{
+				return _entryDis;
+			}
+
+			public function set entryDis(value:EntryDistributionWithProfile):void
+			{
+				_entryDis = value;
+				_destinationName = _entryDis.kalturaDistributionProfile.name;
+				buildTitle();
+			}
+
+			/**
+			 * build the string for the window title
+			 * */
+			private function buildTitle():void {
+				if (_destinationName && _entryDetailsModel)
+					this.title = resourceManager.getString('cms','editEntry') + " - " + _entryDetailsModel.selectedEntry.name + 
+						" - " + _destinationName + " " + resourceManager.getString('cms','distributionDetails');
+			}
+			private function closeWindow():void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','status')+ ':'}" fontWeight="bold"/>
+	<mx:HBox>
+		<mx:VBox>
+			<mx:Label text="{resourceManager.getString('cms','submitted')}"/>
+			<mx:Label text="{resourceManager.getString('cms','remoteId')}"/>
+			<mx:Label text="{resourceManager.getString('cms','logs')}"/>			
+		</mx:VBox>
+		<mx:VBox>
+			<!-- change later to icon -->
+			<mx:Label text="{(_entryDis.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY) ? 'YES' : 'NO'}"/>
+			<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}"/>
+			<!--<mx:Label text="{resourceManager.getString('cms','logs')}"/>-->			
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('cms','scheduling')}" fontWeight="bold"/>
+	<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true" id="sepcificStartHour"
+						   styleName="timeEntry"/>
+</mx:TitleWindow>

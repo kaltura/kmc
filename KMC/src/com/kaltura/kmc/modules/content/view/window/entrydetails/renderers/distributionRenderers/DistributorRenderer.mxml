@@ -3,19 +3,29 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
 			import com.kaltura.vo.KalturaDistributionProfile;
 			
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			
 			private var _distributionProfile:KalturaDistributionProfile;
+			private var _distribution:EntryDistributionWithProfile;
 			
 			override public function set data(value:Object):void {
-				var distribution:EntryDistributionWithProfile = value as EntryDistributionWithProfile;
-				_distributionProfile = distribution.kalturaDistributionProfile;
+				_distribution = value as EntryDistributionWithProfile;
+				_distributionProfile = _distribution.kalturaDistributionProfile;
 				this.label = _distributionProfile.name;
 			}
 
 			protected function buttonClickHandler(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				var distributionDetails:DistributionDetailsWindow = new DistributionDetailsWindow();
+				distributionDetails.entryDetailsModel = parentDocument.entryDetailsModel;
+				distributionDetails.entryDis = _distribution;
+				
+				PopUpManager.addPopUp(distributionDetails, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(distributionDetails);
 			}
 
 		]]>

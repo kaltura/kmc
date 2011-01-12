@@ -120,7 +120,12 @@ package com.kaltura.kmc.modules.content.control
 			
 			//distribution
 			addCommand(DistributionProfileEvent.LIST, ListDistributionProfilesCommand);
+			//addCommand(DistributionProfileEvent.UPDATE, UpdateDistributionProfilesCommand);
 			addCommand(EntryDistributionEvent.LIST, ListEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.UPDATE_LIST, UpdateEntryDistributionsCommand);
+			addCommand(EntryDistributionEvent.SUBMIT, SubmitEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.UPDATE, UpdateEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.RETRY, RetryEntryDistributionCommand);
 			
 			//thumb asset
 			addCommand(ThumbnailAssetEvent.LIST, ListThumbnailAssetCommand);
@@ -133,6 +138,7 @@ package com.kaltura.kmc.modules.content.control
 			//roles and permissions stuff
 			addCommand(ChangeModelEvent.SET_EMBED_STATUS, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_CUSTOM_METADATA, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
 		}
 	}
 }

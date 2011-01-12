@@ -45,14 +45,10 @@ package com.kaltura.kmc.modules.content.model
 		
 		
 		/**
-		 * TODO: change later to arrive from permissions!!!!!!!!!
+		 * indicates if we have the distribution plugin
 		 * */
-		public var enableDistribution:Boolean = false;
+		public var enableDistribution:Boolean = true;
 		
-		/**
-		 * indicates if we should send the listDistributionProfiles
-		 * */
-		public var listDistributionProfilesRequired:Boolean = true;
 		
 		/**
 		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 

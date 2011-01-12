@@ -14,6 +14,9 @@ package com.kaltura.kmc.modules.content.commands
 				case ChangeModelEvent.SET_CUSTOM_METADATA:
 					_model.filterModel.enableCustomData = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.SET_DISTRIBUTION:
+					_model.entryDetailsModel.enableDistribution = (event as ChangeModelEvent).newValue;
+					break;
 			}
 		}	
 	}

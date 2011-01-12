@@ -7,6 +7,8 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_CUSTOM_METADATA:String = "content_setCustomMetadata";
 		
+		public static const SET_DISTRIBUTION:String = "content_setDistribution";
+
 		public static const SET_EMBED_STATUS:String = "content_setEmbedStatus";
 		
 		private var _newValue:*;

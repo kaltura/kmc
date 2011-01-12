@@ -33,14 +33,14 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 
 			var result:KalturaEntryDistributionListResponse = data.data as KalturaEntryDistributionListResponse;
-			handleEntryDistributionResult(result.objects);	
+			handleEntryDistributionResult(result);	
 		}
 		
-		private function handleEntryDistributionResult(resultArray:Array):void 
+		public function handleEntryDistributionResult(result:KalturaEntryDistributionListResponse):void 
 		{
 			var distributionArray:Array = new Array();
 			var profilesArray:Array = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
-			for each (var distribution:KalturaEntryDistribution in resultArray) {
+			for each (var distribution:KalturaEntryDistribution in result.objects) {
 				if (distribution.status != KalturaEntryDistributionStatus.DELETED) {
 					for each (var profile:KalturaDistributionProfile in profilesArray) {
 						if (distribution.distributionProfileId == profile.id) {
@@ -54,7 +54,6 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			
 			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = distributionArray;
-
 		}
 	}
 }

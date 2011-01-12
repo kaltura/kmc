@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.model
 	 * @author Michal
 	 * 
 	 */	
+	[Bindable]
 	public class EntryDistributionWithProfile
 	{
 		/**
@@ -18,6 +19,12 @@ package com.kaltura.kmc.modules.content.model
 		 * describes the distribution profile for current entry distribution 
 		 */		
 		public var kalturaDistributionProfile:KalturaDistributionProfile;
+		/**
+		 * whether the entry will be automatic distributed or not 
+		 * In case this value is true but the profile is configured otherwhise, this parameter has no meaning 
+		 */		
+		public var manualQualityControl:Boolean = true;
+		public var updateRequired:Boolean = false;
 		
 		public function EntryDistributionWithProfile()
 		{
