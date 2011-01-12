@@ -50,6 +50,8 @@ package com.kaltura.vo
 
 		public var enableAnnotation : Boolean;
 
+		public var enablePs2PermissionValidation : Boolean;
+
 		public var defThumbOffset : int = int.MIN_VALUE;
 
 		public var adminLoginUsersQuota : int = int.MIN_VALUE;
@@ -81,6 +83,7 @@ package com.kaltura.vo
 			arr.push('enableContentDistribution');
 			arr.push('enableAuditTrail');
 			arr.push('enableAnnotation');
+			arr.push('enablePs2PermissionValidation');
 			arr.push('defThumbOffset');
 			arr.push('adminLoginUsersQuota');
 			return arr;

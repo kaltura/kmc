@@ -23,6 +23,10 @@ package com.kaltura.vo
 
 		public var fetchReportAction : KalturaGenericDistributionProfileAction;
 
+		public var updateRequiredEntryFields : String;
+
+		public var updateRequiredMetadataXPaths : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -31,6 +35,8 @@ package com.kaltura.vo
 			arr.push('updateAction');
 			arr.push('deleteAction');
 			arr.push('fetchReportAction');
+			arr.push('updateRequiredEntryFields');
+			arr.push('updateRequiredMetadataXPaths');
 			return arr;
 		}
 	}

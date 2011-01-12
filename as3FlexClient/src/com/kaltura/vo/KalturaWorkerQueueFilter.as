@@ -10,7 +10,7 @@ package com.kaltura.vo
 
 		public var workerId : int = int.MIN_VALUE;
 
-		public var jobType : int = int.MIN_VALUE;
+		public var jobType : String;
 
 		public var filter : KalturaBatchJobFilter;
 

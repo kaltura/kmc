@@ -17,6 +17,8 @@ package com.kaltura.vo
 
 		public var jobSubTypeIn : String;
 
+		public var jobSubTypeNotIn : String;
+
 		public var onStressDivertToIn : String;
 
 		public var statusEqual : int = int.MIN_VALUE;
@@ -51,6 +53,7 @@ package com.kaltura.vo
 			arr.push('jobTypeNotIn');
 			arr.push('jobSubTypeEqual');
 			arr.push('jobSubTypeIn');
+			arr.push('jobSubTypeNotIn');
 			arr.push('onStressDivertToIn');
 			arr.push('statusEqual');
 			arr.push('statusIn');

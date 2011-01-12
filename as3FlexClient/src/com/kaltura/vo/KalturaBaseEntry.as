@@ -71,6 +71,7 @@ package com.kaltura.vo
 			arr.push('adminTags');
 			arr.push('categories');
 			arr.push('categoriesIds');
+			arr.push('type');
 			arr.push('groupId');
 			arr.push('partnerData');
 			arr.push('licenseType');
