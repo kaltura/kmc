@@ -84,7 +84,7 @@ package com.kaltura.kmc.business
 		 * @param subtab	name of subtab to write in url
 		 */
 		public static function writeUrlHash(module:String, subtab:String):void {
-			ExternalInterface.call("kmc.mediator.writeUrlHash", "content", subtab);
+			ExternalInterface.call("kmc.mediator.writeUrlHash", module, subtab);
 		}
 		
 		/**
