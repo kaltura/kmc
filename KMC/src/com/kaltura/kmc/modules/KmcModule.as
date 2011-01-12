@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules {
 	import flash.display.LoaderInfo;
 	import flash.events.IEventDispatcher;
 	import flash.external.ExternalInterface;
+	import flash.system.Security;
 	import flash.ui.ContextMenu;
 	import flash.ui.ContextMenuItem;
 	import flash.utils.getQualifiedClassName;
@@ -233,6 +234,7 @@ package com.kaltura.kmc.modules {
 		 * @param context	Application context
 		 * */
 		public function init(kc:KalturaClient, uiconfid:String, flashvars:Object, user:UserVO, cm:ContextMenu, context:Context = null):void {
+			Security.allowDomain('*');
 			_kc = kc;
 			_uiconfId = uiconfid;
 			_flashvars = flashvars;
