@@ -23,17 +23,17 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function result(event:Object):void {
-			super.result(event);
-//			if (event.error) {
-//				var er:KalturaError = event.error as KalturaError;
-//				if (er) {
-//					// ignore service forbidden
-//					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
-//						Alert.show(er.errorMsg, "Error");
-//					}
-//				}
-//			}
-//			else {
+//			super.result(event);
+			if (event.error) {
+				var er:KalturaError = event.error as KalturaError;
+				if (er) {
+					// ignore service forbidden
+					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+						Alert.show(er.errorMsg, "Error");
+					}
+				}
+			}
+			else {
 				clearOldData();
 				var tempFlavorParamsArr:ArrayCollection = new ArrayCollection();
 				var response:KalturaFlavorParamsListResponse = event.data as KalturaFlavorParamsListResponse;
@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.content.commands {
 					}
 				}
 				_model.filterModel.flavorParams = tempFlavorParamsArr;
-//			}
+			}
 			_model.decreaseLoadCounter();
 		}
 

@@ -33,18 +33,18 @@ package com.kaltura.kmc.modules.content.commands
 		}
 		
 		override public function result(data:Object):void {
-//			if (data.error) {
-//				var er:KalturaError = data.error as KalturaError;
-//				if (er) {
-//					// ignore service forbidden
-//					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
-//						Alert.show(er.errorMsg, "Error");
-//					}
-//				}
-//			}
-//			else {
+			if (data.error) {
+				var er:KalturaError = data.error as KalturaError;
+				if (er) {
+					// ignore service forbidden
+					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+						Alert.show(er.errorMsg, "Error");
+					}
+				}
+			}
+			else {
 				handleListDistributionProfileResult(data.data as KalturaDistributionProfileListResponse);
-//			}
+			}
 			_model.decreaseLoadCounter();
 		}
 		

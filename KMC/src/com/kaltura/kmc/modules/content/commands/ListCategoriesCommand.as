@@ -52,23 +52,23 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function result(data:Object):void {
-//			var er:KalturaError = (data as KalturaEvent).error;
-//			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
-//				// redirect to login, or whatever JS does with invalid KS.
-//				JSGate.expired();
-//			}
-//			var o:Object = data.data[1];
-//			if (o.error && o.error.code) {
-//				if (o.error.code == APIErrorCode.SERVICE_FORBIDDEN) {
-//					_model.decreaseLoadCounter();
-//				}
-//				else {
-//					Alert.show(o.error.code, "Error");
-//				}
-//				return;
-//			}
+			var er:KalturaError = (data as KalturaEvent).error;
+			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
+				// redirect to login, or whatever JS does with invalid KS.
+				JSGate.expired();
+			}
+			var o:Object = data.data[1];
+			if (o.error && o.error.code) {
+				if (o.error.code == APIErrorCode.SERVICE_FORBIDDEN) {
+					_model.decreaseLoadCounter();
+				}
+				else {
+					Alert.show(o.error.code, "Error");
+				}
+				return;
+			}
 			
-			super.result(data);
+//			super.result(data);
 			var categories:Array = (data.data[1] as KalturaCategoryListResponse).objects;
 			_model.filterModel.categories = buildCategoriesHyrarchy(categories, data.data[0] as String);
 			_model.decreaseLoadCounter();
