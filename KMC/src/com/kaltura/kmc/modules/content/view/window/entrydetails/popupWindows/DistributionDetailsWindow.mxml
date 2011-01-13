@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="350" height="500"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="650"
 				layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true"
 				close="{closeWindow()}"
@@ -11,12 +11,15 @@
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			
+			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			[Bindable]
 			private var _entryDis:EntryDistributionWithProfile;
 			private var _entryDetailsModel:EntryDetailsModel;
 			[Bindable]
 			private var _destinationName:String;
+			private var oldStartDate:Date = null;
+			private var oldEndDate:Date = null;
 			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -52,6 +55,94 @@
 			private function closeWindow():void {
 				PopUpManager.removePopUp(this);
 			}
+			
+			private function validateTimes():void {
+
+				var sDate:Date = startDateField.selectedDate;
+				var eDate:Date = endDateField.selectedDate;
+				
+				if ((sDate == null) || (eDate == null)) {
+					return;
+				}
+				
+				if (eDate.time < sDate.time) {
+					Alert.show(resourceManager.getString('cms', 'startToEndDateAlert'));
+					endDateField.selectedDate = oldEndDate;
+					startDateField.selectedDate = oldStartDate;
+					endDateField.validateNow();
+					checkTime();
+				}
+				else if (eDate.time == sDate.time) {
+					checkTime();
+				}
+				else {
+					oldStartDate = new Date(sDate.time);
+					oldEndDate = new Date(eDate.time);
+				}
+			}
+			
+			
+			private function checkTime():void {
+				var sTimeObj:Object = startDateHour.timeValue;
+				var sTime:Number = calculateTime(sTimeObj, startDateHour.am_pm);
+				var eTimeObj:Object = endDateHour.timeValue;
+				var eTime:Number = calculateTime(eTimeObj, endDateHour.am_pm);
+				
+				if (eTime <= sTime) {
+					endDateHour.hour = startDateHour.hour;
+					endDateHour.minute = startDateHour.minute;
+					endDateHour.am_pm = startDateHour.am_pm;
+				}
+			}
+			
+			private function calculateTime(timeObj:Object, am_pmIndicator:String):Number {
+				var isPM:Boolean = am_pmIndicator == 'pm';
+				var dayHour:Number = isPM ? timeObj.hour : (timeObj.hour % 12);
+				var hours:Number = dayHour * 60 * 60;
+				var minute:Number = timeObj.minute * 60;
+				var seconds:Number = timeObj.second;
+				var addition:Number = isPM && (timeObj.hour != 12) ? (12 * 60 * 60) : 0;
+				
+				var totalTime:Number = hours + minute + seconds + addition;
+				
+				return totalTime;
+			}
+
+
+			
+			private function setSchedulerData():void {
+				if (_entryDis != null) {
+					var startTime:int = _entryDis.kalturaEntryDistribution.sunrise;
+					var endTime:int = _entryDis.kalturaEntryDistribution.sunset;
+					
+					if (((startTime == -1) || (startTime == int.MIN_VALUE)) && ((endTime == -1) || (endTime == int.MIN_VALUE))) {
+						//anyTimeRBtn.selected = true;
+					}
+					else {
+						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
+							var startDate:Date = new Date(startTime * 1000);
+							startDateField.selectedDate = startDate;
+							setTime(startDateHour, startDate.hours, startDate.minutes);
+						}
+						
+						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
+							var endDate:Date = new Date(endTime * 1000);
+							endDateField.selectedDate = endDate;
+							setTime(endDateHour, endDate.hours, endDate.minutes);
+						}
+						
+					}
+				}
+			}
+			
+			private function setTime(timeEntry:SM_TimeEntry, hours:int, minutes:int):void {
+				timeEntry.minute = minutes;
+				timeEntry.am_pm = hours >= 12 ? 'pm' : 'am'
+				timeEntry.hour = hours % 12;
+				if (timeEntry.hour == 0) {
+					timeEntry.hour = 12;
+				}
+			}
 		]]>
 	</mx:Script>
 	
@@ -70,6 +161,22 @@
 		</mx:VBox>
 	</mx:HBox>
 	<mx:Label text="{resourceManager.getString('cms','scheduling')}" fontWeight="bold"/>
-	<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true" id="sepcificStartHour"
-						   styleName="timeEntry"/>
+	<mx:HBox>
+		<mx:VBox>
+			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}"/>
+			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}"/>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:DateField id="startDateField" change="validateTimes()"/> 
+			<mx:DateField id="endDateField" change="validateTimes()"/> 
+		</mx:VBox>
+		<mx:VBox>
+			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
+								   styleName="timeEntry" click="validateTimes()"/>		
+			
+			<controls:SM_TimeEntry id="endDateHour" height="25" showAMPMLabel="true" showHours="true"
+								   styleName="timeEntry" click="validateTimes()"/>	
+		</mx:VBox>
+	</mx:HBox>
+
 </mx:TitleWindow>
