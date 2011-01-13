@@ -26,6 +26,7 @@
 			private static const REMOVING:String = "removing";
 			private static const UPDATING:String = "updating";
 			private static const DISTRIBUTION_ERROR:String = "distributionError";
+			private static const REMOVAL_ERROR:String = "removalError";
 
 			[Bindable]
 			private var _errorsVisible:Boolean = false;
@@ -67,6 +68,8 @@
 						status = REMOVING;
 						break;
 					case KalturaEntryDistributionStatus.ERROR_DELETING:
+						status = REMOVAL_ERROR;
+						break;
 					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
 					case KalturaEntryDistributionStatus.ERROR_UPDATING:
 						status = DISTRIBUTION_ERROR;
@@ -83,7 +86,8 @@
 					statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
 				}
 				
-				if (status == DISTRIBUTION_ERROR) {
+				if (status == DISTRIBUTION_ERROR || status == REMOVAL_ERROR) {
+					distributionErrorLink.label = resourceManager.getString('cms',status);
 					_statusVisible = false;
 					_errorsVisible = false;
 				}

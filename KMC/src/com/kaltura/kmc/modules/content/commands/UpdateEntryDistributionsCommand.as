@@ -31,17 +31,20 @@ package com.kaltura.kmc.modules.content.commands
 			//all entry distributions to add
 			var requestsIndex:int = 1;
 			for each (var distribution:EntryDistributionWithProfile in distributionsToAdd) {
-				//change to "removed"
-				if (distribution.kalturaEntryDistribution.status!= KalturaEntryDistributionStatus.REMOVED)
-				{
-					var addEntryDistribution:EntryDistributionAdd = new EntryDistributionAdd(distribution.kalturaEntryDistribution);
-					mr.addAction(addEntryDistribution);
+				//first delete old leftovers, create new entryDistribution if needed
+				var addEntryDistribution:EntryDistributionAdd;
+				if (distribution.kalturaEntryDistribution.status== KalturaEntryDistributionStatus.REMOVED) {
+					var deleteEntryDistribution:EntryDistributionDelete = new EntryDistributionDelete(distribution.kalturaEntryDistribution.id);
+					mr.addAction(deleteEntryDistribution);
+					var newEntryDistribution:KalturaEntryDistribution = new KalturaEntryDistribution();
+					newEntryDistribution.entryId = distribution.kalturaEntryDistribution.entryId;
+					newEntryDistribution.distributionProfileId = distribution.kalturaEntryDistribution.distributionProfileId;
+					addEntryDistribution = new EntryDistributionAdd(newEntryDistribution);
 				}
-				else //if (distribution.updateRequired)
-				{
-					var updateEntryDistribution:EntryDistributionUpdate = new EntryDistributionUpdate(distribution.kalturaEntryDistribution.id,distribution.kalturaEntryDistribution);
-					mr.addAction(addEntryDistribution);
-				}
+				else
+					addEntryDistribution = new EntryDistributionAdd(distribution.kalturaEntryDistribution);
+				mr.addAction(addEntryDistribution);
+				
 				//if submitAdd action is required
 				if (!distribution.manualQualityControl) {
 					requestsIndex++;
@@ -59,9 +62,6 @@ package com.kaltura.kmc.modules.content.commands
 					var removeSubmitEntryDistribution:EntryDistributionSubmitDelete = new EntryDistributionSubmitDelete(removeDistribution.id);
 					mr.addAction(removeSubmitEntryDistribution);	
 				}
-				//delete entry distribution
-				//var removeEntryDistribution:EntryDistributionDelete = new EntryDistributionDelete(removeDistribution.id);
-				//mr.addAction(removeEntryDistribution);
 			}
 			//get the new entry distributions list
 			var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();

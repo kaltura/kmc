@@ -42,10 +42,13 @@
 			public var enableRemoveDistribution:Boolean = true;
 			
 			private function onCreationComplete():void {
-				isReady = true;
 				PermissionManager.getInstance().applyAllAttributes(this, "selectDistributorsWindow");
+				isReady = true;
 			}
 			
+			/**
+			 * sets the suitable status on the "Distribute when Ready" column
+			 * */
 			private function addStatusLabel(status:int):void {
 				var component:DistributeWhenReadyComponent = new DistributeWhenReadyComponent();
 				component.labelVisible = true;
@@ -58,17 +61,21 @@
 					case KalturaEntryDistributionStatus.SUBMITTING:
 					case KalturaEntryDistributionStatus.DELETING:
 					case KalturaEntryDistributionStatus.UPDATING:
-						component.labelText = resourceManager.getString('cms','inProcess');
+						component.labelText = resourceManager.getString('cms','inProgress');
 						break;
 					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
-						component.labelText = resourceManager.getString('cms','distributedError');
+						component.labelText = resourceManager.getString('cms','distributionError');
 						break;
 				}
 		
 				qcVbox.addChild(component);
 			}
 			
-			public function buildDistributors(value:Boolean):void {
+			/**
+			 * This function should be called only after creation complete, and after
+			 * the functio buildDistributorsWindow has been called
+			 * */
+			private function buildDistributors(value:Boolean):void {
 				if (!value)
 					return;
 				
@@ -101,7 +108,7 @@
 						if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.REMOVED) {
 							disCompontnet.cbSelected = false;
 							disCompontnet.initState = false;
-							updateDistributionThumbsAndFlavors(disCompontnet.distribution, disCompontnet.distributionProfile);
+							//updateDistributionThumbsAndFlavors(disCompontnet.distribution, disCompontnet.distributionProfile);
 						}
 					} 
 					/* else if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.PENDING)
@@ -117,7 +124,7 @@
 					var newDistribution:KalturaEntryDistribution = new KalturaEntryDistribution();
 					newDistribution.entryId = selectedEntry.id;
 					newDistribution.distributionProfileId = profile.id;
-					updateDistributionThumbsAndFlavors(newDistribution, profile);
+					//updateDistributionThumbsAndFlavors(newDistribution, profile);
 					
 					var disProfileComponent:DistributorComponent = new DistributorComponent();
 					disProfileComponent.distributionProfile = profile;
@@ -132,7 +139,7 @@
 			 * this function updates the given entry ditribution with the suitable flavor and thumb assets, according to required params
 			 * from a given profile.
 			 * */
-			private function updateDistributionThumbsAndFlavors(distribution:KalturaEntryDistribution, profile:KalturaDistributionProfile):void
+			/* private function updateDistributionThumbsAndFlavors(distribution:KalturaEntryDistribution, profile:KalturaDistributionProfile):void
 			{
 				distribution.flavorAssetIds = "";
 				distribution.thumbAssetIds = "";
@@ -165,7 +172,7 @@
 						}
 					}
 				}
-			} 
+			}  */
 			
 			private function onClose():void {
 				PopUpManager.removePopUp(this);
@@ -188,6 +195,10 @@
 		
 			}
 			
+			/**
+			 * This function sets the given values and builds the window components according
+			 * to its input
+			 * */
 			public function buildDistributorsWindow(distributionProfiles:Array, entryDistributions:Array):void {
 				//containes all profiles that entries weren't distributed to them yet
 				_unusedDistributionProfiles = new ArrayCollection(distributionProfiles.concat());
@@ -196,6 +207,9 @@
 				BindingUtils.bindSetter(buildDistributors, this, "isReady");	
 			} 
 			
+			/**
+			 * Sends update to the server with all distribution points that were changed
+			 * */
 			private function apply():void {
 				var addDistributors:Array = new Array();
 				var removeDistributors:Array = new Array();

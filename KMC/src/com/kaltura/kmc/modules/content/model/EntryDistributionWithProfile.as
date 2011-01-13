@@ -24,7 +24,6 @@ package com.kaltura.kmc.modules.content.model
 		 * In case this value is true but the profile is configured otherwhise, this parameter has no meaning 
 		 */		
 		public var manualQualityControl:Boolean = true;
-		public var updateRequired:Boolean = false;
 		
 		public function EntryDistributionWithProfile()
 		{
