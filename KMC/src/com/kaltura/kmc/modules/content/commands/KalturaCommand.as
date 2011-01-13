@@ -56,12 +56,12 @@ package com.kaltura.kmc.modules.content.commands {
 				// redirect to login, or whatever JS does with invalid KS.
 				JSGate.expired();
 			}
-			else if (data.data.length) {
+			/*else if (data.data.length) {
 				// this was a multirequest, we need to check its contents.
 				for (var i:int = 0; i<data.data.length; i++) {
-					result (data[i]);
+					result (data.data[i]);
 				}
-			}
+			}*/
 		}
 
 
