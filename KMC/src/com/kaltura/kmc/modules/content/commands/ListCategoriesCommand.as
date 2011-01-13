@@ -59,12 +59,10 @@ package com.kaltura.kmc.modules.content.commands {
 			}
 			var o:Object = data.data[1];
 			if (o.error && o.error.code) {
-				if (o.error.code == APIErrorCode.SERVICE_FORBIDDEN) {
-					_model.decreaseLoadCounter();
-				}
-				else {
+				if (o.error.code != APIErrorCode.SERVICE_FORBIDDEN) {
 					Alert.show(o.error.code, "Error");
 				}
+				_model.decreaseLoadCounter();
 				return;
 			}
 			
