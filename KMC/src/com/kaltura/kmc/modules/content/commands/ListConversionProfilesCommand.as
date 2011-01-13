@@ -70,7 +70,7 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function fault(event:Object):void
 		{
-			//TODO -- remove in time
+			//TODO -- remove in time (needed for bulk upload)
 			if (event.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
 				Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 			}
