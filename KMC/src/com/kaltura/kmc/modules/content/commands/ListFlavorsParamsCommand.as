@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
 	public class ListFlavorsParamsCommand extends KalturaCommand implements ICommand, IResponder {
@@ -48,6 +49,19 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.decreaseLoadCounter();
 		}
 
+		/**
+		 * This function will be called if the request failed
+		 * @param info the info returned from the server
+		 * 
+		 */		
+		override public function fault(info:Object):void
+		{
+			if(info && info.error && info.error.errorMsg && info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN)
+			{
+				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			}
+			_model.decreaseLoadCounter();
+		}
 
 		private function clearOldData():void {
 			_model.filterModel.flavorParams.removeAll();

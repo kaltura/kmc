@@ -70,7 +70,10 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function fault(event:Object):void
 		{
-			Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			//TODO -- remove in time
+			if (event.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+				Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			}
 			_model.decreaseLoadCounter();
 		}
 	}

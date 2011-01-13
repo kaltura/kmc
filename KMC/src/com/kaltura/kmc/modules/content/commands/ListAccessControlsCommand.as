@@ -2,9 +2,10 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.commands.accessControl.AccessControlList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.vo.AccessControlProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
@@ -59,8 +60,10 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function fault(info:Object):void
 		{
+			if (info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+				Alert.show(ResourceManager.getInstance().getString('cms', 'accessControlLoadErrorMsg') , ResourceManager.getInstance().getString('cms','error'));
+			}
 			_model.decreaseLoadCounter();
-			Alert.show(ResourceManager.getInstance().getString('cms', 'accessControlLoadErrorMsg') , ResourceManager.getInstance().getString('cms','error'));
 		}
 		
 
