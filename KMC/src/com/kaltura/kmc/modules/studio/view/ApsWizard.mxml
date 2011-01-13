@@ -128,7 +128,12 @@
 				this.parent.addEventListener(Event.RESIZE, onResize);
 				previewPlayerPage.addEventListener(ApsWizPreviewPlayer.REFRESH_KDP, previewKdp);
 
-				PermissionManager.getInstance().applyAllAttributes(this, "wizard");
+				if (_isNewPlayer) {
+					PermissionManager.getInstance().applyAllAttributes(this, "wizard_add");
+				}
+				else {
+					PermissionManager.getInstance().applyAllAttributes(this, "wizard_edit");
+				}
 				
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("wizard");
