@@ -358,12 +358,14 @@
 				if (vre.results != null && vre.results.length > 0) {
 					isOk &&= !(vre.results[0] as ValidationResult).isError;
 				}
-				//TODO make sure this name is not used
-				for each (var role:KalturaUserRole in _roles) {
-					if (role.name == nameTi.text) {
-						isOk = false;
-						var rm:IResourceManager = ResourceManager.getInstance();
-						Alert.show(rm.getString('admin', 'name_in_use'), rm.getString('admin', 'error'));
+				if (_mode == DrilldownMode.ADD) {
+					// make sure this name is not used
+					for each (var role:KalturaUserRole in _roles) {
+						if (role.name == nameTi.text) {
+							isOk = false;
+							var rm:IResourceManager = ResourceManager.getInstance();
+							Alert.show(rm.getString('admin', 'name_in_use'), rm.getString('admin', 'error'));
+						}
 					}
 				}
 
