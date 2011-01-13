@@ -4,7 +4,7 @@
 				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
 				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" layout="vertical"
-				   minHeight="520" minWidth="950" backgroundColor="#034F57" backgroundAlpha="1" borderThickness="0"
+				   minHeight="520" minWidth="950" backgroundColor="#FFFFFF" backgroundAlpha="1" borderThickness="0"
 				   borderStyle="solid" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
 				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}"
 				   >
@@ -23,9 +23,9 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
@@ -34,7 +34,6 @@
 			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
-			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
@@ -61,7 +60,6 @@
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
-			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			
@@ -171,7 +169,7 @@
 
 				Security.allowDomain('*');
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
-				setStyle("backgroundColor", 0xFFFFFF);
+			//	setStyle("backgroundColor", 0xFFFFFF);
 
 				// flashvars and uiconf vars processing
 				saveUiconfVars();
@@ -231,6 +229,7 @@
 				if (_model.attic.entryid) {
 					// get the entry
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
+					//TODO -- block if no access
 					cgEvent.dispatch();
 				}
 				
@@ -352,7 +351,6 @@
 			 * tabs such as "settings"
 			 * */
 			private function loadChangableData():void {
-
 				//to populate the filter
 				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
 				getAllFlavorParams.dispatch();

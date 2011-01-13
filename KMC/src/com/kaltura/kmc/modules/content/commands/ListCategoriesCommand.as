@@ -1,12 +1,15 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryCount;
 	import com.kaltura.commands.category.CategoryList;
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
+	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaCategory;
@@ -17,6 +20,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
+	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
@@ -48,15 +52,29 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function result(data:Object):void {
+//			var er:KalturaError = (data as KalturaEvent).error;
+//			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
+//				// redirect to login, or whatever JS does with invalid KS.
+//				JSGate.expired();
+//			}
+//			var o:Object = data.data[1];
+//			if (o.error && o.error.code) {
+//				if (o.error.code == APIErrorCode.SERVICE_FORBIDDEN) {
+//					_model.decreaseLoadCounter();
+//				}
+//				else {
+//					Alert.show(o.error.code, "Error");
+//				}
+//				return;
+//			}
+			
 			super.result(data);
-//			var kclr:KalturaCategoryListResponse;
-//			var kc:KalturaCategory;
 			var categories:Array = (data.data[1] as KalturaCategoryListResponse).objects;
 			_model.filterModel.categories = buildCategoriesHyrarchy(categories, data.data[0] as String);
 			_model.decreaseLoadCounter();
 		}
-
-
+		
+		
 		private function buildCategoriesHyrarchy(array:Array, totalEntryCount:String):CategoryVO {
 			var catMap:HashMap = _model.filterModel.categoriesMap;
 			catMap.clear();

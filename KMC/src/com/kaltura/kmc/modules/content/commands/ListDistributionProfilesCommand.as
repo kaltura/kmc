@@ -3,7 +3,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.distributionProfile.DistributionProfileList;
 	import com.kaltura.core.KClassFactory;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.model.DistributionProfileInfo;
 	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
 	import com.kaltura.vo.KalturaDistributionProfile;
@@ -14,6 +16,7 @@ package com.kaltura.kmc.modules.content.commands
 	import flash.xml.XMLNode;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
 	import mx.rpc.xml.SimpleXMLEncoder;
 
 	public class ListDistributionProfilesCommand extends KalturaCommand
@@ -30,9 +33,19 @@ package com.kaltura.kmc.modules.content.commands
 		}
 		
 		override public function result(data:Object):void {
+//			if (data.error) {
+//				var er:KalturaError = data.error as KalturaError;
+//				if (er) {
+//					// ignore service forbidden
+//					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+//						Alert.show(er.errorMsg, "Error");
+//					}
+//				}
+//			}
+//			else {
+				handleListDistributionProfileResult(data.data as KalturaDistributionProfileListResponse);
+//			}
 			_model.decreaseLoadCounter();
-			
-			handleListDistributionProfileResult(data.data as KalturaDistributionProfileListResponse);			
 		}
 		
 		public function handleListDistributionProfileResult(profilesResult:KalturaDistributionProfileListResponse) : void {
