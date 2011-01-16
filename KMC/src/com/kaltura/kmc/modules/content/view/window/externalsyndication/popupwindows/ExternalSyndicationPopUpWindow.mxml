@@ -1,30 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--- 
-This is the window in which you add a new syndication.
+<!---
+	 This is the window in which you add a new syndication.
 -->
-<HelpTitleWindow xmlns="com.kaltura.containers.*"
-				 xmlns:mx="http://www.adobe.com/2006/mxml"
-				 xmlns:externalsyndicationsections="com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.externalsyndicationsections.*"
-				 xmlns:validators="com.kaltura.validators.*"
-				 width="620" height="570"
-				 verticalScrollPolicy="off"
-				 paddingTop="20"
-				 title="{resourceManager.getString('cms','addNewFeedTitle')}"
-				 showCloseButton="true"
-				 help="onHelp()"
-				 creationComplete="setData()"
-				 close="closeWindow(event)"
-				 initialize="{init()}">
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+				 xmlns:exts="com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.externalsyndicationsections.*"
+				 xmlns:validators="com.kaltura.validators.*" width="620" height="570" verticalScrollPolicy="off"
+				 paddingTop="20" title="{resourceManager.getString('cms','addNewFeedTitle')}" showCloseButton="true"
+				 help="onHelp()" creationComplete="setData()" close="closeWindow(event)" initialize="{init()}">
 	<states>
 		<mx:State name="editFeedSate">
-			<mx:SetProperty name="title"
-							value="{resourceManager.getString('cms','editFeedTitle')}"/>
-			<mx:SetProperty target="{submitBtn}"
-							name="label"
+			<mx:SetProperty name="title" value="{resourceManager.getString('cms','editFeedTitle')}"/>
+			<mx:SetProperty target="{submitBtn}" name="label"
 							value="{resourceManager.getString('cms','saveChangesBtn')}"/>
-			<mx:SetProperty target="{feedTypeComboBox}"
-							name="enabled"
-							value="false"/>
+			<mx:SetProperty target="{feedTypeComboBox}" name="enabled" value="false"/>
 		</mx:State>
 	</states>
 	<mx:Script>
@@ -42,41 +30,39 @@ This is the window in which you add a new syndication.
 			import com.kaltura.vo.KalturaBaseSyndicationFeed;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaUiConfFilter;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
 			import mx.validators.ValidationResult;
-			
+
 			[Bindable]
 			/**
 			 * edited feed settings
 			 * */
 			public var selectedExSynVo:ExternalSyndicationVO = null;
-			
+
 			/**
 			 * optional syndication feed types
 			 * */
 			[ArrayElementType("Object")]
-			private const FEED_TYPES:Array = [{label: 'Google', code: KalturaSyndicationFeedType.GOOGLE_VIDEO}, 
-											{label: 'Yahoo!', code: KalturaSyndicationFeedType.YAHOO}, 
-											{label: 'ITunes', code: KalturaSyndicationFeedType.ITUNES}, 
-											{label: 'TubeMogul', code: KalturaSyndicationFeedType.TUBE_MOGUL}];
-			
+			private const FEED_TYPES:Array = [{label: 'Google', code: KalturaSyndicationFeedType.GOOGLE_VIDEO}, {label: 'Yahoo!', code: KalturaSyndicationFeedType.YAHOO}, {label: 'ITunes', code: KalturaSyndicationFeedType.ITUNES}, {label: 'TubeMogul', code: KalturaSyndicationFeedType.TUBE_MOGUL}];
+
 			[Bindable]
 			public var flavorParams:ArrayCollection;
-			
+
 			[Bindable]
 			public var extSynModel:ExtSynModel;
-			
-			
+
+
 			/**
 			 * address of the server the application is running with
 			 * */
 			public var rootUrl:String;
-			
+
+
 			/**
 			 * server calls to config the syndications filters
 			 * */
@@ -84,23 +70,24 @@ This is the window in which you add a new syndication.
 				//server calls to config the syndications filters
 				var listPlayList:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, null);
 				listPlayList.dispatch();
-				
+
 				var filter:KalturaUiConfFilter = new KalturaUiConfFilter();
 				filter.objTypeEqual = KalturaUiConfObjType.PLAYER;
 				filter.tagsMultiLikeAnd = 'player';
-				
+
 				var listUIConfEvent:UIConfEvent = new UIConfEvent(UIConfEvent.LIST_UI_CONFS, filter);
 				listUIConfEvent.dispatch();
 			}
-			
-			
+
+
 			/**
 			 * open help page
 			 * */
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section15'));
 			}
-			
+
+
 			/**
 			 * set selected feed data
 			 * */
@@ -121,10 +108,10 @@ This is the window in which you add a new syndication.
 				else {
 					PermissionManager.getInstance().applyAllAttributes(this, "externalSyndicationDrilldown_add");
 				}
-				
+
 			}
-			
-			
+
+
 			/**
 			 * something with playlists and feed content
 			 * */
@@ -148,73 +135,74 @@ This is the window in which you add a new syndication.
 					}
 				}
 			}
-			
-			
+
+
 			private function closeWindow(event:Event = null):void {
 				PopUpManager.removePopUp(this);
 			}
-			
-			
+
+
 			private function onSubmit(event:Event):void {
 				if (validateFeed()) {
 					if (!selectedExSynVo)
 						addNewFeed();
 					else
 						saveFeedChanges();
-					
+
 					closeWindow();
 				}
 				else {
 					Alert.show(resourceManager.getString('cms', 'feedInvalidInputMsg'), resourceManager.getString('cms', 'error'));
 				}
 			}
-			
-			
+
+
 			private function validateFeed():Boolean {
 				var isOk:Boolean = true;
 				var nameValidateResultEvent:ValidationResultEvent = feedNameValidator.validate();
 				if ((nameValidateResultEvent.results != null) && (nameValidateResultEvent.results.length > 0)) {
 					isOk = !(nameValidateResultEvent.results[0] as ValidationResult).isError;
 				}
-				
+
 				if (isOk) {
 					var syndicationFeedTemplate:IExternalSyndicationFeed = syndicationTypeOptions.selectedChild as IExternalSyndicationFeed;
 					isOk = syndicationFeedTemplate.validate();
 				}
-				
+
 				return isOk;
 			}
-			
-			
+
+
 			private function addNewFeed():void {
 				var syndicationFeedTemplate:IExternalSyndicationFeed = syndicationTypeOptions.selectedChild as IExternalSyndicationFeed;
 				var newFeed:KalturaBaseSyndicationFeed = syndicationFeedTemplate.syndication;
 				newFeed.name = StringUtil.trim(generalFeedNameTextInput.text);
 				newFeed.playlistId = getPlaylistID();
-				
+
 				var addNewFeedEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.ADD_NEW_EXTERNAL_SYNDICATION);
 				addNewFeedEvent.data = newFeed;
 				addNewFeedEvent.dispatch();
 			}
-			
-			
-			
+
+
+
 			private function getPlaylistID():String {
 				return allcontentRadioBtn.selected ? '' : (playListComboBox.selectedItem as KalturaPlaylist).id + '';
 			}
-			
-			
+
+
 			private function saveFeedChanges():void {
 				var syndicationFeedTemplate:IExternalSyndicationFeed = syndicationTypeOptions.selectedChild as IExternalSyndicationFeed;
 				var editedFeed:KalturaBaseSyndicationFeed = syndicationFeedTemplate.syndication;
 				editedFeed.name = StringUtil.trim(generalFeedNameTextInput.text);
 				editedFeed.playlistId = getPlaylistID();
-				
+
 				var saveEditedFeedEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.UPDATE_EXTERNAL_SYNDICATION_CHANGES);
 				saveEditedFeedEvent.data = editedFeed;
 				saveEditedFeedEvent.dispatch();
 			}
-			
+
+
 			public function set editable(value:Boolean):void {
 				if (generalFeedNameTextInput) {
 					generalFeedNameTextInput.editable = false;
@@ -225,78 +213,56 @@ This is the window in which you add a new syndication.
 					syndicationTypeOptions.selectedChild.enabled = false;
 					submitBtn.enabled = false;
 					submitBtn.buttonMode = false;
-				}	
+				}
 			}
-			
-			public function get editable():Boolean{
+
+
+			public function get editable():Boolean {
 				return submitBtn.enabled;
 			}
-			
 		]]>
 	</mx:Script>
-	<mx:StringValidator id="feedNameValidator"
-						source="{generalFeedNameTextInput}"
-						property="text"
-						required="true"/>
-	
-	<mx:VBox width="100%" >
-		<mx:HBox width="100%" >
-			<mx:Label text="*{resourceManager.getString('cms','feedNameLabel')}"
-					  width="180" styleName="feedParamLabel" />
-			<mx:TextInput id='generalFeedNameTextInput'
-						  width="100%"
-						  text="{selectedExSynVo.kSyndicationFeed.name}"/>
-			
-			
+	<mx:StringValidator id="feedNameValidator" source="{generalFeedNameTextInput}" property="text" required="true"/>
+
+	<mx:VBox width="100%">
+		<mx:HBox width="100%">
+			<mx:Label text="*{resourceManager.getString('cms','feedNameLabel')}" width="180" styleName="feedParamLabel"/>
+			<mx:TextInput id='generalFeedNameTextInput' width="100%" text="{selectedExSynVo.kSyndicationFeed.name}"/>
+
+
 		</mx:HBox>
-		<mx:HBox width="100%" >
-			<mx:Label text="{resourceManager.getString('cms','selectedContentLabel')}"
-					  width="180" styleName="feedParamLabel" />
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('cms','selectedContentLabel')}" width="180"
+					  styleName="feedParamLabel"/>
 			<mx:VBox width="100%" height="100%">
-				<mx:RadioButtonGroup id='contentRadioBtnsGroup' />
-				<mx:RadioButton id="allcontentRadioBtn"
-								label="{resourceManager.getString('cms','allContentRadioBtn')}"
-								groupName="contentRadioBtnsGroup"
-								selected="true"/>
+				<mx:RadioButtonGroup id='contentRadioBtnsGroup'/>
+				<mx:RadioButton id="allcontentRadioBtn" label="{resourceManager.getString('cms','allContentRadioBtn')}"
+								groupName="contentRadioBtnsGroup" selected="true"/>
 				<mx:RadioButton id="playlistsRadioBtn"
 								label="{resourceManager.getString('cms','onlyFromPlaylistRadioBtn')}"
 								groupName="contentRadioBtnsGroup"/>
-				<mx:ComboBox id='playListComboBox'
-							 width="100%"
-							 enabled="{playlistsRadioBtn.selected}"
-							 dataProvider="{extSynModel.generalPlayListdata}"
-							 labelField="name"/>
+				<mx:ComboBox id='playListComboBox' width="100%" enabled="{playlistsRadioBtn.selected}"
+							 dataProvider="{extSynModel.generalPlayListdata}" labelField="name"/>
 			</mx:VBox>
 		</mx:HBox>
-		<mx:HBox width="100%" >
-			<mx:Label text="{resourceManager.getString('cms','feedTypleLabel')}"
-					  width="180" styleName="feedParamLabel"/>
-			<mx:ComboBox width="100%"
-						 id="feedTypeComboBox"
-						 dataProvider="{FEED_TYPES}"
-						 editable="false">
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('cms','feedTypleLabel')}" width="180" styleName="feedParamLabel"/>
+			<mx:ComboBox width="100%" id="feedTypeComboBox" dataProvider="{FEED_TYPES}" editable="false">
 			</mx:ComboBox>
 		</mx:HBox>
 	</mx:VBox>
-	
+
 	<mx:ViewStack id="syndicationTypeOptions" width="100%" height="100%" creationPolicy="all"
 				  selectedIndex="{feedTypeComboBox.selectedIndex}">
-		<externalsyndicationsections:GoogleExternalSyndication width="100%" height="100%"
-															   extSynData="{extSynModel}"
-															   flavorParams="{flavorParams}"/>
-		<externalsyndicationsections:YahooExternalSyndication width="100%" height="100%"
-															  flavorParams="{flavorParams}"
-															  players="{extSynModel.uiConfData}" />
-		<externalsyndicationsections:ITuneExternalSyndication width="100%" height="100%"
-															  partnerData="{extSynModel.partnerData}"
-															  flavorParams="{flavorParams}"/>
-		<externalsyndicationsections:TubeMogulExternalSyndication width="100%" height="100%"
-																  flavorParams="{flavorParams}" />
+		<exts:GoogleExtSyn width="100%" height="100%" extSynData="{extSynModel}" flavorParams="{flavorParams}"/>
+		<exts:YahooExtSyn width="100%" height="100%" flavorParams="{flavorParams}" players="{extSynModel.uiConfData}"/>
+		<exts:ITuneExtSyn width="100%" height="100%" partnerData="{extSynModel.partnerData}"
+						  flavorParams="{flavorParams}"/>
+		<exts:TubeMogulExtSyn width="100%" height="100%" flavorParams="{flavorParams}"/>
 	</mx:ViewStack>
-	<mx:ControlBar horizontalAlign="center" paddingBottom="6" paddingLeft="2" 
-				   paddingRight="2" paddingTop="6" verticalAlign="middle">
-		<mx:Button label="{resourceManager.getString('cms','addNewFeedBtn')}"
-				   useHandCursor="true" buttonMode="true" id="submitBtn"
-				   click="onSubmit(event)"/>
+	<mx:ControlBar horizontalAlign="center" paddingBottom="6" paddingLeft="2" paddingRight="2" paddingTop="6"
+				   verticalAlign="middle">
+		<mx:Button label="{resourceManager.getString('cms','addNewFeedBtn')}" useHandCursor="true" buttonMode="true"
+				   id="submitBtn" click="onSubmit(event)"/>
 	</mx:ControlBar>
 </HelpTitleWindow>
