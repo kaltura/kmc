@@ -78,18 +78,19 @@ package com.kaltura.kmc.modules.content.commands
 			return xml;
 		}
 		
-		/**
-		 * This function will be called if the request failed
-		 * @param info the info returned from the server
-		 * 
-		 */		
-		override public function fault(info:Object):void
-		{
-			if(info && info.error && info.error.errorMsg && info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN)
-			{
-				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-			}
-			_model.decreaseLoadCounter();
-		}
+//		/**
+//		 * This function will be called if the request failed
+//		 * @param info the info returned from the server
+//		 * 
+//		 */		
+//		override public function fault(info:Object):void
+//		{
+//			//TODO -- remove in time
+//			if(info && info.error && info.error.errorMsg && info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN)
+//			{
+//				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+//			}
+//			_model.decreaseLoadCounter();
+//		}
 	}
 }

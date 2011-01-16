@@ -58,13 +58,13 @@ package com.kaltura.kmc.modules.content.commands
 			_model.decreaseLoadCounter();
 		}
 		
-		override public function fault(info:Object):void
-		{
-			if (info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'accessControlLoadErrorMsg') , ResourceManager.getInstance().getString('cms','error'));
-			}
-			_model.decreaseLoadCounter();
-		}
+//		override public function fault(info:Object):void
+//		{
+//			if (info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+//				Alert.show(ResourceManager.getInstance().getString('cms', 'accessControlLoadErrorMsg') , ResourceManager.getInstance().getString('cms','error'));
+//			}
+//			_model.decreaseLoadCounter();
+//		}
 		
 
 	}

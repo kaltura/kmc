@@ -6,10 +6,8 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 xmlns:es="com.kaltura.kmc.modules.content.view.window.externalsyndication.*"
-		 xmlns:controls="com.kaltura.controls.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
-		 width="100%" height="100%" creationComplete="applyPermissions(event)"
-		 >
+		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 width="100%" height="100%" creationComplete="applyPermissions(event)">
 
 	<mx:Script>
 		<![CDATA[
@@ -27,7 +25,7 @@
 			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -50,7 +48,7 @@
 			 * optional flavor params
 			 * */
 			public var flavorParams:ArrayCollection;
-			
+
 			/**
 			 * application base url
 			 * */
@@ -65,6 +63,7 @@
 				loadSyndicationData(externalSyndicationData);
 				updateBtnStatus();
 			}
+
 
 			/**
 			 * this panel does not support initial filtering data, the kmef param is ignored.
@@ -87,8 +86,7 @@
 
 			private function loadFeeds():void {
 				if (paging.pageSize == 10) {
-					tableContainer.height = (feedsTable.rowHeight * 10) + feedsTable.headerHeight +
-						paging.height + deleteExSynBtn.height + 20;
+					tableContainer.height = (feedsTable.rowHeight * 10) + feedsTable.headerHeight + paging.height + deleteExSynBtn.height + 20;
 					feedsTable.percentHeight = 100; //tableContainer.height - (paging.height + deleteExSynBtn.height);//entryTable.rowHeight*11+entryTable.headerHeight;
 					feedsTable.rowCount = 10;
 					actionsBox.height = tableContainer.height;
@@ -169,9 +167,8 @@
 			private function gotoPage():void {
 				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
 				loadFeeds();
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>Show Rows");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
 
@@ -182,11 +179,10 @@
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 			}
 
-			protected function applyPermissions(event:FlexEvent):void
-			{
+
+			protected function applyPermissions(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
-
 		]]>
 	</mx:Script>
 	<mx:Text styleName="expendableButton" text="{resourceManager.getString('cms', 'syndicationFeeds')}"/>
@@ -197,13 +193,12 @@
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox id='tableContainer' width="100%" horizontalAlign="center" styleName="entriesTablePagerAndButtonsVbox">
-			<es:ExternalSyndicationTable id='feedsTable' allSelected="{allSelected}" rowCount="10" 
+			<es:ExternalSyndicationTable id='feedsTable' allSelected="{allSelected}" rowCount="10"
 										 dataProvider="{extSynModel.externalSyndicationData}"/>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{extSynModel.externalSyndicationFeedsTotalCount}" nextPage="gotoPage()"
 							 prvPage="gotoPage()" getPageNum="gotoPage()" visible="true" showRowsInPage="true"
-							 creationComplete="{onPagerCreationComplete(event)}"
-							 rowsInPage="{[10, 25, 50, 100]}"/>
+							 creationComplete="{onPagerCreationComplete(event)}" rowsInPage="{[10, 25, 50, 100]}"/>
 			<mx:HBox width="100%" styleName="DataGridActions" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 				<mx:Button id='deleteExSynBtn'
 						   label="{resourceManager.getString('cms', 'deleteExternalSyndicationButton')}"
@@ -213,8 +208,9 @@
 
 		</mx:VBox>
 		<mx:VBox id='actionsBox' height="100%" styleName="listActionsBox">
-			<mx:Button id="addBtn" label="{resourceManager.getString('cms', 'addExternalSyndicationButton')}" useHandCursor="true"
-					   buttonMode="true" click="showNewVideoFeedWindow(event)" styleName="listActionButton"/>
+			<mx:Button id="addBtn" label="{resourceManager.getString('cms', 'addExternalSyndicationButton')}"
+					   useHandCursor="true" buttonMode="true" click="showNewVideoFeedWindow(event)"
+					   styleName="listActionButton"/>
 		</mx:VBox>
 	</mx:HBox>
 

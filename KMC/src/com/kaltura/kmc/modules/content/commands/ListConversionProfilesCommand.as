@@ -68,13 +68,13 @@ package com.kaltura.kmc.modules.content.commands
 			_model.decreaseLoadCounter();
 		}
 		
-		override public function fault(event:Object):void
-		{
-			//TODO -- remove in time (needed for bulk upload)
-			if (event.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-			}
-			_model.decreaseLoadCounter();
-		}
+//		override public function fault(event:Object):void
+//		{
+//			//TODO -- remove in time (needed for bulk upload)
+//			if (event.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
+//				Alert.show(ResourceManager.getInstance().getString('cms', 'notLoadConversionProfiles') + "\n\t" + event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+//			}
+//			_model.decreaseLoadCounter();
+//		}
 	}
 }
