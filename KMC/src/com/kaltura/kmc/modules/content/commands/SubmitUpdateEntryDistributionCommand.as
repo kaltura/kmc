@@ -1,18 +1,17 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.commands.entryDistribution.EntryDistributionUpdate;
+	import com.kaltura.commands.entryDistribution.EntryDistributionSubmitUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
 
-	public class UpdateEntryDistributionCommand extends KalturaCommand
+	public class SubmitUpdateEntryDistributionCommand extends KalturaCommand
 	{
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			var entryDis:KalturaEntryDistribution = (event as EntryDistributionEvent).entryDistribution;
-			entryDis.setUpdatedFieldsOnly(true);
-			var update:EntryDistributionUpdate = new EntryDistributionUpdate(entryDis.id, entryDis);
+			var update:EntryDistributionSubmitUpdate = new EntryDistributionSubmitUpdate(entryDis.id);
 			update.addEventListener(KalturaEvent.COMPLETE, result);
 			update.addEventListener(KalturaEvent.FAILED, fault);
 			

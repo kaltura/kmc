@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center" paddingLeft="5" paddingRight="5" borderSides="right" borderStyle="solid">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			[Bindable]
+			private var _dimensionsString:String;
+			[Bindable]
+			private var _visibleImg:Boolean;
+			private var _thumbnail:ThumbnailWithDimensions;
+			private var _erased:Boolean = false;
+			
+			override public function set data(value:Object):void {
+				if (!value)
+					return;
+				_thumbnail = value as ThumbnailWithDimensions;
+				_dimensionsString = _thumbnail.width + ' X ' + _thumbnail.height;
+				if (_thumbnail.thumbAsset && (!_erased)) {
+					_visibleImg = true;
+					img.source = _thumbnail.thumbUrl;
+				}
+				else {
+					_visibleImg = false;
+				}
+			}
+			
+			private function onRemoveBtnClick():void {
+				parentDocument.removeThumbnail(_thumbnail.thumbAsset.id);
+				_visibleImg = false;
+				_erased = true;
+			//	_thumbnail.thumbAsset = null;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="dimensionsLabel" text="{_dimensionsString}"/>
+	<mx:Image id="img" width="90" height="90" visible="{_visibleImg}"/>
+	<mx:Label id="missingLbl" bottom="5" visible="{!_visibleImg}" includeInLayout="{!_visibleImg}" text="{resourceManager.getString('cms','missing')}"/>
+	<mx:LinkButton id="removeBtn" bottom="5" visible="{_visibleImg}" includeInLayout="{_visibleImg}" 
+				   label="{resourceManager.getString('cms','remove')}" styleName="multiRemoveButton"
+				   click="{onRemoveBtnClick()}"/>
+</mx:VBox>

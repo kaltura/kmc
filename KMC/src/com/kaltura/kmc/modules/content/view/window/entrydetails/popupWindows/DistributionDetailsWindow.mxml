@@ -1,25 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="650"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+				width="710" height="650"
 				layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true"
 				close="{closeWindow()}"
-				xmlns:controls="com.kaltura.controls.*">
+				xmlns:controls="com.kaltura.controls.*"
+				creationComplete="{onCreationComplete()}"
+				show="setSchedulerData()">
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
+			import com.kaltura.vo.KalturaDistributionProfile;
+			import com.kaltura.vo.KalturaDistributionThumbDimensions;
+			import com.kaltura.vo.KalturaEntryDistribution;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			
+			/**
+			 * will be sent when the window closes
+			 * */
+			public static const WINDOW_CLOSE:String = "windowClose";
 			[Bindable]
 			private var _entryDis:EntryDistributionWithProfile;
 			private var _entryDetailsModel:EntryDetailsModel;
 			[Bindable]
 			private var _destinationName:String;
-			private var oldStartDate:Date = null;
-			private var oldEndDate:Date = null;
+			private var _timeManager:DateFieldWithTimeStepperLogic;
+			[Bindable]
+			private var _thumbsArray:Array = new Array();
+			[Bindable]
+			private var _flavorAssets:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var _flavorRowHeight:int;
+			[Bindable]
+			private var _flavorHeaderHeight:int;
+			[Bindable]
+			private var _name:String;
+			[Bindable]
+			private var _description:String;
+			[Bindable]
+			private var _tags:String;
+			private var _isDirty:Boolean = false;
 			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -29,6 +62,9 @@
 			public function set entryDetailsModel(value:EntryDetailsModel):void
 			{
 				_entryDetailsModel = value;
+				_name = _entryDetailsModel.selectedEntry.name;
+				_description = _entryDetailsModel.selectedEntry.description;
+				_tags = _entryDetailsModel.selectedEntry.tags;
 				buildTitle();
 			}
 
@@ -42,6 +78,83 @@
 				_entryDis = value;
 				_destinationName = _entryDis.kalturaDistributionProfile.name;
 				buildTitle();
+				buildThumbsArray();
+				buildFlavorsAssets();
+			}
+			
+			/**
+			 * builds a hash map with given ids as the keys, given thumbs as the values
+			 * */
+			private function buildThumbsMap(idsArray:Array, thumbsArray:Array):HashMap {
+				var thumbsMap:HashMap = new HashMap();
+				for each (var st:String in idsArray) {
+					for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
+						if (thumb.thumbAsset && (thumb.thumbAsset.id == st)) {
+							thumbsMap.put(st, thumb);
+							break;
+						}
+					}
+				}
+				
+				return thumbsMap;
+			}
+			
+			/**
+			 * builds the data provider for thumbnails table, according to required thumbs and existing thumbs.
+			 * */
+			public function buildThumbsArray():void {
+				_thumbsArray = new Array();
+				var requiredDim:Array = _entryDis.kalturaDistributionProfile.requiredThumbDimensions;
+				var thumbsIds:String = _entryDis.kalturaEntryDistribution.thumbAssetIds;
+				var thumbsIdsArray:Array;
+				if (thumbsIds)
+					thumbsIdsArray = thumbsIds.split(",");
+				
+				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray);
+				
+				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
+					var thumbnail:ThumbnailWithDimensions = new ThumbnailWithDimensions(dim.width, dim.height);
+					for each (var st:String in thumbsIdsArray) {
+						if (st!="") {
+							var thumb:ThumbnailWithDimensions = thumbsMap.getValue(st) as ThumbnailWithDimensions;
+							if (thumb && thumb.width==dim.width && thumb.height==dim.height) {
+								thumbnail = thumb;
+								break;
+							}
+						}
+					}
+					_thumbsArray.push(thumbnail);
+				}
+				
+			}
+			
+			private function onCreationComplete():void {
+				//to avoid warning, save these params
+				_flavorHeaderHeight = flavorsTable.headerHeight;
+				_flavorRowHeight = flavorsTable.rowHeight
+				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
+				setSchedulerData();
+			}
+			
+			/**
+			 * build the data provider for the flavors table, according to the used flavors in current distirbution
+			 * */
+			private function buildFlavorsAssets():void {
+				_flavorAssets = new ArrayCollection();
+				var entryFlavors:ArrayCollection = _entryDetailsModel.flavorParamsAndAssetsByEntryId;
+				var flavorsIds:String = _entryDis.kalturaEntryDistribution.flavorAssetIds;
+				if (flavorsIds) {
+					var flavorsIdsArray:Array = flavorsIds.split(",");
+					for each (var st:String in flavorsIdsArray) {
+						for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
+							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id == st) {
+								_flavorAssets.addItem(flavorWithParams);
+								break;
+							}
+						}
+					}
+				
+				}
 			}
 
 			/**
@@ -52,64 +165,42 @@
 					this.title = resourceManager.getString('cms','editEntry') + " - " + _entryDetailsModel.selectedEntry.name + 
 						" - " + _destinationName + " " + resourceManager.getString('cms','distributionDetails');
 			}
+			
 			private function closeWindow():void {
-				PopUpManager.removePopUp(this);
+				if (_isDirty)
+					Alert.show(resourceManager.getString('cms','undoEntryDetails'),resourceManager.getString('cms','exitDistributionDetails'), Alert.YES | Alert.NO, null, closeHandler);
+				else 
+					dispatchCloseEvent();
+			}
+			
+			private function dispatchCloseEvent():void {
+				this.dispatchEvent(new Event(WINDOW_CLOSE));
+			}
+			
+			private function closeHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES)
+					dispatchCloseEvent();
 			}
 			
 			private function validateTimes():void {
-
-				var sDate:Date = startDateField.selectedDate;
-				var eDate:Date = endDateField.selectedDate;
-				
-				if ((sDate == null) || (eDate == null)) {
-					return;
-				}
-				
-				if (eDate.time < sDate.time) {
-					Alert.show(resourceManager.getString('cms', 'startToEndDateAlert'));
-					endDateField.selectedDate = oldEndDate;
-					startDateField.selectedDate = oldStartDate;
-					endDateField.validateNow();
-					checkTime();
-				}
-				else if (eDate.time == sDate.time) {
-					checkTime();
-				}
-				else {
-					oldStartDate = new Date(sDate.time);
-					oldEndDate = new Date(eDate.time);
-				}
+				_isDirty = true;
+				_timeManager.validateTimes();
+				if (startDateField.selectedDate)
+					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
+				if (endDateField.selectedDate)
+					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour);
 			}
 			
-			
-			private function checkTime():void {
-				var sTimeObj:Object = startDateHour.timeValue;
-				var sTime:Number = calculateTime(sTimeObj, startDateHour.am_pm);
-				var eTimeObj:Object = endDateHour.timeValue;
-				var eTime:Number = calculateTime(eTimeObj, endDateHour.am_pm);
-				
-				if (eTime <= sTime) {
-					endDateHour.hour = startDateHour.hour;
-					endDateHour.minute = startDateHour.minute;
-					endDateHour.am_pm = startDateHour.am_pm;
-				}
+			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
+				var seconds:int = 0;
+				seconds += dateField.selectedDate.time / 1000;
+				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
+				return seconds;
 			}
 			
-			private function calculateTime(timeObj:Object, am_pmIndicator:String):Number {
-				var isPM:Boolean = am_pmIndicator == 'pm';
-				var dayHour:Number = isPM ? timeObj.hour : (timeObj.hour % 12);
-				var hours:Number = dayHour * 60 * 60;
-				var minute:Number = timeObj.minute * 60;
-				var seconds:Number = timeObj.second;
-				var addition:Number = isPM && (timeObj.hour != 12) ? (12 * 60 * 60) : 0;
-				
-				var totalTime:Number = hours + minute + seconds + addition;
-				
-				return totalTime;
-			}
-
-
-			
+			/**
+			 * display suitbale dates according to distribution sunrise/sunset times
+			 * */
 			private function setSchedulerData():void {
 				if (_entryDis != null) {
 					var startTime:int = _entryDis.kalturaEntryDistribution.sunrise;
@@ -122,32 +213,50 @@
 						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
 							var startDate:Date = new Date(startTime * 1000);
 							startDateField.selectedDate = startDate;
-							setTime(startDateHour, startDate.hours, startDate.minutes);
+							_timeManager.setTime(startDateHour, startDate.hours, startDate.minutes);
 						}
 						
 						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
 							var endDate:Date = new Date(endTime * 1000);
 							endDateField.selectedDate = endDate;
-							setTime(endDateHour, endDate.hours, endDate.minutes);
+							_timeManager.setTime(endDateHour, endDate.hours, endDate.minutes);
 						}
 						
 					}
 				}
 			}
 			
-			private function setTime(timeEntry:SM_TimeEntry, hours:int, minutes:int):void {
-				timeEntry.minute = minutes;
-				timeEntry.am_pm = hours >= 12 ? 'pm' : 'am'
-				timeEntry.hour = hours % 12;
-				if (timeEntry.hour == 0) {
-					timeEntry.hour = 12;
+			/**
+			 * removes the given thumb id from the entryDistribution thumbs list.
+			 * */
+			public function removeThumbnail(thumbId:String):void {
+				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
+				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
+				for (var i:int = 0; i<thumbsArray.length; i++) {
+					if (thumbsArray[i]==thumbId) {
+						thumbsArray.splice(i,1);
+						break;
+					}	
 				}
+				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
+				_isDirty = true;
 			}
+			
+			private function save():void {
+				if (_isDirty) {
+					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, _entryDis.kalturaEntryDistribution);
+					updateEntryDistribution.dispatch();
+					_isDirty = false;
+				}
+				
+				dispatchCloseEvent();
+			}
+	
 		]]>
 	</mx:Script>
 	
 	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','status')+ ':'}" fontWeight="bold"/>
-	<mx:HBox>
+	<mx:HBox paddingLeft="7">
 		<mx:VBox>
 			<mx:Label text="{resourceManager.getString('cms','submitted')}"/>
 			<mx:Label text="{resourceManager.getString('cms','remoteId')}"/>
@@ -161,7 +270,7 @@
 		</mx:VBox>
 	</mx:HBox>
 	<mx:Label text="{resourceManager.getString('cms','scheduling')}" fontWeight="bold"/>
-	<mx:HBox>
+	<mx:HBox paddingLeft="7">
 		<mx:VBox>
 			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}"/>
 			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}"/>
@@ -178,5 +287,38 @@
 								   styleName="timeEntry" click="validateTimes()"/>	
 		</mx:VBox>
 	</mx:HBox>
-
+	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" fontWeight="bold"/>
+	<mx:HBox paddingLeft="7">
+		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}" includeInLayout="{_thumbsArray.length==0}"/>
+		<mx:HorizontalList width="{105 * _thumbsArray.length}"
+						   dataProvider="{_thumbsArray}" borderStyle="solid"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.ThumbDetailsRenderer"
+						   rowCount="1" columnCount="{_thumbsArray.length}" height="175"
+						   visible="{(_thumbsArray.length > 0)}" includeInLayout="{(_thumbsArray.length>0)}"/>
+		
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" fontWeight="bold"/>
+	<mx:HBox paddingLeft="7">
+		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}" includeInLayout="{_flavorAssets.length==0}"/>
+		<entryDetails:FlavorsTable id="flavorsTable" height="{(_flavorAssets.length * _flavorRowHeight) + _flavorHeaderHeight}" 
+								   flavorAssets="{_flavorAssets}"
+								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>	
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('cms','metadata')}" fontWeight="bold"/>
+	<mx:HBox paddingLeft="7">
+		<mx:VBox>
+			<mx:Label text="{resourceManager.getString('cms','name') + ':'}"/>
+			<mx:Label text="{resourceManager.getString('cms','description') +':'}"/>
+			<mx:Label text="{resourceManager.getString('cms','tags') + ':'}"/>			
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Label text="{_name}"/>
+			<mx:Label text="{_description}"/>
+			<mx:Label text="{_tags}"/>					
+		</mx:VBox>
+	</mx:HBox>
+	<mx:ControlBar>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="save()"
+				   buttonMode="true"/>
+	</mx:ControlBar>
 </mx:TitleWindow>

@@ -4,11 +4,12 @@
 	 also used in SetSchedulingWin.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
-		 xmlns:controls="com.kaltura.controls.*" show="setSchedulerData()">
+		 xmlns:controls="com.kaltura.controls.*" show="setSchedulerData()" creationComplete="onCreationComplete()">
 
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
@@ -17,6 +18,7 @@
 			public static const POP_UP_MODE:String = 'popUpMode';
 
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _timeManager:DateFieldWithTimeStepperLogic;
 			
 			[Bindable]
 			/**
@@ -25,7 +27,10 @@
 			 * */
 			public var editable:Boolean = true;
 
-
+			private function onCreationComplete():void {
+				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
+				
+			}
 			public function isInit():Boolean {
 				return (spcificRangeRBtn != null);
 			}
@@ -84,13 +89,13 @@
 						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
 							var startDate:Date = new Date(startTime * 1000);
 							sepcificStartDate.selectedDate = startDate;
-							setTime(sepcificStartHour, startDate.hours, startDate.minutes);
+							_timeManager.setTime(sepcificStartHour, startDate.hours, startDate.minutes);
 						}
 
 						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
 							var endDate:Date = new Date(endTime * 1000);
 							specificEndDate.selectedDate = endDate;
-							setTime(specificEndHour, endDate.hours, endDate.minutes);
+							_timeManager.setTime(specificEndHour, endDate.hours, endDate.minutes);
 						}
 
 					}
@@ -108,7 +113,7 @@
 			}
 
 
-			private function onCreationComplete(event:Event):void {
+			private function onGridCreationComplete(event:Event):void {
 				var today:Date = new Date();
 				sepcificStartDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
 				specificEndDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
@@ -118,8 +123,11 @@
 			private var oldStartDate:Date = null;
 			private var oldEndDate:Date = null;
 
-
 			private function validateTimes():void {
+				_timeManager.validateTimes();
+			}
+			
+		/* 	private function validateTimes():void {
 				if (spcificRangeRBtn.selected && specificEndCBBtn.selected) {
 					var sDate:Date = sepcificStartDate.selectedDate;
 					var eDate:Date = specificEndDate.selectedDate;
@@ -160,7 +168,7 @@
 				}
 			}
 
-
+ 
 			private function calculateTime(timeObj:Object, am_pmIndicator:String):Number {
 				var isPM:Boolean = am_pmIndicator == 'pm';
 				var dayHour:Number = isPM ? timeObj.hour : (timeObj.hour % 12);
@@ -173,12 +181,12 @@
 
 				return totalTime;
 			}
-
+*/
 
 			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
 				var seconds:int = 0;
 				seconds += dateField.selectedDate.time / 1000;
-				seconds += calculateTime(timeEntry.timeValue, timeEntry.am_pm);
+				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
 				return seconds;
 			}
 
@@ -227,7 +235,7 @@
 		<mx:RadioButton label="{resourceManager.getString('cms', 'rangeRadioBtn')}" 
 						groupName="timeGroup" id="spcificRangeRBtn"/>
 		<mx:VBox width="100%">
-			<mx:Grid verticalGap="10" creationComplete="onCreationComplete(event)">
+			<mx:Grid verticalGap="10" creationComplete="onGridCreationComplete(event)">
 				<mx:GridRow width="100%" height="30">
 					<mx:GridItem width="100%" height="100%" colSpan="4" horizontalAlign="center">
 						<mx:Label width="100%" id='timeZoneLabel' enabled="{spcificRangeRBtn.selected}"

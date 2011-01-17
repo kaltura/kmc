@@ -11,6 +11,7 @@
 			
 			private var _distributionProfile:KalturaDistributionProfile;
 			private var _distribution:EntryDistributionWithProfile;
+			private var _distributionDetailsWindow:DistributionDetailsWindow;
 			
 			override public function set data(value:Object):void {
 				_distribution = value as EntryDistributionWithProfile;
@@ -18,14 +19,20 @@
 				this.label = _distributionProfile.name;
 			}
 
-			protected function buttonClickHandler(event:MouseEvent):void
+			private function buttonClickHandler(event:MouseEvent):void
 			{
-			/* 	var distributionDetails:DistributionDetailsWindow = new DistributionDetailsWindow();
-				distributionDetails.entryDetailsModel = parentDocument.entryDetailsModel;
-				distributionDetails.entryDis = _distribution;
-				
-				PopUpManager.addPopUp(distributionDetails, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(distributionDetails);  */
+				_distributionDetailsWindow = new DistributionDetailsWindow();
+				_distributionDetailsWindow.entryDetailsModel = parentDocument.entryDetailsModel;
+				_distributionDetailsWindow.entryDis = _distribution;
+				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+				PopUpManager.addPopUp(_distributionDetailsWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(_distributionDetailsWindow);  
+			}
+			
+			private function closeDistributionDetailsWindow(event:Event):void {
+				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+				PopUpManager.removePopUp(_distributionDetailsWindow);
+				_distributionDetailsWindow = null;
 			}
 
 		]]>

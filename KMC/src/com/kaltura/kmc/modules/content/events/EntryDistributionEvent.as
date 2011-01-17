@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.content.events
 	{
 		public static const LIST:String = "content_listEntryDistribution";
 		public static const UPDATE_LIST:String = "content_updateEntryDistributionList";
+		public static const SUBMIT_UPDATE:String = "content_submitUpdateEntryDistribution";
 		public static const UPDATE:String = "content_updateEntryDistribution";
 		public static const SUBMIT:String = "content_submitEntryDistribution";
 		public static const DELETE:String = "content_deleteEntryDistribution";

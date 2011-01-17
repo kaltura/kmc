@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical" styleName="distributionErrorsWindow" width="200" height="150"
+				showCloseButton="true" close="onClose()">
+	<mx:Script>
+		<![CDATA[
+			import mx.containers.ViewStack;
+			import mx.controls.Label;
+			import mx.controls.LinkButton;
+			import mx.core.Container;
+			import mx.managers.PopUpManager;
+			public static const THUMB_ERROR:String = "thumbError";
+			public static const FLAVOR_ERROR:String = "flavorError";
+			public static const METADATA_ERROR:String = "metadataError";
+			public static const GENERAL_ERROR:String = "generalError";
+			
+			private var _type:String;
+			public var viewStack:ViewStack;
+			[Bindable]
+			private var _visibleBtn:Boolean = false;
+			[Bindable]
+			private var _btnText:String;
+	
+			public function setType(type:String):void {
+				var st:String;
+				_type = type;
+				switch (_type) {
+					case THUMB_ERROR:
+						st = resourceManager.getString('cms','gotoThumbnailTab');
+						break;
+					case FLAVOR_ERROR:
+						st = resourceManager.getString('cms','gotoFlavorTab');
+						break;
+					case METADATA_ERROR:
+						st = resourceManager.getString('cms','gotoMetadataTab');
+						break;
+				}
+				_btnText = st;
+				if (_btnText) {
+					_visibleBtn = true;
+				}
+				else {
+					_visibleBtn = false;
+				}
+			}
+			
+			private function onLinkClick(event:Event):void {
+				switch (_type) {
+					case THUMB_ERROR:
+						viewStack.selectedChild = viewStack.getChildByName("entryThumbnails") as Container;
+						break;
+					case FLAVOR_ERROR:
+						viewStack.selectedChild = viewStack.getChildByName("entryAsstes") as Container;
+						break;
+					case METADATA_ERROR:
+						viewStack.selectedChild = viewStack.getChildByName("entryMetaData") as Container;
+						break;
+				}
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onClose():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * adds the given string to the window
+			 * */
+			public function addErrorDetail(error:String):void {
+				var lbl:Label = new Label();
+				lbl.text = "* "+error;
+				this.addChild(lbl);
+			}
+		]]>
+	</mx:Script>
+	<mx:Spacer height="100%"/>
+	<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}" 
+				   click="{onLinkClick(event)}"/>
+</mx:TitleWindow>

@@ -124,6 +124,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(EntryDistributionEvent.LIST, ListEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.UPDATE_LIST, UpdateEntryDistributionsCommand);
 			addCommand(EntryDistributionEvent.SUBMIT, SubmitEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.SUBMIT_UPDATE, SubmitUpdateEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.UPDATE, UpdateEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.RETRY, RetryEntryDistributionCommand);
 			
