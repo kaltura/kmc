@@ -13,18 +13,19 @@ package com.kaltura.kmc.modules.content.model
 	public class EntryDetailsModel {
 		/**
 		 * list of Object {label}	<br>
-		 * used for entry details window
+		 * used for entry details window > entry metadata
 		 * */
 		public var categoriesFullNameList:ArrayCollection = new ArrayCollection();
 		
 		/**
 		 * FlavorAssetWithParamsVO objects 
+		 * used for entry drilldown > flavors, distribution
 		 */		
 		public var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
 		
 		
 		/**
-		 * total number of entries 
+		 * total number of entries by current filter (the last ListEntriesCommand)
 		 */		
 		public var totalEntriesCount:int = 0;
 		
