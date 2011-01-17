@@ -10,10 +10,11 @@ package com.kaltura.kmc.modules.content.view.content
 	public interface IContentPanel {
 		
 		/**
-		 * initialize the panel.
+		 * initialize the panel, refresh data, etc.
 		 * @param kbef	(optional) initial filtering data
 		 */		
 		function init(kbef:KalturaBaseEntryFilter = null):void;
 		
+
 	}
 }

@@ -1,36 +1,41 @@
 package com.kaltura.kmc.modules.content.model
 {
-	import com.kaltura.kmc.modules.content.model.search.SearchData;
 	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
 	/**
-	 * data used by bulk upload 
+	 * data used by <code>BulkUpload</code> panel
 	 */
 	public class BulkUploadModel {
 		
-		/**
-		 * used to get a pager for Content.contentView.bulkListPager
-		 * */
-		public var bulkSearchData:SearchData = null;
 		
 		/**
 		 * list of <code>KalturaBulkUpload</code>
 		 * used as dataprovider somewhere in <code>BulkUpload</code>
 		 * */
-		public var ps3BulkUploadData:ArrayCollection = null;
+		public var bulkUploads:ArrayCollection = null;
 		
 		/**
 		 * total count for pager somewhere in <code>BulkUpload</code>
 		 * */
 		public var bulkUploadTotalCount:int = 0;
 		
+		/**
+		 * list of <code>ConversionProfileVO</code>
+		 * data provider for conversion profiles cb in <code>BulkUpload</code> panel 
+		 */
 		public var conversionData:ArrayCollection;
 		
+		/**
+		 * the default conversion profile for this partner 
+		 */		
 		public var defaultConversionProfileId:int;
 		
+		/**
+		 * pager for searching bulk uploads 
+		 */
 		public var bulkUploadFilterPager:KalturaFilterPager;
 		
 		/**

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
-		 horizontalAlign="left" width="100%" height="100%" creationComplete="{vbox1_creationCompleteHandler(event)}">
+		 horizontalAlign="left" width="100%" height="100%" creationComplete="{creationCompleteHandler(event)}">
 
 	<mx:Script>
 		<![CDATA[
@@ -65,16 +65,14 @@
 			 * */
 			public function init(kmef:KalturaBaseEntryFilter = null):void {
 				loadEntries();
-//				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
-//				listConvProfileEvent.dispatch();
-
+				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
+				listConvProfileEvent.dispatch();
 			}
-
+			
 
 
 			private function setFileName(event:Event):void {
 				_fileReadyFlag = true;
-				//fileName.text = _fm.fr.name;
 				var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.ADD_BULK_UPLOAD, _filter, _fm);
 				bulkEvent.dispatch();
 			}
@@ -232,7 +230,7 @@
 			}
 
 
-			protected function vbox1_creationCompleteHandler(event:FlexEvent):void {
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
@@ -262,7 +260,7 @@
 			<mx:Button id="submitBtn" label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
 			<mx:VBox styleName="vGapBox" width="100%">
 				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
-							 dataProvider="{bulkUploadData.ps3BulkUploadData}" headerRelease="{event.preventDefault()}">
+							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
 						<mx:DataGridColumn dataField="uploadedBy" width="50"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"

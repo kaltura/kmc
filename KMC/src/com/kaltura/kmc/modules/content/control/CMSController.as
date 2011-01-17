@@ -69,7 +69,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( DownloadEvent.DOWNLOAD_ENTRY , AddDownloadCommand );
 			
 			//Bulk Upload Event
-			addCommand(BulkEvent.LIST_BULK_UPLOAD , ListBulkUplaodCommand );
+			addCommand(BulkEvent.LIST_BULK_UPLOAD , ListBulkUploadCommand );
 			addCommand(BulkEvent.ADD_BULK_UPLOAD , AddBulkUploadCommand);
 			
 			//Profile Event

@@ -1,7 +1,6 @@
 package com.kaltura.kmc.modules.content.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.kmc.modules.content.model.search.SearchData;
 	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
@@ -203,7 +202,6 @@ package com.kaltura.kmc.modules.content.model {
 			moderationModel = new ModerationModel();
 			
 			bulkUploadModel = new BulkUploadModel();
-			bulkUploadModel.bulkSearchData = new SearchData();
 			bulkUploadModel.bulkUploadFilterPager = new KalturaFilterPager();
 			bulkUploadModel.bulkUploadFilterPager.pageSize = 10;
 			
