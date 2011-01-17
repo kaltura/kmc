@@ -20,6 +20,7 @@ Distribution tab of EntryDetailsWin
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.containers.ViewStack;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			private var _selectedEntry:KalturaBaseEntry;
@@ -30,6 +31,20 @@ Distribution tab of EntryDetailsWin
 			private var _notDeletedEntries:Array;
 			[Bindable]
 			private var _selectDistributorsEnabled:Boolean = true;
+			/**
+			 * view stack of current entry details window
+			 * */
+			private var _viewStack:ViewStack;
+			
+			public function get viewStack():ViewStack
+			{
+				return _viewStack;
+			}
+			
+			public function set viewStack(value:ViewStack):void
+			{
+				_viewStack = value;
+			}
 			
 			public function set showActions(value:Boolean):void {
 				var cols:Array = dataGrid.columns;
@@ -82,14 +97,14 @@ Distribution tab of EntryDetailsWin
 			
 			public function set selectedEntry(value:KalturaBaseEntry):void
 			{
-				if (!value || !_entryDetailsModel.enableDistribution)
+				if (!value)
 					return;
 				BindingUtils.bindSetter(setEntryDistributions, _entryDetailsModel.distributionProfileInfo, "entryDistributionArray");
 				_selectedEntry = value;
 				var listEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
 				listEntryDistribution.dispatch();
 			}
-			
+		
 			public function setEntryDistributions(value:Array): void {
 				_entryDistributions = value;
 				_notDeletedEntries = new Array();
@@ -139,12 +154,11 @@ Distribution tab of EntryDetailsWin
 	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_notDeletedEntries}" draggableColumns="false" 
 				 sortableColumns="true" selectable="false" rowHeight="40">
 		<mx:columns>
-			<mx:DataGridColumn id="distributorCol" headerText="{resourceManager.getString('cms','distributorCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributorRenderer" width="110" sortable="false"/>			
+			<mx:DataGridColumn id="distributorCol" headerText="{resourceManager.getString('cms','distributorCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributorRenderer" width="110" sortable="false"/>
 			<mx:DataGridColumn id="startDateCol" headerText="{resourceManager.getString('cms','startDateCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SunriseRenderer" sortable="true" width="85" sortCompareFunction="compareSunrise"/>
 			<mx:DataGridColumn id="endDateCol" headerText="{resourceManager.getString('cms','endDateCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SunsetRenderer" sortable="true" width="80"  sortCompareFunction="compareSunset"/>
 			<mx:DataGridColumn id="submissionsStatusCol" headerText="{resourceManager.getString('cms','submissionsStatusCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.SubmissionStatusRenderer" width="380" sortable="false"/>
-			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionAvailableCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributionActionRenderer" width="125" sortable="false"/>
-			
+			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('cms','actionAvailableCol')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.DistributionActionRenderer" width="125" sortable="false"/>	
 		</mx:columns>
 	</mx:DataGrid>
 	
