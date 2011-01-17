@@ -64,8 +64,8 @@ package com.kaltura.kmc.modules.account.command {
 			if (event.data && event.data.length > 0) {
 				var l:int = event.data.length ;
 				for(var i:int = 0; i<l; i++) {
-					if (event.data[i].error && event.data[i].error.errorMsg) {
-						Alert.show(event.data[i].error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
+					if (event.data[i].error && event.data[i].error.code) {
+						Alert.show(event.data[i].error.message, ResourceManager.getInstance().getString('account', 'error'));
 						return;
 					}
 				}

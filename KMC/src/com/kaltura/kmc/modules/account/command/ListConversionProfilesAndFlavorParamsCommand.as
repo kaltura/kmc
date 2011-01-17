@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.commands.thumbParams.ThumbParamsList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
@@ -21,6 +22,7 @@ package com.kaltura.kmc.modules.account.command
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 	
@@ -51,6 +53,21 @@ package com.kaltura.kmc.modules.account.command
 		public function result(event:Object):void
 		{
 			var kEvent:KalturaEvent = event as KalturaEvent;
+			if (kEvent.data && kEvent.data.length > 0) {
+				for (var i:int = 0; i<kEvent.data.length ; i++) {
+					if (kEvent.data[i].error) {
+						var rm:IResourceManager = ResourceManager.getInstance();
+						if (kEvent.data[i].error.code == APIErrorCode.SERVICE_FORBIDDEN) {
+							Alert.show(rm.getString('account', 'forbidden_service', [kEvent.data[i].error.message]), rm.getString('account', 'forbidden_service_title'));
+						}
+						else {
+							Alert.show(kEvent.data[i].error.message, rm.getString('account', 'forbidden_service_title'));
+						}
+						_model.loadingFlag = false;
+						return;
+					}
+				}
+			}
 			var thumbRespones:KalturaThumbParamsListResponse = (kEvent.data as Array)[0] as KalturaThumbParamsListResponse;
 			_model.thumbsData = new ArrayCollection(thumbRespones.objects);
 			
@@ -84,7 +101,7 @@ package com.kaltura.kmc.modules.account.command
 			var selectedItems:Array = (convProfilesTmpArrCol[0] as ConversionProfileVO).profile.flavorParamsIds.split(",");
 			for each (var flavora:String in selectedItems)
 			{
-				trace(flavora);
+//				trace(flavora);
 				for each (var flavorVO:FlavorVO in flvorsTmpArrCol )
 				{
 					if (flavora == flavorVO.kFlavor.id.toString()) 
