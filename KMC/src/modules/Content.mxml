@@ -6,8 +6,7 @@
 				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" layout="vertical"
 				   minHeight="520" minWidth="950" backgroundColor="#FFFFFF" backgroundAlpha="1" borderThickness="0"
 				   borderStyle="solid" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
-				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}"
-				   >
+				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}">
 
 	<mx:Metadata>
 		[ResourceBundle("cms")]
@@ -62,7 +61,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.containers.TitleWindow;
@@ -77,8 +76,8 @@
 
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
-			
-			
+
+
 			[Bindable]
 			/**
 			 * application model
@@ -115,31 +114,31 @@
 			 * first, name of the initial tab (as in locale)
 			 * */
 			private var _initialTab:String;
-			
+
 			/**
 			 * indicates start() has finished executing so all initial
 			 * data is present, and children can be created safely.
 			 * */
 			protected var _ready:Boolean = false;
-			
+
 			/**
 			 * KMC is responsible to use the value of
 			 * this const as the id of this module.
 			 * */
 			public static const NAME:String = "content";
-			
-			
-			override public function getModuleName():String 
-			{
+
+
+			override public function getModuleName():String {
 				return NAME;
-			} 
-			override public function getModuleVersion():String
-			{
+			}
+
+
+			override public function getModuleVersion():String {
 				return VERSION;
 			}
-			
-			override public function showSubtab(subtab:String, data:Object = null):void 
-			{
+
+
+			override public function showSubtab(subtab:String, data:Object = null):void {
 				// save data in the attic
 				if (data) {
 					putInAttic(data);
@@ -153,23 +152,22 @@
 				}
 			}
 
-			override protected function createChildren():void 
-			{
+
+			override protected function createChildren():void {
 				if (_ready) {
 					super.createChildren();
 				}
 			}
-			
-			
-			override protected function start():void 
-			{
+
+
+			override protected function start():void {
 				trace("=================");
 				trace("Content VERSION   " + VERSION);
 				trace("=================");
 
 				Security.allowDomain('*');
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
-			//	setStyle("backgroundColor", 0xFFFFFF);
+				//	setStyle("backgroundColor", 0xFFFFFF);
 
 				// flashvars and uiconf vars processing
 				saveUiconfVars();
@@ -183,9 +181,9 @@
 				//Register Event Listenters
 				addEventListener(Event.RESIZE, centerPopups);
 
-				
+
 				setAlert();
-				
+
 				if (stage) {
 					initTrackers();
 				}
@@ -195,9 +193,9 @@
 				_ready = true;
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
-				
+
 			}
-			
+
 
 			/**
 			 * put things on the attic object.
@@ -213,25 +211,25 @@
 				}
 			}
 
-			
+
 			/**
 			 * init the panels in the view after all data is ready
 			 * */
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-				var kmef:KalturaBaseEntryFilter ;
-				if (_model.attic.filter ) {
+				var kmef:KalturaBaseEntryFilter;
+				if (_model.attic.filter) {
 					kmef = createFilterFromString(_model.attic.filter);
 					_model.attic.filter = null;
 				}
-				
+
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
 					// get the entry
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
 					cgEvent.dispatch();
 				}
-				
+
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
@@ -241,16 +239,17 @@
 					_model.attic.kmef = kmef;
 					// switch tab if asked
 					switchToTab(_initialTab);
-				} else {
+				}
+				else {
 					(contentView.selectedChild as IContentPanel).init(kmef);
 					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 				}
 				loadData();
 			}
-			
-			
+
+
 			/**
-			 * start the sequence of commands which will end in opening drilldown 
+			 * start the sequence of commands which will end in opening drilldown
 			 * window for the given entry.
 			 * @param entry		the entry to drill into.
 			 * */
@@ -280,15 +279,14 @@
 			/**
 			 * set Alert locale for this module
 			 * */
-			private function setAlert():void 
-			{
+			private function setAlert():void {
 				Alert.yesLabel = resourceManager.getString('cms', 'yes');
 				Alert.noLabel = resourceManager.getString('cms', 'no');
 				Alert.okLabel = resourceManager.getString('cms', 'ok');
 				Alert.cancelLabel = resourceManager.getString('cms', 'cancel');
 			}
-			
-			
+
+
 			/**
 			 * creates a KalturaMediaEntryFilter from encoded data
 			 * @param filter	encoded filter data
@@ -298,10 +296,10 @@
 				dec.decode(filter);
 				var filterString:String = dec.toByteArray().toString();
 				var filterArray:Array = filterString.split("&");
-				
+
 				// distinguish between playlist and entry:
 				var kmef:KalturaBaseEntryFilter;
-				for (var j:int = 0; j<filterArray.length; j++) {
+				for (var j:int = 0; j < filterArray.length; j++) {
 					if (filterArray[j].indexOf("objectType") == 0) {
 						var cls:String = filterArray[j].split("=")[1];
 						if (cls == "KalturaPlaylistFilter") {
@@ -313,67 +311,67 @@
 						break;
 					}
 				}
-				
+
 				var att:Array;
-				for (var i:int = 0; i<filterArray.length; i++) {
+				for (var i:int = 0; i < filterArray.length; i++) {
 					att = filterArray[i].split("=");
 					if (att[1]) {
 						// KalturaMediaEntryFilter is dynamic, ok to put all values without testing
 						kmef[att[0]] = att[1];
 					}
 				}
-				
+
 				return kmef;
 			}
+
 
 			/**
 			 * dispatches events that trigger data loading
 			 * */
-			private function loadData():void 
-			{
+			private function loadData():void {
 				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				getCategoriesList.dispatch();
 
 				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 				getPartnerInfoEvent.dispatch();
-				
+
 				if (_model.entryDetailsModel.enableDistribution) {
 					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
 					listDistribution.dispatch();
 				}
-				
+
 				loadChangableData();
 			}
-			
+
+
 			/**
 			 * dispatches events that trigger data loading, for data that can be changed from other
 			 * tabs such as "settings"
 			 * */
 			private function loadChangableData():void {
-				//to populate the filter
+				//to populate the filter + syndication
 				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
 				getAllFlavorParams.dispatch();
 
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
-				
+
 				if (_model.filterModel.enableCustomData) {
-  					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-					listMetadataProfile.dispatch();  
+					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+					listMetadataProfile.dispatch();
 				}
-				
+
 				// bulk upload tab
 //				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
 //				listConvProfileEvent.dispatch();
-				
+
 			}
 
 
 			/**
 			 * I have no idea what this function (or this flag) do.
 			 * */
-			private function onExternalTabChange():void 
-			{
+			private function onExternalTabChange():void {
 				JSGate.onTabChange();
 			}
 
@@ -381,8 +379,7 @@
 			/**
 			 * bring any visible popups to the center of the screen
 			 * */
-			private function centerPopups(event:Event = null):void 
-			{
+			private function centerPopups(event:Event = null):void {
 				if (_popup)
 					PopUpManager.centerPopUp(_popup);
 
@@ -408,22 +405,23 @@
 
 				ka.init(_model.context.kc, "content", VERSION, _model.context.userId);
 			}
-			
+
+
 			/**
 			 * saves value of vars passed via uiconf
 			 * */
 			private function saveUiconfVars():void {
 				var confFile:XML = new XML(_uiconf.confFile);
-				
+
 				// context:
-				_model.context.moderationUiconf = confFile.uiconf.kdp.moderation.text().toString(); 
+				_model.context.moderationUiconf = confFile.uiconf.kdp.moderation.text().toString();
 				_model.context.drilldownUiconf = confFile.uiconf.kdp.drilldown.text().toString();
 				_model.context.captureThumbnailUiconf = confFile.uiconf.kdp.captureThumbnail.text().toString();
-				
+
 				// model:
 				_model.entryDetailsModel.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
 				_model.bulkUploadModel.sampleFileUrl = confFile.bulkupload.text().toString();
-				
+
 			}
 
 
@@ -479,7 +477,7 @@
 					case 'syndication':
 						secTln.selectedIndex = 3;
 						break;
-					case  'upload':
+					case 'upload':
 						secTln.selectedIndex = 4;
 						break;
 					default:
@@ -545,11 +543,12 @@
 				edw.filterModel = _model.filterModel;
 				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN,GoogleAnalyticsConsts.CONTENT)
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 				return edw;
 			}
-			
+
+
 			private function onHelp(e:KmcHelpEvent):void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
 			}
@@ -716,13 +715,13 @@
 
 				if (_model.openPlayer) {
 					//id, name, description, previewonly, is_playlist, uiconf_id 
-					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description),!_model.showEmbedCode, false, _model.attic.previewuiconf, bitrates, false);
+					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, bitrates, false);
 					_model.attic.previewuiconf = null;
 				}
 
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED,GoogleAnalyticsConsts.CONTENT);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED, GoogleAnalyticsConsts.CONTENT);
 				}
 			}
 
@@ -734,11 +733,11 @@
 				// open playlist preview
 				if (_model.openPlaylist) {
 					var pl:KalturaPlaylist = entry as KalturaPlaylist;
-					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description),!_model.showEmbedCode, true, _model.attic.previewuiconf, null, false);
+					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), !_model.showEmbedCode, true, _model.attic.previewuiconf, null, false);
 					_model.attic.previewuiconf = null;
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED,GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED, GoogleAnalyticsConsts.CONTENT);
 					}
 				}
 			}
@@ -752,12 +751,12 @@
 				if (_model.openPlayer) {
 //					JSGate.doPreviewEmbed(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), !_model.showEmbedCode, false, _attic.previewuiconf, null);
 //					_attic.previewuiconf = null;
-					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
 					cgEvent.dispatch();
 				}
 				//First time funnel
 				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED)) {
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED,GoogleAnalyticsConsts.CONTENT);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED, GoogleAnalyticsConsts.CONTENT);
 				}
 			}
 
@@ -809,26 +808,26 @@
 				var label:String = contentView.selectedChild.id;
 				switch (label) {
 					case "manage":
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'),GoogleAnalyticsConsts.CONTENT);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'entriesTitle'), GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "upload":
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'),GoogleAnalyticsConsts.CONTENT);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'bulkUpload'), GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "playlists":
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'),GoogleAnalyticsConsts.CONTENT);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'), GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "moderate":
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'),GoogleAnalyticsConsts.CONTENT)
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'), GoogleAnalyticsConsts.CONTENT)
 						break;
 					case "syndication":
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'),GoogleAnalyticsConsts.CONTENT);
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'), GoogleAnalyticsConsts.CONTENT);
 						break;
-				} 
+				}
 
 //				JSGate.writeUrlHash(label);
 
@@ -878,8 +877,6 @@
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_model.attic.kmef);
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
-			
-			
 		]]>
 	</mx:Script>
 
@@ -900,7 +897,7 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
-							 filterModel="{_model.filterModel}" 
+							 filterModel="{_model.filterModel}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"/>
 			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"
 								selectedEntry="{_model.entryDetailsModel.selectedEntry}"
@@ -908,9 +905,10 @@
 								label="{ResourceManager.getInstance().getString('cms','moderation')}"/>
 			<playlist:Playlist id="playlists" width="100%" styleName="pageStyle"
 							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
-							   previewOnly="{_model.showEmbedCode}"
+							   showEmbed="{_model.showEmbedCode}"
 							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
-			<content:ExternalSyndication id="syndication" styleName="pageStyle" flavorParams="{_model.filterModel.flavorParams}"
+			<content:ExternalSyndication id="syndication" styleName="pageStyle"
+										 flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
 										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
 			<content:BulkUpload id="upload" width="100%" styleName="pageStyle" ks="{_model.context.kc.ks}"

@@ -1,27 +1,21 @@
-package com.kaltura.kmc.modules.content.model
-{
-	import com.kaltura.kmc.modules.content.model.search.SearchData;
-	
+package com.kaltura.kmc.modules.content.model {
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
 	/**
-	 * Data that is used by moderation tab 
+	 * Data that is used by moderation tab
 	 * @author Atar
-	 */	
+	 */
 	public class ModerationModel {
-		
+
 		public function ModerationModel() {
-			entriesSearchData = new SearchData();
 			moderationsArray = new ArrayCollection();
 		}
-		
-		/**
-		 * results of entries searching
-		 * used to get a pager for Content.contentView.pager
-		 * */
-		public var entriesSearchData:SearchData;
-		
+
+	/**
+	 * list of moderation data (comments) per entry.
+	 * <code>KalturaModerationFlag</code> objects
+	 * */
 		public var moderationsArray:ArrayCollection;
 	}
 }

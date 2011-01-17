@@ -47,7 +47,7 @@
 			/**
 			 * should the actionbox in the entry table show "preview & embed" or "preview"
 			 * */
-			public var previewOnly:Boolean;
+			public var showEmbed:Boolean;
 			
 			
 			[Bindable]
@@ -57,9 +57,11 @@
 			public var selectedEntry:KalturaBaseEntry;
 			
 			
-			[Bindable]
 			private var _pager:Pager;
 			
+			/**
+			 * table ordering 
+			 * */
 			private var _orderBy:String = KalturaMediaEntryOrderBy.CREATED_AT_DESC;
 			
 			/**
@@ -251,6 +253,9 @@
 			}
 
 
+			/**
+			 * remove buttons which are not relevant for this screen
+			 * */
 			private function setEntriesToolbar():void {
 				toolBar.removeController(toolBar.approveSelected);
 				toolBar.removeController(toolBar.rejectSelected);
@@ -502,7 +507,7 @@
 			<mx:HBox width="100%" height="100%" id="entryTableContainer">
 				<view:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
 								 orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
-								 selectedEntry="{selectedEntry}" showEmbed="{previewOnly}"
+								 selectedEntry="{selectedEntry}" showEmbed="{showEmbed}"
 								 creationComplete="{removeColums( event )}" dragEnabled="false" dragMoveEnabled="false"
 								 dropEnabled="false"/>
 			</mx:HBox>
