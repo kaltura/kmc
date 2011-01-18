@@ -11,12 +11,16 @@
 			import com.kaltura.types.KalturaSearchOperatorType;
 			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaBaseEntryBaseFilter;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaContentDistributionSearchItem;
+			import com.kaltura.vo.KalturaDistributionProfile;
 			import com.kaltura.vo.KalturaFlavorParams;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaMetadataSearchItem;
 			import com.kaltura.vo.KalturaPlaylistFilter;
+			import com.kaltura.vo.KalturaSearch;
 			import com.kaltura.vo.KalturaSearchCondition;
 			import com.kaltura.vo.MetadataFieldVO;
 			
@@ -41,14 +45,20 @@
 			/**
 			 * value of the type property of the newSearch event dispatched by filter
 			 * */
-			public static const NEW_SEARCH:String = 'newSearch';
+			public static const NEW_SEARCH:String = "newSearch";
 
 			public static const DATE_FIELD_WIDTH:Number = 80;
 			
 			/**
 			 * name of the no-metadata flex application state
 			 * */
-			private const NO_METADATA:String = 'noMetadata';
+			private const NO_METADATA:String = "noMetadata";
+			
+			private const NO_DISTRIBUTION : String = "noDistribution";
+			
+			private const SHOW_METADATA : String = "showMetadata";
+			
+			private const SHOW_DISTRIBUTION : String = "showDistribution";
 
 			private const XPATH_PREFIX:String = "local-name()='";
 			
@@ -138,6 +148,11 @@
 			 * @copy #enableCustomData
 			 * */
 			private var _enableCustomData:Boolean;
+			
+			/**
+			 * @copy #enableDistribution
+			 * */
+			private var _enableDistribution:Boolean;
 
 			/**
 			 * @copy #isFilterOn
@@ -183,6 +198,10 @@
 			 * metadata
 			 * */
 			private var _metadataProfile:KMCMetadataProfileVO;
+			/**
+			 * Distribution profiles array
+			 * */
+			private var _distributionProfileArr:Array;
 
 			/**
 			 * when changing dates of search range, saves the old starting
@@ -207,16 +226,32 @@
 					for each (var obj:Object in _metadataProfile.metadataFieldVOArray) {
 						field = obj as MetadataFieldVO;
 						if (field && field.appearInSearch) {
-							currentState = "";
 							break;
 						}
 					}
 				}
 				else {
-					currentState = NO_METADATA;
+					metadata.visible = false;
+					metadata.includeInLayout = false;
 				}
 			}
-
+			
+			private function setDistributionTabVisibility():void {
+        		if (_enableDistribution && _distributionProfileArr && _distributionProfileArr.length) {
+					var field:KalturaDistributionProfile;
+					for each (var profile:Object in _distributionProfileArr) {
+						field = profile as KalturaDistributionProfile;
+						if (field) {
+							
+							break;
+						}
+					}
+				}
+				else {
+					distribution.visible = false;
+					distribution.includeInLayout = false;
+				}
+			}
 
 			/**
 			 * generate a KalturaMediaEntryFilterVo or KalturaMediaEntryFilterForPlaylist from current view
@@ -251,6 +286,10 @@
 				// metadata filters
 				if (metadataProfile) {
 					getMetadataFilters(currentFilter);
+				}
+				
+				if (distributionProfileArr) {
+					getDistributionFilters(currentFilter);
 				}
 				// category build
 				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
@@ -330,8 +369,37 @@
 					(currentFilter as KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
 				}
 			}
-
-
+			
+			/**
+			 * get distribution filters for the main media filter
+			 * */
+			private function getDistributionFilters (currentFilter : KalturaBaseEntryBaseFilter) : void
+			{
+				var distributionSearchItem : KalturaContentDistributionSearchItem = new KalturaContentDistributionSearchItem();
+				var distributionProfileSearchCondition : KalturaSearchCondition = new KalturaSearchCondition();
+				distributionSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
+				
+				var btnArr:Array = _metadataFilters["destinations"];
+				
+				if (btnArr) {
+					for (var i:int=0; i<btnArr.length; i++ )
+					{
+						if (btnArr[i].selected) {
+							for (var j:int=0; j < distributionProfileArr.length; j++) {
+								if ( (distributionProfileArr[j] as KalturaDistributionProfile).name == btnArr[i].label) {
+									distributionSearchItem.distributionProfileId = distributionProfileArr[j].id;
+								}
+							}
+						}
+					}
+					
+					if (currentFilter is KalturaMediaEntryFilter) {
+						(currentFilter as KalturaMediaEntryFilter).advancedSearch = distributionSearchItem;
+					}
+				}
+				
+			}
+			
 			/**
 			 * Use the data(vo) and the UI to check if the filter is on.
 			 * */
@@ -427,8 +495,24 @@
 				}
 				return container;
 			}
-
-
+			/**
+			 * create the UI for the distribution filter section of the main Filter
+			 * */
+			private function createDynamicDistributionFilter(distributionProfileArr:Array):Container {
+				var container:Container = new VBox();
+				container.percentWidth = 100;
+				container.styleName = "defualtFilter";
+				
+				var listButtonsArray : Array = createButtonsGroup(resourceManager.getString("cms" , "destinations"), "destinations", distributionProfileArr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
+				_metadataFilters["destinations"] = listButtonsArray;
+				injectGroupToContainer(container, listButtonsArray);
+				
+				return container;
+			}
+			
+			/**
+			 * Handler for clicking on the button group title.
+			 * */
 			private function onDynamicTitleClicked(event:MouseEvent):void {
 				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
 				var btnArr:Array = _metadataFilters[groupName] as Array;
@@ -451,15 +535,17 @@
 				}
 			}
 
-
+			/**
+			 *Handler for clicking an individual member of a button group.
+			 * */
 			private function onDynamicMemberClicked(event:MouseEvent):void {
 				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
 				var btnArr:Array = _metadataFilters[groupName] as Array;
-
+				var i:int;
 				var selectTheTitle:Boolean = true;
 				//if we unselected a member we should go over and see if we need to select the title 
 				if (!(event.target as Button).selected) {
-					for (var i:int = 1; i < btnArr.length; i++) {
+					for (i = 1; i < btnArr.length; i++) {
 						if (btnArr[i].selected)
 							selectTheTitle = false;
 					}
@@ -467,15 +553,23 @@
 					if (selectTheTitle)
 						btnArr[0].selected = true;
 				}
-				else //if any of the members has been selected shut down the title
+				else {//if any of the members has been selected shut down the title
 					btnArr[0].selected = false;
+					
+					if(groupName == "destinations") {
+						for (i = 1; i < btnArr.length; i++) {
+							if (btnArr[i].selected && btnArr[i] != (event.target as Button))
+								btnArr[i].selected = false;
+						} 
+					}
+				}
 
 				updateImageButton(btnArr);
 				preformNewSearch();
 			}
 
 
-			private function buildeMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO):void {
+			private function buildMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO):void {
 				metadata.removeAllChildren();
 
 				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
@@ -491,8 +585,34 @@
 
 				//if there are no feilds with displayInSearch = true we will hide the metadata accordion header
 				if (metadata.numChildren == 0)
-					currentState = NO_METADATA;
+				{
+					metadata.visible = false;
+					metadata.includeInLayout = false;
+				}
 
+				//select the last container after rebuild the filter
+				accordion.selectedIndex = accordion.numChildren - 1;
+			}
+			
+			/**
+			 * Initiate the construction of the distribution filter UI
+			 * */
+			private function buildDistributionProfileFilter(kalturaDistributionProfileArray : Array) : void {
+				distribution.removeAllChildren();
+				
+				if (kalturaDistributionProfileArray && kalturaDistributionProfileArray.length) {
+					var container:Container = createDynamicDistributionFilter(kalturaDistributionProfileArray);
+					
+					if (container) // if we need to add visual filter
+						distribution.addChild(container);
+				}
+				//if there are no feilds with displayInSearch = true we will hide the metadata accordion header
+				if (distribution.numChildren == 0)
+				{
+					metadata.visible = false;
+					metadata.includeInLayout = false;
+				}
+				
 				//select the last container after rebuild the filter
 				accordion.selectedIndex = accordion.numChildren - 1;
 			}
@@ -847,7 +967,41 @@
 				setMetadataTabVisibility();
 			}
 
-
+			[Bindable]
+			public function get enableDistribution() : Boolean {
+				return _enableDistribution;
+			}
+			
+			/**
+			 * enable distribution
+			 * */
+			public function set enableDistribution(value : Boolean) : void {
+				_enableDistribution = value;
+				setDistributionTabVisibility();
+			}
+			
+			[Bindable]
+			/**
+			 * distribution
+			 * */
+			public function get distributionProfileArr():Array
+			{
+				return _distributionProfileArr;
+			}
+			
+			/**
+			 * @private
+			 */
+			public function set distributionProfileArr(value:Array):void
+			{
+				_distributionProfileArr = value;
+				setDistributionTabVisibility();
+				
+				if (value)
+					buildDistributionProfileFilter(value);
+					
+			}
+			
 			[Bindable]
 			public function get metadataProfile():KMCMetadataProfileVO {
 				return _metadataProfile;
@@ -859,7 +1013,7 @@
 				setMetadataTabVisibility();
 
 				if (value)
-					buildeMetadataProfileFilter(value);
+					buildMetadataProfileFilter(value);
 			}
 
 
@@ -922,6 +1076,9 @@
 				renderFilterVo(mediaFilter);
 				return mediaFilter;
 			}
+
+			
+
 		]]>
 	</mx:Script>
 	<mx:Metadata>
@@ -929,11 +1086,24 @@
 		  [Event(name="close", type="flash.events.Event")] 
 		  [Event(name="open", type="flash.events.Event")] 
 	</mx:Metadata>
-	<mx:states>
+	<!--<mx:states>
 		<mx:State name="noMetadata">
-			<mx:RemoveChild target="{metadata}"/>
+			<mx:SetProperty target="{metadata}" name="visible" value="false"/>
+			<mx:SetProperty target="{metadata}" name="includeInLayout" value="false"/>
 		</mx:State>
-	</mx:states>
+		<mx:State name="noDistribution">
+			<mx:SetProperty target="{distribution}" name="visible" value="false"/>
+			<mx:SetProperty target="{distribution}" name="includeInLayout" value="false"/>
+		</mx:State>
+		<mx:State name="showMetadata">
+			<mx:SetProperty target="{metadata}" name="visible" value="true"/>
+			<mx:SetProperty target="{metadata}" name="includeInLayout" value="true"/>
+		</mx:State>
+		<mx:State name="showDistribution">
+			<mx:SetProperty target="{distribution}" name="visible" value="true"/>
+			<mx:SetProperty target="{distribution}" name="includeInLayout" value="true"/>
+		</mx:State>
+	</mx:states>-->
 
 	<filter:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
 			 label="{resourceManager.getString('cms', 'searchFilter')}" width="100%" 
@@ -994,5 +1164,6 @@
 								 dragEnter="onDragEnter(event)" newSearch="preformNewSearch()"
 								 styleName="categoriesTree" mask="{maskCanvas}"/>
 		</mx:Canvas>
+		<mx:VBox id="distribution" label="{resourceManager.getString('cms', 'distribution')}" width="100%" height="100%" styleName="additinalFilterVBox"/>
 	</mx:Accordion>
 </mx:VBox>
