@@ -38,6 +38,10 @@ package com.kaltura.vo
 
 		public var requiredThumbDimensions : Array = new Array();
 
+		public var sunriseDefaultOffset : int = int.MIN_VALUE;
+
+		public var sunsetDefaultOffset : int = int.MIN_VALUE;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -54,6 +58,8 @@ package com.kaltura.vo
 			arr.push('requiredFlavorParamsIds');
 			arr.push('optionalThumbDimensions');
 			arr.push('requiredThumbDimensions');
+			arr.push('sunriseDefaultOffset');
+			arr.push('sunsetDefaultOffset');
 			return arr;
 		}
 	}

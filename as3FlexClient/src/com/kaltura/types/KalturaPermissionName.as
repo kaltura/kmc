@@ -13,6 +13,7 @@ package com.kaltura.types
 		public static const SYSTEM_BASE_ACTIONS : String = 'SYSTEM_BASE_ACTIONS';
 		public static const SYSTEM_FILESYNC : String = 'SYSTEM_FILESYNC';
 		public static const SYSTEM_INTERNAL : String = 'SYSTEM_INTERNAL';
+		public static const KMC_ACCESS : String = 'KMC_ACCESS';
 		public static const SYSTEM_ADMIN_BASE : String = 'SYSTEM_ADMIN_BASE';
 		public static const SYSTEM_ADMIN_PUBLISHER_BASE : String = 'SYSTEM_ADMIN_PUBLISHER_BASE';
 		public static const SYSTEM_ADMIN_PUBLISHER_KMC_ACCESS : String = 'SYSTEM_ADMIN_PUBLISHER_KMC_ACCESS';
@@ -42,7 +43,6 @@ package com.kaltura.types
 		public static const CONTENT_MANAGE_DISTRIBUTION_WHERE : String = 'CONTENT_MANAGE_DISTRIBUTION_WHERE';
 		public static const CONTENT_MANAGE_DISTRIBUTION_SEND : String = 'CONTENT_MANAGE_DISTRIBUTION_SEND';
 		public static const CONTENT_MANAGE_DISTRIBUTION_REMOVE : String = 'CONTENT_MANAGE_DISTRIBUTION_REMOVE';
-		public static const CONTENT_MANAGE_DISTRIBUTION_PROFILE_BASE : String = 'CONTENT_MANAGE_DISTRIBUTION_PROFILE_BASE';
 		public static const CONTENT_MANAGE_DISTRIBUTION_PROFILE_MODIFY : String = 'CONTENT_MANAGE_DISTRIBUTION_PROFILE_MODIFY';
 		public static const CONTENT_MANAGE_VIRUS_SCAN : String = 'CONTENT_MANAGE_VIRUS_SCAN';
 		public static const CONTENT_MANAGE_MIX : String = 'CONTENT_MANAGE_MIX';
