@@ -47,10 +47,6 @@ package com.kaltura.kmc.business {
 		 * list of tabs and subtabs to hide
 		 */
 		private var _hideTabs:Array;
-		/**
-		 * List of features that the partner does not have (IE live stream , custom metadata , 508 etc')
-		 */
-		private var _hideFeatures:Array;
 
 
 		/**
@@ -142,7 +138,6 @@ package com.kaltura.kmc.business {
 			
 			_hideTabs = permissionParser.getTabsToHide(_deniedPermissions..uimapping[0], roleAndPartnerPermissionNames); 
 		
-			_hideFeatures = [];		//TODO + implement hideFeatures when we need it
 		}
 		
 		/**
@@ -465,13 +460,6 @@ package com.kaltura.kmc.business {
 			return _partnerUIDefinitions;
 		}
 
-
-		/**
-		 * @copy #_hideFeatures
-		 */
-		public function get hideFeatures():Array {
-			return _hideFeatures;
-		}
 
 		////////////////////////////////////////////////singleton code
 		/**
