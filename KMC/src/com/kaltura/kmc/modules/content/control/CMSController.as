@@ -81,6 +81,10 @@ package com.kaltura.kmc.modules.content.control
 			//FilterEvent
 			addCommand(FilterEvent.SET_FILTER_TO_MODEL , SetFilterToModelCommand );
 			
+			// Load Events
+			addCommand(LoadEvent.LOAD_FILTER_DATA , LoadFilterDataCommand );
+			addCommand(LoadEvent.LOAD_ENTRY_DATA , LoadEntryDrilldownDataCommand );
+			
 			//Category Event
 			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand );
 			addCommand(CategoryEvent.DELETE_CATEGORY, DeleteCategoriesCommand );

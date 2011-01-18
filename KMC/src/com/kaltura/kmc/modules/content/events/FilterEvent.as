@@ -1,13 +1,17 @@
 package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.modules.content.business.IDataOwner;
 	import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 
 	public class FilterEvent extends CairngormEvent
 	{
 		public static const SET_FILTER_TO_MODEL : String = "content_setFilterToModel";
 		
+		
 		private var _filterVo : KalturaMediaEntryFilterForPlaylist;
+		
+		
 		
 		public function FilterEvent(type:String, filterVo : KalturaMediaEntryFilterForPlaylist, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
@@ -19,6 +23,8 @@ package com.kaltura.kmc.modules.content.events
 		{
 			return _filterVo;
 		}
+		
+		
 
 	}
 }

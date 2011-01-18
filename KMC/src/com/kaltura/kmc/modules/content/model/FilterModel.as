@@ -44,6 +44,11 @@ package com.kaltura.kmc.modules.content.model
 		 * load access control only once 
 		 */		
 		public var oneTimeLoadAccessControlLoadedFlag:Boolean = false;
+		
+		/**
+		 * indicates if we have the distribution plugin
+		 * */
+		public var enableDistribution:Boolean = true;
 
 	}
 }

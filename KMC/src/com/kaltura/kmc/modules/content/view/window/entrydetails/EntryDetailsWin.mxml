@@ -2,11 +2,10 @@
 <!---
 	 entry drill-down screen.
 -->
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="{onCreationComplete()}"
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
 							title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" 
 							height="545" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
-							xmlns:containers="com.kaltura.containers.*"
 							xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
@@ -187,7 +186,7 @@
 			/**
 			 * set screen contents according to data
 			 * */
-			private function onCreationComplete():void {
+			public function init():void {
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
 
 				_undoToEntry = createWorkingCopy(selectedEntry);
@@ -523,7 +522,8 @@
 						  openPreview="{openPreview(event)}" viewStack="{viewStack}" showEmbed="{showEmbedCode}"/>
 		<!-- Thumbnails Tab -->
 		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
-							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" context="{context}"/>
+							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" 
+							context="{context}" enableDistribution="{filterModel.enableDistribution}"/>
 
 		<!-- Access Control Tab -->
 		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"

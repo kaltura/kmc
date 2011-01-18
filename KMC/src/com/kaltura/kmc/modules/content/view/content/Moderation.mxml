@@ -7,7 +7,7 @@
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*" verticalScrollPolicy="off"
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.kmc.modules.content.business.IDataOwner"
 		 creationComplete="init()">
 
 	<mx:Script>
@@ -16,8 +16,15 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.FilterEvent;
+			import com.kaltura.kmc.modules.content.events.LoadEvent;
+			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
@@ -103,6 +110,11 @@
 			// ===============================================
 			// methods
 			// ===============================================
+			
+			public function onRequestedDataLoaded():void {
+				filter.init();
+				loadEntries();
+			}
 
 			/**
 			 * this is the old creationComplete handler, it needs to be triggered
@@ -146,7 +158,7 @@
 					
 					filter.validateNow();
 					
-					loadEntries();
+					loadFilterData();
 					loadKDP();
 
 					paging.selectedPage = 1;
@@ -158,6 +170,34 @@
 				else {
 					_ready = true;
 				}
+			}
+			
+			
+			/**
+			 * load all the data the filter needs
+			 * */
+			private function loadFilterData():void {
+//				// distribution
+//				if (filterModel.enableDistribution) {
+//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+//					listDistribution.dispatch();
+//				}
+//				// flavor params
+//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+//				getAllFlavorParams.dispatch();
+//				// metadata profile
+//				if (filterModel.enableCustomData) {
+//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+//					listMetadataProfile.dispatch();
+//				}
+//				// access control
+//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+//				getAllProfilesEvent.dispatch();
+//				//categories
+//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+//				getCategoriesList.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
+				fe.dispatch();
 			}
 
 

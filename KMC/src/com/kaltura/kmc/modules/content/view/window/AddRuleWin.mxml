@@ -8,15 +8,18 @@
 				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
 				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" 
 				 showCloseButton="true" close="onClose()" help="{onHelp()}" 
-				 creationComplete="onCreationComplete()" height="540" width="780" >
+				 implements="com.kaltura.kmc.modules.content.business.IDataOwner"
+				 creationComplete="loadFilterData()" height="540" width="780" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.business.IDataOwner;
+			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
-
+			
 			//in case of editing an existing filter - this function will be called 
 			[Bindable]
 			public var filterForSingleRule:KalturaMediaEntryFilterForPlaylist;
@@ -28,6 +31,16 @@
 
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section13'));
+			}
+			
+			public function onRequestedDataLoaded():void {
+				singleRule.filter.init();
+				onCreationComplete();
+			}
+			
+			private function loadFilterData():void {
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
+				fe.dispatch();
 			}
 			
 			private function onCreationComplete():void {

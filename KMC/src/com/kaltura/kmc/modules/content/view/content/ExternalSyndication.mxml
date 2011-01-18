@@ -17,7 +17,9 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
+			import com.kaltura.kmc.modules.content.events.PartnerEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetSyndicationPagerEvent;
 			import com.kaltura.kmc.modules.content.model.ExtSynModel;
@@ -84,6 +86,13 @@
 				// load playlists
 				var listPlayList:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, null);
 				listPlayList.dispatch();
+				// external syndications are listed after the call for playlists returns (Atar: not sure why)
+				// list flavor params
+				var getFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+				getFlavorParams.dispatch();
+				// get partner info
+				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+				getPartnerInfoEvent.dispatch();
 			}
 
 
@@ -93,6 +102,9 @@
 			}
 
 
+			/**
+			 * list external syndications
+			 * */
 			private function loadFeeds():void {
 				if (paging.pageSize == 10) {
 					tableContainer.height = (feedsTable.rowHeight * 10) + feedsTable.headerHeight + paging.height + deleteExSynBtn.height + 20;
@@ -106,8 +118,8 @@
 					feedsTable.rowCount = -1;
 					actionsBox.percentHeight = 100;
 				}
-				var listExSyndicationEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.LIST_EXTERNAL_SYNDICATIONS);
-				listExSyndicationEvent.dispatch();
+				var listExSynEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.LIST_EXTERNAL_SYNDICATIONS);
+				listExSynEvent.dispatch();
 			}
 
 

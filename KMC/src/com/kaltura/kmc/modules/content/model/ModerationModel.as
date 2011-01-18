@@ -12,10 +12,11 @@ package com.kaltura.kmc.modules.content.model {
 			moderationsArray = new ArrayCollection();
 		}
 
-	/**
-	 * list of moderation data (comments) per entry.
-	 * <code>KalturaModerationFlag</code> objects
-	 * */
+		/**
+		 * list of moderation data (comments) per entry.
+		 * <code>KalturaModerationFlag</code> objects
+		 * */
 		public var moderationsArray:ArrayCollection;
+		
 	}
 }

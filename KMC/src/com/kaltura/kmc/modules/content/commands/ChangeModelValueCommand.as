@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.content.commands
 					_model.filterModel.enableCustomData = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_DISTRIBUTION:
-					_model.entryDetailsModel.enableDistribution = (event as ChangeModelEvent).newValue;
+					_model.filterModel.enableDistribution = (event as ChangeModelEvent).newValue;
 					break;
 			}
 		}	

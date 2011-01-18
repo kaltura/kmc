@@ -5,9 +5,8 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
 		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel" 
-		 creationComplete="creationCompleteHandler(event)"
-		 >
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.kmc.modules.content.business.IDataOwner" 
+		 creationComplete="creationCompleteHandler(event)" >
 	<mx:states>
 		<mx:State name="noFilterState">
 			<mx:SetProperty target="{vbox1}" name="visible" value="false"/>
@@ -29,6 +28,7 @@
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.FilterEvent;
+			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
@@ -72,6 +72,10 @@
 			 * */
 			public var entryDetailsModel:EntryDetailsModel;
 
+			public function onRequestedDataLoaded():void {
+				filter.init();
+				loadEntries();
+			}
 
 			/**
 			 * initialize the panel.
@@ -85,7 +89,34 @@
 					filter.ps3filter = initFilter as KalturaMediaEntryFilter;
 					updateExpenderLabel();
 				}
-				loadEntries();
+				loadFilterData();
+			}
+			
+			/**
+			 * load all the data the filter needs
+			 * */
+			private function loadFilterData():void {
+//				// distribution
+//				if (filterModel.enableDistribution) {
+//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+//					listDistribution.dispatch();
+//				}
+//				// flavor params
+//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+//				getAllFlavorParams.dispatch();
+//				// metadata profile
+//				if (filterModel.enableCustomData) {
+//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+//					listMetadataProfile.dispatch();
+//				}
+//				// access control
+//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+//				getAllProfilesEvent.dispatch();
+//				//categories
+//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+//				getCategoriesList.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
+				fe.dispatch();
 			}
 			
 			

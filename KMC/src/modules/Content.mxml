@@ -3,7 +3,8 @@
 				   xmlns:content="com.kaltura.kmc.modules.content.view.content.*"
 				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
-				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" layout="vertical"
+				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
+				   implements="com.kaltura.kmc.modules.content.business.IDataOwner" layout="vertical"
 				   minHeight="520" minWidth="950" backgroundColor="#FFFFFF" backgroundAlpha="1" borderThickness="0"
 				   borderStyle="solid" paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
 				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}">
@@ -25,14 +26,15 @@
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.business.IDataOwner;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
-			import com.kaltura.kmc.modules.content.events.ProfileEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
@@ -61,7 +63,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.containers.TitleWindow;
@@ -161,13 +163,12 @@
 
 
 			override protected function start():void {
-				trace("=================");
-				trace("Content VERSION   " + VERSION);
-				trace("=================");
+//				trace("=================");
+//				trace("Content VERSION   " + VERSION);
+//				trace("=================");
 
 				Security.allowDomain('*');
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
-				//	setStyle("backgroundColor", 0xFFFFFF);
 
 				// flashvars and uiconf vars processing
 				saveUiconfVars();
@@ -181,7 +182,6 @@
 				//Register Event Listenters
 				addEventListener(Event.RESIZE, centerPopups);
 
-
 				setAlert();
 
 				if (stage) {
@@ -194,6 +194,21 @@
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 
+			}
+			
+
+			/**
+			 * entry details data loaded (triggered by command)
+			 * */
+			public function onRequestedDataLoaded():void {
+				// init entry details window
+				if (_secondPopup && _secondPopup is EntryDetailsWin) {
+					(_secondPopup as EntryDetailsWin).init();
+				}
+				else if (_popup && _popup is EntryDetailsWin) {
+					(_popup as EntryDetailsWin).init();
+				}
+				//TODO -- add it to popup manager
 			}
 
 
@@ -329,18 +344,18 @@
 			 * dispatches events that trigger data loading
 			 * */
 			private function loadData():void {
-				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				getCategoriesList.dispatch();
+//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+//				getCategoriesList.dispatch();
 
-				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
-				getPartnerInfoEvent.dispatch();
+//				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+//				getPartnerInfoEvent.dispatch();
 
-				if (_model.entryDetailsModel.enableDistribution) {
-					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-					listDistribution.dispatch();
-				}
-
-				loadChangableData();
+//				if (_model.filterModel.enableDistribution) {
+//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+//					listDistribution.dispatch();
+//				}
+//
+//				loadChangableData();
 			}
 
 
@@ -350,16 +365,16 @@
 			 * */
 			private function loadChangableData():void {
 				//to populate the filter + syndication
-				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
-				getAllFlavorParams.dispatch();
+//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+//				getAllFlavorParams.dispatch();
 
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 
-				if (_model.filterModel.enableCustomData) {
-					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-					listMetadataProfile.dispatch();
-				}
+//				if (_model.filterModel.enableCustomData) {
+//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+//					listMetadataProfile.dispatch();
+//				}
 
 				// bulk upload tab
 //				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
@@ -536,6 +551,7 @@
 			 * opens a popup window with entry details
 			 * */
 			private function openEntryDetails():EntryDetailsWin {
+				
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.entryDetailsModel = _model.entryDetailsModel;
@@ -545,6 +561,9 @@
 				edw.openPlayerFunc = _model.openPlayer;
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
+				
+				var lde:LoadEvent = new LoadEvent(LoadEvent.LOAD_ENTRY_DATA, this, _model.entryDetailsModel.selectedEntry.id);
+				lde.dispatch();
 				return edw;
 			}
 

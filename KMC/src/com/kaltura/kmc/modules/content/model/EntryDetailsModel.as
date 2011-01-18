@@ -44,13 +44,6 @@ package com.kaltura.kmc.modules.content.model
 		 * */
 		public var metadataDefaultUiconf:int;
 		
-		
-		/**
-		 * indicates if we have the distribution plugin
-		 * */
-		public var enableDistribution:Boolean = true;
-		
-		
 		/**
 		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 
 		 */		

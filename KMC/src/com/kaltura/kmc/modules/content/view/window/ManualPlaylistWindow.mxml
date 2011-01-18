@@ -5,7 +5,7 @@
 				 xmlns:controls="com.kaltura.controls.*"
 				 xmlns:mx="http://www.adobe.com/2006/mxml" 
 				 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
-				 implements="com.kaltura.kmc.modules.content.view.interfaces.IListable"
+				 implements="com.kaltura.kmc.modules.content.view.interfaces.IListable,com.kaltura.kmc.modules.content.business.IDataOwner"
 				 creationComplete="{onCreationComplete()}" 
 				 showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 				 verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="980" height="560"
@@ -21,6 +21,7 @@
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -128,6 +129,12 @@
 			[Bindable]
 			private var _listableVo:ListableVo;
 
+			
+			public function onRequestedDataLoaded():void {
+				filter.init();
+				loadEntries();
+			}
+			
 
 			/**
 			 * User closed window. if this is an edit window - check if there was a change
@@ -197,9 +204,7 @@
 				}
 				else if (context == EDIT_LINKED_ENTRIES_MODE || context == NEW_LINKED_ENTRIES) {
 					removeChild(nameAndDescription);
-
 					_playlistArrayCollection = editLinkedArrayCollection;
-
 					_isNewPlaylist = true;
 				}
 				else {
@@ -250,7 +255,7 @@
 					// new playlist created on the fly from entries screen 
 					_playlistArrayCollection = playlistModel.onTheFlyPlaylistEntries;
 				}
-				loadEntries();
+				loadFilterData();
 				filter.validateNow();
 				if (_isNewPlaylist) {
 					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_add");
@@ -258,6 +263,11 @@
 				else {
 					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_edit");
 				}
+			}
+			
+			private function loadFilterData():void {
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
+				fe.dispatch();
 			}
 
 
@@ -582,11 +592,10 @@
 		<mx:VBox height="400" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formSubTitleLabel"/>
 			<filter:Filter id="filter" width="260" height="100%" newSearch="{filterNewSearch()}"
-						   
 						   enableCustomData="{filterData.enableCustomData}" catMap="{filterData.categoriesMap}"
 						   metadataProfile="{filterData.metadataProfile}" categories="{filterData.categories}"
-						   flavorParams="{filterData.flavorParams}"
-						   accessControlProfiles="{filterData.accessControlProfiles}" showRejectedOption="false"
+						   flavorParams="{filterData.flavorParams}" showRejectedOption="false"
+						   accessControlProfiles="{filterData.accessControlProfiles}" 
 						   showStatusOptions="false"/>
 		</mx:VBox>
 
