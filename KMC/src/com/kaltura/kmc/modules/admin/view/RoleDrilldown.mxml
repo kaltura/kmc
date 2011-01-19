@@ -469,8 +469,8 @@
 			protected function fillPermissions(permissionList:String):void {
 				var cb:CheckBox;
 				var pm:PermissionGroupManager;
-				// new roles have a null value for permissionNames, so we test here (default value doesn't work with null):
-				if (permissionList) {
+				// new roles have this value for permissionNames
+				if (permissionList != Roles.DEFAULT_KMC_PERMISSIONS) {
 					var SelectedPermissionIds:Array = permissionList.split(",");
 					// setting the selected / not selected checkboxes
 					for each (var permission:String in SelectedPermissionIds) {
@@ -489,7 +489,7 @@
 					}
 				}
 				else {
-					// for new roles, the default value is all permissions selected.
+					// for new roles, show all permissions selected.
 					for each (cb in _allCheckboxes) {
 						// if the partner doesn't have the feature, don't check the box
 						if (cb.enabled) {

@@ -74,7 +74,7 @@ package com.kaltura.kmc.modules.admin.model
 		public var partnerPermissionsUiconf:XML;
 		
 		/**
-		 * a list of permissions ids from the KalturaPartner data 
+		 * a list of permissions ids from the KalturaPartner data (features, plugins)
 		 */
 		public var partnerPermissions:String;
 	}
