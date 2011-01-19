@@ -455,7 +455,18 @@
 							ArrayUtil.removeValueFromArray(updatedPerms, cb.id);
 						}
 					}
+					// the ugly fix for metadataProfileAdd
+					if (cb.id == 'METADATA_FIELD_ADD') {
+						// also add / remove the profile permission
+						if (cb.selected) {
+							updatedPerms.push('CUSTOM_DATA_PROFILE_ADD');
+						}
+						else {
+							ArrayUtil.removeValueFromArray(updatedPerms, 'CUSTOM_DATA_PROFILE_ADD');
+						}
+					}
 				}
+				
 				// return comma separated string
 				return updatedPerms.join(",");
 			}
