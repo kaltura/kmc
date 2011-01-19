@@ -61,7 +61,7 @@ package com.kaltura.kmc.modules.content.commands
 	 * 
 	 */	
 	public class LoadFilterDataCommand extends KalturaCommand {
-		
+		//TODO take the fault beahvior from all the commands (used to show different errors)
 		
 		/**
 		 * the element that triggered the data load.

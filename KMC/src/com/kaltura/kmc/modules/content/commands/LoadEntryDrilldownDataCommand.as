@@ -70,6 +70,7 @@ package com.kaltura.kmc.modules.content.commands
 	 * @author Atar
 	 */	
 	public class LoadEntryDrilldownDataCommand extends KalturaCommand {
+		//TODO take the fault beahvior from all the commands
 		
 		/**
 		 * the element that triggered the data load.
