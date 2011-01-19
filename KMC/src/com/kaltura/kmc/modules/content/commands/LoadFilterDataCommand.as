@@ -128,20 +128,31 @@ package com.kaltura.kmc.modules.content.commands
 		}
 	
 		override public function result(data:Object):void {
-			// distribution
-			handleListDistributionProfileResult(data.data[0] as KalturaDistributionProfileListResponse);
+			var responseCount:int = 0;
+			
+			if (_model.filterModel.enableDistribution) {
+				// distribution
+				handleListDistributionProfileResult(data.data[responseCount] as KalturaDistributionProfileListResponse);
+				responseCount ++;
+			}
 			
 			// flavor params
-			handleFlavorsData(data.data[1] as KalturaFlavorParamsListResponse);
+			handleFlavorsData(data.data[responseCount] as KalturaFlavorParamsListResponse);
+			responseCount ++;
 			
-			// metadata profile
-			handleMetadataProfile(data.data[2] as KalturaMetadataProfileListResponse);
+			if (_model.filterModel.enableCustomData) {
+				// metadata profile
+				handleMetadataProfile(data.data[responseCount] as KalturaMetadataProfileListResponse);
+				responseCount ++;
+			}
+				
 			
 			// access control
-			handleAccessControls(data.data[3] as KalturaAccessControlListResponse);
+			handleAccessControls(data.data[responseCount] as KalturaAccessControlListResponse);
+			responseCount ++;
 			
 			// categories
-			handleCategoriesList(data.data[5] as KalturaCategoryListResponse, data.data[4] as String);
+			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
 			
 			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
