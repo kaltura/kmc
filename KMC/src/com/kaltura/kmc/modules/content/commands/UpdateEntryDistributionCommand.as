@@ -8,11 +8,13 @@ package com.kaltura.kmc.modules.content.commands
 
 	public class UpdateEntryDistributionCommand extends KalturaCommand
 	{
+		private var _entryDis:KalturaEntryDistribution;
+		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			var entryDis:KalturaEntryDistribution = (event as EntryDistributionEvent).entryDistribution;
-			entryDis.setUpdatedFieldsOnly(true);
-			var update:EntryDistributionUpdate = new EntryDistributionUpdate(entryDis.id, entryDis);
+			_entryDis = (event as EntryDistributionEvent).entryDistribution;
+			_entryDis.setUpdatedFieldsOnly(true);
+			var update:EntryDistributionUpdate = new EntryDistributionUpdate(_entryDis.id, _entryDis);
 			update.addEventListener(KalturaEvent.COMPLETE, result);
 			update.addEventListener(KalturaEvent.FAILED, fault);
 			
@@ -22,6 +24,8 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			var resultEntry:KalturaEntryDistribution = data.data as KalturaEntryDistribution;
+			_entryDis =  resultEntry;
 			//for data binding
 			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = _model.entryDetailsModel.distributionProfileInfo.entryDistributionArray.concat();
 		}

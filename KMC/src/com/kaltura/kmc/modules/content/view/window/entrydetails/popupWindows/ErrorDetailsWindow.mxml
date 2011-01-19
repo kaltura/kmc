@@ -20,18 +20,24 @@
 			private var _visibleBtn:Boolean = false;
 			[Bindable]
 			private var _btnText:String;
-	
+			[Bindable]
+			private var _infoLabel:String;
+			private var _isFirstParam:Boolean = true;
+			
 			public function setType(type:String):void {
 				var st:String;
 				_type = type;
 				switch (_type) {
 					case THUMB_ERROR:
+						_infoLabel = resourceManager.getString('cms','missingDimensions');
 						st = resourceManager.getString('cms','gotoThumbnailTab');
 						break;
 					case FLAVOR_ERROR:
+						_infoLabel = resourceManager.getString('cms','missingFlavors');
 						st = resourceManager.getString('cms','gotoFlavorTab');
 						break;
 					case METADATA_ERROR:
+						_infoLabel = resourceManager.getString('cms','missingMetadata');
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 				}
@@ -42,6 +48,10 @@
 				else {
 					_visibleBtn = false;
 				}
+			}
+			
+			public function setGeneralLabel(error:String):void {
+				_infoLabel = error;
 			}
 			
 			private function onLinkClick(event:Event):void {
@@ -67,13 +77,17 @@
 			 * adds the given string to the window
 			 * */
 			public function addErrorDetail(error:String):void {
-				var lbl:Label = new Label();
-				lbl.text = "* "+error;
-				this.addChild(lbl);
+				if (_isFirstParam){
+					_infoLabel += error;
+					_isFirstParam = false;
+				}
+				else {
+					_infoLabel += ", " + error;
+				}
 			}
 		]]>
 	</mx:Script>
-	<mx:Spacer height="100%"/>
+	<mx:Text text="{_infoLabel}" width="100%"/>
 	<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}" 
 				   click="{onLinkClick(event)}"/>
 </mx:TitleWindow>

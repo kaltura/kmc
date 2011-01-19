@@ -12,6 +12,8 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.controls.tabbar.OverlappingTabBar;
 			import com.kaltura.kmc.modules.content.events.FlavorAssetEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.FlavorsTable;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -29,7 +31,10 @@
 
 			[Bindable]
 			private var oneActionLabel:String = '';
-
+			[Bindable]
+			private var _showCB:Boolean = true;
+			[Bindable]
+			private var _showBtn:Boolean = false;
 
 			override public function onCreatoinComplete():void {
 				super.onCreatoinComplete();
@@ -46,6 +51,9 @@
 				else {
 					actionArr = [];
 					setActions();
+				}
+				if (parentDocument is DistributionDetailsWindow) {
+					_showCB = false;
 				}
 			}
 
@@ -70,6 +78,7 @@
 					actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
 					if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 						actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
+						_showBtn = true;
 					}
 				}
 				else {
@@ -107,6 +116,7 @@
 							actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
 							if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 								actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
+								_showBtn = true;
 							}
 							if (obj.hasOriginal) {
 								actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
@@ -117,14 +127,18 @@
 					}
 				}
 			}
+			
+			private function dispatchPreview():void {
+				var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET,
+					(this.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+				preEvent.dispatch();
+			}
 
 
 			private function launchAction(actionName:String):void {
 				switch (actionName) {
 					case resourceManager.getString('cms', 'previewActionLabel'):  {
-						var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET,
-										(this.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
-						preEvent.dispatch();
+						dispatchPreview();
 						break;
 					}
 					case resourceManager.getString('cms', 'downloadActionLabel'):  {
@@ -188,8 +202,10 @@
 			</mx:State>
 	</renderers:states>
 
-	<mx:ComboBox editable="false" fontSize="10" dataProvider="{actionArr}" width="110" id="actionCombobox"
+	<mx:ComboBox id="actionCombobox" editable="false" fontSize="10" dataProvider="{actionArr}" width="110" 
 				 buttonMode="true" change="onActionChange(event)" styleName="dataGridComboBox"
-				 prompt="{resourceManager.getString('cms','selectActionLabel')}">
+				 prompt="{resourceManager.getString('cms','selectActionLabel')}" visible="{_showCB}" includeInLayout="{_showCB}">
 	</mx:ComboBox>
+	<mx:Button label="{resourceManager.getString('cms', 'previewActionLabel')}" click="{dispatchPreview()}" 
+			   visible="{_showBtn &amp;&amp; !_showCB}" includeInLayout="{_showBtn &amp;&amp; !_showCB}" styleName="dataGridBtn"/>
 </renderers:FlavorAssetRendererBase>

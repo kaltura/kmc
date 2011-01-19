@@ -12,6 +12,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
@@ -39,7 +40,7 @@
 			private var _destinationName:String;
 			private var _timeManager:DateFieldWithTimeStepperLogic;
 			[Bindable]
-			private var _thumbsArray:Array = new Array();
+			private var _thumbsArray:ArrayCollection = new ArrayCollection();
 			[Bindable]
 			private var _flavorAssets:ArrayCollection = new ArrayCollection();
 			[Bindable]
@@ -53,6 +54,9 @@
 			[Bindable]
 			private var _tags:String;
 			private var _isDirty:Boolean = false;
+			private var _oldStartDate:Number;
+			private var _oldEndDate:Number;
+			private var _oldThumbs:String;
 			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -76,6 +80,8 @@
 			public function set entryDis(value:EntryDistributionWithProfile):void
 			{
 				_entryDis = value;
+				setOldData(_entryDis.kalturaEntryDistribution);
+				
 				_destinationName = _entryDis.kalturaDistributionProfile.name;
 				buildTitle();
 				buildThumbsArray();
@@ -102,8 +108,9 @@
 			/**
 			 * builds the data provider for thumbnails table, according to required thumbs and existing thumbs.
 			 * */
-			public function buildThumbsArray():void {
-				_thumbsArray = new Array();
+			private function buildThumbsArray():void {
+				_thumbsArray = new ArrayCollection();
+				var existingThumbs:Array = _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
 				var requiredDim:Array = _entryDis.kalturaDistributionProfile.requiredThumbDimensions;
 				var thumbsIds:String = _entryDis.kalturaEntryDistribution.thumbAssetIds;
 				var thumbsIdsArray:Array;
@@ -113,17 +120,36 @@
 				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray);
 				
 				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
+					var isArray:Boolean = false;
 					var thumbnail:ThumbnailWithDimensions = new ThumbnailWithDimensions(dim.width, dim.height);
 					for each (var st:String in thumbsIdsArray) {
 						if (st!="") {
 							var thumb:ThumbnailWithDimensions = thumbsMap.getValue(st) as ThumbnailWithDimensions;
 							if (thumb && thumb.width==dim.width && thumb.height==dim.height) {
-								thumbnail = thumb;
+								thumbnail.thumbAsset = thumb.thumbAsset;
+								thumbnail.thumbUrl = thumb.thumbUrl;
+								var arr:Array = new Array(thumbnail);
+								//check if there are more suitable thumbnails
+								for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
+									if (existingThumb.thumbAsset && 
+										(existingThumb.thumbAsset.id!=st) &&
+										(existingThumb.width==thumb.width) &&
+										(existingThumb.height==thumb.height)) {
+										var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumb.width, thumb.height, existingThumb.thumbAsset);
+										newThumb.thumbUrl = existingThumb.thumbUrl;
+										arr.push(newThumb);
+										isArray = true;
+									}
+								}
+								if (isArray)
+									_thumbsArray.addItem(arr);
+								 
 								break;
 							}
 						}
 					}
-					_thumbsArray.push(thumbnail);
+					if (!isArray)
+						_thumbsArray.addItem(thumbnail);
 				}
 				
 			}
@@ -146,8 +172,9 @@
 				if (flavorsIds) {
 					var flavorsIdsArray:Array = flavorsIds.split(",");
 					for each (var st:String in flavorsIdsArray) {
+						var flavorId:int = parseInt(st);
 						for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
-							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id == st) {
+							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == flavorId) {
 								_flavorAssets.addItem(flavorWithParams);
 								break;
 							}
@@ -178,8 +205,10 @@
 			}
 			
 			private function closeHandler(event:CloseEvent):void {
-				if (event.detail == Alert.YES)
+				if (event.detail == Alert.YES) {
+					getOldData(entryDis.kalturaEntryDistribution);
 					dispatchCloseEvent();
+				}
 			}
 			
 			private function validateTimes():void {
@@ -229,7 +258,7 @@
 			/**
 			 * removes the given thumb id from the entryDistribution thumbs list.
 			 * */
-			public function removeThumbnail(thumbId:String):void {
+			 public function removeThumbnail(thumbId:String):void {
 				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
 				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
 				for (var i:int = 0; i<thumbsArray.length; i++) {
@@ -240,12 +269,46 @@
 				}
 				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
 				_isDirty = true;
+			} 
+			
+			/**
+			 * swaps between the given thumb and the new thumb in the thumbAssedIds string
+			 * */
+			public function swapThumbs(originalThumbId:String, newThumbId:String): void {
+				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
+				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
+				for (var i:int = 0; i<thumbsArray.length; i++) {
+					if (thumbsArray[i]==originalThumbId) {
+						thumbsArray[i] = newThumbId;
+						break;
+					}	
+				}
+				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
+				_isDirty = true;
+			}
+			
+			/**
+			 * saves data that might be changed in this window in backup values
+			 * */
+			private function setOldData(entryDistribution:KalturaEntryDistribution):void {
+				_oldStartDate = entryDistribution.sunrise;
+				_oldEndDate = entryDistribution.sunset;
+				_oldThumbs = entryDistribution.thumbAssetIds;
+			}
+			/**
+			 * sets the original data back to the given entry
+			 * */
+			private function getOldData(entryDistribution:KalturaEntryDistribution):void {
+				entryDistribution.sunrise = _oldStartDate;
+				entryDistribution.sunset = _oldEndDate;
+				entryDistribution.thumbAssetIds = _oldThumbs;
 			}
 			
 			private function save():void {
 				if (_isDirty) {
 					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, _entryDis.kalturaEntryDistribution);
 					updateEntryDistribution.dispatch();
+					setOldData(entryDis.kalturaEntryDistribution);
 					_isDirty = false;
 				}
 				
@@ -290,7 +353,7 @@
 	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" fontWeight="bold"/>
 	<mx:HBox paddingLeft="7">
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}" includeInLayout="{_thumbsArray.length==0}"/>
-		<mx:HorizontalList width="{105 * _thumbsArray.length}"
+		<mx:HorizontalList width="{133 * _thumbsArray.length}"
 						   dataProvider="{_thumbsArray}" borderStyle="solid"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.ThumbDetailsRenderer"
 						   rowCount="1" columnCount="{_thumbsArray.length}" height="175"

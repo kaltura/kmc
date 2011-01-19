@@ -133,7 +133,7 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			
 			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
-			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC);
+			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC | Array.DESCENDING);
 			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
 		}
 		

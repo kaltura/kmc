@@ -99,7 +99,7 @@
 			}
 			
 			private function onCreationComplete(event:Event):void {
-				createDemoDimensions(); //erase later! for QA tests
+				//createDemoDimensions(); //erase later! for QA tests
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				//no sources to crop from
@@ -319,18 +319,29 @@
 					var currentThumb:ThumbnailWithDimensions = value[i] as ThumbnailWithDimensions;
 					if (currentThumb.thumbAsset && currentThumb.thumbAsset.status == KalturaFlavorAssetStatus.READY)
 						_thumbnailsList.push(currentThumb);
-					if (currentThumb.usedDistributionProfilesArray.length>0) 
-						_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data:currentThumb});
+					if (currentThumb.usedDistributionProfilesArray.length>0) {
+						var presetAlreadyExist:Boolean = false;
+						for (var j:int = 0; j<_presetSizeList.length; j++) {
+							var thumbToCheck:ThumbnailWithDimensions = _presetSizeList[j].data as ThumbnailWithDimensions;
+							if ((thumbToCheck.width == currentThumb.width) && (thumbToCheck.height == currentThumb.height)){
+								presetAlreadyExist = true;
+								break;
+							}
+						}
+						if (!presetAlreadyExist)
+							_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data:currentThumb});
+					}
 				}
 				
 				if (_presetSizeList.length>0) {
 					_isPreSize = true;
+					
 				}
 				
 				
 				if (presetComboBox) {
 					//for qa!!!!! erase later!!!!!!!!!!
-					createDemoDimensions();
+					//createDemoDimensions();
 					presetComboBox.selectedIndex = 0;
 				}
 				if (imgList) {
@@ -413,6 +424,8 @@
 			 * */
 			private function onImgItemClick():void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
+				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length>0))
+					presetComboBox.selectedIndex = 0;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
 				//setPreviewImgDim();
 				imageBox.removeChild(_imageCrop);

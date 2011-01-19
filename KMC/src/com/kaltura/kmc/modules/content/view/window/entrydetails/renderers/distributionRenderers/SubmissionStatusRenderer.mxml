@@ -48,13 +48,15 @@
 			private var  flavor:String = ResourceManager.getInstance().getString('cms','flavor');
 			private var  metadata:String = ResourceManager.getInstance().getString('cms','metadata');
 			private var  missing:String = ResourceManager.getInstance().getString('cms','missing') + " ";
-				
+			
+			private var _entryDis:KalturaEntryDistribution;
+			
 			override public function set data(value:Object):void {
-				var entryDis:KalturaEntryDistribution = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
+				_entryDis = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
 				var status:String;
 				var status2:String;
 	
-				switch (entryDis.status) {
+				switch (_entryDis.status) {
 					case KalturaEntryDistributionStatus.PENDING:
 						status = READY_FOR_DISTRIBUTION;
 						break;
@@ -79,7 +81,7 @@
 						break;
 					case KalturaEntryDistributionStatus.READY:
 						status = DISTRIBUTED;
-						if (entryDis.dirtyStatus == KalturaEntryDistributionFlag.UPDATE_REQUIRED)
+						if (_entryDis.dirtyStatus == KalturaEntryDistributionFlag.UPDATE_REQUIRED)
 							status2 = UPDATE_REQUIRED;
 						break;
 				}
@@ -94,12 +96,12 @@
 					_statusVisible = false;
 					_errorsVisible = false;
 				}
-				else if (entryDis.validationErrors.length > 0 ) 
+				else if (_entryDis.validationErrors.length > 0 ) 
 				{
 					_errorsVisible = true;
 					_statusVisible = true;
 					statusLabel.text = statusLabel.text + ", ";
-					parseErrors(entryDis.validationErrors);
+					parseErrors(_entryDis.validationErrors);
 					setErrosTexts(); 
 				}
 				else {
@@ -169,38 +171,48 @@
 			}
 			
 			private function onDistributionErrorClick():void {
-
+				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
+				errorDetails.setType(ErrorDetailsWindow.GENERAL_ERROR);
+				errorDetails.title = distributionErrorLink.label;
+				var errorLabel:String;
+				switch (_entryDis.errorType) {
+				}
+				//errorDetails.setGeneralLabel();
+				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(errorDetails);
 			}
+			
 			private function onThumbErrorLink():void {
 				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
+				errorDetails.setType(ErrorDetailsWindow.THUMB_ERROR);
 				errorDetails.viewStack = parentDocument.viewStack;
 				errorDetails.title = missing + thumbnail;
 				for each (var err:KalturaDistributionValidationErrorMissingThumbnail in _thumbErrorsArray) {
 					errorDetails.addErrorDetail(getDimensionsError(err));
 				}
-				errorDetails.setType(ErrorDetailsWindow.THUMB_ERROR);
 				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(errorDetails);
 			}
 			
 			private function getDimensionsError(error:KalturaDistributionValidationErrorMissingThumbnail):String {
-				var st:String = resourceManager.getString('cms','requiredDimensions') + error.dimensions.width + " X " + error.dimensions.height;
+				var st:String = error.dimensions.width + " X " + error.dimensions.height;
 				return st;
 			}
 			
 			private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
-				var st:String = resourceManager.getString('cms','requiredFlavor') + error.flavorParamsId;	
-				return st;
-			}
-			private function getMetadataError(error:KalturaDistributionValidationError):String {
-				var st:String = resourceManager.getString('cms','requiredFlavor');
-				if (error is KalturaDistributionValidationErrorInvalidMetadata)
-					st += (error as KalturaDistributionValidationErrorInvalidMetadata).flavorParamsId;	
-				else
-					st += (error as KalturaDistributionValidationErrorMissingMetadata).flavorParamsId;	
+				var st:String = error.flavorParamsId;	
 				return st;
 			}
 			
+			 private function getMetadataError(error:KalturaDistributionValidationError):String {
+				var st:String ;
+				if (error is KalturaDistributionValidationErrorInvalidMetadata)
+					st = (error as KalturaDistributionValidationErrorInvalidMetadata).fieldName;	
+				else
+					st = (error as KalturaDistributionValidationErrorMissingMetadata).fieldName;	
+				return st;
+			}
+			 
 			private function onFlavorErrorClick():void {
 				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
 				errorDetails.setType(ErrorDetailsWindow.FLAVOR_ERROR);
