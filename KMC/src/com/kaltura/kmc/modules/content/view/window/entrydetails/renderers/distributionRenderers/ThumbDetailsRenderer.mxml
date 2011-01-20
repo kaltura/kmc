@@ -11,9 +11,12 @@
 			private var _visibleImg:Boolean;
 			[Bindable]
 			private var _swapVisible:Boolean;
+			[Bindable]
+			private var _noneVisibe:Boolean;
 			private var _thumbnail:ThumbnailWithDimensions;
 			private var _thumbArray:Array;
-			private var _lastIndex:int;
+			private var _lastIndex:int = 0;
+			private var _oldId:String;
 			
 			override public function set data(value:Object):void {
 				if (!value)
@@ -21,10 +24,12 @@
 				//if there are a few thumbnails with the same dimensions
 				if (value is Array) {
 					_thumbArray = value as Array;
-					_thumbnail = _thumbArray[0] as ThumbnailWithDimensions;
+					_thumbnail = _thumbArray[_lastIndex] as ThumbnailWithDimensions;
 					_lastIndex = 0;
-					if (_thumbArray.length > 1)
+					if (_thumbArray.length > 1) {
 						_swapVisible = true;
+						_oldId = _thumbnail.thumbAsset.id;
+					}
 					else
 						_swapVisible = false;
 				}
@@ -43,37 +48,53 @@
 			}
 			
 			private function onRemoveBtnClick():void {
-				parentDocument.removeThumbnail(_thumbnail.thumbAsset.id);
-				if (_swapVisible) {
+				parentDocument.swapThumbs(_thumbnail.thumbAsset.id, '');
+				/* if (_swapVisible) {
 					for (var i:int = 0; i<_thumbArray.length; i++) {
 						var thumb:ThumbnailWithDimensions = _thumbArray[i] as ThumbnailWithDimensions;
 						thumb.thumbUrl = null;
 					}
 					_swapVisible = false;
 				}
-				else
+				else */
 					_thumbnail.thumbUrl = null;
 			}
 			
 			private function onSwapBtnClick():void {
-				var oldId:String = _thumbnail.thumbAsset.id;
-				_lastIndex++;
-				wipeLeft.play();
-				_thumbnail = _thumbArray[_lastIndex % _thumbArray.length];
-				parentDocument.swapThumbs(oldId, _thumbnail.thumbAsset.id);
-				img.source = _thumbnail.thumbUrl;
+				//if this is the last thumb, add the option to select "none"
+				var newID:String;
+				if ((_lastIndex==_thumbArray.length-1) && !_noneVisibe) {
+					_noneVisibe = true;
+					newID  = '';
+				}
+				else {
+					_noneVisibe = false;
+					_lastIndex = (_lastIndex + 1) % _thumbArray.length;
+					wipeLeft.play();
+					_thumbnail = _thumbArray[_lastIndex];
+					newID = _thumbnail.thumbAsset.id
+					img.source = _thumbnail.thumbUrl;
+				}
+
+				parentDocument.swapThumbs(_oldId, newID);
+				_oldId = newID;
+
 			}
 			
 		]]>
 	</mx:Script>
 	<mx:WipeLeft id="wipeLeft" duration="500" target="{img}"/>
 	<mx:Label id="dimensionsLabel" text="{_dimensionsString}"/>
-	<mx:Image horizontalAlign="center" verticalAlign="middle" id="img" width="90" height="90" visible="{_visibleImg}"/>
+	<mx:Image horizontalAlign="center" verticalAlign="middle" id="img" width="90" height="90" visible="{_visibleImg &amp;&amp; !_noneVisibe}"
+			  includeInLayout="{!_noneVisibe}"/>
+	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="90" height="90" visible="{_noneVisibe}" includeInLayout="{_noneVisibe}">
+		<mx:Label text="{resourceManager.getString('cms','noThumbnails')}" fontWeight="bold"/>
+	</mx:VBox>
 	<mx:Label id="missingLbl" bottom="5" visible="{!_visibleImg}" includeInLayout="{!_visibleImg}" text="{resourceManager.getString('cms','missing')}"/>
 	<mx:HBox horizontalAlign="center" width="100%" horizontalGap="0" bottom="5" visible="{_visibleImg}" includeInLayout="{_visibleImg}">
 		<mx:LinkButton id="swapBtn" visible="{_swapVisible}" includeInLayout="{_swapVisible}"
 					   label="{resourceManager.getString('cms','swap')}" click="{onSwapBtnClick()}"/>
-		<mx:LinkButton id="removeBtn" bottom="5" visible="{_visibleImg}" includeInLayout="{_visibleImg}" 
+		<mx:LinkButton id="removeBtn" bottom="5" visible="{!_swapVisible}" includeInLayout="{!_swapVisible}" 
 					   label="{resourceManager.getString('cms','remove')}" styleName="multiRemoveButton"
 					   click="{onRemoveBtnClick()}"/>
 	</mx:HBox>

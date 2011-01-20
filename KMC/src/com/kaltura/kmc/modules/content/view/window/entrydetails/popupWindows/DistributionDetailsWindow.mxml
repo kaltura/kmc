@@ -278,7 +278,7 @@
 			/**
 			 * removes the given thumb id from the entryDistribution thumbs list.
 			 * */
-			 public function removeThumbnail(thumbId:String):void {
+	/* 		 public function removeThumbnail(thumbId:String):void {
 				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
 				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
 				for (var i:int = 0; i<thumbsArray.length; i++) {
@@ -289,20 +289,36 @@
 				}
 				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
 				_isDirty = true;
-			} 
+			}  */
 			
 			/**
 			 * swaps between the given thumb and the new thumb in the thumbAssedIds string
+			 * if the original is empty, will just add the new thumb
+			 * if the new is empty, will remove the original
 			 * */
 			public function swapThumbs(originalThumbId:String, newThumbId:String): void {
 				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
 				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
-				for (var i:int = 0; i<thumbsArray.length; i++) {
-					if (thumbsArray[i]==originalThumbId) {
-						thumbsArray[i] = newThumbId;
-						break;
-					}	
+				var deleteThumb:Boolean = false;
+				if (originalThumbId == "") {
+					thumbsArray.push(newThumbId);
 				}
+				else {
+					if (newThumbId == "") {
+						deleteThumb = true;
+					}
+					for (var i:int = 0; i<thumbsArray.length; i++) {
+						if (thumbsArray[i]==originalThumbId) {
+							if (deleteThumb)
+								thumbsArray.splice(i,1);
+							else
+								thumbsArray[i] = newThumbId;
+							
+							break;
+						}	
+					}
+				}
+
 				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
 				_isDirty = true;
 			}
