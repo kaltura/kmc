@@ -377,7 +377,7 @@
 			private function getDistributionFilters (currentFilter : KalturaBaseEntryBaseFilter) : void
 			{
 				var distributionSearchItem : KalturaSearchOperator = new KalturaSearchOperator();
-				var distributionProfileSearchCondition : KalturaContentDistributionSearchItem = new KalturaContentDistributionSearchItem();
+				var distributionProfileSearchCondition : KalturaContentDistributionSearchItem;
 				distributionSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
 				
 				var btnArr:Array = _metadataFilters["destinations"];
@@ -388,6 +388,7 @@
 						if (btnArr[i].selected) {
 							for (var j:int=0; j < distributionProfileArr.length; j++) {
 								if ( (distributionProfileArr[j] as KalturaDistributionProfile).name == btnArr[i].label) {
+									distributionProfileSearchCondition = new KalturaContentDistributionSearchItem();
 									distributionProfileSearchCondition.distributionProfileId = distributionProfileArr[j].id;
 									distributionSearchItem.items.push(distributionProfileSearchCondition);
 								}
