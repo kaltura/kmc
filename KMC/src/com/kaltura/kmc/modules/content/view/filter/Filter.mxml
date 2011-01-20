@@ -22,6 +22,7 @@
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			import com.kaltura.vo.KalturaSearch;
 			import com.kaltura.vo.KalturaSearchCondition;
+			import com.kaltura.vo.KalturaSearchOperator;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
@@ -286,11 +287,11 @@
 				// metadata filters
 				if (metadataProfile) {
 					getMetadataFilters(currentFilter);
-				}
+				} 
 				
 				if (distributionProfileArr) {
 					getDistributionFilters(currentFilter);
-				}
+				} 
 				// category build
 				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
 				updateFilterStatus(currentFilter);
@@ -365,8 +366,8 @@
 					}
 				}
 
-				if (currentFilter is KalturaMediaEntryFilter) {
-					(currentFilter as KalturaMediaEntryFilter).advancedSearch = mainKalturaMetadataSearchItem;
+				if (currentFilter is KalturaMediaEntryFilter && mainKalturaMetadataSearchItem.items.length) {
+					((currentFilter as KalturaMediaEntryFilter).advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
 				}
 			}
 			
@@ -375,8 +376,8 @@
 			 * */
 			private function getDistributionFilters (currentFilter : KalturaBaseEntryBaseFilter) : void
 			{
-				var distributionSearchItem : KalturaContentDistributionSearchItem = new KalturaContentDistributionSearchItem();
-				var distributionProfileSearchCondition : KalturaSearchCondition = new KalturaSearchCondition();
+				var distributionSearchItem : KalturaSearchOperator = new KalturaSearchOperator();
+				var distributionProfileSearchCondition : KalturaContentDistributionSearchItem = new KalturaContentDistributionSearchItem();
 				distributionSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
 				
 				var btnArr:Array = _metadataFilters["destinations"];
@@ -387,14 +388,17 @@
 						if (btnArr[i].selected) {
 							for (var j:int=0; j < distributionProfileArr.length; j++) {
 								if ( (distributionProfileArr[j] as KalturaDistributionProfile).name == btnArr[i].label) {
-									distributionSearchItem.distributionProfileId = distributionProfileArr[j].id;
+									distributionProfileSearchCondition.distributionProfileId = distributionProfileArr[j].id;
+									distributionSearchItem.items.push(distributionProfileSearchCondition);
 								}
 							}
 						}
 					}
 					
-					if (distributionSearchItem.distributionProfileId != int.MIN_VALUE && currentFilter is KalturaMediaEntryFilter) {
-						(currentFilter as KalturaMediaEntryFilter).advancedSearch = distributionSearchItem;
+
+					if (currentFilter is KalturaMediaEntryFilter && distributionSearchItem.items.length) {
+						((currentFilter as KalturaMediaEntryFilter).advancedSearch as KalturaSearchOperator).items.push(distributionSearchItem);
+
 					}
 				}
 				
@@ -556,12 +560,12 @@
 				else {//if any of the members has been selected shut down the title
 					btnArr[0].selected = false;
 					
-					if(groupName == "destinations") {
+					/* if(groupName == "destinations") {
 						for (i = 1; i < btnArr.length; i++) {
 							if (btnArr[i].selected && btnArr[i] != (event.target as Button))
 								btnArr[i].selected = false;
 						} 
-					}
+					} */
 				}
 
 				updateImageButton(btnArr);
@@ -1073,6 +1077,8 @@
 
 			public function get ps3filter():KalturaMediaEntryFilter {
 				var mediaFilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
+				mediaFilter.advancedSearch = new KalturaSearchOperator();
+				(mediaFilter.advancedSearch as KalturaSearchOperator).type = KalturaSearchOperatorType.SEARCH_AND;
 				renderFilterVo(mediaFilter);
 				return mediaFilter;
 			}
