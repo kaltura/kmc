@@ -297,6 +297,7 @@ package com.kaltura.kmc.modules.content.utils {
 				compInstance["metadataObject"] = boundModel;
 				// pass relevant model parts:
 				compInstance["filterModel"] = _model.filterModel;
+				compInstance["distributionProfilesArr"] = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
 				compInstance["selectedEntry"] = _model.entryDetailsModel.selectedEntry;
 				
 			}
