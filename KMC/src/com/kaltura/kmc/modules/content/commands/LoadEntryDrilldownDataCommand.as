@@ -128,14 +128,18 @@ package com.kaltura.kmc.modules.content.commands
 			mr.addAction(listThumbnailAsset);
 			
 //			entry distribution
-			var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
-			entryDistributionFilter.entryIdEqual = entryId;	
-			var listEntryDistribution:EntryDistributionList = new EntryDistributionList(entryDistributionFilter);
-			mr.addAction(listEntryDistribution);
+			if (_model.filterModel.enableDistribution)
+			{
+				var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
+				entryDistributionFilter.entryIdEqual = entryId;	
+				var listEntryDistribution:EntryDistributionList = new EntryDistributionList(entryDistributionFilter);
+				mr.addAction(listEntryDistribution);
 			
-//			distribution profiles
-			var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
-			mr.addAction(listDistributionProfile);
+//				distribution profiles
+			
+				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
+				mr.addAction(listDistributionProfile);
+			}
 			
 //			access control profiles
 			var acfilter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
@@ -155,20 +159,32 @@ package com.kaltura.kmc.modules.content.commands
 		
 		
 		override public function result(data:Object):void {
+			var multiRequestIndex : int = 3;
 //			categories
 			handleCategoriesList(data.data[1] as KalturaCategoryListResponse, data.data[0] as String);
 //			flavor assets by entry id
 			handleFlavorAssetsByEntryId(data.data[2] as Array);
 //			entry metadata
-			handleMetadata(data.data[3] as KalturaMetadataListResponse);
+			if (data.data[multiRequestIndex] is KalturaMetadataListResponse) {
+				handleMetadata(data.data[multiRequestIndex] as KalturaMetadataListResponse);
+				multiRequestIndex++;				
+			}
 //			thumbnail assets
-			handleThumbnailAssets(data.data[4] as Array);
+			handleThumbnailAssets(data.data[multiRequestIndex] as Array);			
+			multiRequestIndex++;
+			
 //			entry distribution
-			handleEntryDistribution(data.data[5] as KalturaEntryDistributionListResponse);
+			if (data.data[multiRequestIndex] is KalturaEntryDistributionListResponse) {
+				handleEntryDistribution(data.data[multiRequestIndex] as KalturaEntryDistributionListResponse);
+				multiRequestIndex++;
+			}
 //			distribution profiles
-			handleDistributionProfiles(data.data[6] as KalturaDistributionProfileListResponse);
+			if (data.data[multiRequestIndex] is KalturaDistributionProfileListResponse) {
+				handleDistributionProfiles(data.data[multiRequestIndex] as KalturaDistributionProfileListResponse);
+				multiRequestIndex++
+			}
 //			access control profiles
-			handleAccessControls(data.data[7] as KalturaAccessControlListResponse);
+			handleAccessControls(data.data[multiRequestIndex] as KalturaAccessControlListResponse);
 			
 			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
