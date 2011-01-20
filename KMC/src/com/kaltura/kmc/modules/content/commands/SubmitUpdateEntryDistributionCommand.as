@@ -24,7 +24,7 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
-			var updateResult:KalturaEntryDistribution = data as KalturaEntryDistribution;
+			var updateResult:KalturaEntryDistribution = data.data as KalturaEntryDistribution;
 			_entryDis.status = updateResult.status;
 			_entryDis.dirtyStatus = updateResult.dirtyStatus;
 			//for data binding

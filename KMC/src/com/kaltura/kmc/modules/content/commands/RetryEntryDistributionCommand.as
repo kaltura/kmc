@@ -8,10 +8,12 @@ package com.kaltura.kmc.modules.content.commands
 
 	public class RetryEntryDistributionCommand extends KalturaCommand
 	{
+		private var _entryDis:KalturaEntryDistribution;
+		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			var entryDis:KalturaEntryDistribution = (event as EntryDistributionEvent).entryDistribution;
-			var retry:EntryDistributionRetrySubmit = new EntryDistributionRetrySubmit(entryDis.id);
+			_entryDis = (event as EntryDistributionEvent).entryDistribution;
+			var retry:EntryDistributionRetrySubmit = new EntryDistributionRetrySubmit(_entryDis.id);
 			retry.addEventListener(KalturaEvent.COMPLETE, result);
 			retry.addEventListener(KalturaEvent.FAILED, fault);
 			
@@ -21,6 +23,9 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			var updateResult:KalturaEntryDistribution = data.data as KalturaEntryDistribution;
+			_entryDis.status = updateResult.status;
+
 			//for data binding
 			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = _model.entryDetailsModel.distributionProfileInfo.entryDistributionArray.concat();
 		}
