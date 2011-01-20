@@ -452,8 +452,10 @@
 					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
 					kdp3LoaderParent.addChildAt(_kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
 					//kdp3LoaderParent.removeChild(kdp3Loader);
-					_kdp3SwfLoader.content["sendNotification"]('changeMedia', {entryId: (data as KalturaBaseEntry).id});
-						//Change media
+					//Change media
+					if (data && data is KalturaBaseEntry) {
+						_kdp3SwfLoader.content["sendNotification"]('changeMedia', {entryId: (data as KalturaBaseEntry).id});
+					}
 				}
 				else {
 					// default
