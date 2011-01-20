@@ -21,8 +21,8 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = true;
 			 
 			var kp:KalturaPartner = new KalturaPartner();
-			kp.adminEmail = _model.partnerData.adminEmail;	
-			kp.adminName = _model.partnerData.adminName;
+			//kp.adminEmail = _model.partnerData.adminEmail;	
+			//kp.adminName = _model.partnerData.adminName;
 			kp.adultContent = _model.partnerData.adultContent;
 			kp.allowQuickEdit = _model.partnerData.allowQuickEdit ? 1 : 0;
 			kp.appearInSearch = _model.partnerData.appearInSearch;	
