@@ -130,15 +130,16 @@ package com.kaltura.kmc.modules.content.commands
 //			entry distribution
 			if (_model.filterModel.enableDistribution)
 			{
+				//				distribution profiles
+				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
+				mr.addAction(listDistributionProfile);
+				
 				var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
 				entryDistributionFilter.entryIdEqual = entryId;	
 				var listEntryDistribution:EntryDistributionList = new EntryDistributionList(entryDistributionFilter);
 				mr.addAction(listEntryDistribution);
 			
-//				distribution profiles
-			
-				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
-				mr.addAction(listDistributionProfile);
+
 			}
 			
 //			access control profiles
@@ -173,15 +174,16 @@ package com.kaltura.kmc.modules.content.commands
 			handleThumbnailAssets(data.data[multiRequestIndex] as Array);			
 			multiRequestIndex++;
 			
-//			entry distribution
-			if (data.data[multiRequestIndex] is KalturaEntryDistributionListResponse) {
-				handleEntryDistribution(data.data[multiRequestIndex] as KalturaEntryDistributionListResponse);
-				multiRequestIndex++;
-			}
+
 //			distribution profiles
 			if (data.data[multiRequestIndex] is KalturaDistributionProfileListResponse) {
 				handleDistributionProfiles(data.data[multiRequestIndex] as KalturaDistributionProfileListResponse);
 				multiRequestIndex++
+			}
+			//			entry distribution
+			if (data.data[multiRequestIndex] is KalturaEntryDistributionListResponse) {
+				handleEntryDistribution(data.data[multiRequestIndex] as KalturaEntryDistributionListResponse);
+				multiRequestIndex++;
 			}
 //			access control profiles
 			handleAccessControls(data.data[multiRequestIndex] as KalturaAccessControlListResponse);
