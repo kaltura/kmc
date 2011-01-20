@@ -29,6 +29,8 @@
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
 			
+			import org.hamcrest.collection.array;
+			
 			/**
 			 * will be sent when the window closes
 			 * */
@@ -43,10 +45,6 @@
 			private var _thumbsArray:ArrayCollection = new ArrayCollection();
 			[Bindable]
 			private var _flavorAssets:ArrayCollection = new ArrayCollection();
-			[Bindable]
-			private var _flavorRowHeight:int;
-			[Bindable]
-			private var _flavorHeaderHeight:int;
 			[Bindable]
 			private var _name:String;
 			[Bindable]
@@ -118,7 +116,7 @@
 					thumbsIdsArray = thumbsIds.split(",");
 				
 				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray);
-				
+				//first check all thumbs with  required dimensions
 				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
 					var isArray:Boolean = false;
 					var thumbnail:ThumbnailWithDimensions = new ThumbnailWithDimensions(dim.width, dim.height);
@@ -128,6 +126,8 @@
 							if (thumb && thumb.width==dim.width && thumb.height==dim.height) {
 								thumbnail.thumbAsset = thumb.thumbAsset;
 								thumbnail.thumbUrl = thumb.thumbUrl;
+								//we handle this thumb, so we can remove it
+								thumbsMap.remove(st);
 								var arr:Array = new Array(thumbnail);
 								//check if there are more suitable thumbnails
 								for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
@@ -139,6 +139,8 @@
 										newThumb.thumbUrl = existingThumb.thumbUrl;
 										arr.push(newThumb);
 										isArray = true;
+										if (thumbsMap.containsKey(existingThumb.thumbAsset.id))
+											thumbsMap.remove(existingThumb.thumbAsset.id);
 									}
 								}
 								if (isArray)
@@ -151,36 +153,54 @@
 					if (!isArray)
 						_thumbsArray.addItem(thumbnail);
 				}
-				
+				//go over all remaind thumbnails, copy them and add them to the data provider
+				for (var key:String in thumbsMap) {
+					var remainedThumb:ThumbnailWithDimensions = thumbsMap.getValue(key) as ThumbnailWithDimensions;
+					var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(remainedThumb.width, remainedThumb.height, remainedThumb.thumbAsset);
+					thumbToAdd.thumbUrl = remainedThumb.thumbUrl;
+					_thumbsArray.addItem(thumbToAdd);
+				}
 			}
 			
 			private function onCreationComplete():void {
-				//to avoid warning, save these params
-				_flavorHeaderHeight = flavorsTable.headerHeight;
-				_flavorRowHeight = flavorsTable.rowHeight
 				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
 				setSchedulerData();
 			}
 			
 			/**
 			 * build the data provider for the flavors table, according to the used flavors in current distirbution
+			 * and the required flavor params of the distribution profile
 			 * */
 			private function buildFlavorsAssets():void {
 				_flavorAssets = new ArrayCollection();
 				var entryFlavors:ArrayCollection = _entryDetailsModel.flavorParamsAndAssetsByEntryId;
-				var flavorsIds:String = _entryDis.kalturaEntryDistribution.flavorAssetIds;
-				if (flavorsIds) {
-					var flavorsIdsArray:Array = flavorsIds.split(",");
-					for each (var st:String in flavorsIdsArray) {
-						var flavorId:int = parseInt(st);
-						for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
-							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == flavorId) {
+				var requiredFlavors:String = _entryDis.kalturaDistributionProfile.requiredFlavorParamsIds;
+				var requiredFlavorsArray:Array;
+				if (requiredFlavors)
+					requiredFlavorsArray = requiredFlavors.split(",");
+				var flavorsAssetsIds:String = _entryDis.kalturaEntryDistribution.flavorAssetIds;
+				var flavorsAssetsArray:Array;
+				if (flavorsAssetsIds)
+					flavorsAssetsArray = flavorsAssetsIds.split(",");
+	
+				for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
+					var isRequiredParam:Boolean = false;
+					for each (var stringId:String in requiredFlavorsArray) {
+						var flavorId:int = parseInt(stringId);
+						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == flavorId) {
+							_flavorAssets.addItem(flavorWithParams);
+							isRequiredParam = true;
+							break;
+						}
+					}
+					if (!isRequiredParam && flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset) {
+						for each (var assetId:String in flavorsAssetsArray) {
+							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id == assetId) {
 								_flavorAssets.addItem(flavorWithParams);
 								break;
 							}
 						}
 					}
-				
 				}
 			}
 
@@ -363,7 +383,7 @@
 	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" fontWeight="bold"/>
 	<mx:HBox paddingLeft="7">
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}" includeInLayout="{_flavorAssets.length==0}"/>
-		<entryDetails:FlavorsTable id="flavorsTable" height="{(_flavorAssets.length * _flavorRowHeight) + _flavorHeaderHeight}" 
+		<entryDetails:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" 
 								   flavorAssets="{_flavorAssets}"
 								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>	
 	</mx:HBox>

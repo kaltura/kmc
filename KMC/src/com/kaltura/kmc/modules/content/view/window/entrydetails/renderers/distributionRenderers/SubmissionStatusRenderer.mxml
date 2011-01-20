@@ -4,6 +4,8 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.ErrorDetailsWindow;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.types.KalturaBatchJobErrorTypes;
 			import com.kaltura.types.KalturaEntryDistributionFlag;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -14,6 +16,7 @@
 			import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Button;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
@@ -176,8 +179,21 @@
 				errorDetails.title = distributionErrorLink.label;
 				var errorLabel:String;
 				switch (_entryDis.errorType) {
+					case KalturaBatchJobErrorTypes.APP:
+					case KalturaBatchJobErrorTypes.KALTURA_API:
+					case KalturaBatchJobErrorTypes.KALTURA_CLIENT:
+						errorLabel = resourceManager.getString('cms','kalturaError');
+						break;
+					case KalturaBatchJobErrorTypes.HTTP:
+						errorLabel = resourceManager.getString('cms','transferError');
+						break;
+					case KalturaBatchJobErrorTypes.CURL:
+					case KalturaBatchJobErrorTypes.RUNTIME:
+						errorLabel = resourceManager.getString('cms','destintaionError');
+						break;
+						
 				}
-				//errorDetails.setGeneralLabel();
+				errorDetails.setGeneralLabel(errorLabel);
 				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(errorDetails);
 			}
@@ -200,8 +216,17 @@
 			}
 			
 			private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
-				var st:String = error.flavorParamsId;	
-				return st;
+				var id:int = parseInt(error.flavorParamsId);	
+				var flavorName:String;
+				var flavors:ArrayCollection = parentDocument.entryDetailsModel.flavorParamsAndAssetsByEntryId;
+				for each (var flavorWithParams:FlavorAssetWithParamsVO in flavors) {
+					if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == id) {
+						flavorName = flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.name;
+						break;
+					}
+				}
+				
+				return flavorName;
 			}
 			
 			 private function getMetadataError(error:KalturaDistributionValidationError):String {
