@@ -32,6 +32,7 @@
 
 package com.adobe.utils
 {
+	import mx.utils.ObjectUtil;
 	
 	/**
 	* 	Class that contains static utility methods for manipulating and working
@@ -166,18 +167,68 @@ package com.adobe.utils
 		*/		
 		public static function arraysAreEqual(arr1:Array, arr2:Array):Boolean
 		{
-			if(arr1.length != arr2.length)
+			if( (arr1 &&  !arr2) || (!arr1 && arr2) )
 			{
-				return false;
+				return false;	
 			}
+
 			
-			var len:Number = arr1.length;
-			
-			for(var i:Number = 0; i < len; i++)
+			if (arr1 && arr2)
 			{
-				if(arr1[i] !== arr2[i])
+				if(arr1.length != arr2.length)
 				{
 					return false;
+				}
+				
+				var len:Number = arr1.length;
+				for(var i:Number = 0; i < len; i++)
+				{
+					if(arr1[i] !== arr2[i])
+					{
+						return false;
+					}
+				}
+			}
+			
+			return true;
+		}
+		
+		/**
+		 *	Compares two arrays containing Kaltura objects and returns a boolean indicating whether the arrays
+		 * 
+		 * 	@param arr1 The first array that will be compared to the second.
+		 *
+		 * 	@param arr2 The second array that will be compared to the first.
+		 *
+		 *	@return True if the arrays contains the same values at the same indexes.
+		 False if they do not.
+		 *
+		 * 	@langversion ActionScript 3.0
+		 *	@playerversion Flash 9.0
+		 *	@tiptext
+		 */		
+		public static function kalturaObjectArraysAreEqual(arr1:Array, arr2:Array):Boolean
+		{
+			if( (arr1 &&  !arr2) || (!arr1 && arr2) )
+			{
+				return false;	
+			}
+			
+			
+			if (arr1 && arr2)
+			{
+				if(arr1.length != arr2.length)
+				{
+					return false;
+				}
+				
+				var len:Number = arr1.length;
+				for(var i:Number = 0; i < len; i++)
+				{
+					if(arr1[i]["id"] !== arr2[i]["id"])
+					{
+						return false;
+					}
 				}
 			}
 			
