@@ -62,6 +62,13 @@ package com.kaltura.kmc.modules.content.commands
 					var removeSubmitEntryDistribution:EntryDistributionSubmitDelete = new EntryDistributionSubmitDelete(removeDistribution.id);
 					mr.addAction(removeSubmitEntryDistribution);	
 				}
+				//if entry wasn't submitted yet, delete it
+				else if (removeDistribution.status == KalturaEntryDistributionStatus.QUEUED ||
+						 removeDistribution.status == KalturaEntryDistributionStatus.PENDING)
+				{
+					var deleteDistribution:EntryDistributionDelete = new EntryDistributionDelete(removeDistribution.id);
+					mr.addAction(deleteDistribution);
+				}
 			}
 			//get the new entry distributions list
 			var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
