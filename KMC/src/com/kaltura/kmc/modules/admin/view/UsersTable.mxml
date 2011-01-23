@@ -82,6 +82,9 @@
 			 * */
 			private var _roles:ArrayCollection;
 			
+			[Bindable]
+			public var enableActionDropdown : Boolean = true;
+			
 			
 			// ==================================================================
 			// methods
@@ -250,6 +253,10 @@
 					return;
 				//remove the item
 				comboDataProvider.removeItemAt(i); 
+				if (comboDataProvider.length == 0)
+				{
+					enableActionDropdown = false;
+				}
 			}
 
 			/**
@@ -366,12 +373,13 @@
 						   headerStyleName="adminTableCenteredColumn" >
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
+					<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center" 
 							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
 						<mx:ComboBox width="130" selectedIndex="-1"
 									 dataProvider="{outerDocument.getActionsDP(data)}"
 									 prompt="{resourceManager.getString('admin','select_action')}"
-									 change="{outerDocument.onActionSelected(event)}" />
+									 change="{outerDocument.onActionSelected(event)}" 
+									 enabled="{outerDocument.enableActionDropdown}"/>
 					</mx:VBox>
 				</mx:Component>
 			</mx:itemRenderer>
