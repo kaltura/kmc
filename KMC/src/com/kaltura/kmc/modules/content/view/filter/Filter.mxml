@@ -5,6 +5,7 @@
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.modules.content.vo.CategoryVO;
@@ -242,7 +243,7 @@
 			
 			private function setDistributionTabVisibility():void {
         		if (_enableDistribution && _distributionProfileArr && _distributionProfileArr.length) {
-					accordion.addChildAt(distribution, 1);
+					accordion.addChildAt(distribution, accordion.numChildren - 1);
 					var field:KalturaDistributionProfile;
 					for each (var profile:Object in _distributionProfileArr) {
 						field = profile as KalturaDistributionProfile;
@@ -253,8 +254,6 @@
 					}
 				}
 				else {
-					distribution.visible = false;
-					distribution.includeInLayout = false;
 					if (distribution.parent is Accordion)
 						accordion.removeChild(distribution);
 				}
@@ -1006,11 +1005,14 @@
 			 */
 			public function set distributionProfileArr(value:Array):void
 			{
-				_distributionProfileArr = value;
-				setDistributionTabVisibility();
-				
-				if (value && value.length)
-					buildDistributionProfileFilter(value);
+				if (!ArrayUtil.kalturaObjectArraysAreEqual(value, _distributionProfileArr) )
+				{
+					_distributionProfileArr = value;
+						setDistributionTabVisibility();
+					
+					if (value && value.length)
+						buildDistributionProfileFilter(value);
+				}
 					
 			}
 			
