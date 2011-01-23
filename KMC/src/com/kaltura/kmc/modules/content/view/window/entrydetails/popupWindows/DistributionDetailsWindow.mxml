@@ -41,6 +41,7 @@
 			[Bindable]
 			private var _destinationName:String;
 			private var _timeManager:DateFieldWithTimeStepperLogic;
+			//array of arrays containing thumbnails
 			[Bindable]
 			private var _thumbsArray:ArrayCollection = new ArrayCollection();
 			[Bindable]
@@ -129,6 +130,7 @@
 								//we handle this thumb, so we can remove it
 								thumbsMap.remove(st);
 								var arr:Array = new Array(thumbnail);
+								isArray = true;
 								//check if there are more suitable thumbnails
 								for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
 									if (existingThumb.thumbAsset && 
@@ -137,8 +139,7 @@
 										(existingThumb.height==thumb.height)) {
 										var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumb.width, thumb.height, existingThumb.thumbAsset);
 										newThumb.thumbUrl = existingThumb.thumbUrl;
-										arr.push(newThumb);
-										isArray = true;
+										arr.push(newThumb);	
 										if (thumbsMap.containsKey(existingThumb.thumbAsset.id))
 											thumbsMap.remove(existingThumb.thumbAsset.id);
 									}
@@ -150,6 +151,7 @@
 							}
 						}
 					}
+					//only thumbnails with thumbAssets were added as arrays, others should be added now
 					if (!isArray)
 						_thumbsArray.addItem(thumbnail);
 				}
@@ -158,7 +160,7 @@
 					var remainedThumb:ThumbnailWithDimensions = thumbsMap.getValue(key) as ThumbnailWithDimensions;
 					var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(remainedThumb.width, remainedThumb.height, remainedThumb.thumbAsset);
 					thumbToAdd.thumbUrl = remainedThumb.thumbUrl;
-					_thumbsArray.addItem(thumbToAdd);
+					_thumbsArray.addItem(new Array(thumbToAdd));
 				}
 			}
 			
@@ -276,22 +278,6 @@
 			}
 			
 			/**
-			 * removes the given thumb id from the entryDistribution thumbs list.
-			 * */
-	/* 		 public function removeThumbnail(thumbId:String):void {
-				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
-				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
-				for (var i:int = 0; i<thumbsArray.length; i++) {
-					if (thumbsArray[i]==thumbId) {
-						thumbsArray.splice(i,1);
-						break;
-					}	
-				}
-				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
-				_isDirty = true;
-			}  */
-			
-			/**
 			 * swaps between the given thumb and the new thumb in the thumbAssedIds string
 			 * if the original is empty, will just add the new thumb
 			 * if the new is empty, will remove the original
@@ -363,7 +349,7 @@
 		</mx:VBox>
 		<mx:VBox>
 			<!-- change later to icon -->
-			<mx:Label text="{(_entryDis.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY) ? 'YES' : 'NO'}"/>
+			<mx:Label text="{(_entryDis.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY) ? resourceManager.getString('cms','yes') : resourceManager.getString('cms','no')}"/>
 			<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}"/>
 			<!--<mx:Label text="{resourceManager.getString('cms','logs')}"/>-->			
 		</mx:VBox>
