@@ -256,25 +256,30 @@
 			private function hasMobileFlavors():Boolean {
 				var result:Boolean = false;
 				var fa:KalturaFlavorAsset;
-				
-				for each (var kawp:FlavorAssetWithParamsVO in entryDetailsModel.flavorParamsAndAssetsByEntryId) {
-					fa = kawp.kalturaFlavorAssetWithParams.flavorAsset; 
-					if(fa.tags.indexOf('iphone') > -1 ){
-						result = true;
-						break;
-					};
-					if(fa.tags.indexOf('ipad') > -1 ){
-						result = true; 
-						break;
-					};
-					if(fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga'){
-						result = true;
-						break;
-					};
-					if(fa.fileExt == '3gp') {
-						result = true;
-						break;
-					};
+				if(entryDetailsModel.flavorParamsAndAssetsByEntryId && entryDetailsModel.flavorParamsAndAssetsByEntryId.length)
+				{
+					for each (var kawp:FlavorAssetWithParamsVO in entryDetailsModel.flavorParamsAndAssetsByEntryId) {
+						fa = kawp.kalturaFlavorAssetWithParams.flavorAsset; 
+						if (fa && fa.tags)
+						{
+							if(fa.tags.indexOf('iphone') > -1 ){
+								result = true;
+								break;
+							};
+							if(fa.tags.indexOf('ipad') > -1 ){
+								result = true; 
+								break;
+							};
+							if(fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga'){
+								result = true;
+								break;
+							};
+							if(fa.fileExt == '3gp') {
+								result = true;
+								break;
+							};
+						}
+					}
 				}
 				return result;
 
