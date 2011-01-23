@@ -6,7 +6,7 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" styleName="chartsBox" height="100%" 
 		 xmlns:charts="com.kaltura.charts.*" 
-		 xmlns:chartspanel="com.kaltura.kmc.modules.dashboard.components.panels.chartspanel.*" xmlns:panels="com.kaltura.kmc.modules.dashboard.panels.*" >
+		 xmlns:chartspanel="com.kaltura.kmc.modules.dashboard.components.panels.chartspanel.*" xmlns:panels="com.kaltura.kmc.modules.dashboard.panels.*" creationComplete="onChartPanelCreationComplete()">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -18,6 +18,16 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			
 			import mx.binding.utils.BindingUtils;
+			
+			[Bindable]
+			public var showGraphs : Boolean = true;
+			
+			
+			private function onChartPanelCreationComplete () : void
+			{
+				BindingUtils.bindProperty(DashboardManager.instance, "showGraphs", this, "showGraphs");
+			}
+			
 			
 			/**
 			 *  Bind the graphs to the data

@@ -11,6 +11,7 @@
 				   minHeight="520" minWidth="950" 
 				   verticalGap="0"
 				   xmlns:panels="com.kaltura.kmc.modules.dashboard.panels.*" 
+				   initialize="onInit()"
 				   >
 
 
@@ -55,7 +56,8 @@
 			 * google analytics identifier
 			 * */
 			private var _gaUrchinNumber:String;
-
+			
+			private var _showGraphs : Boolean =true;
 			
 			override public function getModuleName():String {
 				return NAME;
@@ -67,7 +69,13 @@
 			override public function showSubtab(subtab:String, data:Object = null):void {
 				// dashboard don't have tabs, empty implementation
 			}
-
+			
+			
+			protected function onInit () : void
+			{
+				permissionManager.applyAllAttributes(this,NAME);
+			}
+			
 			/**
 			 * Selecting the right state for the user - first time or not.
 			 */
@@ -115,7 +123,7 @@
 					addEventListener(Event.ADDED_TO_STAGE, initGoogleTracker);
 				}
 				
-				permissionManager.applyAllAttributes(this,NAME);
+				
 			}
 
 			
@@ -129,6 +137,19 @@
 				ga.init(DashboardManager.instance.kc.partnerId, _gaUserId, this, "KMC/Dashboard",
 						_gaUrchinNumber, "AS3", _flashvars.gadebug == "true" ? true : false);
 			}
+			
+			[Bindable]
+			public function get showGraphs():Boolean
+			{
+				return _showGraphs;
+			}
+
+			public function set showGraphs(value:Boolean):void
+			{
+				if (!value)
+					_showGraphs = value;
+			}
+
 		]]>
 	</mx:Script>
 
@@ -145,7 +166,7 @@
 					<panels:CustomizePanel id="customizePanel"/>
 		</mx:VBox>
 		<mx:VBox width="35%" height="100%">
-					<panels:ChartsPanel id="chartsPanel" width="100%" height="65%" />
+					<panels:ChartsPanel id="chartsPanel" width="100%" height="65%" showGraphs="{showGraphs}"/>
 					<panels:AccountPanel id="accountPanel" height="35%"/>
 			
 		</mx:VBox>

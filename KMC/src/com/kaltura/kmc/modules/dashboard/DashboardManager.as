@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
+	import com.kaltura.kmc.business.PermissionManager;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.KmcModule;
@@ -44,6 +45,9 @@ package com.kaltura.kmc.modules.dashboard {
 		/** kaltura client object - for contacting the server **/
 		private var _kc:KalturaClient; //kaltura client that make all kaltura API calls
 		public var app:KmcModule;
+		
+		[Bindable]
+		public var showGraphs : Boolean = true;
 
 		/** map for the graphs data **/
 		private var dimMap:HashMap = new HashMap();
@@ -120,7 +124,10 @@ package com.kaltura.kmc.modules.dashboard {
 		 *
 		 */
 		public function getData():void {
-			getGraphData();
+			if (showGraphs)
+			{
+				getGraphData();
+			}
 			getUsageData();
 			getPartnerData();
 		}
