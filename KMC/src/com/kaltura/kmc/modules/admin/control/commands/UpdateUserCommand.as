@@ -6,6 +6,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUser;
+	
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	public class UpdateUserCommand extends BaseCommand {
 		
@@ -25,6 +28,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 				_model.usersModel.drilldownMode = DrilldownMode.NONE;
 			}
 			_model.decreaseLoadCounter();
+			Alert.show(ResourceManager.getInstance().getString('admin', 'after_user_edit')); 
 		}
 	}
 }
