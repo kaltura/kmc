@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.content.commands
 				if ((newThumb.width == thumb.width) && (newThumb.height == thumb.height)) {
 					if (!thumb.thumbAsset) {
 						thumb.thumbAsset = newThumb;
-						thumb.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumb.id;
+						thumb.thumbUrl = buildThumbUrl(newThumb);
 						thumbExist = true;
 						break;
 					}
@@ -42,13 +42,17 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			if (!thumbExist) {
 				var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(newThumb.width, newThumb.height, newThumb);
-				thumbToAdd.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumb.id;
+				thumbToAdd.thumbUrl = buildThumbUrl(newThumb);
 				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
 				thumbsArray.splice(0,0,thumbToAdd);
 			}
 			
 			_model.entryDetailsModel.thumbnailSaved = true;
 			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
+		}
+		
+		private function buildThumbUrl(thumb:KalturaThumbAsset):String {
+			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.id;
 		}
 	}
 }

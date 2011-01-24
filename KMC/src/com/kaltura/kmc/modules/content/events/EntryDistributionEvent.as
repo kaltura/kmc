@@ -12,6 +12,8 @@ package com.kaltura.kmc.modules.content.events
 		public static const SUBMIT:String = "content_submitEntryDistribution";
 		public static const DELETE:String = "content_deleteEntryDistribution";
 		public static const RETRY:String = "content_retryEntryDistribution";
+		public static const GET_SENT_DATA:String = "content_getSentDataEntryDistribution";
+		public static const GET_RETURNED_DATA:String = "content_getReturnedDataEntryDistribution";
 		
 		public var entryDistribution:KalturaEntryDistribution;
 		public var distributionsWithProfilesToAddArray:Array;

@@ -25,15 +25,19 @@ package com.kaltura.kmc.modules.content.commands
 			insertToThumbsArray(data.data as KalturaThumbAsset);
 		}
 		
+		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
+			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
+		}
+		
 		private function insertToThumbsArray(thumbAsset:KalturaThumbAsset):void {
 			var thumbsArray:Array = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
 			var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumbAsset.width, thumbAsset.height, thumbAsset);
-			newThumb.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + newThumb.thumbAsset.id;
+			newThumb.thumbUrl = buildThumbUrl(newThumb);
 			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
 				if ((thumb.width==thumbAsset.width) && (thumb.height==thumbAsset.height)) {
 					if (!thumb.thumbAsset) {
 						thumb.thumbAsset = thumbAsset;
-						thumb.thumbUrl = _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + thumb.thumbAsset.id;
+						thumb.thumbUrl = buildThumbUrl(thumb)
 						//no need to add a new thumbnailWithDimensions object in this case
 						return;
 					}

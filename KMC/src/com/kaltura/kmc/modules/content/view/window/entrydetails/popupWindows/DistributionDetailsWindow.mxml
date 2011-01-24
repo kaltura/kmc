@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+				xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.*"
 				width="710" height="655"
 				layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true"
@@ -17,6 +18,7 @@
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDistribution;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
@@ -56,6 +58,10 @@
 			private var _oldStartDate:Number;
 			private var _oldEndDate:Number;
 			private var _oldThumbs:String;
+			[Bindable]
+			private var _requestXMLAvailable:Boolean;
+			[Bindable]
+			private var _responseXMLAvailable:Boolean;
 			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -79,9 +85,10 @@
 			public function set entryDis(value:EntryDistributionWithProfile):void
 			{
 				_entryDis = value;
-				setOldData(_entryDis.kalturaEntryDistribution);
-				
+				setOldData(_entryDis.kalturaEntryDistribution);	
 				_destinationName = _entryDis.kalturaDistributionProfile.name;
+				_requestXMLAvailable = _entryDis.kalturaEntryDistribution.hasSubmitSentDataLog;
+				_responseXMLAvailable = _entryDis.kalturaEntryDistribution.hasSubmitResultsLog;
 				buildTitle();
 				buildThumbsArray();
 				buildFlavorsAssets();
@@ -336,22 +343,38 @@
 				
 				dispatchCloseEvent();
 			}
+			
+			/**
+			 * dispatches a request for xml,
+			 * if getSentData is true, will send a request for request XML
+			 * otherwise for response XML
+			 * */
+			private function getXML(getSentData:Boolean):void {
+				var type:String = getSentData ? EntryDistributionEvent.GET_SENT_DATA : EntryDistributionEvent.GET_RETURNED_DATA;
+				var requestXML:EntryDistributionEvent = new EntryDistributionEvent(type, null, null, _entryDis.kalturaEntryDistribution);
+				requestXML.dispatch();
+			}
 	
 		]]>
 	</mx:Script>
 	
-	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','status')+ ':'}" fontWeight="bold"/>
+	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','statusLabel')}" fontWeight="bold"/>
 	<mx:HBox paddingLeft="7">
 		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','submitted')}"/>
+			<mx:Label text="{resourceManager.getString('cms','statusLabel')}"/>
 			<mx:Label text="{resourceManager.getString('cms','remoteId')}"/>
-			<mx:Label text="{resourceManager.getString('cms','logs')}"/>			
+			<mx:Label text="{resourceManager.getString('cms','logs')}" visible="{_requestXMLAvailable || _responseXMLAvailable}" 
+					  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}"/>			
 		</mx:VBox>
 		<mx:VBox>
-			<!-- change later to icon -->
-			<mx:Label text="{(_entryDis.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY) ? resourceManager.getString('cms','yes') : resourceManager.getString('cms','no')}"/>
+			<renderers:SubmissionStatusRenderer data="{_entryDis}"/>
 			<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}"/>
-			<!--<mx:Label text="{resourceManager.getString('cms','logs')}"/>-->			
+			<mx:HBox>
+				<mx:LinkButton label="{resourceManager.getString('cms','requestXML')}" click="{getXML(true)}" 
+							   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"/>
+				<mx:LinkButton label="{resourceManager.getString('cms','responseXML')}" click="{getXML(false)}"
+							   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"/>
+			</mx:HBox>		
 		</mx:VBox>
 	</mx:HBox>
 	<mx:Label text="{resourceManager.getString('cms','scheduling')}" fontWeight="bold"/>

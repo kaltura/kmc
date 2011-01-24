@@ -124,13 +124,14 @@ package com.kaltura.kmc.modules.content.control
 			
 			//distribution
 			addCommand(DistributionProfileEvent.LIST, ListDistributionProfilesCommand);
-			//addCommand(DistributionProfileEvent.UPDATE, UpdateDistributionProfilesCommand);
 			addCommand(EntryDistributionEvent.LIST, ListEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.UPDATE_LIST, UpdateEntryDistributionsCommand);
 			addCommand(EntryDistributionEvent.SUBMIT, SubmitEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.SUBMIT_UPDATE, SubmitUpdateEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.UPDATE, UpdateEntryDistributionCommand);
 			addCommand(EntryDistributionEvent.RETRY, RetryEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.GET_SENT_DATA, GetSentDataEntryDistributionCommand);
+			addCommand(EntryDistributionEvent.GET_RETURNED_DATA, GetReturnedDataEntryDistributionCommand);
 			
 			//thumb asset
 			addCommand(ThumbnailAssetEvent.LIST, ListThumbnailAssetCommand);

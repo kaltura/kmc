@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.content.model
 	[Bindable]
 	public class ThumbnailWithDimensions extends EventDispatcher
 	{
-		public static var serveURL:String = "/api_v3/index.php?service=thumbasset&action=serve";
+		public static var serveURL:String = "/api_v3/index.php/service/thumbasset/action/serve";
 		
 		//the height of the thubnail
 		public var height:int;

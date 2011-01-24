@@ -3,6 +3,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.ErrorDetailsWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaBatchJobErrorTypes;
@@ -174,9 +175,7 @@
 			}
 			
 			private function onDistributionErrorClick():void {
-				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
-				errorDetails.setType(ErrorDetailsWindow.GENERAL_ERROR);
-				errorDetails.title = distributionErrorLink.label;
+				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.GENERAL_ERROR, distributionErrorLink.label);
 				var errorLabel:String;
 				switch (_entryDis.errorType) {
 					case KalturaBatchJobErrorTypes.APP:
@@ -199,15 +198,29 @@
 			}
 			
 			private function onThumbErrorLink():void {
-				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
-				errorDetails.setType(ErrorDetailsWindow.THUMB_ERROR);
-				errorDetails.viewStack = parentDocument.viewStack;
-				errorDetails.title = missing + thumbnail;
+				var errorWindow:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.THUMB_ERROR, missing+thumbnail);
 				for each (var err:KalturaDistributionValidationErrorMissingThumbnail in _thumbErrorsArray) {
-					errorDetails.addErrorDetail(getDimensionsError(err));
+					errorWindow.addErrorDetail(getDimensionsError(err));
 				}
-				PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(errorDetails);
+				PopUpManager.addPopUp(errorWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(errorWindow);
+			}
+			
+			/**
+			 * creates a new errorDetailsWindow and sets the given params
+			 * */
+			private function createErrorPopup(type:String, title:String):ErrorDetailsWindow {
+				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
+				errorDetails.setType(type);
+				if (parentDocument is DistributionDetailsWindow)
+					errorDetails.enableLinks = false;
+				else {
+					errorDetails.enableLinks = true;
+					errorDetails.viewStack = parentDocument.viewStack;
+				}
+				errorDetails.title = title;
+				
+				return errorDetails;
 			}
 			
 			private function getDimensionsError(error:KalturaDistributionValidationErrorMissingThumbnail):String {
@@ -239,10 +252,7 @@
 			}
 			 
 			private function onFlavorErrorClick():void {
-				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
-				errorDetails.setType(ErrorDetailsWindow.FLAVOR_ERROR);
-				errorDetails.viewStack = parentDocument.viewStack;
-				errorDetails.title = missing + flavor;
+				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.FLAVOR_ERROR, missing + flavor);
 				for each (var err:KalturaDistributionValidationErrorMissingFlavor in _flavorErrorsArray) {
 					errorDetails.addErrorDetail(getFlavorsError(err));
 				}
@@ -251,10 +261,7 @@
 			}
 			
 			private function onMetadataErrorLink():void {
-				var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
-				errorDetails.setType(ErrorDetailsWindow.METADATA_ERROR);
-				errorDetails.viewStack = parentDocument.viewStack;
-				errorDetails.title = missing + metadata;
+				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, missing + metadata);
 				for each (var err:KalturaDistributionValidationError in _metadataErrorsArray) {
 					errorDetails.addErrorDetail(getMetadataError(err));
 				}

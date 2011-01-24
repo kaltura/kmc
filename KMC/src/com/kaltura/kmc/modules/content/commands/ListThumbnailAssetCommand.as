@@ -85,13 +85,6 @@ package com.kaltura.kmc.modules.content.commands
 							}
 							
 						}
-					/*	for each (var dim:KalturaDistributionThumbDimensions in distributionProfile.requiredThumbDimensions) {
-							if ((dim.width==currentThumb.width) && (dim.height==currentThumb.height)) {
-								curUsedProfiles.push(distributionProfile);
-								isRequiredThumbsExistArray[i] = true;
-								break;
-							}
-						}*/
 					}
 				}
 				//should create new thumbnailWithDimensions object
@@ -138,7 +131,7 @@ package com.kaltura.kmc.modules.content.commands
 		}
 		
 		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
-			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "&ks=" + _model.context.kc.ks + "&thumbAssetId=" + thumb.thumbAsset.id;
+			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
 		}
 		
 	}
