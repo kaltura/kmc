@@ -110,7 +110,7 @@ package com.kaltura.kmc.modules.content.commands
 			mr.addAction(getAssetsAndFlavorsByEntryId);
 			
 //			entry metadata
-			if (_model.filterModel.enableCustomData && _model.filterModel.metadataProfile.profile && entryId) {
+			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfile && _model.filterModel.metadataProfile.profile && entryId) {
 				var filter1:KalturaMetadataFilter = new KalturaMetadataFilter();
 				filter1.metadataProfileIdEqual = _model.filterModel.metadataProfile.profile.id;
 				filter1.metadataProfileVersionEqual = _model.filterModel.metadataProfile.profile.version;
