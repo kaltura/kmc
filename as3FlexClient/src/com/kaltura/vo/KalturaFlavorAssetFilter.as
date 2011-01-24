@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaUser;
+	import com.kaltura.vo.KalturaFlavorAssetBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaAdminUser extends KalturaUser
+	public dynamic class KalturaFlavorAssetFilter extends KalturaFlavorAssetBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

@@ -14,6 +14,7 @@ package com.kaltura.types
 		public static const SYSTEM_FILESYNC : String = 'SYSTEM_FILESYNC';
 		public static const SYSTEM_INTERNAL : String = 'SYSTEM_INTERNAL';
 		public static const KMC_ACCESS : String = 'KMC_ACCESS';
+		public static const KMC_READ_ONLY : String = 'KMC_READ_ONLY';
 		public static const SYSTEM_ADMIN_BASE : String = 'SYSTEM_ADMIN_BASE';
 		public static const SYSTEM_ADMIN_PUBLISHER_BASE : String = 'SYSTEM_ADMIN_PUBLISHER_BASE';
 		public static const SYSTEM_ADMIN_PUBLISHER_KMC_ACCESS : String = 'SYSTEM_ADMIN_PUBLISHER_KMC_ACCESS';
@@ -93,6 +94,9 @@ package com.kaltura.types
 		public static const CUSTOM_DATA_PROFILE_ADD : String = 'CUSTOM_DATA_PROFILE_ADD';
 		public static const CUSTOM_DATA_PROFILE_UPDATE : String = 'CUSTOM_DATA_PROFILE_UPDATE';
 		public static const CUSTOM_DATA_PROFILE_DELETE : String = 'CUSTOM_DATA_PROFILE_DELETE';
+		public static const CUSTOM_DATA_FIELD_ADD : String = 'CUSTOM_DATA_FIELD_ADD';
+		public static const CUSTOM_DATA_FIELD_UPDATE : String = 'CUSTOM_DATA_FIELD_UPDATE';
+		public static const CUSTOM_DATA_FIELD_DELETE : String = 'CUSTOM_DATA_FIELD_DELETE';
 		public static const ADMIN_BASE : String = 'ADMIN_BASE';
 		public static const ADMIN_USER_ADD : String = 'ADMIN_USER_ADD';
 		public static const ADMIN_USER_UPDATE : String = 'ADMIN_USER_UPDATE';

@@ -66,6 +66,10 @@ package com.kaltura.vo
 
 		public var roleIds : String;
 
+		public var roleNames : String;
+
+		public var isAccountOwner : Boolean;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

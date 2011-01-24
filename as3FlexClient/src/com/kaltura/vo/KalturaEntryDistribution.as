@@ -44,6 +44,18 @@ package com.kaltura.vo
 
 		public var errorDescription : String;
 
+		public var hasSubmitResultsLog : Boolean;
+
+		public var hasSubmitSentDataLog : Boolean;
+
+		public var hasUpdateResultsLog : Boolean;
+
+		public var hasUpdateSentDataLog : Boolean;
+
+		public var hasDeleteResultsLog : Boolean;
+
+		public var hasDeleteSentDataLog : Boolean;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaUser;
+	import com.kaltura.vo.KalturaThumbAssetBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaAdminUser extends KalturaUser
+	public dynamic class KalturaThumbAssetFilter extends KalturaThumbAssetBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

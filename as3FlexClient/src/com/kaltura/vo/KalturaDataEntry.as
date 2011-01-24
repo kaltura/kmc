@@ -7,6 +7,8 @@ package com.kaltura.vo
 	{
 		public var dataContent : String;
 
+		public var retrieveDataContentByGet : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

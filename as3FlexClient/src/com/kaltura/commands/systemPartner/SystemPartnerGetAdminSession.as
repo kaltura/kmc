@@ -8,8 +8,9 @@ package com.kaltura.commands.systemPartner
 		public var filterFields : String;
 		/**
 		 * @param partnerId int
+		 * @param userId String
 		 **/
-		public function SystemPartnerGetAdminSession( partnerId : int )
+		public function SystemPartnerGetAdminSession( partnerId : int,userId : String='' )
 		{
 			service= 'systempartner_systempartner';
 			action= 'getAdminSession';
@@ -19,6 +20,8 @@ package com.kaltura.commands.systemPartner
 			var keyValArr : Array = new Array();
 			keyArr.push('partnerId');
 			valueArr.push(partnerId);
+			keyArr.push('userId');
+			valueArr.push(userId);
 			applySchema(keyArr, valueArr);
 		}
 
