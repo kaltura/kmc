@@ -58,13 +58,15 @@ package com.kaltura.kmc.modules.content.commands
 			//all entry distributions to delete
 			for each (var removeDistribution:KalturaEntryDistribution in distributionsToRemove) {
 				//remove from destination
-				if (removeDistribution.status == KalturaEntryDistributionStatus.READY) {
+				if (removeDistribution.status == KalturaEntryDistributionStatus.READY ||
+					removeDistribution.status == KalturaEntryDistributionStatus.ERROR_UPDATING) {
 					var removeSubmitEntryDistribution:EntryDistributionSubmitDelete = new EntryDistributionSubmitDelete(removeDistribution.id);
 					mr.addAction(removeSubmitEntryDistribution);	
 				}
 				//if entry wasn't submitted yet, delete it
 				else if (removeDistribution.status == KalturaEntryDistributionStatus.QUEUED ||
-						 removeDistribution.status == KalturaEntryDistributionStatus.PENDING)
+						 removeDistribution.status == KalturaEntryDistributionStatus.PENDING ||
+						 removeDistribution.status == KalturaEntryDistributionStatus.ERROR_SUBMITTING)
 				{
 					var deleteDistribution:EntryDistributionDelete = new EntryDistributionDelete(removeDistribution.id);
 					mr.addAction(deleteDistribution);

@@ -9,8 +9,14 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaThumbAsset;
 	import com.kaltura.vo.KalturaThumbParams;
 	
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
+	import mx.resources.ResourceManager;
+	
 	public class GenerateThumbAssetCommand extends KalturaCommand
 	{
+		private var _thumbsArray:Array;
+		
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
@@ -26,10 +32,10 @@ package com.kaltura.kmc.modules.content.commands
 			_model.decreaseLoadCounter();
 			super.result(data);
 			var newThumb:KalturaThumbAsset =  data.data as KalturaThumbAsset;
-			var thumbsArray:Array = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			_thumbsArray = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
 			var curUsedProfiles:Array = new Array();
 			var thumbExist:Boolean = false;
-			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
+			for each (var thumb:ThumbnailWithDimensions in _thumbsArray) {
 				if ((newThumb.width == thumb.width) && (newThumb.height == thumb.height)) {
 					if (!thumb.thumbAsset) {
 						thumb.thumbAsset = newThumb;
@@ -44,11 +50,18 @@ package com.kaltura.kmc.modules.content.commands
 				var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(newThumb.width, newThumb.height, newThumb);
 				thumbToAdd.thumbUrl = buildThumbUrl(newThumb);
 				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
-				thumbsArray.splice(0,0,thumbToAdd);
+				_thumbsArray.splice(0,0,thumbToAdd);
 			}
 			
-			_model.entryDetailsModel.thumbnailSaved = true;
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
+			Alert.show(ResourceManager.getInstance().getString('cms','savedMessage'),ResourceManager.getInstance().getString('cms','savedTitle'), Alert.OK, null, onUserOK);
+			
+		}
+		
+		/**
+		 * only after user approval for the new thumbnail alert, the model will reload the thumbs
+		 * */
+		private function onUserOK(event:CloseEvent):void {
+			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = _thumbsArray.concat();
 		}
 		
 		private function buildThumbUrl(thumb:KalturaThumbAsset):String {

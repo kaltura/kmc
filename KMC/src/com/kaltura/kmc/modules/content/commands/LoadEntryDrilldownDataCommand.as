@@ -302,13 +302,6 @@ package com.kaltura.kmc.modules.content.commands
 							}
 							
 						}
-						/*	for each (var dim:KalturaDistributionThumbDimensions in distributionProfile.requiredThumbDimensions) {
-						if ((dim.width==currentThumb.width) && (dim.height==currentThumb.height)) {
-						curUsedProfiles.push(distributionProfile);
-						isRequiredThumbsExistArray[i] = true;
-						break;
-						}
-						}*/
 					}
 				}
 				//should create new thumbnailWithDimensions object
@@ -350,7 +343,7 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			
 			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
-			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC);
+			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC | Array.DESCENDING);
 			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
 		}
 		

@@ -54,9 +54,5 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var loadingFlag:Boolean = false;
 		
-		/**
-		 * inidicates if generate new thumbnail asset request returned valid result 
-		 */		
-		public var thumbnailSaved:Boolean = false;
 	}
 }

@@ -19,8 +19,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaThumbAsset;
 			import com.kaltura.vo.KalturaThumbParams;
-			
-			import mx.binding.utils.BindingUtils;
+
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			/**
@@ -73,48 +72,19 @@
 			[Bindable]
 			private var _thumbnailsList:Array;
 			
-			/**
-			 * !erase later!!!! only for QA tests
-			 * */
-			private function createDemoDimensions():void {
-				var dimensions1:ThumbnailWithDimensions = new ThumbnailWithDimensions(60, 45);
-				var dimensions2:ThumbnailWithDimensions = new ThumbnailWithDimensions(64, 48);
-				var dimensions3:ThumbnailWithDimensions = new ThumbnailWithDimensions(72, 92);
-				var dimensions4:ThumbnailWithDimensions = new ThumbnailWithDimensions(92, 69);
-				var dimensions5:ThumbnailWithDimensions = new ThumbnailWithDimensions(100, 75);
-				var dimensions6:ThumbnailWithDimensions = new ThumbnailWithDimensions(105, 105);
-				var dimensions7:ThumbnailWithDimensions = new ThumbnailWithDimensions(136, 102);
-				var dimensions8:ThumbnailWithDimensions = new ThumbnailWithDimensions(1280, 720);
-				
-				_presetSizeList.push({label: dimensions1.width + ' X ' + dimensions1.height, data:dimensions1});
-				_presetSizeList.push({label: dimensions2.width + ' X ' + dimensions2.height, data:dimensions2});
-				_presetSizeList.push({label: dimensions3.width + ' X ' + dimensions3.height, data:dimensions3});
-				_presetSizeList.push({label: dimensions4.width + ' X ' + dimensions4.height, data:dimensions4});
-				_presetSizeList.push({label: dimensions5.width + ' X ' + dimensions5.height, data:dimensions5});
-				_presetSizeList.push({label: dimensions6.width + ' X ' + dimensions6.height, data:dimensions6});
-				_presetSizeList.push({label: dimensions7.width + ' X ' + dimensions7.height, data:dimensions7});
-				_presetSizeList.push({label: dimensions8.width + ' X ' + dimensions8.height, data:dimensions8});
-				_isPreSize = true;
-				
-			}
-			
 			private function onCreationComplete(event:Event):void {
-				//createDemoDimensions(); //erase later! for QA tests
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
-				//no sources to crop from
+				//no sources to crop from - exit
 				if (!_selectedThumbnail) {
 					Alert.show(resourceManager.getString('cms','unavailableCropMsg'),resourceManager.getString('cms','unavalilableCropTitle'), Alert.OK, null, alertOkHandler);
 					return;
 				}
-				
-				BindingUtils.bindSetter(onThumbSaved, _entryDetailsModel, "thumbnailSaved");
-				//_maxImageHeight = this.height - this.titleBar.height - controlHbox.height - saveBtn.height - 3*IMG_OFFSET ;
-				_maxImageHeight = this.height - this.titleBar.height - saveBtn.height - 3*IMG_OFFSET ;
+			
+				_maxImageHeight = this.height - this.titleBar.height - saveBtnControlBar.height - 2*IMG_OFFSET ;
 				_maxImageWidth = this.width - controlVBox.width- 3*IMG_OFFSET;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
-				//setPreviewImgDim();
-				//previewImg.width = (_selectedImgRatio < 2) ? previewImg.height*_selectedImgRatio : (DEFAULT_PREVIEW_HEIGHT*2);
+	
 				if (_isPreSize) {
 					_presetSizesExist = true;
 					presetComboBox.selectedIndex = 0;
@@ -187,7 +157,7 @@
 				//dimensions are too big
 				if (cropWidth > _selectedThumbnail.width || cropHeight > _selectedThumbnail.height) {
 					if (_isPreSize) {
-						Alert.show(resourceManager.getString('cms', 'warningMessage'),resourceManager.getString('cms','warningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
+						displayUpscaleWarning();
 					}
 					else {
 						setCropperOnEntireImage();
@@ -195,7 +165,6 @@
 							displayInvalidAlert();
 					}
 				}
-					//the cropper will be in the middle
 				else {
 					_upscaleMultiplier = 1;
 					_imageCrop.cropBox.cropWidth = cropWidth;
@@ -244,7 +213,7 @@
 			 * will try to set the cropper with the maximum values while keeping aspet ratio
 			 * */
 			private function adjustPresetDimensions(maxWidth:int, maxHeight:int, requestedWidth:int, requestedHeight:int, xPos:int = 0, yPos:int = 0):void {
-				var ratio:Number = maxWidth/requestedWidth; //must be < 1 since max < requested
+				var ratio:Number = maxWidth/requestedWidth; //ratio must be < 1, since max < requested
 				_upscaleMultiplier = ratio;
 				var tempWidth:Number = maxWidth;
 				var tempHeight:Number = requestedHeight * ratio; //will keep the ratio between requested width and height since we multiplied them in the same number
@@ -338,10 +307,7 @@
 					
 				}
 				
-				
 				if (presetComboBox) {
-					//for qa!!!!! erase later!!!!!!!!!!
-					//createDemoDimensions();
 					presetComboBox.selectedIndex = 0;
 				}
 				if (imgList) {
@@ -404,19 +370,10 @@
 					thumbParams.scaleWidth = selectedDimensions.width/thumbParams.cropWidth;
 					thumbParams.scaleHeight = selectedDimensions.height/thumbParams.cropHeight;
 				}
-				_entryDetailsModel.thumbnailSaved = false;
 				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
 				generateThumbEvent.dispatch();
 				
 				_isDirty = false;
-			}
-			
-			
-			public function onThumbSaved(value:Boolean):void {
-				if (value) {
-					Alert.show(resourceManager.getString('cms','savedMessage'),resourceManager.getString('cms','savedTitle'));
-					entryDetailsModel.thumbnailSaved = false;
-				}	
 			}
 			
 			/**
@@ -427,7 +384,6 @@
 				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length>0))
 					presetComboBox.selectedIndex = 0;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
-				//setPreviewImgDim();
 				imageBox.removeChild(_imageCrop);
 				setCropperImage();
 			}
@@ -518,9 +474,17 @@
 			private function onPresetSizeChange(event:Event):void {
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 				if (_imageCrop && _imageCrop.cropBox) {
-					var newRatio:Number = selectedSize.height/selectedSize.width;
-					var requestedHeight:Number = _imageCrop.cropBox.cropWidth * newRatio;
-					adjustPresetDimensions(_imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight, _imageCrop.cropBox.cropWidth, requestedHeight, _imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY);
+					//dimensions are too big
+					if (selectedSize.width > _selectedThumbnail.width || selectedSize.height > _selectedThumbnail.height)
+					{
+						displayUpscaleWarning();						
+					}
+					else
+					{
+						var newRatio:Number = selectedSize.height/selectedSize.width;
+						var requestedHeight:Number = _imageCrop.cropBox.cropWidth * newRatio;
+						adjustPresetDimensions(_imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight, _imageCrop.cropBox.cropWidth, requestedHeight, _imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY);
+					}
 				}
 			}
 			
@@ -529,6 +493,13 @@
 			 * */
 			private function displayInvalidAlert():void {
 				Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
+			}
+			
+			/**
+			 * displays a warning saying the image is about to be upscaled
+			 * */
+			private function displayUpscaleWarning():void {
+				Alert.show(resourceManager.getString('cms', 'warningMessage'),resourceManager.getString('cms','warningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
 			}
 			
 			/**
@@ -560,14 +531,6 @@
 				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0" verticalCenter="0" 
 						 horizontalScrollPolicy="off" verticalScrollPolicy="off">		
 					<mx:HRule width="100%"/>
-					<!--controls:SmoothScrollingList id="imgList"
-					width="90" height="100%"
-					dragMoveEnabled="false" dragEnabled="false" dropEnabled="false"
-					dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick(event)}"
-					enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
-					verticalScrollPolicy="off"
-					itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbnailListItemRenderer"/-->
-					
 					
 					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick()}"
 							 enabled="true" styleName="thumbsList" selectable="true" columnWidth="90" rowHeight="90"
@@ -627,13 +590,11 @@
 					<mx:Image id="previewImg" height="{MAX_PREVIEW_HEIGHT}" width="{MAX_PREVIEW_WIDTH}"/>
 				</mx:HBox>
 			</mx:VBox>
-			
-			
-			
-			
+	
 		</mx:VBox>
 		<mx:HBox id="imageBox" width="100%" verticalAlign="middle" horizontalAlign="center" height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}" backgroundColor="#e5e5e5"/>
 	</mx:HBox>
-	<mx:HRule width="100%"/>
-	<mx:Button id="saveBtn" label="{resourceManager.getString('cms','saveChanges')}" click="{onSave()}"/>
+	<mx:ControlBar id="saveBtnControlBar">
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','saveChanges')}" click="{onSave()}"/>
+	</mx:ControlBar>
 </mx:TitleWindow>
