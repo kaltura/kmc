@@ -240,7 +240,9 @@
 			 * */
 			private function openPreview(e:Event):void {
 				if (openPlayerFunc) {
-					JSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, hasMobileFlavors() );
+					
+					var html5Compatible : Boolean = (_undoToEntry is KalturaMediaEntry && (_undoToEntry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO) ? true: false;
+					JSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, hasMobileFlavors(), html5Compatible );
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");
