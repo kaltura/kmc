@@ -68,9 +68,9 @@ package com.kaltura.kmc.business
 		 * @param uiconfId			initial player uiconf to use
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
 		 */
-		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array, hasMobileFlavors:Boolean):void {
+		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array, hasMobileFlavors:Boolean, isHtml5:Boolean):void {
 //			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
-			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId, live_bitrates, hasMobileFlavors);
+			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId, live_bitrates, hasMobileFlavors, isHtml5);
 		}
 		
 		
