@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(event:Object):void {
 			super.result(event);
 			var ac:ArrayCollection = setDataInModel((event as KalturaEvent).data as Array);
-			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac));
+			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), false);
 			_model.attic.previewuiconf = null;
 			_model.decreaseLoadCounter();
 		}
