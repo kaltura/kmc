@@ -181,12 +181,14 @@ package com.kaltura.utils.parsers
 		public static function fromXSDtoArray(xsd:XML):ArrayCollection {
 			var fieldsArray:ArrayCollection = new ArrayCollection();
 			var root:XML = returnElementNode(xsd);
-			var xPathRoot:String = buildXpath(root.@name);
-			var	elements:XMLList = root.children()[0].children()[0].children();
-			for each (var element:XML in elements) {
-				fieldsArray.addItem(fromXSDToField(element, xPathRoot));	
+			if (root && root.children() && root.children().length() )
+			{
+				var xPathRoot:String = buildXpath(root.@name);
+				var	elements:XMLList = root.children()[0].children()[0].children();
+				for each (var element:XML in elements) {
+					fieldsArray.addItem(fromXSDToField(element, xPathRoot));	
+				}
 			}
-			
 			return fieldsArray;
 		}
 		
@@ -388,7 +390,7 @@ package com.kaltura.utils.parsers
 					break
 				}
 			}
-			return input.children()[elementIndex];
+			return (input.children()[elementIndex] && input.children()[elementIndex] is XML) ? input.children()[elementIndex] : new XML();
 		}
 
 	}
