@@ -87,7 +87,12 @@
 			/**
 			 * dataprovider for the combobox of multi playlist
 			 */
-			public var comboDataProviderMulti:ArrayCollection = new ArrayCollection();
+			protected var comboDataProviderMulti:ArrayCollection = new ArrayCollection();
+			
+			/**
+			 * Flag indicating whether user can preview&embed multi-playlist player from the appstudio.
+			 */
+			private var _canPreviewAndEmbed:Boolean = true;
 
 
 			private function onCreationComplete():void {
@@ -114,8 +119,17 @@
 			public function refresh():void {
 				loadList();
 			}
-
-
+			
+			[Bindable]
+			public function set canPreviewAndEmbed (value : Boolean) : void
+			{
+				removeItemById("previewAndEmbed");
+			}
+			
+			public function get canPreviewAndEmbed () : Boolean
+			{
+				return _canPreviewAndEmbed;
+			}
 			/**
 			 * edit selected player
 			 * */
