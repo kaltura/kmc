@@ -32,6 +32,9 @@
 			 * data that only bulkUpload tab uses
 			 * */
 			public var bulkUploadData:BulkUploadModel;
+			
+			[Bindable]
+			public var bulkUploadEnabled : Boolean = true; 
 
 			[Bindable]
 			/**
@@ -64,7 +67,7 @@
 			 * @inheritDoc
 			 * */
 			public function init(kmef:KalturaBaseEntryFilter = null):void {
-				loadEntries();
+				
 				var listConvProfileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILE);
 				listConvProfileEvent.dispatch();
 			}
@@ -131,9 +134,11 @@
 			public function loadEntries():void {
 				if (paging)
 					_filter.page = paging.selectedPage;
-
-				var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD, _filter);
-				bulkEvent.dispatch();
+				if (bulkUploadEnabled) 
+				{
+					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD, _filter);
+					bulkEvent.dispatch();
+				}
 			}
 
 
@@ -236,6 +241,7 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				loadEntries();
 			}
 		]]>
 	</mx:Script>
