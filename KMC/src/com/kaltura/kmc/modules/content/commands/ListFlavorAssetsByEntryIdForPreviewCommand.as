@@ -7,9 +7,11 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
 	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
+	import com.kaltura.vo.KalturaMediaEntry;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -44,7 +46,12 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(event:Object):void {
 			super.result(event);
 			var ac:ArrayCollection = setDataInModel((event as KalturaEvent).data as Array);
-			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), false);
+			var isHtml5 : Boolean = false;
+			if (_entry is KalturaMediaEntry && (_entry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO)
+			{
+				isHtml5 = true;	
+			}
+			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), isHtml5);
 			_model.attic.previewuiconf = null;
 			_model.decreaseLoadCounter();
 		}
