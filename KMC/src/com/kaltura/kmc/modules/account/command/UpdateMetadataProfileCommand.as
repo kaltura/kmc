@@ -29,6 +29,7 @@ package com.kaltura.kmc.modules.account.command
 		 */		
 		public function execute(event:CairngormEvent):void
 		{
+			_model.loadingFlag = true;
 			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.metadataProfile.profile.id, new KalturaMetadataProfile(), _model.metadataProfile.xsd.toString());
 			updateMetadataProfle.addEventListener(KalturaEvent.COMPLETE, result);
 			updateMetadataProfle.addEventListener(KalturaEvent.FAILED, fault);
