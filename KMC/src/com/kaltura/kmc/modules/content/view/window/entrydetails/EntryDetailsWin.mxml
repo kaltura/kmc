@@ -10,7 +10,8 @@
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 							xmlns:adobe="http://www.adobe.com/2006/fc"
-							enabled="{!entryDetailsModel.loadingFlag}">
+							enabled="{!entryDetailsModel.loadingFlag}"
+							creationComplete="{onWindowCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -44,6 +45,7 @@
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -110,6 +112,21 @@
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section2'));
 			}
+			
+			private function onWindowCreationComplete():void {
+				BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
+			}
+			
+			/**
+			 * if there are no custom data fields, will not display the custom data tab
+			 * */
+			private function onMetadataFieldsChange(arr:ArrayCollection) : void {
+				if (arr && arr.length==0) {
+					if (viewStack.getChildByName('customData')) {
+						viewStack.removeChild(customData);
+					}
+				}
+			}
 
 
 			/**
@@ -117,9 +134,7 @@
 			 * */
 			private function showNormalSetup():void {
 				viewStack.removeChild(liveStream);
-				if (!filterModel.enableCustomData) {
-					viewStack.removeChild(customData);
-				}
+			
 				// for mix/content tab, show "mixesTab" header
 				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
 				
@@ -136,10 +151,7 @@
 			private function showMixSetup():void {
 				viewStack.removeChild(entryAsstes);
 				viewStack.removeChild(liveStream);
-				
-				if (!filterModel.enableCustomData) {
-					viewStack.removeChild(customData);
-				}
+		
 				// for mix/content tab, show "mixesTab" header
 				contentTab.label = ResourceManager.getInstance().getString('cms', 'content');
 			}
@@ -152,9 +164,6 @@
 				viewStack.removeChild(entryAsstes);
 				viewStack.removeChild(contentTab);
 
-				if (!filterModel.enableCustomData) {
-					viewStack.removeChild(customData);
-				}
 			}
 
 

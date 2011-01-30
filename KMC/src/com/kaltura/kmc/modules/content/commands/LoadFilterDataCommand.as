@@ -203,6 +203,7 @@ package com.kaltura.kmc.modules.content.commands
 				metadataProfile.profile = recievedProfile;
 				metadataProfile.xsd = new XML(recievedProfile.xsd);
 				metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+		
 				//set the displayed label of each label
 				for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
 					var label:String = ResourceManager.getInstance().getString('customFields',field.defaultLabel);

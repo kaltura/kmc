@@ -56,25 +56,6 @@ Distribution tab of EntryDetailsWin
 				return true;
 			}
 			
-			///!!!! just for testing- erase later!!!!!!
-			private function myTest():EntryDistributionWithProfile {
-				var entryDistribution:EntryDistributionWithProfile = new EntryDistributionWithProfile();
-				var profile:KalturaDistributionProfile = new KalturaDistributionProfile();
-				profile.id = 10;
-				entryDistribution.kalturaDistributionProfile = profile;
-				var distribution:KalturaEntryDistribution = new KalturaEntryDistribution;
-				distribution.status = KalturaEntryDistributionStatus.DELETING;
-				distribution.dirtyStatus = KalturaEntryDistributionFlag.UPDATE_REQUIRED;
-				var error1:KalturaDistributionValidationErrorInvalidMetadata = new KalturaDistributionValidationErrorInvalidMetadata();
-				var error2:KalturaDistributionValidationErrorMissingFlavor = new KalturaDistributionValidationErrorMissingFlavor();
-				var error4:KalturaDistributionValidationErrorMissingThumbnail = new KalturaDistributionValidationErrorMissingThumbnail();
-				distribution.validationErrors = new Array();
-				//distribution.validationErrors.push(error1, error2, error4);
-				entryDistribution.kalturaEntryDistribution = distribution;
-				
-				return entryDistribution;
-			}
-			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
 				return _entryDetailsModel;
@@ -101,8 +82,6 @@ Distribution tab of EntryDetailsWin
 					return;
 				BindingUtils.bindSetter(setEntryDistributions, _entryDetailsModel.distributionProfileInfo, "entryDistributionArray");
 				_selectedEntry = value;
-				//var listEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
-				//listEntryDistribution.dispatch();
 			}
 		
 			public function setEntryDistributions(value:Array): void {
@@ -114,8 +93,6 @@ Distribution tab of EntryDetailsWin
 						_notDeletedEntries.push(entryDis);
 					}
 				}
-				/* if (_entryDistributions)
-					_entryDistributions.push(myTest()); */
 			}
 			
 			private function selectDistributorsClick():void {

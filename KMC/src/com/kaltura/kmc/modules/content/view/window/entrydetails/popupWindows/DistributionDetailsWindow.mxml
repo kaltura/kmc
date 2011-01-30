@@ -13,6 +13,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -62,7 +63,11 @@
 			private var _requestXMLAvailable:Boolean;
 			[Bindable]
 			private var _responseXMLAvailable:Boolean;
+			//for roles and permissions: is where permission exists
+			[Bindable]
+			public var enableChanges:Boolean = true;
 			
+
 			public function get entryDetailsModel():EntryDetailsModel
 			{
 				return _entryDetailsModel;
@@ -172,6 +177,7 @@
 			}
 			
 			private function onCreationComplete():void {
+				PermissionManager.getInstance().applyAllAttributes(this, "distributionDetailsWindow");
 				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
 				setSchedulerData();
 			}
@@ -384,15 +390,15 @@
 			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}"/>
 		</mx:VBox>
 		<mx:VBox>
-			<mx:DateField id="startDateField" change="validateTimes()"/> 
-			<mx:DateField id="endDateField" change="validateTimes()"/> 
+			<mx:DateField id="startDateField" change="validateTimes()" enabled="{enableChanges}"/> 
+			<mx:DateField id="endDateField" change="validateTimes()" enabled="{enableChanges}"/> 
 		</mx:VBox>
 		<mx:VBox>
 			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
-								   styleName="timeEntry" click="validateTimes()"/>		
+								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>		
 			
 			<controls:SM_TimeEntry id="endDateHour" height="25" showAMPMLabel="true" showHours="true"
-								   styleName="timeEntry" click="validateTimes()"/>	
+								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>	
 		</mx:VBox>
 	</mx:HBox>
 	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" fontWeight="bold"/>
@@ -427,6 +433,6 @@
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="save()"
-				   buttonMode="true"/>
+				   buttonMode="true" enabled="{enableChanges}"/>
 	</mx:ControlBar>
 </mx:TitleWindow>
