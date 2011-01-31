@@ -41,8 +41,9 @@ package com.kaltura.kmc.modules.content.commands
 					newEntryDistribution.distributionProfileId = distribution.kalturaEntryDistribution.distributionProfileId;
 					addEntryDistribution = new EntryDistributionAdd(newEntryDistribution);
 				}
-				else
+				else {
 					addEntryDistribution = new EntryDistributionAdd(distribution.kalturaEntryDistribution);
+				}
 				mr.addAction(addEntryDistribution);
 				
 				//if submitAdd action is required

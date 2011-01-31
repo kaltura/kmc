@@ -61,6 +61,7 @@ package com.kaltura.kmc.modules.content.commands
 				profilesArray.push(newProfile);
 			}
 			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		/**

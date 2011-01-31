@@ -1,9 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--- Represents the check box for "Distributo when ready" column. only one component can appear: check box OR label -->
+<!--- Represents the check box for "Distribute Automatically" column. only one component can appear: check box OR label -->
 <components:CBLabelComponent xmlns:mx="http://www.adobe.com/2006/mxml" 
 							 xmlns:components="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.types.KalturaDistributionProfileActionStatus;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			
+			
+			override public function set data(value:Object):void {
+				var distributionWithProfile:EntryDistributionWithProfile = value as EntryDistributionWithProfile;
+				var distribution:KalturaEntryDistribution = distributionWithProfile.kalturaEntryDistribution;
+				switch (distribution.status) {
+					case KalturaEntryDistributionStatus.READY:
+					case KalturaEntryDistributionStatus.ERROR_DELETING:
+					case KalturaEntryDistributionStatus.ERROR_UPDATING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('cms','distributed');
+						break;
+					case KalturaEntryDistributionStatus.SUBMITTING:
+					case KalturaEntryDistributionStatus.DELETING:
+					case KalturaEntryDistributionStatus.UPDATING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('cms','inProgress');
+						break;
+					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('cms','distributionError');
+						break;
+					default:
+						this.cbVisible = true;
+						if (distributionWithProfile.kalturaDistributionProfile.submitEnabled == KalturaDistributionProfileActionStatus.AUTOMATIC) {
+							this.cbSelected = true;
+							this.cbEnabled = false;
+						}
+						//only enabled if we have "send" permission
+						this.cbEnabled &&= parentDocument.enableDistribution;
+				}
+				
+			}
+			
 			override public function set labelVisible(value:Boolean):void {
 				super.labelVisible = value;
 				super.cbVisible = !value;
@@ -13,6 +51,7 @@
 				super.cbVisible = value;
 				super.labelVisible = !value;
 			}
+			
 		]]>
 	</mx:Script>
 </components:CBLabelComponent>

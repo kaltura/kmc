@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--- This window holds a list of available distributors and their distribution state -->
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="800" height="400" creationComplete="onCreationComplete()"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="500" creationComplete="onCreationComplete()"
 				title="{resourceManager.getString('cms','selectDistributors')}" layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true" close="onClose()"
-				paddingLeft="15">
+				paddingLeft="15" paddingRight="15"
+				xmlns:components="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.business.PermissionManager;
@@ -11,7 +12,6 @@
 			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
-			import com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.CBLabelComponent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.DistributeWhenReadyComponent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.DistributorComponent;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
@@ -23,15 +23,12 @@
 			import com.kaltura.vo.KalturaEntryDistribution;
 			import com.kaltura.vo.KalturaThumbAsset;
 			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			
 			public var selectedEntry:KalturaBaseEntry;
 			[Bindable]
-			public var isReady:Boolean = false;
-			private var _unusedDistributionProfiles:ArrayCollection;
-			private var _entryDistributions:Array;
+			private var _distributionDataProvider:Array;
 			public var entryFlavors:ArrayCollection;
 			public var entryThumbs:Array;
 			//permission to add distributions
@@ -43,157 +40,12 @@
 			
 			private function onCreationComplete():void {
 				PermissionManager.getInstance().applyAllAttributes(this, "selectDistributorsWindow");
-				isReady = true;
 			}
-			
-			/**
-			 * sets the suitable status on the "Distribute when Ready" column
-			 * */
-			private function addStatusLabel(status:int):void {
-				var component:DistributeWhenReadyComponent = new DistributeWhenReadyComponent();
-				component.labelVisible = true;
-				switch (status) {
-					case KalturaEntryDistributionStatus.READY:
-					case KalturaEntryDistributionStatus.ERROR_DELETING:
-					case KalturaEntryDistributionStatus.ERROR_UPDATING:
-						component.labelText = resourceManager.getString('cms','distributed');
-						break;
-					case KalturaEntryDistributionStatus.SUBMITTING:
-					case KalturaEntryDistributionStatus.DELETING:
-					case KalturaEntryDistributionStatus.UPDATING:
-						component.labelText = resourceManager.getString('cms','inProgress');
-						break;
-					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
-						component.labelText = resourceManager.getString('cms','distributionError');
-						break;
-				}
-		
-				qcVbox.addChild(component);
-			}
-			
-			/**
-			 * This function should be called only after creation complete, and after
-			 * the functio buildDistributorsWindow has been called
-			 * */
-			private function buildDistributors(value:Boolean):void {
-				if (!value)
-					return;
-				
-				for each (var distribution:EntryDistributionWithProfile in _entryDistributions) {
-					var disCompontnet:DistributorComponent = new DistributorComponent();
-					disCompontnet.distributionProfile = distribution.kalturaDistributionProfile;
-					disCompontnet.distribution = distribution.kalturaEntryDistribution;
-					disCompontnet.cbSelected = true;
-					disCompontnet.cbEnabled = enableRemoveDistribution;
-					disCompontnet.initState = true;
-					if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.QUEUED ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.READY ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_DELETING ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_SUBMITTING ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.ERROR_UPDATING) 
-					{
-						addStatusLabel(distribution.kalturaEntryDistribution.status);
-					}
-					else if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.DELETING ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.UPDATING ||
-						distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.SUBMITTING)
-					{
-						disCompontnet.cbEnabled = false;
-						addStatusLabel(distribution.kalturaEntryDistribution.status);
-					}
-						
-
-					else {
-						addQualityControlCB(distribution.kalturaDistributionProfile);
-						if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.REMOVED) {
-							disCompontnet.cbSelected = false;
-							disCompontnet.initState = false;
-							//updateDistributionThumbsAndFlavors(disCompontnet.distribution, disCompontnet.distributionProfile);
-						}
-					} 
-					/* else if (distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.PENDING)
-					{
-						addQualityControlCB(distribution.kalturaDistributionProfile);
-					} */
-					
-					_unusedDistributionProfiles.removeItemAt(_unusedDistributionProfiles.getItemIndex(distribution.kalturaDistributionProfile));
-					distributorsVbox.addChild(disCompontnet);					
-				}
-				
-				for each (var profile:KalturaDistributionProfile in _unusedDistributionProfiles) {
-					var newDistribution:KalturaEntryDistribution = new KalturaEntryDistribution();
-					newDistribution.entryId = selectedEntry.id;
-					newDistribution.distributionProfileId = profile.id;
-					//updateDistributionThumbsAndFlavors(newDistribution, profile);
-					
-					var disProfileComponent:DistributorComponent = new DistributorComponent();
-					disProfileComponent.distributionProfile = profile;
-					disProfileComponent.distribution = newDistribution;
-					disProfileComponent.cbEnabled = enableAddDistribution;
-					addQualityControlCB(profile);
-					distributorsVbox.addChild(disProfileComponent);
-				}
-			}
-			
-			/**
-			 * this function updates the given entry ditribution with the suitable flavor and thumb assets, according to required params
-			 * from a given profile.
-			 * */
-			/* private function updateDistributionThumbsAndFlavors(distribution:KalturaEntryDistribution, profile:KalturaDistributionProfile):void
-			{
-				distribution.flavorAssetIds = "";
-				distribution.thumbAssetIds = "";
-				
-				//search for required flavors
-				if (profile.requiredFlavorParamsIds && profile.requiredFlavorParamsIds!="") {
-					if(entryFlavors)
-						var flavorsArray:Array = profile.requiredFlavorParamsIds.split(",");
-					for each (var flavorId:String in flavorsArray) {
-						var intFlavorId:int = parseInt(flavorId);
-						for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
-							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == intFlavorId) {
-								distribution.flavorAssetIds += flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id + ",";
-								break;
-							}
-						}
-					}
-				}	
-				//search for required thumbs
-				if ( profile.requiredThumbDimensions && (profile.requiredThumbDimensions.length > 0)) {
-					if (entryThumbs)
-					{
-						for each (var dimension:KalturaDistributionThumbDimensions in profile.requiredThumbDimensions) {
-							for each (var thumb:ThumbnailWithDimensions in entryThumbs) {
-								if (thumb.thumbAsset && (thumb.width == dimension.width) && (thumb.height == dimension.height)) {
-									distribution.thumbAssetIds += thumb.thumbAsset.id + ",";
-									break;
-								}
-							}
-						}
-					}
-				}
-			}  */
 			
 			private function onClose():void {
 				PopUpManager.removePopUp(this);
 			}
 			
-			/**
-			 * adds a checkbox according to the given distribution profile
-			 * returns the new checkBox
-			 * */
-			private function addQualityControlCB(profile:KalturaDistributionProfile):void {
-				var component:DistributeWhenReadyComponent = new DistributeWhenReadyComponent();
-				component.cbVisible = true;
-				if (profile.submitEnabled == KalturaDistributionProfileActionStatus.AUTOMATIC) {
-					component.cbSelected = true;
-					component.cbEnabled = false;
-				}
-				//only enabled if we have "send" permission
-				component.cbEnabled &&= enableDistribution;
-				qcVbox.addChild(component);
-		
-			}
 			
 			/**
 			 * This function sets the given values and builds the window components according
@@ -201,10 +53,24 @@
 			 * */
 			public function buildDistributorsWindow(distributionProfiles:Array, entryDistributions:Array):void {
 				//containes all profiles that entries weren't distributed to them yet
-				_unusedDistributionProfiles = new ArrayCollection(distributionProfiles.concat());
-				_entryDistributions = entryDistributions;
+				var unusedDistributionProfiles:ArrayCollection = new ArrayCollection(distributionProfiles.concat());
+				var entryDistributions:Array = entryDistributions;
 				
-				BindingUtils.bindSetter(buildDistributors, this, "isReady");	
+				_distributionDataProvider = new Array;
+				for each (var distribution:EntryDistributionWithProfile in entryDistributions) {
+					_distributionDataProvider.push(distribution);
+					unusedDistributionProfiles.removeItemAt(unusedDistributionProfiles.getItemIndex(distribution.kalturaDistributionProfile));					
+				}
+				
+				for each (var profile:KalturaDistributionProfile in unusedDistributionProfiles) {
+					var newDistributionWithProfile:EntryDistributionWithProfile = new EntryDistributionWithProfile();
+					var newDistribution:KalturaEntryDistribution = new KalturaEntryDistribution();
+					newDistribution.entryId = selectedEntry.id;
+					newDistribution.distributionProfileId = profile.id;
+					newDistributionWithProfile.kalturaEntryDistribution = newDistribution;
+					newDistributionWithProfile.kalturaDistributionProfile = profile;
+					_distributionDataProvider.push(newDistributionWithProfile);
+				}	
 			} 
 			
 			/**
@@ -214,22 +80,20 @@
 				var addDistributors:Array = new Array();
 				var removeDistributors:Array = new Array();
 				var profilesToUpdate:Array = new Array();
-				for (var i:int = 0; i<distributorsVbox.numChildren; i++) {
-					var disComponent:DistributorComponent = distributorsVbox.getChildAt(i) as DistributorComponent;
+				for (var i:int = 0; i<_distributionDataProvider.length; i++) {
+					var entryDistribution:EntryDistributionWithProfile = _distributionDataProvider[i] as EntryDistributionWithProfile;
+					var disComponent:DistributorComponent = dataGrid.dataGridListItems()[i][0] as DistributorComponent;
 					if (disComponent.initState && !(disComponent.cbSelected)) {
-						removeDistributors.push(disComponent.distribution);
+						removeDistributors.push(entryDistribution.kalturaEntryDistribution);
 						//reset the init state
 						disComponent.initState = disComponent.cbSelected;
 					}
 					else if (!(disComponent.initState) && disComponent.cbSelected) {
-						var newDistributionWithProfile:EntryDistributionWithProfile = new EntryDistributionWithProfile();
-						newDistributionWithProfile.kalturaDistributionProfile = disComponent.distributionProfile;
-						newDistributionWithProfile.kalturaEntryDistribution = disComponent.distribution;
-						var qcBox:DistributeWhenReadyComponent = qcVbox.getChildAt(i) as DistributeWhenReadyComponent;
+						var qcBox:DistributeWhenReadyComponent = dataGrid.dataGridListItems()[i][1] as DistributeWhenReadyComponent;
 						if (qcBox && qcBox.cbVisible && qcBox.cbSelected)
-							newDistributionWithProfile.manualQualityControl = false;
+							entryDistribution.manualQualityControl = false;
 						
-						addDistributors.push(newDistributionWithProfile);
+						addDistributors.push(entryDistribution);
 						//reset the init state
 						disComponent.initState = disComponent.cbSelected;
 					}
@@ -240,42 +104,15 @@
 				
 				PopUpManager.removePopUp(this);
 			}
-			
-			private function selectAllDistributors(value:Boolean, container:VBox):void {
-				for (var i:int = 0; i< container.numChildren; i++) {
-					var cbLabelComp:CBLabelComponent = container.getChildAt(i) as CBLabelComponent;
-					if (cbLabelComp && cbLabelComp.cbVisible && cbLabelComp.cbEnabled)
-						cbLabelComp.cbSelected = value;
-				}
-			}
-			
+		
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms','distributors')}" styleName="titleLabel"/>
 	<mx:Text text="{resourceManager.getString('cms','selectDistributorsText')}" width="100%"/>
-	<mx:HBox width="100%">
-		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','distributorName')}" styleName="distributorsSubTitleLabel"/>
-			<mx:HBox id="distributorsBtns" styleName="selectionButtonsHBox">
-				<mx:LinkButton id="allDistributorsBtn" width="25" label="{resourceManager.getString('cms','allButton')}" click="{selectAllDistributors(true, distributorsVbox)}" styleName="selectionLinkbutton"/>
-				<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
-				<mx:LinkButton id="noneDistributorsBtn" width="30" label="{resourceManager.getString('cms','noneButton')}" click="{selectAllDistributors(false, distributorsVbox)}" styleName="selectionLinkbutton"/>
-			</mx:HBox>
-			<mx:VBox id="distributorsVbox" verticalGap="7" paddingLeft="2"/>
-		</mx:VBox>
-		
-		<mx:Spacer width="100"/>
-		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','notManualQC')}" styleName="distributorsSubTitleLabel"/>	
-			<mx:HBox id="DWRBtns" styleName="selectionButtonsHBox">
-				<mx:LinkButton id="allDWRBtn" width="25" label="{resourceManager.getString('cms','allButton')}" click="{selectAllDistributors(true, qcVbox)}" styleName="selectionLinkbutton"/>
-				<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
-				<mx:LinkButton id="noneDWRBtn" width="30" label="{resourceManager.getString('cms','noneButton')}" click="{selectAllDistributors(false, qcVbox)}" styleName="selectionLinkbutton"/>
-			</mx:HBox>
-			<mx:VBox id="qcVbox" verticalGap="7" paddingLeft="2"/>
-			
-		</mx:VBox>
-	</mx:HBox>
+	<components:SelectDistributorsDataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_distributionDataProvider}" draggableColumns="false" 
+				 sortableColumns="false" selectable="false" rowHeight="40"/>
+
+
 	<mx:ControlBar>
 		<mx:Button id="applyBtn" label="{resourceManager.getString('cms', 'apply')}" click="apply()"
 				   buttonMode="true"/>

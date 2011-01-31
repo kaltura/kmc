@@ -2,7 +2,8 @@
 <!---
 Distribution tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*"
+		 show="onTabShow()">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
@@ -24,6 +25,7 @@ Distribution tab of EntryDetailsWin
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			private var _selectedEntry:KalturaBaseEntry;
+			[Bindable]
 			private var _entryDetailsModel:EntryDetailsModel;
 			[Bindable]
 			private var _entryDistributions:Array;
@@ -44,6 +46,14 @@ Distribution tab of EntryDetailsWin
 			public function set viewStack(value:ViewStack):void
 			{
 				_viewStack = value;
+			}
+			
+			/**
+			 * will refresh the entry distribution list on every navigation to distribution tab
+			 * */
+			private function onTabShow():void {
+				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
+				updateEntryDistributions.dispatch();
 			}
 			
 			public function set showActions(value:Boolean):void {

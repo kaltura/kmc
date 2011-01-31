@@ -134,11 +134,6 @@ package com.kaltura.kmc.modules.content.commands
 				//				distribution profiles
 				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
 				mr.addAction(listDistributionProfile);
-				
-				var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
-				entryDistributionFilter.entryIdEqual = entryId;	
-				var listEntryDistribution:EntryDistributionList = new EntryDistributionList(entryDistributionFilter);
-				mr.addAction(listEntryDistribution);
 			
 
 			}
@@ -181,11 +176,7 @@ package com.kaltura.kmc.modules.content.commands
 				handleDistributionProfiles(data.data[multiRequestIndex] as KalturaDistributionProfileListResponse);
 				multiRequestIndex++
 			}
-			//			entry distribution
-			if (data.data[multiRequestIndex] is KalturaEntryDistributionListResponse) {
-				handleEntryDistribution(data.data[multiRequestIndex] as KalturaEntryDistributionListResponse);
-				multiRequestIndex++;
-			}
+			
 //			access control profiles
 			handleAccessControls(data.data[multiRequestIndex] as KalturaAccessControlListResponse);
 			
@@ -208,6 +199,7 @@ package com.kaltura.kmc.modules.content.commands
 					profilesArray.push(newProfile);
 			}
 			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		/**
@@ -222,28 +214,6 @@ package com.kaltura.kmc.modules.content.commands
 			var xmlNode:XMLNode = simpleXMLEncoder.encodeValue(obj, qName, xmlDocument);
 			var xml:XML = new XML(xmlDocument.toString());
 			return xml;
-		}
-		
-		/**
-		 * copied from ListEntryDistributionCommand 
-		 */
-		private function handleEntryDistribution(result:KalturaEntryDistributionListResponse):void {
-			var distributionArray:Array = new Array();
-			var profilesArray:Array = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
-			for each (var distribution:KalturaEntryDistribution in result.objects) {
-				if (distribution.status != KalturaEntryDistributionStatus.DELETED) {
-					for each (var profile:KalturaDistributionProfile in profilesArray) {
-						if (distribution.distributionProfileId == profile.id) {
-							var newEntryDistribution:EntryDistributionWithProfile = new EntryDistributionWithProfile();
-							newEntryDistribution.kalturaDistributionProfile = profile;
-							newEntryDistribution.kalturaEntryDistribution = distribution;
-							distributionArray.push(newEntryDistribution);
-						} 
-					}
-				}
-			}
-			
-			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = distributionArray;
 		}
 		
 		/**

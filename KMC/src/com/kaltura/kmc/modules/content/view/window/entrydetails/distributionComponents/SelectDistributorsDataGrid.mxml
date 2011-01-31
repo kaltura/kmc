@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="1550" height="798">
+	<mx:Script>
+		<![CDATA[
+			public function dataGridListItems():Array {
+				return this.listItems;
+			}
+			
+			/**
+			 * selects all/none of the given column id
+			 * */
+			public function selectAll(value:Boolean, columnID:int) : void {
+				for (var i:int = 0; i< this.listItems.length; i++) {
+					var cbLabelComp:CBLabelComponent = this.listItems[i][columnID] as CBLabelComponent;
+					if (cbLabelComp && cbLabelComp.cbVisible && cbLabelComp.cbEnabled)
+						cbLabelComp.cbSelected = value;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:columns>
+		<mx:DataGridColumn width="235" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.DistributorComponent">
+			<mx:headerRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" horizontalGap="0" paddingLeft="6" paddingRight="6"  horizontalScrollPolicy="off">
+						<mx:Label text="{resourceManager.getString('cms','distributorName')}" styleName="distributorsSubTitleLabel"/>
+						<mx:Spacer width="100%"/>
+						<mx:LinkButton id="allDistributorsBtn" width="25" label="{resourceManager.getString('cms','allButton')}" styleName="selectionLinkbutton" click="{outerDocument.selectAll(true, 0)}"/>
+						<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
+						<mx:LinkButton id="noneDistributorsBtn" width="30" label="{resourceManager.getString('cms','noneButton')}" styleName="selectionLinkbutton" click="{outerDocument.selectAll(false, 0)}"/>
+					</mx:HBox>	
+				</mx:Component>
+			</mx:headerRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn width="235" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.DistributeWhenReadyComponent">
+			<mx:headerRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" horizontalGap="0" paddingLeft="6" paddingRight="6" horizontalScrollPolicy="off">
+						<mx:Label text="{resourceManager.getString('cms','notManualQC')}" styleName="distributorsSubTitleLabel"/>
+						<mx:Spacer width="100%"/>
+						<mx:LinkButton id="allDWRBtn" width="25" label="{resourceManager.getString('cms','allButton')}" click="{outerDocument.selectAll(true, 1)}"  styleName="selectionLinkbutton"/>
+						<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
+						<mx:LinkButton id="noneDWRBtn" width="30" label="{resourceManager.getString('cms','noneButton')}" click="{outerDocument.selectAll(false, 1)}" styleName="selectionLinkbutton"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:headerRenderer>
+		</mx:DataGridColumn>
+		
+	</mx:columns>
+</mx:DataGrid>
