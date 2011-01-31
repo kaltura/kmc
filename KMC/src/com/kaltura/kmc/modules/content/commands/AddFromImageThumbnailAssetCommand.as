@@ -49,8 +49,8 @@ package com.kaltura.kmc.modules.content.commands
 					break;
 				}
 			}
-			//add to first place
-			thumbsArray.splice(0, 0, newThumb); 
+			//add last
+			thumbsArray.splice(thumbsArray.length, 0, newThumb); 
 			//for data binding
 			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();	
 		}

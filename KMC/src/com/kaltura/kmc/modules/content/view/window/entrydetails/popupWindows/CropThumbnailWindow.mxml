@@ -19,7 +19,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaThumbAsset;
 			import com.kaltura.vo.KalturaThumbParams;
-
+			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			/**
@@ -62,6 +62,7 @@
 			private var _isPreSize:Boolean = false;
 			[Bindable]
 			private var _selectedThumbnail:ThumbnailWithDimensions;
+			private var _lastSelectedIndex:int = 0;
 			private var _imageCrop:ImageCrop;
 			private var _isDirty:Boolean;
 			[Bindable]
@@ -71,6 +72,7 @@
 			private var _presetSizesExist:Boolean = false;
 			[Bindable]
 			private var _thumbnailsList:Array;
+			private var _firstLoaded:Boolean = false;
 			
 			private function onCreationComplete(event:Event):void {
 				imgList.selectedIndex = 0;
@@ -302,17 +304,17 @@
 					}
 				}
 				
-				if (_presetSizeList.length>0) {
-					_isPreSize = true;
-					
+				if (_firstLoaded && imgList) {
+					imgList.selectedItem = _thumbnailsList[_lastSelectedIndex];
+					//onImgItemClick();
 				}
-				
+				else if (!_firstLoaded) {
+					_firstLoaded = true;
+					if (_presetSizeList.length>0)
+					_isPreSize = true;
+				}
 				if (presetComboBox) {
 					presetComboBox.selectedIndex = 0;
-				}
-				if (imgList) {
-					imgList.selectedItem = _thumbnailsList[0];
-					onImgItemClick();
 				}
 			}
 			
@@ -381,6 +383,7 @@
 			 * */
 			private function onImgItemClick():void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
+				_lastSelectedIndex = imgList.selectedIndex;
 				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length>0))
 					presetComboBox.selectedIndex = 0;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;

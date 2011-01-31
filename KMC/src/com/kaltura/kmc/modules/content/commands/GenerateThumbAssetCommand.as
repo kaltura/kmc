@@ -50,7 +50,8 @@ package com.kaltura.kmc.modules.content.commands
 				var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(newThumb.width, newThumb.height, newThumb);
 				thumbToAdd.thumbUrl = buildThumbUrl(newThumb);
 				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
-				_thumbsArray.splice(0,0,thumbToAdd);
+				//add last
+				_thumbsArray.splice(_thumbsArray.length,0,thumbToAdd);
 			}
 			
 			Alert.show(ResourceManager.getInstance().getString('cms','savedMessage'),ResourceManager.getInstance().getString('cms','savedTitle'), Alert.OK, null, onUserOK);
