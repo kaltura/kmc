@@ -598,6 +598,7 @@ $(window).load(function(){
 			var embed_code, preview_player,
 			id_type = is_playlist ? "Playlist " + (id == "multitab_playlist" ? "Name" : "ID") : "Embedding",
 			uiconf_details = kmc.preview_embed.getUiconfDetails(uiconf_id,is_playlist);
+			name = (name) ? name : '';
 //			kmc.log("uiconf_details="+uiconf_details);
 			if(kmc.vars.jw) {
 				embed_code = kmc.preview_embed.jw.buildJWEmbed(id, name, description, is_playlist, uiconf_id);
