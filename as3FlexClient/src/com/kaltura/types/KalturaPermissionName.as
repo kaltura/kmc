@@ -10,7 +10,6 @@ package com.kaltura.types
 		public static const FEATURE_PS2_PERMISSIONS_VALIDATION : String = 'FEATURE_PS2_PERMISSIONS_VALIDATION';
 		public static const USER_SESSION_PERMISSION : String = 'BASE_USER_SESSION_PERMISSION';
 		public static const ALWAYS_ALLOWED_ACTIONS : String = 'ALWAYS_ALLOWED_ACTIONS';
-		public static const SYSTEM_BASE_ACTIONS : String = 'SYSTEM_BASE_ACTIONS';
 		public static const SYSTEM_FILESYNC : String = 'SYSTEM_FILESYNC';
 		public static const SYSTEM_INTERNAL : String = 'SYSTEM_INTERNAL';
 		public static const KMC_ACCESS : String = 'KMC_ACCESS';
@@ -36,6 +35,7 @@ package com.kaltura.types
 		public static const SYSTEM_ADMIN_CONTENT_DISTRIBUTION_BASE : String = 'SYSTEM_ADMIN_CONTENT_DISTRIBUTION_BASE';
 		public static const SYSTEM_ADMIN_CONTENT_DISTRIBUTION_MODIFY : String = 'SYSTEM_ADMIN_CONTENT_DISTRIBUTION_MODIFY';
 		public static const SYSTEM_ADMIN_PERMISSIONS_MANAGE : String = 'SYSTEM_ADMIN_PERMISSIONS_MANAGE';
+		public static const SYSTEM_ADMIN_ENTRY_INVESTIGATION : String = 'SYSTEM_ADMIN_ENTRY_INVESTIGATION';
 		public static const BATCH_BASE : String = 'BATCH_BASE';
 		public static const CONTENT_INGEST_UPLOAD : String = 'CONTENT_INGEST_UPLOAD';
 		public static const CONTENT_INGEST_BULK_UPLOAD : String = 'CONTENT_INGEST_BULK_UPLOAD';

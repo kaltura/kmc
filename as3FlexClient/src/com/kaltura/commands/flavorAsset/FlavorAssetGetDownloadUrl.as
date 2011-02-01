@@ -8,8 +8,9 @@ package com.kaltura.commands.flavorAsset
 		public var filterFields : String;
 		/**
 		 * @param id String
+		 * @param useCdn Boolean
 		 **/
-		public function FlavorAssetGetDownloadUrl( id : String )
+		public function FlavorAssetGetDownloadUrl( id : String,useCdn : Boolean=false )
 		{
 			service= 'flavorasset';
 			action= 'getDownloadUrl';
@@ -19,6 +20,8 @@ package com.kaltura.commands.flavorAsset
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
+			keyArr.push('useCdn');
+			valueArr.push(useCdn);
 			applySchema(keyArr, valueArr);
 		}
 

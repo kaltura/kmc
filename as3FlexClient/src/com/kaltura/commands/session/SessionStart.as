@@ -14,7 +14,7 @@ package com.kaltura.commands.session
 		 * @param expiry int
 		 * @param privileges String
 		 **/
-		public function SessionStart( secret : String,userId : String='',type : int=0,partnerId : int=-1,expiry : int=86400,privileges : String='' )
+		public function SessionStart( secret : String,userId : String='',type : int=0,partnerId : int=undefined,expiry : int=86400,privileges : String='' )
 		{
 			service= 'session';
 			action= 'start';

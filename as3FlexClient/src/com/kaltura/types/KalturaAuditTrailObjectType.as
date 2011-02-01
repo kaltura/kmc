@@ -29,5 +29,7 @@ package com.kaltura.types
 		public static const METADATA : String = 'Metadata';
 		public static const METADATA_PROFILE : String = 'MetadataProfile';
 		public static const USER_LOGIN_DATA : String = 'UserLoginData';
+		public static const USER_ROLE : String = 'UserRole';
+		public static const PERMISSION : String = 'Permission';
 	}
 }

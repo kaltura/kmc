@@ -14,6 +14,9 @@ package com.kaltura.types
 		public static const ISMV : String = 'ismv';
 		public static const MKV : String = 'mkv';
 		public static const WEBM : String = 'webm';
+		public static const MPEG : String = 'mpeg';
+		public static const MPEGTS : String = 'mpegts';
+		public static const APPLEHTTP : String = 'applehttp';
 		public static const SWF : String = 'swf';
 		public static const PDF : String = 'pdf';
 		public static const JPG : String = 'jpg';
