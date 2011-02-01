@@ -22,6 +22,7 @@
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDistribution;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.vo.KalturaDistributionProfile;
 			import com.kaltura.vo.KalturaDistributionThumbDimensions;
@@ -95,8 +96,8 @@
 				_entryDis = value;
 				setOldData(_entryDis.kalturaEntryDistribution);	
 				_destinationName = _entryDis.kalturaDistributionProfile.name;
-				_requestXMLAvailable = _entryDis.kalturaEntryDistribution.hasSubmitSentDataLog;
-				_responseXMLAvailable = _entryDis.kalturaEntryDistribution.hasSubmitResultsLog;
+				_requestXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitSentDataLog == KalturaNullableBoolean.TRUE_VALUE);
+				_responseXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitResultsLog == KalturaNullableBoolean.TRUE_VALUE);
 				buildTitle();
 				buildThumbsArray();
 				buildFlavorsAssets();
