@@ -70,8 +70,8 @@
 			 * */
 			private var _isLiveStream:Boolean;
 
-
-
+			private var _maxNumCategories : int;
+			
 			/**
 			 * if somthing that we can't track changes happen
 			 * (like mix created) we need to refresh entires table after save.
@@ -403,7 +403,7 @@
 					// Atar: need to alert no name? there's validation on the TF itself 
 				}
 				else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
-					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg'), resourceManager.getString('cms', 'categoriesErrorTitle'));
+					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg',[]), resourceManager.getString('cms', 'categoriesErrorTitle'));
 				}
 				// scheduling validation:
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
@@ -524,6 +524,17 @@
 			public function get hideTabs():String {
 				return '';
 			}
+
+			public function get maxNumCategories():int
+			{
+				return _maxNumCategories;
+			}
+
+			public function set maxNumCategories(value:int):void
+			{
+				_maxNumCategories = value;
+			}
+
 			
 		]]>
 	</mx:Script>
@@ -537,7 +548,7 @@
 						  label="{ResourceManager.getInstance().getString('cms', 'metadata')}"
 						  selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}" context="{context}"
 						  entryDetailsModel="{entryDetailsModel}" untrackableChange="{setUntrackableChange()}"
-						  openPreview="{openPreview(event)}" viewStack="{viewStack}" showEmbed="{showEmbedCode}"/>
+						  openPreview="{openPreview(event)}" viewStack="{viewStack}" showEmbed="{showEmbedCode}" maxNumCategories="{maxNumCategories}"/>
 		<!-- Thumbnails Tab -->
 		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
 							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" 
