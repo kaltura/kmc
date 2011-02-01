@@ -111,8 +111,8 @@ package com.kaltura.kmc.business
 		/**
 		 * open the change user password popup window 
 		 */
-		public static function openChangePwd():void {
-			ExternalInterface.call("kmc.functions.openChangePwd");
+		public static function openChangePwd(mail:String):void {
+			ExternalInterface.call("kmc.functions.openChangePwd", mail);
 		}
 		
 		/**
