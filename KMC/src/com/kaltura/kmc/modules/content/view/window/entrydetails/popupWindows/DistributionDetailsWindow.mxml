@@ -8,7 +8,8 @@
 				close="{closeWindow()}"
 				xmlns:controls="com.kaltura.controls.*"
 				creationComplete="{onCreationComplete()}"
-				show="setSchedulerData()">
+				show="setSchedulerData()"
+				paddingLeft="15">
 	
 	<mx:Script>
 		<![CDATA[
@@ -368,13 +369,13 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','statusLabel')}" fontWeight="bold"/>
-	<mx:HBox paddingLeft="7">
+	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','distributionDetails')}" styleName="drillDownTitleLabel"/>
+	<mx:HBox>
 		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','statusLabel')}"/>
-			<mx:Label text="{resourceManager.getString('cms','remoteId')}"/>
+			<mx:Label text="{resourceManager.getString('cms','statusLabel')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('cms','remoteId')}" styleName="drillDownLabel"/>
 			<mx:Label text="{resourceManager.getString('cms','logs')}" visible="{_requestXMLAvailable || _responseXMLAvailable}" 
-					  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}"/>			
+					  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>			
 		</mx:VBox>
 		<mx:VBox>
 			<renderers:SubmissionStatusRenderer data="{_entryDis}"/>
@@ -389,11 +390,10 @@
 			</mx:HBox>		
 		</mx:VBox>
 	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('cms','scheduling')}" fontWeight="bold"/>
-	<mx:HBox paddingLeft="7">
+	<mx:HBox>
 		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}"/>
-			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}"/>
+			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}" styleName="drillDownLabel"/>
 		</mx:VBox>
 		<mx:VBox>
 			<mx:DateField id="startDateField" change="validateTimes()" enabled="{enableChanges}"/> 
@@ -407,8 +407,27 @@
 								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>	
 		</mx:VBox>
 	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" fontWeight="bold"/>
-	<mx:HBox paddingLeft="7">
+	<mx:Spacer height="10"/>
+	<mx:Label text="{resourceManager.getString('cms','metadataDetails')}" styleName="drillDownTitleLabel"/>
+	
+	<mx:VBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('cms','name') + ':'}" width="70" styleName="drillDownLabel"/>
+			<mx:Text text="{_name}" width="500"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('cms','description') +':'}" width="70" styleName="drillDownLabel"/>
+			<mx:Text text="{_description}" width="500"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('cms','tags') + ':'}" width="70" styleName="drillDownLabel"/>			
+			<mx:Text text="{_tags}" width="500"/>		
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:Spacer height="10"/>
+	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" styleName="drillDownTitleLabel"/>
+	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}" includeInLayout="{_thumbsArray.length==0}"/>
 		<mx:HorizontalList width="100%"
 						   dataProvider="{_thumbsArray}" borderStyle="solid" paddingRight="0"
@@ -417,29 +436,15 @@
 						   visible="{(_thumbsArray.length > 0)}" includeInLayout="{(_thumbsArray.length>0)}"/>
 		
 	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" fontWeight="bold"/>
-	<mx:HBox paddingLeft="7">
+	<mx:Spacer height="10"/>
+	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" styleName="drillDownTitleLabel"/>
+	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}" includeInLayout="{_flavorAssets.length==0}"/>
 		<entryDetails:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" 
 								   flavorAssets="{_flavorAssets}"
 								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>	
 	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('cms','metadata')}" fontWeight="bold"/>
 
-	<mx:VBox paddingLeft="7">
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('cms','name') + ':'}" width="70"/>
-			<mx:Text text="{_name}" width="500"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('cms','description') +':'}" width="70"/>
-			<mx:Text text="{_description}" width="500"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('cms','tags') + ':'}" width="70"/>			
-			<mx:Text text="{_tags}" width="500"/>		
-		</mx:HBox>
-	</mx:VBox>
 
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="save()"
