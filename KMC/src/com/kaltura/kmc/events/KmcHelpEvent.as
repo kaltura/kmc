@@ -8,7 +8,7 @@ package com.kaltura.kmc.events {
 	 */
 	public class KmcHelpEvent extends Event {
 
-		public static const HELP:String = "help";
+		public static const HELP:String = "helpRequest";
 
 		private var _anchor:String;
 

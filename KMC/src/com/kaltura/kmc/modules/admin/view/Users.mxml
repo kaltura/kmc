@@ -340,11 +340,16 @@
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
+				ud.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
 				PopUpManager.addPopUp(ud, this, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;
 			}
 			
+			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+			}
 
 			/**
 			 * show the "add user" dialog

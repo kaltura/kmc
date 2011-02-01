@@ -96,7 +96,8 @@
 			 * */
 			private var _isMissingFeature:Boolean = false;
 
-
+			private var _roleEditEnabled : Boolean = true;
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_ready = true;
 				// re-trigger the mode setter
@@ -492,12 +493,14 @@
 								if (cb.data && cb.data is CheckBox)
 									(cb.data as CheckBox).selected = true;
 							}
+							
 						}
 					}
 					// applying the half-selected style
 					for each (pm in _allPermissionGroupManagers) {
 						pm.setMainCBState();
 					}
+					
 				}
 				else {
 					// for new roles, show all permissions selected.
@@ -518,14 +521,21 @@
 						pm.setMainCBState();
 					}
 				}
+				
+				if (!roleEditEnabled) {
+					for each (cb in _allCheckboxes) {
+						cb.enabled = false;
+						
+					}
+				}
 			}
 
 
 			/**
 			 * dispatch help event with relevant anchor
 			 * */
-			protected function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section46'));
+			private function onHelp():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section2'));
 			}
 
 
@@ -578,6 +588,25 @@
 			public function get mode():String {
 				return _mode;
 			}
+			
+			[Bindable]
+			public function get roleEditEnabled():Boolean
+			{
+				return _roleEditEnabled;
+			}
+
+			public function set roleEditEnabled(value:Boolean):void
+			{
+				_roleEditEnabled = value;
+				/* if (!_roleEditEnabled)
+				{
+					for each (var cb:CheckBox in _allCheckboxes)
+					{
+						cb.enabled = false;
+					}
+				} */
+			}
+
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='validator' property="text" required="true"

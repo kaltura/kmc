@@ -172,17 +172,22 @@
 			 * @return the newly created popup window
 			 * */
 			protected function drillToSelectedRole():RoleDrilldown {
-				var ud:RoleDrilldown = new RoleDrilldown();
-				ud.init(model.selectedRole, model.drilldownMode, model.partnerPermissionsUiconf, model.partnerPermissions, model.roles);
-				ud.addEventListener(RoleDrilldown.SAVE, saveRoleData);
-				ud.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
-				ud.addEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
-				PopUpManager.addPopUp(ud, this, true);
-				PopUpManager.centerPopUp(ud);
+				var rd:RoleDrilldown = new RoleDrilldown();
+				rd.init(model.selectedRole, model.drilldownMode, model.partnerPermissionsUiconf, model.partnerPermissions, model.roles);
+				rd.addEventListener(RoleDrilldown.SAVE, saveRoleData);
+				rd.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
+				rd.addEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
+				rd.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
+				PopUpManager.addPopUp(rd, this, true);
+				PopUpManager.centerPopUp(rd);
 				dispatchEvent(new GeneralEvent("enableHeader", false));
-				return ud;
+				return rd;
 			}
 			
+			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+			}
 			
 			/**
 			 * show the "add user" dialog
