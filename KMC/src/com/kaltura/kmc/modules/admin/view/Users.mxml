@@ -149,6 +149,8 @@
 				if (_userDrilldown) {
 					_userDrilldown.roles = value;
 				}
+				tableHBox.height = (table.rowHeight * 10) + table.headerHeight + 10;
+				superTanker.height = tableHBox.height + paging.height;
 			}
 			
 			/**
@@ -434,12 +436,15 @@
 					   id="usersQuotaBtn" />
 	</mx:VBox>
 
-	<mx:HBox width="100%" id="superTanker">
-		<mx:VBox id="tableContainer" width="100%" styleName="noVGap" height="100%">
-			<view:UsersTable id="table" width="100%" dataProvider="{model.users}" roles="{rolesModel.roles}" 
-							 rowCount="10" drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
-							 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" 
-							 crippledUsersIds="{model.crippledUsers}" sortableColumns="{false}" />
+	<mx:HBox width="100%" height="100%" id="superTanker" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:VBox id="tableContainer" width="100%" height="100%" styleName="entriesTablePagerAndButtonsVbox">
+			<mx:HBox id="tableHBox" width="100%" >
+				<view:UsersTable id="table" width="100%" height="100%" dataProvider="{model.users}" roles="{rolesModel.roles}" 
+								 rowCount="10" drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
+								 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" 
+								 crippledUsersIds="{model.crippledUsers}" sortableColumns="{false}"/>
+				
+			</mx:HBox>
 			<controls:Paging id="paging" width="{table.width}" styleName="paging" nextPage="gotoPage()"
 							 prvPage="gotoPage()" getPageNum="gotoPage()" rowsInPageChange="gotoPage()"
 							 showRowsInPage="{true}" totalCount="{model.totalUsers}" />
