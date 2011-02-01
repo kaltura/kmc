@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.utils.FormBuilder;
 	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
+	import com.kaltura.types.KalturaDistributionProfileStatus;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
@@ -170,10 +171,11 @@ package com.kaltura.kmc.modules.content.commands
 				//fix bug: simpleXmlEncoder not working properly for nested objects
 				if (profile.requiredThumbDimensions is Array)
 					newProfile.requiredThumbDimensions = profile.requiredThumbDimensions;
-				
-				profilesArray.push(newProfile);
+				if (newProfile.status == KalturaDistributionProfileStatus.ENABLED)
+					profilesArray.push(newProfile);
 			}
 			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		
