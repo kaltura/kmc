@@ -44,17 +44,17 @@ package com.kaltura.vo
 
 		public var errorDescription : String;
 
-		public var hasSubmitResultsLog : Boolean;
+		public var hasSubmitResultsLog : int = int.MIN_VALUE;
 
-		public var hasSubmitSentDataLog : Boolean;
+		public var hasSubmitSentDataLog : int = int.MIN_VALUE;
 
-		public var hasUpdateResultsLog : Boolean;
+		public var hasUpdateResultsLog : int = int.MIN_VALUE;
 
-		public var hasUpdateSentDataLog : Boolean;
+		public var hasUpdateSentDataLog : int = int.MIN_VALUE;
 
-		public var hasDeleteResultsLog : Boolean;
+		public var hasDeleteResultsLog : int = int.MIN_VALUE;
 
-		public var hasDeleteSentDataLog : Boolean;
+		public var hasDeleteSentDataLog : int = int.MIN_VALUE;
 
 		public function getUpdateableParamKeys():Array
 		{
