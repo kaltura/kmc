@@ -503,7 +503,15 @@
 			 * displays a warning saying the image is about to be upscaled
 			 * */
 			private function displayUpscaleWarning():void {
-				Alert.show(resourceManager.getString('cms', 'warningMessage'),resourceManager.getString('cms','warningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
+				Alert.yesLabel = resourceManager.getString('cms', 'continue');
+				Alert.noLabel = resourceManager.getString('cms', 'ignore');
+				var previousBtnWidth:Number = Alert.buttonWidth;
+				Alert.buttonWidth = 80;
+				Alert.show(resourceManager.getString('cms', 'upscaleWarningMessage'),resourceManager.getString('cms','upscaleWarningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
+				//restore default labels
+				Alert.yesLabel = resourceManager.getString('cms', 'yes');
+				Alert.noLabel = resourceManager.getString('cms', 'no');
+				Alert.buttonWidth = previousBtnWidth;
 			}
 			
 			/**

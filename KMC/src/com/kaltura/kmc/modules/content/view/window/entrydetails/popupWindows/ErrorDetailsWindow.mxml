@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				layout="vertical" styleName="distributionErrorsWindow" width="344" height="200"
+				layout="vertical" styleName="distributionErrorsWindow" width="360" height="230"
 				showCloseButton="true" close="onClose()">
 	<mx:Script>
 		<![CDATA[
@@ -22,24 +22,28 @@
 			private var _btnText:String;
 			[Bindable]
 			private var _infoLabel:String;
+			[Bindable]
+			private var _extraInfoLabel:String;
 			private var _isFirstParam:Boolean = true;
 			[Bindable]
 			public var enableLinks:Boolean = false;
-			
 			public function setType(type:String):void {
 				var st:String;
 				_type = type;
 				switch (_type) {
 					case THUMB_ERROR:
 						_infoLabel = resourceManager.getString('cms','missingDimensions');
+						_extraInfoLabel = resourceManager.getString('cms','gotoThumbnailTabMsg');
 						st = resourceManager.getString('cms','gotoThumbnailTab');
 						break;
 					case FLAVOR_ERROR:
 						_infoLabel = resourceManager.getString('cms','missingFlavors');
+						_extraInfoLabel = resourceManager.getString('cms','gotoFlavorTabMsg');
 						st = resourceManager.getString('cms','gotoFlavorTab');
 						break;
 					case METADATA_ERROR:
 						_infoLabel = resourceManager.getString('cms','missingMetadata');
+						_extraInfoLabel = resourceManager.getString('cms','gotoMetadataTabMsg');
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 				}
@@ -90,6 +94,7 @@
 		]]>
 	</mx:Script>
 	<mx:Text  htmlText="{_infoLabel}" width="100%"/>
+	<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
 	<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
 				   click="{onLinkClick(event)}"/>
 </mx:TitleWindow>
