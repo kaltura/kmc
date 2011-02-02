@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.commands.user.UserList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
+	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserFilter;
 	import com.kaltura.vo.KalturaUserListResponse;
 	
@@ -34,9 +35,26 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override protected function result(data:Object):void {
 			super.result(data);
 			var response:KalturaUserListResponse = data.data as KalturaUserListResponse;
-			_model.usersModel.users = new ArrayCollection(response.objects);
+			var resultArray:ArrayCollection = new ArrayCollection(response.objects);
+			setOwnerFirstInArray(resultArray);
+			_model.usersModel.users = resultArray;
 			_model.usersModel.totalUsers = response.totalCount;
 			_model.decreaseLoadCounter();
+		}
+		
+		/**
+		 * sets the owner user to be the first user
+		 * */
+		private function setOwnerFirstInArray(arr:ArrayCollection):void {
+			for (var i:int = 0; i<arr.length; i++){
+				var user:KalturaUser = arr.getItemAt(i) as KalturaUser;
+				if (user.isAccountOwner) {
+					arr.removeItemAt(i);
+					arr.addItemAt(user,0);
+					return;
+				}
+			}
+			
 		}
 	}
 }
