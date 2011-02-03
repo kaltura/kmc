@@ -48,7 +48,6 @@ package com.kaltura.kmc.modules.account.command
 			kp.website = _model.partnerData.url1;
 			kp.adminUserId = _model.partnerData.accountOwnerId;
 			
-			
 			var updatePartner:PartnerUpdate = new PartnerUpdate(kp, true);
 			updatePartner.addEventListener(KalturaEvent.COMPLETE, result);
 			updatePartner.addEventListener(KalturaEvent.FAILED, fault);

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
-			 itemClick="setSelection(event);" creationComplete="creationCompleteHandler(event)">
+			 itemClick="setSelection(event);" creationComplete="creationCompleteHandler(event)"
+			 xmlns:renderers="com.kaltura.kmc.modules.admin.view.renderers.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
 		[Event(name="deleteUser", type="flash.events.Event")] 
@@ -160,7 +161,7 @@
 				
 				crippledComboDataProvider = new ArrayCollection();
 				crippledComboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
-				
+			
 			}
 
 
@@ -176,61 +177,6 @@
 					}
 				} 
 				return comboDataProvider;
-			}
-			
-			
-			/**
-			 * show formatted date
-			 * */
-			private function formatDate(date:Number):String {
-				var df:DateFormatter = new DateFormatter();
-				df.formatString = resourceManager.getString('admin', 'list_date_format');
-				var dt:Date = new Date();
-				dt.setTime(date * 1000);
-				return df.format(dt);
-			};
-
-
-			/**
-			 * translate user status to string
-			 * */
-			private function getUserStatus(item:Object, column:DataGridColumn):String {
-				var res:String = '';
-				switch (item.status) {
-					case KalturaUserStatus.ACTIVE:
-						res = ResourceManager.getInstance().getString('admin', 'active');
-						break;
-					case KalturaUserStatus.BLOCKED:
-						res = ResourceManager.getInstance().getString('admin', 'blocked');
-						break;
-					case KalturaUserStatus.DELETED:
-						res = ResourceManager.getInstance().getString('admin', 'deleted');
-						break;
-				}
-				return res;
-			}
-
-
-			/**
-			 * translate last login data to something readable
-			 * */
-			private function getLastLogin(item:Object, column:DataGridColumn):String {
-				return formatDate(item.lastLoginTime);
-			}
-
-
-			/**
-			 * translate role id to role name
-			 * */
-			private function getUserRole(item:Object, column:DataGridColumn):String {
-				if (!_roles) return '';
-				// need to scan all partner's roles list and get the correct one.
-				for (var i:int = 0; i<_roles.length; i++) {
-					if ((_roles.getItemAt(i) as KalturaUserRole).id == item.roleIds) {
-						return (_roles.getItemAt(i) as KalturaUserRole).name;
-					}
-				}
-				return item.roleIds;
 			}
 			
 
@@ -344,42 +290,65 @@
 				dataProvider = dataProvider;
 			}
 			
-			
+			/**
+			 * translate role id to role name
+			 * */
+			public function getUserRole(item:Object):String {
+				if (!_roles) return '';
+				// need to scan all partner's roles list and get the correct one.
+				for (var i:int = 0; i<_roles.length; i++) {
+					if ((_roles.getItemAt(i) as KalturaUserRole).id == item.roleIds) {
+						return (_roles.getItemAt(i) as KalturaUserRole).name;
+					}
+				}
+				return item.roleIds;
+			}
 
 		]]>
 	</mx:Script>
 
 	<mx:columns>
-		<mx:DataGridColumn dataField="status" labelFunction="{getUserStatus}"
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserStatusItemRenderer"
+						   dataField="status"
 						   headerText="{resourceManager.getString('admin', 'user_status')}"
 						   headerStyleName="adminTableColumn" />
-		<mx:DataGridColumn dataField="fullName"
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserNameItemRenderer" dataField="fullName"
 						   headerText="{resourceManager.getString('admin', 'user_name')}"
 						   headerStyleName="adminTableColumn"/>
-		<mx:DataGridColumn dataField="id"
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserIdItemRenderer" dataField="id"
 						   headerText="{resourceManager.getString('admin', 'id')}"
 						   headerStyleName="adminTableColumn"/>
-		<mx:DataGridColumn dataField="email"
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserEmailItemRenderer" dataField="email"
 						   headerText="{resourceManager.getString('admin', 'user_email')}"
 						   headerStyleName="adminTableColumn"/>
-		<mx:DataGridColumn dataField="roleIds" labelFunction="{getUserRole}"
+		<mx:DataGridColumn dataField="roleIds"
 						   headerText="{resourceManager.getString('admin', 'role')}"
-						   headerStyleName="adminTableColumn"/>
-		<mx:DataGridColumn dataField="lastLoginTime" labelFunction="{getLastLogin}"
+						   headerStyleName="adminTableColumn">
+			<mx:itemRenderer>
+				<mx:Component>
+					<renderers:UserBaseItemRenderer>
+						<mx:Label text="{outerDocument.getUserRole(data)}"/>
+					</renderers:UserBaseItemRenderer>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserLastLoginItemRenderer" dataField="lastLoginTime"
 						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
 						   headerStyleName="adminTableColumn"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('admin', 'user_actions')}"
 						   headerStyleName="adminTableCenteredColumn" >
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox verticalAlign="middle" horizontalAlign="center" 
-							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-						<mx:ComboBox width="130" selectedIndex="-1"
-									 dataProvider="{outerDocument.getActionsDP(data)}"
-									 prompt="{resourceManager.getString('admin','select_action')}"
-									 change="{outerDocument.onActionSelected(event)}" 
-									 enabled="{outerDocument.enableActionDropdown}"/>
-					</mx:VBox>
+					<renderers:UserBaseItemRenderer>
+						<mx:VBox verticalAlign="middle" horizontalAlign="center"   
+								 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+							<mx:ComboBox width="130" selectedIndex="-1"
+										 dataProvider="{outerDocument.getActionsDP(data)}"
+										 prompt="{resourceManager.getString('admin','select_action')}"
+										 change="{outerDocument.onActionSelected(event)}" 
+										 enabled="{outerDocument.enableActionDropdown}"/>
+						</mx:VBox>
+					</renderers:UserBaseItemRenderer>
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>

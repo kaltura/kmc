@@ -2,7 +2,8 @@
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 allowMultipleSelection="true" rowHeight="36" dropEnabled="true" dragMoveEnabled="false"
 			 itemClick="setSelection(event);" creationComplete="creationCompleteHandler(event)"
-			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
+			 xmlns:view="com.kaltura.kmc.modules.content.view.*"
+			 xmlns:renderers="com.kaltura.kmc.modules.admin.view.renderers.*">
 	<mx:Metadata>
 		[Event(name="drillDown", type="flash.events.Event")] 
 		[Event(name="deleteRole", type="flash.events.Event")] 
@@ -133,7 +134,7 @@
 			/**
 			 * translate last login data to something readable
 			 * */
-			private function getSaveDate(item:Object, column:DataGridColumn):String {
+			public function getSaveDate(item:Object):String {
 				return formatDate(item.updatedAt);
 			}
 			
@@ -274,24 +275,50 @@
 	
 	<mx:columns>
 		<mx:DataGridColumn dataField="name" headerStyleName="adminTableColumn"
-						   headerText="{resourceManager.getString('admin', 'role')}"/>
+						   headerText="{resourceManager.getString('admin', 'role')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<renderers:RoleBaseItemRenderer width="100%" height="100%">
+						<mx:Label text="{data.name}"/>
+					</renderers:RoleBaseItemRenderer>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
 		<!--<mx:DataGridColumn dataField="id" headerStyleName="adminTableColumn"
 						   headerText="{resourceManager.getString('admin', 'id')}" />-->
 		<mx:DataGridColumn dataField="description" headerStyleName="adminTableColumn"
-						   headerText="{resourceManager.getString('admin', 'description')}"/>
-		<mx:DataGridColumn dataField="email" labelFunction="{getSaveDate}" headerStyleName="adminTableColumn"
-						   headerText="{resourceManager.getString('admin', 'save_date')}" width="150"/>
+						   headerText="{resourceManager.getString('admin', 'description')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<renderers:RoleBaseItemRenderer width="100%" height="100%">
+						<mx:Label text="{data.description}"/>
+					</renderers:RoleBaseItemRenderer>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerStyleName="adminTableColumn"
+						   headerText="{resourceManager.getString('admin', 'save_date')}" width="150">
+			<mx:itemRenderer>
+				<mx:Component>
+					<renderers:RoleBaseItemRenderer width="100%" height="100%">
+						<mx:Label text="{outerDocument.getSaveDate(data)}"/>
+					</renderers:RoleBaseItemRenderer>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
 		<mx:DataGridColumn headerText="{resourceManager.getString('admin', 'user_actions')}"
 						   headerStyleName="adminTableCenteredColumn" width="150">
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
-							 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-						<mx:ComboBox width="130" selectedIndex="-1" enabled="{data.partnerId != 0}"
-									 dataProvider="{outerDocument.comboDataProvider}"
-									 prompt="{resourceManager.getString('admin','select_action')}"
-									 change="{outerDocument.onActionSelected(event)}" />
-					</mx:VBox>
+					<renderers:RoleBaseItemRenderer width="100%" height="100%">
+						<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center"
+								 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+							<mx:ComboBox width="130" selectedIndex="-1" enabled="{data.partnerId != 0}"
+										 dataProvider="{outerDocument.comboDataProvider}"
+										 prompt="{resourceManager.getString('admin','select_action')}"
+										 change="{outerDocument.onActionSelected(event)}" />
+						</mx:VBox>
+					</renderers:RoleBaseItemRenderer>
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
