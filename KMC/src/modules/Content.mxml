@@ -555,7 +555,7 @@
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.entryDetailsModel = _model.entryDetailsModel;
-				edw.showEmbedCode = _model.showEmbedCode;
+				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
 				edw.filterModel = _model.filterModel;
 				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
@@ -738,7 +738,7 @@
 
 				if (_model.openPlayer) {
 					//id, name, description, previewonly, is_playlist, uiconf_id 
-					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, bitrates, false, false);
+					JSGate.doPreviewEmbed(_model.openPlayer, lp.id, lp.name, StringUtil.cutTo512Chars(lp.description), !_model.showSingleEntryEmbedCode, false, _model.attic.previewuiconf, bitrates, false, false);
 					_model.attic.previewuiconf = null;
 				}
 
@@ -756,7 +756,7 @@
 				// open playlist preview
 				if (_model.openPlaylist) {
 					var pl:KalturaPlaylist = entry as KalturaPlaylist;
-					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), !_model.showEmbedCode, true, _model.attic.previewuiconf, null, false, false);
+					JSGate.doPreviewEmbed(_model.openPlaylist, pl.id, pl.name, StringUtil.cutTo512Chars(pl.description), !_model.showPlaylistEmbedCode, true, _model.attic.previewuiconf, null, false, false);
 					_model.attic.previewuiconf = null;
 					//first time funnel 
 					if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYLIST_EMBED)) {
@@ -920,7 +920,7 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" styleName="pageStyle" entryDetailsModel="{_model.entryDetailsModel}"
-							 filterModel="{_model.filterModel}"
+							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"/>
 			<content:Moderation id="moderation" height="100%" styleName="pageStyle" context="{_model.context}"
 								selectedEntry="{_model.entryDetailsModel.selectedEntry}"
@@ -928,7 +928,7 @@
 								label="{ResourceManager.getInstance().getString('cms','moderation')}"/>
 			<playlist:Playlist id="playlists" width="100%" styleName="pageStyle"
 							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
-							   showEmbed="{_model.showEmbedCode}"
+							   showEmbed="{_model.showPlaylistEmbedCode}"
 							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
 			<content:ExternalSyndication id="syndication" styleName="pageStyle"
 										 flavorParams="{_model.filterModel.flavorParams}"
