@@ -8,8 +8,11 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			switch (event.type) {
-				case ChangeModelEvent.SET_EMBED_STATUS:
-					_model.showEmbedCode = (event as ChangeModelEvent).newValue;
+				case ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS:
+					_model.showSingleEntryEmbedCode = (event as ChangeModelEvent).newValue;
+					break;
+				case ChangeModelEvent.SET_PLAYLIST_EMBED_STATUS:
+					_model.showPlaylistEmbedCode = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_CUSTOM_METADATA:
 					_model.filterModel.enableCustomData = (event as ChangeModelEvent).newValue;

@@ -332,7 +332,7 @@
 			 * get metadata filters
 			 * */
 			private function getMetadataFilters(currentFilter:KalturaBaseEntryFilter):void {
-				var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+ 				var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
 				mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
 				mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
 
@@ -372,8 +372,8 @@
 					}
 				}
 
-				if (currentFilter is KalturaMediaEntryFilter ) {
-					((currentFilter as KalturaMediaEntryFilter).advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
+				if (currentFilter is KalturaMediaEntryFilter && currentFilter.advancedSearch) {
+					(currentFilter.advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
 				}
 			}
 			
@@ -382,7 +382,7 @@
 			 * */
 			private function getDistributionFilters (currentFilter : KalturaBaseEntryBaseFilter) : void
 			{
-				var distributionSearchItem : KalturaSearchOperator = new KalturaSearchOperator();
+ 				var distributionSearchItem : KalturaSearchOperator = new KalturaSearchOperator();
 				var distributionProfileSearchCondition : KalturaContentDistributionSearchItem;
 				distributionSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
 				
@@ -403,7 +403,7 @@
 					}
 					
 
-					if (currentFilter is KalturaMediaEntryFilter && distributionSearchItem.items.length) {
+ 					if (currentFilter is KalturaMediaEntryFilter && distributionSearchItem.items.length) {
 						((currentFilter as KalturaMediaEntryFilter).advancedSearch as KalturaSearchOperator).items.push(distributionSearchItem);
 
 					}
@@ -1074,6 +1074,8 @@
 
 			public function get listPlaylistFilter():KalturaPlaylistFilter {
 				var playlistFilter:KalturaPlaylistFilter = new KalturaPlaylistFilter();
+				playlistFilter.advancedSearch = new KalturaSearchOperator();
+				(playlistFilter.advancedSearch as KalturaSearchOperator).type = KalturaSearchOperatorType.SEARCH_AND;
 				renderFilterVo(playlistFilter);
 				return playlistFilter;
 			}
@@ -1081,6 +1083,8 @@
 
 			public function get playlistFilter():KalturaMediaEntryFilterForPlaylist {
 				var mediaFilterForPlaylist:KalturaMediaEntryFilterForPlaylist = new KalturaMediaEntryFilterForPlaylist();
+				mediaFilterForPlaylist.advancedSearch = new KalturaSearchOperator();
+				(mediaFilterForPlaylist.advancedSearch as KalturaSearchOperator).type = KalturaSearchOperatorType.SEARCH_AND;
 				renderFilterVo(mediaFilterForPlaylist);
 				return mediaFilterForPlaylist;
 			}

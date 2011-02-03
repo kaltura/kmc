@@ -76,10 +76,10 @@ package com.kaltura.kmc.modules.content.view.content
 		 * allow roles and permissions to decide if user should 
 		 * see embed code.
 		 */
-		public function set showEmbedCode(value:Boolean):void
+		public function set showPlaylistEmbedCode(value:Boolean):void
 		{
 			// raise a command to change the model
-			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_EMBED_STATUS, value);
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_PLAYLIST_EMBED_STATUS, value);
 			cge.dispatch();
 		}
 		
@@ -89,7 +89,19 @@ package com.kaltura.kmc.modules.content.view.content
 		 * permission manager needs the getter to get the parameter type,
 		 * NOTE: the value is never changed!!
 		 * */
-		public function get showEmbedCode():Boolean
+		public function get showPlaylistEmbedCode():Boolean
+		{
+			return true;
+			//TODO * return the real value from the model ?
+		}
+		
+		public function set showSinglePlayerEmbedCode (value:Boolean) : void
+		{
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS, value);
+			cge.dispatch();
+		}
+		
+		public function get showSinglePlayerEmbedCode():Boolean
 		{
 			return true;
 			//TODO * return the real value from the model ?

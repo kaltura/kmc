@@ -9,7 +9,9 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_DISTRIBUTION:String = "content_setDistribution";
 
-		public static const SET_EMBED_STATUS:String = "content_setEmbedStatus";
+		public static const SET_SINGLE_ENTRY_EMBED_STATUS:String = "singleEntry_setEmbedStatus";
+		
+		public static const SET_PLAYLIST_EMBED_STATUS : String = "playlist_setEmbedStatus";
 		
 		private var _newValue:*;
 		

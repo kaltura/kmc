@@ -82,9 +82,13 @@ package com.kaltura.kmc.modules.content.model {
 		public var openPlayer:String = "openPlayer";
 		
 		/**
-		 * on preview & embed, should player embedcode be presented 
+		 * on preview & embed, should single player embedcode be presented 
 		 */		
-		public var showEmbedCode:Boolean = true;
+		public var showSingleEntryEmbedCode:Boolean = true;
+		/**
+		 * on preview & embed, should playlist player embedcode be presented 
+		 */	
+		public var showPlaylistEmbedCode:Boolean = true;
 		
 		// ------------------------------------------------------------
 		// current view

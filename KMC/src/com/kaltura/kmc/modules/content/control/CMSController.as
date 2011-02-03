@@ -142,7 +142,8 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ThumbnailAssetEvent.GET, GetThumbAssetCommand);
 			
 			//roles and permissions stuff
-			addCommand(ChangeModelEvent.SET_EMBED_STATUS, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_PLAYLIST_EMBED_STATUS, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_CUSTOM_METADATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
 		}
