@@ -294,16 +294,20 @@
 			 * change the page size - dispatches an event PagingEvent.ROWS_IN_PAGE_CHANGE
 			 * @ListEvent
 			 */
-			protected function resultSizeChange( event : ListEvent ) : void
+			protected function resultSizeChange( event : ListEvent = null ) : void
 			{
-				
+				var kmcSO:SharedObject=SharedObject.getLocal("kmcSO");
 				pageSize = int(rowInPageCb.selectedItem);
+				kmcSO.data.rowInPage = pageSize;
+				kmcSO.flush();
 				selectedPage = 1;
 				
 				kalturaFilterPager.pageSize = pageSize;
 				kalturaFilterPager.pageIndex = 1;
 				
-				dispatchEvent(new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE));
+				//only if not manually executed dispatch it
+				if(event)
+					dispatchEvent(new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE));
 			}
 			/**
 			 * user clicked on previous button
@@ -336,6 +340,18 @@
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				styleName = "pagerTopBox";
+				var kmcSO:SharedObject=SharedObject.getLocal("kmcSO");
+				var soRowInPage : int = kmcSO.data.rowInPage;
+				if( int(soRowInPage) != int(rowInPageCb.selectedItem) )
+				{
+					for(var i:int=0; i<rowsInPage.length;i++)
+					{
+						if( int(rowsInPage[i]) == soRowInPage )
+							rowInPageCb.selectedIndex = i;
+					}
+					
+					resultSizeChange();
+				}
 			}
 			
 		]]>
