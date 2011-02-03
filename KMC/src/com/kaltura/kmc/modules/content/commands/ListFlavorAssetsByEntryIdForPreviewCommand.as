@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.content.commands
 			{
 				isHtml5 = true;	
 			}
-			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), isHtml5);
+			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showSingleEntryEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), isHtml5);
 			_model.attic.previewuiconf = null;
 			_model.decreaseLoadCounter();
 		}
