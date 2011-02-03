@@ -7,6 +7,8 @@
 			import mx.controls.Button;
 			import mx.core.FlexVersion;
 			import mx.core.UIComponent;
+			import mx.effects.Resize;
+			import mx.events.ResizeEvent;
 
 			[Bindable] public var fullUrlHost : String;
 
@@ -27,10 +29,15 @@
 				this.mx_internal::closeButton.width = _titleBtnWidth;
 				this.mx_internal::closeButton.buttonMode = true;
 				var titleBar : UIComponent = this.mx_internal::getTitleBar();
+				titleBar.addEventListener(ResizeEvent.RESIZE, onResizeTitleBar);
 				titleBar.height = 20;
 				addHelpBtn();
 			}
-
+			
+			private function onResizeTitleBar (e : ResizeEvent ) : void {
+				setHelpBtnPos();
+			}
+			
 			private function help( event : MouseEvent ) : void
 		    {
 		    	dispatchEvent( new Event( "help") );
@@ -77,6 +84,7 @@
 			    // Add the child component to the custom component.
 			    titleBar.addChild(_helpBtn);
 				showHelpButton = _showHelpButton;
+				BindingUtils.bindProperty(helpBtn,"y", this.mx_internal::closeButton,"y");
 			}
 		    
 		    public function get helpBtn() : Button
