@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*" creationComplete="onCreationComplete()">
 	<mx:Metadata>
 		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
@@ -193,6 +193,12 @@
 					//mix or video
 					loadKDP();
 				}
+			}
+			
+			protected function onCreationComplete() : void
+			{
+				editWithSimple.visible = true;
+				editWithAdvanced.visible = true;
 			}
 			
 			/**
@@ -710,11 +716,11 @@
 							  text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
 					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"
 								   label="{resourceManager.getString('cms','simpleEditor')}"
-								   click="{onStandardClick()}" styleName="icoTextLink"
+								   click="{onStandardClick()}" styleName="icoTextLink" visible="false"
 								   buttonMode="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"/>
 					<mx:Label text="/" textAlign="center" paddingLeft="0" paddingRight="0" width="8"/>
 					<mx:LinkButton id="editWithAdvanced" label="{resourceManager.getString('cms','advancedEditor')}"
-								   click="onAdvancedEditor()" styleName="icoTextLink"
+								   click="onAdvancedEditor()" styleName="icoTextLink" visible="false"
 								   enabled="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"
 								   buttonMode="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"/>
 				</mx:HBox>
