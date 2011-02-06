@@ -332,6 +332,8 @@
 			 * get metadata filters
 			 * */
 			private function getMetadataFilters(currentFilter:KalturaBaseEntryFilter):void {
+				if (!metadataProfile)
+					return;
  				var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
 				mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
 				mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
@@ -426,7 +428,9 @@
 					(currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || 
 					(currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || 
 					(currentFilter.categoriesMatchOr != '')
-					|| ((currentFilter.advancedSearch as KalturaSearchOperator).items.length > 1) ||  (((currentFilter.advancedSearch as KalturaSearchOperator).items[0] as KalturaMetadataSearchItem).items.length);
+					|| (((currentFilter.advancedSearch as KalturaSearchOperator).items.length > 1) ||  
+						(((currentFilter.advancedSearch as KalturaSearchOperator).items.length) && 
+							(((currentFilter.advancedSearch as KalturaSearchOperator).items[0] as KalturaSearchOperator).items.length)));
 			}
 
 
