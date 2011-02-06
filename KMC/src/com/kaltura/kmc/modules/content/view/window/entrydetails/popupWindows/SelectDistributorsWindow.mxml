@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--- This window holds a list of available distributors and their distribution state -->
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="500" creationComplete="onCreationComplete()"
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="500"
 				title="{resourceManager.getString('cms','selectDistributors')}" layout="vertical"
 				showCloseButton="true" close="onClose()"
 				paddingLeft="15" paddingRight="15"
@@ -40,10 +40,6 @@
 			//permission to remove distributions
 			public var enableRemoveDistribution:Boolean = true;
 			
-			private function onCreationComplete():void {
-				PermissionManager.getInstance().applyAllAttributes(this, "selectDistributorsWindow");
-			}
-			
 			private function onClose():void {
 				PopUpManager.removePopUp(this);
 			}
@@ -54,6 +50,7 @@
 			 * to its input
 			 * */
 			public function buildDistributorsWindow(distributionProfiles:Array, entryDistributions:Array):void {
+				PermissionManager.getInstance().applyAllAttributes(this, "selectDistributorsWindow");	
 				//containes all profiles that entries weren't distributed to them yet
 				var unusedDistributionProfiles:ArrayCollection = new ArrayCollection(distributionProfiles.concat());
 				var entryDistributions:Array = entryDistributions;
