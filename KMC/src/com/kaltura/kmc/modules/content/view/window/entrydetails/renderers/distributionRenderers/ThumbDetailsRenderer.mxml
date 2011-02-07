@@ -23,34 +23,37 @@
 				if (value is Array) {
 					_thumbArray = value as Array;
 					thumbnail = _thumbArray[_lastIndex] as ThumbnailWithDimensions;
+					_visibleImg = true;
+					if (!thumbnail.thumbAsset) {
+						_noneVisibe = true;
+						_oldId  = '';
+					}
 				}
+				//when we are missing thumbnails and have no thumbnails to swap
 				else {
-					thumbnail = value as ThumbnailWithDimensions;				
+					thumbnail = value as ThumbnailWithDimensions;
+					_visibleImg = false;
 				}
 				
 				_dimensionsString = thumbnail.width + ' X ' + thumbnail.height;
 				if (thumbnail.thumbUrl && thumbnail.thumbAsset) {
-					_visibleImg = true;
 					img.source = thumbnail.thumbUrl;
 					_oldId = thumbnail.thumbAsset.id;
 				}
-				else {
-					_visibleImg = false;
-				}
+				
 			}
 			
 			private function onSwapBtnClick():void {
 				var newID:String;
-				//if this is the last thumb, add the option to select "none"
-				if ((_lastIndex==_thumbArray.length-1) && !_noneVisibe) {
+				_lastIndex = (_lastIndex + 1) % _thumbArray.length;
+				var thumbnail:ThumbnailWithDimensions = _thumbArray[_lastIndex];
+				if (!thumbnail.thumbAsset) {
 					_noneVisibe = true;
 					newID  = '';
 				}
 				else {
 					_noneVisibe = false;
-					_lastIndex = (_lastIndex + 1) % _thumbArray.length;
 					wipeLeft.play();
-					var thumbnail:ThumbnailWithDimensions = _thumbArray[_lastIndex];
 					newID = thumbnail.thumbAsset.id
 					img.source = thumbnail.thumbUrl;
 				}

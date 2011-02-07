@@ -145,23 +145,17 @@
 							if (thumb && thumb.width==dim.width && thumb.height==dim.height) {
 								thumbnail.thumbAsset = thumb.thumbAsset;
 								thumbnail.thumbUrl = thumb.thumbUrl;
-								//we handle this thumb, so we can remove it
+								//we handled this thumb, so we can remove it
 								thumbsMap.remove(st);
 								var arr:Array = new Array(thumbnail);
 								isArray = true;
-								//check if there are more suitable thumbnails
-								for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
-									if (existingThumb.thumbAsset && 
-										(existingThumb.thumbAsset.id!=st) &&
-										(existingThumb.width==thumb.width) &&
-										(existingThumb.height==thumb.height)) {
-										var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumb.width, thumb.height, existingThumb.thumbAsset);
-										newThumb.thumbUrl = existingThumb.thumbUrl;
-										arr.push(newThumb);	
-										if (thumbsMap.containsKey(existingThumb.thumbAsset.id))
-											thumbsMap.remove(existingThumb.thumbAsset.id);
-									}
+								var suitsArray:Array = searchForSuitableThumbs(thumb, existingThumbs);
+								for each (var suitThumb:ThumbnailWithDimensions in suitsArray) {
+									if (thumbsMap.containsKey(suitThumb.thumbAsset.id))
+										thumbsMap.remove(suitThumb.thumbAsset.id);
 								}
+								arr = arr.concat(suitsArray);
+								addNoneThumb(thumbnail.width, thumbnail.height, arr);
 								if (isArray)
 									_thumbsArray.addItem(arr);
 								 
@@ -170,16 +164,64 @@
 						}
 					}
 					//only thumbnails with thumbAssets were added as arrays, others should be added now
-					if (!isArray)
-						_thumbsArray.addItem(thumbnail);
+					if (!isArray) {
+						var optionsArray:Array = searchForSuitableThumbs(thumbnail, existingThumbs);
+						if (optionsArray.length) {
+							addNoneThumb(thumbnail.width, thumbnail.height, optionsArray, true);
+							_thumbsArray.addItem(optionsArray);
+						}
+						else {
+							_thumbsArray.addItem(thumbnail);
+						}
+					}
 				}
 				//go over all remaind thumbnails, copy them and add them to the data provider
 				for (var key:String in thumbsMap) {
 					var remainedThumb:ThumbnailWithDimensions = thumbsMap.getValue(key) as ThumbnailWithDimensions;
 					var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(remainedThumb.width, remainedThumb.height, remainedThumb.thumbAsset);
 					thumbToAdd.thumbUrl = remainedThumb.thumbUrl;
-					_thumbsArray.addItem(new Array(thumbToAdd));
+					var array:Array = new Array(thumbToAdd);
+					addNoneThumb(remainedThumb.width, remainedThumb.height, array);
+					_thumbsArray.addItem(array);
 				}
+			}
+			
+			/**
+			 * adds an empty thumb to the given array, for the "none" option
+			 * @param addFirst if true then will be added to the begining of the array
+			 * */
+			private function addNoneThumb(width:int, height:int, arr:Array, addFirst:Boolean = false):void {
+				var noneThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(width,height);
+				if (addFirst) {
+					arr.splice(0,0, noneThumb);
+				}
+				else
+					arr.push(noneThumb);
+			}
+			
+			/**
+			 * This function will search for suitable thumbs in the existingThumbs array. 
+			 * Will return array containing all thumbs with identical dimensions
+			 * */
+			private function searchForSuitableThumbs(thumbnail:ThumbnailWithDimensions, existingThumbs:Array):Array {
+				//check if there are more suitable thumbnails
+				var resultArray:Array = new Array();
+				for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
+					
+					if (thumbnail.thumbAsset && existingThumb.thumbAsset && 
+						(thumbnail.thumbAsset.id==existingThumb.thumbAsset.id))
+						continue;
+					
+					if (existingThumb.thumbAsset && 
+					    (existingThumb.width==thumbnail.width) &&
+						(existingThumb.height==thumbnail.height)) {
+						var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(existingThumb.width, existingThumb.height, existingThumb.thumbAsset);
+						newThumb.thumbUrl = existingThumb.thumbUrl;
+						resultArray.push(newThumb);	
+					}
+				}
+				
+				return resultArray;
 			}
 			
 			private function onCreationComplete():void {
@@ -329,7 +371,7 @@
 			}
 			
 			/**
-			 * saves data that might be changed in this window in backup values
+			 * saves data that might could've changed in this window with backup values
 			 * */
 			private function setOldData(entryDistribution:KalturaEntryDistribution):void {
 				_oldStartDate = entryDistribution.sunrise;
