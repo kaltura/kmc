@@ -1,5 +1,4 @@
 package com.kaltura.kmc.modules.studio.business.wizard {
-	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.kmc.modules.studio.view.wizard.ApsWizFeatures;
 	import com.kaltura.kmc.modules.studio.view.wizard.ApsWizPreviewPlayer;
 	import com.kaltura.kmc.modules.studio.view.wizard.ApsWizStyle;
@@ -11,6 +10,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 	import com.kaltura.kmc.modules.studio.vo.ads.AdvertizingVo;
 	import com.kaltura.kmc.modules.studio.vo.ads.CompanionAdVo;
 	import com.kaltura.kmc.modules.studio.vo.ads.InPlayerAdVo;
+	import com.kaltura.utils.ObjectUtil;
 	
 	import flash.events.EventDispatcher;
 	
@@ -50,6 +50,22 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			return XML(xml)..descendants().(attribute("id").toString().indexOf(idSubstring) > -1);
 		}
 
+		
+		/**
+		 * Add all colors from the color Object to the given plugin
+		 * @param plugin
+		 * @param colorObject
+		 * @return 
+		 * 
+		 */		
+		private function addColorsToPlugin(plugin:XML, colorObject:Object):void 
+		{
+			plugin.@color1 = colorObject.color1;
+			plugin.@color2 = colorObject.color2;
+			plugin.@color3 = colorObject.color3;
+			plugin.@color4 = colorObject.color4;
+			plugin.@color5 = colorObject.color5;
+		}
 		
 		/**
 		 * Clear the icon/s or the label from the Uiconf
@@ -443,6 +459,20 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					}
 				}
 			}
+			
+			// color all the marked plugins
+			
+			//get the list of plugins that needs to be colored and marked as setColors="true"
+			var coloredPlugins:XMLList = activeFeatures.(attribute("setColors").toString() == "true" );
+			for each (var colored:XML in coloredPlugins)
+			{
+				var pluginId:String = colored.attribute("id").toString();
+				var pluginTarget:String =  colored.attribute("colorPlugin")[0].toString()
+				var targetPlugin:XML = fullPlayerCopy..descendants().(attribute("id") == pluginTarget)[0];
+				addColorsToPlugin(targetPlugin , colorObj);
+			}
+
+			
 			
 			// UIVARS:
 			// delete previous uiVars elements
