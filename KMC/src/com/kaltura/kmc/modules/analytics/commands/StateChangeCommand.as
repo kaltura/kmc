@@ -1,5 +1,4 @@
-package com.kaltura.kmc.modules.analytics.commands
-{
+package com.kaltura.kmc.modules.analytics.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.analytics.control.StateEvent;
@@ -8,27 +7,37 @@ package com.kaltura.kmc.modules.analytics.commands
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
 
-	public class StateChangeCommand implements ICommand
-	{
-		private var _model : AnalyticsModelLocator =  AnalyticsModelLocator.getInstance();
-		public function execute(event:CairngormEvent):void
-		{
-			var newStae : int = (event as StateEvent).newState;
+	/**
+	 * inner page changes - sub navigation. 
+	 */	
+	public class StateChangeCommand implements ICommand {
+		private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+
+
+		public function execute(event:CairngormEvent):void {
+			var newStae:int = (event as StateEvent).newState;
+			
+			_model.selectedEntry = null;
+			
 			_model.currentScreenState = newStae;
 			_model.filter.keywords = "";
-			
-			switch(newStae)
-			{
+
+			switch (newStae) {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
-				case ScreenTypes.TOP_CONTRIBUTORS: DrillDownLinkButton.linkable = false; break;
-				default: DrillDownLinkButton.linkable = true; break;
+				case ScreenTypes.TOP_CONTRIBUTORS:
+					DrillDownLinkButton.linkable = false;
+					break;
+				default:
+					DrillDownLinkButton.linkable = true;
+					break;
 			}
-			
-			if(_model.reportDataMap[newStae])
+
+			if (_model.reportDataMap[newStae])
 				_model.selectedReportData = _model.reportDataMap[newStae];
 			else
 				_model.selectedReportData = _model.reportDataMap[newStae] = new ReportData();
+			
 		}
 	}
 }
