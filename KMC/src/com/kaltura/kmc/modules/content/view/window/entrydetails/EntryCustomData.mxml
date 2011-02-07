@@ -5,20 +5,23 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event)" show="onShow(event)" xmlns:itemrenderers="com.kaltura.kmc.modules.content.view.itemrenderers.*">
 <mx:Script>
 	<![CDATA[
+		import com.kaltura.commands.uiConf.UiConfAdd;
 		import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
+		import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 		import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 		import com.kaltura.kmc.modules.content.model.FilterModel;
 		import com.kaltura.kmc.modules.content.utils.FormBuilder;
 		import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
-		import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 		import com.kaltura.types.KalturaMetadataProfileStatus;
 		
 		import mx.binding.utils.BindingUtils;
 		import mx.controls.Alert;
 		import mx.core.Application;
+		import mx.core.Container;
 		import mx.core.UIComponent;
 
 		private var _pending:Boolean = false;
+		private var _form:UIComponent ;
 		
 		/**
 		 * filtering data
@@ -49,6 +52,7 @@
 			//	var listMetadata:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
 			//	listMetadata.dispatch();
 				BindingUtils.bindSetter(addForm, entryDetailsModel, ["metadataInfo","finalViewMxml"]);
+				BindingUtils.bindSetter(disableComponentes, this.all, "enabled");
 			}
 		}
 		
@@ -63,8 +67,17 @@
 		
 		private function addForm(finalMxml:XML) : void{
 			if (finalMxml) {
-				var form:UIComponent = FormBuilder.buildLayout(finalMxml);
-				all.addChild(form);
+				_form = FormBuilder.buildLayout(finalMxml);
+				all.addChild(_form);
+			}
+		}
+		
+		/**
+		 * if the inner components should be disabled - from roles&Permissions
+		 * */
+		private function disableComponentes(value:Boolean) : void{
+			if (_form && !value) {
+				FormBuilder.disableComponents(_form as Container);
 			}
 		}
 

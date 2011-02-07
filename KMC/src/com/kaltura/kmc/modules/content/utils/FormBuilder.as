@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.vo.KalturaUiConf;
 	import com.kaltura.vo.MetadataFieldVO;
 	
+	import flash.display.DisplayObject;
 	import flash.utils.getDefinitionByName;
 	
 	import mx.binding.utils.BindingUtils;
@@ -310,6 +311,23 @@ package com.kaltura.kmc.modules.content.utils {
 			return compInstance;
 		}
 		
+		/**
+		 * This function will go over all components in the given container and disable them 
+		 * @param container the container of the components to disable
+		 * 
+		 */		
+		public static function disableComponents(container:Container) : void {
+			for (var i:int = 0; i<container.numChildren; i++) {
+				var child:DisplayObject = container.getChildAt(i);
+				if (child is Container) {
+					disableComponents(child as Container)
+				}
+				else if (!(child is Label) && (child is UIComponent)){
+					(child as UIComponent).enabled = false;
+				}
+			}
+		}
+		
 		
 		/**
 		 * Builds a form with all fields as detailed in the given XML
@@ -326,7 +344,7 @@ package com.kaltura.kmc.modules.content.utils {
 			
 			for each (var field:XML in mxml.children()) {
 				var child:UIComponent = buildLayoutItem(field, fieldsArray);
-				if (child)
+				if (child) 			
 					newLayout.addChild(child);
 				else if (_isInvalidView)
 					break;
