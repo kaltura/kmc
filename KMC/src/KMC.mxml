@@ -36,6 +36,7 @@
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ResourceEvent;
 			import mx.events.StyleEvent;
@@ -278,13 +279,18 @@
 			 * */
 			protected function isError(errorObj:Object):Boolean {
 				if (errorObj) {
-					alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'));
 					if (errorObj.code == APIErrorCode.INVALID_KS) {
-						JSGate.expired();
+						alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'), Alert.OK, null, expired);
+					} else {
+						alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'));
 					}
 					return true;
 				}
 				return false;
+			}
+			
+			private function expired(e:CloseEvent):void {
+				JSGate.expired();
 			}
 			
 
@@ -555,8 +561,8 @@
 			 * show an alert with the default "ok" button.
 			 * @param
 			 * */
-			private function alert(text:String, header:String = ""):void {
-				Alert.show(text, header);
+			private function alert(text:String, header:String = "", flags:uint = 4, parent:Sprite = null, closeHandler:Function = null):void {
+				Alert.show(text, header, flags, parent, closeHandler);
 			}
 
 
@@ -566,7 +572,7 @@
 			 * @param e	help request dispatched by anything on the displayList.
 			 * */
 			private function showHelp(e:KmcHelpEvent):void {
-				trace("caught help event");
+//				trace("caught help event");
 				var url:String = _flashvars.protocol; 
 				if (!url) {
 					url = "http://";
