@@ -60,29 +60,48 @@
 			private var _ctList:Array = [];
 			[Bindable]
 			private var _ctComboBox:Array = [];
+			
+			private var isReady:Boolean = false;
 
 			public static const NAME:String = "overview";
 
 
 			public function init(event:FlexEvent = null):void {
-				//populate the content type list
-				var s:String = resourceManager.getString('account', 'contentList');
-				_ctList = s.split(',');
-				_ctComboBox = (resourceManager.getString('account', 'describeList')).split(',');
+				if (isReady) {
+					reloadData();
+				}
+				else{
+					//populate the content type list
+					var s:String = resourceManager.getString('account', 'contentList');
+					_ctList = s.split(',');
+					_ctComboBox = (resourceManager.getString('account', 'describeList')).split(',');
+	
+					_clonedAdminData = adminData.clone(); //admin has the email when the application init (in flashvars) so it can be set here
+	
+					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
+					BindingUtils.bindSetter(onAdminDataLoaded, this, "adminData");
+	
+					// load partner data
+					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+					partnerEvent.dispatch();
+					
+					// load changeable data
+					reloadData();
 
-				_clonedAdminData = adminData.clone(); //admin has the email when the application init (in flashvars) so it can be set here
+					// set ui according to permissions
+					PermissionManager.getInstance().applyAllAttributes(this, NAME);
+					
+					isReady = true;
+				}
 
-				BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
-				BindingUtils.bindSetter(onAdminDataLoaded, this, "adminData");
-
-				var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
-				partnerEvent.dispatch();
-
+			}
+			
+			/**
+			 * reload data that may be changed in other modules
+			 * */
+			private function reloadData():void {
 				var ul:UserEvent = new UserEvent(UserEvent.LIST_USERS);
 				ul.dispatch();
-
-				PermissionManager.getInstance().applyAllAttributes(this, NAME);
-
 			}
 
 
