@@ -3,6 +3,7 @@ package com.kaltura.delegates.genericDistributionProviderAction
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import com.kaltura.core.KClassFactory;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.commands.genericDistributionProviderAction.GenericDistributionProviderActionAddResultsTransformFromFile;
 
@@ -24,6 +25,17 @@ package com.kaltura.delegates.genericDistributionProviderAction
 		public function GenericDistributionProviderActionAddResultsTransformFromFileDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
+		}
+
+		override public function parse(result:XML):* {
+			if ((call as GenericDistributionProviderActionAddResultsTransformFromFile).transformFile is FileReference) {
+				return super.parse(result);
+			}
+			else {
+				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.objectType) as Class;
+				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( result.result );
+				return obj;
+			}
 		}
 
 		override protected function sendRequest():void {
@@ -48,7 +60,12 @@ package com.kaltura.delegates.genericDistributionProviderAction
 		// Event Handlers
 		override protected function onDataComplete(event:Event):void {
 			try{
-				handleResult( XML(event["data"]) );
+				if ((call as GenericDistributionProviderActionAddResultsTransformFromFile).transformFile is FileReference) {
+					handleResult( XML(event["data"]) );
+				}
+				else {
+					handleResult( XML(event.target.loader.data) );
+				}
 			}
 			catch( e:Error ){
 				var kErr : KalturaError = new KalturaError();

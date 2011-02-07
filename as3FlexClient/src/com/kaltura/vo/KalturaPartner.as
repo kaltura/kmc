@@ -74,6 +74,8 @@ package com.kaltura.vo
 			arr.push('website');
 			arr.push('notificationUrl');
 			arr.push('appearInSearch');
+			arr.push('adminName');
+			arr.push('adminEmail');
 			arr.push('description');
 			arr.push('commercialUse');
 			arr.push('landingPage');

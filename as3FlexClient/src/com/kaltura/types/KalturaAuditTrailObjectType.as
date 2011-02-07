@@ -20,7 +20,6 @@ package com.kaltura.types
 		public static const MEDIA_INFO : String = 'mediaInfo';
 		public static const MODERATION : String = 'moderation';
 		public static const PARTNER : String = 'Partner';
-		public static const PUSER_KUSER : String = 'PuserKuser';
 		public static const ROUGHCUT : String = 'roughcutEntry';
 		public static const SYNDICATION : String = 'syndicationFeed';
 		public static const UI_CONF : String = 'uiConf';

@@ -3,6 +3,7 @@ package com.kaltura.delegates.media
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
+	import com.kaltura.core.KClassFactory;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.commands.media.MediaUpload;
 
@@ -53,7 +54,12 @@ package com.kaltura.delegates.media
 		// Event Handlers
 		override protected function onDataComplete(event:Event):void {
 			try{
-				handleResult( XML(event["data"]) );
+				if ((call as MediaUpload).fileData is FileReference) {
+					handleResult( XML(event["data"]) );
+				}
+				else {
+					handleResult( XML(event.target.loader.data) );
+				}
 			}
 			catch( e:Error ){
 				var kErr : KalturaError = new KalturaError();

@@ -8,6 +8,8 @@ package com.kaltura.vo
 
 		public var type : String;
 
+		public var partnerId : int = int.MIN_VALUE;
+
 		public var tags : String;
 
 		public var createdAt : int = int.MIN_VALUE;
