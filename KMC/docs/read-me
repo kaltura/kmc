@@ -22,3 +22,28 @@ How to run KMC from your Flash Builder
 6. Compile all.
 7. Make sure your localhost is running.
 8. Run KMC.
+
+********************************
+Example for working with xampp
+********************************
+You can point your virtual host to your kmc workspace. In this case you can leave your output folder
+to be in bin-debug (no special configuration required).
+
+Point your xampp to your kmc workspace in the following manner:
+1. build your workspace under: C:\workspaces\kmc
+2. go to: C:\xampp\apache\conf\extra\
+3. open httpd-vhosts.conf
+4. add to the file:
+	<VirtualHost *:80>
+	    ServerAdmin postmaster@dummy-host2.localhost
+	    DocumentRoot "C:/workspaces/"
+	    ServerName workspace
+	    ErrorLog "logs/dummy-workspaces-error.log"
+	    CustomLog "logs/dummy-workspaces-access.log" combined
+	 	<Directory C:/workspaces>
+		 	AllowOverride All
+		 	order allow,deny
+		 	allow from all
+	 	</Directory>
+	</VirtualHost>
+5. save	
