@@ -2,7 +2,7 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 				xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.*"
-				width="710" height="655"
+				width="710" height="545"
 				layout="vertical" styleName="TitleWindowType2"
 				backgroundColor="#f7f7f7"
 				showCloseButton="true"
@@ -26,6 +26,7 @@
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
+			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaDistributionProfile;
 			import com.kaltura.vo.KalturaDistributionThumbDimensions;
 			import com.kaltura.vo.KalturaEntryDistribution;
@@ -72,7 +73,10 @@
 			//for roles and permissions: is where permission exists
 			[Bindable]
 			public var enableXMLViews:Boolean = true;
-			
+			public static const MAX_THUMBS:int = 5;
+			public static const MAX_HEIGHT:int = 650;
+			[Bindable]
+			private var _pager:Pager;
 
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -121,6 +125,7 @@
 				
 				return thumbsMap;
 			}
+			
 			
 			/**
 			 * builds the data provider for thumbnails table, according to required thumbs and existing thumbs.
@@ -184,7 +189,28 @@
 					addNoneThumb(remainedThumb.width, remainedThumb.height, array);
 					_thumbsArray.addItem(array);
 				}
+				
+				
+				_pager = new Pager();
+				_pager.localPageSize = MAX_THUMBS;
+				_pager.addDataSet(_thumbsArray.source);
+				_pager.lastPageIndex = Math.floor(_thumbsArray.length / MAX_THUMBS);
 			}
+			
+			/**
+			 * page to the previous page
+			 * */
+			private function onPrevClick():void {
+				_pager.prevPage();
+			}
+			
+			/***
+			 * pages to the next page
+			 * */
+			private function onNextClick():void {
+				_pager.nextPage();
+			}
+			
 			
 			/**
 			 * adds an empty thumb to the given array, for the "none" option
@@ -318,23 +344,19 @@
 					var startTime:int = _entryDis.kalturaEntryDistribution.sunrise;
 					var endTime:int = _entryDis.kalturaEntryDistribution.sunset;
 					
-					if (((startTime == -1) || (startTime == int.MIN_VALUE)) && ((endTime == -1) || (endTime == int.MIN_VALUE))) {
-						//anyTimeRBtn.selected = true;
+					
+					if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
+						var startDate:Date = new Date(startTime * 1000);
+						startDateField.selectedDate = startDate;
+						_timeManager.setTime(startDateHour, startDate.hours, startDate.minutes);
 					}
-					else {
-						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
-							var startDate:Date = new Date(startTime * 1000);
-							startDateField.selectedDate = startDate;
-							_timeManager.setTime(startDateHour, startDate.hours, startDate.minutes);
-						}
-						
-						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
-							var endDate:Date = new Date(endTime * 1000);
-							endDateField.selectedDate = endDate;
-							_timeManager.setTime(endDateHour, endDate.hours, endDate.minutes);
-						}
-						
+					
+					if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
+						var endDate:Date = new Date(endTime * 1000);
+						endDateField.selectedDate = endDate;
+						_timeManager.setTime(endDateHour, endDate.hours, endDate.minutes);
 					}
+	
 				}
 			}
 			
@@ -468,14 +490,18 @@
 	</mx:VBox>
 	
 	<mx:Label text="{resourceManager.getString('cms','thumbnails')}" styleName="drillDownTitleLabel"/>
-	<mx:HBox>
+	<mx:HBox >
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}" includeInLayout="{_thumbsArray.length==0}"/>
-		<mx:HorizontalList width="100%"
-						   dataProvider="{_thumbsArray}" borderStyle="solid" paddingRight="0"
-						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.ThumbDetailsRenderer"
-						   rowCount="1" columnCount="{_thumbsArray.length}" height="175" borderSides="top,left,bottom"
-						   visible="{(_thumbsArray.length > 0)}" includeInLayout="{(_thumbsArray.length>0)}"/>
-		
+		<mx:HBox height="100%" verticalAlign="middle" enabled="{(_thumbsArray.length > 0)}" includeInLayout="{(_thumbsArray.length>0)}">		
+			<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" click="{onPrevClick()}" styleName="moveLeftButton"/>
+			<mx:HorizontalList width="100%"
+							   columnCount="{_pager.visiblePageData.length}"
+							   rowCount="1" dataProvider="{_pager.visiblePageData}"  borderStyle="solid" paddingRight="0"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.ThumbDetailsRenderer"
+							   height="175" borderSides="top,left,bottom"
+							   />		
+			<mx:LinkButton id="nextBtn" enabled="{!(_pager.isLastPage)}" click="{onNextClick()}" styleName="moveRightButton"/>
+		</mx:HBox>
 	</mx:HBox>
 
 	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" styleName="drillDownTitleLabel"/>
