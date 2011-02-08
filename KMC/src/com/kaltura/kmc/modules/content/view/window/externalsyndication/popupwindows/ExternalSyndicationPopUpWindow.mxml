@@ -30,9 +30,11 @@
 			import com.kaltura.vo.KalturaBaseSyndicationFeed;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaUiConfFilter;
-
+			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
@@ -52,9 +54,11 @@
 
 			[Bindable]
 			public var flavorParams:ArrayCollection;
-
 			[Bindable]
-			public var extSynModel:ExtSynModel;
+			public var _playlistsProvider:ArrayCollection;
+
+			
+			private var _extSynModel:ExtSynModel;
 
 
 			/**
@@ -62,6 +66,18 @@
 			 * */
 			public var rootUrl:String;
 
+
+			[Bindable]
+			public function get extSynModel():ExtSynModel
+			{
+				return _extSynModel;
+			}
+
+			public function set extSynModel(value:ExtSynModel):void
+			{
+				_extSynModel = value;
+				_playlistsProvider = _extSynModel.generalPlayListdata;
+			}
 
 			/**
 			 * server calls to config the syndications filters
@@ -126,16 +142,15 @@
 					playlistsRadioBtn.selected = true;
 					var index:uint;
 					// select the correct playlist from the playlist combobox
-					for each (var pl:KalturaPlaylist in playListComboBox.dataProvider) {
-						if (pl && plId == pl.id) {
-							playListComboBox.selectedItem = pl;
+					for each (var pl:KalturaPlaylist in _playlistsProvider) {
+						if (pl && plId == pl.id) {		
+							playListComboBox.selectedIndex = index;
 							return;
 						}
 						index++;
 					}
 				}
 			}
-
 
 			private function closeWindow(event:Event = null):void {
 				PopUpManager.removePopUp(this);
@@ -220,6 +235,7 @@
 			public function get editable():Boolean {
 				return submitBtn.enabled;
 			}
+
 		]]>
 	</mx:Script>
 	<mx:StringValidator id="feedNameValidator" source="{generalFeedNameTextInput}" property="text" required="true"/>
@@ -242,7 +258,7 @@
 								label="{resourceManager.getString('cms','onlyFromPlaylistRadioBtn')}"
 								groupName="contentRadioBtnsGroup"/>
 				<mx:ComboBox id='playListComboBox' width="100%" enabled="{playlistsRadioBtn.selected}"
-							 dataProvider="{extSynModel.generalPlayListdata}" labelField="name"/>
+							 dataProvider="{_playlistsProvider}" labelField="name"/>
 			</mx:VBox>
 		</mx:HBox>
 		<mx:HBox width="100%">
