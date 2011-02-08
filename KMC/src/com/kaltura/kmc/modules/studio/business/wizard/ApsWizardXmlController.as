@@ -31,6 +31,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * <br>(from features.xml)
 		 */		
 		private var _featuresCollection:XMLListCollection;
+		private var _colorPlugins:XML = null;
 		
 		/**
 		 * a full uiconf.xml, with all possible features
@@ -464,12 +465,38 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			
 			//get the list of plugins that needs to be colored and marked as setColors="true"
 			var coloredPlugins:XMLList = activeFeatures.(attribute("setColors").toString() == "true" );
-			for each (var colored:XML in coloredPlugins)
+			if(coloredPlugins.length())
 			{
-				var pluginId:String = colored.attribute("id").toString();
-				var pluginTarget:String =  colored.attribute("colorPlugin")[0].toString()
-				var targetPlugin:XML = fullPlayerCopy..descendants().(attribute("id") == pluginTarget)[0];
-				addColorsToPlugin(targetPlugin , colorObj);
+				for each (var colored:XML in coloredPlugins)
+				{
+					var pluginId:String = colored.attribute("id").toString();
+					var pluginTarget:String =  colored.attribute("colorPlugin")[0].toString()
+					var targetPlugin:XML = fullPlayerCopy..descendants().(attribute("id") == pluginTarget)[0];
+					if(targetPlugin)
+						addColorsToPlugin(targetPlugin , colorObj);
+				}
+			}
+			
+			//set colors to static plugins
+			
+			/*
+			<colorPlugins> 
+				<plugin id='fdt' />
+			</colorPlugins>
+			
+			
+			
+			*/
+			if (_colorPlugins)
+			{
+				var pluginsList:XMLList = _colorPlugins.children();
+				for each (var colored:XML in pluginsList)
+				{
+					var pluginId:String = colored.attribute("id").toString();
+					var targetPlugin:XML = fullPlayerCopy..descendants().(attribute("id") == pluginId)[0];
+					if(targetPlugin)
+						addColorsToPlugin(targetPlugin , colorObj);
+				}
 			}
 
 			
@@ -1017,6 +1044,22 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 */		
 		public function get featuresCollection():XMLListCollection {
 			return _featuresCollection;
+		}
+
+		/**
+		 * An xml with nodes that list static plugins that needs to be colored 
+		 */
+		public function get colorPlugins():XML
+		{
+			return _colorPlugins;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set colorPlugins(value:XML):void
+		{
+			_colorPlugins = value;
 		}
 
 
