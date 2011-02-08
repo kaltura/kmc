@@ -239,11 +239,10 @@ package com.kaltura.kmc.business {
 
 
 		/**
-		 * Search for relevant attributes for this component accourding to path,
+		 * Search for relevant attributes for this component according to path,
 		 * iterate on them, and try to change their value
 		 * @param startComponent
 		 * @param path
-		 *
 		 */
 		public function applyAllAttributes(startComponent:Object, path:String):void {
 			var relevantPermissions:Array = getRelevantPermissions(path);
