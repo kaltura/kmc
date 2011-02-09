@@ -490,12 +490,12 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			if (_colorPlugins)
 			{
 				var pluginsList:XMLList = _colorPlugins.children();
-				for each (var colored:XML in pluginsList)
+				for each (var coloredFromList:XML in pluginsList)
 				{
-					var pluginId:String = colored.attribute("id").toString();
-					var targetPlugin:XML = fullPlayerCopy..descendants().(attribute("id") == pluginId)[0];
-					if(targetPlugin)
-						addColorsToPlugin(targetPlugin , colorObj);
+					var pluginIdFromList:String = coloredFromList.attribute("id").toString();
+					var targetPluginFromList:XML = fullPlayerCopy..descendants().(attribute("id") == pluginIdFromList)[0];
+					if(targetPluginFromList)
+						addColorsToPlugin(targetPluginFromList , colorObj);
 				}
 			}
 
