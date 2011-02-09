@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 creationComplete="init()"
-		 show="onShow()"
-		 hide="onHide()"
-		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*"
-		 xmlns:map="com.kaltura.kmc.modules.analytics.view.map.*"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()" show="onShow()" hide="onHide()"
+		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" xmlns:map="com.kaltura.kmc.modules.analytics.view.map.*"
 		 xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*"
 		 xmlns:aggregateBar="com.kaltura.kmc.modules.analytics.view.aggregateBar.*"
 		 xmlns:controls="com.kaltura.controls.*">
@@ -21,7 +17,7 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.vo.KalturaBaseEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.SWFLoader;
@@ -142,6 +138,7 @@
 			private static var playerReadyFlag:Boolean = false;
 
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+
 
 			private function init():void {
 				BindingUtils.bindSetter(onReportDataChange, this, "reportData");
@@ -346,20 +343,21 @@
 				params.partnerId = context.partnerId;
 				params.widgetId = "_" + context.partnerId;
 				params.subpId = context.subpId;
-				params.uiConfId = _model.kdpUiConf; 
+				params.uiConfId = _model.kdpUiConf;
 				params.ks = context.ks;
 				params.entryId = reportData.seletedMediaEntry.id;
 
 				if (context.debugMode)
 					params.debugMode = "true";
-				
+
 				// set flashvars
-				event.target.content["flashvars"] = params; 
-				
+				event.target.content["flashvars"] = params;
+
 				// start the loading sqeunce of the kdp 
-				event.target.content["init"](); 
+				event.target.content["init"]();
 			}
-			
+
+
 			/**
 			 * dispatch help event for the KMC.
 			 * */
@@ -374,31 +372,26 @@
 	</mx:Metadata>
 
 	<!-- breadcrumps -->
-	<mx:HBox width="100%" horizontalGap="0"
-			 visible="{isDrillDown}" includeInLayout="{isDrillDown}" >
+	<mx:HBox width="100%" horizontalGap="0" visible="{isDrillDown}" includeInLayout="{isDrillDown}">
 		<mx:LinkButton label="{this.label}" buttonMode="true"
-					   click="{(new StateEvent( StateEvent.STATE_CHANGE, backScreenType )).dispatch(); }" />
+					   click="{(new StateEvent( StateEvent.STATE_CHANGE, backScreenType )).dispatch(); }"/>
 		<mx:Label id="drillDownArrow" text=">>" paddingTop="2"/>
 		<mx:Label id="drillDownObjectName" paddingTop="2"/>
 	</mx:HBox>
-	
+
 	<!-- report title -->
 	<mx:HBox width="100%">
 		<mx:Label id="reportTitle" text="{this.label}" styleName="pageTitle2"/>
 		<mx:Spacer width="100%"/>
-		<mx:Button styleName="help" buttonMode="true"
-				   click="{help()}"/>
+		<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 	</mx:HBox>
 
 	<mx:Spacer height="5"/>
-	
+
 	<!-- report filter -->
-	<mx:VBox width="100%"
-			 enabled="{!_isLoading}">
-		<view:Filter id="filter" filterVo="{filterVo}" width="100%"
-					 apply="{getReports(event)}"
-					 dateOnlyFlag="{dateOnlyFlag}"
-					 objectIds="{reportData.objectIds}"
+	<mx:VBox width="100%" enabled="{!_isLoading}">
+		<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
+					 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
 					 showDrillDownNav="{showDrillDownNav}"/>
 		<mx:Spacer height="5"/>
 		<mx:HRule width="100%"/>
@@ -407,99 +400,69 @@
 
 	<!-- graph dimension -->
 	<mx:HBox width="100%" enabled="{!_isLoading}">
-		<view:DimComboBox id="dimCb" width="200" dataProvider="{dimCbDp}"
-						  visible="{showDimention}" includeInLayout="{showDimention}"/>
+		<view:DimComboBox id="dimCb" width="200" dataProvider="{dimCbDp}" visible="{showDimention}"
+						  includeInLayout="{showDimention}"/>
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('analytics','exportToExcel')}"
 					   click="{ var reportEvent : ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); reportEvent.dispatch();}"/>
 	</mx:HBox>
-	
+
 	<!-- charts -->
-	<map:KMap id="kmap" width="100%"
-			  visible="{showMap}" includeInLayout="{showMap}"/>
+	<map:KMap id="kmap" width="100%" visible="{showMap}" includeInLayout="{showMap}"/>
 
-	<charts:KColumnChart id="columnChart" width="100%"
-						 enabled="{_isVisibleColumnChart}"
-						 visible="{showColumnChart}" includeInLayout="{showColumnChart}"/>
+	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
+						 includeInLayout="{showColumnChart}"/>
 
-	<charts:KLineChart id="lineChart" width="100%"
-					   enabled="{_isVisibleLineChart}"
-					   includeInLayout="{showLineChart}"  visible="{showLineChart}"
-					   minHAxisDate="{filterVo.fromDate}"
-					   maxHAxisDate="{filterVo.toDate}"/>
+	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart}"
+					   visible="{showLineChart}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
 
 	<!-- loader -->
-	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center"
-			 clipContent="false" includeInLayout="false" visible="{_loadChart}">
+	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"
+			 includeInLayout="false" visible="{_loadChart}">
 		<!-- <view:ProgressPanel title="Loading Chart" isLoading="{_loadChart}" halfSecCycles="50"/> -->
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 	</mx:VBox>
 
 	<mx:Spacer height="10"/>
-	<mx:Text id="searchNote" text="{reportData.message}"
-			 width="100%" height="25" styleName="pageTitle2" />
-	<mx:Text width="100%" height="15" styleName="pageTitle3"
-			 text="{reportData.filterMessage}" />
+	<mx:Text id="searchNote" text="{reportData.message}" width="100%" height="25" styleName="pageTitle2"/>
+	<mx:Text width="100%" height="15" styleName="pageTitle3" text="{reportData.filterMessage}"/>
 	<mx:Spacer height="10"/>
 
 	<!-- totals -->
-	<aggregateBar:AggregateBar id="aggregateBar"
-							   width="100%"
-							   headerDataProvider="{aggregatedHeaders}"
-							   enabled="{_isVisibleTotal}"
-							   dataProvider="{reportData.aggregatedDataArrCol}"/>
+	<aggregateBar:AggregateBar id="aggregateBar" width="100%" headerDataProvider="{aggregatedHeaders}"
+							   enabled="{_isVisibleTotal}" dataProvider="{reportData.aggregatedDataArrCol}"/>
 
 	<!-- loader -->
-	<mx:VBox width="{this.width-150}" paddingTop="-35" horizontalAlign="center"
-			 visible="{_loadTotal}" includeInLayout="false" clipContent="false">
+	<mx:VBox width="{this.width-150}" paddingTop="-35" horizontalAlign="center" visible="{_loadTotal}"
+			 includeInLayout="false" clipContent="false">
 		<!-- <view:ProgressPanel title="Loading Total Bar" isLoading="{_loadTotal}" halfSecCycles="30" /> -->
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 	</mx:VBox>
 	<mx:Spacer height="5"/>
 
-	
-	<mx:HBox id="kdpSection" width="100%" enabled="{_isVisibleEntry}" 
-			  visible="{showKDP}" includeInLayout="{showKDP}">
-		<view:EntryDetails height="292.6" width="100%" styleName="blueBox"
-						   data="{reportData.seletedMediaEntry}"/>
+
+	<mx:HBox id="kdpSection" width="100%" enabled="{_isVisibleEntry}" visible="{showKDP}" includeInLayout="{showKDP}">
+		<view:EntryDetails height="292.6" width="100%" styleName="blueBox" data="{reportData.seletedMediaEntry}"/>
 	</mx:HBox>
 
 	<!-- table -->
-	<view:KTable id="ktable"
-				 width="100%" height="295" rowHeight="27" orderBy="{orderBy}"
-				 enabled="{_isVisibleTable}" includeInLayout="{showTable}" visible="{showTable}"
-				 headerDataProvider="{tableHeaders}"
+	<view:KTable id="ktable" width="100%" height="295" rowHeight="27" orderBy="{orderBy}" enabled="{_isVisibleTable}"
+				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
 				 reportType="{reportType}" reportData="{ reportData }"/>
 
 	<!-- paging -->
-	<controls:Paging id="paging"
-					 width="100%"
-					 visible="{_isVisibleTable}"
-					 includeInLayout="{_isVisibleTable}"
-					 rowsInPageChange="onPageChange()"
-					 nextPage="onPageChange()"
-					 prvPage="onPageChange()"
-					 getPageNum="onPageChange()"
-					 showRowsInPage="true"
-					 pageSize="{reportData.pager.pageSize}"
-					 totalCount="{reportData.totalCount}"
-					 selectedPage="{reportData.pager.pageIndex}"/>
+	<controls:Paging id="paging" width="100%" visible="{_isVisibleTable}" includeInLayout="{_isVisibleTable}"
+					 rowsInPageChange="onPageChange()" nextPage="onPageChange()" prvPage="onPageChange()"
+					 getPageNum="onPageChange()" showRowsInPage="true" pageSize="{reportData.pager.pageSize}"
+					 totalCount="{reportData.totalCount}" selectedPage="{reportData.pager.pageIndex}"/>
 
-	<mx:VBox width="{this.width-150}"
-			 paddingTop="-130"
-			 horizontalAlign="center"
-			 includeInLayout="false"
-			 visible="{_loadEntry}"
-			 clipContent="false"> 
+	<mx:VBox width="{this.width-150}" paddingTop="-130" horizontalAlign="center" includeInLayout="false"
+			 visible="{_loadEntry}" clipContent="false">
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 		<!-- <view:ProgressPanel title="Loading Entry" isLoading="{_loadEntry}" /> -->
 	</mx:VBox>
-	<mx:VBox width="{this.width-150}"
-			 paddingTop="-130"
-			 horizontalAlign="center"
-			 includeInLayout="false"
-			 visible="{_loadTable}"
-			 clipContent="false"> 
+	<mx:VBox width="{this.width-150}" paddingTop="-130" horizontalAlign="center" includeInLayout="false"
+			 visible="{_loadTable}" clipContent="false">
 		<mx:SWFLoader source="@Embed(source='assets/loader.swf', symbol='MyLoader')"/>
 		<!-- <view:ProgressPanel title="Loading Table" isLoading="{_loadTable}" /> -->
 	</mx:VBox>
