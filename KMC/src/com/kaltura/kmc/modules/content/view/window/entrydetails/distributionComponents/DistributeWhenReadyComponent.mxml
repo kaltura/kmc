@@ -9,11 +9,13 @@
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
+			import mx.binding.utils.BindingUtils;
+			private var _distributionWithProfile:EntryDistributionWithProfile
 			
 			override public function set data(value:Object):void {
-				var distributionWithProfile:EntryDistributionWithProfile = value as EntryDistributionWithProfile;
-				var distribution:KalturaEntryDistribution = distributionWithProfile.kalturaEntryDistribution;
-				switch (distribution.status) {
+				_distributionWithProfile = value as EntryDistributionWithProfile;
+
+				switch (_distributionWithProfile.kalturaEntryDistribution.status) {
 					case KalturaEntryDistributionStatus.READY:
 					case KalturaEntryDistributionStatus.ERROR_DELETING:
 					case KalturaEntryDistributionStatus.ERROR_UPDATING:
@@ -32,14 +34,25 @@
 						break;
 					default:
 						this.cbVisible = true;
-						if (distributionWithProfile.kalturaDistributionProfile.submitEnabled == KalturaDistributionProfileActionStatus.AUTOMATIC) {
-							this.cbSelected = true;
-							this.cbEnabled = false;
-						}
-						//only enabled if we have "send" permission
-						this.cbEnabled &&= parentDocument.enableDistribution;
 				}
 				
+				BindingUtils.bindProperty(this, 'cbSelected', _distributionWithProfile, 'distributeAutomatically');
+				BindingUtils.bindSetter(setCBEnabled, _distributionWithProfile, 'distributorSelected');
+						
+			}
+			
+			private function setCBEnabled(value:Boolean) : void {
+				if (_distributionWithProfile.kalturaDistributionProfile.submitEnabled != KalturaDistributionProfileActionStatus.AUTOMATIC)
+					cbEnabled = value && parentDocument.enableDistribution;
+				else
+					cbEnabled = false;
+				
+				_distributionWithProfile.enableAutomaticSubmission = cbEnabled;
+			}
+			
+			override protected function onCbClick():void {
+				super.onCbClick();
+				_distributionWithProfile.distributeAutomatically = cbSelected;
 			}
 			
 			override public function set labelVisible(value:Boolean):void {

@@ -6,47 +6,47 @@
 		<![CDATA[
 			import com.hurlant.util.der.Integer;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
-			import com.kaltura.types.KalturaEntryDistributionStatus;
-			import com.kaltura.vo.KalturaDistributionProfile;
-			import com.kaltura.vo.KalturaEntryDistribution;
-			
+			import com.kaltura.types.KalturaEntryDistributionStatus;	
+			import mx.binding.utils.BindingUtils;
 			import mx.core.mx_internal;
-
-
+			
 			public var initState:Boolean;
-			private var _distribution:KalturaEntryDistribution;
-			private var _distributionProfile:KalturaDistributionProfile;
+			private var _distributionWithProfile:EntryDistributionWithProfile;
 			
 			override public function set data(value:Object):void {
-				var distributionWithProfile:EntryDistributionWithProfile = value as EntryDistributionWithProfile;
-				_distribution = distributionWithProfile.kalturaEntryDistribution;
-				_distributionProfile = distributionWithProfile.kalturaDistributionProfile;
-				super.labelText = _distributionProfile.name;
-		
-				switch (_distribution.status) {
+				_distributionWithProfile= value as EntryDistributionWithProfile;
+				super.labelText = _distributionWithProfile.kalturaDistributionProfile.name;
+					
+				switch (_distributionWithProfile.kalturaEntryDistribution.status) {
 					case KalturaEntryDistributionStatus.QUEUED:
 					case KalturaEntryDistributionStatus.PENDING:
 					case KalturaEntryDistributionStatus.READY:
 					case KalturaEntryDistributionStatus.ERROR_DELETING:
 					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
 					case KalturaEntryDistributionStatus.ERROR_UPDATING:
-						cbSelected = initState = true;
-						cbEnabled = parentDocument.enableRemoveDistribution;
+						_distributionWithProfile.enableSelectingDistributor = cbEnabled = parentDocument.enableRemoveDistribution;
 						break;
 					case KalturaEntryDistributionStatus.DELETING:
 					case KalturaEntryDistributionStatus.UPDATING:
 					case KalturaEntryDistributionStatus.SUBMITTING:
-						cbSelected = initState = true;
-						cbEnabled = false;
+						_distributionWithProfile.enableSelectingDistributor = cbEnabled = false;
 						break;
 					case KalturaEntryDistributionStatus.REMOVED:
 					case int.MIN_VALUE:
-						cbEnabled = parentDocument.enableAddDistribution;
+						_distributionWithProfile.enableSelectingDistributor = cbEnabled = parentDocument.enableAddDistribution;
 						break;
-	
-				}	
+				}
+				
+				BindingUtils.bindProperty(this, 'cbSelected', _distributionWithProfile, 'distributorSelected');
 			
 			}
+			
+			
+			override protected function onCbClick():void {
+				super.onCbClick();
+				_distributionWithProfile.distributorSelected = cbSelected;
+			}
+		
 		
 		]]>
 	</mx:Script>

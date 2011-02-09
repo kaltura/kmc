@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--- Crop Thumbnail Window. Enables the user to crop new thumbnails from the existing thumbnails.-->
+
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				layout="vertical" styleName="TitleWindowType2"
 				showCloseButton="true"
@@ -78,7 +81,7 @@
 			private function onCreationComplete(event:Event):void {
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
-				//no sources to crop from - exit
+				//no sources to crop from - close the window
 				if (!_selectedThumbnail) {
 					Alert.show(resourceManager.getString('cms','unavailableCropMsg'),resourceManager.getString('cms','unavalilableCropTitle'), Alert.OK, null, alertOkHandler);
 					return;
@@ -307,7 +310,6 @@
 				
 				if (_firstLoaded && imgList) {
 					imgList.selectedItem = _thumbnailsList[_lastSelectedIndex];
-					//onImgItemClick();
 				}
 				else if (!_firstLoaded) {
 					_firstLoaded = true;
