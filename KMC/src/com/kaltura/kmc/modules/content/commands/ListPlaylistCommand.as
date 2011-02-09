@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.rpc.IResponder;
 
 	public class ListPlaylistCommand extends KalturaCommand implements ICommand, IResponder {
-		// Atar: I have no idea why we need this, but it was there and I'm too tired to check it.
+		// Atar: I have no idea why we need this.
 		KalturaMediaEntryFilterForPlaylist;
 
 		/**
@@ -60,6 +60,7 @@ package com.kaltura.kmc.modules.content.commands {
 			super.result(data);
 			_model.decreaseLoadCounter();
 			if (_caller == null) {
+				// from ext.syn subtab
 				var tempArr:ArrayCollection = new ArrayCollection();
 				var playlistListResult:KalturaPlaylistListResponse = data.data as KalturaPlaylistListResponse;
 				for each (var playList:KalturaPlaylist in playlistListResult.objects) {
@@ -68,6 +69,7 @@ package com.kaltura.kmc.modules.content.commands {
 				_model.extSynModel.generalPlayListdata = tempArr;
 			}
 			else {
+				// from playlists subtab
 				_caller.arrayCollection = new ArrayCollection(data.data.objects);
 				_caller.pagingComponent.totalCount = data.data.totalCount;
 
