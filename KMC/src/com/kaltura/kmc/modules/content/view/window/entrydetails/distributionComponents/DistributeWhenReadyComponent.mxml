@@ -41,8 +41,13 @@
 						
 			}
 			
+			/**
+			 * CB will be enabled only if distributor was selected and the profile is not configured to 
+			 * distribute automatically
+			 * */
 			private function setCBEnabled(value:Boolean) : void {
-				if (_distributionWithProfile.kalturaDistributionProfile.submitEnabled != KalturaDistributionProfileActionStatus.AUTOMATIC)
+				if ((_distributionWithProfile.kalturaDistributionProfile.submitEnabled != KalturaDistributionProfileActionStatus.AUTOMATIC) &&
+					(_distributionWithProfile.kalturaEntryDistribution.status != KalturaEntryDistributionStatus.QUEUED))
 					cbEnabled = value && parentDocument.enableDistribution;
 				else
 					cbEnabled = false;
@@ -50,6 +55,9 @@
 				_distributionWithProfile.enableAutomaticSubmission = cbEnabled;
 			}
 			
+			/**
+			 * updates the distributeAutomatically value in the entry distribution
+			 * */
 			override protected function onCbClick():void {
 				super.onCbClick();
 				_distributionWithProfile.distributeAutomatically = cbSelected;
