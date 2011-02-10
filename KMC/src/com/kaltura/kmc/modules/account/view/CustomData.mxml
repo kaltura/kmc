@@ -63,8 +63,13 @@
 			private function openAddFieldPopup(event:Event):void {
 				var addCustomFieldPopup:CustomDataAddEditPopup = new CustomDataAddEditPopup();
 				addCustomFieldPopup.addEventListener(AddMetadataFieldEvent.ADD, addNewFieldHandler);
+				addCustomFieldPopup.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
 				PopUpManager.addPopUp(addCustomFieldPopup, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addCustomFieldPopup);
+			}
+			
+			private function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
 			}
 
 
