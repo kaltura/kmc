@@ -24,6 +24,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.kmc.modules.dashboard.DashboardManager;
+			import com.kaltura.kmc.modules.dashboard.panels.FirstTimeWelcomePanel;
 			
 			import mx.controls.Alert;
 			import mx.resources.IResourceManager;
@@ -92,6 +93,9 @@
 
 				if (_flashvars.firstlogin == 'true') {
 					currentState = 'firstTimeUserState';
+//					removeChild(chartsPanel);
+//					var ft:FirstTimeWelcomePanel = new FirstTimeWelcomePanel();
+//					aaa.addChildAt(ft, 0);
 				}
 
 				DashboardManager.instance.kc = _kc;
@@ -152,6 +156,14 @@
 
 		]]>
 	</mx:Script>
+	<modules:states>
+			<mx:State name="firstTimeUserState">
+				<mx:RemoveChild target="{chartsPanel}"/>
+				<mx:AddChild relativeTo="{aaa}" position="firstChild">
+					<panels:FirstTimeWelcomePanel />
+				</mx:AddChild>
+			</mx:State>
+	</modules:states>
 
 	<mx:HBox width="100%" styleName="tabsContainer" height="39" verticalScrollPolicy="off">
 		<!--<mx:Label text="{_userName + ','}" id="userNameLabel" styleName="nameLabelStyle"/>-->
@@ -165,7 +177,7 @@
 					<panels:EmbedPanel id="embedPanel"/>
 					<panels:CustomizePanel id="customizePanel"/>
 		</mx:VBox>
-		<mx:VBox width="35%" height="100%">
+		<mx:VBox width="35%" height="100%" id="aaa">
 					<panels:ChartsPanel id="chartsPanel" width="100%" height="65%" showGraphs="{showGraphs}"/>
 					<panels:AccountPanel id="accountPanel" height="35%"/>
 			

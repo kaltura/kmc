@@ -289,6 +289,20 @@ package com.kaltura.kmc.modules.dashboard {
 			}
 		}
 
+		/**
+		 * launch the links by clicking on the linkbuttons in the dashboard application
+		 * 
+		 * @param linkCode
+		 * @param pageNum
+		 * 
+		 */
+		public function launchOuterLink(linkCode:String, pageNum:String=null):void
+		{
+			var linkStr:String = ResourceManager.getInstance().getString('kdashboard', linkCode);
+			linkStr += pageNum ? ('#page=' + pageNum) : '';
+			var urlr:URLRequest = new URLRequest(linkStr);
+			navigateToURL(urlr, "_blank");
+		}
 
 		/**
 		 * open a new page with the given url
