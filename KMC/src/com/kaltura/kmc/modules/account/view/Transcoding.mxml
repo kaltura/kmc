@@ -25,7 +25,7 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -161,9 +161,13 @@
 			private function onOpenNewConversionProfilePopUp(event:Event):void {
 				var addNewConversionProfileWindow:ConversionProfilePopUpWindow = new ConversionProfilePopUpWindow();
 //				addNewConversionProfileWindow.rootUrl = rootUrl;
-
+				addNewConversionProfileWindow.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
 				PopUpManager.addPopUp(addNewConversionProfileWindow, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addNewConversionProfileWindow);
+			}
+			
+			private function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
 			}
 
 
