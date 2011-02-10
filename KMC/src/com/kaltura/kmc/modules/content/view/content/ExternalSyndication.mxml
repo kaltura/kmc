@@ -17,6 +17,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
@@ -144,11 +145,19 @@
 				extFeedPopUp.flavorParams = flavorParams;
 				extFeedPopUp.extSynModel = extSynModel;
 				extFeedPopUp.rootUrl = rootUrl;
+				extFeedPopUp.addEventListener(KmcHelpEvent.HELP, dispatchHelp);
 
 				PopUpManager.addPopUp(extFeedPopUp, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(extFeedPopUp);
 			}
 
+			/**
+			 * pass the event to whomever is listening 
+			 * (because events from popups don't naturally propagate to the main app, not the same displaylist)
+			 * */
+			private function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
+			}
 
 			private function onDelete(event:Event):void {
 				var selectedFeeds:Array = feedsTable.selectedItems;

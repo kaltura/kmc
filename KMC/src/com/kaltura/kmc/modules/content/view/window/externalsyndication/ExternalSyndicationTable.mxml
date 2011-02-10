@@ -2,19 +2,24 @@
 <!---
 	External syndications list in <code>ExternalSyndication</code>.
 -->
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" allowMultipleSelection="true" selectable="true"
-			 itemClick="onItemClick(event)" headerRelease="headerReleaseHandler(event)" rowHeight="25">
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" allowMultipleSelection="true" 
+			 selectable="true" itemClick="onItemClick(event)" headerRelease="headerReleaseHandler(event)"
+			 rowHeight="25" creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.ExternalSyndicationEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.view.window.externalsyndication.popupwindows.ExternalSyndicationPopUpWindow;
+			import com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationNameRenderer;
 			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
-			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.types.KalturaBaseSyndicationFeedOrderBy;
-			import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
 			
+			import mx.core.Application;
 			import mx.events.DataGridEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 
 			public static const ASCENDING:String = "ASC";
 			public static const DESCENDING:String = "DESC";
@@ -108,6 +113,27 @@
 					esVo.dispatchEvent(new Event(ExternalSyndicationVO.SELECTED_CHANGED_EVENT));
 				}
 			}
+			
+			
+			/**
+			 * open edit syndication window
+			 * */
+			private function onClickProfileName(event:Event):void {
+				var model:CmsModelLocator = CmsModelLocator.getInstance();
+				var editSyndicationWin:ExternalSyndicationPopUpWindow = new ExternalSyndicationPopUpWindow();
+				editSyndicationWin.flavorParams = model.filterModel.flavorParams;
+				editSyndicationWin.extSynModel = model.extSynModel;
+				editSyndicationWin.rootUrl = model.context.rootUrl;
+				editSyndicationWin.selectedExSynVo = event.target.data as ExternalSyndicationVO;
+ 				editSyndicationWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
+				PopUpManager.addPopUp(editSyndicationWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(editSyndicationWin);
+			}
+			
+			
+			private function dispatchHelp(event:KmcHelpEvent):void {
+				dispatchEvent(event.clone());
+			}
 
 
 			public function dispatchSelection(event:Event):void {
@@ -115,6 +141,14 @@
 																					!allSelected);
 				cbEvent.dispatch();
 			}
+
+			/**
+			 * listen to item renderer events
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(ExternalSyndicationNameRenderer.PROFILE_NAME_CLICK, onClickProfileName, false, 0, true);
+			}
+
 		]]>
 	</mx:Script>
 
