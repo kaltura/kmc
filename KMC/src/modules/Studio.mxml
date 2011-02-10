@@ -12,6 +12,7 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
@@ -196,10 +197,19 @@
 					_wizard.title = "Edit Player";
 
 				_wizard.addEventListener(ApsNavigationEvent.CLOSE_WIZARD, closeWizard);
+				_wizard.addEventListener(KmcHelpEvent.HELP, dispatchHelp);
 				enableHtmlTabs(false);
 				PopUpManager.addPopUp(_wizard, this);
 				PopUpManager.centerPopUp(_wizard);
 				this.enabled = false;
+			}
+			
+			
+			/**
+			 * dispatch relevant help event
+			 * */
+			private function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
 			}
 
 

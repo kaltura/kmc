@@ -17,6 +17,10 @@ package com.kaltura.kmc.events {
 			super(type, bubbles, cancelable);
 			_anchor = anchor;
 		}
+		
+		override public function clone():Event {
+			return new KmcHelpEvent(super.type, _anchor, super.bubbles, super.cancelable);
+		}
 
 
 		/**
