@@ -210,7 +210,6 @@
 				else if (_popup && _popup is EntryDetailsWin) {
 					(_popup as EntryDetailsWin).init();
 				}
-				//TODO -- add it to popup manager only after data is loaded, because R&P don't run before that
 			}
 
 
@@ -490,6 +489,9 @@
 					_popup = null;
 					enableHtmlTabs(true);
 				}
+				if (contentView) {
+					contentView.selectedChild.setFocus();
+				}
 			}
 
 
@@ -686,6 +688,7 @@
 					enableHtmlTabs(false);
 				}
 				PopUpManager.addPopUp(currentPopUp, this, true);
+				currentPopUp.setFocus();
 				centerPopups();
 			}
 

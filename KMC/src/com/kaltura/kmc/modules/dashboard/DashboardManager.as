@@ -280,7 +280,8 @@ package com.kaltura.kmc.modules.dashboard {
 			}
 			else {
 				try {
-					ExternalInterface.call("cwFunction", _kc.ks);
+					JSGate.openKcw(_kc.ks);
+//					ExternalInterface.call("cwFunction", _kc.ks);
 				}
 				catch (e:Error) {
 					trace('the openCw is missing, or the JS function does not exist');

@@ -80,14 +80,13 @@
 				if (!watchersCreated) {
 					// only bind once
 					BindingUtils.bindSetter(setExternalSyndicationData, extSynModel, "externalSyndicationData");
-					BindingUtils.bindSetter(playlistReady, extSynModel, "generalPlayListdata");
+					BindingUtils.bindSetter(onPlaylistReady, extSynModel, "generalPlayListdata");
 					watchersCreated = true;
 				}
 				// load playlists
 				var listPlayList:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, null);
 				listPlayList.dispatch();
-//				loadFeeds();
-				//TODO external syndications are listed after the call for playlists returns (Atar: not sure why)
+				// external syndications are listed after the call for playlists returns
 				// list flavor params
 				var getFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
 				getFlavorParams.dispatch();
@@ -97,7 +96,7 @@
 			}
 
 
-			private function playlistReady(generalPlayListdata:ArrayCollection):void {
+			private function onPlaylistReady(generalPlayListdata:ArrayCollection):void {
 				if (generalPlayListdata)
 					loadFeeds();
 			}

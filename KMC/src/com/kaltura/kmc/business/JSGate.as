@@ -122,5 +122,15 @@ package com.kaltura.kmc.business
 		public static function openChangeEmail(mail:String):void {
 			ExternalInterface.call("kmc.functions.openChangeEmail", mail);
 		}
+		
+		
+		/**
+		 * open the KCW 
+		 * @param ks
+		 * @param conversion_profile
+		 */
+		public static function openKcw(ks:String, conversion_profile:String = ''):void {
+			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		}
 	}
 }
