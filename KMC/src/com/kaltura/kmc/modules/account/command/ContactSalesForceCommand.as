@@ -45,7 +45,7 @@ package com.kaltura.kmc.modules.account.command {
 		private function result(event:ResultEvent):void {
 			var xml:XML = new XML(event.result);
 			// if the server returned an error as an answer
-			if (xml.error && xml.error.num_0) {
+			if (xml.error && xml.error.num_0.length() > 0) {
 				if (xml.error.num_0.code.toString() == APIErrorCode.INVALID_KS) {
 					JSGate.expired();
 					return;
