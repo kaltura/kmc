@@ -512,7 +512,7 @@
 				container.styleName = "defualtFilter";
 
 				var listButtonsArray:Array = createButtonsGroup(resourceManager.getString("cms", "destinations"), "destinations", distributionProfileArr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
-				_distributionFilters["destinations"] = listButtonsArray;
+				_metadataFilters["destinations"] = listButtonsArray;
 				injectGroupToContainer(container, listButtonsArray);
 
 				return container;
@@ -932,26 +932,26 @@
 					for each (var searchItem:KalturaSearchOperator in(filterVo.advancedSearch.items as Array)) {
 						// custom metadata
 						if (searchItem is KalturaMetadataSearchItem) {
-							for each (var item:KalturaMetadataSearchItem in(searchItem.items as Array)) {
-								for each (var subItem:KalturaSearchCondition in(item["items"] as Array)) {
+							for each (var item:KalturaMetadataSearchItem in searchItem.items) {
+								for each (var subItem:KalturaSearchCondition in item["items"]) {
 									var currentValue:String = subItem["value"];
 									var currentXpath:String = subItem["field"];
 									var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
 									parentName = currentXpath.substring(startIndex, currentXpath.length - 2);
 									var btnName:String = parentName + "_" + currentValue;
-									for each (var btn:Button in _metadataButtons) {
+									for each (var btn:Button in _metadataFilters[parentName]) {
 										if (btn.id == btnName) {
 											// check the button
 											btn.selected = true;
-											for each (var parentBtn:Button in _metadataButtons) {
+											for each (var parentBtn:Button in _metadataFilters[parentName]) {
 												// uncheck the parent button
 												if (parentBtn.id == parentName) {
 													parentBtn.selected = false;
 													break;
 												}
 											}
-											updateImageButton(_metadataButtons.source);
-											validateNow();
+											/* updateImageButton(_metadataButtons.source);
+											validateNow(); */
 											break;
 										}
 									}
@@ -967,15 +967,11 @@
 								for (var i:int = 0; i < _distributionProfileArr.length; i++) {
 									if (_distributionProfileArr[i].id == profileId) {
 										profileName = _distributionProfileArr[i].name;
-										parentName = _distributionFilters["destinations"][0].id;
-										var groupParentBtn:Button = _distributionFilters["destinations"][0] as Button;
-										for each (var distributionBtn:Button in _metadataButtons) {
+										parentName = _metadataFilters["destinations"][0].id;
+										for each (var distributionBtn:Button in _metadataFilters["destinations"]) {
 											if (String(parentName + "_" + profileName) == distributionBtn.id) {
 												distributionBtn.selected = true;
 											}
-//											else {
-//												distributionBtn.selected = false;
-//											}
 										}
 									}
 								}
