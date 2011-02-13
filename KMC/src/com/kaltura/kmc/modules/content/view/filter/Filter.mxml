@@ -571,13 +571,6 @@
 				}
 				else {//if any of the members has been selected shut down the title
 					btnArr[0].selected = false;
-					
-					/* if(groupName == "destinations") {
-						for (i = 1; i < btnArr.length; i++) {
-							if (btnArr[i].selected && btnArr[i] != (event.target as Button))
-								btnArr[i].selected = false;
-						} 
-					} */
 				}
 
 				updateImageButton(btnArr);
@@ -939,33 +932,46 @@
 				// set categories here
 				catTree.selectedFilterCategories = filterVo.categoriesMatchOr;
 
-				// metadata
+				// advanced filter
+				var parentName:String;
 				if (filterVo.advancedSearch && filterVo.advancedSearch.items) {
 					//getting selected items from metadata filter
-					for each (var item:Object in(filterVo.advancedSearch.items as Array)) {
-						for each (var subItem:Object in(item["items"] as Array)) {
-							var currentValue:String = subItem["value"];
-							var currentXpath:String = subItem["field"];
-							var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
-							var parentName:String = currentXpath.substring(startIndex, currentXpath.length - 2);
-							var btnName:String = parentName + "_" + currentValue;
-							for each (var btn:Button in _metadataButtons) {
-								if (btn.id == btnName) {
-									btn.selected = true;
-									for each (var parentBtn:Button in _metadataButtons) {
-										if (parentBtn.id == parentName) {
-											parentBtn.selected = false;
+					for each(var searchItem:KalturaSearchOperator in (filterVo.advancedSearch.items as Array) ) 
+					{
+						if (searchItem is KalturaMetadataSearchItem)
+						{
+							for each (var item:Object in(searchItem.items as Array)) {
+								for each (var subItem:Object in(item["items"] as Array)) {
+									var currentValue:String = subItem["value"];
+									var currentXpath:String = subItem["field"];
+									var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
+									parentName = currentXpath.substring(startIndex, currentXpath.length - 2);
+									var btnName:String = parentName + "_" + currentValue;
+									for each (var btn:Button in _metadataButtons) {
+										if (btn.id == btnName) {
+											btn.selected = true;
+											for each (var parentBtn:Button in _metadataButtons) {
+												if (parentBtn.id == parentName) {
+													parentBtn.selected = false;
+													break;
+												}
+											}
 											break;
 										}
 									}
-									break;
 								}
 							}
+							updateImageButton(_metadataButtons.source);
+						}
+						else
+						{
+							parentName
 						}
 					}
-					updateImageButton(_metadataButtons.source);
+					
 				}
 				validateNow();
+				
 			}
 
 
