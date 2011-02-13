@@ -7,9 +7,12 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.analytics.KAnalyticsTrackerConsts;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryDelete;
+	import com.kaltura.commands.mixing.MixingDelete;
+	import com.kaltura.commands.playlist.PlaylistDelete;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.net.KalturaCall;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
@@ -18,17 +21,18 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
 	public class DeleteEntriesCommand extends KalturaCommand implements ICommand, IResponder {
-		private var isPlaylist:Boolean = false;
+		private var _isPlaylist:Boolean = false;
 
 
 		override public function execute(event:CairngormEvent):void {
-			isPlaylist = (event.data == "Playlist");
+			_isPlaylist = (event.data == "Playlist");
 			if (_model.selectedEntries.length == 0) {
-				if (isPlaylist) {
+				if (_isPlaylist) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectPlaylistsFirst'),
 																	   ResourceManager.getInstance().getString('cms',
 																											   'pleaseSelectPlaylistsFirstTitle'));
@@ -46,7 +50,7 @@ package com.kaltura.kmc.modules.content.commands {
 					entryNames += (i + 1) + ". " + _model.selectedEntries[i].name + "\n";
 
 
-				if (isPlaylist) {
+				if (_isPlaylist) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'deletePlaylistQ', [entryNames]),
 																								  ResourceManager.getInstance().getString('cms',
 																																		  'deletePlaylistQTitle'),
@@ -62,7 +66,7 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 			}
 			else {
-				if (isPlaylist) {
+				if (_isPlaylist) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'deleteSelectedPlaylists'),
 																	   ResourceManager.getInstance().getString('cms',
 																											   'deletePlaylistQTitle'),
@@ -86,34 +90,33 @@ package com.kaltura.kmc.modules.content.commands {
 		private function deleteEntries(event:CloseEvent):void {
 			if (event.detail == Alert.YES) {
 				_model.increaseLoadCounter();
-
 				var mr:MultiRequest = new MultiRequest();
 				for (var i:uint = 0; i < _model.selectedEntries.length; i++) {
-					var deleteEntry:BaseEntryDelete = new BaseEntryDelete((_model.selectedEntries[i] as
-						KalturaBaseEntry).id);
-					mr.addAction(deleteEntry);
-
+					var deleteEntry:KalturaCall;
+					// create the correct delete action by entry type, and track deletion.
 					if (_model.selectedEntries[i] is KalturaPlaylist) {
+						deleteEntry = new PlaylistDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DELETE_PLAYLIST,
-																  "Playlists>DeletePlaylist",
-																  _model.selectedEntries[i].id);
+																  "Playlists>DeletePlaylist", _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_PLAYLIST +
 							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT );
 					}
 					else if (_model.selectedEntries[i] is KalturaMixEntry) {
+						deleteEntry = new MixingDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DELETE_MIX,
-																  "Delete Mix",
-																  _model.selectedEntries[i].id);
+																  "Delete Mix", _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MIX +
 							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT);
 					}
 					else {
+						deleteEntry = new BaseEntryDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DELETE_ITEM,
-																  "Delete Entry",
-																  _model.selectedEntries[i].id);
+																  "Delete Entry", _model.selectedEntries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM +
 							"/entry_id=" + _model.selectedEntries[i].id,GoogleAnalyticsConsts.CONTENT);
 					}
+					
+					mr.addAction(deleteEntry);
 				}
 
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
@@ -126,17 +129,14 @@ package com.kaltura.kmc.modules.content.commands {
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
-			if (isPlaylist) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'playlistsDeleted'),
-																   ResourceManager.getInstance().getString('cms',
-																										   'deletePlaylists'),
-																   4, null, refresh);
+			var rm:IResourceManager = ResourceManager.getInstance();
+			if (_isPlaylist) {
+				Alert.show(rm.getString('cms', 'playlistsDeleted'), 
+					rm.getString('cms', 'deletePlaylists'), 4, null, refresh);
 			}
 			else {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'entriesDeleted'),
-																   ResourceManager.getInstance().getString('cms',
-																										   'deleteEntries'),
-																   4, null, refresh);
+				Alert.show(rm.getString('cms', 'entriesDeleted'), 
+					rm.getString('cms', 'deleteEntries'), 4, null, refresh);
 			}
 		}
 
