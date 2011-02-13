@@ -244,6 +244,18 @@
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				loadEntries();
 			}
+			
+			
+			/**
+			 * get uploader name to display.
+			 * if no screen name (uploadedBy) use user id (uploadedByUserId)
+			 * */
+			protected function getScreenNameOrUserId(item:Object, column:DataGridColumn):String {
+				if (item.uploadedBy) {
+					return item.uploadedBy;
+				}
+				else return item.uploadedByUserId;
+			}
 		]]>
 	</mx:Script>
 	<mx:VBox id="maincontent" width="100%" styleName="blueBoxContainer">
@@ -273,7 +285,7 @@
 				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
 							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
-						<mx:DataGridColumn dataField="uploadedBy" width="50"
+						<mx:DataGridColumn width="50" labelFunction="getScreenNameOrUserId"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
 										   showDataTips="true" dataTipField="uploadedBy"/>
 						<mx:DataGridColumn dataField="uploadedOn" width="60"
