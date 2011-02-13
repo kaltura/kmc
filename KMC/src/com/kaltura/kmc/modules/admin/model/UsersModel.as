@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.admin.model
 {
+	import com.kaltura.kmc.vo.UserVO;
 	import com.kaltura.types.KalturaUserOrderBy;
 	import com.kaltura.types.KalturaUserStatus;
 	import com.kaltura.vo.KalturaUser;
@@ -19,6 +20,11 @@ package com.kaltura.kmc.modules.admin.model
 			usersFilter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
 			usersFilter.orderBy = KalturaUserOrderBy.CREATED_AT_ASC;
 		}
+		
+		/**
+		 * info about the current (active) user 
+		 */		
+		public var currentUserInfo:UserVO;
 		
 		/**
 		 * the active user entry.

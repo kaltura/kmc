@@ -50,7 +50,7 @@
 			 * */
 			public var rolesModel:RolesModel;
 
-
+//TODO user cannot change own role
 			
 			
 			/**
@@ -342,7 +342,9 @@
 			protected function drillToSelectedUser():UserDrilldown {
 				dispatchEvent(new GeneralEvent("enableHeader", false));
 				var ud:UserDrilldown = new UserDrilldown();
-				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, model.selectedUser.id != model.adminUserId);
+				var allowSetRole:Boolean = model.selectedUser.id != model.adminUserId;
+				allowSetRole &&= model.selectedUser.id != model.currentUserInfo.user.id;
+				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, allowSetRole);
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
