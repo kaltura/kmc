@@ -79,6 +79,12 @@
 			protected var _allowSetRole:Boolean;
 			
 
+			/**
+			 * a flag indicating the puser_id was defined automatically.
+			 * if false, puser_id was defined by user.
+			 * this flag is only relevant when creating new users.
+			 * */
+			protected var _isAutoPuserId:Boolean;
 
 			/**
 			 * pass initial data.
@@ -123,13 +129,40 @@
 					_undoUser.email = emailTi.text;
 					_undoUser.firstName = firstNameTi.text;
 					_undoUser.lastName = lastNameTi.text;
-				}
-				if (idTi.text) {
-					_undoUser.id = idTi.text;
+					
+					// if there is value in puserid TF
+					if (idTi.text) {
+						// if this value was auto generated, update it
+						if (_isAutoPuserId) {
+							_undoUser.id = emailTi.text;
+						}
+						// other use existing value
+						else {
+							_undoUser.id = idTi.text;		
+						}
+					}
+					// if no value in puserid TF, use login mail
+					else {
+						_isAutoPuserId = true;
+						_undoUser.id = emailTi.text;
+					}
 				}
 				else {
-					_undoUser.id = emailTi.text;
+					// update mode
+					if (idTi.text) {
+						_undoUser.id = idTi.text;		
+					}
+					else {
+						_undoUser.id = emailTi.text;
+					}
 				}
+//				if (idTi.text && !_isUserDefinedPuserId) {
+//					_isUserDefinedPuserId = true;
+//					_undoUser.id = idTi.text;
+//				}
+//				else {
+//					_undoUser.id = emailTi.text;
+//				}
 				_undoUser.roleIds = (roleCb.selectedItem as KalturaUserRole).id.toString();
 				
 				if (validateInput()) {
@@ -268,6 +301,7 @@
 							title = ResourceManager.getInstance().getString('admin', 'add_user_title');
 							break;
 						case DrilldownMode.EDIT:
+							_isAutoPuserId = true;
 							title = ResourceManager.getInstance().getString('admin', 'edit_user_title');
 							emailTi.enabled = false;
 							firstNameTi.enabled = false;
