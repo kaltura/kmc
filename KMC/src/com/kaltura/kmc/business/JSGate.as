@@ -103,9 +103,10 @@ package com.kaltura.kmc.business
 		 * open the change user name popup window 
 		 * @param fName	user's current first name
 		 * @param lName	user's current last name
+		 * @param email	user's current email
 		 */
-		public static function openChangeName(fName:String, lName:String):void {
-			ExternalInterface.call("kmc.functions.openChangeName", fName, lName);
+		public static function openChangeName(fName:String, lName:String, email:String):void {
+			ExternalInterface.call("kmc.functions.openChangeName", fName, lName, email);
 		}
 		
 		/**
