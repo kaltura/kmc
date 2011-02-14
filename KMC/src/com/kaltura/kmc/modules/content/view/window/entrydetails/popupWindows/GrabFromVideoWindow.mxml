@@ -18,7 +18,7 @@
 			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			private var _selectedEntry:KalturaBaseEntry;
-			private var _refreshRequired:Boolean = false;
+			private var _refreshRequired:Boolean = true;
 			private static var _kdp3SwfLoader:SWFLoader;
 			public var context:Context;
 			
@@ -45,6 +45,7 @@
 			}
 			
 			private function onCreationComplete():void {
+				_refreshRequired = false;
 				loadKdp();	
 			}
 			
@@ -59,6 +60,7 @@
 					//because this is static KDP (due to performance issue that we fixed)
 					_kdp3SwfLoader.visible = false;
 					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
+					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 					_kdp3SwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA,
 						{entryId: _selectedEntry.id});
 				}
@@ -109,6 +111,7 @@
 			}
 			
 			private function onThumbnailSaved(event:Event):void {
+				_kdp3SwfLoader.content.removeEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_refreshRequired = true;
 			}
 			
