@@ -4,12 +4,12 @@
 -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
 			title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" 
-			height="545" width="935" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
+			height="545" width="940" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 			showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 			xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
 			xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 			xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
-			xmlns:adobe="http://www.adobe.com/2006/fc" visible="false"
+			xmlns:adobe="http://www.adobe.com/2006/fc" 
 			enabled="{!entryDetailsModel.loadingFlag}"
 			creationComplete="{onWindowCreationComplete()}">
 	<mx:Script>
@@ -113,9 +113,7 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section2'));
 			}
 			
-			private function onWindowCreationComplete():void {
-				BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
-			}
+			
 			
 			/**
 			 * if there are no custom data fields, will not display the custom data tab
@@ -191,27 +189,25 @@
 				return copy;
 			}
 
-
-			/**
-			 * set screen contents according to data
-			 * */
-			public function init():void {
+			private function onWindowCreationComplete():void {
+				BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
+				
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
-
+				
 				_undoToEntry = createWorkingCopy(selectedEntry);
-
+				
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 					_isLiveStream = true;
 				}
-
+				
 				// mixes:
 				/* if (!_undoToEntry is KalturaMixEntry) {
-					partsTable.text = resourceManager.getString('cms', 'usageInMixes');
+				partsTable.text = resourceManager.getString('cms', 'usageInMixes');
 				} */
-
+				
 				// init the top panel
 				entryMetaData.init();
-
+				
 				// show correct panels according to entry type
 				// live entry
 				if (_isLiveStream) {
@@ -230,19 +226,27 @@
 				}
 				
 				loadEntries();
-				PopUpManager.centerPopUp(this);
-				
-				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				
 				// roles and permissions 
+				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
 				for each (var subtabName:String in tabsToHide) {
 					if (viewStack.getChildByName(subtabName)) {
 						viewStack.removeChild(this[subtabName]);
 					}
 				}
+				
+			}
+
+			/**
+			 * set screen contents according to data
+			 * */
+			public function init():void {
+//				loadEntries();
+//				PopUpManager.centerPopUp(this);
+				
 //				dtn.visible = true;
-				visible = true;
+//				visible = true;
 			}
 
 
