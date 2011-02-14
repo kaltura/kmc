@@ -286,8 +286,8 @@
 				topContainer.percentWidth = 100;
 				entryTableContainer.percentWidth = 100;
 				mainCont.percentWidth = 100;
-				entryTable.percentWidth = 75;
-				kdpContainer.percentWidth = 25;
+//				entryTable.percentWidth = 75;
+//				kdpContainer.percentWidth = 25;
 				paging.percentWidth = 100;
 				toolBar.percentWidth = 100;
 				filterContainer.width = 245;
@@ -521,31 +521,32 @@
 						   accessControlProfiles="{filterModel.accessControlProfiles}"
 						   newSearch="{paging.selectedPage=1;loadEntries()}"/>
 		</mx:VBox>
-		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox">
-			<mx:HBox id="mainCont" height="100%" styleName="moderationHBox" paddingTop="0">
-				<view:EntryTable id="entryTable" width="400" openEntry="{onDrillDown()}"
+		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
+			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
+				<view:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
 								 sortDirection="{EntryTable.ASCENDING}" dataProvider="{_listableVo.arrayCollection}"
 								 selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
 								 creationComplete="removeColums( event )" change="getModeration( event )"
 								 dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"
 								 usedForModeration="true"/>
-				<mx:Panel id="kdpContainer" width="300" height="{entryTable.height}" horizontalScrollPolicy="off"
+				<mx:Panel id="kdpContainer" height="100%" minWidth="290"
 						  styleName="modPrev" toolTip="{entryTable.selectedItem.name}" layout="vertical" 
 						  title="{resourceManager.getString('cms', 'preview')} - {entryTable.selectedItem.name}">
 					<mx:SWFLoader id="kdp3Loader" width="280" height="255" init="{onKDP3Loaded(event)}"/>
-					<mx:VBox width="{kdp3Loader.width}">
-						<mx:HBox width="100%" height="30" styleName="modPrevToolBar">
+					<mx:VBox width="280" height="100%" >
+						<mx:HBox width="100%" styleName="modPrevToolBar" >
 							<mx:Label text="{entryTable.selectedItem.moderationCount} {resourceManager.getString('cms', 'flag')}"/>
 							<mx:Spacer width="100%"/>
+							<mx:LinkButton label="{resourceManager.getString('cms', 'viewFullDetails')}"
+										   click="{entryTable.openEditEntry(entryTable.selectedItem)}"/>
 							<mx:LinkButton label="{resourceManager.getString('cms', 'banUser')}" click="banUser()"
 										   labelPlacement="left" styleName="banUser"/>
 						</mx:HBox>
-						<mx:List id="modList" width="100%" height="100%" backgroundColor="0xDDDDDD"
-								 styleName="flagList" selectable="false" borderColor="black" borderStyle="solid"
+						<mx:List id="modList" width="100%" height="100%" minHeight="80" borderThickness="1"
+								 styleName="flagList" selectable="false" borderColor="0xCCCCCC" borderStyle="solid" 
 								 rowHeight="80" dataProvider="{moderationModel.moderationsArray}"
 								 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.ModerationItemRenderer"/>
-						<mx:LinkButton label="{resourceManager.getString('cms', 'viewFullDetails')}"
-									   click="{entryTable.openEditEntry(entryTable.selectedItem)}"/>
+						
 					</mx:VBox>
 				</mx:Panel>
 			</mx:HBox>

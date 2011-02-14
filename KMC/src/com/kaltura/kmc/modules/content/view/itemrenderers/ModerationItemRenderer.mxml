@@ -2,7 +2,11 @@
 <mx:VBox width="100%" xmlns:mx="http://www.adobe.com/2006/mxml" >
 <mx:Script>
 	<![CDATA[
+		import com.kaltura.types.KalturaModerationFlagType;
+		import com.kaltura.vo.KalturaModerationFlag;
+		
 		import mx.formatters.DateFormatter;
+		import mx.resources.ResourceManager;
         public function formatDate( date : Number ) : String
         {
         	var df:DateFormatter = new DateFormatter();
@@ -11,9 +15,39 @@
         	dt.setTime(date * 1000);
         	return df.format(dt);
         }
+		
+		override public function set data(o:Object):void {
+			super.data = o;
+			header.text = getReason(o as KalturaModerationFlag);
+		} 
+		
+		private function getReason(data:KalturaModerationFlag):String {
+			if (data) {
+				var reason:String = '';
+				switch (data.flagType) {
+					case KalturaModerationFlagType.SEXUAL_CONTENT:
+						reason = ResourceManager.getInstance().getString('cms', 'moderation_reason_sex');
+						break;
+					case KalturaModerationFlagType.HARMFUL_DANGEROUS:
+						reason = ResourceManager.getInstance().getString('cms', 'moderation_reason_harmful');
+						break;
+					case KalturaModerationFlagType.SPAM_COMMERCIALS:
+						reason = ResourceManager.getInstance().getString('cms', 'moderation_reason_spam');
+						break;
+					case KalturaModerationFlagType.VIOLENT_REPULSIVE:
+						reason = ResourceManager.getInstance().getString('cms', 'moderation_reason_violence');
+						break;
+				}
+				return formatDate(data.createdAt) + ", " + reason;
+			} 
+			else {
+				return '';
+			}
+		}
 	]]>
 </mx:Script>
-	<mx:Text text="{formatDate(data.createdAt)} , {data.comments}" width="100%" styleName="modItemText"/> 
+	<mx:Text id="header" width="100%" styleName="modItemText"/> 
+	<mx:Text text="{data.comments}" width="100%" styleName="modItemText"/> 
 	<mx:Spacer height="100%" />
 	<mx:HRule width="100%" />
 </mx:VBox>
