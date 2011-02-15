@@ -20,7 +20,7 @@ package com.kaltura.kmc.command
 		{
 			_model.loadingFlag = false;
 			
-			_model.partnerInfoLoaded = true;
+		//	_model.partnerInfoLoaded = true;
 		}
 		
 		public function fault(info:Object):void

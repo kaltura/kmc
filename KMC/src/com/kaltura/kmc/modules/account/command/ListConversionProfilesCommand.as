@@ -52,7 +52,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.conversionData = tempArrCol;
 //			setDummyData();
 			
-			_model.partnerInfoLoaded = true;
+			//_model.partnerInfoLoaded = true;
 		}
 		
 		public function fault(event:Object):void

@@ -45,7 +45,7 @@ package com.kaltura.kmc.modules.account.command
 			
 			_model.flavorsData = tempArrCol
 			
-			_model.partnerInfoLoaded = true;
+			//_model.partnerInfoLoaded = true;
 		}
 		
 		private function clearOldData():void

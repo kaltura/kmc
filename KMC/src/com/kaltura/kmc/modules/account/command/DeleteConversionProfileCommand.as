@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.account.command
 				Alert.show(data.error, ResourceManager.getInstance().getString('account', 'error'));
 			}
 
-			_model.partnerInfoLoaded = true;
+			//_model.partnerInfoLoaded = true;
 		}
 		
 		public function fault(info:Object):void
