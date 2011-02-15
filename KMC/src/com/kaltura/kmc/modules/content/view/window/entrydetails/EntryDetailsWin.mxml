@@ -138,8 +138,11 @@
 				
 			}
 			
-			private function removeThumbnailsTab():void {
-				viewStack.removeChild(entryThumbnails);
+			private function setViewPerEntryType(tabsToRemove:Array):void {
+				for each (var tab:DisplayObject in tabsToRemove) {
+					if (tab.parent is ViewStack)
+						viewStack.removeChild(tab);
+				}
 			}
 
 
@@ -193,7 +196,6 @@
 				BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
 				
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
-				
 				_undoToEntry = createWorkingCopy(selectedEntry);
 				
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
@@ -221,7 +223,10 @@
 					// this entry is a regular video/image/audio
 					showNormalSetup();
 					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-						removeThumbnailsTab();
+						setViewPerEntryType(new Array(entryThumbnails, entryAsstes, entryDistribution));
+					}
+					else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
+						setViewPerEntryType(new Array(entryDistribution));
 					}
 				}
 				
