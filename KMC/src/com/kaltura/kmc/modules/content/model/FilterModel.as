@@ -38,6 +38,10 @@ package com.kaltura.kmc.modules.content.model
 		
 		public var metadataProfile:KMCMetadataProfileVO;
 		
+		/**
+		 * a list of access control profiles of the current partner,
+		 * <Code>AccessControlProfileVO</code> objects 
+		 */		
 		public var accessControlProfiles:ArrayCollection = new ArrayCollection();
 		
 		/**

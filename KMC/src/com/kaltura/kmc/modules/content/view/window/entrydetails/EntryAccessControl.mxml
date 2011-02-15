@@ -8,30 +8,25 @@
 		<![CDATA[
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
 			import com.kaltura.types.*;
 			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
-			import com.kaltura.vo.AccessControlProfileVO;
 			
-			import mx.binding.utils.BindingUtils;
-			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.collections.SortField;
 			import mx.core.Application;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
-			import mx.messaging.AbstractConsumer;
 
-			[Bindable]
-			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
-
-			private var selectedItemIndex:int = -1;
-
+			/**
+			 * the entry being presented / edited in entry drilldown
+			 * */
 			public var selectedEntry:KalturaBaseEntry;
 
+			/**
+			 * list of entries to edit in SetAccessControlProfileWin
+			 * */
 			public var selectedEntries:ArrayCollection;
 
 			/**
@@ -39,17 +34,12 @@
 			 * */
 			public var filterModel:FilterModel;
 
+			/**
+			 * @copy #accessControlData
+			 * */
 			private var _accessControlData:ArrayCollection;
 
-			public function get accessControlData():ArrayCollection {
-				return _accessControlData;
-			}
-
-
-			public function set accessControlData(accessControlData:ArrayCollection):void {
-				_accessControlData = accessControlData;
-				updateAccessSection();
-			}
+			
 
 
 			private function init():void {
@@ -68,7 +58,7 @@
 			private function updateAccessSection():void {
 				var acProfiles:ArrayCollection = new ArrayCollection();
 				var itemsCounter:int = 0;
-				selectedItemIndex = 0;
+				var selectedItemIndex:int = 0;
 				var defualtProfile:AccessControlProfileVO;
 				for each (var acProfile:AccessControlProfileVO in _accessControlData) {
 					if (acProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
@@ -85,16 +75,15 @@
 
 				for each (var acProfile1:Object in acProfiles) {
 					if (selectedEntry != null) {
-						if ((acProfile1.profile as AccessControlProfileVO).profile.id ==
-							selectedEntry.accessControlId) {
+						if ((acProfile1.profile as AccessControlProfileVO).profile.id == selectedEntry.accessControlId) {
 							selectedItemIndex = itemsCounter;
 						}
 						itemsCounter++;
 					}
 				}
-				accessControlProfliesComboBox.dataProvider = acProfiles;
-				accessControlProfliesComboBox.selectedIndex = selectedItemIndex;
-				accessControlProfliesComboBox.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				acProfsCB.dataProvider = acProfiles;
+				acProfsCB.selectedIndex = selectedItemIndex;
+				acProfsCB.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 			}
 
 
@@ -104,10 +93,9 @@
 				PopUpManager.addPopUp(newProfileWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(newProfileWin);
 				
-				//TODO clean listeners when closing window
-				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc );
-				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc );
-				newProfileWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp);
+				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc , false, 0, true);
+				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc , false, 0, true);
+				newProfileWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
 				
 			}
 			
@@ -136,18 +124,18 @@
 				addNewProfileEvent.dispatch(); 
 			}
 			private function onAccessControlChange(event:Event):void {
-				if (accessControlProfliesComboBox.selectedItem == null) {
+				if (acProfsCB.selectedItem == null) {
 					// this only happen because creationPolicy set to all?
 					return;
 				}
 				else {
-					var selectedAC:AccessControlProfileVO = accessControlProfliesComboBox.selectedItem.profile;
+					var selectedAC:AccessControlProfileVO = acProfsCB.selectedItem.profile;
 					if (selectedAC == null) {
-						accessControlNameLabel.text = '';
-						accessControlDescriptionLabel.text = '';
-						accessControlAuthoSitesLabel.text = '';
-						accessControlAuthoCountriesLabel.text = '';
-						accessControlAdvancedLabel.text = '';
+						acNameLabel.text = '';
+						acDescriptionLabel.text = '';
+						acAuthoSitesLabel.text = '';
+						acAuthoCountriesLabel.text = '';
+						acAdvancedLabel.text = '';
 						if (selectedEntry != null) {
 							selectedEntry.accessControlId = 0;
 						}
@@ -158,58 +146,58 @@
 						}
 					}
 					else {
-						accessControlNameLabel.text = selectedAC.profile.name;
-						accessControlDescriptionLabel.text = selectedAC.profile.description;
-						accessControlAdvancedLabel.text = "";
+						acNameLabel.text = selectedAC.profile.name;
+						acDescriptionLabel.text = selectedAC.profile.description;
+						acAdvancedLabel.text = "";
 						var foundSitesRestriction:Boolean = false;
 						var foundCountriesRestriction:Boolean = false;
 						var foundKalDirRestriction:Boolean = false;
 						for each (var restriction:KalturaBaseRestriction in selectedAC.profile.restrictions) {
 							if (restriction is KalturaSiteRestriction) {
 								foundSitesRestriction = true;
-								accessControlAuthoSitesLabel.text = (restriction as
+								acAuthoSitesLabel.text = (restriction as
 									KalturaSiteRestriction).siteRestrictionType ==
 									KalturaSiteRestrictionType.ALLOW_SITE_LIST ? resourceManager.getString('cms',
 																										   'ALLOW_SITES') +
 									":  " : resourceManager.getString('cms', 'RESTRICT_SITES') + ":  ";
 
-								accessControlAuthoSitesLabel.text += (restriction as
+								acAuthoSitesLabel.text += (restriction as
 									KalturaSiteRestriction).siteList;
 							}
 							else if (restriction is KalturaCountryRestriction) {
 								foundCountriesRestriction = true;
-								accessControlAuthoCountriesLabel.text = (restriction as
+								acAuthoCountriesLabel.text = (restriction as
 									KalturaCountryRestriction).countryRestrictionType ==
 									KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST ? resourceManager.getString('cms',
 																												 'ALLOW_COUNTRIES') +
 									": " : resourceManager.getString('cms', 'RESTRICT_COUNTRIES') + ": ";
 
-								accessControlAuthoCountriesLabel.text += "\n" +
+								acAuthoCountriesLabel.text += "\n" +
 									getCountriesList((restriction as KalturaCountryRestriction).countryList); 
 							}
 
 							if (restriction is KalturaSessionRestriction) {
-								accessControlAdvancedLabel.text = resourceManager.getString('cms',
+								acAdvancedLabel.text = resourceManager.getString('cms',
 																							'KS_SHORT_CUT') +
 									", ";
 							}
 
 							if (restriction is KalturaPreviewRestriction) {
-								accessControlAdvancedLabel.text += resourceManager.getString('cms', 'PREVIEW');
+								acAdvancedLabel.text += resourceManager.getString('cms', 'PREVIEW');
 								var len:int = (restriction as KalturaPreviewRestriction).previewLength;
 								var min:int = Math.floor(len / 60);
 								var sec:int = len % 60;
-								accessControlAdvancedLabel.text += "(" + min + "m:" + sec + "s)  ";
+								acAdvancedLabel.text += "(" + min + "m:" + sec + "s)  ";
 							}
 						}
 
-						accessControlAuthoSitesLabel.text = foundSitesRestriction ? accessControlAuthoSitesLabel.text : resourceManager.getString('cms',
+						acAuthoSitesLabel.text = foundSitesRestriction ? acAuthoSitesLabel.text : resourceManager.getString('cms',
 																																				  'ANY_SITE');
-						accessControlAuthoCountriesLabel.text = foundCountriesRestriction ? accessControlAuthoCountriesLabel.text : resourceManager.getString('cms',
+						acAuthoCountriesLabel.text = foundCountriesRestriction ? acAuthoCountriesLabel.text : resourceManager.getString('cms',
 																																							  'ANY_COUNTRY');
-						accessControlAdvancedLabel.text = (accessControlAdvancedLabel.text.length >
-							0) ? accessControlAdvancedLabel.text.substr(0,
-																		accessControlAdvancedLabel.text.length -
+						acAdvancedLabel.text = (acAdvancedLabel.text.length >
+							0) ? acAdvancedLabel.text.substr(0,
+																		acAdvancedLabel.text.length -
 							2) : '';
 
 						if (selectedEntry != null) {
@@ -237,8 +225,25 @@
 
 
 			public function getSelectedAccessControlProfile():AccessControlProfileVO {
-				return (accessControlProfliesComboBox.selectedItem ==
-					null) ? null : accessControlProfliesComboBox.selectedItem.profile;
+				return (acProfsCB.selectedItem ==
+					null) ? null : acProfsCB.selectedItem.profile;
+			}
+			
+			
+			/**
+			 * @copy FilterModel#accessControlProfiles
+			 * */
+			public function get accessControlData():ArrayCollection {
+				return _accessControlData;
+			}
+			
+			
+			/**
+			 * @private
+			 * */
+			public function set accessControlData(accessControlData:ArrayCollection):void {
+				_accessControlData = accessControlData;
+				updateAccessSection();
 			}
 		]]>
 	</mx:Script>
@@ -257,7 +262,7 @@
 				<mx:Label text="{resourceManager.getString('cms', 'acpSectionTitle')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:ComboBox id='accessControlProfliesComboBox' change="onAccessControlChange(event)" width="200"/>
+				<mx:ComboBox id='acProfsCB' change="onAccessControlChange(event)" width="200"/>
 				<mx:LinkButton id="addBtn" label="{resourceManager.getString('cms', 'addProfileBtn')}"
 							   click="openNewAccessControlPopUpWindow(event)"/>
 			</mx:GridItem>
@@ -267,7 +272,7 @@
 				<mx:Label text="{resourceManager.getString('cms', 'nameLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:Label width="280" id="accessControlNameLabel" toolTip="{accessControlNameLabel.text}" color="black" styleName="drillDownSubLabel"/>
+				<mx:Label width="280" id="acNameLabel" toolTip="{acNameLabel.text}" color="black" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 		<mx:GridRow width="100%">
@@ -275,9 +280,9 @@
 				<mx:Label text="{resourceManager.getString('cms', 'descriptionLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:TextArea id="accessControlDescriptionLabel" height="100%" selectable="false" editable="false"
+				<mx:TextArea id="acDescriptionLabel" height="100%" selectable="false" editable="false"
 							 width="100%" wordWrap="true" borderStyle="none" horizontalScrollPolicy="off"
-							 verticalScrollPolicy="off" toolTip="{accessControlDescriptionLabel.text}" color="black"
+							 verticalScrollPolicy="off" toolTip="{acDescriptionLabel.text}" color="black"
 							 backgroundAlpha="0" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
@@ -286,8 +291,8 @@
 				<mx:Label text="{resourceManager.getString('cms', 'authoSitesLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:Label width="100%" id="accessControlAuthoSitesLabel" color="black"
-						  toolTip="{accessControlAuthoSitesLabel.text}" styleName="drillDownSubLabel"/>
+				<mx:Label width="100%" id="acAuthoSitesLabel" color="black"
+						  toolTip="{acAuthoSitesLabel.text}" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 		<mx:GridRow>
@@ -295,9 +300,9 @@
 				<mx:Label text="{resourceManager.getString('cms', 'authoCountries')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:TextArea width="100%" id="accessControlAuthoCountriesLabel" height="100%" selectable="false"
+				<mx:TextArea width="100%" id="acAuthoCountriesLabel" height="100%" selectable="false"
 							 editable="false" wordWrap="true" borderStyle="none" color="black" backgroundAlpha="0"
-							 toolTip="{accessControlAuthoCountriesLabel.text}" styleName="drillDownSubLabel"/>
+							 toolTip="{acAuthoCountriesLabel.text}" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 		<mx:GridRow>
@@ -305,7 +310,7 @@
 				<mx:Label text="{resourceManager.getString('cms', 'advancedLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:Label width="100%" id="accessControlAdvancedLabel" color="black" styleName="drillDownSubLabel"/>
+				<mx:Label width="100%" id="acAdvancedLabel" color="black" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>
