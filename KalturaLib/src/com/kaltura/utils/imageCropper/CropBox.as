@@ -34,6 +34,11 @@ package com.kaltura.utils.imageCropper {
 	
 	public class CropBox extends UIComponent {
 		public static var EVENT_CHANGED:String = "crop.changed";
+		/**
+		 * indicates whether the crop is currently being changed
+		 * */
+		[Bindable]
+		public var cropChanging:Boolean  = false;
 		
 		public var cropMaxHeight:int = 0;
 		public var cropMinHeight:int = 0;
@@ -125,6 +130,7 @@ package com.kaltura.utils.imageCropper {
 				
 				lastMouseX = mouseX;
 				lastMouseY = mouseY;
+			
 				addEventListener(MouseEvent.MOUSE_MOVE, mouseBoxMoveEvent);
 				me.stopPropagation();
 			} else {
@@ -236,6 +242,9 @@ package com.kaltura.utils.imageCropper {
 				boxMoving = false;
 				stage.removeEventListener(MouseEvent.MOUSE_MOVE, mouseBoxMoveEvent);
 			}
+
+			if (cropChanging)
+				cropChanging = false;
 		}
 		
 		private function setHandleHeld(handle:CropHandle):void {
@@ -385,6 +394,8 @@ package com.kaltura.utils.imageCropper {
 			handleSe.y = _cropY + _cropHeight;
 			
 			dispatchEvent(new Event(EVENT_CHANGED));
+			if (!cropChanging)
+				cropChanging = true;
 			
 			this.invalidateDisplayList();
 		}
