@@ -23,6 +23,7 @@
 			import com.kaltura.vo.KalturaThumbAsset;
 			import com.kaltura.vo.KalturaThumbParams;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			/**
@@ -76,6 +77,7 @@
 			[Bindable]
 			private var _thumbnailsList:Array;
 			private var _firstLoaded:Boolean = false;
+			private var _cropperTimer:Timer = new Timer(100);
 
 			
 			private function onCreationComplete(event:Event):void {
@@ -95,6 +97,8 @@
 					_presetSizesExist = true;
 					presetComboBox.selectedIndex = 0;
 				}
+				
+				_cropperTimer.addEventListener(TimerEvent.TIMER, onCropChanged);
 				
 				setCropperImage();
 			}
@@ -119,7 +123,9 @@
 				_imageCrop.loadImage(_selectedThumbnail.thumbUrl);
 				imageBox.addChild(_imageCrop);
 				var cropBox:CropBox = _imageCrop.cropBox;
-				cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
+			//	cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
+				BindingUtils.bindSetter(onCropperChanging, cropBox, 'cropChanging');
+				
 				
 				var imageHeight:Number = _maxImageHeight;
 				var imageWidth:Number = _maxImageHeight*_selectedImgRatio;
@@ -130,6 +136,15 @@
 				_imageCrop.maxImageHeight = imageHeight;
 				_imageCrop.maxImageWidth = imageWidth;	
 				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);			
+			}
+			
+			private function onCropperChanging(value:Boolean) : void {
+				if (!value && _cropperTimer.running) {
+					_cropperTimer.stop();
+				}
+				else if (value && !_cropperTimer.running) {
+					_cropperTimer.start();
+				}
 			}
 			
 			/**
@@ -520,6 +535,7 @@
 			 * dispatches window close event
 			 * */
 			private function dispatchCloseEvent():void {
+				_cropperTimer.removeEventListener(TimerEvent.TIMER, onCropChanged);
 				this.dispatchEvent(new Event(WINDOW_CLOSE));
 			}
 			
