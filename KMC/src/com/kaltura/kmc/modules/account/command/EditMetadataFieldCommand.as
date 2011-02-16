@@ -34,8 +34,9 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			
-			var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-			updateMetadataProfile.dispatch();
+			_model.metadataProfile.metadataProfileChanged = true;
+			/*var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
+			updateMetadataProfile.dispatch();*/
 		}
 	}
 }

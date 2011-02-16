@@ -33,10 +33,11 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 
-			if (_model.metadataProfile.profile) {
+			_model.metadataProfile.metadataProfileChanged = true;
+		/*	if (_model.metadataProfile.profile) {
 				var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
 				updateMetadataProfile.dispatch();
-			}
+			}*/
 		}
 
 	}

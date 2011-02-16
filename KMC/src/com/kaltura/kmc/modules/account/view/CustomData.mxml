@@ -81,6 +81,7 @@
 			private function addNewFieldHandler(event:AddMetadataFieldEvent):void {
 				var fieldsArray:Array = new Array();
 				fieldsArray.push(event.metadataField);
+				_model.metadataProfile.metadataFieldVOArray.addItem(event.metadataField);
 				var addMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.ADD, fieldsArray);
 				addMetadataField.dispatch();
 
@@ -117,6 +118,7 @@
 						var indexToRemove:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(item);
 						var fieldToRemove:MetadataFieldVO = MetadataFieldVO(_model.metadataProfile.metadataFieldVOArray.getItemAt(indexToRemove));
 						fieldsArray.push(fieldToRemove);
+						_model.metadataProfile.metadataFieldVOArray.removeItemAt(indexToRemove);
 					}
 					var deleteMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.DELETE, fieldsArray);
 					deleteMetadataField.dispatch();
@@ -125,15 +127,11 @@
 
 
 			public function isChanged():Boolean {
-				return false;
+				return _model.metadataProfile.metadataProfileChanged;
 			}
 
 
 			public function undo():void {
-			}
-
-
-			public function saveChanges():void {
 			}
 
 
@@ -142,6 +140,21 @@
 			
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section26' ));
+			}
+			
+			public function saveChanges():void {
+				if (!_model.metadataProfile.metadataProfileChanged)
+					return;
+				
+				if (_model.metadataProfile.profile) {
+					var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
+					updateMetadataProfile.dispatch();
+				}
+				else {
+					var addMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.ADD);
+					addMetadataProfile.dispatch();
+				}
+				
 			}
 		]]>
 
@@ -166,6 +179,8 @@
 			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
 				<mx:Button id="deleteCustomDataField" label="{resourceManager.getString('account', 'customFieldsDeleteField')}"
 						   click="deleteField(event)" useHandCursor="true" buttonMode="true"/>
+				<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
+						   click="{saveChanges()}" useHandCursor="true" buttonMode="true"/>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HBox>
