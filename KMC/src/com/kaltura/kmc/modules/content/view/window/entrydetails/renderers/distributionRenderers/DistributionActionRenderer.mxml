@@ -22,7 +22,8 @@
 				if (_entryDis.validationErrors.length == 0) {
 					switch (_entryDis.status) {
 						case KalturaEntryDistributionStatus.PENDING:
-							action = DISTRIBUTE;
+							if (_entryDis.dirtyStatus != KalturaEntryDistributionFlag.SUBMIT_REQUIRED)
+								action = DISTRIBUTE;
 							break;
 						
 						case KalturaEntryDistributionStatus.ERROR_DELETING:

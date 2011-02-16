@@ -30,6 +30,7 @@
 				
 				private static const READY_FOR_DISTRIBUTION:String = "readyForDistribution";
 				private static const APPROVED_FOR_DISTRIBUTION:String = "approvedForDistribution";
+				private static const SCHEDULED_FOR_DISTRIBUTION:String = "scheduledForDistribution";
 				private static const DISTRIBUTED:String = "distributed";
 				private static const UPDATE_REQUIRED:String = "updateRequired";
 				private static const DELETED:String = "deleted";
@@ -49,6 +50,8 @@
 				private var _metadataErrorVisible:Boolean = true;
 				[Bindable]
 				private var _statusVisible:Boolean = true;
+				[Bindable]
+				private var _distributionError:Boolean = true;
 				private var _thumbErrorsArray:Array;
 				private var _flavorErrorsArray:Array;
 				private var _metadataErrorsArray:Array;
@@ -66,7 +69,10 @@
 		
 					switch (_entryDis.status) {
 						case KalturaEntryDistributionStatus.PENDING:
-							status = READY_FOR_DISTRIBUTION;
+							if (!_entryDis.validationErrors || _entryDis.validationErrors.length==0)
+								status = READY_FOR_DISTRIBUTION;
+							if (_entryDis.dirtyStatus == KalturaEntryDistributionFlag.SUBMIT_REQUIRED)
+								status = SCHEDULED_FOR_DISTRIBUTION;
 							break;
 						case KalturaEntryDistributionStatus.QUEUED:
 							status = APPROVED_FOR_DISTRIBUTION;
@@ -94,27 +100,38 @@
 							break;
 					}
 					
-					statusLabel.text = resourceManager.getString('cms',status);
-					if (status2) {
-						statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
+					if (status) {
+						statusLabel.text = resourceManager.getString('cms',status);
+						if (status2) {
+							statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
+						}
 					}
-					
+				
 					if (status == DISTRIBUTION_ERROR || status == REMOVAL_ERROR) {
 						distributionErrorLink.label = resourceManager.getString('cms',status);
 						_statusVisible = false;
+						_distributionError = true;
 						_errorsVisible = false;
 					}
 					else if (_entryDis.validationErrors.length > 0 ) 
 					{
 						_errorsVisible = true;
-						_statusVisible = true;
-						statusLabel.text = statusLabel.text + ", ";
+						_distributionError = false;
+						if (status) {
+							_statusVisible = true;
+							statusLabel.text = statusLabel.text + ", ";
+						}
+						else {
+							_statusVisible = false;							
+						}
+
 						parseErrors(_entryDis.validationErrors);
 						setErrosTexts(); 
 					}
 					else {
 						_errorsVisible = false;
 						_statusVisible = true;
+						_distributionError = false;
 					}
 				}
 				
@@ -277,8 +294,8 @@
 		</mx:Script>
 	
 		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" paddingLeft="0" paddingRight="0"/>
-		<mx:LinkButton id="distributionErrorLink" paddingLeft="0" paddingRight="0" label="{resourceManager.getString('cms','distributionError')}" visible="{!_statusVisible}" 
-					   includeInLayout="{!_statusVisible}" styleName="distributionError"
+		<mx:LinkButton id="distributionErrorLink" paddingLeft="0" paddingRight="0" label="{resourceManager.getString('cms','distributionError')}" visible="{_distributionError}" 
+					   includeInLayout="{_distributionError}" styleName="distributionError"
 					   click="{onDistributionErrorClick()}"/>
 		<mx:LinkButton id="thumbErrorLink" paddingLeft="0" paddingRight="0"
 					   visible="{(_errorsVisible &amp;&amp; _thumbErrorVisible)}"

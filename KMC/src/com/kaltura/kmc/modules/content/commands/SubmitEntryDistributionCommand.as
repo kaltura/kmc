@@ -28,6 +28,7 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 			var resultEntry:KalturaEntryDistribution = data.data as KalturaEntryDistribution;
 			_entryDis.status =  resultEntry.status;
+			_entryDis.dirtyStatus = resultEntry.dirtyStatus;
 			//for data binding
 			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = _model.entryDetailsModel.distributionProfileInfo.entryDistributionArray.concat();
 		}
