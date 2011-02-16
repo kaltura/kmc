@@ -54,6 +54,11 @@
 			 * default width for the preview image
 			 * */
 			public static const MAX_PREVIEW_WIDTH:int = 160;
+			/**
+			 * time in milliseconds that will determine the intervals for refreshing the preview image
+			 * */
+			public static const REFRESH_PREVIEW_IMG_INTERVAL:int = 100;
+			
 			private static var enterClicked:Boolean = false;
 			[Bindable]
 			private var _maxImageHeight:int;
@@ -66,7 +71,8 @@
 			private var _isPreSize:Boolean = false;
 			[Bindable]
 			private var _selectedThumbnail:ThumbnailWithDimensions;
-			private var _lastSelectedIndex:int = 0;
+			private var _lastSelectedThumbIndex:int = 0;
+			private var _lastSelectedSizeIndex:int = 0;
 			private var _imageCrop:ImageCrop;
 			private var _isDirty:Boolean;
 			[Bindable]
@@ -77,7 +83,7 @@
 			[Bindable]
 			private var _thumbnailsList:Array;
 			private var _firstLoaded:Boolean = false;
-			private var _cropperTimer:Timer = new Timer(100);
+			private var _cropperTimer:Timer = new Timer(REFRESH_PREVIEW_IMG_INTERVAL);
 
 			
 			private function onCreationComplete(event:Event):void {
@@ -95,7 +101,7 @@
 	
 				if (_isPreSize) {
 					_presetSizesExist = true;
-					presetComboBox.selectedIndex = 0;
+					_lastSelectedSizeIndex = presetComboBox.selectedIndex = 0;
 				}
 				
 				_cropperTimer.addEventListener(TimerEvent.TIMER, onCropChanged);
@@ -138,6 +144,10 @@
 				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);			
 			}
 			
+			/**
+			 * To improve performance: when the cropper is changing we will refresh the view
+			 * only every [REFRESH_PREVIEW_IMG_INTERVAL] milliseconds by using the _croppperTimer
+			 * */
 			private function onCropperChanging(value:Boolean) : void {
 				if (!value && _cropperTimer.running) {
 					_cropperTimer.stop();
@@ -214,7 +224,7 @@
 					adjustPresetDimensions(_selectedThumbnail.width, _selectedThumbnail.height, requestedDimensions.width, requestedDimensions.height);
 				}
 				else {
-					presetComboBox.selectedIndex = -1;
+					_lastSelectedSizeIndex = presetComboBox.selectedIndex = -1;
 					setCropperOnEntireImage();
 				}
 			}
@@ -323,17 +333,18 @@
 					}
 				}
 				
-				if (_firstLoaded && imgList) {
-					imgList.selectedItem = _thumbnailsList[_lastSelectedIndex];
+				if (_firstLoaded) {
+					if (imgList)
+						imgList.selectedItem = _thumbnailsList[_lastSelectedThumbIndex];
 				}
-				else if (!_firstLoaded) {
+				else {
 					_firstLoaded = true;
 					if (_presetSizeList.length>0)
 					_isPreSize = true;
-				}
-				if (presetComboBox) {
-					presetComboBox.selectedIndex = 0;
-				}
+				}	
+				
+			 	if (presetComboBox && _lastSelectedSizeIndex<_presetSizeList.length) 
+					presetComboBox.selectedIndex = _lastSelectedSizeIndex; 
 			}
 			
 			private function alertOkHandler(event:CloseEvent): void {
@@ -401,9 +412,9 @@
 			 * */
 			private function onImgItemClick():void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
-				_lastSelectedIndex = imgList.selectedIndex;
+				_lastSelectedThumbIndex = imgList.selectedIndex;
 				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length>0))
-					presetComboBox.selectedIndex = 0;
+					_lastSelectedSizeIndex = presetComboBox.selectedIndex = 0;
 				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
 				imageBox.removeChild(_imageCrop);
 				setCropperImage();
@@ -493,6 +504,7 @@
 			}
 			
 			private function onPresetSizeChange(event:Event):void {
+				_lastSelectedSizeIndex = presetComboBox.selectedIndex;
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 				if (_imageCrop && _imageCrop.cropBox) {
 					//dimensions are too big
@@ -625,6 +637,6 @@
 		<mx:HBox id="imageBox" width="100%" verticalAlign="middle" horizontalAlign="center" height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}" backgroundColor="#e5e5e5"/>
 	</mx:HBox>
 	<mx:ControlBar id="saveBtnControlBar">
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','saveChanges')}" click="{onSave()}"/>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','generateThumbnail')}" click="{onSave()}"/>
 	</mx:ControlBar>
 </mx:TitleWindow>
