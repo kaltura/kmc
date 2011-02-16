@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.account.command
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
-			
+			_model.metadataProfileLoaded = false;
 			_model.context.kc.post(listMetadataProfile);
 		}
 		
@@ -72,7 +72,9 @@ package com.kaltura.kmc.modules.account.command
 					_model.customDataDisabled = true;
 					
 				}
-			} 
+			}
+			
+			_model.metadataProfileLoaded = true;
 		}
 		
 		/**

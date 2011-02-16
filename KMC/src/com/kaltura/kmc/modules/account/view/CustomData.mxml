@@ -16,9 +16,11 @@
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.CustomDataAddEditPopup;
 			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.metadataNotEditablePopup;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
@@ -27,6 +29,7 @@
 
 			[Bindable]
 			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
+			private var _originalProfile:KMCMetadataProfileVO;
 
 
 			/**
@@ -41,7 +44,18 @@
 			private function onInit(event:FlexEvent):void
 			{
 				BindingUtils.bindSetter( disableTab , _model , "customDataDisabled" );
+				BindingUtils.bindSetter( metadataLoaded , _model , "metadataProfileLoaded" );
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+			}
+			
+			private function metadataLoaded(value:Boolean) : void {
+				if (value) {
+					_originalProfile = new KMCMetadataProfileVO();
+					_originalProfile.profile = _model.metadataProfile.profile;
+					_originalProfile.xsd = _model.metadataProfile.xsd.copy();
+					_originalProfile.metadataFieldVOArray = new ArrayCollection(_model.metadataProfile.metadataFieldVOArray.source.concat());
+				}
+					
 			}
 			
 			public function disableTab( customDataDisabled : Boolean ) : void {
@@ -132,6 +146,8 @@
 
 
 			public function undo():void {
+				_model.metadataProfile.xsd = _originalProfile.xsd.copy();
+				_model.metadataProfile.metadataFieldVOArray = new ArrayCollection(_originalProfile.metadataFieldVOArray.source.concat())
 			}
 
 

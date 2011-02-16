@@ -76,6 +76,10 @@ package com.kaltura.kmc.modules.account.model {
 		 * the custom metadata tab is disabled
 		 * */
 		public var customDataDisabled:Boolean = false;
+		/**
+		 * the metadata profile was loaded
+		 * */
+		public var metadataProfileLoaded:Boolean = false;
 		
 		public var partnerInfoLoaded:Boolean = false;
 		public var openPayPalWindowFlag:Boolean = false;

@@ -38,6 +38,7 @@ package com.kaltura.kmc.modules.account.command
 			var addMetadataProfile:MetadataProfileAdd = new MetadataProfileAdd(profile, _model.metadataProfile.xsd.toXMLString());
 			addMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			addMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
+			_model.metadataProfileLoaded = false;
 			_model.context.kc.post(addMetadataProfile);
 		}
 		
@@ -57,6 +58,7 @@ package com.kaltura.kmc.modules.account.command
 			}	
 			
 			_model.metadataProfile.metadataProfileChanged = false;
+			_model.metadataProfileLoaded = true;
 
 		}
 		
