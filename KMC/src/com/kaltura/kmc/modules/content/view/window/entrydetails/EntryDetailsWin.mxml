@@ -10,8 +10,8 @@
 			xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 			xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 			xmlns:adobe="http://www.adobe.com/2006/fc" 
-			enabled="{!entryDetailsModel.loadingFlag}"
 			creationComplete="{onWindowCreationComplete()}">
+	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -46,10 +46,10 @@
 			import com.kaltura.vo.KalturaPlaylist;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
-			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
 
@@ -108,6 +108,12 @@
 			 * show embed option on drilldown
 			 * */
 			public var showEmbedCode:Boolean = true;
+			
+			/**
+			 * a watcher for binding this.enabled to model.loadingFlag
+			 * once only.
+			 * */
+			private var _enabledWatcher:ChangeWatcher;
 
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section2'));
@@ -368,6 +374,7 @@
 					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
 				}
 				else {
+					
 					// remove window
 					removeMe();
 				}
@@ -392,6 +399,7 @@
 				if ((event == null || event.detail == Alert.YES)) {
 					_undoToEntry = null;
 					entryMetaData.clearPlayer();
+					_enabledWatcher.unwatch();
 					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
 					cgEvent.dispatch();
 				}
@@ -517,6 +525,26 @@
 			}
 			
 			
+			private function onChangeView():void {
+				entryMetaData.pausePreview();
+				// all data for entry metadata is loaded before the window opens.
+				// other panels need data that is loaded when the panel opens, so 
+				// we disable them until data is loaded.
+				if (viewStack.selectedChild != entryMetaData) {
+					if (entryDetailsModel.loadingFlag) {
+						this.enabled = false;
+						if (!_enabledWatcher) {
+							_enabledWatcher = BindingUtils.bindSetter(setEnabledByLoadingFlag, entryDetailsModel, "loadingFlag");
+						}
+					}
+				}
+			}
+			
+			private function setEnabledByLoadingFlag(val:Boolean):void {
+				this.enabled = !val;
+			}
+			
+			
 			/**
 			 * list of tabs to remove from the drilldown window, separated by ",".
 			 * */
@@ -559,7 +587,7 @@
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
 			   useHandCursor="true" buttonMode="true" tabHeight="25" />
 
-	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{entryMetaData.pausePreview()}" creationPolicy="all"
+	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{onChangeView()}" creationPolicy="all"
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack" >
 		<!-- Metadata Tab -->
 		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
