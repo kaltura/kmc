@@ -88,7 +88,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 					to both the user and to all account’s users that are granted with user management permission. */ 
 					
 					var str:String = ResourceManager.getInstance().getString('admin', 'user_exists_other_partner', [user.email]);
-					Alert.show(str, ResourceManager.getInstance().getString('admin', 'error'), Alert.YES|Alert.NO, null, closeHandler);
+					Alert.show(str, ResourceManager.getInstance().getString('admin', 'add_user_title'), Alert.YES|Alert.NO, null, closeHandler);
 					break;
 				default:
 					// show the given error text:
