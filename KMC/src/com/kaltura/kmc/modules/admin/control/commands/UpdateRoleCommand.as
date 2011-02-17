@@ -6,6 +6,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 	import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 	import com.kaltura.vo.KalturaUserRole;
+	
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	/**
 	 * update a role after editing it. 
@@ -33,6 +36,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 				_model.rolesModel.drilldownMode = DrilldownMode.NONE;
 			}
 			_model.decreaseLoadCounter();
+			Alert.show(ResourceManager.getInstance().getString('admin', 'after_role_edit'));
 		}
 	}
 }
