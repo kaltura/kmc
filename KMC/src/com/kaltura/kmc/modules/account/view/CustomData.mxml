@@ -51,9 +51,12 @@
 			private function metadataLoaded(value:Boolean) : void {
 				if (value) {
 					_originalProfile = new KMCMetadataProfileVO();
-					_originalProfile.profile = _model.metadataProfile.profile;
-					_originalProfile.xsd = _model.metadataProfile.xsd.copy();
-					_originalProfile.metadataFieldVOArray = new ArrayCollection(_model.metadataProfile.metadataFieldVOArray.source.concat());
+					if (_model.metadataProfile.xsd && _model.metadataProfile.metadataFieldVOArray.length) {
+						//_originalProfile.profile = _model.metadataProfile.profile;
+						_originalProfile.xsd = _model.metadataProfile.xsd.copy();
+						_originalProfile.metadataFieldVOArray = new ArrayCollection(_model.metadataProfile.metadataFieldVOArray.source.concat());
+					}
+					
 				}
 					
 			}
@@ -146,8 +149,14 @@
 
 
 			public function undo():void {
-				_model.metadataProfile.xsd = _originalProfile.xsd.copy();
-				_model.metadataProfile.metadataFieldVOArray = new ArrayCollection(_originalProfile.metadataFieldVOArray.source.concat())
+				if (_originalProfile.xsd && _originalProfile.metadataFieldVOArray.length) {
+					_model.metadataProfile.xsd = _originalProfile.xsd.copy();
+					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection(_originalProfile.metadataFieldVOArray.source.concat())
+				}
+				else {
+					_model.metadataProfile.xsd = null;
+					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection();
+				}
 			}
 
 
