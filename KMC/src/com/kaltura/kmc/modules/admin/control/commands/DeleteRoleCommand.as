@@ -10,6 +10,9 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.vo.KalturaUserRoleListResponse;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.resources.IResourceManager;
+	import mx.resources.ResourceManager;
 
 	public class DeleteRoleCommand extends BaseCommand {
 		
@@ -32,6 +35,12 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override protected function result(data:Object):void {
 			//TODO + note the optional response of "still have users associated with role"
 			super.result(data);
+			
+			if (data.data[0].error && data.data[0].error.code == "ROLE_IS_BEING_USED") {
+				var rm:IResourceManager = ResourceManager.getInstance(); 
+				Alert.show(rm.getString('admin', 'role_in_use'), rm.getString('admin', 'error')) ;
+			}
+			
 			var response:KalturaUserRoleListResponse = data.data[1] as KalturaUserRoleListResponse;
 			_model.rolesModel.roles = new ArrayCollection(response.objects);
 			_model.decreaseLoadCounter();
