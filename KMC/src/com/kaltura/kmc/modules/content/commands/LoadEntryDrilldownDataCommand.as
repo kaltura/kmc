@@ -27,6 +27,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
+	import com.kaltura.types.KalturaMetadataProfileStatus;
 	import com.kaltura.vo.AccessControlProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
 	import com.kaltura.vo.KalturaAccessControlFilter;
@@ -111,7 +112,9 @@ package com.kaltura.kmc.modules.content.commands
 			mr.addAction(getAssetsAndFlavorsByEntryId);
 			
 //			entry metadata
-			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfile && _model.filterModel.metadataProfile.profile && entryId) {
+			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfile 
+				&& _model.filterModel.metadataProfile.profile && entryId
+				&& (_model.filterModel.metadataProfile.profile.status != KalturaMetadataProfileStatus.TRANSFORMING)) {
 				var filter1:KalturaMetadataFilter = new KalturaMetadataFilter();
 				filter1.metadataProfileIdEqual = _model.filterModel.metadataProfile.profile.id;
 				filter1.metadataProfileVersionEqual = _model.filterModel.metadataProfile.profile.version;

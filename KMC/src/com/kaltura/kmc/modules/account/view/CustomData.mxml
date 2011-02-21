@@ -52,9 +52,13 @@
 				if (value) {
 					_originalProfile = new KMCMetadataProfileVO();
 					if (_model.metadataProfile.xsd && _model.metadataProfile.metadataFieldVOArray.length) {
-						//_originalProfile.profile = _model.metadataProfile.profile;
 						_originalProfile.xsd = _model.metadataProfile.xsd.copy();
-						_originalProfile.metadataFieldVOArray = new ArrayCollection(_model.metadataProfile.metadataFieldVOArray.source.concat());
+						_originalProfile.metadataFieldVOArray = new ArrayCollection();
+						for each (var field:MetadataFieldVO in _model.metadataProfile.metadataFieldVOArray) {
+							var newField:MetadataFieldVO = field.Clone();
+							_originalProfile.metadataFieldVOArray.addItem(newField);
+						}
+					
 					}
 					
 				}
@@ -151,7 +155,11 @@
 			public function undo():void {
 				if (_originalProfile.xsd && _originalProfile.metadataFieldVOArray.length) {
 					_model.metadataProfile.xsd = _originalProfile.xsd.copy();
-					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection(_originalProfile.metadataFieldVOArray.source.concat())
+					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection();
+					for each (var field:MetadataFieldVO in _originalProfile.metadataFieldVOArray) {
+						var newField:MetadataFieldVO = field.Clone();
+						_model.metadataProfile.metadataFieldVOArray.addItem(newField);
+					}
 				}
 				else {
 					_model.metadataProfile.xsd = null;
