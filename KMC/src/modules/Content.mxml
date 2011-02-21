@@ -72,6 +72,12 @@
 
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
+			
+			/**
+			 * max number of categories an entry may be associated with, 
+			 * may be overriden with maxNumCategories flashvar
+			 * */
+			private static const DEFAULT_CATEGORIES_NUM : int = 32;
 
 
 			[Bindable]
@@ -165,6 +171,9 @@
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 
 				// flashvars and uiconf vars processing
+				if(!_flashvars.maxnumcategories) {
+					_flashvars.maxnumcategories = DEFAULT_CATEGORIES_NUM;
+				}
 				saveUiconfVars();
 				initModelContext(_flashvars);
 				initModel(_flashvars);
