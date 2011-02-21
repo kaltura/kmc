@@ -93,7 +93,9 @@ package com.kaltura.kmc.modules.admin.business {
 				groupCheckbox.selected = true;
 				//turn off all inner checkboxes
 				for each (cb in innerCheckBoxes) {
-					cb.selected = false;
+					if (cb.enabled) {
+						cb.selected = false;
+					}
 				}
 				setMainCBState();
 				_status = STATUS_PARTIAL;
@@ -103,7 +105,9 @@ package com.kaltura.kmc.modules.admin.business {
 				groupCheckbox.selected = false;
 				//turn off all inner checkboxes
 				for each (cb in innerCheckBoxes) {
-					cb.selected = false;
+					if (cb.enabled) {
+						cb.selected = false;
+					}
 				}
 				setMainCBState();
 				_status = STATUS_NONE;
@@ -113,7 +117,9 @@ package com.kaltura.kmc.modules.admin.business {
 				groupCheckbox.selected = true;
 				//turn on all inner checkboxes
 				for each (cb in innerCheckBoxes) {
-					cb.selected = true;
+					if (cb.enabled) {
+						cb.selected = true;
+					}
 				}
 				setMainCBState();
 				_status = STATUS_ALL;
