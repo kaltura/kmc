@@ -18,6 +18,7 @@
 			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			
 			//in case of editing an existing filter - this function will be called 
@@ -25,7 +26,14 @@
 			public var filterForSingleRule:KalturaMediaEntryFilterForPlaylist;
 
 			[Bindable]
-			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+			/**
+			 * data for filter
+			 * */
+			public var filterData:FilterModel;
+			
+			[Bindable]
+			public var distributionProfilesArr : Array;
+			
 
 			public static const REMOVE_ME:String = "removeMe";
 
@@ -72,7 +80,7 @@
 	</mx:Script>
 	<mx:HBox width="100%" height="100%">
 		<window:OneRule id="singleRule" width="100%" ruleToEdit="{filterForSingleRule}" height="100%"
-						filterData="{_model.filterModel}" />
+						filterData="{filterData}" distributionProfilesArray="{distributionProfilesArr}" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" buttonMode="true" click="save()"/>
