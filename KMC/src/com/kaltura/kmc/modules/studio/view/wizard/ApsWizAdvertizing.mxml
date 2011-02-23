@@ -12,7 +12,8 @@
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			import com.kaltura.kmc.modules.studio.vo.ads.AdSourceVo;
 			import com.kaltura.kmc.modules.studio.vo.ads.AdvertizingVo;
-
+			import com.kaltura.utils.KUtils;
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.ComboBox;
 			import mx.events.ListEvent;
@@ -45,6 +46,11 @@
 			 * */
 			private var _changed:Boolean = false;
 
+			[Bindable]
+			/**
+			 * @copy #editable
+			 * */
+			private var _editable:Boolean = true;
 
 			/**
 			 * update screen data
@@ -57,25 +63,6 @@
 					_initValuesOnce = true;
 				}
 			}
-
-
-//
-//			/**
-//			 * shows or hides timeline panel according to event data.
-//			 * @param e
-//			 * */
-//			private function enableTimeline(e:Event):void {
-//				e.stopPropagation();
-//				var yn:YesNoQuestion = e.target as YesNoQuestion;
-//				if (yn.selected) {
-//					timeline.selectedChild = pre;
-//					timelineNavigation.visible = true;
-//				}
-//				else {
-//					timeline.selectedChild = none;
-//					timelineNavigation.visible = false;
-//				}
-//			}
 
 
 			/**
@@ -93,7 +80,6 @@
 					atts = xmllst[i].attributes();
 					for (var j:uint = 0; j < atts.length(); j++) {
 						o[(atts[j] as XML).localName()] = atts[j];
-//						trace("attribute :", (atts[j] as XML).localName() , " with value:",(atts[j] as XML)  )
 					}
 					ar.push(o);
 				}
@@ -572,6 +558,36 @@
 				}
 				btn.selected = true;
 			}
+			
+			
+			/**
+			 * is panel contents editable
+			 * */
+			public function set editable(value:Boolean):void {
+				_editable = value;
+				ynAds.enabled = value;
+				// add source:
+				adsourceCB.enabled = value;
+				customswfView.enabled = value;
+//				tiSrcUrl.enabled = value;
+//				tiPlayerKv.enabled = value;
+				// player config
+				playerConfigBox.enabled = value;
+				//TODO not working!!
+				// timeline
+				timelineNavigation.enabled = value;
+				pre.enabled = value;
+				bumper.enabled = value;
+				over.enabled = value;
+				post.enabled = value;
+			}
+			
+			/**
+			 * @private
+			 * */
+			public function get editable():Boolean {
+				return _editable;
+			}
 		]]>
 	</mx:Script>
 	<mx:Validator id="bumperEntryValidator"/>
@@ -589,7 +605,7 @@
 				<mx:Label text="{resourceManager.getString('advertising', 'adsrc')}:" width="180"/>
 				<mx:ComboBox id="adsourceCB" change="adsourceCB_changeHandler(event)" width="400"/>
 			</mx:HBox>
-			<form:DisablableBox id="customswfView" direction="vertical" enabled="{adsourceCB.selectedItem.id != VAST}"
+			<form:DisablableBox id="customswfView" direction="vertical" enabled="{KUtils.logicalAnd(adsourceCB.selectedItem.id != VAST, _editable)}"
 								width="100%">
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('advertising', 'swfurl')}:" width="180"/>
@@ -597,21 +613,15 @@
 								  enabled="{adsourceCB.selectedItem.id == CUSTOM}" width="400"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
-					<mx:VBox>
-						<mx:Text width="180"
-								 htmlText="{resourceManager.getString('advertising', 'keyValue')}:&lt;br&gt;{resourceManager.getString('advertising', 'separate')}"/>
-						<!--<mx:Label text="{resourceManager.getString('advertising', 'keyValue')}:"
-							 width="180"/>
-							 <mx:Label text="{resourceManager.getString('advertising', 'separate')}"
-							 width="180"/>-->
-					</mx:VBox>
+					<mx:Text width="180"
+							 htmlText="{resourceManager.getString('advertising', 'keyValue')}:&lt;br&gt;{resourceManager.getString('advertising', 'separate')}"/>
 					<mx:TextArea id="tiPlayerKv" width="400" height="100%"/>
 				</mx:HBox>
 			</form:DisablableBox>
 			<mx:Spacer height="10"/>
 			<!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 			<!-- - - - - - - - - - - - - - - player config - - - - - - - - - - - - - - - -->
-			<form:DisablableBox direction="vertical" enabled="{(adsourceCB.selectedItem.id == VAST)}" width="100%">
+			<form:DisablableBox id="playerConfigBox" direction="vertical" enabled="{KUtils.logicalAnd((adsourceCB.selectedItem.id == VAST), _editable)}" width="100%">
 				<mx:Label text="{resourceManager.getString('advertising', 'playerConfig')}" styleName="pageTitle"/>
 				<form:YesNoQuestion id="ynNotice" labelWidth="180" yesLabel="Yes" noLabel="No"
 									text="{resourceManager.getString('advertising', 'notice')}:"/>
@@ -668,7 +678,8 @@
 
 				<mx:ViewStack id="timeline" creationPolicy="all" resizeToContent="true" width="100%" height="200">
 					<!-- - - - - - - - - - - - - - - - preroll - - - - - - - - - - - - - - - - -->
-					<mx:VBox id="pre" label="{resourceManager.getString('advertising', 'preroll')}:" width="100%">
+					<form:DisablableBox id="pre" direction="vertical" width="100%"
+										label="{resourceManager.getString('advertising', 'preroll')}:" >
 						<form:YesNoQuestion id="ynPreroll" labelWidth="180"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
@@ -686,9 +697,9 @@
 							<mx:ComboBox id="cbPreStart" labelField="label" enabled="{ynPreroll.selected}"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
 						</mx:HBox>
-					</mx:VBox>
+					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - bumper - - - - - - - - - - - - - - - - -->
-					<mx:VBox id="bumper" label="{resourceManager.getString('advertising', 'bumper')}:" width="100%">
+					<form:DisablableBox id="bumper" label="{resourceManager.getString('advertising', 'bumper')}:" direction="vertical" width="100%">
 						<form:YesNoQuestion id="ynBumper" labelWidth="180"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
@@ -703,9 +714,10 @@
 							<mx:Label text="{resourceManager.getString('advertising', 'clickurl')}:" width="180"/>
 							<mx:TextInput id="tiBumperUrl" width="400" enabled="{ynBumper.selected}"/>
 						</mx:HBox>
-					</mx:VBox>
+					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - overlay - - - - - - - - - - - - - - - - -->
-					<mx:VBox id="over" label="{resourceManager.getString('advertising', 'overlay')}:" width="100%">
+					<form:DisablableBox id="over" direction="vertical" width="100%"
+										label="{resourceManager.getString('advertising', 'overlay')}:">
 						<form:YesNoQuestion id="ynOverlay" labelWidth="180"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
@@ -736,9 +748,10 @@
 												  height="25" styleName="timeEntry"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
 						</mx:HBox>
-					</mx:VBox>
+					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - postroll - - - - - - - - - - - - - - - - -->
-					<mx:VBox id="post" label="{resourceManager.getString('advertising', 'postroll')}:" width="100%">
+					<form:DisablableBox id="post" direction="vertical" width="100%"
+										label="{resourceManager.getString('advertising', 'postroll')}:" >
 						<form:YesNoQuestion id="ynPostroll" labelWidth="180"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
@@ -756,7 +769,7 @@
 							<mx:ComboBox id="cbPostStart" labelField="label" enabled="{ynPostroll.selected}"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
 						</mx:HBox>
-					</mx:VBox>
+					</form:DisablableBox>
 				</mx:ViewStack>
 			</mx:VBox>
 		</mx:VBox>

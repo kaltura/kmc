@@ -13,6 +13,9 @@
 			private var _selected:Boolean;
 			
 			[Bindable]
+			protected var _enabled:Boolean = true;
+			
+			[Bindable]
 			/**
 			 * the width of the text part of the question.
 			 * */
@@ -51,18 +54,18 @@
 				 _selected = value;
 			} 
 			
-//			public function get enabled():Boolean {
-//				return _enabled;
-//			}
-//			
-//			public function set enabled(value:Boolean):void {
-//				_enabled = value;
-//			}
+			override public function get enabled():Boolean {
+				return _enabled;
+			}
+			
+			override public function set enabled(value:Boolean):void {
+				_enabled = value;
+			}
 				
 
 		]]>
 	</mx:Script>
 	<mx:Label text="{text}" width="{labelWidth}" />
-	<mx:RadioButton id="yes" label="{yesLabel}" selected="{_selected}" change="{ selected = yes.selected }"/>
-	<mx:RadioButton id="no" label="{noLabel}" selected="{!_selected}" change="{ selected = !no.selected }"/>
+	<mx:RadioButton id="yes" label="{yesLabel}" selected="{_selected}" change="{ selected = yes.selected }" enabled="{_enabled}"/>
+	<mx:RadioButton id="no" label="{noLabel}" selected="{!_selected}" change="{ selected = !no.selected }" enabled="{_enabled}"/>
 </mx:HBox>
