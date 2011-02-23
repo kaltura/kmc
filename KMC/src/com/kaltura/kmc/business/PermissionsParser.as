@@ -65,7 +65,7 @@ package com.kaltura.kmc.business {
 				delete uiXml.@id;
 				var attributes:XMLList = uiXml.attributes();
 				if (!attributes.length())
-					break;
+					continue;
 				var attributesObject:Object = new Object();
 				for (var i:uint = 0; i < attributes.length(); i++) {
 					attributesObject[(attributes[i] as XML).localName()] = (attributes[i] as XML).toString();
