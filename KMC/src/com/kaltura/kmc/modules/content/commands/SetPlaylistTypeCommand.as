@@ -2,9 +2,10 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
 
 	/**
-	 * set the _model.manualPlaylistWindowModel.onTheFlyPlaylistType 
+	 * set the _model.playlistModel.onTheFlyPlaylistType 
 	 * to manual, to rule based or to none
 	 */
 	public class SetPlaylistTypeCommand extends KalturaCommand implements ICommand
@@ -12,6 +13,9 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.playlistModel.onTheFlyPlaylistType = event.type;
+			if (event.type == SetPlaylistTypeEvent.NONE_PLAYLIST) {
+				_model.playlistModel.onTheFlyPlaylistEntries = null;
+			}
 		}
 	}
 }

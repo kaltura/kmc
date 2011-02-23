@@ -32,6 +32,7 @@ package com.kaltura.kmc.modules.content.control
 			//on the fly playlist event
 			addCommand( SetPlaylistTypeEvent.MANUAL_PLAYLIST , SetPlaylistTypeCommand );
 			addCommand( SetPlaylistTypeEvent.RULE_BASED_PLAYLIST , SetPlaylistTypeCommand );
+			addCommand( SetPlaylistTypeEvent.NONE_PLAYLIST , SetPlaylistTypeCommand );
 			//execute playlist to see current entries
 			addCommand( EntryEvent.GET_PLAYLIST , GetPlaylistCommand );
 			addCommand( RuleBasedTypeEvent.MULTY_RULES, SetPreviewTypeCommand);

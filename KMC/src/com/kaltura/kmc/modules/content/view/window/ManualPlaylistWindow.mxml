@@ -12,6 +12,7 @@
 				 styleName="TitleWindowType2" >
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -184,7 +185,10 @@
 
 			public function removeMe(event:CloseEvent = null):void {
 				if ((event == null || event.detail == Alert.YES)) {
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+					// reset on-the-fly flag 
+					var cgEvent:CairngormEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.NONE_PLAYLIST);
+					cgEvent.dispatch();
+					cgEvent = new WindowEvent(WindowEvent.CLOSE);
 					cgEvent.dispatch();
 				}
 			}

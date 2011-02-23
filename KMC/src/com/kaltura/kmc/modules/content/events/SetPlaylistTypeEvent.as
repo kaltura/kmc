@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.content.events
 	{
 		public static const MANUAL_PLAYLIST:String = "content_manualPlaylist";
 		public static const RULE_BASED_PLAYLIST:String = "content_ruleBasedPlaylist";
+		public static const NONE_PLAYLIST:String = "content_nonePlaylist";
 		
 		public function SetPlaylistTypeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
