@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingTop="0" paddingBottom="0">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+			/**
+			 * concat a string representing a short summary of the playlist filter
+			 * (used by advanced mode item renderer)
+			 * @param kmefpl	in advanced mode, item renderer's data
+			 */
+			private function renderSummary(data:Object):String {
+				var kmefpl:KalturaMediaEntryFilterForPlaylist = data as KalturaMediaEntryFilterForPlaylist;
+				var summary:String = "";
+				if (kmefpl.tagsNameMultiLikeOr)
+					summary += resourceManager.getString('cms', "tags") + kmefpl.tagsNameMultiLikeOr + "/n";
+				var mediaTypesString:String = "";
+				//handle types
+				if (kmefpl.mediaTypeIn.indexOf("1") > -1)
+					mediaTypesString += resourceManager.getString('cms', "video");
+				if (kmefpl.mediaTypeIn.indexOf("6") > -1)
+					mediaTypesString += resourceManager.getString('cms', "videoMix");
+				if (kmefpl.mediaTypeIn.indexOf("5") > -1)
+					mediaTypesString += resourceManager.getString('cms', "audio");
+				if (kmefpl.mediaTypeIn.indexOf("2") > -1)
+					mediaTypesString += resourceManager.getString('cms', "image");
+				//remove last , 
+				mediaTypesString.slice(0, mediaTypesString.length - 1);
+				//handle durations
+				summary += resourceManager.getString('cms', "mediaType") + mediaTypesString;
+				return summary;
+			}
+		]]>
+	</mx:Script>
+	<mx:Text height="100%" text="{renderSummary(data)}" selectable="false"/>
+</mx:HBox>

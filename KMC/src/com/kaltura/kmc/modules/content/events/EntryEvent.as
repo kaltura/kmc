@@ -17,6 +17,10 @@ package com.kaltura.kmc.modules.content.events
 		public static const GET_FLAVOR_ASSETS_FOR_PREVIEW : String = "content_getFlavorAssetsForPreview";
 		public static const ADD_PLAYLIST : String = "content_addPlaylist";
 		public static const GET_PLAYLIST_STATS_FROM_CONTENT : String = "content_getPlaylistStatsFromcontent";
+		
+		/**
+		 * dispatch this event to raise GetRuleBasedPlaylistCommand 
+		 */		
 		public static const GET_RULE_BASED_PLAYLIST : String = "content_getRuleBasedPlaylist";
 		public static const RESET_RULE_BASED_DATA : String = "content_resetRuleBasedData";
 		public static const PREVIEW : String = "content_preview";

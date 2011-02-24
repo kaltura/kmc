@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.content.playlist.PlaylistEntries;
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
+			/**
+			 * return the filter type property
+			 */
+			private function renderFilterType(data:Object):String {
+				var kmefpl:KalturaMediaEntryFilterForPlaylist = data as KalturaMediaEntryFilterForPlaylist;
+				var result:String = '';
+				
+				if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[0]) {
+					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostViewed');
+				}
+				else if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[1]) {
+					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_MostRecent');
+				}
+				else if (kmefpl.orderBy == PlaylistEntries.ORDER_BY_ARR[2]) {
+					result = resourceManager.getString('cms', 'ruleBasedPlaylistOrderBy_HighstRated');
+				}
+				return result;
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{renderFilterType(data)}" selectable="false"/>
+</mx:HBox>

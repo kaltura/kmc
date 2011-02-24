@@ -10,6 +10,10 @@
 				 showCloseButton="true" close="onClose()" help="{onHelp()}" 
 				 implements="com.kaltura.kmc.modules.content.business.IDataOwner"
 				 creationComplete="loadFilterData()" height="540" width="780" >
+	<mx:Metadata>
+		[Event (name="removeMe", type="flash.events.Event")]
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.business.PermissionManager;
@@ -21,29 +25,43 @@
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			
-			//in case of editing an existing filter - this function will be called 
-			[Bindable]
+
+			/**
+			 * defines the value of the type property of the "removeMe" event
+			 * */
+			public static const REMOVE_ME:String = "removeMe";
+			
+			/**
+			 * in case of editing an existing filter (rule), this is it.
+			 * */
 			public var filterForSingleRule:KalturaMediaEntryFilterForPlaylist;
 
 			[Bindable]
 			/**
-			 * data for filter
+			 * data (model) for filter
 			 * */
 			public var filterData:FilterModel;
 			
 			[Bindable]
+			/**
+			 * a list of distibution profiles for the filter
+			 * */
 			public var distributionProfilesArr : Array;
+
 			
-
-			public static const REMOVE_ME:String = "removeMe";
-
+			/**
+			 * dispatch a help event with relevant section data.
+			 * */
 			private function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section13'));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section152'));
 			}
 			
+			/**
+			 * triggered by command after filter data is loaded
+			 * */
 			public function onRequestedDataLoaded():void {
 				singleRule.filter.init();
-				onCreationComplete();
+				initWindow();
 			}
 			
 			private function loadFilterData():void {
@@ -51,11 +69,12 @@
 				fe.dispatch();
 			}
 			
-			private function onCreationComplete():void {
-				singleRule.advancedBtn.visible = false;
-				singleRule.advancedBtn.includeInLayout = false;
+			private function initWindow():void {
+				singleRule.showAdvanceModeBtn = false;
+				singleRule.ruleToEdit = filterForSingleRule;
 				//async call to the kaltura server to run the rule filter 
-				singleRule.runRule();
+				
+				singleRule.runRule(); 
 				PermissionManager.getInstance().applyAllAttributes(this, "addRuleWin");
 			}
 
@@ -79,8 +98,8 @@
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%">
-		<window:OneRule id="singleRule" width="100%" ruleToEdit="{filterForSingleRule}" height="100%"
-						filterData="{filterData}" distributionProfilesArray="{distributionProfilesArr}" />
+		<window:OneRule id="singleRule" width="100%" height="100%" filterData="{filterData}" 
+						distributionProfilesArray="{distributionProfilesArr}" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" buttonMode="true" click="save()"/>
