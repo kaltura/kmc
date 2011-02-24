@@ -323,12 +323,17 @@
 					JSGate.onTabChange();
 			}
 
-			
+			/**
+			 * First handle the save result and only then dispatch event saying the save has finished.
+			 * */
 			private function saveBeforeChangingModule(event:CloseEvent):void {
 				handleSaveAlert(event);
 				dispatchEvent(new Event(KmcModule.FINISHED_SAVING, true));
 			}
 			
+			/**
+			 * handles the save alert event - yes for "save", no for "undo"
+			 * */
 			private function handleSaveAlert(event:CloseEvent):void {
 				if (event.detail == Alert.YES)
 					(contentView.getChildAt(_oldSelectedTab) as IUndoable).saveChanges();
