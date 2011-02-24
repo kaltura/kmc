@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.vo.KalturaUiConf;
 	
 	import flash.display.LoaderInfo;
+	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.external.ExternalInterface;
 	import flash.system.Security;
@@ -29,6 +30,8 @@ package com.kaltura.kmc.modules {
 	 * */
 	public class KmcModule extends Module {
 		
+		
+		public static const FINISHED_SAVING:String = "finishedSaving";
 
 		// =====================================================
 		// events
@@ -52,6 +55,13 @@ package com.kaltura.kmc.modules {
 		 * @eventType com.kaltura.kmc.events.KmcHelpEvent
 		 */
 		[Event(name="help", type="com.kaltura.kmc.events.KmcHelpEvent")]
+
+		/**
+		 * Dispatched when module has finished saving necessary data and application can navigate
+		 * to a different module
+		 * @eventType flash.events.Event
+		 */
+		[Event(name="finishedSaving", type="flash.events.Event")]
 
 		// =====================================================
 		// members
@@ -249,7 +259,16 @@ package com.kaltura.kmc.modules {
 //			this.contextMenu = cm;
 
 		}
+				
 		
+		/**
+		 * Checks if current subTab of this module requires save. 
+		 * Dispatches the "finishedSaving" event after all saving is done. 
+		 * 
+		 */		
+		public function checkForSaveSubTab():void {
+			this.dispatchEvent(new Event(FINISHED_SAVING, true));
+		}
 		
 		/**
 		 * The version returned by this method will be the version of the module in KMC.

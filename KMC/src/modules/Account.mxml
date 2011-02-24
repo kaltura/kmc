@@ -90,6 +90,15 @@
 				}
 			}
 			
+			override public function checkForSaveSubTab():void {
+				if ((contentView.getChildAt(_oldSelectedTab) as IUndoable).isChanged()) {
+					Alert.show(resourceManager.getString('account', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveBeforeChangingModule);
+				}
+				else {
+					dispatchEvent(new Event(KmcModule.FINISHED_SAVING, true));
+				}
+			}
+			
 			private function switchToTab(tab:String):void {
 				var doc:Container = contentView.getChildByName(tab) as Container;
 				if (doc) {
@@ -314,17 +323,26 @@
 					JSGate.onTabChange();
 			}
 
+			
+			private function saveBeforeChangingModule(event:CloseEvent):void {
+				handleSaveAlert(event);
+				dispatchEvent(new Event(KmcModule.FINISHED_SAVING, true));
+			}
+			
+			private function handleSaveAlert(event:CloseEvent):void {
+				if (event.detail == Alert.YES)
+					(contentView.getChildAt(_oldSelectedTab) as IUndoable).saveChanges();
+				else
+					(contentView.getChildAt(_oldSelectedTab) as IUndoable).undo();
+				
+				(contentView.getChildAt(_newSelectedTab) as IUndoable).resetClonedData();
+			}
 
 			/**
 			 * response handler for "save changes" question when switching subtabs.
 			 * */
 			private function saveChangesQ(event:CloseEvent):void {
-				if (event.detail == Alert.YES)
-					(contentView.getChildAt(_oldSelectedTab) as IUndoable).saveChanges();
-				else
-					(contentView.getChildAt(_oldSelectedTab) as IUndoable).undo();
-
-				(contentView.getChildAt(_newSelectedTab) as IUndoable).resetClonedData();
+				handleSaveAlert(event);
 				_oldSelectedTab = _newSelectedTab;
 				//secTln.selectedIndex = _newSelectedTab;
 				contentView.selectedIndex = _newSelectedTab;

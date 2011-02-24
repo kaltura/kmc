@@ -100,7 +100,9 @@
 			 * Singletone PermissionManager
 			 **/
 			public var permissionManager:PermissionManager;
-
+			
+			private var _moduleLoader:ModuleLoader;
+			private var _currentObject:Object;
 
 			// ==============================================================================
 			// methods
@@ -456,6 +458,7 @@
 			 * */
 			protected function gotoPage(o:Object):void {
 				var mInfo:XML;
+				_currentObject = o;
 				if (o) {
 					mInfo = _uiconf.modules.module.(@id == o.moduleName)[0];
 				}
@@ -463,6 +466,7 @@
 					// take the first on the KMC uiconf
 					mInfo = _uiconf.modules.module[0];
 					o = {moduleName : mInfo.@id.toString(), subtab:mInfo.@subtab.toString()};
+					_currentObject = o;
 				}
 				if (!mInfo) {
 					var s:String = ResourceManager.getInstance().getString('kmc', 'module_unavailable',[o.moduleName]);
@@ -484,26 +488,47 @@
 				else {
 					// load KMC module
 					var url:String = getUrl(mInfo.@path.toString());
-					var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
-					if (!ml.parent) {
+					_moduleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
+					if (!_moduleLoader.parent) {
 						// this is the first time we load this module.
 						// add to the viewstack if needed
-						mainViewStack.addChild(ml);
+						mainViewStack.addChild(_moduleLoader);
 						// show preloader, set its source, bla bla
-						progressbar.source = ml;
+						progressbar.source = _moduleLoader;
 						progressbar.visible = true;
 					}
-					mainViewStack.selectedChild = ml;
-					_startModule = o;
-					if (ml.child && o.subtab) {
-						(ml.child as KmcModule).showSubtab(o.subtab, o.extra);
+					
+					if ((mainViewStack.selectedChild) && (mainViewStack.selectedChild as ModuleLoader).child)
+					{
+						this.addEventListener(KmcModule.FINISHED_SAVING, onModuleReadyToNavigate);	
+					 	((mainViewStack.selectedChild as ModuleLoader).child as KmcModule).checkForSaveSubTab();
 					}
-					JSGate.showFlash();
+					else {
+						changeSelectedTab();
+					}
+			
 				}
 
 				// tell html
 				JSGate.writeUrlHash(o.moduleName, o.subtab);
 				JSGate.setTab(o.moduleName);
+			}
+			
+			private function changeSelectedTab():void {
+				mainViewStack.selectedChild = _moduleLoader;
+				_startModule = _currentObject;
+				if (_moduleLoader.child && _currentObject.subtab) {
+					(_moduleLoader.child as KmcModule).showSubtab(_currentObject.subtab, _currentObject.extra);
+				}
+				JSGate.showFlash();
+				// tell html
+				JSGate.writeUrlHash(_currentObject.moduleName, _currentObject.subtab);
+				JSGate.setTab(_currentObject.moduleName);
+			}
+			
+			private function onModuleReadyToNavigate(event:Event): void {
+				this.removeEventListener(KmcModule.FINISHED_SAVING, onModuleReadyToNavigate);
+				changeSelectedTab();
 			}
 
 
