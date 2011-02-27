@@ -146,6 +146,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ChangeModelEvent.SET_SINGLE_ENTRY_EMBED_STATUS, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_PLAYLIST_EMBED_STATUS, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_CUSTOM_METADATA, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_UPDATE_CUSTOM_DATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
 		}
 	}

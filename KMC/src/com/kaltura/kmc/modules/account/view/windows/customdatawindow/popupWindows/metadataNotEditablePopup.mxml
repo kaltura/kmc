@@ -3,8 +3,13 @@
 This popup will tell the user he can't edit this profile and will supply a link to 
 kaltura support form
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" height="180" width="400" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-		 styleName="unavailableMetadataStyle">
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" height="195" width="400" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+				layout="vertical" styleName="TitleWindowType2"
+				backgroundColor="#f7f7f7"
+				showCloseButton="true"
+				close="{closeWindow(event)}"
+				creationComplete="{onCreationComplete()}"
+				title="{resourceManager.getString('account','metadataCustomProfileAlertTitle')}">
 	
 	<mx:Script>
 		<![CDATA[
@@ -13,6 +18,10 @@ kaltura support form
 			private var _pid:String;
 			[Bindable]
 			private var textParams:Array = new Array();
+			
+			private function onCreationComplete():void {
+				this.mx_internal::closeButton.buttonMode = true;
+			}
 			
 			public function get pid():String
 			{
@@ -35,14 +44,17 @@ kaltura support form
 			
 		]]>
 	</mx:Script>
-	<mx:HBox width="100%" horizontalAlign="center">
+<!--	<mx:HBox width="100%" horizontalAlign="center">
 		<mx:Label text="{resourceManager.getString('account','metadataCustomProfileAlertTitle')}" styleName="alertTitle"/>	
-	</mx:HBox>
+	</mx:HBox>-->
 	<mx:Text htmlText="{resourceManager.getString('account','metadataCustomProfileAlert',textParams)}" 
 			 styleName="unavailableMetadataText" width="100%" height="100"/>
-	<mx:HBox width="100%" horizontalAlign="center">
+	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('account','ok')}" click="closeWindow(event)" styleName="alertButtonsStyle"/>
-	</mx:HBox>
+	</mx:ControlBar>
+<!--	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="{resourceManager.getString('account','ok')}" click="closeWindow(event)" styleName="alertButtonsStyle"/>
+	</mx:HBox>-->
 	
 	
-</mx:VBox>
+</mx:TitleWindow>

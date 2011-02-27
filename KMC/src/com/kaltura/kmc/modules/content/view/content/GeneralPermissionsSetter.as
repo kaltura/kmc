@@ -94,6 +94,27 @@ package com.kaltura.kmc.modules.content.view.content
 			return true;
 			//TODO * return the real value from the model ?
 		}
+		/**
+		 * allow roles and permissions to decide if can update custom data data
+		 */
+		public function set enableUpdateCustomData(value:Boolean):void
+		{
+			// raise a command to change the model
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_UPDATE_CUSTOM_DATA, value);
+			cge.dispatch();
+		}
+		
+		
+		/**
+		 * @private
+		 * permission manager needs the getter to get the parameter type,
+		 * NOTE: the value is never changed!!
+		 * */
+		public function get enableUpdateCustomData():Boolean
+		{
+			return true;
+			//TODO * return the real value from the model ?
+		}
 		
 		public function set showSinglePlayerEmbedCode (value:Boolean) : void
 		{

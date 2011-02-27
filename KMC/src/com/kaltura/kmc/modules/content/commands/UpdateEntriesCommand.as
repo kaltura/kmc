@@ -82,7 +82,8 @@ package com.kaltura.kmc.modules.content.commands {
 					}
 					
 					var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
-					if (!(e.entries[i] is KalturaPlaylist) && _model.filterModel.metadataProfile &&
+					if (_model.entryDetailsModel.enableUpdateMetadata &&
+						!(e.entries[i] is KalturaPlaylist) && _model.filterModel.metadataProfile &&
 						_model.filterModel.metadataProfile.profile && metadataInfo) {
 						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, _model.filterModel.metadataProfile);
 						//metadata exists--> update request
