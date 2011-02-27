@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							width="594" height="514" help="{onHelp()}" showCloseButton="true" close="closeHandler(event)"
-							creationComplete="creationCompleteHandler(event)">
+							creationComplete="creationCompleteHandler(event)" enabled="{!isLoading}">
 	<mx:Metadata>
 		[Event(name="udd_save", type="flash.events.Event")] 
 		[Event(name="udd_close", type="flash.events.Event")] 
@@ -25,6 +25,8 @@
 			import mx.validators.ValidationResult;
 
 
+			
+			private var _isLoading:Boolean;
 			/**
 			 * value of the type property for the <code>udd_save</code> event
 			 * */
@@ -85,6 +87,17 @@
 			 * this flag is only relevant when creating new users.
 			 * */
 			protected var _isAutoPuserId:Boolean;
+
+			[Bindable]
+			public function get isLoading():Boolean
+			{
+				return _isLoading;
+			}
+
+			public function set isLoading(value:Boolean):void
+			{
+				_isLoading = value;
+			}
 
 			/**
 			 * pass initial data.

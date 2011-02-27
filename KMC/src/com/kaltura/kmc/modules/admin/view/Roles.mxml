@@ -34,6 +34,8 @@
 			
 			[Bindable]
 			public var model:RolesModel;
+			[Bindable]
+			public var isLoading:Boolean;
 
 			/**
 			 * a popup window with role details
@@ -183,6 +185,7 @@
 			 * */
 			protected function drillToSelectedRole():RoleDrilldown {
 				var rd:RoleDrilldown = new RoleDrilldown();
+				BindingUtils.bindProperty(rd, "isLoading", this, "isLoading");
 				rd.init(model.selectedRole, model.drilldownMode, model.partnerPermissionsUiconf, model.partnerPermissions, model.roles);
 				rd.addEventListener(RoleDrilldown.SAVE, saveRoleData);
 				rd.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);

@@ -37,6 +37,8 @@
 
 			[Bindable]
 			public var userInfo:UserVO;
+
+			private var _isLoading:Boolean;
 			
 			[Bindable]
 			/**
@@ -70,6 +72,18 @@
 			 * used to tell if data should be reloaded when closing user drilldown.
 			 * */
 			protected var _needToRefreshData:Boolean;
+
+			[Bindable]
+			public function get isLoading():Boolean
+			{
+				return _isLoading;
+			}
+
+			public function set isLoading(value:Boolean):void
+			{
+				_isLoading = value;
+			}
+
 			/**
 			 * refresh subtab data
 			 * */
@@ -343,6 +357,7 @@
 			protected function drillToSelectedUser():UserDrilldown {
 				dispatchEvent(new GeneralEvent("enableHeader", false));
 				var ud:UserDrilldown = new UserDrilldown();
+				BindingUtils.bindProperty(ud, "isLoading", this, "isLoading");
 				var allowSetRole:Boolean = model.selectedUser.id != model.adminUserId;
 				allowSetRole &&= model.selectedUser.id != model.currentUserInfo.user.id;
 				ud.init(rolesModel.roles, model.selectedUser, model.drilldownMode, allowSetRole);
