@@ -240,7 +240,8 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}"/>
 					<mx:ComboBox id="appendEntry"
-								 change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}">
+								 change="{partnerData.allowQuickEdit = appendEntry.selectedIndex == 0 ? true : false}"
+								 enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
@@ -269,7 +270,7 @@
 					 </mx:HBox> -->
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appearInUploader')}"/>
-					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )">
+					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )" enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'kalturaNetwork')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'siteSearch')}</mx:String>
@@ -280,7 +281,8 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'returnListOfUserClips')}"/>
 					<mx:ComboBox id="returnListOfUserClips"
-								 change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}">
+								 change="{partnerData.mergeEntryLists = returnListOfUserClips.selectedIndex == 0 ? true : false}"
+								 enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'true')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'false')}</mx:String>
@@ -291,18 +293,19 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userPageUrlFormat')}"/>
 					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}"
-								  change="{partnerData.userLandingPage = userLandingPage.text}"/>
+								  change="{partnerData.userLandingPage = userLandingPage.text}" enabled="{advCont.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'mediaPageUrlFormat')}"/>
 					<mx:TextInput id="landingPage" text="{partnerData.landingPage}"
-								  change="{partnerData.landingPage = landingPage.text}"/>
+								  change="{partnerData.landingPage = landingPage.text}" enabled="{advCont.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userUploadLimit')}"/>
 					<mx:NumericStepper id="maxUploadSize" minimum="0" maximum="10000"
 									   value="{partnerData.maxUploadSize}"
-									   change="{partnerData.maxUploadSize = maxUploadSize.value}"/>
+									   change="{partnerData.maxUploadSize = maxUploadSize.value}"
+									   enabled="{advCont.enabled}"/>
 					<mx:Label text="{resourceManager.getString('account', 'mb')}"/>
 				</mx:HBox>
 			</mx:VBox>
@@ -313,22 +316,22 @@
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="pageTitle"/>
 					<mx:Spacer width="100%"/>
-					<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
+					<mx:Button styleName="help" buttonMode="true" click="{help()}" enabled="{notifications.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}"/>
 					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}"
-									groupName="getNoti" change="onNotificationsConfigChange( event )"/>
+									groupName="getNoti" change="onNotificationsConfigChange( event )" enabled="{notifications.enabled}"/>
 					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}"
-									groupName="getNoti" change="onNotificationsConfigChange( event )"/>
+									groupName="getNoti" change="onNotificationsConfigChange( event )" enabled="{notifications.enabled}"/>
 				</mx:HBox>
 
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'notificationUrl')}:"/>
 					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
-								  change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected}"/>
+								  change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}"/>
 					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" click="{verifyHttp()}"
-							   enabled="{yesGetNoti.selected}" buttonMode="true"/>
+							   enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}" buttonMode="true"/>
 				</mx:HBox>
 			</mx:VBox>
 			<mx:VBox id="notificationsTable" width="100%" height="100%" maxHeight="{advCont.height}"
@@ -344,7 +347,7 @@
 										   dataTipField="availableInClient">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:CheckBox enabled="{data.clientEnabled}"
+									<mx:CheckBox enabled="{data.clientEnabled &amp;&amp; outerDocument.notifications.enabled}"
 												 selected="{outerDocument.determineSelected(data)}"
 												 click="{data.availableInClient = this.selected}"/>
 								</mx:Component>
@@ -356,7 +359,7 @@
 										   dataTipField="availableInServer">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:CheckBox click="{data.availableInServer = this.selected}"/>
+									<mx:CheckBox click="{data.availableInServer = this.selected}" enabled="{outerDocument.notifications.enabled}"/>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
