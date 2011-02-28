@@ -12,7 +12,11 @@
 			private var day : Number = 1000*60*60*24;
 			
 			/**
-			 * override the dataProvider to create the graph points from the rough 
+			 * override the dataProvider to create the graph points from the rough
+			 * @internal 
+			 * we don't get any data for days where the value is 0, so we 
+			 * first create all needed points with y=0, then go through the data 
+			 * we received and replace y values where we have matching x values (dates). 
 			 */
 			override public function set dataProvider(value:Object):void
 			{
@@ -33,9 +37,11 @@
 						newArrCol.addItem( obj );
 					}
 				}
+				
 					
 				if( value && value is ArrayCollection )
 				{
+					newArrCol = fixTimeOffsets(newArrCol, value as ArrayCollection);
 					var arrCol : ArrayCollection = value as ArrayCollection;
 					for(var i:int=0; i<arrCol.length; i++)
 					{
@@ -67,6 +73,32 @@
 				}
 				
 				super.dataProvider = newArrCol;
+			}
+			
+			/**
+			 * there is an offset between the x values of the server data and 
+			 * the x value of the mockup data (where the y value is 0).
+			 * caculate offset and fix values on the mock data.
+			 * @return 	the fixed mockdata array
+			 * */
+			private function fixTimeOffsets(mockData:ArrayCollection, serverData:ArrayCollection):ArrayCollection {
+				var realDate:Date = new Date(serverData[0].x);
+				var mockDate:Date;
+				var offset:int;
+				var k:int;
+				// find the what's offset
+				for (k = 0; k < mockData.length; k++) {
+					mockDate = new Date(mockData[k].x);
+					if (realDate.date == mockDate.date && realDate.fullYear == mockDate.fullYear && realDate.month == mockDate.month) {
+						offset = mockData[k].x - serverData[0].x;
+						break;
+					}
+				}
+				// fix all mock data
+				for (k = 0; k < mockData.length; k++) {
+					mockData[k].x -= offset;
+				}
+				return mockData;
 			}
  
             private function onDataTip( hitData:HitData ) : String
