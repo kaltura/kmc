@@ -19,6 +19,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.CustomData;
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
@@ -359,6 +360,26 @@
 				if (_paypalWin)
 					_paypalWin.enabled = !isIt;
 			}
+			
+			protected function onHelp():void {
+				var anchor:String;
+				if (contentView.selectedChild==overview)
+					anchor='section21';
+				else if (contentView.selectedChild==integration)
+					anchor='section22';
+				else if (contentView.selectedChild==accessControl)
+					anchor='section23';
+				else if (contentView.selectedChild==transcoding)
+					anchor='section24';
+				else if (contentView.selectedChild==metadata)
+					anchor='section21';
+				else if (contentView.selectedChild==user)
+					anchor='section26';
+				else if (contentView.selectedChild==upgrade)
+					anchor='section21';
+				
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+			}
 		]]>
 	</mx:Script>
 
@@ -372,6 +393,8 @@
 			<mx:TabBar id="secTln" styleName="tln" itemClick="onTabChange(event)" buttonMode="true"
 					   dataProvider="contentView" visible="false">
 			</mx:TabBar>
+			<mx:Spacer width="100%"/>
+			<mx:Button styleName="help" buttonMode="true" click="{onHelp()}"/>
 		</mx:HBox>
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"

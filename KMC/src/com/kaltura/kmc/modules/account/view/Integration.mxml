@@ -174,12 +174,6 @@
 					Alert.show(resourceManager.getString('account', 'httpverify'))
 			}
 
-
-			private function help():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section22'));
-			}
-
-
 			/**
 			 * helper function to decide if a checkbox on the client list should
 			 * be checked or not. checkboxes which are disabled can not be checked -
@@ -221,14 +215,30 @@
 			<mx:VBox id="details" width="100%" height="100%" horizontalAlign="left" styleName="blueBox"
 					 disabledOverlayAlpha="0">
 				<mx:Label text="{resourceManager.getString('account', 'partnerInfo')}" styleName="pageTitle"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'partnerIdB')} {partnerData.pId}"
-						  selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'subPartnerIdB')} {partnerData.subPId}"
-						  selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'adminSeceretB')} {partnerData.adminSecret}"
-						  selectable="true"/>
-				<mx:Label htmlText="{resourceManager.getString('account', 'userSeceretB')} {partnerData.secret}"
-						  selectable="true"/>
+				<mx:HBox>
+					<mx:Label htmlText="{resourceManager.getString('account', 'partnerIdB')}"
+							  selectable="true" width="{_lblWidth}" />
+					<mx:Label text="{partnerData.pId}"/>
+				</mx:HBox>
+
+				<mx:HBox>
+					<mx:Label htmlText="{resourceManager.getString('account', 'subPartnerIdB')}"
+							  selectable="true" width="{_lblWidth}" />
+					<mx:Label text="{partnerData.subPId}"/>
+				</mx:HBox>
+			
+				<mx:HBox>
+					<mx:Label htmlText="{resourceManager.getString('account', 'adminSeceretB')}"
+							  selectable="true" width="{_lblWidth}" />
+					<mx:Label text="{partnerData.adminSecret}"/>
+				</mx:HBox>
+				
+				<mx:HBox>
+					<mx:Label htmlText="{resourceManager.getString('account', 'userSeceretB')}"
+							  selectable="true" width="{_lblWidth}" />
+					<mx:Label text="{partnerData.secret}"/>
+				</mx:HBox>
+				
 				<mx:HBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
 					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}"
 								   click="toggoleAdvanced()" styleName="openCloseBtnOpen"/>
@@ -315,11 +325,9 @@
 					 styleName="blueBox" disabledOverlayAlpha="0">
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="pageTitle"/>
-					<mx:Spacer width="100%"/>
-					<mx:Button styleName="help" buttonMode="true" click="{help()}" enabled="{notifications.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}"/>
+					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}" width="224"/>
 					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}"
 									groupName="getNoti" change="onNotificationsConfigChange( event )" enabled="{notifications.enabled}"/>
 					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}"
@@ -327,7 +335,7 @@
 				</mx:HBox>
 
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'notificationUrl')}:"/>
+					<mx:Label width="224" text="{resourceManager.getString('account', 'notificationUrl')}:"/>
 					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
 								  change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}"/>
 					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" click="{verifyHttp()}"

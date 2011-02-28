@@ -2,18 +2,20 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
 	<mx:Script>
 		<![CDATA[
-			import mx.events.CollectionEvent;
-			import mx.collections.ArrayCollection;
-			import mx.managers.PopUpManager;
-			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
-			import flash.utils.setTimeout;
-			import mx.events.CalendarLayoutChangeEvent;
-			import mx.controls.Alert;
+			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.events.CollectionEvent;
 			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
 			public static const APPLY:String = "apply";
@@ -25,6 +27,8 @@
 			private var _filterVo:FilterVo;
 
 
+			[Bindable]
+			public var isLoading:Boolean;
 			/**
 			 *
 			 * @param filterVo is the current FilterVO that will be applied on the data
@@ -331,55 +335,55 @@
 	<mx:HBox width="100%" verticalAlign="middle">
 		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
 		<mx:ComboBox id="dateCb" dataProvider="{_dateRange}" change="changeDateByRange(event)"
-					 styleName="analyticsCombo"/>
+					 styleName="analyticsCombo" enabled="{!isLoading}"/>
 		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
 		<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
-					  change="fromDateChanged( event )"/>
+					  change="fromDateChanged( event )" enabled="{!isLoading}"/>
 		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
-					  change="toDateChanged( event )"/>
+					  change="toDateChanged( event )" enabled="{!isLoading}"/>
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
-				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>
+				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" enabled="{!isLoading}"/>
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','categoriesTitle')}"/>
 		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('analytics','categoriesAll')}"
-					   click="onAllCategoriesSelection(event)"/>
+					   click="onAllCategoriesSelection(event)" enabled="{!isLoading}"/>
 		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
-					   click="onCategoriesTreeOpen(event)"/>
+					   click="onCategoriesTreeOpen(event)" enabled="{!isLoading}"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{dateOnlyFlag}" visible="{dateOnlyFlag}">
 		<mx:LinkButton id="basicDetails" visible="{showDrillDownNav}"
 					   label="{resourceManager.getString('analytics','basicDetails')}"
-					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true"/>
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)" toggle="true" enabled="{!isLoading}"/>
 		<mx:LinkButton id="dropoff" visible="{showDrillDownNav}"
 					   label="{resourceManager.getString('analytics','dropoff')}"
-					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true"/>
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true" enabled="{!isLoading}"/>
 		<mx:LinkButton id="interactions" visible="{showDrillDownNav}"
 					   label="{resourceManager.getString('analytics','interactions')}"
-					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"/>
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true" enabled="{!isLoading}"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','searchFilter')}"/>
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
 					  change="{_filterVo.keywords = searchTerm.text}"
-					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}"/>
+					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}" enabled="{!isLoading}"/>
 		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
 		<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
 						label="{resourceManager.getString('analytics','searchInTags')}"
 						selected="{_filterVo.searchInTags}"
 						change="{_filterVo.searchInAdminTags = !(_filterVo.searchInTags = searchInTags.selected);}"
-						visible="false" includeInLayout="false"/>
+						visible="false" includeInLayout="false" enabled="{!isLoading}"/>
 		<!--  checkDisableTextField() -->
 		<mx:RadioButton id="searchInAdminTags" groupName="searchGroup" height="15"
 						label="{resourceManager.getString('analytics','searchInAdminTags')}"
 						selected="{_filterVo.searchInAdminTags}"
 						change="{_filterVo.searchInTags = !(_filterVo.searchInAdminTags = searchInAdminTags.selected);}"
-						visible="false" includeInLayout="false"/>
+						visible="false" includeInLayout="false" enabled="{!isLoading}"/>
 		<!--  checkDisableTextField() -->
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" buttonMode="true"
-				   click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"/>
+				   click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" enabled="{!isLoading}"/>
 	</mx:HBox>
 
 </mx:VBox>

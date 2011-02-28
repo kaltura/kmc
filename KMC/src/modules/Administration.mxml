@@ -12,6 +12,7 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
 			import com.kaltura.kmc.modules.admin.control.events.PartnerEvent;
@@ -150,6 +151,16 @@
 				var bEnable:Boolean = event.data;
 				enableHtmlTabs(bEnable);
 			}
+			
+			protected function onHelp():void {
+				var anchor:String;
+				if (contentView.selectedChild==users)
+					anchor='section41';
+				else
+					anchor='section42';
+				
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+			}
 
 		]]>
 	</mx:Script>
@@ -160,6 +171,8 @@
 	<mx:HBox width="100%" styleName="tabsContainer" enabled="{true}">
 		<mx:TabBar id="secTln" styleName="tln" itemClick="onItemClick(event)" buttonMode="true"
 				   dataProvider="contentView"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button styleName="help" buttonMode="true" click="{onHelp()}"/>
 	</mx:HBox>
 	<mx:ViewStack id="contentView" width="100%" height="100%" styleName="adminViewstack"
 				  horizontalScrollPolicy="off" verticalScrollPolicy="off">

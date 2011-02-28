@@ -382,29 +382,28 @@
 	<!-- report title -->
 	<mx:HBox width="100%">
 		<mx:Label id="reportTitle" text="{this.label}" styleName="pageTitle2"/>
-		<mx:Spacer width="100%"/>
-		<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
 	</mx:HBox>
 
 	<mx:Spacer height="5"/>
 
 	<!-- report filter -->
-	<mx:VBox width="100%" enabled="{!_isLoading}">
+	<mx:VBox width="100%" >
 		<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
 					 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
-					 showDrillDownNav="{showDrillDownNav}"/>
+					 showDrillDownNav="{showDrillDownNav}" isLoading="{_isLoading}"/>
 		<mx:Spacer height="5"/>
 		<mx:HRule width="100%"/>
 		<mx:Spacer height="5"/>
 	</mx:VBox>
 
 	<!-- graph dimension -->
-	<mx:HBox width="100%" enabled="{!_isLoading}">
+	<mx:HBox width="100%">
 		<view:DimComboBox id="dimCb" width="200" dataProvider="{dimCbDp}" visible="{showDimention}"
-						  includeInLayout="{showDimention}"/>
+						  includeInLayout="{showDimention}"  enabled="{!_isLoading}"/>
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('analytics','exportToExcel')}"
-					   click="{ var reportEvent : ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); reportEvent.dispatch();}"/>
+					   click="{ var reportEvent : ReportEvent = new ReportEvent(ReportEvent.EXPORT_TO_EXCEL , reportType); reportEvent.dispatch();}"
+					   enabled="{!_isLoading}"/>
 	</mx:HBox>
 
 	<!-- charts -->
