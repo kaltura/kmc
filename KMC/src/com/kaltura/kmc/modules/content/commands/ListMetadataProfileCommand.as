@@ -59,6 +59,7 @@ package com.kaltura.kmc.modules.content.commands
 		 */		
 		override public function result(data:Object):void
 		{
+			_model.decreaseLoadCounter();
 //			super.result(data);
 			if (data.error) {
 				var er:KalturaError = data.error as KalturaError;
@@ -114,7 +115,7 @@ package com.kaltura.kmc.modules.content.commands
 					FormBuilder.setViewXML(_model.entryDetailsModel.metadataDefaultUiconf);
 				} 
 			}
-			_model.decreaseLoadCounter();
+
 		}
 		
 		/**
