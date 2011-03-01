@@ -260,7 +260,7 @@
 	</mx:Script>
 	<mx:VBox id="maincontent" width="100%" styleName="blueBoxContainer">
 		<mx:VBox id="kcwBox" width="100%" styleName="blueBox">
-			<mx:Label text="{resourceManager.getString('cms', 'upload')}" styleName="blueBoxTitle" selectable="false"/>
+			<mx:Label text="{resourceManager.getString('cms', 'upload')}" styleName="expendableButton" selectable="false"/>
 			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}" selectable="false"/>
 			<mx:HBox>
 				<mx:ComboBox id="profilesCb"/>
@@ -270,7 +270,7 @@
 		</mx:VBox>
 
 		<mx:VBox id="bulkUploadBox" width="100%" styleName="blueBox">
-			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="blueBoxTitle"
+			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton"
 					  selectable="false"/>
 			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" selectable="false"/>
 			<mx:Spacer/>
@@ -280,7 +280,9 @@
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}" selectable="false"/>
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}" selectable="false"/>
 			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}" selectable="false"/>
+			<mx:Spacer height="5"/>
 			<mx:Button id="submitBtn" label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
+			<mx:Spacer height="5"/>
 			<mx:VBox styleName="vGapBox" width="100%">
 				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
 							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
@@ -293,8 +295,9 @@
 										   showDataTips="true" dataTipField="uploadedOn">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getDate(data)}" toolTip="{this.text}"
+									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" toolTip="{this.text}"
 											  selectable="false"/>
+										
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -302,15 +305,17 @@
 										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getEntriesNumber(data)}" toolTip="{this.text}"
-											  selectable="false"/>
+									<mx:HBox width="100%" horizontalAlign="center">
+										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" toolTip="{entriesLabel.text}"
+												  selectable="false"/>
+									</mx:HBox>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'status')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}"
+									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}"
 											  selectable="false"/>
 								</mx:Component>
 							</mx:itemRenderer>
