@@ -1,12 +1,12 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
-	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.commands {
 	public class ListFlavorAssetsByEntryIdCommand extends KalturaCommand implements ICommand, IResponder {
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
+			_model.entryDetailsModel.flavorsLoaded = false;
 			var entryId:String = (event as EntryEvent).entryVo.id;
 			var getAssetsAndFlavorsByEntryId:FlavorAssetGetFlavorAssetsWithParams = new FlavorAssetGetFlavorAssetsWithParams(entryId);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.COMPLETE, result);
@@ -34,6 +35,7 @@ package com.kaltura.kmc.modules.content.commands {
 		override public function result(event:Object):void {
 			super.result(event);
 			setDataInModel((event as KalturaEvent).data as Array);
+			_model.entryDetailsModel.flavorsLoaded = true;
 			_model.decreaseLoadCounter();
 		}
 
@@ -68,6 +70,8 @@ package com.kaltura.kmc.modules.content.commands {
 					afwps.hasOriginal = true;
 				}
 			}
+			
+		
 		}
 	}
 }

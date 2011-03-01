@@ -35,6 +35,7 @@
 			import com.kaltura.vo.KalturaDistributionThumbDimensions;
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -94,6 +95,8 @@
 				_description = _entryDetailsModel.selectedEntry.description;
 				_tags = _entryDetailsModel.selectedEntry.tags;
 				buildTitle();
+				
+				BindingUtils.bindSetter(refreshFlavors, _entryDetailsModel, "flavorsLoaded");
 			}
 
 			public function get entryDis():EntryDistributionWithProfile
@@ -262,6 +265,13 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "distributionDetailsWindow");
 				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
 				setSchedulerData();
+			}
+			
+			private function refreshFlavors(value:Boolean):void {
+				if (value && _entryDis)
+				{
+					buildFlavorsAssets();	
+				}			
 			}
 			
 			/**
@@ -458,26 +468,28 @@
 	</mx:Script>
 	
 	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','distributionDetails')}" styleName="drillDownTitleLabel"/>
+
+
 	<mx:HBox>
-		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('cms','statusLabel')}" width="75" styleName="drillDownLabel"/>
-			<mx:Label text="{resourceManager.getString('cms','remoteId')}" width="75" styleName="drillDownLabel"/>
-			<mx:Label text="{resourceManager.getString('cms','logs')}" width="75" visible="{_requestXMLAvailable || _responseXMLAvailable}" 
-					  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>			
-		</mx:VBox>
-		<mx:VBox>
-			<renderers:SubmissionStatusRenderer data="{_entryDis}"/>
-			<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}" styleName="drillDownSubLabel"/>
-			<mx:HBox>
-				<mx:LinkButton label="{resourceManager.getString('cms','requestXML')}" click="{getXML(true)}" 
-							   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"
-							   enabled="{enableXMLViews}"/>
-				<mx:LinkButton label="{resourceManager.getString('cms','responseXML')}" click="{getXML(false)}"
-							   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
-							   enabled="{enableXMLViews}"/>
-			</mx:HBox>		
-		</mx:VBox>
+		<mx:Label text="{resourceManager.getString('cms','statusLabel')}" width="75" styleName="drillDownLabel"/>
+		<renderers:SubmissionStatusRenderer data="{_entryDis}"/>
 	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','remoteId')}" width="75" styleName="drillDownLabel"/>
+		<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','logs')}" width="75" visible="{_requestXMLAvailable || _responseXMLAvailable}" 
+				  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>	
+		<mx:LinkButton label="{resourceManager.getString('cms','requestXML')}" click="{getXML(true)}" 
+					   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"
+					   enabled="{enableXMLViews}"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','responseXML')}" click="{getXML(false)}"
+					   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
+					   enabled="{enableXMLViews}"/>
+	</mx:HBox>
+
+
 	<mx:HBox>
 		<mx:VBox>
 			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}" width="75" styleName="drillDownLabel"/>

@@ -23,6 +23,10 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
 		
+		/**
+		 * Indicates whtether flavors were loaded
+		 * */
+		public var flavorsLoaded:Boolean = false;
 		
 		/**
 		 * total number of entries by current filter (the last ListEntriesCommand)
