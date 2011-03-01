@@ -47,6 +47,10 @@
 			 * will be sent when the window closes
 			 * */
 			public static const WINDOW_CLOSE:String = "windowClose";
+			/**
+			 * maximum length for this window title
+			 * */
+			public static const MAX_TITLE_LENGTH:int = 85;
 			[Bindable]
 			private var _entryDis:EntryDistributionWithProfile;
 			private var _entryDetailsModel:EntryDetailsModel;
@@ -315,9 +319,16 @@
 			 * build the string for the window title
 			 * */
 			private function buildTitle():void {
-				if (_destinationName && _entryDetailsModel)
-					this.title = resourceManager.getString('cms','editEntry') + " - " + _entryDetailsModel.selectedEntry.name + 
+				if (_destinationName && _entryDetailsModel) {
+					var title:String = resourceManager.getString('cms','editEntry') + " - " + _entryDetailsModel.selectedEntry.name + 
 						" - " + _destinationName + " " + resourceManager.getString('cms','distributionDetails');
+					if (title.length > MAX_TITLE_LENGTH) {
+						title = title.substr(0, MAX_TITLE_LENGTH) + "...";
+					}
+					
+					this.title = title;
+				}
+					
 			}
 			
 			private function closeWindow():void {
