@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*" 
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*"
 		 creationComplete="onCreationComplete()">
 	<mx:Metadata>
 		[Event(name="untrackableChange", type="flash.events.Event")] 
@@ -36,83 +36,84 @@
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
-			
+
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
 			public static const OPEN_PREVIEW:String = "openPreview";
-			
-			
+
+
 			/**
 			 * reference to kdp3Loader.
 			 * due to performance issue that we fixed, this is static.
 			 * */
-			private static var kdp3SwfLoader:SWFLoader;
+			private static var kdp3StaticSwfLoader:SWFLoader;
+
 			
-			private var _maxNumCategories : int;
 			private const LABEL_WIDTH:Number = 105;
 			private const TEXT_WIDTH:Number = 320;
-			
+
 			[Bindable]
 			public var selectedEntry:KalturaBaseEntry;
-			
+
 			[Bindable]
 			/**
 			 * indicates the current entry is a livestream entry
 			 * */
 			public var isLiveStream:Boolean;
-			
+
 			[Bindable]
 			public var context:Context;
-			
+
 			[Bindable]
 			public var entryDetailsModel:EntryDetailsModel;
-			
-			
-			
+
+			private var _maxNumCategories:int;
+
 			private var _fr:FileReference;
-			
+
 			private var _changedThumbnail:Boolean;
-			
+
 			/**
 			 * entry thumbnail for image entries
 			 * */
 			private var _entryImg:Image;
-			
+
 			/**
 			 * view stack of current entry details window
 			 * */
 			private var _viewStack:ViewStack;
 
-			public function get viewStack():ViewStack
-			{
+
+			public function get viewStack():ViewStack {
 				return _viewStack;
 			}
 
-			public function set viewStack(value:ViewStack):void
-			{
+
+			public function set viewStack(value:ViewStack):void {
 				_viewStack = value;
 			}
+
 
 			/**
 			 * remove any playing entry from the preview player
 			 * */
 			public function clearPlayer():void {
-				if (kdp3SwfLoader && kdp3SwfLoader.content) {
-					kdp3SwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
-					kdp3SwfLoader.content['sendNotification'](KDPEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
+				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
+					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
+					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
 			}
-			
-			
+
+
 			/**
 			 * see all data on the panel is legal and save data
-			 * @return an object with error code 
+			 * @return an object with error code
 			 * */
 			public function save():EntryDetailsValidationError {
 				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
 				// entry name
 				if (name_input.text == "") {
 					result.error = EntryDetailsValidationError.ENTRY_NAME_MISSING;
-					
+
 				}
 				else {
 					// categories section
@@ -131,16 +132,16 @@
 					else {
 						// set the categories on the entry
 						selectedEntry.categories = tempArr.join(',');
-						
+
 						if (isLiveStream)
 							(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 					}
 				}
 				return result;
 			}
-			
-			
-			
+
+
+
 			/**
 			 * Format the creation date
 			 */
@@ -151,11 +152,12 @@
 				dt.setTime(date * 1000);
 				return df.format(dt);
 			};
-			
-		/*	private function displayThumbnailOption(value:Boolean):void {
-				thumbnailOptionBox.visible = thumbnailOptionBox.includeInLayout = value;
-			}*/
-			
+
+
+			/*	private function displayThumbnailOption(value:Boolean):void {
+			   thumbnailOptionBox.visible = thumbnailOptionBox.includeInLayout = value;
+			 }*/
+
 			/**
 			 * this can't be done on creationComplete because selectedEntry is
 			 * only set at the parent's creationComplete, which comes later. so
@@ -164,29 +166,27 @@
 			public function init():void {
 				// bind to the REAL entry, not the copy, so the thumbnail  
 				// image will be updated when a new thumbnail is uploaded
-				BindingUtils.bindSetter(updateUndoEntryThumbnail, entryDetailsModel.selectedEntry,
-					"thumbnailUrl");
-				
-				// ===========================================================
-				
-				/*var showThumbnailUi:Boolean = false;
-				if (selectedEntry is KalturaMediaEntry &&
-					((selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE)) {
-					showThumbnailUi = true;
-				}
-				else {
-					showThumbnailUi = false;
-				}
-				if (selectedEntry is KalturaMixEntry) {
-					showThumbnailUi = true;
-				}
-				
-				displayThumbnailOption(showThumbnailUi);		*/		
-				
+				BindingUtils.bindSetter(updateUndoEntryThumbnail, entryDetailsModel.selectedEntry, "thumbnailUrl");
+
 				// ===========================================================
 
-				if ((selectedEntry is KalturaMediaEntry) &&
-					(selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
+				/*var showThumbnailUi:Boolean = false;
+				   if (selectedEntry is KalturaMediaEntry &&
+				   ((selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE)) {
+				   showThumbnailUi = true;
+				   }
+				   else {
+				   showThumbnailUi = false;
+				   }
+				   if (selectedEntry is KalturaMixEntry) {
+				   showThumbnailUi = true;
+				   }
+
+				 displayThumbnailOption(showThumbnailUi);		*/
+
+				// ===========================================================
+
+				if ((selectedEntry is KalturaMediaEntry) && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
 					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
 					addImageThumb();
 				}
@@ -195,30 +195,32 @@
 					loadKDP();
 				}
 			}
-			
-			protected function onCreationComplete() : void
-			{
-			//	editWithSimple.visible = true;
-			//	editWithAdvanced.visible = true;
+
+
+			protected function onCreationComplete():void {
 				name_input.setFocus();
 			}
 			
+
+
 			/**
-			 * Load KDP function
+			 * Load KDP.
+			 * if we already have a loaded KDP, we add it to the parent of the new (instance) kdploader
+			 * instead of loading a new kdp.
 			 */
 			private function loadKDP():void {
 				//if this is the second time we open the content
-				if (kdp3SwfLoader && kdp3SwfLoader.content) {
+				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
+					// parent of instance loader
 					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
-					
-					kdp3LoaderParent.addChildAt(kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
+					// add the static loader instead of the instance loader:
+					kdp3LoaderParent.addChildAt(kdp3StaticSwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
 					kdp3LoaderParent.removeChild(kdp3Loader);
-					//listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
-					//because this is static KDP (due to performance issue that we fixed)
-					kdp3SwfLoader.visible = false;
-					kdp3SwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
-					kdp3SwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA,
-						{entryId: entryDetailsModel.selectedEntry.id});
+					// listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
+					// because this is static KDP (due to performance issue)
+					kdp3StaticSwfLoader.visible = false;
+					kdp3StaticSwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
+					kdp3StaticSwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA, {entryId: entryDetailsModel.selectedEntry.id});
 				}
 				else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
@@ -227,61 +229,59 @@
 					kdp3Loader.load(newUrl);
 				}
 			}
-			
+
+
 			private function showKDP(event:Event = null):void {
-				kdp3SwfLoader.visible = true;
+				kdp3StaticSwfLoader.visible = true;
+//				kdp3StaticSwfLoader.content["focusManager"].deactivate();
 			}
+
+
 			private function onStandardClick():void {
 				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.SIMPLE);
 				deleayEditors();
 				pausePreview();
 			}
-			
-			
+
+
 			private function onAdvancedEditor():void {
 				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.ADVANCED);
 				deleayEditors();
 				pausePreview();
 			}
-			
-			/*private function loadNewThumbnail(value:ArrayCollection):void {
-				if (img && value.length > 0)
-					img.source = value[0];
-			}*/
-			
+
+
 			/**
 			 * save and load new image
 			 * */
 			private function updateUndoEntryThumbnail(thumbnailUrl:String):void {
 				if (selectedEntry) {
 					selectedEntry.thumbnailUrl = thumbnailUrl;
-					//img.source = selectedEntry.thumbnailUrl;
 				}
 			}
-			
-			
+
+
 			/**
 			 * pause the preview player
 			 * */
 			public function pausePreview():void {
-				if (kdp3SwfLoader && kdp3SwfLoader.content) {
-					kdp3SwfLoader.content['sendNotification'](KDPEventTypes.DO_PAUSE);
+				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
+					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_PAUSE);
 				}
 			}
-			
+
+
 			private function setFile(event:Event):void {
 				_changedThumbnail = true;
-				var cgEvent:UploadEntryEvent = new UploadEntryEvent(UploadEntryEvent.UPLOAD_THUMBNAIL,
-					selectedEntry.id, _fr);
+				var cgEvent:UploadEntryEvent = new UploadEntryEvent(UploadEntryEvent.UPLOAD_THUMBNAIL, selectedEntry.id, _fr);
 				cgEvent.dispatch();
-				
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL,
-					"contentChangeThumbnail", selectedEntry.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL,GoogleAnalyticsConsts.CONTENT);
+
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "contentChangeThumbnail", selectedEntry.id);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
 			}
-			
-			
-			
+
+
+
 			private function addImageThumb():void {
 				_entryImg = new Image();
 				_entryImg.width = 240;
@@ -292,19 +292,18 @@
 				_entryImg.source = selectedEntry.thumbnailUrl + "/width/240/height/180/bgcolor/F7F7F7/type/2";
 				kdpContainer.addChildAt(_entryImg, 0);
 			}
-			
-			
-			
+
+
+
 			/**
 			 * track thumbnail change
 			 * */
 			private function onThumbnailSaved():void {
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL , GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL,
-					"KDP3>DrillDown>Change Thumbnail");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "KDP3>DrillDown>Change Thumbnail");
 			}
-			
-		
+
+
 			/**
 			 * Check if this entry is a mix and if it was made in advanced editor
 			 * if it is
@@ -315,7 +314,8 @@
 					return false;
 				return true;
 			}
-			
+
+
 			/**
 			 * Mix action - create a mix from this entry or open editor
 			 */
@@ -338,26 +338,35 @@
 						JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, true);
 						break;
 				}
-				
+
 			}
-			
+
+
 			private function openPreview():void {
 				//stop the player from playing 
-				if (kdp3SwfLoader) {
-					kdp3SwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
+				if (kdp3StaticSwfLoader) {
+					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
 				}
 				dispatchEvent(new Event(EntryMetadata.OPEN_PREVIEW));
 			}
 
-			
-			
-			
+
+			private function uncaughtErrorHandler(event:Event):void {
+				event.preventDefault();
+				trace(event);
+			}
+
 			/**
 			 * Kdp loaded, initialize it.
 			 */
 			private function onKDP3Loaded(event:Event):void {
-				kdp3SwfLoader = kdp3Loader;
-				
+				kdp3Loader.tabChildren = false;
+				kdp3Loader.tabEnabled = false;
+				name_input.setFocus();
+				kdp3StaticSwfLoader = kdp3Loader;
+				if(kdp3Loader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
+					IEventDispatcher(kdp3Loader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
+
 				//set kdp params
 				var params:Object = new Object();
 				params.widgetId = "_" + context.kc.partnerId;
@@ -375,16 +384,17 @@
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
-				
+
 //				params.cdnUrl = context.rootUrl;
 				params.debugMode = context.debugMode;
-				
-				kdp3SwfLoader.content["flashvars"] = params;
+
+				kdp3StaticSwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
-				kdp3SwfLoader.content["init"]();
-				kdp3SwfLoader.addEventListener(KDPEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
+				kdp3StaticSwfLoader.content["init"]();
+				kdp3StaticSwfLoader.addEventListener(KDPEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
 			}
-			
+
+
 			/**
 			 * return a matching value - to edit current mix or create a new mix from this entry
 			 */
@@ -399,10 +409,11 @@
 						return resourceManager.getString('cms', 'createmixfromentry');
 						break;
 				}
-				
+
 				return "";
 			}
-			
+
+
 			private function getModeration(moderationCode:int):String {
 				switch (moderationCode) {
 					case KalturaEntryModerationStatus.APPROVED:  {
@@ -420,13 +431,14 @@
 					case KalturaEntryModerationStatus.PENDING_MODERATION:  {
 						return resourceManager.getString('cms', 'pendingModeration');
 					}
-						
+
 					default:  {
 						return ' -- ';
 					}
 				}
 			}
-			
+
+
 			/**
 			 * The function translate media type enum to the matching locale string
 			 * @param mediaType
@@ -456,17 +468,17 @@
 						return resourceManager.getString('cms', 'liveStream');
 						break;
 				}
-				
+
 				return "";
 			}
 
-			
-			
+
+
 			[Bindable]
 			private var _simpleEditorTimer:Boolean = true;
 			[Bindable]
 			private var _advancedEditorTimer:Boolean = true;
-			
+
 			[Bindable]
 			private var _showEditorLinks:Boolean = true;
 			[Bindable]
@@ -486,7 +498,7 @@
 			 * workaround for boolean and in mxml binding expressions
 			 * @param val1 boolean expression
 			 * @param val2 boolean expression
-			 * @return boolean value of val1 && val2 
+			 * @return boolean value of val1 && val2
 			 * */
 			protected function booleanAnd(val1:Boolean, val2:Boolean):Boolean {
 				return val1 && val2;
@@ -528,8 +540,7 @@
 			/**
 			 * show only "preview" and not "preview & embed"
 			 */
-			public function set showEmbed(value:Boolean):void
-			{
+			public function set showEmbed(value:Boolean):void {
 				if (value)
 					previewLabel = resourceManager.getString('cms', 'previewAndEmbed');
 				else {
@@ -537,32 +548,36 @@
 				}
 				_showEmbed = value;
 			}
-			public function get showEmbed():Boolean
-			{
+
+
+			public function get showEmbed():Boolean {
 				return _showEmbed;
 			}
+
+
 			/**
-			 * This function prevents the user from re-click the editors for 5 sec because it takse time to open 
-			 * the HTML editors and users re-click the editors. 
+			 * This function prevents the user from re-click the editors for 5 sec because it takse time to open
+			 * the HTML editors and users re-click the editors.
 			 */
-			protected function deleayEditors():void
-			{
-				var t:Timer = new Timer(5000,1);
-				t.addEventListener(TimerEvent.TIMER_COMPLETE,onDelayDone);
+			protected function deleayEditors():void {
+				var t:Timer = new Timer(5000, 1);
+				t.addEventListener(TimerEvent.TIMER_COMPLETE, onDelayDone);
 				_simpleEditorTimer = false;
 				_advancedEditorTimer = false;
 				t.start();
 			}
+
+
 			/**
 			 * 5 sec over - return the ability to the editor buttons
 			 */
-			protected function onDelayDone(event:TimerEvent):void
-			{
-				event.target.removeEventListener(TimerEvent.TIMER_COMPLETE,onDelayDone);
+			protected function onDelayDone(event:TimerEvent):void {
+				event.target.removeEventListener(TimerEvent.TIMER_COMPLETE, onDelayDone);
 				_simpleEditorTimer = true;
 				_advancedEditorTimer = true;
 			}
-			
+
+
 			/**
 			 * will redirect the user to "thumbnails" tab
 			 * */
@@ -572,46 +587,42 @@
 
 
 			/**
-			 * show the editor links box 
+			 * show the editor links box
 			 * */
-			public function get showEditorLinks():Boolean
-			{
+			public function get showEditorLinks():Boolean {
 				return _showEditorLinks;
 			}
 
-			public function set showEditorLinks(value:Boolean):void
-			{
+
+			public function set showEditorLinks(value:Boolean):void {
 				_showEditorLinks = value;
 			}
 
-			public function get maxNumCategories():int
-			{
+
+			public function get maxNumCategories():int {
 				return _maxNumCategories;
 			}
 
-			public function set maxNumCategories(value:int):void
-			{
+
+			public function set maxNumCategories(value:int):void {
 				_maxNumCategories = value;
 			}
-
-			
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
 						required="true" requiredFieldError="{resourceManager.getString('cms', 'entryNameIsMandatory')}"/>
 	<mx:VBox width="100%" verticalGap="3">
 		<!--<mx:Label text="{resourceManager.getString('cms','metadataDetails')}"
-				  styleName="drillDownTitleLabel"/>-->
+			 styleName="drillDownTitleLabel"/>-->
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('cms','name')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:TextInput id="name_input" width="{TEXT_WIDTH}" text="{selectedEntry.name}" 
+			<mx:Label text="{resourceManager.getString('cms','name')}:" width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
+			<mx:TextInput id="name_input" width="{TEXT_WIDTH}" text="{selectedEntry.name}"
 						  change="{selectedEntry.name = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms','description')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}" 
+			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}"
 						 change="{selectedEntry.description = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
@@ -624,36 +635,36 @@
 			<mx:Label text="{resourceManager.getString('cms','drillDownCategories')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
 			<utils:AutoComplete width="{TEXT_WIDTH}" text="{selectedEntry.categories}" id='categoriesTextInput'
-								dataProvider="{entryDetailsModel.categoriesFullNameList}"
-								styleName="autoComplete"/>
+								dataProvider="{entryDetailsModel.categoriesFullNameList}" styleName="autoComplete"/>
 		</mx:HBox>
 		<!--mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('cms','thumbnail')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Image id="img" maxWidth="100" maxHeight="75" source="{selectedEntry.thumbnailUrl}"
-					  maintainAspectRatio="true" horizontalAlign="center" verticalAlign="top"
-					  horizontalCenter="0" verticalCenter="0"/>
+			 <mx:Label text="{resourceManager.getString('cms','thumbnail')}:" width="{LABEL_WIDTH}"
+			 styleName="drillDownLabel"/>
+			 <mx:Image id="img" maxWidth="100" maxHeight="75" source="{selectedEntry.thumbnailUrl}"
+			 maintainAspectRatio="true" horizontalAlign="center" verticalAlign="top"
+			 horizontalCenter="0" verticalCenter="0"/>
 
-			<mx:Canvas>
-				<mx:VBox id="thumbnailOptionBox" height="{img.height}" verticalAlign="middle" paddingLeft="10">
-					<mx:LinkButton id="changeThumbButton" label="{resourceManager.getString('cms','changeThumbnail')}" 
-								  click="onChangeThumbnailClick(event)"/>
-				</mx:VBox>
-				<mx:Canvas id="captureThumbnailCanvas" backgroundColor="yellow" width="208" height="90"
-						   styleName="captureThumbnailCanvas" visible="false">
-					<mx:Text width="100%" height="100%" selectable="false" styleName="thumbnailMessageText"
-							 text="{resourceManager.getString('cms','captureThumbnailMessage')}"/>
-					<mx:Button id="thumbPopupCloseBtn" styleName="thumbMessageCloseBtn" right="6" top="6"
-							   width="16" height="16"
-							   click="{captureThumbnailCanvas.visible = false;captureThumbnailCanvas.includeInLayout=false}"/>
-				</mx:Canvas>
-			</mx:Canvas>
-		</mx:HBox-->
+			 <mx:Canvas>
+			 <mx:VBox id="thumbnailOptionBox" height="{img.height}" verticalAlign="middle" paddingLeft="10">
+			 <mx:LinkButton id="changeThumbButton" label="{resourceManager.getString('cms','changeThumbnail')}"
+			 click="onChangeThumbnailClick(event)"/>
+			 </mx:VBox>
+			 <mx:Canvas id="captureThumbnailCanvas" backgroundColor="yellow" width="208" height="90"
+			 styleName="captureThumbnailCanvas" visible="false">
+			 <mx:Text width="100%" height="100%" selectable="false" styleName="thumbnailMessageText"
+			 text="{resourceManager.getString('cms','captureThumbnailMessage')}"/>
+			 <mx:Button id="thumbPopupCloseBtn" styleName="thumbMessageCloseBtn" right="6" top="6"
+			 width="16" height="16"
+			 click="{captureThumbnailCanvas.visible = false;captureThumbnailCanvas.includeInLayout=false}"/>
+			 </mx:Canvas>
+			 </mx:Canvas>
+			 </mx:HBox-->
 		<mx:VBox styleName="lineGap">
 			<mx:HBox width="100%" visible="{isLiveStream}" includeInLayout="{isLiveStream}">
 				<mx:Label text="{resourceManager.getString('cms','offlineMessage')}" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
-				<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}" styleName="drillDownSubLabel" />
+				<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}"
+							 styleName="drillDownSubLabel"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms','entryId')}:" width="{LABEL_WIDTH}"
@@ -663,7 +674,8 @@
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms','type')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
-				<mx:Label text="{getMediaTypes(selectedEntry.mediaType,selectedEntry.type)}" styleName="drillDownSubLabel"/>
+				<mx:Label text="{getMediaTypes(selectedEntry.mediaType,selectedEntry.type)}"
+						  styleName="drillDownSubLabel"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms','moderation')}:" width="{LABEL_WIDTH}"
@@ -706,55 +718,52 @@
 		<mx:HBox width="100%" paddingTop="5">
 			<mx:VBox width="100%" horizontalAlign="center">
 				<mx:HBox width="100%" paddingLeft="0">
-					<mx:SWFLoader id="kdp3Loader" width="300" height="255" complete="{onKDP3Loaded(event)}"/>					
+					<mx:SWFLoader id="kdp3Loader" width="300" height="255" complete="{onKDP3Loaded(event)}"/>
 				</mx:HBox>
 				<mx:Button id="previewAndEmbed" label="{previewLabel}" buttonMode="{previewAndEmbed.enabled}"
 						   click="{openPreview()}" width="135" styleName="dataGridBtn"
 						   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
 				<!--<mx:HBox width="100%" horizontalGap="0" id="editorsBox"
-						 toolTip="{resourceManager.getString('cms','createmixfromentryTooltip')}"
-						 visible="{booleanAnd(!isLiveStream, _showEditorLinks)}" includeInLayout="{booleanAnd(!isLiveStream, _showEditorLinks)}">
-					<mx:Label paddingTop="3" styleName="drillDownLabel"
-							  text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
-					<mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"
-								   label="{resourceManager.getString('cms','simpleEditor')}"
-								   click="{onStandardClick()}" styleName="icoTextLink" visible="false"
-								   buttonMode="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"/>
-					<mx:Label text="/" textAlign="center" paddingLeft="0" paddingRight="0" width="8"/>
-					<mx:LinkButton id="editWithAdvanced" label="{resourceManager.getString('cms','advancedEditor')}"
-								   click="onAdvancedEditor()" styleName="icoTextLink" visible="false"
-								   enabled="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"
-								   buttonMode="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"/>
-				</mx:HBox>-->
-				
+					 toolTip="{resourceManager.getString('cms','createmixfromentryTooltip')}"
+					 visible="{booleanAnd(!isLiveStream, _showEditorLinks)}" includeInLayout="{booleanAnd(!isLiveStream, _showEditorLinks)}">
+					 <mx:Label paddingTop="3" styleName="drillDownLabel"
+					 text="{labelMix(selectedEntry.mediaType,selectedEntry.type)}"/>
+					 <mx:LinkButton id="editWithSimple" enabled="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"
+					 label="{resourceManager.getString('cms','simpleEditor')}"
+					 click="{onStandardClick()}" styleName="icoTextLink" visible="false"
+					 buttonMode="{booleanAnd(booleanAnd(booleanAnd(checkIfNotAdvanced(selectedEntry) , _simpleEditorEnable ) , selectedEntry.status == KalturaEntryStatus.READY),_simpleEditorTimer)}"/>
+					 <mx:Label text="/" textAlign="center" paddingLeft="0" paddingRight="0" width="8"/>
+					 <mx:LinkButton id="editWithAdvanced" label="{resourceManager.getString('cms','advancedEditor')}"
+					 click="onAdvancedEditor()" styleName="icoTextLink" visible="false"
+					 enabled="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"
+					 buttonMode="{booleanAnd(booleanAnd(selectedEntry.status == KalturaEntryStatus.READY , _advancedEditorEnable),_advancedEditorTimer)}"/>
+					 </mx:HBox>-->
+
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms','rating')}:" 
-							  styleName="drillDownLabel"/>
+					<mx:Label text="{resourceManager.getString('cms','rating')}:" styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.rank}" styleName="drillDownSubLabel"/>
-			
-					<mx:Label text="{resourceManager.getString('cms','votesCount')}:" 
-							  styleName="drillDownLabel"/>
+
+					<mx:Label text="{resourceManager.getString('cms','votesCount')}:" styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.votes}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
-				<mx:HBox width="100%">			
-					<mx:Label text="{resourceManager.getString('cms','plays')}:"
-							  styleName="drillDownLabel"/>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('cms','plays')}:" styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.plays}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
-		
-<!--				<mx:HBox width="100%" visible="false" includeInLayout="false">
-					<mx:Label text="{resourceManager.getString('cms','playerLoades')}:" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.views}"/>
-				</mx:HBox>-->
+
+				<!--				<mx:HBox width="100%" visible="false" includeInLayout="false">
+					 <mx:Label text="{resourceManager.getString('cms','playerLoades')}:" width="{LABEL_WIDTH}"
+					 styleName="drillDownLabel"/>
+					 <mx:Label text="{selectedEntry.views}"/>
+					 </mx:HBox>-->
 
 				<!--<mx:HBox width="100%">
-					<mx:Label paddingTop="3" text="{resourceManager.getString('cms','embed')}:"
-							  width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
-					<mx:Button id="previewAndEmbed" label="{previewLabel}"
-								   click="{openPreview()}" width="135" styleName="dataGridBtn"
-								   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
-				</mx:HBox>-->
+					 <mx:Label paddingTop="3" text="{resourceManager.getString('cms','embed')}:"
+					 width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
+					 <mx:Button id="previewAndEmbed" label="{previewLabel}"
+					 click="{openPreview()}" width="135" styleName="dataGridBtn"
+					 enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
+					 </mx:HBox>-->
 			</mx:VBox>
 		</mx:HBox>
 	</mx:VBox>
