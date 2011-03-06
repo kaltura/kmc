@@ -9,6 +9,8 @@ package com.kaltura.kmc.modules.content.vo
 		public var id:Number;
 		[Bindable]public var name:String;
 		public var category:KalturaCategory;
+		
+		[ArrayElementType("CategoryVO")]
 		public var children:ArrayCollection = new ArrayCollection();
 		
 		

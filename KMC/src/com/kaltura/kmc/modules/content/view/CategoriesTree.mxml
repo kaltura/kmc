@@ -16,12 +16,13 @@
 	 </mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.view.itemrenderers.CategoriesTreeItemRenderer;
 			import com.kaltura.kmc.modules.content.vo.CategoryVO;
-			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -94,10 +95,25 @@
 					}
 					else {
 						catNameArr.push(category.category.fullName);
+//						catNameArr.push(getCategoryChain(category));
 					}
 				}
 
 				return rootFound ? '' : catNameArr.join(',');
+			}
+			
+			
+			/**
+			 * retrieve a list of ids of nested categories.
+			 * */
+			private function getCategoryChain(cat:CategoryVO):String {
+				var res:String = '';
+				var children:ArrayCollection = cat.children;
+				for (var i:int = 0; i<children.length; i++) {
+					res += (children[i] as CategoryVO).category.id + ",";
+				}
+				res += cat.category.id;
+				return res;
 			}
 
 
