@@ -22,7 +22,8 @@ package com.kaltura.kmc.modules.admin.control.commands
 			var call:KalturaCall;
 			var role:KalturaUserRole = (event as RoleEvent).role; 
 			// pass result of first call to second call
-			mr.addRequestParam("2:userRoleId", "{1:result:id}");
+//			mr.addRequestParam("2:userRoleId", "{1:result:id}");
+			mr.mapMultiRequestParam(1, "id", 2, "userRoleId");
 			mr.addRequestParam("2:userRole:name", ResourceManager.getInstance().getString('admin', 'duplicate_name') + ' ' + role.name);
 			// duplicate the role
 			call = new UserRoleClone(role.id);
@@ -37,6 +38,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			// post
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
+			mr.queued = false;
 			_model.increaseLoadCounter();
 			_model.kc.post(mr);
 		}

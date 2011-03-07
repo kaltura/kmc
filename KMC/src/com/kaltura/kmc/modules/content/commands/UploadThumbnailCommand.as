@@ -20,6 +20,7 @@ package com.kaltura.kmc.modules.content.commands
 			var uploadImage:BaseEntryUpdateThumbnailImage = new BaseEntryUpdateThumbnailImage((event as UploadEntryEvent).entryId , (event as UploadEntryEvent).fileReferance);
             uploadImage.addEventListener(KalturaEvent.COMPLETE,result);
             uploadImage.addEventListener(KalturaEvent.FAILED,fault);
+            uploadImage.queued = false;
             _model.context.kc.post(uploadImage); 
 		}
 		

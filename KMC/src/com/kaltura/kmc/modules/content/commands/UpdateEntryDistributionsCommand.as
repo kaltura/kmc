@@ -51,7 +51,8 @@ package com.kaltura.kmc.modules.content.commands
 					requestsIndex++;
 					var submitEntry:EntryDistributionSubmitAdd = new EntryDistributionSubmitAdd(int.MIN_VALUE, true);
 					mr.addAction(submitEntry);
-					mr.addRequestParam(requestsIndex + ":id","{" + (requestsIndex-1) + ":result:id}");
+//					mr.addRequestParam(requestsIndex + ":id","{" + (requestsIndex-1) + ":result:id}");
+					mr.mapMultiRequestParam(requestsIndex-1, "id", requestsIndex, "id");
 				}
 				requestsIndex++;
 			}

@@ -165,13 +165,15 @@
 					//take the cloned object from request 1 and update its name (this is request 2 - UiConfUpdate); 
 					var updateUiConf:UiConfUpdate = new UiConfUpdate(int.MIN_VALUE, new KalturaUiConf());
 					//map the keys from req' 1 to req' 2 
-					mr.addRequestParam("2:id", "{1:result:id}");
+//					mr.addRequestParam("2:id", "{1:result:id}");
+					mr.mapMultiRequestParam(1, "id", 2, "id");
 					mr.addRequestParam("2:uiConf", "{1:result}");
 					mr.addRequestParam("2:uiConf:name", resourceManager.getString('aps', 'newPlayerPrefix') + uint(Math.random() * 1000));
 					mr.addAction(updateUiConf);
 					//complete the MultiRequest
 					mr.addEventListener(KalturaEvent.COMPLETE, duplicationComplete);
 					mr.addEventListener(KalturaEvent.FAILED, fault);
+					mr.queued = false;
 					Studio.kc.post(mr);
 				}
 			}

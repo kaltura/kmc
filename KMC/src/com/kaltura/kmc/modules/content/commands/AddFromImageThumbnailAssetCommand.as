@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.content.commands
 			var uploadFromImage:ThumbAssetAddFromImage = new ThumbAssetAddFromImage(uploadEvent.entryId, uploadEvent.thumbnailFileReference);
 			uploadFromImage.addEventListener(KalturaEvent.COMPLETE, result);
 			uploadFromImage.addEventListener(KalturaEvent.FAILED, fault);
+			uploadFromImage.queued = false;
 			_model.context.kc.post(uploadFromImage);
 		}
 		

@@ -91,10 +91,12 @@
 			 * */
 			protected var _localeCode:String;
 			
+			private var _kcTimer:Timer;
+			
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "4.0.10";
+			public var VERSION:String = "4.0.11";
 		
 			/**
 			 * Singletone PermissionManager
@@ -211,9 +213,13 @@
 				configuration.domain = KUtils.hostFromCode(objParam.host);
 				configuration.srvUrl = objParam.srvurl;
 				configuration.clientTag = "kmc";
+				configuration.ks = objParam.ks;
 
 				_modelLocator.kalturaClient = new KalturaClient(configuration);
-				_modelLocator.kalturaClient.ks = objParam.ks;
+				_modelLocator.kalturaClient.queueing = true;
+				_modelLocator.kalturaClient.addEventListener(KalturaClient.CALL_QUEUED, setTimer);
+				_modelLocator.kalturaClient.addEventListener(KalturaClient.QUEUE_FLUSHED, setTimer);
+				
 
 				// create a module loader:
 				_kmcModuleLoader = new KmcModuleLoader();
@@ -229,7 +235,7 @@
 				// get user id from service, if server decides to give it..
 				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
 				var userget:UserGet = new UserGet(userid);
-				mr.addRequestParam("4:userRoleId","{3:result:roleIds}");
+				mr.mapMultiRequestParam(3, "roleIds", 4, "userRoleId");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
 				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter);	
@@ -243,6 +249,36 @@
 				mr.addEventListener(KalturaEvent.COMPLETE, dataLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, dataLoadFailedHandler, false, 0, true);
 				_modelLocator.kalturaClient.post(mr);
+			}
+			
+			/**
+			 * create the client flushing timer, activate or deactivate it as needed.
+			 * */
+			private function setTimer(e:Event):void {
+				switch (e.type) {
+					case KalturaClient.CALL_QUEUED:
+						if (!_kcTimer) {
+							_kcTimer = new Timer(250);
+							_kcTimer.addEventListener(TimerEvent.TIMER, handleTimer, false, 0, true);
+						}
+						if (!_kcTimer.running) {
+							_kcTimer.start();
+						}
+						break;
+					case KalturaClient.QUEUE_FLUSHED:
+						if (_kcTimer) {
+							_kcTimer.stop();
+						}
+						break;
+				}
+			}
+			
+			
+			/**
+			 * flush client calls.
+			 * */
+			private function handleTimer(e:TimerEvent):void {
+				_modelLocator.kalturaClient.flush();
 			}
 
 
@@ -297,6 +333,10 @@
 				// [0] KMC uiconf:
 				if (isError(event.data[0].error)) return;
 				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
+				if (_uiconf.descendants().length() == 0) {
+					Alert.show("KMC UIConf is empty", "Error");
+					return;
+				}
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 

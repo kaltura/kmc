@@ -25,6 +25,7 @@ package com.kaltura.kmc.modules.content.commands
 				var kbu:BulkUploadAdd = new BulkUploadAdd(_model.bulkUploadModel.defaultConversionProfileId, fr);
 				kbu.addEventListener(KalturaEvent.COMPLETE, result);
 				kbu.addEventListener(KalturaEvent.FAILED, fault);
+				kbu.queued = false;
 				_model.context.kc.post(kbu);
 			}
 		}
