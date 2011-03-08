@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalScrollPolicy="off">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.AddCustomDataProfilePopup;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+			
+			private var _profile:KMCMetadataProfileVO;
+			[Bindable]
+			private var _text:String;
+			[Bindable]
+			private var _btnEnabled:Boolean = true;
+			
+			override public function set data(value:Object):void {
+				_profile = value as KMCMetadataProfileVO;
+				_text = _profile.profile.name;
+				if (_profile.profileDisabled ) {
+					_text = _text + '*';
+					parentDocument.displayCustomSchemaMsg = true;
+				}
+				_btnEnabled = !_profile.profileDisabled;
+			}
+			
+			private function onBtnClick():void {
+				parentDocument.setSelectedProfile(_profile);
+				var editProfileWindow:AddCustomDataProfilePopup = new AddCustomDataProfilePopup();
+				editProfileWindow.metadataProfile = _profile;
+				PopUpManager.addPopUp(editProfileWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(editProfileWindow);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:LinkButton id="linkBtn" textAlign="left" label="{_text}" enabled="{_btnEnabled}"
+			  toolTip="{linkBtn.label}" click="{onBtnClick()}"/>
+</mx:HBox>

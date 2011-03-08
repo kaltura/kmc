@@ -7,13 +7,31 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.CustomDataAddEditPopup;
 			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataNameRenderer;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			
+			private var _metadataProfile:KMCMetadataProfileVO;
 
+			//r&p: enable deletion of fields
+			[Bindable]
+			public var removeFieldsEnabled:Boolean = true;
+			
+
+			[Bindable]
+			public function get metadataProfile():KMCMetadataProfileVO
+			{
+				return _metadataProfile;
+			}
+
+			public function set metadataProfile(value:KMCMetadataProfileVO):void
+			{
+				_metadataProfile = value;
+			}
 
 			public function get hideColumns():String{
 				return '';
@@ -73,10 +91,10 @@
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsFullDescription')}"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataFullDescRenderer"
 						   paddingLeft="5"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsType')}"
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsType')}" width="90"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataTypeRenderer"
 						   paddingLeft="5"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsMaxValues')}"
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsMaxValues')}" width="80"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataMaxOccursRenderer"
 						   paddingLeft="5"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsAppearInSearch')}"

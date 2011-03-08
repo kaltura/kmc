@@ -3,31 +3,42 @@
 	<mx:LinkButton id="upBtn" click="moveItemUp(event)" styleName="moveUpButton" buttonMode="true"/>
 	<mx:VRule height="20"/>
 	<mx:LinkButton id="downBtn" click="moveItenDown(event)" styleName="moveDownButton" buttonMode="true"/>
+	<mx:VRule height="20" visible="{deleteBtn.visible}" includeInLayout="{deleteBtn.visible}"/>
+	<!--<  change to a different icon >-->
+	<mx:LinkButton id="deleteBtn" click="deleteItem(event)" styleName="moveDownButton" buttonMode="true"
+				   visible="{parentDocument.removeFieldsEnabled}" includeInLayout="{deleteBtn.visible}"/>
 	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
-			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			
 
-			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
+			private var _metadataProfile:KMCMetadataProfileVO;
+			private var _currentField:MetadataFieldVO
+			
+			override public function set data(value:Object):void {
+				_currentField = value as MetadataFieldVO;
+				_metadataProfile = parentDocument.metadataProfile;
+			}
 			
 			private function moveItemUp(event:Event):void {
-				var currentField:MetadataFieldVO = MetadataFieldVO(data);
 				var tempField:MetadataFieldVO;
 
-				if (!_model.metadataProfile) {
+				if (!_metadataProfile) {
 					return;
 				}
 				
-				var curIndex:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(currentField);
+				var curIndex:int = _metadataProfile.metadataFieldVOArray.getItemIndex(_currentField);
 				if (curIndex > 0) {
-					tempField = _model.metadataProfile.metadataFieldVOArray.getItemAt(curIndex - 1).Clone();
-					_model.metadataProfile.metadataFieldVOArray.removeItemAt(curIndex - 1);
-					_model.metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
+					tempField = _metadataProfile.metadataFieldVOArray.getItemAt(curIndex - 1).Clone();
+					_metadataProfile.metadataFieldVOArray.removeItemAt(curIndex - 1);
+					_metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
 				}
 				
 				var reorderEvent:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.REORDER);
@@ -35,23 +46,43 @@
 			}
 			
 			private function moveItenDown(event:Event):void {
-				var currentField:MetadataFieldVO = MetadataFieldVO(data);
 				var tempField:MetadataFieldVO;
 				
-				if (!_model.metadataProfile) {
+				if (!_metadataProfile) {
 					return;
 				}
 				
-				var curIndex:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(currentField);
-				if (curIndex < (_model.metadataProfile.metadataFieldVOArray.length-1)) {
-					tempField = _model.metadataProfile.metadataFieldVOArray.getItemAt(curIndex + 1).Clone();
-					_model.metadataProfile.metadataFieldVOArray.removeItemAt(curIndex + 1);
-					_model.metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
+				var curIndex:int = _metadataProfile.metadataFieldVOArray.getItemIndex(_currentField);
+				if (curIndex < (_metadataProfile.metadataFieldVOArray.length-1)) {
+					tempField = _metadataProfile.metadataFieldVOArray.getItemAt(curIndex + 1).Clone();
+					_metadataProfile.metadataFieldVOArray.removeItemAt(curIndex + 1);
+					_metadataProfile.metadataFieldVOArray.addItemAt(tempField, curIndex);					
 				}
 				
 				var reorderEvent:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.REORDER);
 				reorderEvent.dispatch();
 			}
+			
+			/**
+			 * On click on the "delete" field, the "are you sure" alert will pop up
+			 * @param event
+			 *
+			 */
+			private function deleteItem(event:Event):void {
+				Alert.show(resourceManager.getString('account', 'metadataFieldDeleteAlert') + _currentField.name + '?', resourceManager.getString('account', 'metadataFieldDeleteTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
+			}
+			
+			/**
+			 * This function handles the case of "yes" selection and deletes the selected fields
+			 * */
+			private function deleteResponseFunc(evt:CloseEvent):void {
+				if (evt.detail == Alert.YES) {
+					_metadataProfile.metadataFieldVOArray.removeItemAt(_metadataProfile.metadataFieldVOArray.getItemIndex(_currentField));
+					var deleteMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.DELETE, _currentField);
+					deleteMetadataField.dispatch();
+				}
+			}
+
 		]]>
 	</mx:Script>
 </mx:HBox>

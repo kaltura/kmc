@@ -1,23 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
-		 xmlns:dataGrid="com.kaltura.kmc.view.dataGrid.*"
-		 xmlns:cdw="com.kaltura.kmc.modules.account.view.windows.customdatawindow.*"
-		 creationComplete="onInit(event)">
-
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
+		 xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="creationCompleteHandler(event)">
+	
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
-			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.CustomDataAddEditPopup;
-			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.metadataNotEditablePopup;
+			import com.kaltura.kmc.modules.account.view.windows.customdatawindow.popupWindows.AddCustomDataProfilePopup;
 			import com.kaltura.vo.KMCMetadataProfileVO;
-			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -26,196 +19,175 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-
+			
 			[Bindable]
-			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
-			private var _originalProfile:KMCMetadataProfileVO;
-
-
-			/**
-			 * This function will be called on every "show" event of this class
-			 * it will trigger an event to request the server the most updated metadataProfile to display
-			 * */
+			public var profilesArray:ArrayCollection;
+			[Bindable]
+			public var profilesTotalCount:int;
+			[Bindable]
+			public var displayCustomSchemaMsg:Boolean = false; 
+			
 			public function init():void {
 				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 				getMetadataProfile.dispatch();
 			}
 			
-			private function onInit(event:FlexEvent):void
+			private function creationCompleteHandler(event:FlexEvent):void
 			{
-				BindingUtils.bindSetter( disableTab , _model , "customDataDisabled" );
-				BindingUtils.bindSetter( metadataLoaded , _model , "metadataProfileLoaded" );
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				//BindingUtils.bindSetter(onProfilesChange, this, "profilesArray");
 			}
 			
-			private function metadataLoaded(value:Boolean) : void {
-				if (value) {
-					_originalProfile = new KMCMetadataProfileVO();
-					if (_model.metadataProfile.xsd && _model.metadataProfile.metadataFieldVOArray.length) {
-						_originalProfile.xsd = _model.metadataProfile.xsd.copy();
-						_originalProfile.metadataFieldVOArray = new ArrayCollection();
-						for each (var field:MetadataFieldVO in _model.metadataProfile.metadataFieldVOArray) {
-							var newField:MetadataFieldVO = field.Clone();
-							_originalProfile.metadataFieldVOArray.addItem(newField);
-						}
-					
-					}
-					
+			
+			private function onPagerCreationComplete(event:Event):void {
+				AccountModelLocator.getInstance().metadataFilterPager = paging.kalturaFilterPager;
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				loadMetadataProfilesList();
+			}
+			
+			private function onDGChange():void {
+				setSelectedProfile(dg.selectedItem as KMCMetadataProfileVO);
+			}
+			
+			public function setSelectedProfile(profile:KMCMetadataProfileVO):void {
+				var selectProfileEvent:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.SELECT, profile);
+				selectProfileEvent.dispatch();
+			}
+			
+			private function loadMetadataProfilesList():void {
+				/*  if (paging.pageSize == 10) {
+					tableMainHbox.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height+ bottomActionBox.height + 15;
+					dg.rowCount = 10;
 				}
-					
-			}
-			
-			public function disableTab( customDataDisabled : Boolean ) : void {
-				if (customDataDisabled) {
-					var metadataNotEditable:metadataNotEditablePopup = new metadataNotEditablePopup();
-					metadataNotEditable.pid = _model.context.kc.partnerId;
-					PopUpManager.addPopUp(metadataNotEditable, (Application.application as DisplayObject), true);
-					PopUpManager.centerPopUp(metadataNotEditable);					
-					this.enabled = false;
+				else {
+					tableMainHbox.percentHeight = 100;
+					dg.percentHeight = 100;
+				}  */
+				
+				if (paging.pageSize == 10) {
+					tableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height + bottomActionBox.height + 15;
+					dg.height = tableContainer.height - (paging.height + bottomActionBox.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					dg.rowCount = 10;
+					actionBox.height = dg.height + paging.height + bottomActionBox.height;
+					tableMainHbox.height = tableContainer.height ;
 				}
-			}
-
-
-			/**
-			 * On click on the "add" button a popup will be opened.
-			 * @param event
-			 *
-			 */
-			private function openAddFieldPopup(event:Event):void {
-				var addCustomFieldPopup:CustomDataAddEditPopup = new CustomDataAddEditPopup();
-				addCustomFieldPopup.addEventListener(AddMetadataFieldEvent.ADD, addNewFieldHandler);
-				addCustomFieldPopup.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
-				PopUpManager.addPopUp(addCustomFieldPopup, Application.application as DisplayObject, true);
-				PopUpManager.centerPopUp(addCustomFieldPopup);
+				else {
+					tableMainHbox.percentHeight = 100;
+					tableContainer.percentHeight = 100;
+					dg.percentHeight = 100;
+					dg.rowCount = -1;
+					actionBox.percentHeight = 100;
+				} 
+				
+				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				getMetadataProfile.dispatch();
 			}
 			
-			private function dispatchHelp(e:KmcHelpEvent):void {
-				dispatchEvent(e.clone());
+			//paging
+			private function gotoPage():void {
+				// update filter here
+				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
+				loadMetadataProfilesList();
 			}
+			
+			public function resetClonedData():void {}
+			
+			public function isChanged():Boolean { return false;}
+			
+			public function undo():void {}
+			
+			public function saveChanges():void {}
 
-
-			/**
-			 * When saving a new field, this handler will be called
-			 * @param event
-			 *
-			 */
-			private function addNewFieldHandler(event:AddMetadataFieldEvent):void {
-				var fieldsArray:Array = new Array();
-				fieldsArray.push(event.metadataField);
-				_model.metadataProfile.metadataFieldVOArray.addItem(event.metadataField);
-				var addMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.ADD, fieldsArray);
-				addMetadataField.dispatch();
-
+			
+			private function addProfile():void {
+				var addProfileWindow:AddCustomDataProfilePopup = new AddCustomDataProfilePopup();
+				var newProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
+				setSelectedProfile(newProfile);
+				addProfileWindow.currentState = 'newProfileState';
+				addProfileWindow.metadataProfile = newProfile;
+				PopUpManager.addPopUp(addProfileWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(addProfileWindow);
 			}
-
-
-			/**
-			 * On click on the "delete" field, the "are you sure" alert will pop up
-			 * @param event
-			 *
-			 */
-			private function deleteField(event:Event):void {
-				if (!customFieldsTable.selectedItem) {
-					Alert.show(resourceManager.getString('account', 'customFieldsDeleteError'), resourceManager.getString('account', 'custonFieldsDeleteErrorTitle'));
+			
+			private function deleteProfile():void {
+				if (!dg.selectedItem) {
+					Alert.show(resourceManager.getString('account', 'customSchemaDeleteError'), resourceManager.getString('account', 'customSchemaDeleteErrorTitle'));
 					return;
 				}
-
+				
 				var delStr:String = '';
-				for each (var item:Object in customFieldsTable.selectedItems) {
-					delStr += '\n' + (item as MetadataFieldVO).name;
-				}
-
-				Alert.show(resourceManager.getString('account', 'metadataFieldDeleteAlert') + delStr, resourceManager.getString('account', 'metadataFieldDeleteTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
-			}
-
-
-			/**
-			 * This function handles the case of "yes" selection and deletes the selected fields
-			 * */
-			private function deleteResponseFunc(evt:CloseEvent):void {
-				if (evt.detail == Alert.YES) {
-					var fieldsArray:Array = new Array();
-					for each (var item:Object in customFieldsTable.selectedItems) {
-						var indexToRemove:int = _model.metadataProfile.metadataFieldVOArray.getItemIndex(item);
-						var fieldToRemove:MetadataFieldVO = MetadataFieldVO(_model.metadataProfile.metadataFieldVOArray.getItemAt(indexToRemove));
-						fieldsArray.push(fieldToRemove);
-						_model.metadataProfile.metadataFieldVOArray.removeItemAt(indexToRemove);
-					}
-					var deleteMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.DELETE, fieldsArray);
-					deleteMetadataField.dispatch();
-				}
-			}
-
-
-			public function isChanged():Boolean {
-				return _model.metadataProfile.metadataProfileChanged;
-			}
-
-
-			public function undo():void {
-				if (_originalProfile.xsd && _originalProfile.metadataFieldVOArray.length) {
-					_model.metadataProfile.xsd = _originalProfile.xsd.copy();
-					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection();
-					for each (var field:MetadataFieldVO in _originalProfile.metadataFieldVOArray) {
-						var newField:MetadataFieldVO = field.Clone();
-						_model.metadataProfile.metadataFieldVOArray.addItem(newField);
-					}
-				}
-				else {
-					_model.metadataProfile.xsd = null;
-					_model.metadataProfile.metadataFieldVOArray = new ArrayCollection();
+				for each (var item:Object in dg.selectedItems) {
+					delStr += '\n' + (item as KMCMetadataProfileVO).profile.name;
 				}
 				
-				_model.metadataProfile.metadataProfileChanged = false;
-			}
-
-
-			public function resetClonedData():void {
+				Alert.show(resourceManager.getString('account', 'metadataSchemaDeleteAlert') + delStr, resourceManager.getString('account', 'metadataSchemaDeleteTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
 			}
 			
-			private function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section21' ));
-			}
-			
-			public function saveChanges():void {
-				if (!_model.metadataProfile.metadataProfileChanged)
-					return;
-				
-				if (_model.metadataProfile.profile) {
-					var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-					updateMetadataProfile.dispatch();
+			private function deleteResponseFunc(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var schemas:Array = new Array();
+					for each (var item:Object in dg.selectedItems) {
+						var indexToRemove:int = profilesArray.getItemIndex(item);
+						var scehmaToRemove:KMCMetadataProfileVO = profilesArray.getItemAt(indexToRemove) as KMCMetadataProfileVO;
+						schemas.push(scehmaToRemove);
+					}
+					var deleteMetadata:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.DELETE, null, schemas);
+					deleteMetadata.dispatch();
 				}
-				else {
-					var addMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.ADD);
-					addMetadataProfile.dispatch();
-				}
-				
 			}
+
 		]]>
-
 	</mx:Script>
-	<mx:HBox width="100%">
-		<mx:Label styleName="expendableButton" width="100%" text="{resourceManager.getString('account', 'customFieldsTitle')}"/>
-	</mx:HBox>
-	<mx:Spacer height="20"/>
-	<mx:HBox id="fieldsTableBox" width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
-		<mx:VBox width="100%" height="100%" id='tableContainer' styleName="tableAndPagerContainerStyle"
-				 horizontalAlign="center">
-			<mx:HBox width="100%" height="100%">
-				<cdw:CustomDataFieldsTable id="customFieldsTable" allowMultipleSelection="true" selectable="true"
-										   dataProvider="{_model.metadataProfile.metadataFieldVOArray}"/>
-				<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
-					<mx:Button id="addFieldButton" label="{resourceManager.getString('account', 'customFieldsAddField')}" useHandCursor="true"
-							   buttonMode="true" click="openAddFieldPopup(event)" styleName="listActionButton"/>
-				</mx:VBox>
-			</mx:HBox>
+	
+	<mx:Label text="{resourceManager.getString('account', 'customDataSchemas')}" styleName="expendableButton"/>
+	<mx:Label text="{resourceManager.getString('account', 'customDataSchemasText')}" styleName="pageDescription"/>
+	
+	<mx:HBox id="tableMainHbox" width="100%" styleName="tablePagerAndButtonsBarBox">
+		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center" verticalScrollPolicy="off">
+	
+			<mx:DataGrid id="dg" width="100%" sortableColumns="false" dataProvider="{profilesArray}" change="onDGChange()"
+						 allowMultipleSelection="true"
+						 rowCount="10" rowHeight="36">
+				<mx:columns>
+					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasIdCol')}" width="120" paddingLeft="5">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label text="{data.profile.id}" toolTip="{data.profile.id}"/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasNameCol')}" width="140"
+									   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataProfileNameRenderer"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasDescriptionCol')}" paddingLeft="5">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label text="{data.profile.name}" toolTip="{data.name}"/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasFieldsIncludedCol')}" paddingLeft="5"
+									   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdatawindow.renderers.CustomDataFieldsIncludedRenderer"/>
+						
+				</mx:columns>	
+			</mx:DataGrid>
+			
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 totalCount="{profilesTotalCount}"
+							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
+							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
 			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
-				<mx:Button id="deleteCustomDataField" label="{resourceManager.getString('account', 'customFieldsDeleteField')}"
-						   click="deleteField(event)" useHandCursor="true" buttonMode="true"/>
-				<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
-						   click="{saveChanges()}" useHandCursor="true" buttonMode="true"/>
+				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','deleteSchema')}"
+						   useHandCursor="true" buttonMode="true" click="{deleteProfile()}"/>
 			</mx:HBox>
 		</mx:VBox>
+		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox" verticalScrollPolicy="off">
+			<mx:Button id="addButton"
+					   label="{resourceManager.getString('account','addNewSchema')}" useHandCursor="true"
+					   buttonMode="true" click="{addProfile()}" styleName="listActionButton"/>
+		</mx:VBox>
 	</mx:HBox>
+	
+	<mx:Label text="{resourceManager.getString('account','customSchemaMessage')}" visible="{displayCustomSchemaMsg}"/>
 
 </mx:VBox>

@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.account.events
 		public static const EDIT : String = "account_editField";
 		public static const REORDER : String = "account_reorderFields";
 		
-		public var metadataFields:Array;
+		public var metadataField:MetadataFieldVO;
 		
 		/**
 		 * Constructs a new MetadataFieldEvent  
@@ -25,11 +25,11 @@ package com.kaltura.kmc.modules.account.events
 		 * @param cancelable
 		 * 
 		 */		
-		public function MetadataFieldEvent( type:String, metadataFields:Array = null,
+		public function MetadataFieldEvent( type:String, metadataField:MetadataFieldVO= null,
 									 bubbles:Boolean=false, 
 									 cancelable:Boolean=false)
 		{
-			this.metadataFields = metadataFields;
+			this.metadataField = metadataField;
 			super(type , bubbles, cancelable);
 		}	
 

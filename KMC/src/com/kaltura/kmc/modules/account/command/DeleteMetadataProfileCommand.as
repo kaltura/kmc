@@ -3,13 +3,13 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
-	import com.kaltura.commands.metadataProfile.MetadataProfileAdd;
+	import com.kaltura.commands.metadataProfile.MetadataProfileDelete;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
+	import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.utils.ListMetadataProfileUtil;
-	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -21,31 +21,34 @@ package com.kaltura.kmc.modules.account.command
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	
+
 	/**
-	 * This class handles the addition of a new profile to the current partner 
+	 * This class handles the deletion of a custom data schema
 	 * @author Michal
 	 * 
 	 */	
-	public class AddMetadataProfileCommand implements ICommand, IResponder {
+	public class DeleteMetadataProfileCommand implements ICommand, IResponder {
 		
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 		
 		/**
-		 * Will send a MetadataProfileAdd request with the current XSD. 
+		 * Will send a MetadataProfileDelete request. 
 		 * @param event the event that triggered this command.
 		 * 
 		 */		
 		public function execute(event:CairngormEvent):void
 		{
-			_model.loadingFlag = true;
+			_model.loadingFlag  = true;
+			var schemasToDelete:Array = (event as MetadataProfileEvent).profilesArray;
+			if (!schemasToDelete || schemasToDelete.length==0)
+				return;
 			
 			var mr:MultiRequest = new MultiRequest();
 			
-			_model.selectedMetadataProfile.profile.metadataObjectType = KalturaMetadataObjectType.ENTRY;		
-			var addMetadataProfile:MetadataProfileAdd = new MetadataProfileAdd(_model.selectedMetadataProfile.profile, _model.selectedMetadataProfile.xsd.toXMLString());
-			mr.addAction(addMetadataProfile);
-			
+			for each (var profile:KMCMetadataProfileVO in schemasToDelete) {
+				var deleteSchema:MetadataProfileDelete = new MetadataProfileDelete(profile.profile.id);
+				mr.addAction(deleteSchema);
+			}
 			//list the latest metadata profiles (after all deletion is done)s
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
@@ -54,6 +57,7 @@ package com.kaltura.kmc.modules.account.command
 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
+			
 			_model.context.kc.post(mr);
 		}
 		
@@ -67,7 +71,7 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			var responseArray:Array = data.data as Array;
 			//last request is always the list request
-			var listResult:KalturaMetadataProfileListResponse  = responseArray[1]as KalturaMetadataProfileListResponse;
+			var listResult:KalturaMetadataProfileListResponse  = responseArray[responseArray.length-1]as KalturaMetadataProfileListResponse;
 			_model.metadataProfilesTotalCount = listResult.totalCount;
 			_model.metadataProfilesArray = ListMetadataProfileUtil.handleListMetadataResult(listResult, _model.context.metadataProfileName);
 		}
@@ -86,8 +90,8 @@ package com.kaltura.kmc.modules.account.command
 			}
 			_model.loadingFlag = false;
 			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-
+			
 		}
-	
+		
 	}
 }

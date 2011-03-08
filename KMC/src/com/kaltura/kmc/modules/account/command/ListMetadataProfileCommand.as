@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+	import com.kaltura.kmc.utils.ListMetadataProfileUtil;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -14,6 +15,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.vo.KalturaMetadataProfileFilter;
 	import com.kaltura.vo.KalturaMetadataProfileListResponse;
 	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -38,13 +40,9 @@ package com.kaltura.kmc.modules.account.command
 		{
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
-			var pager:KalturaFilterPager = new KalturaFilterPager();
-			pager.pageSize = 1;
-			pager.pageIndex = 1;
-			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);
+			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, _model.metadataFilterPager);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
-			_model.metadataProfileLoaded = false;
 			_model.context.kc.post(listMetadataProfile);
 		}
 		
@@ -55,26 +53,10 @@ package com.kaltura.kmc.modules.account.command
 		 */		
 		public function result(data:Object):void
 		{
-			var response:KalturaMetadataProfileListResponse =  KalturaMetadataProfileListResponse(data.data);
-			var recievedProfile:KalturaMetadataProfile = response.objects[0];
-			if (recievedProfile) {
-				//display only profiles that were created from KMC
-				if (recievedProfile.name == _model.context.metadataProfileName) {
-					var metadataProfile : KMCMetadataProfileVO = new KMCMetadataProfileVO();
-					metadataProfile.profile = recievedProfile;
-					metadataProfile.xsd = new XML(recievedProfile.xsd);
-					metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
-
-					_model.metadataProfile = metadataProfile;
-				}
-				//custom profile
-				else {
-					_model.customDataDisabled = true;
-					
-				}
-			}
-			
-			_model.metadataProfileLoaded = true;
+			//last request is always the list request
+			var listResult:KalturaMetadataProfileListResponse  = data.data as KalturaMetadataProfileListResponse;
+			_model.metadataProfilesTotalCount = listResult.totalCount;
+			_model.metadataProfilesArray = ListMetadataProfileUtil.handleListMetadataResult(listResult, _model.context.metadataProfileName);
 		}
 		
 		/**

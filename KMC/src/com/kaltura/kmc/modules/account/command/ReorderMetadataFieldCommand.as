@@ -16,18 +16,17 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void 
 		{
+			if (!_model.selectedMetadataProfile)
+				return;
+			
 			try {
-				_model.metadataProfile.xsd = MetadataProfileParser.fromArrayToXSD(_model.metadataProfile.metadataFieldVOArray);
+				_model.selectedMetadataProfile.xsd = MetadataProfileParser.fromArrayToXSD(_model.selectedMetadataProfile.metadataFieldVOArray);
 			}
 			catch (e:Error){
 				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('account','error'));
 				return;
 			}
-			
-			_model.metadataProfile.metadataProfileChanged = true;
-			
-			/*var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-			updateMetadataProfile.dispatch();*/
+			_model.selectedMetadataProfile.metadataProfileChanged = true;
 		}
 	}
 }

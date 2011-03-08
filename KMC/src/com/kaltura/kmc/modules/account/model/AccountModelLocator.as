@@ -47,7 +47,12 @@ package com.kaltura.kmc.modules.account.model {
 		public var listPackages:ArrayCollection;
 		public var modalWinData:Object = null;
 		public var gaTrackUrl:String = null;
-		public var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
+		
+		public var metadataProfilesArray:ArrayCollection = new ArrayCollection();
+		public var selectedMetadataProfile:KMCMetadataProfileVO;
+		public var metadataFilterPager:KalturaFilterPager;
+		public var metadataProfilesTotalCount:int = 10;
+		//public var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
 
 		public var accessControlData:ArrayCollection = new ArrayCollection();
 
@@ -76,10 +81,6 @@ package com.kaltura.kmc.modules.account.model {
 		 * the custom metadata tab is disabled
 		 * */
 		public var customDataDisabled:Boolean = false;
-		/**
-		 * the metadata profile was loaded
-		 * */
-		public var metadataProfileLoaded:Boolean = false;
 		
 		public var partnerInfoLoaded:Boolean = false;
 		public var openPayPalWindowFlag:Boolean = false;

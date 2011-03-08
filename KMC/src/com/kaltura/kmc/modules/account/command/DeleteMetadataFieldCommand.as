@@ -17,27 +17,22 @@ package com.kaltura.kmc.modules.account.command
 
 		public function execute(event:CairngormEvent):void
 		{
-			var deleteFields:Array = MetadataFieldEvent(event).metadataFields;
-			if (!deleteFields)
+			var deleteField:MetadataFieldVO = (event as MetadataFieldEvent).metadataField;
+			if (!_model.selectedMetadataProfile || !deleteField)
 				return;
-			if (!_model.metadataProfile.xsd) {
-				_model.metadataProfile.xsd = MetadataProfileParser.createNewXSD();
+			if (!_model.selectedMetadataProfile.xsd) {
+				_model.selectedMetadataProfile.xsd = MetadataProfileParser.createNewXSD();
 			}
 			try {
-				for each (var field:MetadataFieldVO in deleteFields) {
-					MetadataProfileParser.deleteFieldFromXSD(field, _model.metadataProfile.xsd);			
-				}
+
+				MetadataProfileParser.deleteFieldFromXSD(deleteField, _model.selectedMetadataProfile.xsd);			
+
 			}
 			catch (e:Error){
 				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('account','error'));
 				return;
 			}
-
-			_model.metadataProfile.metadataProfileChanged = true;
-		/*	if (_model.metadataProfile.profile) {
-				var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-				updateMetadataProfile.dispatch();
-			}*/
+			_model.selectedMetadataProfile.metadataProfileChanged = true;
 		}
 
 	}

@@ -30,10 +30,10 @@ package com.kaltura.kmc.modules.account.command
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;
-			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.metadataProfile.profile.id, new KalturaMetadataProfile(), _model.metadataProfile.xsd.toString());
+			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.selectedMetadataProfile.profile.id, new KalturaMetadataProfile(), _model.selectedMetadataProfile.xsd.toString());
 			updateMetadataProfle.addEventListener(KalturaEvent.COMPLETE, result);
 			updateMetadataProfle.addEventListener(KalturaEvent.FAILED, fault);
-			_model.metadataProfileLoaded = false;
+
 			_model.context.kc.post(updateMetadataProfle); 
 		}
 		
@@ -47,11 +47,10 @@ package com.kaltura.kmc.modules.account.command
 			_model.loadingFlag = false;
 			var recievedProfile:KalturaMetadataProfile = KalturaMetadataProfile(data.data);
 			if (recievedProfile) {
-				_model.metadataProfile.profile = recievedProfile;
-				_model.metadataProfile.xsd = new XML(recievedProfile.xsd);
-				_model.metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(_model.metadataProfile.xsd);
-				_model.metadataProfile.metadataProfileChanged = false;
-				_model.metadataProfileLoaded = true;
+				_model.selectedMetadataProfile.profile = recievedProfile;
+				_model.selectedMetadataProfile.xsd = new XML(recievedProfile.xsd);
+				_model.selectedMetadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(_model.selectedMetadataProfile.xsd);
+				_model.selectedMetadataProfile.metadataProfileChanged = false;
 			}
 			
 			

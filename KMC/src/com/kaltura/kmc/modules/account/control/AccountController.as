@@ -69,6 +69,8 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(MetadataProfileEvent.LIST , ListMetadataProfileCommand);
 			addCommand(MetadataProfileEvent.ADD , AddMetadataProfileCommand);
 			addCommand(MetadataProfileEvent.UPDATE , UpdateMetadataProfileCommand);
+			addCommand(MetadataProfileEvent.SELECT , UpdateSelectedMetadataProfileCommand);
+			addCommand(MetadataProfileEvent.DELETE , DeleteMetadataProfileCommand);
 			//metadata field events
 			addCommand(MetadataFieldEvent.ADD , AddMetadataFieldCommand);
 			addCommand(MetadataFieldEvent.DELETE , DeleteMetadataFieldCommand);

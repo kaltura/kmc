@@ -30,33 +30,21 @@ package com.kaltura.kmc.modules.account.command
 		 */	
 		public function execute(event:CairngormEvent):void
 		{
-			var newFields:Array = MetadataFieldEvent(event).metadataFields;
-			if (!newFields)
+			var newField:MetadataFieldVO = (event as MetadataFieldEvent).metadataField;
+			if (!newField || !_model.selectedMetadataProfile)
 				return;
-			if (!_model.metadataProfile.xsd) {
-				_model.metadataProfile.xsd = MetadataProfileParser.createNewXSD();
+			if (!_model.selectedMetadataProfile.xsd) {
+				_model.selectedMetadataProfile.xsd = MetadataProfileParser.createNewXSD();
 			}
 			
 			try {
-				for each (var field:MetadataFieldVO in newFields) {
-					MetadataProfileParser.addToXSD(field, _model.metadataProfile.xsd);	
-				}
+				MetadataProfileParser.addToXSD(newField, _model.selectedMetadataProfile.xsd);	
 			}
 			catch (e:Error){
 				Alert.show(ResourceManager.getInstance().getString('account','metadataMalformedXSDError'), ResourceManager.getInstance().getString('account','error'));
 				return;
 			}
-
-			_model.metadataProfile.metadataProfileChanged = true;
-			/*if (_model.metadataProfile.profile) {
-				var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-				updateMetadataProfile.dispatch();
-			}
-			else {
-				var addMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.ADD);
-				addMetadataProfile.dispatch();
-			}*/
-			
+			_model.selectedMetadataProfile.metadataProfileChanged = true;
 		}
 		
 	}

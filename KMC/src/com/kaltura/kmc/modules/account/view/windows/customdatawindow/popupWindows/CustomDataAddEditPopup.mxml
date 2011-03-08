@@ -18,6 +18,7 @@
 			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.controls.Alert;
@@ -48,9 +49,6 @@
 			private var _appearInSearchList:Array;
 			private var _dirty:Boolean = false;
 
-			[Bindable]
-			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
-
 			private var _textType:String;
 			private var _dateType:String;
 			private var _listType:String;
@@ -65,7 +63,18 @@
 			private var _itemWidth:int = 180;
 			[Bindable]
 			private var _spacerHeight:int = 10;
+			private var _metadataProfile:KMCMetadataProfileVO;
 
+			[Bindable]
+			public function get metadataProfile():KMCMetadataProfileVO
+			{
+				return _metadataProfile;
+			}
+
+			public function set metadataProfile(value:KMCMetadataProfileVO):void
+			{
+				_metadataProfile = value;
+			}
 
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section21'));
@@ -183,7 +192,7 @@
 			 * if name already exist then the given system name is not valid
 			 * */
 			private function isValidSystemName(sysName:String):Boolean {
-				for each (var field:MetadataFieldVO in _model.metadataProfile.metadataFieldVOArray) {
+				for each (var field:MetadataFieldVO in _metadataProfile.metadataFieldVOArray) {
 					if (field.name == sysName)
 						return false;
 				}
@@ -262,9 +271,7 @@
 
 				else {
 					updateField();
-					var fieldsArray:Array = new Array();
-					fieldsArray.push(metadataField);
-					var editMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.EDIT, fieldsArray);
+					var editMetadataField:MetadataFieldEvent = new MetadataFieldEvent(MetadataFieldEvent.EDIT, metadataField);
 					editMetadataField.dispatch();
 				}
 
