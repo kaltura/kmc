@@ -34,12 +34,13 @@ package com.kaltura.vo
 	[Bindable]
 	public class KMCMetadataProfileVO implements IValueObject
 	{
-		public var profile:KalturaMetadataProfile;
+		public var profile:KalturaMetadataProfile = new KalturaMetadataProfile();
 		public var metadataFieldVOArray:ArrayCollection = new ArrayCollection();
 		public var metadataProfileChanged:Boolean = false;
 		//represents the xsd from the profile, in an XML representation
 		public var xsd:XML;
 		public var viewXML:XML;
+		public var profileDisabled:Boolean  = false;
 		
 		/**
 		 *  Constructs a new KMCMetadataProfileVO class
@@ -48,6 +49,7 @@ package com.kaltura.vo
 		public function KMCMetadataProfileVO ():void
 		{
 		}
+		
 
 	}
 }
