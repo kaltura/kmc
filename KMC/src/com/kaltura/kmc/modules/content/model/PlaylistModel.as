@@ -19,7 +19,7 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * number of entries in a rule-based playlist
 		 * */
-		public var ruleBasedEntriesAmount:Number;
+		public var ruleBasedEntriesAmount:Number = 0;
 		
 		/**
 		 * total playing time of a rule based playlist
