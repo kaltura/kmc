@@ -16,7 +16,7 @@ package com.kaltura.vo
 
 		public var status : int = int.MIN_VALUE;
 
-		public var type : int = int.MIN_VALUE;
+		public var type : String;
 
 		public var landingPage : String;
 

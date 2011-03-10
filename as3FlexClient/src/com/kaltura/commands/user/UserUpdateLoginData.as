@@ -11,8 +11,10 @@ package com.kaltura.commands.user
 		 * @param password String
 		 * @param newLoginId String
 		 * @param newPassword String
+		 * @param newFirstName String
+		 * @param newLastName String
 		 **/
-		public function UserUpdateLoginData( oldLoginId : String,password : String,newLoginId : String='',newPassword : String='' )
+		public function UserUpdateLoginData( oldLoginId : String,password : String,newLoginId : String='',newPassword : String='',newFirstName : String='',newLastName : String='' )
 		{
 			service= 'user';
 			action= 'updateLoginData';
@@ -28,6 +30,10 @@ package com.kaltura.commands.user
 			valueArr.push(newLoginId);
 			keyArr.push('newPassword');
 			valueArr.push(newPassword);
+			keyArr.push('newFirstName');
+			valueArr.push(newFirstName);
+			keyArr.push('newLastName');
+			valueArr.push(newLastName);
 			applySchema(keyArr, valueArr);
 		}
 

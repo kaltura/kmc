@@ -104,6 +104,9 @@ package com.kaltura.types
 		public static const ADMIN_ROLE_ADD : String = 'ADMIN_ROLE_ADD';
 		public static const ADMIN_ROLE_UPDATE : String = 'ADMIN_ROLE_UPDATE';
 		public static const ADMIN_ROLE_DELETE : String = 'ADMIN_ROLE_DELETE';
+		public static const ADMIN_PERMISSION_ADD : String = 'ADMIN_PERMISSION_ADD';
+		public static const ADMIN_PERMISSION_UPDATE : String = 'ADMIN_PERMISSION_UPDATE';
+		public static const ADMIN_PERMISSION_DELETE : String = 'ADMIN_PERMISSION_DELETE';
 		public static const ADMIN_PUBLISHER_MANAGE : String = 'ADMIN_PUBLISHER_MANAGE';
 		public static const ANALYTICS_BASE : String = 'ANALYTICS_BASE';
 		public static const WIDGET_ADMIN : String = 'WIDGET_ADMIN';

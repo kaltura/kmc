@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		public var appearInSearch : int = int.MIN_VALUE;
 
-		public var createdAt : String;
+		public var createdAt : int = int.MIN_VALUE;
 
 		public var adminName : String;
 
@@ -91,6 +91,7 @@ package com.kaltura.vo
 			arr.push('mergeEntryLists');
 			arr.push('notificationsConfig');
 			arr.push('maxUploadSize');
+			arr.push('allowMultiNotification');
 			arr.push('adminUserId');
 			return arr;
 		}

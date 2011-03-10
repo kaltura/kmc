@@ -9,12 +9,15 @@ package com.kaltura.vo
 
 		public var idIn : String;
 
+		public var nameEqual : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('idEqual');
 			arr.push('idIn');
+			arr.push('nameEqual');
 			return arr;
 		}
 	}

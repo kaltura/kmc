@@ -8,6 +8,8 @@ package com.kaltura.vo
 
 		public var uploadedBy : String;
 
+		public var uploadedByUserId : String;
+
 		public var uploadedOn : int = int.MIN_VALUE;
 
 		public var numOfEntries : int = int.MIN_VALUE;
@@ -26,6 +28,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('id');
 			arr.push('uploadedBy');
+			arr.push('uploadedByUserId');
 			arr.push('uploadedOn');
 			arr.push('numOfEntries');
 			arr.push('status');

@@ -11,7 +11,13 @@ package com.kaltura.vo
 
 		public var nameLike : String;
 
+		public var partnerIdEqual : int = int.MIN_VALUE;
+
+		public var partnerIdIn : String;
+
 		public var objTypeEqual : int = int.MIN_VALUE;
+
+		public var objTypeIn : String;
 
 		public var tagsMultiLikeOr : String;
 
@@ -36,7 +42,10 @@ package com.kaltura.vo
 			arr.push('idEqual');
 			arr.push('idIn');
 			arr.push('nameLike');
+			arr.push('partnerIdEqual');
+			arr.push('partnerIdIn');
 			arr.push('objTypeEqual');
+			arr.push('objTypeIn');
 			arr.push('tagsMultiLikeOr');
 			arr.push('tagsMultiLikeAnd');
 			arr.push('createdAtGreaterThanOrEqual');

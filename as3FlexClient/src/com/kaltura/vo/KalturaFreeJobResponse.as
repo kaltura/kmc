@@ -8,7 +8,7 @@ package com.kaltura.vo
 	{
 		public var job : KalturaBatchJob;
 
-		public var jobType : int = int.MIN_VALUE;
+		public var jobType : String;
 
 		public var queueSize : int = int.MIN_VALUE;
 

@@ -27,10 +27,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('flavorParamsId');
 			arr.push('isOriginal');
-			arr.push('isWeb');
-			arr.push('containerFormat');
-			arr.push('videoCodecId');
 			return arr;
 		}
 	}

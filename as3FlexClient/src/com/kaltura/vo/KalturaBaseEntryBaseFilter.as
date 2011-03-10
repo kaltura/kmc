@@ -9,6 +9,8 @@ package com.kaltura.vo
 
 		public var idIn : String;
 
+		public var idNotIn : String;
+
 		public var nameLike : String;
 
 		public var nameMultiLikeOr : String;
@@ -115,6 +117,7 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('idEqual');
 			arr.push('idIn');
+			arr.push('idNotIn');
 			arr.push('nameLike');
 			arr.push('nameMultiLikeOr');
 			arr.push('nameMultiLikeAnd');

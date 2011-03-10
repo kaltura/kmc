@@ -5,7 +5,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadJobData extends KalturaJobData
 	{
-		public var userId : int = int.MIN_VALUE;
+		public var userId : String;
 
 		public var uploadedBy : String;
 

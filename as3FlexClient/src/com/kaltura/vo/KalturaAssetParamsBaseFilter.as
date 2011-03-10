@@ -7,6 +7,8 @@ package com.kaltura.vo
 	{
 		public var isSystemDefaultEqual : int = int.MIN_VALUE;
 
+		public var tagsEqual : String;
+
 		public var formatEqual : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -14,6 +16,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('isSystemDefaultEqual');
+			arr.push('tagsEqual');
 			arr.push('formatEqual');
 			return arr;
 		}

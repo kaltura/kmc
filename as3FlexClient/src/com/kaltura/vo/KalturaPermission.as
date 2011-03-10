@@ -34,7 +34,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('type');
 			arr.push('name');
 			arr.push('friendlyName');
 			arr.push('description');

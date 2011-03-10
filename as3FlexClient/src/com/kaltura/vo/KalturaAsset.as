@@ -34,10 +34,6 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('tags');
 			arr.push('fileExt');
-			arr.push('createdAt');
-			arr.push('updatedAt');
-			arr.push('deletedAt');
-			arr.push('description');
 			return arr;
 		}
 	}
