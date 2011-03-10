@@ -46,8 +46,8 @@ package com.kaltura.kmc.modules.content.commands {
 				pvo.contentCategories = (resultKp.contentCategories == null) ? '' : resultKp.contentCategories;
 				pvo.createdAt = resultKp.createdAt;
 
-				var dateArr:Array = (pvo.createdAt).split('-');
-				var date:Date = new Date(int(pvo.createdAt) * 1000);
+				//var dateArr:Array = (pvo.createdAt).split('-');
+				var date:Date = new Date((pvo.createdAt) * 1000);
 
 				pvo.createdYear = date.fullYear;
 				pvo.createdMonth = date.month;

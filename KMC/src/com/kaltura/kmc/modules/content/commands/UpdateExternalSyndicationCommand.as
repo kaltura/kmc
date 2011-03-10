@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.content.commands
 			var feed:KalturaBaseSyndicationFeed = event.data as KalturaBaseSyndicationFeed;
 			var id:String = feed.id;
 			feed.id = null;
-			feed.type = int.MIN_VALUE;
+			feed.type = "";
 			feed.feedUrl = null;
 			feed.partnerId = int.MIN_VALUE;
 			feed.status = int.MIN_VALUE;

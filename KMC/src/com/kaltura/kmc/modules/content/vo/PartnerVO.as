@@ -16,7 +16,7 @@ package com.kaltura.kmc.modules.content.vo
 		public var url1 : String = "";
 		public var url2 : String = "";
 		public var appearInSearch : int = 0;
-		public var createdAt : String = "";
+		public var createdAt : int;
 		public var adminName : String = "";
 		public var adminEmail : String = "";
 		public var phone : String = "";

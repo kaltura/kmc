@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				layout="vertical" styleName="distributionErrorsWindow" width="360" height="230"
+				layout="vertical" styleName="TitleWindowType2"
+				backgroundColor="#f7f7f7"
+				width="360" height="230"
 				showCloseButton="true" close="onClose()" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
@@ -9,9 +11,10 @@
 			import mx.controls.LinkButton;
 			import mx.core.Container;
 			import mx.managers.PopUpManager;
-			public static const THUMB_ERROR:String = "thumbError";
-			public static const FLAVOR_ERROR:String = "flavorError";
+			public static const MISSING_THUMB_ERROR:String = "missingThumbError";
+			public static const MISSING_FLAVOR_ERROR:String = "missingFlavorError";
 			public static const METADATA_ERROR:String = "metadataError";
+			public static const MISSING_METADATA:String = "missingMetadataError";
 			public static const GENERAL_ERROR:String = "generalError";
 			
 			private var _type:String;
@@ -27,6 +30,8 @@
 			private var _isFirstParam:Boolean = true;
 			[Bindable]
 			public var enableLinks:Boolean = false;
+			[Bindable]
+			private var _showCustomDataBtn:Boolean = false;
 			
 			private function onCreationComplete():void {
 				this.mx_internal::closeButton.buttonMode = true;
@@ -36,19 +41,26 @@
 				var st:String;
 				_type = type;
 				switch (_type) {
-					case THUMB_ERROR:
+					case MISSING_THUMB_ERROR:
 						_infoLabel = resourceManager.getString('cms','missingDimensions');
 						_extraInfoLabel = resourceManager.getString('cms','gotoThumbnailTabMsg');
 						st = resourceManager.getString('cms','gotoThumbnailTab');
 						break;
-					case FLAVOR_ERROR:
+					case MISSING_FLAVOR_ERROR:
 						_infoLabel = resourceManager.getString('cms','missingFlavors');
 						_extraInfoLabel = resourceManager.getString('cms','gotoFlavorTabMsg');
 						st = resourceManager.getString('cms','gotoFlavorTab');
 						break;
-					case METADATA_ERROR:
-						_infoLabel = resourceManager.getString('cms','missingMetadata');
+					case MISSING_METADATA:
+						_infoLabel = resourceManager.getString('cms','missingMetadataMsg');
 						_extraInfoLabel = resourceManager.getString('cms','gotoMetadataTabMsg');
+						_showCustomDataBtn = true;
+						st = resourceManager.getString('cms','gotoMetadataTab');
+						break;
+					case METADATA_ERROR:
+						_infoLabel = resourceManager.getString('cms','invalidMetadata');
+						_extraInfoLabel = resourceManager.getString('cms','gotoMetadataTabMsgInvalid');
+						_showCustomDataBtn = true;
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 				}
@@ -67,17 +79,28 @@
 			
 			private function onLinkClick(event:Event):void {
 				switch (_type) {
-					case THUMB_ERROR:
-						viewStack.selectedChild = viewStack.getChildByName("entryThumbnails") as Container;
+					case MISSING_THUMB_ERROR:
+						setSelectedChild("entryThumbnails");
 						break;
-					case FLAVOR_ERROR:
-						viewStack.selectedChild = viewStack.getChildByName("entryAsstes") as Container;
+					case MISSING_FLAVOR_ERROR:
+						setSelectedChild("entryAsstes")
 						break;
+					case MISSING_METADATA:
 					case METADATA_ERROR:
-						viewStack.selectedChild = viewStack.getChildByName("entryMetaData") as Container;
+						if (event.target==linkBtn) {
+							setSelectedChild("entryMetaData")
+						}
+						else {
+							setSelectedChild("customData")							
+						}
 						break;
 				}
 				PopUpManager.removePopUp(this);
+			}
+			
+			private function setSelectedChild(childName:String):void {
+				if (viewStack.getChildByName(childName))	
+					viewStack.selectedChild = viewStack.getChildByName(childName) as Container;
 			}
 			
 			private function onClose():void {
@@ -87,19 +110,37 @@
 			/**
 			 * adds the given string to the window
 			 * */
-			public function addErrorDetail(error:String):void {
-				if (_isFirstParam){
-					_infoLabel += error;
-					_isFirstParam = false;
+			public function addErrorDetail(error:String, addInNewLine:Boolean = false):void {
+				if (!addInNewLine) {
+					if (_isFirstParam){
+						_infoLabel += error;
+						_isFirstParam = false;
+					}
+					else {
+						_infoLabel += ", " + error;
+					}
 				}
 				else {
-					_infoLabel += ", " + error;
+					_infoLabel += '\n'+error;
 				}
 			}
 		]]>
 	</mx:Script>
-	<mx:Text  htmlText="{_infoLabel}" width="100%"/>
-	<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
-	<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
-				   click="{onLinkClick(event)}"/>
+	<!--<mx:VBox height="115" width="100%" styleName="distributionErrorVBox">-->
+		<mx:Text  htmlText="{_infoLabel}" width="100%"/>
+		<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
+		
+<!--	</mx:VBox>
+	<mx:HBox height="100%" width="100%">-->
+	<mx:ControlBar>
+		
+		<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
+					   click="{onLinkClick(event)}"/>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton id="customDataBtn" paddingRight="0" label="{resourceManager.getString('cms','gotoCustomDataTab')}" 
+					   visible="{_showCustomDataBtn}" includeInLayout="{_showCustomDataBtn}"
+					   click="{onLinkClick(event)}"/>
+	</mx:ControlBar>
+		
+<!--	</mx:HBox>-->
 </mx:TitleWindow>
