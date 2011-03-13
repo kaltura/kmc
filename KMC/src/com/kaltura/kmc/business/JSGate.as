@@ -67,6 +67,8 @@ package com.kaltura.kmc.business
 		 * @param is_playlist		the entry is a playlist
 		 * @param uiconfId			initial player uiconf to use
 		 * @param live_bitrates		list of bitrate objects {bitrate, width, height}
+		 * @param hasMobileFlavors	does the entry have mobile flavors
+		 * @param isHtml5			should the html5 part of the p&e be shown
 		 */
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array, hasMobileFlavors:Boolean, isHtml5:Boolean):void {
 //			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
