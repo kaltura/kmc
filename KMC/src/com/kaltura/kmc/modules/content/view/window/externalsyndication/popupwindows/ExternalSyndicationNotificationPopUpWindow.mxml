@@ -23,7 +23,7 @@
 			[Bindable]
 			private var _feedCountersData:KalturaSyndicationFeedEntryCount;
 			[Bindable]
-			private var showDropEntriesMsg:Boolean = true;
+			private var _showDropEntriesMsg:Boolean = true;
 			[Bindable]
 			private var dropEntriesMsg:String = '';
 			[Bindable]
@@ -62,9 +62,9 @@
 
 			public function set feedCountersData(feedCountersData:KalturaSyndicationFeedEntryCount):void {
 				_feedCountersData = feedCountersData;
-				showDropEntriesMsg = _feedCountersData.requireTranscodingCount != 0;
+				_showDropEntriesMsg = _feedCountersData.requireTranscodingCount != 0;
 
-				if (showDropEntriesMsg) {
+				if (_showDropEntriesMsg) {
 					var tempStr:String = resourceManager.getString('cms', 'entriesNotIncludedMsg');
 					tempStr = tempStr.replace("{NUM}", _feedCountersData.requireTranscodingCount + '');
 
@@ -138,9 +138,9 @@
 	<mx:ViewStack id='viewStack' width="100%" height="100%" creationComplete="showFeedConfirmationText(event)">
 		<!-- Yahoo -->
 		<mx:VBox width="100%" height="100%" styleName="confirmationVboxes" verticalGap="16">
-			<mx:HBox styleName="noteBackground" width="100%">
-				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
-						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			<mx:HBox styleName="noteBackground" width="100%" visible="{_showDropEntriesMsg}"
+						 includeInLayout="{_showDropEntriesMsg}">
+				<mx:Text width="100%" link="lbl_link(event)" htmlText="{dropEntriesMsg}"/>
 			</mx:HBox>
 			<mx:VBox width="100%" verticalGap="10">
 				<mx:HBox width="100%" height="100%">
@@ -172,9 +172,9 @@
 
 		<!-- Tube Mogul -->
 		<mx:VBox styleName="confirmationVboxes" verticalGap="16">
-			<mx:HBox styleName="noteBackground" width="100%">
-				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
-						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			<mx:HBox styleName="noteBackground" width="100%" visible="{_showDropEntriesMsg}"
+						 includeInLayout="{_showDropEntriesMsg}">
+				<mx:Text width="100%" link="lbl_link(event)" htmlText="{dropEntriesMsg}"/>
 			</mx:HBox>
 			<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise1')}"/>
 			<mx:Text width="100%" text="{resourceManager.getString('cms', 'tmAdvise2')}"/>
@@ -221,9 +221,9 @@
 
 		<!-- iTunes -->
 		<mx:VBox styleName="confirmationVboxes" verticalGap="16" paddingRight="11">
-			<mx:HBox styleName="noteBackground" width="100%">
-				<mx:Text width="100%" link="lbl_link(event)" visible="{showDropEntriesMsg}"
-						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			<mx:HBox styleName="noteBackground" width="100%" visible="{_showDropEntriesMsg}"
+						 includeInLayout="{_showDropEntriesMsg}" >
+				<mx:Text width="100%" link="lbl_link(event)" htmlText="{dropEntriesMsg}"/>
 			</mx:HBox>
 
 			<mx:Grid width="100%" verticalGap="10">
@@ -294,9 +294,9 @@
 
 		<!-- Google -->
 		<mx:VBox width="100%" height="100%" horizontalScrollPolicy="off" verticalGap="16" paddingRight="11">
-			<mx:HBox styleName="noteBackground" width="100%">
-				<mx:Text link="lbl_link(event)" width="100%" visible="{showDropEntriesMsg}"
-						 includeInLayout="{showDropEntriesMsg}" htmlText="{dropEntriesMsg}"/>
+			<mx:HBox styleName="noteBackground" width="100%" visible="{_showDropEntriesMsg}"
+						 includeInLayout="{_showDropEntriesMsg}">
+				<mx:Text link="lbl_link(event)" width="100%"  htmlText="{dropEntriesMsg}"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms', 'ggAdvise1')}" styleName="feedParamLabel"/>
