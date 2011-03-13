@@ -68,11 +68,8 @@
 			 * */
 			private var crippledComboDataProvider:ArrayCollection;
 			
-			[Bindable][ArrayElementType("String")]
-			/**
-			 * ids of users who should get the cripled actions DP
-			 * */
-			public var crippledUsersIds:Array;
+			[ArrayElementType("String")]
+			private var _crippledUsersIds:Array;
 			
 			
 			
@@ -303,6 +300,28 @@
 				}
 				return item.roleIds;
 			}
+
+			/**
+			 * ids of users who should get the cripled actions DP
+			 * */
+			public function get crippledUsersIds():Array
+			{
+				return _crippledUsersIds;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set crippledUsersIds(value:Array):void
+			{
+				_crippledUsersIds = value;
+				// re-trigger the itemrenderers' data setter,  
+				// so the list will actually be used
+				if (dataProvider) {
+					dataProvider = dataProvider;
+				}
+			}
+
 
 		]]>
 	</mx:Script>
