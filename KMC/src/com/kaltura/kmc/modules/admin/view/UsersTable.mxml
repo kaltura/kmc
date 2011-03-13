@@ -167,19 +167,27 @@
 			// ==================================================================
 
 			public function getActionsDP(data:Object):ArrayCollection {
+				var res:ArrayCollection;
 				var usr:KalturaUser = data as KalturaUser;
 				for each (var uid:String in crippledUsersIds) {
 					if (uid == usr.id) {
-						return crippledComboDataProvider;
+						res = crippledComboDataProvider;
+						break;
 					}
 				} 
-				return comboDataProvider;
+				if (!res) {
+					res = comboDataProvider;
+				}
+				// refresh the collection so it'll dispatch an event that will 
+				// hopefuly solve the incomplete / incorrect dropdown issue. 
+				res.refresh();
+				return res;
 			}
 			
 
 			/**
 			 * Remove single item from the combobox dataprovider by its id
-			 * @id - the name of the id to remove 
+			 * @param id	the name of the id to remove 
 			 */
 			private function removeItemById(id:String):void
 			{
@@ -221,7 +229,7 @@
 			}
 			
 			// ==================================================================
-			// gettesr / setters
+			// getters / setters
 			// ==================================================================
 
 			public function get selectedUser():KalturaUser {
