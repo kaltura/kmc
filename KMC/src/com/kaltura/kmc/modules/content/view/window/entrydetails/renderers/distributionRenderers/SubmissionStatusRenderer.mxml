@@ -17,6 +17,7 @@
 				import com.kaltura.types.KalturaEntryStatus;
 				import com.kaltura.vo.KalturaDistributionValidationError;
 				import com.kaltura.vo.KalturaDistributionValidationErrorInvalidData;
+				import com.kaltura.vo.KalturaDistributionValidationErrorInvalidMetadata;
 				import com.kaltura.vo.KalturaDistributionValidationErrorMissingFlavor;
 				import com.kaltura.vo.KalturaDistributionValidationErrorMissingMetadata;
 				import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
@@ -224,13 +225,13 @@
 				 * */
 				private function createErrorPopup(type:String, title:String):ErrorDetailsWindow {
 					var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
-					errorDetails.setType(type);
 					if (parentDocument is DistributionDetailsWindow)
 						errorDetails.enableLinks = false;
 					else {
 						errorDetails.enableLinks = true;
 						errorDetails.viewStack = parentDocument.viewStack;
 					}
+					errorDetails.setType(type);
 					errorDetails.title = title;
 					
 					return errorDetails;
@@ -266,9 +267,11 @@
 				
 				private function onMissingMetadataErrorLink():void {
 					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_METADATA, resourceManager.getString('cms','missingMetadata'));
+					
 					for each (var err:KalturaDistributionValidationErrorMissingMetadata in _metadataMissingArray) {
 						errorDetails.addErrorDetail( err.fieldName);
-					}
+					} 
+					
 					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 					PopUpManager.centerPopUp(errorDetails);
 				}
@@ -276,9 +279,12 @@
 				private function onMetadataErrorLink():void {
 					//buildMockUpErrors();
 					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('cms','metadataValidationFailed'));
-					 for each (var err:KalturaDistributionValidationErrorInvalidData in _metadataErrorsArray) {
-						errorDetails.addErrorDetail(returnValidationErroString(err), true);
-					} 
+					for (var i:int = 0; i<_metadataErrorsArray.length; i++) {
+						if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
+							errorDetails.addLinkToCustomTab((_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidMetadata).metadataProfileId.toString());
+						errorDetails.addErrorDetail(returnValidationErroString(_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidData), true);
+					}  
+				
 					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 					PopUpManager.centerPopUp(errorDetails);
 				}
@@ -349,15 +355,15 @@
 		<mx:LinkButton id="missingThumbLink" label="{resourceManager.getString('cms','missingThumbnail')}"
 					   visible="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}"
 					   includeInLayout="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}" styleName="distributionError"
-					   click="{onThumbErrorLink()}" width="97"/>	
+					   click="{onThumbErrorLink()}"/>	
 		<mx:LinkButton id="missingFlavorLink" label="{resourceManager.getString('cms','missingFlavor')}"
 					   visible="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}"
-					   styleName="distributionError" click="{onFlavorErrorClick()}" width="97"/>
+					   styleName="distributionError" click="{onFlavorErrorClick()}"/>
 		<mx:LinkButton id="missingMetadataLink" label="{resourceManager.getString('cms','missingMetadata')}"
 						visible="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
-						styleName="distributionError" click="{onMissingMetadataErrorLink()}" width="97" />
+						styleName="distributionError" click="{onMissingMetadataErrorLink()}"/>
 		<mx:LinkButton id="invalidMetadataLink" label="{resourceManager.getString('cms','metadataError')}"
 						visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
-						styleName="distributionError" click="{onMetadataErrorLink()}" width="97" />
+						styleName="distributionError" click="{onMetadataErrorLink()}"/>
 	</mx:Tile>
 </mx:VBox>

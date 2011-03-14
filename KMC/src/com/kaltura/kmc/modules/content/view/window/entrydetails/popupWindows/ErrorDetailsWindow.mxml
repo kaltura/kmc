@@ -6,6 +6,7 @@
 				showCloseButton="true" close="onClose()" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
+			import mx.containers.VBox;
 			import mx.containers.ViewStack;
 			import mx.controls.Label;
 			import mx.controls.LinkButton;
@@ -32,6 +33,11 @@
 			public var enableLinks:Boolean = false;
 			[Bindable]
 			private var _showCustomDataBtn:Boolean = false;
+			[Bindable]
+			private var _customTabId:String = '';
+			[Bindable]
+			private var _customDataLabel:String;
+			
 			
 			private function onCreationComplete():void {
 				this.mx_internal::closeButton.buttonMode = true;
@@ -54,13 +60,11 @@
 					case MISSING_METADATA:
 						_infoLabel = resourceManager.getString('cms','missingMetadataMsg');
 						_extraInfoLabel = resourceManager.getString('cms','gotoMetadataTabMsg');
-						_showCustomDataBtn = true;
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 					case METADATA_ERROR:
 						_infoLabel = resourceManager.getString('cms','invalidMetadata');
 						_extraInfoLabel = resourceManager.getString('cms','gotoMetadataTabMsgInvalid');
-						_showCustomDataBtn = true;
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 				}
@@ -91,7 +95,7 @@
 							setSelectedChild("entryMetaData")
 						}
 						else {
-							setSelectedChild("customData")							
+							setSelectedChild(_customTabId)							
 						}
 						break;
 				}
@@ -124,6 +128,23 @@
 					_infoLabel += '\n'+error;
 				}
 			}
+			
+			/**
+			 * adds a link to a custom data tab
+			 * @param tabName the name of the custom data tab
+			 * @param tabId the id of the custom data tab
+			 * */
+			public function addLinkToCustomTab(tabId:String) : void {
+				_customTabId = tabId;
+				if (viewStack) {
+					var child:VBox = viewStack.getChildByName(tabId) as VBox;
+					if (child) {
+						_customDataLabel = resourceManager.getString('cms','gotoCustomDataTab',new Array(child.label));
+						if (tabId)
+							_showCustomDataBtn = true;
+					}
+				} 
+			}
 		]]>
 	</mx:Script>
 	<!--<mx:VBox height="115" width="100%" styleName="distributionErrorVBox">-->
@@ -137,7 +158,7 @@
 		<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
 					   click="{onLinkClick(event)}"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton id="customDataBtn" paddingRight="0" label="{resourceManager.getString('cms','gotoCustomDataTab')}" 
+		<mx:LinkButton id="customDataBtn" paddingRight="0" label="{_customDataLabel}"
 					   visible="{_showCustomDataBtn}" includeInLayout="{_showCustomDataBtn}"
 					   click="{onLinkClick(event)}"/>
 	</mx:ControlBar>

@@ -252,24 +252,20 @@
 						viewStack.removeChild(this[subtabName]);
 					}
 				}
+				//adds custom data tabs
 				if (filterModel.enableCustomData) {
 					if (filterModel.metadataProfiles && filterModel.metadataProfiles.length>0) {
-						//customData.label = (filterModel.metadataProfiles[0] as KMCMetadataProfileVO).profile.name;
 						entryDetailsModel.metadataInfoArray = new ArrayCollection();
 						
 						for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {					
 							var curProfile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
-						//	var metadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
-						//	entryDetailsModel.metadataInfoArray.addItem(metadataInfo);
 							
 							if (curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
 								var curCustomData:EntryCustomData= new EntryCustomData();		
-								//curCustomData.metadataProfile = curProfile;
-								//curCustomData.metadataInfo = metadataInfo;
 								var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
-							//	curFormBuilder.metadataInfo = metadataInfo;
 								curCustomData.formBuilder = curFormBuilder;
 								curCustomData.label = curProfile.profile ? curProfile.profile.name : resourceManager.getString('cms', 'customData');
+								curCustomData.name = curProfile.profile.id.toString();
 								viewStack.addChild(curCustomData);
 							}
 						}
