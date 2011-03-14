@@ -6,6 +6,7 @@
 <mx:Script>
 	<![CDATA[
 		import com.kaltura.commands.uiConf.UiConfAdd;
+		import com.kaltura.kmc.business.PermissionManager;
 		import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
 		import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 		import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -28,6 +29,10 @@
 		private var _finalMxml:XML;
 		private var _formBuilder:FormBuilder;
 		private var _isFormReady:Boolean = false;
+		
+		//rols and permissions: if we can edit metadata
+		[Bindable]
+		public var metadataEditable:Boolean = true;
 
 		/**
 		 * The form builder for current custom data tab
@@ -48,6 +53,7 @@
 		}
 
 		private function onCreationComplete(event:Event):void {
+			PermissionManager.getInstance().applyAllAttributes(this, "entryCustomData");
 			if (_isFormReady)
 				checkProfile();
 			_isReady= true;
@@ -119,5 +125,5 @@
 
 	]]>
 </mx:Script>
-	<mx:VBox id="all" width="100%" disabledOverlayAlpha="0"/>
+	<mx:VBox id="all" width="100%" disabledOverlayAlpha="0" enabled="{metadataEditable}"/>
 </mx:VBox>
