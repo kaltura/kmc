@@ -190,7 +190,8 @@
 			/**
 			 * metadata
 			 * */
-			private var _metadataProfile:KMCMetadataProfileVO;
+			//private var _metadataProfile:KMCMetadataProfileVO;
+			private var _metadataProfilesArray:ArrayCollection;
 			/**
 			 * Distribution profiles array
 			 * */
@@ -212,25 +213,66 @@
 
 
 			/**
+			 * Array collection fo KMCMetadataProfileVO
+			 * */
+			[Bindable]
+			public function get metadataProfilesArray():ArrayCollection
+			{
+				return _metadataProfilesArray;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set metadataProfilesArray(value:ArrayCollection):void
+			{
+				_metadataProfilesArray = value;
+				
+
+				
+				if (value) {
+					setMetadataTabVisibility();
+				}
+			}
+
+			/**
 			 * if there are no metadata fields that should appear
 			 * in search, remove the metadata tab from the accordion
 			 * */
 			private function setMetadataTabVisibility():void {
-				if (_enableCustomData && _metadataProfile && _metadataProfile.metadataFieldVOArray.length) {
-					accordion.addChildAt(metadata, 1);
-					var field:MetadataFieldVO;
-					for each (var obj:Object in _metadataProfile.metadataFieldVOArray) {
-						field = obj as MetadataFieldVO;
-						if (field && field.appearInSearch) {
-							break;
-						}
+				//clean previous metadata children
+				for (var i:int = accordion.numChildren-1; i>=0; i--) {
+					if (accordion.getChildAt(i) is MetadataAccordionTab) {
+						accordion.removeChildAt(i);
 					}
 				}
-				else {
-					metadata.visible = false;
-					metadata.includeInLayout = false;
-					if (metadata.parent is Accordion)
-						accordion.removeChild(metadata);
+				if (_enableCustomData) {
+					for (var j:int = _metadataProfilesArray.length-1; j>=0; j--) {
+					//for each (var profile:KMCMetadataProfileVO in _metadataProfilesArray) {
+						var profile:KMCMetadataProfileVO = _metadataProfilesArray.getItemAt(j) as KMCMetadataProfileVO;
+						if (profile.metadataFieldVOArray && profile.metadataFieldVOArray.length) {
+							var metadataTab:MetadataAccordionTab = new MetadataAccordionTab();
+							metadataTab.label = profile.profile.name;
+							
+
+							var field:MetadataFieldVO;
+							var hasSearchableFields:Boolean = false;
+							for each (var obj:Object in profile.metadataFieldVOArray) {
+								field = obj as MetadataFieldVO;
+								if (field && field.appearInSearch && (field.type == MetadataCustomFieldTypes.LIST)) {
+									hasSearchableFields = true;
+									break;
+								}
+							}
+							if (hasSearchableFields) {
+								accordion.addChildAt(metadataTab, 1);
+								buildMetadataProfileFilter(profile, metadataTab);
+							}
+						}
+					}
+					//select the last container after rebuild the filter
+					accordion.selectedIndex = accordion.numChildren - 1;
+					
 				}
 			}
 
@@ -327,51 +369,55 @@
 			 * get metadata filters
 			 * */
 			private function getMetadataFilters(currentFilter:KalturaBaseEntryFilter):void {
-				if (!metadataProfile)
+				if (!metadataProfilesArray)
 					return;
-				var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
-				mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
-				mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
-
-				//Setting the advanced filter when one change the filter of the metadata
-				for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
-					var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
-					fieldKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
-					fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
-
-					//get a reference to the current media field vo
-					var metadataFieldVo:MetadataFieldVO = metadataProfile.metadataFieldVOArray[i];
-
-					//recive the buttons array according to the list fiels vo that saved if not saved return null
-					//and bypass
-					var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
-
-					//if this filter exist
-					if (btnArr) {
-						//if the title selected we don't need to pass the metadata filter 
-						//but if it's not we will dive to check what values selected
-						if (!btnArr[0].selected) {
-							for (var j:int = 1; j < btnArr.length; j++) {
-								var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
-								if (btnArr[j].selected) {
-									fieldValueSearchCondition.field = metadataFieldVo.xpath;
-									fieldValueSearchCondition.value = btnArr[j].label;
-									fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
-									fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+				
+				for each (var metadataProfile:KMCMetadataProfileVO in metadataProfilesArray) {
+					var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+					mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
+					mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+					
+					//Setting the advanced filter when one change the filter of the metadata
+					for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
+						var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
+						fieldKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
+						fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+						
+						//get a reference to the current media field vo
+						var metadataFieldVo:MetadataFieldVO = metadataProfile.metadataFieldVOArray[i];
+						
+						//recive the buttons array according to the list fiels vo that saved if not saved return null
+						//and bypass
+						var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
+						
+						//if this filter exist
+						if (btnArr) {
+							//if the title selected we don't need to pass the metadata filter 
+							//but if it's not we will dive to check what values selected
+							if (!btnArr[0].selected) {
+								for (var j:int = 1; j < btnArr.length; j++) {
+									var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
+									if (btnArr[j].selected) {
+										fieldValueSearchCondition.field = metadataFieldVo.xpath;
+										fieldValueSearchCondition.value = btnArr[j].label;
+										fieldKalturaMetadataSearchItem.items.push(fieldValueSearchCondition);
+										fieldKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
+									}
 								}
 							}
 						}
+						
+						//if we have items in the array add them to main filter
+						if (fieldKalturaMetadataSearchItem.items.length > 0) {
+							mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
+						}
 					}
-
-					//if we have items in the array add them to main filter
-					if (fieldKalturaMetadataSearchItem.items.length > 0) {
-						mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
+					
+					if (currentFilter is KalturaMediaEntryFilter && currentFilter.advancedSearch) {
+						(currentFilter.advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
 					}
 				}
-
-				if (currentFilter is KalturaMediaEntryFilter && currentFilter.advancedSearch) {
-					(currentFilter.advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
-				}
+				
 			}
 
 
@@ -564,8 +610,8 @@
 			}
 
 
-			private function buildMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO):void {
-				metadata.removeAllChildren();
+			private function buildMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO, metadataTab:VBox):void {
+				//metadata.removeAllChildren();
 
 				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
 					//if appear in search is true and we need to create additinal filter
@@ -574,18 +620,15 @@
 						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i]);
 
 						if (container) // if we need to add visual filter
-							metadata.addChild(container);
+							metadataTab.addChild(container);
 					}
 				}
 
 				//if there are no feilds with displayInSearch = true we will hide the metadata accordion header
-				if (metadata.numChildren == 0) {
-					metadata.visible = false;
-					metadata.includeInLayout = false;
+				if (metadataTab.numChildren == 0) {
+					metadataTab.visible = false;
+					metadataTab.includeInLayout = false;
 				}
-
-				//select the last container after rebuild the filter
-				accordion.selectedIndex = accordion.numChildren - 1;
 			}
 
 
@@ -1031,7 +1074,7 @@
 			}
 
 
-			[Bindable]
+			/* [Bindable]
 			public function get metadataProfile():KMCMetadataProfileVO {
 				return _metadataProfile;
 			}
@@ -1044,7 +1087,7 @@
 				if (value)
 					buildMetadataProfileFilter(value);
 			}
-
+ */
 
 			/**
 			 * there's an active filter
@@ -1168,8 +1211,7 @@
 			<mx:VBox id="transcodingFlavor" width="100%" styleName="transcodingFlavorVBox"
 					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}"/>
 		</mx:VBox>
-		<mx:VBox id="metadata" label="{resourceManager.getString('cms', 'metadataTab')}" width="100%" height="100%"
-				 styleName="additinalFilterVBox"/>
+
 		<mx:VBox id="distribution" label="{resourceManager.getString('cms', 'distribution')}" width="100%" height="100%"
 				 styleName="additinalFilterVBox"/>
 		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%"

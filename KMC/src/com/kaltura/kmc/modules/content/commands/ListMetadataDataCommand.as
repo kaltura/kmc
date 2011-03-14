@@ -6,10 +6,13 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.utils.FormBuilder;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.types.KalturaMetadataOrderBy;
+	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaMetadata;
 	import com.kaltura.vo.KalturaMetadataFilter;
 	import com.kaltura.vo.KalturaMetadataListResponse;
+	
+	import mx.collections.ArrayCollection;
 	
 	/**
 	 * This class sends a metadata data list request to the server and handles the response 
@@ -27,17 +30,12 @@ package com.kaltura.kmc.modules.content.commands
 		 */		
 		override public function execute(event:CairngormEvent):void
 		{
-			if (!_model.filterModel.metadataProfile.profile || !_model.entryDetailsModel.selectedEntry.id)
+			if (!_model.filterModel.metadataProfiles || !_model.entryDetailsModel.selectedEntry.id)
 				return;
 				
 			var filter:KalturaMetadataFilter = new KalturaMetadataFilter();
-			filter.metadataProfileIdEqual = _model.filterModel.metadataProfile.profile.id;
-			filter.metadataProfileVersionEqual = _model.filterModel.metadataProfile.profile.version;
 			filter.objectIdEqual = _model.entryDetailsModel.selectedEntry.id;	
-			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
-			pager.pageSize = 1;
-			pager.pageIndex = 1;
 		
 			var listMetadataData:MetadataList = new MetadataList(filter, pager);
 			listMetadataData.addEventListener(KalturaEvent.COMPLETE, result);
@@ -54,12 +52,25 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void
 		{
 			super.result(data);
-			_model.entryDetailsModel.metadataInfo = new EntryMetadataDataVO();
+			var metadataResponse:KalturaMetadataListResponse = data.data as KalturaMetadataListResponse;
 			
-			var metadataResponse:KalturaMetadataListResponse = KalturaMetadataListResponse(data.data);
-			_model.entryDetailsModel.metadataInfo.metadata = KalturaMetadata(metadataResponse.objects[0]);
-			FormBuilder.updateMultiTags();
-		
+			_model.entryDetailsModel.metadataInfoArray = new ArrayCollection;
+			//go over all profiles and match to the metadata data
+			for (var i:int = 0; i<_model.filterModel.metadataProfiles.length; i++) {
+				var curMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
+				_model.entryDetailsModel.metadataInfoArray.addItem(curMetadata);
+				var curFormBuilder:FormBuilder = _model.filterModel.formBuilders[i] as FormBuilder;
+				curFormBuilder.metadataInfo = curMetadata;
+				var curProfile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				for each (var metadata:KalturaMetadata in metadataResponse.objects) {
+					if ((metadata.metadataProfileId == curProfile.profile.id) &&
+						(metadata.metadataProfileVersion == curProfile.profile.version)) {
+						curMetadata.metadata = metadata;
+						break;
+					}
+				}
+				curFormBuilder.updateMultiTags();
+			}
 		}
 		
 //		/**

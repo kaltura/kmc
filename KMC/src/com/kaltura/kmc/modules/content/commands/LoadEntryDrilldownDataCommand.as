@@ -29,6 +29,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.types.KalturaMetadataProfileStatus;
 	import com.kaltura.vo.AccessControlProfileVO;
+	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaAccessControlListResponse;
@@ -112,17 +113,11 @@ package com.kaltura.kmc.modules.content.commands
 			mr.addAction(getAssetsAndFlavorsByEntryId);
 			
 //			entry metadata
-			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfile 
-				&& _model.filterModel.metadataProfile.profile && entryId
-				&& (_model.filterModel.metadataProfile.profile.status != KalturaMetadataProfileStatus.TRANSFORMING)) {
+			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfiles 
+				&& entryId) {
 				var filter1:KalturaMetadataFilter = new KalturaMetadataFilter();
-				filter1.metadataProfileIdEqual = _model.filterModel.metadataProfile.profile.id;
-				filter1.metadataProfileVersionEqual = _model.filterModel.metadataProfile.profile.version;
 				filter1.objectIdEqual = entryId;	
-				filter1.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
 				var pager:KalturaFilterPager = new KalturaFilterPager();
-				pager.pageSize = 1;
-				pager.pageIndex = 1;
 				var listMetadataData:MetadataList = new MetadataList(filter1, pager);
 				mr.addAction(listMetadataData);
 			}
@@ -329,9 +324,23 @@ package com.kaltura.kmc.modules.content.commands
 		 * copied from ListMetadataCommand
 		 */
 		private function handleMetadata(metadataResponse:KalturaMetadataListResponse):void {
-			_model.entryDetailsModel.metadataInfo = new EntryMetadataDataVO();
-			_model.entryDetailsModel.metadataInfo.metadata = KalturaMetadata(metadataResponse.objects[0]);
-			FormBuilder.updateMultiTags();
+			_model.entryDetailsModel.metadataInfoArray = new ArrayCollection;
+			//go over all profiles and match to the metadata data
+			for (var i:int = 0; i<_model.filterModel.metadataProfiles.length; i++) {
+				var curMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
+				_model.entryDetailsModel.metadataInfoArray.addItem(curMetadata);
+				var curFormBuilder:FormBuilder = _model.filterModel.formBuilders[i] as FormBuilder;
+				curFormBuilder.metadataInfo = curMetadata;
+				var curProfile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				for each (var metadata:KalturaMetadata in metadataResponse.objects) {
+					if ((metadata.metadataProfileId == curProfile.profile.id) &&
+						(metadata.metadataProfileVersion == curProfile.profile.version)) {
+						curMetadata.metadata = metadata;
+						break;
+					}
+				}
+				curFormBuilder.updateMultiTags();
+			}
 		}
 		
 		

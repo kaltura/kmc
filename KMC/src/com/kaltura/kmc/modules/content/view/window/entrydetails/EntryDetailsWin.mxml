@@ -21,6 +21,7 @@
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.view.CustomData;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -28,6 +29,7 @@
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.kmc.modules.content.utils.FormBuilder;
 			import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
@@ -124,13 +126,13 @@
 			/**
 			 * if there are no custom data fields, will not display the custom data tab
 			 * */
-			private function onMetadataFieldsChange(arr:ArrayCollection) : void {
+			/* private function onMetadataFieldsChange(arr:ArrayCollection) : void {
 				if (arr && arr.length==0) {
 					if (viewStack.getChildByName('customData')) {
 						viewStack.removeChild(customData);
 					}
 				}
-			}
+			} */
 
 
 			/**
@@ -202,7 +204,7 @@
 			}
 
 			private function onWindowCreationComplete():void {
-				BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
+			//	BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
 				
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
 				_undoToEntry = createWorkingCopy(selectedEntry);
@@ -248,6 +250,29 @@
 				for each (var subtabName:String in tabsToHide) {
 					if (viewStack.getChildByName(subtabName)) {
 						viewStack.removeChild(this[subtabName]);
+					}
+				}
+				if (filterModel.enableCustomData) {
+					if (filterModel.metadataProfiles && filterModel.metadataProfiles.length>0) {
+						//customData.label = (filterModel.metadataProfiles[0] as KMCMetadataProfileVO).profile.name;
+						entryDetailsModel.metadataInfoArray = new ArrayCollection();
+						
+						for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {					
+							var curProfile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+						//	var metadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
+						//	entryDetailsModel.metadataInfoArray.addItem(metadataInfo);
+							
+							if (curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
+								var curCustomData:EntryCustomData= new EntryCustomData();		
+								//curCustomData.metadataProfile = curProfile;
+								//curCustomData.metadataInfo = metadataInfo;
+								var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
+							//	curFormBuilder.metadataInfo = metadataInfo;
+								curCustomData.formBuilder = curFormBuilder;
+								curCustomData.label = curProfile.profile ? curProfile.profile.name : resourceManager.getString('cms', 'customData');
+								viewStack.addChild(curCustomData);
+							}
+						}
 					}
 				}
 				
@@ -352,22 +377,25 @@
 			 * */
 			private function onClose():void {
 				var metadataChanged:Boolean = false;
-				var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfo;
-				var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfile;
-
-				if (metadataProfile && metadataProfile.profile && metadataInfo) {
-					var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
-					if (metadataInfo.metadata) {
-						var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-						if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+				for (var i:int = 0; i< filterModel.metadataProfiles.length; i++) {
+					var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
+					var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
+					
+					if (metadataProfile && metadataProfile.profile && metadataInfo) {
+						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
+						if (metadataInfo.metadata) {
+							var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+							if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+								metadataChanged = true;
+							}
+						}
+							//new metadata was inserted
+						else if (newMetadataXML.children().length() > 0) {
 							metadataChanged = true;
 						}
 					}
-					//new metadata was inserted
-					else if (newMetadataXML.children().length() > 0) {
-						metadataChanged = true;
-					}
 				}
+				
 
 				if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
 					// had change, ask for save
@@ -635,8 +663,8 @@
 							   selectedEntry="{_undoToEntry}"/>
 
 		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"
-							filterModel="{filterModel}" entryDetailsModel="{entryDetailsModel}"/>
+		<!--<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"
+							filterModel="{filterModel}" entryDetailsModel="{entryDetailsModel}"/>-->
 		
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution" label="{ResourceManager.getInstance().getString('cms', 'distribution')}"

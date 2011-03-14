@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.EntryIDLinkTable;
 	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.MultiComponent;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
+	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaUiConf;
 	import com.kaltura.vo.MetadataFieldVO;
 	
@@ -28,14 +29,64 @@ package com.kaltura.kmc.modules.content.utils {
 	import mx.core.UIComponent;
 	import mx.resources.ResourceManager;
 	import mx.utils.UIDUtil;
+	import mx.utils.object_proxy;
 	
+	/**
+	 * This class is used for building UI components according to a given
+	 * metadata profile and a view XML. 
+	 */	
+	[Bindable]
 	public class FormBuilder {
 		//spacer height between container fields
 		private static const FIELDS_GAP:int = 10;
 		//padding left for each hierarich level
 		private static const FIELD_INDENT:int = 12;
-		private static var _model:CmsModelLocator = CmsModelLocator.getInstance();
-		private static var _isInvalidView:Boolean = false;
+		private var _model:CmsModelLocator = CmsModelLocator.getInstance();
+		private var _isInvalidView:Boolean = false;
+		
+		private var _metadataProfile:KMCMetadataProfileVO;
+		private var _metadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
+		
+		/**
+		 * The metadataProfile which according to it the builder will
+		 * build the ui components 
+		 * @return the used metadataProfile
+		 * 
+		 */		
+		public function get metadataProfile():KMCMetadataProfileVO
+		{
+			return _metadataProfile;
+		}
+
+		public function set metadataProfile(value:KMCMetadataProfileVO):void
+		{
+			_metadataProfile = value;
+		}
+
+		/**
+		 *  The metadata info, containing the data that was inserted to the current metadata profile
+		 * @return the used metadataInfo
+		 * 
+		 */		
+		public function get metadataInfo():EntryMetadataDataVO
+		{
+			return _metadataInfo;
+		}
+
+		public function set metadataInfo(value:EntryMetadataDataVO):void
+		{
+			_metadataInfo = value;
+		}
+
+		/**
+		 * Builds a new FormBuilder instance 
+		 * @param metadataProfile the metadata profile which will be used to build the proper
+		 * UI components
+		 * 
+		 */		
+		public function FormBuilder(metadataProfile:KMCMetadataProfileVO) {
+			_metadataProfile = metadataProfile;
+		}
 		
 		/**
 		 * go through the view xml and duplicates fields if neccessary, according to metadata data
@@ -44,27 +95,27 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @return a new mxml with the existing data in the fields nodes, under the "text" property
 		 *
 		 */
-		public static function updateMultiTags():void {
-			var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
-			if (!metadataInfo)
+		public function updateMultiTags():void {
+			//var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
+			if (!_metadataInfo)
 				return;
-			if (!_model.filterModel.metadataProfile.viewXML){
-				Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidView'),ResourceManager.getInstance().getString('cms', 'error'));
+			if (!_metadataProfile.viewXML){
+				Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidView', new Array(_metadataProfile.profile.name)),ResourceManager.getInstance().getString('cms', 'error'));
 				return;				
 			}
-			if (!metadataInfo.metadata) {
-				metadataInfo.finalViewMxml = _model.filterModel.metadataProfile.viewXML.copy();
+			if (!_metadataInfo.metadata) {
+				metadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
 				return;
 			}
 			
-			var mxml:XML = _model.filterModel.metadataProfile.viewXML.copy();
-			var metadataData:XML = new XML(metadataInfo.metadata.xml);
+			var mxml:XML = _metadataProfile.viewXML.copy();
+			var metadataData:XML = new XML(_metadataInfo.metadata.xml);
 			
 			var dataMap:HashMap = MetadataDataParser.getMetadataDataValues(metadataData);
 			for each (var field:XML in mxml.children()) 
 			setFieldData(field, dataMap);
 			
-			metadataInfo.finalViewMxml = mxml;
+			_metadataInfo.finalViewMxml = mxml;
 		}
 		
 		/**
@@ -74,7 +125,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param valuesHashMap hash map containing data the fields should contain
 		 * 
 		 */			
-		private static function setFieldData(field:XML, valuesHashMap:HashMap):void {
+		private function setFieldData(field:XML, valuesHashMap:HashMap):void {
 			//represents which property in the component saves the metadata data
 			var metadataDataAttribute:String;
 			
@@ -147,10 +198,11 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param uicondId id of uiconf to get
 		 *
 		 */
-		public static function setViewXML(uicondId:int):void {
+		public function setViewXML(uicondId:int):void {
 			var uiconfRequest:UiConfGet = new UiConfGet(uicondId);
 			uiconfRequest.addEventListener(KalturaEvent.COMPLETE, uiconfResult);
 			uiconfRequest.addEventListener(KalturaEvent.FAILED, uiconfFault);
+			_model.increaseLoadCounter();
 			_model.context.kc.post(uiconfRequest);
 		}
 		
@@ -159,9 +211,9 @@ package com.kaltura.kmc.modules.content.utils {
 		 * sets in the model the suitable mxml for the ui represantation.
 		 * It is done according to the default view xml and the fieldsArray.
 		 * */
-		public static function buildInitialMxml():void {
-			var fieldsArray:ArrayCollection = _model.filterModel.metadataProfile.metadataFieldVOArray;
-			var viewXml:XML = _model.filterModel.metadataProfile.viewXML;
+		public function buildInitialMxml():void {
+			var fieldsArray:ArrayCollection = _metadataProfile.metadataFieldVOArray;
+			var viewXml:XML = _metadataProfile.viewXML;
 			if (!fieldsArray || !viewXml)
 				return;
 			
@@ -225,7 +277,7 @@ package com.kaltura.kmc.modules.content.utils {
 				}
 			}
 			
-			_model.filterModel.metadataProfile.viewXML = mxml;
+			_metadataProfile.viewXML = mxml;
 		}
 		
 		
@@ -237,7 +289,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param nestedFields is the array of the nested fields inside current component that will be build
 		 * @return the built component
 		 */
-		public static function buildComponent(component:XML, boundModel:MetadataDataObject, nestedFieldsArray:ArrayCollection):UIComponent {
+		public function buildComponent(component:XML, boundModel:MetadataDataObject, nestedFieldsArray:ArrayCollection):UIComponent {
 			var componentName:String = component.@compPackage + component.localName();
 			var ClassReference:Class = getDefinitionByName(componentName) as Class;
 			var compInstance:UIComponent = new ClassReference();
@@ -286,6 +338,7 @@ package com.kaltura.kmc.modules.content.utils {
 						//this is the child that will be added with every click on the "add" button
 						(compInstance as MultiComponent).childXML = XML(component.children()[0]).copy();
 						(compInstance as MultiComponent).nestedFieldsArray = nestedFieldsArray;
+						(compInstance as MultiComponent).formBuilder = this;
 					}
 					(compInstance as MultiComponent).metadataObject = boundModel[newProperty];
 				}
@@ -316,7 +369,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param container the container of the components to disable
 		 * 
 		 */		
-		public static function disableComponents(container:Container) : void {
+		public function disableComponents(container:Container) : void {
 			for (var i:int = 0; i<container.numChildren; i++) {
 				var child:DisplayObject = container.getChildAt(i);
 				if (child is Container) {
@@ -334,13 +387,13 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param mxml	form description
 		 * @return	a form
 		 * */
-		public static function buildLayout(mxml:XML):UIComponent {
+		public function buildLayout(mxml:XML):UIComponent {
 			//In order to have a class definition it should compile, so we point to it
 			var dummyTable:EntryIDLinkTable;
 			var dummyMulti:MultiComponent;
 			
 			var newLayout:VBox = new VBox();
-			var fieldsArray:ArrayCollection = _model.filterModel.metadataProfile.metadataFieldVOArray;
+			var fieldsArray:ArrayCollection =_metadataProfile.metadataFieldVOArray;
 			
 			for each (var field:XML in mxml.children()) {
 				var child:UIComponent = buildLayoutItem(field, fieldsArray);
@@ -357,7 +410,7 @@ package com.kaltura.kmc.modules.content.utils {
 			return newLayout;
 		}
 		
-		private static function buildLayoutItem(field:XML, fieldsArray:ArrayCollection, metadataObject:MetadataDataObject = null) : UIComponent
+		private function buildLayoutItem(field:XML, fieldsArray:ArrayCollection, metadataObject:MetadataDataObject = null) : UIComponent
 		{
 			if (!fieldsArray)
 				return null;
@@ -389,13 +442,13 @@ package com.kaltura.kmc.modules.content.utils {
 			}
 			
 			//if it's a nested component we will recieve the bound metadata object. otherwhise use the one from the model
-			var boundObject:MetadataDataObject = metadataObject ? metadataObject: _model.entryDetailsModel.metadataInfo.metadataDataObject;
+			var boundObject:MetadataDataObject = metadataObject ? metadataObject: _metadataInfo.metadataDataObject;
 			try {
 				var child:UIComponent = buildComponent(field, boundObject, fieldsArray );
 			}
 			catch (e:Error) {
 				if (!_isInvalidView) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidViewComponents'),ResourceManager.getInstance().getString('cms', 'error'));
+					Alert.show(ResourceManager.getInstance().getString('cms', 'metadataInvalidViewComponents', new Array(_metadataProfile.profile.name)),ResourceManager.getInstance().getString('cms', 'error'));
 					_isInvalidView = true;					
 				}
 				return null;
@@ -421,7 +474,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param valueType the type to return
 		 * @return the correct form of the value
 		 */
-		private static function getSuitableValue(input:String, valueType:String):Object {
+		private function getSuitableValue(input:String, valueType:String):Object {
 			switch (valueType) {
 				case "int":
 					return parseInt(input);
@@ -445,7 +498,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * recieves an xml and maps its children to a hashmap where
 		 * key=node name, value= node
 		 * */
-		private static function getValuesFromView(metadataViewXml:XML):HashMap {
+		private function getValuesFromView(metadataViewXml:XML):HashMap {
 			var values:HashMap = new HashMap();
 			for each (var node:XML in metadataViewXml.children().children()) {
 				values.put(node.@id, node);
@@ -461,14 +514,15 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param event
 		 *
 		 */
-		private static function uiconfResult(event:KalturaEvent):void {
+		private function uiconfResult(event:KalturaEvent):void {
 			var result:KalturaUiConf = KalturaUiConf(event.data);
-			_model.filterModel.metadataProfile.viewXML = new XML(result.confFile);
+			_metadataProfile.viewXML = new XML(result.confFile);
+			_model.decreaseLoadCounter();
 			buildInitialMxml();
 		}
 		
 		
-		private static function uiconfFault(info:Object):void {
+		private function uiconfFault(info:Object):void {
 			if (info && info.error && info.error.errorMsg &&
 				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
 				JSGate.expired();
@@ -488,7 +542,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @param fieldsVoArray is the array of fields where current component exist in
 		 * @return the new uicomponent
 		 */
-		private static function buildComplexComponent(field:XML, fieldInstance:UIComponent,
+		private function buildComplexComponent(field:XML, fieldInstance:UIComponent,
 													  boundObject:MetadataDataObject, fieldsVoArray:ArrayCollection = null):UIComponent {
 			
 			

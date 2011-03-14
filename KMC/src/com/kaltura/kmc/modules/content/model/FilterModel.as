@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.content.model
 {
-	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	
 	import mx.collections.ArrayCollection;
@@ -35,8 +35,14 @@ package com.kaltura.kmc.modules.content.model
 		 * */
 		public var flavorParams:ArrayCollection = new ArrayCollection();
 
-		
-		public var metadataProfile:KMCMetadataProfileVO;
+		/**
+		 * list of KMCMetadataProfileVO
+		 * */
+		public var metadataProfiles:ArrayCollection;
+		/**
+		 * list of FormBuilder, the indices should suit the metadataProfiles arrayCollection
+		 * */
+		public var formBuilders:ArrayCollection;
 		
 		/**
 		 * a list of access control profiles of the current partner,

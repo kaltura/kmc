@@ -1,13 +1,6 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.EntriesEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
-	import com.kaltura.kmc.modules.content.events.WindowEvent;
-	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
-	import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
-	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.commands.metadata.MetadataAdd;
@@ -15,7 +8,15 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.playlist.PlaylistUpdate;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.EntriesEvent;
+	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.kmc.modules.content.events.WindowEvent;
+	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+	import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
+	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 	import com.kaltura.types.KalturaMetadataObjectType;
+	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 	import com.kaltura.vo.KalturaMixEntry;
@@ -81,27 +82,32 @@ package com.kaltura.kmc.modules.content.commands {
 						mr.addAction(updateEntry1);
 					}
 					
-					var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
-					if (_model.entryDetailsModel.enableUpdateMetadata &&
-						!(e.entries[i] is KalturaPlaylist) && _model.filterModel.metadataProfile &&
-						_model.filterModel.metadataProfile.profile && metadataInfo) {
-						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, _model.filterModel.metadataProfile);
-						//metadata exists--> update request
-						if (metadataInfo.metadata) {
-							var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-							if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
-								var metadataUpdate:MetadataUpdate = new MetadataUpdate(metadataInfo.metadata.id,
-																					   newMetadataXML.toXMLString());
-								mr.addAction(metadataUpdate);
+					//var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
+					if (_model.entryDetailsModel.enableUpdateMetadata && !(e.entries[i] is KalturaPlaylist) && _model.entryDetailsModel.metadataInfoArray) {
+						for (var j:int = 0; j< _model.entryDetailsModel.metadataInfoArray.length; j++) {
+							var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfoArray[j] as EntryMetadataDataVO;
+							var profile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[j] as KMCMetadataProfileVO;
+							if (metadataInfo && profile && profile.profile) {
+								var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, profile);
+								//metadata exists--> update request
+								if (metadataInfo.metadata) {
+									var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+									if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+										var metadataUpdate:MetadataUpdate = new MetadataUpdate(metadataInfo.metadata.id,
+											newMetadataXML.toXMLString());
+										mr.addAction(metadataUpdate);
+									}
+								}
+								else if (newMetadataXML.children().length() > 0) {
+									var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
+										KalturaMetadataObjectType.ENTRY,
+										_model.entryDetailsModel.selectedEntry.id,
+										newMetadataXML.toXMLString());
+									mr.addAction(metadataAdd);
+								}
 							}
 						}
-						else if (newMetadataXML.children().length() > 0) {
-							var metadataAdd:MetadataAdd = new MetadataAdd(_model.filterModel.metadataProfile.profile.id,
-																		  KalturaMetadataObjectType.ENTRY,
-																		  _model.entryDetailsModel.selectedEntry.id,
-																		  newMetadataXML.toXMLString());
-							mr.addAction(metadataAdd);
-						}
+											
 					}
 				}
 				mr.addEventListener(KalturaEvent.COMPLETE, result);

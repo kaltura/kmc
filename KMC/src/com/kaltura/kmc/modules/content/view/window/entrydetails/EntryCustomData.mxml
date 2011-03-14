@@ -13,6 +13,7 @@
 		import com.kaltura.kmc.modules.content.utils.FormBuilder;
 		import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 		import com.kaltura.types.KalturaMetadataProfileStatus;
+		import com.kaltura.vo.KMCMetadataProfileVO;
 		
 		import mx.binding.utils.BindingUtils;
 		import mx.controls.Alert;
@@ -22,39 +23,59 @@
 
 		private var _pending:Boolean = false;
 		private var _form:UIComponent ;
+		private var _isReady:Boolean = false;
 		
+		private var _finalMxml:XML;
+		private var _formBuilder:FormBuilder;
+		private var _isFormReady:Boolean = false;
+
 		/**
-		 * filtering data
+		 * The form builder for current custom data tab
 		 * */
-		public var filterModel:FilterModel;
-		
-		/**
-		 * entry details window data
-		 * */
-		public var entryDetailsModel:EntryDetailsModel;
+		public function get formBuilder():FormBuilder
+		{
+			return _formBuilder;
+		}
+
+		public function set formBuilder(value:FormBuilder):void
+		{
+			_formBuilder = value;
+			if (!_isFormReady && _isReady)
+				checkProfile();
+			_isFormReady = true;
+			if (_finalMxml) 
+				buildForm();
+		}
 
 		private function onCreationComplete(event:Event):void {
-			//resets old metadata
-			entryDetailsModel.metadataInfo = new EntryMetadataDataVO();
+			if (_isFormReady)
+				checkProfile();
+			_isReady= true;
 			
-			if (!filterModel.enableCustomData)
+		
+		}
+		
+		/**
+		 * once the window is ready and all relvent data is ready we should check for the
+		 * state of the profile
+		 * */
+		private function checkProfile():void {
+			if (!_formBuilder.metadataProfile || !_formBuilder.metadataProfile.profile)
 				return;
-			
-			if (!filterModel.metadataProfile || !filterModel.metadataProfile.profile)
-				return;
-			if (filterModel.metadataProfile && filterModel.metadataProfile.profile &&
-				(filterModel.metadataProfile.profile.status == KalturaMetadataProfileStatus.TRANSFORMING)) {
-				var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-				listMetadataProfile.dispatch();
+			_formBuilder.metadataInfo = new EntryMetadataDataVO();
+			if (_formBuilder.metadataProfile && _formBuilder.metadataProfile.profile &&
+				(_formBuilder.metadataProfile.profile.status == KalturaMetadataProfileStatus.TRANSFORMING)) {
+				//if current profile is transforming, will request it again from the server, to see if ready
+				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET, _formBuilder.metadataProfile.profile.id);
+				getMetadataProfile.dispatch();
 				_pending = true;
 			}
 			else {
-			//	var listMetadata:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
-			//	listMetadata.dispatch();
-				BindingUtils.bindSetter(addForm, entryDetailsModel, ["metadataInfo","finalViewMxml"]);
+				BindingUtils.bindSetter(addForm, _formBuilder,["metadataInfo","finalViewMxml"]);
 				BindingUtils.bindSetter(disableComponentes, this.all, "enabled");
 			}
 		}
+		
 		
 		/**
 		 * not building a form if metadataProfile is pending
@@ -65,13 +86,25 @@
 			}
 		}
 		
+		/**
+		 * will be called when the final mxml is ready
+		 * */
 		private function addForm(finalMxml:XML) : void{
 			if (finalMxml) {
-				_form = FormBuilder.buildLayout(finalMxml);
-				all.addChild(_form);
-				if (_form && !all.enabled) {
-					FormBuilder.disableComponents(_form as Container);
-				}
+				_finalMxml = finalMxml;
+				if (_isFormReady) 
+					buildForm();
+			}
+		}
+		
+		/**
+		 * once the formBuilder and the _finalmxml are available we can build the form
+		 * */
+		private function buildForm():void {
+			_form = formBuilder.buildLayout(_finalMxml);
+			all.addChild(_form);
+			if (_form && !all.enabled) {
+				formBuilder.disableComponents(_form as Container);
 			}
 		}
 		
@@ -80,7 +113,7 @@
 		 * */
 		private function disableComponentes(value:Boolean) : void{
 			if (_form && !value) {
-				FormBuilder.disableComponents(_form as Container);
+				formBuilder.disableComponents(_form as Container);
 			}
 		}
 

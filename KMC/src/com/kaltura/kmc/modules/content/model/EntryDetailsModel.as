@@ -39,9 +39,9 @@ package com.kaltura.kmc.modules.content.model
 		public var selectedEntry:KalturaBaseEntry;
 		
 		/**
-		 * will hold the metadata data values
+		 * array of EntryMetadataDataVO;
 		 * */
-		public var metadataInfo:EntryMetadataDataVO;
+		public var metadataInfoArray:ArrayCollection;
 		
 		/**
 		 * uiconf used with metadata
