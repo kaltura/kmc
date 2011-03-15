@@ -34,6 +34,8 @@ package com.kaltura.vo
 	[Bindable]
 	public class KMCMetadataProfileVO implements IValueObject
 	{
+		public static var serveURL:String = "/api_v3/index.php/service/metadata_metadataprofile/action/serve";
+		
 		public var profile:KalturaMetadataProfile = new KalturaMetadataProfile();
 		public var metadataFieldVOArray:ArrayCollection = new ArrayCollection();
 		public var metadataProfileChanged:Boolean = false;
@@ -41,6 +43,7 @@ package com.kaltura.vo
 		public var xsd:XML;
 		public var viewXML:XML;
 		public var profileDisabled:Boolean  = false;
+		public var downloadUrl:String;
 		
 		/**
 		 *  Constructs a new KMCMetadataProfileVO class
