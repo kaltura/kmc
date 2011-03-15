@@ -1,17 +1,17 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionValidationError;
+	import com.kaltura.vo.KalturaDistributionValidationErrorInvalidData;
 
 	[Bindable]
-	public dynamic class KalturaDistributionValidationErrorInvalidMetadata extends KalturaDistributionValidationError
+	public dynamic class KalturaDistributionValidationErrorInvalidMetadata extends KalturaDistributionValidationErrorInvalidData
 	{
-		public var fieldName : String;
+		public var metadataProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('fieldName');
+			arr.push('metadataProfileId');
 			return arr;
 		}
 	}

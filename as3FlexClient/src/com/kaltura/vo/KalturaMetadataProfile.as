@@ -13,6 +13,8 @@ package com.kaltura.vo
 		public var version : int = int.MIN_VALUE;
 
 		public var name : String;
+		
+		//public var description: String;
 
 		public var createdAt : int = int.MIN_VALUE;
 
