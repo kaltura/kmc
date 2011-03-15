@@ -373,26 +373,27 @@
 			 * */
 			private function onClose():void {
 				var metadataChanged:Boolean = false;
-				for (var i:int = 0; i< filterModel.metadataProfiles.length; i++) {
-					var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
-					var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
-					
-					if (metadataProfile && metadataProfile.profile && metadataInfo) {
-						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
-						if (metadataInfo.metadata) {
-							var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-							if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+				if (filterModel.enableCustomData && filterModel.metadataProfiles) {
+					for (var i:int = 0; i< filterModel.metadataProfiles.length; i++) {
+						var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
+						var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
+						
+						if (metadataProfile && metadataProfile.profile && metadataInfo) {
+							var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
+							if (metadataInfo.metadata) {
+								var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+								if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+									metadataChanged = true;
+								}
+							}
+								//new metadata was inserted
+							else if (newMetadataXML.children().length() > 0) {
 								metadataChanged = true;
 							}
-						}
-							//new metadata was inserted
-						else if (newMetadataXML.children().length() > 0) {
-							metadataChanged = true;
 						}
 					}
 				}
 				
-
 				if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
 					// had change, ask for save
 					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);

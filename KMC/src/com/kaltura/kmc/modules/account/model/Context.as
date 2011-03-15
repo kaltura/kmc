@@ -16,7 +16,6 @@ package com.kaltura.kmc.modules.account.model
 		public var uiConfigId:String = DEFAULT_UI_CONFIG_ID;
 		public var permissions:int = -1;
 		public var groupId:String;
-		public var metadataProfileName:String = DEFAULT_METADATA_PROFILE_NAME;
 		
 		/**
 		 * The PS3 - new flex client API

@@ -69,7 +69,7 @@ package com.kaltura.kmc.modules.account.command
 			//last request is always the list request
 			var listResult:KalturaMetadataProfileListResponse  = responseArray[1]as KalturaMetadataProfileListResponse;
 			_model.metadataProfilesTotalCount = listResult.totalCount;
-			_model.metadataProfilesArray = ListMetadataProfileUtil.handleListMetadataResult(listResult, _model.context.metadataProfileName);
+			_model.metadataProfilesArray = ListMetadataProfileUtil.handleListMetadataResult(listResult, _model.context);
 		}
 		
 		/**

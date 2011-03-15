@@ -1,5 +1,7 @@
 package com.kaltura.kmc.utils
 {
+	import com.kaltura.kmc.modules.account.model.Context;
+	import com.kaltura.types.KalturaMetadataProfileCreateMode;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadataProfile;
@@ -19,24 +21,27 @@ package com.kaltura.kmc.utils
 		 * This function will parse the given object and return an arrayCollection of the 
 		 * suitable KMCMetadataProfileVO classes 
 		 * @param response is the KalturaMetadataProfileList response, returned from the server
-		 * @param kmc_name - only if the profile will have the same name it will be enabled in the kmc settings tab
+		 * @param context is the Context that will be used for the download url
 		 * @return arrayCollection
 		 */		
-		public static function handleListMetadataResult(response:KalturaMetadataProfileListResponse, kmc_name:String) : ArrayCollection 
+		public static function handleListMetadataResult(response:KalturaMetadataProfileListResponse, context:Context) : ArrayCollection 
 		{
 			var profilesArray:ArrayCollection = new ArrayCollection();
 		
 			for (var i:int = 0; i< response.objects.length; i++ ) {
 				var recievedProfile:KalturaMetadataProfile = response.objects[i] as KalturaMetadataProfile;
+				if (!recievedProfile)
+					continue;
 				var metadataProfile : KMCMetadataProfileVO = new KMCMetadataProfileVO();
 				metadataProfile.profile = recievedProfile;
+				metadataProfile.downloadUrl = context.kc.protocol + context.kc.domain + KMCMetadataProfileVO.serveURL + "/ks/" + context.kc.ks + "/id/" + recievedProfile.id;
 				//parses only profiles that were created from KMC
-				// !!!! Change later to be according to a flag Tantan will add!!!!!!!!
-				if (recievedProfile.name == kmc_name) {
+				//change later to refer only to creation mode=kmc
+				if (!(recievedProfile.createMode) || (recievedProfile.createMode == KalturaMetadataProfileCreateMode.KMC)) {
 					metadataProfile.xsd = new XML(recievedProfile.xsd);
 					metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
 				}
-					//custom profile
+				//none KMC profile
 				else {
 					metadataProfile.profileDisabled = true;
 				}

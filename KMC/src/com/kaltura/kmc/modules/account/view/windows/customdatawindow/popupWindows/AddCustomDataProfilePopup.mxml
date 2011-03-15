@@ -59,12 +59,6 @@ Use the 'newProfileState' state for the 'Add New..' action
 			[Bindable]
 			private var _metadataProfile:KMCMetadataProfileVO;
 			private var _originalProfile:KMCMetadataProfileVO;
-			//r&p: enable addition of fields
-			[Bindable]
-			public var addFieldsEnabled:Boolean = true;
-			//r&p: enable deletion of fields
-			[Bindable]
-			public var removeFieldsEnabled:Boolean = true;
 			
 			/**
 			 * get the accessControlProfile(acp)
@@ -98,7 +92,12 @@ Use the 'newProfileState' state for the 'Add New..' action
 			 */
 			private function onCreationComplete():void {
 				this.mx_internal::closeButton.buttonMode = true;
-				PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup");
+				//edit state
+				if (currentState == null)
+					PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup_edit");
+				//add new state
+				else
+					PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup_add");
 			}
 	
 			/**
@@ -202,6 +201,16 @@ Use the 'newProfileState' state for the 'Add New..' action
 				_metadataProfile.metadataProfileChanged = true;
 			}
 			
+			private function onDescriptionChanged(event:Event) : void {
+				_metadataProfile.profile.description = descriptionTi.text;
+				_metadataProfile.metadataProfileChanged = true;
+			}
+			
+			private function downloadXSD():void {
+				var urlRequest:URLRequest = new URLRequest(metadataProfile.downloadUrl);
+				navigateToURL(urlRequest , '_self');
+			}
+			
 			
 			
 			
@@ -226,17 +235,17 @@ Use the 'newProfileState' state for the 'Add New..' action
 		</mx:HBox>
 		<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('account', 'profileDescription')}" width="80"/>
-				<!-- !!!!! Bind Later to the new desctiption field!!!!-->
-				<mx:TextInput id='descriptionTi' width="100%"/>		
+				<mx:TextInput id='descriptionTi' width="100%" text="{metadataProfile.profile.description}"
+							  change="{onDescriptionChanged(event)}"/>		
 		</mx:HBox>
+		<mx:LinkButton id="downloadXSDBtn" paddingLeft="0" label="{resourceManager.getString('account', 'downloadSchema')}" click="downloadXSD()"/>
 		<mx:HBox id="fieldsTableBox" width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 			<mx:VBox width="100%" height="100%" id='tableContainer' styleName="tableAndPagerContainerStyle"
 					 horizontalAlign="center">
 				<mx:HBox width="100%" height="100%">
-					<cdw:CustomDataFieldsTable id="customFieldsTable" allowMultipleSelection="true" selectable="true"
-											   dataProvider="{_metadataProfile.metadataFieldVOArray}" metadataProfile="{_metadataProfile}"
-											   removeFieldsEnabled="{removeFieldsEnabled}"/>
-					<mx:VBox id='actionBox' visible="{addFieldsEnabled}" includeInLayout="{addFieldsEnabled}" 
+					<cdw:CustomDataFieldsTable id="customFieldsTable"
+											   dataProvider="{_metadataProfile.metadataFieldVOArray}" metadataProfile="{_metadataProfile}"/>
+					<mx:VBox id='actionBox' 
 							 height="100%" styleName="listActionsBox">
 						<mx:Button id="addFieldButton" label="{resourceManager.getString('account', 'customFieldsAddField')}" useHandCursor="true"
 								   buttonMode="true" click="openAddFieldPopup(event)" styleName="listActionButton"/>
@@ -248,6 +257,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 		
 	</mx:VBox>
 	<mx:ControlBar>
-		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account','saveChanges')}" useHandCursor="true" buttonMode="true" click="saveChanges()"/>
+		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account','saveChanges')}" 
+				   useHandCursor="true" buttonMode="true" click="saveChanges()"/>
 	</mx:ControlBar>
 </mx:TitleWindow>
