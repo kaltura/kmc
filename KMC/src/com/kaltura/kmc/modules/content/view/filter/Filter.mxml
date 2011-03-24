@@ -54,6 +54,7 @@
 			public static const DATE_FIELD_WIDTH:Number = 80;
 
 			private const XPATH_PREFIX:String = "local-name()='";
+			private const DESTINATIONS_FILTER:String = "destinations";
 
 			[Bindable]
 			/**
@@ -173,6 +174,8 @@
 			 * holds mapping to the meta data filters
 			 * */
 			private var _metadataFilters:Object = new Object();
+			
+			private var _currentMetadataFilterId:String;
 
 			/**
 			 * indicates the control key is pressed
@@ -253,6 +256,7 @@
 						if (profile.metadataFieldVOArray && profile.metadataFieldVOArray.length) {
 							var metadataTab:MetadataAccordionTab = new MetadataAccordionTab();
 							metadataTab.label = profile.profile.name;
+							metadataTab.id = profile.profile.id.toString();
 
 							var field:MetadataFieldVO;
 							var hasSearchableFields:Boolean = false;
@@ -387,7 +391,7 @@
 						
 						//recive the buttons array according to the list fiels vo that saved if not saved return null
 						//and bypass
-						var btnArr:Array = _metadataFilters[StringUtil.trim(metadataFieldVo.name)];
+						var btnArr:Array = _metadataFilters[metadataProfile.profile.id][StringUtil.trim(metadataFieldVo.name)];
 						
 						//if this filter exist
 						if (btnArr) {
@@ -428,7 +432,7 @@
 				var distributionProfileSearchCondition:KalturaContentDistributionSearchItem;
 				distributionSearchItem.type = KalturaSearchOperatorType.SEARCH_OR;
 
-				var btnArr:Array = _metadataFilters["destinations"];
+				var btnArr:Array = _metadataFilters[DESTINATIONS_FILTER];
 
 				if (btnArr) {
 					for (var i:int = 1; i < btnArr.length; i++) {
@@ -513,7 +517,7 @@
 			 * creates a filter based on VO data
 			 * @param metadataFieldVo	filter data
 			 * */
-			private function createDynamicFilter(metadataFieldVo:MetadataFieldVO):Container {
+			private function createDynamicFilter(metadataFieldVo:MetadataFieldVO, metadataTabId:String):Container {
 				var container:Container;
 				switch (metadataFieldVo.type) {
 					case MetadataCustomFieldTypes.LIST:
@@ -529,7 +533,9 @@
 
 						var listButtonsArr:Array = createButtonsGroup(metadataFieldVo.displayedLabel, StringUtil.trim(metadataFieldVo.name), arr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
 
-						_metadataFilters[StringUtil.trim(metadataFieldVo.name)] = listButtonsArr;
+						if (!_metadataFilters[metadataTabId])
+							_metadataFilters[metadataTabId] = new Object();
+						_metadataFilters[metadataTabId][StringUtil.trim(metadataFieldVo.name)] = listButtonsArr;
 						injectGroupToContainer(container, listButtonsArr);
 						break;
 					case MetadataCustomFieldTypes.DATE:
@@ -551,8 +557,8 @@
 				container.percentWidth = 100;
 				container.styleName = "defualtFilter";
 
-				var listButtonsArray:Array = createButtonsGroup(resourceManager.getString("cms", "destinations"), "destinations", distributionProfileArr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
-				_metadataFilters["destinations"] = listButtonsArray;
+				var listButtonsArray:Array = createButtonsGroup(resourceManager.getString("cms", "destinations"), DESTINATIONS_FILTER, distributionProfileArr, "name", onDynamicTitleClicked, onDynamicMemberClicked);
+				_metadataFilters[DESTINATIONS_FILTER] = listButtonsArray;
 				injectGroupToContainer(container, listButtonsArray);
 
 				return container;
@@ -564,7 +570,11 @@
 			 * */
 			private function onDynamicTitleClicked(event:MouseEvent):void {
 				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
-				var btnArr:Array = _metadataFilters[groupName] as Array;
+				var btnArr:Array;
+				if (groupName == DESTINATIONS_FILTER)
+					btnArr = _metadataFilters[groupName] as Array;
+				else
+					btnArr = _metadataFilters[_currentMetadataFilterId][groupName] as Array;
 
 				//if the title was clicked
 				if ((event.target as Button) == btnArr[0]) {
@@ -590,7 +600,11 @@
 			 * */
 			private function onDynamicMemberClicked(event:MouseEvent):void {
 				var groupName:String = ((event.target as Button).data as String).split(' - ')[0];
-				var btnArr:Array = _metadataFilters[groupName] as Array;
+				var btnArr:Array;
+				if (groupName == DESTINATIONS_FILTER)
+					btnArr = _metadataFilters[groupName] as Array;
+				else
+					btnArr = _metadataFilters[_currentMetadataFilterId][groupName] as Array;
 				var i:int;
 				var selectTheTitle:Boolean = true;
 				//if we unselected a member we should go over and see if we need to select the title 
@@ -619,7 +633,7 @@
 					//if appear in search is true and we need to create additinal filter
 					var mfvo:MetadataFieldVO = kmcMetadataProfileVO.metadataFieldVOArray[i] as MetadataFieldVO;
 					if (mfvo && mfvo.appearInSearch) {
-						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i]);
+						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i], metadataTab.id);
 
 						if (container) // if we need to add visual filter
 							metadataTab.addChild(container);
@@ -976,11 +990,11 @@
 									var startIndex:int = currentXpath.lastIndexOf(XPATH_PREFIX) + XPATH_PREFIX.length;
 									parentName = currentXpath.substring(startIndex, currentXpath.length - 2);
 									var btnName:String = parentName + "_" + currentValue;
-									for each (var btn:Button in _metadataFilters[parentName]) {
+									for each (var btn:Button in _metadataFilters[item.metadataProfileId][parentName]) {
 										if (btn.id == btnName) {
 											// check the button
 											btn.selected = true;
-											for each (var parentBtn:Button in _metadataFilters[parentName]) {
+											for each (var parentBtn:Button in _metadataFilters[item.metadataProfileId][parentName]) {
 												// uncheck the parent button
 												if (parentBtn.id == parentName) {
 													parentBtn.selected = false;
@@ -1004,8 +1018,8 @@
 								for (var i:int = 0; i < _distributionProfileArr.length; i++) {
 									if (_distributionProfileArr[i].id == profileId) {
 										profileName = _distributionProfileArr[i].name;
-										parentName = _metadataFilters["destinations"][0].id;
-										for each (var distributionBtn:Button in _metadataFilters["destinations"]) {
+										parentName = _metadataFilters[DESTINATIONS_FILTER][0].id;
+										for each (var distributionBtn:Button in _metadataFilters[DESTINATIONS_FILTER]) {
 											if (String(parentName + "_" + profileName) == distributionBtn.id) {
 												distributionBtn.selected = true;
 											}
@@ -1075,22 +1089,6 @@
 
 			}
 
-
-			/* [Bindable]
-			public function get metadataProfile():KMCMetadataProfileVO {
-				return _metadataProfile;
-			}
-
-
-			public function set metadataProfile(value:KMCMetadataProfileVO):void {
-				_metadataProfile = value;
-				setMetadataTabVisibility();
-
-				if (value)
-					buildMetadataProfileFilter(value);
-			}
- */
-
 			/**
 			 * there's an active filter
 			 * */
@@ -1156,6 +1154,15 @@
 				renderFilterVo(mediaFilter);
 				return mediaFilter;
 			}
+			
+			/**
+			 * if current selected child is metadataTab, remembers it for future use in the metadata buttons listeners
+			 * */
+			private function onAccordionChange():void {
+				if (accordion.selectedChild is MetadataAccordionTab) {
+					_currentMetadataFilterId = accordion.selectedChild.id;
+				}
+			}
 		]]>
 	</mx:Script>
 	<mx:Metadata>
@@ -1167,7 +1174,7 @@
 	<filter:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
 						  label="{resourceManager.getString('cms', 'searchFilter')}" width="100%"
 						  filterChanged="{onTabChanged(event)}"/>
-	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2">
+	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2" change="{onAccordionChange()}">
 		<mx:headerRenderer>
 			<mx:Component>
 				<filter:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}"/>
