@@ -91,13 +91,13 @@
 
 
 			private function setName():void {
-				conversionNameTextInput.enabled = !(conversionProfile.profile.isDefault);
-				conversionNameTextInput.text = conversionProfile.profile.name;
+				conversionNameTextInput.enabled = !(_conversionProfile.profile.isDefault);
+				conversionNameTextInput.text = _conversionProfile.profile.name;
 			}
 
 
 			private function setDescription():void {
-				conversionDescTextArea.text = conversionProfile.profile.description;
+				conversionDescTextArea.text = _conversionProfile.profile.description;
 			}
 
 			
@@ -121,8 +121,8 @@
 
 			private function saveProfile(event:Event):void {
 				if (validateInput()) {
-					conversionProfile.profile.name = conversionNameTextInput.text;
-					conversionProfile.profile.description = conversionDescTextArea.text;
+					_conversionProfile.profile.name = conversionNameTextInput.text;
+					_conversionProfile.profile.description = conversionDescTextArea.text;
 
 					if (currentState == EDIT_STATE) {
 						var updateProfileEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionProfile);
@@ -158,7 +158,7 @@
 					 toolTip="{resourceManager.getString('account','requiredFlavorsToolTip')}">
 			<csw:ConversionSettingsTable id="flavorsTable" click="validateInput(event)" height="100%"
 					dataProvider="{currentState == EDIT_STATE ? _model.getClonedFlavorsData() : _model.getUnselectedClonedFlavorsData()}"
-					thumbParamsData="{_model.thumbsData}" cProfile="{conversionProfile}" change="validateInput(event)" />
+					thumbParamsData="{_model.thumbsData}" cProfile="{_conversionProfile}" change="validateInput(event)" />
 		</mx:FormItem>
 	</mx:Form>
 
