@@ -38,7 +38,7 @@ package com.kaltura.kmc.modules.content.commands
 			{
 				if (feed is KalturaBaseSyndicationFeed) {
 					var exSyn:ExternalSyndicationVO = new ExternalSyndicationVO();
-					exSyn.kSyndicationFeed = feed;
+					exSyn.kSyndicationFeed = feed as KalturaBaseSyndicationFeed;
 					tempArr.addItem(exSyn);
 				}
 			}
