@@ -34,20 +34,15 @@ package com.kaltura.kmc.modules.content.commands
 			var response:KalturaBaseSyndicationFeedListResponse = event.data as KalturaBaseSyndicationFeedListResponse;
 			_model.extSynModel.externalSyndicationFeedsTotalCount = response.totalCount;
 			
-			for each(var feed:KalturaBaseSyndicationFeed in response.objects)
+			for each(var feed:Object in response.objects)
 			{
-				var exSyn:ExternalSyndicationVO = new ExternalSyndicationVO();
-				exSyn.kSyndicationFeed = feed;
-				tempArr.addItem(exSyn);
+				if (feed is KalturaBaseSyndicationFeed) {
+					var exSyn:ExternalSyndicationVO = new ExternalSyndicationVO();
+					exSyn.kSyndicationFeed = feed;
+					tempArr.addItem(exSyn);
+				}
 			}
 			_model.extSynModel.externalSyndicationData = tempArr;
 		}
-		
-//		override public function fault(event:Object):void
-//		{
-//			_model.decreaseLoadCounter();
-//			var alert : Alert = Alert.show(event.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-//		}
-	
 	}
 }
