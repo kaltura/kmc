@@ -94,8 +94,8 @@
 						break;
 					}
 					else {
-						catNameArr.push(category.category.fullName);
-//						catNameArr.push(getCategoryChain(category));
+//						catNameArr.push(category.category.fullName);
+						catNameArr.push(getCategoryChain(category));
 					}
 				}
 
@@ -110,9 +110,12 @@
 				var res:String = '';
 				var children:ArrayCollection = cat.children;
 				for (var i:int = 0; i<children.length; i++) {
-					res += (children[i] as CategoryVO).category.id + ",";
+					// first generation child:
+//					res += (children[i] as CategoryVO).category.id + ",";
+					res += getCategoryChain(children[i] as CategoryVO);
+					
 				}
-				res += cat.category.id;
+				res += cat.category.id + ",";
 				return res;
 			}
 
