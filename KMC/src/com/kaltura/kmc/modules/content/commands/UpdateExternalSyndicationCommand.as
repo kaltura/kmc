@@ -16,12 +16,13 @@ package com.kaltura.kmc.modules.content.commands
 			_model.increaseLoadCounter();
 			var feed:KalturaBaseSyndicationFeed = event.data as KalturaBaseSyndicationFeed;
 			var id:String = feed.id;
-			feed.id = null;
-			feed.type = "";
-			feed.feedUrl = null;
-			feed.partnerId = int.MIN_VALUE;
-			feed.status = int.MIN_VALUE;
-			feed.createdAt = int.MIN_VALUE;
+//			feed.id = null;
+//			feed.type = "";
+//			feed.feedUrl = null;
+//			feed.partnerId = int.MIN_VALUE;
+//			feed.status = int.MIN_VALUE;
+//			feed.createdAt = int.MIN_VALUE;
+			feed.setUpdatedFieldsOnly(true);
 		
 		 	var updateFeed:SyndicationFeedUpdate = new SyndicationFeedUpdate(id, feed);
 		 	updateFeed.addEventListener(KalturaEvent.COMPLETE, result);
