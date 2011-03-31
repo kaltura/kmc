@@ -53,9 +53,7 @@
 			import mx.events.CloseEvent;
 			import mx.resources.ResourceManager;
 
-
-
-
+		
 
 			[Bindable]
 			/**
@@ -120,18 +118,6 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section12'));
 			}
 			
-			
-			
-			/**
-			 * if there are no custom data fields, will not display the custom data tab
-			 * */
-			/* private function onMetadataFieldsChange(arr:ArrayCollection) : void {
-				if (arr && arr.length==0) {
-					if (viewStack.getChildByName('customData')) {
-						viewStack.removeChild(customData);
-					}
-				}
-			} */
 
 
 			/**
@@ -203,8 +189,7 @@
 			}
 
 			private function onWindowCreationComplete():void {
-			//	BindingUtils.bindSetter(onMetadataFieldsChange, filterModel.metadataProfile, "metadataFieldVOArray");
-				
+			
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
 				_undoToEntry = createWorkingCopy(selectedEntry);
 				
@@ -263,7 +248,10 @@
 								var curCustomData:EntryCustomData= new EntryCustomData();		
 								var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
 								curCustomData.formBuilder = curFormBuilder;
-								curCustomData.label = curProfile.profile ? curProfile.profile.name : resourceManager.getString('cms', 'customData');
+								if (curProfile.profile && curProfile.profile.name)
+									curCustomData.label = curProfile.profile.name;
+								else
+									curCustomData.label = resourceManager.getString('cms', 'customData');
 								curCustomData.name = curProfile.profile.id.toString();
 								viewStack.addChild(curCustomData);
 							}
