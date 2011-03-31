@@ -42,7 +42,7 @@ package com.kaltura.kmc.modules.account.command
 				{
 					var acVo:AccessControlProfileVO = new AccessControlProfileVO();
 					acVo.profile = kac;
-					//TODO remove unknown objects
+					// remove unknown objects
 					// if any restriction is unknown, we remove it from the list.
 					// this means access control profiles with unknown restrictions CANNOT be edited in KMC,
 					// as editing hem will delete the unknown restriction.
