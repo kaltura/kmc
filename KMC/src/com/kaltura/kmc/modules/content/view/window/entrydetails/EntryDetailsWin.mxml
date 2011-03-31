@@ -50,6 +50,7 @@
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.resources.ResourceManager;
 
@@ -113,6 +114,25 @@
 			 * once only.
 			 * */
 			private var _enabledWatcher:ChangeWatcher;
+			
+			/**
+			 * contains list of the tabs that will be visible
+			 * */
+			private var _visibleTabsAC:ArrayCollection;
+			
+			private var _isReady:Boolean = false;
+
+			public function get visibleTabsAC():ArrayCollection
+			{
+				return _visibleTabsAC;
+			}
+
+			public function set visibleTabsAC(value:ArrayCollection):void
+			{
+				_visibleTabsAC = value;
+				if (_isReady)
+					setVisibleTabs();
+			}
 
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section12'));
@@ -258,6 +278,10 @@
 						}
 					}
 				}
+				
+				_isReady = true;
+				if (_visibleTabsAC)
+					setVisibleTabs();
 				
 			}
 
@@ -595,6 +619,19 @@
 			{
 				_maxNumCategories = value;
 			}
+			
+			/**
+			 * removes all tabs that their ID doesn't appear in the given array collection
+			 * */
+			private function setVisibleTabs():void {
+				for (var i:int = viewStack.numChildren-1; i>=0; i--)
+				{
+					var child:UIComponent = viewStack.getChildAt(i) as UIComponent;
+					if (!_visibleTabsAC.contains(child.id))
+						viewStack.removeChild(child);
+				}
+			}
+			
 
 			
 		]]>
