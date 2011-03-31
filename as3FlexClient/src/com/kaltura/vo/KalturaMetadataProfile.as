@@ -13,8 +13,10 @@ package com.kaltura.vo
 		public var version : int = int.MIN_VALUE;
 
 		public var name : String;
-		
-		//public var description: String;
+
+		public var systemName : String;
+
+		public var description : String;
 
 		public var createdAt : int = int.MIN_VALUE;
 
@@ -26,12 +28,17 @@ package com.kaltura.vo
 
 		public var views : String;
 
+		public var createMode : int = int.MIN_VALUE;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			arr.push('metadataObjectType');
 			arr.push('name');
+			arr.push('systemName');
+			arr.push('description');
+			arr.push('createMode');
 			return arr;
 		}
 	}

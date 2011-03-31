@@ -99,6 +99,26 @@ package com.kaltura.vo
 
 		public var endDateLessThanOrEqualOrNull : int = int.MIN_VALUE;
 
+		public var referenceIdEqual : String;
+
+		public var referenceIdIn : String;
+
+		public var replacingEntryIdEqual : String;
+
+		public var replacingEntryIdIn : String;
+
+		public var replacedEntryIdEqual : String;
+
+		public var replacedEntryIdIn : String;
+
+		public var replacementStatusEqual : String;
+
+		public var replacementStatusIn : String;
+
+		public var partnerSortValueGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		public var partnerSortValueLessThanOrEqual : int = int.MIN_VALUE;
+
 		public var tagsNameMultiLikeOr : String;
 
 		public var tagsAdminTagsMultiLikeOr : String;
@@ -162,6 +182,16 @@ package com.kaltura.vo
 			arr.push('endDateLessThanOrEqual');
 			arr.push('endDateGreaterThanOrEqualOrNull');
 			arr.push('endDateLessThanOrEqualOrNull');
+			arr.push('referenceIdEqual');
+			arr.push('referenceIdIn');
+			arr.push('replacingEntryIdEqual');
+			arr.push('replacingEntryIdIn');
+			arr.push('replacedEntryIdEqual');
+			arr.push('replacedEntryIdIn');
+			arr.push('replacementStatusEqual');
+			arr.push('replacementStatusIn');
+			arr.push('partnerSortValueGreaterThanOrEqual');
+			arr.push('partnerSortValueLessThanOrEqual');
 			arr.push('tagsNameMultiLikeOr');
 			arr.push('tagsAdminTagsMultiLikeOr');
 			arr.push('tagsAdminTagsNameMultiLikeOr');

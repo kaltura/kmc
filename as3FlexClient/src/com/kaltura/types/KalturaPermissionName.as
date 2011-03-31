@@ -8,6 +8,9 @@ package com.kaltura.types
 		public static const FEATURE_VAST : String = 'FEATURE_VAST';
 		public static const FEATURE_SILVERLIGHT : String = 'FEATURE_SILVERLIGHT';
 		public static const FEATURE_PS2_PERMISSIONS_VALIDATION : String = 'FEATURE_PS2_PERMISSIONS_VALIDATION';
+		public static const FEATURE_ENTRY_REPLACEMENT : String = 'FEATURE_ENTRY_REPLACEMENT';
+		public static const FEATURE_ENTRY_REPLACEMENT_APPROVAL : String = 'FEATURE_ENTRY_REPLACEMENT_APPROVAL';
+		public static const FEATURE_MOBILE_FLAVORS : String = 'FEATURE_MOBILE_FLAVORS';
 		public static const USER_SESSION_PERMISSION : String = 'BASE_USER_SESSION_PERMISSION';
 		public static const ALWAYS_ALLOWED_ACTIONS : String = 'ALWAYS_ALLOWED_ACTIONS';
 		public static const SYSTEM_FILESYNC : String = 'SYSTEM_FILESYNC';

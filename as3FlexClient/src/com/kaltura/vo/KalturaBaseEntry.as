@@ -60,6 +60,16 @@ package com.kaltura.vo
 
 		public var endDate : int = int.MIN_VALUE;
 
+		public var referenceId : String;
+
+		public var replacingEntryId : String;
+
+		public var replacedEntryId : String;
+
+		public var replacementStatus : String;
+
+		public var partnerSortValue : int = int.MIN_VALUE;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -78,7 +88,11 @@ package com.kaltura.vo
 			arr.push('accessControlId');
 			arr.push('startDate');
 			arr.push('endDate');
+			arr.push('referenceId');
+			arr.push('partnerSortValue');
 			return arr;
 		}
+		// required for backwards compatibility with an old, un-optimized client
+		public function getParamKeys():Array { trace('backward incompatible'); throw new Error('backward incompatible');}
 	}
 }

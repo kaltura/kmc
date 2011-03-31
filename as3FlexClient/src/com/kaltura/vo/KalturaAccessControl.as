@@ -10,6 +10,8 @@ package com.kaltura.vo
 
 		public var name : String;
 
+		public var systemName : String;
+
 		public var description : String;
 
 		public var createdAt : int = int.MIN_VALUE;
@@ -23,6 +25,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('name');
+			arr.push('systemName');
 			arr.push('description');
 			arr.push('isDefault');
 			arr.push('restrictions');

@@ -10,6 +10,8 @@ package com.kaltura.vo
 
 		public var isSessionRestricted : Boolean;
 
+		public var isIpAddressRestricted : Boolean;
+
 		public var previewLength : int = int.MIN_VALUE;
 
 		public var isScheduledNow : Boolean;
@@ -23,6 +25,7 @@ package com.kaltura.vo
 			arr.push('isSiteRestricted');
 			arr.push('isCountryRestricted');
 			arr.push('isSessionRestricted');
+			arr.push('isIpAddressRestricted');
 			arr.push('previewLength');
 			arr.push('isScheduledNow');
 			arr.push('isAdmin');

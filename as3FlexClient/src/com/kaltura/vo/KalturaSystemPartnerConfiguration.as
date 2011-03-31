@@ -50,6 +50,8 @@ package com.kaltura.vo
 
 		public var enableAnnotation : Boolean;
 
+		public var enableMobileFlavors : Boolean;
+
 		public var enablePs2PermissionValidation : Boolean;
 
 		public var defThumbOffset : int = int.MIN_VALUE;
@@ -61,6 +63,12 @@ package com.kaltura.vo
 		public var adminSessionRoleId : int = int.MIN_VALUE;
 
 		public var alwaysAllowedPermissionNames : String;
+
+		public var importRemoteSourceForConvert : Boolean;
+
+		public var enableEntryReplacement : Boolean;
+
+		public var enableEntryReplacementApproval : Boolean;
 
 		public function getUpdateableParamKeys():Array
 		{
@@ -89,12 +97,16 @@ package com.kaltura.vo
 			arr.push('enableContentDistribution');
 			arr.push('enableAuditTrail');
 			arr.push('enableAnnotation');
+			arr.push('enableMobileFlavors');
 			arr.push('enablePs2PermissionValidation');
 			arr.push('defThumbOffset');
 			arr.push('adminLoginUsersQuota');
 			arr.push('userSessionRoleId');
 			arr.push('adminSessionRoleId');
 			arr.push('alwaysAllowedPermissionNames');
+			arr.push('importRemoteSourceForConvert');
+			arr.push('enableEntryReplacement');
+			arr.push('enableEntryReplacementApproval');
 			return arr;
 		}
 	}

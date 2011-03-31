@@ -14,6 +14,8 @@ package com.kaltura.vo
 
 		public var name : String;
 
+		public var systemName : String;
+
 		public var desciption : String;
 
 		public var status : int = int.MIN_VALUE;
@@ -55,6 +57,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('name');
+			arr.push('systemName');
 			arr.push('desciption');
 			arr.push('status');
 			arr.push('protocol');

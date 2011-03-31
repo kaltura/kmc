@@ -20,5 +20,7 @@ package com.kaltura.types
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
 		public static const RANK_ASC : String = '+rank';
 		public static const RANK_DESC : String = '-rank';
+		public static const PARTNER_SORT_VALUE_ASC : String = '+partnerSortValue';
+		public static const PARTNER_SORT_VALUE_DESC : String = '-partnerSortValue';
 	}
 }
