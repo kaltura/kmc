@@ -28,6 +28,8 @@ package com.kaltura.vo
 
 		public var isDefault : int = int.MIN_VALUE;
 
+		public var isPartnerDefault : Boolean;
+
 		public var cropDimensions : KalturaCropDimensions;
 
 		public var clipStart : int = int.MIN_VALUE;

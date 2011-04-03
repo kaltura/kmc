@@ -8,8 +8,6 @@ package com.kaltura.vo
 
 		public var assetParamsId : int = int.MIN_VALUE;
 
-		public var partnerId : int = int.MIN_VALUE;
-
 		public var readyBehavior : int = int.MIN_VALUE;
 
 		public var origin : int = int.MIN_VALUE;

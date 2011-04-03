@@ -1,13 +1,13 @@
 package com.kaltura.vo
 {
-//	import com.kaltura.vo.file;
+	import com.kaltura.vo.file;
 
 	import com.kaltura.vo.KalturaContentResource;
 
 	[Bindable]
 	public dynamic class KalturaUploadedFileResource extends KalturaContentResource
 	{
-		//public var fileData : file;
+		public var fileData : file;
 
 		override public function getUpdateableParamKeys():Array
 		{
