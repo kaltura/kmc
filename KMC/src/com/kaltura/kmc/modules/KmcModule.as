@@ -167,7 +167,7 @@ package com.kaltura.kmc.modules {
 		 * @param e		data from server
 		 * */
 		protected function configurationLoadFailedHandler(e:KalturaEvent):void {
-			//TODO . use locale value instead of given error
+			// use locale value instead of given error
 			// - do we know the resourceBundle name? put all errors in "errors" bundle on all locales 
 			dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, e.error.errorMsg));
 		}

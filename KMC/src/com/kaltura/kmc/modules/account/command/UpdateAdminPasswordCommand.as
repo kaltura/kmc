@@ -72,7 +72,7 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			// show readable error message
-			//TODO . if one day we get an enum of error codes from server, show locale string instead.
+			// if one day we get an enum of error codes from server, show locale string instead.
 			var alert : Alert = Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error')); 
 //			setTimeout( closeAlert , 2000 , alert);
 		}

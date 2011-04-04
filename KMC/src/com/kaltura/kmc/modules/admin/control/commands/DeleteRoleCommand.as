@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 		}
 		
 		override protected function result(data:Object):void {
-			//TODO + note the optional response of "still have users associated with role"
+			// note the optional response of "still have users associated with role"
 			super.result(data);
 			
 			if (data.data[0].error && data.data[0].error.code == "ROLE_IS_BEING_USED") {
