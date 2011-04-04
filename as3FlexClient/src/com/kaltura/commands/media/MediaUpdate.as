@@ -1,8 +1,9 @@
 package com.kaltura.commands.media
 {
-	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.delegates.media.MediaUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
+	import com.kaltura.vo.KalturaMediaEntry;
 
 	public class MediaUpdate extends KalturaCall
 	{
@@ -11,7 +12,7 @@ package com.kaltura.commands.media
 		 * @param entryId String
 		 * @param mediaEntry KalturaMediaEntry
 		 **/
-		public function MediaUpdate( entryId : String,mediaEntry : KalturaMediaEntry )
+		public function MediaUpdate( entryId : String,mediaEntry : KalturaMediaEntry , resource:KalturaAssetsParamsResourceContainers)
 		{
 			service= 'media';
 			action= 'update';
