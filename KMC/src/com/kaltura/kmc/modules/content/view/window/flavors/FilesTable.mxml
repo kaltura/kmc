@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			public static const FLAVOR_SELECTED:String = "flavor_selected";
+			public static const DELETE_FILE:String = "delete_file";
+
+			[Bindable]
+			[ArrayElementType("com.kaltura.kmc.modules.content.vo.UploadFileVo")]
+			protected var _dataProvider:ArrayCollection;
+			
+			[Bindable]
+			/**
+			 * show the "add files" button
+			 * */
+			public var allowAddFiles:Boolean;
+			
+			[ArrayElementType("String")]
+			/**
+			 * flavorparamsids list
+			 * */
+			protected var _flavors:ArrayCollection;
+			
+			
+
+
+			protected function addMoreFiles(event:MouseEvent):void {
+				// TODO open file browser
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(FilesTable.FLAVOR_SELECTED, flavorSelected);
+				addEventListener(FilesTable.DELETE_FILE, deleteFile);
+			}
+
+			/**
+			 * remove relevant VO (the IR's data) from DP
+			 * */
+			protected function deleteFile(e:Event):void {
+				// 
+				var ar:Array = dataProvider.source;
+				for (var i:int = 0; i<ar.length; i++) {
+					if (ar[i] == e.target.data) {
+						ar.splice(i, 1);
+					}
+				}
+				dataProvider.refresh();
+			}
+
+
+			/**
+			 * set the event target's selected item data to the relevent VO (the IR's data)
+			 * */
+			protected function flavorSelected(e:Event):void {
+				var uf:UploadFileVo = e.target.data as UploadFileVo;
+				uf.flavorParamId = (e.target as FlavorRenderer).selectedFlavor.toString();
+			}
+			
+			
+			public function set flavors(value:String):void {
+				_flavors = new ArrayCollection(value.split(","));
+				if (_dataProvider) {
+					for each (var ufv:UploadFileVo in _dataProvider) {
+						ufv.flavors = _flavors;
+					}
+				}
+			}
+			
+			
+			public function get dataProvider():ArrayCollection {
+				return _dataProvider;
+			}
+			
+			public function set dataProvider(value:ArrayCollection):void {
+				if (_flavors) {
+					flavors = _flavors.source.join(",");
+				}
+				_dataProvider = value;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:DataGrid id="filesList" width="100%" dataProvider="{_dataProvider}">
+		<mx:columns>
+			<mx:DataGridColumn headerText="File Name"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer"/>
+			<mx:DataGridColumn headerText="Conversion Flavor"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer"/>
+			<mx:DataGridColumn headerText="Actions"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.ActionsRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:LinkButton id="addBtn" click="addMoreFiles(event)" visible="{allowAddFiles}" includeInLayout="{allowAddFiles}"/>
+</mx:VBox>

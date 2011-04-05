@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+A popup window that allows matching files with the flavor they represent. 
+The same window with different configurations will be used for upload, link and import.
+Should have a single file state: hide the "add more files" options, use flavorAsset.update 
+instead of flavorAsset.add or media.update.
+Submit handler:
+•	Upload – add the relevant files to FileUploadManager.
+•	Import – trigger media.add with matching KalturaURLResource objects.
+•	Link – trigger media.add with matching KalturaNetStorageResource objects.
+Properties:
+•	state:String - upload / import / link 
+
+-->
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+		xmlns:containers="com.kaltura.containers.*" 
+		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
+		width="550" height="400" 
+		showCloseButton="true" showHelpButton="false">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+			
+			/**
+			 * hide the "add more files" options,
+			 * use flavorAsset.update instead of flavorAsset.add or media.update.
+			 * */
+			public var allowAddFiles:Boolean;
+			
+			/**
+			 * the entry being edited
+			 * */
+			public var entry:KalturaBaseEntry;
+			
+			[Bindable]
+			/**
+			 * list of available conversion profiles and their
+			 * respective flavorparam ids
+			 * */
+			public var conversionProfiles:ArrayCollection;
+			
+			[Bindable]
+			public var filesList:ArrayCollection;
+
+
+			protected function submitBtn_clickHandler(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Label text="Conversion Profile:" />
+		<mx:ComboBox id="cnvrtProfCb" dataProvider="{conversionProfiles}" />
+	</mx:HBox>
+	<mx:Label text="Uploaded Files" fontWeight="bold" />
+	<flavors:FilesTable id="filesTable" width="100%" dataProvider="{filesList}" flavors="{cnvrtProfCb.selectedItem.profile.flavorParamsIds}"/>
+	
+	<mx:ControlBar>
+		<mx:Button id="submitBtn" label="Upload" click="submitBtn_clickHandler(event)"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>
