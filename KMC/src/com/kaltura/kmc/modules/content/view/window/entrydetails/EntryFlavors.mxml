@@ -5,15 +5,22 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.ProfileEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
+			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.managers.PopUpManager;
 			
 			[Bindable]
 			private var _showActions:Boolean;
@@ -23,7 +30,23 @@
 			[Bindable]
 			private var _flavorAssets:ArrayCollection;
 			
+			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
+			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
 			
+			private var _fileReferenceList:FileReferenceList;
+			
+			private var _entryDetailsModel:EntryDetailsModel;
+			
+			public function get entryDetailsModel():EntryDetailsModel
+			{
+				return _entryDetailsModel;
+			}
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void
+			{
+				_entryDetailsModel = value;
+			}
+
 			public function get selectedEntry():KalturaBaseEntry
 			{
 				return _selectedEntry;
@@ -90,6 +113,49 @@
 				return '';
 			}
 			
+			/**
+			 * will open a browse window and allow multiple selection
+			 * */
+			private function onUploadFilesClick():void {
+				_fileReferenceList = new FileReferenceList();
+				_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+				var mediaType:int = parseInt(_selectedEntry.type);
+				if (mediaType == KalturaMediaType.VIDEO) 
+					_fileReferenceList.browse(new Array(getTypeFilter('video',VIDEO_TYPES)));
+				else if (mediaType == KalturaMediaType.AUDIO)
+					_fileReferenceList.browse(new Array(getTypeFilter('audio',AUDIO_TYPES)));
+			}
+			
+			/**
+			 * will return fileFilter according to given name and file types
+			 * */
+			private function getTypeFilter(localeKey:String, types:String):FileFilter {
+				return new FileFilter(resourceManager.getString('cms',localeKey) +  "(" + types+ ")" , types );
+			}
+			
+			
+			/**
+			 * Will handle user files selection. Will open "AddFlavorsAssetsWindow" with the selected files 
+			 * */
+			private function onFlavorsSelected(event:Event):void {
+				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				profileEvent.dispatch();
+				
+				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
+				addFlavorsAssetsWindow.entry = _selectedEntry;
+				BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
+				var filesList:ArrayCollection = new ArrayCollection();
+				for each (var fileReference:FileReference in _fileReferenceList.fileList) {
+					var uploadFile:UploadFileVo = new UploadFileVo();
+					uploadFile.fileName = fileReference.name;
+					uploadFile.fileData = fileReference;
+					filesList.addItem(uploadFile);
+				}
+				
+				addFlavorsAssetsWindow.filesList = filesList;
+				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
+				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
+			}
 			
 		]]>
 	</mx:Script>
@@ -101,7 +167,7 @@
 	</mx:HBox>
 	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
 		<mx:Label id="actionLabel"/>
-		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}"/>
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}"/>
 		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}"/>
 	</mx:HBox>
 	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}"/>
