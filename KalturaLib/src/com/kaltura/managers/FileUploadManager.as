@@ -153,6 +153,7 @@ package com.kaltura.managers {
 				var file:FileUploadVO = getUploadByFileName(token.fileName);
 				file.uploadToken = token.id;
 				var utu:UploadTokenUpload = new UploadTokenUpload(token.id, file.file);
+				utu.queued = false;
 				// add listeners with weak references because if upload fails, we can't clean them manually
 				utu.addEventListener(KalturaEvent.COMPLETE, wrapUpUpload, false, 0, true);
 				utu.addEventListener(KalturaEvent.FAILED, wrapUpUpload, false, 0, true);
