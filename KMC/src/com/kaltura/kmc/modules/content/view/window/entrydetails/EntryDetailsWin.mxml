@@ -3,7 +3,6 @@
 	 entry drill-down screen.
 -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
-			title="{resourceManager.getString('cms','editEntry') } - { _undoToEntry.name }" 
 			height="545" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 			showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 			xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
@@ -30,6 +29,7 @@
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.kmc.modules.content.utils.FormBuilder;
 			import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.SingleCustomData;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
@@ -49,12 +49,14 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.containers.HBox;
 			import mx.controls.Alert;
+			import mx.controls.LinkButton;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.resources.ResourceManager;
 
-		
+			private const customDataVerticalGap:Number = 5;
 
 			[Bindable]
 			/**
@@ -212,11 +214,41 @@
 				}
 				return copy;
 			}
+			
+			/**
+			 * sets the window title, if entry doesn't have content and title yet,
+			 * will set the title according to its type
+			 * */
+			private function setWindowTitle():void {
+				if (_undoToEntry.status == KalturaEntryStatus.NO_CONTENT) {
+					if (_undoToEntry.name) {
+						 title = _undoToEntry.name;
+					}
+					else {
+						var mediaType:int = parseInt(_undoToEntry.mediaType);
+						switch (mediaType) {
+							case KalturaMediaType.IMAGE:
+								title = resourceManager.getString('cms', 'newImageEntry');
+								break;
+							case KalturaMediaType.AUDIO:
+								title = resourceManager.getString('cms', 'newAudioEntry');
+								break;
+							case KalturaMediaType.VIDEO:
+								title = resourceManager.getString('cms', 'newVideoEntry');
+								break;
+						}
+					}
+				}
+				else {
+					title = resourceManager.getString('cms','editEntry') +  ' - ' +  _undoToEntry.name;
+				}
+			}
 
 			private function onWindowCreationComplete():void {
 			
 				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
 				_undoToEntry = createWorkingCopy(selectedEntry);
+				setWindowTitle();
 				
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 					_isLiveStream = true;
@@ -261,33 +293,58 @@
 						viewStack.removeChild(this[subtabName]);
 					}
 				}
-				//adds custom data tabs
-				if (filterModel.enableCustomData) {
-					if (filterModel.metadataProfiles && filterModel.metadataProfiles.length>0) {
-						entryDetailsModel.metadataInfoArray = new ArrayCollection();
-						
-						for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {					
-							var curProfile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				//adds custom data profiles
+				if (customData.parent is ViewStack) {
+					
+					if (filterModel.enableCustomData) {
+						if (filterModel.metadataProfiles && filterModel.metadataProfiles.length>0) {
+							var navigationHbox:HBox = new HBox();
+							customData.addChild(navigationHbox);
+							entryDetailsModel.metadataInfoArray = new ArrayCollection();
+							//indicates the custom data child number inside the custom data tab. will be used for navigation on a button click
+							var childIndex:int = 1;
 							
-							if (curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
-								var curCustomData:EntryCustomData= new EntryCustomData();		
-								var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
-								curCustomData.formBuilder = curFormBuilder;
-								if (curProfile.profile && curProfile.profile.name)
-									curCustomData.label = curProfile.profile.name;
-								else
-									curCustomData.label = resourceManager.getString('cms', 'customData');
-								curCustomData.name = curProfile.profile.id.toString();
-								viewStack.addChild(curCustomData);
+							for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {					
+								var curProfile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+								
+								if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
+									var curCustomData:SingleCustomData= new SingleCustomData();	
+									var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
+									curCustomData.formBuilder = curFormBuilder;
+									customData.addChild(curCustomData);
+									
+									var linkBtn:LinkButton = new LinkButton();
+									linkBtn.label = curProfile.profile.name;
+									//id is the child number inside the custom data container
+									linkBtn.id = childIndex.toString();
+									linkBtn.addEventListener(MouseEvent.CLICK, onMetadataShortcutBtnClick);
+									navigationHbox.addChild(linkBtn);
+									
+									childIndex++;
+								}
 							}
 						}
 					}
+					//if none of the profiles contain fields (the only child is the navigation hbox)
+					if (customData.numChildren < 2)
+						viewStack.removeChild(customData);
 				}
-				
+					
 				_isReady = true;
 				if (_visibleTabsAC)
 					setVisibleTabs();
-				
+			}
+			
+			/**
+			 * Will be called when a user selects a profile name to navigate to
+			 * */
+			private function onMetadataShortcutBtnClick(event:MouseEvent):void {
+				var scrollPos:int = 0;
+				//sums up all heights before the desired profile
+				for (var i:int = 0; i< int(event.target.id); i++) {
+					scrollPos += customData.getChildAt(i).height + customDataVerticalGap;
+				}
+				customData.verticalScrollPosition = scrollPos;
 			}
 
 			/**
@@ -440,6 +497,7 @@
 				if ((event == null || event.detail == Alert.YES)) {
 					_undoToEntry = null;
 					entryMetaData.clearPlayer();
+					removeCustomDataWatchers();
 					if (_enabledWatcher) {
 						_enabledWatcher.unwatch();
 					}
@@ -448,6 +506,19 @@
 				}
 			}
 
+			/**
+			 * to fix performance bug: remove all metadata view watchers
+			 * */
+			private function removeCustomDataWatchers():void {
+				if (customData) {
+					//first child is navigation hbox
+					for (var i:int = 1; i<customData.numChildren; i++) {
+						var innerCustomData:SingleCustomData = customData.getChildAt(i) as SingleCustomData;
+						if (innerCustomData && innerCustomData.metadataViewWatcher)
+							innerCustomData.metadataViewWatcher.unwatch();
+					}
+				}
+			}
 
 
 			/**
@@ -489,6 +560,8 @@
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
 					cgEvent.dispatch();
 
+					removeCustomDataWatchers();
+					
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 //					removeMe();
@@ -689,8 +762,7 @@
 							   selectedEntry="{_undoToEntry}"/>
 
 		<!-- Custom Data -->
-		<!--<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"
-							filterModel="{filterModel}" entryDetailsModel="{entryDetailsModel}"/>-->
+		<mx:VBox id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" verticalGap="{customDataVerticalGap}"/>
 		
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution" label="{ResourceManager.getInstance().getString('cms', 'distribution')}"

@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	custom metadata tab of EntryDetailsWin
+	single custom metadata of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event)" show="onShow(event)" xmlns:itemrenderers="com.kaltura.kmc.modules.content.view.itemrenderers.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event)" show="onShow(event)"
+		 borderStyle="solid">
 <mx:Script>
 	<![CDATA[
 		import com.kaltura.commands.uiConf.UiConfAdd;
 		import com.kaltura.kmc.business.PermissionManager;
 		import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
 		import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
-		import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-		import com.kaltura.kmc.modules.content.model.FilterModel;
 		import com.kaltura.kmc.modules.content.utils.FormBuilder;
 		import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
 		import com.kaltura.types.KalturaMetadataProfileStatus;
 		import com.kaltura.vo.KMCMetadataProfileVO;
 		
 		import mx.binding.utils.BindingUtils;
+		import mx.binding.utils.ChangeWatcher;
 		import mx.controls.Alert;
 		import mx.core.Application;
 		import mx.core.Container;
 		import mx.core.UIComponent;
 
+		public var metadataViewWatcher:ChangeWatcher;
+		
 		private var _pending:Boolean = false;
 		private var _form:UIComponent ;
 		private var _isReady:Boolean = false;
@@ -30,9 +32,23 @@
 		private var _formBuilder:FormBuilder;
 		private var _isFormReady:Boolean = false;
 		
-		//rols and permissions: if we can edit metadata
+		
+		//roles and permissions: if we can edit metadata
+		private var _metadataEditable:Boolean = true;
+
 		[Bindable]
-		public var metadataEditable:Boolean = true;
+		public function get metadataEditable():Boolean
+		{
+			return _metadataEditable;
+		}
+
+		public function set metadataEditable(value:Boolean):void
+		{
+			_metadataEditable = value;
+			if (_form && !value) {
+				formBuilder.disableComponents(_form as Container);
+			}
+		}
 
 		/**
 		 * The form builder for current custom data tab
@@ -69,6 +85,7 @@
 			if (!_formBuilder.metadataProfile || !_formBuilder.metadataProfile.profile)
 				return;
 			_formBuilder.metadataInfo = new EntryMetadataDataVO();
+			profileName.text =  _formBuilder.metadataProfile.profile.name;
 			if (_formBuilder.metadataProfile && _formBuilder.metadataProfile.profile &&
 				(_formBuilder.metadataProfile.profile.status == KalturaMetadataProfileStatus.TRANSFORMING)) {
 				//if current profile is transforming, will request it again from the server, to see if ready
@@ -77,8 +94,7 @@
 				_pending = true;
 			}
 			else {
-				BindingUtils.bindSetter(addForm, _formBuilder,["metadataInfo","finalViewMxml"]);
-				BindingUtils.bindSetter(disableComponentes, this.all, "enabled");
+				metadataViewWatcher = BindingUtils.bindSetter(addForm, _formBuilder,["metadataInfo","finalViewMxml"]);
 			}
 		}
 		
@@ -113,17 +129,9 @@
 				formBuilder.disableComponents(_form as Container);
 			}
 		}
-		
-		/**
-		 * if the inner components should be disabled - from roles&Permissions
-		 * */
-		private function disableComponentes(value:Boolean) : void{
-			if (_form && !value) {
-				formBuilder.disableComponents(_form as Container);
-			}
-		}
 
 	]]>
 </mx:Script>
+	<mx:Label id="profileName" color="blue"/>
 	<mx:VBox id="all" width="100%" disabledOverlayAlpha="0" enabled="{metadataEditable}"/>
 </mx:VBox>

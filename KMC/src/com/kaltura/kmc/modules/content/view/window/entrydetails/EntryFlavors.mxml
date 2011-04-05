@@ -7,10 +7,16 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaEntryType;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			[Bindable]
+			private var _showActions:Boolean;
 			
 			private var _selectedEntry:KalturaBaseEntry;
 			
@@ -26,6 +32,29 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
+				if (_selectedEntry) {
+					if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+						stateLabel.text = resourceManager.getString('cms','noContentState');
+						_showActions = true;
+						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
+							actionLabel.text = resourceManager.getString('cms','addVideo');
+						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
+							actionLabel.text = resourceManager.getString('cms','addAudio');
+					}
+					else if (_selectedEntry.status == KalturaEntryStatus.READY) {
+						stateLabel.text = resourceManager.getString('cms','readyState');
+						_showActions = true;
+						noteLabel.visible = noteLabel.includeInLayout = true;
+						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
+							actionLabel.text = resourceManager.getString('cms','replaceVideo');
+						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
+							actionLabel.text = resourceManager.getString('cms','replaceAudio');
+					}
+					else {
+						stateLabel.text = resourceManager.getString('cms','notReadyState');
+						_showActions = false;
+					}
+				}
 				
 			/* 	if(_selectedEntry != null)
 				{
@@ -66,7 +95,16 @@
 	</mx:Script>
 	
 	
-	
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','currentState')}"/>
+		<mx:Label id="stateLabel"/>
+	</mx:HBox>
+	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
+		<mx:Label id="actionLabel"/>
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}"/>
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}"/>
+	</mx:HBox>
+	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}"/>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{_flavorAssets}"/>
 
