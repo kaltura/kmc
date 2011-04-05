@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.model.states
 	public class WindowsStates
 	{
 		public static const NONE : String = "none";
+		public static const ENTRY_DETAILS_WINDOW_NEW_ENTRY : String = "entryDetailsWindowNewEntry";
 		public static const ENTRY_DETAILS_WINDOW : String = "entryDetailsWindow";
 		public static const PLAYLIST_DETAILS_WINDOW_ADD : String = "playlistDetailsWindowAdd";
 		public static const PLAYLIST_DETAILS_WINDOW_EDIT : String = "playlistDetailsWindowEdit";

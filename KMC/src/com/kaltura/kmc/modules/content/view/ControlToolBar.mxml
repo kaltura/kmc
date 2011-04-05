@@ -3,9 +3,12 @@
 		 verticalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.core.UIComponent;
 			import mx.resources.ResourceManager;
@@ -206,6 +209,16 @@
 			}
 
 
+			private function onNewEntry():void {
+				//TODO set a new entry to the model
+				var entry:KalturaMediaEntry = new KalturaMediaEntry();
+				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
+				cgEvent.dispatch();
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+				cgEvent.dispatch();
+			}
+			
+			
 			private function onNewStream():void {
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
 				cgEvent.dispatch();
@@ -293,6 +306,9 @@
 				   includeInLayout="false" styleName="dataGridBtn"/>
 		<mx:Button id="newStreamBtn" label="{ResourceManager.getInstance().getString('cms', 'newLiveStream')}"
 				   click="onNewStream()" buttonMode="true" visible="{enablelivestream}"
+				   includeInLayout="{enablelivestream}" styleName="dataGridBtn"/>
+		<mx:Button id="newEntryBtn" label="{ResourceManager.getInstance().getString('cms', 'newEntry')}"
+				   click="onNewEntry()" buttonMode="true" visible="{enablelivestream}"
 				   includeInLayout="{enablelivestream}" styleName="dataGridBtn"/>
 	</mx:HBox>
 </mx:HBox>

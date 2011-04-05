@@ -42,6 +42,8 @@
 			import com.kaltura.kmc.modules.content.view.window.SetAccessControlProfileWin;
 			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDetailsWin;
+			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -521,8 +523,9 @@
 
 			/**
 			 * opens a popup window with entry details
+			 * @param isNewEntry	is this creation of a new entry or edit of existing one
 			 * */
-			private function openEntryDetails():EntryDetailsWin {
+			private function openEntryDetails(isNewEntry:Boolean):EntryDetailsWin {
 				
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
@@ -617,7 +620,8 @@
 					var currentPopUp:TitleWindow;
 					switch (newState) {
 						case WindowsStates.ENTRY_DETAILS_WINDOW:
-							currentPopUp = openEntryDetails();
+						case WindowsStates.ENTRY_DETAILS_WINDOW:
+							currentPopUp = openEntryDetails(newState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
 							break;
 						case WindowsStates.DOWNLOAD_WINDOW:
 							currentPopUp = openDownload();
@@ -877,6 +881,24 @@
 			protected function resizeToContent():void {
 				contentView.height = contentView.selectedChild.height;
 			}
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				var dummy:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
+				dummy.entry = _model.entryDetailsModel.selectedEntry;
+				dummy.conversionProfiles = _model.bulkUploadModel.conversionData;
+				var fl:Array = [];
+				var ufv:UploadFileVo = new UploadFileVo();
+				ufv.fileName = "file_number_1.flv";
+				fl.push(ufv);
+				ufv = new UploadFileVo();
+				ufv.fileName = "file_number_2.mp3";
+				fl.push(ufv);
+				dummy.filesList = new ArrayCollection(fl);
+				PopUpManager.addPopUp(dummy, this, true);
+				PopUpManager.centerPopUp(dummy);
+			}
+
 		]]>
 	</mx:Script>
 
@@ -892,7 +914,7 @@
 			<mx:Spacer width="100%"/>
 			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 		</mx:HBox>
-
+<mx:Button click="button1_clickHandler(event)" label="upload flavours"/>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" height="100%" styleName="pageStyle" 
