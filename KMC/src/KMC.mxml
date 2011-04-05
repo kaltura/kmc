@@ -204,6 +204,7 @@
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("gotoPage", gotoPage);
 					ExternalInterface.addCallback("alert", alert);
+					ExternalInterface.addCallback("hasOngoingProcess", hasOngoingProcess);
 				}
 
 				// create KalturaClient:
@@ -627,6 +628,15 @@
 			 * */
 			private function alert(text:String, header:String = "", flags:uint = 4, parent:Sprite = null, closeHandler:Function = null):void {
 				Alert.show(text, header, flags, parent, closeHandler);
+			}
+			
+			
+			/**
+			 * check if any processes are going on that will 
+			 * stop upon navigating away from the KMC.
+			 * */
+			private function hasOngoingProcess():Boolean {
+				return (FileUploadManager.getInstance().getAllFiles().length > 0) ;
 			}
 
 
