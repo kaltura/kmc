@@ -29,6 +29,8 @@ package com.kaltura.kmc.modules.content.commands
 			 _model.increaseLoadCounter();
 			 
 			_caller = (event as SearchEvent).listableVo;
+			//TODO - remove the no_content state when there's a filter for it
+			_caller.filterVo.statusIn += ",7";
 			var getMediaList:BaseEntryList = new BaseEntryList(_caller.filterVo as KalturaMediaEntryFilter ,_caller.pagingComponent.kalturaFilterPager );
 		 	getMediaList.addEventListener(KalturaEvent.COMPLETE, result);
 			getMediaList.addEventListener(KalturaEvent.FAILED, fault);

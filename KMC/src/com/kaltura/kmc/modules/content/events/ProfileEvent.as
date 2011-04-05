@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.content.events
 	{
 		public static const ADD_CONVERSION_PROFILE : String = "content_addConversionProfile";
 		public static const LIST_CONVERSION_PROFILE : String = "content_listConversionProfile";
+		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "content_listConversionProfilesAndFlavorParams";
 		
 		public function ProfileEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{

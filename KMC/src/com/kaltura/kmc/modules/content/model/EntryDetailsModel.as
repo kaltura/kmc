@@ -62,5 +62,11 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var enableUpdateMetadata:Boolean = true;
 		
+		/**
+		 * a list of <code>ConversionProfileWithFlavorParamsVo</code> objects
+		 * for each conversion profile, lists the flavorparams matching objects. 
+		 */		
+		public var conversionProfsWFlavorParams:ArrayCollection;
+		
 	}
 }

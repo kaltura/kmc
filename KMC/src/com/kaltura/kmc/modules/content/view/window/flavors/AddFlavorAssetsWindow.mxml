@@ -1,28 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-A popup window that allows matching files with the flavor they represent. 
-The same window with different configurations will be used for upload, link and import.
-Should have a single file state: hide the "add more files" options, use flavorAsset.update 
-instead of flavorAsset.add or media.update.
-Submit handler:
-•	Upload – add the relevant files to FileUploadManager.
-•	Import – trigger media.add with matching KalturaURLResource objects.
-•	Link – trigger media.add with matching KalturaNetStorageResource objects.
-Properties:
-•	state:String - upload / import / link 
-
+	A popup window that allows matching files with the flavor they represent. 
+	The same window with different configurations will be used for upload, link and import.
+	Should have a single file state: hide the "add more files" options, use flavorAsset.update 
+	instead of flavorAsset.add or media.update.
+	
+	Properties:
+	•	state:String - upload / import / link 
 -->
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 		xmlns:containers="com.kaltura.containers.*" 
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
-		width="550" height="400" 
-		showCloseButton="true" showHelpButton="false">
+		width="550" height="400" styleName="TitleWindowType2" 
+		showCloseButton="true" close="closeHandler(event)"
+		creationComplete="titlewindow1_creationCompleteHandler(event)">
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.managers.FileUploadManager;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
 			
 			/**
 			 * hide the "add more files" options,
@@ -46,8 +51,44 @@ Properties:
 			public var filesList:ArrayCollection;
 
 
-			protected function submitBtn_clickHandler(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+			/**
+			 * Submit handler:
+			 * 	•	Upload – add the relevant files to FileUploadManager.
+			 * 	•	Import – trigger media.add with matching KalturaURLResource objects.
+			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
+			 * */
+			protected function submit(event:MouseEvent):void {
+				// get the files list from the table
+				// add them to the FileUploadManager
+				var n:int = filesList.length;
+				var uploader:FileUploadManager = FileUploadManager.getInstance();
+				var ufv:UploadFileVo;
+				var action:String = FileUploadVO.ACTION_NONE;
+				if (entry.status == KalturaEntryStatus.NO_CONTENT) {
+					action = FileUploadVO.ACTION_ADD;
+				}
+				for (var i:int = 0; i<n; i++) {
+					ufv = filesList[i] as UploadFileVo;
+					uploader.addUpload(entry.id, ufv.fileData, action, ufv.flavorParamId, entry.id);
+				}
+			}
+			
+			
+			protected function cnvrtPrfLbl(itemObj:ConversionProfileWithFlavorParamsVo):String{
+				return itemObj.profile.name;
+			}
+
+			
+			/**
+			 * remove the popup
+			 * */
+			protected function closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void {
+				this.mx_internal::closeButton.buttonMode = true;
 			}
 
 		]]>
@@ -55,12 +96,12 @@ Properties:
 	
 	<mx:HBox>
 		<mx:Label text="Conversion Profile:" />
-		<mx:ComboBox id="cnvrtProfCb" dataProvider="{conversionProfiles}" />
+		<mx:ComboBox id="cnvrtProfCb" dataProvider="{conversionProfiles}" labelFunction="cnvrtPrfLbl" selectedIndex="0"/>
 	</mx:HBox>
 	<mx:Label text="Uploaded Files" fontWeight="bold" />
-	<flavors:FilesTable id="filesTable" width="100%" dataProvider="{filesList}" flavors="{cnvrtProfCb.selectedItem.profile.flavorParamsIds}"/>
+	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.profile.flavorParamsIds}" dataProvider="{filesList}"/>
 	
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" label="Upload" click="submitBtn_clickHandler(event)"/>
+		<mx:Button id="submitBtn" label="Upload" click="submit(event)"/>
 	</mx:ControlBar>
-</containers:HelpTitleWindow>
+</mx:TitleWindow>

@@ -885,9 +885,12 @@
 
 			protected function button1_clickHandler(event:MouseEvent):void
 			{
+				var ce:CairngormEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				ce.dispatch();
 				var dummy:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				dummy.entry = _model.entryDetailsModel.selectedEntry;
-				dummy.conversionProfiles = _model.bulkUploadModel.conversionData;
+				BindingUtils.bindProperty(dummy, "conversionProfiles",_model.entryDetailsModel, "conversionProfsWFlavorParams"); 
+//				dummy.conversionProfiles = _model.entryDetailsModel.conversionProfsWFlavorParams;
 				var fl:Array = [];
 				var ufv:UploadFileVo = new UploadFileVo();
 				ufv.fileName = "file_number_1.flv";
@@ -915,7 +918,7 @@
 			<mx:Spacer width="100%"/>
 			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 		</mx:HBox>
-<mx:Button click="button1_clickHandler(event)" label="upload flavours"/>
+		<mx:Button click="button1_clickHandler(event)" label="upload flavours"/>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
 			<content:Entries id="manage" height="100%" styleName="pageStyle" 

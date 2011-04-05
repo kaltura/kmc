@@ -75,6 +75,7 @@ package com.kaltura.kmc.modules.content.control
 			
 			//Profile Event
 			addCommand(ProfileEvent.LIST_CONVERSION_PROFILE , ListConversionProfilesCommand);
+			addCommand(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS , ListConversionProfilesAndFlavorParams);
 			
 			// flavor params
 			addCommand( ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);

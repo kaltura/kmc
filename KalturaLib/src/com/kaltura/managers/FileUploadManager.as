@@ -71,7 +71,7 @@ package com.kaltura.managers {
 		/**
 		 * Retrieves the singleton instance
 		 */
-		public function getInstance():FileUploadManager {
+		public static function getInstance():FileUploadManager {
 			if (_instance == null) {
 				_instance = new FileUploadManager(new Enforcer());
 			}

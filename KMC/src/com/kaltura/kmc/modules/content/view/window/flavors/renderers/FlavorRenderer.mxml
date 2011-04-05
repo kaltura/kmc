@@ -3,35 +3,63 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.view.window.flavors.FilesTable;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			
+			import flash.utils.flash_proxy;
+			
+			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
-			
+
+
+			/**
+			 * Object of type <code>UploadFileVo</code>
+			 * */
 			override public function set data(value:Object):void {
 				super.data = value;
-				selectFlavor();
-			}
-
-			protected function selectFlavor():void {
-				for (var o:Object in data.flavors) {
-//					if (o.toString() == data.
+				if (value) {
+					cb.dataProvider = value.flavors; 
+					selectFlavor(value as UploadFileVo);
 				}
 			}
-			
-			protected function combobox1_changeHandler(event:ListEvent):void
-			{
+
+
+			/**
+			 * show the correct flavorParamId in the CB.
+			 * */
+			protected function selectFlavor(ufv:UploadFileVo):void {
+				var found:Boolean;
+				for (var o:Object in ufv.flavors) {
+					if (o.toString() == ufv.flavorParamId) {
+						cb.selectedItem = o;
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					cb.selectedIndex = 0;
+					if (ufv.flavors) {
+						ufv.flavorParamId = ufv.flavors.getItemAt(0).toString();
+					}
+					ufv.flavorParamId = '';
+				}
+				
+			}
+
+
+			protected function combobox1_changeHandler(event:ListEvent):void {
 				dispatchEvent(new Event(FilesTable.FLAVOR_SELECTED, true));
 			}
-			
+
+
 			public function get selectedFlavor():Object {
 				return cb.selectedItem;
 			}
-			
+
+
 			public function set selectedFlavor(value:Object):void {
 				cb.selectedItem = value;
 			}
-
 		]]>
 	</mx:Script>
-	<mx:ComboBox id="cb" dataProvider="{data.flavors}" change="combobox1_changeHandler(event)"
-				 width="100%"/>
+	<mx:ComboBox id="cb" change="combobox1_changeHandler(event)" width="100%"/>
 </mx:HBox>
