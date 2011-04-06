@@ -2,6 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.flavors.renderers.EditableNameRenderer;
 			import com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.types.KalturaMediaType;
@@ -11,38 +12,55 @@
 			import mx.events.FlexEvent;
 
 			public static const FLAVOR_SELECTED:String = "flavor_selected";
+			public static const NAME_CHANGED:String = "name_changed";
 			public static const DELETE_FILE:String = "delete_file";
 			public static const ADD_FILES:String = "addFiles";
 
 			[Bindable]
 			[ArrayElementType("com.kaltura.kmc.modules.content.vo.UploadFileVo")]
 			protected var _dataProvider:ArrayCollection;
-			
+
 			[Bindable]
 			/**
 			 * show the "add files" button
 			 * */
 			public var allowAddFiles:Boolean;
-			
+
+			private var _nameEditable:Boolean;
+
 			[ArrayElementType("KalturaFlavorParams")]
 			/**
 			 * flavorparamsids list
 			 * */
 			protected var _flavors:ArrayCollection;
-			
-			
+
+
 			/**
-			 * open the file browser and add the selected files to the files list
+			 * allow adding more files, depending on nameEditable status
 			 * */
 			protected function addMoreFiles(event:MouseEvent):void {
-				dispatchEvent(new Event(FilesTable.ADD_FILES));
+				if (_nameEditable) {
+					// create a new VO and add it to the DP
+					var ufv:UploadFileVo = new UploadFileVo();
+					ufv.flavors = _dataProvider.getItemAt(0).flavors;
+					_dataProvider.addItem(ufv);
+				}
+				else {
+					// have to open file browser, etc
+					dispatchEvent(new Event(FilesTable.ADD_FILES));
+				}
 			}
-			
-			
+
+
+			/**
+			 * add listeners to itemrenderers events
+			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(FilesTable.FLAVOR_SELECTED, flavorSelected);
+				addEventListener(FilesTable.NAME_CHANGED, nameChanged);
 				addEventListener(FilesTable.DELETE_FILE, deleteFile);
 			}
+
 
 			/**
 			 * remove relevant VO (the IR's data) from DP
@@ -50,7 +68,7 @@
 			protected function deleteFile(e:Event):void {
 				// 
 				var ar:Array = dataProvider.source;
-				for (var i:int = 0; i<ar.length; i++) {
+				for (var i:int = 0; i < ar.length; i++) {
 					if (ar[i] == e.target.data) {
 						ar.splice(i, 1);
 					}
@@ -66,8 +84,20 @@
 				var uf:UploadFileVo = e.target.data as UploadFileVo;
 				uf.flavorParamId = (e.target as FlavorRenderer).selectedFlavor.id.toString();
 			}
-			
-			
+
+
+			/**
+			 * set the event target's selected item data to the relevent VO (the IR's data)
+			 * */
+			protected function nameChanged(e:Event):void {
+				var uf:UploadFileVo = e.target.data as UploadFileVo;
+				uf.fileName = (e.target as EditableNameRenderer).text;
+			}
+
+
+			/**
+			 * the flavors that will be displayed in the dropdown
+			 * */
 			public function set flavors(value:ArrayCollection):void {
 				_flavors = value;
 				if (_dataProvider) {
@@ -76,32 +106,54 @@
 					}
 				}
 			}
-			
-			
+
+
 			public function get dataProvider():ArrayCollection {
 				return _dataProvider;
 			}
-			
+
+
 			public function set dataProvider(value:ArrayCollection):void {
 				if (_flavors) {
 					flavors = _flavors;
 				}
 				_dataProvider = value;
 			}
-			
+
+
+			/**
+			 * is file name editable or fixed
+			 * */
+			public function get nameEditable():Boolean {
+				return _nameEditable;
+			}
+
+
+			/**
+			 * @private
+			 * */
+			public function set nameEditable(value:Boolean):void {
+				_nameEditable = value;
+				if (value) {
+					fileName.itemRenderer =  new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer);
+				}
+				else {
+					fileName.itemRenderer =  new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.EditableNameRenderer);
+				}
+			}
 		]]>
 	</mx:Script>
 	<mx:Metadata>
 		[Event(name="addFiles", type="flash.events.Event")] 
 	</mx:Metadata>
-	
+
 	<mx:DataGrid id="filesList" width="100%" dataProvider="{_dataProvider}">
 		<mx:columns>
-			<mx:DataGridColumn headerText="File Name"
+			<mx:DataGridColumn id="fileName" headerText="File Name"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer"/>
-			<mx:DataGridColumn headerText="Conversion Flavor"
+			<mx:DataGridColumn id="flavor" headerText="Conversion Flavor"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer"/>
-			<mx:DataGridColumn headerText="Actions"
+			<mx:DataGridColumn id="actions" headerText="Actions"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.ActionsRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
