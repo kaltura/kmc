@@ -35,6 +35,25 @@ $(window).load(function(){
 	kmc.vars.isLoadedInterval = setInterval("kmc.utils.isModuleLoaded()",200);
 });
 
+
+//If we have Ongoing Process in KMC we show warning to the user when he try to leave the page (for example: Uploading)
+window.onbeforeunload = function() {
+                
+    try {
+        var onGoing = $("#kcms")[0].hasOngoingProcess();
+    }
+    catch(e) {
+        var onGoing = false;
+    }
+
+    if(onGoing) {
+        return 'Are you sure?';
+    } else {
+        return;
+    }
+};
+
+
 /* kmc and kmc.vars defined in script block in kmc2success.php */
 
 	// For debug enable to true

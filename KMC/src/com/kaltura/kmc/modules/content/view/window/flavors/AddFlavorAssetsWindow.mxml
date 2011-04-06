@@ -18,10 +18,12 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryFlavors;
 			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
@@ -30,11 +32,12 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
+			[Bindable]
 			/**
 			 * hide the "add more files" options,
 			 * use flavorAsset.update instead of flavorAsset.add or media.update.
 			 * */
-			public var allowAddFiles:Boolean;
+			public var allowAddFiles:Boolean = true;
 			
 			/**
 			 * the entry being edited
@@ -45,10 +48,18 @@
 			/**
 			 * list of available conversion profiles and their
 			 * respective flavorparam ids
+			 * <code>ConversionProfileWithFlavorParamsVo</code> objects
 			 * */
 			public var conversionProfiles:ArrayCollection;
 			
 			[Bindable]
+			/**
+			 * <code>UploadFileVo</code> objects. <br>
+			 * when passed fro outside the objects only have fileData and fileName attributes popuplated. <br>
+			 * flavors attribute is set in FilesTable.(set)flavors.<br>
+			 * flavorParamId attribute is initialized in FlavorRenderer.selectFlavor and set 
+			 * 		in FilesTable.flavorSelected
+			 * */
 			public var filesList:ArrayCollection;
 
 
@@ -59,19 +70,21 @@
 			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
 			 * */
 			protected function submit(event:MouseEvent):void {
-				// get the files list from the table
-				// add them to the FileUploadManager
 				var n:int = filesList.length;
 				var uploader:FileUploadManager = FileUploadManager.getInstance();
 				var ufv:UploadFileVo;
+				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
 				var action:String = FileUploadVO.ACTION_NONE;
 				if (entry.status == KalturaEntryStatus.NO_CONTENT) {
 					action = FileUploadVO.ACTION_ADD;
 				}
+				// add uploads to the FileUploadManager
 				for (var i:int = 0; i<n; i++) {
 					ufv = filesList[i] as UploadFileVo;
-					uploader.addUpload(entry.id, ufv.fileData, action, ufv.flavorParamId, entry.id);
+					uploader.addUpload(entry.id, ufv.fileData, action, ufv.flavorParamId, cnvrtProfId, entry.id);
 				}
+				// close the popup
+				closeHandler();
 			}
 			
 			
@@ -83,8 +96,43 @@
 			/**
 			 * remove the popup
 			 * */
-			protected function closeHandler(event:CloseEvent):void {
+			protected function closeHandler(event:CloseEvent = null):void {
 				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * open the file browser 
+			 * */
+			protected function addMoreFiles():void {
+				var fileReferenceList:FileReferenceList = new FileReferenceList();
+				fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+				var mediaType:int = parseInt(entry.type);
+				if (mediaType == KalturaMediaType.VIDEO) 
+					fileReferenceList.browse(new Array(getTypeFilter('video',EntryFlavors.VIDEO_TYPES)));
+				else if (mediaType == KalturaMediaType.AUDIO)
+					fileReferenceList.browse(new Array(getTypeFilter('audio',EntryFlavors.AUDIO_TYPES)));
+			}
+			
+			/**
+			 * add the selected files to the files list
+			 * */
+			private function onFlavorsSelected(event:Event):void {
+				var files:Array = (event.target as FileReferenceList).fileList;
+				for each (var fileReference:FileReference in files) {
+					var uploadFile:UploadFileVo = new UploadFileVo();
+					uploadFile.fileName = fileReference.name;
+					uploadFile.fileData = fileReference;
+					filesList.addItem(uploadFile);
+				}
+				// trigger the binding to get the rest of the fileVo attributes set
+				filesTable.dataProvider = filesList;
+			}
+			
+			/**
+			 * will return fileFilter according to given name and file types
+			 * */
+			private function getTypeFilter(localeKey:String, types:String):FileFilter {
+				return new FileFilter(resourceManager.getString('cms',localeKey) +  "(" + types+ ")" , types );
 			}
 
 
@@ -100,8 +148,9 @@
 		<mx:ComboBox id="cnvrtProfCb" dataProvider="{conversionProfiles}" labelFunction="cnvrtPrfLbl" selectedIndex="0"/>
 	</mx:HBox>
 	<mx:Label text="Uploaded Files" fontWeight="bold" />
-	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.profile.flavorParamsIds}"
-						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"/>
+	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
+						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
+						addFiles="addMoreFiles()"/>
 	
 	<mx:ControlBar>
 		<mx:Button id="submitBtn" label="Upload" click="submit(event)"/>

@@ -114,7 +114,8 @@ package com.kaltura.managers {
 		 * @return a unique identifier for the upload, which allows referencing the
 		 * 		upload process of the specific file
 		 */
-		public function addUpload(entryid:String, file:FileReference, action:String, flavorid:String = null, groupid:String = null):String {
+		public function addUpload(entryid:String, file:FileReference, action:String, 
+							flavorid:String = null, convprofid:String = null, groupid:String = null):String {
 			// create the VO
 			var vo:FileUploadVO = new FileUploadVO();
 			vo.file = file;
@@ -123,8 +124,10 @@ package com.kaltura.managers {
 			vo.entryId = entryid; 
 			vo.groupId = groupid;
 			vo.flavorParamsId = flavorid;
+			vo.conversionProfile = convprofid;
 			vo.fileSize = file.size;
 			vo.action = action;
+			_files.push(vo);
 			if (_files.length < _concurrentUploads) {
 				// create upload token
 				var ut:KalturaUploadToken = new KalturaUploadToken();
@@ -175,9 +178,17 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, wrapUpUpload);
 			e.target.removeEventListener(KalturaEvent.FAILED, wrapUpUpload);
 			if (e.type == KalturaEvent.COMPLETE) {
-				var file:FileUploadVO = getFile(e.target.uploadTokenId);
+				var file:FileUploadVO = getUploadByUploadToken(e.data.id);
 				// dispatch "fileUploadComplete" event with relevant unique identifier
-				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_COMPLETE, file.uploadToken));
+				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_COMPLETE, file.id));
+				if (file.groupId) {
+					// add the file to a group_and_complete list
+					_groupAndComplete.push(file);
+					// if no other actions was specified, handle group issues
+					if (file.action == FileUploadVO.ACTION_NONE) {
+						handleGroupFile(file);
+					}
+				}
 				// if any action on the VO trigger flavorAsset.action
 				var flavorAsset:KalturaFlavorAsset;
 				var resource:KalturaUploadedFileTokenResource
@@ -186,9 +197,6 @@ package com.kaltura.managers {
 				}
 				else if (file.action == FileUploadVO.ACTION_UPDATE) {
 					updateFlavorAsset(file);
-				}
-				if (file.groupId != null) {
-					handleGroupFile(file);
 				}
 				// remove file from files list 
 				var ind:int = getQueuePosition(file.id);
@@ -206,9 +214,7 @@ package com.kaltura.managers {
 		 * @param file	the file 
 		 */		
 		private function handleGroupFile(file:FileUploadVO):void {
-			// 	add the file to a group_and_complete list
-			_groupAndComplete.push(file);
-			// 	scan rest of files.
+			// scan rest of files.
 			var remainingGroupFiles:Boolean = false;
 			for each (var notYet:FileUploadVO in _files) {
 				if (notYet.groupId == file.groupId) {
@@ -225,6 +231,7 @@ package com.kaltura.managers {
 					var mc:MediaConvert = new MediaConvert(file.entryId, parseInt(file.conversionProfile));
 					mc.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
 					mc.addEventListener(KalturaEvent.FAILED, finalActionHandler);
+					_kc.post(mc);
 				}
 				else if (file.action == FileUploadVO.ACTION_NONE) {
 					updateMedia(file.groupId, file.entryId);
@@ -301,8 +308,8 @@ package com.kaltura.managers {
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
 			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(file.entryId, flavorAsset, resource);
-			fau.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
-			fau.addEventListener(KalturaEvent.FAILED, finalActionHandler);
+			fau.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
+			fau.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			_kc.post(fau);
 		}
 
@@ -319,11 +326,34 @@ package com.kaltura.managers {
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
 			var faa:FlavorAssetAdd = new FlavorAssetAdd(file.entryId, flavorAsset, resource);
-			faa.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
-			faa.addEventListener(KalturaEvent.FAILED, finalActionHandler);
+			faa.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
+			faa.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			_kc.post(faa);
 		}
 		
+		
+		
+		
+		
+		/**
+		 * 
+		 * alert user of any problems 
+		 */		
+		private function flavorActionHandler(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
+			e.target.removeEventListener(KalturaEvent.FAILED, flavorActionHandler);
+			if (e.type == KalturaEvent.FAILED) {
+				// alert user
+				Alert.show(e.error.errorMsg, "Error");
+			}
+			else {
+				var file:FileUploadVO = getCompleteByFlavorAssetId(e.data.flavorParamsId);
+				if (file.groupId != null) {
+					handleGroupFile(file);
+				}				
+			}
+
+		}
 		
 		/**
 		 * handler for the wrap-up action (flavorAsset.add / update)
@@ -351,6 +381,7 @@ package com.kaltura.managers {
 			Alert.show("File Upload Failed", "Error");
 		}
 
+		
 
 		/**
 		 * Cancels an upload according to uploadid.
@@ -388,6 +419,22 @@ package com.kaltura.managers {
 		
 		
 		/**
+		 * Retrieve a file vo according to uploadToken 
+		 * @param id	uploadToken id
+		 * @return 		FileUploadVO 
+		 */		
+		public function getUploadByUploadToken(id:String):FileUploadVO {
+			var result:FileUploadVO = null;
+			for each (var file:FileUploadVO in _files) {
+				if (file.uploadToken == id) {
+					result = file;
+					break;
+				}
+			}
+			return result;
+		}
+		
+		/**
 		 * Retrieve a file vo according to file name 
 		 * @param name	name of the uploaded file
 		 * @return 		FileUploadVO with a file with a matching name
@@ -396,6 +443,18 @@ package com.kaltura.managers {
 			var result:FileUploadVO = null;
 			for each (var file:FileUploadVO in _files) {
 				if (file.name == name) {
+					result = file;
+					break;
+				}
+			}
+			return result;
+		}
+		
+		
+		public function getCompleteByFlavorAssetId(id:String):FileUploadVO {
+			var result:FileUploadVO = null;
+			for each (var file:FileUploadVO in _groupAndComplete) {
+				if (file.flavorParamsId == id) {
 					result = file;
 					break;
 				}

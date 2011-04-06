@@ -4,6 +4,7 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.view.window.flavors.FilesTable;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.vo.KalturaFlavorParams;
 			
 			import flash.utils.flash_proxy;
 			
@@ -17,7 +18,7 @@
 			override public function set data(value:Object):void {
 				super.data = value;
 				if (value) {
-					cb.dataProvider = value.flavors; 
+					cb.dataProvider = value.flavors; // KalturaFlavorParams objects
 					selectFlavor(value as UploadFileVo);
 				}
 			}
@@ -28,8 +29,8 @@
 			 * */
 			protected function selectFlavor(ufv:UploadFileVo):void {
 				var found:Boolean;
-				for (var o:Object in ufv.flavors) {
-					if (o.toString() == ufv.flavorParamId) {
+				for each(var o:Object in ufv.flavors) {
+					if (o.id.toString() == ufv.flavorParamId) {
 						cb.selectedItem = o;
 						found = true;
 						break;
@@ -38,9 +39,11 @@
 				if (!found) {
 					cb.selectedIndex = 0;
 					if (ufv.flavors) {
-						ufv.flavorParamId = ufv.flavors.getItemAt(0).toString();
+						ufv.flavorParamId = ufv.flavors.getItemAt(0).id.toString();
 					}
-					ufv.flavorParamId = '';
+					else {
+						ufv.flavorParamId = '';
+					}
 				}
 				
 			}
@@ -51,15 +54,15 @@
 			}
 
 
-			public function get selectedFlavor():Object {
-				return cb.selectedItem;
+			public function get selectedFlavor():KalturaFlavorParams {
+				return cb.selectedItem as KalturaFlavorParams;
 			}
 
 
-			public function set selectedFlavor(value:Object):void {
+			public function set selectedFlavor(value:KalturaFlavorParams):void {
 				cb.selectedItem = value;
 			}
 		]]>
 	</mx:Script>
-	<mx:ComboBox id="cb" change="combobox1_changeHandler(event)" width="100%"/>
+	<mx:ComboBox id="cb" change="combobox1_changeHandler(event)" labelField="name" width="100%"/>
 </mx:HBox>
