@@ -21,6 +21,7 @@ package com.kaltura.vo
 		public static const STATUS_UPLOADING:String = "status_uploading";
 		public static const STATUS_QUEUED:String = "status_queued";
 		public static const STATUS_FAILED:String = "status_failed";
+		public static const STATUS_COMPLETE:String = "status_complete";
 		
 		
 		protected var _id:String;

@@ -129,6 +129,7 @@ package com.kaltura.managers {
 			vo.action = action;
 			_files.push(vo);
 			if (_files.length < _concurrentUploads) {
+				vo.status = FileUploadVO.STATUS_UPLOADING;
 				// create upload token
 				var ut:KalturaUploadToken = new KalturaUploadToken();
 				ut.fileName = file.name;
@@ -177,8 +178,9 @@ package com.kaltura.managers {
 		private function wrapUpUpload(e:KalturaEvent):void {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, wrapUpUpload);
 			e.target.removeEventListener(KalturaEvent.FAILED, wrapUpUpload);
+			var file:FileUploadVO = getUploadByUploadToken(e.data.id);
 			if (e.type == KalturaEvent.COMPLETE) {
-				var file:FileUploadVO = getUploadByUploadToken(e.data.id);
+				file.status = FileUploadVO.STATUS_COMPLETE;
 				// dispatch "fileUploadComplete" event with relevant unique identifier
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_COMPLETE, file.id));
 				if (file.groupId) {
@@ -203,6 +205,7 @@ package com.kaltura.managers {
 				_files.splice(ind, 1);
 			}
 			else {
+				file.status = FileUploadVO.STATUS_FAILED;
 				Alert.show(e.error.errorMsg, "Error");
 			}
 		}
@@ -238,7 +241,6 @@ package com.kaltura.managers {
 				}
 			}
 		}
-		
 		
 		
 		/**
@@ -332,9 +334,6 @@ package com.kaltura.managers {
 		}
 		
 		
-		
-		
-		
 		/**
 		 * 
 		 * alert user of any problems 
@@ -352,8 +351,8 @@ package com.kaltura.managers {
 					handleGroupFile(file);
 				}				
 			}
-
 		}
+		
 		
 		/**
 		 * handler for the wrap-up action (flavorAsset.add / update)
@@ -377,6 +376,10 @@ package com.kaltura.managers {
 			var file:FileReference = e.target as FileReference;
 			file.removeEventListener(IOErrorEvent.IO_ERROR, fileFailed );
 			file.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, fileFailed);
+			var fuv:FileUploadVO = getUploadByFr(file);
+			if (fuv) {
+				fuv.status = FileUploadVO.STATUS_FAILED;
+			}
 			// alert user (possible to separate to ioerror / security error)
 			Alert.show("File Upload Failed", "Error");
 		}
@@ -419,6 +422,23 @@ package com.kaltura.managers {
 		
 		
 		/**
+		 * Retrieve a file vo according to its file reference object 
+		 * @param id	file reference
+		 * @return 		FileUploadVO 
+		 */		
+		public function getUploadByFr(o:FileReference):FileUploadVO {
+			var result:FileUploadVO = null;
+			for each (var file:FileUploadVO in _files) {
+				if (file.file == o) {
+					result = file;
+					break;
+				}
+			}
+			return result;
+		}
+		
+		
+		/**
 		 * Retrieve a file vo according to uploadToken 
 		 * @param id	uploadToken id
 		 * @return 		FileUploadVO 
@@ -433,6 +453,7 @@ package com.kaltura.managers {
 			}
 			return result;
 		}
+		
 		
 		/**
 		 * Retrieve a file vo according to file name 
