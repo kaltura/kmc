@@ -129,21 +129,44 @@ package com.kaltura.managers {
 			vo.action = action;
 			_files.push(vo);
 			if (_files.length < _concurrentUploads) {
+				uploadNextFile();
+			}
+			return vo.id;
+		}
+		
+		/**
+		 * get the next file on uploads queue 
+		 */
+		private function getNextFile():FileUploadVO {
+			var result:FileUploadVO = null;
+			for (var i:int = 0; i<_files.length; i++) {
+				if (_files[i].status == FileUploadVO.STATUS_QUEUED) {
+					result = _files[i];
+					break;
+				}
+			}
+			return result;
+		}
+		
+		
+		/**
+		 * upload the next file on queue 
+		 */		
+		private function uploadNextFile():void {
+			var vo:FileUploadVO = getNextFile();
+			if (vo) {
 				vo.status = FileUploadVO.STATUS_UPLOADING;
 				// create upload token
 				var ut:KalturaUploadToken = new KalturaUploadToken();
-				ut.fileName = file.name;
-				ut.fileSize = file.size;
+				ut.fileName = vo.name;
+				ut.fileSize = vo.fileSize;
 				var uta:UploadTokenAdd = new UploadTokenAdd(ut); 
 				// add listeners for complete / failed
 				uta.addEventListener(KalturaEvent.COMPLETE, uploadFile);
 				uta.addEventListener(KalturaEvent.FAILED, uploadFile);
 				_kc.post(uta);
 			}
-			return vo.id;
 		}
-		
-		
 		
 		/**
 		 * start uploading the file  
@@ -208,6 +231,8 @@ package com.kaltura.managers {
 				file.status = FileUploadVO.STATUS_FAILED;
 				Alert.show(e.error.errorMsg, "Error");
 			}
+			// start uploading the next file
+			uploadNextFile();
 		}
 		
 		
