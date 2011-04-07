@@ -43,7 +43,8 @@ package com.kaltura.vo
 		public var uploadTime:Date;
 		
 		/**
-		 * the id of the entry to which this asset belongs, passed as parameter.
+		 * the id of the entry to which this asset belongs.
+		 * passed as parameter.
 		 */
 		public var entryId:String; 
 		
@@ -53,9 +54,16 @@ package com.kaltura.vo
 		public var groupId:String;
 		
 		/**
-		 * used when replacing flavors, passed as parameter.
+		 * (when adding assets to a new entry) flavorParamsId of the flavorparams to use. 
+		 * passed as parameter.
 		 */
 		public var flavorParamsId:String;
+		
+		/**
+		 * (when replacing a single flavor) flavorAssetId of the asset to be replaced.
+		 * passed as parameter.
+		 */
+		public var flavorAssetId:String;
 		
 		/**
 		 * file size, taken from the FileReference object

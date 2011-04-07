@@ -11,7 +11,7 @@ package com.kaltura.commands.flavorAsset
 	 */
 	public class FlavorAssetUpdate extends KalturaCall {
 		
-		public function FlavorAssetUpdate(entryId : String, flavorAsset:KalturaFlavorAsset, resource:KalturaResource = null)
+		public function FlavorAssetUpdate(flavorAssetId : String, flavorAsset:KalturaFlavorAsset, resource:KalturaResource = null)
 		{
 			super();
 		}

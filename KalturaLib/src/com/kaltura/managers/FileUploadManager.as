@@ -106,7 +106,9 @@ package com.kaltura.managers {
 		 * @param action	the action to apply on the file after upload, either
 		 * 		<code>UploadFileVO.ADD</code>, <code>UploadFileVO.UPDATE</code>
 		 * 		or <code>UploadFileVO.NONE</code>
-		 * @param flavorid	if updating an entry, the flavour that should be replaced
+		 * @param flavorid	if updating an entry, the flavourAsset that should be 
+		 * 		replaced. if adding assets to a no_content entry, the flavorParam 
+		 * 		to be used with this asset.
 		 * @param groupid	identifier of a flavour group. if <code>groupid</code>
 		 * 		is supplied, media.update will be triggered after all files with
 		 * 		this group id have finished uploading.
@@ -115,7 +117,8 @@ package com.kaltura.managers {
 		 * 		upload process of the specific file
 		 */
 		public function addUpload(entryid:String, file:FileReference, action:String, 
-							flavorid:String = null, convprofid:String = null, groupid:String = null):String {
+							flavorparamsid:String = null, flavorassetid:String = null, 
+							convprofid:String = null, groupid:String = null):String {
 			// create the VO
 			var vo:FileUploadVO = new FileUploadVO();
 			vo.file = file;
@@ -123,7 +126,7 @@ package com.kaltura.managers {
 			vo.uploadTime = new Date();
 			vo.entryId = entryid; 
 			vo.groupId = groupid;
-			vo.flavorParamsId = flavorid;
+			vo.flavorParamsId = flavorparamsid;
 			vo.conversionProfile = convprofid;
 			vo.fileSize = file.size;
 			vo.action = action;
@@ -334,7 +337,7 @@ package com.kaltura.managers {
 			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
-			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(file.entryId, flavorAsset, resource);
+			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(file.flavorAssetId, flavorAsset, resource);
 			fau.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
 			fau.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			_kc.post(fau);

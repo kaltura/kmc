@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.vo
 
 	[Bindable]
 	/**
-	 * Data concerning a file about to be uploaded as a flavour to a no-media entry. 
+	 * Data concerning a file about to be uploaded as a flavour to an entry. 
 	 * @author Atar
 	 */	
 	public class UploadFileVo {
@@ -18,16 +18,25 @@ package com.kaltura.kmc.modules.content.vo
 		 */
 		public var flavorParamId:String;
 		
+		
+		/**
+		 * the id of the flavorasset this file should replace 
+		 */
+		public var flavorAssetId:String;
+		
+		
 		/**
 		 * the string that will be shown on screen
 		 */
 		public var fileName:String;
+		
 		
 		/**
 		 * relevant FileReference object if exists 
 		 */
 		public var fileData:FileReference
 
+		
 		/**
 		 * list of optional conversion flavors for the selected profile 
 		 */
