@@ -55,6 +55,7 @@ package com.kaltura.analytics
         	
         	var statsKmcCall:StatsKmcCollect = new StatsKmcCollect(analyticsEvent);
         	statsKmcCall.method = URLRequestMethod.GET;
+			statsKmcCall.queued = false;
         	_kc.post(statsKmcCall);
         }
         
