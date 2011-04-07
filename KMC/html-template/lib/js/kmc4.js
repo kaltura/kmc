@@ -36,22 +36,23 @@ $(window).load(function(){
 });
 
 
-//If we have Ongoing Process in KMC we show warning to the user when he try to leave the page (for example: Uploading)
-window.onbeforeunload = function() {
-                
-    try {
-        var onGoing = $("#kcms")[0].hasOngoingProcess();
-    }
-    catch(e) {
-        var onGoing = false;
-    }
+//If we have ongoing process, we show a warning message when the user try to leaves the page
+function checkForOngoingProcess() {
+                var warning_message;
+                try {
+                                warning_message = $("#kcms")[0].hasOngoingProcess();
+                }
+                catch(e) {
+                                warning_message = false;
+                }
 
-    if(onGoing) {
-        return 'Are you sure?';
-    } else {
-        return;
-    }
-};
+                if(warning_message != null) {
+                                return warning_message;
+                }
+                return;
+}
+window.onbeforeunload = checkForOngoingProcess;
+
 
 
 /* kmc and kmc.vars defined in script block in kmc2success.php */
