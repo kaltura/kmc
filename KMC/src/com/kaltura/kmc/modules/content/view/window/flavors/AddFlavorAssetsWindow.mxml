@@ -40,9 +40,9 @@
 			public var allowAddFiles:Boolean = true;
 			
 			/**
-			 * the entry being edited
+			 * @copy #entry
 			 * */
-			public var entry:KalturaBaseEntry;
+			private var _entry:KalturaBaseEntry;
 			
 			[Bindable]
 			/**
@@ -78,7 +78,7 @@
 				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
 				// action
 				var action:String = FileUploadVO.ACTION_NONE;
-				if (entry.status == KalturaEntryStatus.NO_CONTENT) {
+				if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
 					action = FileUploadVO.ACTION_ADD;
 				}
 				else if (!allowAddFiles) {
@@ -91,12 +91,12 @@
 				if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
 					// group actions: adding flavors to a no_content entry, or replacing multiple 
 					// 		flavours while creating replacement entry.
-					groupid = entry.id;
+					groupid = _entry.id;
 				}
 				// add uploads to the FileUploadManager
 				for (var i:int = 0; i<n; i++) {
 					ufv = filesList[i] as UploadFileVo;
-					uploader.addUpload(entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
+					uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
 				}
 				// close the popup
 				closeHandler();
@@ -121,7 +121,7 @@
 			protected function addMoreFiles():void {
 				var fileReferenceList:FileReferenceList = new FileReferenceList();
 				fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
-				var mediaType:int = parseInt(entry.type);
+				var mediaType:int = parseInt(_entry.type);
 				if (mediaType == KalturaMediaType.VIDEO) 
 					fileReferenceList.browse(new Array(getTypeFilter('video',EntryFlavors.VIDEO_TYPES)));
 				else if (mediaType == KalturaMediaType.AUDIO)
@@ -154,6 +154,27 @@
 			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void {
 				this.mx_internal::closeButton.buttonMode = true;
 			}
+
+			/**
+			 * the entry being edited
+			 * */
+			public function get entry():KalturaBaseEntry {
+				return _entry;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set entry(value:KalturaBaseEntry):void {
+				_entry = value;
+				if (value.status == KalturaEntryStatus.NO_CONTENT) {
+					title = "Add Video";
+				}
+				else {
+					title = "Update Video";
+				}
+			}
+
 
 		]]>
 	</mx:Script>
