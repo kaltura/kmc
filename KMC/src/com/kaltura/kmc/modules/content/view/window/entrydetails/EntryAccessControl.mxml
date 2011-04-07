@@ -3,7 +3,7 @@
 	 access control tab of EntryDetailsWin
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" initialize="{updateAccessSection()}"
-		 show="{init()}">
+		 show="{init()}" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.events.AccessControlProfileEvent;
@@ -39,8 +39,13 @@
 			 * */
 			private var _accessControlData:ArrayCollection;
 
-			
-
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
+				var listAcc:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+				listAcc.dispatch();
+			}
 
 			private function init():void {
 				if (!filterModel.oneTimeLoadAccessControlLoadedFlag) {

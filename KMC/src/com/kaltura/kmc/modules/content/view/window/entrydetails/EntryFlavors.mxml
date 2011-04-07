@@ -2,7 +2,9 @@
 <!---
 	Flavours tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%" height="100%">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%"
+		 height="100%" creationComplete="onCreationComplete()"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -11,6 +13,7 @@
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
 			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
@@ -22,6 +25,9 @@
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.managers.PopUpManager;
 			
+			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
+			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
+			
 			[Bindable]
 			private var _showActions:Boolean;
 			
@@ -30,12 +36,54 @@
 			[Bindable]
 			private var _flavorAssets:ArrayCollection;
 			
-			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
-			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
-			
 			private var _fileReferenceList:FileReferenceList;
+			private var _fileReference:FileReference;
+			private var _selectedFlavorAssetId:String;
 			
 			private var _entryDetailsModel:EntryDetailsModel;
+			
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
+				if(_selectedEntry != null)
+				{
+					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
+					cgEvent.dispatch();
+				}
+				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				profileEvent.dispatch();
+			}
+			
+			private function onCreationComplete():void {
+				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
+			}
+			
+			/**
+			 * will be called when selecting to upload a specific flavor
+			 * */
+			private function onFlavorUploadSelected(event:Event):void {
+				_selectedFlavorAssetId = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.id;
+				_fileReference = new FileReference();
+				var fileFilter:FileFilter = getTypeFilter(parseInt(_selectedEntry.mediaType));
+				if (fileFilter) {
+					_fileReference.addEventListener(Event.SELECT, onFlavorSelected);
+					_fileReference.browse(new Array(fileFilter));
+				}
+			}
+			
+			/**
+			 * handles user selection for replacing existing flavor
+			 * */
+			private function onFlavorSelected(event:Event) : void {
+				_fileReference.removeEventListener(Event.SELECT, onFlavorSelected);
+
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				uploadFile.fileName = _fileReference.name;
+				uploadFile.fileData = _fileReference;
+				//TODO send flavorAssetId
+				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);	
+			}
 			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
@@ -55,6 +103,7 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
+				//sets labels according to entry's status
 				if (_selectedEntry) {
 					if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 						stateLabel.text = resourceManager.getString('cms','noContentState');
@@ -78,12 +127,7 @@
 						_showActions = false;
 					}
 				}
-				
-			/* 	if(_selectedEntry != null)
-				{
-					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
-					cgEvent.dispatch();
-				} */
+
 			}
 			
 			public function get flavorAssets():ArrayCollection
@@ -118,32 +162,46 @@
 			 * */
 			private function onUploadFilesClick():void {
 				_fileReferenceList = new FileReferenceList();
-				_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
-				var mediaType:int = parseInt(_selectedEntry.type);
+				var fileFilter:FileFilter = getTypeFilter(parseInt(selectedEntry.mediaType));
+				if (fileFilter)  {
+					_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+					_fileReferenceList.browse(new Array(fileFilter));
+				}
+			}
+			
+			/**
+			 * returns the suitable fileFilter according to given mediaType
+			 * */
+			private function getTypeFilter(mediaType:int):FileFilter {
+				var fileFilter:FileFilter;
 				if (mediaType == KalturaMediaType.VIDEO) 
-					_fileReferenceList.browse(new Array(getTypeFilter('video',VIDEO_TYPES)));
+					fileFilter = new FileFilter(resourceManager.getString('cms','video') +  "(" + VIDEO_TYPES+ ")" , VIDEO_TYPES );
 				else if (mediaType == KalturaMediaType.AUDIO)
-					_fileReferenceList.browse(new Array(getTypeFilter('audio',AUDIO_TYPES)));
-			}
-			
-			/**
-			 * will return fileFilter according to given name and file types
-			 * */
-			private function getTypeFilter(localeKey:String, types:String):FileFilter {
-				return new FileFilter(resourceManager.getString('cms',localeKey) +  "(" + types+ ")" , types );
-			}
-			
-			
-			/**
-			 * Will handle user files selection. Will open "AddFlavorsAssetsWindow" with the selected files 
-			 * */
-			private function onFlavorsSelected(event:Event):void {
-				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				profileEvent.dispatch();
+					fileFilter = new FileFilter(resourceManager.getString('cms','audio') +  "(" + AUDIO_TYPES+ ")" , AUDIO_TYPES );
 				
+				return fileFilter;
+			}
+			
+			/**
+			 * opens AddFlavorsAssetsWindow according to given params
+			 * */
+			private function openAddFlavorsWindow(filesList:ArrayCollection, allowAddFiles:Boolean = true) : void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.entry = _selectedEntry;
 				BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
+				addFlavorsAssetsWindow.filesList = filesList;
+				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
+				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
+				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
+			}
+			
+
+			/**
+			 * handle user files selection to upload
+			 * */
+			private function onFlavorsSelected(event:Event):void {
+				_fileReferenceList.removeEventListener(Event.SELECT, onFlavorsSelected);
+				
 				var filesList:ArrayCollection = new ArrayCollection();
 				for each (var fileReference:FileReference in _fileReferenceList.fileList) {
 					var uploadFile:UploadFileVo = new UploadFileVo();
@@ -152,9 +210,7 @@
 					filesList.addItem(uploadFile);
 				}
 				
-				addFlavorsAssetsWindow.filesList = filesList;
-				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
-				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
+				openAddFlavorsWindow(filesList);
 			}
 			
 		]]>
@@ -162,15 +218,15 @@
 	
 	
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','currentState')}"/>
-		<mx:Label id="stateLabel"/>
+		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="flavorsCurrentStateTitle"/>
+		<mx:Label id="stateLabel" styleName="flavorsCurrentState"/>
 	</mx:HBox>
 	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
-		<mx:Label id="actionLabel"/>
-		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}"/>
-		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}"/>
+		<mx:Label id="actionLabel" styleName="flavorsActionTitle"/>
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}" styleName="flavorsActionBtn"/>
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" styleName="flavorsActionBtn"/>
 	</mx:HBox>
-	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}"/>
+	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{_flavorAssets}"/>
 

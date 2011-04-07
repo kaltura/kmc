@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*"
-		 creationComplete="onCreationComplete()">
+		 creationComplete="onCreationComplete()" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
 	<mx:Metadata>
 		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
@@ -12,6 +12,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -45,6 +46,7 @@
 			/**
 			 * default image to display when entry contains no content
 			 * */
+			//TODO just a temp, change default image
 			[Embed(source="assets/images/thumb_error.png")]
 			private static const noMediaImage:Class;
 
@@ -92,6 +94,10 @@
 			[Bindable]
 			private var _entryHasContent:Boolean = true;
 
+			public function initData():void {
+				var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				listCategories.dispatch();
+			}
 
 			public function get viewStack():ViewStack {
 				return _viewStack;

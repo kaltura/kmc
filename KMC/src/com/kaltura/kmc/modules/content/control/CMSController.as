@@ -52,6 +52,9 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( EntriesEvent.UPDATE_ENTRIES , UpdateEntriesCommand );
 			addCommand( EntriesEvent.UPDATE_PLAYLISTS ,  UpdateEntriesCommand );
 			addCommand( EntriesEvent.DELETE_ENTRIES , DeleteEntriesCommand );
+			//media Event
+			addCommand( MediaEvent.ADD_MEDIA , AddMediaCommand );
+			
 			//selection Event
 			addCommand( SelectionEvent.SELECTION_CHANGED , SelectionCommand);
 			 

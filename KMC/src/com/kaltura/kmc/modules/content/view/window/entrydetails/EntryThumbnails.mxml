@@ -2,7 +2,8 @@
 <!---
 Thumbnails tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
@@ -14,6 +15,7 @@ Thumbnails tab of EntryDetailsWin
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.CropThumbnailWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.GrabFromVideoWindow;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer;
+			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.utils.ObjectUtil;
@@ -38,6 +40,14 @@ Thumbnails tab of EntryDetailsWin
 			[Bindable]
 			private var _uploadThumbnailActionsDP:Array;
 			private var _cropperWindow:CropThumbnailWindow;
+			
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
+				var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+				listThumbs.dispatch();
+			}
 			
 			public function get context():Context
 			{
@@ -107,7 +117,8 @@ Thumbnails tab of EntryDetailsWin
 				
 				//set the available operations for current entry
 				_uploadThumbnailActionsDP = new Array(resourceManager.getString('cms','upload'));
-				if ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)) {
+				if ((_selectedEntry.status!=KalturaEntryStatus.NO_CONTENT) &&
+					((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
 					_uploadThumbnailActionsDP.push(resourceManager.getString('cms','grabFromVideo'));
 					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
 						_uploadThumbnailActionsDP.push(resourceManager.getString('cms','cropNewThumbnail'));

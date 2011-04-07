@@ -6,10 +6,14 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.core.UIComponent;
 			import mx.resources.ResourceManager;
 
@@ -212,10 +216,11 @@
 			private function onNewEntry():void {
 				//TODO set a new entry to the model
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
-				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
-				cgEvent.dispatch();
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
-				cgEvent.dispatch();
+				entry.name = resourceManager.getString('cms','defaultEntryName');
+				//TODO currently only video available
+				entry.mediaType = KalturaMediaType.VIDEO;
+				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_MEDIA, entry, true);
+				addMedia.dispatch();
 			}
 			
 			

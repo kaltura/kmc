@@ -39,17 +39,21 @@
 			override public function onCreatoinComplete():void {
 				super.onCreatoinComplete();
 				var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
+				actionArr = [];
 				if (obj.kalturaFlavorAssetWithParams.flavorAsset == null) {
 					if (obj.hasOriginal) {
-						this.currentState = "convertState";
-						oneActionLabel = resourceManager.getString('cms', 'convertActionLabel');
+						//this.currentState = "convertState";
+						actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
+						actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+						actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
+						//oneActionLabel = resourceManager.getString('cms', 'convertActionLabel');
 					}
 					else {
 						this.currentState = "emptyState";
 					}
 				}
 				else {
-					actionArr = [];
+					//actionArr = [];
 					setActions();
 				}
 				if (parentDocument is DistributionDetailsWindow) {
@@ -76,6 +80,8 @@
 					this.currentState = null;
 					actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
 					actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+					actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+					actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
 					if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 						actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
 						_showBtn = true;
@@ -91,7 +97,10 @@
 						case KalturaFlavorAssetStatus.DELETED:  {
 							if (obj.hasOriginal) {
 								this.currentState = "convertState";
-								oneActionLabel = resourceManager.getString('cms', 'convertActionLabel');
+								//oneActionLabel = resourceManager.getString('cms', 'convertActionLabel');
+								actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
+								actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+								actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
 							}
 							else {
 								this.currentState = "emptyState";
@@ -101,8 +110,11 @@
 						case KalturaFlavorAssetStatus.ERROR:
 						case KalturaFlavorAssetStatus.NOT_APPLICABLE:  {
 							if (obj.hasOriginal) {
-								this.currentState = "convertState";
-								oneActionLabel = resourceManager.getString('cms', 'reconvertActionLabel');
+								//this.currentState = "convertState";
+								//oneActionLabel = resourceManager.getString('cms', 'reconvertActionLabel');
+								actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+								actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+								actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
 							}
 							else {
 								this.currentState = "emptyState";
@@ -114,6 +126,8 @@
 							this.currentState = null;
 							actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
 							actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+							actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+							actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
 							if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 								actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
 								_showBtn = true;
@@ -164,9 +178,13 @@
 						convEvent.dispatch();
 						break;
 					}
+					case resourceManager.getString('cms', 'uploadActionLabel'): {
+						dispatchEvent(new Event(FlavorsTable.UPLOAD_FLAVOR, true));
+						break;
+					}
+						
 				}
 			}
-
 
 			private function onOneActionClick(event:Event):void {
 				var btn:Button = event.target as Button;
@@ -183,13 +201,13 @@
 		]]>
 	</mx:Script>
 	<renderers:states>
-			<mx:State name="convertState">
+			<!--<mx:State name="convertState">
 				<mx:RemoveChild target="{actionCombobox}"/>
 				<mx:AddChild position="lastChild">
 					<mx:Button id="oneActionBtn" label="{oneActionLabel}" useHandCursor="true" buttonMode="true"
 							   fontSize="10" click="onOneActionClick(event)" styleName="dataGridBtn" width="110"/>
 				</mx:AddChild>
-			</mx:State>
+			</mx:State>-->
 			<mx:State name="convertingState">
 				<mx:RemoveChild target="{actionCombobox}"/>
 				<mx:AddChild position="lastChild">

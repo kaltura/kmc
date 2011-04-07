@@ -21,8 +21,10 @@
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.business.IDrilldownPanel;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -128,6 +130,7 @@
 			private var _visibleTabsAC:ArrayCollection;
 			
 			private var _isReady:Boolean = false;
+			private var _dataInitialized:Boolean = false;
 
 			public function get visibleTabsAC():ArrayCollection
 			{
@@ -173,7 +176,7 @@
 			 * reorder tabs and show only relevant tabs for mix entries
 			 * */
 			private function showMixSetup():void {
-				viewStack.removeChild(entryAsstes);
+				viewStack.removeChild(entryAssets);
 				viewStack.removeChild(liveStream);
 		
 				// for mix/content tab, show "mixesTab" header
@@ -185,7 +188,7 @@
 			 * reorder tabs and show only relevant tabs for live Entries
 			 * */
 			private function showLiveStreamSetup():void {
-				viewStack.removeChild(entryAsstes);
+				viewStack.removeChild(entryAssets);
 				viewStack.removeChild(contentTab);
 
 			}
@@ -276,7 +279,7 @@
 					showNormalSetup();
 					//remove redundant tabs in image and audio cases
 					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-						setViewPerEntryType(new Array(entryThumbnails, entryAsstes, entryDistribution));
+						setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution));
 					}
 					else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
 						setViewPerEntryType(new Array(entryDistribution));
@@ -333,6 +336,8 @@
 				_isReady = true;
 				if (_visibleTabsAC)
 					setVisibleTabs();
+				else
+					initTabs();
 			}
 			
 			/**
@@ -558,7 +563,7 @@
 				else {
 					// if we got here, all panels validation passed ok, the error was null.	
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
-					cgEvent.dispatch();
+					cgEvent.dispatch();	
 
 					removeCustomDataWatchers();
 					
@@ -708,6 +713,32 @@
 					if (!_visibleTabsAC.contains(child.id))
 						viewStack.removeChild(child);
 				}
+				initTabs();
+			}
+			
+			/**
+			 * loads the data of the visible tabs only
+			 * */
+			private function initTabs():void {
+				//we should load only once
+				if (_dataInitialized)
+					return;
+			
+				for (var i:int = 0; i<viewStack.numChildren; i++) {
+					if (viewStack.getChildAt(i) is IDrilldownPanel)
+						(viewStack.getChildAt(i) as IDrilldownPanel).initData();
+				} 
+
+				//distribution panel requires the data flavors and thumbnails tab are loading,
+				//so if they aren't exist, will still call their initData func
+				if (viewStack.getChildByName('entryDistribution')) {
+					if (!viewStack.getChildByName('entryAssets'))
+						entryAssets.initData();
+					if (!viewStack.getChildByName('entryThumbnails'))
+						entryThumbnails.initData();					
+				}
+				
+				_dataInitialized = true;
 			}
 			
 
@@ -741,7 +772,7 @@
 							selectedEntry="{_undoToEntry}"/>
 
 		<!-- Flavor Assets Tab -->
-		<ed:EntryFlavors id="entryAsstes" styleName="flavorsVbox"
+		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
 						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
 						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
 						 flavorAssets="{entryDetailsModel.flavorParamsAndAssetsByEntryId}"/>
@@ -762,7 +793,7 @@
 							   selectedEntry="{_undoToEntry}"/>
 
 		<!-- Custom Data -->
-		<mx:VBox id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" verticalGap="{customDataVerticalGap}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" verticalGap="{customDataVerticalGap}"/>
 		
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution" label="{ResourceManager.getInstance().getString('cms', 'distribution')}"
