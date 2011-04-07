@@ -16,6 +16,7 @@
 					convConvertingBtn.selected = false;
 					convErrorBtn.selected = false;
 					convReadyBtn.selected = false;
+					noMediaBtn.selected = false;
 					convUploadingBtn.selected = false;
 				}
 				else {
@@ -39,6 +40,10 @@
 								convReadyBtn.selected = true;
 								break;
 							
+							case KalturaEntryStatus.NO_CONTENT:
+								noMediaBtn.selected = true;
+								break;
+							
 						}
 					}
 				}
@@ -55,6 +60,7 @@
 					convStatusArray.push(KalturaEntryStatus.IMPORT);
 					convStatusArray.push(KalturaEntryStatus.PRECONVERT);
 					convStatusArray.push(KalturaEntryStatus.READY);
+					convStatusArray.push(KalturaEntryStatus.NO_CONTENT);
 				}
 				else {
 					if (convErrorBtn.selected) { // for error
@@ -68,6 +74,9 @@
 					}
 					if (convReadyBtn.selected) { // for ready 
 						convStatusArray.push(KalturaEntryStatus.READY);
+					}
+					if (noMediaBtn.selected) { // for no media 
+						convStatusArray.push(KalturaEntryStatus.NO_CONTENT);
 					}
 				}
 				return convStatusArray.join(',');
@@ -83,6 +92,7 @@
 					convConvertingBtn.selected = false;
 					convErrorBtn.selected = false;
 					convReadyBtn.selected = false;
+					noMediaBtn.selected = false;
 					convUploadingBtn.selected = false;
 					dispatchEvent(new Event(Filter.FILTER_CHANGED));
 				}
@@ -110,14 +120,14 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateConversionStatus():Boolean {
-				return !convConvertingBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
+				return !convConvertingBtn.selected && !noMediaBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
 			}
 			
 
 			
 			
 			public function get buttons():Array {
-				return [allConversionStatusBtn, convReadyBtn, convUploadingBtn, convConvertingBtn, convErrorBtn];
+				return [allConversionStatusBtn, convReadyBtn, noMediaBtn, convUploadingBtn, convConvertingBtn, convErrorBtn];
 			}
 		]]>
 	</mx:Script>
@@ -125,6 +135,9 @@
 			   label="{resourceManager.getString('cms', 'allConversionStatus')}" buttonMode="true"
 			   click="{onAllConversionStatusClicked(event)}" styleName="mainFilterGroupButton"/>
 	<mx:Button id="convReadyBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'readyBtn')}"
+			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
+			   click="{changeConversionStatusFilter(event)}"/>
+	<mx:Button id="noMediaBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'noMediaBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeConversionStatusFilter(event)}"/>
 	<mx:Button id="convUploadingBtn" width="100%" selected="false"
