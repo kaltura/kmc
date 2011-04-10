@@ -324,6 +324,8 @@
 				currentFilter.moderationStatusIn = moderationStatus.getFilterString();
 				// conversion status	
 				currentFilter.statusIn = conversionStatus.getFilterString();
+				// replacement status	
+				currentFilter.replacementStatusIn = replacementStatus.getFilterString();
 				// free text search
 				currentFilter.freeText = searchBox.getFilterString();
 				// scheduling 
@@ -469,7 +471,7 @@
 			 * Use the data(vo) and the UI to check if the filter is on.
 			 * */
 			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
-				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') || (!mediaTypes.selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!conversionStatus.allConversionStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '') || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length > 1) || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length) && (((currentFilter.advancedSearch as KalturaSearchOperator).items[0] as KalturaSearchOperator).items.length)));
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') || (!mediaTypes.selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!conversionStatus.allConversionStatusBtn.selected) || (!replacementStatus.allReplacementStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '') || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length > 1) || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length) && (((currentFilter.advancedSearch as KalturaSearchOperator).items[0] as KalturaSearchOperator).items.length)));
 			}
 
 
@@ -910,6 +912,7 @@
 				updateImageButton(durationStatus.buttons);
 				updateImageButton(moderationStatus.buttons);
 				updateImageButton(conversionStatus.buttons);
+				updateImageButton(replacementStatus.buttons);
 				updateImageButton(scheduling.buttons);
 			}
 
@@ -973,6 +976,9 @@
 				moderationStatus.setFilter(filterVo);
 
 				conversionStatus.setFilter(filterVo);
+				
+				//replacement
+				replacementStatus.setFilter(filterVo);
 
 				// free text
 				searchBox.setFilter(filterVo);
