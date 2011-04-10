@@ -15,7 +15,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('thumbParamsId');
 			return arr;
 		}
 	}

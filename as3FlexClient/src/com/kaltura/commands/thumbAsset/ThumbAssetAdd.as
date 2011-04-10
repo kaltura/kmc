@@ -1,29 +1,29 @@
-package com.kaltura.commands.flavorAsset
+package com.kaltura.commands.thumbAsset
 {
-	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.vo.KalturaThumbAsset;
 	import com.kaltura.vo.KalturaContentResource;
-	import com.kaltura.delegates.flavorAsset.FlavorAssetUpdateDelegate;
+	import com.kaltura.delegates.thumbAsset.ThumbAssetAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
-	public class FlavorAssetUpdate extends KalturaCall
+	public class ThumbAssetAdd extends KalturaCall
 	{
 		public var filterFields : String;
 		/**
-		 * @param id String
-		 * @param flavorAsset KalturaFlavorAsset
+		 * @param entryId String
+		 * @param thumbAsset KalturaThumbAsset
 		 * @param contentResource KalturaContentResource
 		 **/
-		public function FlavorAssetUpdate( id : String,flavorAsset : KalturaFlavorAsset,contentResource : KalturaContentResource )
+		public function ThumbAssetAdd( entryId : String,thumbAsset : KalturaThumbAsset,contentResource : KalturaContentResource )
 		{
-			service= 'flavorasset';
-			action= 'update';
+			service= 'thumbasset';
+			action= 'add';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('id');
-			valueArr.push(id);
- 			keyValArr = kalturaObject2Arrays(flavorAsset, 'flavorAsset');
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+ 			keyValArr = kalturaObject2Arrays(thumbAsset, 'thumbAsset');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
  			keyValArr = kalturaObject2Arrays(contentResource, 'contentResource');
@@ -35,7 +35,7 @@ package com.kaltura.commands.flavorAsset
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new FlavorAssetUpdateDelegate( this , config );
+			delegate = new ThumbAssetAddDelegate( this , config );
 		}
 	}
 }

@@ -33,7 +33,6 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('tags');
-			arr.push('fileExt');
 			return arr;
 		}
 	}

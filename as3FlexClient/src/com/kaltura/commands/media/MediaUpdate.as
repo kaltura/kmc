@@ -1,9 +1,9 @@
 package com.kaltura.commands.media
 {
+	import com.kaltura.vo.KalturaMediaEntry;
+	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.delegates.media.MediaUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
-	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
-	import com.kaltura.vo.KalturaMediaEntry;
 
 	public class MediaUpdate extends KalturaCall
 	{
@@ -11,9 +11,12 @@ package com.kaltura.commands.media
 		/**
 		 * @param entryId String
 		 * @param mediaEntry KalturaMediaEntry
+		 * @param resource KalturaResource
 		 **/
-		public function MediaUpdate( entryId : String,mediaEntry : KalturaMediaEntry , resource:KalturaAssetsParamsResourceContainers)
+		public function MediaUpdate( entryId : String,mediaEntry : KalturaMediaEntry=null,resource : KalturaResource=null )
 		{
+			if(mediaEntry== null)mediaEntry= new KalturaMediaEntry();
+			if(resource== null)resource= new KalturaResource();
 			service= 'media';
 			action= 'update';
 
@@ -23,6 +26,9 @@ package com.kaltura.commands.media
 			keyArr.push('entryId');
 			valueArr.push(entryId);
  			keyValArr = kalturaObject2Arrays(mediaEntry, 'mediaEntry');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			keyValArr = kalturaObject2Arrays(resource, 'resource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);

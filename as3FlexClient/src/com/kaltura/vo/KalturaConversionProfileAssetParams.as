@@ -12,12 +12,15 @@ package com.kaltura.vo
 
 		public var origin : int = int.MIN_VALUE;
 
+		public var systemName : String;
+
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			arr.push('readyBehavior');
 			arr.push('origin');
+			arr.push('systemName');
 			return arr;
 		}
 	}

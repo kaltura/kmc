@@ -21,6 +21,10 @@ package com.kaltura.vo
 
 		public var originIn : String;
 
+		public var systemNameEqual : String;
+
+		public var systemNameIn : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -33,6 +37,8 @@ package com.kaltura.vo
 			arr.push('readyBehaviorIn');
 			arr.push('originEqual');
 			arr.push('originIn');
+			arr.push('systemNameEqual');
+			arr.push('systemNameIn');
 			return arr;
 		}
 	}

@@ -27,7 +27,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('flavorParamsId');
 			return arr;
 		}
 	}
