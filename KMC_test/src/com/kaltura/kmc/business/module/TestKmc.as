@@ -1,4 +1,4 @@
-package flexUnitTests
+package com.kaltura.kmc.business.module
 {
 	import org.flexunit.Assert;
 	

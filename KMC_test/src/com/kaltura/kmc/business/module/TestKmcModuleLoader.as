@@ -1,4 +1,4 @@
-package com.kaltura.kmc.business {
+package com.kaltura.kmc.business.module {
 	import com.kaltura.kmc.business.KmcModuleLoader;
 	import com.kaltura.kmc.events.KmcModuleEvent;
 	import com.kaltura.kmc.modules.KmcModule;

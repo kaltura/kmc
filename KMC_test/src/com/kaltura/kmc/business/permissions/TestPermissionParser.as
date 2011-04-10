@@ -1,4 +1,4 @@
-package com.kaltura.kmc.business {
+package com.kaltura.kmc.business.permissions {
 	import com.kaltura.kmc.business.PermissionsParser;
 	import com.kaltura.kmc.vo.PermissionVo;
 
