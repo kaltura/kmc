@@ -23,6 +23,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.controls.kobjecthadles.handles.LeftHandle;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
@@ -80,6 +81,11 @@
 			 * may be overriden with maxNumCategories flashvar
 			 * */
 			private static const DEFAULT_CATEGORIES_NUM : int = 32;
+			
+			[Bindable]
+			private var _tabBarViewStack:ViewStack;
+			[Bindable]
+			private var _rightBtnsViewStack:ViewStack;
 
 
 			[Bindable]
@@ -252,8 +258,29 @@
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
-					contentView.removeChild(this[subtabName]);
+					var indexToRemove:int = contentView.getChildIndex(this[subtabName]);
+					contentView.removeChildAt(indexToRemove);
+					leftBtnsHBox.removeChildAt(indexToRemove);
+					
 				}
+
+				/* _rightBtnsViewStack = new ViewStack();
+				for (var i:int = 0; i<2; i++) {
+					var child:DisplayObject = contentView.getChildAt(contentView.numChildren-1);
+					contentView.removeChildAt(contentView.numChildren-1);
+					_rightBtnsViewStack.addChild(child)
+				}
+			
+				
+				_tabBarViewStack = new ViewStack();
+
+				for (var j:int = contentView.numChildren-1; j>=0; j--) {
+					var child2:DisplayObject = contentView.getChildAt(j);
+					contentView.removeChildAt(j);
+					_tabBarViewStack.addChild(child2);
+					
+				} */
+	
 				if (_initialTab && _initialTab != "manage") {
 					_model.attic.kmef = kmef;
 					// switch tab if asked
@@ -263,6 +290,8 @@
 					(contentView.selectedChild as IContentPanel).init(kmef);
 					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 				}
+				
+
 			}
 
 
@@ -450,7 +479,9 @@
 			 */
 			private function switchToTab(tab:String = ""):void {
 				// get the correct index from the viewstack, so it'll work after removing items as well.
-				secTln.selectedIndex = getSubtabIndex(tab);
+				var selectedIndex:int = getSubtabIndex(tab);
+				contentView.selectedIndex = selectedIndex;
+				(leftBtnsHBox.getChildAt(selectedIndex) as Button).selected = true;
 				// init subtab (Atar: doesn't seem necessary, happens when the viewstack changes)
 				(contentView.selectedChild as IContentPanel).init();
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
@@ -800,6 +831,38 @@
 					this.enabled = true;
 				}
 			}
+			
+			/**
+			 * will be called when clicking one of the left tab buttons
+			 * */
+			private function leftTabClicked(event:Event):void {
+				setNewTabSelection(event);	
+				contentView.selectedIndex = leftBtnsHBox.getChildIndex(event.target as Button);
+				trackTabChange(event);
+			} 
+			
+			/**
+			 * will be called when clicking one of the right tab buttons
+			 * */
+			private function rightTabClicked(event:Event):void {
+				setNewTabSelection(event);	
+				contentView.selectedIndex = rightBtnsHBox.getChildIndex(event.target as Button) + leftBtnsHBox.numChildren ;
+				trackTabChange(event);
+			}
+			
+			/**
+			 * unselects the previous selected tab, and sets the new tab to selected
+			 * */
+			private function setNewTabSelection(event:Event):void {
+				//unselect old tab
+				var oldSelectedIndex:int = contentView.selectedIndex;
+				if (oldSelectedIndex < leftBtnsHBox.numChildren)
+					(leftBtnsHBox.getChildAt(oldSelectedIndex) as Button).selected = false;
+				else
+					(rightBtnsHBox.getChildAt(oldSelectedIndex - leftBtnsHBox.numChildren) as Button).selected = false;
+
+				(event.target as Button).selected = true;
+			}
 
 
 			/**
@@ -807,6 +870,7 @@
 			 * */
 			private function trackTabChange(evt:Event):void {
 				var label:String = contentView.selectedChild.id;
+				//TODO add event for dropfolders?
 				switch (label) {
 					case "manage":
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
@@ -821,6 +885,7 @@
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'), GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "moderate":
+						trace ("moderateeee");
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'), GoogleAnalyticsConsts.CONTENT)
 						break;
@@ -882,6 +947,7 @@
 			protected function resizeToContent():void {
 				contentView.height = contentView.selectedChild.height;
 			}
+			
 
 //			protected function button1_clickHandler(event:MouseEvent):void
 //			{
@@ -911,15 +977,37 @@
 	<!-- permissions setter -->
 	
 	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView" >
-		<mx:HBox width="100%" styleName="tabsContainer" >
-			<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
-					   dataProvider="{contentView}">
-			</mx:TabBar>
+		<mx:HBox width="100%" styleName="tabsContainer" verticalAlign="middle">
+			<mx:HBox id="leftBtnsHBox" styleName="tln">
+				<mx:Button id="manageBtn" label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
+						   click="leftTabClicked(event)" styleName="{manageBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
+						   buttonMode="true" toggle="true" selected="true"/>
+				<mx:Button id="moderationBtn" label="{ResourceManager.getInstance().getString('cms','moderation')}"
+						   click="leftTabClicked(event)" styleName="{moderationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
+						   buttonMode="true" toggle="true"/>
+				<mx:Button id="playlistsBtn" label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"
+						   click="leftTabClicked(event)" styleName="{playlistsBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
+						   buttonMode="true" toggle="true"/>
+				<mx:Button id="syndicationBtn" label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"
+						   click="leftTabClicked(event)" styleName="{syndicationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}"
+						   buttonMode="true" toggle="true"/>
+				<mx:Button id="uploadBtn" label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"
+						   click="leftTabClicked(event)" styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
+						   buttonMode="true" toggle="true"/>						   
+			</mx:HBox>
+			<!--<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
+					   dataProvider="{_tabBarViewStack}">
+			</mx:TabBar>-->
 			<mx:Spacer width="100%"/>
+			<mx:HBox id="rightBtnsHBox">
+				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" 
+						   styleName="{dropFoldersBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}"  buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
+				
+			</mx:HBox>
 			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 		</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
-					  minHeight="500" selectedIndex="{secTln.selectedIndex}" change="initSelectedTab(event)">
+					  minHeight="500" change="initSelectedTab(event)">
 			<content:Entries id="manage" height="100%" styleName="pageStyle" 
 					entryDetailsModel="{_model.entryDetailsModel}" creationComplete="resizeToContent()"
 					filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
@@ -943,6 +1031,7 @@
 					creationComplete="resizeToContent()"
 					ks="{_model.context.kc.ks}" bulkUploadData="{_model.bulkUploadModel}"
 					label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"/>
+			<content:DropFoldersPanel id="dropFolderPanel" width="100%" height="100%" styleName="pageStyle"/>
 		</mx:ViewStack>
 	</mx:VBox>
 	<content:GeneralPermissionsSetter id="generalPermissions" />

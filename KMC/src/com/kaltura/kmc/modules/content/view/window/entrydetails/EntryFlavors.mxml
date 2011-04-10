@@ -81,7 +81,7 @@
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
-				//TODO send flavorAssetId
+				uploadFile.flavorAssetId = _selectedFlavorAssetId
 				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);	
 			}
 			
@@ -104,16 +104,15 @@
 			{
 				_selectedEntry = selectedEntry;
 				//sets labels according to entry's status
-				if (_selectedEntry) {
-					if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+				switch (_selectedEntry.status) {
+					case KalturaEntryStatus.NO_CONTENT:
 						stateLabel.text = resourceManager.getString('cms','noContentState');
-						_showActions = true;
 						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
 							actionLabel.text = resourceManager.getString('cms','addVideo');
 						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
 							actionLabel.text = resourceManager.getString('cms','addAudio');
-					}
-					else if (_selectedEntry.status == KalturaEntryStatus.READY) {
+						break;
+					case KalturaEntryStatus.READY:
 						stateLabel.text = resourceManager.getString('cms','readyState');
 						_showActions = true;
 						noteLabel.visible = noteLabel.includeInLayout = true;
@@ -121,11 +120,15 @@
 							actionLabel.text = resourceManager.getString('cms','replaceVideo');
 						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
 							actionLabel.text = resourceManager.getString('cms','replaceAudio');
-					}
-					else {
+						break;
+					case KalturaEntryStatus.ERROR_CONVERTING:
+					case KalturaEntryStatus.ERROR_IMPORTING:
+						stateLabel.text = resourceManager.getString('cms','errorState');
+						_showActions = false;
+						break;
+					default:
 						stateLabel.text = resourceManager.getString('cms','notReadyState');
 						_showActions = false;
-					}
 				}
 
 			}
