@@ -57,7 +57,7 @@ package com.kaltura.vo
 		 * (when adding assets to a new entry) flavorParamsId of the flavorparams to use. 
 		 * passed as parameter.
 		 */
-		public var flavorParamsId:String;
+		public var flavorParamsId:int;
 		
 		/**
 		 * (when replacing a single flavor) flavorAssetId of the asset to be replaced.

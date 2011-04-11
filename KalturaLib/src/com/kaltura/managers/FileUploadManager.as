@@ -126,7 +126,7 @@ package com.kaltura.managers {
 			vo.uploadTime = new Date();
 			vo.entryId = entryid; 
 			vo.groupId = groupid;
-			vo.flavorParamsId = flavorparamsid;
+			vo.flavorParamsId = parseInt(flavorparamsid);
 			vo.conversionProfile = convprofid;
 			vo.fileSize = file.size;
 			vo.action = action;
@@ -351,7 +351,7 @@ package com.kaltura.managers {
 		private function addFlavorAsset(file:FileUploadVO):void {
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
 			// the flavorParamsId of the flavor we want this to be
-			flavorAsset.flavorParamsId = parseInt(file.flavorParamsId);	
+			flavorAsset.flavorParamsId = file.flavorParamsId;	
 			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
@@ -500,7 +500,7 @@ package com.kaltura.managers {
 		}
 		
 		
-		public function getCompleteByFlavorAssetId(id:String):FileUploadVO {
+		public function getCompleteByFlavorAssetId(id:int):FileUploadVO {
 			var result:FileUploadVO = null;
 			for each (var file:FileUploadVO in _groupAndComplete) {
 				if (file.flavorParamsId == id) {
