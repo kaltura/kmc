@@ -9,7 +9,7 @@ package com.kaltura.vo
 	{
 		public var resource : KalturaContentResource;
 
-		public var assetParamsId : String;
+		public var assetParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -5,7 +5,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaRemoteStorageResource extends KalturaUrlResource
 	{
-		public var storageProfileId : String;
+		public var storageProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{

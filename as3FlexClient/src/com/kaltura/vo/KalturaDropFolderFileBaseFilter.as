@@ -33,11 +33,11 @@ package com.kaltura.vo
 
 		public var parsedSlugLike : String;
 
-		public var parsedFlavorIdEqual : int = int.MIN_VALUE;
+		public var parsedFlavorEqual : int = int.MIN_VALUE;
 
-		public var parsedFlavorIdIn : String;
+		public var parsedFlavorIn : String;
 
-		public var parsedFlavorIdLike : int = int.MIN_VALUE;
+		public var parsedFlavorLike : int = int.MIN_VALUE;
 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
@@ -65,9 +65,9 @@ package com.kaltura.vo
 			arr.push('parsedSlugEqual');
 			arr.push('parsedSlugIn');
 			arr.push('parsedSlugLike');
-			arr.push('parsedFlavorIdEqual');
-			arr.push('parsedFlavorIdIn');
-			arr.push('parsedFlavorIdLike');
+			arr.push('parsedFlavorEqual');
+			arr.push('parsedFlavorIn');
+			arr.push('parsedFlavorLike');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');

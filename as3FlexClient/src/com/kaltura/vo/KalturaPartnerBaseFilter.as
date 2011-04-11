@@ -21,6 +21,12 @@ package com.kaltura.vo
 
 		public var statusIn : String;
 
+		public var partnerPackageEqual : int = int.MIN_VALUE;
+
+		public var partnerPackageGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		public var partnerPackageLessThanOrEqual : int = int.MIN_VALUE;
+
 		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -35,6 +41,9 @@ package com.kaltura.vo
 			arr.push('nameEqual');
 			arr.push('statusEqual');
 			arr.push('statusIn');
+			arr.push('partnerPackageEqual');
+			arr.push('partnerPackageGreaterThanOrEqual');
+			arr.push('partnerPackageLessThanOrEqual');
 			arr.push('partnerNameDescriptionWebsiteAdminNameAdminEmailLike');
 			return arr;
 		}

@@ -5,7 +5,7 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkResource extends KalturaUrlResource
 	{
-		public var bulkUploadId : String;
+		public var bulkUploadId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
