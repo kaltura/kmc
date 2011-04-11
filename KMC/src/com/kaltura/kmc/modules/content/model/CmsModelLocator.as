@@ -60,6 +60,11 @@ package com.kaltura.kmc.modules.content.model {
 		public var playlistModel:PlaylistModel;
 		
 		/**
+		 * data that is used by the playlist windows  
+		 */		
+		public var dropFolderModel:DropFolderModel;
+		
+		/**
 		 * placeholder for data received via showSubtab().
 		 * when putting things on this object one should make sure one doesn't override 
 		 * irrelevant vars (i.e., don't change the object, add / remove attributes). 
@@ -204,6 +209,7 @@ package com.kaltura.kmc.modules.content.model {
 			entryDetailsModel = new EntryDetailsModel();
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
+			dropFolderModel = new DropFolderModel();
 			
 			bulkUploadModel = new BulkUploadModel();
 			bulkUploadModel.bulkUploadFilterPager = new KalturaFilterPager();

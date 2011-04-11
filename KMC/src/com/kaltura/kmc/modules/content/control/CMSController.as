@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.control
 	import com.adobe.cairngorm.control.FrontController;
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
+	import com.kaltura.kmc.modules.content.commands.dropFolder.*;
 	import com.kaltura.kmc.modules.content.events.*;
 	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 
@@ -153,6 +154,14 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ChangeModelEvent.SET_CUSTOM_METADATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_UPDATE_CUSTOM_DATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
+			
+			// drop folder stuff
+			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);
+			addCommand(DropFolderEvent.SET_SELECTED_FOLDER, SetSelectedFolder);
+			addCommand(DropFolderEvent.LIST_CONTENT, ListDropFolderFiles);
+			addCommand(DropFolderFileEvent.MATCH_SLUG, MatchSlugCommand);
+			
+			
 		}
 	}
 }

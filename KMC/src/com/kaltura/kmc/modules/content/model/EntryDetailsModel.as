@@ -68,5 +68,7 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var conversionProfsWFlavorParams:ArrayCollection;
 		
+		
+		
 	}
 }
