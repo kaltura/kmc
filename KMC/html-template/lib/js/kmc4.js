@@ -38,18 +38,18 @@ $(window).load(function(){
 
 //If we have ongoing process, we show a warning message when the user try to leaves the page
 function checkForOngoingProcess() {
-                var warning_message;
-                try {
-                                warning_message = $("#kcms")[0].hasOngoingProcess();
-                }
-                catch(e) {
-                                warning_message = false;
-                }
-
-                if(warning_message != null) {
-                                return warning_message;
-                }
-                return;
+    var warning_message;
+    try {
+        warning_message = $("#kcms")[0].hasOngoingProcess();
+    }
+    catch(e) {
+        warning_message = false;
+    }
+//console.log(warning_message);
+    if(warning_message != null) {
+        return warning_message;
+    }
+    return;
 }
 window.onbeforeunload = checkForOngoingProcess;
 
