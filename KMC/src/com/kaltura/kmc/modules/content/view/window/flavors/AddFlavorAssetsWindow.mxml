@@ -181,15 +181,17 @@
 	</mx:Script>
 	
 	<mx:HBox>
-		<mx:Label text="Conversion Profile:" />
-		<mx:ComboBox id="cnvrtProfCb" dataProvider="{conversionProfiles}" labelFunction="cnvrtPrfLbl" selectedIndex="0"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" />
+		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" 
+					 selectedIndex="0" dataProvider="{conversionProfiles}" />
 	</mx:HBox>
-	<mx:Label text="Uploaded Files" fontWeight="bold" />
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" fontWeight="bold" />
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
 						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
 						addFiles="addMoreFiles()"/>
 	
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}" click="submit(event)"/>
+		<mx:Button id="submitBtn" click="submit(event)"
+				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}" />
 	</mx:ControlBar>
 </mx:TitleWindow>
