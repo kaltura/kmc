@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 "Manage" part of the content viewstack.
-	 lists all entries, allows filtering, preview and drill-down to entry details.
+"Manage" part of the content viewstack.
+lists all entries, allows filtering, preview and drill-down to entry details.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
 		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
@@ -16,7 +16,7 @@
 			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
-
+	
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -38,14 +38,16 @@
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.vo.ListableVo;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaPlayableEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
-
+			
 			[Bindable]
 			/**
 			 * show embed option in "publish" column
@@ -71,12 +73,12 @@
 			 * entries-related data
 			 * */
 			public var entryDetailsModel:EntryDetailsModel;
-
+			
 			public function onRequestedDataLoaded():void {
 				filter.init();
 				loadEntries();
 			}
-
+			
 			/**
 			 * initialize the panel.
 			 * @param initFilter	filter for initial entry loading.
@@ -96,38 +98,38 @@
 			 * load all the data the filter needs
 			 * */
 			private function loadFilterData():void {
-//				// distribution
-//				if (filterModel.enableDistribution) {
-//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-//					listDistribution.dispatch();
-//				}
-//				// flavor params
-//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
-//				getAllFlavorParams.dispatch();
-//				// metadata profile
-//				if (filterModel.enableCustomData) {
-//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-//					listMetadataProfile.dispatch();
-//				}
-//				// access control
-//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-//				getAllProfilesEvent.dispatch();
-//				//categories
-//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-//				getCategoriesList.dispatch();
+				//				// distribution
+				//				if (filterModel.enableDistribution) {
+				//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
+				//					listDistribution.dispatch();
+				//				}
+				//				// flavor params
+				//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
+				//				getAllFlavorParams.dispatch();
+				//				// metadata profile
+				//				if (filterModel.enableCustomData) {
+				//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				//					listMetadataProfile.dispatch();
+				//				}
+				//				// access control
+				//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
+				//				getAllProfilesEvent.dispatch();
+				//				//categories
+				//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				//				getCategoriesList.dispatch();
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
 				fe.dispatch();
 			}
 			
 			
-
-
+			
+			
 			private function setEntriesToolbar():void {
 				toolBar.removeController(toolBar.approveSelected);
 				toolBar.removeController(toolBar.rejectSelected);
 			}
-
-
+			
+			
 			public function loadEntries():void {
 				if (paging.pageSize == 10) {
 					entryTableContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10;
@@ -143,7 +145,7 @@
 					entryTable.rowCount = -1;
 					vbox1.percentHeight = 100;
 				}
-
+				
 				_listableVo = new ListableVo(filter.ps3filter, paging, null);
 				// set the order-by to the filter
 				if (_orderBy)
@@ -154,33 +156,33 @@
 				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _listableVo);
 				searchEvent.dispatch();
 			}
-
-
+			
+			
 			//paging
 			private function gotoPage():void {
 				loadEntries();
 			}
-
-
+			
+			
 			/**
 			 * controller has selected all entries
 			 */
 			private function onSelectAllEntries(evt:Event):void {
 				entryTable.selectAll();
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-															new ArrayCollection(entryTable.selectedItems));
+					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
 			}
-
-
+			
+			
 			private function onDeselectAllEntries(evt:Event):void {
 				entryTable.deselectAll();
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-															new ArrayCollection(entryTable.selectedItems));
+					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
 			}
-
-
+			
+			
 			private function removeColums(event:Event):void {
 				event.target.removeColumn(resourceManager.getString('cms', 'idHeader'));
 				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
@@ -190,8 +192,8 @@
 				//			event.target.removeColumn(resourceManager.getString('cms', 'duration'));
 				event.target.removeColumn(resourceManager.getString('cms', 'playlistType'));
 				//		event.target.removeColumn(resourceManager.getString('cms', 'preview'));
-
-
+				
+				
 				event.target.updateDefaultSortColumn();
 				percentWidth = 100;
 				topContainer.percentWidth = 100;
@@ -205,8 +207,8 @@
 				validateNow();
 				validateDisplayList()
 			}
-
-
+			
+			
 			/**
 			 * This is a new search called by an action on the filter vo
 			 */
@@ -216,8 +218,8 @@
 				loadEntries();
 				updateExpenderLabel();
 			}
-
-
+			
+			
 			private function updateExpenderLabel():void {
 				if (!filter.isFilterOn) {
 					filteredLabel.visible = false;
@@ -226,13 +228,13 @@
 					filteredLabel.visible = true;
 				}
 			}
-
-
+			
+			
 			/**
 			 * Create a new manual based playlist based on current selection
 			 */
 			private function onNewManualPlaylist():void {
-
+				
 				if (entryTable.selectedItems.length == 0) {
 					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
 					return;
@@ -240,30 +242,31 @@
 				var cgEvent:CairngormEvent;
 				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, null);
 				cgEvent.dispatch();
-
+				
 				// add the selected items to the model 
 				cgEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-										   new ArrayCollection(entryTable.selectedItems));
+					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
-
+				
 				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
 				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.MANUAL_PLAYLIST);
 				cgEvent.dispatch();
-
+				
 				//open a new manual playlist window to edit this 
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
 				cgEvent.dispatch();
-
+				
 			}
-
-
+			
+			
 			/**
 			 * Create a new ruled based playlist based on current filter
 			 */
 			private function onNewRulePlaylist():void {
-				// add the selected filter to the model 
-				var cgEvent:CairngormEvent = new FilterEvent(FilterEvent.SET_FILTER_TO_MODEL,
-															 filter.playlistFilter);
+				var filterVo:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter; 
+				filterVo.orderBy = KalturaPlayableEntryOrderBy.PLAYS_DESC;
+				// add the selected filter to the model
+				var cgEvent:CairngormEvent = new FilterEvent(FilterEvent.SET_FILTER_TO_MODEL, filterVo);
 				cgEvent.dispatch();
 				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
 				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.RULE_BASED_PLAYLIST);
@@ -271,16 +274,16 @@
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
 				cgEvent.dispatch();
 			}
-
-
+			 
+			
 			/**
 			 * fold / unfold filter
 			 */
 			private function foldFilter():void {
 				currentState = (currentState == null) ? 'noFilterState' : null;
 			}
-
-
+			
+			
 			/**
 			 * Entry table dispatched an order-by changing
 			 */
@@ -288,42 +291,42 @@
 				_orderBy = entryTable.orderBy;
 				loadEntries();
 			}
-
-
+			
+			
 			private function changeRows():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE ,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>Show Rows");
+					"content>Show Rows");
 				gotoPage()
 			}
-
-
+			
+			
 			private function nxtPage():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_NEXT_PAGE +
 					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>NextPage/Page" + paging.selectedPage);
+					"content>NextPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-
-
+			
+			
 			private function prvPage():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PREV_PAGE +
 					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>PrevPage/Page" + paging.selectedPage);
+					"content>PrevPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-
-
+			
+			
 			private function gotoPageNum():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE_NUM +
 					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>GoToPage/Page" + paging.selectedPage);
+					"content>GoToPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-
+			
 			protected function creationCompleteHandler(event:FlexEvent):void
 			{
 				setEntriesToolbar();
@@ -331,7 +334,7 @@
 			}
 			
 			
-
+			
 		]]>
 	</mx:Script>
 	<mx:HBox styleName="filtersHeadTitleHBox">
@@ -362,12 +365,12 @@
 								 selectedEntry="{entryDetailsModel.selectedEntry}" showEmbed="{showEmbed}"
 								 orderByChanged="{onOrderByChanged()}" creationComplete="removeColums( event )"/>
 			</mx:HBox>
-			 
+			
 			<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
 							 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
 							 getPageNum="gotoPageNum()" totalCount="{entryDetailsModel.totalEntriesCount}"
 							 showRowsInPage="true" />
-
+			
 			<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}" 
 								 selectAllEntries="onSelectAllEntries(event)"
 								 deselectAllEntries="onDeselectAllEntries(event)"
@@ -375,5 +378,5 @@
 								 createNewRulePlaylist="onNewRulePlaylist()"/>
 		</mx:VBox>
 	</mx:HDividedBox>
-
+	
 </mx:VBox>
