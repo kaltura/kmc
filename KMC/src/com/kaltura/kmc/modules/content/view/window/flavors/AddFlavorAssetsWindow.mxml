@@ -13,8 +13,7 @@
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
 		width="550" height="400" styleName="TitleWindowType2" 
 		showCloseButton="true" close="closeHandler(event)"
-		creationComplete="titlewindow1_creationCompleteHandler(event)"
-		title="Add Video">
+		creationComplete="titlewindow1_creationCompleteHandler(event)" >
 
 	<mx:Script>
 		<![CDATA[
@@ -181,17 +180,19 @@
 	</mx:Script>
 	
 	<mx:HBox>
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" />
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" 
+				  styleName="simpleText"/>
 		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" 
 					 selectedIndex="0" dataProvider="{conversionProfiles}" />
 	</mx:HBox>
-	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" fontWeight="bold" />
+	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
+			  styleName="tableName"/>
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
 						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
 						addFiles="addMoreFiles()"/>
 	
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" click="submit(event)"
+		<mx:Button id="submitBtn" click="submit(event)" buttonMode="true"
 				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}" />
 	</mx:ControlBar>
 </mx:TitleWindow>
