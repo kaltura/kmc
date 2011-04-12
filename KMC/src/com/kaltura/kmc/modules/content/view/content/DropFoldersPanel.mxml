@@ -3,17 +3,148 @@
 "Drop Folders" section of content viewstack.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel">
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+		 creationComplete="{onCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
+			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+			import com.kaltura.kmc.modules.content.model.DropFolderModel;
+			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaDropFolderFile;
+			import com.kaltura.vo.KalturaDropFolderFileFilter;
+			
+			import mx.formatters.DateFormatter;
+			import mx.formatters.SwitchSymbolFormatter;
+			
+			private const MB_MULTIPLIER:int = 1024*1024;
+			
+			[Bindable]
+			public var dropFolderModel:DropFolderModel;
+			
+			private function onCreationComplete():void {
+				dropFolderModel.filter = new KalturaDropFolderFileFilter();
+			}
 			/**
 			 * @inheritDoc
 			 * */
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
-			
+				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS);
+				listFoldersEvent.dispatch();
+				var listFilesEvent:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
+				listFilesEvent.dispatch();
 			}
+			
+			private function newSearchhFromFilter():void {
+				
+			}
+			
+			/**
+			 * Create suitable string to display in the "Created at" column
+			 * */
+			private function dateCreatedLabelFunc(item:Object, column:DataGridColumn): String {
+				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				if (curFile.createdAt==int.MIN_VALUE)
+					return '';
+				var date:Date = new Date(curFile.createdAt * 1000);
+				return dateDisplay.format(date);
+			}
+			/**
+			 * Create suitable string to display in the "File Size" column
+			 * */
+			private function fileSizeLabelFunc(item:Object, column:DataGridColumn): String {
+				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				if (curFile.fileSize==int.MIN_VALUE)
+					return '';
+				return (curFile.fileSize/MB_MULTIPLIER) + ' ' + resourceManager.getString('cms','megaBytes');
+				
+			}
+			/**
+			 * Create suitable string to display in the "Status" column
+			 * */
+			private function statusLabelFunc(item:Object, column:DataGridColumn): String {
+				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				switch (curFile.status) {
+					case KalturaDropFolderFileStatus.PENDING:
+						return resourceManager.getString('cms','pendingBtn');
+					case KalturaDropFolderFileStatus.DOWNLOADING:
+						return resourceManager.getString('cms','downloadingBtn');
+					case KalturaDropFolderFileStatus.ERROR_DOWNLOADING:
+						return resourceManager.getString('cms','errDownloadingBtn');
+					case KalturaDropFolderFileStatus.ERROR_DELETING:
+						return resourceManager.getString('cms','errDeletingBtn');
+				}
+				return '';
+			}
+			
+			/**
+			 * paging
+			 * */
+		/* 	private function gotoPage():void {
+				// update filter here
+				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
+				loadDropFolderFiles();
+			}
+			
+			private function loadDropFolderFiles():void {
+				if (paging.pageSize == 10) {
+					tableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height + bottomActionBox.height + 15;
+					dg.height = tableContainer.height - (paging.height + bottomActionBox.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					dg.rowCount = 10;
+					actionBox.height = dg.height + paging.height + bottomActionBox.height;
+					tableMainHbox.height = tableContainer.height ;
+				}
+				else {
+					tableMainHbox.percentHeight = 100;
+					tableContainer.percentHeight = 100;
+					dg.percentHeight = 100;
+					dg.rowCount = -1;
+					actionBox.percentHeight = 100;
+				} 
+				
+				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				getMetadataProfile.dispatch();
+			} */
+		
 		]]>
-	</mx:Script>	
+	</mx:Script>
+	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
 	
+	<mx:HBox styleName="filtersHeadTitleHBox">
+		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
+				  styleName="filterTitleHeader"/>
+		<mx:Label text="{resourceManager.getString('cms','mediaFilesTitle')}" styleName="filterTitleHeader"/>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="init()"/>
+	</mx:HBox>
+	<mx:HDividedBox id="topContainer" verticalScrollPolicy="off">
+		<mx:VBox id="vbox1">
+			<filter:DropFolderFilter id="filter" height="100%" width="245"
+									 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
+		</mx:VBox>
+		<mx:VBox id="tableContainer" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox" width="100%">
+			<mx:HBox id="entryTableContainer" height="100%" width="100%">
+				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" width="100%" allowMultipleSelection="true">
+					<mx:columns>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}" dataField="errorDescription"/>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:HBox>
+			
+			<!--<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 totalCount="{dropFolderModel.filesTotalCount}"
+							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
+							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
+			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
+				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','deleteSchema')}"
+						   useHandCursor="true" buttonMode="true" click="{deleteProfile()}"/>
+			</mx:HBox>-->
+		</mx:VBox>
+	</mx:HDividedBox>
 </mx:VBox>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<filter:BaseFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" styleName="filter" paddingTop="0" paddingBottom="0"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%"
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaDropFolder;
+			import com.kaltura.vo.KalturaDropFolderFileFilter;
+			import com.kaltura.vo.KalturaDropFolderFilter;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.core.Container;
+
+			private const DATE_FIELD_WIDTH:Number = 80;
+			private const DROP_FOLDERS_GROUP_NAME:String = "dropFolders";
+			
+			private var _dropFolderFileFilter:KalturaDropFolderFileFilter;
+			private var _dropFoldersAC:ArrayCollection;
+			
+			public function get dropFoldersAC():ArrayCollection
+			{
+				return _dropFoldersAC;
+			}
+
+			public function set dropFoldersAC(value:ArrayCollection):void
+			{
+				_dropFoldersAC = value;
+				
+				if (value && value.length)
+					buildDropFoldersFilter();
+			}
+			
+			/**
+			 * builds the UI for dropfolders filter
+			 * */
+			private function buildDropFoldersFilter():void {
+				dropFolders.removeAllChildren();
+				
+				if (dropFoldersAC && dropFoldersAC.length) {
+					var container:Container = createDynamicDropFoldersFilter();
+					
+					if (container) // if we need to add visual filter
+						dropFolders.addChild(container);
+				}
+			}
+			
+			
+			/**
+			 * create the UI for the drop folders filter section of the main Filter
+			 * */
+			private function createDynamicDropFoldersFilter():Container{
+				var container:Container = new VBox();
+				container.percentWidth = 100;
+				container.styleName = "defualtFilter";
+				
+				var listButtonsArray:Array = createButtonsGroup(resourceManager.getString("cms", "dropFoldersTitle"), "dropFolders",
+					_dropFoldersAC.source, "name", onAutoTitleClick, onAutoMemberClick);
+				//_dropFoldersBtnsAC["dropFolders"] = listButtonsArray;
+				injectGroupToContainer(container, listButtonsArray);
+				
+				return container;
+			}
+
+			public function get dropFolderFileFilter():KalturaDropFolderFileFilter
+			{
+				if (dropFolderFileStatus)
+					_dropFolderFileFilter.statusIn = dropFolderFileStatus.getFilterString();
+				return _dropFolderFileFilter;
+			}
+
+			public function set dropFolderFileFilter(value:KalturaDropFolderFileFilter):void
+			{
+				_dropFolderFileFilter = value;
+				if (dropFolderFileStatus) {
+					dropFolderFileStatus.setFilter(_dropFolderFileFilter);	
+					validateNow();
+					
+				}
+			}
+
+			private function clearDates():void {
+				super.clearGivenDates(fromDate, toDate);
+			}
+			
+			private function currentDatesChange(event:Event):void {
+				super.currentGivenDatesChange(fromDate, toDate);
+			}
+			
+			/**
+			 * updates images etc.
+			 * */
+			override public function validateNow():void {
+				super.validateNow();
+				updateImageButton(dropFolderFileStatus.buttons);
+			}
+			
+			/**
+			 * update button icons and start a search with new data
+			 * */
+			private function onDropFilterChanged():void {
+				var btns:Array = dropFolderFileStatus.buttons;
+				updateImageButton(btns);
+				preformNewSearch();
+			}
+		
+			
+
+		]]>
+	</mx:Script>
+	
+	<filter:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
+						  label="{resourceManager.getString('cms', 'searchFilter')}" width="100%"
+						  filterChanged="{preformNewSearch()}"/>
+	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="1">
+		<mx:headerRenderer>
+			<mx:Component>
+				<filter:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}"/>
+			</mx:Component>
+		</mx:headerRenderer>
+		<mx:VBox id="dropFolders" label="{resourceManager.getString('cms', 'dropFoldersTitle')}" width="100%" height="100%"
+				 styleName="additinalFilterVBox"/>
+		<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%" height="100%"
+				 styleName="additinalFilterVBox">
+			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
+					 styleName="upperDatesVBox">
+				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
+				<mx:HBox styleName="innerUpperDatesHBox">
+					<mx:DateField id="fromDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'from')}"
+								  change="{currentDatesChange(event)}"/>
+					<mx:Label id="toDateTxt" text="-"/>
+					<mx:DateField id="toDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'to')}"
+								  change="{currentDatesChange(event)}"/>
+				</mx:HBox>
+				<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
+							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
+			</mx:VBox>
+			<filter:DropFolderStatusesTab id="dropFolderFileStatus" width="100%" styleName="moderationVBox"
+										 label="{resourceManager.getString('cms', 'status')}"
+										 filterChanged="{onDropFilterChanged()}"/>
+		</mx:VBox>
+	</mx:Accordion>
+	
+</filter:BaseFilter>

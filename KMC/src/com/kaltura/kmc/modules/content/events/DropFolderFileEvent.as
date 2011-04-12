@@ -6,13 +6,15 @@ package com.kaltura.kmc.modules.content.events {
 	public class DropFolderFileEvent extends CairngormEvent {
 
 		public static const MATCH_SLUG:String = "match_slug";
+		public static const LIST_ALL:String = "list_all";
+		public static const LIST_BY_SELECTED_FOLDER:String = "list_by_selected_folder";
 
 		private var _entry:KalturaBaseEntry;
 		private var _slug:String;
 		private var _resources:KalturaAssetsParamsResourceContainers;
 
 
-		public function DropFolderFileEvent(type:String, entry:KalturaBaseEntry, slug:String, resources:KalturaAssetsParamsResourceContainers, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function DropFolderFileEvent(type:String, entry:KalturaBaseEntry=null, slug:String=null, resources:KalturaAssetsParamsResourceContainers=null, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_entry = entry;
 			_slug = slug;

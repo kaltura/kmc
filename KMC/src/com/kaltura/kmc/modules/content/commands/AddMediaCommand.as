@@ -23,6 +23,7 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function execute(event:CairngormEvent):void 
 		{
+			_model.increaseLoadCounter();
 			var mediaEvent:MediaEvent = event as MediaEvent;
 			var mediaEntry:KalturaMediaEntry = mediaEvent.entry;
 			var defaultCatName:String = ResourceManager.getInstance().getString('cms','defaultCategoryName');
@@ -39,7 +40,7 @@ package com.kaltura.kmc.modules.content.commands
 			//looks if default category already exists
 			for each (var category:CategoryVO in categories) {
 				if (category.name==defaultCatName) {
-					mediaEntry.categoriesIds = category.name; //required?
+					mediaEntry.categoriesIds = category.id.toString();
 					defaultCatExists = true;
 					break;
 				}
@@ -55,7 +56,6 @@ package com.kaltura.kmc.modules.content.commands
 				_isMR = true;
 				mr.addAction(addCategory);
 				mr.addAction(addMedia);	
-				mr.mapMultiRequestParam(0, "id", 1, "categoriedIds"); //required?
 				callToSend = mr;
 			}	
 			
@@ -70,6 +70,7 @@ package com.kaltura.kmc.modules.content.commands
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
 				cgEvent.dispatch();
 			}
+			_model.decreaseLoadCounter();
 		}
 		
 	}
