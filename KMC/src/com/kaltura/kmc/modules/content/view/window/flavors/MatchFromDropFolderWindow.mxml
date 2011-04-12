@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							layout="vertical" width="550" height="528" showCloseButton="true"
+							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
+							creationComplete="creationCompleteHandler(event)">
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
+			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
+			import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaDropFolder;
+			import com.kaltura.vo.KalturaDropFolderFile;
+			import com.kaltura.vo.KalturaDropFolderFileResource;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.HierarchicalData;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			/**
+			 * list of drop folders for this partner
+			 * */
+			public var folders:ArrayCollection;
+			
+			
+			/**
+			 * @copy #entry
+			 * */
+			private var _entry:KalturaBaseEntry;
+
+
+			[Bindable]
+			/**
+			 * the hierarchicalData displayed in the datagrid
+			 * */
+			private var _filesHierarchy:HierarchicalData;
+
+			/**
+			 * files data, used as source for the DG's dataprovider
+			 * */
+			private var _files:ArrayCollection;
+			
+			/**
+			 * a flag saying if the refid should be saved to the entry.
+			 * determined according to the following:
+			 * - if when first setting an entry it had no refid, set to true.
+			 * */
+			private var _saveRefId:Boolean;
+			
+			/**
+			 * for slug based folder, the slug currently selected
+			 * */
+			private var _selectedSlug:KalturaDropFolderFile;
+			
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(Event.CHANGE, onRadioChange, false, 0, true);
+			}
+			
+
+			/**
+			 * mark the relevant VO as selected
+			 * */
+			private function onRadioChange(e:Event):void {
+				e.stopPropagation();
+				// set all buttons to false
+				for each (var vo:KalturaDropFolderFile in _files) {
+					vo.imSelected = false;
+				}
+				// set the last clicked to true
+				e.target.data.imSelected = true;
+				// save needed values
+				_selectedSlug = e.target.data as KalturaDropFolderFile; 
+				if (_saveRefId) {
+					refidLbl.text = _selectedSlug.parsedSlug; 
+				}
+			}
+
+
+			/**
+			 * for first level (has files list) returns slug name + number of files in the sub-group.
+			 * for second level returns file name.
+			 * @param item		IR's data, KalturaDropFolderFile object
+			 * @param column	the column in which to display the data
+			 * @return	text to show
+			 * */
+			private function slugNameLabel(item:Object, column:AdvancedDataGridColumn):String {
+				var s:String;
+				if (item.files) {
+					s = item.parsedSlug + " (" + item.files.length + ")";
+				}
+				else {
+					s = item.fileName;
+				}
+				return s;
+			}
+
+
+			/**
+			 * issue a request to search drop folder
+			 * */
+			protected function btnSearch_clickHandler(event:MouseEvent):void {
+				if (searchText.text) {
+					btnSearch.selected = true;
+				}
+				else {
+					btnSearch.selected = false;
+				}
+				// issue request:
+				listFolderContents();
+			}
+
+
+
+			/**
+			 * Reference ID is saved into the entry as needed. 
+			 * update media with KlaturaDropFolderFileResource
+			 * */
+			protected function submitHandler(event:MouseEvent):void {
+				if (_saveRefId) {
+					_entry.referenceId = _selectedSlug.parsedSlug;
+				}
+				updateMedia(_entry);
+				
+			}
+			
+			
+			/**
+			 * trigger media.update with resources matching the slug 
+			 * @param entryid	id of the original entry
+			 */
+			private function updateMedia(entry:KalturaBaseEntry):void {
+				// the actual resource we send is a list of the containers for the resources we want to replace.                
+				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
+				mediaResource.resources = new Array();
+
+				//TODO simple folder submit handler
+				// select the file as source for transcoding
+				
+				for each (var dff:KalturaDropFolderFile in _selectedSlug.files) {
+					// the first resource of the flavor we want to replace
+					var subSubResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+					subSubResource.token = dff.uploadToken;	// the token we used to upload the file
+					
+					// container for the resource we want to replace
+					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
+					subResource.resource = subSubResource;
+					subResource.assetParamsId = dff.flavorParamsId;
+					
+					// add to list
+					mediaResource.resources.push(subResource);
+					
+				}
+				// dispatch the event with required data
+				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_SLUG, 
+					entry, _selectedSlug.parsedSlug, mediaResource);
+				ce.dispatch();
+			}
+			
+
+
+			/**
+			 * close popup
+			 * */
+			protected function closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			/**
+			 * open help with correct anchore
+			 * */
+			protected function helpHandler(event:Event):void {
+				// TODO open help with correct anchore
+			}
+			
+			
+			/**
+			 * refresh files list according to search string
+			 * */
+			protected function listFolderContents(event:MouseEvent = null):void {
+				var txt:String = searchText.text;
+				// search with or without slug
+				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.LIST_CONTENT, txt ? txt : null);
+				ce.dispatch();
+			}
+			
+			
+			/**
+			 * set window appearance and list folder contents
+			 * */
+			protected function folderChangeHandler(event:ListEvent):void {
+				// select the folder
+				var folder:KalturaDropFolder = event.target.selectedItem as KalturaDropFolder;
+				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null, folder);
+				ce.dispatch();
+				// set appearance by selected folder
+				setAppearance(folder.slugField != null);
+				// list new folder contents
+				listFolderContents();
+			}
+			
+			
+			/**
+			 * set window texts and appearance by folder config 
+			 * @param isSlug	is the folder configured for slug matching
+			 * */
+			protected function setAppearance(isSlug:Boolean):void {
+				if (isSlug) {
+					// header
+					headerLbl.text = 'Match Bla blabla';
+					// instructions
+					instructionsTxt.htmlText = 'For Matching bla bla bla';
+					// submit
+					submitBtn.label = "Match";
+				} else {
+					// header
+					headerLbl.text = 'Add blab albal';
+					// instructions
+					instructionsTxt.htmlText = 'Select a file bla bla bla';
+					// submit
+					submitBtn.label = "Select";
+				}
+				// reference id field
+				refidHdrLbl.visible = refidHdrLbl.includeInLayout = isSlug;
+				refidLbl.visible = refidLbl.includeInLayout = isSlug;
+			}
+			
+			
+			[Bindable]
+			/**
+			 * drop folder files list.
+			 * elements of type KalturaDropFolderFile
+			 * */
+			public function get files():ArrayCollection {
+				return _files;
+			}
+
+			/**
+			 * @private
+			 * */
+			public function set files(value:ArrayCollection):void {
+				_files = value;
+				_filesHierarchy = new HierarchicalData(_files);
+				_filesHierarchy.childrenField = "files";
+			}
+			
+			
+			[Bindable]
+			/**
+			 * the entry being edited
+			 * */
+			public function get entry():KalturaBaseEntry {
+				return _entry;
+			}
+			
+			/**
+			 * @private
+			 * */
+			public function set entry(value:KalturaBaseEntry):void {
+				_entry = value;
+				if (!value.referenceId) {
+					_saveRefId = true;
+				}
+				if (value.status == KalturaEntryStatus.NO_CONTENT) {
+					title = "Add Video";
+					refidLbl.text = entry.referenceId
+				} 
+				else {
+					title = "Replace Video";
+				}
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:HBox width="100%">
+		<mx:Label id="headerLbl" text="Match Video Package in Drop Folder:"/>
+		<mx:Spacer width="100%"/>
+		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)"
+					 selectedIndex="-1" prompt="Select Folder"/>
+	</mx:HBox>
+	<mx:Text id="instructionsTxt" htmlText="blabla bla" width="100%"/>
+	<mx:HBox width="100%">
+		<mx:Label text="Search Folder:"/>
+		<mx:HBox horizontalGap="0">
+			<mx:TextInput id="searchText" width="250" styleName="searchTextInput"/>
+			<mx:Button id="btnSearch" styleName="searchButton" click="btnSearch_clickHandler(event)"
+					   buttonMode="{btnSearch.enabled}"/>
+		</mx:HBox>
+	</mx:HBox>
+	<mx:AdvancedDataGrid dataProvider="{_filesHierarchy}" width="100%" height="100%" displayItemsExpanded="false"
+						 treeColumn="{slug}" draggableColumns="false">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn width="30" editable="true"
+				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SelectedRenderer"/>
+			<mx:AdvancedDataGridColumn headerText="File Name" labelFunction="slugNameLabel" id="slug"/>
+			<mx:AdvancedDataGridColumn headerText="Created At"
+				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.DateRenderer"/>
+		</mx:columns>
+		<mx:rendererProviders>
+			<mx:AdvancedDataGridRendererProvider columnIndex="0" columnSpan="1" depth="2"
+				renderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NoRadioRenderer"/>
+		</mx:rendererProviders>
+	</mx:AdvancedDataGrid>
+	<mx:HBox width="100%" >
+		<mx:Label id="refidHdrLbl" text="Reference ID:"/>
+		<mx:Label id="refidLbl" />
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton label="Refresh List from Drop Folder" click="listFolderContents(event)"/>
+	</mx:HBox>
+	<mx:ControlBar>
+		<mx:Button id="submitBtn" label="Match" click="submitHandler(event)"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>
