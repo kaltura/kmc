@@ -8,17 +8,20 @@ package com.kaltura.kmc.modules.content.events {
 		public static const MATCH_SLUG:String = "match_slug";
 		public static const LIST_ALL:String = "list_all";
 		public static const LIST_BY_SELECTED_FOLDER:String = "list_by_selected_folder";
+		public static const DELETE_FILES:String = "delete_files";
 
 		private var _entry:KalturaBaseEntry;
 		private var _slug:String;
 		private var _resources:KalturaAssetsParamsResourceContainers;
+		private var _selectedFiles:Array;
 
 
-		public function DropFolderFileEvent(type:String, entry:KalturaBaseEntry=null, slug:String=null, resources:KalturaAssetsParamsResourceContainers=null, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function DropFolderFileEvent(type:String, entry:KalturaBaseEntry=null, slug:String=null, resources:KalturaAssetsParamsResourceContainers=null, selectedFiles:Array=null, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_entry = entry;
 			_slug = slug;
 			_resources = resources;
+			_selectedFiles = selectedFiles;
 		}
 
 
@@ -34,6 +37,10 @@ package com.kaltura.kmc.modules.content.events {
 
 		public function get resources():KalturaAssetsParamsResourceContainers {
 			return _resources;
+		}
+		
+		public function get selectedFiles():Array {
+			return _selectedFiles;
 		}
 
 

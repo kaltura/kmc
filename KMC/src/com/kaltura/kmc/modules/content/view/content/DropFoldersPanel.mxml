@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-"Drop Folders" section of content viewstack.
+"Drop Folders" section of content viewstack. Displays all files in drop folders.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+		 xmlns:controls="com.kaltura.controls.*"
+		 width="100%" height="100%"
 		 creationComplete="{onCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
@@ -16,9 +18,13 @@
 			import com.kaltura.vo.KalturaDropFolderFile;
 			import com.kaltura.vo.KalturaDropFolderFileFilter;
 			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.formatters.DateFormatter;
 			import mx.formatters.SwitchSymbolFormatter;
 			
+			//will be used to convert to MegaByetes
 			private const MB_MULTIPLIER:int = 1024*1024;
 			
 			[Bindable]
@@ -38,7 +44,9 @@
 			}
 			
 			private function newSearchhFromFilter():void {
-				
+				paging.kalturaFilterPager.pageIndex = 1;
+				paging.selectedPage = 1;
+				loadDropFolderFiles();
 			}
 			
 			/**
@@ -51,6 +59,7 @@
 				var date:Date = new Date(curFile.createdAt * 1000);
 				return dateDisplay.format(date);
 			}
+			
 			/**
 			 * Create suitable string to display in the "File Size" column
 			 * */
@@ -61,6 +70,7 @@
 				return (curFile.fileSize/MB_MULTIPLIER) + ' ' + resourceManager.getString('cms','megaBytes');
 				
 			}
+			
 			/**
 			 * Create suitable string to display in the "Status" column
 			 * */
@@ -80,9 +90,52 @@
 			}
 			
 			/**
+			 * user selects to delete files
+			 * */
+			private function deleteFiles():void {
+				if (!dg.selectedItem) {
+					Alert.show(resourceManager.getString('cms', 'selectDropFolderFiles'), resourceManager.getString('cms', 'selectDropFolderFilesTitle'));
+					return;
+				}
+				
+				var delStr:String = '';
+				for each (var item:Object in dg.selectedItems) {
+					delStr += '\n' + (item as KalturaDropFolderFile).fileName;
+				}
+				
+				Alert.show(resourceManager.getString('cms', 'deleteDropFoldersFilesQ') + delStr, resourceManager.getString('cms', 'deleteDropFolderFileTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
+			}
+			
+			private function deleteResponseFunc(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var deleteArray:Array = new Array;
+					for each (var item:Object in dg.selectedItems) {
+						deleteArray.push(item);
+					}
+					
+					var deleteEvent:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.DELETE_FILES, null,null,null,deleteArray);
+					deleteEvent.dispatch();
+				}
+			}
+
+			/**
+			 * selects all items in the page
+			 * */
+			private function selectAllTable():void {
+				dg.selectedItems = (dg.dataProvider as ArrayCollection).source;
+			}
+			
+			/**
+			 * deselect all items
+			 * */
+			private function deSelectAllTable():void {
+				dg.selectedItems = new Array();
+			}		
+			
+			/**
 			 * paging
 			 * */
-		/* 	private function gotoPage():void {
+		 	private function gotoPage():void {
 				// update filter here
 				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
 				loadDropFolderFiles();
@@ -90,43 +143,51 @@
 			
 			private function loadDropFolderFiles():void {
 				if (paging.pageSize == 10) {
-					tableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height + bottomActionBox.height + 15;
-					dg.height = tableContainer.height - (paging.height + bottomActionBox.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					entryTableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + 10;
+					dg.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
 					dg.rowCount = 10;
-					actionBox.height = dg.height + paging.height + bottomActionBox.height;
-					tableMainHbox.height = tableContainer.height ;
+					vbox1.height = dg.height + paging.height + bottomActionBox.height;
+					topContainer.height = entryTableContainer.height + paging.height + bottomActionBox.height;
 				}
 				else {
-					tableMainHbox.percentHeight = 100;
-					tableContainer.percentHeight = 100;
+					topContainer.percentHeight = 100;
+					entryTableContainer.percentHeight = 100;
 					dg.percentHeight = 100;
 					dg.rowCount = -1;
-					actionBox.percentHeight = 100;
-				} 
+					vbox1.percentHeight = 100;
+				}
 				
-				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-				getMetadataProfile.dispatch();
-			} */
+				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
+				listFiles.dispatch();
+			} 
+			
+			private function onPagerCreationComplete(event:Event):void {
+				dropFolderModel.pager = paging.kalturaFilterPager;
+				paging.kalturaFilterPager.pageIndex = 0;
+				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				loadDropFolderFiles();
+			}
 		
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
 	
-	<mx:HBox styleName="filtersHeadTitleHBox">
+	<mx:HBox styleName="filtersHeadTitleHBox" width="100%">
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
 		<mx:Label text="{resourceManager.getString('cms','mediaFilesTitle')}" styleName="filterTitleHeader"/>
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="init()"/>
 	</mx:HBox>
-	<mx:HDividedBox id="topContainer" verticalScrollPolicy="off">
+	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">
-			<filter:DropFolderFilter id="filter" height="100%" width="245"
-									 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
+			<filter:DropFolderFilter id="filter" height="{tableContainer.height}" width="245" newSearch="{newSearchhFromFilter()}"
+						 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
 		</mx:VBox>
-		<mx:VBox id="tableContainer" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox" width="100%">
-			<mx:HBox id="entryTableContainer" height="100%" width="100%">
-				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" width="100%" allowMultipleSelection="true">
+
+		<mx:VBox id="tableContainer" height="100%" width="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
+			<mx:HBox id="entryTableContainer" width="100%">
+				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
@@ -137,14 +198,24 @@
 				</mx:DataGrid>
 			</mx:HBox>
 			
-			<!--<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{dropFolderModel.filesTotalCount}"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
 							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
 			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
-				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','deleteSchema')}"
-						   useHandCursor="true" buttonMode="true" click="{deleteProfile()}"/>
-			</mx:HBox>-->
+				<mx:HBox height="100%" verticalAlign="middle" left="5" horizontalGap="0">
+					<mx:Label text="{resourceManager.getString('cms', 'selectionTitle')}"/>
+					<mx:LinkButton id="selectAll" label="{resourceManager.getString('cms', 'selectAllOption')}"
+								   click="selectAllTable()" buttonMode="true" paddingLeft="-2" paddingRight="0"/>
+					<mx:LinkButton id="deselectAll" label="{resourceManager.getString('cms', 'deselectAllOption')}"
+								   click="deSelectAllTable()" buttonMode="true" paddingLeft="-2" paddingRight="0"/>
+				</mx:HBox>
+				<mx:HBox horizontalAlign="center" width="100%">
+					<mx:Button id='deleteFilesBtn' label="{resourceManager.getString('cms','delete')}"
+							   useHandCursor="true" buttonMode="true" click="{deleteFiles()}"/>
+				</mx:HBox>
+			</mx:HBox>
 		</mx:VBox>
+
 	</mx:HDividedBox>
 </mx:VBox>

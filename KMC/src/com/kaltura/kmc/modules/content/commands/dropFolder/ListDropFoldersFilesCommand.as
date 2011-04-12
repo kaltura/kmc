@@ -152,11 +152,13 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			dff.status = KalturaDropFolderFileStatus.ERROR_DOWNLOADING;
 			dff.parsedSlug = "atarsh";
 			response.objects.push(dff);
+
 			
 			var resultArray:Array = handleDropFolderFileList(response);
 			if (_eventType == DropFolderFileEvent.LIST_ALL) {
 				_model.dropFolderModel.files = new ArrayCollection(resultArray);
-				_model.dropFolderModel.filesTotalCount = response.totalCount;
+				//_model.dropFolderModel.filesTotalCount = response.totalCount;
+				_model.dropFolderModel.filesTotalCount = 30;
 			}
 			else
 				_model.dropFolderModel.dropFolderFiles = new ArrayCollection(resultArray);
