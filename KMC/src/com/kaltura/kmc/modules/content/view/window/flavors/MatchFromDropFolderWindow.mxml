@@ -23,6 +23,7 @@
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 
 			[Bindable]
 			/**
@@ -217,18 +218,20 @@
 			protected function setAppearance(isSlug:Boolean):void {
 				if (isSlug) {
 					// header
-					headerLbl.text = 'Match Bla blabla';
+					headerLbl.text = ResourceManager.getInstance().getString('cms', 'hdrLblSlug');
 					// instructions
-					instructionsTxt.htmlText = 'For Matching bla bla bla';
+					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblSlug');
 					// submit
-					submitBtn.label = "Match";
+					submitBtn.label = ResourceManager.getInstance().getString('cms', 'matchActionLabel');
+					
 				} else {
 					// header
-					headerLbl.text = 'Add blab albal';
+					headerLbl.text = ResourceManager.getInstance().getString('cms', 'hdrLblNoSlug');
 					// instructions
-					instructionsTxt.htmlText = 'Select a file bla bla bla';
+					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblNoSlug');
+					
 					// submit
-					submitBtn.label = "Select";
+					submitBtn.label = ResourceManager.getInstance().getString('cms', 'selectActionLabel');
 				}
 				// reference id field
 				refidHdrLbl.visible = refidHdrLbl.includeInLayout = isSlug;
@@ -272,11 +275,11 @@
 					_saveRefId = true;
 				}
 				if (value.status == KalturaEntryStatus.NO_CONTENT) {
-					title = "Add Video";
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd');
 					refidLbl.text = entry.referenceId
 				} 
 				else {
-					title = "Replace Video";
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
 				}
 			}
 
@@ -284,14 +287,14 @@
 	</mx:Script>
 
 	<mx:HBox width="100%">
-		<mx:Label id="headerLbl" text="Match Video Package in Drop Folder:"/>
+		<mx:Label id="headerLbl" />
 		<mx:Spacer width="100%"/>
 		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)"
-					 selectedIndex="-1" prompt="Select Folder"/>
+					 selectedIndex="-1" prompt="{ResourceManager.getInstance().getString('cms', 'selectPrompt')}"/>
 	</mx:HBox>
-	<mx:Text id="instructionsTxt" htmlText="blabla bla" width="100%"/>
+	<mx:Text id="instructionsTxt" width="100%"/>
 	<mx:HBox width="100%">
-		<mx:Label text="Search Folder:"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'searchLbl')}:"/>
 		<mx:HBox horizontalGap="0">
 			<mx:TextInput id="searchText" width="250" styleName="searchTextInput"/>
 			<mx:Button id="btnSearch" styleName="searchButton" click="btnSearch_clickHandler(event)"
@@ -303,8 +306,9 @@
 		<mx:columns>
 			<mx:AdvancedDataGridColumn width="30" editable="true"
 				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SelectedRenderer"/>
-			<mx:AdvancedDataGridColumn headerText="File Name" labelFunction="slugNameLabel" id="slug"/>
-			<mx:AdvancedDataGridColumn headerText="Created At"
+			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}" 
+									   labelFunction="slugNameLabel" id="slug"/>
+			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'createAt')}"
 				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.DateRenderer"/>
 		</mx:columns>
 		<mx:rendererProviders>
@@ -313,12 +317,14 @@
 		</mx:rendererProviders>
 	</mx:AdvancedDataGrid>
 	<mx:HBox width="100%" >
-		<mx:Label id="refidHdrLbl" text="Reference ID:"/>
+		<mx:Label id="refidHdrLbl" text="{ResourceManager.getInstance().getString('cms', 'refid')}:"/>
 		<mx:Label id="refidLbl" />
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="Refresh List from Drop Folder" click="listFolderContents(event)"/>
+		<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'refreshDropFolder')}" 
+					   click="listFolderContents(event)"/>
 	</mx:HBox>
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" label="Match" click="submitHandler(event)"/>
+		<mx:Button id="submitBtn" click="submitHandler(event)"
+				   label="{ResourceManager.getInstance().getString('cms', 'matchActionLabel')}" />
 	</mx:ControlBar>
 </containers:HelpTitleWindow>

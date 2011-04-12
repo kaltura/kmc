@@ -10,6 +10,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
 
 			public static const FLAVOR_SELECTED:String = "flavor_selected";
 			public static const NAME_CHANGED:String = "name_changed";
@@ -149,13 +150,16 @@
 
 	<mx:DataGrid id="filesList" width="100%" dataProvider="{_dataProvider}">
 		<mx:columns>
-			<mx:DataGridColumn id="fileName" headerText="File Name"
+			<mx:DataGridColumn id="fileName" headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer"/>
-			<mx:DataGridColumn id="flavor" headerText="Conversion Flavor" editable="{allowAddFiles}"
+			<mx:DataGridColumn id="flavor" headerText="{ResourceManager.getInstance().getString('cms', 'convFlavorHeader')}" 
+							   editable="{allowAddFiles}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer"/>
-			<mx:DataGridColumn id="actions" headerText="Actions"
+			<mx:DataGridColumn id="actions" headerText="{ResourceManager.getInstance().getString('cms', 'actionsHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.ActionsRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
-	<mx:LinkButton id="addBtn" click="addMoreFiles(event)" visible="{allowAddFiles}" includeInLayout="{allowAddFiles}"/>
+	<mx:LinkButton id="addBtn" click="addMoreFiles(event)"
+				   label="{ResourceManager.getInstance().getString('cms', 'addFiles')}"
+				   visible="{allowAddFiles}" includeInLayout="{allowAddFiles}"/>
 </mx:VBox>

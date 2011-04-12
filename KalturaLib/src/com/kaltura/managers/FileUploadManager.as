@@ -24,6 +24,7 @@ package com.kaltura.managers {
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	/**
 	 * This class will handle all file uploads for the current KMC session
@@ -193,7 +194,7 @@ package com.kaltura.managers {
 			}
 			else {
 				// alert user
-				Alert.show(e.error.errorMsg, "Error");
+				showError(e.error.errorMsg);
 			}
 		}
 	
@@ -232,7 +233,7 @@ package com.kaltura.managers {
 			}
 			else {
 				file.status = FileUploadVO.STATUS_FAILED;
-				Alert.show(e.error.errorMsg, "Error");
+				showError(e.error.errorMsg);
 			}
 			// start uploading the next file
 			uploadNextFile();
@@ -371,7 +372,7 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			if (e.type == KalturaEvent.FAILED) {
 				// alert user
-				Alert.show(e.error.errorMsg, "Error");
+				showError(e.error.errorMsg);
 			}
 			else {
 				var file:FileUploadVO = getCompleteByFlavorAssetId(e.data.flavorParamsId);
@@ -391,8 +392,12 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.FAILED, finalActionHandler);
 			if (e.type == KalturaEvent.FAILED) {
 				// alert user
-				Alert.show(e.error.errorMsg, "Error");
+				showError(e.error.errorMsg);
 			}
+		}
+		
+		protected function showError(str:String):void {
+			Alert.show(str, ResourceManager.getInstance().getString('cms', 'error'));
 		}
 		
 		
@@ -409,7 +414,7 @@ package com.kaltura.managers {
 				fuv.status = FileUploadVO.STATUS_FAILED;
 			}
 			// alert user (possible to separate to ioerror / security error)
-			Alert.show("File Upload Failed", "Error");
+			showError(ResourceManager.getInstance().getString('cms', 'uploadFailedMessage'));
 		}
 
 		
@@ -444,7 +449,7 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
 			e.target.removeEventListener(KalturaEvent.FAILED, handleDeleteResult);
 			if (e.type == KalturaEvent.FAILED) {
-				Alert.show(e.error.errorMsg, "Error");
+				showError(e.error.errorMsg);
 			}
 		}
 		
