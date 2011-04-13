@@ -45,7 +45,7 @@ package com.kaltura.kmc.modules.content.commands {
 					// if any restriction is unknown, we remove it from the list.
 					// this means it is not supported in KMC at the moment
 					for (var i:int = 0; i<kac.restrictions.length; i++) {
-						if (! kac.restrictions[i] is KalturaBaseRestriction) {
+						if (! (kac.restrictions[i] is KalturaBaseRestriction)) {
 							kac.restrictions.splice(i, 1);
 						}
 					}

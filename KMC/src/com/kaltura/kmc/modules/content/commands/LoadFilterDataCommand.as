@@ -26,6 +26,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaAccessControl;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaAccessControlListResponse;
+	import com.kaltura.vo.KalturaBaseRestriction;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
@@ -259,6 +260,14 @@ package com.kaltura.kmc.modules.content.commands
 			{
 				var acVo:AccessControlProfileVO = new AccessControlProfileVO();
 				acVo.profile = kac;
+				// remove unknown objects
+				// if any restriction is unknown, we remove it from the list.
+				// this means it is not supported in KMC at the moment
+				for (var i:int = 0; i<kac.restrictions.length; i++) {
+					if (! (kac.restrictions[i] is KalturaBaseRestriction)) {
+						kac.restrictions.splice(i, 1);
+					}
+				}
 				tempArrCol.addItem(acVo);
 			}
 			_model.filterModel.accessControlProfiles = tempArrCol;
