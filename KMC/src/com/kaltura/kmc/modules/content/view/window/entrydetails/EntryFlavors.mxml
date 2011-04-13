@@ -31,6 +31,9 @@
 			[Bindable]
 			private var _showActions:Boolean;
 			
+			[Bindable]
+			private var _showReplacenentInfo:Boolean;
+			
 			private var _selectedEntry:KalturaBaseEntry;
 			
 			[Bindable]
@@ -103,9 +106,12 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
+				//TODO add replacement status
+				//if (_selectedEntry.replacedEntryId) 
 				//sets labels according to entry's status
 				switch (_selectedEntry.status) {
 					case KalturaEntryStatus.NO_CONTENT:
+						_showActions = true;
 						stateLabel.text = resourceManager.getString('cms','noContentState');
 						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
 							actionLabel.text = resourceManager.getString('cms','addVideo');
@@ -230,6 +236,9 @@
 		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" styleName="flavorsActionBtn"/>
 	</mx:HBox>
 	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
+	<mx:HBox id="replacementInfoHBox" visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}">
+		
+	</mx:HBox>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{_flavorAssets}"/>
 
