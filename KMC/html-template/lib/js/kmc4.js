@@ -43,7 +43,7 @@ function checkForOngoingProcess() {
         warning_message = $("#kcms")[0].hasOngoingProcess();
     }
     catch(e) {
-        warning_message = false;
+        warning_message = null;
     }
 //console.log(warning_message);
     if(warning_message != null) {
