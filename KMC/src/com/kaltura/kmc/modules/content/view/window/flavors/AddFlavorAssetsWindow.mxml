@@ -27,6 +27,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -55,7 +56,7 @@
 			[Bindable]
 			/**
 			 * <code>UploadFileVo</code> objects. <br>
-			 * when passed fro outside the objects only have fileData and fileName attributes popuplated. <br>
+			 * when passed from outside the objects only have fileData and fileName attributes popuplated. <br>
 			 * flavors attribute is set in FilesTable.(set)flavors.<br>
 			 * flavorParamId attribute is initialized in FlavorRenderer.selectFlavor and set 
 			 * 		in FilesTable.flavorSelected
@@ -64,42 +65,69 @@
 
 
 			/**
+			 * make sure the same flavour is not selected for more than one file
+			 * */
+			protected function validate():Boolean {
+				// when replaceing a single flavour, this is not a problem.
+				if (!allowAddFiles) return true;
+				// scan files list and put each flavor id in an array.
+				// if the same falvor appears twice - fail, else return true.
+				var ar:Vector.<String> = new Vector.<String>();
+				for each (var file:UploadFileVo in filesList) {
+					for (var i:int = 0; i<ar.length; i++) {
+						if (file.flavorParamId == ar[i]) {
+							return false;
+						}
+					}
+					ar.push(file.flavorParamId);
+				}
+				return true;
+			}
+			
+			
+			/**
 			 * Submit handler:
 			 * 	•	Upload – add the relevant files to FileUploadManager.
 			 * 	•	Import – trigger media.add with matching KalturaURLResource objects.
 			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
 			 * */
 			protected function submit(event:MouseEvent):void {
-				//TODO - handle link, import (phase 2)
-				var n:int = filesList.length;
-				var uploader:FileUploadManager = FileUploadManager.getInstance();
-				var ufv:UploadFileVo;
-				// conversion profile id
-				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
-				// action
-				var action:String = FileUploadVO.ACTION_NONE;
-				if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
-					action = FileUploadVO.ACTION_ADD;
+				if (validate()) {
+					//TODO - handle link, import (phase 2)
+					var n:int = filesList.length;
+					var uploader:FileUploadManager = FileUploadManager.getInstance();
+					var ufv:UploadFileVo;
+					// conversion profile id
+					var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+					// action
+					var action:String = FileUploadVO.ACTION_NONE;
+					if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
+						action = FileUploadVO.ACTION_ADD;
+					}
+					else if (!allowAddFiles) {
+						// replace a single flavor asset
+						action = FileUploadVO.ACTION_UPDATE;
+					}
+					
+					// group id
+					var groupid:String = '';
+					if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
+						// group actions: adding flavors to a no_content entry, or replacing multiple 
+						// 		flavours while creating replacement entry.
+						groupid = _entry.id;
+					}
+					// add uploads to the FileUploadManager
+					for (var i:int = 0; i<n; i++) {
+						ufv = filesList[i] as UploadFileVo;
+						uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
+					}
+					// close the popup
+					closeHandler();
 				}
-				else if (!allowAddFiles) {
-					// replace a single flavor asset
-					action = FileUploadVO.ACTION_UPDATE;
+				else {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'multipleFilesFlavor'), 
+						ResourceManager.getInstance().getString('cms', 'error'));
 				}
-				
-				// group id
-				var groupid:String = '';
-				if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
-					// group actions: adding flavors to a no_content entry, or replacing multiple 
-					// 		flavours while creating replacement entry.
-					groupid = _entry.id;
-				}
-				// add uploads to the FileUploadManager
-				for (var i:int = 0; i<n; i++) {
-					ufv = filesList[i] as UploadFileVo;
-					uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
-				}
-				// close the popup
-				closeHandler();
 			}
 			
 			
