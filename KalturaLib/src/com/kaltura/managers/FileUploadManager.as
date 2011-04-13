@@ -249,6 +249,8 @@ package com.kaltura.managers {
 			// scan rest of files.
 			var remainingGroupFiles:Boolean = false;
 			for each (var notYet:FileUploadVO in _files) {
+				if (notYet == file) continue;	// the file is removed from the list only afterwards
+					
 				if (notYet.groupId == file.groupId) {
 					remainingGroupFiles = true;
 					break;
@@ -320,7 +322,7 @@ package com.kaltura.managers {
 		 * @param groupid	group identifier
 		 */
 		private function removeGroupFromCompleteList(groupid:String):void {
-			for (var i:int = _groupAndComplete.length; i >= 0; i--) {
+			for (var i:int = _groupAndComplete.length-1; i >= 0; i--) {
 				if (_groupAndComplete[i].groupId == groupid) {
 					_groupAndComplete.splice(i, 1);
 				}
