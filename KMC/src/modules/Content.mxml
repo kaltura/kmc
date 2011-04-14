@@ -546,18 +546,26 @@
 					// we just close the second popup
 					(_popup as ManualPlaylistWindow).loadEntries();
 				}
+				else if (_popup is EntryDetailsWin) {
+					if ((_popup as EntryDetailsWin).refreshEntriesRequired) {
+						manage.loadEntries();
+					}
+				}
 			}
 
 
 			/**
 			 * opens a popup window with entry details
 			 * @param isNewEntry	is this creation of a new entry or edit of existing one
+			 * @param sendReferenceEntry	should the selected entry be the reference entry
 			 * */
-			private function openEntryDetails(isNewEntry:Boolean):EntryDetailsWin {
+			private function openEntryDetails(isNewEntry:Boolean, sendReferenceEntry:Boolean):EntryDetailsWin {
 				
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = isNewEntry;
+				if (sendReferenceEntry)
+					edw.selectedEntry = _model.entryDetailsModel.referenceEntry;
 				edw.entryDetailsModel = _model.entryDetailsModel;
 				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
 				edw.filterModel = _model.filterModel;
@@ -566,9 +574,7 @@
 				edw.maxNumCategories = this._flashvars.maxnumcategories;
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
-				
-			//	var lde:LoadEvent = new LoadEvent(LoadEvent.LOAD_ENTRY_DATA, this, _model.entryDetailsModel.selectedEntry.id);
-			//	lde.dispatch();
+
 				return edw;
 			}
 
@@ -648,9 +654,10 @@
 					this.enabled = false;
 					var currentPopUp:TitleWindow;
 					switch (newState) {
+						case WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW:
 						case WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY:
 						case WindowsStates.ENTRY_DETAILS_WINDOW:
-							currentPopUp = openEntryDetails(newState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
+							currentPopUp = openEntryDetails(newState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY, newState == WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW);
 							break;
 						case WindowsStates.DOWNLOAD_WINDOW:
 							currentPopUp = openDownload();
@@ -716,12 +723,14 @@
 				if (_popup) {
 					_secondPopup = currentPopUp;
 					_model.has2OpenedPopups = true;
+					PopUpManager.addPopUp(_secondPopup, this, true);
 				}
 				else {
 					_popup = currentPopUp;
 					enableHtmlTabs(false);
+					PopUpManager.addPopUp(_popup, this, true);
 				}
-				PopUpManager.addPopUp(currentPopUp, this, true);
+				//PopUpManager.addPopUp(currentPopUp, this, true);
 				currentPopUp.setFocus();
 				centerPopups();
 			}
@@ -828,6 +837,7 @@
 					this.enabled = true;
 				}
 			}
+			
 			
 			/**
 			 * will be called when clicking one of the left tab buttons
@@ -972,26 +982,26 @@
 			<mx:HBox id="leftBtnsHBox" styleName="tln">
 				<mx:Button id="manageBtn" label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 						   click="leftTabClicked(event)" styleName="{manageBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
-						   buttonMode="true" toggle="true" selected="true"/>
+						   buttonMode="true" toggle="true" selected="true" height="18"/>
 				<mx:Button id="moderationBtn" label="{ResourceManager.getInstance().getString('cms','moderation')}"
 						   click="leftTabClicked(event)" styleName="{moderationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
-						   buttonMode="true" toggle="true"/>
+						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="playlistsBtn" label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"
 						   click="leftTabClicked(event)" styleName="{playlistsBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
-						   buttonMode="true" toggle="true"/>
+						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="syndicationBtn" label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"
 						   click="leftTabClicked(event)" styleName="{syndicationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}"
-						   buttonMode="true" toggle="true"/>
+						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="uploadBtn" label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"
 						   click="leftTabClicked(event)" styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}" 
-						   buttonMode="true" toggle="true"/>						   
+						   buttonMode="true" toggle="true" height="18"/>						   
 			</mx:HBox>
 			<!--<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
 					   dataProvider="{_tabBarViewStack}">
 			</mx:TabBar>-->
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
-				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" 
+				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}"  height="18"
 						   styleName="{dropFoldersBtn.selected ? 'tlnSelectedTabStyle' : 'tlnTabStyle'}"  buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
 				
 			</mx:HBox>
