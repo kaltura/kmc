@@ -5,18 +5,32 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAssetParamsBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var systemNameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var systemNameIn : String;
 
+		/** 
+		* 		* */ 
 		public var isSystemDefaultEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var tagsEqual : String;
 
+		/** 
+		* 		* */ 
 		public var formatEqual : String;
 
+		/** 
+		* 		* */ 
 		public var originEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var originIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -32,5 +46,13 @@ package com.kaltura.vo
 			arr.push('originIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

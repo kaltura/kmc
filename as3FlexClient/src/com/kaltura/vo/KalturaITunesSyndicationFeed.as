@@ -5,22 +5,46 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaITunesSyndicationFeed extends KalturaBaseSyndicationFeed
 	{
+		/** 
+		* feed description
+		* */ 
 		public var feedDescription : String;
 
+		/** 
+		* feed language
+		* */ 
 		public var language : String;
 
+		/** 
+		* feed landing page (i.e publisher website)
+		* */ 
 		public var feedLandingPage : String;
 
+		/** 
+		* author/publisher name
+		* */ 
 		public var ownerName : String;
 
+		/** 
+		* publisher email
+		* */ 
 		public var ownerEmail : String;
 
+		/** 
+		* podcast thumbnail
+		* */ 
 		public var feedImageUrl : String;
 
+		/** 
+		* 		* */ 
 		public var category : String;
 
+		/** 
+		* 		* */ 
 		public var adultContent : String;
 
+		/** 
+		* 		* */ 
 		public var feedAuthor : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -37,5 +61,13 @@ package com.kaltura.vo
 			arr.push('feedAuthor');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

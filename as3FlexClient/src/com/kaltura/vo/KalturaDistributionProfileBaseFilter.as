@@ -5,16 +5,28 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDistributionProfileBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -29,5 +41,13 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

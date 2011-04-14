@@ -4,16 +4,32 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSearch extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var keyWords : String;
 
+		/** 
+		* 		* */ 
 		public var searchSource : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var mediaType : int = int.MIN_VALUE;
 
+		/** 
+		* Use this field to pass dynamic data for searching
+For example - if you set this field to "mymovies_$partner_id"
+The $partner_id will be automatically replcaed with your real partner Id
+		* */ 
 		public var extraData : String;
 
+		/** 
+		* 		* */ 
 		public var authData : String;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -25,5 +41,16 @@ package com.kaltura.vo
 			arr.push('authData');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

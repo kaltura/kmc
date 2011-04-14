@@ -21,7 +21,6 @@ package com.kaltura.commands.report
 		 **/
 		public function ReportGetUrlForReportAsCsv( reportTitle : String,reportText : String,headers : String,reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String='',pager : KalturaFilterPager=null,order : String='',objectIds : String='' )
 		{
-			if(pager== null)pager= new KalturaFilterPager();
 			service= 'report';
 			action= 'getUrlForReportAsCsv';
 
@@ -41,9 +40,11 @@ package com.kaltura.commands.report
 			valueArr = valueArr.concat(keyValArr[1]);
 			keyArr.push('dimension');
 			valueArr.push(dimension);
+ 			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			keyArr.push('order');
 			valueArr.push(order);
 			keyArr.push('objectIds');

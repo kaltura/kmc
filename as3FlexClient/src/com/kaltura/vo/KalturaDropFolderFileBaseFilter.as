@@ -5,46 +5,88 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDropFolderFileBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var dropFolderIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var dropFolderIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var fileNameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var fileNameIn : String;
 
+		/** 
+		* 		* */ 
 		public var fileNameLike : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var parsedSlugEqual : String;
 
+		/** 
+		* 		* */ 
 		public var parsedSlugIn : String;
 
+		/** 
+		* 		* */ 
 		public var parsedSlugLike : String;
 
+		/** 
+		* 		* */ 
 		public var parsedFlavorEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var parsedFlavorIn : String;
 
+		/** 
+		* 		* */ 
 		public var parsedFlavorLike : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -74,5 +116,13 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

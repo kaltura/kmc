@@ -5,6 +5,8 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaMetadataSearchItem extends KalturaSearchOperator
 	{
+		/** 
+		* 		* */ 
 		public var metadataProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -14,5 +16,13 @@ package com.kaltura.vo
 			arr.push('metadataProfileId');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

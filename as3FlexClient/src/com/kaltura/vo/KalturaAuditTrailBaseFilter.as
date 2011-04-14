@@ -5,78 +5,152 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAuditTrailBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var parsedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var parsedAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var auditObjectTypeEqual : String;
 
+		/** 
+		* 		* */ 
 		public var auditObjectTypeIn : String;
 
+		/** 
+		* 		* */ 
 		public var objectIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var objectIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var relatedObjectIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var relatedObjectIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var relatedObjectTypeEqual : String;
 
+		/** 
+		* 		* */ 
 		public var relatedObjectTypeIn : String;
 
+		/** 
+		* 		* */ 
 		public var entryIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var entryIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var masterPartnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var masterPartnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var requestIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var requestIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var userIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var userIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var actionEqual : String;
 
+		/** 
+		* 		* */ 
 		public var actionIn : String;
 
+		/** 
+		* 		* */ 
 		public var ksEqual : String;
 
+		/** 
+		* 		* */ 
 		public var contextEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var contextIn : String;
 
+		/** 
+		* 		* */ 
 		public var entryPointEqual : String;
 
+		/** 
+		* 		* */ 
 		public var entryPointIn : String;
 
+		/** 
+		* 		* */ 
 		public var serverNameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var serverNameIn : String;
 
+		/** 
+		* 		* */ 
 		public var ipAddressEqual : String;
 
+		/** 
+		* 		* */ 
 		public var ipAddressIn : String;
 
+		/** 
+		* 		* */ 
 		public var clientTagEqual : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -122,5 +196,13 @@ package com.kaltura.vo
 			arr.push('clientTagEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

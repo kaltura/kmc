@@ -5,6 +5,8 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaTubeMogulSyndicationFeed extends KalturaBaseSyndicationFeed
 	{
+		/** 
+		* 		* */ 
 		public var category : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -13,5 +15,13 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

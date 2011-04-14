@@ -5,26 +5,48 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaControlPanelCommandBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdByIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var typeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var typeIn : String;
 
+		/** 
+		* 		* */ 
 		public var targetTypeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var targetTypeIn : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -44,5 +66,13 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

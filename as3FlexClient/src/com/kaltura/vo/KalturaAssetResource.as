@@ -5,6 +5,8 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAssetResource extends KalturaContentResource
 	{
+		/** 
+		* ID of the source asset 		* */ 
 		public var assetId : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -14,5 +16,13 @@ package com.kaltura.vo
 			arr.push('assetId');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

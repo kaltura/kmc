@@ -13,7 +13,6 @@ package com.kaltura.commands.media
 		 **/
 		public function MediaListFlags( entryId : String,pager : KalturaFilterPager=null )
 		{
-			if(pager== null)pager= new KalturaFilterPager();
 			service= 'media';
 			action= 'listFlags';
 
@@ -22,9 +21,11 @@ package com.kaltura.commands.media
 			var keyValArr : Array = new Array();
 			keyArr.push('entryId');
 			valueArr.push(entryId);
+ 			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

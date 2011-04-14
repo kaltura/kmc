@@ -5,44 +5,84 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPermissionBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var typeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var typeIn : String;
 
+		/** 
+		* 		* */ 
 		public var nameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var nameIn : String;
 
+		/** 
+		* 		* */ 
 		public var friendlyNameLike : String;
 
+		/** 
+		* 		* */ 
 		public var descriptionLike : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var dependsOnPermissionNamesMultiLikeOr : String;
 
+		/** 
+		* 		* */ 
 		public var dependsOnPermissionNamesMultiLikeAnd : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeOr : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeAnd : String;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -71,5 +111,13 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

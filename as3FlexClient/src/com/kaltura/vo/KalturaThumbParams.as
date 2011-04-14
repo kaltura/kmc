@@ -5,30 +5,56 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaThumbParams extends KalturaAssetParams
 	{
+		/** 
+		* 		* */ 
 		public var cropType : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var quality : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var cropX : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var cropY : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var cropWidth : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var cropHeight : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var videoOffset : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var width : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var height : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var scaleWidth : Number = NaN;
 
+		/** 
+		* 		* */ 
 		public var scaleHeight : Number = NaN;
 
+		/** 
+		* Hexadecimal value		* */ 
 		public var backgroundColor : String;
 
+		/** 
+		* Id of the flavor params or the thumbnail params to be used as source for the thumbnail creation		* */ 
 		public var sourceParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -50,5 +76,13 @@ package com.kaltura.vo
 			arr.push('sourceParamsId');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

@@ -5,28 +5,52 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPartnerBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var nameLike : String;
 
+		/** 
+		* 		* */ 
 		public var nameMultiLikeOr : String;
 
+		/** 
+		* 		* */ 
 		public var nameMultiLikeAnd : String;
 
+		/** 
+		* 		* */ 
 		public var nameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var partnerPackageEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerPackageGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerPackageLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -47,5 +71,13 @@ package com.kaltura.vo
 			arr.push('partnerNameDescriptionWebsiteAdminNameAdminEmailLike');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

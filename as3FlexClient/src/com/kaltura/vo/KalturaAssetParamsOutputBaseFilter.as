@@ -5,12 +5,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAssetParamsOutputBaseFilter extends KalturaAssetParamsFilter
 	{
+		/** 
+		* 		* */ 
 		public var assetParamsIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var assetParamsVersionEqual : String;
 
+		/** 
+		* 		* */ 
 		public var assetIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var assetVersionEqual : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -23,5 +31,13 @@ package com.kaltura.vo
 			arr.push('assetVersionEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

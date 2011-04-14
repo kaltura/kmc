@@ -4,68 +4,133 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPartner extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var name : String;
 
+		/** 
+		* 		* */ 
 		public var website : String;
 
+		/** 
+		* 		* */ 
 		public var notificationUrl : String;
 
+		/** 
+		* 		* */ 
 		public var appearInSearch : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var adminName : String;
 
+		/** 
+		* 		* */ 
 		public var adminEmail : String;
 
+		/** 
+		* 		* */ 
 		public var description : String;
 
+		/** 
+		* 		* */ 
 		public var commercialUse : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var landingPage : String;
 
+		/** 
+		* 		* */ 
 		public var userLandingPage : String;
 
+		/** 
+		* 		* */ 
 		public var contentCategories : String;
 
+		/** 
+		* 		* */ 
 		public var type : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var phone : String;
 
+		/** 
+		* 		* */ 
 		public var describeYourself : String;
 
+		/** 
+		* 		* */ 
 		public var adultContent : Boolean;
 
+		/** 
+		* 		* */ 
 		public var defConversionProfileType : String;
 
+		/** 
+		* 		* */ 
 		public var notify : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var status : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var allowQuickEdit : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var mergeEntryLists : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var notificationsConfig : String;
 
+		/** 
+		* 		* */ 
 		public var maxUploadSize : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerPackage : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var secret : String;
 
+		/** 
+		* 		* */ 
 		public var adminSecret : String;
 
+		/** 
+		* 		* */ 
 		public var cmsPassword : String;
 
+		/** 
+		* 		* */ 
 		public var allowMultiNotification : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var adminLoginUsersQuota : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var adminUserId : String;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -95,5 +160,16 @@ package com.kaltura.vo
 			arr.push('adminUserId');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

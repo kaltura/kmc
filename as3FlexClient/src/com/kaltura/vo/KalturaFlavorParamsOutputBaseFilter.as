@@ -5,12 +5,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaFlavorParamsOutputBaseFilter extends KalturaFlavorParamsFilter
 	{
+		/** 
+		* 		* */ 
 		public var flavorParamsIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var flavorParamsVersionEqual : String;
 
+		/** 
+		* 		* */ 
 		public var flavorAssetIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var flavorAssetVersionEqual : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -23,5 +31,13 @@ package com.kaltura.vo
 			arr.push('flavorAssetVersionEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

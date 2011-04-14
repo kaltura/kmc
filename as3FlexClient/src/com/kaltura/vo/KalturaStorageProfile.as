@@ -4,54 +4,107 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaStorageProfile extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var name : String;
 
+		/** 
+		* 		* */ 
 		public var systemName : String;
 
+		/** 
+		* 		* */ 
 		public var desciption : String;
 
+		/** 
+		* 		* */ 
 		public var status : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var protocol : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var storageUrl : String;
 
+		/** 
+		* 		* */ 
 		public var storageBaseDir : String;
 
+		/** 
+		* 		* */ 
 		public var storageUsername : String;
 
+		/** 
+		* 		* */ 
 		public var storagePassword : String;
 
+		/** 
+		* 		* */ 
 		public var storageFtpPassiveMode : Boolean;
 
+		/** 
+		* 		* */ 
 		public var deliveryHttpBaseUrl : String;
 
+		/** 
+		* 		* */ 
 		public var deliveryRmpBaseUrl : String;
 
+		/** 
+		* 		* */ 
 		public var deliveryIisBaseUrl : String;
 
+		/** 
+		* 		* */ 
 		public var minFileSize : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var maxFileSize : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var flavorParamsIds : String;
 
+		/** 
+		* 		* */ 
 		public var maxConcurrentConnections : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var pathManagerClass : String;
 
+		/** 
+		* 		* */ 
 		public var urlManagerClass : String;
 
+		/** 
+		* TODO - remove after events manager is implemented
+No need to create enum for temp field
+		* */ 
 		public var trigger : int = int.MIN_VALUE;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -78,5 +131,16 @@ package com.kaltura.vo
 			arr.push('trigger');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

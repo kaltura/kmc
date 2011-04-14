@@ -5,22 +5,40 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPlayableEntryBaseFilter extends KalturaBaseEntryFilter
 	{
+		/** 
+		* 		* */ 
 		public var durationLessThan : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var durationGreaterThan : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var durationLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var durationGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var msDurationLessThan : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var msDurationGreaterThan : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var msDurationLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var msDurationGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var durationTypeMatchOr : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -38,5 +56,13 @@ package com.kaltura.vo
 			arr.push('durationTypeMatchOr');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

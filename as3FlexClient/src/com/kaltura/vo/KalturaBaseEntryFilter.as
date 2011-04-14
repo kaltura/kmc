@@ -5,6 +5,8 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBaseEntryFilter extends KalturaBaseEntryBaseFilter
 	{
+		/** 
+		* 		* */ 
 		public var freeText : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -14,5 +16,13 @@ package com.kaltura.vo
 			arr.push('freeText');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

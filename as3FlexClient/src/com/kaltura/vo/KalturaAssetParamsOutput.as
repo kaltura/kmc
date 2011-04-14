@@ -5,14 +5,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAssetParamsOutput extends KalturaAssetParams
 	{
+		/** 
+		* 		* */ 
 		public var assetParamsId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var assetParamsVersion : String;
 
+		/** 
+		* 		* */ 
 		public var assetId : String;
 
+		/** 
+		* 		* */ 
 		public var assetVersion : String;
 
+		/** 
+		* 		* */ 
 		public var readyBehavior : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -26,5 +36,13 @@ package com.kaltura.vo
 			arr.push('readyBehavior');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

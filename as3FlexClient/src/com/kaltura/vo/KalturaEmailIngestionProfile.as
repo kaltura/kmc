@@ -4,38 +4,73 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaEmailIngestionProfile extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var name : String;
 
+		/** 
+		* 		* */ 
 		public var description : String;
 
+		/** 
+		* 		* */ 
 		public var emailAddress : String;
 
+		/** 
+		* 		* */ 
 		public var mailboxId : String;
 
+		/** 
+		* 		* */ 
 		public var partnerId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var conversionProfile2Id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var moderationStatus : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var status : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAt : String;
 
+		/** 
+		* 		* */ 
 		public var defaultCategory : String;
 
+		/** 
+		* 		* */ 
 		public var defaultUserId : String;
 
+		/** 
+		* 		* */ 
 		public var defaultTags : String;
 
+		/** 
+		* 		* */ 
 		public var defaultAdminTags : String;
 
+		/** 
+		* 		* */ 
 		public var maxAttachmentSizeKbytes : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var maxAttachmentsPerMail : int = int.MIN_VALUE;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -54,5 +89,16 @@ package com.kaltura.vo
 			arr.push('maxAttachmentsPerMail');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

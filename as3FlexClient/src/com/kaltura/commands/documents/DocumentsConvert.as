@@ -13,7 +13,6 @@ package com.kaltura.commands.documents
 		 **/
 		public function DocumentsConvert( entryId : String,conversionProfileId : int=undefined,dynamicConversionAttributes : Array=null )
 		{
-			if(dynamicConversionAttributes== null)dynamicConversionAttributes= new Array();
 			service= 'document_documents';
 			action= 'convert';
 
@@ -24,9 +23,11 @@ package com.kaltura.commands.documents
 			valueArr.push(entryId);
 			keyArr.push('conversionProfileId');
 			valueArr.push(conversionProfileId);
+ 			if (dynamicConversionAttributes) { 
  			keyValArr = extractArray(dynamicConversionAttributes,'dynamicConversionAttributes');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

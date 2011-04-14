@@ -5,14 +5,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUploadTokenBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : String;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var userIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -26,5 +36,13 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

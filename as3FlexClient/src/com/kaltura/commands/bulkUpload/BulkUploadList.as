@@ -12,16 +12,17 @@ package com.kaltura.commands.bulkUpload
 		 **/
 		public function BulkUploadList( pager : KalturaFilterPager=null )
 		{
-			if(pager== null)pager= new KalturaFilterPager();
 			service= 'bulkupload';
 			action= 'list';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
+ 			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

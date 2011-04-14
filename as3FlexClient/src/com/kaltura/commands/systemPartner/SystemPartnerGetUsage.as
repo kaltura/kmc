@@ -16,24 +16,27 @@ package com.kaltura.commands.systemPartner
 		 **/
 		public function SystemPartnerGetUsage( partnerFilter : KalturaPartnerFilter=null,usageFilter : KalturaSystemPartnerUsageFilter=null,pager : KalturaFilterPager=null )
 		{
-			if(partnerFilter== null)partnerFilter= new KalturaPartnerFilter();
-			if(usageFilter== null)usageFilter= new KalturaSystemPartnerUsageFilter();
-			if(pager== null)pager= new KalturaFilterPager();
 			service= 'systempartner_systempartner';
 			action= 'getUsage';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
+ 			if (partnerFilter) { 
  			keyValArr = kalturaObject2Arrays(partnerFilter, 'partnerFilter');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (usageFilter) { 
  			keyValArr = kalturaObject2Arrays(usageFilter, 'usageFilter');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

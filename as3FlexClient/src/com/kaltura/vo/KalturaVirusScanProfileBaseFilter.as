@@ -5,28 +5,52 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaVirusScanProfileBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var engineTypeEqual : String;
 
+		/** 
+		* 		* */ 
 		public var engineTypeIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -47,5 +71,13 @@ package com.kaltura.vo
 			arr.push('engineTypeIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

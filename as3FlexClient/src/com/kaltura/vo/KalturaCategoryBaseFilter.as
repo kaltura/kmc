@@ -5,18 +5,32 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCategoryBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var parentIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var parentIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var depthEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var fullNameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var fullNameStartsWith : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -32,5 +46,13 @@ package com.kaltura.vo
 			arr.push('fullNameStartsWith');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

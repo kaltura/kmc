@@ -5,8 +5,14 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaGenericSyndicationFeed extends KalturaBaseSyndicationFeed
 	{
+		/** 
+		* feed description
+		* */ 
 		public var feedDescription : String;
 
+		/** 
+		* feed landing page (i.e publisher website)
+		* */ 
 		public var feedLandingPage : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -17,5 +23,13 @@ package com.kaltura.vo
 			arr.push('feedLandingPage');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

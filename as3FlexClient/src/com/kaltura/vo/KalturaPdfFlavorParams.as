@@ -5,6 +5,8 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPdfFlavorParams extends KalturaFlavorParams
 	{
+		/** 
+		* 		* */ 
 		public var readonly : Boolean;
 
 		override public function getUpdateableParamKeys():Array
@@ -14,5 +16,13 @@ package com.kaltura.vo
 			arr.push('readonly');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

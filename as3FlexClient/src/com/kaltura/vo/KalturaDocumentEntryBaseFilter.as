@@ -5,8 +5,12 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDocumentEntryBaseFilter extends KalturaBaseEntryFilter
 	{
+		/** 
+		* 		* */ 
 		public var documentTypeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var documentTypeIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -17,5 +21,13 @@ package com.kaltura.vo
 			arr.push('documentTypeIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

@@ -5,28 +5,55 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaGenericDistributionProvider extends KalturaDistributionProvider
 	{
+		/** 
+		* Auto generated
+		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* Generic distribution provider creation date as Unix timestamp (In seconds)
+		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
+		/** 
+		* Generic distribution provider last update date as Unix timestamp (In seconds)
+		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var isDefault : Boolean;
 
+		/** 
+		* 		* */ 
 		public var status : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var optionalFlavorParamsIds : String;
 
+		/** 
+		* 		* */ 
 		public var requiredFlavorParamsIds : String;
 
+		/** 
+		* 		* */ 
 		public var optionalThumbDimensions : Array = new Array();
 
+		/** 
+		* 		* */ 
 		public var requiredThumbDimensions : Array = new Array();
 
+		/** 
+		* 		* */ 
 		public var editableFields : String;
 
+		/** 
+		* 		* */ 
 		public var mandatoryFields : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -42,5 +69,13 @@ package com.kaltura.vo
 			arr.push('mandatoryFields');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

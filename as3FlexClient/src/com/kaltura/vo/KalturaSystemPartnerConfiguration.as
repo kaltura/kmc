@@ -4,72 +4,141 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSystemPartnerConfiguration extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var partnerName : String;
 
+		/** 
+		* 		* */ 
 		public var description : String;
 
+		/** 
+		* 		* */ 
 		public var adminName : String;
 
+		/** 
+		* 		* */ 
 		public var adminEmail : String;
 
+		/** 
+		* 		* */ 
 		public var host : String;
 
+		/** 
+		* 		* */ 
 		public var cdnHost : String;
 
+		/** 
+		* 		* */ 
 		public var maxBulkSize : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerPackage : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var monitorUsage : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var liveStreamEnabled : Boolean;
 
+		/** 
+		* 		* */ 
 		public var moderateContent : Boolean;
 
+		/** 
+		* 		* */ 
 		public var rtmpUrl : String;
 
+		/** 
+		* 		* */ 
 		public var storageDeleteFromKaltura : Boolean;
 
+		/** 
+		* 		* */ 
 		public var storageServePriority : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var kmcVersion : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var enableAnalyticsTab : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableSilverLight : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableVast : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enable508Players : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableMetadata : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableContentDistribution : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableAuditTrail : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableAnnotation : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableMobileFlavors : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enablePs2PermissionValidation : Boolean;
 
+		/** 
+		* 		* */ 
 		public var defThumbOffset : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var adminLoginUsersQuota : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var userSessionRoleId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var adminSessionRoleId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var alwaysAllowedPermissionNames : String;
 
+		/** 
+		* 		* */ 
 		public var importRemoteSourceForConvert : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableEntryReplacement : Boolean;
 
+		/** 
+		* 		* */ 
 		public var enableEntryReplacementApproval : Boolean;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -109,5 +178,16 @@ package com.kaltura.vo
 			arr.push('enableEntryReplacementApproval');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

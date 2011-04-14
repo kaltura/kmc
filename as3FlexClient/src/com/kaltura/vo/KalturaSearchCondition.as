@@ -5,8 +5,12 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSearchCondition extends KalturaSearchItem
 	{
+		/** 
+		* 		* */ 
 		public var field : String;
 
+		/** 
+		* 		* */ 
 		public var value : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -17,5 +21,13 @@ package com.kaltura.vo
 			arr.push('value');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

@@ -5,26 +5,48 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaConversionProfileBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : String;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
+		/** 
+		* 		* */ 
 		public var nameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var systemNameEqual : String;
 
+		/** 
+		* 		* */ 
 		public var systemNameIn : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeOr : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeAnd : String;
 
+		/** 
+		* 		* */ 
 		public var defaultEntryIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var defaultEntryIdIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -44,5 +66,13 @@ package com.kaltura.vo
 			arr.push('defaultEntryIdIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

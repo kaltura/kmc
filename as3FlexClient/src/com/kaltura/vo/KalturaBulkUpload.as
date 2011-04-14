@@ -4,24 +4,45 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUpload extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var uploadedBy : String;
 
+		/** 
+		* 		* */ 
 		public var uploadedByUserId : String;
 
+		/** 
+		* 		* */ 
 		public var uploadedOn : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var numOfEntries : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var status : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var logFileUrl : String;
 
+		/** 
+		* 		* */ 
 		public var csvFileUrl : String;
 
+		/** 
+		* 		* */ 
 		public var results : Array = new Array();
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -37,5 +58,16 @@ package com.kaltura.vo
 			arr.push('results');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

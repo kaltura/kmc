@@ -4,22 +4,41 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDistributionProvider extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var type : String;
 
+		/** 
+		* 		* */ 
 		public var name : String;
 
+		/** 
+		* 		* */ 
 		public var scheduleUpdateEnabled : Boolean;
 
+		/** 
+		* 		* */ 
 		public var deleteInsteadUpdate : Boolean;
 
+		/** 
+		* 		* */ 
 		public var intervalBeforeSunrise : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var intervalBeforeSunset : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updateRequiredEntryFields : String;
 
+		/** 
+		* 		* */ 
 		public var updateRequiredMetadataXPaths : String;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -33,5 +52,16 @@ package com.kaltura.vo
 			arr.push('updateRequiredMetadataXPaths');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

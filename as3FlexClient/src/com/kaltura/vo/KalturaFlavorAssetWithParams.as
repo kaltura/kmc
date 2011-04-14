@@ -8,12 +8,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaFlavorAssetWithParams extends BaseFlexVo
 	{
+		/** 
+		* The Flavor Asset (Can be null when there are params without asset)
+		* */ 
 		public var flavorAsset : KalturaFlavorAsset;
 
+		/** 
+		* The Flavor Params
+		* */ 
 		public var flavorParams : KalturaFlavorParams;
 
+		/** 
+		* The entry id
+		* */ 
 		public var entryId : String;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -23,5 +35,16 @@ package com.kaltura.vo
 			arr.push('entryId');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

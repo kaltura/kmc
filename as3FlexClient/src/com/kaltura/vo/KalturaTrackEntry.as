@@ -4,40 +4,77 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaTrackEntry extends BaseFlexVo
 	{
+		/** 
+		* 		* */ 
 		public var id : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var trackEventType : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var psVersion : String;
 
+		/** 
+		* 		* */ 
 		public var context : String;
 
+		/** 
+		* 		* */ 
 		public var partnerId : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var entryId : String;
 
+		/** 
+		* 		* */ 
 		public var hostName : String;
 
+		/** 
+		* 		* */ 
 		public var userId : String;
 
+		/** 
+		* 		* */ 
 		public var changedProperties : String;
 
+		/** 
+		* 		* */ 
 		public var paramStr1 : String;
 
+		/** 
+		* 		* */ 
 		public var paramStr2 : String;
 
+		/** 
+		* 		* */ 
 		public var paramStr3 : String;
 
+		/** 
+		* 		* */ 
 		public var ks : String;
 
+		/** 
+		* 		* */ 
 		public var description : String;
 
+		/** 
+		* 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var userIp : String;
 
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -61,5 +98,16 @@ package com.kaltura.vo
 			arr.push('userIp');
 			return arr;
 		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }

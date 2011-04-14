@@ -5,38 +5,72 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaMetadataBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var metadataProfileIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var metadataProfileVersionEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var metadataProfileVersionGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var metadataProfileVersionLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var metadataObjectTypeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var objectIdEqual : String;
 
+		/** 
+		* 		* */ 
 		public var objectIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var versionEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var versionGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var versionLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var statusIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -62,5 +96,13 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

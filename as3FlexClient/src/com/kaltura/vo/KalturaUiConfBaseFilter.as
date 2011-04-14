@@ -5,34 +5,64 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUiConfBaseFilter extends KalturaFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var nameLike : String;
 
+		/** 
+		* 		* */ 
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var partnerIdIn : String;
 
+		/** 
+		* 		* */ 
 		public var objTypeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var objTypeIn : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeOr : String;
 
+		/** 
+		* 		* */ 
 		public var tagsMultiLikeAnd : String;
 
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var creationModeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var creationModeIn : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -56,5 +86,13 @@ package com.kaltura.vo
 			arr.push('creationModeIn');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

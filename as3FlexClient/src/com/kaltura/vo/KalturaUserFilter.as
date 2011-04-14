@@ -5,10 +5,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserFilter extends KalturaUserBaseFilter
 	{
+		/** 
+		* 		* */ 
 		public var idEqual : String;
 
+		/** 
+		* 		* */ 
 		public var idIn : String;
 
+		/** 
+		* 		* */ 
 		public var loginEnabledEqual : Boolean;
 
 		override public function getUpdateableParamKeys():Array
@@ -20,5 +26,13 @@ package com.kaltura.vo
 			arr.push('loginEnabledEqual');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

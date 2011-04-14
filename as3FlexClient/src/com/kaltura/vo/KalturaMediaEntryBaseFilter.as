@@ -5,16 +5,28 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaMediaEntryBaseFilter extends KalturaPlayableEntryFilter
 	{
+		/** 
+		* 		* */ 
 		public var mediaTypeEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var mediaTypeIn : String;
 
+		/** 
+		* 		* */ 
 		public var mediaDateGreaterThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var mediaDateLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
 		public var flavorParamsIdsMatchOr : String;
 
+		/** 
+		* 		* */ 
 		public var flavorParamsIdsMatchAnd : String;
 
 		override public function getUpdateableParamKeys():Array
@@ -29,5 +41,13 @@ package com.kaltura.vo
 			arr.push('flavorParamsIdsMatchAnd');
 			return arr;
 		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

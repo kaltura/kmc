@@ -14,7 +14,6 @@ package com.kaltura.commands.search
 		 **/
 		public function SearchSearch( search : KalturaSearch,pager : KalturaFilterPager=null )
 		{
-			if(pager== null)pager= new KalturaFilterPager();
 			service= 'search';
 			action= 'search';
 
@@ -24,9 +23,11 @@ package com.kaltura.commands.search
  			keyValArr = kalturaObject2Arrays(search, 'search');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

@@ -128,6 +128,7 @@ package com.kaltura.managers {
 			vo.entryId = entryid; 
 			vo.groupId = groupid;
 			vo.flavorParamsId = parseInt(flavorparamsid);
+			vo.flavorAssetId = flavorassetid;
 			vo.conversionProfile = convprofid;
 			vo.fileSize = file.size;
 			vo.action = action;
@@ -337,6 +338,7 @@ package com.kaltura.managers {
 		private function updateFlavorAsset(file:FileUploadVO):void {
 			// we don’t need flavorParamsId here
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
+			flavorAsset.setUpdatedFieldsOnly(true);
 			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
@@ -353,7 +355,9 @@ package com.kaltura.managers {
 		 */		
 		private function addFlavorAsset(file:FileUploadVO):void {
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
+			flavorAsset.flavorParamsId = file.flavorParamsId;
 			flavorAsset.setUpdatedFieldsOnly(true);
+			flavorAsset.setInsertedFields(true);
 			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
@@ -361,7 +365,7 @@ package com.kaltura.managers {
 			// pass in the flavorParamsId of the flavor we want this to be;
 			// we can't pass it on the object without passing parameters that are read-only 
 			// and cause the server to return an error, so we do it here:
-			faa.setRequestArgument("flavorAsset:flavorParamsId", file.flavorParamsId);
+//			faa.setRequestArgument("flavorAsset:flavorParamsId", file.flavorParamsId);
 			faa.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
 			faa.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			_kc.post(faa);
