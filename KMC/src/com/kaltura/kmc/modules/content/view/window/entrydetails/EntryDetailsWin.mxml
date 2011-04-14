@@ -57,6 +57,11 @@
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.resources.ResourceManager;
+			
+			/**
+			 * if we need to refresh entries list
+			 * */
+			public var refreshEntriesRequired:Boolean = false;
 
 			private const customDataVerticalGap:Number = 5;
 
@@ -67,7 +72,13 @@
 			 * (model.selectedEntry) so we can easily revert if needed.
 			 * */
 			private var _undoToEntry:KalturaBaseEntry;
-
+			
+			[Bindable]
+			/**
+			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
+			 * */
+			public var selectedEntry:KalturaBaseEntry;
+			
 			[Bindable]
 			/**
 			 * indicates the current entry is a livestream entry
@@ -123,6 +134,12 @@
 			 * once only.
 			 * */
 			private var _enabledWatcher:ChangeWatcher;
+			
+			[Bindable]
+			/**
+			 * whether there was first navigation: meaning init data was loaded, so we can enable tln
+			 * */
+			private var _hadFirstNavigation:Boolean = false;
 			
 			/**
 			 * contains list of the tabs that will be visible
@@ -249,7 +266,8 @@
 
 			private function onWindowCreationComplete():void {
 			
-				var selectedEntry:KalturaBaseEntry = entryDetailsModel.selectedEntry;
+				if (!selectedEntry)
+					 selectedEntry = entryDetailsModel.selectedEntry;
 				_undoToEntry = createWorkingCopy(selectedEntry);
 				setWindowTitle();
 				
@@ -427,12 +445,12 @@
 			private function loadEntries():void {
 				if (_undoToEntry is KalturaMixEntry) {
 					//get all mix entries
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, entryDetailsModel.selectedEntry);
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, selectedEntry);
 					cgEvent.dispatch();
 				}
 				else if (!_isLiveStream) {
 					//get all entries that uses this mix 
-					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, entryDetailsModel.selectedEntry);
+					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, selectedEntry);
 					getRoughcuts.dispatch();
 				}
 
@@ -445,11 +463,50 @@
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
+			/**
+			 * will save the entry if needed, or delete it if user selected not to save
+			 * */
+			private function newEntryQuestionHandler(event:CloseEvent) : void {
+				if (event.detail == Alert.YES) {
+					if (checkDataChanged())
+						save();
+					//a new entry was added so we should refresh
+					refreshEntriesRequired = true;
+				}
+				else {
+					var deleteEntryEvent:EntryEvent = new EntryEvent(EntryEvent.DELETE_ENTRY, _undoToEntry, _undoToEntry.id);
+					deleteEntryEvent.dispatch();
+				}
+				
+				removeMe();
+			}
 
 			/**
 			 * "x" button clicked - see if need save or just close.
 			 * */
 			private function onClose():void {
+				if (isNewEntry) {
+					Alert.show(resourceManager.getString('cms','saveNoMediaEntryQ'), resourceManager.getString('cms','save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
+				}
+				else {
+					if (checkDataChanged()) {
+						// had change, ask for save
+						Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
+					}
+					else {
+						
+						// remove window
+						removeMe();
+					}
+				}
+		
+			}
+
+
+			/**
+			 * checks if any data has changed. returns true if entry was changed, otherwise false
+			 * */
+			private function checkDataChanged():Boolean {
 				var metadataChanged:Boolean = false;
 				if (filterModel.enableCustomData && filterModel.metadataProfiles) {
 					for (var i:int = 0; i< filterModel.metadataProfiles.length; i++) {
@@ -472,18 +529,9 @@
 					}
 				}
 				
-				if (!ObjectUtil.compareObjects(entryDetailsModel.selectedEntry, _undoToEntry) || metadataChanged) {
-					// had change, ask for save
-					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
-				}
-				else {
-					
-					// remove window
-					removeMe();
-				}
+				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged)
 			}
-
-
+			
 			/**
 			 * 
 			 * */
@@ -502,7 +550,7 @@
 				if ((event == null || event.detail == Alert.YES)) {
 					_undoToEntry = null;
 					entryMetaData.clearPlayer();
-					removeCustomDataWatchers();
+					removeWatchers();
 					if (_enabledWatcher) {
 						_enabledWatcher.unwatch();
 					}
@@ -514,7 +562,7 @@
 			/**
 			 * to fix performance bug: remove all metadata view watchers
 			 * */
-			private function removeCustomDataWatchers():void {
+			private function removeWatchers():void {
 				if (customData) {
 					//first child is navigation hbox
 					for (var i:int = 1; i<customData.numChildren; i++) {
@@ -522,6 +570,13 @@
 						if (innerCustomData && innerCustomData.metadataViewWatcher)
 							innerCustomData.metadataViewWatcher.unwatch();
 					}
+				}
+				//flavors watchers
+				if (entryAssets) {
+					if (entryAssets.flavorsWatcher)
+						entryAssets.flavorsWatcher.unwatch();
+					if (entryAssets.replacementEntryWatcher)
+						entryAssets.replacementEntryWatcher.unwatch();
 				}
 			}
 
@@ -565,7 +620,7 @@
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
 					cgEvent.dispatch();	
 
-					removeCustomDataWatchers();
+					removeWatchers();
 					
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
@@ -649,6 +704,7 @@
 			
 			private function onChangeView():void {
 				entryMetaData.pausePreview();
+				_hadFirstNavigation = true;
 				// all data for entry metadata is loaded before the window opens.
 				// other panels need data that is loaded when the panel opens, so 
 				// we disable them until data is loaded.
@@ -740,13 +796,12 @@
 				
 				_dataInitialized = true;
 			}
-			
 
 			
 		]]>
 	</mx:Script>
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
-			   useHandCursor="true" buttonMode="true" tabHeight="25" />
+			   useHandCursor="true" buttonMode="true" tabHeight="25" enabled="{!entryDetailsModel.loadingFlag || _hadFirstNavigation}" />
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{onChangeView()}" creationPolicy="all"
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack" >
@@ -774,14 +829,13 @@
 		<!-- Flavor Assets Tab -->
 		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
 						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
-						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
-						 flavorAssets="{entryDetailsModel.flavorParamsAndAssetsByEntryId}"/>
+						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"/>
 
 		<!-- content Tab -->
 		<mx:VBox id="contentTab" width="100%" height="100%" styleName="contentVbox"
 				 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}">
 			<!--<mx:Label id="partsTable" styleName="drillDownTitleLabel"/>-->
-			<view:EntryTable width="100%" height="100%" dataProvider="{entryDetailsModel.selectedEntry.parts}"
+			<view:EntryTable width="100%" height="100%" dataProvider="{selectedEntry.parts}"
 							 creationComplete="{removeColums(event)}" sortableColumns="false"/>
 			<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" getPageNum="onPaging()"
 							 showRowsInPage="false" />

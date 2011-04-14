@@ -10,19 +10,24 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
 			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.types.KalturaEntryReplacementStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			
 			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
@@ -35,9 +40,11 @@
 			private var _showReplacenentInfo:Boolean;
 			
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _referenceEntry:KalturaBaseEntry;
 			
 			[Bindable]
-			private var _flavorAssets:ArrayCollection;
+			public var flavorAssets:ArrayCollection;
+//			private var _flavorAssets:ArrayCollection;
 			
 			private var _fileReferenceList:FileReferenceList;
 			private var _fileReference:FileReference;
@@ -45,14 +52,48 @@
 			
 			private var _entryDetailsModel:EntryDetailsModel;
 			
+			public var flavorsWatcher:ChangeWatcher;
+			public var replacementEntryWatcher:ChangeWatcher;
+
+
+			/**
+			 * will be called once referenceEntry has changed, and set values according to the given entry
+			 * */
+			public function setReplacementData(value:KalturaBaseEntry):void
+			{
+				_referenceEntry = value;
+				if (_referenceEntry) {
+					switch (_referenceEntry.replacementStatus) {
+						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
+						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
+							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'statusProcessing');
+							break;
+						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
+							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementRFRState');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'readyForReviewBtn');
+							break;
+					}
+				}
+			}
+
 			/**
 			 * loads required data from server
 			 * */
 			public function initData():void {
 				if(_selectedEntry != null)
 				{
+					//fix bug in performance
+					if (!flavorsWatcher)
+						flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
 					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
+					if (_selectedEntry.referenceId) {
+						if (!replacementEntryWatcher)
+							replacementEntryWatcher = BindingUtils.bindSetter(setReplacementData, entryDetailsModel, "referenceEntry");
+						var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REFERENCE_ENTRY, null, _selectedEntry.referenceId);
+						getReferenceEntry.dispatch();
+					}
 				}
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
@@ -97,6 +138,7 @@
 			{
 				_entryDetailsModel = value;
 			}
+			
 
 			public function get selectedEntry():KalturaBaseEntry
 			{
@@ -106,39 +148,46 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
-				//TODO add replacement status
-				//if (_selectedEntry.replacedEntryId) 
-				//sets labels according to entry's status
-				switch (_selectedEntry.status) {
-					case KalturaEntryStatus.NO_CONTENT:
-						_showActions = true;
-						stateLabel.text = resourceManager.getString('cms','noContentState');
-						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-							actionLabel.text = resourceManager.getString('cms','addVideo');
-						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-							actionLabel.text = resourceManager.getString('cms','addAudio');
-						break;
-					case KalturaEntryStatus.READY:
-						stateLabel.text = resourceManager.getString('cms','readyState');
-						_showActions = true;
-						noteLabel.visible = noteLabel.includeInLayout = true;
-						if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-							actionLabel.text = resourceManager.getString('cms','replaceVideo');
-						else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-							actionLabel.text = resourceManager.getString('cms','replaceAudio');
-						break;
-					case KalturaEntryStatus.ERROR_CONVERTING:
-					case KalturaEntryStatus.ERROR_IMPORTING:
-						stateLabel.text = resourceManager.getString('cms','errorState');
-						_showActions = false;
-						break;
-					default:
-						stateLabel.text = resourceManager.getString('cms','notReadyState');
-						_showActions = false;
+				if (_selectedEntry.replacedEntryId)  {
+					replacementEntryId.text = _selectedEntry.referenceId;
+					_showActions = false;
+					_showReplacenentInfo = true;
+				}
+				else {
+					//sets labels according to entry's status
+					switch (_selectedEntry.status) {
+						case KalturaEntryStatus.NO_CONTENT:
+							_showActions = true;
+							stateLabel.text = resourceManager.getString('cms','noContentState');
+							if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
+								actionLabel.text = resourceManager.getString('cms','addVideo');
+							else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
+								actionLabel.text = resourceManager.getString('cms','addAudio');
+							break;
+						case KalturaEntryStatus.READY:
+							stateLabel.text = resourceManager.getString('cms','readyState');
+							_showActions = true;
+							noteLabel.visible = noteLabel.includeInLayout = true;
+							if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
+								actionLabel.text = resourceManager.getString('cms','replaceVideo');
+							else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
+								actionLabel.text = resourceManager.getString('cms','replaceAudio');
+							break;
+						case KalturaEntryStatus.ERROR_CONVERTING:
+						case KalturaEntryStatus.ERROR_IMPORTING:
+							stateLabel.text = resourceManager.getString('cms','errorState');
+							_showActions = false;
+							break;
+						default:
+							stateLabel.text = resourceManager.getString('cms','notReadyState');
+							_showActions = false;
+					} 
 				}
 
-			}
 			
+
+			}
+	/* 		
 			public function get flavorAssets():ArrayCollection
 			{
 				return _flavorAssets;
@@ -148,7 +197,7 @@
 			{
 				_flavorAssets = flavorAssets;
 				
-			}
+			} */
 			
 			public function set hideColumns(indices:String):void {
 				var ind:Array = indices.split(",");
@@ -222,12 +271,27 @@
 				openAddFlavorsWindow(filesList);
 			}
 			
+			/**
+			 * opens another entry drill down window, for the replacement entry
+			 * */
+			private function onReplacementStautsBtnClick():void {
+				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW);
+				openWindow.dispatch();
+			}
+			
+			private function onCancelReplacementClick():void {
+				
+			}
+			private function onApproveReplacementClick():void {
+				
+			}
+			
 		]]>
 	</mx:Script>
 	
 	
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="flavorsCurrentStateTitle"/>
+		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="flavorsTitleLabel"/>
 		<mx:Label id="stateLabel" styleName="flavorsCurrentState"/>
 	</mx:HBox>
 	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
@@ -236,10 +300,18 @@
 		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" styleName="flavorsActionBtn"/>
 	</mx:HBox>
 	<mx:Label id="noteLabel" visible="false" includeInLayout="false" text="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
-	<mx:HBox id="replacementInfoHBox" visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}">
-		
+	<mx:HBox id="replacementInfoHBox" width="100%" visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" horizontalGap="0">
+		<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="flavorsTitleLabel"/>
+		<mx:Label id="replacementEntryId" text="00000000"/>
+		<mx:Spacer width="10"/>
+		<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="flavorsTitleLabel"/>
+		<mx:LinkButton id="replacementStatusBtn" click="{onReplacementStautsBtnClick()}"/>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}"/>
+		<mx:Label text="/" width="7"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}"/>
 	</mx:HBox>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
-	<entryDetails:FlavorsTable id="dg" flavorAssets="{_flavorAssets}"/>
+	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
 
 </mx:VBox>

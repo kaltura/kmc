@@ -22,6 +22,8 @@ package com.kaltura.kmc.modules.content.control
 			
 			//Entry Event
 			addCommand( EntryEvent.GET_ENTRY , GetSingleEntryCommand );
+			addCommand( EntryEvent.GET_REFERENCE_ENTRY , GetSingleEntryCommand );
+			addCommand( EntryEvent.DELETE_ENTRY , DeleteBaseEntryCommand );
 			addCommand( EntryEvent.SET_SELECTED_ENTRY , SetSelectedEntryCommand );
 			addCommand( EntryEvent.ADD_CHECKED_ENTRY , AddCheckedEntryCommand );
 			addCommand( EntryEvent.REMOVE_CHECKED_ENTRY , RemoveCheckedEntryCommand   );	

@@ -155,6 +155,7 @@ package com.kaltura.kmc.modules.content.commands
 			
 			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
+
 		}
 		
 		

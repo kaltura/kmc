@@ -25,6 +25,8 @@ package com.kaltura.kmc.modules.content.events
 		public static const RESET_RULE_BASED_DATA : String = "content_resetRuleBasedData";
 		public static const PREVIEW : String = "content_preview";
 		public static const GET_ENTRY : String = "content_get_entry";
+		public static const DELETE_ENTRY : String = "content_delete_entry";
+		public static const GET_REFERENCE_ENTRY : String = "content_get_reference_entry";
 		
 		
 		private var _entryVo : KalturaBaseEntry;

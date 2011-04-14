@@ -68,7 +68,10 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var conversionProfsWFlavorParams:ArrayCollection;
 		
-		
+		/**
+		 * reference entry of the selected entry 
+		 */		
+		public var referenceEntry:KalturaBaseEntry;
 		
 	}
 }
