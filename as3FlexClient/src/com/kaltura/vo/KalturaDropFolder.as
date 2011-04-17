@@ -1,5 +1,7 @@
 package com.kaltura.vo
 {
+	import com.kaltura.vo.KalturaDropFolderFileHandlerConfig;
+
 	import com.kaltura.vo.BaseFlexVo;
 	[Bindable]
 	public dynamic class KalturaDropFolder extends BaseFlexVo
@@ -42,19 +44,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var slugField : String;
-
-		/** 
-		* 		* */ 
-		public var slugRegex : String;
-
-		/** 
-		* 		* */ 
 		public var fileSizeCheckInterval : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var unmatchedFilePolicy : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
@@ -63,6 +53,22 @@ package com.kaltura.vo
 		/** 
 		* 		* */ 
 		public var autoFileDeleteDays : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var fileHandlerType : String;
+
+		/** 
+		* 		* */ 
+		public var fileNamePatterns : String;
+
+		/** 
+		* 		* */ 
+		public var fileHandlerConfig : KalturaDropFolderFileHandlerConfig;
+
+		/** 
+		* 		* */ 
+		public var tags : String;
 
 		/** 
 		* 		* */ 
@@ -86,12 +92,13 @@ package com.kaltura.vo
 			arr.push('ingestionProfileId');
 			arr.push('dc');
 			arr.push('path');
-			arr.push('slugField');
-			arr.push('slugRegex');
 			arr.push('fileSizeCheckInterval');
-			arr.push('unmatchedFilePolicy');
 			arr.push('fileDeletePolicy');
 			arr.push('autoFileDeleteDays');
+			arr.push('fileHandlerType');
+			arr.push('fileNamePatterns');
+			arr.push('fileHandlerConfig');
+			arr.push('tags');
 			return arr;
 		}
 

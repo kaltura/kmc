@@ -163,6 +163,11 @@ package com.kaltura.vo
 		public var partnerSortValue : int = int.MIN_VALUE;
 
 		/** 
+		* Override the default ingestion profile  
+		* */ 
+		public var ingestionProfileId : String;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -196,6 +201,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('thumbnailUrl');
+			arr.push('ingestionProfileId');
 			return arr;
 		}
 

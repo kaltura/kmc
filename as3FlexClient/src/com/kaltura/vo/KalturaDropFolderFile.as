@@ -38,7 +38,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parsedFlavor : int = int.MIN_VALUE;
+		public var parsedFlavor : String;
 
 		/** 
 		* 		* */ 

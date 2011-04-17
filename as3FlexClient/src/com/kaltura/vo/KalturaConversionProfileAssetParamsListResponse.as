@@ -1,13 +1,12 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
-	import com.kaltura.vo.KalturaConversionProfileAssetParams;
 	[Bindable]
 	public dynamic class KalturaConversionProfileAssetParamsListResponse extends BaseFlexVo
 	{
 		/** 
 		* 		* */ 
-		public var objects : Array;
+		public var objects : Array = new Array();
 
 		/** 
 		* 		* */ 

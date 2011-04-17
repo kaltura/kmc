@@ -1,6 +1,6 @@
 package com.kaltura.commands.uiConfAdmin
 {
-	import com.kaltura.vo.KalturaUiConf;
+	import com.kaltura.vo.KalturaUiConfAdmin;
 	import com.kaltura.delegates.uiConfAdmin.UiConfAdminAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -8,9 +8,9 @@ package com.kaltura.commands.uiConfAdmin
 	{
 		public var filterFields : String;
 		/**
-		 * @param uiConf KalturaUiConf
+		 * @param uiConf KalturaUiConfAdmin
 		 **/
-		public function UiConfAdminAdd( uiConf : KalturaUiConf )
+		public function UiConfAdminAdd( uiConf : KalturaUiConfAdmin )
 		{
 			service= 'adminconsole_uiconfadmin';
 			action= 'add';

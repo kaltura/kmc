@@ -31,7 +31,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var videoOffset : int = int.MIN_VALUE;
+		public var videoOffset : Number = NaN;
 
 		/** 
 		* 		* */ 

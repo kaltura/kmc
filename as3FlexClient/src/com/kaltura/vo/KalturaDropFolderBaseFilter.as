@@ -63,11 +63,35 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var slugFieldLike : String;
+		public var fileHandlerTypeEqual : String;
 
 		/** 
 		* 		* */ 
-		public var slugRegexLike : String;
+		public var fileHandlerTypeIn : String;
+
+		/** 
+		* 		* */ 
+		public var fileNamePatternsLike : String;
+
+		/** 
+		* 		* */ 
+		public var fileNamePatternsMultiLikeOr : String;
+
+		/** 
+		* 		* */ 
+		public var fileNamePatternsMultiLikeAnd : String;
+
+		/** 
+		* 		* */ 
+		public var tagsLike : String;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeOr : String;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeAnd : String;
 
 		/** 
 		* 		* */ 
@@ -103,8 +127,14 @@ package com.kaltura.vo
 			arr.push('dcEqual');
 			arr.push('dcIn');
 			arr.push('pathLike');
-			arr.push('slugFieldLike');
-			arr.push('slugRegexLike');
+			arr.push('fileHandlerTypeEqual');
+			arr.push('fileHandlerTypeIn');
+			arr.push('fileNamePatternsLike');
+			arr.push('fileNamePatternsMultiLikeOr');
+			arr.push('fileNamePatternsMultiLikeAnd');
+			arr.push('tagsLike');
+			arr.push('tagsMultiLikeOr');
+			arr.push('tagsMultiLikeAnd');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');

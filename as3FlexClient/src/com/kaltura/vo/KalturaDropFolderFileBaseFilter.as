@@ -63,7 +63,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parsedFlavorEqual : int = int.MIN_VALUE;
+		public var parsedFlavorEqual : String;
 
 		/** 
 		* 		* */ 
@@ -71,7 +71,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parsedFlavorLike : int = int.MIN_VALUE;
+		public var parsedFlavorLike : String;
 
 		/** 
 		* 		* */ 

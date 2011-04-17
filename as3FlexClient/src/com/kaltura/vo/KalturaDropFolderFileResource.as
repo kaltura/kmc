@@ -6,8 +6,8 @@ package com.kaltura.vo
 	public dynamic class KalturaDropFolderFileResource extends KalturaContentResource
 	{
 		/** 
-		* Token that returned from media server such as FMS or red5. 		* */ 
-		public var dropFolderFileId : String;
+		* Id of the drop folder file object		* */ 
+		public var dropFolderFileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -100,6 +100,7 @@ and addes media-player tag (yahoo)		* */
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('type');
 			return arr;
 		}
 

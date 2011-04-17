@@ -90,10 +90,10 @@ package com.kaltura.net {
 			if(obj["getUpdatedFieldsOnly"]() || obj["getInsertedFields"]()) {
 				objKeys = [];
 				if (obj["getUpdatedFieldsOnly"]() ) {
-					objKeys = objKeys.concat( obj["getUpdateableParamKeys"]());
+					objKeys.concat( obj["getUpdateableParamKeys"]());
 				}
 				if (obj["getInsertedFields"]() ) {
-					objKeys = objKeys.concat( obj["getInsertableParamKeys"]());
+					objKeys.concat( obj["getInsertableParamKeys"]());
 				}
 				
 			}
