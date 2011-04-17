@@ -17,14 +17,18 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryFlavors;
 			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaFlavorReadyBehaviorType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -39,6 +43,14 @@
 			 * use flavorAsset.update instead of flavorAsset.add or media.update.
 			 * */
 			public var allowAddFiles:Boolean = true;
+			
+			
+			/**
+			 * @copy #selectedCPAssetParams
+			 * */
+			protected var _selectedCPAssetParams:ArrayCollection;
+			
+			private var _fileReferenceList:FileReferenceList;
 			
 			/**
 			 * @copy #entry
@@ -66,8 +78,49 @@
 
 			/**
 			 * make sure the same flavour is not selected for more than one file
+			 * ---------------------------------- 
+			 * • more than one file is associated to the same conversion flavor settings.
+			 * • Some of the files are exceeding system upload file size limitation 
+			 * 	(currently set to X GB). please import these files to the system by 
+			 * 	utilizing other ingestion options, applicable in your account (e.g. 
+			 * 	import, drop folder etc)" 
+			 * • Some files required for entry’s readiness for publishing are missing.
 			 * */
 			protected function validate():Boolean {
+				var result:Boolean = true;
+				if (!validateMultipleFilesSingleFlavour()) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'multipleFilesFlavor'), 
+						ResourceManager.getInstance().getString('cms', 'error'));
+					result = false;
+				}
+				else if (!validateFileSize()) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filesTooBig'), 
+						ResourceManager.getInstance().getString('cms', 'error'));
+					result = false;
+				}
+				return result;
+			}
+			
+			/**
+			 * if file size of any file exceeds partner limit, return false
+			 * */
+			protected function validateFileSize():Boolean {
+				var result:Boolean = true;
+				var maxSize:Number = CmsModelLocator.getInstance().extSynModel.partnerData.maxUploadSize;
+				for each (var file:UploadFileVo in filesList) {
+					if (file.fileData.size > maxSize) {
+						result = false;
+						break;
+					}
+				}
+				return result;
+			}
+			
+			
+			/**
+			 * if the same flavour is selected for more than one file, return false.
+			 * */
+			protected function validateMultipleFilesSingleFlavour():Boolean {
 				// when replaceing a single flavour, this is not a problem.
 				if (!allowAddFiles) return true;
 				// scan files list and put each flavor id in an array.
@@ -86,48 +139,73 @@
 			
 			
 			/**
+			 * run validations sequence
+			 * */
+			protected function initSubmitSequence(event:MouseEvent):void {
+				if (validate()) {
+					validateReadyCriteria();
+				}
+			}
+			
+			
+			/**
+			 * test entry readiness criteria, approve / cancel, continue accordingly.
+			 * */
+			protected function validateReadyCriteria():void {
+				// dispatch a command to list conversionProfile.listAssetParams
+				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_ASSET_PARAMS, cnvrtProfId);
+				// the result should go on the model as selectedCPAssetParams
+				// bind it with a setter so we can continue validation
+			}
+			
+			
+			/**
+			 * if the user wishes to upload partial files list, do so.
+			 * */
+			protected function handleWarning(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					submit();
+				}
+			}
+			
+			
+			/**
 			 * Submit handler:
 			 * 	•	Upload – add the relevant files to FileUploadManager.
 			 * 	•	Import – trigger media.add with matching KalturaURLResource objects.
 			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
 			 * */
-			protected function submit(event:MouseEvent):void {
-				if (validate()) {
-					//TODO - handle link, import (phase 2)
-					var n:int = filesList.length;
-					var uploader:FileUploadManager = FileUploadManager.getInstance();
-					var ufv:UploadFileVo;
-					// conversion profile id
-					var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
-					// action
-					var action:String = FileUploadVO.ACTION_NONE;
-					if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
-						action = FileUploadVO.ACTION_ADD;
-					}
-					else if (!allowAddFiles) {
-						// replace a single flavor asset
-						action = FileUploadVO.ACTION_UPDATE;
-					}
-					
-					// group id
-					var groupid:String = '';
-					if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
-						// group actions: adding flavors to a no_content entry, or replacing multiple 
-						// 		flavours while creating replacement entry.
-						groupid = _entry.id;
-					}
-					// add uploads to the FileUploadManager
-					for (var i:int = 0; i<n; i++) {
-						ufv = filesList[i] as UploadFileVo;
-						uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
-					}
-					// close the popup
-					closeHandler();
+			protected function submit():void {
+				var n:int = filesList.length;
+				var uploader:FileUploadManager = FileUploadManager.getInstance();
+				var ufv:UploadFileVo;
+				// conversion profile id
+				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+				// action
+				var action:String = FileUploadVO.ACTION_NONE;
+				if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
+					action = FileUploadVO.ACTION_ADD;
 				}
-				else {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'multipleFilesFlavor'), 
-						ResourceManager.getInstance().getString('cms', 'error'));
+				else if (!allowAddFiles) {
+					// replace a single flavor asset
+					action = FileUploadVO.ACTION_UPDATE;
 				}
+				
+				// group id
+				var groupid:String = '';
+				if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
+					// group actions: adding flavors to a no_content entry, or replacing multiple 
+					// 		flavours while creating replacement entry.
+					groupid = _entry.id;
+				}
+				// add uploads to the FileUploadManager
+				for (var i:int = 0; i<n; i++) {
+					ufv = filesList[i] as UploadFileVo;
+					uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
+				}
+				// close the popup
+				closeHandler();
 			}
 			
 			
@@ -147,19 +225,20 @@
 			 * open the file browser 
 			 * */
 			protected function addMoreFiles():void {
-				var fileReferenceList:FileReferenceList = new FileReferenceList();
-				fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+				_fileReferenceList = new FileReferenceList();
+				_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
 				var mediaType:int = parseInt(_entry.type);
 				if (mediaType == KalturaMediaType.VIDEO) 
-					fileReferenceList.browse(new Array(getTypeFilter('video',EntryFlavors.VIDEO_TYPES)));
+					_fileReferenceList.browse(new Array(getTypeFilter('video',EntryFlavors.VIDEO_TYPES)));
 				else if (mediaType == KalturaMediaType.AUDIO)
-					fileReferenceList.browse(new Array(getTypeFilter('audio',EntryFlavors.AUDIO_TYPES)));
+					_fileReferenceList.browse(new Array(getTypeFilter('audio',EntryFlavors.AUDIO_TYPES)));
 			}
 			
 			/**
 			 * add the selected files to the files list
 			 * */
 			private function onFlavorsSelected(event:Event):void {
+				_fileReferenceList.removeEventListener(Event.SELECT, onFlavorsSelected);
 				var files:Array = (event.target as FileReferenceList).fileList;
 				for each (var fileReference:FileReference in files) {
 					var uploadFile:UploadFileVo = new UploadFileVo();
@@ -182,6 +261,8 @@
 			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void {
 				this.mx_internal::closeButton.buttonMode = true;
 			}
+			
+			
 
 			/**
 			 * the entry being edited
@@ -202,6 +283,50 @@
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
 				}
 			}
+			
+			
+			
+			[Bindable]
+			/**
+			 * the selected CP's conversionProfileAssetParams
+			 * this setter is triggered during validation before save, so we complete the 
+			 * process here.
+			 * */
+			public function set selectedCPAssetParams(value:ArrayCollection):void {
+				_selectedCPAssetParams = value;
+				var isOk:Boolean = true;
+				if (value) {
+					// scan the flavors list and see if any required flavors are missing
+					for each(var cpap:KalturaConversionProfileAssetParams in value) {
+						var bFound:Boolean = false;
+						if (cpap.readyBehavior == KalturaFlavorReadyBehaviorType.REQUIRED) {
+							for each (var fuv:UploadFileVo in filesList) {
+								if (fuv.flavorParamId == cpap.assetParamsId.toString()) {
+									bFound = true;
+									break;
+								}
+							}
+							if (!bFound) {
+								isOk = false;
+								break;
+							}
+						}
+					}
+					if (isOk) {
+						// save
+						submit();
+					}
+					else {
+						// alert user
+						Alert.show(ResourceManager.getInstance().getString('cms', 'missingRequired'),
+							ResourceManager.getInstance().getString('cms', 'warning'), Alert.OK|Alert.CANCEL, null, handleWarning);
+					}
+				}
+			}
+			
+			public function get selectedCPAssetParams():ArrayCollection {
+				return _selectedCPAssetParams;
+			}
 
 
 		]]>
@@ -220,7 +345,7 @@
 						addFiles="addMoreFiles()"/>
 	
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" click="submit(event)" buttonMode="true"
+		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
 				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}" />
 	</mx:ControlBar>
 </mx:TitleWindow>

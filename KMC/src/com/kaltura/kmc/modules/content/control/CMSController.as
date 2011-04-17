@@ -86,7 +86,8 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS , ListConversionProfilesAndFlavorParams);
 			
 			// flavor params
-			addCommand( ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
+			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
+			addCommand(ConversionSettingsEvent.LIST_ASSET_PARAMS, ListAssetParams);
 			
 			//FilterEvent
 			addCommand(FilterEvent.SET_FILTER_TO_MODEL , SetFilterToModelCommand );
