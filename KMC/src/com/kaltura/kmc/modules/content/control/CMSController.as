@@ -57,6 +57,8 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( EntriesEvent.DELETE_ENTRIES , DeleteEntriesCommand );
 			//media Event
 			addCommand( MediaEvent.ADD_MEDIA , AddMediaCommand );
+			addCommand( MediaEvent.APPROVE_REPLACEMENT , ApproveMediaEntryReplacementCommand );
+			addCommand( MediaEvent.CANCEL_REPLACEMENT , CancelMediaEntryReplacementCommand );
 			
 			//selection Event
 			addCommand( SelectionEvent.SELECTION_CHANGED , SelectionCommand);

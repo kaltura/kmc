@@ -28,11 +28,19 @@ package com.kaltura.kmc.modules.content.commands
 		}
 		
 		override public function result(data:Object):void {
-			_model.entryDetailsModel.selectedEntry = data.data as KalturaMediaEntry;
-			if (_openDrilldown) {	
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
-				cgEvent.dispatch();
+			super.result(data);
+			
+			if (data.data && (data.data is KalturaMediaEntry)) {
+				_model.entryDetailsModel.selectedEntry = data.data as KalturaMediaEntry;
+				if (_openDrilldown) {	
+					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
+					cgEvent.dispatch();
+				}
 			}
+			else {
+				trace ("error in add media");
+			}
+			
 			_model.decreaseLoadCounter();
 		}
 		
