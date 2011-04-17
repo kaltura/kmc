@@ -9,14 +9,17 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.commands.media.MediaAdd;
+			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.DropFolderModel;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
 			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
+			import com.kaltura.kmc.modules.content.view.window.flavors.MatchFromDropFolderWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.types.KalturaEntryReplacementStatus;
@@ -52,7 +55,19 @@
 			private var _selectedFlavorAssetId:String;
 			
 			private var _entryDetailsModel:EntryDetailsModel;
+			private var _dropFolderModel:DropFolderModel;
 			public var flavorsWatcher:ChangeWatcher;
+
+			[Bindable]
+			public function get dropFolderModel():DropFolderModel
+			{
+				return _dropFolderModel;
+			}
+
+			public function set dropFolderModel(value:DropFolderModel):void
+			{
+				_dropFolderModel = value;
+			}
 
 			/**
 			 * loads required data from server
@@ -70,12 +85,18 @@
 						getReferenceEntry.dispatch();
 					}
 				}
-				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				profileEvent.dispatch();
+				//the following data is required for the actions buttons
+				if (_showActions) {
+					var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+					profileEvent.dispatch();
+					var listFolders:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS);
+					listFolders.dispatch();
+				}
 			}
 			
 			private function onCreationComplete():void {
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
+				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 			}
 			
 			/**
@@ -89,6 +110,13 @@
 					_fileReference.addEventListener(Event.SELECT, onFlavorSelected);
 					_fileReference.browse(new Array(fileFilter));
 				}
+			}
+			
+			/**
+			 * user selects to match from a drop folder a selected flavor
+			 * */
+			private function onFlavorMatchSelected(event:Event):void {
+				openMatchFromDropFolderWindow((event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.id);
 			}
 			
 			/**
@@ -283,13 +311,24 @@
 				approveReplacement.dispatch();
 			}
 			
+			private function openMatchFromDropFolderWindow(selectedFlavor:String = null):void {
+				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
+				matchFromDropFodlerWin.entry = _selectedEntry;
+				//TODO add selectedFlavor
+				
+				BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
+				BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");			
+				PopUpManager.addPopUp(matchFromDropFodlerWin, this, true);
+				PopUpManager.centerPopUp(matchFromDropFodlerWin);
+			}
+			
 		]]>
 	</mx:Script>
 	
 	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
 		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}" styleName="dataGridBtn" />
-		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" styleName="dataGridBtn" />
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn" />
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
