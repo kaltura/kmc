@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.dropFolder.DropFolderList;
 	import com.kaltura.errors.KalturaError;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.vo.KalturaDropFolder;
 	import com.kaltura.vo.KalturaDropFolderListResponse;
@@ -13,16 +14,16 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	public class ListDropFolders extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
-			createHandleDummy();
+//			createHandleDummy();
 			// ---------------------
-			/*_model.increaseLoadCounter();
+			_model.increaseLoadCounter();
 //			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
 			
 			var listFolders:DropFolderList = new DropFolderList();
 			listFolders.addEventListener(KalturaEvent.COMPLETE, result);
 			listFolders.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(listFolders);*/ 	
+			_model.context.kc.post(listFolders); 	
 		}
 		
 		

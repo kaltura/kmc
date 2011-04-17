@@ -65,6 +65,9 @@
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(Event.CHANGE, onRadioChange, false, 0, true);
+				if (_entry && _entry.status == KalturaEntryStatus.NO_CONTENT) {
+					refidLbl.text = _entry.referenceId;
+				}
 			}
 			
 
@@ -191,7 +194,7 @@
 			protected function listFolderContents(event:MouseEvent = null):void {
 				var txt:String = searchText.text;
 				// search with or without slug
-				var ce:CairngormEvent = new DropFolderEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER, txt ? txt : null);
+				var ce:CairngormEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER, null, txt ? txt : null);
 				ce.dispatch();
 			}
 			
@@ -276,7 +279,9 @@
 				}
 				if (value.status == KalturaEntryStatus.NO_CONTENT) {
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd');
-					refidLbl.text = entry.referenceId
+					if (refidLbl) {
+						refidLbl.text = entry.referenceId;
+					}
 				} 
 				else {
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');

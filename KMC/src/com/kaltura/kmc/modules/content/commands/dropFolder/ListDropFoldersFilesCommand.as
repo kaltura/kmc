@@ -3,10 +3,12 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.dropFolderFile.DropFolderFileList;
 	import com.kaltura.errors.KalturaError;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 	import com.kaltura.types.KalturaDropFolderFileStatus;
 	import com.kaltura.vo.KalturaDropFolderFile;
+	import com.kaltura.vo.KalturaDropFolderFileFilter;
 	import com.kaltura.vo.KalturaDropFolderFileListResponse;
 	
 	import mx.collections.ArrayCollection;
@@ -19,8 +21,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		
 		override public function execute(event:CairngormEvent):void {
 			_eventType = (event as DropFolderFileEvent).type;
-			createHandleDummy();
-			/*_model.increaseLoadCounter();
+//			createHandleDummy();
+			_model.increaseLoadCounter();
 			var listEvent:DropFolderFileEvent = event as DropFolderFileEvent;
 			
 			var filter:KalturaDropFolderFileFilter;
@@ -40,7 +42,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			listFiles.addEventListener(KalturaEvent.COMPLETE, result);
 			listFiles.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(listFiles); */
+			_model.context.kc.post(listFiles); 
 		}
 
 		override public function result(data:Object):void {
@@ -117,7 +119,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		//	_model.dropFolderModel.dropFolderFiles = new ArrayCollection(ar);
 		}
 		
-		protected function createHandleDummy() :void {
+	/*	protected function createHandleDummy() :void {
 			var response:KalturaDropFolderFileListResponse = new KalturaDropFolderFileListResponse();
 			response.objects = new Array();
 			var dff:KalturaDropFolderFile = new KalturaDropFolderFile();
@@ -162,7 +164,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			}
 			else
 				_model.dropFolderModel.dropFolderFiles = new ArrayCollection(resultArray);
-		}
+		}*/
 
 	}
 		
