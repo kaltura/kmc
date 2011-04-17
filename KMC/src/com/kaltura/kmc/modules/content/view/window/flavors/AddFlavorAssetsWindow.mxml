@@ -106,9 +106,10 @@
 			 * */
 			protected function validateFileSize():Boolean {
 				var result:Boolean = true;
+				var bytesInMega:int = 1024*1024;
 				var maxSize:Number = CmsModelLocator.getInstance().extSynModel.partnerData.maxUploadSize;
 				for each (var file:UploadFileVo in filesList) {
-					if (file.fileData.size > maxSize) {
+					if ((file.fileData.size/bytesInMega) > maxSize) {
 						result = false;
 						break;
 					}
@@ -155,6 +156,7 @@
 				// dispatch a command to list conversionProfile.listAssetParams
 				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
 				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_ASSET_PARAMS, cnvrtProfId);
+				cg.dispatch();
 				// the result should go on the model as selectedCPAssetParams
 				// bind it with a setter so we can continue validation
 			}
@@ -218,6 +220,9 @@
 			 * remove the popup
 			 * */
 			protected function closeHandler(event:CloseEvent = null):void {
+				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.RESET_ASSET_PARAMS);
+				cg.dispatch();
+				
 				PopUpManager.removePopUp(this);
 			}
 			

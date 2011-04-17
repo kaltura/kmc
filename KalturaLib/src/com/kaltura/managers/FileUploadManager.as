@@ -385,7 +385,7 @@ package com.kaltura.managers {
 			}
 			else {
 				var file:FileUploadVO = getCompleteByFlavorAssetId(e.data.flavorParamsId);
-				if (file.groupId != null) {
+				if (file && file.groupId != null) {
 					handleGroupFile(file);
 				}				
 			}
