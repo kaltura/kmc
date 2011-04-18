@@ -42,6 +42,13 @@
 
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
 			public static const OPEN_PREVIEW:String = "openPreview";
+			
+			private const ENTRY_PLACEHOLDER:String = '{entryId}';
+			
+			/**
+			 * landing page according to partner's data
+			 * */
+			public var landingPage:String;
 
 			/**
 			 * default image to display when entry contains no content
@@ -213,7 +220,16 @@
 				}
 				else {
 					//mix or video
-					//loadKDP();
+					loadKDP();
+				}
+				
+				if (landingPage && landingPage!='')
+				{
+					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
+					if (replaceIndex > -1) 
+						landingPageLabel.text = landingPage.replace(ENTRY_PLACEHOLDER, selectedEntry.id);
+					else
+						landingPageLabel.text = landingPage+selectedEntry.id;
 				}
 			}
 
@@ -701,7 +717,11 @@
 						  styleName="drillDownLabel"/>
 				<mx:Label text="{selectedEntry.id}" selectable="true" styleName="drillDownSubLabel"/>
 			</mx:HBox>
-
+			<mx:HBox width="100%">
+				<mx:Label text="{resourceManager.getString('cms','landingPage')}:" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
+				<mx:Label id="landingPageLabel" selectable="true" styleName="drillDownSubLabel"/>
+			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms','type')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
