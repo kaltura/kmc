@@ -82,7 +82,7 @@ package com.kaltura.kmc.modules.content.commands {
 		protected function addFlavorParams(cp:ConversionProfileWithFlavorParamsVo, params:Array):void {
 			var paramsIds:Array = cp.profile.flavorParamsIds.split(",");
 			for (var i:int =0; i<paramsIds.length; i++) {
-				for each (var param:KalturaAssetParams in params) {
+				for each (var param:Object in params) {
 					if (param is KalturaFlavorParams && param.id == paramsIds[i]) {
 						cp.flavors.addItem(param);
 						break;
