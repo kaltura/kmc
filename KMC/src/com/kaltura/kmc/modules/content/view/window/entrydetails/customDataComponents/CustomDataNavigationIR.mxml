@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalScrollPolicy="off"
+		 verticalScrollPolicy="off" paddingLeft="0" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ScrollToProfileEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryCustomData;
+			private const MAX_NAME_LENGTH:int = 140;
+			[Bindable]
+			private var _childIndex:int;
+			[Bindable]
+			private var _name:String;
+			
+			override public function set data(value:Object):void {
+				_childIndex = int(value.childIndex);
+				_name = value.name;
+			} 
+		]]>
+	</mx:Script>
+	<!-- first child index is 2, since we have the HRule seperator -->
+	<mx:VRule id="seperator" height="{nameBtn.height}" visible="{(_childIndex != 2)}" includeInLayout="{seperator.visible}"/>
+	<mx:LinkButton id="nameBtn" label="{_name}" click="{dispatchEvent(new ScrollToProfileEvent(ScrollToProfileEvent.SCROLL_TO_SELECTED_CHILD,_childIndex,true))}" styleName="profilesNavBtn"
+				   toolTip="{_name}" textAlign="left" paddingLeft="0" paddingBottom="0" paddingTop="0" width="{MAX_NAME_LENGTH}"/>
+<!--	<mx:VRule height="{nameBtn.height}"/>
+	<mx:Spacer width="5"/>-->
+</mx:HBox>

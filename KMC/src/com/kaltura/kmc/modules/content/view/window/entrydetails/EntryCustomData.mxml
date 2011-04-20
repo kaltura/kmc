@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
+		 verticalGap="{customDataVerticalGap}">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
+			import com.kaltura.kmc.modules.content.events.ScrollToProfileEvent;
+			import com.kaltura.kmc.modules.content.utils.FormBuilder;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.SingleCustomData;
+			import com.kaltura.utils.pager.Pager;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			
+			import flash.sampler.getInvocationCount;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.HRule;
+			
+			
+			private const MAX_PROFILES:int = 4;
+			private const customDataVerticalGap:Number = 5;
+			
+			public var selectedProfileIndex:int;
+			[Bindable]
+			private var _pager:Pager;
 			
 			/**
 			 * loads required data from server
@@ -11,7 +30,79 @@
 				var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
 				listCustomData.dispatch();
 			}
+			
+			public function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
+				var profilesArray:Array = new Array();
+				//indicates the custom data child number inside the custom data tab. will be used for navigation on a button click
+				var childIndex:int = 1;
+						
+				for (var i:int = 0; i<profilesAC.length; i++) {					
+					var curProfile:KMCMetadataProfileVO = profilesAC.getItemAt(i) as KMCMetadataProfileVO;
+					
+					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
+						var curCustomData:SingleCustomData= new SingleCustomData();	
+						var curFormBuilder:FormBuilder = formBuildersAC.getItemAt(i) as FormBuilder;
+						curCustomData.formBuilder = curFormBuilder;
+						
+						var hrule:HRule = new HRule();
+						hrule.percentWidth = 100;
+						this.addChild(hrule);
+						childIndex ++;
+						
+						var obj:Object = new Object();
+						obj.name = curProfile.profile.name;
+						obj.childIndex = childIndex;
+						profilesArray.push(obj);
+						this.addChild(curCustomData);
+						childIndex++;				
+					}
+				}
+						
+				_pager = new Pager();
+				_pager.localPageSize = MAX_PROFILES;
+				_pager.addDataSet(profilesArray);
+				_pager.lastPageIndex = Math.floor(profilesAC.length / MAX_PROFILES);
+				
+				navBtnsList.addEventListener(ScrollToProfileEvent.SCROLL_TO_SELECTED_CHILD,onMetadataShortcutBtnClick);
+			}
+			
+			/**
+			 * page to the previous page
+			 * */
+			private function onPrevClick():void {
+				_pager.prevPage();
+			}
+			
+			/***
+			 * pages to the next page
+			 * */
+			private function onNextClick():void {
+				_pager.nextPage();
+			}
+			
+			/**
+			 * Will be called when a user selects a profile name to navigate to
+			 * will scroll to the requested profile
+			 * */
+			private function onMetadataShortcutBtnClick(event:ScrollToProfileEvent):void {
+				var scrollPos:int = 0;
+				var childIndex:int = (event as ScrollToProfileEvent).selectedIndexToScroll;
+				//sums up all heights before the desired profile
+				for (var i:int = 0; i< childIndex; i++) {
+					scrollPos += this.getChildAt(i).height + customDataVerticalGap;
+				}
+				this.verticalScrollPosition = scrollPos;
+			}
+			
 		]]>
 	</mx:Script>
-	
+	<mx:HBox id="navigationHbox" verticalAlign="middle">		
+		<mx:HorizontalList id="navBtnsList" width="100%" height="40" paddingLeft="0"
+						   columnCount="{_pager.visiblePageData.length}" borderStyle="none" backgroundAlpha="0"
+						   rowCount="1" dataProvider="{_pager.visiblePageData}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.CustomDataNavigationIR"
+						   />
+		<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" includeInLayout="{!_pager.isFirstPage}" click="{onPrevClick()}" styleName="moveLeftButton"/>
+		<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}" click="{onNextClick()}" styleName="moveRightButton"/>
+	</mx:HBox>
 </mx:VBox>

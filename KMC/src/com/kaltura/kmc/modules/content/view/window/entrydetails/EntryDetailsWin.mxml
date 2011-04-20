@@ -25,6 +25,7 @@
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
+			import com.kaltura.kmc.modules.content.events.ScrollToProfileEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
@@ -63,8 +64,6 @@
 			 * if we need to refresh entries list
 			 * */
 			public var refreshEntriesRequired:Boolean = false;
-
-			private const customDataVerticalGap:Number = 5;
 
 			[Bindable]
 			/**
@@ -327,35 +326,11 @@
 					}
 				}
 				//adds custom data profiles
-				if (customData.parent is ViewStack) {
-					
+				if (customData.parent is ViewStack) {			
 					if (filterModel.enableCustomData) {
 						if (filterModel.metadataProfiles && filterModel.metadataProfiles.length>0) {
-							var navigationHbox:HBox = new HBox();
-							customData.addChild(navigationHbox);
 							entryDetailsModel.metadataInfoArray = new ArrayCollection();
-							//indicates the custom data child number inside the custom data tab. will be used for navigation on a button click
-							var childIndex:int = 1;
-							
-							for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {					
-								var curProfile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
-								
-								if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length>0) {
-									var curCustomData:SingleCustomData= new SingleCustomData();	
-									var curFormBuilder:FormBuilder = filterModel.formBuilders[i] as FormBuilder;
-									curCustomData.formBuilder = curFormBuilder;
-									customData.addChild(curCustomData);
-									
-									var linkBtn:LinkButton = new LinkButton();
-									linkBtn.label = curProfile.profile.name;
-									//id is the child number inside the custom data container
-									linkBtn.id = childIndex.toString();
-									linkBtn.addEventListener(MouseEvent.CLICK, onMetadataShortcutBtnClick);
-									navigationHbox.addChild(linkBtn);
-									
-									childIndex++;
-								}
-							}
+							customData.buildProfiles(filterModel.metadataProfiles, filterModel.formBuilders);					
 						}
 					}
 					//if none of the profiles contain fields (the only child is the navigation hbox)
@@ -368,18 +343,6 @@
 					setVisibleTabs();
 				else
 					initTabs();
-			}
-			
-			/**
-			 * Will be called when a user selects a profile name to navigate to
-			 * */
-			private function onMetadataShortcutBtnClick(event:MouseEvent):void {
-				var scrollPos:int = 0;
-				//sums up all heights before the desired profile
-				for (var i:int = 0; i< int(event.target.id); i++) {
-					scrollPos += customData.getChildAt(i).height + customDataVerticalGap;
-				}
-				customData.verticalScrollPosition = scrollPos;
 			}
 
 			/**
@@ -860,7 +823,7 @@
 							   selectedEntry="{_undoToEntry}"/>
 
 		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" verticalGap="{customDataVerticalGap}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"/>
 		
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution" label="{ResourceManager.getInstance().getString('cms', 'distribution')}"

@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.kmc.utils.ListMetadataProfileUtil;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
+	import com.kaltura.types.KalturaMetadataProfileCreateMode;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadataProfile;
@@ -43,6 +44,7 @@ package com.kaltura.kmc.modules.account.command
 			var mr:MultiRequest = new MultiRequest();
 			
 			_model.selectedMetadataProfile.profile.metadataObjectType = KalturaMetadataObjectType.ENTRY;		
+			_model.selectedMetadataProfile.profile.createMode = KalturaMetadataProfileCreateMode.KMC;		
 			var addMetadataProfile:MetadataProfileAdd = new MetadataProfileAdd(_model.selectedMetadataProfile.profile, _model.selectedMetadataProfile.xsd.toXMLString());
 			mr.addAction(addMetadataProfile);
 			
