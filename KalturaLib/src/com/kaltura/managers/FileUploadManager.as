@@ -355,6 +355,7 @@ package com.kaltura.managers {
 		 */		
 		private function addFlavorAsset(file:FileUploadVO):void {
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
+			// pass in the flavorParamsId of the flavor we want this to be;
 			flavorAsset.flavorParamsId = file.flavorParamsId;
 			flavorAsset.setUpdatedFieldsOnly(true);
 			flavorAsset.setInsertedFields(true);
@@ -362,10 +363,6 @@ package com.kaltura.managers {
 			// the token we used to upload the file
 			resource.token = file.uploadToken;	
 			var faa:FlavorAssetAdd = new FlavorAssetAdd(file.entryId, flavorAsset, resource);
-			// pass in the flavorParamsId of the flavor we want this to be;
-			// we can't pass it on the object without passing parameters that are read-only 
-			// and cause the server to return an error, so we do it here:
-//			faa.setRequestArgument("flavorAsset:flavorParamsId", file.flavorParamsId);
 			faa.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
 			faa.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
 			_kc.post(faa);

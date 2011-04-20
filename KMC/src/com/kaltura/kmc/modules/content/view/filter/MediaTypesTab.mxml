@@ -79,11 +79,13 @@
 			 * 						types on a filter
 			 * @return an object like {1:true, 201:true, ..}
 			 * */
-			protected function mediaTypesToObject(mediaTypes:String):Object {
+			protected function mediaTypesToObject(mediaTypes:String = ''):Object {
 				var result:Object = {};
-				var mediaTypesArray:Array = mediaTypes.split(",");
-				for (var i:int = 0; i < mediaTypesArray.length; i++) {
-					result[mediaTypesArray[i]] = true;
+				if (mediaTypes) {
+					var mediaTypesArray:Array = mediaTypes.split(",");
+					for (var i:int = 0; i < mediaTypesArray.length; i++) {
+						result[mediaTypesArray[i]] = true;
+					}
 				}
 				return result;
 			}
@@ -116,7 +118,7 @@
 			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
 				// filterVo.mediaTypeIn is a list of KalturaMediaType-s separated by ",".
 				var mediaTypes:Object = mediaTypesToObject(filterVo.mediaTypeIn);
-				if (filterVo.mediaTypeIn == "" || (mediaTypes[KalturaMediaType.VIDEO] && mediaTypes[6] && mediaTypes[KalturaMediaType.AUDIO] && mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] && mediaTypes[KalturaMediaType.IMAGE])) {
+				if (!filterVo.mediaTypeIn || (mediaTypes[KalturaMediaType.VIDEO] && mediaTypes[6] && mediaTypes[KalturaMediaType.AUDIO] && mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] && mediaTypes[KalturaMediaType.IMAGE])) {
 					// all types selected
 					selectAllTypesBtn.selected = true;
 					mixType.selected = false;

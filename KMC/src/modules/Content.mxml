@@ -232,6 +232,17 @@
 					_model.attic[prop] = o[prop];
 				}
 			}
+			
+			
+			/**
+			 * look in the attic for any data we know how to use, and use it.
+			 * */
+			protected function useInitData():void {
+				
+				
+				
+
+			}
 
 
 			/**
@@ -239,19 +250,14 @@
 			 * */
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-				var kmef:KalturaBaseEntryFilter;
-				if (_model.attic.filter) {
-					kmef = createFilterFromString(_model.attic.filter);
-					_model.attic.filter = null;
-				}
-
+				
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
 					// get the entry
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
 					cgEvent.dispatch();
 				}
-
+				
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
@@ -279,12 +285,19 @@
 				} */
 	
 				if (_initialTab && _initialTab != "manage") {
-					_model.attic.kmef = kmef;
+//					_model.attic.kmef = kmef;
 					// switch tab if asked
 					switchToTab(_initialTab);
 				}
 				else {
-					(contentView.selectedChild as IContentPanel).init(kmef);
+					// if initial filter provided
+					var kmef:KalturaBaseEntryFilter;
+					if (_model.attic.filter) {
+						kmef = createFilterFromString(_model.attic.filter);
+						_model.attic.filter = null;
+						_model.attic.kmef = kmef;
+					}
+					(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 				}
 				
@@ -475,12 +488,18 @@
 			 * fix race condition, application added or tab switch from initial flashvar
 			 */
 			private function switchToTab(tab:String = ""):void {
+				var kmef:KalturaBaseEntryFilter;
+				if (_model.attic.filter) {
+					kmef = createFilterFromString(_model.attic.filter);
+					_model.attic.filter = null;
+					_model.attic.kmef = kmef;
+				}
 				// get the correct index from the viewstack, so it'll work after removing items as well.
 				var selectedIndex:int = getSubtabIndex(tab);
 				contentView.selectedIndex = selectedIndex;
 				(leftBtnsHBox.getChildAt(selectedIndex) as Button).selected = true;
 				// init subtab (Atar: doesn't seem necessary, happens when the viewstack changes)
-				(contentView.selectedChild as IContentPanel).init();
+				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
 			
