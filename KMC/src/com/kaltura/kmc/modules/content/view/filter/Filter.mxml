@@ -689,25 +689,29 @@
 			 * show dates filtering data on filter
 			 * */
 			protected function showDatesData(filterVo:KalturaMediaEntryFilter):void {
-				if (filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE && filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
-					// no dates
-					fromDate.data = null;
-					toDate.data = null
+				var date:Date;
+				// from date:
+				if (!filterVo.createdAtGreaterThanOrEqual ||
+					filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE) {
+					fromDate.selectedDate = null;
+				} 
+				else {
+					date = new Date();
+					date.time = filterVo.createdAtGreaterThanOrEqual * 1000;
+					fromDate.selectedDate = date;
+				}
+				
+				// to date:
+				if (!filterVo.createdAtLessThanOrEqual ||
+					filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+					toDate.selectedDate = null;
 				}
 				else {
-					var date:Date;
-					if (filterVo.createdAtGreaterThanOrEqual != int.MIN_VALUE) {
-						date = new Date();
-						date.time = filterVo.createdAtGreaterThanOrEqual * 1000;
-						fromDate.selectedDate = date;
-					}
-					if (filterVo.createdAtLessThanOrEqual != int.MIN_VALUE) {
-						date = new Date();
-						date.time = filterVo.createdAtLessThanOrEqual * 1000;
-						toDate.selectedDate = date;
-					}
-					
+					date = new Date();
+					date.time = filterVo.createdAtLessThanOrEqual * 1000;
+					toDate.selectedDate = date;
 				}
+					
 			}
 			
 			
@@ -739,9 +743,10 @@
 				// free text
 				searchBox.setFilter(filterVo);
 				
-				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
-					scheduling.allSchedulingBtn.selected = true;
-				}
+//				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
+//					scheduling.allSchedulingBtn.selected = true;
+//				}
+				scheduling.setFilter(filterVo);
 				
 				// set categories here
 				catTree.selectedFilterCategories = filterVo.categoriesMatchOr;
