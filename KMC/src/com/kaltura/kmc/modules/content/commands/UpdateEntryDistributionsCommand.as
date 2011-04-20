@@ -49,7 +49,7 @@ package com.kaltura.kmc.modules.content.commands
 				//if submitAdd action is required
 				if (!distribution.manualQualityControl) {
 					requestsIndex++;
-					var submitEntry:EntryDistributionSubmitAdd = new EntryDistributionSubmitAdd(int.MIN_VALUE, true);
+					var submitEntry:EntryDistributionSubmitAdd = new EntryDistributionSubmitAdd(0, true);
 					mr.addAction(submitEntry);
 //					mr.addRequestParam(requestsIndex + ":id","{" + (requestsIndex-1) + ":result:id}");
 					mr.mapMultiRequestParam(requestsIndex-1, "id", requestsIndex, "id");
