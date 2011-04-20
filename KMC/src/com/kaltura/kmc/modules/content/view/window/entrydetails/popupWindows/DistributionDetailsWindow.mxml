@@ -352,13 +352,12 @@
 			private function validateTimes():void {
 				_isDirty = true;
 				_timeManager.validateTimes();
-				if (startDateField.selectedDate)
-					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
-				if (endDateField.selectedDate)
-					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour);
 			}
 			
 			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
+				if (!dateField.selectedDate)
+					return int.MIN_VALUE;
+				
 				var seconds:int = 0;
 				seconds += dateField.selectedDate.time / 1000;
 				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
@@ -442,7 +441,9 @@
 			
 			private function save():void {
 				if (_isDirty) {
-					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, _entryDis.kalturaEntryDistribution);
+					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
+					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour); 
+					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, entryDis.kalturaEntryDistribution);
 					updateEntryDistribution.dispatch();
 					setOldData(entryDis.kalturaEntryDistribution);
 					_isDirty = false;
@@ -507,8 +508,8 @@
 			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}" width="75" styleName="drillDownLabel"/>
 		</mx:VBox>
 		<mx:VBox>
-			<mx:DateField id="startDateField" change="validateTimes()" enabled="{enableChanges}"/> 
-			<mx:DateField id="endDateField" change="validateTimes()" enabled="{enableChanges}"/> 
+			<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}"/> 
+			<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}"/> 
 		</mx:VBox>
 		<mx:VBox>
 			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
