@@ -2,6 +2,11 @@ package com.kaltura.kmc.modules.content.events
 {
 	import flash.events.Event;
 
+	/**
+	 * This event will be used for scrolling to a selected child 
+	 * @author Michal
+	 * 
+	 */	
 	public class ScrollToProfileEvent extends Event
 	{
 		public static const SCROLL_TO_SELECTED_CHILD:String = "scrollToSelectedChild";
