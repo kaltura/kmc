@@ -14,10 +14,6 @@ package com.kaltura.kmc.modules.content.commands {
 
 	public class GetPartnerInfoCommand extends KalturaCommand implements ICommand, IResponder {
 		override public function execute(event:CairngormEvent):void {
-			//we only load the partner info 1 time in this app
-			if (_model.extSynModel.partnerInfoLoaded)
-				return;
-
 			_model.increaseLoadCounter();
 
 			var getPartnerInfo:PartnerGetInfo = new PartnerGetInfo();
