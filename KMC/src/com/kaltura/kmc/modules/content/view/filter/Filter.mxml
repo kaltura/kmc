@@ -379,6 +379,7 @@
 			 * generate a KalturaMediaEntryFilterVo or KalturaMediaEntryFilterForPlaylist from current view
 			 * */
 			private function renderFilterVo(currentFilter:KalturaBaseEntryFilter):void {
+				var tmpStr:String;
 				//add dates to filter
 				if (fromDate && fromDate.selectedDate) {
 					currentFilter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
@@ -387,17 +388,35 @@
 					currentFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
 				}
 				// duration :
-				currentFilter.durationTypeMatchOr = durationStatus.getFilterString();
+				tmpStr = durationStatus.getFilterString();
+				if (tmpStr) 
+					currentFilter.durationTypeMatchOr = tmpStr;
+				
 				// media types
-				currentFilter.mediaTypeIn = mediaTypes.getFilterString();
+				tmpStr = mediaTypes.getFilterString();
+				if (tmpStr)
+					currentFilter.mediaTypeIn = tmpStr;
+				
 				// moderation
-				currentFilter.moderationStatusIn = moderationStatus.getFilterString();
+				tmpStr = moderationStatus.getFilterString();
+				if (tmpStr)
+					currentFilter.moderationStatusIn = tmpStr;
+				
 				// conversion status	
-				currentFilter.statusIn = conversionStatus.getFilterString();
+				tmpStr = conversionStatus.getFilterString();
+				if (tmpStr)
+					currentFilter.statusIn = tmpStr;
+				
 				// replacement status	
-				currentFilter.replacementStatusIn = replacementStatus.getFilterString();
+				tmpStr = replacementStatus.getFilterString();
+				if (tmpStr)
+					currentFilter.replacementStatusIn = tmpStr;
+				
 				// free text search
-				currentFilter.freeText = searchBox.getFilterString();
+				tmpStr = searchBox.getFilterString();
+				if (tmpStr)
+					currentFilter.freeText = tmpStr;
+				
 				// scheduling 
 				scheduling.getSchedulingData(currentFilter);
 				// access control profiles
