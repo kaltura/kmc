@@ -284,7 +284,6 @@ package com.kaltura.managers {
 		private function updateMedia(groupid:String, entryid:String):void {
 			// the media entry we will update (no need for entryid as it's read-only)
 			var mediaEntry:KalturaMediaEntry = new KalturaMediaEntry();
-			//TODO - make sure we don't need a real entry here!! (if possible, pass in null)
 			
 			// the actual resource we send is a list of the containers for the resources we want to replace.                
 			var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
