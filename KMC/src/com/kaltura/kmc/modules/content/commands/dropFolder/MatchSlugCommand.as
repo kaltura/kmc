@@ -25,7 +25,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				// change the slug on the replacement entry 
 				var mr:MultiRequest = new MultiRequest();
 				// media update:
-				mu = new MediaUpdate(e.entry.id, (e.entry as KalturaMediaEntry), e.resources);
+				mu = new MediaUpdate(e.entry.id, (e.entry as KalturaMediaEntry), e.resource);
 				mr.addAction(mu);
 				
 				// set the reference id on the replacement entry id
@@ -47,7 +47,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			else {
 				// send the entry for update - if it needs a slug update it is already there.
 				// media update:
-				mu = new MediaUpdate(e.entry.id, (e.entry as KalturaMediaEntry), e.resources);
+				mu = new MediaUpdate(e.entry.id, (e.entry as KalturaMediaEntry), e.resource);
 				// add listeners and post call
 				mu.addEventListener(KalturaEvent.COMPLETE, result);
 				mu.addEventListener(KalturaEvent.FAILED, fault);

@@ -9,13 +9,17 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+			import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
+			import com.kaltura.types.KalturaDropFolderFileHandlerType;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 			import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaDropFolder;
+			import com.kaltura.vo.KalturaDropFolderContentFileHandlerConfig;
 			import com.kaltura.vo.KalturaDropFolderFile;
 			import com.kaltura.vo.KalturaDropFolderFileResource;
+			import com.kaltura.vo.KalturaFlavorAsset;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.HierarchicalData;
@@ -31,11 +35,26 @@
 			 * */
 			public var folders:ArrayCollection;
 			
+			/**
+			 * When replacing an existing asset, the id of the asset being replaced.
+			 * */
+			public var flavorAssetId:String;
+			
+			/**
+			 * when creating a new flavor asset, the id of the flavorparams to use.
+			 * */
+			public var flavorParamsId:int;
+			
 			
 			/**
 			 * @copy #entry
 			 * */
 			private var _entry:KalturaBaseEntry;
+			
+			/**
+			 * currently selected drop folder
+			 * */
+			private var _selectedFolder:KalturaDropFolder; 
 
 
 			[Bindable]
@@ -57,7 +76,8 @@
 			private var _saveRefId:Boolean;
 			
 			/**
-			 * for slug based folder, the slug currently selected
+			 * for slug based folder, the slug currently selected.
+			 * for simple folders, the selected file.
 			 * */
 			private var _selectedSlug:KalturaDropFolderFile;
 			
@@ -127,27 +147,95 @@
 
 			/**
 			 * Reference ID is saved into the entry as needed. 
-			 * update media with KlaturaDropFolderFileResource
+			 * update media with KalturaDropFolderFileResource-s
 			 * */
 			protected function submitHandler(event:MouseEvent):void {
-				if (_saveRefId) {
-					_entry.referenceId = _selectedSlug.parsedSlug;
+				if (flavorAssetId ){
+					// replacing existing flavor
+					updateFlavor();
+				} 
+				else if (flavorParamsId) {
+					// adding new flavor
+					addFlavor();
 				}
-				updateMedia(_entry);
+				else {
+					// updating the whole entry (replacement entry will be created by server if necessary)
+					if (_saveRefId) {
+						_entry.referenceId = _selectedSlug.parsedSlug;
+					}
+					updateMedia(_entry);
+				}
 				
 			}
 			
 			
 			/**
-			 * trigger media.update with resources matching the slug 
-			 * @param entryid	id of the original entry
+			 * replace a flavor
+			 * */
+			protected function updateFlavor():void {
+				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+				resource.dropFolderFileId = _selectedSlug.id;
+				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.UPDATE_SINGLE_FLAVOR, 
+				_entry, null, resource);
+				dffe.data = {flavorAssetId:flavorAssetId};
+				dffe.dispatch();
+			}
+			
+			
+			/**
+			 * add new flavor
+			 * */
+			protected function addFlavor():void {
+				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+				resource.dropFolderFileId = _selectedSlug.id;
+				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_SINGLE_FLAVOR, 
+					_entry, null, resource);
+				dffe.data = {flavorParamsId:flavorParamsId};
+				dffe.dispatch();
+				
+			}
+			
+			/**
+			 * @param entry		entry to update
 			 */
-			private function updateMedia(entry:KalturaBaseEntry):void {
+			protected function updateMedia(entry:KalturaBaseEntry):void {
+				var isSlug:Boolean = _selectedFolder != null;
+				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
+				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
+				if (isSlug) {
+					updateMediaWithSlug(entry);
+				}
+				else {
+					updateMediaSimple(entry);
+				}
+			}
+			
+			
+			
+			/**
+			 * trigger media.update with resources matching the slug 
+			 * @param entry		entry to update
+			 */
+			private function updateMediaSimple(entry:KalturaBaseEntry):void {
+				var mediaResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+				mediaResource.dropFolderFileId = _selectedSlug.id;
+				// dispatch event with required data
+				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_SLUG, 
+					entry, null, mediaResource);
+				ce.dispatch();
+			}
+			
+			
+			/**
+			 * trigger media.update with resources matching the slug 
+			 * @param entry		entry to update
+			 */
+			private function updateMediaWithSlug(entry:KalturaBaseEntry):void {
+				
 				// the actual resource we send is a list of the containers for the resources we want to replace.                
 				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
 				mediaResource.resources = new Array();
 
-				//TODO simple folder submit handler
 				// select the file as source for transcoding
 				
 				for each (var dff:KalturaDropFolderFile in _selectedSlug.files) {
@@ -158,7 +246,7 @@
 					// container for the resource we want to replace
 					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 					subResource.resource = subSubResource;
-					subResource.assetParamsId = dff.flavorParamsId;
+					subResource.assetParamsId = dff.flavorParamsId; 
 					
 					// add to list
 					mediaResource.resources.push(subResource);
@@ -194,7 +282,13 @@
 			protected function listFolderContents(event:MouseEvent = null):void {
 				var txt:String = searchText.text;
 				// search with or without slug
-				var ce:CairngormEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER, null, txt ? txt : null);
+				var ce:CairngormEvent;
+				if (flavorAssetId || flavorParamsId) {
+					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, null, txt ? txt : null);
+				}
+				else {
+					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO, null, txt ? txt : null);
+				}
 				ce.dispatch();
 			}
 			
@@ -204,11 +298,14 @@
 			 * */
 			protected function folderChangeHandler(event:ListEvent):void {
 				// select the folder
-				var folder:KalturaDropFolder = event.target.selectedItem as KalturaDropFolder;
-				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null, folder);
+				_selectedFolder = event.target.selectedItem as KalturaDropFolder;
+				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null, _selectedFolder);
 				ce.dispatch();
 				// set appearance by selected folder
-				setAppearance(folder.slugField != null);
+				var isSlug:Boolean = _selectedFolder != null;
+				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
+				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
+				setAppearance(isSlug);
 				// list new folder contents
 				listFolderContents();
 			}

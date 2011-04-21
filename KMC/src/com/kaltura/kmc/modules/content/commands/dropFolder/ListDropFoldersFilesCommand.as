@@ -85,7 +85,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			isSlug &&= df.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
 			isSlug &&= (df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;   
 			
-			if (isSlug) {
+			if (isSlug && _eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO) {
 				/* 
 				* Slug Based Folders:
 				* 	create a new dropfolderfile for each slug
