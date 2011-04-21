@@ -29,7 +29,7 @@
 			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
 				var now:Number = new Date().time / 1000; 
 				
-				finishedBtn.selected = filterVo.endDateLessThanOrEqual < now;
+				finishedBtn.selected = filterVo.endDateLessThanOrEqual != int.MIN_VALUE && filterVo.endDateLessThanOrEqual < now;
 				
 				liveBtn.selected = filterVo.startDateLessThanOrEqualOrNull <= now && 
 									filterVo.endDateGreaterThanOrEqualOrNull >= now;
@@ -47,7 +47,9 @@
 				}
 				scheduledBtn.selected = sched;
 				
-				allSchedulingBtn.selected = finishedBtn.selected && liveBtn.selected && futureBtn.selected && scheduledBtn.selected;
+				// "all" button is selected if all the above are selected, or if none of them is.
+				allSchedulingBtn.selected = finishedBtn.selected && liveBtn.selected && futureBtn.selected && sched;
+				allSchedulingBtn.selected ||= !finishedBtn.selected && !liveBtn.selected && !futureBtn.selected && !sched;
 				
 				if (allSchedulingBtn.selected) {
 					finishedBtn.selected = false;
