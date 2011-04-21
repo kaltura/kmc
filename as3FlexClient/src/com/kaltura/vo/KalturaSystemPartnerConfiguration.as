@@ -137,6 +137,10 @@ package com.kaltura.vo
 		public var enableEntryReplacementApproval : Boolean;
 
 		/** 
+		* 		* */ 
+		public var enableDropFolder : Boolean;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -176,6 +180,7 @@ package com.kaltura.vo
 			arr.push('importRemoteSourceForConvert');
 			arr.push('enableEntryReplacement');
 			arr.push('enableEntryReplacementApproval');
+			arr.push('enableDropFolder');
 			return arr;
 		}
 

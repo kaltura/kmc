@@ -38,5 +38,6 @@ package com.kaltura.types
 		public static const DISTRIBUTION_FETCH_REPORT : String = 'contentDistribution.DistributionFetchReport';
 		public static const DISTRIBUTION_SYNC : String = 'contentDistribution.DistributionSync';
 		public static const DROP_FOLDER_WATCHER : String = 'dropFolder.DropFolderWatcher';
+		public static const DROP_FOLDER_HANDLER : String = 'dropFolder.DropFolderHandler';
 	}
 }

@@ -109,6 +109,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('partnerId');
 			return arr;
 		}
 
