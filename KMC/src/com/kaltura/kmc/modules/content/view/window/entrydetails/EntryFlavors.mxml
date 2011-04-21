@@ -27,6 +27,7 @@
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -52,7 +53,7 @@
 			
 			private var _fileReferenceList:FileReferenceList;
 			private var _fileReference:FileReference;
-			private var _selectedFlavorAssetId:String;
+			private var _selectedFlavorWithParams:KalturaFlavorAssetWithParams;
 			
 			private var _entryDetailsModel:EntryDetailsModel;
 			private var _dropFolderModel:DropFolderModel;
@@ -103,7 +104,8 @@
 			 * will be called when selecting to upload a specific flavor
 			 * */
 			private function onFlavorUploadSelected(event:Event):void {
-				_selectedFlavorAssetId = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.id;
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+			
 				_fileReference = new FileReference();
 				var fileFilter:FileFilter = getTypeFilter(parseInt(_selectedEntry.mediaType));
 				if (fileFilter) {
@@ -116,7 +118,8 @@
 			 * user selects to match from a drop folder a selected flavor
 			 * */
 			private function onFlavorMatchSelected(event:Event):void {
-				openMatchFromDropFolderWindow((event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.id);
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				openMatchFromDropFolderWindow();
 			}
 			
 			/**
@@ -128,8 +131,16 @@
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
-				uploadFile.flavorAssetId = _selectedFlavorAssetId
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+
 				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);	
+				//resets data
+				_selectedFlavorWithParams = null;
 			}
 			
 			public function get entryDetailsModel():EntryDetailsModel
@@ -312,15 +323,21 @@
 				approveReplacement.dispatch();
 			}
 			
-			private function openMatchFromDropFolderWindow(selectedFlavor:String = null):void {
+			private function openMatchFromDropFolderWindow():void {
 				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
-				matchFromDropFodlerWin.entry = _selectedEntry;
-				//TODO add selectedFlavor
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset) {
+					}
+					else if (_selectedFlavorWithParams.flavorParams) {
+					}
+				}
 				
 				BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
 				BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");			
 				PopUpManager.addPopUp(matchFromDropFodlerWin, this, true);
 				PopUpManager.centerPopUp(matchFromDropFodlerWin);
+				//resets data
+				_selectedFlavorWithParams = null;
 			}
 			
 		]]>

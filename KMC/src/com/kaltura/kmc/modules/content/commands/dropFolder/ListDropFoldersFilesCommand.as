@@ -142,7 +142,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			dff.createdAt = 105348965;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_1";
-			dff.fileSize = 3145728;
+			dff.fileSize = 3145728.1111111111111111111111111;
 			dff.status = KalturaDropFolderFileStatus.PENDING;
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
@@ -151,7 +151,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			dff.dropFolderId = 6;
 			dff.fileName = "file_2";
 			dff.fileSize = 3145728*2;
-			dff.status = KalturaDropFolderFileStatus.DOWNLOADING;
+			dff.status = KalturaDropFolderFileStatus.UPLOADING;
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
 			dff = new KalturaDropFolderFile();
@@ -167,7 +167,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			dff.dropFolderId = 6;
 			dff.fileName = "file_4";
 			dff.fileSize = 3145728/4;
-			dff.status = KalturaDropFolderFileStatus.ERROR_DOWNLOADING;
+			dff.status = KalturaDropFolderFileStatus.ERROR_HANDLING;
 			dff.parsedSlug = "atarsh";
 			response.objects.push(dff);
 

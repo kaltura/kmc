@@ -26,6 +26,8 @@
 			
 			//will be used to convert to MegaByetes
 			private const MB_MULTIPLIER:int = 1024*1024;
+			//in files size: number of digits to show after the decimal point
+			private const DIGITS_AFTER_DEC_POINT:int = 2;
 			
 			[Bindable]
 			public var dropFolderModel:DropFolderModel;
@@ -67,7 +69,7 @@
 				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
 				if (curFile.fileSize==int.MIN_VALUE)
 					return '';
-				return (curFile.fileSize/MB_MULTIPLIER) + ' ' + resourceManager.getString('cms','megaBytes');
+				return ((curFile.fileSize/MB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','megaBytes');
 				
 			}
 			
@@ -77,12 +79,14 @@
 			private function statusLabelFunc(item:Object, column:DataGridColumn): String {
 				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
 				switch (curFile.status) {
+					case KalturaDropFolderFileStatus.UPLOADING:
+						return resourceManager.getString('cms','transferringBtn');
 					case KalturaDropFolderFileStatus.PENDING:
+					case KalturaDropFolderFileStatus.WAITING:
+					case KalturaDropFolderFileStatus.NO_MATCH:
 						return resourceManager.getString('cms','pendingBtn');
-					case KalturaDropFolderFileStatus.DOWNLOADING:
-						return resourceManager.getString('cms','downloadingBtn');
-					case KalturaDropFolderFileStatus.ERROR_DOWNLOADING:
-						return resourceManager.getString('cms','errDownloadingBtn');
+					case KalturaDropFolderFileStatus.ERROR_HANDLING:
+						return resourceManager.getString('cms','errHandlingBtn');
 					case KalturaDropFolderFileStatus.ERROR_DELETING:
 						return resourceManager.getString('cms','errDeletingBtn');
 				}
