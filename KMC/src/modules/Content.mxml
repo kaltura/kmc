@@ -143,8 +143,9 @@
 			override public function getModuleVersion():String {
 				return VERSION;
 			}
-
-
+			
+			
+			
 			override public function showSubtab(subtab:String, data:Object = null):void {
 				// save data in the attic
 				if (data) {
@@ -153,6 +154,8 @@
 				// show the tab
 				_initialTab = subtab;
 				if (_ready) {
+					handleEntryId();
+					
 					switchToTab(subtab);
 					//loads data that might have changed from a different tab
 					loadChangableData();
@@ -217,6 +220,18 @@
 					(_popup as EntryDetailsWin).init();
 				}
 			}
+			
+			/**
+			 * if there is entryid to start with, open the entry drilldown
+			 * */
+			protected function handleEntryId():void {
+				// if there is entryid to start with, open the entry drilldown.
+				if (_model.attic.entryid) {
+					// get the entry
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
+					cgEvent.dispatch();
+				}
+			}
 
 
 			/**
@@ -251,12 +266,7 @@
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				
-				// if there is entryid to start with, open the entry drilldown.
-				if (_model.attic.entryid) {
-					// get the entry
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
-					cgEvent.dispatch();
-				}
+				handleEntryId();
 				
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
@@ -498,7 +508,7 @@
 				var selectedIndex:int = getSubtabIndex(tab);
 				contentView.selectedIndex = selectedIndex;
 				(leftBtnsHBox.getChildAt(selectedIndex) as Button).selected = true;
-				// init subtab (Atar: doesn't seem necessary, happens when the viewstack changes)
+				// init subtab 
 				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
@@ -808,8 +818,6 @@
 			private function openEntryPreview(entry:KalturaBaseEntry):void {
 				// open regular entry preview
 				if (_model.openPlayer) {
-//					JSGate.doPreviewEmbed(_model.openPlayer, entry.id, entry.name, StringUtil.cutTo512Chars(entry.description), !_model.showEmbedCode, false, _attic.previewuiconf, null);
-//					_attic.previewuiconf = null;
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
 					cgEvent.dispatch();
 				}
@@ -913,7 +921,6 @@
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'playlistTitle'), GoogleAnalyticsConsts.CONTENT);
 						break;
 					case "moderate":
-						trace ("moderateeee");
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'moderation'), GoogleAnalyticsConsts.CONTENT)
 						break;
