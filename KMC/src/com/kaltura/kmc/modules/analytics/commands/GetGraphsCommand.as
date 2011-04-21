@@ -50,7 +50,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var reportGetGraphs : ReportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , krif , _model.selectedReportData.selectedDim , objectIds);
-			
+			reportGetGraphs.queued = false;
 			reportGetGraphs.addEventListener( KalturaEvent.COMPLETE , result );
 			reportGetGraphs.addEventListener( KalturaEvent.FAILED , fault );
 			_model.kc.post( reportGetGraphs );

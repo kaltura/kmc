@@ -49,6 +49,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var reportGetTable:ReportGetTable = new ReportGetTable((event as ReportEvent).reportType, krif, 
 																	_model.selectedReportData.pager, 
 																	_model.selectedReportData.orderBy, objectIds);
+			reportGetTable.queued = false;
 			reportGetTable.addEventListener(KalturaEvent.COMPLETE, result);
 			reportGetTable.addEventListener(KalturaEvent.FAILED, fault);
 			_model.kc.post(reportGetTable);

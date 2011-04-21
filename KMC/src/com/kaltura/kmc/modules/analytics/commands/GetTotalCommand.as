@@ -43,6 +43,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var reportGetTotal : ReportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , krif , objectIds);
+			reportGetTotal.queued = false;
 			reportGetTotal.addEventListener( KalturaEvent.COMPLETE , result );
 			reportGetTotal.addEventListener( KalturaEvent.FAILED , fault );
 			_model.kc.post( reportGetTotal );
