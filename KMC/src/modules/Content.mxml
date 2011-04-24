@@ -273,26 +273,12 @@
 				for each (var subtabName:String in tabsToHide) {
 					var indexToRemove:int = contentView.getChildIndex(this[subtabName]);
 					contentView.removeChildAt(indexToRemove);
-					leftBtnsHBox.removeChildAt(indexToRemove);
+					if (indexToRemove < leftBtnsHBox.numChildren)
+						leftBtnsHBox.removeChildAt(indexToRemove);
+					else
+						rightBtnsHBox.removeChildAt(indexToRemove - leftBtnsHBox.numChildren);
 					
 				}
-
-				/* _rightBtnsViewStack = new ViewStack();
-				for (var i:int = 0; i<2; i++) {
-					var child:DisplayObject = contentView.getChildAt(contentView.numChildren-1);
-					contentView.removeChildAt(contentView.numChildren-1);
-					_rightBtnsViewStack.addChild(child)
-				}
-			
-				
-				_tabBarViewStack = new ViewStack();
-
-				for (var j:int = contentView.numChildren-1; j>=0; j--) {
-					var child2:DisplayObject = contentView.getChildAt(j);
-					contentView.removeChildAt(j);
-					_tabBarViewStack.addChild(child2);
-					
-				} */
 	
 				if (_initialTab && _initialTab != "manage") {
 //					_model.attic.kmef = kmef;
@@ -504,10 +490,12 @@
 					_model.attic.filter = null;
 					_model.attic.kmef = kmef;
 				}
+				//unselect old tab
+				setSelectionValueToButton(contentView.selectedIndex, false);
 				// get the correct index from the viewstack, so it'll work after removing items as well.
 				var selectedIndex:int = getSubtabIndex(tab);
 				contentView.selectedIndex = selectedIndex;
-				(leftBtnsHBox.getChildAt(selectedIndex) as Button).selected = true;
+				setSelectionValueToButton(contentView.selectedIndex, true);
 				// init subtab 
 				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
@@ -887,17 +875,23 @@
 			}
 			
 			/**
-			 * unselects the previous selected tab, and sets the new tab to selected
+			 * unselects the previous selected tab, and sets the new tab to selected (only the buttons)
 			 * */
 			private function setNewTabSelection(event:Event):void {
 				//unselect old tab
-				var oldSelectedIndex:int = contentView.selectedIndex;
-				if (oldSelectedIndex < leftBtnsHBox.numChildren)
-					(leftBtnsHBox.getChildAt(oldSelectedIndex) as Button).selected = false;
-				else
-					(rightBtnsHBox.getChildAt(oldSelectedIndex - leftBtnsHBox.numChildren) as Button).selected = false;
-
+				setSelectionValueToButton(contentView.selectedIndex, false);
+				//select new
 				(event.target as Button).selected = true;
+			}
+			
+			/**
+			 * Sets the given selection value to the correct button - in leftBtnsHbox or rightBtnsHbox, according to index
+			 * */
+			private function setSelectionValueToButton(btnIndex:int, value:Boolean):void {
+				if (btnIndex < leftBtnsHBox.numChildren)
+					(leftBtnsHBox.getChildAt(btnIndex) as Button).selected = value;
+				else
+					(rightBtnsHBox.getChildAt(btnIndex - leftBtnsHBox.numChildren) as Button).selected = value;
 			}
 
 
