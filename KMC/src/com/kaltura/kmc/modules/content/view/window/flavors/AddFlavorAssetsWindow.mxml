@@ -94,11 +94,16 @@
 					result = false;
 				}
 				else if (!validateFileSize()) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'filesTooBig'), 
+					Alert.show(ResourceManager.getInstance().getString('cms', 'filesTooBig', [getPartnerUploadLimit()]), 
 						ResourceManager.getInstance().getString('cms', 'error'));
 					result = false;
 				}
 				return result;
+			}
+			
+			
+			protected function getPartnerUploadLimit():Number {
+				return CmsModelLocator.getInstance().extSynModel.partnerData.maxUploadSize;
 			}
 			
 			/**
@@ -107,7 +112,7 @@
 			protected function validateFileSize():Boolean {
 				var result:Boolean = true;
 				var bytesInMega:int = 1024*1024;
-				var maxSize:Number = CmsModelLocator.getInstance().extSynModel.partnerData.maxUploadSize;
+				var maxSize:Number = getPartnerUploadLimit();
 				for each (var file:UploadFileVo in filesList) {
 					if ((file.fileData.size/bytesInMega) > maxSize) {
 						result = false;
