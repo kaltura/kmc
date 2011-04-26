@@ -41,7 +41,25 @@
 			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
 			
 			[Bindable]
+			/**
+			 * show action buttons based on business logic
+			 * */
 			private var _showActions:Boolean;
+			
+			[Bindable]
+			/**
+			 * show action buttons for no_content entry
+			 * (for r&p)
+			 * */
+			public var allowAddMedia:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * show action buttons for ready entry
+			 * (for r&p)
+			 * */
+			public var allowReplaceMedia:Boolean = true;
+			
 			
 			[Bindable]
 			private var _showReplacenentInfo:Boolean;	
@@ -349,10 +367,23 @@
 				_selectedFlavorWithParams = null;
 			}
 			
+			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
+				var result:Boolean = entryState;
+				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT ) {
+					result &&= allowAdd;
+				}
+				else {
+					result &&= allowReplace;
+				}
+				return result;
+			}
+											
+			
 		]]>
 	</mx:Script>
 	
-	<mx:HBox visible="{_showActions}" includeInLayout="{_showActions}">
+	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}" 
+			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
 		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}" styleName="dataGridBtn" />
 		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn" />
@@ -369,9 +400,11 @@
 		<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
 		<mx:LinkButton id="replacementStatusBtn" click="{onReplacementStautsBtnClick()}"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
-		<mx:Label text="/" width="7"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon"/>
+		<mx:HBox id="replacementActionsHBox">
+			<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
+			<mx:Label text="/" width="7"/>
+			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon"/>
+		</mx:HBox>
 	</mx:HBox>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
