@@ -1,16 +1,28 @@
 <root>
 	<permissions>
-		<!-- Upload Files -->
-		<permissionGroup text="Upload File/s" id="CONTENT_INGEST_UPLOAD" >
-			<ui id="content.upload.profilesCb" enabled="false"/>
-			<ui id="content.upload.kcwBtn" enabled="false" buttonMode="false"/>
-			<ui id="dashboard.uploadPanel.uploadOption2Button" enabled="false" buttonMode="false"/>
-		</permissionGroup>
-		<!-- Bulk Upload -->
-		<permissionGroup text="Bulk Upload" id="CONTENT_INGEST_BULK_UPLOAD">
-			<ui id="content.upload.submitBtn" enabled="false"/>
-			<ui id="content.upload" bulkUploadEnabled="false"/>
-			<ui id="dashboard.uploadPanel.uploadOption1Button" enabled="false" buttonMode="false"/>
+		<!-- Content Ingestion -->
+		<permissionGroup text="Content Ingestion" id="CONTENT_INGEST_BASE" >
+			<permission text="Upload File/s" id="CONTENT_INGEST_UPLOAD" >
+				<ui id="entryDrilldown.entryAssets.uploadFilesBtn" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- Bulk Upload -->
+			<permission text="Import Files" id="CONTENT_INGEST_BULK_UPLOAD">
+				<ui id="content.upload.submitBtn" enabled="false"/>
+				<ui id="content.upload" bulkUploadEnabled="false"/>
+				<ui id="dashboard.uploadPanel.uploadOption1Button" enabled="false" buttonMode="false"/>
+			</permission>
+			<!-- drop folder -->
+			<permission text="Add from Drop Folder" id="CONTENT_INGEST_DROP_FOLDER_MATCH" dependsOnFeature="DROPFOLDER_PLUGIN_PERMISSION">
+				<ui id="entryDrilldown.entryAssets.matchFromDropBtn" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- create empty entry -->
+			<permission text="Add Video Entry" id="CONTENT_INGEST_ORPHAN_VIDEO">
+				<ui id="content.manage.toolBar.newEntryBtn" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- live stream -->
+			<permission text="Add Live Stream" id="LIVE_STREAM_ADD" dependsOnFeature="FEATURE_LIVE_STREAM">
+				<ui id="content.manage.toolBar.newStreamBtn" visible="false" includeInLayout="false"/>
+			</permission>
 		</permissionGroup>
 		<!-- Content Management -->
 		<permissionGroup text="Content Management" id="CONTENT_MANAGE_BASE">
@@ -27,6 +39,11 @@
 				<ui id="content.manage.toolBar.tagsCombo" visible="false"/>
 				<ui id="content.manage.toolBar.tagsCombo" includeInLayout="false"/>
 			</permission>
+			
+			<permission text="Modify Reference ID" id="CONTENT_INGEST_REFERENCE_MODIFY">
+				<ui id="entryDrilldown.entryMetaData.referenceId" enabled="false" mouseEnabled="false"/>
+			</permission>
+			
 			<permission text="Modify Categories" id="CONTENT_MANAGE_ASSIGN_CATEGORIES">
 				<ui id="entryDrilldown.entryMetaData.categoriesTextInput" enabled="false"/>
 				<ui id="content.manage.entryTable" dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"/>
@@ -51,9 +68,7 @@
 				<ui id="entryDrilldown.saveBtn" enabled="false" buttonMode="false"/>
 			</permission>
 			<permission text="Modify Custom Data" id="CONTENT_MANAGE_CUSTOM_DATA" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
-				<!--ui id="entryDrilldown.customData.all" enabled="false"/-->
-				<ui id="entryCustomData" metadataEditable="false"/>
-				<ui id="content.generalPermissions" enableUpdateCustomData="false" />
+				<ui id="entryDrilldown.customData.all" enabled="false"/>
 				<ui id="entryDrilldown.saveBtn" enabled="false" buttonMode="false"/>
 			</permission>
 			<permission text="Delete Content" id="CONTENT_MANAGE_DELETE">
@@ -70,9 +85,7 @@
 			<permission text="Edit Categories" id="CONTENT_MANAGE_EDIT_CATEGORIES">
 				<ui id="content.manage.filter" showAccordionHeaderButtons="false" />
 			</permission>
-			<permission text="Add Live Stream" id="LIVE_STREAM_ADD" dependsOnFeature="FEATURE_LIVE_STREAM">
-				<ui id="content.manage.toolBar.newStreamBtn" visible="false" includeInLayout="false"/>
-			</permission>
+			
 			<permission text="Update Live Stream" id="LIVE_STREAM_UPDATE" dependsOnFeature="FEATURE_LIVE_STREAM">
 				<ui id="entryDrilldown.liveStream.bitrate1Info" enabled="false" />
 				<ui id="entryDrilldown.liveStream.bitrate2Info" enabled="false" />
@@ -85,6 +98,17 @@
 			</permission-->
 			<permission text="Download Files" id="CONTENT_MANAGE_DOWNLOAD" >
 				<ui id="content.manage.toolBar.download" visible="false" includeInLayout="false"/>
+			</permission>
+			<permission text="Add Video/Audio" id="CONTENT_INGEST_INTO_ORPHAN" >
+				<ui id="entryDrilldown.entryAssets" allowAddMedia="false"/>
+			</permission>
+			
+			<permission text="Replace Video/Audio" id="CONTENT_INGEST_INTO_READY" >
+				<ui id="entryDrilldown.entryAssets" allowReplaceMedia="false"/>
+			</permission>
+			
+			<permission text="Approve/Cancel Video Replacement" id="" >
+				<ui id="entryDrilldown.entryAssets.replacementActionsHBox" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
 		<!-- Content Moderation -->
@@ -102,9 +126,7 @@
 				<ui id="content.manage.toolBar.tagsCombo" includeInLayout="false"/>
 			</permission>
 			<permission text="Moderate Custom Metadata" id="CONTENT_MODERATE_CUSTOM_DATA" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
-				<!--ui id="entryDrilldown.customData.all" enabled="false"/-->
-				<ui id="entryCustomData" metadataEditable="false"/>
-				<ui id="content.generalPermissions" enableUpdateCustomData="false" />
+				<ui id="entryDrilldown.customData.all" enabled="false"/>
 				<ui id="entryDrilldown.saveBtn" enabled="false" buttonMode="false"/>
 			</permission>
 		</permissionGroup>
@@ -156,6 +178,12 @@
 			</permission>
 			<permission text="Remove Distributed Content" id="CONTENT_MANAGE_DISTRIBUTION_REMOVE" dependsOnFeature="CONTENTDISTRIBUTION_PLUGIN_PERMISSION">
 				<ui id="selectDistributorsWindow" enableRemoveDistribution="false"/>
+			</permission>
+		</permissionGroup>
+		<!-- Drop Folder Control -->
+		<permissionGroup text="Ingestion Drop Folder Control" id="CONTENT_INGEST_DROP_FOLDER_BASE" dependsOnFeature="DROPFOLDER_PLUGIN_PERMISSION">
+			<permission text="Delete Files" id="CONTENT_INGEST_DROP_FOLDER_DELETE" dependsOnFeature="DROPFOLDER_PLUGIN_PERMISSION">
+				<ui id="content.dropFolders.deleteFilesBtn" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
 		<!-- Studio -->
@@ -240,21 +268,15 @@
 		</permissionGroup>
 		<!-- Custom data settings -->
 		<permissionGroup text="Custom Metadata Settings" id="CUSTOM_DATA_PROFILE_BASE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
-			<permission text="Add Custom Metadata Schemas" id="CUSTOM_DATA_PROFILE_ADD" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+			<permission text="Add Custom Metadata Fields" id="CUSTOM_DATA_FIELD_ADD" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
 				<ui id="account.metadata.actionBox" visible="false" includeInLayout="false"/>
-					<ui id="addCustomDataProfilePopup_add.actionBox" visible="false" includeInLayout="false"/>
-				<ui id="addCustomDataProfilePopup_add.saveChangesBtn" visible="false" includeInLayout="false"/>
-				<ui id="addCustomDataProfilePopup_add.customFieldsTable" hideColumns="customFieldsPositions" />
-				<ui id="addCustomDataProfilePopup_edit.downloadXSDBtn" visible="false" includeInLayout="false"/>
 			</permission>
-			<permission text="Modify Custom Metadata Schemas" id="CUSTOM_DATA_PROFILE_UPDATE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
-				<ui id="addCustomDataProfilePopup_edit.actionBox" visible="false" includeInLayout="false"/>
-				<ui id="addCustomDataProfilePopup_edit.saveChangesBtn" visible="false" includeInLayout="false"/>
-				<ui id="addCustomDataProfilePopup_edit.customFieldsTable" hideColumns="customFieldsPositions" />
+			<permission text="Modify Custom Metadata Fields" id="CUSTOM_DATA_FIELD_UPDATE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+				<ui id="account.metadata.customFieldsTable" hideColumns="customFieldsPositions" />
 				<ui id="customDataDrilldown_edit" editable="false" />
 			</permission>
-			<permission text="Delete Custom Metadata Schemas" id="CUSTOM_DATA_PROFILE_DELETE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
-				<ui id="account.metadata.deleteProfilesBtn" visible="false" />
+			<permission text="Delete Custom Metadata Fields" id="CUSTOM_DATA_FIELD_DELETE" dependsOnFeature="METADATA_PLUGIN_PERMISSION">
+				<ui id="account.metadata.deleteCustomDataField" visible="false" />
 			</permission>
 		</permissionGroup>
 		<!-- Administration -->
@@ -302,25 +324,30 @@
 
 	<!-- partner features - not relevant to form, only to ui -->
 	<partnerPermissions>
+		<!-- custom metadata -->
 		<permissionGroup id="METADATA_PLUGIN_PERMISSION">
 			<ui id="content.generalPermissions" enableCustomData="false"/>
 			<ui id="entryDrilldown" hideTabs="customData"/>
 		</permissionGroup>
+		<!-- content analytics -->
 		<permissionGroup id="FEATURE_ANALYTICS_TAB">
 			<ui id="dashboard.chartsPanel.OptionsComboBox" enabled="false" buttonMode="false"/>
 			<ui id="dashboard.chartsPanel.viewReportsBtn" enabled="false" buttonMode="false"/>
 			<ui id="dashboard.chartsPanel" visible="false" includeInLayout="false"/>
 			<ui id="dashboard" showGraphs="false"/>
 		</permissionGroup>
+		<!-- content distribution -->
 		<permissionGroup id="CONTENTDISTRIBUTION_PLUGIN_PERMISSION">
 			<ui id="content.generalPermissions" enableDistribution="false"/>
 			<ui id="entryDrilldown" hideTabs="entryDistribution"/>
 			<ui id="distributionDetailsWindow" enableXMLViews="false"/>
 		</permissionGroup>
+		<!-- vast advertising in appstudio -->
 		<permissionGroup id="FEATURE_VAST">
 			<ui id="wizard_add" hideTabs="advertizingPage"/>
 			<ui id="wizard_edit" hideTabs="advertizingPage"/>
 		</permissionGroup>
+		<!-- broadcast livestream entries -->
 		<permissionGroup id="FEATURE_LIVE_STREAM">
 			<ui id="content.manage.filter" enablelivestream="false" />
 			<ui id="content.manage.toolBar" enablelivestream="false" />
@@ -329,6 +356,10 @@
 			<ui id="manualPlaylistDrilldown_add.filter" enablelivestream="false" />
 			<ui id="addRuleWin.singleRule.filter" enablelivestream="false" />
 			<ui id="entryDrilldown" hideTabs="liveStream" />
+		</permissionGroup>
+		<!-- ingestion of multiple flavours -->
+		<permissionGroup id="FEATURE_MULTI_FLAVOR_INGESTION">
+			<ui id="entryDrilldown.entryAssets" multiFlavorsIngestionAllowed="false" />
 		</permissionGroup>
 	</partnerPermissions>
 	
@@ -387,6 +418,9 @@
 				<permission id="CONTENT_INGEST_UPLOAD"/>
 				<permission id="CONTENT_INGEST_BULK_UPLOAD"/>
 			</tab>
+			<tab id="dropFolders">
+				<permission id="DROPFOLDER_PLUGIN_PERMISSION"/>
+			</tab>
 		</module>
 		<module id="studio">
 			<permission id="STUDIO_BASE"/>
@@ -423,9 +457,9 @@
 			</tab>
 			<tab id="metadata">
 				<permission id="CUSTOM_DATA_PROFILE_BASE"/>
-				<permission id="CUSTOM_DATA_PROFILE_ADD"/>
-				<permission id="CUSTOM_DATA_PROFILE_UPDATE"/>
-				<permission id="CUSTOM_DATA_PROFILE_DELETE"/>
+				<permission id="CUSTOM_DATA_FIELD_ADD"/>
+				<permission id="CUSTOM_DATA_FIELD_UPDATE"/>
+				<permission id="CUSTOM_DATA_FIELD_DELETE"/>
 			</tab>
 		</module>
 		
