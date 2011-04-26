@@ -14,16 +14,16 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	public class ListDropFolders extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
-			createHandleDummy();
+//			createHandleDummy();
 			// ---------------------
-			/*_model.increaseLoadCounter();
+			_model.increaseLoadCounter();
 //			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
 			//TODO filter only media folders
 			var listFolders:DropFolderList = new DropFolderList();
 			listFolders.addEventListener(KalturaEvent.COMPLETE, result);
 			listFolders.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(listFolders); 	*/
+			_model.context.kc.post(listFolders); 	
 		}
 		
 		

@@ -25,8 +25,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		
 		override public function execute(event:CairngormEvent):void {
 			_eventType = (event as DropFolderFileEvent).type;
-			createHandleDummy();
-			/*_model.increaseLoadCounter();
+//			createHandleDummy();
+			_model.increaseLoadCounter();
 			var listEvent:DropFolderFileEvent = event as DropFolderFileEvent;
 			
 			var filter:KalturaDropFolderFileFilter;
@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			listFiles.addEventListener(KalturaEvent.COMPLETE, result);
 			listFiles.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(listFiles); */
+			_model.context.kc.post(listFiles); 
 		}
 
 		override public function result(data:Object):void {

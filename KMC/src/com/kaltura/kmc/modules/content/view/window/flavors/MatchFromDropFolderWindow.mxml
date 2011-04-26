@@ -220,7 +220,7 @@
 				var mediaResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
 				mediaResource.dropFolderFileId = _selectedSlug.id;
 				// dispatch event with required data
-				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_SLUG, 
+				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_MEDIA, 
 					entry, null, mediaResource);
 				ce.dispatch();
 			}
@@ -246,14 +246,14 @@
 					// container for the resource we want to replace
 					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 					subResource.resource = subSubResource;
-					subResource.assetParamsId = dff.flavorParamsId; 
+					subResource.assetParamsId = dff.flavorParamsId; //TODO if matching failed, this has no value.
 					
 					// add to list
 					mediaResource.resources.push(subResource);
 					
 				}
 				// dispatch the event with required data
-				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_SLUG, 
+				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_MEDIA, 
 					entry, _selectedSlug.parsedSlug, mediaResource);
 				ce.dispatch();
 			}
