@@ -7,6 +7,7 @@
 			import com.kaltura.vo.KalturaFlavorParams;
 			
 			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
 
 
 			/**
@@ -50,15 +51,19 @@
 						}
 					}
 				}
-				// if that failed too, select the first flavor in the list.
+				// if that failed too, prompt "select".
 				if (!found) {
-					cb.selectedIndex = 0;
-					if (ufv.flavors) {
-						ufv.flavorParamId = ufv.flavors.getItemAt(0).id.toString();
-					}
-					else {
-						ufv.flavorParamId = '';
-					}
+					ufv.flavorParamId = '';
+					cb.prompt = ResourceManager.getInstance().getString('cms', 'selectActionLabel');
+					
+					
+//					cb.selectedIndex = 0;
+//					if (ufv.flavors) {
+//						ufv.flavorParamId = ufv.flavors.getItemAt(0).id.toString();
+//					}
+//					else {
+//						ufv.flavorParamId = '';
+//					}
 				}
 				
 			}
