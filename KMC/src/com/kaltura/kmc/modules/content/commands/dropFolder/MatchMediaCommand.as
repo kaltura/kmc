@@ -10,7 +10,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 
-	public class MatchSlugCommand extends KalturaCommand {
+	public class MatchMediaCommand extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void
 		{

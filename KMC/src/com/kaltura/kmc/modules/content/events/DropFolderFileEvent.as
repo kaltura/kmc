@@ -9,7 +9,7 @@ package com.kaltura.kmc.modules.content.events {
 		/**
 		 * set media to entry according to slug / file 
 		 */		
-		public static const MATCH_SLUG:String = "df_match_slug";
+		public static const MATCH_MEDIA:String = "df_match_media";
 		
 		/**
 		 * replace a single flavor on an entry with a drop folder file.
