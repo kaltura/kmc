@@ -208,6 +208,7 @@
 				else {
 					updateMediaSimple(entry);
 				}
+				
 			}
 			
 			
@@ -246,7 +247,8 @@
 					// container for the resource we want to replace
 					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 					subResource.resource = subSubResource;
-					subResource.assetParamsId = dff.flavorParamsId; //TODO if matching failed, this has no value.
+					//NOTE if matching failed, this has no value - but then we shouldn't be able to select this group.
+					subResource.assetParamsId = dff.flavorParamsId; 
 					
 					// add to list
 					mediaResource.resources.push(subResource);
@@ -264,6 +266,10 @@
 			 * close popup
 			 * */
 			protected function closeHandler(event:CloseEvent):void {
+				// reset the selected folder
+				var cg:DropFolderEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null, null);
+				cg.dispatch();
+				// remove popup
 				PopUpManager.removePopUp(this);
 			}
 

@@ -17,6 +17,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	public class ListDropFoldersFilesCommand extends KalturaCommand
 	{
@@ -100,6 +101,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				for each (var o:Object in lr.objects) {
 					if (o is KalturaDropFolderFile) {
 						dff = o as KalturaDropFolderFile;
+						// group all files where name parse failed under same group
+						if (dff.parsedSlug == null) {
+							dff.parsedSlug = ResourceManager.getInstance().getString('cms', 'parseFailed');
+						}
 						if (!dict[dff.parsedSlug]) {
 							// create group
 							group = new KalturaDropFolderFile();
