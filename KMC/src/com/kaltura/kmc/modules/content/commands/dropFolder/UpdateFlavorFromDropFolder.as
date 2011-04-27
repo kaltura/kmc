@@ -14,7 +14,9 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		{
 			_model.increaseLoadCounter();
 			var e:DropFolderFileEvent = event as DropFolderFileEvent;
-			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(e.data.flavorAssetId, new KalturaFlavorAsset(), e.resource as KalturaContentResource);
+			var fa:KalturaFlavorAsset = new KalturaFlavorAsset();
+			fa.setUpdatedFieldsOnly(true);
+			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(e.data.flavorAssetId, fa, e.resource as KalturaContentResource);
 			fau.addEventListener(KalturaEvent.COMPLETE, result);
 			fau.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(fau);

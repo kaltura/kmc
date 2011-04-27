@@ -11,6 +11,7 @@
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
 			import com.kaltura.types.KalturaDropFolderFileHandlerType;
+			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 			import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
@@ -119,8 +120,13 @@
 			 * */
 			private function slugNameLabel(item:Object, column:AdvancedDataGridColumn):String {
 				var s:String;
+				// if is group
 				if (item.files) {
-					s = item.parsedSlug + " (" + item.files.length + ")";
+					s = item.parsedSlug + " (" + item.files.length ;
+					if (item.status == KalturaDropFolderFileStatus.WAITING) {
+						s += ", " + ResourceManager.getInstance().getString('cms', 'fileWaiting');
+					}
+					s += ")";
 				}
 				else {
 					s = item.fileName;
@@ -150,7 +156,7 @@
 			 * update media with KalturaDropFolderFileResource-s
 			 * */
 			protected function submitHandler(event:MouseEvent):void {
-				if (flavorAssetId ){
+				if (flavorAssetId){
 					// replacing existing flavor
 					updateFlavor();
 				} 
@@ -199,15 +205,15 @@
 			 * @param entry		entry to update
 			 */
 			protected function updateMedia(entry:KalturaBaseEntry):void {
-				var isSlug:Boolean = _selectedFolder != null;
-				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
-				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
-				if (isSlug) {
+//				var isSlug:Boolean = _selectedFolder != null;
+//				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
+//				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
+//				if (isSlug) {
 					updateMediaWithSlug(entry);
-				}
-				else {
-					updateMediaSimple(entry);
-				}
+//				}
+//				else {
+//					updateMediaSimple(entry);
+//				}
 				
 			}
 			
@@ -307,10 +313,10 @@
 				_selectedFolder = event.target.selectedItem as KalturaDropFolder;
 				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, _selectedFolder );
 				ce.dispatch();
-				// set appearance by selected folder
+				//TODO set appearance by selected folder
 				var isSlug:Boolean = _selectedFolder != null;
-				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
-				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
+//				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
+//				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
 				setAppearance(isSlug);
 				// list new folder contents
 				listFolderContents();
