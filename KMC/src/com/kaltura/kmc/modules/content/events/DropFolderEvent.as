@@ -10,13 +10,11 @@ package com.kaltura.kmc.modules.content.events {
 		public static const SET_SELECTED_FOLDER:String = "df_set_selected_folder";
 
 		private var _folder:KalturaDropFolder;
-		private var _slug:String;
 		
 
 
-		public function DropFolderEvent(type:String, slug:String='', folder:KalturaDropFolder = null, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function DropFolderEvent(type:String, folder:KalturaDropFolder = null, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
-			_slug = slug;
 			_folder = folder;
 			
 		}
@@ -27,14 +25,6 @@ package com.kaltura.kmc.modules.content.events {
 		 */
 		public function get folder():KalturaDropFolder {
 			return _folder;
-		}
-
-		/**
-		 * slug to use in search
-		 * */
-		public function get slug():String
-		{
-			return _slug;
 		}
 
 
