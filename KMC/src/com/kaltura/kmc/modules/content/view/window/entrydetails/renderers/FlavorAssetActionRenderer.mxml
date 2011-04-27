@@ -27,8 +27,7 @@
 			private static const progressImage:Class;
 
 			[ArrayElementType("String")]
-			[Bindable]
-			private var actionArr:Array = [];
+			private var _actionArr:Array = [];
 
 			[Bindable]
 			private var oneActionLabel:String = '';
@@ -39,6 +38,7 @@
 			private var _allowMatch:Boolean = true;
 			[Bindable]
 			private var _showBtn:Boolean = false;
+			private var _flavorWithParams:FlavorAssetWithParamsVO
 
 			override public function onCreatoinComplete():void {
 				super.onCreatoinComplete();
@@ -52,103 +52,109 @@
 					_allowUpload = parentDocument.allowUpload && parentDocument.multiFlavorsIngestionAllowed;
 					_allowMatch = parentDocument.allowMatchFromDrop;
 				}
-				
-				var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
-				actionArr = [];
-				if (obj.kalturaFlavorAssetWithParams.flavorAsset == null) {
-					if (obj.hasOriginal) {
-						this.currentState = null;
-						actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
-						addUploadAndMatch();
-					}
-					else {
-						this.currentState = "emptyState";
-					}
-				}
-				else {
-					setActions();
-				}
-
 			}
 
 
 			override public function set data(value:Object):void {
 				super.data = value;
-				onCreatoinComplete();
+				 _flavorWithParams = value as FlavorAssetWithParamsVO;
+				
+				setActions();
+
 			}
 
 
-			override public function validateNow():void {
+		 	override public function validateNow():void {
 				super.validateNow();
-				onCreatoinComplete();
+				setActions();
 			}
-
+ 
 
 			private function setActions():void {
-				var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
-				if (obj.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
-					this.currentState = null;
-					actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
-					actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
-					addUploadAndMatch();
-					if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
-						actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-						_showBtn = true;
+				_actionArr = new Array();
+				
+				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
+					if (_flavorWithParams.hasOriginal) {
+						this.currentState = null;
+						_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
+						addUploadAndMatch();
+					}
+					else {
+						this.currentState = "emptyState";
+					}
+				} 
+				else 
+				{
+					if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
+						this.currentState = null;
+						_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
+						_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+						addUploadAndMatch();
+						if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
+							_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
+							_showBtn = true;
+						}
+					}
+					else {
+						switch (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status) {
+							case KalturaFlavorAssetStatus.CONVERTING:
+							case KalturaFlavorAssetStatus.QUEUED:  {
+								this.currentState = "convertingState";
+								break;
+							}
+							case KalturaFlavorAssetStatus.DELETED:  {
+								if (_flavorWithParams.hasOriginal) {
+									this.currentState = null;
+									_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
+									addUploadAndMatch();
+								}
+								else {
+									this.currentState = "emptyState";
+								}
+								break;
+							}
+							case KalturaFlavorAssetStatus.ERROR:
+							case KalturaFlavorAssetStatus.NOT_APPLICABLE:  {
+								if (_flavorWithParams.hasOriginal) {
+									this.currentState = null;
+									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+									addUploadAndMatch();
+								}
+								else {
+									this.currentState = "emptyState";
+								}
+								break;
+							}
+								
+							case KalturaFlavorAssetStatus.READY:  {
+								this.currentState = null;
+								_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
+								_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+								addUploadAndMatch();
+								if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
+									_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
+									_showBtn = true;
+								}
+								if (_flavorWithParams.hasOriginal) {
+									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+								}
+								
+								break;
+							}
+						}
 					}
 				}
-				else {
-					switch (obj.kalturaFlavorAssetWithParams.flavorAsset.status) {
-						case KalturaFlavorAssetStatus.CONVERTING:
-						case KalturaFlavorAssetStatus.QUEUED:  {
-							this.currentState = "convertingState";
-							break;
-						}
-						case KalturaFlavorAssetStatus.DELETED:  {
-							if (obj.hasOriginal) {
-								this.currentState = null;
-								actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
-								addUploadAndMatch();
-							}
-							else {
-								this.currentState = "emptyState";
-							}
-							break;
-						}
-						case KalturaFlavorAssetStatus.ERROR:
-						case KalturaFlavorAssetStatus.NOT_APPLICABLE:  {
-							if (obj.hasOriginal) {
-								this.currentState = null;
-								actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
-								addUploadAndMatch();
-							}
-							else {
-								this.currentState = "emptyState";
-							}
-							break;
-						}
-
-						case KalturaFlavorAssetStatus.READY:  {
-							this.currentState = null;
-							actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
-							actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
-							addUploadAndMatch();
-							if (obj.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
-								actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-								_showBtn = true;
-							}
-							if (obj.hasOriginal) {
-								actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
-							}
-
-							break;
-						}
-					}
+				if (actionCombobox) {
+					actionCombobox.dataProvider = _actionArr;
+					//workaround for a flex bug - dropdown didn't show correct data
+					if (actionCombobox.dropdown)
+						actionCombobox.dropdown.dataProvider = _actionArr;
 				}
 			}
 			
 			private function dispatchPreview():void {
 				var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET,
-					(this.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+					_flavorWithParams.kalturaFlavorAssetWithParams);
 				preEvent.dispatch();
 			}
 			
@@ -157,9 +163,9 @@
 			 * */
 			private function addUploadAndMatch():void {
 				if (_allowUpload)
-					actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
+					_actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
 				if (_allowMatch)
-					actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
+					_actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
 			}
 
 
@@ -170,25 +176,23 @@
 						break;
 					}
 					case resourceManager.getString('cms', 'downloadActionLabel'):  {
-						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET,(this.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET,_flavorWithParams.kalturaFlavorAssetWithParams);
 						dlEvent.dispatch();
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DOWNLOAD,
-																  "EntryDrillDown>FlavorTab>DownloadAsset",(data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.entryId);
+																  "EntryDrillDown>FlavorTab>DownloadAsset", _flavorWithParams.kalturaFlavorAssetWithParams.entryId);
 
 						break;
 					}
 					case resourceManager.getString('cms', 'deleteActionLabel'):  {
 						var delEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET,
-																			 (this.data as
-							FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+							_flavorWithParams.kalturaFlavorAssetWithParams);
 						delEvent.dispatch();
 						break;
 					}
 					case resourceManager.getString('cms', 'reconvertActionLabel'):
 					case resourceManager.getString('cms', 'convertActionLabel'):  {
 						var convEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET,
-																			  (this.data as
-							FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams);
+							_flavorWithParams.kalturaFlavorAssetWithParams);
 						convEvent.dispatch();
 						break;
 					}
@@ -238,7 +242,7 @@
 			</mx:State>
 	</renderers:states>
 
-	<mx:ComboBox id="actionCombobox" editable="false" fontSize="10" dataProvider="{actionArr}" width="110" 
+	<mx:ComboBox id="actionCombobox" editable="false" fontSize="10" width="110" 
 				 buttonMode="true" change="onActionChange(event)" styleName="dataGridComboBox"
 				 prompt="{resourceManager.getString('cms','selectActionLabel')}" visible="{_isFlavorsView}" includeInLayout="{_isFlavorsView}">
 	</mx:ComboBox>
