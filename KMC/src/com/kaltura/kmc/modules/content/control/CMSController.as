@@ -126,6 +126,7 @@ package com.kaltura.kmc.modules.content.control
 			
 			// UI CONF
 			addCommand(UIConfEvent.LIST_UI_CONFS, ListUIConfCommand);
+			addCommand(GeneralUiconfEvent.GET_METADATA_UICONF, GetMetadataUIConfCommand);
 			
 			// Partner Events
 			addCommand( PartnerEvent.GET_PARTNER_INFO  , GetPartnerInfoCommand );

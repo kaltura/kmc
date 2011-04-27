@@ -28,6 +28,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.FilterEvent;
+			import com.kaltura.kmc.modules.content.events.GeneralUiconfEvent;
 			import com.kaltura.kmc.modules.content.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
@@ -85,6 +86,12 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * @param initFilter	filter for initial entry loading.
 			 * */
 			public function init(initFilter:KalturaBaseEntryFilter = null):void {
+				//get default metadata view if needed
+				if (filterModel.enableCustomData && !entryDetailsModel.metadataDefaultUiconfXML) {
+					var getMetadataUiconf:GeneralUiconfEvent = new GeneralUiconfEvent(GeneralUiconfEvent.GET_METADATA_UICONF);
+					getMetadataUiconf.dispatch();
+				}
+				
 				paging.kalturaFilterPager.pageIndex = 0; 
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 				//init as 10 lines 
@@ -97,6 +104,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				// get partner info
 				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 				getPartnerInfoEvent.dispatch();
+				
 			}
 			
 			/**

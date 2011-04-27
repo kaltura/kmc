@@ -193,22 +193,9 @@ package com.kaltura.kmc.modules.content.utils {
 		}
 		
 		
-		/**
-		 * request the view uiconf and will set the viewXML in the model
-		 * @param uicondId id of uiconf to get
-		 *
-		 */
-		public function setViewXML(uicondId:int):void {
-			var uiconfRequest:UiConfGet = new UiConfGet(uicondId);
-			uiconfRequest.addEventListener(KalturaEvent.COMPLETE, uiconfResult);
-			uiconfRequest.addEventListener(KalturaEvent.FAILED, uiconfFault);
-			_model.increaseLoadCounter();
-			_model.context.kc.post(uiconfRequest);
-		}
-		
 		
 		/**
-		 * sets in the model the suitable mxml for the ui represantation.
+		 * sets in viewXml the suitable mxml for the ui represantation.
 		 * It is done according to the default view xml and the fieldsArray.
 		 * */
 		public function buildInitialMxml():void {
@@ -508,32 +495,7 @@ package com.kaltura.kmc.modules.content.utils {
 		}
 		
 		
-		/**
-		 * recieve the uiconf from the server and call buildInitalMxml
-		 * to build the layout according to the uiconf xml
-		 * @param event
-		 *
-		 */
-		private function uiconfResult(event:KalturaEvent):void {
-			var result:KalturaUiConf = KalturaUiConf(event.data);
-			_metadataProfile.viewXML = new XML(result.confFile);
-			_model.decreaseLoadCounter();
-			buildInitialMxml();
-		}
-		
-		
-		private function uiconfFault(info:Object):void {
-			if (info && info.error && info.error.errorMsg &&
-				info.error.errorMsg.toString().indexOf("Invalid KS") > -1) {
-				JSGate.expired();
-				return;
-			}
-			_model.decreaseLoadCounter();
-			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-		}
-		
-		
-		
+
 		/**
 		 * builds a complex uicomponent
 		 * @param field the XML description of the uicomponent we wish to create

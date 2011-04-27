@@ -44,9 +44,14 @@ package com.kaltura.kmc.modules.content.model
 		public var metadataInfoArray:ArrayCollection;
 		
 		/**
-		 * uiconf used with metadata
+		 * uiconf id used with metadata
 		 * */
 		public var metadataDefaultUiconf:int;
+
+		/**
+		 * default metadata view uiconf xml
+		 * */
+		public var metadataDefaultUiconfXML:XML;
 		
 		/**
 		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 

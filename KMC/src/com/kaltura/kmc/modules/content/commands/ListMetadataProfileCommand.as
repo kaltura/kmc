@@ -108,7 +108,6 @@ package com.kaltura.kmc.modules.content.commands
 								//invalid view xmls
 								continue;
 							}
-							//!!!! change later to the correct flag Tantan will create !!!!!!!!
 							for each (var layout:XML in recievedView.children()) {
 								if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
 									metadataProfile.viewXML = layout;
@@ -118,7 +117,9 @@ package com.kaltura.kmc.modules.content.commands
 							}
 						}
 						//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-						fb.setViewXML(_model.entryDetailsModel.metadataDefaultUiconf);
+						if (_model.entryDetailsModel.metadataDefaultUiconfXML)
+							metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
+						fb.buildInitialMxml();
 					} 	
 				}
 				
