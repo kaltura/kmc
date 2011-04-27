@@ -5,7 +5,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.types.KalturaDropFolderFileHandlerType;
+	import com.kaltura.types.KalturaDropFolderType;
 	import com.kaltura.vo.KalturaDropFolder;
+	import com.kaltura.vo.KalturaDropFolderFilter;
 	import com.kaltura.vo.KalturaDropFolderListResponse;
 	
 	import mx.collections.ArrayCollection;
@@ -17,9 +20,9 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 //			createHandleDummy();
 			// ---------------------
 			_model.increaseLoadCounter();
-//			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
-			//TODO filter only media folders
-			var listFolders:DropFolderList = new DropFolderList();
+			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
+			filter.fileHandlerTypeEqual = KalturaDropFolderFileHandlerType.CONTENT;
+			var listFolders:DropFolderList = new DropFolderList(filter);
 			listFolders.addEventListener(KalturaEvent.COMPLETE, result);
 			listFolders.addEventListener(KalturaEvent.FAILED, fault);
 			
