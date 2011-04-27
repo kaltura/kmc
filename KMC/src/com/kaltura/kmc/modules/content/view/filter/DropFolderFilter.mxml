@@ -13,7 +13,6 @@
 			import mx.core.Container;
 
 			private const DATE_FIELD_WIDTH:Number = 80;
-			private const DROP_FOLDERS_GROUP_NAME:String = "dropFolders";
 			
 			private var _dropFolderFileFilter:KalturaDropFolderFileFilter;
 			private var _dropFoldersAC:ArrayCollection;
@@ -47,6 +46,29 @@
 			
 			
 			/**
+			 * get select drop folders ids
+			 * */
+			private function getSelectedDropFoldersIds():String {
+				if (dropFolders.numChildren==0)
+					return '';
+				var idsArr:Array = new Array();	
+				var container:Container = dropFolders.getChildAt(0) as Container;
+				for (var i:int = 0; i<container.numChildren; i++)
+				{
+					if ((container.getChildAt(i) as Button).selected) {
+						for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
+							if (dropFolder.name == ((container.getChildAt(i) as Button).label)) {
+								idsArr.push(dropFolder.id);
+								break;
+							}
+						}
+					}
+				}
+				
+				return idsArr.join(',');
+			}
+			
+			/**
 			 * create the UI for the drop folders filter section of the main Filter
 			 * */
 			private function createDynamicDropFoldersFilter():Container{
@@ -64,20 +86,26 @@
 
 			public function get dropFolderFileFilter():KalturaDropFolderFileFilter
 			{
-				if (dropFolderFileStatus)
-					_dropFolderFileFilter.statusIn = dropFolderFileStatus.getFilterString();
-				return _dropFolderFileFilter;
+				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
+				filter.statusIn = dropFolderFileStatus.getFilterString();
+				if (fromDate && fromDate.selectedDate)
+					filter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
+				if (toDate && toDate.selectedDate)
+					filter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
+				filter.dropFolderIdIn = getSelectedDropFoldersIds(); 
+				return filter;
 			}
 
-			public function set dropFolderFileFilter(value:KalturaDropFolderFileFilter):void
+			 public function set dropFolderFileFilter(value:KalturaDropFolderFileFilter):void
 			{
+				 //TODO add created dates, drop folders
 				_dropFolderFileFilter = value;
-				if (dropFolderFileStatus) {
+				if (value && dropFolderFileStatus) {
 					dropFolderFileStatus.setFilter(_dropFolderFileFilter);	
 					validateNow();
 					
 				}
-			}
+			} 
 
 			private function clearDates():void {
 				super.clearGivenDates(fromDate, toDate);

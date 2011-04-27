@@ -25,13 +25,13 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		private var _eventType:String;
 		
 		override public function execute(event:CairngormEvent):void {
-			_eventType = (event as DropFolderFileEvent).type;
+			//_eventType = (event as DropFolderFileEvent).type;
 //			createHandleDummy();
 			_model.increaseLoadCounter();
 			var listEvent:DropFolderFileEvent = event as DropFolderFileEvent;
-			
+			_eventType = listEvent.type;
 			var filter:KalturaDropFolderFileFilter;
-			if (listEvent.type == DropFolderFileEvent.LIST_ALL) {
+			if (_eventType == DropFolderFileEvent.LIST_ALL) {
 				filter = _model.dropFolderModel.filter;
 			}
 			else {
