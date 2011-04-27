@@ -571,8 +571,13 @@
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = isNewEntry;
-				if (sendReferenceEntry)
+				//opens drill down to reference entry, with flavors tab only
+				if (sendReferenceEntry) 
+				{
+					edw.isReplacementEntry = true;
 					edw.selectedEntry = _model.entryDetailsModel.referenceEntry;
+					edw.visibleTabsAC = new ArrayCollection(new Array("entryAssets"));
+				}
 				edw.entryDetailsModel = _model.entryDetailsModel;
 				edw.dropFolderModel = _model.dropFolderModel;
 				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
@@ -1006,18 +1011,18 @@
 						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="uploadBtn" label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"
 						   click="leftTabClicked(event)" styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
-						   buttonMode="true" toggle="true" height="18"/>						   
+						   height="18" buttonMode="true" toggle="true"/>						   
 			</mx:HBox>
 			<!--<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
 					   dataProvider="{_tabBarViewStack}">
 			</mx:TabBar>-->
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
-				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}"  height="18"
+				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="18"
 						   styleName="{dropFoldersBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"  buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
 				
+				<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 			</mx:HBox>
-			<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 		</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" change="initSelectedTab(event)">

@@ -30,7 +30,7 @@ package com.kaltura.kmc.modules.content.commands {
 			var mr:MultiRequest = new MultiRequest();
 			var filter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
 
-			filter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
+			filter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
 				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
 				KalturaEntryStatus.READY;
 			filter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +

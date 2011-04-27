@@ -78,6 +78,12 @@
 			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
 			 * */
 			public var selectedEntry:KalturaBaseEntry;
+
+			[Bindable]
+			/**
+			 * If the current entry is a replacement entry, will be used mainly in flavors tab
+			 * */
+			public var isReplacementEntry:Boolean = false;
 			
 			[Bindable]
 			/**
@@ -291,8 +297,6 @@
 				partsTable.text = resourceManager.getString('cms', 'usageInMixes');
 				} */
 				
-				// init the top panel
-				entryMetaData.init();
 				
 				// show correct panels according to entry type
 				// live entry
@@ -343,6 +347,9 @@
 					setVisibleTabs();
 				else
 					initTabs();
+				
+				if (viewStack.getChildByName('entryMetaData'))
+					entryMetaData.init();
 			}
 
 			/**
@@ -483,7 +490,7 @@
 			 * */
 			private function checkDataChanged():Boolean {
 				var metadataChanged:Boolean = false;
-				if (filterModel.enableCustomData && filterModel.metadataProfiles) {
+				if (filterModel.enableCustomData && filterModel.metadataProfiles && entryDetailsModel.metadataInfoArray.length) {
 					for (var i:int = 0; i< filterModel.metadataProfiles.length; i++) {
 						var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
 						var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
@@ -805,7 +812,8 @@
 		<!-- Flavor Assets Tab -->
 		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
 						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
-						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" dropFolderModel="{dropFolderModel}"/>
+						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" dropFolderModel="{dropFolderModel}"
+						 isReplacementEntry="{isReplacementEntry}"/>
 
 		<!-- content Tab -->
 		<mx:VBox id="contentTab" width="100%" height="100%" styleName="contentVbox"

@@ -103,7 +103,7 @@ package com.kaltura.kmc.modules.content.commands
 			//categories
 			var mefilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
 			
-			mefilter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
+			mefilter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
 				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
 				KalturaEntryStatus.READY;
 			mefilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +

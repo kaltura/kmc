@@ -46,6 +46,11 @@
 			 * */
 			private var _showActions:Boolean;
 			
+			/**
+			 * if the selected entry is a replacement entry
+			 * */
+			public var isReplacementEntry:Boolean;
+
 			[Bindable]
 			/**
 			 * show action buttons for no_content entry
@@ -59,6 +64,20 @@
 			 * (for r&p)
 			 * */
 			public var allowReplaceMedia:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * allow upload option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowUpload:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * allow match option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowMatchFromDrop:Boolean = true;
 			
 			
 			[Bindable]
@@ -82,7 +101,6 @@
 			 * allow multiple flavours to be ingested simultaneously 
 			 * */
 			public var multiFlavorsIngestionAllowed:Boolean = true;
-			//TODO hook to wherever relevant..
 
 			[Bindable]
 			public function get dropFolderModel():DropFolderModel
@@ -130,12 +148,37 @@
 			 * */
 			private function onFlavorUploadSelected(event:Event):void {
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				uploadSingleFlavor();
+			}
 			
+			private function onUploadBtnClick():void {
+				if (multiFlavorsIngestionAllowed)
+					uploadMultiFlavors();
+				else
+					uploadSingleFlavor();
+			}
+			
+			/**
+			 * will open a browse window and allow a single selection
+			 * */
+			private function uploadSingleFlavor():void {
 				_fileReference = new FileReference();
 				var fileFilter:FileFilter = getTypeFilter(parseInt(_selectedEntry.mediaType));
 				if (fileFilter) {
 					_fileReference.addEventListener(Event.SELECT, onFlavorSelected);
 					_fileReference.browse(new Array(fileFilter));
+				}
+			}
+			
+			/**
+			 * will open a browse window and allow multiple selection
+			 * */
+			private function uploadMultiFlavors():void {
+				_fileReferenceList = new FileReferenceList();
+				var fileFilter:FileFilter = getTypeFilter(parseInt(selectedEntry.mediaType));
+				if (fileFilter)  {
+					_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+					_fileReferenceList.browse(new Array(fileFilter));
 				}
 			}
 			
@@ -156,6 +199,7 @@
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
+				//var allowAddFiles:Boolean = true;
 				if (_selectedFlavorWithParams) {
 					if (_selectedFlavorWithParams.flavorAsset)
 						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
@@ -217,13 +261,19 @@
 								actionLabel.text = resourceManager.getString('cms','addAudio');
 							break;
 						case KalturaEntryStatus.READY:
-							stateLabel.text = resourceManager.getString('cms','readyState');
-							_showActions = true;
-							noteLabel.visible = noteLabel.includeInLayout = true;
-							if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-								actionLabel.text = resourceManager.getString('cms','replaceVideo');
-							else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-								actionLabel.text = resourceManager.getString('cms','replaceAudio');
+							if (isReplacementEntry) {
+								stateLabel.text = resourceManager.getString('cms','replacementReadyState');
+								_showActions = false;
+							}
+							else {
+								stateLabel.text = resourceManager.getString('cms','readyState');
+								_showActions = true;
+								noteLabel.visible = noteLabel.includeInLayout = true;
+								if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
+									actionLabel.text = resourceManager.getString('cms','replaceVideo');
+								else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
+									actionLabel.text = resourceManager.getString('cms','replaceAudio');
+							}
 							break;
 						case KalturaEntryStatus.ERROR_CONVERTING:
 						case KalturaEntryStatus.ERROR_IMPORTING:
@@ -267,17 +317,7 @@
 				return '';
 			}
 			
-			/**
-			 * will open a browse window and allow multiple selection
-			 * */
-			private function onUploadFilesClick():void {
-				_fileReferenceList = new FileReferenceList();
-				var fileFilter:FileFilter = getTypeFilter(parseInt(selectedEntry.mediaType));
-				if (fileFilter)  {
-					_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
-					_fileReferenceList.browse(new Array(fileFilter));
-				}
-			}
+			
 			
 			/**
 			 * returns the suitable fileFilter according to given mediaType
@@ -369,7 +409,7 @@
 			
 			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
 				var result:Boolean = entryState;
-				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT ) {
+				if (_selectedEntry && _selectedEntry.status == KalturaEntryStatus.NO_CONTENT ) {
 					result &&= allowAdd;
 				}
 				else {
@@ -385,8 +425,9 @@
 	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}" 
 			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
-		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadFilesClick()}" styleName="dataGridBtn" />
-		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn" />
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadBtnClick()}" styleName="dataGridBtn"/>
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}"
+				   styleName="dataGridBtn"/>
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
