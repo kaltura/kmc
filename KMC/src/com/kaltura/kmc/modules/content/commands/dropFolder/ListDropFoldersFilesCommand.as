@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	public class ListDropFoldersFilesCommand extends KalturaCommand
 	{
 		//list_all or list_by_selected_folder
-		private var _eventType:String;
+		protected var _eventType:String;
 		
 		override public function execute(event:CairngormEvent):void {
 			//_eventType = (event as DropFolderFileEvent).type;
@@ -113,7 +113,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 							// create group
 							group = new KalturaDropFolderFile();
 							group.parsedSlug = dff.parsedSlug;
-							group.creaedAt = dff.createdAt;
+							group.createdAt = dff.createdAt;
 							group.files = new Array();
 							dict[group.parsedSlug] = group;
 						}
