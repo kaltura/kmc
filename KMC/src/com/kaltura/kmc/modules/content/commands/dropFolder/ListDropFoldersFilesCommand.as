@@ -39,8 +39,12 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				// use selected folder
 				filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
 				// if searching for slug
-				if (listEvent.slug) 
+				if (listEvent.slug) { 
 					filter.parsedSlugLike = listEvent.slug;
+				}
+				// file status
+				filter.statusIn = KalturaDropFolderFileStatus.ERROR_HANDLING + "," 
+					+ KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING  
 			}
 			
 			var listFiles:DropFolderFileList = new DropFolderFileList(filter);
@@ -82,11 +86,11 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			var df:KalturaDropFolder = _model.dropFolderModel.selectedDropFolder;
 			var dff:KalturaDropFolderFile;
 			var ar:Array = new Array();	// results array
-			var isSlug:Boolean = df != null;
-			isSlug &&= df.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
-			isSlug &&= (df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;   
+//			var isSlug:Boolean = df != null;
+//			isSlug &&= df.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
+//			isSlug &&= (df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;   
 			
-			if (isSlug && _eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO) {
+			if (/*isSlug && */_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO) {
 				/* 
 				* Slug Based Folders:
 				* 	create a new dropfolderfile for each slug
@@ -122,6 +126,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 						}
 						// add dff to files list
 						group.files.push(dff);
+						// if any file in the group is in waiting status, set the group to waiting:
+						if (dff.status == KalturaDropFolderFileStatus.WAITING) {
+							group.status = KalturaDropFolderFileStatus.WAITING;
+						}
 					}
 				}
 				for (var slug:String in dict) {
@@ -137,7 +145,6 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				}
 			}
 			return ar;
-		//	_model.dropFolderModel.dropFolderFiles = new ArrayCollection(ar);
 		}
 		
 		protected function createHandleDummy() :void {

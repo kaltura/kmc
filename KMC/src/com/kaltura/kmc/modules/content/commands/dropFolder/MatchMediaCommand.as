@@ -19,6 +19,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			
 			var willHaveReplacement:Boolean = e.entry.status != KalturaEntryStatus.NO_CONTENT;
 			
+			e.entry.setUpdatedFieldsOnly(true);
+			
 			var mu:MediaUpdate;
 			
 			if (willHaveReplacement) {

@@ -5,13 +5,25 @@ package com.kaltura.kmc.modules.content.events {
 	public class DropFolderEvent extends CairngormEvent {
 
 
-		public static const LIST_CONTENT:String = "df_list_content";
+		/**
+		 * list drop folders that are configured for slug matching 
+		 */
+		public static const LIST_MATCH_FOLDERS:String = "df_list_match_folders";
+		
+		/**
+		 * list all drop folders 
+		 */
 		public static const LIST_FOLDERS:String = "df_list_folders";
+		
+		/**
+		 * set selected drop folder to the supplied drop folder 
+		 */
 		public static const SET_SELECTED_FOLDER:String = "df_set_selected_folder";
 
+		
+		
 		private var _folder:KalturaDropFolder;
 		
-
 
 		public function DropFolderEvent(type:String, folder:KalturaDropFolder = null, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
