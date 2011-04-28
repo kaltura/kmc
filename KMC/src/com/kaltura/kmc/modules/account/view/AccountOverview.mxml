@@ -107,8 +107,15 @@
 
 			private function onPartnerDataLoaded(pvo:PartnerVO):void {
 				if (pvo) {
+					// remove the redundant trailing thing for partners who 
+					// registered from .org (or something)
+					var i:int = pvo.url1.indexOf(" | Source =") ; 
+					if (i > -1) {
+						var s:String = pvo.url1;
+						s = s.substr(i, 11);
+						pvo.url1 = s;
+					}
 					_clonedPartnerData = pvo.clone();
-					setContentCategories();
 					setDescribeYourself();
 				}
 			}
@@ -119,13 +126,6 @@
 					_clonedAdminData = avo.clone();
 			}
 
-
-			private function setContentCategories():void {
-				var arr:Array = partnerData.contentCategories.split(",");
-				if ((arr.length > 0) && (arr[0] != '')) {
-					cctList.selectedItems = arr;
-				}
-			}
 
 
 			private function setDescribeYourself():void {
@@ -155,19 +155,9 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (!partnerData.equals(_clonedPartnerData) || force) {
-//					emailValidator.source = pEmail;
-//					if ((emailValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
-//						return;
 					nameValidator.source = pName;
 					if ((nameValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
 						return;
-					urlValidator.source = pWebsite;
-					if ((urlValidator.validate() as ValidationResultEvent).type == ValidationResultEvent.INVALID)
-						return;
-
-					if (cctList.selectedItems.length < 0) {
-						Alert.show(resourceManager.getString('account', 'enterContentCategory'));
-					}
 
 					_clonedPartnerData = partnerData.clone();
 					//do save
@@ -241,7 +231,6 @@
 
 		]]>
 	</mx:Script>
-	<!--<mx:EmailValidator id="emailValidator" required="true" property="text"/>-->
 	<mx:StringValidator id="passwordValidator" required="true" property="text" minLength="4" maxLength="20"/>
 	<mx:StringValidator id="nameValidator" required="true" property="text" minLength="4" maxLength="20"/>
 
@@ -274,34 +263,14 @@
 						  change="{partnerData.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}*"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}"/>
 			<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.url1}"
 						  change="{partnerData.url1 = pWebsite.text}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'description')}"/>
-			<mx:TextArea id="desc" width="{TXT_WIDTH}" text="{partnerData.description}"
-						 change="{partnerData.description = desc.text}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'contetntCategories')}*"/>
-			<mx:List id="cctList" width="{TXT_WIDTH}" height="100" dataProvider="{_ctList}"
-					 allowMultipleSelection="true"
-					 change="{ partnerData.contentCategories = cctList.selectedItems.toString(); }" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
 			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'describeYourself')}"/>
 			<mx:ComboBox id="dyCB" width="{TXT_WIDTH}" dataProvider="{_ctComboBox}"
 						 change="{partnerData.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('account', 'adultContent')}"/>
-			<mx:RadioButton id="adContYes" label="{resourceManager.getString('account', 'yes')}" groupName="adCont"
-							selected="{partnerData.adultContent}"
-							change="{if(adContYes.selected)partnerData.adultContent = true}" enabled="{infoBox.enabled}"/>
-			<mx:RadioButton id="adContNo" label="{resourceManager.getString('account', 'no')}" groupName="adCont"
-							selected="{!partnerData.adultContent}"
-							change="{if(adContNo.selected)partnerData.adultContent = false}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:Label text="{resourceManager.getString('account', 'reqF')}" fontSize="9"/>
 		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
