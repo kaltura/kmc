@@ -74,9 +74,9 @@ package com.kaltura.kmc.modules.content.model
 		public var conversionProfsWFlavorParams:ArrayCollection;
 		
 		/**
-		 * reference entry of the selected entry 
+		 * replacement entry of the selected entry 
 		 */		
-		public var referenceEntry:KalturaBaseEntry;
+		public var selectedReplacementEntry:KalturaBaseEntry;
 		
 		
 		[ArrayElementType("com.kaltura.vo.KalturaConversionProfileAssetParams")]
@@ -85,6 +85,11 @@ package com.kaltura.kmc.modules.content.model
 		 * <code>KalturaConversionProfileAssetParams</cpde> objects
 		 */
 		public var selectedCPAssetParams:ArrayCollection;
+		
+		/**
+		 * if we did some kind of action in entry drilldown that requires to refresh entries
+		 * */
+		public var refreshEntriesRequired:Boolean = false;
 		
 	}
 }

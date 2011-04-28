@@ -554,7 +554,7 @@
 					(_popup as ManualPlaylistWindow).loadEntries();
 				}
 				else if (_popup is EntryDetailsWin) {
-					if ((_popup as EntryDetailsWin).refreshEntriesRequired) {
+					if (_model.entryDetailsModel.refreshEntriesRequired) {
 						manage.loadEntries();
 					}
 				}
@@ -568,6 +568,7 @@
 			 * */
 			private function openEntryDetails(isNewEntry:Boolean, sendReferenceEntry:Boolean):EntryDetailsWin {
 				
+
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = isNewEntry;
@@ -575,7 +576,7 @@
 				if (sendReferenceEntry) 
 				{
 					edw.isReplacementEntry = true;
-					edw.selectedEntry = _model.entryDetailsModel.referenceEntry;
+					edw.selectedEntry = _model.entryDetailsModel.selectedReplacementEntry;
 					edw.visibleTabsAC = new ArrayCollection(new Array("entryAssets"));
 				}
 				edw.entryDetailsModel = _model.entryDetailsModel;

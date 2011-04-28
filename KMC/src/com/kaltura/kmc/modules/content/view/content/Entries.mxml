@@ -24,6 +24,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -39,6 +40,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.vo.ListableVo;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaPlayableEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -344,6 +346,15 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			{
 				setEntriesToolbar();
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_COMPLETE, onGroupUploadComplete);
+			}
+			
+			
+			/**
+			 * if a replacement process begun, refresh the entries to be updated
+			 * */
+			private function onGroupUploadComplete(event:Event):void {
+			//	loadEntries();
 			}
 			
 			

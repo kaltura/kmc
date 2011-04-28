@@ -9,10 +9,12 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.commands.media.MediaAdd;
+			import com.kaltura.kmc.modules.content.commands.SetRefreshRequiredCommand;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.events.ProfileEvent;
+			import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
@@ -124,8 +126,8 @@
 						flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
 					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
-					if (_selectedEntry.referenceId) {
-						var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REFERENCE_ENTRY, null, _selectedEntry.referenceId);
+					if (_selectedEntry.replacingEntryId) {
+						var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REFERENCE_ENTRY, null, _selectedEntry.replacingEntryId);
 						getReferenceEntry.dispatch();
 					}
 				}
@@ -230,9 +232,9 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
-				if (_selectedEntry.replacedEntryId) 
+				if (_selectedEntry.replacingEntryId) 
 				{
-					replacementEntryId.text = _selectedEntry.referenceId;
+					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
 					_showReplacenentInfo = true;
 					switch (_selectedEntry.replacementStatus) {
@@ -249,6 +251,7 @@
 				}
 				else 
 				{
+					_showReplacenentInfo = false;
 					//sets labels according to entry's status
 					switch (_selectedEntry.status) {
 						case KalturaEntryStatus.NO_CONTENT:
@@ -377,6 +380,12 @@
 			private function onCancelReplacementClick():void {
 				var cancelReplacement:MediaEvent = new MediaEvent(MediaEvent.CANCEL_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				cancelReplacement.dispatch();
+				dispatchRefreshEvent();
+			}
+			
+			private function dispatchRefreshEvent():void {
+				var setRefresh:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, true);
+				setRefresh.dispatch();
 			}
 			
 			/**
@@ -385,6 +394,7 @@
 			private function onApproveReplacementClick():void {
 				var approveReplacement:MediaEvent = new MediaEvent(MediaEvent.APPROVE_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				approveReplacement.dispatch();
+				dispatchRefreshEvent();
 			}
 			
 			private function openMatchFromDropFolderWindow():void {

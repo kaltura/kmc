@@ -26,6 +26,7 @@
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.events.ScrollToProfileEvent;
+			import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
@@ -60,10 +61,8 @@
 			import mx.events.CloseEvent;
 			import mx.resources.ResourceManager;
 			
-			/**
-			 * if we need to refresh entries list
-			 * */
-			public var refreshEntriesRequired:Boolean = false;
+			
+			private var _entryWatcher:ChangeWatcher;
 
 			[Bindable]
 			/**
@@ -73,11 +72,7 @@
 			 * */
 			private var _undoToEntry:KalturaBaseEntry;
 			
-			[Bindable]
-			/**
-			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
-			 * */
-			public var selectedEntry:KalturaBaseEntry;
+			private var _selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
 			/**
@@ -165,6 +160,25 @@
 			
 			private var _isReady:Boolean = false;
 			private var _dataInitialized:Boolean = false;
+
+			/**
+			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
+			 * */
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+
+			[Bindable]
+			/**
+			 * @private
+			 */
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				_selectedEntry = value;
+				_undoToEntry = createWorkingCopy(_selectedEntry);
+				setWindowTitle();
+			}
 
 			public function get visibleTabsAC():ArrayCollection
 			{
@@ -283,10 +297,12 @@
 
 			private function onWindowCreationComplete():void {
 			
-				if (!selectedEntry)
-					 selectedEntry = entryDetailsModel.selectedEntry;
-				_undoToEntry = createWorkingCopy(selectedEntry);
-				setWindowTitle();
+				if (!selectedEntry) {
+					if (!_entryWatcher)
+						_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
+				}
+					// selectedEntry = entryDetailsModel.selectedEntry;
+
 				
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 					_isLiveStream = true;
@@ -453,7 +469,8 @@
 					if (checkDataChanged())
 						save();
 					//a new entry was added so we should refresh
-					refreshEntriesRequired = true;
+					var setRefresh:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, true);
+					setRefresh.dispatch();
 				}
 				else {
 					var deleteEntryEvent:EntryEvent = new EntryEvent(EntryEvent.DELETE_ENTRY, _undoToEntry, _undoToEntry.id);
@@ -533,9 +550,7 @@
 					_undoToEntry = null;
 					entryMetaData.clearPlayer();
 					removeWatchers();
-					if (_enabledWatcher) {
-						_enabledWatcher.unwatch();
-					}
+	
 					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
 					cgEvent.dispatch();
 				}
@@ -554,11 +569,15 @@
 					}
 				}
 				//flavors watchers
-				if (entryAssets) {
-					if (entryAssets.flavorsWatcher)
+				if (entryAssets && entryAssets.flavorsWatcher) {
 						entryAssets.flavorsWatcher.unwatch();
-					//if (entryAssets.replacementEntryWatcher)
-					//	entryAssets.replacementEntryWatcher.unwatch();
+				}
+				
+				if (_enabledWatcher) {
+					_enabledWatcher.unwatch();
+				}
+				if (_entryWatcher) {
+					_entryWatcher.unwatch();
 				}
 			}
 
@@ -607,6 +626,7 @@
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 //					removeMe();
+
 				}
 			}
 

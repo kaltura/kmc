@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.content.commands {
 			
 			if (data.data && data.data is KalturaBaseEntry) {
 				if (_eventType == EntryEvent.GET_REFERENCE_ENTRY) {
-					_model.entryDetailsModel.referenceEntry = data.data as KalturaBaseEntry;
+					_model.entryDetailsModel.selectedReplacementEntry = data.data as KalturaBaseEntry;
 				}
 				else {
 					(_model.app as Content).requestEntryDrilldown(data.data);
