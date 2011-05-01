@@ -133,8 +133,7 @@
 				if (_showActions) {
 					var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 					profileEvent.dispatch();
-					var listFolders:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS);
-					listFolders.dispatch();
+					
 				}
 			}
 			
@@ -401,6 +400,7 @@
 			
 			private function openMatchFromDropFolderWindow():void {
 				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
+				var listFolders:DropFolderEvent;
 				if (_selectedFlavorWithParams) {
 					if (_selectedFlavorWithParams.flavorAsset) {
 						matchFromDropFodlerWin.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id; 
@@ -408,6 +408,12 @@
 					else if (_selectedFlavorWithParams.flavorParams) {
 						matchFromDropFodlerWin.flavorParamsId = _selectedFlavorWithParams.flavorParams.id;
 					}
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.ADD_NEW);
+					listFolders.dispatch();
+				}
+				else {
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
+					listFolders.dispatch();
 				}
 				matchFromDropFodlerWin.entry = _selectedEntry;
 				BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
