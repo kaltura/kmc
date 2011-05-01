@@ -4,7 +4,7 @@
 				   xmlns:view="com.kaltura.kmc.modules.admin.view.*" 
 				   xmlns:model="com.kaltura.kmc.modules.admin.model.*" styleName="adminModuleMain" 
 				   layout="vertical" minHeight="520" minWidth="950" 
-				   creationComplete="creationCompleteHandler(event)" enabled="{!_model.isLoading}">
+				   creationComplete="creationCompleteHandler(event)" >
 	<mx:Metadata>
 		[ResourceBundle("admin")]
 	</mx:Metadata>
@@ -19,6 +19,7 @@
 			import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 			import com.kaltura.kmc.modules.admin.view.IAdminSubtab;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 			private static const VERSION:String = "0.1";
 
@@ -69,11 +70,23 @@
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				BindingUtils.bindSetter(toggleLoading, _model, "isLoading");
 				if (_ready && _initialTab) {
 					switchToTab(_initialTab);
 				}
 				else {
 					_ready = true;
+				}
+			}
+			
+			protected function toggleLoading(isIt:Boolean):void {
+				this.enabled = !isIt;
+				
+				if (isIt) {
+					cursorManager.setBusyCursor();
+				}
+				else {
+					cursorManager.removeBusyCursor();
 				}
 			}
 
