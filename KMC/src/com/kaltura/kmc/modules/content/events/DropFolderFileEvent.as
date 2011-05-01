@@ -27,12 +27,12 @@ package com.kaltura.kmc.modules.content.events {
 		public static const LIST_ALL:String = "list_all";
 		
 		/**
-		 * list files in selected folder and create the array hierarchical or not, based on folder config
+		 * list files in selected folder and create the array hierarchical
 		 * */
-		public static const LIST_BY_SELECTED_FOLDER_AUTO:String = "df_list_by_selected_folder_auto";
+		public static const LIST_BY_SELECTED_FOLDER_HIERCH:String = "df_list_by_selected_folder_hierch";
 		
 		/**
-		 * list files in selected folder and create the array flat, regardless of folder config
+		 * list files in selected folder and create the array flat
 		 */		
 		public static const LIST_BY_SELECTED_FOLDER_FLAT:String = "df_list_by_selected_folder_flat";
 		

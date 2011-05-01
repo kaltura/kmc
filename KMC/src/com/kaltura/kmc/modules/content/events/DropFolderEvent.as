@@ -1,6 +1,8 @@
 package com.kaltura.kmc.modules.content.events {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.vo.KalturaDropFolder;
+	
+	import mx.controls.Alert;
 
 	public class DropFolderEvent extends CairngormEvent {
 
@@ -19,16 +21,43 @@ package com.kaltura.kmc.modules.content.events {
 		 * set selected drop folder to the supplied drop folder 
 		 */
 		public static const SET_SELECTED_FOLDER:String = "df_set_selected_folder";
+		
+		
+		/**
+		 *  Value that enables listing drop folder with this config when passed
+		 *  as the <code>folderFlags</code> parameter of the constructor.
+		 *  You can use the | operator to combine this bitflag
+		 *  with the <code>MATCH_OR_LEAVE</code>, <code>ADD_NEW</code> flags.
+		 */
+		public static const MATCH_OR_NEW:uint = 0x0001;
+		
+		/**
+		 *  Value that enables listing drop folder with this config when passed
+		 *  as the <code>folderFlags</code> parameter of the constructor.
+		 *  You can use the | operator to combine this bitflag
+		 *  with the <code>MATCH_OR_NEW</code>, <code>ADD_NEW</code> flags.
+		 */
+		public static const MATCH_OR_KEEP:uint = 0x0002;
+		
+		/**
+		 *  Value that enables listing drop folder with this config when passed
+		 *  as the <code>folderFlags</code> parameter of the constructor.
+		 *  You can use the | operator to combine this bitflag
+		 *  with the <code>MATCH_OR_NEW</code>, <code>MATCH_OR_LEAVE</code> flags.
+		 */
+		public static const ADD_NEW:uint = 0x0004;
 
 		
 		
 		private var _folder:KalturaDropFolder;
 		
+		private var _flags:uint;
+		
 
-		public function DropFolderEvent(type:String, folder:KalturaDropFolder = null, bubbles:Boolean = false, cancelable:Boolean = false) {
+		public function DropFolderEvent(type:String, folder:KalturaDropFolder = null, folderFlags:uint = 0x0, bubbles:Boolean = false, cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			_folder = folder;
-			
+			_flags = folderFlags;
 		}
 
 
@@ -37,6 +66,14 @@ package com.kaltura.kmc.modules.content.events {
 		 */
 		public function get folder():KalturaDropFolder {
 			return _folder;
+		}
+
+		
+		/**
+		 * list flags 
+		 * */
+		public function get flags():uint {
+			return _flags;
 		}
 
 
