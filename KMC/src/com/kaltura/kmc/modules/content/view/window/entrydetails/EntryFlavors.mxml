@@ -47,11 +47,6 @@
 			 * show action buttons based on business logic
 			 * */
 			private var _showActions:Boolean;
-			
-			/**
-			 * if the selected entry is a replacement entry
-			 * */
-			public var isReplacementEntry:Boolean;
 
 			[Bindable]
 			/**
@@ -269,7 +264,8 @@
 								actionLabel.text = resourceManager.getString('cms','addAudio');
 							break;
 						case KalturaEntryStatus.READY:
-							if (isReplacementEntry) {
+							//if this is a replacement entry
+							if (_selectedEntry.replacedEntryId) {
 								stateLabel.text = resourceManager.getString('cms','replacementReadyState');
 								_showActions = false;
 							}
@@ -456,8 +452,7 @@
 		<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
 		<mx:LinkButton id="replacementStatusBtn" click="{onReplacementStautsBtnClick()}"/>
 		<mx:Spacer width="100%"/>
-		<mx:HBox>
-<!--		<mx:HBox id="replacementActionsHBox">-->
+		<mx:HBox id="replacementActionsHBox">
 			<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
 			<mx:Label text="/" width="7"/>
 			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>

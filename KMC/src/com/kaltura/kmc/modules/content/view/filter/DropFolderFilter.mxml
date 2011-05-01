@@ -99,14 +99,44 @@
 
 			 public function set dropFolderFileFilter(value:KalturaDropFolderFileFilter):void
 			{
-				 //TODO add created dates, drop folders
 				_dropFolderFileFilter = value;
 				if (value && dropFolderFileStatus) {
+					showDatesData(_dropFolderFileFilter);
+					showDropFoldersData(_dropFolderFileFilter);
 					dropFolderFileStatus.setFilter(_dropFolderFileFilter);	
 					validateNow();
 					
 				}
-			} 
+			}
+			
+			/**
+			 * show dates filtering data on filter
+			 * */
+			private function showDatesData(filterVo:KalturaDropFolderFileFilter):void {
+				var date:Date;
+				// from date:
+				if (!filterVo.createdAtGreaterThanOrEqual ||
+					filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE) {
+					fromDate.selectedDate = null;
+				} 
+				else {
+					date = new Date();
+					date.time = filterVo.createdAtGreaterThanOrEqual * 1000;
+					fromDate.selectedDate = date;
+				}
+				
+				// to date:
+				if (!filterVo.createdAtLessThanOrEqual ||
+					filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+					toDate.selectedDate = null;
+				}
+				else {
+					date = new Date();
+					date.time = filterVo.createdAtLessThanOrEqual * 1000;
+					toDate.selectedDate = date;
+				}
+				
+			}
 
 			private function clearDates():void {
 				super.clearGivenDates(fromDate, toDate);
@@ -133,7 +163,31 @@
 				preformNewSearch();
 			}
 		
-			
+			/**
+			 * selects the suitable data accoding to the given filterVo
+			 * */
+			private function showDropFoldersData(filterVo:KalturaDropFolderFileFilter) : void {
+				if (dropFolders.numChildren==0 || !filterVo.dropFolderIdIn)
+					return;
+				var container:Container = dropFolders.getChildAt(0) as Container;
+				var foldersArr:Array = filterVo.dropFolderIdIn.split(',');
+				var selectedFoldersNames:ArrayCollection = new ArrayCollection();
+				//get suitable names
+				for (var i:int = 0; i<foldersArr.length; i++) {
+					for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
+						if (dropFolder.id == foldersArr[i]) {
+							selectedFoldersNames.addItem(dropFolder.name);
+							break;
+						}
+					}
+				}
+				//mark suitable buttons
+				for (var j:int = 0; j<container.numChildren; j++) {
+					var curBtn:Button = container.getChildAt(j) as Button;
+					if (selectedFoldersNames.contains(curBtn.label))
+						curBtn.selected = true;
+				}
+			}
 
 		]]>
 	</mx:Script>
