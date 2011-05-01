@@ -259,8 +259,6 @@ package com.kaltura.managers {
 			}
 			//	if no other file has the same groupid 
 			if (!remainingGroupFiles) {
-				//	dispatch "groupUploadComplete" event with group identifier
-				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_COMPLETE, file.groupId));
 				if (file.action == FileUploadVO.ACTION_ADD) {
 					// trigger media.convert for the entry
 					var mc:MediaConvert = new MediaConvert(file.entryId, parseInt(file.conversionProfile));
@@ -271,6 +269,8 @@ package com.kaltura.managers {
 				else if (file.action == FileUploadVO.ACTION_NONE) {
 					updateMedia(file.groupId, file.entryId);
 				}
+				//	dispatch "groupUploadComplete" event with group identifier
+				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_COMPLETE, file.groupId));
 			}
 		}
 		
