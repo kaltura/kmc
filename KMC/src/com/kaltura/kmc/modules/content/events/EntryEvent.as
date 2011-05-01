@@ -28,6 +28,11 @@ package com.kaltura.kmc.modules.content.events
 		public static const DELETE_ENTRY : String = "content_delete_entry";
 		public static const GET_REFERENCE_ENTRY : String = "content_get_reference_entry";
 		
+		/**
+		 * triggers a baseEntry.update with the given baseEntry, with no side effects.
+		 * */
+		public static const UPDATE_SINGLE_ENTRY:String = "update_single_entry"; 
+		
 		
 		private var _entryVo : KalturaBaseEntry;
 		private var _entryId : String;

@@ -32,6 +32,8 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( EntryEvent.ADD_PLAYLIST , AddEntryCommand );
 			addCommand( EntryEvent.PREVIEW , PreviewCommand );
 			addCommand( EntryEvent.GET_ENTRY_ROUGHCUTS , GetEntryRoughcutsCommand );
+			addCommand( EntryEvent.UPDATE_SINGLE_ENTRY , UpdateSingleEntry );
+			
 			//on the fly playlist event
 			addCommand( SetPlaylistTypeEvent.MANUAL_PLAYLIST , SetPlaylistTypeCommand );
 			addCommand( SetPlaylistTypeEvent.RULE_BASED_PLAYLIST , SetPlaylistTypeCommand );
