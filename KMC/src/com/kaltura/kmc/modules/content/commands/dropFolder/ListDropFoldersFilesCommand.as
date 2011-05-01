@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+	import com.kaltura.types.KalturaDropFolderFileOrderBy;
 	import com.kaltura.types.KalturaDropFolderFileStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaDropFolderFile;
@@ -39,6 +40,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 					//TODO correct if needed by PRD
 				case DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH:
 					filter = new KalturaDropFolderFileFilter();
+					filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 					// use selected folder
 					filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
 					// if searching for slug
