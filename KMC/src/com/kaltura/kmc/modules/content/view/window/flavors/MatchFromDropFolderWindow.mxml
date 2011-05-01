@@ -9,6 +9,7 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
@@ -51,6 +52,7 @@
 			 * */
 			private var _flavorParamsId:int;
 			
+			[Bindable]
 			/**
 			 * current window state (single_flavour / multi_flavour)
 			 * */
@@ -153,7 +155,14 @@
 
 
 			/**
-			 * Reference ID is saved into the entry as needed. 
+			 * set the selected referenceId to the selelcted entry
+			 * */
+			protected function updateHandler(event:MouseEvent):void {
+				var ee:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SINGLE_ENTRY, _entry, _entry.id);
+				ee.dispatch();
+			}
+
+			/**
 			 * update media with KalturaDropFolderFileResource-s
 			 * */
 			protected function submitHandler(event:MouseEvent):void {
@@ -496,6 +505,9 @@
 					   click="listFolderContents(event)" styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:ControlBar>
+		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"  
+				   includeInLayout="{_windowState == MULTI_FLAVOUR}"
+				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}" />
 		<mx:Button id="submitBtn" click="submitHandler(event)"
 				   label="{ResourceManager.getInstance().getString('cms', 'matchActionLabel')}" />
 	</mx:ControlBar>
