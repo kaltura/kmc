@@ -81,6 +81,9 @@
 			 * */
 			public var allowMatchFromDrop:Boolean = true;
 			
+			[Bindable]
+			private var _approveEnabled:Boolean;
+			
 			
 			[Bindable]
 			private var _showReplacenentInfo:Boolean;	
@@ -237,8 +240,11 @@
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
 					_showReplacenentInfo = true;
+					_approveEnabled = true;
+			
 					switch (_selectedEntry.replacementStatus) {
 						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
+							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
 							replacementStatusBtn.label = resourceManager.getString('cms', 'statusProcessing');
@@ -450,10 +456,11 @@
 		<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
 		<mx:LinkButton id="replacementStatusBtn" click="{onReplacementStautsBtnClick()}"/>
 		<mx:Spacer width="100%"/>
-		<mx:HBox id="replacementActionsHBox">
+		<mx:HBox>
+<!--		<mx:HBox id="replacementActionsHBox">-->
 			<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
 			<mx:Label text="/" width="7"/>
-			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon"/>
+			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
 		</mx:HBox>
 	</mx:HBox>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>

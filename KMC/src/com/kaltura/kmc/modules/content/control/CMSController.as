@@ -48,6 +48,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( EntryEvent.RESET_RULE_BASED_DATA, ResetRuleBasedDataCommand);
 			
 			addCommand( SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL, SetCurrentListableCommand);
+			addCommand( SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, SetRefreshRequiredCommand);
 			
 			//Entries Event
 			addCommand( EntriesEvent.SET_SELECTED_ENTRIES_FOR_PLAYLIST , SetSelectedEntriesForPlaylistCommand );

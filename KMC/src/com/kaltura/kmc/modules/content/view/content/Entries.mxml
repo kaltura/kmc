@@ -35,6 +35,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
+			import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
@@ -354,7 +355,9 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * if a replacement process begun, refresh the entries to be updated
 			 * */
 			private function onGroupUploadComplete(event:Event):void {
-			//	loadEntries();
+				//refresh only when entryDetailsWin is closed, to avoid null selected entry
+				var refreshRequired:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED,true);
+				refreshRequired.dispatch();
 			}
 			
 			
