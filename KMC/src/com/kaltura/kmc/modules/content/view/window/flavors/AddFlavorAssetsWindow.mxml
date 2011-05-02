@@ -37,6 +37,8 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
+			public static const CLOSE_WINDOW:String = "closeWindow";
+			
 			[Bindable]
 			/**
 			 * hide the "add more files" options,
@@ -235,7 +237,8 @@
 				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.RESET_ASSET_PARAMS);
 				cg.dispatch();
 				
-				PopUpManager.removePopUp(this);
+				dispatchEvent(new Event(CLOSE_WINDOW));
+				//PopUpManager.removePopUp(this);
 			}
 			
 			/**
@@ -363,6 +366,6 @@
 	
 	<mx:ControlBar>
 		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
-				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}" />
+				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}"/>
 	</mx:ControlBar>
 </mx:TitleWindow>

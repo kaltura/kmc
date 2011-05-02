@@ -10,10 +10,17 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function execute(event:CairngormEvent):void
 		{
-			if(_model.windowState == WindowsStates.NONE ) {
-				_model.windowState = ""; //refrash the close state (in order to close window number 2)
+			//in this case we still have another drilldown open
+			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
+				_model.entryDetailsModelsArray.pop();
+				_model.windowState = WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE;
 			}
-			_model.windowState = WindowsStates.NONE;
+			else {
+				if(_model.windowState == WindowsStates.NONE ) {
+					_model.windowState = ""; //refrash the close state (in order to close window number 2)
+				}
+				_model.windowState = WindowsStates.NONE;
+			}
 		}
 	}
 }

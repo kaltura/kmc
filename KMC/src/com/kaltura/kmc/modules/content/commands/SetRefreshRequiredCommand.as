@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.commands
 	public class SetRefreshRequiredCommand extends KalturaCommand
 	{
 		override public function execute(event:CairngormEvent):void {
-			_model.entryDetailsModel.refreshEntriesRequired = (event as SetRefreshRequiredEvent).value;
+			_model.refreshEntriesRequired = (event as SetRefreshRequiredEvent).value;
 		}
 	}
 }

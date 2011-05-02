@@ -96,11 +96,29 @@
 			private var _dropFolderModel:DropFolderModel;
 			public var flavorsWatcher:ChangeWatcher;
 			
-			[Bindable]
+			//watchers for binding to assFlavorAssetWindow
+			private var _convProfilesWatcher:ChangeWatcher;
+			private var _selectCPAssetWatcher:ChangeWatcher;
+			
+			//[Bindable]
+			private var _multiFlavorsIngestionAllowed:Boolean = true;
+
 			/**
 			 * allow multiple flavours to be ingested simultaneously 
 			 * */
-			public var multiFlavorsIngestionAllowed:Boolean = true;
+			public function get multiFlavorsIngestionAllowed():Boolean
+			{
+				return _multiFlavorsIngestionAllowed;
+			}
+
+			[Bindable]
+			/**
+			 * @private
+			 */
+			public function set multiFlavorsIngestionAllowed(value:Boolean):void
+			{
+				_multiFlavorsIngestionAllowed = value;
+			}
 
 			[Bindable]
 			public function get dropFolderModel():DropFolderModel
@@ -130,11 +148,13 @@
 					}
 				}
 				//the following data is required for the actions buttons
-				if (_showActions) {
+				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				profileEvent.dispatch();
+				/* if (_showActions) {
 					var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 					profileEvent.dispatch();
 					
-				}
+				} */
 			}
 			
 			private function onCreationComplete():void {
@@ -341,12 +361,25 @@
 			private function openAddFlavorsWindow(filesList:ArrayCollection, allowAddFiles:Boolean = true) : void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.entry = _selectedEntry;
-				BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
-				BindingUtils.bindProperty(addFlavorsAssetsWindow, "selectedCPAssetParams",entryDetailsModel, "selectedCPAssetParams"); 
+				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
+				_selectCPAssetWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "selectedCPAssetParams",entryDetailsModel, "selectedCPAssetParams"); 
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
+				addFlavorsAssetsWindow.addEventListener(AddFlavorAssetsWindow.CLOSE_WINDOW, onAddFlavorsWindowClose);
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
+			}
+			
+			/**
+			 * remove binding and close addFlavorAssetWindow
+			 * */
+			private function onAddFlavorsWindowClose(event:Event):void {
+				if (_convProfilesWatcher)
+					_convProfilesWatcher.unwatch();
+				if (_selectCPAssetWatcher)
+					_selectCPAssetWatcher.unwatch();
+				
+				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}
 			
 
@@ -371,7 +404,7 @@
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function onReplacementStautsBtnClick():void {
-				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW);
+				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
 				openWindow.dispatch();
 			}
 			

@@ -87,9 +87,9 @@ package com.kaltura.kmc.modules.content.model
 		public var selectedCPAssetParams:ArrayCollection;
 		
 		/**
-		 * if we did some kind of action in entry drilldown that requires to refresh entries
+		 * Name of the replaced entry for the replacement entry
 		 * */
-		public var refreshEntriesRequired:Boolean = false;
+		public var replacedEntryName:String;
 		
 	}
 }

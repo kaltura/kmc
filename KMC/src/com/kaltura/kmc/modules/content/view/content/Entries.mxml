@@ -79,6 +79,11 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * */
 			public var entryDetailsModel:EntryDetailsModel;
 			
+			/**
+			 * current window state
+			 * */
+			public var windowState:String;
+			
 			public function onRequestedDataLoaded():void {
 				filter.init();
 				loadEntries();
@@ -356,8 +361,17 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * */
 			private function onGroupUploadComplete(event:Event):void {
 				//refresh only when entryDetailsWin is closed, to avoid null selected entry
-				var refreshRequired:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED,true);
-				refreshRequired.dispatch();
+				if ((windowState ==WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW)
+					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY)
+					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE) 
+					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW)) 
+				{
+					var refreshRequired:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED,true);
+					refreshRequired.dispatch();
+				}
+				else
+					loadEntries();
+
 			}
 			
 			

@@ -49,10 +49,17 @@ package com.kaltura.kmc.modules.content.model {
 		 * */
 		public var moderationModel:ModerationModel;
 		
+		private var _entryDetailsModel:EntryDetailsModel;
+		
 		/**
-		 * entry details data 
-		 */
-		public var entryDetailsModel:EntryDetailsModel;
+		 * array of entryDetailsModel
+		 * */
+		public var entryDetailsModelsArray:Array;
+		
+		/**
+		 * if we did some kind of action in entry drilldown that requires to refresh entries
+		 * */
+		public var refreshEntriesRequired:Boolean = false;
 		
 		/**
 		 * data that is used by the playlist windows  
@@ -146,6 +153,22 @@ package com.kaltura.kmc.modules.content.model {
 		
 		
 		/**
+		 * active entry details data, always the last one in entryDetailsModelsArray 
+		 */
+		public function get entryDetailsModel():EntryDetailsModel
+		{
+			return entryDetailsModelsArray[entryDetailsModelsArray.length-1];
+		}
+
+		/**
+		 * @private
+		 */
+		public function set entryDetailsModel(value:EntryDetailsModel):void
+		{
+			entryDetailsModelsArray[entryDetailsModelsArray.length-1] = value;
+		}
+
+		/**
 		 * increase the counter of loading items 
 		 */		
 		public function increaseLoadCounter():void {
@@ -206,7 +229,8 @@ package com.kaltura.kmc.modules.content.model {
 			attic = new Object();
 			
 			filterModel = new FilterModel();
-			entryDetailsModel = new EntryDetailsModel();
+			_entryDetailsModel = new EntryDetailsModel();
+			entryDetailsModelsArray = new Array(_entryDetailsModel);
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
 			dropFolderModel = new DropFolderModel();

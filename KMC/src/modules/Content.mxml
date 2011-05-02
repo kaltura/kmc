@@ -554,10 +554,8 @@
 					// we just close the second popup
 					(_popup as ManualPlaylistWindow).loadEntries();
 				}
-				else if (_popup is EntryDetailsWin) {
-					if (_model.entryDetailsModel.refreshEntriesRequired) {
-						manage.loadEntries();
-					}
+				else if (_popup is EntryDetailsWin && _model.refreshEntriesRequired ) {
+					manage.loadEntries();
 				}
 			}
 
@@ -565,20 +563,23 @@
 			/**
 			 * opens a popup window with entry details
 			 * @param isNewEntry	is this creation of a new entry or edit of existing one
-			 * @param sendReferenceEntry	should the selected entry be the reference entry
+			 * @param sendReplacementEntry	should the selected entry be the reference entry
 			 * */
-			private function openEntryDetails(isNewEntry:Boolean, sendReferenceEntry:Boolean):EntryDetailsWin {
+			private function openEntryDetails(isNewEntry:Boolean, sendReplacementEntry:Boolean):EntryDetailsWin {
 				
 
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = isNewEntry;
 				//opens drill down to reference entry, with flavors tab only
-				if (sendReferenceEntry) 
+				if (sendReplacementEntry) 
 				{
-					edw.selectedEntry = _model.entryDetailsModel.selectedReplacementEntry;
+					var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
+					newEntryDetailsModel.selectedEntry =  _model.entryDetailsModel.selectedReplacementEntry;
+					newEntryDetailsModel.replacedEntryName = _model.entryDetailsModel.selectedEntry.name;
+					//we open another drilldown, should add another model
+					_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 					edw.visibleTabsAC = new ArrayCollection(new Array("entryAssets"));
-					edw.title = resourceManager.getString('cms','editEntry') +  ' - ' +  _model.entryDetailsModel.selectedEntry.name + ' (' + resourceManager.getString('cms','assetReplacement') + ')';
 				}
 				edw.entryDetailsModel = _model.entryDetailsModel;
 				edw.dropFolderModel = _model.dropFolderModel;
@@ -666,14 +667,17 @@
 					closePopup();
 					this.enabled = true;
 				}
+				else if (newState == WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE) {
+					closePopup();
+				}
 				else {
 					this.enabled = false;
 					var currentPopUp:TitleWindow;
 					switch (newState) {
-						case WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW:
+						case WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW:
 						case WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY:
 						case WindowsStates.ENTRY_DETAILS_WINDOW:
-							currentPopUp = openEntryDetails(newState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY, newState == WindowsStates.REFERENCE_ENTRY_DETAILS_WINDOW);
+							currentPopUp = openEntryDetails(newState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY, newState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
 							break;
 						case WindowsStates.DOWNLOAD_WINDOW:
 							currentPopUp = openDownload();
@@ -1031,7 +1035,7 @@
 			<content:Entries id="manage" height="100%" styleName="pageStyle" 
 					entryDetailsModel="{_model.entryDetailsModel}" creationComplete="resizeToContent()"
 					filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
-					label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"/>
+					label="{ResourceManager.getInstance().getString('cms','entriesTitle')}" windowState="{_model.windowState}"/>
 			<content:Moderation id="moderation" styleName="pageStyle" height="100%" 
 					creationComplete="resizeToContent()"
 					context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"

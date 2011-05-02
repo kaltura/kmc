@@ -56,7 +56,7 @@ package com.kaltura.kmc.modules.content.commands
 			_caller.arrayCollection = new ArrayCollection (recivedData.objects);
 			_model.entryDetailsModel.totalEntriesCount = recivedData.totalCount;
 			_caller.pagingComponent.totalCount = recivedData.totalCount;
-			_model.entryDetailsModel.refreshEntriesRequired = false;
+			_model.refreshEntriesRequired = false;
 			_model.decreaseLoadCounter();
 		}
 		
