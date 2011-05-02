@@ -84,6 +84,7 @@ package com.kaltura.kmc.modules.content.commands {
 			for (var i:int =0; i<paramsIds.length; i++) {
 				for each (var param:Object in params) {
 					if (param is KalturaFlavorParams && param.id == paramsIds[i]) {
+						//TODO only add if not converted flavor
 						cp.flavors.addItem(param);
 						break;
 					}
