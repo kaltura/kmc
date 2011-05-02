@@ -47,7 +47,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				_model.context.kc.post(mr);
 			}
 			else {
-				// send the entry for update - if it needs a slug update it is already there.
+				// send the entry for update.
 				// media update:
 				mu = new MediaUpdate(e.entry.id, (e.entry as KalturaMediaEntry), e.resource);
 				// add listeners and post call
@@ -56,7 +56,6 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 				
 				_model.context.kc.post(mu);
 			}
-			
 		}
 		
 		override public function result(data:Object):void

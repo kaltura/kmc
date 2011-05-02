@@ -33,40 +33,40 @@
 			 * window state - handling a single flavour
 			 * */
 			private static const SINGLE_FLAVOUR:String = "single_flavour";
-			
+
 			/**
 			 * window state - handling all entry's flavours.
 			 * */
 			private static const MULTI_FLAVOUR:String = "multi_flavour";
-			
-			
+
+
 			private var _folders:ArrayCollection;
-			
+
 			/**
 			 * @copy #flavorAssetId
 			 * */
 			private var _flavorAssetId:String;
-			
+
 			/**
 			 * @copy #flavorParamsId
 			 * */
 			private var _flavorParamsId:int;
-			
+
 			[Bindable]
 			/**
 			 * current window state (single_flavour / multi_flavour)
 			 * */
 			private var _windowState:String = MULTI_FLAVOUR;
-			
+
 			/**
 			 * @copy #entry
 			 * */
 			private var _entry:KalturaBaseEntry;
-			
+
 			/**
 			 * currently selected drop folder
 			 * */
-			private var _selectedFolder:KalturaDropFolder; 
+			private var _selectedFolder:KalturaDropFolder;
 
 
 			[Bindable]
@@ -79,23 +79,23 @@
 			 * files data, used as source for the DG's dataprovider
 			 * */
 			private var _files:ArrayCollection;
-			
-			
+
+
 			/**
 			 * for slug based folder, the slug currently selected.
 			 * for simple folders, the selected file.
 			 * */
 			private var _selectedSlug:KalturaDropFolderFile;
-			
-			
-			
+
+
+
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(Event.CHANGE, onRadioChange, false, 0, true);
 				// assuming any flavour data was passed before the popup was
 				// added to the display list, this is a good time to set appearance
 				setAppearance(_windowState == MULTI_FLAVOUR);
 			}
-			
+
 
 			/**
 			 * mark the relevant VO as selected
@@ -109,8 +109,11 @@
 				// set the last clicked to true
 				e.target.data.imSelected = true;
 				// save needed values
-				_selectedSlug = e.target.data as KalturaDropFolderFile; 
-				_entry.referenceId = _selectedSlug.parsedSlug; 
+				_selectedSlug = e.target.data as KalturaDropFolderFile;
+				_entry.referenceId = _selectedSlug.parsedSlug;
+				// enable / disable action buttons according to slug status
+				updateBtn.enabled = _selectedSlug.status != KalturaDropFolderFileStatus.WAITING; 
+				submitBtn.enabled = _selectedSlug.status == KalturaDropFolderFileStatus.WAITING;
 			}
 
 
@@ -125,7 +128,7 @@
 				var s:String;
 				// if is group
 				if (item.files) {
-					s = item.parsedSlug + " (" + item.files.length ;
+					s = item.parsedSlug + " (" + item.files.length;
 					if (item.status == KalturaDropFolderFileStatus.WAITING) {
 						s += ", " + ResourceManager.getInstance().getString('cms', 'fileWaiting');
 					}
@@ -160,7 +163,9 @@
 			protected function updateHandler(event:MouseEvent):void {
 				var ee:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SINGLE_ENTRY, _entry, _entry.id);
 				ee.dispatch();
+				Alert.show(ResourceManager.getInstance().getString('cms', 'setRefidNotification'));
 			}
+
 
 			/**
 			 * update media with KalturaDropFolderFileResource-s
@@ -168,115 +173,109 @@
 			protected function submitHandler(event:MouseEvent):void {
 				if (_windowState == MULTI_FLAVOUR) {
 					// updating the whole entry (replacement entry will be created by server if necessary)
-					updateMedia(_entry);
-				} 
-				else if (_flavorAssetId){
-					// replacing existing flavor
-					updateFlavor();
-				} 
-				else if (_flavorParamsId) {
-					// adding new flavor
-					addFlavor();
+					confirmAddFiles(false);
 				}
 				else {
-					// never supposed to get here
-					trace("Error #720: window state is single but flavour data is missing.");
+					confirmAddFiles(true);
 				}
 				closeHandler(null);
 			}
 			
 			
+			
+			/**
+			 * add or replace a single flavour
+			 * +*/
+			protected function updateSingleFile(e:CloseEvent):void {
+				if (e.detail == Alert.YES) {
+					if (_flavorAssetId) {
+						// replacing existing flavor
+						updateFlavor();
+					}
+					else if (_flavorParamsId) {
+						// adding new flavor
+						addFlavor();
+					}
+					else {
+						// never supposed to get here
+						trace("Error #720: window state is single but flavour data is missing.");
+					}
+				}
+			}
+
+
 			/**
 			 * replace a flavor
 			 * */
 			protected function updateFlavor():void {
 				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
 				resource.dropFolderFileId = _selectedSlug.id;
-				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.UPDATE_SINGLE_FLAVOR, 
-				_entry, null, resource);
-				dffe.data = {flavorAssetId:flavorAssetId};
+				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.UPDATE_SINGLE_FLAVOR, _entry, null, resource);
+				dffe.data = {flavorAssetId: flavorAssetId};
 				dffe.dispatch();
 			}
-			
-			
+
+
 			/**
 			 * add new flavor
 			 * */
 			protected function addFlavor():void {
 				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
 				resource.dropFolderFileId = _selectedSlug.id;
-				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_SINGLE_FLAVOR, 
-					_entry, null, resource);
-				dffe.data = {flavorParamsId:flavorParamsId};
+				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_SINGLE_FLAVOR, _entry, null, resource);
+				dffe.data = {flavorParamsId: flavorParamsId};
 				dffe.dispatch();
-				
-			}
-			
-			/**
-			 * @param entry		entry to update
-			 */
-			protected function updateMedia(entry:KalturaBaseEntry):void {
-//				var isSlug:Boolean = _selectedFolder != null;
-//				isSlug &&= _selectedFolder.fileHandlerConfig.handlerType == KalturaDropFolderFileHandlerType.CONTENT;
-//				isSlug &&= (_selectedFolder.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig).contentMatchPolicy != KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW;
-//				if (isSlug) {
-					updateMediaWithSlug(entry);
-//				}
-//				else {
-//					updateMediaSimple(entry);
-//				}
-				
-			}
-			
-			
-			
-			/**
-			 * trigger media.update with resources matching the slug 
-			 * @param entry		entry to update
-			 */
-			private function updateMediaSimple(entry:KalturaBaseEntry):void {
-				var mediaResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
-				mediaResource.dropFolderFileId = _selectedSlug.id;
-				// dispatch event with required data
-				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_MEDIA, 
-					entry, null, mediaResource);
-				ce.dispatch();
-			}
-			
-			
-			/**
-			 * trigger media.update with resources matching the slug 
-			 * @param entry		entry to update
-			 */
-			private function updateMediaWithSlug(entry:KalturaBaseEntry):void {
-				
-				// the actual resource we send is a list of the containers for the resources we want to replace.                
-				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
-				mediaResource.resources = new Array();
 
-				// select the file as source for transcoding
-				
-				for each (var dff:KalturaDropFolderFile in _selectedSlug.files) {
-					// the first resource of the flavor we want to replace
-					var subSubResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
-					subSubResource.dropFolderFileId = dff.id;
-					
-					// container for the resource we want to replace
-					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
-					subResource.resource = subSubResource;
-					//NOTE if matching failed, this has no value - but then we shouldn't be able to select this group.
-					subResource.assetParamsId = dff.flavorParamsId; 
-					
-					// add to list
-					mediaResource.resources.push(subResource);
-					
+			}
+
+			
+			/**
+			 * show confirmation request
+			 * */
+			protected function confirmAddFiles(isSingle:Boolean):void {
+				if (isSingle) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'addFilesConfirm'), '', Alert.YES|Alert.NO, null, updateSingleFile); 
 				}
-				// dispatch the event with required data
-				var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.MATCH_MEDIA, 
-					entry, _selectedSlug.parsedSlug, mediaResource);
-				ce.dispatch();
+				else {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'addFilesConfirm'), '', Alert.YES|Alert.NO, null, updateMediaFiles); 
+				}
 			}
 			
+			
+			/**
+			 * if user confirmed, add selected files to the entry
+			 * @param e		alert closing event holding user's response
+			 */
+			protected function updateMediaFiles(e:CloseEvent):void {
+				if (e.detail == Alert.YES) {
+					// the actual resource we send is a list of the containers for the resources we want to replace.                
+					var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
+					mediaResource.resources = new Array();
+					
+					// select the file as source for transcoding
+					
+					for each (var dff:KalturaDropFolderFile in _selectedSlug.files) {
+						// the first resource of the flavor we want to replace
+						var subSubResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+						subSubResource.dropFolderFileId = dff.id;
+						
+						// container for the resource we want to replace
+						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
+						subResource.resource = subSubResource;
+						//NOTE if matching failed, this has no value - but then we shouldn't be able to select this group.
+						subResource.assetParamsId = dff.flavorParamsId;
+						
+						// add to list
+						mediaResource.resources.push(subResource);
+						
+					}
+					// dispatch the event with required data
+					var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_MEDIA, _entry, _selectedSlug.parsedSlug, mediaResource);
+					ce.dispatch();
+				}
+			}
+
+
 
 
 			/**
@@ -297,8 +296,8 @@
 			protected function helpHandler(event:Event):void {
 				// TODO open help with correct anchore
 			}
-			
-			
+
+
 			/**
 			 * refresh files list according to search string
 			 * */
@@ -307,31 +306,31 @@
 				// search with or without slug
 				var ce:CairngormEvent;
 				if (_windowState == SINGLE_FLAVOUR) {
-					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, null, txt ? txt : null);
+					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, _entry, txt ? txt : null);
 				}
 				else {
-					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, null, txt ? txt : null);
+					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, _entry, txt ? txt : null);
 				}
 				ce.dispatch();
 			}
-			
-			
+
+
 			/**
 			 * set window appearance and list folder contents
 			 * */
 			protected function folderChangeHandler(event:ListEvent):void {
 				// select the folder
 				_selectedFolder = event.target.selectedItem as KalturaDropFolder;
-				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, _selectedFolder );
+				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, _selectedFolder);
 				ce.dispatch();
-				
+
 				// list new folder contents
 				listFolderContents();
 			}
-			
-			
+
+
 			/**
-			 * set window texts and appearance by folder config 
+			 * set window texts and appearance by folder config
 			 * @param isSlug	is the folder configured for slug matching
 			 * */
 			protected function setAppearance(showGrouped:Boolean):void {
@@ -341,22 +340,23 @@
 					// instructions
 					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblSlug');
 					// submit
-					submitBtn.label = ResourceManager.getInstance().getString('cms', 'matchActionLabel');
-					
-				} else {
+					submitBtn.label = ResourceManager.getInstance().getString('cms', 'addFilesActionLabel');
+
+				}
+				else {
 					// header
 					headerLbl.htmlText = ResourceManager.getInstance().getString('cms', 'hdrLblNoSlug');
 					// instructions
 					instructionsTxt.htmlText = ResourceManager.getInstance().getString('cms', 'instrLblNoSlug');
 					// submit
-					submitBtn.label = ResourceManager.getInstance().getString('cms', 'selectActionLabel');
+					submitBtn.label = ResourceManager.getInstance().getString('cms', 'addFileActionLabel');
 				}
 				// reference id field
 				refidHdrLbl.visible = refidHdrLbl.includeInLayout = showGrouped;
 				refidLbl.visible = refidLbl.includeInLayout = showGrouped;
 			}
-			
-			
+
+
 			[Bindable]
 			/**
 			 * drop folder files list.
@@ -366,6 +366,7 @@
 				return _files;
 			}
 
+
 			/**
 			 * @private
 			 * */
@@ -374,8 +375,8 @@
 				_filesHierarchy = new HierarchicalData(_files);
 				_filesHierarchy.childrenField = "files";
 			}
-			
-			
+
+
 			[Bindable]
 			/**
 			 * the entry being edited
@@ -383,7 +384,8 @@
 			public function get entry():KalturaBaseEntry {
 				return _entry;
 			}
-			
+
+
 			/**
 			 * @private
 			 * */
@@ -391,61 +393,60 @@
 				_entry = value;
 				if (value.status == KalturaEntryStatus.NO_CONTENT) {
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd');
-				} 
+				}
 				else {
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
 				}
 			}
 
+
 			/**
 			 * When replacing an existing asset, the id of the asset being replaced.
 			 * */
-			public function get flavorAssetId():String
-			{
+			public function get flavorAssetId():String {
 				return _flavorAssetId;
 			}
+
 
 			/**
 			 * @private
 			 */
-			public function set flavorAssetId(value:String):void
-			{
+			public function set flavorAssetId(value:String):void {
 				_flavorAssetId = value;
 				_windowState = SINGLE_FLAVOUR;
 			}
 
+
 			/**
 			 * when creating a new flavor asset, the id of the flavorparams to use.
 			 * */
-			public function get flavorParamsId():int
-			{
+			public function get flavorParamsId():int {
 				return _flavorParamsId;
 			}
+
 
 			/**
 			 * @private
 			 */
-			public function set flavorParamsId(value:int):void
-			{
+			public function set flavorParamsId(value:int):void {
 				_flavorParamsId = value;
 				_windowState = SINGLE_FLAVOUR;
 			}
 
-			
+
 			[Bindable]
 			/**
 			 * list of drop folders for this partner
 			 * */
-			public function get folders():ArrayCollection
-			{
+			public function get folders():ArrayCollection {
 				return _folders;
 			}
+
 
 			/**
 			 * @private
 			 */
-			public function set folders(value:ArrayCollection):void
-			{
+			public function set folders(value:ArrayCollection):void {
 				_folders = value;
 				if (value) {
 					if (value.length > 0) {
@@ -460,8 +461,6 @@
 					}
 				}
 			}
-
-
 		]]>
 	</mx:Script>
 
@@ -473,8 +472,7 @@
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
 	<mx:HBox width="100%">
-		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'searchLbl')}:"
-				  styleName="simpleBoldText"/>
+		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'searchLbl')}:" styleName="simpleBoldText"/>
 		<mx:HBox horizontalGap="0">
 			<mx:TextInput id="searchText" width="250" styleName="searchTextInput"/>
 			<mx:Button id="btnSearch" styleName="searchButton" click="btnSearch_clickHandler(event)"
@@ -485,30 +483,30 @@
 						 treeColumn="{slug}" draggableColumns="false">
 		<mx:columns>
 			<mx:AdvancedDataGridColumn width="30" editable="true"
-				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SelectedRenderer"/>
-			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}" 
+									   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SelectedRenderer"/>
+			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
 									   labelFunction="slugNameLabel" id="slug"/>
 			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'createAt')}"
-				  itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.DateRenderer"/>
+									   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.DateRenderer"/>
 		</mx:columns>
 		<mx:rendererProviders>
 			<mx:AdvancedDataGridRendererProvider columnIndex="0" columnSpan="1" depth="2"
-				renderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NoRadioRenderer"/>
+												 renderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NoRadioRenderer"/>
 		</mx:rendererProviders>
 	</mx:AdvancedDataGrid>
-	<mx:HBox width="100%" >
+	<mx:HBox width="100%">
 		<mx:Label id="refidHdrLbl" text="{ResourceManager.getInstance().getString('cms', 'refid')}:"
 				  styleName="simpleBoldText"/>
-		<mx:Label id="refidLbl" styleName="simpleText"  text="{entry.referenceId}"/>
+		<mx:Label id="refidLbl" styleName="simpleText" text="{entry.referenceId}"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'refreshDropFolder')}" 
+		<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'refreshDropFolder')}"
 					   click="listFolderContents(event)" styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:ControlBar>
-		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"  
+		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"
 				   includeInLayout="{_windowState == MULTI_FLAVOUR}"
-				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}" />
+				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}"/>
 		<mx:Button id="submitBtn" click="submitHandler(event)"
-				   label="{ResourceManager.getInstance().getString('cms', 'matchActionLabel')}" />
+				   label="{ResourceManager.getInstance().getString('cms', 'addFilesActionLabel')}"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>

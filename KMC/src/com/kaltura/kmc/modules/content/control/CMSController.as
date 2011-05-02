@@ -169,7 +169,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);
 			addCommand(DropFolderEvent.SET_SELECTED_FOLDER, SetSelectedFolder);
 			
-			addCommand(DropFolderFileEvent.MATCH_MEDIA, MatchMediaCommand);
+			addCommand(DropFolderFileEvent.ADD_MEDIA, MatchMediaCommand);
 			addCommand(DropFolderFileEvent.LIST_ALL, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, ListDropFoldersFilesCommand);

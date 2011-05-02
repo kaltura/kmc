@@ -1,5 +1,4 @@
-package com.kaltura.kmc.modules.content.commands.dropFolder
-{
+package com.kaltura.kmc.modules.content.commands.dropFolder {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.dropFolderFile.DropFolderFileList;
 	import com.kaltura.errors.KalturaError;
@@ -12,53 +11,57 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.vo.KalturaDropFolderFile;
 	import com.kaltura.vo.KalturaDropFolderFileFilter;
 	import com.kaltura.vo.KalturaDropFolderFileListResponse;
-	
+
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 
-	public class ListDropFoldersFilesCommand extends KalturaCommand
-	{
+	public class ListDropFoldersFilesCommand extends KalturaCommand {
 		// list_all / df_list_by_selected_folder_hierch / df_list_by_selected_folder_flat
 		protected var _eventType:String;
-		
+
 		protected var _entry:KalturaBaseEntry;
-		
+
+
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			var listEvent:DropFolderFileEvent = event as DropFolderFileEvent;
 			_eventType = listEvent.type;
-			_entry = listEvent.entry; //TODO make sure we send it on list events
-			var listFiles:DropFolderFileList; 
+			_entry = listEvent.entry;
+			var listFiles:DropFolderFileList;
 			var filter:KalturaDropFolderFileFilter;
-			switch (_eventType) {
-				case DropFolderFileEvent.LIST_ALL:
-					filter = _model.dropFolderModel.filter;
-					listFiles = new DropFolderFileList(filter);		
-					break;
-				case DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT:
-					//TODO correct if needed by PRD
-				case DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH:
-					filter = new KalturaDropFolderFileFilter();
-					filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
-					// use selected folder
-					filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
-					// if searching for slug
-					if (listEvent.slug) { 
-						filter.parsedSlugLike = listEvent.slug;
-					}
-					// file status
-					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING; 
-					listFiles = new DropFolderFileList(filter);
-					break;
+			// drop folders panel
+			if (_eventType == DropFolderFileEvent.LIST_ALL) {
+				filter = _model.dropFolderModel.filter;
+				listFiles = new DropFolderFileList(filter);
 			}
-			
-			
+			// match from drop folder popup
+			else {
+				filter = new KalturaDropFolderFileFilter();
+				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
+				// use selected folder
+				filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
+				// if searching for slug
+				if (listEvent.slug) {
+					filter.parsedSlugLike = listEvent.slug;
+				}
+				// file status
+				if (_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT) {
+					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
+				}
+				else {
+					// DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH
+					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING;
+				}
+				listFiles = new DropFolderFileList(filter);
+			}
+
 			listFiles.addEventListener(KalturaEvent.COMPLETE, result);
 			listFiles.addEventListener(KalturaEvent.FAILED, fault);
-			
-			_model.context.kc.post(listFiles); 
+
+			_model.context.kc.post(listFiles);
 		}
+
 
 		override public function result(data:Object):void {
 			if (data.error) {
@@ -79,19 +82,22 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			}
 			_model.decreaseLoadCounter();
 		}
-		
-		
+
+
 		/**
 		 * list hierarchical:
 		 * 	group items by slug
-		 * 
+		 *
 		 * list all or list flat:
 		 *  just push the items to the model
 		 *  */
 		protected function handleDropFolderFileList(lr:KalturaDropFolderFileListResponse):Array {
-			var ar:Array;	// results array
+			var ar:Array; // results array
 			if (_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH) {
 				ar = createHierarchicData(lr);
+			}
+			else if (_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT) {
+				ar = createFlatData(lr);
 			}
 			else {
 				ar = new Array();
@@ -103,22 +109,55 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			}
 			return ar;
 		}
-		
-		/** 
-		* Slug Based Folders:
-		* 	create a new dropfolderfile for each slug
-		* 	pouplate its createdAt property according to the file that created it.
-		* 	for each file:
-		* 	- if no matching slug object is found, create matching slug object.
-		* 	- update date on slug if needed
-		* 	- push the dff to the "files" attribute on the slug vo
-		*/
+
+
+		protected function createFlatData(lr:KalturaDropFolderFileListResponse):Array {
+			var dff:KalturaDropFolderFile;
+			var ar:Array = new Array(); // results array
+			var arWait:Array = new Array(); // waiting array
+
+			for each (var o:Object in lr.objects) {
+				if (o is KalturaDropFolderFile) {
+					dff = o as KalturaDropFolderFile;
+					// for files in status waiting, we only want files with a matching slug
+					if (dff.status == KalturaDropFolderFileStatus.WAITING) {
+						if (dff.parsedSlug != _entry.referenceId) {
+							continue;
+						}
+						else {
+							arWait.push(dff)
+						}
+					}
+					// .. and all other fiels
+					else {
+						ar.push(dff);
+					}
+				}
+			}
+
+			// put the matched waiting files first
+			while (arWait.length > 0) {
+				ar.unshift(arWait.pop());
+			}
+			return ar;
+		}
+
+
+		/**
+		 * Slug Based Folders:
+		 * 	create a new dropfolderfile for each slug
+		 * 	pouplate its createdAt property according to the file that created it.
+		 * 	for each file:
+		 * 	- if no matching slug object is found, create matching slug object.
+		 * 	- update date on slug if needed
+		 * 	- push the dff to the "files" attribute on the slug vo
+		 */
 		protected function createHierarchicData(lr:KalturaDropFolderFileListResponse):Array {
 			var dff:KalturaDropFolderFile;
-			var ar:Array = new Array();			// results array
-			var dict:Object = new Object();		// slugs dictionary
-			var group:KalturaDropFolderFile;	// dffs group (by slug)
-			
+			var ar:Array = new Array(); // results array
+			var dict:Object = new Object(); // slugs dictionary
+			var group:KalturaDropFolderFile; // dffs group (by slug)
+
 			var parseFailedStr:String = ResourceManager.getInstance().getString('cms', 'parseFailed');
 			for each (var o:Object in lr.objects) {
 				if (o is KalturaDropFolderFile) {
@@ -159,10 +198,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			}
 			var wait:KalturaDropFolderFile;
 			for (var slug:String in dict) {
-				if (slug != parseFailedStr){
+				if (slug != parseFailedStr) {
 					if (dict[slug].status == KalturaDropFolderFileStatus.WAITING) {
 						// we assume there's only one...
-						wait = dict[slug] as KalturaDropFolderFile; 
+						wait = dict[slug] as KalturaDropFolderFile;
 					}
 					else {
 						ar.push(dict[slug]);
@@ -179,7 +218,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			}
 			return ar;
 		}
-		
+
 	}
-		
+
 }
