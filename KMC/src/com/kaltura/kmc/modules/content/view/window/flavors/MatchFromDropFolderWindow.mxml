@@ -2,6 +2,7 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							layout="vertical" width="550" height="528" showCloseButton="true"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
+							visible="false"
 							creationComplete="creationCompleteHandler(event)">
 
 	<mx:Script>
@@ -164,6 +165,7 @@
 				var ee:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SINGLE_ENTRY, _entry, _entry.id);
 				ee.dispatch();
 				Alert.show(ResourceManager.getInstance().getString('cms', 'setRefidNotification'));
+				closeHandler(null);
 			}
 
 
@@ -171,13 +173,7 @@
 			 * update media with KalturaDropFolderFileResource-s
 			 * */
 			protected function submitHandler(event:MouseEvent):void {
-				if (_windowState == MULTI_FLAVOUR) {
-					// updating the whole entry (replacement entry will be created by server if necessary)
-					confirmAddFiles(false);
-				}
-				else {
-					confirmAddFiles(true);
-				}
+				confirmAddFiles(_windowState == SINGLE_FLAVOUR);
 				closeHandler(null);
 			}
 			
@@ -283,7 +279,10 @@
 			 * */
 			protected function closeHandler(event:CloseEvent):void {
 				// reset the selected folder
-				var cg:DropFolderEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null);
+				var cg:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null);
+				cg.dispatch();
+				// reset files list
+				cg = new DropFolderFileEvent(DropFolderFileEvent.RESET_FILES_LIST);
 				cg.dispatch();
 				// remove popup
 				PopUpManager.removePopUp(this);

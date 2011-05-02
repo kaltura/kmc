@@ -7,6 +7,11 @@ package com.kaltura.kmc.modules.content.events {
 	public class DropFolderFileEvent extends CairngormEvent {
 
 		/**
+		 * reset the drop folder files list on the model
+		 */		
+		public static const RESET_FILES_LIST:String = "df_reset_files_list";
+		
+		/**
 		 * set media to entry according to slug / file 
 		 */		
 		public static const ADD_MEDIA:String = "df_match_media";
