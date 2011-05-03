@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 	import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
 	import com.kaltura.types.KalturaDropFolderFileHandlerType;
+	import com.kaltura.types.KalturaDropFolderOrderBy;
 	import com.kaltura.types.KalturaDropFolderType;
 	import com.kaltura.vo.KalturaDropFolder;
 	import com.kaltura.vo.KalturaDropFolderContentFileHandlerConfig;
@@ -28,6 +29,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			_model.increaseLoadCounter();
 			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
 			filter.fileHandlerTypeEqual = KalturaDropFolderFileHandlerType.CONTENT;
+			filter.orderBy = KalturaDropFolderOrderBy.NAME_DESC;
 			var listFolders:DropFolderList = new DropFolderList(filter);
 			listFolders.addEventListener(KalturaEvent.COMPLETE, result);
 			listFolders.addEventListener(KalturaEvent.FAILED, fault);
