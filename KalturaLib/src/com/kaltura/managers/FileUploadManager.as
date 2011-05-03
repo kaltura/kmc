@@ -265,6 +265,8 @@ package com.kaltura.managers {
 					mc.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
 					mc.addEventListener(KalturaEvent.FAILED, finalActionHandler);
 					_kc.post(mc);
+					// remove group from groupAndComplete list
+					removeGroupFromCompleteList(file.groupId);
 				}
 				else if (file.action == FileUploadVO.ACTION_NONE) {
 					updateMedia(file.groupId, file.entryId);
@@ -380,7 +382,7 @@ package com.kaltura.managers {
 				showError(e.error.errorMsg);
 			}
 			else {
-				var file:FileUploadVO = getCompleteByFlavorAssetId(e.data.flavorParamsId);
+				var file:FileUploadVO = getCompleteByFlavorAssetIdAndEntryId(e.data.flavorParamsId, e.data.entryId);
 				if (file && file.groupId != null) {
 					handleGroupFile(file);
 				}				
@@ -510,10 +512,10 @@ package com.kaltura.managers {
 		}
 		
 		
-		public function getCompleteByFlavorAssetId(id:int):FileUploadVO {
+		public function getCompleteByFlavorAssetIdAndEntryId(flavourId:int, entryId:String):FileUploadVO {
 			var result:FileUploadVO = null;
 			for each (var file:FileUploadVO in _groupAndComplete) {
-				if (file.flavorParamsId == id) {
+				if (file.flavorParamsId == flavourId && file.entryId == entryId) {
 					result = file;
 					break;
 				}
