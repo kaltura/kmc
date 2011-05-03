@@ -13,7 +13,7 @@ package com.kaltura.commands.thumbAsset
 		 * @param thumbAsset KalturaThumbAsset
 		 * @param contentResource KalturaContentResource
 		 **/
-		public function ThumbAssetUpdate( id : String,thumbAsset : KalturaThumbAsset,contentResource : KalturaContentResource )
+		public function ThumbAssetUpdate( id : String,thumbAsset : KalturaThumbAsset,contentResource : KalturaContentResource=null )
 		{
 			service= 'thumbasset';
 			action= 'update';
@@ -26,9 +26,11 @@ package com.kaltura.commands.thumbAsset
  			keyValArr = kalturaObject2Arrays(thumbAsset, 'thumbAsset');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			if (contentResource) { 
  			keyValArr = kalturaObject2Arrays(contentResource, 'contentResource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

@@ -75,6 +75,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var errorCodeEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var errorCodeIn : String;
+
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -110,6 +118,8 @@ package com.kaltura.vo
 			arr.push('parsedFlavorEqual');
 			arr.push('parsedFlavorIn');
 			arr.push('parsedFlavorLike');
+			arr.push('errorCodeEqual');
+			arr.push('errorCodeIn');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');

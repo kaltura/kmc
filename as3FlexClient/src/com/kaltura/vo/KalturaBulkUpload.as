@@ -38,6 +38,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var bulkFileUrl : String;
+
+		/** 
+		* 		* */ 
 		public var results : Array = new Array();
 
 		/** 
@@ -55,6 +59,7 @@ package com.kaltura.vo
 			arr.push('status');
 			arr.push('logFileUrl');
 			arr.push('csvFileUrl');
+			arr.push('bulkFileUrl');
 			arr.push('results');
 			return arr;
 		}

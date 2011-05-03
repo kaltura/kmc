@@ -29,7 +29,7 @@ package com.kaltura.vo
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* deprecated - lastName and firstName replaces this field		* */ 
 		public var adminName : String;
 
 		/** 
@@ -129,6 +129,27 @@ package com.kaltura.vo
 		public var adminUserId : String;
 
 		/** 
+		* firstName and lastName replace the old (deprecated) adminName		* */ 
+		public var firstName : String;
+
+		/** 
+		* lastName and firstName replace the old (deprecated) adminName		* */ 
+		public var lastName : String;
+
+		/** 
+		* country code (2char) - this field is optional
+		* */ 
+		public var country : String;
+
+		/** 
+		* state code (2char) - this field is optional		* */ 
+		public var state : String;
+
+		/** 
+		* 		* */ 
+		public var additionalParams : Array = new Array();
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -158,6 +179,10 @@ package com.kaltura.vo
 			arr.push('maxUploadSize');
 			arr.push('allowMultiNotification');
 			arr.push('adminUserId');
+			arr.push('firstName');
+			arr.push('lastName');
+			arr.push('country');
+			arr.push('state');
 			return arr;
 		}
 
@@ -168,6 +193,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('additionalParams');
 			return arr;
 		}
 

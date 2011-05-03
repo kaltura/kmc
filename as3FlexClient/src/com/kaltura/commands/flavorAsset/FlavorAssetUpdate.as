@@ -13,7 +13,7 @@ package com.kaltura.commands.flavorAsset
 		 * @param flavorAsset KalturaFlavorAsset
 		 * @param contentResource KalturaContentResource
 		 **/
-		public function FlavorAssetUpdate( id : String,flavorAsset : KalturaFlavorAsset,contentResource : KalturaContentResource )
+		public function FlavorAssetUpdate( id : String,flavorAsset : KalturaFlavorAsset,contentResource : KalturaContentResource=null )
 		{
 			service= 'flavorasset';
 			action= 'update';
@@ -26,9 +26,11 @@ package com.kaltura.commands.flavorAsset
  			keyValArr = kalturaObject2Arrays(flavorAsset, 'flavorAsset');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			if (contentResource) { 
  			keyValArr = kalturaObject2Arrays(contentResource, 'contentResource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 

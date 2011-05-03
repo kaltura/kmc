@@ -42,10 +42,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var liveStreamEnabled : Boolean;
-
-		/** 
-		* 		* */ 
 		public var moderateContent : Boolean;
 
 		/** 
@@ -63,46 +59,6 @@ package com.kaltura.vo
 		/** 
 		* 		* */ 
 		public var kmcVersion : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var enableAnalyticsTab : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableSilverLight : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableVast : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enable508Players : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableMetadata : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableContentDistribution : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableAuditTrail : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableAnnotation : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableMobileFlavors : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enablePs2PermissionValidation : Boolean;
 
 		/** 
 		* 		* */ 
@@ -130,15 +86,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var enableEntryReplacement : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableEntryReplacementApproval : Boolean;
-
-		/** 
-		* 		* */ 
-		public var enableDropFolder : Boolean;
+		public var permissions : Array = new Array();
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -156,31 +104,18 @@ package com.kaltura.vo
 			arr.push('maxBulkSize');
 			arr.push('partnerPackage');
 			arr.push('monitorUsage');
-			arr.push('liveStreamEnabled');
 			arr.push('moderateContent');
 			arr.push('rtmpUrl');
 			arr.push('storageDeleteFromKaltura');
 			arr.push('storageServePriority');
 			arr.push('kmcVersion');
-			arr.push('enableAnalyticsTab');
-			arr.push('enableSilverLight');
-			arr.push('enableVast');
-			arr.push('enable508Players');
-			arr.push('enableMetadata');
-			arr.push('enableContentDistribution');
-			arr.push('enableAuditTrail');
-			arr.push('enableAnnotation');
-			arr.push('enableMobileFlavors');
-			arr.push('enablePs2PermissionValidation');
 			arr.push('defThumbOffset');
 			arr.push('adminLoginUsersQuota');
 			arr.push('userSessionRoleId');
 			arr.push('adminSessionRoleId');
 			arr.push('alwaysAllowedPermissionNames');
 			arr.push('importRemoteSourceForConvert');
-			arr.push('enableEntryReplacement');
-			arr.push('enableEntryReplacementApproval');
-			arr.push('enableDropFolder');
+			arr.push('permissions');
 			return arr;
 		}
 

@@ -3,7 +3,7 @@ package com.kaltura.vo
 	import com.kaltura.vo.KalturaDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaMyspaceDistributionProfile extends KalturaDistributionProfile
+	public dynamic class KalturaYoutubeApiDistributionProfile extends KalturaDistributionProfile
 	{
 		/** 
 		* 		* */ 
@@ -15,27 +15,27 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var domain : String;
+		public var defaultCategory : String;
+
+		/** 
+		* 		* */ 
+		public var allowComments : String;
+
+		/** 
+		* 		* */ 
+		public var allowEmbedding : String;
+
+		/** 
+		* 		* */ 
+		public var allowRatings : String;
+
+		/** 
+		* 		* */ 
+		public var allowResponses : String;
 
 		/** 
 		* 		* */ 
 		public var metadataProfileId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var myspFlavorParamsId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var feedTitle : String;
-
-		/** 
-		* 		* */ 
-		public var feedDescription : String;
-
-		/** 
-		* 		* */ 
-		public var feedContact : String;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -43,12 +43,12 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('username');
 			arr.push('password');
-			arr.push('domain');
+			arr.push('defaultCategory');
+			arr.push('allowComments');
+			arr.push('allowEmbedding');
+			arr.push('allowRatings');
+			arr.push('allowResponses');
 			arr.push('metadataProfileId');
-			arr.push('myspFlavorParamsId');
-			arr.push('feedTitle');
-			arr.push('feedDescription');
-			arr.push('feedContact');
 			return arr;
 		}
 
