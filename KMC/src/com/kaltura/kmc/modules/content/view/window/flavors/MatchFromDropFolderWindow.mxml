@@ -11,6 +11,7 @@
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
@@ -114,7 +115,7 @@
 				_entry.referenceId = _selectedSlug.parsedSlug;
 				// enable / disable action buttons according to slug status
 				updateBtn.enabled = _selectedSlug.status != KalturaDropFolderFileStatus.WAITING; 
-				submitBtn.enabled = _selectedSlug.status == KalturaDropFolderFileStatus.WAITING;
+				submitBtn.enabled = _selectedSlug.status == KalturaDropFolderFileStatus.WAITING || _windowState == SINGLE_FLAVOUR;
 			}
 
 
@@ -162,6 +163,12 @@
 			 * set the selected referenceId to the selelcted entry
 			 * */
 			protected function updateHandler(event:MouseEvent):void {
+				/* this is the ugliest line in the world, and it will handle the case that
+				* a reference id was saved from this window but the user discarded changes
+				* in the main drilldown window, and ended up with a "wrong" value for this 
+				* field on the object in the entries list because it was not refreshed.
+				*/
+				CmsModelLocator.getInstance().entryDetailsModel.selectedEntry.referenceId = _selectedSlug.parsedSlug;
 				var ee:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SINGLE_ENTRY, _entry, _entry.id);
 				ee.dispatch();
 				Alert.show(ResourceManager.getInstance().getString('cms', 'setRefidNotification'));
@@ -258,7 +265,7 @@
 						// container for the resource we want to replace
 						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 						subResource.resource = subSubResource;
-						//NOTE if matching failed, this has no value - but then we shouldn't be able to select this group.
+						//NOTE if matching failed, this has no value (but then we shouldn't be able to select this group)
 						subResource.assetParamsId = dff.flavorParamsId;
 						
 						// add to list
@@ -503,9 +510,9 @@
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"
-				   includeInLayout="{_windowState == MULTI_FLAVOUR}"
+				   includeInLayout="{_windowState == MULTI_FLAVOUR}" enabled="false"
 				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}"/>
-		<mx:Button id="submitBtn" click="submitHandler(event)"
+		<mx:Button id="submitBtn" click="submitHandler(event)" enabled="{_windowState == SINGLE_FLAVOUR}"
 				   label="{ResourceManager.getInstance().getString('cms', 'addFilesActionLabel')}"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
