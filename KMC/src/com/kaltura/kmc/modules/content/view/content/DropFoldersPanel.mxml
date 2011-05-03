@@ -6,13 +6,13 @@
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
 		 xmlns:controls="com.kaltura.controls.*"
-		 width="100%" height="100%"
-		 creationComplete="{onCreationComplete()}">
+		 width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
+			import com.kaltura.types.KalturaDropFolderFileErrorCode;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaDropFolderFile;
@@ -31,10 +31,7 @@
 			
 			[Bindable]
 			public var dropFolderModel:DropFolderModel;
-			
-			private function onCreationComplete():void {
-				dropFolderModel.filter = new KalturaDropFolderFileFilter();
-			}
+	
 			/**
 			 * @inheritDoc
 			 * */
@@ -97,6 +94,37 @@
 						return resourceManager.getString('cms','errDeletingBtn');
 				}
 				return '';
+			}
+
+			/**
+			 * Create suitable string to display in the "error desctiption" column
+			 * */
+			public function getErrorDescription(item:Object) : String {
+				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				var errDescription:String = '';
+				if (curFile.errorCode) {
+					var code:int = parseInt(curFile.errorCode);
+					switch (code) {
+						case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
+							errDescription = resourceManager.getString('cms','dfErrUpdateEntry');
+							break;
+						case KalturaDropFolderFileErrorCode.ERROR_ADD_ENTRY:
+							errDescription = resourceManager.getString('cms','dfErrAddEntry');
+							break;
+						case KalturaDropFolderFileErrorCode.FLAVOR_MISSING_IN_FILE_NAME:
+							errDescription = resourceManager.getString('cms','dfErrFlavorMissingInFile');
+							break;
+						case KalturaDropFolderFileErrorCode.FLAVOR_NOT_FOUND:
+							errDescription = resourceManager.getString('cms','dfErrFlavorNotFound', new Array(curFile.parsedFlavor));
+							break;
+						case KalturaDropFolderFileErrorCode.SLUG_REGEX_NO_MATCH:
+							errDescription = resourceManager.getString('cms','dfErrSlugRegex', new Array(curFile.fileName));
+							break;
+					}
+					
+				}
+				
+				return errDescription;
 			}
 			
 			/**
@@ -204,7 +232,13 @@
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}" dataField="errorDescription"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label text="{outerDocument.getErrorDescription(data)}" paddingLeft="7"/>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
 					</mx:columns>
 				</mx:DataGrid>
 			</mx:HBox>
