@@ -44,6 +44,7 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 				else if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
 					_model.entryDetailsModel.selectedEntry = data.data as KalturaBaseEntry;
+					//TODO if in the entries list there's an entry with the same id, replace it.
 					_model.entryDetailsModel.selectedEntryReloaded = true;
 				}
 				else {
@@ -66,8 +67,9 @@ package com.kaltura.kmc.modules.content.commands {
 					return;
 				}
 			}
-			
-			super.fault(info);
+			else {
+				super.fault(info);
+			}
 		}
 	}
 }
