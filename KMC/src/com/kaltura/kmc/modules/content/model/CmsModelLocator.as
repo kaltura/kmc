@@ -144,8 +144,7 @@ package com.kaltura.kmc.modules.content.model {
 		//Loading Mechanism Data
 		///////////////////////////////////////////
 		
-		
-		
+
 		/**
 		 * number of items currently loading
 		 * */

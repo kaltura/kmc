@@ -91,5 +91,12 @@ package com.kaltura.kmc.modules.content.model
 		 * */
 		public var replacedEntryName:String;
 		
+		/**
+		 * if selected entry was refreshed
+		 * */
+		public var selectedEntryReloaded:Boolean;
+		
+		
+		
 	}
 }

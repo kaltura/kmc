@@ -13,7 +13,6 @@
 			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
 				if (!filterVo.replacementStatusIn) {
 					allReplacementStatusBtn.selected = true;
-					noRequestBtn.selected = false;
 					processingNewBtn.selected = false;
 					readyForReviewBtn.selected = false;
 				}
@@ -21,11 +20,11 @@
 					allReplacementStatusBtn.selected = false;
 					var replacementStatusArr:Array = filterVo.replacementStatusIn.split(',');
 					for each (var replaceCode:String in replacementStatusArr) {
-						switch (replaceCode) {
-							case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
+						switch (replaceCode) {	
 							case KalturaEntryReplacementStatus.NONE:
-								noRequestBtn.selected = true;
+								allReplacementStatusBtn.selected = true;
 								break;
+							case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
 							case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
 								processingNewBtn.selected = true;
 								break;
@@ -49,11 +48,8 @@
 //						KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED, KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED);
 				}
 				else {
-					if (noRequestBtn.selected) { // for no request
-						replacementStatusArray.push(KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY,KalturaEntryReplacementStatus.NONE);
-					}
 					if (processingNewBtn.selected) { // for processing new files 
-						replacementStatusArray.push(KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED);
+						replacementStatusArray.push(KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED,KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY);
 					}
 					if (readyForReviewBtn.selected) { // for ready for review
 						replacementStatusArray.push(KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED);
@@ -70,7 +66,6 @@
 				var isSelected:Boolean = evt.target.selected;
 				if (!isSelected) {
 					(evt.target as Button).selected = true;
-					noRequestBtn.selected = false;
 					processingNewBtn.selected = false;
 					readyForReviewBtn.selected = false;
 					dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
@@ -100,23 +95,20 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateReplacementStatus():Boolean {
-				return !noRequestBtn.selected && !processingNewBtn.selected && !readyForReviewBtn.selected;
+				return !processingNewBtn.selected && !readyForReviewBtn.selected;
 			}
 			
 			
 			
 			
 			public function get buttons():Array {
-				return [allReplacementStatusBtn, noRequestBtn, processingNewBtn, readyForReviewBtn];
+				return [allReplacementStatusBtn, processingNewBtn, readyForReviewBtn];
 			}
 		]]>
 	</mx:Script>
 	<mx:Button id="allReplacementStatusBtn" width="100%" selected="true"
 			   label="{resourceManager.getString('cms', 'allReplacementStatus')}" buttonMode="true"
 			   click="{onAllReplacementStatusClicked(event)}" styleName="mainFilterGroupButton"/>
-	<mx:Button id="noRequestBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'noRequestBtn')}"
-			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
-			   click="{changeReplacementStatusFilter(event)}"/>
 	<mx:Button id="processingNewBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'processingNewBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeReplacementStatusFilter(event)}"/>

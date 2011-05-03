@@ -26,7 +26,8 @@ package com.kaltura.kmc.modules.content.events
 		public static const PREVIEW : String = "content_preview";
 		public static const GET_ENTRY : String = "content_get_entry";
 		public static const DELETE_ENTRY : String = "content_delete_entry";
-		public static const GET_REFERENCE_ENTRY : String = "content_get_reference_entry";
+		public static const GET_REPLACEMENT_ENTRY : String = "content_get_replacement_entry";
+		public static const GET_SELECTED_ENTRY : String = "content_get_selected_entry";
 		
 		/**
 		 * triggers a baseEntry.update with the given baseEntry, with no side effects.

@@ -8,6 +8,9 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 	import com.kaltura.vo.KalturaDropFolderFile;
+	import com.kaltura.vo.KalturaDropFolderFileListResponse;
+	
+	import mx.collections.ArrayCollection;
 
 	public class DeleteDropFolderFilesCommand extends KalturaCommand
 	{
@@ -28,6 +31,16 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		}
 		
 		override public function result(data:Object):void {
+			var resultArr:Array = data.data as Array;
+			var listResponse:KalturaDropFolderFileListResponse = resultArr[resultArr.length - 1];
+			var filteredArray:Array = new Array();
+			for each (var o:Object in listResponse.objects) {
+				if (o is KalturaDropFolderFile) {
+					filteredArray.push(o);
+				}
+			}
+			_model.dropFolderModel.files = new ArrayCollection(filteredArray);
+			_model.dropFolderModel.filesTotalCount = listResponse.totalCount;
 			
 			_model.decreaseLoadCounter();
 		}

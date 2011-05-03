@@ -35,6 +35,7 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
@@ -99,6 +100,8 @@
 			//watchers for binding to assFlavorAssetWindow
 			private var _convProfilesWatcher:ChangeWatcher;
 			private var _selectCPAssetWatcher:ChangeWatcher;
+			//watchers for replacement status
+			private var _selectedReloadedWatcher:ChangeWatcher;
 			
 			//[Bindable]
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
@@ -143,18 +146,13 @@
 					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
 					if (_selectedEntry.replacingEntryId) {
-						var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REFERENCE_ENTRY, null, _selectedEntry.replacingEntryId);
+						var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
 						getReferenceEntry.dispatch();
 					}
 				}
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
-				/* if (_showActions) {
-					var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-					profileEvent.dispatch();
-					
-				} */
 			}
 			
 			private function onCreationComplete():void {
@@ -230,6 +228,7 @@
 				_selectedFlavorWithParams = null;
 			}
 			
+			[Bindable]
 			public function get entryDetailsModel():EntryDetailsModel
 			{
 				return _entryDetailsModel;
@@ -365,6 +364,7 @@
 				_selectCPAssetWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "selectedCPAssetParams",entryDetailsModel, "selectedCPAssetParams"); 
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
+				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
 				addFlavorsAssetsWindow.addEventListener(AddFlavorAssetsWindow.CLOSE_WINDOW, onAddFlavorsWindowClose);
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
@@ -404,6 +404,36 @@
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function onReplacementStautsBtnClick():void {
+				//replacement entry is processing - check for updates
+				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) 
+					|| (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) 
+				{
+					_selectedReloadedWatcher = BindingUtils.bindSetter(onSelectedChanged, entryDetailsModel, "selectedEntryReloaded");
+					var getReplacement:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, entryDetailsModel.selectedEntry.replacingEntryId);
+					getReplacement.dispatch();
+					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, entryDetailsModel.selectedEntry.id);
+					getSelectedEntry.dispatch();	
+				}
+				else
+				{
+					openReplacementDrilldown();
+				}
+			}
+			
+			private function onSelectedChanged(value:Boolean):void {
+				if (!value)
+					return;
+				
+				if (_selectedReloadedWatcher)
+					_selectedReloadedWatcher.unwatch();	
+				if (_selectedEntry.replacementStatus && (_selectedEntry.replacementStatus != KalturaEntryReplacementStatus.NONE)) {
+					openReplacementDrilldown();
+				}
+				
+				entryDetailsModel.selectedEntryReloaded = false;
+			}
+			
+			private function openReplacementDrilldown():void {
 				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
 				openWindow.dispatch();
 			}

@@ -2,8 +2,11 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
@@ -28,6 +31,14 @@ package com.kaltura.kmc.modules.content.commands {
 
 		override public function fault(info:Object):void {
 			_model.decreaseLoadCounter();
+			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
+				var er:KalturaError = (info as KalturaEvent).error;
+				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
+					Alert.show(ResourceManager.getInstance().getString('cms','replacementNotExistMsg'),ResourceManager.getInstance().getString('cms','replacementNotExistTitle'));
+					return;
+				}		
+			}
+			
 			Alert.show(ResourceManager.getInstance().getString('cms', 'flavorAssetsErrorMsg') + ":\n" + info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 		}
 
