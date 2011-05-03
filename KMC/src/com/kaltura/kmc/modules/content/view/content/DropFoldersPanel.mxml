@@ -41,8 +41,14 @@
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
 				listFoldersEvent.dispatch();
-				var listFilesEvent:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
-				listFilesEvent.dispatch();
+			}
+			
+			/**
+			 * refresh page data
+			 * */
+			private function refreshList():void {
+				init();
+				loadDropFolderFiles();
 			}
 			
 			private function newSearchhFromFilter():void {
@@ -182,7 +188,7 @@
 				  styleName="filterTitleHeader"/>
 		<mx:Label text="{resourceManager.getString('cms','mediaFilesTitle')}" styleName="filterTitleHeader"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="init()"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList()"/>
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">

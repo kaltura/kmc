@@ -152,6 +152,11 @@
 			 * */
 			private var _visibleTabsAC:ArrayCollection;
 			
+			/**
+			 * whether we should load roughcuts
+			 * */
+			public var loadRoughcuts:Boolean = true;
+			
 			private var _isReady:Boolean = false;
 			private var _dataInitialized:Boolean = false;
 
@@ -444,7 +449,7 @@
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, selectedEntry);
 					cgEvent.dispatch();
 				}
-				else if (!_isLiveStream) {
+				else if (loadRoughcuts && !_isLiveStream) {
 					//get all entries that uses this mix 
 					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, selectedEntry);
 					getRoughcuts.dispatch();
