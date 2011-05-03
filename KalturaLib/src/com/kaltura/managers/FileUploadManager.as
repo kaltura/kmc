@@ -260,30 +260,34 @@ package com.kaltura.managers {
 			//	if no other file has the same groupid 
 			if (!remainingGroupFiles) {
 				if (file.action == FileUploadVO.ACTION_ADD) {
+					// listen to events from the VO
+					file.addEventListener(KalturaEvent.COMPLETE, GroupActionHandler/*, false, 0, true*/);
+					file.addEventListener(KalturaEvent.FAILED, GroupActionHandler/*, false, 0, true*/);
+					
 					// trigger media.convert for the entry
+					// pass the result via the VO:
 					var mc:MediaConvert = new MediaConvert(file.entryId, parseInt(file.conversionProfile));
-					mc.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
-					mc.addEventListener(KalturaEvent.FAILED, finalActionHandler);
+					mc.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent/*, false, 0, true*/);
+					mc.addEventListener(KalturaEvent.FAILED, file.bubbleEvent/*, false, 0, true*/);
 					_kc.post(mc);
 					// remove group from groupAndComplete list
 					removeGroupFromCompleteList(file.groupId);
 				}
 				else if (file.action == FileUploadVO.ACTION_NONE) {
-					updateMedia(file.groupId, file.entryId);
+					updateMedia(file);
 				}
-				//	dispatch "groupUploadComplete" event with group identifier
-				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_COMPLETE, file.groupId));
+				
 			}
 		}
 		
 		
 		/**
 		 * trigger media.update with all group resources from the group_and_complete list. 
-		 * @param groupid	common id of the files in the group 
-		 * @param entryid	id of the entry that will be replaced by the entry created 
-		 * 					with these files
+		 * @param file	a VO holding the group and entry id to update 
 		 */
-		private function updateMedia(groupid:String, entryid:String):void {
+		private function updateMedia(file:FileUploadVO):void {
+			var groupid:String = file.groupId;	// common id of the files in the group
+			var entryid:String = file.entryId;  // id of the entry that will be replaced by the entry created with these files
 			// the media entry we will update (no need for entryid as it's read-only)
 			var mediaEntry:KalturaMediaEntry = new KalturaMediaEntry();
 			
@@ -307,9 +311,15 @@ package com.kaltura.managers {
 				}
 				
 			}
+			
+			// listen to events from the VO
+			file.addEventListener(KalturaEvent.COMPLETE, GroupActionHandler/*, false, 0, true*/);
+			file.addEventListener(KalturaEvent.FAILED, GroupActionHandler/*, false, 0, true*/);
+				
+			// pass the result via the VO:
 			var mu:MediaUpdate = new MediaUpdate(entryid, mediaEntry, mediaResource);
-			mu.addEventListener(KalturaEvent.COMPLETE, finalActionHandler);
-			mu.addEventListener(KalturaEvent.FAILED, finalActionHandler);
+			mu.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+			mu.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
 			_kc.post(mu);
 			
 			// remove relevant files from the group_and_complete list.
@@ -371,8 +381,8 @@ package com.kaltura.managers {
 		
 		
 		/**
-		 * 
 		 * alert user of any problems 
+		 * trigger group action if required.
 		 */		
 		private function flavorActionHandler(e:KalturaEvent):void {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
@@ -391,16 +401,19 @@ package com.kaltura.managers {
 		
 		
 		/**
-		 * handler for the wrap-up action (flavorAsset.add / update)
-		 * alert user of any problems 
+		 * handler for the final group action.
+		 * handles the result of either media.update or media.convert.
+		 * alert user of any problems, and dispatch a groupUploadComplete event.
 		 */		
-		private function finalActionHandler(e:KalturaEvent):void {
-			e.target.removeEventListener(KalturaEvent.COMPLETE, finalActionHandler);
-			e.target.removeEventListener(KalturaEvent.FAILED, finalActionHandler);
+		private function GroupActionHandler(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, GroupActionHandler);
+			e.target.removeEventListener(KalturaEvent.FAILED, GroupActionHandler);
 			if (e.type == KalturaEvent.FAILED) {
 				// alert user
 				showError(e.error.errorMsg);
 			}
+			//	dispatch "groupUploadComplete" event with group identifier
+			dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_COMPLETE, (e.target as FileUploadVO).groupId));
 		}
 		
 		protected function showError(str:String):void {

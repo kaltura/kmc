@@ -1,5 +1,8 @@
 package com.kaltura.vo
 {
+	import com.kaltura.events.KalturaEvent;
+	
+	import flash.events.EventDispatcher;
 	import flash.net.FileReference;
 	
 	import mx.utils.UIDUtil;
@@ -9,7 +12,7 @@ package com.kaltura.vo
 	 * Represents a file being uploaded via FileUploadManager. 
 	 * @author Atar
 	 */
-	public class FileUploadVO {
+	public class FileUploadVO extends EventDispatcher {
 		
 		// optional actions with vo after upload
 		public static const ACTION_ADD:String = "action_add";
@@ -114,6 +117,17 @@ package com.kaltura.vo
 		 */
 		public function get id():String {
 			return _id;
+		}
+		
+		/**
+		 * catch an event, and dispatch equal event with this VO as its target. 
+		 * @param e
+		 */
+		public function bubbleEvent(e:KalturaEvent):void {
+			(e.target as EventDispatcher).removeEventListener(KalturaEvent.COMPLETE, bubbleEvent);
+			(e.target as EventDispatcher).removeEventListener(KalturaEvent.FAILED, bubbleEvent);
+			var event:KalturaEvent = e.clone() as KalturaEvent;
+			dispatchEvent(event);
 		}
 		
 
