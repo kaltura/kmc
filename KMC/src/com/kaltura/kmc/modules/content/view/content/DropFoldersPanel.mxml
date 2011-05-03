@@ -40,6 +40,7 @@
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
 				listFoldersEvent.dispatch();
+				updateExpenderLabel();
 			}
 			
 			/**
@@ -50,10 +51,11 @@
 				loadDropFolderFiles();
 			}
 			
-			private function newSearchhFromFilter():void {
+			private function newSearchFromFilter():void {
 				paging.kalturaFilterPager.pageIndex = 1;
 				paging.selectedPage = 1;
 				loadDropFolderFiles();
+				updateExpenderLabel();
 			}
 			
 			/**
@@ -210,6 +212,18 @@
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
 				loadDropFolderFiles();
 			}
+			
+			private function updateExpenderLabel():void {
+				if (!filter)
+					return;
+				
+				if (!filter.isFilterOn) {
+					filteredLabel.visible = false;
+				}
+				else {
+					filteredLabel.visible = true;
+				}
+			}
 		
 		]]>
 	</mx:Script>
@@ -219,12 +233,14 @@
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
 		<mx:Label text="{resourceManager.getString('cms','mediaFilesTitle')}" styleName="filterTitleHeader"/>
+		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
+				  visible="false"/>
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList()"/>
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">
-			<filter:DropFolderFilter id="filter" height="{tableContainer.height}" width="245" newSearch="{newSearchhFromFilter()}"
+			<filter:DropFolderFilter id="filter" height="{tableContainer.height}" width="245" newSearch="{newSearchFromFilter()}"
 						 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
 		</mx:VBox>
 
