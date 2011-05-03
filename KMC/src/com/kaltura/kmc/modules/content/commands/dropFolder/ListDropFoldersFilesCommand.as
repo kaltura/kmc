@@ -29,15 +29,14 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 			_eventType = listEvent.type;
 			_entry = listEvent.entry;
 			var listFiles:DropFolderFileList;
-			var filter:KalturaDropFolderFileFilter;
+			
 			// drop folders panel
 			if (_eventType == DropFolderFileEvent.LIST_ALL) {
-				filter = _model.dropFolderModel.filter;
-				listFiles = new DropFolderFileList(filter);
+				listFiles = new DropFolderFileList(_model.dropFolderModel.filter, _model.dropFolderModel.pager);
 			}
 			// match from drop folder popup
 			else {
-				filter = new KalturaDropFolderFileFilter();
+				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
 				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 				// use selected folder
 				filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
