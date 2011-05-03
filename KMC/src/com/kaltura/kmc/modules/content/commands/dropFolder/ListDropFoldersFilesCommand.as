@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 	import com.kaltura.vo.KalturaDropFolderFile;
 	import com.kaltura.vo.KalturaDropFolderFileFilter;
 	import com.kaltura.vo.KalturaDropFolderFileListResponse;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -47,11 +47,11 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 				}
 				// file status
 //				if (_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT) {
-//					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
+					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
 //				}
 //				else {
 					// DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH
-					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING;
+//					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING;
 //				}
 				listFiles = new DropFolderFileList(filter);
 			}
@@ -168,8 +168,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 							continue;
 						}
 					}
-					// group all files where name parse failed under same group
-					if (dff.parsedSlug == null) {
+					// group all files where status == ERROR_HANDLING under same group
+					if (dff.status == KalturaDropFolderFileStatus.ERROR_HANDLING) {
 						dff.parsedSlug = parseFailedStr;
 					}
 					// get relevant group
