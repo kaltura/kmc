@@ -96,6 +96,9 @@
 				// assuming any flavour data was passed before the popup was
 				// added to the display list, this is a good time to set appearance
 				setAppearance(_windowState == MULTI_FLAVOUR);
+				if (_folders) {
+					cbFolders.dispatchEvent(new ListEvent("change"));
+				}
 			}
 
 
@@ -458,6 +461,8 @@
 					if (value.length > 0) {
 						// got drop folders, show window
 						visible = true;
+						// prompt="{ResourceManager.getInstance().getString('cms', 'selectPrompt')}"
+						
 					}
 					else {
 						// no drop folders, alert user and close popup
@@ -474,7 +479,7 @@
 		<mx:Label id="headerLbl" styleName="simpleBoldText"/>
 		<mx:Spacer width="100%"/>
 		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)"
-					 selectedIndex="-1" prompt="{ResourceManager.getInstance().getString('cms', 'selectPrompt')}"/>
+					 selectedIndex="0" />
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
 	<mx:HBox width="100%">
