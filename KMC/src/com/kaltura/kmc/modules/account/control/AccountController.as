@@ -24,15 +24,10 @@ package com.kaltura.kmc.modules.account.control
 			// user events
 			addCommand( UserEvent.LIST_USERS, ListUsersCommand );
 			
-			// Package Events
-			addCommand( PackageEvent.LIST_PARTNER_PACKAGE , ListPartnerPackagesCommand );
-			addCommand( PackageEvent.PURCHASE_PARTNER_PACKAGE ,PurchasePackageCommand);
 			
 			// Kaltura Events
 			 addCommand( ContactEvent.CONTACT_US , ContactSalesForceCommand );
 			 
-			// Modal Window Events
-			addCommand( ModalWindowEvent.OPEN_PAYPAL_WINDOW , TogglePayPalWindowCommand );
 			
 			// Partner Usage Event
 			addCommand(UsageGraphEvent.USAGE_GRAPH, GetUsageGraphCommand);
@@ -43,14 +38,6 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
 			addCommand(AccessControlProfileEvent.ACCOUNT_MARK_PROFILES, MarkAccessControlProfilesCommand);
 			addCommand(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
-			
-		/* 	// External Syndication Events
-			addCommand(ExternalSyndicationEvent.ADD_NEW_EXTERNAL_SYNDICATION, AddNewExternalSyndicationCommand);
-			addCommand(ExternalSyndicationEvent.DELETE_EXTERNAL_SYNDICATION, DeleteExternalSyndicationCommand);
-			addCommand(ExternalSyndicationEvent.GET_ALL_EXTERNAL_SYNDICATIONS, GetAllExternalSyndicationsCommand);
-			addCommand(ExternalSyndicationEvent.MARK_EXTERNAL_SYNDICATION, MarkExternalSyndicationCommand);
-			addCommand(ExternalSyndicationEvent.SAVE_EXTERNAL_SYNDICATION_CHANGES, SaveExternalSyndicationCommand); */
-			
 			
 			// Conversion Profile Events
 			addCommand(ConversionSettingsAccountEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);

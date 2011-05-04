@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.account.model {
 		public var paymentDetailsVo:PaymentDetailsVO = new PaymentDetailsVO();
 		public var listPackages:ArrayCollection;
 		public var modalWinData:Object = null;
-		public var gaTrackUrl:String = null;
+//		public var gaTrackUrl:String = null;
 		
 		public var metadataProfilesArray:ArrayCollection = new ArrayCollection();
 		public var selectedMetadataProfile:KMCMetadataProfileVO;
@@ -83,7 +83,6 @@ package com.kaltura.kmc.modules.account.model {
 		public var customDataDisabled:Boolean = false;
 		
 		public var partnerInfoLoaded:Boolean = false;
-		public var openPayPalWindowFlag:Boolean = false;
 		public var saveAndExitFlag:Boolean = false;
 
 		//---------------------------------------------------------

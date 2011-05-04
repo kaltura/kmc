@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
+				   xmlns:view="com.kaltura.kmc.modules.account.view.*" xmlns:business="com.kaltura.kmc.modules.account.business.*"
+				   xmlns:control="com.kaltura.kmc.modules.account.control.*"
 				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#034F57" layout="vertical"
-				   minHeight="520" minWidth="950" borderThickness="0" borderStyle="solid" paddingLeft="0"
-				   paddingRight="0" paddingTop="0" paddingBottom="0" xmlns:view="com.kaltura.kmc.modules.account.view.*"
-				   xmlns:business="com.kaltura.kmc.modules.account.business.*"
-				   xmlns:control="com.kaltura.kmc.modules.account.control.*">
+				   minHeight="520" minWidth="950" borderThickness="0" borderStyle="solid" 
+				   paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" >
 
 	<mx:Metadata>
 		[ResourceBundle("account")]
@@ -23,18 +23,14 @@
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.CustomData;
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
-			import com.kaltura.kmc.modules.account.view.modalWindows.PayPalFormWin;
 			import com.kaltura.kmc.modules.account.vo.AdminVO;
-			import com.kaltura.kmc.modules.account.vo.PackagesVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.kaltura.utils.KUtils;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.core.Container;
 			import mx.events.CloseEvent;
 			import mx.events.ItemClickEvent;
-			import mx.managers.PopUpManager;
 
 			/**
 			 * KMC is responsible to use the value of
@@ -68,7 +64,7 @@
 			 * */
 			public var urchinNumber:String;
 
-			private var _paypalWin:PayPalFormWin;
+//			private var _paypalWin:PayPalFormWin;
 			
 			/**
 			 * in case we want to start from a tab other than the
@@ -131,8 +127,8 @@
 
 				//Binding
 				BindingUtils.bindSetter(toggleLoading, _model, "loadingFlag");
-				BindingUtils.bindSetter(openPayPalWindow, _model, "openPayPalWindowFlag");
-				BindingUtils.bindSetter(onGATrack, _model, "gaTrackUrl");
+//				BindingUtils.bindSetter(openPayPalWindow, _model, "openPayPalWindowFlag");
+//				BindingUtils.bindSetter(onGATrack, _model, "gaTrackUrl");
 
 				urchinNumber = _flashvars.urchinnumber;
 				initModelContext(_flashvars);
@@ -166,9 +162,9 @@
 				
 				
 				// after we have the client, initialize the different panels
-//				if (overview.parent) {
-//					overview.init();
-//				}
+				if (overview.parent) {
+					overview.init();
+				}
 				if (integration.parent) {
 					integration.init();
 				}
@@ -213,10 +209,10 @@
 			}
 
 
-			private function onGATrack(gaTrackUrl:String):void {
-				if (gaTrackUrl)
-					_tracker.trackPageview(gaTrackUrl);
-			}
+//			private function onGATrack(gaTrackUrl:String):void {
+//				if (gaTrackUrl)
+//					_tracker.trackPageview(gaTrackUrl);
+//			}
 
 
 			private function initModelContext(objParam:Object):void {
@@ -235,36 +231,36 @@
 			}
 
 
-			private function openPayPalWindow(isIt:Boolean):void {
-				if (isIt) {
-					if (!_paypalWin) {
-						_paypalWin = new PayPalFormWin();
-						_paypalWin.styleName = "TitleWindowType2";
-						_paypalWin.paymentDetailsVo = _model.paymentDetailsVo;
-						_paypalWin.data = _model.modalWinData;
-						if ((_model.modalWinData as PackagesVO).cycleFee == _model.partnerPackage.cycleFee)
-							_paypalWin.title = resourceManager.getString('account', 'updatePaymetInfo');
-						else if ((_model.modalWinData as PackagesVO).cycleFee > _model.partnerPackage.cycleFee)
-							_paypalWin.title = resourceManager.getString('account', 'upgradePackage');
-						else {
-							_paypalWin.title = resourceManager.getString('account', 'downgradePackage');
-							_paypalWin.actionBtnText = resourceManager.getString('account', 'downgradeNow');
-						}
-
-						_paypalWin.title += " - " + _model.modalWinData.name;
-						PopUpManager.addPopUp(_paypalWin, this, true);
-						PopUpManager.centerPopUp(_paypalWin);
-						enableHtmlTabs(false);
-					}
-				}
-				else {
-					if (_paypalWin) {
-						PopUpManager.removePopUp(_paypalWin);
-						enableHtmlTabs(true);
-						_paypalWin = null;
-					}
-				}
-			}
+//			private function openPayPalWindow(isIt:Boolean):void {
+//				if (isIt) {
+//					if (!_paypalWin) {
+//						_paypalWin = new PayPalFormWin();
+//						_paypalWin.styleName = "TitleWindowType2";
+//						_paypalWin.paymentDetailsVo = _model.paymentDetailsVo;
+//						_paypalWin.data = _model.modalWinData;
+//						if ((_model.modalWinData as PackagesVO).cycleFee == _model.partnerPackage.cycleFee)
+//							_paypalWin.title = resourceManager.getString('account', 'updatePaymetInfo');
+//						else if ((_model.modalWinData as PackagesVO).cycleFee > _model.partnerPackage.cycleFee)
+//							_paypalWin.title = resourceManager.getString('account', 'upgradePackage');
+//						else {
+//							_paypalWin.title = resourceManager.getString('account', 'downgradePackage');
+//							_paypalWin.actionBtnText = resourceManager.getString('account', 'downgradeNow');
+//						}
+//
+//						_paypalWin.title += " - " + _model.modalWinData.name;
+//						PopUpManager.addPopUp(_paypalWin, this, true);
+//						PopUpManager.centerPopUp(_paypalWin);
+//						enableHtmlTabs(false);
+//					}
+//				}
+//				else {
+//					if (_paypalWin) {
+//						PopUpManager.removePopUp(_paypalWin);
+//						enableHtmlTabs(true);
+//						_paypalWin = null;
+//					}
+//				}
+//			}
 
 			/**
 			 * when a user asks to change tab (clicks another tab), track that change.
@@ -354,8 +350,8 @@
 
 			public function toggleLoading(isIt:Boolean):void {
 				this.enabled = !isIt;
-				if (_paypalWin)
-					_paypalWin.enabled = !isIt;
+//				if (_paypalWin)
+//					_paypalWin.enabled = !isIt;
 				
 				if (isIt) {
 					cursorManager.setBusyCursor();
