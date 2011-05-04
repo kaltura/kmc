@@ -3,10 +3,7 @@
 <project name="Locale Compiler" basedir="." default="build">
 	
 	<!-- the language for which we compile locale -->
-    <property name="LANGUAGE" value="en_US"/>
-	
-	<!-- the module (folder name) for which we compile locale -->
-    <property name="MODULE" value="admin"/>
+    <property name="LANGUAGE" value="ja_JP"/>
 	
 	<!-- path to Flex SDK -->
     <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4/sdks/3.5.0"/>
@@ -21,63 +18,35 @@
     
 
 	
-	<target name="compile" description="compile the desired locale module">
-        <mxmlc output="${DEPLOY_DIR}/${MODULE}_${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
-			
-            <!-- Get default compiler options. -->
-            <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
-
-            <!-- List of path elements that form the roots of ActionScript class hierarchies. -->
-            <source-path path-element="../locale/{locale}"/>
-            <source-path path-element="../locale/{locale}/${MODULE}"/>
-
-			<!-- List of resource bundles to compile in the resourceModule -->
-			<!-- dashboard
-			<include-resource-bundles>charts</include-resource-bundles>
-			<include-resource-bundles>kdashboard</include-resource-bundles>
- -->		
-			<!-- analytics 
-			<include-resource-bundles>analytics</include-resource-bundles>
-			<include-resource-bundles>map</include-resource-bundles>
-			<include-resource-bundles>sourceTypes</include-resource-bundles>
--->
-			<!-- account 
-			<include-resource-bundles>account</include-resource-bundles>
-			<include-resource-bundles>charts</include-resource-bundles>
-			<include-resource-bundles>CairngormMessages</include-resource-bundles>
--->
-			<!-- studio 
-			<include-resource-bundles>aps</include-resource-bundles>
-			<include-resource-bundles>advertising</include-resource-bundles>
-			<include-resource-bundles>CairngormMessages</include-resource-bundles>
--->
-			<!-- content 
-			<include-resource-bundles>cms</include-resource-bundles>
-			<include-resource-bundles>CairngormMessages</include-resource-bundles>
--->
-			<!-- admin -->
-			<include-resource-bundles>admin</include-resource-bundles>
-			<include-resource-bundles>CairngormMessages</include-resource-bundles>
-
-            <!-- List of SWC files or directories that contain SWC files. >
-            <compiler.library-path dir="${FLEX_HOME}/frameworks" append="true">
-                <include name="libs" />
-                <include name="../bundles/{locale}" />
-            </compiler.library-path-->
-
-        </mxmlc>
+	<target name="compile" description="compile all locales">
+        <echo>Compiling all KMC locales:</echo>
+        <echo>Compiling locale: KMC</echo>
+		<ant antfile="locale_kmc.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: account</echo>
+		<ant antfile="locale_account.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: admin</echo>
+		<ant antfile="locale_admin.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: analytics</echo>
+		<ant antfile="locale_analytics.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: content</echo>
+		<ant antfile="locale_content.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: dashboard</echo>
+		<ant antfile="locale_dashboard.xml" inheritAll="true" target="compile"/>
+        <echo>Compiling locale: studio</echo>
+		<ant antfile="locale_studio.xml" inheritAll="true" target="compile"/>
     </target>
 
 		
 	<target name="build" depends="clean, init, compile">
-		<echo>Locale ${MODULE}_${LANGUAGE} compiled successfully</echo>
+		<echo>Locale files for ${LANGUAGE} compiled successfully</echo>
 	</target>
 	
 	
 	<target name="clean" description="delete old file">
-		<echo>Deleting ${MODULE}_${LANGUAGE}_ResourceModule.swf</echo>
+		<echo>Deleting compiled files for locale ${LANGUAGE}</echo>
         <delete failonerror="false">
-            <fileset dir="${DEPLOY_DIR}" includes="${MODULE}_${LANGUAGE}_ResourceModule.swf"/>
+            <fileset dir="${DEPLOY_DIR}" />
+			<!-- includes="${MODULE}_${LANGUAGE}_ResourceModule.swf" -->
         </delete>
     </target>
 	
