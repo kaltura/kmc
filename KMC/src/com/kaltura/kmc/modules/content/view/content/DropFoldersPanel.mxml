@@ -40,6 +40,8 @@
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
 				listFoldersEvent.dispatch();
+				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
+				listFiles.dispatch();
 				updateExpenderLabel();
 			}
 			
@@ -47,7 +49,8 @@
 			 * refresh page data
 			 * */
 			private function refreshList():void {
-				init();
+				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
+				listFoldersEvent.dispatch();
 				loadDropFolderFiles();
 			}
 			
@@ -210,7 +213,7 @@
 				dropFolderModel.pager = paging.kalturaFilterPager;
 				paging.kalturaFilterPager.pageIndex = 0;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-				loadDropFolderFiles();
+				//loadDropFolderFiles();
 			}
 			
 			private function updateExpenderLabel():void {

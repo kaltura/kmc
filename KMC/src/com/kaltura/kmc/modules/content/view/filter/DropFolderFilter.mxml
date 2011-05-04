@@ -21,6 +21,8 @@
 			
 			public var isFilterOn:Boolean;
 			
+			private var _listButtonsArray:Array;
+			
 			private function updateIsFilterOn(curFilter:KalturaDropFolderFileFilter):void {
 				isFilterOn = (curFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (curFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || checkSpecificDropFoldersSelcted() 
 				|| !dropFolderFileStatus.allDropStatusBtn.selected || (curFilter.fileNameLike!=''); 
@@ -30,11 +32,10 @@
 			 * checks if "all drop folders" buttons is selected, or are we filtering according to a specific folder
 			 * */
 			private function checkSpecificDropFoldersSelcted():Boolean {
-				if (dropFolders.numChildren==0)
+				if (_listButtonsArray || _listButtonsArray.length==0)
 					return false;
 				
-				var container:Container = dropFolders.getChildAt(0) as Container;
-				return (!(container.getChildAt(0) as Button).selected);
+				return !((_listButtonsArray[0] as Button).selected);
 			}
 			
 			public function get dropFoldersAC():ArrayCollection
@@ -47,7 +48,10 @@
 				_dropFoldersAC = value;
 				
 				if (value && value.length)
+				{
 					buildDropFoldersFilter();
+					showDropFoldersData(_dropFolderFileFilter);
+				}
 			}
 			
 			/**
@@ -69,15 +73,15 @@
 			 * get select drop folders ids
 			 * */
 			private function getSelectedDropFoldersIds():String {
-				if (dropFolders.numChildren==0)
+				if (!_listButtonsArray)
 					return '';
 				var idsArr:Array = new Array();	
-				var container:Container = dropFolders.getChildAt(0) as Container;
-				for (var i:int = 0; i<container.numChildren; i++)
+
+				for (var i:int = 0; i<_listButtonsArray.length; i++)
 				{
-					if ((container.getChildAt(i) as Button).selected) {
+					if ((_listButtonsArray[i] as Button).selected) {
 						for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
-							if (dropFolder.name == ((container.getChildAt(i) as Button).label)) {
+							if (dropFolder.name == ((_listButtonsArray[i] as Button).label)) {
 								idsArr.push(dropFolder.id);
 								break;
 							}
@@ -96,10 +100,10 @@
 				container.percentWidth = 100;
 				container.styleName = "defualtFilter";
 				
-				var listButtonsArray:Array = createButtonsGroup(resourceManager.getString("cms", "dropFoldersTitle"), "dropFolders",
+				 _listButtonsArray = createButtonsGroup(resourceManager.getString("cms", "dropFoldersTitle"), "dropFolders",
 					_dropFoldersAC.source, "name", onAutoTitleClick, onAutoMemberClick);
 				//_dropFoldersBtnsAC["dropFolders"] = listButtonsArray;
-				injectGroupToContainer(container, listButtonsArray);
+				injectGroupToContainer(container, _listButtonsArray);
 				
 				return container;
 			}
@@ -125,8 +129,10 @@
 					showDatesData(_dropFolderFileFilter);
 					showDropFoldersData(_dropFolderFileFilter);
 					dropFolderFileStatus.setFilter(_dropFolderFileFilter);	
-					validateNow();	
+					updateImageButton(_listButtonsArray);
+						
 				}
+				validateNow();
 			}
 			
 			/**
@@ -172,6 +178,7 @@
 			override public function validateNow():void {
 				super.validateNow();
 				updateImageButton(dropFolderFileStatus.buttons);
+				updateImageButton(_listButtonsArray);
 			}
 			
 			/**
@@ -187,7 +194,7 @@
 			 * selects the suitable data accoding to the given filterVo
 			 * */
 			private function showDropFoldersData(filterVo:KalturaDropFolderFileFilter) : void {
-				if (dropFolders.numChildren==0 || !filterVo.dropFolderIdIn)
+				if (!_listButtonsArray || !filterVo.dropFolderIdIn)
 					return;
 				var container:Container = dropFolders.getChildAt(0) as Container;
 				var foldersArr:Array = filterVo.dropFolderIdIn.split(',');
@@ -202,11 +209,17 @@
 					}
 				}
 				//mark suitable buttons
-				for (var j:int = 0; j<container.numChildren; j++) {
-					var curBtn:Button = container.getChildAt(j) as Button;
-					if (selectedFoldersNames.contains(curBtn.label))
+				for (var j:int = 0; j<_listButtonsArray.length; j++) {
+					var curBtn:Button =_listButtonsArray[j] as Button;
+					if (selectedFoldersNames.contains(curBtn.label)) {
 						curBtn.selected = true;
+					}
+					else {
+						curBtn.selected = false;
+					}
 				}
+				
+				validateNow();
 			}
 
 		]]>
