@@ -40,8 +40,7 @@
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
 				listFoldersEvent.dispatch();
-				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
-				listFiles.dispatch();
+				loadDropFolderFiles();
 				updateExpenderLabel();
 			}
 			
@@ -109,26 +108,23 @@
 			public function getErrorDescription(item:Object) : String {
 				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
 				var errDescription:String = '';
-				if (curFile.errorCode) {
-					var code:int = parseInt(curFile.errorCode);
-					switch (code) {
-						case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
-							errDescription = resourceManager.getString('cms','dfErrUpdateEntry');
-							break;
-						case KalturaDropFolderFileErrorCode.ERROR_ADD_ENTRY:
-							errDescription = resourceManager.getString('cms','dfErrAddEntry');
-							break;
-						case KalturaDropFolderFileErrorCode.FLAVOR_MISSING_IN_FILE_NAME:
-							errDescription = resourceManager.getString('cms','dfErrFlavorMissingInFile');
-							break;
-						case KalturaDropFolderFileErrorCode.FLAVOR_NOT_FOUND:
-							errDescription = resourceManager.getString('cms','dfErrFlavorNotFound', new Array(curFile.parsedFlavor));
-							break;
-						case KalturaDropFolderFileErrorCode.SLUG_REGEX_NO_MATCH:
-							errDescription = resourceManager.getString('cms','dfErrSlugRegex', new Array(curFile.fileName));
-							break;
-					}
-					
+
+				switch (curFile.errorCode) {
+					case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
+						errDescription = resourceManager.getString('cms','dfErrUpdateEntry');
+						break;
+					case KalturaDropFolderFileErrorCode.ERROR_ADD_ENTRY:
+						errDescription = resourceManager.getString('cms','dfErrAddEntry');
+						break;
+					case KalturaDropFolderFileErrorCode.FLAVOR_MISSING_IN_FILE_NAME:
+						errDescription = resourceManager.getString('cms','dfErrFlavorMissingInFile');
+						break;
+					case KalturaDropFolderFileErrorCode.FLAVOR_NOT_FOUND:
+						errDescription = resourceManager.getString('cms','dfErrFlavorNotFound', new Array(curFile.parsedFlavor));
+						break;
+					case KalturaDropFolderFileErrorCode.SLUG_REGEX_NO_MATCH:
+						errDescription = resourceManager.getString('cms','dfErrSlugRegex', new Array(curFile.fileName));
+						break;
 				}
 				
 				return errDescription;
@@ -187,23 +183,27 @@
 			}
 			
 			private function loadDropFolderFiles():void {
-				if (paging.pageSize == 10) {
-					entryTableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + 10;
-					dg.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
-					dg.rowCount = 10;
-					vbox1.height = dg.height + paging.height + bottomActionBox.height;
-					topContainer.height = entryTableContainer.height + paging.height + bottomActionBox.height;
-				}
-				else {
-					topContainer.percentHeight = 100;
-					entryTableContainer.percentHeight = 100;
-					dg.percentHeight = 100;
-					dg.rowCount = -1;
-					vbox1.percentHeight = 100;
+				if (paging) {	
+					if (paging.pageSize == 10) {
+						entryTableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + 10;
+						dg.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
+						dg.rowCount = 10;
+						vbox1.height = dg.height + paging.height + bottomActionBox.height;
+						topContainer.height = vbox1.height;
+					}
+					else {
+						topContainer.percentHeight = 100;
+						entryTableContainer.percentHeight = 100;
+						dg.percentHeight = 100;
+						dg.rowCount = -1;
+						vbox1.percentHeight = 100;
+					}
+					
+					dropFolderModel.pager = paging.kalturaFilterPager;
 				}
 				
-				dropFolderModel.filter = filter.dropFolderFileFilter;
-				dropFolderModel.pager = paging.kalturaFilterPager;
+				if (filter)
+					dropFolderModel.filter = filter.dropFolderFileFilter;
 
 				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
 				listFiles.dispatch();
@@ -213,7 +213,6 @@
 				dropFolderModel.pager = paging.kalturaFilterPager;
 				paging.kalturaFilterPager.pageIndex = 0;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-				//loadDropFolderFiles();
 			}
 			
 			private function updateExpenderLabel():void {
@@ -270,7 +269,7 @@
 							 totalCount="{dropFolderModel.filesTotalCount}"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
 							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
-			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
+			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions" height="30">
 				<mx:HBox height="100%" verticalAlign="middle" left="5" horizontalGap="0">
 					<mx:Label text="{resourceManager.getString('cms', 'selectionTitle')}"/>
 					<mx:LinkButton id="selectAll" label="{resourceManager.getString('cms', 'selectAllOption')}"
