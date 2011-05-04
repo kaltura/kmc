@@ -13,7 +13,7 @@ package com.kaltura.commands.bulkUpload
 		 * @param fileData Object - FileReference or ByteArray
 		 * @param bulkUploadType String
 		 **/
-		public function BulkUploadAdd( conversionProfileId : int,fileData : Object,bulkUploadType : String = '' )
+		public function BulkUploadAdd( conversionProfileId : int,fileData : Object,bulkUploadType : String = null )
 		{
 			service= 'bulkupload';
 			action= 'add';

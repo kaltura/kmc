@@ -13,7 +13,7 @@ package com.kaltura.commands.baseEntry
 		 * @param resource KalturaResource
 		 * @param type String
 		 **/
-		public function BaseEntryAdd( entry : KalturaBaseEntry,resource : KalturaResource=null,type : String = '' )
+		public function BaseEntryAdd( entry : KalturaBaseEntry,resource : KalturaResource=null,type : String = null )
 		{
 			service= 'baseentry';
 			action= 'add';
