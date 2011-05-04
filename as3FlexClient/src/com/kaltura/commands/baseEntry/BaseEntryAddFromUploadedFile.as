@@ -12,7 +12,7 @@ package com.kaltura.commands.baseEntry
 		 * @param uploadTokenId String
 		 * @param type String
 		 **/
-		public function BaseEntryAddFromUploadedFile( entry : KalturaBaseEntry,uploadTokenId : String,type : String='null' )
+		public function BaseEntryAddFromUploadedFile( entry : KalturaBaseEntry,uploadTokenId : String,type : String = '' )
 		{
 			service= 'baseentry';
 			action= 'addFromUploadedFile';

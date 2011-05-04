@@ -1,19 +1,14 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaUrlResource;
+	import com.kaltura.vo.KalturaDropFolderFileHandlerConfig;
 
 	[Bindable]
-	public dynamic class KalturaBulkResource extends KalturaUrlResource
+	public dynamic class KalturaDropFolderXmlBulkUploadFileHandlerConfig extends KalturaDropFolderFileHandlerConfig
 	{
-		/** 
-		* ID of the bulk upload job to be associated with the entry 		* */ 
-		public var bulkUploadId : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('bulkUploadId');
 			return arr;
 		}
 

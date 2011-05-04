@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.content.control
 	{
 		public function CMSController()
 		{
-			initializeCommands();
+			initializeCommands(); 
 		}
 		
 		public function initializeCommands() : void

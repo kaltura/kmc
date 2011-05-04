@@ -42,6 +42,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var errorCode : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var errorDescription : String;
 
 		/** 
@@ -63,6 +67,7 @@ package com.kaltura.vo
 			arr.push('status');
 			arr.push('parsedSlug');
 			arr.push('parsedFlavor');
+			arr.push('errorCode');
 			arr.push('errorDescription');
 			return arr;
 		}
