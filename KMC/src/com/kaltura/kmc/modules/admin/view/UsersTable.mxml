@@ -12,6 +12,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcEvent;
 			import com.kaltura.types.KalturaUserStatus;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
@@ -23,7 +24,6 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
-			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 
 			// ==================================================================
@@ -87,6 +87,20 @@
 			// methods
 			// ==================================================================
 
+			override public function set dataProvider(value:Object):void {
+				var ac:ArrayCollection = value as ArrayCollection;
+				for each (var o:Object in ac) {
+					// add the "enabled" property
+					o.enableActionDropdown = enableActionDropdown;
+					// add the actions arrays
+					o.comboDataProvider = comboDataProvider;
+					o.crippledComboDataProvider = crippledComboDataProvider;
+					// add the crippled users ids
+					o.crippledUsersIds = crippledUsersIds;
+				}
+				
+				super.dataProvider = value;
+			}
 
 			/**
 			 * selection or deselection was made
@@ -158,7 +172,7 @@
 				
 				crippledComboDataProvider = new ArrayCollection();
 				crippledComboDataProvider.addItem({label:resourceManager.getString('admin','edit'),id:'edit'});
-			
+				addEventListener("actionSelected", onActionSelected, false, 0, true);
 			}
 
 
@@ -178,9 +192,6 @@
 				if (!res) {
 					res = comboDataProvider;
 				}
-				// refresh the collection so it'll dispatch an event that will 
-				// hopefuly solve the incomplete / incorrect dropdown issue. 
-				res.refresh();
 				return res;
 			}
 			
@@ -211,10 +222,9 @@
 
 			/**
 			 * perform selected action on selected entry
-			 * (used in item renderer)
 			 * */
-			public function onActionSelected(event:ListEvent):void {
-				switch ((event.target as ComboBox).selectedItem.id) {
+			public function onActionSelected(event:KmcEvent):void {
+				switch (event.data) {
 					case 'edit':
 						editEntry();
 						break;
@@ -225,7 +235,6 @@
 						confirmDelete();
 						break;
 				}
-				(event.target as ComboBox).selectedIndex = -1;
 			}
 			
 			// ==================================================================
@@ -326,6 +335,7 @@
 				// re-trigger the itemrenderers' data setter,  
 				// so the list will actually be used
 				if (dataProvider) {
+					(dataProvider as ArrayCollection).refresh();
 					dataProvider = dataProvider;
 				}
 			}
@@ -363,8 +373,9 @@
 						   headerText="{resourceManager.getString('admin', 'user_last_login')}"
 						   headerStyleName="adminTableColumn"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('admin', 'user_actions')}"
-						   headerStyleName="adminTableCenteredColumn" width="140">
-			<mx:itemRenderer>
+						   headerStyleName="adminTableCenteredColumn" width="140"
+						   itemRenderer="com.kaltura.kmc.modules.admin.view.renderers.UserActionItemRenderer" >
+			<!--<mx:itemRenderer>
 				<mx:Component>
 					<renderers:UserBaseItemRenderer height="100%" verticalScrollPolicy="off" 
 													horizontalScrollPolicy="off" paddingRight="5">
@@ -378,7 +389,7 @@
 						</mx:VBox>
 					</renderers:UserBaseItemRenderer>
 				</mx:Component>
-			</mx:itemRenderer>
+			</mx:itemRenderer>-->
 		</mx:DataGridColumn>
 	</mx:columns>
 </mx:DataGrid>

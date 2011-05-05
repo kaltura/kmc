@@ -3,33 +3,60 @@
 								xmlns:renderers="com.kaltura.kmc.modules.admin.view.renderers.*" width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcEvent;
 			import com.kaltura.vo.KalturaUser;
+			
+			import mx.collections.ArrayCollection;
 			
 			private var _currUser:KalturaUser;
 			
 			override public function set data(value:Object):void {
 				_currUser = value as KalturaUser;
+				cb.dataProvider = getActionsDP(value);
+				if (cb.dropdown) {
+					cb.dropdown.dataProvider = cb.dataProvider;
+				}
 				super.data = value;
 			}
 			
-			/**
-			 * show formatted date
-			 * */
-			private function formatDate():String {
-				var df:DateFormatter = new DateFormatter();
-				df.formatString = resourceManager.getString('admin', 'list_date_format');
-				var dt:Date = new Date();
-				dt.setTime(_currUser.lastLoginTime * 1000);
-				return df.format(dt);
-			};
+			protected function getActionsDP(data:Object):ArrayCollection {
+				var res:ArrayCollection;
+				var usr:KalturaUser = data as KalturaUser;
+				for each (var uid:String in data.crippledUsersIds) {
+					if (uid == usr.id) {
+						res = data.crippledComboDataProvider;
+						break;
+					}
+				} 
+				if (!res) {
+					res = data.comboDataProvider;
+				}
+				return res;
+			}
+			
+			protected function onActionSelected():void {
+				dispatchEvent(new KmcEvent("actionSelected", cb.selectedItem.id, true)); 
+//				switch (cb.selectedItem.id) {
+//					case 'edit':
+//						editEntry();
+//						break;
+//					case 'unblock':
+//						confirmBlock();
+//						break;
+//					case 'delete':
+//						confirmDelete();
+//						break;
+//				}
+				cb.selectedIndex = -1;
+			}
+			
 		]]>
 	</mx:Script>
-	<mx:VBox verticalAlign="middle" horizontalAlign="center"   
-			 horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%">
-		<mx:ComboBox width="130" selectedIndex="-1"
-					 dataProvider="{outerDocument.getActionsDP(data)}"
+	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="100%"
+			 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+		<mx:ComboBox width="130" id="cb" selectedIndex="-1"
 					 prompt="{resourceManager.getString('admin','select_action')}"
-					 change="{outerDocument.onActionSelected(event)}" 
-					 enabled="{outerDocument.enableActionDropdown}"/>
+					 change="{onActionSelected()}" 
+					 enabled="{data.enableActionDropdown}"/>
 	</mx:VBox>
 </renderers:UserBaseItemRenderer>

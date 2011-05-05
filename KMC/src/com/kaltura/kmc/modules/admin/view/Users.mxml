@@ -16,6 +16,7 @@
 			import com.kaltura.kmc.modules.admin.control.events.DrilldownEvent;
 			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
 			import com.kaltura.kmc.modules.admin.control.events.ListItemsEvent;
+			import com.kaltura.kmc.modules.admin.control.events.PartnerEvent;
 			import com.kaltura.kmc.modules.admin.control.events.RoleEvent;
 			import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
@@ -88,11 +89,15 @@
 				listRoles();
 				listUsers(0);
 				// reset selected user
-				var ce:UserEvent;
-				ce = new UserEvent(UserEvent.SELECT_USER, null);
-				ce.dispatch();
+				var cg:CairngormEvent;
+				cg = new UserEvent(UserEvent.SELECT_USER, null);
+				cg.dispatch();
 				
-				var cg:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cg = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
+				cg.dispatch();
+				
+				// if account owner changed in settings panel
+				cg = new PartnerEvent(PartnerEvent.GET_PARTNER_DATA);
 				cg.dispatch();
 			}
 			
