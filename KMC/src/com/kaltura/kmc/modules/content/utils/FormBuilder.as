@@ -104,7 +104,7 @@ package com.kaltura.kmc.modules.content.utils {
 				return;				
 			}
 			if (!_metadataInfo.metadata) {
-				metadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
+				_metadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
 				return;
 			}
 			

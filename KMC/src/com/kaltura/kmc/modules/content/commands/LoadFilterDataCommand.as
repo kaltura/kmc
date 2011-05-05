@@ -85,13 +85,13 @@ package com.kaltura.kmc.modules.content.commands
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList();
 			multiRequest.addAction(listFlavorParams);
 			// metadata profile
-			if (_model.filterModel.enableCustomData) {
+		/*	if (_model.filterModel.enableCustomData) {
 				var mpfilter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 				mpfilter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
 				var pager:KalturaFilterPager = new KalturaFilterPager();
 				var listMetadataProfile:MetadataProfileList = new MetadataProfileList(mpfilter, pager);
 				multiRequest.addAction(listMetadataProfile);
-			}
+			}*/
 			// access control
 			var acfilter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
 			acfilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
@@ -139,11 +139,11 @@ package com.kaltura.kmc.modules.content.commands
 			handleFlavorsData(data.data[responseCount] as KalturaFlavorParamsListResponse);
 			responseCount ++;
 			
-			if (_model.filterModel.enableCustomData) {
+		/*	if (_model.filterModel.enableCustomData) {
 				// metadata profile
 				handleMetadataProfile(data.data[responseCount] as KalturaMetadataProfileListResponse);
 				responseCount ++;
-			}
+			}*/
 				
 			
 			// access control

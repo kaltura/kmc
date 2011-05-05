@@ -101,11 +101,48 @@
 				container.styleName = "defualtFilter";
 				
 				 _listButtonsArray = createButtonsGroup(resourceManager.getString("cms", "dropFoldersTitle"), "dropFolders",
-					_dropFoldersAC.source, "name", onAutoTitleClick, onAutoMemberClick);
+					_dropFoldersAC.source, "name", onAutoTitleClick, onDropFolderSelected);
 				//_dropFoldersBtnsAC["dropFolders"] = listButtonsArray;
 				injectGroupToContainer(container, _listButtonsArray);
 				
 				return container;
+			}
+			
+			/**
+			 * handle a drop folder click
+			 */
+			public function onDropFolderSelected(evt:MouseEvent):void {
+				// target button:
+				var btn:Button = evt.target as Button;
+				
+				// name of relevant button group
+				var groupName:String = (btn.data as String).split(' - ')[0];
+				
+				// all the buttons in the group
+				var arr:Array = dynamicFilterData[groupName] as Array;
+				if (btn.selected) {
+					// deselect all other button
+					for (var i:int = 0; i<arr.length; i++) {
+						var curBtn:Button = arr[i] as Button;
+						if (curBtn!=btn)
+							curBtn.selected = false;
+					}
+				}
+				else {
+					//check if this unselect it the last one on the group. if so - select the title
+					var counter:Number = 0;
+					for (var j:uint = 1; j < arr.length; j++) {
+						if ((arr[j] as Button) != btn && (arr[j] as Button).selected) {
+							counter++;
+						}
+					}
+					if (counter == 0) {
+						//this is the last button unselected - turn on the title button 
+						(arr[0] as Button).selected = true;
+					}
+				}
+				updateImageButton(arr);
+				preformNewSearch();
 			}
 
 			public function get dropFolderFileFilter():KalturaDropFolderFileFilter

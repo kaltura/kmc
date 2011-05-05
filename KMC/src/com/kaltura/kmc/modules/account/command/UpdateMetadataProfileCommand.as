@@ -9,6 +9,8 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KalturaMetadataProfile;
 	
+	import flash.profiler.profile;
+	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -30,7 +32,8 @@ package com.kaltura.kmc.modules.account.command
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;
-			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.selectedMetadataProfile.profile.id, new KalturaMetadataProfile(), _model.selectedMetadataProfile.xsd.toString());
+			_model.selectedMetadataProfile.profile.setUpdatedFieldsOnly(true);
+			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.selectedMetadataProfile.profile.id, _model.selectedMetadataProfile.profile, _model.selectedMetadataProfile.xsd.toString());
 			updateMetadataProfle.addEventListener(KalturaEvent.COMPLETE, result);
 			updateMetadataProfle.addEventListener(KalturaEvent.FAILED, fault);
 

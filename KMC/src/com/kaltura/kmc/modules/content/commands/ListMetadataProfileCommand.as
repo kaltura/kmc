@@ -40,7 +40,6 @@ package com.kaltura.kmc.modules.content.commands
 		{
 			_model.increaseLoadCounter();
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
-			//this configuration will promise that we will work with the latest metadataProfile version
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);

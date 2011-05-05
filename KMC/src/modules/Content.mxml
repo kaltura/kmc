@@ -221,13 +221,24 @@
 			
 			/**
 			 * if there is entryid to start with, open the entry drilldown
+			 * loads info required for drill down
 			 * */
 			protected function handleEntryId():void {
+				//get default metadata view if needed
+				if (_model.filterModel.enableCustomData) {
+					if (!_model.entryDetailsModel.metadataDefaultUiconfXML) {
+						var getMetadataUiconf:GeneralUiconfEvent = new GeneralUiconfEvent(GeneralUiconfEvent.GET_METADATA_UICONF);
+						getMetadataUiconf.dispatch();
+					}
+					var listMetadataProfiles:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+					listMetadataProfiles.dispatch();
+				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
 					// get the entry
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY, null, _model.attic.entryid);
 					cgEvent.dispatch();
+					_model.attic.entryid = null;
 				}
 			}
 
