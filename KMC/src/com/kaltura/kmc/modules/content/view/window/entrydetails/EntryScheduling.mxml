@@ -218,6 +218,17 @@
 				_selectedEntry = selectedEntry;
 				setSchedulerData();
 			}
+
+			protected function timeGroup_changeHandler(event:Event):void
+			{
+				if (anyTimeRBtn.selected) {
+					specificEndCBBtn.selected = false;
+				}
+				else {
+					validateTimes()
+				}
+			}
+
 		]]>
 	</mx:Script>
 	<mx:states>
@@ -229,7 +240,7 @@
 
 		<!--<mx:Label text="{resourceManager.getString('cms', 'entrySchedulingTitle')}" styleName="drillDownTitleLabel"
 				  id="label1"/>-->
-		<mx:RadioButtonGroup id='timeGroup' change="validateTimes()"/>
+		<mx:RadioButtonGroup id='timeGroup' change="timeGroup_changeHandler(event)"/>
 		<mx:RadioButton label="{resourceManager.getString('cms', 'ANY_TIME')}" groupName="timeGroup" 
 						id="anyTimeRBtn" selected="true"/>
 		<mx:RadioButton label="{resourceManager.getString('cms', 'rangeRadioBtn')}" 
