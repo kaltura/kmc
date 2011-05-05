@@ -123,7 +123,7 @@ package com.kaltura.kmc.dropFolder.tests
 		 */
 		public function testSlugResponseNoParsed():void
 		{
-			_eventType = DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO;
+			_eventType = DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH;
 			var response:KalturaDropFolderFileListResponse = createDummy2();
 			var list:Array = handleDropFolderFileList(response);
 			var defaultName:String = '';//ResourceManager.getInstance().getString('cms', 'parseFailed');
@@ -163,7 +163,7 @@ package com.kaltura.kmc.dropFolder.tests
 		 */
 		public function testHandleSlugResponse():void
 		{
-			_eventType = DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_AUTO;
+			_eventType = DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH;
 			var response:KalturaDropFolderFileListResponse = createDummy();
 			var list:Array = handleDropFolderFileList(response);
 			
