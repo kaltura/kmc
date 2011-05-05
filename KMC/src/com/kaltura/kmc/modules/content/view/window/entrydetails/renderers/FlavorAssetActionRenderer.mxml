@@ -16,8 +16,10 @@
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.FlavorsTable;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			
 			import mx.controls.Alert;
@@ -64,15 +66,19 @@
 			}
 
 
-		 	override public function validateNow():void {
+		  	override public function validateNow():void {
 				super.validateNow();
 				setActions();
 			}
- 
+  
 
 			private function setActions():void {
-				_actionArr = new Array();
+				if (isRelatedFlavorUploading()) {
+					this.currentState = "convertingState";
+					return;
+				}
 				
+				_actionArr = new Array();
 				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
 					if (_flavorWithParams.hasOriginal) {
 						this.currentState = null;
@@ -220,6 +226,7 @@
 				cb.selectedIndex = -1;
 				launchAction(sl);
 			}
+
 		]]>
 	</mx:Script>
 	<renderers:states>
