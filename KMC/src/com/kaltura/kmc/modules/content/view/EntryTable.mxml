@@ -21,11 +21,13 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.utils.KTimeUtil;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
@@ -596,6 +598,24 @@
 
 				return '';
 			}
+			
+			
+			/**
+			 * checks if any files related to an entry are currently uploading via upload manager
+			 * @param entryid	id of the entry in question
+			 * @return true if files are handled by upload manager, false otherwise.
+			 * */
+			private function isRelatedFileUploading(entryid:String):Boolean {
+				var uploadingfiles:Vector.<FileUploadVO> = FileUploadManager.getInstance().getAllFiles();
+				var result:Boolean;
+				for each (var file:FileUploadVO in uploadingfiles) {
+					if (file.entryId == entryid) {
+						result = true;
+						break;
+					}
+				}
+				return result;
+			}
 
 
 			private const SCHEDULING_ALL_OR_IN_FRAME:int = 1;
@@ -650,7 +670,17 @@
 					   return resourceManager.getString('cms', 'statuspending');
 					 break; */
 					case KalturaEntryStatus.NO_CONTENT: {
-						return resourceManager.getString('cms','statusNoMedia');
+						/* 
+						When any file related to the entry is currently in “uploading page” 
+						of existing KMC session – either actually being uploaded or waiting 
+						in queue to be uploaded – the status of the entry should present “Uploading” status.
+						*/
+						if (isRelatedFileUploading(entry.id)) {
+							return resourceManager.getString('cms','statusimport');
+						}
+						else {
+							return resourceManager.getString('cms','statusNoMedia');
+						}
 					}
 					case KalturaEntryStatus.READY:  {
 						var now:Date = new Date();
