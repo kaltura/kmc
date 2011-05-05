@@ -270,13 +270,6 @@ package com.kaltura.kmc.modules {
 			this.dispatchEvent(new Event(FINISHED_SAVING, true));
 		}
 		
-		/**
-		 * The version returned by this method will be the version of the module in KMC.
-		 * Each module must implement this method to return the right version.  
-		 */		
-		public function getModuleVersion():String {
-			throw new Error(getQualifiedClassName(this) + ".getModuleVersion() must be implemented");
-		}
 		
 		/**
 		 * The name returned by this method will be the ID of the module in KMC.
