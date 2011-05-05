@@ -156,9 +156,56 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected function configurationLoadHandler(e:KalturaEvent):void {
 			_uiconf = e.data as KalturaUiConf;
+			// update any values from flashvars
+			_uiconf.confFile = overrideDataByFlashvars(_uiconf.confFile, _flashvars);
 			var confFile:XML = new XML(_uiconf.confFile);
-
 			loadLocale(getLoadUrl(confFile.locale.path.toString()), confFile.locale.language.toString());
+		}
+		
+		
+		/**
+		 * if any flashvars are supposed to override uiconf values, set them here to the uiconf.
+		 * flashvars names will be constructed from module id + "." + xml structure, nodes 
+		 * separated by ".", i.e, "content.uiconf.metadata" or "admin.locale.language"
+		 */		
+		protected function overrideDataByFlashvars(conf:String, flashvars:Object):String {
+			var confFile:XML = new XML(conf);
+			// process
+			for (var key:String in flashvars) {
+				var elements:Array = key.split(".");
+				if (elements[0] == getModuleName()) {
+					// need to process
+					// get to the node we need to edit
+					var xml:XML = getElement(confFile, elements);
+					if (xml) {
+						delete xml.children()[0];
+						xml.appendChild(flashvars[key]);
+					}
+				}
+			}
+			// re-set values
+			return confFile.toXMLString();
+		}
+		
+		/**
+		 * get a node from an xml file that matches the given path. 
+		 * @param xml	xml to search
+		 * @param chain	path to desired element
+		 * @return 	(hopefully) the desired element
+		 */		
+		protected function getElement(xml:XML, chain:Array):XML {
+			// remove the first element - it directs to the module and isn't relevant anymore.
+			chain.shift();
+			var lst:XMLList = XMLList(xml);
+			
+			// get the following node
+			for (var i:int = 0; i<chain.length; i++) {
+				if (lst) {
+					lst = lst.child(chain[i]);
+				}
+			}
+			xml = lst[0];
+			return xml;
 		}
 
 
