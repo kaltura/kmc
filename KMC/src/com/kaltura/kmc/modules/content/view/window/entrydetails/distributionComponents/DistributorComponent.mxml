@@ -6,7 +6,9 @@
 		<![CDATA[
 			import com.hurlant.util.der.Integer;
 			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
-			import com.kaltura.types.KalturaEntryDistributionStatus;	
+			import com.kaltura.types.KalturaDistributionProfileActionStatus;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.core.mx_internal;
 			
@@ -19,12 +21,14 @@
 					
 				switch (_distributionWithProfile.kalturaEntryDistribution.status) {
 					case KalturaEntryDistributionStatus.QUEUED:
-					case KalturaEntryDistributionStatus.PENDING:
-					case KalturaEntryDistributionStatus.READY:
-					case KalturaEntryDistributionStatus.ERROR_DELETING:
+					case KalturaEntryDistributionStatus.PENDING:	
 					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
-					case KalturaEntryDistributionStatus.ERROR_UPDATING:
 						_distributionWithProfile.enableSelectingDistributor = cbEnabled = parentDocument.enableRemoveDistribution;
+						break;
+					case KalturaEntryDistributionStatus.READY:
+					case KalturaEntryDistributionStatus.ERROR_UPDATING:
+					case KalturaEntryDistributionStatus.ERROR_DELETING:
+						_distributionWithProfile.enableSelectingDistributor = cbEnabled = parentDocument.enableRemoveDistribution && (_distributionWithProfile.kalturaDistributionProfile.deleteEnabled != KalturaDistributionProfileActionStatus.DISABLED);
 						break;
 					case KalturaEntryDistributionStatus.DELETING:
 					case KalturaEntryDistributionStatus.UPDATING:
