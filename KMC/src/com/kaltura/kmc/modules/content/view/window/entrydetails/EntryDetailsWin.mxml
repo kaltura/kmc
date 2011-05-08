@@ -271,10 +271,7 @@
 			 * */
 			private function setWindowTitle():void {
 				if (_undoToEntry.status == KalturaEntryStatus.NO_CONTENT) {
-					if (_undoToEntry.name) {
-						 title = _undoToEntry.name;
-					}
-					else {
+					if (isNewEntry) {
 						var mediaType:int = parseInt(_undoToEntry.mediaType);
 						switch (mediaType) {
 							case KalturaMediaType.IMAGE:
@@ -287,15 +284,15 @@
 								title = resourceManager.getString('cms', 'newVideoEntry');
 								break;
 						}
+						return;
 					}
 				}
-				else {
-					title = resourceManager.getString('cms','editEntry') +  ' - ' ;
-					if (_undoToEntry.replacedEntryId) 
-						title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('cms','assetReplacement') + ')';
-					else
-						title +=  _undoToEntry.name;
-				}
+				
+				title = resourceManager.getString('cms','editEntry') +  ' - ' ;
+				if (_undoToEntry.replacedEntryId) 
+					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('cms','assetReplacement') + ')';
+				else
+					title +=  _undoToEntry.name;
 			}
 
 			private function onWindowCreationComplete():void {
