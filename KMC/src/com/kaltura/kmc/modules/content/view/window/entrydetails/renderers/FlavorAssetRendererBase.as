@@ -32,21 +32,19 @@ package com.kaltura.kmc.modules.content.view.window.entrydetails.renderers
 		protected function isRelatedFlavorUploading():Boolean {
 			var uploadingfiles:Vector.<FileUploadVO> = FileUploadManager.getInstance().getAllFiles();
 			var _flavorWithParams:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
-			var result:Boolean;
 			for each (var file:FileUploadVO in uploadingfiles) {
 				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset) { 
 					if (file.flavorAssetId == _flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id)
 					{
-						result = true;
-						break;
+						return true;
 					}
 				}
 				else if (file.flavorParamsId == _flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id) {
-					result = true;
-					break;
+					return true;
 				}
 			}
-			return result;
+			
+			return false;
 		}
 		
 				

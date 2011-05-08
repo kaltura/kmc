@@ -21,6 +21,7 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.utils.EntryUtil;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -598,24 +599,6 @@
 
 				return '';
 			}
-			
-			
-			/**
-			 * checks if any files related to an entry are currently uploading via upload manager
-			 * @param entryid	id of the entry in question
-			 * @return true if files are handled by upload manager, false otherwise.
-			 * */
-			private function isRelatedFileUploading(entryid:String):Boolean {
-				var uploadingfiles:Vector.<FileUploadVO> = FileUploadManager.getInstance().getAllFiles();
-				var result:Boolean;
-				for each (var file:FileUploadVO in uploadingfiles) {
-					if (file.entryId == entryid) {
-						result = true;
-						break;
-					}
-				}
-				return result;
-			}
 
 
 			private const SCHEDULING_ALL_OR_IN_FRAME:int = 1;
@@ -675,7 +658,7 @@
 						of existing KMC session – either actually being uploaded or waiting 
 						in queue to be uploaded – the status of the entry should present “Uploading” status.
 						*/
-						if (isRelatedFileUploading(entry.id)) {
+						if (EntryUtil.isRelatedFileUploading(entry.id)) {
 							return resourceManager.getString('cms','statusimport');
 						}
 						else {

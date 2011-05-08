@@ -19,15 +19,18 @@
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.utils.EntryUtil;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.FlavorAssetIDRenderer;
 			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
 			import com.kaltura.kmc.modules.content.view.window.flavors.MatchFromDropFolderWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryReplacementStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaMediaEntry;
@@ -86,8 +89,8 @@
 			private var _selectedEntry:KalturaBaseEntry;
 			
 			[Bindable]
-			public var flavorAssets:ArrayCollection;
-//			private var _flavorAssets:ArrayCollection;
+			public var flavorAssets:ArrayCollection; 
+			//private var _flavorAssets:ArrayCollection;
 			
 			private var _fileReferenceList:FileReferenceList;
 			private var _fileReference:FileReference;
@@ -138,11 +141,18 @@
 			 * loads required data from server
 			 * */
 			public function initData():void {
+				//fix bug in performance
+				if (!flavorsWatcher)
+					flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
+				refreshData();
+				//the following data is required for the actions buttons
+				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				profileEvent.dispatch();
+			}
+			
+			private function refreshData():void {
 				if(_selectedEntry != null)
 				{
-					//fix bug in performance
-					if (!flavorsWatcher)
-						flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
 					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
 					if (_selectedEntry.replacingEntryId) {
@@ -150,9 +160,6 @@
 						getReferenceEntry.dispatch();
 					}
 				}
-				//the following data is required for the actions buttons
-				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				profileEvent.dispatch();
 			}
 			
 			private function onCreationComplete():void {
@@ -248,6 +255,7 @@
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
 			{
 				_selectedEntry = selectedEntry;
+				
 				if (_selectedEntry.replacingEntryId) 
 				{
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
@@ -267,6 +275,9 @@
 							replacementStatusBtn.label = resourceManager.getString('cms', 'readyForReviewBtn');
 							break;
 					}
+				}
+				else if (EntryUtil.isRelatedFileUploading(_selectedEntry.id)) {
+					setUploadingFlavorsStatus();
 				}
 				else 
 				{
@@ -311,7 +322,8 @@
 			
 
 			}
-	/* 		
+	 		
+		/* 	[Bindable]
 			public function get flavorAssets():ArrayCollection
 			{
 				return _flavorAssets;
@@ -321,7 +333,14 @@
 			{
 				_flavorAssets = flavorAssets;
 				
-			} */
+			} 
+			 */
+			
+			private function setUploadingFlavorsStatus():void {
+				stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
+				_showActions = false;
+				_showReplacenentInfo = false;
+			}
 			
 			public function set hideColumns(indices:String):void {
 				var ind:Array = indices.split(",");
@@ -380,7 +399,9 @@
 					_selectCPAssetWatcher.unwatch();
 				
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
-				dg.dataProvider = flavorAssets;
+				refreshData();
+				if (EntryUtil.isRelatedFileUploading(_selectedEntry.id))
+					setUploadingFlavorsStatus();
 			}
 			
 

@@ -62,27 +62,29 @@
 				 _flavorWithParams = value as FlavorAssetWithParamsVO;
 				
 				setActions();
-
 			}
 
 
 		  	override public function validateNow():void {
-				super.validateNow();
 				setActions();
+				super.validateNow();
 			}
   
 
 			private function setActions():void {
-				if (isRelatedFlavorUploading()) {
-					this.currentState = "convertingState";
-					return;
-				}
 				
 				_actionArr = new Array();
-				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
+				if (isRelatedFlavorUploading()) {
+					this.currentState = "convertingState";
+				}
+				else if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
 					if (_flavorWithParams.hasOriginal) {
 						this.currentState = null;
 						_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
+						addUploadAndMatch();
+					}
+					else if (_allowUpload || _allowMatch) {
+						this.currentState = null;
 						addUploadAndMatch();
 					}
 					else {
@@ -114,6 +116,10 @@
 									_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
 									addUploadAndMatch();
 								}
+								else if (_allowUpload || _allowMatch) {
+									this.currentState = null;
+									addUploadAndMatch();
+								}
 								else {
 									this.currentState = "emptyState";
 								}
@@ -124,6 +130,10 @@
 								if (_flavorWithParams.hasOriginal) {
 									this.currentState = null;
 									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+									addUploadAndMatch();
+								}
+								else if (_allowUpload || _allowMatch) {
+									this.currentState = null;
 									addUploadAndMatch();
 								}
 								else {
