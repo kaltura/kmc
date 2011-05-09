@@ -22,6 +22,11 @@ package com.kaltura.events {
 		 */
 		public static const GROUP_UPLOAD_COMPLETE:String = "group_upload_complete";
 		
+		/**
+		 * defines the value for the "type" property of the group upload complete event
+		 */
+		public static const GROUP_UPLOAD_STARTED:String = "group_upload_started";
+		
 		
 
 		private var _uploadid:String;
