@@ -1,7 +1,6 @@
 package com.kaltura.commands.baseEntry
 {
 	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.delegates.baseEntry.BaseEntryAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -10,10 +9,9 @@ package com.kaltura.commands.baseEntry
 		public var filterFields : String;
 		/**
 		 * @param entry KalturaBaseEntry
-		 * @param resource KalturaResource
 		 * @param type String
 		 **/
-		public function BaseEntryAdd( entry : KalturaBaseEntry,resource : KalturaResource=null,type : String = null )
+		public function BaseEntryAdd( entry : KalturaBaseEntry,type : String = null )
 		{
 			service= 'baseentry';
 			action= 'add';
@@ -24,11 +22,6 @@ package com.kaltura.commands.baseEntry
  			keyValArr = kalturaObject2Arrays(entry, 'entry');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
- 			if (resource) { 
- 			keyValArr = kalturaObject2Arrays(resource, 'resource');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
- 			} 
 			keyArr.push('type');
 			valueArr.push(type);
 			applySchema(keyArr, valueArr);

@@ -1,7 +1,6 @@
 package com.kaltura.commands.flavorAsset
 {
 	import com.kaltura.vo.KalturaFlavorAsset;
-	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.delegates.flavorAsset.FlavorAssetAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -11,9 +10,8 @@ package com.kaltura.commands.flavorAsset
 		/**
 		 * @param entryId String
 		 * @param flavorAsset KalturaFlavorAsset
-		 * @param contentResource KalturaContentResource
 		 **/
-		public function FlavorAssetAdd( entryId : String,flavorAsset : KalturaFlavorAsset,contentResource : KalturaContentResource )
+		public function FlavorAssetAdd( entryId : String,flavorAsset : KalturaFlavorAsset )
 		{
 			service= 'flavorasset';
 			action= 'add';
@@ -24,9 +22,6 @@ package com.kaltura.commands.flavorAsset
 			keyArr.push('entryId');
 			valueArr.push(entryId);
  			keyValArr = kalturaObject2Arrays(flavorAsset, 'flavorAsset');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
- 			keyValArr = kalturaObject2Arrays(contentResource, 'contentResource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);

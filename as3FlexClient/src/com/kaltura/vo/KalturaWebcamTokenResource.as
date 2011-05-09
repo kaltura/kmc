@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaContentResource;
+	import com.kaltura.vo.KalturaDataCenterContentResource;
 
 	[Bindable]
-	public dynamic class KalturaWebcamTokenResource extends KalturaContentResource
+	public dynamic class KalturaWebcamTokenResource extends KalturaDataCenterContentResource
 	{
 		/** 
 		* Token that returned from media server such as FMS or red5. 		* */ 

@@ -1,7 +1,6 @@
 package com.kaltura.commands.media
 {
 	import com.kaltura.vo.KalturaMediaEntry;
-	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.delegates.media.MediaAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -10,9 +9,8 @@ package com.kaltura.commands.media
 		public var filterFields : String;
 		/**
 		 * @param entry KalturaMediaEntry
-		 * @param resource KalturaResource
 		 **/
-		public function MediaAdd( entry : KalturaMediaEntry,resource : KalturaResource=null )
+		public function MediaAdd( entry : KalturaMediaEntry )
 		{
 			service= 'media';
 			action= 'add';
@@ -23,11 +21,6 @@ package com.kaltura.commands.media
  			keyValArr = kalturaObject2Arrays(entry, 'entry');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
- 			if (resource) { 
- 			keyValArr = kalturaObject2Arrays(resource, 'resource');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
- 			} 
 			applySchema(keyArr, valueArr);
 		}
 

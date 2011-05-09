@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaContentResource;
+	import com.kaltura.vo.KalturaDataCenterContentResource;
 
 	[Bindable]
-	public dynamic class KalturaLocalFileResource extends KalturaContentResource
+	public dynamic class KalturaLocalFileResource extends KalturaDataCenterContentResource
 	{
 		/** 
 		* Full path to the local file 		* */ 

@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaContentResource;
+	import com.kaltura.vo.KalturaDataCenterContentResource;
 
 	[Bindable]
-	public dynamic class KalturaUploadedFileTokenResource extends KalturaContentResource
+	public dynamic class KalturaUploadedFileTokenResource extends KalturaDataCenterContentResource
 	{
 		/** 
 		* Token that returned from upload.upload action or uploadToken.add action. 		* */ 

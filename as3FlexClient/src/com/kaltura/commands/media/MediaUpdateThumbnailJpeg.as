@@ -1,22 +1,34 @@
 package com.kaltura.commands.media
 {
-	import com.kaltura.delegates.media.MediaUpdateThumbnailJpegDelegate;
+	import flash.net.FileReference;
 	import com.kaltura.net.KalturaFileCall;
-
-	import flash.utils.ByteArray;
+	import com.kaltura.delegates.media.MediaUpdateThumbnailJpegDelegate;
 
 	public class MediaUpdateThumbnailJpeg extends KalturaFileCall
 	{
-		public function MediaUpdateThumbnailJpeg( entryId : String, fileData : ByteArray )
+		public var fileData:Object;
+
+		/**
+		 * @param entryId String
+		 * @param fileData Object - FileReference or ByteArray
+		 **/
+		public function MediaUpdateThumbnailJpeg( entryId : String,fileData : Object )
 		{
 			service= 'media';
 			action= 'updateThumbnailJpeg';
-			applySchema(['entryId'] , [entryId]);
-			bytes = fileData;
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			this.fileData = fileData;
+			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
+			setRequestArgument('filterFields', filterFields);
 			delegate = new MediaUpdateThumbnailJpegDelegate( this , config );
 		}
 	}

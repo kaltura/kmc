@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaContentResource;
+	import com.kaltura.vo.KalturaDataCenterContentResource;
 
 	[Bindable]
-	public dynamic class KalturaDropFolderFileResource extends KalturaContentResource
+	public dynamic class KalturaDropFolderFileResource extends KalturaDataCenterContentResource
 	{
 		/** 
 		* Id of the drop folder file object		* */ 
