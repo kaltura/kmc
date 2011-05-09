@@ -2,11 +2,6 @@
 <!---
 	A popup window that allows matching files with the flavor they represent. 
 	The same window with different configurations will be used for upload, link and import.
-	Should have a single file state: hide the "add more files" options, use flavorAsset.update 
-	instead of flavorAsset.add or media.update.
-	
-	Properties:
-	•	state:String - upload / import / link 
 -->
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 		xmlns:containers="com.kaltura.containers.*" 
@@ -194,42 +189,39 @@
 				var ufv:UploadFileVo;
 				// conversion profile id
 				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
-				// action
-				var action:String = FileUploadVO.ACTION_NONE;	// will only trigger media.update
-				if (windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE) {
-					if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
-						// adding flavours to no_content entry
-						action = FileUploadVO.ACTION_ADD;	// will trigger flavourAsset.add 
-					}
-				}
-				else {
-					if ((filesList[0] as UploadFileVo).flavorAssetId) {
-						// select action according to existance of flavorAssetId; we will only 
-						// have flavorassetid if this is replacement of a single flavour.
-						action = FileUploadVO.ACTION_UPDATE;	// will trigger flavourAsset.update
-					}
-					else if ((filesList[0] as UploadFileVo).flavorParamId){
-						// if we have a single file with flavourParamId, we are adding 
-						// a single flavour to an existing entry.
-						action = FileUploadVO.ACTION_ADD; // will trigger flavourAsset.add
-					}	
-				}
+//				// action
+//				var action:String = FileUploadVO.ACTION_NONE;	// will only trigger media.update
+//				if (windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE) {
+//					if (_entry.status == KalturaEntryStatus.NO_CONTENT) {
+//						// adding flavours to no_content entry
+//						action = FileUploadVO.ACTION_ADD;	// will trigger flavourAsset.add 
+//					}
+//				}
+//				else {
+//					if ((filesList[0] as UploadFileVo).flavorAssetId) {
+//						// select action according to existance of flavorAssetId; we will only 
+//						// have flavorassetid if this is replacement of a single flavour.
+//						action = FileUploadVO.ACTION_UPDATE;	// will trigger flavourAsset.update
+//					}
+//					else if ((filesList[0] as UploadFileVo).flavorParamId){
+//						// if we have a single file with flavourParamId, we are adding 
+//						// a single flavour to an existing entry.
+//						action = FileUploadVO.ACTION_ADD; // will trigger flavourAsset.add
+//					}	
+//				}
 				
-				// group id
-				var groupid:String = '';
-				if (action == FileUploadVO.ACTION_ADD || FileUploadVO.ACTION_NONE) {
-					// group actions: adding flavors to a no_content entry, or replacing multiple 
-					// 		flavours while creating replacement entry.
-					groupid = _entry.id;
-				}
 				// add uploads to the FileUploadManager
+				var files:Array = new Array();
 				for (var i:int = 0; i<n; i++) {
 					ufv = filesList[i] as UploadFileVo;
-					uploader.addUpload(_entry.id, ufv.fileData, action, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId, groupid);
+					files.push(uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId));
 				}
+				//TODO decide the correct action (add / update)
+				uploader.updateEntryContent(_entry.id, files, _entry.status == KalturaEntryStatus.NO_CONTENT);
 				// close the popup
 				closeHandler();
 			}
+			
 			
 			
 			protected function cnvrtPrfLbl(itemObj:ConversionProfileWithFlavorParamsVo):String{

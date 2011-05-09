@@ -27,7 +27,12 @@ package com.kaltura.events {
 		 */
 		public static const GROUP_UPLOAD_STARTED:String = "group_upload_started";
 		
+		/**
+		 * defines the value for the "type" property of the upload error event
+		 */
+		public static const UPLOAD_ERROR:String = "upload_error";
 		
+		public var error:String;
 
 		private var _uploadid:String;
 

@@ -12,13 +12,7 @@ package com.kaltura.vo
 	 * Represents a file being uploaded via FileUploadManager. 
 	 * @author Atar
 	 */
-	public class FileUploadVO extends EventDispatcher {
-		
-		// optional actions with vo after upload
-		public static const ACTION_ADD:String = "action_add";
-		public static const ACTION_UPDATE:String = "action_update";
-		public static const ACTION_NONE:String = "action_none";
-		
+	public dynamic class FileUploadVO extends EventDispatcher {
 		
 		// optional file upload statuses
 		public static const STATUS_UPLOADING:String = "status_uploading";
@@ -51,10 +45,10 @@ package com.kaltura.vo
 		 */
 		public var entryId:String; 
 		
-		/**
-		 * used to decide when all assets of a given entry have finished uploading.
-		 */
-		public var groupId:String;
+//		/**
+//		 * used to decide when all assets of a given entry have finished uploading.
+//		 */
+//		public var groupId:String;
 		
 		/**
 		 * (when adding assets to a new entry) flavorParamsId of the flavorparams to use. 
@@ -98,11 +92,6 @@ package com.kaltura.vo
 		 */
 		public var conversionProfile:String;
 		
-		/**
-		 * requested action, represented as consts (add / update / none).  These will be used for 
-		 * completing the upload process, i.e. linking the uploaded file with the relevant entry.
-		 */
-		public var action:String;
 		
 		/**
 		 * create a unique id for this vo
