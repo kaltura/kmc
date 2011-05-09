@@ -347,20 +347,24 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			{
 				setEntriesToolbar();
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_COMPLETE, onGroupUploadComplete);
+				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_STARTED, onGroupUploadStarted);
 			}
 			
 			
 			/**
 			 * if a replacement process begun, refresh the entries to be updated
 			 * */
-			private function onGroupUploadComplete(event:Event):void {
+			private function onGroupUploadStarted(event:Event):void {
 				//refresh only when entryDetailsWin is closed, to avoid null selected entry
 				if ((windowState ==WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW)
 					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY)
 					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE) 
 					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW)) 
 				{
+					//refresh the open entry
+					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, entryDetailsModel.selectedEntry.id);
+					getSelectedEntry.dispatch();
+					//refresh all entries after drilldown will be closed
 					var refreshRequired:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED,true);
 					refreshRequired.dispatch();
 				}

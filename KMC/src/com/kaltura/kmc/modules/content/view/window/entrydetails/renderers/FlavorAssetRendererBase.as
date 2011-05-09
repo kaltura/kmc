@@ -23,30 +23,7 @@ package com.kaltura.kmc.modules.content.view.window.entrydetails.renderers
 			
 			this.horizontalScrollPolicy = "off";
 			this.verticalScrollPolicy = "off";
-		}
-		
-		/**
-		 * checks if any files related to this flavor are currently uploading via upload manager
-		 * @return true if files are handled by upload manager, false otherwise.
-		 * */
-		protected function isRelatedFlavorUploading():Boolean {
-			var uploadingfiles:Vector.<FileUploadVO> = FileUploadManager.getInstance().getAllFiles();
-			var _flavorWithParams:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
-			for each (var file:FileUploadVO in uploadingfiles) {
-				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset) { 
-					if (file.flavorAssetId == _flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id)
-					{
-						return true;
-					}
-				}
-				else if (file.flavorParamsId == _flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id) {
-					return true;
-				}
-			}
-			
-			return false;
-		}
-		
+		}	
 				
 	}
 }

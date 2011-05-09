@@ -11,85 +11,79 @@
 				var statusStr:String = "";
 				var fontColor:String = "#000000";
 				var tooltip:String = '';
-				if (isRelatedFlavorUploading()) {
-					statusStr = resourceManager.getString('cms','statusimport');
-					tooltip = statusStr;
-				}
-				else {
-					
-					if(data.kalturaFlavorAssetWithParams.flavorAsset != null)
+				
+				if(data.kalturaFlavorAssetWithParams.flavorAsset != null)
+				{
+					switch(int(data.kalturaFlavorAssetWithParams.flavorAsset.status))
 					{
-						switch(int(data.kalturaFlavorAssetWithParams.flavorAsset.status))
+						case KalturaFlavorAssetStatus.CONVERTING:
 						{
-							case KalturaFlavorAssetStatus.CONVERTING:
-							{
-								statusStr = resourceManager.getString('cms','convertingStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.ERROR:
-							{
-								statusStr = resourceManager.getString('cms','errorStatus');
-								fontColor = "#FF0000";
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.DELETED:
-							{
-								statusStr = resourceManager.getString('cms','deleteStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.QUEUED:
-							{
-								statusStr = resourceManager.getString('cms','inqueueStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.READY:
-							{
-								statusStr = resourceManager.getString('cms','readyStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.NOT_APPLICABLE:
-							{
-								statusStr = resourceManager.getString('cms','notAppStatus');
-								tooltip = resourceManager.getString('cms','notAppStatusTooltip');
-								break;
-							}
-							case KalturaFlavorAssetStatus.TEMP:
-							{
-								statusStr = resourceManager.getString('cms','tmpStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.WAIT_FOR_CONVERT:
-							{
-								statusStr = resourceManager.getString('cms','waitCnvrtStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.IMPORTING:
-							{
-								statusStr = resourceManager.getString('cms','importStatus');
-								tooltip = statusStr;
-								break;
-							}
-							case KalturaFlavorAssetStatus.VALIDATING:
-							{
-								statusStr = resourceManager.getString('cms','validateStatus');
-								tooltip = statusStr;
-								break;
-							}
-								
+							statusStr = resourceManager.getString('cms','convertingStatus');
+							tooltip = statusStr;
+							break;
 						}
+						case KalturaFlavorAssetStatus.ERROR:
+						{
+							statusStr = resourceManager.getString('cms','errorStatus');
+							fontColor = "#FF0000";
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.DELETED:
+						{
+							statusStr = resourceManager.getString('cms','deleteStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.QUEUED:
+						{
+							statusStr = resourceManager.getString('cms','inqueueStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.READY:
+						{
+							statusStr = resourceManager.getString('cms','readyStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.NOT_APPLICABLE:
+						{
+							statusStr = resourceManager.getString('cms','notAppStatus');
+							tooltip = resourceManager.getString('cms','notAppStatusTooltip');
+							break;
+						}
+						case KalturaFlavorAssetStatus.TEMP:
+						{
+							statusStr = resourceManager.getString('cms','tmpStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.WAIT_FOR_CONVERT:
+						{
+							statusStr = resourceManager.getString('cms','waitCnvrtStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.IMPORTING:
+						{
+							statusStr = resourceManager.getString('cms','importStatus');
+							tooltip = statusStr;
+							break;
+						}
+						case KalturaFlavorAssetStatus.VALIDATING:
+						{
+							statusStr = resourceManager.getString('cms','validateStatus');
+							tooltip = statusStr;
+							break;
+						}
+							
 					}
-					else
-					{
-						statusStr = resourceManager.getString('cms','notRequiredStatus');
-						tooltip = statusStr;
-					}
+				}
+				else
+				{
+					statusStr = resourceManager.getString('cms','notRequiredStatus');
+					tooltip = statusStr;
 				}
 				statusLabel.enabled = (data.kalturaFlavorAssetWithParams.flavorAsset != null);
 				statusLabel.text = statusStr;

@@ -74,10 +74,7 @@
 			private function setActions():void {
 				
 				_actionArr = new Array();
-				if (isRelatedFlavorUploading()) {
-					this.currentState = "convertingState";
-				}
-				else if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
+				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
 					if (_flavorWithParams.hasOriginal) {
 						this.currentState = null;
 						_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
@@ -106,7 +103,8 @@
 					else {
 						switch (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status) {
 							case KalturaFlavorAssetStatus.CONVERTING:
-							case KalturaFlavorAssetStatus.QUEUED:  {
+							case KalturaFlavorAssetStatus.QUEUED:
+							case KalturaFlavorAssetStatus.IMPORTING:{
 								this.currentState = "convertingState";
 								break;
 							}
