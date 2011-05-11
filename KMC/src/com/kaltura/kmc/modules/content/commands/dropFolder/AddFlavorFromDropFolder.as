@@ -15,9 +15,9 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		
 		override public function execute(event:CairngormEvent):void
 		{
-			_resource = e.resource as KalturaContentResource;
 			_model.increaseLoadCounter();
 			var e:DropFolderFileEvent = event as DropFolderFileEvent;
+			_resource = e.resource as KalturaContentResource;
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset()
 			flavorAsset.flavorParamsId = e.data.flavorParamsId;
 			flavorAsset.setUpdatedFieldsOnly(true);
