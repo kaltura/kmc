@@ -11,7 +11,11 @@ package com.kaltura.kmc.dropFolder.tests
 	import mx.resources.ResourceManager;
 	
 	public class TestDropFolderFilesList extends ListDropFoldersFilesCommand
-	{		
+	{	
+		
+		[ResourceBundle("cms")]
+		
+		
 //		[Before]
 //		public function setUp():void
 //		{
