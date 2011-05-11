@@ -1,7 +1,9 @@
 package com.kaltura.managers {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.MultiRequest;
+	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
+	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetUpdate;
 	import com.kaltura.commands.media.MediaAddContent;
 	import com.kaltura.commands.media.MediaConvert;
@@ -17,6 +19,7 @@ package com.kaltura.managers {
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
+	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaUploadToken;
@@ -33,12 +36,22 @@ package com.kaltura.managers {
 	import mx.resources.ResourceManager;
 
 	/**
-	 * This class will handle all file uploads for the current KMC session
+	 * This class will handle all file uploads for the current KMC session, and the 
+	 * association of uploaded files with relevant entries / flavors.
+	 * 
+	 * file statuses:
+	 * --------------
+	 * a FileUploadVo starts its life with status PREPROCESS, it becomes QUEUED after 
+	 * upload tokens are associated with entry / flavor. when the file starts uploading
+	 * the vo status changes to STATUS_UPLOADING, and when upload is complete it the 
+	 * status is changed to COMPLETE. if an error occures while uploading the vo status
+	 * becomes FAILED. 
+	 * 
 	 * @author Atar
 	 */
 	public class FileUploadManager extends EventDispatcher {
 
-
+		
 		/**
 		 * Singleton instance
 		 */
@@ -89,65 +102,17 @@ package com.kaltura.managers {
 		}
 
 
-//		/**
-//		 * Adds an upload to the queue.
-//		 *
-//		 * <p><u>General upload process:</u>
-//		 * Create upload token (uploadToken.add)
-//		 * Upload file (uploadToken.upload)
-//		 * dispatch "fileUploadComplete" event with relevant unique identifier
-//		 * if any action on the VO trigger flavorAsset.action
-//		 * if (file.groupid != null) {
-//		 * 	add the file to a group_and_complete list
-//		 * 	scan rest of files.
-//		 * 	if no other file has the same groupid {
-//		 * 		dispatch "groupUploadComplete" event with group identifier
-//		 * 		if action = add on the VO trigger media.convert for the entry
-//		 * 		else {
-//		 * 			trigger media.update with all group resources from the group_and_complete list.
-//		 * 			remove relevant files from the group_and_complete list.
-//		 * 		}
-//		 * 	}
-//		 * }
-//		 * remove file from files list </p>
-//		 *
-//		 * @param entryid	the id of the entry to which this file will be added
-//		 * @param file		the file to upload
-//		 * @param action	the action to apply on the file after upload, either
-//		 * 		<code>UploadFileVO.ADD</code>, <code>UploadFileVO.UPDATE</code>
-//		 * 		or <code>UploadFileVO.NONE</code>
-//		 * @param flavorid	if updating an entry, the flavourAsset that should be 
-//		 * 		replaced. if adding assets to a no_content entry, the flavorParam 
-//		 * 		to be used with this asset.
-//		 * @param groupid	identifier of a flavour group. if <code>groupid</code>
-//		 * 		is supplied, media.update will be triggered after all files with
-//		 * 		this group id have finished uploading.
-//		 *
-//		 * @return a unique identifier for the upload, which allows referencing the
-//		 * 		upload process of the specific file
-//		 */
-//		public function addUpload(entryid:String, file:FileReference, action:String, 
-//							flavorparamsid:String = null, flavorassetid:String = null, 
-//							convprofid:String = null, groupid:String = null):String {
-//			// create the VO
-//			var vo:FileUploadVO = new FileUploadVO();
-//			vo.file = file;
-//			vo.name = file.name;
-//			vo.uploadTime = new Date();
-//			vo.entryId = entryid; 
-//			vo.groupId = groupid;
-//			vo.flavorParamsId = parseInt(flavorparamsid);
-//			vo.flavorAssetId = flavorassetid;
-//			vo.conversionProfile = convprofid;
-//			vo.fileSize = file.size;
-//			vo.action = action;
-//			_files.push(vo);
-//			if (_files.length < _concurrentUploads) {
-//				uploadNextFile();
-//			}
-//			return vo.id;
-//		}
 		
+		/**
+		 * create an upload vo based on given data
+		 * @param entryid
+		 * @param file
+		 * @param flavorparamsid
+		 * @param flavorassetid
+		 * @param convprofid
+		 * @return 
+		 * 
+		 */
 		public function createFuv(entryid:String, file:FileReference, 
 	  							flavorparamsid:String = null, flavorassetid:String = null, 
 	  							convprofid:String = null):FileUploadVO {
@@ -161,11 +126,46 @@ package com.kaltura.managers {
 			vo.flavorAssetId = flavorassetid;
 			vo.conversionProfile = convprofid;
 			vo.fileSize = file.size;
-			
+			vo.status = FileUploadVO.STATUS_PREPROCESS;
 			return vo;
 		}
 		
 		
+		
+		/**
+		 * add or update a single flavor to an entry
+		 * @param entryid	the id of the entry to be updated
+		 * @param file		upload info
+		 * @param isNew		is this a new flavor or update of existing one
+		 */
+		public function updateEntryFlavor(entryid:String, file:FileUploadVO, isNew:Boolean):void {
+			/* Flow:
+			- create token
+			- associate the token resource with the entry
+			- upload the file
+			*/
+			
+			_preprocessedFiles.push(file);
+			// create upload token
+			var ut:KalturaUploadToken = new KalturaUploadToken();
+			ut.fileName = file.name;
+			ut.fileSize = file.fileSize;
+			var uta:UploadTokenAdd = new UploadTokenAdd(ut);
+			// add listeners for complete / failed
+			// pass events via fuv so we can retrieve a relevant vo after the call returns.
+			if (isNew) {
+				file.addEventListener(KalturaEvent.COMPLETE, addFlavorAsset/*, false, 0, true*/);
+				file.addEventListener(KalturaEvent.FAILED, addFlavorAsset/*, false, 0, true*/);
+			}
+			else {
+				file.addEventListener(KalturaEvent.COMPLETE, updateFlavorAsset/*, false, 0, true*/);
+				file.addEventListener(KalturaEvent.FAILED, updateFlavorAsset/*, false, 0, true*/);
+			}
+			
+			uta.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+			uta.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
+			_kc.post(uta);
+		}
 		
 		
 		
@@ -176,7 +176,7 @@ package com.kaltura.managers {
 		 * @param isOrphan	is this the initial content adding to this entry
 		 */
 		public function updateEntryContent(entryid:String, filesData:Array, isOrphan:Boolean):void {
-			/*
+			/* Flow:
 			- create all required tokens
 			- add them to the media
 			- start uploading the files
@@ -227,15 +227,13 @@ package com.kaltura.managers {
 						file.uploadToken = ut.id;
 					}
 					else if (o is KalturaError) {
-						//TODO something that breaks the chain
+						//TODO something that breaks the chain intelligibly, and not..
+						return;
 					}
 				}
 				
-				file = e.target as FileUploadVO;
 				// create uploadTokenResources, add them to the media.
-				var entryid:String = file.entryId;  // id of the entry that will be replaced by the entry created with these files
-				// the media entry we will update (no need for entryid as it's read-only)
-				var mediaEntry:KalturaMediaEntry = new KalturaMediaEntry();
+				var entryid:String = (e.target as FileUploadVO).entryId;  
 				
 				// the actual resource we send is a list of the containers for the resources we want to replace.                
 				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
@@ -255,24 +253,36 @@ package com.kaltura.managers {
 						// add to list
 						mediaResource.resources.push(subResource);
 					}
-					
 				}
 				
 				// we saved this value in updateEntryContent() so we can use it here
+				var mr:MultiRequest = new MultiRequest();
+				
+				// set the desired conversion profile on the entry
+				var entry:KalturaBaseEntry = new KalturaBaseEntry();
+				entry.ingestionProfileId = file.conversionProfile;
+				entry.setUpdatedFieldsOnly(true);
+				var beu:BaseEntryUpdate = new BaseEntryUpdate(entryid, entry);
+				mr.addAction(beu);
+				
+				// add media
 				var mac:KalturaCall; 
 				if (e.target.orphan) {
 					mac = new MediaAddContent(entryid, mediaResource);
 				} else {
 					mac = new MediaUpdateContent(entryid, mediaResource);
 				}
-				mac.addEventListener(KalturaEvent.COMPLETE, startUploads);
-				mac.addEventListener(KalturaEvent.FAILED, startUploads);
-				_kc.post(mac);
+				mr.addAction(mac);
+				
+				// listeners
+				mr.addEventListener(KalturaEvent.COMPLETE, startUploadMulti);
+				mr.addEventListener(KalturaEvent.FAILED, startUploadMulti);
+				_kc.post(mr);
 			}
 			else {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
-				er.error = 'token creation failed for entry ' + e.target.entryId;
+				er.error = "Error #201: " + e.error.errorMsg;
 				dispatchEvent(er);
 			}
 		}
@@ -282,9 +292,9 @@ package com.kaltura.managers {
 		 * handle errors if any, or start uploading files. 
 		 * @param e
 		 */
-		protected function startUploads(e:KalturaEvent):void {
-			e.target.removeEventListener(KalturaEvent.COMPLETE, startUploads);
-			e.target.removeEventListener(KalturaEvent.FAILED, startUploads);
+		protected function startUploadMulti(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, startUploadMulti);
+			e.target.removeEventListener(KalturaEvent.FAILED, startUploadMulti);
 			if (e.type == KalturaEvent.COMPLETE) {
 				// pass files to files list
 				var entryid:String = e.data.id;
@@ -303,8 +313,39 @@ package com.kaltura.managers {
 			}
 			else {
 				// dispatch error event with relevant data
-				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, '');
-				er.error = 'adding content to entry failed';
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, 'multi_uploads');
+				er.error = 'Error 202: ' + e.error.errorMsg;
+				dispatchEvent(er);
+			}
+		}
+		
+		
+		/**
+		 * handle errors if any, or adds the file to upload queue. 
+		 * @param e
+		 */
+		protected function startUploadSingle(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, startUploadSingle);
+			e.target.removeEventListener(KalturaEvent.FAILED, startUploadSingle);
+			if (e.type == KalturaEvent.COMPLETE) {
+				// pass files to files list (upload queue)
+				var fuv:FileUploadVO;
+				for (var i:int =_preprocessedFiles.length-1; i>=0; i--) {
+					if ((_preprocessedFiles[i] as FileUploadVO) == e.target) {
+						e.target.status = FileUploadVO.STATUS_QUEUED;
+						_files.push(e.target);
+						_preprocessedFiles.splice(i, 1);
+					}
+				}
+				// start uploading files
+				if (_files.length < _concurrentUploads) {
+					uploadNextFile();
+				}
+			}
+			else {
+				// dispatch error event with relevant data
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
+				er.error = 'Error #203: ' + e.error.errorMsg;
 				dispatchEvent(er);
 			}
 		}
@@ -328,7 +369,7 @@ package com.kaltura.managers {
 		/**
 		 * get the next file on uploads queue 
 		 */
-		private function getNextFile():FileUploadVO {
+		protected function getNextFile():FileUploadVO {
 			var result:FileUploadVO = null;
 			for (var i:int = 0; i<_files.length; i++) {
 				if (_files[i].status == FileUploadVO.STATUS_QUEUED) {
@@ -343,7 +384,7 @@ package com.kaltura.managers {
 		/**
 		 * upload the next file on queue 
 		 */		
-		private function uploadNextFile():void {
+		protected function uploadNextFile():void {
 			var vo:FileUploadVO = getNextFile();
 			if (vo) {
 				vo.status = FileUploadVO.STATUS_UPLOADING;
@@ -362,7 +403,7 @@ package com.kaltura.managers {
 		/**
 		 * dispatch complete event and remove the file from the list
 		 */
-		private function wrapUpUpload(e:KalturaEvent):void {
+		protected function wrapUpUpload(e:KalturaEvent):void {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, wrapUpUpload);
 			e.target.removeEventListener(KalturaEvent.FAILED, wrapUpUpload);
 			var file:FileUploadVO = getUploadByUploadToken(e.data.id);
@@ -387,7 +428,7 @@ package com.kaltura.managers {
 				file.status = FileUploadVO.STATUS_FAILED;
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
-				er.error = e.error.errorMsg;
+				er.error = "Error #204: " + e.error.errorMsg;
 				dispatchEvent(er);
 			}
 			// start uploading the next file
@@ -401,50 +442,99 @@ package com.kaltura.managers {
 		 * update a single flavor asset, without creating replacement entry 
 		 * @param file
 		 */
-		private function updateFlavorAsset(file:FileUploadVO):void {
-//			// we don’t need flavorParamsId here
-//			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
-//			flavorAsset.setUpdatedFieldsOnly(true);
-//			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
-//			// the token we used to upload the file
-//			resource.token = file.uploadToken;	
-//			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(file.flavorAssetId, flavorAsset, resource);
-//			fau.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
-//			fau.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
-//			_kc.post(fau);
+		protected function updateFlavorAsset(e:KalturaEvent = null):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, updateFlavorAsset);
+			e.target.removeEventListener(KalturaEvent.FAILED, updateFlavorAsset);
+			if (e.type == KalturaEvent.COMPLETE) {
+				var file:FileUploadVO = e.target as FileUploadVO;
+				if (e && e.data is KalturaUploadToken) {
+					file.uploadToken = e.data.id;
+				}
+				var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
+				// the token we used to upload the file
+				resource.token = file.uploadToken;	
+				var fau:FlavorAssetSetContent = new FlavorAssetSetContent(file.flavorAssetId, resource);
+				
+				// add listeners for complete / failed
+				// pass events via fuv so we can retrieve a relevant vo after the call returns.
+				file.addEventListener(KalturaEvent.COMPLETE, startUploadSingle/*, false, 0, true*/);
+				file.addEventListener(KalturaEvent.FAILED, startUploadSingle/*, false, 0, true*/);
+				
+				fau.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+				fau.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
+				_kc.post(fau);
+			}
+			else {
+				// dispatch error event with relevant data
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, '');
+				er.error = 'Error #205: ' + e.error.errorMsg;
+				dispatchEvent(er);
+			}
 		}
 
 		
 		/**
 		 * add a single flavor asset to a no-media entry 
-		 * @param file
 		 */		
-		private function addFlavorAsset(file:FileUploadVO):void {
-//			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
-//			// pass in the flavorParamsId of the flavor we want this to be;
-//			flavorAsset.flavorParamsId = file.flavorParamsId;
-//			flavorAsset.setUpdatedFieldsOnly(true);
-//			flavorAsset.setInsertedFields(true);
-//			var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
-//			// the token we used to upload the file
-//			resource.token = file.uploadToken;	
-//			var faa:FlavorAssetAdd = new FlavorAssetAdd(file.entryId, flavorAsset, resource);
-//			faa.addEventListener(KalturaEvent.COMPLETE, flavorActionHandler);
-//			faa.addEventListener(KalturaEvent.FAILED, flavorActionHandler);
-//			_kc.post(faa);
+		protected function addFlavorAsset(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, addFlavorAsset);
+			e.target.removeEventListener(KalturaEvent.FAILED, addFlavorAsset);
+			if (e.type == KalturaEvent.COMPLETE) {
+				var file:FileUploadVO = e.target as FileUploadVO;
+				file.uploadToken = (e.data as KalturaUploadToken).id;
+				var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset();
+				// pass in the flavorParamsId of the flavor we want this to be;
+				flavorAsset.flavorParamsId = file.flavorParamsId;
+				flavorAsset.setUpdatedFieldsOnly(true);
+				flavorAsset.setInsertedFields(true);
+				var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
+				// the token we used to upload the file
+				resource.token = file.uploadToken;	
+				
+				// add listeners for complete / failed
+				// pass events via fuv so we can retrieve a relevant vo after the call returns.
+				file.addEventListener(KalturaEvent.COMPLETE, saveAssetParamsId/*, false, 0, true*/);
+				file.addEventListener(KalturaEvent.FAILED, saveAssetParamsId/*, false, 0, true*/);
+				
+				var faa:FlavorAssetAdd = new FlavorAssetAdd(file.entryId, flavorAsset);
+				faa.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+				faa.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
+				// when this call returns, we need to save the assetParamsId to the VO.
+				_kc.post(faa);
+			} 
+			else {
+				// dispatch error event with relevant data
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, '');
+				er.error = 'Error #206: ' + e.error.errorMsg;
+				dispatchEvent(er);
+			}
 		}
 		
-
 		
-		protected function showError(str:String):void {
-			Alert.show(str, ResourceManager.getInstance().getString('cms', 'error'));
+		
+		/**
+		 * saves the result's assetparams id to the target vo 
+		 */
+		protected function saveAssetParamsId(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, updateFlavorAsset);
+			e.target.removeEventListener(KalturaEvent.FAILED, updateFlavorAsset);
+			if (e.type == KalturaEvent.COMPLETE) {
+				(e.target as FileUploadVO).flavorAssetId = (e.data as KalturaFlavorAsset).id;
+				updateFlavorAsset(e);
+			}
+			else {
+				// dispatch error event with relevant data
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
+				er.error = 'Error #207: ' + e.error.errorMsg;
+				dispatchEvent(er);
+			}
 		}
 		
 		
 		/**
 		 * handler for security error or io error 
 		 */		
-		private function fileFailed(e:Event):void {
+		protected function fileFailed(e:Event):void {
 			// clean listeners
 			var file:FileReference = e.target as FileReference;
 			file.removeEventListener(IOErrorEvent.IO_ERROR, fileFailed );
@@ -466,22 +556,41 @@ package com.kaltura.managers {
 		 *
 		 * @param uploadid
 		 */
-//		public function cancelUpload(uploadid:String):void {
-//			var file:FileUploadVO = getFile(uploadid);
-//			if (!file) {
-//				return;
-//			}
-//			//	call uploadToken.delete with relevant upload token.
-//			var utd:UploadTokenDelete = new UploadTokenDelete(file.uploadToken);
-//			utd.addEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
-//			utd.addEventListener(KalturaEvent.FAILED, handleDeleteResult);
-//			_kc.post(utd);
-//			// Dispatch "fileUploadCanceled" event.
-//			dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_CANCELED, uploadid));
-//			// Remove relevant fileVo from files list.	
-//			var ind:int = getQueuePosition(uploadid);
-//			_files.splice(ind, 1);
-//		}
+		public function cancelUpload(uploadid:String):void {
+			var file:FileUploadVO = getFile(uploadid);
+			if (!file) {
+				return;
+			}
+			// call uploadToken.delete with relevant upload token.
+			var utd:UploadTokenDelete = new UploadTokenDelete(file.uploadToken);
+			file.addEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
+			file.addEventListener(KalturaEvent.FAILED, handleDeleteResult);
+			
+			utd.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+			utd.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
+			
+			_kc.post(utd);
+			// Dispatch "fileUploadCanceled" event.
+			dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_CANCELED, uploadid));
+			// Remove relevant fileVo from files list.	
+			var ind:int = getQueuePosition(uploadid);
+			_files.splice(ind, 1);
+		}
+		
+		
+		/**
+		 * remove delete listeners, handle error. 
+		 */
+		protected function handleDeleteResult(e:KalturaEvent):void {
+			e.target.removeEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
+			e.target.removeEventListener(KalturaEvent.FAILED, handleDeleteResult);
+			if (e.type == KalturaEvent.FAILED) {
+				// dispatch error event with relevant data
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
+				er.error = "Error #208: " + e.error.errorMsg;
+				dispatchEvent(er);
+			}
+		}
 
 		/**
 		 * Retrieve a file vo according to its file reference object 
@@ -543,7 +652,7 @@ package com.kaltura.managers {
 		 * @param uploadid	id of the requested upload
 		 * @param requiredIndex	the index to move the upload to.
 		 *
-		 * @return 	true if move succeeded, false otherwise (i.e. illegal index).
+		 * @return	true if move succeeded, false otherwise (i.e. illegal index).
 		 */
 		public function setQueuePosition(uploadid:String, requiredIndex:int):Boolean {
 			if (requiredIndex > _files.length) {

@@ -19,6 +19,7 @@ package com.kaltura.vo
 		public static const STATUS_QUEUED:String = "status_queued";
 		public static const STATUS_FAILED:String = "status_failed";
 		public static const STATUS_COMPLETE:String = "status_complete";
+		public static const STATUS_PREPROCESS:String = "status_preprocess";
 		
 		
 		protected var _id:String;
