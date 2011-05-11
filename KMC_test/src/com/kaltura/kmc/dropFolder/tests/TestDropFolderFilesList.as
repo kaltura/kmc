@@ -43,23 +43,25 @@ package com.kaltura.kmc.dropFolder.tests
 			dff.dropFolderId = 6;
 			dff.fileName = "file_1";
 			dff.fileSize = 3145728.1111111111111111111111111;
-			dff.status = KalturaDropFolderFileStatus.PENDING; 
+			dff.status = KalturaDropFolderFileStatus.NO_MATCH; 
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
+			
 			dff = new KalturaDropFolderFile();
 			dff.createdAt = 115348665;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_2";
 			dff.fileSize = 3145728*2;
-			dff.status = KalturaDropFolderFileStatus.UPLOADING;
+			dff.status = KalturaDropFolderFileStatus.NO_MATCH;
 			dff.parsedSlug = "";
 			response.objects.push(dff);
+			
 			dff = new KalturaDropFolderFile();
 			dff.createdAt = 125348565;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_3";
 			dff.fileSize = 3145728*6;
-			dff.status = KalturaDropFolderFileStatus.ERROR_DELETING;
+			dff.status = KalturaDropFolderFileStatus.NO_MATCH;
 			dff.parsedSlug = "";
 			response.objects.push(dff);
 			dff = new KalturaDropFolderFile();
@@ -67,7 +69,7 @@ package com.kaltura.kmc.dropFolder.tests
 			dff.dropFolderId = 6;
 			dff.fileName = "file_4";
 			dff.fileSize = 3145728/4;
-			dff.status = KalturaDropFolderFileStatus.ERROR_HANDLING;
+			dff.status = KalturaDropFolderFileStatus.NO_MATCH;
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
 			
@@ -80,6 +82,7 @@ package com.kaltura.kmc.dropFolder.tests
 		protected function createDummy():KalturaDropFolderFileListResponse {
 			var response:KalturaDropFolderFileListResponse = new KalturaDropFolderFileListResponse();
 			response.objects = new Array();
+			
 			var dff:KalturaDropFolderFile = new KalturaDropFolderFile();
 			dff.createdAt = 105348965;
 			dff.dropFolderId = 6;
@@ -88,28 +91,32 @@ package com.kaltura.kmc.dropFolder.tests
 			dff.status = KalturaDropFolderFileStatus.PENDING; 
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
+			
 			dff = new KalturaDropFolderFile();
 			dff.createdAt = 115348665;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_2";
 			dff.fileSize = 3145728*2;
-			dff.status = KalturaDropFolderFileStatus.UPLOADING;
+			dff.status = KalturaDropFolderFileStatus.PENDING;
 			dff.parsedSlug = "atar";
 			response.objects.push(dff);
+			
+			
 			dff = new KalturaDropFolderFile();
 			dff.createdAt = 125348565;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_3";
 			dff.fileSize = 3145728*6;
-			dff.status = KalturaDropFolderFileStatus.ERROR_DELETING;
+			dff.status = KalturaDropFolderFileStatus.PENDING;
 			dff.parsedSlug = "atarsh";
 			response.objects.push(dff);
+			
 			dff = new KalturaDropFolderFile();
 			dff.createdAt = 135348565;
 			dff.dropFolderId = 6;
 			dff.fileName = "file_4";
 			dff.fileSize = 3145728/4;
-			dff.status = KalturaDropFolderFileStatus.ERROR_HANDLING;
+			dff.status = KalturaDropFolderFileStatus.PENDING;
 			dff.parsedSlug = "atarsh";
 			response.objects.push(dff);
 			
