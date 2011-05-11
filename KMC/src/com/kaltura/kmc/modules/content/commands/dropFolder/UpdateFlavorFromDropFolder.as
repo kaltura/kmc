@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.content.commands.dropFolder
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
@@ -14,9 +15,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		{
 			_model.increaseLoadCounter();
 			var e:DropFolderFileEvent = event as DropFolderFileEvent;
-			var fa:KalturaFlavorAsset = new KalturaFlavorAsset();
-			fa.setUpdatedFieldsOnly(true);
-			var fau:FlavorAssetUpdate = new FlavorAssetUpdate(e.data.flavorAssetId, fa, e.resource as KalturaContentResource);
+			var fau:FlavorAssetSetContent = new FlavorAssetSetContent(e.data.flavorAssetId, e.resource as KalturaContentResource);
 			fau.addEventListener(KalturaEvent.COMPLETE, result);
 			fau.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(fau);
@@ -26,7 +25,6 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		{
 			super.result(data);
 			_model.decreaseLoadCounter();
-			//TODO do we need to do anything?
 		}
 	}
 }
