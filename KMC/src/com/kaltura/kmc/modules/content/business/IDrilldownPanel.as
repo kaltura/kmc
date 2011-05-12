@@ -12,6 +12,12 @@ package com.kaltura.kmc.modules.content.business
 		 * 
 		 */		
 		function initData() : void ;
+		
+		/**
+		 * will be triggered before the window closes. 
+		 * 
+		 */
+		function destroy():void;
 	}
 	
 }
