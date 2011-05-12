@@ -1,7 +1,10 @@
 package com.kaltura.kmc.modules.content.utils
 {
-	import com.kaltura.managers.FileUploadManager;
-	import com.kaltura.vo.FileUploadVO;
+	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+	import com.kaltura.utils.ObjectUtil;
+	import com.kaltura.vo.KalturaBaseEntry;
+	
+	import mx.collections.ArrayCollection;
 
 	/**
 	 * This class will hold functions related to kaltura entries 
@@ -10,22 +13,34 @@ package com.kaltura.kmc.modules.content.utils
 	 */	
 	public class EntryUtil
 	{
+		private static var _model:CmsModelLocator = CmsModelLocator.getInstance();
 		
 		/**
-		 * checks if any files related to an entry are currently uploading via upload manager
-		 * @param entryid	id of the entry in question
-		 * @return true if files are handled by upload manager, false otherwise.
-		 * */
-		public static function isRelatedFileUploading(entryid:String):Boolean {
-			var uploadingfiles:Vector.<FileUploadVO> = FileUploadManager.getInstance().getAllFiles();
-			var result:Boolean;
-			for each (var file:FileUploadVO in uploadingfiles) {
-				if (file.entryId == entryid) {
-					result = true;
+		 * Update the given entry on the listableVO list, if it contains an entry with the same id 
+		 * 
+		 */		
+		public static function updateSelectedEntryInList(entryToUpdate:KalturaBaseEntry):void {
+			var entries:ArrayCollection = _model.listableVo.arrayCollection;
+			for each (var entry:KalturaBaseEntry in entries) {
+				if (entry.id==entryToUpdate.id) {
+					var atts:Array = ObjectUtil.getObjectAllKeys(entryToUpdate);
+					for (var i:int = 0; i<atts.length; i++) {
+						entry[atts[i]] = entryToUpdate[atts[i]];
+					}
 					break;
 				}
-			}
-			return result;
+			}	
+		}	
+		
+		/**
+		 * In order not to override data that was inserted by the user, update only status & replacement fiedls that
+		 * might have changed
+		 * */
+		public static function updateChangebleFieldsOnly(entry:KalturaBaseEntry):void {
+			_model.entryDetailsModel.selectedEntry.status = entry.status;
+			_model.entryDetailsModel.selectedEntry.replacementStatus = entry.replacementStatus;
+			_model.entryDetailsModel.selectedEntry.replacedEntryId = entry.replacedEntryId;
+			_model.entryDetailsModel.selectedEntry.replacingEntryId = entry.replacingEntryId;
 		}
 	}
 }

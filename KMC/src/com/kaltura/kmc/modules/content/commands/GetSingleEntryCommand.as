@@ -5,12 +5,15 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.kmc.modules.content.business.Cloner;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.utils.EntryUtil;
 	import com.kaltura.types.KalturaEntryReplacementStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import modules.Content;
 	
+	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -23,8 +26,9 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.increaseLoadCounter();
 			var e:EntryEvent = event as EntryEvent;
 			_eventType = e.type;
-			if (_eventType == EntryEvent.GET_SELECTED_ENTRY)
+			if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
 				_model.entryDetailsModel.selectedEntryReloaded = false;
+			}
 			
 			var getEntry:BaseEntryGet = new BaseEntryGet(e.entryId);
 
@@ -39,12 +43,14 @@ package com.kaltura.kmc.modules.content.commands {
 			super.result(data);
 			
 			if (data.data && data.data is KalturaBaseEntry) {
+				var resultEntry:KalturaBaseEntry = data.data as KalturaBaseEntry;
 				if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) {
-					_model.entryDetailsModel.selectedReplacementEntry = data.data as KalturaBaseEntry;
+					_model.entryDetailsModel.selectedReplacementEntry = resultEntry;
 				}
 				else if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
-					_model.entryDetailsModel.selectedEntry = data.data as KalturaBaseEntry;
-					//TODO if in the entries list there's an entry with the same id, replace it.
+					EntryUtil.updateChangebleFieldsOnly(resultEntry);
+					//if in the entries list there's an entry with the same id, replace it.
+					EntryUtil.updateSelectedEntryInList(_model.entryDetailsModel.selectedEntry);
 					_model.entryDetailsModel.selectedEntryReloaded = true;
 				}
 				else {
@@ -56,20 +62,19 @@ package com.kaltura.kmc.modules.content.commands {
 			}
 			_model.decreaseLoadCounter();
 		}
+
 		
 		override public function fault(info:Object):void {
 			//if entry replacement doesn't exist it means that the replacement is ready
-			if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) {
+			if ((_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) || (_eventType == EntryEvent.GET_SELECTED_ENTRY)) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					_model.decreaseLoadCounter();
-					Alert.show(ResourceManager.getInstance().getString('cms','replacementNotExistMsg'),ResourceManager.getInstance().getString('cms','replacementNotExistTitle'));
 					return;
 				}
 			}
-			else {
-				super.fault(info);
-			}
+
+			super.fault(info);
 		}
 	}
 }

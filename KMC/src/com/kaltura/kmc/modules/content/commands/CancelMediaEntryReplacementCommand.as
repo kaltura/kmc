@@ -3,8 +3,11 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.media.MediaCancelReplace;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.business.Cloner;
 	import com.kaltura.kmc.modules.content.events.MediaEvent;
+	import com.kaltura.kmc.modules.content.utils.EntryUtil;
 	import com.kaltura.vo.KalturaMediaEntry;
+
 
 	public class CancelMediaEntryReplacementCommand extends KalturaCommand
 	{
@@ -21,7 +24,8 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 			
 			if (data.data && (data.data is KalturaMediaEntry)) {
-				_model.entryDetailsModel.selectedEntry = data.data as KalturaMediaEntry;
+				EntryUtil.updateChangebleFieldsOnly(data.data as KalturaMediaEntry);
+				EntryUtil.updateSelectedEntryInList(_model.entryDetailsModel.selectedEntry);
 			}
 			else {
 				trace ("error in cancel replacement");

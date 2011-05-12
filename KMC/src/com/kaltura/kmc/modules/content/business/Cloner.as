@@ -15,6 +15,28 @@ package com.kaltura.kmc.modules.content.business
 		}
 		
 		/**
+		 * clone according to entry type
+		 * */
+		public static function cloneByEntryType(entry:KalturaBaseEntry):KalturaBaseEntry {
+			var copy:KalturaBaseEntry;
+			
+			if (entry is KalturaPlaylist) {
+				copy = cloneKalturaPlaylist(entry as KalturaPlaylist);
+			}
+			else if (entry is KalturaMixEntry) {
+				copy = cloneKalturaMixEntry(entry as KalturaMixEntry);
+			}
+			else if (entry is KalturaLiveStreamAdminEntry) {
+				copy = cloneKalturaStreamAdminEntry(entry as KalturaLiveStreamAdminEntry);
+			}
+			else if (entry is KalturaMediaEntry) {
+				copy = cloneKalturaMediaEntry(entry as KalturaMediaEntry);
+			}
+			return copy;
+		}
+		
+		
+		/**
 		 * Return a new KalturaBaseEntry object with same attributes as source attributes
 		 */
 		public static function cloneKalturaBaseEntry(source:KalturaBaseEntry):KalturaBaseEntry

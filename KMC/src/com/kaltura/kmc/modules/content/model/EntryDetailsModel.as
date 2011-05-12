@@ -94,9 +94,6 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * if selected entry was refreshed
 		 * */
-		public var selectedEntryReloaded:Boolean;
-		
-		
-		
+		public var selectedEntryReloaded:Boolean;		
 	}
 }

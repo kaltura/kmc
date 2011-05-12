@@ -59,10 +59,18 @@
 			import mx.controls.LinkButton;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.PropertyChangeEvent;
 			import mx.resources.ResourceManager;
 			
 			
 			private var _entryWatcher:ChangeWatcher;
+			private var _statusWatcher:ChangeWatcher;
+			private var _replacementWatcher:ChangeWatcher;
+			private var _replacingEntryWatcher:ChangeWatcher;
+			//indicates the number of change events, once will be equal to NUM_OF_CHANGE_FIELDS 
+			//all relevant fiedls were updated
+			private var _changeCounter:int = 0;
+			private const NUM_OF_CHANGE_FIELDS:int = 3;
 
 			[Bindable]
 			/**
@@ -175,7 +183,7 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void
 			{
 				_selectedEntry = value;
-				_undoToEntry = createWorkingCopy(_selectedEntry);
+				_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
 				setWindowTitle();
 			}
 
@@ -204,8 +212,7 @@
 				viewStack.removeChild(liveStream);
 			
 				// for mix/content tab, show "mixesTab" header
-				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
-				
+				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');		
 			}
 			
 			/**
@@ -240,31 +247,6 @@
 
 			}
 
-
-			/**
-			 * save a working copy of the selected entry
-			 * @return a copy entry
-			 * */
-			private function createWorkingCopy(entry:KalturaBaseEntry):KalturaBaseEntry {
-				var copy:KalturaBaseEntry;
-
-				if (entry is KalturaPlaylist) {
-					copy = Cloner.cloneKalturaPlaylist(entry as KalturaPlaylist);
-				}
-				else if (entry is KalturaMixEntry) {
-					copy = Cloner.cloneKalturaMixEntry(entry as KalturaMixEntry);
-					// mixes:
-					//partsTable.text = resourceManager.getString('cms', 'parts');
-				}
-				else if (entry is KalturaLiveStreamAdminEntry) {
-					copy = Cloner.cloneKalturaStreamAdminEntry(entry as KalturaLiveStreamAdminEntry);
-				}
-				else if (entry is KalturaMediaEntry) {
-					copy = Cloner.cloneKalturaMediaEntry(entry as KalturaMediaEntry);
-				}
-				return copy;
-			}
-			
 			/**
 			 * sets the window title, if entry doesn't have content and title yet,
 			 * will set the title according to its type
@@ -294,15 +276,59 @@
 				else
 					title +=  _undoToEntry.name;
 			}
+			
+			/**
+			 *status on selected entry has changed
+			 * */
+			private function onStatusChange(value:String):void {
+				if (value && _undoToEntry) {
+					_undoToEntry.status = value;
+					_changeCounter++;
+					if (_changeCounter==NUM_OF_CHANGE_FIELDS)
+						dispatchChangeEntry();
+				}
+			}
+			/**
+			 *replacement status on selected entry has changed
+			 * */
+			private function onReplacementStatusChange(value:String):void {
+				if (value && _undoToEntry) {
+					_undoToEntry.replacementStatus = value;
+					_changeCounter++;
+					if (_changeCounter==NUM_OF_CHANGE_FIELDS)
+						dispatchChangeEntry();
+				}
+			}
+			/**
+			 *replaceing entry on selected entry has changed
+			 * */
+			private function onReplacingEntryChange(value:String):void {
+				if (value && _undoToEntry) {
+					_undoToEntry.replacingEntryId = value;
+					_changeCounter++;
+					if (_changeCounter==NUM_OF_CHANGE_FIELDS)
+						dispatchChangeEntry();
+				}
+			}
+			
+			/**
+			 * dispatch change event to trigger binding
+			 * */
+			private function dispatchChangeEntry():void {
+				dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "_undoToEntry", _undoToEntry, _undoToEntry));
+				_changeCounter = 0;
+			}
 
 			private function onWindowCreationComplete():void {
 			
-				if (!selectedEntry) {
-					if (!_entryWatcher)
-						_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
-				}
-					// selectedEntry = entryDetailsModel.selectedEntry;
-
+				if (!_entryWatcher)
+					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
+				if (!_statusWatcher)
+					_statusWatcher = BindingUtils.bindSetter(onStatusChange, entryDetailsModel.selectedEntry, "status");
+				if (!_replacementWatcher)
+					_replacementWatcher = BindingUtils.bindSetter(onReplacementStatusChange, entryDetailsModel.selectedEntry, "replacementStatus");
+				if (!_replacingEntryWatcher)
+					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, entryDetailsModel.selectedEntry, "replacingEntryId");
 				
 				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 					_isLiveStream = true;
@@ -578,6 +604,15 @@
 				}
 				if (_entryWatcher) {
 					_entryWatcher.unwatch();
+				}
+				if (_statusWatcher) {
+					_statusWatcher.unwatch();
+				}
+				if (_replacementWatcher) {
+					_replacementWatcher.unwatch();
+				}
+				if (_replacingEntryWatcher) {
+					_replacingEntryWatcher.unwatch();
 				}
 			}
 
