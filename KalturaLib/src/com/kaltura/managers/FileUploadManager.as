@@ -4,10 +4,7 @@ package com.kaltura.managers {
 	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
-	import com.kaltura.commands.flavorAsset.FlavorAssetUpdate;
 	import com.kaltura.commands.media.MediaAddContent;
-	import com.kaltura.commands.media.MediaConvert;
-	import com.kaltura.commands.media.MediaUpdate;
 	import com.kaltura.commands.media.MediaUpdateContent;
 	import com.kaltura.commands.uploadToken.UploadTokenAdd;
 	import com.kaltura.commands.uploadToken.UploadTokenDelete;
@@ -21,7 +18,6 @@ package com.kaltura.managers {
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
-	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaUploadToken;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
 	
@@ -30,9 +26,7 @@ package com.kaltura.managers {
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
-	import flash.utils.Dictionary;
 	
-	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 
 	/**
@@ -400,6 +394,7 @@ package com.kaltura.managers {
 				vo.file.addEventListener(IOErrorEvent.IO_ERROR, fileFailed );
 				vo.file.addEventListener(SecurityErrorEvent.SECURITY_ERROR, fileFailed);
 				_kc.post(utu);
+				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_STARTED, vo.id));
 			}
 		}
 		

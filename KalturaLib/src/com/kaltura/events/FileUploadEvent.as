@@ -11,6 +11,11 @@ package com.kaltura.events {
 		 * defines the value for the "type" property of the upload canceled event
 		 */
 		public static const UPLOAD_CANCELED:String = "upload_cacnceled";
+		
+		/**
+		 * defines the value for the "type" property of the group upload started event
+		 */
+		public static const UPLOAD_STARTED:String = "upload_started";
 
 		/**
 		 * defines the value for the "type" property of the upload complete event
@@ -26,7 +31,7 @@ package com.kaltura.events {
 		 * defines the value for the "type" property of the group upload complete event
 		 */
 		public static const GROUP_UPLOAD_STARTED:String = "group_upload_started";
-		
+				
 		/**
 		 * defines the value for the "type" property of the upload error event
 		 */
