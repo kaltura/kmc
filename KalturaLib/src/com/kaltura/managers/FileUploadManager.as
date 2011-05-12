@@ -297,10 +297,11 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.FAILED, startUploadMulti);
 			if (e.type == KalturaEvent.COMPLETE) {
 				// pass files to files list
-				var entryid:String = e.data.id;
+				var entryid:String = e.data[1].id;
 				var fuv:FileUploadVO;
 				for (var i:int =_preprocessedFiles.length-1; i>=0; i--) {
 					if ((_preprocessedFiles[i] as FileUploadVO).entryId == entryid) {
+						(_preprocessedFiles[i] as FileUploadVO).status = FileUploadVO.STATUS_QUEUED;
 						_files.push(_preprocessedFiles[i]);
 						_preprocessedFiles.splice(i, 1);
 					}
