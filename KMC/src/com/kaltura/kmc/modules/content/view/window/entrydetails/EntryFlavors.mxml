@@ -9,6 +9,7 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.commands.media.MediaAdd;
+			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.commands.SetRefreshRequiredCommand;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
@@ -99,7 +100,7 @@
 			
 			private var _entryDetailsModel:EntryDetailsModel;
 			private var _dropFolderModel:DropFolderModel;
-			public var flavorsWatcher:ChangeWatcher;
+			private var _flavorsWatcher:ChangeWatcher;
 			
 			//watchers for binding to assFlavorAssetWindow
 			private var _convProfilesWatcher:ChangeWatcher;
@@ -203,11 +204,19 @@
 			 * */
 			public function initData():void {
 				//fix bug in performance
-				if (!flavorsWatcher)
-					flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
+				if (!_flavorsWatcher)
+					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
+			}
+			
+			public function destroy():void {
+				dg.removeEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
+				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+				if (_flavorsWatcher)
+					_flavorsWatcher.unwatch();
 			}
 			
 			/**
@@ -225,6 +234,11 @@
 				
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+			}
+			
+			private function onFlavorsChanged(event:Event):void {
+				refreshData();
 			}
 			
 			/**
@@ -435,7 +449,6 @@
 					_selectCPAssetWatcher.unwatch();
 				
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
-				refreshData();
 			}
 			
 

@@ -556,6 +556,7 @@
 				if ((event == null || event.detail == Alert.YES)) {
 					_undoToEntry = null;
 					entryMetaData.clearPlayer();
+					destroyPanels();
 					removeWatchers();
 	
 					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
@@ -575,11 +576,7 @@
 							innerCustomData.metadataViewWatcher.unwatch();
 					}
 				}
-				//flavors watchers
-				if (entryAssets && entryAssets.flavorsWatcher) {
-						entryAssets.flavorsWatcher.unwatch();
-				}
-				
+
 				if (_enabledWatcher) {
 					_enabledWatcher.unwatch();
 				}
@@ -597,6 +594,15 @@
 				}
 			}
 
+			/**
+			 * destroy and clean all viewstack children
+			 * */
+			private function destroyPanels():void {
+				for (var i:int = 0; i<viewStack.numChildren; i++) {
+					if (viewStack.getChildAt(i) is IDrilldownPanel)
+						(viewStack.getChildAt(i) as IDrilldownPanel).destroy();
+				} 
+			}
 
 			/**
 			 * validate all panels, if validation is ok update server.
@@ -633,6 +639,7 @@
 					Alert.show(ResourceManager.getInstance().getString('cms', 'bitrateValidation'));
 				}
 				else {
+					destroyPanels();
 					// if we got here, all panels validation passed ok, the error was null.	
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
 					cgEvent.dispatch();	
