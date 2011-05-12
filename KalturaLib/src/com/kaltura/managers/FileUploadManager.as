@@ -144,7 +144,7 @@ package com.kaltura.managers {
 			- associate the token resource with the entry
 			- upload the file
 			*/
-			
+			trace('updateEntryFlavor');
 			_preprocessedFiles.push(file);
 			// create upload token
 			var ut:KalturaUploadToken = new KalturaUploadToken();
@@ -326,6 +326,7 @@ package com.kaltura.managers {
 		 * @param e
 		 */
 		protected function startUploadSingle(e:KalturaEvent):void {
+			trace('startUploadSingle');
 			e.target.removeEventListener(KalturaEvent.COMPLETE, startUploadSingle);
 			e.target.removeEventListener(KalturaEvent.FAILED, startUploadSingle);
 			if (e.type == KalturaEvent.COMPLETE) {
@@ -371,6 +372,7 @@ package com.kaltura.managers {
 		 * get the next file on uploads queue 
 		 */
 		protected function getNextFile():FileUploadVO {
+			trace('getNextFile');
 			var result:FileUploadVO = null;
 			for (var i:int = 0; i<_files.length; i++) {
 				if (_files[i].status == FileUploadVO.STATUS_QUEUED) {
@@ -386,6 +388,7 @@ package com.kaltura.managers {
 		 * upload the next file on queue 
 		 */		
 		protected function uploadNextFile():void {
+			trace('uploadNextFile');
 			var vo:FileUploadVO = getNextFile();
 			if (vo) {
 				vo.status = FileUploadVO.STATUS_UPLOADING;
@@ -405,6 +408,7 @@ package com.kaltura.managers {
 		 * dispatch complete event and remove the file from the list
 		 */
 		protected function wrapUpUpload(e:KalturaEvent):void {
+			trace('wrapUpUpload');
 			e.target.removeEventListener(KalturaEvent.COMPLETE, wrapUpUpload);
 			e.target.removeEventListener(KalturaEvent.FAILED, wrapUpUpload);
 			var file:FileUploadVO = getUploadByUploadToken(e.data.id);
@@ -444,6 +448,7 @@ package com.kaltura.managers {
 		 * @param file
 		 */
 		protected function updateFlavorAsset(e:KalturaEvent = null):void {
+			trace('updateFlavorAsset');
 			e.target.removeEventListener(KalturaEvent.COMPLETE, updateFlavorAsset);
 			e.target.removeEventListener(KalturaEvent.FAILED, updateFlavorAsset);
 			if (e.type == KalturaEvent.COMPLETE) {
@@ -478,6 +483,7 @@ package com.kaltura.managers {
 		 * add a single flavor asset to a no-media entry 
 		 */		
 		protected function addFlavorAsset(e:KalturaEvent):void {
+			trace('addFlavorAsset');
 			e.target.removeEventListener(KalturaEvent.COMPLETE, addFlavorAsset);
 			e.target.removeEventListener(KalturaEvent.FAILED, addFlavorAsset);
 			if (e.type == KalturaEvent.COMPLETE) {
@@ -517,8 +523,9 @@ package com.kaltura.managers {
 		 * saves the result's assetparams id to the target vo 
 		 */
 		protected function saveAssetParamsId(e:KalturaEvent):void {
-			e.target.removeEventListener(KalturaEvent.COMPLETE, updateFlavorAsset);
-			e.target.removeEventListener(KalturaEvent.FAILED, updateFlavorAsset);
+			trace('saveAssetParamsId');
+			e.target.removeEventListener(KalturaEvent.COMPLETE, saveAssetParamsId);
+			e.target.removeEventListener(KalturaEvent.FAILED, saveAssetParamsId);
 			if (e.type == KalturaEvent.COMPLETE) {
 				(e.target as FileUploadVO).flavorAssetId = (e.data as KalturaFlavorAsset).id;
 				updateFlavorAsset(e);
