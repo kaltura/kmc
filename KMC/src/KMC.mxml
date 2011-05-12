@@ -26,6 +26,7 @@
 			import com.kaltura.kmc.model.types.APIErrorCode;
 			import com.kaltura.kmc.modules.KmcModule;
 			import com.kaltura.kmc.utils.KSUtil;
+			import com.kaltura.kmc.utils.XMLUtils;
 			import com.kaltura.kmc.vo.UserVO;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.utils.KUtils;
@@ -143,6 +144,30 @@
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
 			}
 			
+			/**
+			 * if any flashvars are supposed to override uiconf values, set them here to the uiconf.
+			 * flashvars names will be constructed from module id + "." + xml structure, nodes 
+			 * separated by ".", i.e, "content.uiconf.metadata" or "admin.locale.language"
+			 */		
+			protected function overrideDataByFlashvars(conf:String, flashvars:Object):String {
+				var confFile:XML = new XML(conf);
+				// process
+				for (var key:String in flashvars) {
+					var elements:Array = key.split(".");
+					if (elements[0] == 'kmc') {
+						// need to process
+						// get to the node we need to edit
+						var xml:XML = XMLUtils.getElement(confFile, elements);
+						if (xml) {
+							delete xml.children()[0];
+							xml.appendChild(flashvars[key]);
+						}
+					}
+				}
+				// re-set values
+				return confFile.toXMLString();
+			}
+			
 			
 			/**
 			 * show correct tabs in HTML
@@ -195,9 +220,12 @@
 				this.addEventListener(KmcErrorEvent.ERROR, onError);
 				this.addEventListener(KmcHelpEvent.HELP, showHelp);
 
-				// save flashvars
+				// save flashvars (keep original keys as well as lowercased keys)
 				var objParam:Object = Application.application.parameters;
-				objParam = ObjectHelpers.lowerNoUnderscore(objParam);
+				var oLowers:Object = ObjectHelpers.lowerNoUnderscore(objParam);
+				for (var key:String in oLowers) {
+					objParam[key] = oLowers[key];
+				}
 				_flashvars = objParam;
 
 				// hook ExternalInterface:
@@ -334,7 +362,8 @@
 			protected function dataLoadHandler(event:KalturaEvent):void {
 				// [0] KMC uiconf:
 				if (isError(event.data[0].error)) return;
-				_uiconf = new XML((event.data[0] as KalturaUiConf).confFile);
+				
+				_uiconf = new XML(overrideDataByFlashvars((event.data[0] as KalturaUiConf).confFile, _flashvars));
 				if (_uiconf.descendants().length() == 0) {
 					Alert.show("KMC UIConf is empty", "Error");
 					return;
@@ -410,6 +439,7 @@
 				
 				// load skin
 				loadSkin(getUrl(_uiconf.skinPath.toString()));
+//				loadSkin(getUrl("workspaces/kmc/KMC/assets/kmc_skin.swf"));
 			}
 
 

@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.kmc.business.PermissionManager;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
+	import com.kaltura.kmc.utils.XMLUtils;
 	import com.kaltura.kmc.vo.Context;
 	import com.kaltura.kmc.vo.UserVO;
 	import com.kaltura.vo.KalturaUiConf;
@@ -176,7 +177,7 @@ package com.kaltura.kmc.modules {
 				if (elements[0] == getModuleName()) {
 					// need to process
 					// get to the node we need to edit
-					var xml:XML = getElement(confFile, elements);
+					var xml:XML = XMLUtils.getElement(confFile, elements);
 					if (xml) {
 						delete xml.children()[0];
 						xml.appendChild(flashvars[key]);
@@ -187,27 +188,6 @@ package com.kaltura.kmc.modules {
 			return confFile.toXMLString();
 		}
 		
-		/**
-		 * get a node from an xml file that matches the given path. 
-		 * @param xml	xml to search
-		 * @param chain	path to desired element
-		 * @return 	(hopefully) the desired element
-		 */		
-		protected function getElement(xml:XML, chain:Array):XML {
-			// remove the first element - it directs to the module and isn't relevant anymore.
-			chain.shift();
-			var lst:XMLList = XMLList(xml);
-			
-			// get the following node
-			for (var i:int = 0; i<chain.length; i++) {
-				if (lst) {
-					lst = lst.child(chain[i]);
-				}
-			}
-			xml = lst[0];
-			return xml;
-		}
-
 
 		/**
 		 * failed loading uiconf
