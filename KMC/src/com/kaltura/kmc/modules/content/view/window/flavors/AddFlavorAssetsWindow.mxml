@@ -34,13 +34,21 @@
 			public static const CLOSE_WINDOW:String = "closeWindow";
 			
 			public static const SINGLE_FILE_STATE:String = "single_file_state"; 
-			public static const MULTI_FILES_STATE:String = "multi_files_state"; 
+			public static const MULTI_FILES_STATE:String = "multi_files_state";
+			
+			[Bindable]
+			/**
+			 * windowState is the state the window is currently functioning at.
+			 * MULTI_FILES_STATE means this is replacement of all flavours of the entry,
+			 * while SINGLE_FILE_STATE means we only replace a single flavour.
+			 * note that this is not affected by the partner multiple files 
+			 * ingestion permission, and shouldn't be.
+			 * */
 			public var windowState:String;
 			
 			[Bindable]
 			/**
 			 * hide the "add more files" options,
-			 * use flavorAsset.update instead of flavorAsset.add or media.update.
 			 * */
 			public var allowAddFiles:Boolean = true;
 			
@@ -338,7 +346,8 @@
 		]]>
 	</mx:Script>
 	
-	<mx:HBox verticalAlign="middle" visible="{allowAddFiles}" includeInLayout="{allowAddFiles}">
+	<mx:HBox verticalAlign="middle" visible="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}" 
+			 includeInLayout="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}">
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
 		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" 
