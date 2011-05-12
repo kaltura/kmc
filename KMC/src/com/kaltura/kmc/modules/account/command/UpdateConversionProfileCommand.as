@@ -23,8 +23,8 @@ package com.kaltura.kmc.modules.account.command
 			var profileVo:ConversionProfileVO = event.data as ConversionProfileVO;
 			
 			var id:int = profileVo.profile.id;
-			var updateProfile:KalturaConversionProfile = prepareForUpdate(profileVo.profile);
-			
+			var updateProfile:KalturaConversionProfile = profileVo.profile;//prepareForUpdate(profileVo.profile);
+			updateProfile.setUpdatedFieldsOnly(true);
 			var updateConversionProfile:ConversionProfileUpdate = new ConversionProfileUpdate(profileVo.profile.id, updateProfile);
 			updateConversionProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			updateConversionProfile.addEventListener(KalturaEvent.FAILED, fault);
@@ -37,7 +37,7 @@ package com.kaltura.kmc.modules.account.command
 			updatePofile.name = profile.name;
 			updatePofile.description = profile.description;
 			updatePofile.flavorParamsIds = profile.flavorParamsIds;
-		
+			updatePofile.setUpdatedFieldsOnly(true);
 			return updatePofile;
 		}
 		
