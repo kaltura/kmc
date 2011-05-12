@@ -9,6 +9,7 @@
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.commands.media.MediaAdd;
+			import com.kaltura.kmc.modules.content.business.Cloner;
 			import com.kaltura.kmc.modules.content.commands.SetRefreshRequiredCommand;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -103,11 +104,71 @@
 			//watchers for binding to assFlavorAssetWindow
 			private var _convProfilesWatcher:ChangeWatcher;
 			private var _selectCPAssetWatcher:ChangeWatcher;
-			//watchers for replacement status
-			private var _selectedReloadedWatcher:ChangeWatcher;
-			
-			//[Bindable]
+			//if there is a pending request to open drilldown
+			private var _drillDownClicked:Boolean = false;
+
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
+			private var _replacementStatus:String;
+			private var _replacingEntryId:String;
+			private var _status:String;
+
+			public function get status():String
+			{
+				return _status;
+			}
+
+			public function set status(value:String):void
+			{
+				if (value && (!_status || (_status!=value))) {
+					refreshData();
+				}
+				_status = value;
+				selectedEntry = _selectedEntry;
+			}
+
+			public function get replacingEntryId():String
+			{
+				return _replacingEntryId;
+			}
+
+			public function set replacingEntryId(value:String):void
+			{
+				//if we have a replacement entry that we didn't have before, request the entry from server
+				if (value
+					&& (!_replacingEntryId || (_replacingEntryId!=value))) 
+				{		
+					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
+					getReferenceEntry.dispatch();
+				}
+				
+				_replacingEntryId = value;
+				selectedEntry = _selectedEntry;
+			}
+
+			public function get replacementStatus():String
+			{
+				return _replacementStatus;
+			}
+
+			public function set replacementStatus(value:String):void
+			{
+				if (_drillDownClicked) {
+					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
+						openReplacementDrilldown();
+					}
+					//if replacement entry doesn't exist anymore
+					else {
+						Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
+					}
+					_drillDownClicked = false;
+				}
+				
+				if (value && (!_replacementStatus || (_replacementStatus!=value))) {
+					refreshData();
+				}
+				_replacementStatus = value;
+				selectedEntry = _selectedEntry;
+			}
 
 			/**
 			 * allow multiple flavours to be ingested simultaneously 
@@ -144,12 +205,14 @@
 				//fix bug in performance
 				if (!flavorsWatcher)
 					flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
-				//refreshData();
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
 			}
 			
+			/**
+			 * load flavors
+			 * */
 			private function refreshData():void {
 				if(_selectedEntry != null)
 				{
@@ -159,6 +222,7 @@
 			}
 			
 			private function onCreationComplete():void {
+				
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 			}
@@ -248,21 +312,13 @@
 				return _selectedEntry;
 			}
 		
-			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void
+			public function set selectedEntry(value:KalturaBaseEntry):void
 			{
-				if (!selectedEntry)
+				if (!value)
 					return;
-				
-				//if we have a replacement entry that we didn't have before, request the entry from server
- 				if ((selectedEntry.replacementStatus!=KalturaEntryReplacementStatus.NONE) && (selectedEntry.replacingEntryId)
-					&& (!_selectedEntry || !_selectedEntry.replacingEntryId || (_selectedEntry.replacingEntryId!=selectedEntry.replacingEntryId))) 
-				{		
-					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, selectedEntry.replacingEntryId);
-					getReferenceEntry.dispatch();
-				}
-				
-				_selectedEntry = selectedEntry;
-				
+		
+				_selectedEntry = value;
+		
 				if (_selectedEntry.replacingEntryId) 
 				{
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
@@ -322,22 +378,7 @@
 							_showActions = false;
 					} 
 				}
-				
-				refreshData();
 			}
-	 		
-		/* 	[Bindable]
-			public function get flavorAssets():ArrayCollection
-			{
-				return _flavorAssets;
-			}
-		
-			public function set flavorAssets(flavorAssets:ArrayCollection):void
-			{
-				_flavorAssets = flavorAssets;
-				
-			} 
-			 */
 
 			public function set hideColumns(indices:String):void {
 				var ind:Array = indices.split(",");
@@ -354,9 +395,7 @@
 			public function get hideColumns():String {
 				return '';
 			}
-			
-			
-			
+		
 			/**
 			 * returns the suitable fileFilter according to given mediaType
 			 * */
@@ -426,9 +465,10 @@
 					|| (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) 
 				{
 					entryDetailsModel.selectedEntryReloaded = false;
-					_selectedReloadedWatcher = BindingUtils.bindSetter(onSelectedChanged, entryDetailsModel, "selectedEntryReloaded");
+					//_selectedReloadedWatcher = BindingUtils.bindSetter(onSelectedChanged, entryDetailsModel, "selectedEntryReloaded");
 					/* var getReplacement:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, entryDetailsModel.selectedEntry.replacingEntryId);
 					getReplacement.dispatch(); */
+					_drillDownClicked = true;
 					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, entryDetailsModel.selectedEntry.id);
 					getSelectedEntry.dispatch();	
 				}
@@ -437,7 +477,7 @@
 					openReplacementDrilldown();
 				}
 			}
-			
+		/* 	
 			private function onSelectedChanged(value:Boolean):void {
 				if (!value)
 					return;
@@ -450,7 +490,7 @@
 				else {
 					Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
 				}
-			}
+			} */
 			
 			private function openReplacementDrilldown():void {
 				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);

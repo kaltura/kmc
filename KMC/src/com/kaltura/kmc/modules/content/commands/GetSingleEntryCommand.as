@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
+	import mx.events.PropertyChangeEvent;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
@@ -49,6 +50,8 @@ package com.kaltura.kmc.modules.content.commands {
 				}
 				else if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
 					EntryUtil.updateChangebleFieldsOnly(resultEntry);
+					_model.entryDetailsModel.selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.entryDetailsModel.selectedEntry, 'replacementStatus',
+						_model.entryDetailsModel.selectedEntry.replacementStatus,_model.entryDetailsModel.selectedEntry.replacementStatus));
 					//if in the entries list there's an entry with the same id, replace it.
 					EntryUtil.updateSelectedEntryInList(_model.entryDetailsModel.selectedEntry);
 					_model.entryDetailsModel.selectedEntryReloaded = true;
