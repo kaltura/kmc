@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
 	
@@ -14,9 +15,13 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.rpc.IResponder;
 
 	public class ListFlavorsParamsCommand extends KalturaCommand implements ICommand, IResponder {
+		public static const DEFAULT_PAGE_SIZE:int = 500;
+		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			var getListFlavorParams:FlavorParamsList = new FlavorParamsList();
+			var flavorsPager:KalturaFilterPager = new KalturaFilterPager();
+			flavorsPager.pageSize = DEFAULT_PAGE_SIZE;
+			var getListFlavorParams:FlavorParamsList = new FlavorParamsList(null, flavorsPager);
 			getListFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
 			getListFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(getListFlavorParams);

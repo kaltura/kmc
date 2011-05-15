@@ -82,7 +82,9 @@ package com.kaltura.kmc.modules.content.commands
 				multiRequest.addAction(listDistributionProfile);
 			}
 			// flavor params
-			var listFlavorParams:FlavorParamsList = new FlavorParamsList();
+			var flavorsPager:KalturaFilterPager = new KalturaFilterPager();
+			flavorsPager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
+			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, flavorsPager);
 			multiRequest.addAction(listFlavorParams);
 			// metadata profile
 		/*	if (_model.filterModel.enableCustomData) {

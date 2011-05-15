@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
 	
@@ -18,10 +19,13 @@ package com.kaltura.kmc.modules.account.command
 	public class ListFlavorsParamsCommand implements ICommand, IResponder
 	{
 		private var _model : AccountModelLocator = AccountModelLocator.getInstance();
+		public static const DEFAULT_PAGE_SIZE:int = 500;
 		
 		public function execute(event:CairngormEvent):void
 		{
-		 	var getListFlavorParams:FlavorParamsList = new FlavorParamsList();
+			var pager:KalturaFilterPager = new KalturaFilterPager();
+			pager.pageSize = DEFAULT_PAGE_SIZE;
+		 	var getListFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
 		 	getListFlavorParams.addEventListener(KalturaEvent.COMPLETE, result);
 			getListFlavorParams.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(getListFlavorParams);	 

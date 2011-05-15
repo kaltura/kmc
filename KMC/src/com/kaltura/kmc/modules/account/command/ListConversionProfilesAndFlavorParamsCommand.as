@@ -39,7 +39,9 @@ package com.kaltura.kmc.modules.account.command
 			var getListThumbParams:ThumbParamsList = new ThumbParamsList();
 			mr.addAction(getListThumbParams);
 			
-			var getListFlavorParams:FlavorParamsList = new FlavorParamsList();
+			var pager:KalturaFilterPager = new KalturaFilterPager();
+			pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
+			var getListFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
 			mr.addAction(getListFlavorParams);
 			
 			var getListConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, new KalturaFilterPager());
