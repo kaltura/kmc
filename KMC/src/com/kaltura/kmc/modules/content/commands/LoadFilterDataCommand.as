@@ -199,7 +199,7 @@ package com.kaltura.kmc.modules.content.commands
 		/**
 		 * coppied from ListMetadataProfileCommand 
 		 */		
-		private function handleMetadataProfile(response:KalturaMetadataProfileListResponse):void {
+		/*private function handleMetadataProfile(response:KalturaMetadataProfileListResponse):void {
 			_model.filterModel.metadataProfiles = new ArrayCollection();
 			_model.filterModel.formBuilders = new ArrayCollection();
 			for (var i:int = 0; i<response.objects.length; i++) 
@@ -229,6 +229,8 @@ package com.kaltura.kmc.modules.content.commands
 					var fb:FormBuilder = new FormBuilder(metadataProfile);
 					_model.filterModel.formBuilders.addItem(fb);
 					
+					var isViewExist:Boolean = false;
+					
 					if (recievedProfile.views) {
 						try {
 							var recievedView:XML = new XML(recievedProfile.views);
@@ -240,20 +242,22 @@ package com.kaltura.kmc.modules.content.commands
 						for each (var layout:XML in recievedView.children()) {
 							if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
 								metadataProfile.viewXML = layout;
+								isViewExist = true;
 								continue;
-								
 							}
 						}
 					}
-					//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-					if (_model.entryDetailsModel.metadataDefaultUiconfXML)
-						metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
-					fb.buildInitialMxml();
+					if (!isViewExist) {
+						//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
+						if (_model.entryDetailsModel.metadataDefaultUiconfXML)
+							metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
+						fb.buildInitialMxml();
+					}
 				} 	
 			}
 			
 			
-		}
+		}*/
 		
 		/**
 		 * coppied from ListAccessControlsCommand 

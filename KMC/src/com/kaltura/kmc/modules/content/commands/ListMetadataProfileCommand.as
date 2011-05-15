@@ -98,6 +98,7 @@ package com.kaltura.kmc.modules.content.commands
 						_model.filterModel.metadataProfiles.addItem(metadataProfile);
 						var fb:FormBuilder = new FormBuilder(metadataProfile);
 						_model.filterModel.formBuilders.addItem(fb);
+						var isViewExist:Boolean = false;
 						
 						if (recievedProfile.views) {
 							try {
@@ -110,15 +111,17 @@ package com.kaltura.kmc.modules.content.commands
 							for each (var layout:XML in recievedView.children()) {
 								if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
 									metadataProfile.viewXML = layout;
+									isViewExist = true;
 									continue;
-									
 								}
 							}
 						}
-						//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-						if (_model.entryDetailsModel.metadataDefaultUiconfXML)
-							metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
-						fb.buildInitialMxml();
+						if (!isViewExist) {
+							//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
+							if (_model.entryDetailsModel.metadataDefaultUiconfXML)
+								metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
+							fb.buildInitialMxml();
+						}
 					} 	
 				}
 				
