@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" 
+				 width="400" height="240" title="{resourceManager.getString('account','conversionFlavorSettingsTitle')}"
+				 styleName="TitleWindowType2" showCloseButton="true"
+				 close="{onClose()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.vo.FlavorVO;
+			
+			import mx.managers.PopUpManager;
+			private const LABEL_WIDTH:int = 160;
+			
+			private var _flavorVO:FlavorVO;
+			[Bindable]
+			public var profileName:String;
+			
+			public function get flavorVO():FlavorVO
+			{
+				return _flavorVO;
+			}
+
+			[Bindable]
+			public function set flavorVO(value:FlavorVO):void
+			{
+				_flavorVO = value;
+			}
+
+			private function onClose():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function saveFlavor():void {
+				
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('account','convProfileName')}" width="{LABEL_WIDTH}"/>
+		<mx:Label text="{profileName}"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('account','convFlavorName')}" width="{LABEL_WIDTH}"/>
+		<mx:Label text="{flavorVO.kFlavor.name}"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('account','assetAvialability')}" width="{LABEL_WIDTH}"/>
+		
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('account','convertToFlavor')}" width="{LABEL_WIDTH}"/>
+		
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Text htmlText="{resourceManager.getString('account','systemName')}" width="{LABEL_WIDTH}"/>
+		
+	</mx:HBox>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
+				   paddingTop="2">
+		<mx:Button id="submitBtn" label="{resourceManager.getString('account','saveFlavor')}" 
+				   useHandCursor="true" buttonMode="true" click="saveFlavor()"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

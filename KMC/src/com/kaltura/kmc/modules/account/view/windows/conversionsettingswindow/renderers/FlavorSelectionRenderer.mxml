@@ -71,24 +71,8 @@
 
 
 			private function setSelectionCBox():void {
-				//selectionCBox.selected = false;
-				var cProfile:ConversionProfileVO = (this.parent.parent as ConversionSettingsTable).cProfile;
-				if ((cProfile == null) || (cProfile.profile.flavorParamsIds == null)) {
-					return; // in case there are no flavors for the current profile
-				}
-
 				var flavorObj:FlavorVO = data as FlavorVO;
-				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
-				var isSelected:Boolean = false;
-				for each (var id:String in idsArr) {
-					if (int(id) == flavorObj.kFlavor.id) {
-						isSelected = true;
-						flavorObj.selected = true;
-					}
-				}
-
-
-				selectionCBox.selected = isSelected;
+				selectionCBox.selected = (this.parent.parent as ConversionSettingsTable).isGivenFlavorSelected(flavorObj);
 			}
 
 

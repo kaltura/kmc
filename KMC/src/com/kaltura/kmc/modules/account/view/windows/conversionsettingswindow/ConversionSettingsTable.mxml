@@ -7,7 +7,7 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.vo.KalturaThumbParams;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.events.DataGridEvent;
 
@@ -37,7 +37,6 @@
 				_thumbParamsData = value;
 				validateProfileFlavors();
 			}
-
 
 			[Bindable]
 			/**
@@ -140,6 +139,23 @@
 				for each (var vo:FlavorVO in dataProvider) {
 					vo.editable = value;
 				}
+			}
+			
+			/**
+			 * check if the flavor is selected in the current profile
+			 * */
+			public function isGivenFlavorSelected(flavor:FlavorVO):Boolean {
+				if (!cProfile || !cProfile.profile.flavorParamsIds)
+					return false;
+				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
+
+				for each (var id:String in idsArr) {
+					if (int(id) == flavor.kFlavor.id) {
+						return true;
+					}
+				}
+				return false;
+
 			}
 		]]>
 	</mx:Script>
