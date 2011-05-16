@@ -345,11 +345,11 @@
 							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'statusProcessing');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'processClickToReview');
 							break;
 						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementRFRState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'readyForReviewBtn');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'readyClickToReview');
 							break;
 					}
 				}
@@ -375,7 +375,6 @@
 							else {
 								stateLabel.text = resourceManager.getString('cms','readyState');
 								_showActions = true;
-								noteLabel.visible = noteLabel.includeInLayout = true;
 								if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
 									actionLabel.text = resourceManager.getString('cms','replaceVideo');
 								else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
@@ -578,7 +577,7 @@
 		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
 		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
 	</mx:HBox>
-	<mx:Label id="noteLabel" visible="false" includeInLayout="false" htmlText="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
+	
 	<mx:HBox id="replacementInfoHBox" width="100%" visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" horizontalGap="0">
 		<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="drillDownLabel"/>
 		<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
@@ -592,6 +591,7 @@
 			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
 		</mx:HBox>
 	</mx:HBox>
+	<mx:Label visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" htmlText="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
 
