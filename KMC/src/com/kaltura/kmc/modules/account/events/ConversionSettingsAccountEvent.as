@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules.account.events
 		public static const MARK_FLAVORS : String = "account_markFlavors";
 		public static const MARK_CONVERSION_PROFILES : String = "account_markConversionProfiles";
 		public static const UPDATE_CONVERSION_PROFILE_CHANGES : String = "account_updateConversionProfileChanges";
+		public static const SET_AS_DEFAULT_CONVERSION_PROFILE : String = "account_setAsDefualtConversionProfile";
 		
 		public var selected : Boolean;
 		

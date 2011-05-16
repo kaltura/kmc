@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.conversionProfile.ConversionProfileList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+	import com.kaltura.kmc.modules.account.utils.ListConversionProfilesUtil;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileListResponse;
@@ -33,23 +34,7 @@ package com.kaltura.kmc.modules.account.command
 			var response:KalturaConversionProfileListResponse = event.data as KalturaConversionProfileListResponse;
 	//		clearOldData();
 			_model.loadingFlag = false;
-			var tempArrCol:ArrayCollection = new ArrayCollection();
-			
-			for each(var cProfile:KalturaConversionProfile in response.objects)
-			{
-				var cp:ConversionProfileVO = new ConversionProfileVO();
-				cp.profile = cProfile;
-				if(cp.profile.isDefault)
-				{
-					tempArrCol.addItemAt(cp, 0);
-				}
-				else
-				{
-					tempArrCol.addItem(cp);
-				}
-			}
-			
-			_model.conversionData = tempArrCol;
+			ListConversionProfilesUtil.handleConversionProfilesList(response.objects);
 //			setDummyData();
 			
 			//_model.partnerInfoLoaded = true;

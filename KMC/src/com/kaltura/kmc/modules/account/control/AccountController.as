@@ -48,6 +48,7 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(ConversionSettingsAccountEvent.MARK_FLAVORS, MarkFlavorsCommand);
 			addCommand(ConversionSettingsAccountEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
 			addCommand(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
+			addCommand(ConversionSettingsAccountEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
 			
 			//metadata profile events
 			addCommand(MetadataProfileEvent.LIST , ListMetadataProfileCommand);
