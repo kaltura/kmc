@@ -80,10 +80,22 @@
 				<ui id="content.generalPermissions" showSinglePlayerEmbedCode="false" />
 				<ui id="dashboard.embedPanel.embedOption1Button" enabled="false" buttonMode="false"/>
 			</permission>
+			<permission text="Add Media to an Entry" id="CONTENT_INGEST_INTO_ORPHAN" >
+				<ui id="entryDrilldown.entryAssets" allowAddMedia="false"/>
+			</permission>
+			
+			<permission text="Replace Entry’s Media" id="CONTENT_INGEST_INTO_READY" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT">
+				<ui id="entryDrilldown.entryAssets" allowReplaceMedia="false"/>
+			</permission>
+			
+			<permission text="Approve Media Replacement" id="CONTENT_INGEST_REPLACE" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT_APPROVAL">
+				<ui id="entryDrilldown.entryAssets.replacementActionsHBox" visible="false" includeInLayout="false"/>
+			</permission>
 			<permission text="Manage Flavors" id="CONTENT_MANAGE_RECONVERT">
 				<ui id="entryDrilldown.entryAssets" hideColumns="8"/>
 				<ui id="entryDrilldown.saveBtn" enabled="false" buttonMode="false"/>
 			</permission>
+			
 			<permission text="Edit Categories" id="CONTENT_MANAGE_EDIT_CATEGORIES">
 				<ui id="content.manage.filter" showAccordionHeaderButtons="false" />
 			</permission>
@@ -101,17 +113,7 @@
 			<permission text="Download Files" id="CONTENT_MANAGE_DOWNLOAD" >
 				<ui id="content.manage.toolBar.download" visible="false" includeInLayout="false"/>
 			</permission>
-			<permission text="Add Media to an Entry" id="CONTENT_INGEST_INTO_ORPHAN" >
-				<ui id="entryDrilldown.entryAssets" allowAddMedia="false"/>
-			</permission>
 			
-			<permission text="Replace Entry’s Media" id="CONTENT_INGEST_INTO_READY" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT">
-				<ui id="entryDrilldown.entryAssets" allowReplaceMedia="false"/>
-			</permission>
-			
-			<permission text="Approve Media Replacement" id="CONTENT_INGEST_REPLACE" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT_APPROVAL">
-				<ui id="entryDrilldown.entryAssets.replacementActionsHBox" visible="false" includeInLayout="false"/>
-			</permission>
 		</permissionGroup>
 		<!-- Content Moderation -->
 		<permissionGroup text="Content Moderation" id="CONTENT_MODERATE_BASE">
@@ -221,6 +223,13 @@
 			<ui id="wizard_add.advertizingPage" editable="false" />
 			<ui id="wizard_edit.advertizingPage" editable="false" />
 		</permissionGroup>
+		<!-- Video Analytics -->
+		<permissionGroup text="Video Analytics" id="ANALYTICS_BASE" dependsOnFeature="FEATURE_ANALYTICS_TAB">
+			<ui id="dashboard.chartsPanel.OptionsComboBox" enabled="false" buttonMode="false"/>
+			<ui id="dashboard.chartsPanel.viewReportsBtn" enabled="false" buttonMode="false"/>
+			<ui id="dashboard.chartsPanel" visible="false"/>
+			<ui id="dashboard" showGraphs="false"/>
+		</permissionGroup>
 		<!-- Account settings -->
 		<permissionGroup text="Account Settings" id="ACCOUNT_BASE">
 			<permission text="Modify Account Settings" id="ACCOUNT_UPDATE_SETTINGS">
@@ -314,13 +323,7 @@
 				<ui id="admin.roles.table" enableDelete="false"/>
 			</permission>
 		</permissionGroup>
-		<!-- Video Analytics -->
-		<permissionGroup text="Video Analytics" id="ANALYTICS_BASE" dependsOnFeature="FEATURE_ANALYTICS_TAB">
-			<ui id="dashboard.chartsPanel.OptionsComboBox" enabled="false" buttonMode="false"/>
-			<ui id="dashboard.chartsPanel.viewReportsBtn" enabled="false" buttonMode="false"/>
-			<ui id="dashboard.chartsPanel" visible="false"/>
-			<ui id="dashboard" showGraphs="false"/>
-		</permissionGroup>
+		
 		<!-- -->
 	</permissions>
 
