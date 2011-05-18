@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--- Distribution details window. Contains all information regarding selected entry and distribution profile:
-	  distribution status, sunrise, sunset, metadata, thumbnail and flavors	-->
+distribution status, sunrise, sunset, metadata, thumbnail and flavors	-->
 
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
@@ -38,8 +38,11 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.UITextField;
 			import mx.events.CloseEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
+			import mx.validators.ValidationResult;
 			
 			import org.hamcrest.collection.array;
 			
@@ -86,12 +89,12 @@
 			public static const MAX_HEIGHT:int = 650;
 			[Bindable]
 			private var _pager:Pager;
-
+			
 			public function get entryDetailsModel():EntryDetailsModel
 			{
 				return _entryDetailsModel;
 			}
-
+			
 			public function set entryDetailsModel(value:EntryDetailsModel):void
 			{
 				_entryDetailsModel = value;
@@ -102,12 +105,12 @@
 				
 				BindingUtils.bindSetter(refreshFlavors, _entryDetailsModel, "flavorsLoaded");
 			}
-
+			
 			public function get entryDis():EntryDistributionWithProfile
 			{
 				return _entryDis;
 			}
-
+			
 			public function set entryDis(value:EntryDistributionWithProfile):void
 			{
 				_entryDis = value;
@@ -174,7 +177,7 @@
 								addNoneThumb(thumbnail.width, thumbnail.height, arr);
 								if (isArray)
 									_thumbsArray.addItem(arr);
-								 
+								
 								break;
 							}
 						}
@@ -253,7 +256,7 @@
 						continue;
 					
 					if (existingThumb.thumbAsset && 
-					    (existingThumb.width==thumbnail.width) &&
+						(existingThumb.width==thumbnail.width) &&
 						(existingThumb.height==thumbnail.height)) {
 						var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(existingThumb.width, existingThumb.height, existingThumb.thumbAsset);
 						newThumb.thumbUrl = existingThumb.thumbUrl;
@@ -293,7 +296,7 @@
 				var flavorsAssetsArray:Array;
 				if (flavorsAssetsIds)
 					flavorsAssetsArray = flavorsAssetsIds.split(",");
-	
+				
 				for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
 					var isRequiredParam:Boolean = false;
 					for each (var stringId:String in requiredFlavorsArray) {
@@ -314,7 +317,7 @@
 					}
 				}
 			}
-
+			
 			/**
 			 * build the string for the window title
 			 * */
@@ -328,10 +331,17 @@
 					
 					this.title = title;
 				}
-					
+				
 			}
 			
 			private function closeWindow():void {
+				var errors:String = validateDates();
+				if (errors)
+				{
+					Alert.show(errors, resourceManager.getString('cms','invalidDate'));
+					return;
+				}
+				
 				if (_isDirty)
 					Alert.show(resourceManager.getString('cms','undoEntryDetails'),resourceManager.getString('cms','exitDistributionDetails'), Alert.YES | Alert.NO, null, closeHandler);
 				else 
@@ -384,7 +394,7 @@
 						endDateField.selectedDate = endDate;
 						_timeManager.setTime(endDateHour, endDate.hours, endDate.minutes);
 					}
-	
+					
 				}
 			}
 			
@@ -417,7 +427,7 @@
 						}	
 					}
 				}
-
+				
 				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
 				_isDirty = true;
 			}
@@ -439,7 +449,25 @@
 				entryDistribution.thumbAssetIds = _oldThumbs;
 			}
 			
+			private function validateDates():String {
+				var validator:ValidationResultEvent = fromDateValidator.validate();
+				if (validator.type==ValidationResultEvent.VALID) {
+					validator = toDateValidator.validate();
+					if (validator.type==ValidationResultEvent.VALID)
+						return null
+				}
+				
+				return validator.message;	
+			}
+			
 			private function save():void {
+				var errors:String = validateDates();
+				if (errors)
+				{
+					Alert.show(errors, resourceManager.getString('cms','invalidDate'));
+					return;
+				}
+				
 				if (_isDirty) {
 					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
 					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour); 
@@ -475,13 +503,14 @@
 			public function get hideColumns():String {
 				return '';
 			}
-	
+			
+			
 		]]>
 	</mx:Script>
-	
+	<mx:DateValidator id="fromDateValidator" required="false" source="{startDateField}" property="text"/>
+	<mx:DateValidator id="toDateValidator" required="false" source="{endDateField}" property="text"/>
 	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('cms','distributionDetails')}" styleName="drillDownTitleLabel"/>
-
-
+	
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','statusLabel')}" width="75" styleName="drillDownLabel"/>
 		<renderers:SubmissionStatusRenderer data="{_entryDis}"/>
@@ -500,16 +529,16 @@
 					   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
 					   enabled="{enableXMLViews}"/>
 	</mx:HBox>
-
-
+	
+	
 	<mx:HBox>
 		<mx:VBox>
 			<mx:Label text="{resourceManager.getString('cms','startDateLabel')}" width="75" styleName="drillDownLabel"/>
 			<mx:Label text="{resourceManager.getString('cms','endDateLabel')}" width="75" styleName="drillDownLabel"/>
 		</mx:VBox>
 		<mx:VBox>
-			<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}"/> 
-			<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}"/> 
+			<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}" editable="true"/> 
+			<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}" editable="true"/> 
 		</mx:VBox>
 		<mx:VBox>
 			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
@@ -550,7 +579,7 @@
 			<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}" click="{onNextClick()}" styleName="moveRightButton"/>
 		</mx:HBox>
 	</mx:HBox>
-
+	
 	<mx:Label text="{resourceManager.getString('cms','videoFlavors')}" styleName="drillDownTitleLabel"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}" includeInLayout="{_flavorAssets.length==0}"/>
@@ -558,8 +587,8 @@
 								   flavorAssets="{_flavorAssets}"
 								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>	
 	</mx:HBox>
-
-
+	
+	
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="save()"
 				   buttonMode="true" enabled="{enableChanges}"/>
