@@ -41,7 +41,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		/**
 		 * player's visual theme 
 		 */		
-		private var _currentThemeName:String = "";
+		private var _currentThemeId:String = "";
 		
 
 		/**
@@ -379,8 +379,8 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			// THEME 
 			// remove all pre-given themes
 			var themesToDelete:XMLList = fullPlayerCopy.descendants("theme").(attribute("id").toString() != "currentTheme");
-			_currentThemeName = style.themeName;
-			var defaultThemeXml:XML = new XML(fullPlayerCopy.descendants().(attribute("id") == _currentThemeName)[0] as XML);
+			_currentThemeId = style.themeId;
+			var defaultThemeXml:XML = new XML(fullPlayerCopy.descendants().(attribute("id") == _currentThemeId)[0] as XML);
 			for each (var themeXML:XML in themesToDelete) {
 				var themeId:String = themeXML.@id;
 				delete(fullPlayerCopy.descendants().(attribute("id") == themeId)[0]);
@@ -389,10 +389,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			var availabelsGigyasTheme:XMLList = fullPlayerCopy..extraData.GigyaUI;
 			var gigyaXml:XML;
 			//get the current style from stylePage and get the matching data of gigya :
-			defaultThemeXml.@id = _currentThemeName;
+			defaultThemeXml.@id = _currentThemeId;
 			
 			for (var i:uint = 0; i < availabelsGigyasTheme.length(); i++) {
-				if (XML(availabelsGigyasTheme[i]).@theme.toString() == _currentThemeName) {
+				if (XML(availabelsGigyasTheme[i]).@theme.toString() == _currentThemeId) {
 					//found a matching gigya section 
 					gigyaXml = new XML(availabelsGigyasTheme[i]);
 				}
@@ -413,7 +413,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				fullPlayerCopy.extraData[0].appendChild(gigyaXml);
 			} 
 			
-			fullPlayerCopy.@skinPath = updateSkinPath(fullPlayerCopy.@skinPath.toString(), style.themeName);
+			fullPlayerCopy.@skinPath = style.skinPath;
 			
 			
 			// delete all "selected" attributes from the player
@@ -946,20 +946,22 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		
 		
 		/**
-		 * creates styles xml 
-		 * @return 
-		 */		
+		 * create XML with selected style definitions
+		 * @param style		vo with selected style values
+		 * @return	XML with selected values 	
+		 */
 		private function getStyleXML(style:StyleVo):XML {
-			var themeName:String = style.themeName;
-			//build an XML with all colors and fonts definitions
 			var styleXml:XML = <theme />
-			styleXml.@id = themeName;
+			styleXml.@id = style.themeId;
+			styleXml.@name = style.themeFriendlyName;
+			styleXml.appendChild(new XML("<themeSkinPath>" + style.skinPath + "</themeSkinPath>"));
 			for (var i:int = 1; i <= 5; i++) {
 				styleXml.appendChild(new XML("<color" + i + ">" + style["color" + i].toString() + "</color" + i + ">"));
 			}
 			styleXml.appendChild(new XML("<font>" + style.fontName + "</font>"));
 			return styleXml;
 		}
+		
 		
 		/**
 		 * creates a list of general uivars

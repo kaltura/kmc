@@ -81,24 +81,17 @@
 
 			private var _kdpFirstTimeLoad:Boolean = true;
 
-			private function traceKdpSize(n:int):void {
-				trace("trace: ", n);
-				trace(kdp3Loader.height);
-				if (kdp3Loader.content) {
-					trace(kdp3Loader.content.height);
-				}
-				trace("------------------------");
-			}
-
 			/**
 			 * unload the KDP
 			 * */
 			public function unLoadKdp():void {
 				removeEventListener(SecurityErrorEvent.SECURITY_ERROR, handleKDPError);
-				kdp3Loader.content.removeEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
-				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
-				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_READY, onKDPReady);
-				kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+				if (kdp3Loader.content) {
+					kdp3Loader.content.removeEventListener(KdpEventTypes.SKIN_LOAD_FAILED, handleKDPError);
+					kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_EMPTY, onKDPReady);
+					kdp3Loader.content.removeEventListener(KdpEventTypes.KDP_READY, onKDPReady);
+					kdp3Loader.content.removeEventListener(KdpEventTypes.MEDIA_READY, onKDPMediaReady);
+				}
 //				if(kdp3Loader.loaderInfo.hasOwnProperty("uncaughtErrorEvents")){
 //					IEventDispatcher(kdp3Loader.loaderInfo["uncaughtErrorEvents"]).removeEventListener("uncaughtError", handleKDPError);
 //				}
@@ -203,9 +196,10 @@
 			 * Preview player loaded and ready
 			 */
 			private function onKDP3Loaded(event:Event):void {
-				if (!_firstTime)
+				if (!_firstTime) {
 					dispatchEvent(new Event(ApsWizPreviewPlayer.FIRST_TIME_LOAD));
-				_firstTime = true;
+					_firstTime = true;
+				}
 				var params:Object = new Object();
 				params.autoPlay = "false";
 				params.loop = "false";

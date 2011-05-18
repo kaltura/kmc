@@ -5,11 +5,11 @@ The main window for new player wizard.
 
 -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-							xmlns:wv="com.kaltura.kmc.modules.studio.view.wizard.*"
-							xmlns:containers="com.kaltura.containers.*" showCloseButton="true" close="onWizardCancel()"
-							help="{help()}" creationComplete="{onCreationComplete()}" resize="{onResize()}" width="100%"
-							height="100%" minWidth="980" minHeight="510" horizontalScrollPolicy="off"
-							verticalScrollPolicy="off" layout="horizontal" xmlns:controls="com.kaltura.controls.*">
+		xmlns:wv="com.kaltura.kmc.modules.studio.view.wizard.*" xmlns:containers="com.kaltura.containers.*" 
+		showCloseButton="true" close="onWizardCancel()" help="{help()}" 
+		creationComplete="{onCreationComplete()}" resize="{onResize()}" width="100%"
+		height="100%" minWidth="980" minHeight="510" horizontalScrollPolicy="off"
+		verticalScrollPolicy="off" layout="horizontal" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.commands.uiConf.UiConfAdd;
@@ -170,6 +170,7 @@ The main window for new player wizard.
 				// for editing old players
 				delete newUiConfXML..Plugin.(@id == "adaptv")[0];
 				delete newUiConfXML..Plugin.(@id == "tremor")[0];
+				previewPlayerPage.unLoadKdp();
 				previewPlayerPage.loadKdp(swfUrl, newUiConfXML);
 			}
 			
@@ -219,7 +220,7 @@ The main window for new player wizard.
 					}
 				}
 				
-				// show the loaded data in the difefrrent panels
+				// show the loaded data in the different panels
 				setupData();
 				
 				// if this is not a multi playlist or if it is a new multiplaylist - load the player preview
@@ -266,7 +267,7 @@ The main window for new player wizard.
 				// xml controller:
 				_xmlController = new ApsWizardXmlController();
 				_xmlController.fullPlayer = _playerUiConfVO.fullplayer;
-				_xmlController.featuresCollection = new XMLListCollection(_playerUiConfVO.features.feature);
+				_xmlController.featuresCollection = new XMLListCollection(_playerUiConfVO.templateFeaturesWithValues.feature);
 				//TODO hook to a template new node colorPlugins and verify for edit mode too. 
 				if ( _playerUiConfVO.snapshot.colorPlugins.length()>0)
 					_xmlController.colorPlugins = new XML(_playerUiConfVO.snapshot.colorPlugins);
@@ -274,7 +275,7 @@ The main window for new player wizard.
 				
 				// features tab:
 				featurePage.screenAsset = _playerUiConfVO.snapshot..screenAssets[0];
-				featurePage.setFeatureList(_playerUiConfVO.features);
+				featurePage.setFeatureList(_playerUiConfVO.templateFeaturesWithValues);
 				featurePage.init();
 				
 				// general:
@@ -322,7 +323,7 @@ The main window for new player wizard.
 				
 				// styles tab:
 				stylePage.playerUiconfVo = _playerUiConfVO;
-				var theme:XML = _playerUiConfVO.snapshot.visual.theme[0];
+				var theme:XML = _playerUiConfVO.snapshot.visual.theme.(attribute("selected") == "true")[0];
 				stylePage.setStyleData(theme);
 			}
 			
@@ -414,69 +415,133 @@ The main window for new player wizard.
 					the uiconf ids automatically. */
 					ss.@fullPlayerId = _playerUiConfVO.playerId;
 					_playerUiConfVO = new PlayerUiConfVo(_playerUiConfVO.playerId, fpXMl, ss, _playerUiConfVO.name);
-					setPanels();
-					//if this is multi playlist and the content tab is available, load the available playlists 
-					if (_playerUiConfVO.isMultiPlaylistTemplate && contentPage.parent == wizardViewStack)
-						contentPage.listPlaylist();
+					
 				}
 					
 				else {
 					// when we start, playerUiconfVo holds the edited-player's data.
-					var templateFeaturesXml:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
-					// use a "fresh" player:
+					// template features with layout data:
+					var templateXml:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
+					
+					// keep the current skin path, in case the template doesn't declare themeSkinPath-es (backwards comp.)
+					var oldSkinPath:String = _playerUiConfVO.fullplayer.@skinPath.toString(); 
+					// start with a "fresh" player:
 					_playerUiConfVO.fullplayer = XML((evt.data as KalturaUiConf).confFile);
+					
+					// features of the edited player:
 					var featuresData:XML = _playerUiConfVO.snapshot.featuresData[0];
-					var templateFeaturesData:XMLList = templateFeaturesXml..descendants().(attribute("k_param").toString().length != 0);
-					//initiate the player dynamic uiVars section
-					for each (var dataFeature:XML in templateFeaturesData) {
-						var feature:XML = dataFeature;
-						var fullName:String = dataFeature.@id;
-						var k_value:String = dataFeature.@k_value;
-						
-						// get the feature's full name:
-						while (dataFeature = dataFeature.parent()) {
-							// this was INTENTIONALLY assignment and not comaprison!!
-							if (dataFeature.@id[0])
-								fullName = dataFeature.@id + "." + fullName;
-						}
-						// get the player feature with matching full name:
-						var data:XMLList = featuresData.children().(attribute("k_fullName") == fullName);
-						if (data.length()) {
-							// change the template value to match the saved value:
-							feature.@k_value = data[0].@k_value.toString();
-							if (feature.name() == "feature")
-								feature.@selected = feature.@k_value;
+					
+					// get all the features that have k_param
+					var templateFeaturesData:XMLList = templateXml.features..descendants().(attribute("k_param").toString().length != 0);
+					
+					setFeaturesValuesInTemplate(featuresData, templateFeaturesData);
+					
+					// use the changed template as player data:
+					_playerUiConfVO.snapshot.appendChild(templateXml.features[0]);
+					
+					setStyleValuesInTemplate(_playerUiConfVO.snapshot.visual.theme[0], templateXml.visual.theme, oldSkinPath);
+					
+				}
+				setPanels();
+				//if this is multi playlist and the content tab is available, load the available playlists 
+				if (_playerUiConfVO.isMultiPlaylistTemplate && contentPage.parent == wizardViewStack)
+					contentPage.listPlaylist();
+			}
+			
+			/**
+			 * set the saved values into the matching template theme.
+			 * also, to support old templates, add the skinpath and theme name if missing
+			 * */
+			private function setStyleValuesInTemplate(selectedTheme:XML, templateThemes:XMLList, oldSkinPath:String):void {
+				// extract skin pathes from oldSkinPath
+				var dark:String, light:String;
+				var ind:int = oldSkinPath.indexOf("_light");
+				if (ind > -1) {
+					light = oldSkinPath;
+					dark = oldSkinPath.substr(ind, 6);
+				}
+				else {
+					dark = oldSkinPath;
+					light = oldSkinPath.substr(0, oldSkinPath.length - 4) + "_light.swf";
+				}
+				
+				// find the selected theme in the template's themes list
+				for (var i:int = 0; i<templateThemes.length(); i++) {
+					//TODO for some reason, the values are not saved
+					
+					// for backwards compat., add skin pathes if missing 
+					if (templateThemes[i].@id == "dark") {
+						if (templateThemes[i].themeSkinPath.toString().length == 0) {
+							templateThemes[i].themeSkinPath = dark;
+							templateThemes[i].@name = "Dark";
 						}
 					}
-					// use the changed template as player data:
-					_playerUiConfVO.snapshot.features[0] = templateFeaturesXml;
+					else if (templateThemes[i].@id == "light") {
+						if (templateThemes[i].themeSkinPath.toString().length == 0) {
+							templateThemes[i].themeSkinPath = light;
+							templateThemes[i].@name = "Light";
+						}
+					}
 					
-					setPanels();
-					// if this is multi playlist (and the content page is available) load the available playlists 
-					if (_playerUiConfVO.isMultiPlaylistTemplate && contentPage.parent == wizardViewStack)
-						contentPage.listPlaylist();
+					if (selectedTheme.@id == templateThemes[i].@id) {
+						// update the found theme with saved values
+						templateThemes[i].color1 = selectedTheme.color1;
+						templateThemes[i].color2 = selectedTheme.color2;
+						templateThemes[i].color3 = selectedTheme.color3;
+						templateThemes[i].color4 = selectedTheme.color4;
+						templateThemes[i].color5 = selectedTheme.color5;
+						templateThemes[i].font = selectedTheme.font;
+						// no need to update name, id, skinPath (not editable)
+						
+						// mark the selected theme so we can select it later
+						templateThemes[i].@selected = "true";
+					}
+					
 				}
+				
+				// replace the theme data in the snapshot so it'll hold all template themes
+				delete _playerUiConfVO.snapshot.visual[0];
+				var temp:XML = <visual/>;
+				temp.appendChild(templateThemes);
+				_playerUiConfVO.snapshot.appendChild(temp);
+				
 			}
 			
 			
-			//			/**
-			//			 * when creating a new player we start the process by loading the full player template.
-			//			 * This method is triggered wehn the full template is loaded.
-			//			 * 
-			//			 * - create new uiconfvo with loaded player and features
-			//			 * - load the preview player
-			//			 * (configure delta from template and apply to full player)
-			//			 * */
-			//			private function onfullPlayerUiConfLoaded(evt:KalturaEvent):void {
-			//				var fpXMl:XML = XML((evt.data as KalturaUiConf).confFile);
-			//				var ss:XML = XML((evt.data as KalturaUiConf).confFileFeatures);
-			//				_playerUiConfVO = new PlayerUiConfVo(_playerUiConfVO.playerId, fpXMl, ss, _playerUiConfVO.name);
-			//				setPanels();
-			//
-			//				//if this is multi playlist - load the available playlists 
-			//				if (_playerUiConfVO.isMultiPlaylistTemplate)
-			//					contentPage.listPlaylist();
-			//			}
+			/**
+			 * put the saved values of the edited player's features into the full template features.
+			 * the template's data is passed in by reference, so by editing it we actually edit the 
+			 * data of the template itself (hence - no return value).
+			 * @param featuresData			edited player's saved features
+			 * @param templateFeaturesData	template features
+			 * */
+			private function setFeaturesValuesInTemplate(featuresData:XML, templateFeaturesData:XMLList):void {
+				for each (var dataFeature:XML in templateFeaturesData) {
+					// save a reference
+					var feature:XML = dataFeature;
+					
+					// the value for this feature
+					var k_value:String = dataFeature.@k_value;
+					
+					// the feature's full name (concat. with parents' names)
+					var fullName:String = dataFeature.@id;
+					while (dataFeature = dataFeature.parent()) {
+						// this was INTENTIONALLY assignment and not comaprison!!
+						if (dataFeature.@id[0]) {
+							fullName = dataFeature.@id + "." + fullName;
+						}
+					}
+					
+					// get the player feature with matching full name:
+					var data:XMLList = featuresData.children().(attribute("k_fullName") == fullName);
+					if (data.length()) {
+						// change the template value to match the saved value:
+						feature.@k_value = data[0].@k_value.toString();
+						if (feature.name() == "feature")
+							feature.@selected = feature.@k_value;
+					}
+				}
+			}
 			
 			
 			private function onSaved(evt:KalturaEvent):void {

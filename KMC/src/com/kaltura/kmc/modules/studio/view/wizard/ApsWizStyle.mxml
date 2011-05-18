@@ -9,7 +9,7 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			import com.kaltura.kmc.modules.studio.vo.StyleVo;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
 
@@ -22,6 +22,9 @@
 			private var _cmbWidth:Number = 70;
 
 			private var _styleData:StyleVo;
+			
+			[Bindable]
+			private var _themes:XMLList;
 
 			public static const REFRESH_KDP:String = "refreshKdp";
 
@@ -36,14 +39,10 @@
 			 * @ListEvent
 			 */
 			private function onThemeChanged(evt:ListEvent):void {
-				var selectedThemeName:String = _styleData.themeName = (evt.target as ComboBox).selectedLabel;
-				var selectedTheme:XML = (_playerUiConfVO.snapshot as XML)..theme.(attribute("id").toString() == selectedThemeName)[0] as XML;
+				var selectedThemeId:String = _styleData.themeId = (evt.target as ComboBox).selectedItem.@id;
+				var selectedTheme:XML = (_playerUiConfVO.snapshot as XML)..theme.(attribute("id").toString() == selectedThemeId)[0] as XML;
 
-				_styleData.color1 = color1.selectedColor = Number(selectedTheme.color1.toString());
-				_styleData.color2 = color2.selectedColor = Number(selectedTheme.color2.toString());
-				_styleData.color3 = color3.selectedColor = Number(selectedTheme.color3.toString());
-				_styleData.color4 = color4.selectedColor = Number(selectedTheme.color4.toString());
-				_styleData.color5 = color5.selectedColor = Number(selectedTheme.color5.toString());
+				_styleData = retreiveStyleData(selectedTheme);
 
 				refreshKdp();
 			}
@@ -67,6 +66,8 @@
 
 			public function set playerUiconfVo(value:PlayerUiConfVo):void {
 				_playerUiConfVO = value;
+				_themes = _playerUiConfVO.snapshot.visual.theme;
+				
 			}
 
 
@@ -85,7 +86,9 @@
 			 * */
 			private function retreiveStyleData(theme:XML):StyleVo {
 				var vo:StyleVo = new StyleVo();
-				vo.themeName = theme.@id.toString();
+				vo.themeId = theme.@id.toString();
+				vo.themeFriendlyName = theme.@name.toString();
+				vo.skinPath = theme.themeSkinPath.toString();
 				vo.color1 = Number(theme.color1.toString());
 				vo.color2 = Number(theme.color2.toString());
 				vo.color3 = Number(theme.color3.toString());
@@ -103,8 +106,11 @@
 			public function setStyleData(theme:XML):void {
 				var vo:StyleVo = retreiveStyleData(theme);
 				_styleData = vo;
-				if (vo.themeName == "light") {
-					themeSelector.selectedIndex = 1;
+				// set CB selected item accoring to XML data.
+				for (var i:int = 0; i< _themes.length(); i++) {
+					if (vo.themeId == _themes[i].@id) {
+						themeSelector.selectedIndex = i;
+					}
 				}
 				color1.selectedColor = vo.color1;
 				color2.selectedColor = vo.color2;
@@ -120,7 +126,10 @@
 			 * @return updated style data
 			 * */
 			public function getStyleData():StyleVo {
-				_styleData.themeName = themeSelector.selectedLabel;
+				_styleData.themeId = themeSelector.selectedItem.@id;
+				_styleData.themeFriendlyName = themeSelector.selectedItem.@name;
+				_styleData.skinPath = themeSelector.selectedItem.themeSkinPath.toString();
+				
 				_styleData.color1 = color1.selectedColor;
 				_styleData.color2 = color2.selectedColor;
 				_styleData.color3 = color3.selectedColor;
@@ -141,12 +150,8 @@
 			<mx:Label text="{resourceManager.getString('aps','styleAndColor')}" styleName="pageTitle"/>
 			<mx:HBox width="100%" verticalAlign="middle">
 				<mx:Label width="{_txtWidth}" text="{resourceManager.getString('aps','selectTheme')}:"/>
-				<mx:ComboBox id="themeSelector" width="{_cmbWidth}" change="onThemeChanged(event)">
-					<mx:ArrayCollection>
-						<mx:Object label="dark" data="dark"/>
-						<mx:Object label="light" data="light"/>
-					</mx:ArrayCollection>
-				</mx:ComboBox>
+				<mx:ComboBox id="themeSelector" width="{_cmbWidth}" change="onThemeChanged(event)"
+							 dataProvider="{_themes}" labelField="@name" />
 			</mx:HBox>
 			<mx:Spacer height="15"/>
 			<mx:Label text="{resourceManager.getString('aps','controlBarButtons')}" styleName="pageTitle"/>

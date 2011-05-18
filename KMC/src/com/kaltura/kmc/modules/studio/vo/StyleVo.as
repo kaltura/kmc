@@ -12,8 +12,10 @@ package com.kaltura.kmc.modules.studio.vo {
 		private var _color3:uint;
 		private var _color4:uint;
 		private var _color5:uint;
-		private var _themeName:String;
+		private var _themeId:String;
+		private var _themeFriendlyName:String;
 		private var _fontName:String;
+		private var _skinPath:String;
 
 
 
@@ -67,13 +69,13 @@ package com.kaltura.kmc.modules.studio.vo {
 		}
 
 
-		public function get themeName():String {
-			return _themeName;
+		public function get themeId():String {
+			return _themeId;
 		}
 
 
-		public function set themeName(value:String):void {
-			_themeName = value;
+		public function set themeId(value:String):void {
+			_themeId = value;
 		}
 
 
@@ -84,6 +86,26 @@ package com.kaltura.kmc.modules.studio.vo {
 
 		public function set fontName(value:String):void {
 			_fontName = value;
+		}
+
+		public function get skinPath():String
+		{
+			return _skinPath;
+		}
+
+		public function set skinPath(value:String):void
+		{
+			_skinPath = value;
+		}
+
+		public function get themeFriendlyName():String
+		{
+			return _themeFriendlyName;
+		}
+
+		public function set themeFriendlyName(value:String):void
+		{
+			_themeFriendlyName = value;
 		}
 
 

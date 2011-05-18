@@ -20,7 +20,7 @@ package com.kaltura.kmc.modules.studio.vo {
 
 
 		/**
-		 * current template's features (full uiconf)
+		 * player uiconf (the bit that actually goes to KDP)
 		 * */
 		private var _fullplayer:XML;
 
@@ -269,8 +269,8 @@ package com.kaltura.kmc.modules.studio.vo {
 		 * all the template's features, including unused ones, and with data for used ones.
 		 * only for the features tab!!
 		 * */
-		public function get features():XML {
-			return _snapshot..features[0];
+		public function get templateFeaturesWithValues():XML {
+			return _snapshot.features[0];
 		}
 
 

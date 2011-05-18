@@ -22,6 +22,7 @@
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.XMLListCollection;
 			import mx.containers.VBox;
 			import mx.controls.Label;
 			import mx.controls.List;
@@ -42,6 +43,7 @@
 			 * */
 			private var _editable:Boolean = true; 
 			
+			private var _featuresListCollection:XMLListCollection;
 			
 			/**
 			 * The constant defines the value of the type property of a refreshKdp event object.
@@ -66,7 +68,7 @@
 					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
 					var irScreenXML:XML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
 					itemRenderer = irScreenXML;
-					var disabledFeaturesIds:XMLList = featuresListCollection.source.(attribute("selected") == "false").@id;
+					var disabledFeaturesIds:XMLList = _featuresListCollection.source.(attribute("selected") == "false").@id;
 					var irCopy:XML = new XML(_itemRenderer);
 					var irCopyDecendants:XMLList = irCopy.descendants();
 					for each (var disabledFeatureId:String in disabledFeaturesIds) {
@@ -127,17 +129,22 @@
 			 * */
 			public function setFeatureList(featuresXML:XML):void {
 				_featuresXML = featuresXML;
-				featuresListCollection.source = featuresXML..feature;
-				var lc:XMLListCollection = featuresListCollection;
+				_featuresListCollection = new XMLListCollection(featuresXML..feature);
+				
+				var lc:XMLListCollection = _featuresListCollection;
+				
 				var currentFeatureXML:XMLListCollection = null;
+				
 				var currentBoxedList:BoxedList;
-				var showCheckbox:String;
+				
 				var boxedList:BoxedList;
+				
 				for (var i:int = 0; i < lc.length; i++) {
-					showCheckbox = lc[i].attribute("showCheckbox").toString();
-					lc[i].@rpEnabled = _editable.toString();
-					if (showCheckbox == "false") {
-						//if this is not the first loop
+					lc[i].@rpEnabled = _editable.toString(); // roles and permissions?
+					if (lc[i].attribute("showCheckbox").toString() == "false") {
+						// this should be the header of the section.
+						
+						// if this is not the first loop
 						if (currentFeatureXML) {
 							currentBoxedList = accordi.getChildAt(accordi.numChildren - 1) as BoxedList;
 							addLblToEndOfTheList(currentBoxedList);
@@ -217,7 +224,7 @@
 					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
 					var irScreenXML:XML = lis..renderer.(attribute("id").toString() == "playlistItemRenderer")[0];
 					var irCopy:XML = irScreenXML.copy();
-					var disabledFeaturesIds:XMLList = featuresListCollection.source.(attribute("selected") == "false").@id;
+					var disabledFeaturesIds:XMLList = _featuresListCollection.source.(attribute("selected") == "false").@id;
 					var irCopyDecendants:XMLList = irCopy.descendants();
 					for each (var disabledFeatureId:String in disabledFeaturesIds) {
 						var disabledFeatureIdManipulated:String = disabledFeatureId + "IrScreen";
@@ -336,7 +343,6 @@
 			<mx:Accordion id="accordi" width="100%" height="100%" change="onHeaderChange(event)" />
 		</mx:VBox>
 	</mx:HBox>
-	<mx:XMLListCollection id="featuresListCollection"/>
 	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%" editable="{editable}"
 									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));"/>
 	<mx:VBox id="keyValueBox" visible="false" width="100%" height="90%" paddingLeft="5" paddingRight="5"
