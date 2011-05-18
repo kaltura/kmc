@@ -324,6 +324,9 @@ The main window for new player wizard.
 				// styles tab:
 				stylePage.playerUiconfVo = _playerUiConfVO;
 				var theme:XML = _playerUiConfVO.snapshot.visual.theme.(attribute("selected") == "true")[0];
+				if (!theme) {
+					theme = _playerUiConfVO.snapshot.visual.theme[0];
+				}
 				stylePage.setStyleData(theme);
 			}
 			
@@ -467,8 +470,6 @@ The main window for new player wizard.
 				
 				// find the selected theme in the template's themes list
 				for (var i:int = 0; i<templateThemes.length(); i++) {
-					//TODO for some reason, the values are not saved
-					
 					// for backwards compat., add skin pathes if missing 
 					if (templateThemes[i].@id == "dark") {
 						if (templateThemes[i].themeSkinPath.toString().length == 0) {
