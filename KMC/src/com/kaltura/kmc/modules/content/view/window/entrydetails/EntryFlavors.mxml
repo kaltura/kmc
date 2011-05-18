@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	Flavours tab of EntryDetailsWin
+Flavours tab of EntryDetailsWin
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%"
 		 height="100%" creationComplete="onCreationComplete()"
@@ -53,7 +53,7 @@
 			 * show action buttons based on business logic
 			 * */
 			private var _showActions:Boolean;
-
+			
 			[Bindable]
 			/**
 			 * show action buttons for no_content entry
@@ -107,17 +107,17 @@
 			private var _selectCPAssetWatcher:ChangeWatcher;
 			//if there is a pending request to open drilldown
 			private var _drillDownClicked:Boolean = false;
-
+			
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
 			private var _replacementStatus:String;
 			private var _replacingEntryId:String;
 			private var _status:String;
-
+			
 			public function get status():String
 			{
 				return _status;
 			}
-
+			
 			public function set status(value:String):void
 			{
 				if (value && (!_status || (_status!=value))) {
@@ -126,12 +126,12 @@
 				_status = value;
 				selectedEntry = _selectedEntry;
 			}
-
+			
 			public function get replacingEntryId():String
 			{
 				return _replacingEntryId;
 			}
-
+			
 			public function set replacingEntryId(value:String):void
 			{
 				//if we have a replacement entry that we didn't have before, request the entry from server
@@ -145,19 +145,19 @@
 				_replacingEntryId = value;
 				selectedEntry = _selectedEntry;
 			}
-
+			
 			public function get replacementStatus():String
 			{
 				return _replacementStatus;
 			}
-
+			
 			public function set replacementStatus(value:String):void
 			{
 				if (_drillDownClicked) {
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
 						openReplacementDrilldown();
 					}
-					//if replacement entry doesn't exist anymore
+						//if replacement entry doesn't exist anymore
 					else {
 						Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
 					}
@@ -170,7 +170,7 @@
 				_replacementStatus = value;
 				selectedEntry = _selectedEntry;
 			}
-
+			
 			/**
 			 * allow multiple flavours to be ingested simultaneously 
 			 * */
@@ -178,7 +178,7 @@
 			{
 				return _multiFlavorsIngestionAllowed;
 			}
-
+			
 			[Bindable]
 			/**
 			 * @private
@@ -187,18 +187,18 @@
 			{
 				_multiFlavorsIngestionAllowed = value;
 			}
-
+			
 			[Bindable]
 			public function get dropFolderModel():DropFolderModel
 			{
 				return _dropFolderModel;
 			}
-
+			
 			public function set dropFolderModel(value:DropFolderModel):void
 			{
 				_dropFolderModel = value;
 			}
-
+			
 			/**
 			 * loads required data from server
 			 * */
@@ -293,7 +293,7 @@
 			 * */
 			private function onFlavorSelected(event:Event) : void {
 				_fileReference.removeEventListener(Event.SELECT, onFlavorSelected);
-
+				
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
@@ -303,7 +303,7 @@
 					else if (_selectedFlavorWithParams.flavorParams)
 						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
 				}
-
+				
 				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);	
 				//resets data
 				_selectedFlavorWithParams = null;
@@ -314,42 +314,42 @@
 			{
 				return _entryDetailsModel;
 			}
-
+			
 			public function set entryDetailsModel(value:EntryDetailsModel):void
 			{
 				_entryDetailsModel = value;
 			}
 			
-
+			
 			public function get selectedEntry():KalturaBaseEntry
 			{
 				return _selectedEntry;
 			}
-		
+			
 			public function set selectedEntry(value:KalturaBaseEntry):void
 			{
 				if (!value)
 					return;
-		
+				
 				_selectedEntry = value;
-		
+				
 				if (_selectedEntry.replacingEntryId) 
 				{
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
 					_showReplacenentInfo = true;
 					_approveEnabled = true;
-			
+					
 					switch (_selectedEntry.replacementStatus) {
 						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
 							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'processClickToReview');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'statusProcessing');
 							break;
 						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementRFRState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'readyClickToReview');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'readyForReviewBtn');
 							break;
 					}
 				}
@@ -392,7 +392,7 @@
 					} 
 				}
 			}
-
+			
 			public function set hideColumns(indices:String):void {
 				var ind:Array = indices.split(",");
 				var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
@@ -408,7 +408,7 @@
 			public function get hideColumns():String {
 				return '';
 			}
-		
+			
 			/**
 			 * returns the suitable fileFilter according to given mediaType
 			 * */
@@ -450,7 +450,7 @@
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}
 			
-
+			
 			/**
 			 * handle user files selection to upload
 			 * */
@@ -489,19 +489,19 @@
 					openReplacementDrilldown();
 				}
 			}
-		/* 	
+			/* 	
 			private function onSelectedChanged(value:Boolean):void {
-				if (!value)
-					return;
-				
-				if (_selectedReloadedWatcher)
-					_selectedReloadedWatcher.unwatch();	
-				if (_selectedEntry.replacementStatus && (_selectedEntry.replacementStatus != KalturaEntryReplacementStatus.NONE)) {
-					openReplacementDrilldown();
-				}
-				else {
-					Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
-				}
+			if (!value)
+			return;
+			
+			if (_selectedReloadedWatcher)
+			_selectedReloadedWatcher.unwatch();	
+			if (_selectedEntry.replacementStatus && (_selectedEntry.replacementStatus != KalturaEntryReplacementStatus.NONE)) {
+			openReplacementDrilldown();
+			}
+			else {
+			Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
+			}
 			} */
 			
 			private function openReplacementDrilldown():void {
@@ -561,7 +561,7 @@
 				}
 				return result;
 			}
-											
+			
 			
 		]]>
 	</mx:Script>
@@ -577,22 +577,25 @@
 		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
 		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
 	</mx:HBox>
-	
-	<mx:HBox id="replacementInfoHBox" width="100%" visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" horizontalGap="0">
-		<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="drillDownLabel"/>
-		<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
-		<mx:Spacer width="10"/>
-		<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
-		<mx:LinkButton id="replacementStatusBtn" click="{onReplacementStautsBtnClick()}"/>
-		<mx:Spacer width="100%"/>
-		<mx:HBox id="replacementActionsHBox">
+	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%" styleName="flavorsReplacementVBox">
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('cms','replementDetailsTitle')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('cms','replacementNote')}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox id="replacementInfoHBox" horizontalGap="0" >
+			<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="drillDownLabel"/>
+			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
+			<mx:Label text="|" width="15" enabled="false"/>
+			<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
+			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStautsBtnClick()}"/>
+			<mx:Label text="|" width="15" enabled="false"/>
 			<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
-			<mx:Label text="/" width="7"/>
+			<mx:Label text="/" width="15" enabled="false"/>
 			<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
 		</mx:HBox>
-	</mx:HBox>
-	<mx:Label visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" htmlText="{resourceManager.getString('cms','replacementNote')}" styleName="replacementNoteLabel"/>
+	</mx:VBox>
+	<mx:HRule width="100%"/>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
-
+	
 </mx:VBox>

@@ -32,11 +32,7 @@
 			[Bindable]
 			public var enableLinks:Boolean = false;
 			[Bindable]
-			private var _showCustomDataBtn:Boolean = false;
-			[Bindable]
-			private var _customTabId:String = '';
-			[Bindable]
-			private var _customDataLabel:String;
+			public var showCustomDataBtn:Boolean = false;
 			
 			
 			private function onCreationComplete():void {
@@ -68,6 +64,7 @@
 						st = resourceManager.getString('cms','gotoMetadataTab');
 						break;
 				}
+				
 				_btnText = st;
 				if (_btnText) {
 					_visibleBtn = true;
@@ -95,7 +92,7 @@
 							setSelectedChild("entryMetaData")
 						}
 						else {
-							setSelectedChild(_customTabId)							
+							setSelectedChild("customData")							
 						}
 						break;
 				}
@@ -129,39 +126,23 @@
 				}
 			}
 			
-			/**
-			 * adds a link to a custom data tab
-			 * @param tabName the name of the custom data tab
-			 * @param tabId the id of the custom data tab
-			 * */
-			public function addLinkToCustomTab(tabId:String) : void {
-				_customTabId = tabId;
-				if (viewStack) {
-					var child:VBox = viewStack.getChildByName(tabId) as VBox;
-					if (child) {
-						_customDataLabel = resourceManager.getString('cms','gotoCustomDataTab',new Array(child.label));
-						if (tabId)
-							_showCustomDataBtn = true;
-					}
-				} 
-			}
 		]]>
 	</mx:Script>
 	<!--<mx:VBox height="115" width="100%" styleName="distributionErrorVBox">-->
-		<mx:Text  htmlText="{_infoLabel}" width="100%"/>
-		<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
-		
-<!--	</mx:VBox>
+	<mx:Text  htmlText="{_infoLabel}" width="100%"/>
+	<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
+	
+	<!--	</mx:VBox>
 	<mx:HBox height="100%" width="100%">-->
 	<mx:ControlBar>
 		
 		<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
 					   click="{onLinkClick(event)}"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton id="customDataBtn" paddingRight="0" label="{_customDataLabel}"
-					   visible="{_showCustomDataBtn}" includeInLayout="{_showCustomDataBtn}"
+		<mx:LinkButton id="customDataBtn" label="{resourceManager.getString('cms','gotoCustomDataTab')}" paddingRight="0"
+					   visible="{showCustomDataBtn}" includeInLayout="{showCustomDataBtn}"
 					   click="{onLinkClick(event)}"/>
 	</mx:ControlBar>
-		
-<!--	</mx:HBox>-->
+	
+	<!--	</mx:HBox>-->
 </mx:TitleWindow>

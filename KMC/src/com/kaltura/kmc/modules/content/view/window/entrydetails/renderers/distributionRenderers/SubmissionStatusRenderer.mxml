@@ -2,7 +2,7 @@
 <mx:VBox verticalAlign="middle" horizontalAlign="left"
 		 paddingLeft="6" xmlns:mx="http://www.adobe.com/2006/mxml">
 	
-
+	
 	<mx:Tile id="tile" paddingLeft="0" direction="horizontal" horizontalGap="0" width="100%">
 		<mx:Script>
 			<![CDATA[
@@ -28,7 +28,7 @@
 				import mx.core.Application;
 				import mx.managers.PopUpManager;
 				import mx.resources.ResourceManager;
-		
+				
 				
 				private static const READY_FOR_DISTRIBUTION:String = "readyForDistribution";
 				private static const APPROVED_FOR_DISTRIBUTION:String = "approvedForDistribution";
@@ -41,7 +41,7 @@
 				private static const UPDATING:String = "updating";
 				private static const DISTRIBUTION_ERROR:String = "distributionError";
 				private static const REMOVAL_ERROR:String = "removalError";
-	
+				
 				[Bindable]
 				private var _errorsVisible:Boolean;
 				[Bindable]
@@ -67,7 +67,7 @@
 					_entryDis = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
 					var status:String;
 					var status2:String;
-		
+					
 					switch (_entryDis.status) {
 						case KalturaEntryDistributionStatus.PENDING:
 							if (!_entryDis.validationErrors || _entryDis.validationErrors.length==0)
@@ -107,7 +107,7 @@
 							statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
 						}
 					}
-				
+					
 					if (status == DISTRIBUTION_ERROR || status == REMOVAL_ERROR) {
 						distributionErrorLink.label = resourceManager.getString('cms',status);
 						_statusVisible = false;
@@ -125,7 +125,7 @@
 						else {
 							_statusVisible = false;							
 						}
-
+						
 						parseErrors(_entryDis.validationErrors);
 						setErrosTexts(); 
 					}
@@ -139,7 +139,7 @@
 				/**
 				 * add commas if needed
 				 * */
-			 	private function setErrosTexts():void {
+				private function setErrosTexts():void {
 					//whether latest link buttons are visible, will indicate if we need to add comma to the earlier buttons labels
 					var previousVisibleBtn:Boolean = false;
 					for (var i:int = (tile.numChildren-1); i>=0; i--) {
@@ -148,7 +148,7 @@
 							if (previousVisibleBtn) {
 								curBtn.label = curBtn.label + ',';
 							}
-							//will be used in next iterations
+								//will be used in next iterations
 							else if (curBtn.visible) {
 								previousVisibleBtn = true;
 							}
@@ -194,8 +194,8 @@
 						/* case KalturaBatchJobErrorTypes.APP:
 						case KalturaBatchJobErrorTypes.KALTURA_API:
 						case KalturaBatchJobErrorTypes.KALTURA_CLIENT:
-							errorLabel = resourceManager.getString('cms','kalturaError');
-							break; */
+						errorLabel = resourceManager.getString('cms','kalturaError');
+						break; */
 						case KalturaBatchJobErrorTypes.HTTP:
 							errorLabel = resourceManager.getString('cms','transferError');
 							break;
@@ -267,7 +267,7 @@
 				
 				private function onMissingMetadataErrorLink():void {
 					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_METADATA, resourceManager.getString('cms','missingMetadata'));
-					
+					errorDetails.showCustomDataBtn = true;
 					for each (var err:KalturaDistributionValidationErrorMissingMetadata in _metadataMissingArray) {
 						errorDetails.addErrorDetail( err.fieldName);
 					} 
@@ -281,10 +281,10 @@
 					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('cms','metadataValidationFailed'));
 					for (var i:int = 0; i<_metadataErrorsArray.length; i++) {
 						if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
-							errorDetails.addLinkToCustomTab((_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidMetadata).metadataProfileId.toString());
+							errorDetails.showCustomDataBtn = true;
 						errorDetails.addErrorDetail(returnValidationErroString(_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidData), true);
 					}  
-				
+					
 					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
 					PopUpManager.centerPopUp(errorDetails);
 				}
@@ -314,44 +314,44 @@
 				}
 				
 				//for testing: until Tantan will create a use case that can demo these errors
-		/* 		private function buildMockUpErrors():void {
-					_metadataErrorsArray = new Array();
-					var err1:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-					err1.fieldName = "description";
-					err1.validationErrorType = KalturaDistributionValidationErrorType.STRING_EMPTY;
-					_metadataErrorsArray.push(err1);
-					var err2:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-					err2.fieldName = "Name";
-					err2.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_LONG;
-					err2.validationErrorParam = "100";
-					_metadataErrorsArray.push(err2);
-					var err3:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-					err3.fieldName = "Tags";
-					err3.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_SHORT;
-					err3.validationErrorParam = "50";
-					_metadataErrorsArray.push(err3);
-					var err4:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-					err4.fieldName = "ttt";
-					err4.validationErrorType = KalturaDistributionValidationErrorType.INVALID_FORMAT;
-					err4.validationErrorParam = "flv";
-					_metadataErrorsArray.push(err4);
-					var err5:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-					err5.fieldName = "babbba";
-					err5.validationErrorType = KalturaDistributionValidationErrorType.CUSTOM_ERROR;
-					err5.validationErrorParam = "NOT good not good";
-					_metadataErrorsArray.push(err5);
-			
+				/* 		private function buildMockUpErrors():void {
+				_metadataErrorsArray = new Array();
+				var err1:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				err1.fieldName = "description";
+				err1.validationErrorType = KalturaDistributionValidationErrorType.STRING_EMPTY;
+				_metadataErrorsArray.push(err1);
+				var err2:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				err2.fieldName = "Name";
+				err2.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_LONG;
+				err2.validationErrorParam = "100";
+				_metadataErrorsArray.push(err2);
+				var err3:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				err3.fieldName = "Tags";
+				err3.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_SHORT;
+				err3.validationErrorParam = "50";
+				_metadataErrorsArray.push(err3);
+				var err4:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				err4.fieldName = "ttt";
+				err4.validationErrorType = KalturaDistributionValidationErrorType.INVALID_FORMAT;
+				err4.validationErrorParam = "flv";
+				_metadataErrorsArray.push(err4);
+				var err5:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				err5.fieldName = "babbba";
+				err5.validationErrorType = KalturaDistributionValidationErrorType.CUSTOM_ERROR;
+				err5.validationErrorParam = "NOT good not good";
+				_metadataErrorsArray.push(err5);
+				
 				} */
 				
 			]]>
 		</mx:Script>
-	
+		
 		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" paddingLeft="0" paddingRight="0"/>
 		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('cms','distributionError')}" visible="{_distributionError}" 
 					   includeInLayout="{_distributionError}" styleName="distributionError"
 					   click="{onDistributionErrorClick()}"/>
 		
-
+		
 		<mx:LinkButton id="missingThumbLink" label="{resourceManager.getString('cms','missingThumbnail')}"
 					   visible="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}"
 					   includeInLayout="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}" styleName="distributionError"
@@ -360,10 +360,10 @@
 					   visible="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}"
 					   styleName="distributionError" click="{onFlavorErrorClick()}"/>
 		<mx:LinkButton id="missingMetadataLink" label="{resourceManager.getString('cms','missingMetadata')}"
-						visible="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
-						styleName="distributionError" click="{onMissingMetadataErrorLink()}"/>
+					   visible="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
+					   styleName="distributionError" click="{onMissingMetadataErrorLink()}"/>
 		<mx:LinkButton id="invalidMetadataLink" label="{resourceManager.getString('cms','metadataError')}"
-						visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
-						styleName="distributionError" click="{onMetadataErrorLink()}"/>
+					   visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
+					   styleName="distributionError" click="{onMetadataErrorLink()}"/>
 	</mx:Tile>
 </mx:VBox>
