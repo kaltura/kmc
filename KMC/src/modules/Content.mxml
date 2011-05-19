@@ -392,6 +392,10 @@
 			private function loadChangableData():void {
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
+				
+				if (contentView.selectedChild == manage) {
+					manage.loadEntries();
+				}
 			}
 
 
@@ -1028,9 +1032,6 @@
 						   click="leftTabClicked(event)" styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
 						   height="18" buttonMode="true" toggle="true"/>						   
 			</mx:HBox>
-			<!--<mx:TabBar id="secTln" styleName="tln" itemClick="{trackTabChange(event)}" buttonMode="true"
-					   dataProvider="{_tabBarViewStack}">
-			</mx:TabBar>-->
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
 				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="18"
