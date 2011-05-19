@@ -42,8 +42,6 @@
 			private static const MULTI_FLAVOUR:String = "multi_flavour";
 
 
-			private const emptyImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("emptyImg");
-			
 			private var _folders:ArrayCollection;
 
 			/**
@@ -482,8 +480,8 @@
 
 	<mx:HBox width="100%">
 		<mx:Label id="headerLbl" styleName="simpleBoldText"/>
-		<mx:Spacer width="100%"/>
-		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)" />
+		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" 
+					 change="folderChangeHandler(event)" width="100%"/>
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
 	<mx:HBox width="100%">
@@ -496,12 +494,13 @@
 		</mx:HBox>
 	</mx:HBox>
 	<mx:AdvancedDataGrid id="adg" width="100%" height="100%" displayItemsExpanded="false"
-						 treeColumn="{slug}" draggableColumns="false" folderClosedIcon="{emptyImg}" folderOpenIcon="{emptyImg}">
+						 sortExpertMode="true" treeColumn="{slug}" 
+						 draggableColumns="false" styleName="tableHeaderAlignLeft" >
 		<mx:columns>
 			<mx:AdvancedDataGridColumn width="30" editable="true"
 									   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SelectedRenderer"/>
 			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
-									   labelFunction="slugNameLabel" id="slug"/>
+									   labelFunction="slugNameLabel" id="slug" />
 			<mx:AdvancedDataGridColumn headerText="{ResourceManager.getInstance().getString('cms', 'createAt')}"
 									   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.DateRenderer"/>
 		</mx:columns>
@@ -518,7 +517,7 @@
 		<mx:LinkButton label="{ResourceManager.getInstance().getString('cms', 'refreshDropFolder')}"
 					   click="listFolderContents(event)" styleName="recycleIcon"/>
 	</mx:HBox>
-	<mx:ControlBar>
+	<mx:ControlBar horizontalGap="10">
 		<mx:Button id="updateBtn" click="updateHandler(event)" visible="{_windowState == MULTI_FLAVOUR}"
 				   includeInLayout="{_windowState == MULTI_FLAVOUR}" enabled="false"
 				   label="{ResourceManager.getInstance().getString('cms', 'updateRefIdActionLabel')}"/>
