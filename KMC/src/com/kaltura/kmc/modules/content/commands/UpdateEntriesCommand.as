@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
+	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
@@ -67,15 +68,19 @@ package com.kaltura.kmc.modules.content.commands {
 					}
 					else if (e.entries[i] is KalturaLiveStreamAdminEntry) {
 						//handle live stream
+						//TODO - atar - why do wee need this?
 						var kle:KalturaLiveStreamAdminEntry = e.entries[i] as KalturaLiveStreamAdminEntry;
 						kle.setUpdatedFieldsOnly(true);
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, kle);
 						mr.addAction(updateEntry);
-
 					}
 					else {
 						var be:KalturaBaseEntry = e.entries[i] as KalturaBaseEntry;
 						be.setUpdatedFieldsOnly(true);
+						// only send conversionProfileId if the entry is in no_content status
+						if (be.status != KalturaEntryStatus.NO_CONTENT) {
+							be.ingestionProfileId = null;
+						}
 						if(be is KalturaMixEntry)
 							(be as KalturaMixEntry).dataContent = null;
 						var updateEntry1:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
@@ -142,6 +147,10 @@ package com.kaltura.kmc.modules.content.commands {
 						var keepId:String = (_entries[index] as KalturaBaseEntry).id;
 						var be:KalturaBaseEntry = _entries[index] as KalturaBaseEntry;
 						be.setUpdatedFieldsOnly(true);
+						// only send conversionProfileId if the entry is in no_content status
+						if (be.status != KalturaEntryStatus.NO_CONTENT) {
+							be.ingestionProfileId = null;
+						}
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry);
 					}
