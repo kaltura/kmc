@@ -151,7 +151,7 @@
 			/**
 			 * issue a request to search drop folder
 			 * */
-			protected function btnSearch_clickHandler(event:MouseEvent):void {
+			protected function btnSearch_clickHandler():void {
 				if (searchText.text) {
 					btnSearch.selected = true;
 				}
@@ -465,7 +465,9 @@
 						// got drop folders, show window
 						visible = true;
 						// prompt="{ResourceManager.getInstance().getString('cms', 'selectPrompt')}"
-						
+						if (cbFolders) {
+							cbFolders.selectedItem = 0;
+						}
 					}
 					else {
 						// no drop folders, alert user and close popup
@@ -481,15 +483,15 @@
 	<mx:HBox width="100%">
 		<mx:Label id="headerLbl" styleName="simpleBoldText"/>
 		<mx:Spacer width="100%"/>
-		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)"
-					 selectedIndex="0" />
+		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" change="folderChangeHandler(event)" />
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
 	<mx:HBox width="100%">
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'searchLbl')}:" styleName="simpleBoldText"/>
 		<mx:HBox horizontalGap="0">
-			<mx:TextInput id="searchText" width="250" styleName="searchTextInput"/>
-			<mx:Button id="btnSearch" styleName="searchButton" click="btnSearch_clickHandler(event)"
+			<mx:TextInput id="searchText" width="250" styleName="searchTextInput"
+						  enter="btnSearch_clickHandler()"/>
+			<mx:Button id="btnSearch" styleName="searchButton" click="btnSearch_clickHandler()"
 					   buttonMode="{btnSearch.enabled}"/>
 		</mx:HBox>
 	</mx:HBox>

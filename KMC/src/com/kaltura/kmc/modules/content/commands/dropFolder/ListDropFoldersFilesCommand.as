@@ -45,13 +45,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 					filter.parsedSlugLike = listEvent.slug;
 				}
 				// file status
-//				if (_eventType == DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT) {
-					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
-//				}
-//				else {
-					// DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH
-//					filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING;
-//				}
+				filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
 				listFiles = new DropFolderFileList(filter);
 			}
 
