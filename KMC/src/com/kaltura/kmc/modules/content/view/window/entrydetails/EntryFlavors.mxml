@@ -345,11 +345,11 @@ Flavours tab of EntryDetailsWin
 							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'statusProcessing');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'processClickToReview');
 							break;
 						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
 							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementRFRState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'readyForReviewBtn');
+							replacementStatusBtn.label = resourceManager.getString('cms', 'readyClickToReview');
 							break;
 					}
 				}
@@ -566,6 +566,11 @@ Flavours tab of EntryDetailsWin
 		]]>
 	</mx:Script>
 	
+	
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
+		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
+	</mx:HBox>
 	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}" 
 			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
@@ -573,11 +578,7 @@ Flavours tab of EntryDetailsWin
 		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}"
 				   styleName="dataGridBtn"/>
 	</mx:HBox>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
-		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
-	</mx:HBox>
-	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%" styleName="flavorsReplacementVBox">
+	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%" styleName="flavorsReplacementVBox" paddingLeft="15">
 		<mx:HBox>
 			<mx:Label text="{resourceManager.getString('cms','replementDetailsTitle')}" styleName="drillDownLabel"/>
 			<mx:Label text="{resourceManager.getString('cms','replacementNote')}" styleName="drillDownSubLabel"/>
