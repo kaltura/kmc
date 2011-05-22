@@ -274,6 +274,27 @@
 
 			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void {
 				this.mx_internal::closeButton.buttonMode = true;
+				var bFound:Boolean;		// found entry ingestion profile?
+				var defInd:int = -1;	// index of partner default ingestion profile
+				var vo:ConversionProfileWithFlavorParamsVo;
+				if (_entry && conversionProfiles) {
+					// select the conversion profile that matches the entry's default
+					for (var i:int = 0; i<conversionProfiles.length; i++) {
+						vo = conversionProfiles[i] as ConversionProfileWithFlavorParamsVo; 
+						if (vo.profile.id.toString() == _entry.ingestionProfileId) {
+							cnvrtProfCb.selectedIndex = i;
+							bFound = true;
+							break;
+						} 
+						if (vo.profile.isDefault) {
+							defInd = i;
+						}
+					}
+					// if not found, use partner default.
+					if (!bFound) {
+						cnvrtProfCb.selectedIndex = defInd;
+					}
+				}
 			}
 			
 			
