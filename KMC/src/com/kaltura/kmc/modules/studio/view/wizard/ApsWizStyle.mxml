@@ -3,12 +3,13 @@
 	 graphic interface for changing player colors and font.
 -->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:wizard="com.kaltura.kmc.modules.studio.view.wizard.*"
-		 width="100%" height="100%" backgroundColor="#F7F7F7" horizontalScrollPolicy="off"
-		 creationComplete="onCreationComplete()">
+		 width="100%" height="100%" backgroundColor="#F7F7F7" horizontalScrollPolicy="off" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			import com.kaltura.kmc.modules.studio.vo.StyleVo;
+			
+			import flash.utils.setTimeout;
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
@@ -29,21 +30,16 @@
 			public static const REFRESH_KDP:String = "refreshKdp";
 
 
-			private function onCreationComplete():void {
-//				themeSelector.addEventListener(ListEvent.CHANGE, onThemeChanged);
-			}
-
-
 			/**
-			 * when a theme has changed - load the selected theme
+			 * when a theme has changed update theme parameters
 			 * @ListEvent
 			 */
 			private function onThemeChanged(evt:ListEvent):void {
-				var selectedThemeId:String = _styleData.themeId = (evt.target as ComboBox).selectedItem.@id;
-				var selectedTheme:XML = (_playerUiConfVO.snapshot as XML)..theme.(attribute("id").toString() == selectedThemeId)[0] as XML;
-
-				_styleData = retreiveStyleData(selectedTheme);
-
+				var selectedTheme:XML = (evt.target as ComboBox).selectedItem as XML;
+				_styleData.themeId = selectedTheme.@id;
+				_styleData.themeFriendlyName = selectedTheme.@name;
+				_styleData.skinPath = selectedTheme.themeSkinPath.toString();
+				
 				refreshKdp();
 			}
 
@@ -59,25 +55,17 @@
 
 
 
-			public function setFont(font:String):void {
-				fontSelector.selectedItem = font;
-			}
-
-
-			public function set playerUiconfVo(value:PlayerUiConfVo):void {
-				_playerUiConfVO = value;
-				_themes = _playerUiConfVO.snapshot.visual.theme;
-				
-			}
-
-
 			public function dispose():void {
 
 			}
 
-
+			
+			private function refreshKdpWrap(evt:Event = null):void {
+				dispatchEvent(new Event(REFRESH_KDP));	
+			}
+			
 			private function refreshKdp(evt:Event = null):void {
-				dispatchEvent(new Event(REFRESH_KDP));
+				setTimeout(refreshKdpWrap, 100);
 			}
 
 
@@ -117,7 +105,7 @@
 				color3.selectedColor = vo.color3;
 				color4.selectedColor = vo.color4;
 				color5.selectedColor = vo.color5;
-				setFont(vo.fontName);
+				fontSelector.selectedItem = vo.fontName;
 			}
 
 
@@ -126,18 +114,48 @@
 			 * @return updated style data
 			 * */
 			public function getStyleData():StyleVo {
-				_styleData.themeId = themeSelector.selectedItem.@id;
-				_styleData.themeFriendlyName = themeSelector.selectedItem.@name;
-				_styleData.skinPath = themeSelector.selectedItem.themeSkinPath.toString();
-				
-				_styleData.color1 = color1.selectedColor;
-				_styleData.color2 = color2.selectedColor;
-				_styleData.color3 = color3.selectedColor;
-				_styleData.color4 = color4.selectedColor;
-				_styleData.color5 = color5.selectedColor;
-				_styleData.fontName = fontSelector.selectedLabel;
 				return _styleData;
 			}
+			
+			/**
+			 * update the data object, then refresh player
+			 * */
+			private function colorChanged(e:Event):void {
+				switch (e.target) {
+					case color1:
+						_styleData.color1 = color1.selectedColor;		
+						break;
+					case color2:
+						_styleData.color2 = color2.selectedColor;
+						break;
+					case color3:
+						_styleData.color3 = color3.selectedColor;
+						break;
+					case color4:
+						_styleData.color4 = color4.selectedColor;
+						break;
+					case color5:
+						_styleData.color5 = color5.selectedColor;
+						break;
+					
+				}
+				refreshKdp();
+			}
+			
+			/**
+			 * update the data object, then refresh player
+			 * */
+			private function fontChanged(e:Event):void {
+				_styleData.fontName = fontSelector.selectedLabel;
+				refreshKdp();
+			}
+			
+			public function set playerUiconfVo(value:PlayerUiConfVo):void {
+				_playerUiConfVO = value;
+				_themes = _playerUiConfVO.snapshot.visual.theme;
+				
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -158,12 +176,12 @@
 			<mx:HBox width="100%" verticalAlign="middle">
 				<mx:Text width="{_txtWidth}" selectable="false" text="{resourceManager.getString('aps','color1')}"
 						 toolTip="{resourceManager.getString('aps','color1Tooltip')}"/>
-				<mx:ColorPicker id="color1" change="refreshKdp()"/>
+				<mx:ColorPicker id="color1" change="colorChanged(event)"/>
 			</mx:HBox>
 			<mx:HBox width="100%" verticalAlign="middle">
 				<mx:Text selectable="false" width="{_txtWidth}" text="{resourceManager.getString('aps','color2')}"
 						 toolTip="{resourceManager.getString('aps','color2Tooltip')}"/>
-				<mx:ColorPicker id="color2" change="refreshKdp()"/>
+				<mx:ColorPicker id="color2" change="colorChanged(event)"/>
 			</mx:HBox>
 			<mx:Spacer height="15"/>
 			<mx:Label text="{resourceManager.getString('aps','onScreenButtons')}" styleName="pageTitle"/>
@@ -171,25 +189,25 @@
 				<mx:Text selectable="false" width="{_txtWidth}"
 						 toolTip="{resourceManager.getString('aps','color3Tooltip')}"
 						 text="{resourceManager.getString('aps','color3')}"/>
-				<mx:ColorPicker id="color3" change="refreshKdp()"/>
+				<mx:ColorPicker id="color3" change="colorChanged(event)"/>
 				<!--dataProvider="{bw}" -->
 			</mx:HBox>
 			<mx:HBox width="100%" verticalAlign="middle">
 				<mx:Text selectable="false" width="{_txtWidth}"
 						 toolTip="{resourceManager.getString('aps','color4Tooltip')}"
 						 text="{resourceManager.getString('aps','color4')}"/>
-				<mx:ColorPicker id="color4" change="refreshKdp()"/>
+				<mx:ColorPicker id="color4" change="colorChanged(event)"/>
 			</mx:HBox>
 			<mx:HBox width="100%" verticalAlign="middle">
 				<mx:Text selectable="false" width="{_txtWidth}"
 						 toolTip="{resourceManager.getString('aps','color5Tooltip')}"
 						 text="{resourceManager.getString('aps','color5')}"/>
-				<mx:ColorPicker id="color5" change="refreshKdp()"/>
+				<mx:ColorPicker id="color5" change="colorChanged(event)"/>
 			</mx:HBox>
 			<mx:Spacer height="15"/>
 			<mx:VBox width="100%" verticalAlign="middle">
 				<mx:Label width="{_txtWidth}" text="{resourceManager.getString('aps','font')}:" styleName="pageTitle"/>
-				<mx:ComboBox id="fontSelector" change="refreshKdp()">
+				<mx:ComboBox id="fontSelector" change="fontChanged(event)">
 					<mx:dataProvider>
 						<mx:String>Verdana</mx:String>
 						<mx:String>Arial</mx:String>
@@ -208,17 +226,6 @@
 					</mx:dataProvider>
 				</mx:ComboBox>
 			</mx:VBox>
-			<!--<mx:Spacer height="10" />
-				 <mx:HBox visible="false">
-				 <mx:Label text="{resourceManager.getString('aps','fontSize')}"/>
-				 <mx:ComboBox id="fontSizeSelector" >
-				 <mx:ArrayCollection>
-				 <mx:Object label="{resourceManager.getString('aps','fontSizeSmall')}" data="9"/>
-				 <mx:Object label="{resourceManager.getString('aps','fontSizeNormal')}" data="10"/>
-				 <mx:Object label="{resourceManager.getString('aps','fontSizeLarge')}" data="12"/>
-				 </mx:ArrayCollection>
-				 </mx:ComboBox>
-				 </mx:HBox> -->
 		</mx:VBox>
 	</mx:HBox>
 </mx:HBox>
