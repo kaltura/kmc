@@ -13,6 +13,7 @@ package com.kaltura.managers {
 	import com.kaltura.events.FileUploadEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
@@ -255,6 +256,9 @@ package com.kaltura.managers {
 				var entry:KalturaBaseEntry = new KalturaBaseEntry();
 				entry.ingestionProfileId = file.conversionProfile;
 				entry.setUpdatedFieldsOnly(true);
+				if (entry.status != KalturaEntryStatus.NO_CONTENT) {
+					entry.ingestionProfileId = null;
+				}
 				var beu:BaseEntryUpdate = new BaseEntryUpdate(entryid, entry);
 				mr.addAction(beu);
 				

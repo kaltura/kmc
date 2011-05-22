@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.types.KalturaEntryStatus;
 	
 	public class UpdateSingleEntry extends KalturaCommand {
 		
@@ -13,6 +14,9 @@ package com.kaltura.kmc.modules.content.commands
 			var e:EntryEvent = event as EntryEvent;
 			
 			e.entryVo.setUpdatedFieldsOnly(true);
+			if (e.entryVo.status != KalturaEntryStatus.NO_CONTENT) {
+				e.entryVo.ingestionProfileId = null;
+			}
 			
 			var mu:BaseEntryUpdate = new BaseEntryUpdate(e.entryId, e.entryVo);
 			// add listeners and post call
