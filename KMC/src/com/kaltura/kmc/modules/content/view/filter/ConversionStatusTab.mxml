@@ -18,6 +18,7 @@
 					convErrorBtn.selected = false;
 					convReadyBtn.selected = false;
 					noMediaBtn.selected = false;
+					pendingBtn.selected = false;
 					convUploadingBtn.selected = false;
 				}
 				else {
@@ -46,6 +47,10 @@
 								noMediaBtn.selected = true;
 								break;
 							
+							case KalturaEntryStatus.PENDING:
+								pendingBtn.selected = true;
+								break;
+							
 						}
 					}
 				}
@@ -63,6 +68,7 @@
 					convStatusArray.push(KalturaEntryStatus.PRECONVERT);
 					convStatusArray.push(KalturaEntryStatus.READY);
 					convStatusArray.push(KalturaEntryStatus.NO_CONTENT);
+					convStatusArray.push(KalturaEntryStatus.PENDING);
 				}
 				else {
 					if (convErrorBtn.selected) { // for error
@@ -80,6 +86,9 @@
 					if (noMediaBtn.selected) { // for no media 
 						convStatusArray.push(KalturaEntryStatus.NO_CONTENT);
 					}
+					if (pendingBtn.selected) { // for pending
+						convStatusArray.push(KalturaEntryStatus.PENDING);
+					}
 				}
 				return convStatusArray.join(',');
 			}
@@ -95,6 +104,7 @@
 					convErrorBtn.selected = false;
 					convReadyBtn.selected = false;
 					noMediaBtn.selected = false;
+					pendingBtn.selected = false;
 					convUploadingBtn.selected = false;
 					dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
 				}
@@ -122,14 +132,14 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateConversionStatus():Boolean {
-				return !convConvertingBtn.selected && !noMediaBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
+				return !convConvertingBtn.selected && !pendingBtn.selected && !noMediaBtn.selected && !convErrorBtn.selected && !convReadyBtn.selected && !convUploadingBtn.selected;
 			}
 			
 
 			
 			
 			public function get buttons():Array {
-				return [allConversionStatusBtn, convReadyBtn, noMediaBtn, convUploadingBtn, convConvertingBtn, convErrorBtn];
+				return [allConversionStatusBtn, convReadyBtn, noMediaBtn, pendingBtn, convUploadingBtn, convConvertingBtn, convErrorBtn];
 			}
 		]]>
 	</mx:Script>
@@ -140,6 +150,9 @@
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeConversionStatusFilter(event)}"/>
 	<mx:Button id="noMediaBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'noMediaBtn')}"
+			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
+			   click="{changeConversionStatusFilter(event)}"/>
+	<mx:Button id="pendingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'pendingBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeConversionStatusFilter(event)}"/>
 	<mx:Button id="convUploadingBtn" width="100%" selected="false"
