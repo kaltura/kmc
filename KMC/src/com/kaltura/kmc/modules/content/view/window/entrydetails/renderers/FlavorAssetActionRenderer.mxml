@@ -90,73 +90,61 @@
 				} 
 				else 
 				{
-					if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
-						this.currentState = null;
-						_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
-						_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
-						addUploadAndMatch();
-						if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
-							_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-							_showBtn = true;
+					switch (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status) {
+						case KalturaFlavorAssetStatus.CONVERTING:
+						case KalturaFlavorAssetStatus.QUEUED:
+						case KalturaFlavorAssetStatus.IMPORTING:
+						case KalturaFlavorAssetStatus.VALIDATING:
+						{
+							this.currentState = "convertingState";
+							break;
 						}
-					}
-					else {
-						switch (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status) {
-							case KalturaFlavorAssetStatus.CONVERTING:
-							case KalturaFlavorAssetStatus.QUEUED:
-							case KalturaFlavorAssetStatus.IMPORTING:
-							case KalturaFlavorAssetStatus.VALIDATING:
-							{
-								this.currentState = "convertingState";
-								break;
-							}
-							case KalturaFlavorAssetStatus.DELETED:  {
-								if (_flavorWithParams.hasOriginal) {
-									this.currentState = null;
-									_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
-									addUploadAndMatch();
-								}
-								else if (_allowUpload || _allowMatch) {
-									this.currentState = null;
-									addUploadAndMatch();
-								}
-								else {
-									this.currentState = "emptyState";
-								}
-								break;
-							}
-							case KalturaFlavorAssetStatus.ERROR:
-							case KalturaFlavorAssetStatus.NOT_APPLICABLE:  {
-								if (_flavorWithParams.hasOriginal) {
-									this.currentState = null;
-									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
-									addUploadAndMatch();
-								}
-								else if (_allowUpload || _allowMatch) {
-									this.currentState = null;
-									addUploadAndMatch();
-								}
-								else {
-									this.currentState = "emptyState";
-								}
-								break;
-							}
-								
-							case KalturaFlavorAssetStatus.READY:  {
+						case KalturaFlavorAssetStatus.DELETED:  {
+							if (_flavorWithParams.hasOriginal) {
 								this.currentState = null;
-								_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
-								_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+								_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
 								addUploadAndMatch();
-								if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
-									_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-									_showBtn = true;
-								}
-								if (_flavorWithParams.hasOriginal) {
-									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
-								}
-								
-								break;
 							}
+							else if (_allowUpload || _allowMatch) {
+								this.currentState = null;
+								addUploadAndMatch();
+							}
+							else {
+								this.currentState = "emptyState";
+							}
+							break;
+						}
+						case KalturaFlavorAssetStatus.ERROR:
+						case KalturaFlavorAssetStatus.NOT_APPLICABLE:  {
+							if (_flavorWithParams.hasOriginal) {
+								this.currentState = null;
+								_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+								addUploadAndMatch();
+							}
+							else if (_allowUpload || _allowMatch) {
+								this.currentState = null;
+								addUploadAndMatch();
+							}
+							else {
+								this.currentState = "emptyState";
+							}
+							break;
+						}
+							
+						case KalturaFlavorAssetStatus.READY:  {
+							this.currentState = null;
+							_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
+							_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
+							addUploadAndMatch();
+							if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
+								_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
+								_showBtn = true;
+							}
+							if (!_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal && _flavorWithParams.hasOriginal) {
+								_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
+							}
+							
+							break;
 						}
 					}
 				}
