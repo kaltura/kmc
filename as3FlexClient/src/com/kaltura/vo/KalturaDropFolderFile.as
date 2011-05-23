@@ -42,7 +42,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errorCode : int = int.MIN_VALUE;
+		public var errorCode : String;
 
 		/** 
 		* 		* */ 

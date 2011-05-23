@@ -9,11 +9,6 @@ package com.kaltura.vo
 		* The type of the document		* */ 
 		public var documentType : int = int.MIN_VALUE;
 
-		/** 
-		* Conversion profile ID to override the default conversion profile
-		* */ 
-		public var conversionProfileId : String;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -26,7 +21,6 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			arr.push('documentType');
-			arr.push('conversionProfileId');
 			return arr;
 		}
 

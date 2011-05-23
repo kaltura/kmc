@@ -43,11 +43,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var ingestionProfileIdEqual : int = int.MIN_VALUE;
+		public var conversionProfileIdEqual : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
-		public var ingestionProfileIdIn : String;
+		public var conversionProfileIdIn : String;
 
 		/** 
 		* 		* */ 
@@ -122,8 +122,8 @@ package com.kaltura.vo
 			arr.push('typeIn');
 			arr.push('statusEqual');
 			arr.push('statusIn');
-			arr.push('ingestionProfileIdEqual');
-			arr.push('ingestionProfileIdIn');
+			arr.push('conversionProfileIdEqual');
+			arr.push('conversionProfileIdIn');
 			arr.push('dcEqual');
 			arr.push('dcIn');
 			arr.push('pathLike');

@@ -18,6 +18,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var availabilityUpdateEnabled : Boolean;
+
+		/** 
+		* 		* */ 
 		public var deleteInsteadUpdate : Boolean;
 
 		/** 
@@ -45,6 +49,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('name');
 			arr.push('scheduleUpdateEnabled');
+			arr.push('availabilityUpdateEnabled');
 			arr.push('deleteInsteadUpdate');
 			arr.push('intervalBeforeSunrise');
 			arr.push('intervalBeforeSunset');

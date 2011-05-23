@@ -42,6 +42,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var sunStatus : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var dirtyStatus : int = int.MIN_VALUE;
 
 		/** 

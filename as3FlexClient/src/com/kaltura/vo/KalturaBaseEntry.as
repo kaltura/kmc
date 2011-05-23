@@ -143,7 +143,7 @@ package com.kaltura.vo
 		public var referenceId : String;
 
 		/** 
-		* ID of temporary entry that will replace this entry when it’s approved and ready for replacement
+		* ID of temporary entry that will replace this entry when it's approved and ready for replacement
 		* */ 
 		public var replacingEntryId : String;
 
@@ -165,7 +165,7 @@ package com.kaltura.vo
 		/** 
 		* Override the default ingestion profile  
 		* */ 
-		public var ingestionProfileId : String;
+		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -190,6 +190,7 @@ package com.kaltura.vo
 			arr.push('endDate');
 			arr.push('referenceId');
 			arr.push('partnerSortValue');
+			arr.push('conversionProfileId');
 			return arr;
 		}
 
@@ -201,7 +202,6 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('thumbnailUrl');
-			arr.push('ingestionProfileId');
 			return arr;
 		}
 

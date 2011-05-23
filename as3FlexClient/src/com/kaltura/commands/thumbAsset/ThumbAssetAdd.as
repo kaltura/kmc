@@ -1,7 +1,6 @@
 package com.kaltura.commands.thumbAsset
 {
 	import com.kaltura.vo.KalturaThumbAsset;
-	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.delegates.thumbAsset.ThumbAssetAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -11,9 +10,8 @@ package com.kaltura.commands.thumbAsset
 		/**
 		 * @param entryId String
 		 * @param thumbAsset KalturaThumbAsset
-		 * @param contentResource KalturaContentResource
 		 **/
-		public function ThumbAssetAdd( entryId : String,thumbAsset : KalturaThumbAsset,contentResource : KalturaContentResource )
+		public function ThumbAssetAdd( entryId : String,thumbAsset : KalturaThumbAsset )
 		{
 			service= 'thumbasset';
 			action= 'add';
@@ -24,9 +22,6 @@ package com.kaltura.commands.thumbAsset
 			keyArr.push('entryId');
 			valueArr.push(entryId);
  			keyValArr = kalturaObject2Arrays(thumbAsset, 'thumbAsset');
-			keyArr = keyArr.concat(keyValArr[0]);
-			valueArr = valueArr.concat(keyValArr[1]);
- 			keyValArr = kalturaObject2Arrays(contentResource, 'contentResource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);

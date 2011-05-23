@@ -17,7 +17,7 @@ package com.kaltura.vo
 		public var screenName : String;
 
 		/** 
-		* 		* */ 
+		* DEPRECATED		* */ 
 		public var fullName : String;
 
 		/** 

@@ -39,6 +39,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var nameEqual : String;
+
+		/** 
+		* 		* */ 
+		public var nameLike : String;
+
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -65,6 +73,8 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
+			arr.push('nameEqual');
+			arr.push('nameLike');
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('engineTypeEqual');

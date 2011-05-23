@@ -66,17 +66,17 @@ package com.kaltura.vo
 
 		/** 
 		* Cropping dimensions
-		* */ 
+DEPRECATED		* */ 
 		public var cropDimensions : KalturaCropDimensions;
 
 		/** 
 		* Clipping start position (in miliseconds)
-		* */ 
+DEPRECATED		* */ 
 		public var clipStart : int = int.MIN_VALUE;
 
 		/** 
 		* Clipping duration (in miliseconds)
-		* */ 
+DEPRECATED		* */ 
 		public var clipDuration : int = int.MIN_VALUE;
 
 		/** 

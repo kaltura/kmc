@@ -11,8 +11,8 @@ package com.kaltura.vo
 		public var mediaType : int = int.MIN_VALUE;
 
 		/** 
-		* Override the default conversion quality  
-		* */ 
+		* Override the default conversion quality
+DEPRECATED - use conversionProfileId instead		* */ 
 		public var conversionQuality : String;
 
 		/** 

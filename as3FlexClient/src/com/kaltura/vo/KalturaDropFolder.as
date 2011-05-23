@@ -32,7 +32,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var ingestionProfileId : int = int.MIN_VALUE;
+		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
@@ -89,7 +89,7 @@ package com.kaltura.vo
 			arr.push('description');
 			arr.push('type');
 			arr.push('status');
-			arr.push('ingestionProfileId');
+			arr.push('conversionProfileId');
 			arr.push('dc');
 			arr.push('path');
 			arr.push('fileSizeCheckInterval');

@@ -75,7 +75,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errorCodeEqual : int = int.MIN_VALUE;
+		public var errorCodeEqual : String;
 
 		/** 
 		* 		* */ 

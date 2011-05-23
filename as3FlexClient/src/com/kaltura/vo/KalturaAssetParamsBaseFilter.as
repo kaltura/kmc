@@ -25,14 +25,6 @@ package com.kaltura.vo
 		* 		* */ 
 		public var formatEqual : String;
 
-		/** 
-		* 		* */ 
-		public var originEqual : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var originIn : String;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -42,8 +34,6 @@ package com.kaltura.vo
 			arr.push('isSystemDefaultEqual');
 			arr.push('tagsEqual');
 			arr.push('formatEqual');
-			arr.push('originEqual');
-			arr.push('originIn');
 			return arr;
 		}
 

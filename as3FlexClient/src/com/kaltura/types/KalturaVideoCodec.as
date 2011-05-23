@@ -16,6 +16,7 @@ package com.kaltura.types
 		public static const WMV3 : String = 'wmv3';
 		public static const WVC1A : String = 'wvc1a';
 		public static const VP8 : String = 'vp8';
+		public static const MPEG2 : String = 'mpeg2';
 		public static const COPY : String = 'copy';
 	}
 }

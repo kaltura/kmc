@@ -33,7 +33,7 @@ package com.kaltura.vo
 		public var logFileUrl : String;
 
 		/** 
-		* 		* */ 
+		* DEPRECATED		* */ 
 		public var csvFileUrl : String;
 
 		/** 
