@@ -32,8 +32,6 @@ package com.kaltura.kmc.modules {
 	public class KmcModule extends Module {
 		
 		
-		public static const FINISHED_SAVING:String = "finishedSaving";
-
 		// =====================================================
 		// events
 		// =====================================================
@@ -68,12 +66,15 @@ package com.kaltura.kmc.modules {
 		// members
 		// =====================================================
 
+		public static const FINISHED_SAVING:String = "finishedSaving";
+		
 		private const FALLBACK_LOCALE:String = "en_US";
 		
 		/**
 		 * PermissionManager instance 
 		 */		
 		protected var permissionManager:PermissionManager= PermissionManager.getInstance();
+		
 		/**
 		 * all the flashvars, lowercased with no underscores 
 		 */

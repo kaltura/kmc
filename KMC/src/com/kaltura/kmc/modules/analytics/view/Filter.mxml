@@ -7,9 +7,9 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
-			
+
 			import flash.utils.setTimeout;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CalendarLayoutChangeEvent;
@@ -29,6 +29,8 @@
 
 			[Bindable]
 			public var isLoading:Boolean;
+
+
 			/**
 			 *
 			 * @param filterVo is the current FilterVO that will be applied on the data
@@ -228,7 +230,7 @@
 						break;
 				}
 
-				dispatchEvent(new Event('apply')); 
+				dispatchEvent(new Event('apply'));
 			}
 
 
@@ -342,7 +344,8 @@
 		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
 					  change="toDateChanged( event )" enabled="{!isLoading}"/>
 		<mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
-				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2" enabled="{!isLoading}"/>
+				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"
+				   enabled="{!isLoading}"/>
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','categoriesTitle')}"/>
@@ -361,14 +364,16 @@
 					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)" toggle="true" enabled="{!isLoading}"/>
 		<mx:LinkButton id="interactions" visible="{showDrillDownNav}"
 					   label="{resourceManager.getString('analytics','interactions')}"
-					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true" enabled="{!isLoading}"/>
+					   click="onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)" toggle="true"
+					   enabled="{!isLoading}"/>
 	</mx:HBox>
 
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','searchFilter')}"/>
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
 					  change="{_filterVo.keywords = searchTerm.text}"
-					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}" enabled="{!isLoading}"/>
+					  keyDown="{if(event.keyCode == Keyboard.ENTER)dispatchEvent(new Event('apply'))}"
+					  enabled="{!isLoading}"/>
 		<!--<mx:Label text="{resourceManager.getString('analytics','in')}:" />-->
 		<mx:RadioButton id="searchInTags" groupName="searchGroup" height="15"
 						label="{resourceManager.getString('analytics','searchInTags')}"

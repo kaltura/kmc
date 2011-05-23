@@ -32,6 +32,8 @@ package com.kaltura.kmc.modules.content.commands {
 
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList();
 			mr.addAction(listFlavorParams);
+			
+			//TODO list the new thing
 
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
