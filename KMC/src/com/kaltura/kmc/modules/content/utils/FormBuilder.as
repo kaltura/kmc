@@ -298,9 +298,10 @@ package com.kaltura.kmc.modules.content.utils {
 				}
 				else {
 					compInstance.setStyle(attrName, attrValue); // try to set the property as a style
+					var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
 					// if the style value is null the propery is not a style
 					try {
-						compInstance[attrName] = attrValue;
+						compInstance[attrName] = processedValue;
 					}
 					catch (e:Error) {
 						//this case is ok, we have a few attributes that are only used for the building of the view
