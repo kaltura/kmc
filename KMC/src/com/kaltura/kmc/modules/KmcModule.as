@@ -172,6 +172,11 @@ package com.kaltura.kmc.modules {
 		 */		
 		protected function overrideDataByFlashvars(conf:String, flashvars:Object):String {
 			var confFile:XML = new XML(conf);
+			// override with general language definition
+			if (flashvars.language && !flashvars[getModuleName() + ".locale.language"] ) {
+				flashvars[getModuleName() + ".locale.language"] = flashvars.language;
+			}
+			
 			// process
 			for (var key:String in flashvars) {
 				var elements:Array = key.split(".");
@@ -208,6 +213,7 @@ package com.kaltura.kmc.modules {
 		 * */
 		protected function loadLocale(localePath:String, language:String):void {
 			_localeCode = language;
+			localePath = localePath.replace(/{locale}/g, language);
 			var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
 			eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
 			eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
