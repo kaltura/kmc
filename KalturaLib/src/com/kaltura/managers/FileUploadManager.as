@@ -254,10 +254,10 @@ package com.kaltura.managers {
 				
 				// set the desired conversion profile on the entry
 				var entry:KalturaBaseEntry = new KalturaBaseEntry();
-				entry.ingestionProfileId = file.conversionProfile;
+				entry.conversionProfileId = file.conversionProfile;
 				entry.setUpdatedFieldsOnly(true);
 				if (entry.status != KalturaEntryStatus.NO_CONTENT) {
-					entry.ingestionProfileId = null;
+					entry.conversionProfileId = null;
 				}
 				var beu:BaseEntryUpdate = new BaseEntryUpdate(entryid, entry);
 				mr.addAction(beu);

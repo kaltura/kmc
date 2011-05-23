@@ -58,6 +58,10 @@ package com.kaltura.kmc.modules.content.commands {
 				var mr:MultiRequest = new MultiRequest();
 				for (var i:uint = 0; i < e.entries.length; i++) {
 					var keepId:String = (e.entries[i] as KalturaBaseEntry).id;
+					// only send conversionProfileId if the entry is in no_content status
+					if (e.entries[i].status != KalturaEntryStatus.NO_CONTENT) {
+						e.entries[i].conversionProfileId = null;
+					}
 					if (e.entries[i] is KalturaPlaylist) {
 						//handle playlist items
 						_isPlaylist = true;
@@ -71,16 +75,17 @@ package com.kaltura.kmc.modules.content.commands {
 						//TODO - atar - why do wee need this?
 						var kle:KalturaLiveStreamAdminEntry = e.entries[i] as KalturaLiveStreamAdminEntry;
 						kle.setUpdatedFieldsOnly(true);
+						
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, kle);
 						mr.addAction(updateEntry);
 					}
 					else {
 						var be:KalturaBaseEntry = e.entries[i] as KalturaBaseEntry;
 						be.setUpdatedFieldsOnly(true);
-						// only send conversionProfileId if the entry is in no_content status
-						if (be.status != KalturaEntryStatus.NO_CONTENT) {
-							be.ingestionProfileId = null;
-						}
+//						// only send conversionProfileId if the entry is in no_content status
+//						if (be.status != KalturaEntryStatus.NO_CONTENT) {
+//							be.conversionProfileId = null;
+//						}
 						if(be is KalturaMixEntry)
 							(be as KalturaMixEntry).dataContent = null;
 						var updateEntry1:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
