@@ -1,24 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" rowHeight="30"
-			 headerRelease="headerReleaseHandler(event)" selectable="false">
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" rowHeight="30" headerRelease="preventDefault(event)"
+			 selectable="false" creationComplete="datagrid1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionFlavorSettingsPopUp;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.vo.KalturaThumbParams;
-			
+
 			import mx.collections.ArrayCollection;
+			import mx.core.Application;
 			import mx.events.DataGridEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			public static const EDIT_FLAVOR:String = "editFlavor";
+
 
 			[Bindable]
 			private var _allSelected:Boolean = false;
-			
+
 			/**
 			 * @copy #cProfile
 			 * */
 			private var _cProfile:ConversionProfileVO;
-			
+
 			[Bindable]
 			private var _thumbParamsData:ArrayCollection;
 
@@ -28,39 +35,6 @@
 			private var _dataEditable:Boolean = true;
 
 
-			public function get thumbParamsData():ArrayCollection {
-				return _thumbParamsData;
-			}
-
-
-			public function set thumbParamsData(value:ArrayCollection):void {
-				_thumbParamsData = value;
-				validateProfileFlavors();
-			}
-
-			[Bindable]
-			/**
-			 * the conversion profile the table is currently showing
-			 * */
-			public function get cProfile():ConversionProfileVO {
-				return _cProfile;
-			}
-
-
-			public function set cProfile(val:ConversionProfileVO):void {
-				_cProfile = val;
-				validateProfileFlavors();
-			}
-
-
-			override public function set dataProvider(value:Object):void {
-				// roles & permissions - set editable
-				for each (var vo:FlavorVO in value) {
-					vo.editable = _dataEditable;
-				}
-				super.dataProvider = value;
-				validateProfileFlavors();
-			}
 
 
 			private function validateProfileFlavors():void {
@@ -96,18 +70,10 @@
 			}
 
 
-			[Bindable]
-			public function get allSelected():Boolean {
-				return _allSelected;
-			}
 
 
-			public function set allSelected(allSelected:Boolean):void {
-				_allSelected = allSelected;
-			}
 
-
-			private function headerReleaseHandler(event:DataGridEvent):void {
+			private function preventDefault(event:DataGridEvent):void {
 				event.preventDefault();
 			}
 
@@ -120,6 +86,39 @@
 
 			public function isFlavorsSelected():Boolean {
 				return !(_cProfile.profile.flavorParamsIds == null);
+			}
+
+
+
+			/**
+			 * check if the flavor is selected in the current profile
+			 * */
+			public function isGivenFlavorSelected(flavor:FlavorVO):Boolean {
+				if (!cProfile || !cProfile.profile.flavorParamsIds)
+					return false;
+				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
+
+				for each (var id:String in idsArr) {
+					if (int(id) == flavor.kFlavor.id) {
+						return true;
+					}
+				}
+				return false;
+
+			}
+
+
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(ConversionSettingsTable.EDIT_FLAVOR, openEditFlavor);
+			}
+
+
+			protected function openEditFlavor(e:Event):void {
+				var editFlavorPopup:ConversionFlavorSettingsPopUp = new ConversionFlavorSettingsPopUp();
+				editFlavorPopup.profileName = cProfile.profile.name;
+				editFlavorPopup.flavorVO = e.target.data as FlavorVO;
+				PopUpManager.addPopUp(editFlavorPopup, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(editFlavorPopup);
 			}
 
 
@@ -140,22 +139,52 @@
 					vo.editable = value;
 				}
 			}
-			
+
+
+			[Bindable]
+			public function get allSelected():Boolean {
+				return _allSelected;
+			}
+
+
+			public function set allSelected(allSelected:Boolean):void {
+				_allSelected = allSelected;
+			}
+
+
+			public function get thumbParamsData():ArrayCollection {
+				return _thumbParamsData;
+			}
+
+
+			public function set thumbParamsData(value:ArrayCollection):void {
+				_thumbParamsData = value;
+				validateProfileFlavors();
+			}
+
+
+			[Bindable]
 			/**
-			 * check if the flavor is selected in the current profile
+			 * the conversion profile the table is currently showing
 			 * */
-			public function isGivenFlavorSelected(flavor:FlavorVO):Boolean {
-				if (!cProfile || !cProfile.profile.flavorParamsIds)
-					return false;
-				var idsArr:Array = cProfile.profile.flavorParamsIds.split(',');
+			public function get cProfile():ConversionProfileVO {
+				return _cProfile;
+			}
 
-				for each (var id:String in idsArr) {
-					if (int(id) == flavor.kFlavor.id) {
-						return true;
-					}
+
+			public function set cProfile(val:ConversionProfileVO):void {
+				_cProfile = val;
+				validateProfileFlavors();
+			}
+
+
+			override public function set dataProvider(value:Object):void {
+				// roles & permissions - set editable
+				for each (var vo:FlavorVO in value) {
+					vo.editable = _dataEditable;
 				}
-				return false;
-
+				super.dataProvider = value;
+				validateProfileFlavors();
 			}
 		]]>
 	</mx:Script>
@@ -166,7 +195,8 @@
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorSelectionRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','transIdCol')}" dataField="id" width="30"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorIdRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','transConvFlavorsCol')}" dataField="transcodingFlavor"
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','transConvFlavorsCol')}"
+						   dataField="transcodingFlavor"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorNameRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','transDescCol')}" dataField="description"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorDescriptionRenderer"/>
@@ -176,7 +206,8 @@
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorCodecRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','transBitrateCol')}" dataField="bitrate"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorBitrateRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('account','transDimensionsCol')}" dataField="dimensions"
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','transDimensionsCol')}"
+						   dataField="dimensions"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorDimensionsRenderer"/>
 		<!--<mx:DataGridColumn headerText="Transcoder" dataField="transcoder" itemRenderer="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.renderers.FlavorTranscoderRenderer"/>-->
 	</mx:columns>

@@ -4,27 +4,27 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.ConversionSettingsTable;
-			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionFlavorSettingsPopUp;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
-			
-			import mx.core.Application;
-			import mx.managers.PopUpManager;
 
 			[Bindable]
-			private var _isSelected:Boolean = false;		
+			private var _isSelected:Boolean = false;
+			
 			[Bindable]
 			private var _flavor:FlavorVO;
+			
 			override public function set data(value:Object):void {
+				super.data = value;
 				_flavor = value as FlavorVO;
 				_isSelected = (this.parent.parent as ConversionSettingsTable).isGivenFlavorSelected(_flavor);
 			}
 			
 			private function onFlavorNameClick():void {
-				var editFlavorPopup:ConversionFlavorSettingsPopUp = new ConversionFlavorSettingsPopUp();
-				editFlavorPopup.profileName = (this.parent.parent as ConversionSettingsTable).cProfile.profile.name;
-				editFlavorPopup.flavorVO = _flavor;
-				PopUpManager.addPopUp(editFlavorPopup, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(editFlavorPopup);
+				dispatchEvent(new Event(ConversionSettingsTable.EDIT_FLAVOR, true));
+//				var editFlavorPopup:ConversionFlavorSettingsPopUp = new ConversionFlavorSettingsPopUp();
+//				editFlavorPopup.profileName = (this.parent.parent as ConversionSettingsTable).cProfile.profile.name;
+//				editFlavorPopup.flavorVO = _flavor;
+//				PopUpManager.addPopUp(editFlavorPopup, (Application.application as DisplayObject), true);
+//				PopUpManager.centerPopUp(editFlavorPopup);
 			}
 		]]>
 	</mx:Script>
