@@ -18,6 +18,7 @@
 			override public function set data(value:Object):void {
 				super.data = value;
 				if (value) {
+					cb.enabled = true;
 					cb.dataProvider = value.flavors; // KalturaFlavorParams objects
 					if (cb.dropdown) {
 						cb.dropdown.dataProvider = value.flavors;
@@ -59,7 +60,8 @@
 				// if that failed too, prompt "select".
 				if (!found) {
 					ufv.flavorParamId = '';
-					cb.prompt = ResourceManager.getInstance().getString('cms', 'selectPrompt');
+					cb.prompt = ResourceManager.getInstance().getString('cms', 'selectFlavorPrompt');
+					cb.enabled = false;
 					
 					
 //					cb.selectedIndex = 0;
