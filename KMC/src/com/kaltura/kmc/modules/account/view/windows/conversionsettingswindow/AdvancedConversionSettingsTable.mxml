@@ -19,6 +19,11 @@
 			 * value for the type property of the <code>editProfile</code> event
 			 * */
 			public static const EDIT_PROFILE:String = "editProfile";
+			
+			/**
+			 * value for the type property of the <code>setAsDefaultProfile</code> event
+			 * */
+			public static const SET_AS_DEFAULT_PROFILE:String = "setAsDefaultProfile";
 
 
 			/**
@@ -71,6 +76,17 @@
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(AdvancedConversionSettingsTable.EDIT_PROFILE, openProfileDrilldown);
+				addEventListener(AdvancedConversionSettingsTable.SET_AS_DEFAULT_PROFILE, setDefaultProfile);
+			}
+			
+			
+			/**
+			 * set the target profile as partner default
+			 * */
+			protected function setDefaultProfile(e:Event):void {
+				var setDefault:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.SET_AS_DEFAULT_CONVERSION_PROFILE);
+				setDefault.data = (e.target.data as ConversionProfileVO).profile.id;
+				setDefault.dispatch();
 			}
 		]]>
 	</mx:Script>

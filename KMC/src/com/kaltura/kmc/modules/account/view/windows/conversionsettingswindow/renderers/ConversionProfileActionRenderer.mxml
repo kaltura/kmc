@@ -5,26 +5,25 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.AdvancedConversionSettingsTable;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.vo.KalturaConversionProfile;
 			
 			[Bindable]
 			private var _isDefault:Boolean;
-			private var _profile:ConversionProfileVO;
 			
 			override public function set data(value:Object):void {
 				super.data = value;
-				_profile = value as ConversionProfileVO;
-				if (_profile.profile.isDefault)
+				if ((value as ConversionProfileVO).profile.isDefault) {
 					_isDefault = true;
-				else 
+				}
+				else { 
 					_isDefault = false;
+				}
 			}
 			
 			private function setAsDefault():void {
-				var setDefault:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.SET_AS_DEFAULT_CONVERSION_PROFILE);
-				setDefault.data = _profile.profile.id;
-				setDefault.dispatch();
+				dispatchEvent(new Event(AdvancedConversionSettingsTable.SET_AS_DEFAULT_PROFILE, true));
 			}
 		]]>
 	</mx:Script>
