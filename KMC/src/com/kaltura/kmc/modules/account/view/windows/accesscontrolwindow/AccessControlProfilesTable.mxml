@@ -7,7 +7,7 @@
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.events.KmcEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
+			import com.kaltura.kmc.modules.account.events.AccessControlEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
 			import com.kaltura.types.KalturaAccessControlOrderBy;
@@ -94,7 +94,7 @@
 					setSortIndicator();
 
 					AccountModelLocator.getInstance().acpFilter.orderBy = orederByStr;
-					var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
+					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
 					getAllProfilesEvent.dispatch();
 
 				}
@@ -107,7 +107,7 @@
 				}
 				for each (var acpVo:AccessControlProfileVO in this.selectedItems) {
 					acpVo.selected = true && !acpVo.profile.isDefault;
-					acpVo.dispatchEvent(new Event(AccessControlProfileEvent.ACCOUNT_MARK_PROFILES));
+					acpVo.dispatchEvent(new Event(AccessControlEvent.ACCOUNT_MARK_PROFILES));
 				}
 			}
 
@@ -123,7 +123,7 @@
 
 
 			public function dispatchSelection(event:Event):void {
-				var cbEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_MARK_PROFILES, !allSelected);
+				var cbEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_MARK_PROFILES, !allSelected);
 				cbEvent.dispatch();
 			}
 			

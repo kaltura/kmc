@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.conversionProfile.ConversionProfileDelete;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	
 	import mx.controls.Alert;
@@ -40,7 +40,7 @@ package com.kaltura.kmc.modules.account.command
 			if(data.success)
 			{
 				Alert.show(ResourceManager.getInstance().getString('account', 'deleteConvProfilesDoneMsg'));
-				var getAllProfilesEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES);
+				var getAllProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else

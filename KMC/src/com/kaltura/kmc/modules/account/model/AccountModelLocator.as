@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.account.model {
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.vo.KalturaStorageProfile;
 	import com.kaltura.vo.KalturaUser;
 	
 	import flash.events.EventDispatcher;
@@ -34,6 +35,14 @@ package com.kaltura.kmc.modules.account.model {
 		 * a list of users with administrator role of the current partner 
 		 */		
 		public var usersList:ArrayCollection;
+		
+		
+		[ArrayElementType("KalturaStorageProfile")]
+		/**
+		 * a list of remote storages configured for the partner.
+		 * <code>KalturaStorageProfile</code> objects 
+		 */
+		public var storageProfiles:ArrayCollection;
 		
 		/**
 		 * partner info 

@@ -8,7 +8,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.thumbParams.ThumbParamsList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;

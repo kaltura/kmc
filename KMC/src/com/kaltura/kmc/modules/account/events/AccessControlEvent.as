@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	public class AccessControlProfileEvent extends CairngormEvent {
+	public class AccessControlEvent extends CairngormEvent {
 		
 		public static const ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES : String = "accountListAllAccessControlProfiles";
 		public static const ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES : String = "accountDeleteAccessControlProfiles";
@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.account.events
 		
 		public var selected : Boolean;
 		
-		public function AccessControlProfileEvent(type:String, 
+		public function AccessControlEvent(type:String, 
 												  selected:Boolean=false , 
 												  bubbles:Boolean=false, 
 												  cancelable:Boolean=false)

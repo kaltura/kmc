@@ -5,7 +5,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionProfilePopUpWindow;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			
@@ -40,7 +40,7 @@
 				}
 				for each (var cpVo:ConversionProfileVO in this.selectedItems) {
 					cpVo.selected = true && !cpVo.profile.isDefault;
-					cpVo.dispatchEvent(new Event(ConversionSettingsAccountEvent.MARK_CONVERSION_PROFILES));
+					cpVo.dispatchEvent(new Event(ConversionSettingsEvent.MARK_CONVERSION_PROFILES));
 				}
 			}
 
@@ -84,7 +84,7 @@
 			 * set the target profile as partner default
 			 * */
 			protected function setDefaultProfile(e:Event):void {
-				var setDefault:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.SET_AS_DEFAULT_CONVERSION_PROFILE);
+				var setDefault:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE);
 				setDefault.data = (e.target.data as ConversionProfileVO).profile.id;
 				setDefault.dispatch();
 			}

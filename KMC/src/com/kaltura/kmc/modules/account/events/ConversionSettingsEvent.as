@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	
-	public class ConversionSettingsAccountEvent extends CairngormEvent
+	public class ConversionSettingsEvent extends CairngormEvent
 	{
 		public static const ADD_NEW_CONVERSION_PROFILE : String = "account_addNewConversionProfile";
 		public static const DELETE_CONVERSION_PROFILE : String = "account_deleteConversionProfile";
@@ -12,11 +12,20 @@ package com.kaltura.kmc.modules.account.events
 		public static const MARK_FLAVORS : String = "account_markFlavors";
 		public static const MARK_CONVERSION_PROFILES : String = "account_markConversionProfiles";
 		public static const UPDATE_CONVERSION_PROFILE_CHANGES : String = "account_updateConversionProfileChanges";
+		
+		/**
+		 * set the given profile as partner default 
+		 */
 		public static const SET_AS_DEFAULT_CONVERSION_PROFILE : String = "account_setAsDefualtConversionProfile";
+		
+		/**
+		 * list current partner's remote storage profiles
+		 */
+		public static const LIST_STORAGE_PROFILES : String = "account_listStorageProfiles";
 		
 		public var selected : Boolean;
 		
-		public function ConversionSettingsAccountEvent(type:String, 
+		public function ConversionSettingsEvent(type:String, 
 												selected:Boolean=false, 
 												data:Object=null,
 										  		bubbles:Boolean=false, 

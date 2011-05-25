@@ -15,19 +15,24 @@
 		<![CDATA[
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.vo.KalturaStorageProfile;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 
 			public static const EDIT_STATE:String = "edit_state";
 			
-//			public var rootUrl:String;
 
 			[Bindable]
 			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
+			
+			
 			
 			
 			/**
@@ -63,42 +68,59 @@
 			 * for edit we clone the acp, for add new one we create a new acp.
 			 */
 			private function onCreationComplete(event:Event):void {
-				if (currentState == null) {
-					// when we use this pop-up to create a new Conversion profile
-					conversionProfile = new ConversionProfileVO();
-				}
-				else {
-					setConversionControlProfileData();
-				}
 				if (currentState == EDIT_STATE) {
 					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_edit");
+					showConvProfData();
 				}
 				else {
+					// when we use this pop-up to create a new Conversion profile
+					conversionProfile = new ConversionProfileVO();
 					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_add");
+				}
+				
+				// list storage profiles once
+				if (!_model.storageProfiles) {
+					var cw:ChangeWatcher = BindingUtils.bindSetter(showStorageProfile, cbRemoteProfile, "dataProvider");
+					var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_STORAGE_PROFILES);
+					cg.dispatch();
 				}
 			}
 
 
 			/**
-			 * seting all the data when editing an acp
+			 * show conversion profile data
 			 */
-			private function setConversionControlProfileData():void {
-				setName();
-				setDescription();
+			private function showConvProfData():void {
+				conversionNameTextInput.text = _conversionProfile.profile.name;
+				conversionDescTextArea.text = _conversionProfile.profile.description;
+				txtDefaultEntryId.text = _conversionProfile.profile.defaultEntryId;
+				showStorageProfile(cbRemoteProfile.dataProvider);
 				// flavors are set in the cProfile
 				validateInput();
 			}
-
-
-			private function setName():void {
-				conversionNameTextInput.enabled = !(_conversionProfile.profile.isDefault);
-				conversionNameTextInput.text = _conversionProfile.profile.name;
+			
+			/**
+			 * select the correct storage profile.
+			 * @param value		cbRemoteProfile's dp
+			 * */
+			private function showStorageProfile(value:Object):void {
+				if (value) {
+					var bFound:Boolean = false;
+					
+					for each (var sp:KalturaStorageProfile in _model.storageProfiles) {
+						if (sp.id == _conversionProfile.profile.storageProfileId) {
+							cbRemoteProfile.selectedItem = sp;
+							bFound = true;
+							break;
+						}
+					}
+					if (!bFound) {
+						cbRemoteProfile.prompt = "N/A";
+					}
+				}
 			}
 
 
-			private function setDescription():void {
-				conversionDescTextArea.text = _conversionProfile.profile.description;
-			}
 
 			
 			private function validateInput(event:Event = null):Boolean {
@@ -123,13 +145,15 @@
 				if (validateInput()) {
 					_conversionProfile.profile.name = conversionNameTextInput.text;
 					_conversionProfile.profile.description = conversionDescTextArea.text;
+					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text;
+					_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
 
 					if (currentState == EDIT_STATE) {
-						var updateProfileEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionProfile);
+						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionProfile);
 						updateProfileEvent.dispatch();
 					}
 					else {
-						var addProfileEvent:ConversionSettingsAccountEvent = new ConversionSettingsAccountEvent(ConversionSettingsAccountEvent.ADD_NEW_CONVERSION_PROFILE, false, conversionProfile);
+						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, false, conversionProfile);
 						addProfileEvent.dispatch();
 					}
 					closeWindow();
@@ -161,7 +185,17 @@
 					thumbParamsData="{_model.thumbsData}" cProfile="{conversionProfile}" change="validateInput(event)" />
 		</mx:FormItem>
 	</mx:Form>
-
+	<mx:HRule width="100%" />
+	<mx:HBox horizontalGap="3" width="100%">
+		<mx:Text htmlText="&lt;b&gt;Default Ingestion Settings:&lt;/b&gt;&lt;br&gt;(Optional)" />
+		<mx:Spacer width="20%"/>
+		<mx:Label text="Entry ID:" />
+		<mx:TextInput id="txtDefaultEntryId" width="100" />
+		<mx:Spacer width="20%" />
+		<mx:Label text="Ingest from Remote Storage:" />
+		<mx:ComboBox id="cbRemoteProfile" enabled="{_model.storageProfiles != null}"
+					 labelField="name" dataProvider="{_model.storageProfiles}" />
+	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
 				   paddingTop="2">
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','createNewConvProfile')}" 

@@ -33,22 +33,23 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(UsageGraphEvent.USAGE_GRAPH, GetUsageGraphCommand);
 			
 			// Access Control Events
-			addCommand(AccessControlProfileEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
-			addCommand(AccessControlProfileEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
-			addCommand(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
-			addCommand(AccessControlProfileEvent.ACCOUNT_MARK_PROFILES, MarkAccessControlProfilesCommand);
-			addCommand(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
+			addCommand(AccessControlEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
+			addCommand(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
+			addCommand(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
+			addCommand(AccessControlEvent.ACCOUNT_MARK_PROFILES, MarkAccessControlProfilesCommand);
+			addCommand(AccessControlEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
 			
 			// Conversion Profile Events
-			addCommand(ConversionSettingsAccountEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);
-			addCommand(ConversionSettingsAccountEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
-			addCommand(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
-			addCommand(ConversionSettingsAccountEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
-			addCommand(ConversionSettingsAccountEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
-			addCommand(ConversionSettingsAccountEvent.MARK_FLAVORS, MarkFlavorsCommand);
-			addCommand(ConversionSettingsAccountEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
-			addCommand(ConversionSettingsAccountEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
-			addCommand(ConversionSettingsAccountEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
+			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
+			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
+			addCommand(ConversionSettingsEvent.MARK_FLAVORS, MarkFlavorsCommand);
+			addCommand(ConversionSettingsEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
+			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
 			
 			//metadata profile events
 			addCommand(MetadataProfileEvent.LIST , ListMetadataProfileCommand);

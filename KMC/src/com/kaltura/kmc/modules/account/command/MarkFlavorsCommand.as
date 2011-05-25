@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.account.events.ConversionSettingsAccountEvent;
+	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;
 	
@@ -14,7 +14,7 @@ package com.kaltura.kmc.modules.account.command
 		{
 			for each(var flavor:FlavorVO in _model.flavorsData)
 			{
-				flavor.selected = (event as ConversionSettingsAccountEvent).selected;
+				flavor.selected = (event as ConversionSettingsEvent).selected;
 			} 
 		}
 	

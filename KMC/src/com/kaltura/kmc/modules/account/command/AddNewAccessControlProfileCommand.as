@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.accessControl.AccessControlAdd;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
+	import com.kaltura.kmc.modules.account.events.AccessControlEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.vo.AccessControlProfileVO;
 	
@@ -34,7 +34,7 @@ package com.kaltura.kmc.modules.account.command
 			if(data.success)
 			{
 				Alert.show(ResourceManager.getInstance().getString('account', 'addNewAccessControlDoneMsg'));
-				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
+				var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else

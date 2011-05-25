@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.commands.accessControl.AccessControlDelete;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.modules.account.events.AccessControlProfileEvent;
+	import com.kaltura.kmc.modules.account.events.AccessControlEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	
 	import mx.controls.Alert;
@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.account.command
 				{
 					Alert.show(ResourceManager.getInstance().getString('account', 'deleteAccessProfileDoneMsg'));
 				}
-				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
+				var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
 			}
 			else
