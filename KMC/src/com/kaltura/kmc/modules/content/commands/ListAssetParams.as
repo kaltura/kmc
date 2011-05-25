@@ -1,9 +1,10 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.commands.conversionProfile.ConversionProfileListAssetParams;
+	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
+	import com.kaltura.vo.KalturaConversionProfileAssetParamsFilter;
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsListResponse;
 	
 	import mx.collections.ArrayCollection;
@@ -15,7 +16,9 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			var profid:int = parseInt((event as ConversionSettingsEvent).data);
-			var lap:ConversionProfileListAssetParams = new ConversionProfileListAssetParams(profid);
+			var f:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
+			f.conversionProfileIdEqual = profid;
+			var lap:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(f);
 			lap.addEventListener(KalturaEvent.COMPLETE, result);
 			lap.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(lap);
