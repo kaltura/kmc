@@ -98,7 +98,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "4.1.1a";
+			public var VERSION:String = "4.1.2e";
 		
 			/**
 			 * Singletone PermissionManager
@@ -180,9 +180,16 @@
 				var jstabs:Array = new Array();
 				var xmltabs:XMLList = _uiconf.modules.module;
 				var jstab:Object;
+				var tabKey:String;
+				var tabName:String;
 				for each (var xmltab:XML in xmltabs) {
 					jstab = new Object();
-					jstab.display_name = xmltab.@displayName.toString();
+					tabKey = xmltab.@displayName.toString();
+					tabName = resourceManager.getString('kmc', tabKey);
+					if (!tabName) {
+						tabName = tabKey;
+					}
+					jstab.display_name = tabName;
 					jstab.module_name = xmltab.@id.toString();
 					jstab.subtab = xmltab.@subtab.toString();
 					if (xmltab.@htmlUrl) {
