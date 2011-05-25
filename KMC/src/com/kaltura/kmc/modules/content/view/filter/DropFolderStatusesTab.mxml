@@ -20,7 +20,7 @@
 					pendingBtn.selected = false;
 					errHandlingBtn.selected = false;
 					errDeletingBtn.selected = false;
-					//errTransferringBtn.selected = false;
+					handledBtn.selected = false;
 				}
 				else {
 					var dropStatusArr:Array = filterVo.statusIn.split(',');
@@ -39,6 +39,9 @@
 							case KalturaDropFolderFileStatus.ERROR_DELETING:
 								errDeletingBtn.selected = true;
 								break;
+							case KalturaDropFolderFileStatus.HANDLED:
+								handledBtn.selected = true;
+								break;
 						}
 					}
 				}
@@ -53,7 +56,7 @@
 				if (allDropStatusBtn.selected) {
 					dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.UPLOADING, KalturaDropFolderFileStatus.PENDING,
 						KalturaDropFolderFileStatus.WAITING, KalturaDropFolderFileStatus.NO_MATCH, KalturaDropFolderFileStatus.ERROR_HANDLING,
-						KalturaDropFolderFileStatus.ERROR_DELETING);
+						KalturaDropFolderFileStatus.ERROR_DELETING, KalturaDropFolderFileStatus.HANDLED);
 				}
 				else {
 					if (transferringBtn.selected) { // transferring
@@ -67,6 +70,9 @@
 					}
 					if (errDeletingBtn.selected) { // error deleting
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.ERROR_DELETING);
+					}	
+					if (handledBtn.selected) { // handled
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.HANDLED);
 					}	
 				}
 				return dropFolderFileStatusArray.join(',');
@@ -83,6 +89,7 @@
 					pendingBtn.selected = false;
 					errHandlingBtn.selected = false;
 					errDeletingBtn.selected = false;
+					handledBtn.selected = false;
 					dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
 				}
 			}
@@ -109,12 +116,12 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateDropStatus():Boolean {
-				return !transferringBtn.selected && !pendingBtn.selected && !errHandlingBtn.selected && !errDeletingBtn.selected;
+				return !transferringBtn.selected && !pendingBtn.selected && !errHandlingBtn.selected && !errDeletingBtn.selected && !handledBtn.selected;
 			}
-				
+			
 			
 			public function get buttons():Array {
-				return [allDropStatusBtn, transferringBtn, pendingBtn, errHandlingBtn, errDeletingBtn];
+				return [allDropStatusBtn, transferringBtn, pendingBtn, errHandlingBtn, errDeletingBtn, handledBtn];
 			}
 		]]>
 	</mx:Script>
@@ -127,6 +134,9 @@
 	<mx:Button id="pendingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'pendingBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
+	<mx:Button id="handledBtn" width="100%" selected="false"
+			   label="{resourceManager.getString('cms', 'handledBtn')}" buttonMode="true" toggle="true"
+			   styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>
 	<mx:Button id="errHandlingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'errHandlingBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
@@ -135,7 +145,7 @@
 			   styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>
 	<!-- add later, server doesn't support now-->
 	<!--<mx:Button id="errTransferringBtn" width="100%" selected="false"
-			   label="{resourceManager.getString('cms', 'errTransferringBtn')}" buttonMode="true" toggle="true"
-			   styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>-->
+	label="{resourceManager.getString('cms', 'errTransferringBtn')}" buttonMode="true" toggle="true"
+	styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>-->
 	
 </mx:VBox>

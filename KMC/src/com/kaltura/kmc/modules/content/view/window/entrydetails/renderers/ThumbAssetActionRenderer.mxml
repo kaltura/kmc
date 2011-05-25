@@ -7,6 +7,7 @@
 			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			private var _thumbAsset:ThumbnailWithDimensions;
@@ -14,11 +15,18 @@
 			private var _enableActions:Boolean;
 			[Bindable]
 			private var _enableDelete:Boolean;
+			[Bindable]
+			private var _isDefault:Boolean;
 			
 			override public function set data(value:Object):void {
 				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumbsWithDimensions.thumbAsset) {
 					_thumbAsset = thumbsWithDimensions;
+					if (_thumbAsset.thumbAsset.tags == ThumbnailWithDimensions.DEFAULT_THUMB)
+						_isDefault = true;
+					else
+						_isDefault = false;
+					
 					if (_thumbAsset.thumbAsset.status == KalturaFlavorAssetStatus.READY) {
 						_enableActions = true;
 						return;
@@ -62,7 +70,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{_enableActions}" styleName="setDefaultLinkButton"/>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{!_isDefault &amp;&amp; _enableActions}" styleName="setDefaultLinkButton"/>
 	<mx:LinkButton label="{resourceManager.getString('cms', 'download')}" click="downloadClickHandler(event)" enabled="{_enableActions}" styleName="downloadThumbLinkButton"/>	
-	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(_enableActions || _enableDelete)}" styleName="deleteThumbLinkButton"/>	
+	<mx:LinkButton label="{resourceManager.getString('cms', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(!_isDefault &amp;&amp; (_enableActions || _enableDelete))}" styleName="deleteThumbLinkButton"/>	
 </mx:VBox>

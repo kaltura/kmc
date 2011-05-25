@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.model
 	public class ThumbnailWithDimensions extends EventDispatcher
 	{
 		public static var serveURL:String = "/api_v3/index.php/service/thumbasset/action/serve";
+		public static const DEFAULT_THUMB:String = "default_thumb";
 		
 		//the height of the thubnail
 		public var height:int;
