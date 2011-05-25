@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.content.commands
 			
 			e.entryVo.setUpdatedFieldsOnly(true);
 			if (e.entryVo.status != KalturaEntryStatus.NO_CONTENT) {
-				e.entryVo.conversionProfileId = null;
+				e.entryVo.conversionProfileId = int.MIN_VALUE;
 			}
 			
 			var mu:BaseEntryUpdate = new BaseEntryUpdate(e.entryId, e.entryVo);
