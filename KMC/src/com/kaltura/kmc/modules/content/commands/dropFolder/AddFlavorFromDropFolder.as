@@ -23,7 +23,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			flavorAsset.setUpdatedFieldsOnly(true);
 			flavorAsset.setInsertedFields(true);
 			var fau:FlavorAssetAdd = new FlavorAssetAdd(e.entry.id, flavorAsset);
-			fau.addEventListener(KalturaEvent.COMPLETE, result);
+			fau.addEventListener(KalturaEvent.COMPLETE, setResourceContent);
 			fau.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(fau);
 		}
