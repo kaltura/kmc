@@ -20,6 +20,11 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
+			// to update the flavors tab, we re-load flavors data
+			if(_model.entryDetailsModel.selectedEntry != null) {
+				var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _model.entryDetailsModel.selectedEntry);
+				cgEvent.dispatch();
+			}
 		}
 	}
 }
