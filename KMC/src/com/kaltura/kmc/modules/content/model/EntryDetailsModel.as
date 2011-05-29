@@ -95,5 +95,9 @@ package com.kaltura.kmc.modules.content.model
 		 * if selected entry was refreshed
 		 * */
 		public var selectedEntryReloaded:Boolean;		
+		/**
+		 * whether to display "mixes" tab in entrydrilldown 
+		 */		
+		public var showMixesTab:Boolean = true;
 	}
 }
