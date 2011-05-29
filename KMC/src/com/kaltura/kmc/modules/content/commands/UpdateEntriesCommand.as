@@ -199,7 +199,8 @@ package com.kaltura.kmc.modules.content.commands {
 				var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				categoriesEvent.dispatch();
 			}
-			_model.windowState = WindowsStates.NONE;
+			var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+			cgEvent.dispatch();
 			_model.decreaseLoadCounter();
 		}
 
