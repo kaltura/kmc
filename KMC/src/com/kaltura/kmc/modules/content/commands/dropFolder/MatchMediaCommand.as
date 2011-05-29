@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+	import com.kaltura.kmc.modules.content.events.EntryEvent;
 
 	public class MatchMediaCommand extends KalturaCommand {
 		
