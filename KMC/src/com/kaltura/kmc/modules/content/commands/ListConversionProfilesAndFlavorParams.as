@@ -17,6 +17,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsListResponse;
 	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaConversionProfileListResponse;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
 	
@@ -42,7 +43,9 @@ package com.kaltura.kmc.modules.content.commands {
 			
 			var f:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
 			f.originIn = KalturaAssetParamsOrigin.INGEST + "," + KalturaAssetParamsOrigin.CONVERT_WHEN_MISSING;
-			var listcpaps:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(f);
+			var p:KalturaFilterPager = new KalturaFilterPager();
+			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
+			var listcpaps:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(f, p);
 			mr.addAction(listcpaps);
 
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
