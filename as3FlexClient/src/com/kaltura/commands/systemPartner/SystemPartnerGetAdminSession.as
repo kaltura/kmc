@@ -10,7 +10,7 @@ package com.kaltura.commands.systemPartner
 		 * @param partnerId int
 		 * @param userId String
 		 **/
-		public function SystemPartnerGetAdminSession( partnerId : int,userId : String='' )
+		public function SystemPartnerGetAdminSession( partnerId : int,userId : String = null )
 		{
 			service= 'systempartner_systempartner';
 			action= 'getAdminSession';

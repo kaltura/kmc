@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
+	import com.kaltura.vo.KalturaUiConfAdminBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaSynacorDistributionProfileBaseFilter extends KalturaDistributionProfileFilter
+	public dynamic class KalturaUiConfAdminFilter extends KalturaUiConfAdminBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

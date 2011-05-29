@@ -14,7 +14,7 @@ package com.kaltura.commands.user
 		 * @param newFirstName String
 		 * @param newLastName String
 		 **/
-		public function UserUpdateLoginData( oldLoginId : String,password : String,newLoginId : String='',newPassword : String='',newFirstName : String='',newLastName : String='' )
+		public function UserUpdateLoginData( oldLoginId : String,password : String,newLoginId : String='',newPassword : String='',newFirstName : String = null,newLastName : String = null )
 		{
 			service= 'user';
 			action= 'updateLoginData';

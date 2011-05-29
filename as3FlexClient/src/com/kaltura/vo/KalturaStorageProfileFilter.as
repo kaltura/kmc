@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProvider;
+	import com.kaltura.vo.KalturaStorageProfileBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaSynacorDistributionProvider extends KalturaDistributionProvider
+	public dynamic class KalturaStorageProfileFilter extends KalturaStorageProfileBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

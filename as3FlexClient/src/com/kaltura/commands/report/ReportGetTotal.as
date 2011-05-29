@@ -12,7 +12,7 @@ package com.kaltura.commands.report
 		 * @param reportInputFilter KalturaReportInputFilter
 		 * @param objectIds String
 		 **/
-		public function ReportGetTotal( reportType : int,reportInputFilter : KalturaReportInputFilter,objectIds : String='' )
+		public function ReportGetTotal( reportType : int,reportInputFilter : KalturaReportInputFilter,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getTotal';

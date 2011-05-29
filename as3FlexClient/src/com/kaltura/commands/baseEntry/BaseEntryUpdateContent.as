@@ -10,8 +10,9 @@ package com.kaltura.commands.baseEntry
 		/**
 		 * @param entryId String
 		 * @param resource KalturaResource
+		 * @param conversionProfileId int
 		 **/
-		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource )
+		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=undefined )
 		{
 			service= 'baseentry';
 			action= 'updateContent';
@@ -24,6 +25,8 @@ package com.kaltura.commands.baseEntry
  			keyValArr = kalturaObject2Arrays(resource, 'resource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('conversionProfileId');
+			valueArr.push(conversionProfileId);
 			applySchema(keyArr, valueArr);
 		}
 

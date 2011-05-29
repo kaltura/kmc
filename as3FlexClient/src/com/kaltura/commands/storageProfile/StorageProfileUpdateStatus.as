@@ -12,7 +12,7 @@ package com.kaltura.commands.storageProfile
 		 **/
 		public function StorageProfileUpdateStatus( storageId : int,status : int )
 		{
-			service= 'storageprofile_storageprofile';
+			service= 'storageprofile';
 			action= 'updateStatus';
 
 			var keyArr : Array = new Array();

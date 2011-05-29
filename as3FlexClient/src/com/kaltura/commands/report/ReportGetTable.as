@@ -15,7 +15,7 @@ package com.kaltura.commands.report
 		 * @param order String
 		 * @param objectIds String
 		 **/
-		public function ReportGetTable( reportType : int,reportInputFilter : KalturaReportInputFilter,pager : KalturaFilterPager,order : String='',objectIds : String='' )
+		public function ReportGetTable( reportType : int,reportInputFilter : KalturaReportInputFilter,pager : KalturaFilterPager,order : String = null,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getTable';

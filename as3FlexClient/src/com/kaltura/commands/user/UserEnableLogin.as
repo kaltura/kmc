@@ -11,7 +11,7 @@ package com.kaltura.commands.user
 		 * @param loginId String
 		 * @param password String
 		 **/
-		public function UserEnableLogin( userId : String,loginId : String,password : String='' )
+		public function UserEnableLogin( userId : String,loginId : String,password : String = null )
 		{
 			service= 'user';
 			action= 'enableLogin';

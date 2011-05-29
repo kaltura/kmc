@@ -11,7 +11,7 @@ package com.kaltura.commands.storageProfile
 		 **/
 		public function StorageProfileGet( storageProfileId : int )
 		{
-			service= 'storageprofile_storageprofile';
+			service= 'storageprofile';
 			action= 'get';
 
 			var keyArr : Array = new Array();

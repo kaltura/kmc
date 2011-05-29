@@ -13,7 +13,7 @@ package com.kaltura.commands.report
 		 * @param dimension String
 		 * @param objectIds String
 		 **/
-		public function ReportGetGraphs( reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String='',objectIds : String='' )
+		public function ReportGetGraphs( reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String = null,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getGraphs';

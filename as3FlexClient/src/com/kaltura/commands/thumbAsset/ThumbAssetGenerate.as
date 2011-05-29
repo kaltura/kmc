@@ -12,7 +12,7 @@ package com.kaltura.commands.thumbAsset
 		 * @param thumbParams KalturaThumbParams
 		 * @param sourceAssetId String
 		 **/
-		public function ThumbAssetGenerate( entryId : String,thumbParams : KalturaThumbParams,sourceAssetId : String='' )
+		public function ThumbAssetGenerate( entryId : String,thumbParams : KalturaThumbParams,sourceAssetId : String = null )
 		{
 			service= 'thumbasset';
 			action= 'generate';

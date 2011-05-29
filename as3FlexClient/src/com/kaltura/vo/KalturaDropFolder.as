@@ -72,6 +72,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var ignoreFileNamePatterns : String;
+
+		/** 
+		* 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
@@ -99,6 +103,7 @@ package com.kaltura.vo
 			arr.push('fileNamePatterns');
 			arr.push('fileHandlerConfig');
 			arr.push('tags');
+			arr.push('ignoreFileNamePatterns');
 			return arr;
 		}
 

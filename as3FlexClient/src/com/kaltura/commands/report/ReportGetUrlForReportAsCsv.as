@@ -19,7 +19,7 @@ package com.kaltura.commands.report
 		 * @param order String
 		 * @param objectIds String
 		 **/
-		public function ReportGetUrlForReportAsCsv( reportTitle : String,reportText : String,headers : String,reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String='',pager : KalturaFilterPager=null,order : String='',objectIds : String='' )
+		public function ReportGetUrlForReportAsCsv( reportTitle : String,reportText : String,headers : String,reportType : int,reportInputFilter : KalturaReportInputFilter,dimension : String = null,pager : KalturaFilterPager=null,order : String = null,objectIds : String = null )
 		{
 			service= 'report';
 			action= 'getUrlForReportAsCsv';

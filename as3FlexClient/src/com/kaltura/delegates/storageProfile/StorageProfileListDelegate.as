@@ -1,13 +1,13 @@
-package com.kaltura.delegates.documents
+package com.kaltura.delegates.storageProfile
 {
 	import com.kaltura.config.KalturaConfig;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.delegates.WebDelegateBase;
 	import flash.utils.getDefinitionByName;
 
-	public class DocumentsAddDelegate extends WebDelegateBase
+	public class StorageProfileListDelegate extends WebDelegateBase
 	{
-		public function DocumentsAddDelegate(call:KalturaCall, config:KalturaConfig)
+		public function StorageProfileListDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
 		}

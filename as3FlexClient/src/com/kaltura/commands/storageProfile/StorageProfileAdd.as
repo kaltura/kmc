@@ -12,7 +12,7 @@ package com.kaltura.commands.storageProfile
 		 **/
 		public function StorageProfileAdd( storageProfile : KalturaStorageProfile )
 		{
-			service= 'storageprofile_storageprofile';
+			service= 'storageprofile';
 			action= 'add';
 
 			var keyArr : Array = new Array();

@@ -10,7 +10,7 @@ package com.kaltura.commands.user
 		 * @param userId String
 		 * @param loginId String
 		 **/
-		public function UserDisableLogin( userId : String='',loginId : String='' )
+		public function UserDisableLogin( userId : String = null,loginId : String = null )
 		{
 			service= 'user';
 			action= 'disableLogin';

@@ -10,8 +10,9 @@ package com.kaltura.commands.media
 		/**
 		 * @param entryId String
 		 * @param resource KalturaResource
+		 * @param conversionProfileId int
 		 **/
-		public function MediaUpdateContent( entryId : String,resource : KalturaResource )
+		public function MediaUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=undefined )
 		{
 			service= 'media';
 			action= 'updateContent';
@@ -24,6 +25,8 @@ package com.kaltura.commands.media
  			keyValArr = kalturaObject2Arrays(resource, 'resource');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+			keyArr.push('conversionProfileId');
+			valueArr.push(conversionProfileId);
 			applySchema(keyArr, valueArr);
 		}
 

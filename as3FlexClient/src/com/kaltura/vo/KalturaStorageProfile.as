@@ -97,8 +97,7 @@ package com.kaltura.vo
 		public var urlManagerClass : String;
 
 		/** 
-		* TODO - remove after events manager is implemented
-No need to create enum for temp field
+		* No need to create enum for temp field
 		* */ 
 		public var trigger : int = int.MIN_VALUE;
 

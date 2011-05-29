@@ -15,7 +15,7 @@ package com.kaltura.commands.session
 		 * @param expiry int
 		 * @param privileges String
 		 **/
-		public function SessionImpersonate( secret : String,impersonatedPartnerId : int,userId : String='',type : int=0,partnerId : int=undefined,expiry : int=86400,privileges : String='' )
+		public function SessionImpersonate( secret : String,impersonatedPartnerId : int,userId : String='',type : int=0,partnerId : int=undefined,expiry : int=86400,privileges : String = null )
 		{
 			service= 'session';
 			action= 'impersonate';

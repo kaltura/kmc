@@ -13,7 +13,7 @@ package com.kaltura.commands.metadataProfile
 		 * @param xsdData String
 		 * @param viewsData String
 		 **/
-		public function MetadataProfileUpdate( id : int,metadataProfile : KalturaMetadataProfile,xsdData : String='',viewsData : String='' )
+		public function MetadataProfileUpdate( id : int,metadataProfile : KalturaMetadataProfile,xsdData : String = null,viewsData : String = null )
 		{
 			service= 'metadata_metadataprofile';
 			action= 'update';

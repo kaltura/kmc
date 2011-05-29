@@ -10,7 +10,7 @@ package com.kaltura.commands.metadata
 		 * @param id int
 		 * @param xmlData String
 		 **/
-		public function MetadataUpdate( id : int,xmlData : String='' )
+		public function MetadataUpdate( id : int,xmlData : String = null )
 		{
 			service= 'metadata_metadata';
 			action= 'update';
