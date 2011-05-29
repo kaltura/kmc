@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.model {
 	import flash.events.EventDispatcher;
 	
 	import mx.collections.ArrayCollection;
+	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
 
 	[Bindable]
@@ -55,6 +56,31 @@ package com.kaltura.kmc.modules.content.model {
 		 * array of entryDetailsModel
 		 * */
 		public var entryDetailsModelsArray:Array;
+		
+		/**
+		 * list of opened popups 
+		 */
+		public var popups:Vector.<TitleWindow>;
+		
+		/**
+		 * returns the last popup added to the app 
+		 */
+		public function get topPopup():TitleWindow {
+			if (popups.length > 0) {
+				return popups[popups.length-1];
+			}
+			return null;
+		}
+		
+		/**
+		 * returns the one before last popup added to the app 
+		 */
+		public function get prevPopup():TitleWindow {
+			if (popups.length > 1) {
+				return popups[popups.length-2];
+			}
+			return null;
+		}
 		
 		/**
 		 * if we did some kind of action in entry drilldown that requires to refresh entries
@@ -230,6 +256,8 @@ package com.kaltura.kmc.modules.content.model {
 			filterModel = new FilterModel();
 			_entryDetailsModel = new EntryDetailsModel();
 			entryDetailsModelsArray = new Array(_entryDetailsModel);
+			popups = new Vector.<TitleWindow>();
+			
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
 			dropFolderModel = new DropFolderModel();

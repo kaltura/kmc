@@ -184,16 +184,14 @@ package com.kaltura.kmc.modules.content.commands {
 					} 
 				}
 			}
-
+			
 			// refresh playlists list
 			if (_isPlaylist) {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-				cgEvent.dispatch();
 			}
-			else if (!_model.has2OpenedPopups) {
-				//check if this pop up is a 2nd pop up. if so, do not load the entries
+				// only re-load entries if this is the only popup
+			else if (_model.popups.length == 1) {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();
 				var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
@@ -203,14 +201,6 @@ package com.kaltura.kmc.modules.content.commands {
 			cgEvent.dispatch();
 			_model.decreaseLoadCounter();
 		}
-
-//		/**
-//		 * load failure handler
-//		 * */
-//		override public function fault(info:Object):void {
-//			_model.decreaseLoadCounter();
-//			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'), Alert.OK);
-//		}
 
 	}
 }

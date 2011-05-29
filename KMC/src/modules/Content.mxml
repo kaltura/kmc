@@ -98,12 +98,12 @@
 			/**
 			 * active popup window
 			 * */
-			private var _popup:TitleWindow;
+//			private var _popup:TitleWindow;
 
 			/**
 			 * a secondary popup window opened over the first one
 			 * */
-			private var _secondPopup:TitleWindow;
+//			private var _secondPopup:TitleWindow;
 
 			/**
 			 * Google analytics tracker identifier
@@ -219,11 +219,10 @@
 			 * */
 			public function onRequestedDataLoaded():void {
 				// init entry details window
-				if (_secondPopup && _secondPopup is EntryDetailsWin) {
-					(_secondPopup as EntryDetailsWin).init();
-				}
-				else if (_popup && _popup is EntryDetailsWin) {
-					(_popup as EntryDetailsWin).init();
+				var popup:TitleWindow = _model.topPopup;
+				
+				 if (popup && popup is EntryDetailsWin) {
+					(popup as EntryDetailsWin).init();
 				}
 			}
 			
@@ -411,11 +410,9 @@
 			 * bring any visible popups to the center of the screen
 			 * */
 			private function centerPopups(event:Event = null):void {
-				if (_popup)
-					PopUpManager.centerPopUp(_popup);
-
-				if (_secondPopup)
-					PopUpManager.centerPopUp(_secondPopup);
+				for (var i:int = 0; i<_model.popups.length; i++) {
+					PopUpManager.centerPopUp(_model.popups[i]);
+				}
 			}
 
 
@@ -536,48 +533,71 @@
 
 
 			/**
-			 * close popup window
+			 * close popup window. 
+			 * if this was the last opened popup, enable HTML tabs
 			 * */
 			private function closePopup():void {
-				if (_secondPopup) {
-					_secondPopup.removeEventListener(KmcHelpEvent.HELP, onHelp);
-					PopUpManager.removePopUp(_secondPopup);
-					_model.has2OpenedPopups = false;
-					_secondPopup = null;
+				var popup:TitleWindow = _model.topPopup;
+				if (popup) {
+
+					popup.removeEventListener(KmcHelpEvent.HELP, onHelp);
+					PopUpManager.removePopUp(popup);
+					_model.popups.pop();
+
+
 				}
-				else if (_popup) {
-					_popup.removeEventListener(KmcHelpEvent.HELP, onHelp);
-					PopUpManager.removePopUp(_popup);
-					_popup = null;
+				if (!_model.topPopup) {
+
+
+
+
 					enableHtmlTabs(true);
-				}
-				if (contentView) {
-					contentView.selectedChild.setFocus();
+
+					if (contentView) {
+						contentView.selectedChild.setFocus();
+					}
 				}
 			}
 
 
 			/**
 			 * check after changing <code>_model.windowState</code> if
-			 * somthing need to be refreshed
+			 * something has to be refreshed
+			 * 
+			 * we are closing the top window on the list - this is triggered 
+			 * before removing it, so the popup to be removed is still on the list.
 			 * */
 			private function refreshDataByPopupType():void {
-				if (_popup is RulePlaylistWindow && !_secondPopup) {
-					//this is simple add rule state so do nothing
+				if (!_model.popups.length) return;
+				
+				var top:TitleWindow = _model.topPopup;
+				var prev:TitleWindow = _model.prevPopup;
+				
+//				if (popup is RulePlaylistWindow && ln == 1) {
+//					// closing a RulePlaylistWindow 
+//					// (Atar: this is meaningless)
+//					// this is simple add rule state so do nothing
+//				}
+//				else if (popup is RulePlaylistWindow && (popup as RulePlaylistWindow).addRuleWin) {
+//					// closing a RulePlaylistWindow that has an opened addRuleWin
+//					// (Atar: when do we ever get here??? how come?)
+//					// if add rule window exist we need to refresh it
+//					(popup as RulePlaylistWindow).addRuleWin.singleRule.runRule();
+//				}
+//				else  
+				if (prev is RulePlaylistWindow && top is EntryDetailsWin) {
+					// closing entry drilldown opened from rulebased playlist window
+					(prev as RulePlaylistWindow).simpleRule.runRule();
 				}
-				else if (_popup is RulePlaylistWindow && (_popup as RulePlaylistWindow).addRuleWin) {
-					//if add rule window exist we need to refreash it
-					(_popup as RulePlaylistWindow).addRuleWin.singleRule.runRule();
+				else if (prev is ManualPlaylistWindow && top is EntryDetailsWin) {
+					// closing entry drilldown opened from manual playlist window
+					(prev as ManualPlaylistWindow).loadEntries();
+
+
+
 				}
-				else if (_popup is RulePlaylistWindow && _secondPopup) {
-					// we just close the second popup in rule base playlist
-					(_popup as RulePlaylistWindow).simpleRule.runRule();
-				}
-				else if (_popup is ManualPlaylistWindow && _secondPopup) {
-					// we just close the second popup
-					(_popup as ManualPlaylistWindow).loadEntries();
-				}
-				else if (_popup is EntryDetailsWin && _model.refreshEntriesRequired ) {
+				else if (top is EntryDetailsWin && _model.refreshEntriesRequired ) {
+					// closing entry drilldown in "manage"
 					manage.loadEntries();
 				}
 			}
@@ -768,17 +788,20 @@
 			private function addPopup(currentPopUp:TitleWindow):void {
 				currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp);
 				// remember the new window
-				if (_popup) {
-					_secondPopup = currentPopUp;
-					_model.has2OpenedPopups = true;
-					PopUpManager.addPopUp(_secondPopup, this, true);
-				}
-				else {
-					_popup = currentPopUp;
+				_model.popups.push(currentPopUp);
+				if (_model.popups.length == 1) {
+					// this is the first popup
+
+
+
+
+
+
+
 					enableHtmlTabs(false);
-					PopUpManager.addPopUp(_popup, this, true);
+
 				}
-				//PopUpManager.addPopUp(currentPopUp, this, true);
+				PopUpManager.addPopUp(currentPopUp, this, true);
 				currentPopUp.setFocus();
 				centerPopups();
 			}
