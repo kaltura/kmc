@@ -12,7 +12,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			var e:DropFolderFileEvent = event as DropFolderFileEvent;
-			var mu:MediaUpdateContent = new MediaUpdateContent(e.entry.id, e.resource);
+			// e.data here is the conversionProfileId
+			var mu:MediaUpdateContent = new MediaUpdateContent(e.entry.id, e.resource, e.data);
 			mu.addEventListener(KalturaEvent.COMPLETE, result);
 			mu.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mu);

@@ -51,6 +51,12 @@ package com.kaltura.managers {
 		 * Singleton instance
 		 */
 		private static var _instance:FileUploadManager;
+		
+		/**
+		 * number of uploads actually happening at the moment,
+		 * may not exceed  <code>_concurrentUploads</code>.
+		 */
+		private var _ongoingUploads:int = 0;
 
 		/**
 		 * @copy concurrentUploads
@@ -167,9 +173,8 @@ package com.kaltura.managers {
 		 * add media files to a no_content entry 
 		 * @param entryid	the id of the entry to be updated
 		 * @param filesData array of FileUploadVo
-		 * @param isOrphan	is this the initial content adding to this entry
 		 */
-		public function updateEntryContent(entryid:String, filesData:Array, isOrphan:Boolean):void {
+		public function updateEntryContent(entryid:String, filesData:Array):void {
 			/* Flow:
 			- create all required tokens
 			- add them to the media
@@ -193,8 +198,6 @@ package com.kaltura.managers {
 			// pass events via fuv so we can retrieve a relevant vo after the call returns.
 			vo.addEventListener(KalturaEvent.COMPLETE, addContent/*, false, 0, true*/);
 			vo.addEventListener(KalturaEvent.FAILED, addContent/*, false, 0, true*/);
-			// another ugly misuse:
-			vo.orphan = isOrphan;
 			
 			mr.addEventListener(KalturaEvent.COMPLETE, vo.bubbleEvent);
 			mr.addEventListener(KalturaEvent.FAILED, vo.bubbleEvent);
@@ -249,32 +252,13 @@ package com.kaltura.managers {
 					}
 				}
 				
-				// we saved this value in updateEntryContent() so we can use it here
-				var mr:MultiRequest = new MultiRequest();
-				
-				// set the desired conversion profile on the entry
-				var entry:KalturaBaseEntry = new KalturaBaseEntry();
-				entry.ingestionProfileId = file.conversionProfile;
-				entry.setUpdatedFieldsOnly(true);
-				if (entry.status != KalturaEntryStatus.NO_CONTENT) {
-					entry.conversionProfileId = int.MIN_VALUE;
-				}
-				var beu:BaseEntryUpdate = new BaseEntryUpdate(entryid, entry);
-				mr.addAction(beu);
-				
-				// add media
-				var mac:KalturaCall; 
-				if (e.target.orphan) {
-					mac = new MediaAddContent(entryid, mediaResource);
-				} else {
-					mac = new MediaUpdateContent(entryid, mediaResource);
-				}
-				mr.addAction(mac);
+				// set media
+				var mac:MediaUpdateContent = new MediaUpdateContent(entryid, mediaResource, parseInt(file.conversionProfile));
 				
 				// listeners
-				mr.addEventListener(KalturaEvent.COMPLETE, startUploadMulti);
-				mr.addEventListener(KalturaEvent.FAILED, startUploadMulti);
-				_kc.post(mr);
+				mac.addEventListener(KalturaEvent.COMPLETE, startUploadMulti);
+				mac.addEventListener(KalturaEvent.FAILED, startUploadMulti);
+				_kc.post(mac);
 			}
 			else {
 				// dispatch error event with relevant data
@@ -294,7 +278,7 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.FAILED, startUploadMulti);
 			if (e.type == KalturaEvent.COMPLETE) {
 				// pass files to files list
-				var entryid:String = e.data[1].id;
+				var entryid:String = e.data.id;
 				var fuv:FileUploadVO;
 				for (var i:int =_preprocessedFiles.length-1; i>=0; i--) {
 					if ((_preprocessedFiles[i] as FileUploadVO).entryId == entryid) {
@@ -305,7 +289,7 @@ package com.kaltura.managers {
 				}
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_STARTED, entryid));
 				// start uploading files
-				if (_files.length < _concurrentUploads) {
+				if (_ongoingUploads < _concurrentUploads) {
 					uploadNextFile();
 				}
 			}
@@ -385,6 +369,7 @@ package com.kaltura.managers {
 		protected function uploadNextFile():void {
 			var vo:FileUploadVO = getNextFile();
 			if (vo) {
+				_ongoingUploads++;
 				vo.status = FileUploadVO.STATUS_UPLOADING;
 				var utu:UploadTokenUpload = new UploadTokenUpload(vo.uploadToken, vo.file);
 				utu.queued = false;
@@ -410,15 +395,6 @@ package com.kaltura.managers {
 				file.status = FileUploadVO.STATUS_COMPLETE;
 				// dispatch "fileUploadComplete" event with relevant unique identifier
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_COMPLETE, file.id));
-				//TODO dispatch end group event if needed
-//				if (file.groupId) {
-//					// add the file to a group_and_complete list
-//					_groupAndComplete.push(file);
-//					// if no other actions was specified, handle group issues
-//					if (file.action == FileUploadVO.ACTION_NONE) {
-//						handleGroupFile(file);
-//					}
-//				}
 				// remove file from files list 
 				var ind:int = getQueuePosition(file.id);
 				_files.splice(ind, 1);
@@ -430,6 +406,7 @@ package com.kaltura.managers {
 				er.error = "Error #204: " + e.error.errorMsg;
 				dispatchEvent(er);
 			}
+			_ongoingUploads--;
 			// start uploading the next file
 			uploadNextFile();
 		}
@@ -542,6 +519,7 @@ package com.kaltura.managers {
 			if (fuv) {
 				fuv.status = FileUploadVO.STATUS_FAILED;
 			}
+			_ongoingUploads--;
 			// alert user 
 			var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
 			er.error = ResourceManager.getInstance().getString('cms', 'uploadFailedMessage');
