@@ -35,32 +35,38 @@
 				var found:Boolean;
 				var o:KalturaConversionProfileAssetParams;
 				
-				// if a flavor was defined for this file (vo)
-				for each(o in ufv.flavors) {
-					if (o.assetParamsId.toString() == ufv.flavorParamId) {
-						cb.selectedItem = o;
-						found = true;
-						break;
-					}
+				if (ufv.flavors.length == 0) {
+					cb.prompt = ResourceManager.getInstance().getString('cms', 'noFlavorsPrompt');
+					cb.enabled = false;
 				}
-				// if no flavor was defined, try matching by flavor system name
-				if (!found) {
-					// use the flavor system name and file name to "guess" flavor.
+				else {
+					cb.enabled = true;
+					// if a flavor was defined for this file (vo)
 					for each(o in ufv.flavors) {
-						//TODO need the systemname from the CPAP, not from the flavorParams
-						if (ufv.fileName.indexOf(o.systemName) != -1) {
+						if (o.assetParamsId.toString() == ufv.flavorParamId) {
 							cb.selectedItem = o;
-							ufv.flavorParamId = o.assetParamsId.toString();
 							found = true;
 							break;
 						}
 					}
-				}
-				// if that failed too, prompt "select".
-				if (!found) {
-					ufv.flavorParamId = '';
-					cb.prompt = ResourceManager.getInstance().getString('cms', 'selectFlavorPrompt');
-//					cb.enabled = false;
+					// if no flavor was defined, try matching by flavor system name
+					if (!found) {
+						// use the flavor system name and file name to "guess" flavor.
+						for each(o in ufv.flavors) {
+							if (ufv.fileName.indexOf(o.systemName) != -1) {
+								cb.selectedItem = o;
+								ufv.flavorParamId = o.assetParamsId.toString();
+								found = true;
+								break;
+							}
+						}
+					}
+					// if that failed too, prompt "select".
+					if (!found) {
+						ufv.flavorParamId = '';
+						cb.prompt = ResourceManager.getInstance().getString('cms', 'selectFlavorPrompt');
+	//					cb.enabled = false;
+					}
 				}
 				
 			}
