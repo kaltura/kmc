@@ -33,10 +33,7 @@ package com.kaltura.kmc.modules.content.commands {
 			if (event.error) {
 				var er:KalturaError = event.error as KalturaError;
 				if (er) {
-					// ignore service forbidden
-					if (er.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
-						Alert.show(er.errorMsg, "Error");
-					}
+					Alert.show(er.errorMsg, "Error");
 				}
 			}
 			else {
