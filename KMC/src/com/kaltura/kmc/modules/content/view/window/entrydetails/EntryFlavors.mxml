@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-Flavours tab of EntryDetailsWin
+	 Flavours tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%"
-		 height="100%" creationComplete="onCreationComplete()"
-		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%" height="100%"
+		 creationComplete="onCreationComplete()" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -36,7 +36,7 @@ Flavours tab of EntryDetailsWin
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaMediaEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -44,160 +44,159 @@ Flavours tab of EntryDetailsWin
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
-			
+
 			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
 			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
-			
+
 			[Bindable]
 			/**
 			 * show action buttons based on business logic
 			 * */
 			private var _showActions:Boolean;
-			
+
 			[Bindable]
 			/**
 			 * show action buttons for no_content entry
 			 * (for r&p)
 			 * */
 			public var allowAddMedia:Boolean = true;
-			
+
 			[Bindable]
 			/**
 			 * show action buttons for ready entry
 			 * (for r&p)
 			 * */
 			public var allowReplaceMedia:Boolean = true;
-			
+
 			[Bindable]
 			/**
 			 * allow upload option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowUpload:Boolean = true;
-			
+
 			[Bindable]
 			/**
 			 * allow match option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowMatchFromDrop:Boolean = true;
-			
+
 			[Bindable]
 			private var _approveEnabled:Boolean;
-			
-			
+
+
 			[Bindable]
-			private var _showReplacenentInfo:Boolean;	
+			private var _showReplacenentInfo:Boolean;
 			private var _selectedEntry:KalturaBaseEntry;
-			
+
 			[Bindable]
-			public var flavorAssets:ArrayCollection; 
+			public var flavorAssets:ArrayCollection;
 			//private var _flavorAssets:ArrayCollection;
-			
+
 			private var _fileReferenceList:FileReferenceList;
 			private var _fileReference:FileReference;
 			private var _selectedFlavorWithParams:KalturaFlavorAssetWithParams;
-			
+
 			private var _entryDetailsModel:EntryDetailsModel;
 			private var _dropFolderModel:DropFolderModel;
 			private var _flavorsWatcher:ChangeWatcher;
-			
+
 			//watchers for binding to assFlavorAssetWindow
 			private var _convProfilesWatcher:ChangeWatcher;
 			//if there is a pending request to open drilldown
 			private var _drillDownClicked:Boolean = false;
-			
+
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
 			private var _replacementStatus:String;
 			private var _replacingEntryId:String;
 			private var _status:String;
-			
-			public function get status():String
-			{
+
+
+			public function get status():String {
 				return _status;
 			}
-			
-			public function set status(value:String):void
-			{
-				if (value && (!_status || (_status!=value))) {
+
+
+			public function set status(value:String):void {
+				if (value && (!_status || (_status != value))) {
 					refreshData();
 				}
 				_status = value;
 				selectedEntry = _selectedEntry;
 			}
-			
-			public function get replacingEntryId():String
-			{
+
+
+			public function get replacingEntryId():String {
 				return _replacingEntryId;
 			}
-			
-			public function set replacingEntryId(value:String):void
-			{
+
+
+			public function set replacingEntryId(value:String):void {
 				//if we have a replacement entry that we didn't have before, request the entry from server
-				if (value
-					&& (!_replacingEntryId || (_replacingEntryId!=value))) 
-				{		
+				if (value && (!_replacingEntryId || (_replacingEntryId != value))) {
 					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
 					getReferenceEntry.dispatch();
 				}
-				
+
 				_replacingEntryId = value;
 				selectedEntry = _selectedEntry;
 			}
-			
-			public function get replacementStatus():String
-			{
+
+
+			public function get replacementStatus():String {
 				return _replacementStatus;
 			}
-			
-			public function set replacementStatus(value:String):void
-			{
+
+
+			public function set replacementStatus(value:String):void {
 				if (_drillDownClicked) {
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
 						openReplacementDrilldown();
 					}
-						//if replacement entry doesn't exist anymore
+					//if replacement entry doesn't exist anymore
 					else {
-						Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
+						Alert.show(resourceManager.getString('cms', 'replacementNotExistMsg'), resourceManager.getString('cms', 'replacementNotExistTitle'));
 					}
 					_drillDownClicked = false;
 				}
-				
-				if (value && (!_replacementStatus || (_replacementStatus!=value))) {
+
+				if (value && (!_replacementStatus || (_replacementStatus != value))) {
 					refreshData();
 				}
 				_replacementStatus = value;
 				selectedEntry = _selectedEntry;
 			}
-			
+
+
 			/**
-			 * allow multiple flavours to be ingested simultaneously 
+			 * allow multiple flavours to be ingested simultaneously
 			 * */
-			public function get multiFlavorsIngestionAllowed():Boolean
-			{
+			public function get multiFlavorsIngestionAllowed():Boolean {
 				return _multiFlavorsIngestionAllowed;
 			}
-			
+
+
 			[Bindable]
 			/**
 			 * @private
 			 */
-			public function set multiFlavorsIngestionAllowed(value:Boolean):void
-			{
+			public function set multiFlavorsIngestionAllowed(value:Boolean):void {
 				_multiFlavorsIngestionAllowed = value;
 			}
-			
+
+
 			[Bindable]
-			public function get dropFolderModel():DropFolderModel
-			{
+			public function get dropFolderModel():DropFolderModel {
 				return _dropFolderModel;
 			}
-			
-			public function set dropFolderModel(value:DropFolderModel):void
-			{
+
+
+			public function set dropFolderModel(value:DropFolderModel):void {
 				_dropFolderModel = value;
 			}
-			
+
+
 			/**
 			 * loads required data from server
 			 * */
@@ -209,7 +208,8 @@ Flavours tab of EntryDetailsWin
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
 			}
-			
+
+
 			public function destroy():void {
 				dg.removeEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
@@ -217,29 +217,32 @@ Flavours tab of EntryDetailsWin
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
 			}
-			
+
+
 			/**
 			 * load flavors
 			 * */
 			private function refreshData():void {
-				if(_selectedEntry != null)
-				{
-					var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
+				if (_selectedEntry != null) {
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
 				}
 			}
-			
+
+
 			private function onCreationComplete():void {
-				
+
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
 			}
-			
+
+
 			private function onFlavorsChanged(event:Event):void {
 				refreshData();
 			}
-			
+
+
 			/**
 			 * will be called when selecting to upload a specific flavor
 			 * */
@@ -247,14 +250,16 @@ Flavours tab of EntryDetailsWin
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
 				uploadSingleFlavor();
 			}
-			
+
+
 			private function onUploadBtnClick():void {
 				if (multiFlavorsIngestionAllowed)
 					uploadMultiFlavors();
 				else
 					uploadSingleFlavor();
 			}
-			
+
+
 			/**
 			 * will open a browse window and allow a single selection
 			 * */
@@ -266,19 +271,21 @@ Flavours tab of EntryDetailsWin
 					_fileReference.browse(new Array(fileFilter));
 				}
 			}
-			
+
+
 			/**
 			 * will open a browse window and allow multiple selection
 			 * */
 			private function uploadMultiFlavors():void {
 				_fileReferenceList = new FileReferenceList();
 				var fileFilter:FileFilter = getTypeFilter(parseInt(selectedEntry.mediaType));
-				if (fileFilter)  {
+				if (fileFilter) {
 					_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
 					_fileReferenceList.browse(new Array(fileFilter));
 				}
 			}
-			
+
+
 			/**
 			 * user selects to match from a drop folder a selected flavor
 			 * */
@@ -286,13 +293,14 @@ Flavours tab of EntryDetailsWin
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
 				openMatchFromDropFolderWindow();
 			}
-			
+
+
 			/**
 			 * handles user selection for a single flavor
 			 * */
-			private function onFlavorSelected(event:Event) : void {
+			private function onFlavorSelected(event:Event):void {
 				_fileReference.removeEventListener(Event.SELECT, onFlavorSelected);
-				
+
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
@@ -302,132 +310,133 @@ Flavours tab of EntryDetailsWin
 					else if (_selectedFlavorWithParams.flavorParams)
 						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
 				}
-				
-				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);	
+
+				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-			
+
+
 			[Bindable]
-			public function get entryDetailsModel():EntryDetailsModel
-			{
+			public function get entryDetailsModel():EntryDetailsModel {
 				return _entryDetailsModel;
 			}
-			
-			public function set entryDetailsModel(value:EntryDetailsModel):void
-			{
+
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void {
 				_entryDetailsModel = value;
 			}
-			
-			
-			public function get selectedEntry():KalturaBaseEntry
-			{
+
+
+			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-			
-			public function set selectedEntry(value:KalturaBaseEntry):void
-			{
+
+
+			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
-				
+
 				_selectedEntry = value;
-				
-				if (_selectedEntry.replacingEntryId) 
-				{
+
+				if (_selectedEntry.replacingEntryId) {
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
 					_showReplacenentInfo = true;
 					_approveEnabled = true;
-					
+
 					switch (_selectedEntry.replacementStatus) {
 						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
 							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
-							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementProcessState');
+							stateLabel.text = resourceManager.getString('cms', 'readyState') + resourceManager.getString('cms', 'replacementProcessState');
 							replacementStatusBtn.label = resourceManager.getString('cms', 'processClickToReview');
 							break;
 						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
-							stateLabel.text = resourceManager.getString('cms','readyState') + resourceManager.getString('cms','replacementRFRState');
+							stateLabel.text = resourceManager.getString('cms', 'readyState') + resourceManager.getString('cms', 'replacementRFRState');
 							replacementStatusBtn.label = resourceManager.getString('cms', 'readyClickToReview');
 							break;
 					}
 				}
-				else 
-				{
+				else {
 					_showReplacenentInfo = false;
 					//sets labels according to entry's status
 					switch (_selectedEntry.status) {
 						case KalturaEntryStatus.NO_CONTENT:
 							_showActions = true;
-							stateLabel.text = resourceManager.getString('cms','noContentState');
+							stateLabel.text = resourceManager.getString('cms', 'noContentState');
 							if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-								actionLabel.text = resourceManager.getString('cms','addVideo');
+								actionLabel.text = resourceManager.getString('cms', 'addVideo');
 							else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-								actionLabel.text = resourceManager.getString('cms','addAudio');
+								actionLabel.text = resourceManager.getString('cms', 'addAudio');
 							break;
 						case KalturaEntryStatus.READY:
 							//if this is a replacement entry
 							if (_selectedEntry.replacedEntryId) {
-								stateLabel.text = resourceManager.getString('cms','replacementReadyState');
+								stateLabel.text = resourceManager.getString('cms', 'replacementReadyState');
 								_showActions = false;
 							}
 							else {
-								stateLabel.text = resourceManager.getString('cms','readyState');
+								stateLabel.text = resourceManager.getString('cms', 'readyState');
 								_showActions = true;
 								if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-									actionLabel.text = resourceManager.getString('cms','replaceVideo');
+									actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
 								else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-									actionLabel.text = resourceManager.getString('cms','replaceAudio');
+									actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
 							}
 							break;
 						case KalturaEntryStatus.ERROR_CONVERTING:
 						case KalturaEntryStatus.ERROR_IMPORTING:
-							stateLabel.text = resourceManager.getString('cms','errorState');
+							stateLabel.text = resourceManager.getString('cms', 'errorState');
 							_showActions = false;
 							break;
 						default:
-							stateLabel.text = resourceManager.getString('cms','notReadyState');
+							stateLabel.text = resourceManager.getString('cms', 'notReadyState');
 							_showActions = false;
-					} 
+					}
 				}
 			}
-			
+
+
 			public function set hideColumns(indices:String):void {
 				var ind:Array = indices.split(",");
 				var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
-				for (var i:int = 0; i<ind.length; i++) {
+				for (var i:int = 0; i < ind.length; i++) {
 					arrCol.removeItemAt(int(ind[i]));
 				}
 				dg.columns = arrCol.source;
 				for each (var col:DataGridColumn in arrCol) {
 					col.width = col.width;
-				} 
+				}
 			}
-			
+
+
 			public function get hideColumns():String {
 				return '';
 			}
-			
+
+
 			/**
 			 * returns the suitable fileFilter according to given mediaType
 			 * */
 			private function getTypeFilter(mediaType:int):FileFilter {
 				var fileFilter:FileFilter;
-				if (mediaType == KalturaMediaType.VIDEO) 
-					fileFilter = new FileFilter(resourceManager.getString('cms','video') +  "(" + VIDEO_TYPES+ ")" , VIDEO_TYPES );
+				if (mediaType == KalturaMediaType.VIDEO)
+					fileFilter = new FileFilter(resourceManager.getString('cms', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
 				else if (mediaType == KalturaMediaType.AUDIO)
-					fileFilter = new FileFilter(resourceManager.getString('cms','audio') +  "(" + AUDIO_TYPES+ ")" , AUDIO_TYPES );
-				
+					fileFilter = new FileFilter(resourceManager.getString('cms', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
+
 				return fileFilter;
 			}
-			
+
+
 			/**
 			 * opens AddFlavorsAssetsWindow according to given params
 			 * */
-			private function openAddFlavorsWindow(filesList:ArrayCollection, allowAddFiles:Boolean = true) : void {
+			private function openAddFlavorsWindow(filesList:ArrayCollection, allowAddFiles:Boolean = true):void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.entry = _selectedEntry;
-				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
+				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
@@ -435,24 +444,25 @@ Flavours tab of EntryDetailsWin
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
 			}
-			
+
+
 			/**
 			 * remove binding and close addFlavorAssetWindow
 			 * */
 			private function onAddFlavorsWindowClose(event:Event):void {
 				if (_convProfilesWatcher)
 					_convProfilesWatcher.unwatch();
-				
+
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}
-			
-			
+
+
 			/**
 			 * handle user files selection to upload
 			 * */
 			private function onFlavorsSelected(event:Event):void {
 				_fileReferenceList.removeEventListener(Event.SELECT, onFlavorsSelected);
-				
+
 				var filesList:ArrayCollection = new ArrayCollection();
 				for each (var fileReference:FileReference in _fileReferenceList.fileList) {
 					var uploadFile:UploadFileVo = new UploadFileVo();
@@ -460,51 +470,34 @@ Flavours tab of EntryDetailsWin
 					uploadFile.fileData = fileReference;
 					filesList.addItem(uploadFile);
 				}
-				
+
 				openAddFlavorsWindow(filesList);
 			}
-			
+
+
 			/**
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function onReplacementStautsBtnClick():void {
 				//replacement entry is processing - check for updates
-				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) 
-					|| (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) 
-				{
+				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
 					entryDetailsModel.selectedEntryReloaded = false;
-					//_selectedReloadedWatcher = BindingUtils.bindSetter(onSelectedChanged, entryDetailsModel, "selectedEntryReloaded");
-					/* var getReplacement:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, entryDetailsModel.selectedEntry.replacingEntryId);
-					getReplacement.dispatch(); */
 					_drillDownClicked = true;
 					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, entryDetailsModel.selectedEntry.id);
-					getSelectedEntry.dispatch();	
+					getSelectedEntry.dispatch();
 				}
-				else
-				{
+				else {
 					openReplacementDrilldown();
 				}
 			}
-			/* 	
-			private function onSelectedChanged(value:Boolean):void {
-			if (!value)
-			return;
-			
-			if (_selectedReloadedWatcher)
-			_selectedReloadedWatcher.unwatch();	
-			if (_selectedEntry.replacementStatus && (_selectedEntry.replacementStatus != KalturaEntryReplacementStatus.NONE)) {
-			openReplacementDrilldown();
-			}
-			else {
-			Alert.show(resourceManager.getString('cms','replacementNotExistMsg'),resourceManager.getString('cms','replacementNotExistTitle'));
-			}
-			} */
-			
+
+
 			private function openReplacementDrilldown():void {
 				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
 				openWindow.dispatch();
 			}
-			
+
+
 			/**
 			 * cancel entry replacement
 			 * */
@@ -512,7 +505,8 @@ Flavours tab of EntryDetailsWin
 				var cancelReplacement:MediaEvent = new MediaEvent(MediaEvent.CANCEL_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				cancelReplacement.dispatch();
 			}
-			
+
+
 			/**
 			 * approve replacement
 			 * */
@@ -520,36 +514,38 @@ Flavours tab of EntryDetailsWin
 				var approveReplacement:MediaEvent = new MediaEvent(MediaEvent.APPROVE_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				approveReplacement.dispatch();
 			}
-			
+
+
 			private function openMatchFromDropFolderWindow():void {
 				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
 				var listFolders:DropFolderEvent;
 				if (_selectedFlavorWithParams) {
 					if (_selectedFlavorWithParams.flavorAsset) {
-						matchFromDropFodlerWin.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id; 
+						matchFromDropFodlerWin.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id;
 					}
 					else if (_selectedFlavorWithParams.flavorParams) {
 						matchFromDropFodlerWin.flavorParamsId = _selectedFlavorWithParams.flavorParams.id;
 					}
-					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.ADD_NEW);
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP | DropFolderEvent.MATCH_OR_NEW | DropFolderEvent.ADD_NEW);
 					listFolders.dispatch();
 				}
 				else {
-					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP | DropFolderEvent.MATCH_OR_NEW);
 					listFolders.dispatch();
 				}
 				matchFromDropFodlerWin.entry = _selectedEntry;
 				BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
-				BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");			
+				BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");
 				PopUpManager.addPopUp(matchFromDropFodlerWin, this, true);
 				PopUpManager.centerPopUp(matchFromDropFodlerWin);
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-			
+
+
 			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
 				var result:Boolean = entryState;
-				if (_selectedEntry && _selectedEntry.status == KalturaEntryStatus.NO_CONTENT ) {
+				if (_selectedEntry && _selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					result &&= allowAdd;
 				}
 				else {
@@ -557,29 +553,29 @@ Flavours tab of EntryDetailsWin
 				}
 				return result;
 			}
-			
-			
 		]]>
 	</mx:Script>
-	
-	
+
+
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
 		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
 	</mx:HBox>
-	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}" 
+	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}"
 			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
-		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}" click="{onUploadBtnClick()}" styleName="dataGridBtn"/>
-		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}" click="{openMatchFromDropFolderWindow()}"
-				   styleName="dataGridBtn"/>
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}"
+				   click="{onUploadBtnClick()}" styleName="dataGridBtn"/>
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}"
+				   click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn"/>
 	</mx:HBox>
-	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%" styleName="flavorsReplacementVBox" paddingLeft="15">
+	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%"
+			 styleName="flavorsReplacementVBox" paddingLeft="15">
 		<mx:HBox>
 			<mx:Label text="{resourceManager.getString('cms','replementDetailsTitle')}" styleName="drillDownLabel"/>
 			<mx:Label text="{resourceManager.getString('cms','replacementNote')}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
-		<mx:HBox id="replacementInfoHBox" horizontalGap="0" >
+		<mx:HBox id="replacementInfoHBox" horizontalGap="0">
 			<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="drillDownLabel"/>
 			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
 			<mx:Label text="|" width="15" enabled="false"/>
@@ -587,14 +583,16 @@ Flavours tab of EntryDetailsWin
 			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStautsBtnClick()}"/>
 			<mx:HBox id="replacementActionsHBox" horizontalGap="0" paddingLeft="0">
 				<mx:Label text="|" width="15" enabled="false"/>
-				<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}" click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
+				<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}"
+							   click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
 				<mx:Label text="/" width="15" enabled="false"/>
-				<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}" click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
+				<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}"
+							   click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
 			</mx:HBox>
-			</mx:HBox>
+		</mx:HBox>
 	</mx:VBox>
 	<mx:HRule width="100%"/>
 	<mx:Text width="100%" text="{resourceManager.getString('cms','flavorAssetsDescription')}"/>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
-	
+
 </mx:VBox>

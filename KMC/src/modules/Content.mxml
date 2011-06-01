@@ -3,12 +3,11 @@
 				   xmlns:content="com.kaltura.kmc.modules.content.view.content.*"
 				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
-				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
-				   implements="com.kaltura.kmc.modules.content.business.IDataOwner" layout="vertical"
-				   minHeight="520" minWidth="950"
-				   borderThickness="0" borderStyle="solid" verticalGap="0" 
-				   paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0"
-				   preloader="com.kaltura.preloaders.KmcPreloader" enabled="{!_model.loadingFlag}">
+				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
+				   implements="com.kaltura.kmc.modules.content.business.IDataOwner" layout="vertical" minHeight="520"
+				   minWidth="950" borderThickness="0" borderStyle="solid" verticalGap="0" paddingLeft="0"
+				   paddingRight="0" paddingTop="0" paddingBottom="0" preloader="com.kaltura.preloaders.KmcPreloader"
+				   enabled="{!_model.loadingFlag}">
 
 	<mx:Metadata>
 		[ResourceBundle("cms")]
@@ -60,7 +59,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.containers.TitleWindow;
@@ -76,13 +75,13 @@
 
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
-			
+
 			/**
-			 * max number of categories an entry may be associated with, 
+			 * max number of categories an entry may be associated with,
 			 * may be overriden with maxNumCategories flashvar
 			 * */
-			private static const DEFAULT_CATEGORIES_NUM : int = 32;
-			
+			private static const DEFAULT_CATEGORIES_NUM:int = 32;
+
 			[Bindable]
 			private var _tabBarViewStack:ViewStack;
 			[Bindable]
@@ -143,9 +142,9 @@
 				return NAME;
 			}
 
-			
-			
-			
+
+
+
 			override public function showSubtab(subtab:String, data:Object = null):void {
 				// save data in the attic
 				if (data) {
@@ -155,7 +154,7 @@
 				_initialTab = subtab;
 				if (_ready) {
 					handleEntryId();
-					
+
 					switchToTab(subtab);
 					//loads data that might have changed from a different tab
 					loadChangableData();
@@ -179,7 +178,7 @@
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 
 				// flashvars and uiconf vars processing
-				if(!_flashvars.maxnumcategories) {
+				if (!_flashvars.maxnumcategories) {
 					_flashvars.maxnumcategories = DEFAULT_CATEGORIES_NUM;
 				}
 				saveUiconfVars();
@@ -202,17 +201,19 @@
 					addEventListener(Event.ADDED_TO_STAGE, initTrackers);
 				}
 				_ready = true;
-				
+
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_ERROR, showError);
-				
+
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 
 			}
-			
+
+
 			protected function showError(e:FileUploadEvent):void {
 				Alert.show(e.error, ResourceManager.getInstance().getString('cms', 'error'));
 			}
+
 
 			/**
 			 * entry details data loaded (triggered by command)
@@ -220,12 +221,13 @@
 			public function onRequestedDataLoaded():void {
 				// init entry details window
 				var popup:TitleWindow = _model.topPopup;
-				
-				 if (popup && popup is EntryDetailsWin) {
+
+				if (popup && popup is EntryDetailsWin) {
 					(popup as EntryDetailsWin).init();
 				}
 			}
-			
+
+
 			/**
 			 * if there is entryid to start with, open the entry drilldown
 			 * loads info required for drill down
@@ -263,17 +265,17 @@
 					_model.attic[prop] = o[prop];
 				}
 			}
-			
-			
+
+
 
 			/**
 			 * init the panels in the view after all data is ready
 			 * */
 			private function initChildren(e:FlexEvent):void {
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
-				
+
 				handleEntryId();
-				
+
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
@@ -283,9 +285,9 @@
 						leftBtnsHBox.removeChildAt(indexToRemove);
 					else
 						rightBtnsHBox.removeChildAt(indexToRemove - leftBtnsHBox.numChildren);
-					
+
 				}
-	
+
 				if (_initialTab && _initialTab != "manage") {
 //					_model.attic.kmef = kmef;
 					// switch tab if asked
@@ -302,7 +304,7 @@
 					(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 				}
-				
+
 
 			}
 
@@ -391,7 +393,7 @@
 			private function loadChangableData():void {
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
-				
+
 				if (contentView.selectedChild == manage) {
 					manage.loadEntries();
 				}
@@ -410,7 +412,7 @@
 			 * bring any visible popups to the center of the screen
 			 * */
 			private function centerPopups(event:Event = null):void {
-				for (var i:int = 0; i<_model.popups.length; i++) {
+				for (var i:int = 0; i < _model.popups.length; i++) {
 					PopUpManager.centerPopUp(_model.popups[i]);
 				}
 			}
@@ -449,7 +451,7 @@
 				// model:
 				_model.entryDetailsModel.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
 				_model.bulkUploadModel.sampleFileUrl = confFile.bulkupload.text().toString();
-				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString()!='') {
+				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString() != '') {
 					_model.entryDetailsModel.showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
 				}
 
@@ -511,7 +513,8 @@
 //				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
 //				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
-			
+
+
 			/**
 			 * returns the index of a given subtab in the content viewstack
 			 * @param name	subtab name
@@ -521,7 +524,7 @@
 				var t:int = contentView.numChildren;
 				var tab:UIComponent;
 				var res:int = -1;
-				for (var i:int = 0; i<t; i++) {
+				for (var i:int = 0; i < t; i++) {
 					tab = contentView.getChildAt(i) as UIComponent;
 					if (tab.id == name) {
 						res = i;
@@ -533,7 +536,7 @@
 
 
 			/**
-			 * close popup window. 
+			 * close popup window.
 			 * if this was the last opened popup, enable HTML tabs
 			 * */
 			private function closePopup():void {
@@ -563,16 +566,17 @@
 			/**
 			 * check after changing <code>_model.windowState</code> if
 			 * something has to be refreshed
-			 * 
-			 * we are closing the top window on the list - this is triggered 
+			 *
+			 * we are closing the top window on the list - this is triggered
 			 * before removing it, so the popup to be removed is still on the list.
 			 * */
 			private function refreshDataByPopupType():void {
-				if (!_model.popups.length) return;
-				
+				if (!_model.popups.length)
+					return;
+
 				var top:TitleWindow = _model.topPopup;
 				var prev:TitleWindow = _model.prevPopup;
-				
+
 //				if (popup is RulePlaylistWindow && ln == 1) {
 //					// closing a RulePlaylistWindow 
 //					// (Atar: this is meaningless)
@@ -596,7 +600,7 @@
 
 
 				}
-				else if (top is EntryDetailsWin && _model.refreshEntriesRequired ) {
+				else if (top is EntryDetailsWin && _model.refreshEntriesRequired) {
 					// closing entry drilldown in "manage"
 					manage.loadEntries();
 				}
@@ -609,21 +613,20 @@
 			 * @param sendReplacementEntry	should the selected entry be the reference entry
 			 * */
 			private function openEntryDetails(isNewEntry:Boolean, sendReplacementEntry:Boolean):EntryDetailsWin {
-				
+
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = isNewEntry;
 				//opens drill down to reference entry, with flavors tab only
-				if (sendReplacementEntry) 
-				{
+				if (sendReplacementEntry) {
 					var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
-					newEntryDetailsModel.selectedEntry =  _model.entryDetailsModel.selectedReplacementEntry;
+					newEntryDetailsModel.selectedEntry = _model.entryDetailsModel.selectedReplacementEntry;
 					newEntryDetailsModel.replacedEntryName = _model.entryDetailsModel.selectedEntry.name;
 					//we open another drilldown, should add another model
 					_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 					edw.loadRoughcuts = false;
 					edw.visibleTabsAC = new ArrayCollection(new Array("entryAssets"));
-				}	
+				}
 				//get the selected entry from the server
 				if (!isNewEntry) {
 					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, _model.entryDetailsModel.selectedEntry.id);
@@ -697,7 +700,7 @@
 					rpw.editPlaylist = _model.entryDetailsModel.selectedEntry as KalturaPlaylist;
 				}
 				rpw.filterData = _model.filterModel;
-				
+
 				rpw.distributionProfilesArr = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
 				// assign the current fiter to the new window 
 				rpw.onTheFlyFilter = _model.playlistModel.onTheFlyFilter;
@@ -906,26 +909,28 @@
 					this.enabled = true;
 				}
 			}
-			
-			
+
+
 			/**
 			 * will be called when clicking one of the left tab buttons
 			 * */
 			private function leftTabClicked(event:Event):void {
-				setNewTabSelection(event);	
+				setNewTabSelection(event);
 				contentView.selectedIndex = leftBtnsHBox.getChildIndex(event.target as Button);
 				trackTabChange(event);
-			} 
-			
+			}
+
+
 			/**
 			 * will be called when clicking one of the right tab buttons
 			 * */
 			private function rightTabClicked(event:Event):void {
-				setNewTabSelection(event);	
-				contentView.selectedIndex = rightBtnsHBox.getChildIndex(event.target as Button) + leftBtnsHBox.numChildren ;
+				setNewTabSelection(event);
+				contentView.selectedIndex = rightBtnsHBox.getChildIndex(event.target as Button) + leftBtnsHBox.numChildren;
 				trackTabChange(event);
 			}
-			
+
+
 			/**
 			 * unselects the previous selected tab, and sets the new tab to selected (only the buttons)
 			 * */
@@ -935,7 +940,8 @@
 				//select new
 				(event.target as Button).selected = true;
 			}
-			
+
+
 			/**
 			 * Sets the given selection value to the correct button - in leftBtnsHbox or rightBtnsHbox, according to index
 			 * */
@@ -1024,13 +1030,11 @@
 				(contentView.getChildAt(event.newIndex) as IContentPanel).init(_model.attic.kmef);
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
-			
+
+
 			protected function resizeToContent():void {
 				contentView.height = contentView.selectedChild.height;
 			}
-			
-
-
 		]]>
 	</mx:Script>
 
@@ -1038,62 +1042,69 @@
 	<control:CMSController/>
 
 	<!--<mx:Button click="button1_clickHandler(event)" />-->
-	
-	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView" >
+
+	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView">
 		<mx:HBox width="100%" styleName="tabsContainer" verticalAlign="middle">
 			<mx:HBox id="leftBtnsHBox" styleName="tln">
 				<mx:Button id="manageBtn" label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
-						   click="leftTabClicked(event)" styleName="{manageBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
+						   click="leftTabClicked(event)"
+						   styleName="{manageBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" selected="true" height="18"/>
 				<mx:Button id="moderationBtn" label="{ResourceManager.getInstance().getString('cms','moderation')}"
-						   click="leftTabClicked(event)" styleName="{moderationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
+						   click="leftTabClicked(event)"
+						   styleName="{moderationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="playlistsBtn" label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"
-						   click="leftTabClicked(event)" styleName="{playlistsBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
+						   click="leftTabClicked(event)"
+						   styleName="{playlistsBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" height="18"/>
-				<mx:Button id="syndicationBtn" label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"
-						   click="leftTabClicked(event)" styleName="{syndicationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
+				<mx:Button id="syndicationBtn"
+						   label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"
+						   click="leftTabClicked(event)"
+						   styleName="{syndicationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" height="18"/>
 				<mx:Button id="uploadBtn" label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"
-						   click="leftTabClicked(event)" styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}" 
-						   height="18" buttonMode="true" toggle="true"/>						   
+						   click="leftTabClicked(event)"
+						   styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
+						   height="18" buttonMode="true" toggle="true"/>
 			</mx:HBox>
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
 				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="18"
-						   styleName="{dropFoldersBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"  buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
-				
+						   styleName="{dropFoldersBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
+						   buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
+
 				<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 			</mx:HBox>
 		</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
 					  minHeight="500" change="initSelectedTab(event)">
-			<content:Entries id="manage" height="100%" styleName="pageStyle" 
-					entryDetailsModel="{_model.entryDetailsModel}" creationComplete="resizeToContent()"
-					filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
-					label="{ResourceManager.getInstance().getString('cms','entriesTitle')}" windowState="{_model.windowState}"/>
-			<content:Moderation id="moderation" styleName="pageStyle" height="100%" 
-					creationComplete="resizeToContent()"
-					context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"
-					filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
-					label="{ResourceManager.getInstance().getString('cms','moderation')}" distributionProfilesArray="{_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"/>
+			<content:Entries id="manage" height="100%" styleName="pageStyle"
+							 entryDetailsModel="{_model.entryDetailsModel}" creationComplete="resizeToContent()"
+							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
+							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
+							 windowState="{_model.windowState}"/>
+			<content:Moderation id="moderation" styleName="pageStyle" height="100%" creationComplete="resizeToContent()"
+								context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
+								label="{ResourceManager.getInstance().getString('cms','moderation')}"
+								distributionProfilesArray="{_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"/>
 			<playlist:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
-					  creationComplete="resizeToContent()"
-					  selectedEntry="{_model.entryDetailsModel.selectedEntry}"
-					  showEmbed="{_model.showPlaylistEmbedCode}"
-					  label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
-			<content:ExternalSyndication id="syndication" styleName="pageStyle"
-					creationComplete="resizeToContent()"
-					flavorParams="{_model.filterModel.flavorParams}"
-					rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
-					label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
+							   creationComplete="resizeToContent()"
+							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+							   showEmbed="{_model.showPlaylistEmbedCode}"
+							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
+			<content:ExternalSyndication id="syndication" styleName="pageStyle" creationComplete="resizeToContent()"
+										 flavorParams="{_model.filterModel.flavorParams}"
+										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
+										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
 			<content:BulkUpload id="upload" width="100%" height="100%" styleName="pageStyle"
-					creationComplete="resizeToContent()"
-					ks="{_model.context.kc.ks}" bulkUploadData="{_model.bulkUploadModel}"
-					label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"/>
+								creationComplete="resizeToContent()" ks="{_model.context.kc.ks}"
+								bulkUploadData="{_model.bulkUploadModel}"
+								label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"/>
 			<content:DropFoldersPanel id="dropFolders" width="100%" height="100%" styleName="pageStyle"
 									  dropFolderModel="{_model.dropFolderModel}" creationComplete="resizeToContent()"/>
 		</mx:ViewStack>
 	</mx:VBox>
-	<content:GeneralPermissionsSetter id="generalPermissions" />
+	<content:GeneralPermissionsSetter id="generalPermissions"/>
 </modules:KmcModule>
