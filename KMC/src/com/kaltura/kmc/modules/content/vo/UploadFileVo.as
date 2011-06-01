@@ -39,7 +39,7 @@ package com.kaltura.kmc.modules.content.vo
 		
 		/**
 		 * list of optional conversion flavors for the selected profile 
-		 * (KalturaFlavorParams objects)
+		 * (KalturaConversionProfileAssetParams objects)
 		 */
 		public var flavors:ArrayCollection;
 		
