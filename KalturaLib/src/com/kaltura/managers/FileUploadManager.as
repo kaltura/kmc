@@ -212,6 +212,7 @@ package com.kaltura.managers {
 		protected function addContent(e:KalturaEvent):void {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, addContent);
 			e.target.removeEventListener(KalturaEvent.FAILED, addContent);
+			var er:FileUploadEvent;
 			if (e.type == KalturaEvent.COMPLETE) {
 				// e.target is a good vo. e.data is the multirequest response
 				// add the uploadTokens to the VOs
@@ -220,11 +221,18 @@ package com.kaltura.managers {
 				for each (var o:Object in e.data) {
 					if (o is KalturaUploadToken) {
 						ut = o as KalturaUploadToken;
-						file = getVoByFileName(ut.fileName);
+						file = getVoByFileName(ut.fileName, true);
 						file.uploadToken = ut.id;
+						if (!file.uploadToken) {
+							trace('no upload token id');
+						}
 					}
 					else if (o is KalturaError) {
 						//TODO something that breaks the chain intelligibly, and not..
+						// dispatch error event with relevant data
+						er = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
+						er.error = "Error #209: " + (o as KalturaError).errorMsg;
+						dispatchEvent(er);
 						return;
 					}
 				}
@@ -241,7 +249,9 @@ package com.kaltura.managers {
 						// the first resource of the flavor we want to replace
 						var subSubResource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 						subSubResource.token = file.uploadToken;	// the token used to upload the file
-						
+						if (!subSubResource.token) {
+							throw new Error("Token cannot be null");
+						}
 						// container for the resource we want to replace
 						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 						subResource.resource = subSubResource;
@@ -262,7 +272,7 @@ package com.kaltura.managers {
 			}
 			else {
 				// dispatch error event with relevant data
-				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
+				er = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
 				er.error = "Error #201: " + e.error.errorMsg;
 				dispatchEvent(er);
 			}
@@ -332,11 +342,19 @@ package com.kaltura.managers {
 			}
 		}
 		
-		protected function getVoByFileName(name:String):FileUploadVO {
+		/**
+		 * get an upload vo by the name of the file it represents 
+		 * @param name	file name
+		 * @param noUploadToken	if true, only get vos that don't have upload token yet.
+		 * @return 
+		 */
+		protected function getVoByFileName(name:String, noUploadToken:Boolean = false):FileUploadVO {
 			var vo:FileUploadVO;
 			for each (vo in _preprocessedFiles) {
 				if (vo.file.name == name) {
-					return vo;
+					if (!noUploadToken || !vo.uploadToken) {
+						return vo;
+					}
 				}
 			}
 			for each (vo in _files) {
