@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	
@@ -25,6 +26,11 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		{
 			super.result(data);
 			_model.decreaseLoadCounter();
+			// to update the flavors tab, we re-load flavors data
+			if(_model.entryDetailsModel.selectedEntry != null) {
+				var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _model.entryDetailsModel.selectedEntry);
+				cgEvent.dispatch();
+			}
 		}
 	}
 }
