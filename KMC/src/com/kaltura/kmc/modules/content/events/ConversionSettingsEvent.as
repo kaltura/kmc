@@ -5,8 +5,6 @@ package com.kaltura.kmc.modules.content.events
 	public class ConversionSettingsEvent extends CairngormEvent
 	{
 		public static const LIST_FLAVOR_PARAMS : String = "content_listFlavorParams";
-		public static const LIST_ASSET_PARAMS : String = "content_listAssetParams";
-		public static const RESET_ASSET_PARAMS : String = "content_resetAssetParams";
 		
 		
 		public function ConversionSettingsEvent(type:String, 

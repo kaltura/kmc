@@ -4,6 +4,7 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.view.window.flavors.FilesTable;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			import com.kaltura.vo.KalturaFlavorParams;
 			
 			import flash.utils.flash_proxy;
@@ -35,11 +36,11 @@
 			 * */
 			protected function selectFlavor(ufv:UploadFileVo):void {
 				var found:Boolean;
-				var o:KalturaFlavorParams;
+				var o:KalturaConversionProfileAssetParams;
 				
 				// if a flavor was defined for this file (vo)
 				for each(o in ufv.flavors) {
-					if (o.id.toString() == ufv.flavorParamId) {
+					if (o.assetParamsId.toString() == ufv.flavorParamId) {
 						cb.selectedItem = o;
 						found = true;
 						break;
@@ -52,7 +53,7 @@
 						//TODO need the systemname from the CPAP, not from the flavorParams
 						if (ufv.fileName.indexOf(o.systemName) != -1) {
 							cb.selectedItem = o;
-							ufv.flavorParamId = o.id.toString();
+							ufv.flavorParamId = o.assetParamsId.toString();
 							found = true;
 							break;
 						}
@@ -82,10 +83,9 @@
 			}
 
 
-			public function get selectedFlavor():KalturaFlavorParams {
-				return cb.selectedItem as KalturaFlavorParams;
+			public function get selectedFlavor():KalturaConversionProfileAssetParams {
+				return cb.selectedItem as KalturaConversionProfileAssetParams;
 			}
-
 
 //			public function set selectedFlavor(value:KalturaFlavorParams):void {
 //				cb.selectedItem = value;

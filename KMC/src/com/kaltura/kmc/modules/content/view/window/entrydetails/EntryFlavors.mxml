@@ -104,7 +104,6 @@ Flavours tab of EntryDetailsWin
 			
 			//watchers for binding to assFlavorAssetWindow
 			private var _convProfilesWatcher:ChangeWatcher;
-			private var _selectCPAssetWatcher:ChangeWatcher;
 			//if there is a pending request to open drilldown
 			private var _drillDownClicked:Boolean = false;
 			
@@ -429,7 +428,6 @@ Flavours tab of EntryDetailsWin
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.entry = _selectedEntry;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles",entryDetailsModel, "conversionProfsWFlavorParams"); 
-				_selectCPAssetWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "selectedCPAssetParams",entryDetailsModel, "selectedCPAssetParams"); 
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
@@ -444,8 +442,6 @@ Flavours tab of EntryDetailsWin
 			private function onAddFlavorsWindowClose(event:Event):void {
 				if (_convProfilesWatcher)
 					_convProfilesWatcher.unwatch();
-				if (_selectCPAssetWatcher)
-					_selectCPAssetWatcher.unwatch();
 				
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}

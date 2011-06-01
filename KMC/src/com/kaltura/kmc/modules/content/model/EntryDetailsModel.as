@@ -79,13 +79,6 @@ package com.kaltura.kmc.modules.content.model
 		public var selectedReplacementEntry:KalturaBaseEntry;
 		
 		
-		[ArrayElementType("com.kaltura.vo.KalturaConversionProfileAssetParams")]
-		/**
-		 * conversion profile asset params for the selected conversion profile
-		 * <code>KalturaConversionProfileAssetParams</cpde> objects
-		 */
-		public var selectedCPAssetParams:ArrayCollection;
-		
 		/**
 		 * Name of the replaced entry for the replacement entry
 		 * */

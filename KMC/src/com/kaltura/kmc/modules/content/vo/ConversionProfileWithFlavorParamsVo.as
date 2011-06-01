@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.content.vo
 	[Bindable]
 	/**
 	 * Couples <code>KalturaConversionProfile</code> with its 
-	 * <code>KalturaFlavorParams</code> (not <code>KalturaAssetParams</code>)
+	 * <code>KalturaConversionProfileAssetParams</code>.
 	 * @author Atar
 	 */
 	public class ConversionProfileWithFlavorParamsVo {
@@ -17,10 +17,10 @@ package com.kaltura.kmc.modules.content.vo
 		 */
 		public var profile:KalturaConversionProfile;
 		
-		[ArrayElementType("com.kaltura.vo.KalturaFlavorParams")]
+		[ArrayElementType("com.kaltura.vo.KalturaConversionProfileAssetParams")]
 		/**
 		 * all flavor params objects whos ids are associated with this profile.
-		 * <code>KalturaFlavorParams</code> objects 
+		 * <code>KalturaConversionProfileAssetParams</code> objects 
 		 */		
 		public var flavors:ArrayCollection;
 		

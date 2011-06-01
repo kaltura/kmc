@@ -18,6 +18,7 @@
 			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
 			import com.kaltura.managers.FileUploadManager;
+			import com.kaltura.types.KalturaAssetParamsOrigin;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaFlavorReadyBehaviorType;
 			import com.kaltura.types.KalturaMediaType;
@@ -166,12 +167,35 @@
 			 * test entry readiness criteria, approve / cancel, continue accordingly.
 			 * */
 			protected function validateReadyCriteria():void {
-				// dispatch a command to list conversionProfile.listAssetParams
-				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
-				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_ASSET_PARAMS, cnvrtProfId);
-				cg.dispatch();
-				// the result should go on the model as selectedCPAssetParams
-				// bind it with a setter so we can continue validation
+				var isOk:Boolean = true;
+				var cpaps:Array = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).flavors.source;
+				
+				// scan the flavors list and see if any required flavors are missing
+				for each(var cpap:KalturaConversionProfileAssetParams in cpaps) {
+					var bFound:Boolean = false;
+					if (cpap.readyBehavior == KalturaFlavorReadyBehaviorType.REQUIRED && cpap.origin == KalturaAssetParamsOrigin.INGEST) {
+						for each (var fuv:UploadFileVo in filesList) {
+							if (fuv.flavorParamId == cpap.assetParamsId.toString()) {
+								bFound = true;
+								break;
+							}
+						}
+						if (!bFound) {
+							isOk = false;
+							break;
+						}
+					}
+				}
+				if (isOk) {
+					// save
+					submit();
+				}
+				else {
+					// alert user
+					Alert.show(ResourceManager.getInstance().getString('cms', 'missingRequired'),
+						ResourceManager.getInstance().getString('cms', 'warning'), Alert.OK|Alert.CANCEL, null, handleWarning);
+				}
+				
 			}
 			
 			
@@ -228,11 +252,7 @@
 			 * remove the popup
 			 * */
 			protected function closeHandler(event:CloseEvent = null):void {
-				var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.RESET_ASSET_PARAMS);
-				cg.dispatch();
-				
 				dispatchEvent(new Event(CLOSE_WINDOW));
-				//PopUpManager.removePopUp(this);
 			}
 			
 			/**
@@ -319,50 +339,6 @@
 				}
 			}
 			
-			
-			
-			[Bindable]
-			/**
-			 * the selected CP's conversionProfileAssetParams
-			 * this setter is triggered during validation before save, so we complete the 
-			 * process here.
-			 * */
-			public function set selectedCPAssetParams(value:ArrayCollection):void {
-				_selectedCPAssetParams = value;
-				var isOk:Boolean = true;
-				if (value) {
-					// scan the flavors list and see if any required flavors are missing
-					for each(var cpap:KalturaConversionProfileAssetParams in value) {
-						var bFound:Boolean = false;
-						if (cpap.readyBehavior == KalturaFlavorReadyBehaviorType.REQUIRED) {
-							for each (var fuv:UploadFileVo in filesList) {
-								if (fuv.flavorParamId == cpap.assetParamsId.toString()) {
-									bFound = true;
-									break;
-								}
-							}
-							if (!bFound) {
-								isOk = false;
-								break;
-							}
-						}
-					}
-					if (isOk) {
-						// save
-						submit();
-					}
-					else {
-						// alert user
-						Alert.show(ResourceManager.getInstance().getString('cms', 'missingRequired'),
-							ResourceManager.getInstance().getString('cms', 'warning'), Alert.OK|Alert.CANCEL, null, handleWarning);
-					}
-				}
-			}
-			
-			public function get selectedCPAssetParams():ArrayCollection {
-				return _selectedCPAssetParams;
-			}
-
 
 		]]>
 	</mx:Script>

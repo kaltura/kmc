@@ -105,20 +105,30 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.decreaseLoadCounter();
 		}
 			
+		/**
+		 * create a list of <code>KalturaConversionProfileAssetParams</code> that belong to 
+		 * the conversion profile on the given VO, and add it to the VO.
+		 * @param cp		VO to be updated
+		 * @param cpaps		objects to filter
+		 * @param params	flavor params objects, used for their names.
+		 * 
+		 */
 		protected function addFlavorParams(cp:ConversionProfileWithFlavorParamsVo, cpaps:Array, params:Array):void {
-			var paramsIds:Array = cp.profile.flavorParamsIds.split(",");
-			for (var i:int =0; i<paramsIds.length; i++) {
-				var cpap:KalturaConversionProfileAssetParams = getCpap(cp.profile.id, paramsIds[i], cpaps);
-				if (cpap && cpap.origin != KalturaAssetParamsOrigin.CONVERT) {
-					for each (var param:Object in params) {
-						if (param is KalturaFlavorParams && param.id == cpap.assetParamsId) {
-							cp.flavors.addItem(param);
+			var profid:int = cp.profile.id;
+			for each (var cpap:KalturaConversionProfileAssetParams in cpaps) {
+				if (cpap && cpap.conversionProfileId == profid && cpap.origin != KalturaAssetParamsOrigin.CONVERT) {
+					for each (var ap:KalturaFlavorParams in params) {
+						if (ap.id == cpap.assetParamsId) {
+							// add flavor name to the cpap, to be used in dropdown in IR
+							cpap.name = ap.name;
+							cp.flavors.addItem(cpap);
 							break;
 						}
 					}
 				}
 			}
 		}
+		
 		
 		/**
 		 * get cpap by keys 
