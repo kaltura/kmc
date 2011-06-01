@@ -112,7 +112,6 @@ package com.kaltura.kmc.modules.content.commands {
 				if (cpap && cpap.origin != KalturaAssetParamsOrigin.CONVERT) {
 					for each (var param:Object in params) {
 						if (param is KalturaFlavorParams && param.id == cpap.assetParamsId) {
-							//TODO only add if not converted flavor
 							cp.flavors.addItem(param);
 							break;
 						}
