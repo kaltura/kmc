@@ -199,7 +199,9 @@ package com.kaltura.kmc.modules.content.model {
 		public function increaseLoadCounter():void {
 			++_loadingCounter;
 			if (_loadingCounter == 1) {
-				entryDetailsModel.loadingFlag = true;
+				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+					edm.loadingFlag = true;
+				}
 				dispatchEvent(new Event(CmsModelLocator.LOADING_FLAG_CHANGED));
 			}
 		}
@@ -211,7 +213,9 @@ package com.kaltura.kmc.modules.content.model {
 		public function decreaseLoadCounter():void {
 			--_loadingCounter;
 			if (_loadingCounter == 0) {
-				entryDetailsModel.loadingFlag = false;
+				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+					edm.loadingFlag = false;
+				}
 				dispatchEvent(new Event(CmsModelLocator.LOADING_FLAG_CHANGED));
 			}
 		}

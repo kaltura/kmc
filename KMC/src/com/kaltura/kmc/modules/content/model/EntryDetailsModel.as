@@ -62,6 +62,8 @@ package com.kaltura.kmc.modules.content.model
 		 * indicates data is being retrieved from server at the moment 
 		 */		
 		public var loadingFlag:Boolean = false;
+		
+		
 		/**
 		 * R&P: whether to enable custom data update
 		 */		
