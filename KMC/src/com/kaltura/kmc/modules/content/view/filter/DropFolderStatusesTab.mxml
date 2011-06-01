@@ -18,6 +18,8 @@
 					allDropStatusBtn.selected = true;
 					transferringBtn.selected = false;
 					pendingBtn.selected = false;
+					waitingBtn.selected = false;
+					noMatchBtn.selected = false;
 					errHandlingBtn.selected = false;
 					errDeletingBtn.selected = false;
 					handledBtn.selected = false;
@@ -28,10 +30,15 @@
 						switch (statusCode) {
 							case KalturaDropFolderFileStatus.UPLOADING:
 								transferringBtn.selected = true;
+								break;
 							case KalturaDropFolderFileStatus.PENDING:
-							case KalturaDropFolderFileStatus.WAITING:
-							case KalturaDropFolderFileStatus.NO_MATCH:
 								pendingBtn.selected = true;
+								break;
+							case KalturaDropFolderFileStatus.WAITING:
+								waitingBtn.selected = true;
+								break;
+							case KalturaDropFolderFileStatus.NO_MATCH:
+								noMatchBtn.selected = true;
 								break;
 							case KalturaDropFolderFileStatus.ERROR_HANDLING:
 								errHandlingBtn.selected = true;
@@ -63,7 +70,13 @@
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.UPLOADING);
 					}
 					if (pendingBtn.selected) { // pending
-						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PENDING, KalturaDropFolderFileStatus.WAITING, KalturaDropFolderFileStatus.NO_MATCH );
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PENDING);
+					}
+					if (waitingBtn.selected) { // pending
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.WAITING);
+					}
+					if (noMatchBtn.selected) { // pending
+						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.NO_MATCH);
 					}
 					if (errHandlingBtn.selected) { // error handling
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.ERROR_HANDLING);
@@ -87,6 +100,8 @@
 					(evt.target as Button).selected = true;
 					transferringBtn.selected = false;
 					pendingBtn.selected = false;
+					waitingBtn.selected = false;
+					noMatchBtn.selected = false;
 					errHandlingBtn.selected = false;
 					errDeletingBtn.selected = false;
 					handledBtn.selected = false;
@@ -116,12 +131,15 @@
 			 * if one of them is selected - return false
 			 */
 			private function validateDropStatus():Boolean {
-				return !transferringBtn.selected && !pendingBtn.selected && !errHandlingBtn.selected && !errDeletingBtn.selected && !handledBtn.selected;
+				return !transferringBtn.selected && !pendingBtn.selected && !waitingBtn.selected
+					&& !noMatchBtn.selected && !errHandlingBtn.selected && !errDeletingBtn.selected
+					&& !handledBtn.selected;
 			}
-			
+				
 			
 			public function get buttons():Array {
-				return [allDropStatusBtn, transferringBtn, pendingBtn, errHandlingBtn, errDeletingBtn, handledBtn];
+				return [allDropStatusBtn, transferringBtn, pendingBtn, waitingBtn, 
+					noMatchBtn, errHandlingBtn, errDeletingBtn, handledBtn];
 			}
 		]]>
 	</mx:Script>
@@ -132,6 +150,12 @@
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
 	<mx:Button id="pendingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'pendingBtn')}"
+			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
+			   click="{changeDropStatusFilter(event)}"/>
+	<mx:Button id="noMatchBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'noMatchBtn')}"
+			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
+			   click="{changeDropStatusFilter(event)}"/>
+	<mx:Button id="waitingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'waitingBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
 	<mx:Button id="handledBtn" width="100%" selected="false"
@@ -145,7 +169,7 @@
 			   styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>
 	<!-- add later, server doesn't support now-->
 	<!--<mx:Button id="errTransferringBtn" width="100%" selected="false"
-	label="{resourceManager.getString('cms', 'errTransferringBtn')}" buttonMode="true" toggle="true"
-	styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>-->
+			   label="{resourceManager.getString('cms', 'errTransferringBtn')}" buttonMode="true" toggle="true"
+			   styleName="innerFilterGroupButton" click="{changeDropStatusFilter(event)}"/>-->
 	
 </mx:VBox>

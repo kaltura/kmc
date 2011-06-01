@@ -34,7 +34,7 @@
 			
 			[Bindable]
 			public var dropFolderModel:DropFolderModel;
-			
+	
 			/**
 			 * @inheritDoc
 			 * */
@@ -92,9 +92,11 @@
 					case KalturaDropFolderFileStatus.UPLOADING:
 						return resourceManager.getString('cms','transferringBtn');
 					case KalturaDropFolderFileStatus.PENDING:
-					case KalturaDropFolderFileStatus.WAITING:
-					case KalturaDropFolderFileStatus.NO_MATCH:
 						return resourceManager.getString('cms','pendingBtn');
+					case KalturaDropFolderFileStatus.WAITING:
+						return resourceManager.getString('cms','waitingBtn');
+					case KalturaDropFolderFileStatus.NO_MATCH:
+						return resourceManager.getString('cms','noMatchBtn');
 					case KalturaDropFolderFileStatus.ERROR_HANDLING:
 						return resourceManager.getString('cms','errHandlingBtn');
 					case KalturaDropFolderFileStatus.ERROR_DELETING:
@@ -104,14 +106,14 @@
 				}
 				return '';
 			}
-			
+
 			/**
 			 * Create suitable string to display in the "error desctiption" column
 			 * */
 			public function getErrorDescription(item:Object) : String {
 				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
 				var errDescription:String = '';
-				
+
 				switch (curFile.errorCode) {
 					case KalturaDropFolderFileErrorCode.ERROR_UPDATE_ENTRY:
 						errDescription = resourceManager.getString('cms','dfErrUpdateEntry');
@@ -161,7 +163,7 @@
 					deleteEvent.dispatch();
 				}
 			}
-			
+
 			/**
 			 * selects all items in the page
 			 * */
@@ -179,7 +181,7 @@
 			/**
 			 * paging
 			 * */
-			private function gotoPage():void {
+		 	private function gotoPage():void {
 				// update filter here
 				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
 				loadDropFolderFiles();
@@ -207,7 +209,7 @@
 				
 				if (filter)
 					dropFolderModel.filter = filter.dropFolderFileFilter;
-				
+
 				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
 				listFiles.dispatch();
 			} 
@@ -236,7 +238,7 @@
 			private function foldFilter():void {
 				currentState = (currentState == null) ? 'noFilterState' : null;
 			}
-			
+		
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
@@ -262,9 +264,9 @@
 	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">
 			<filter:DropFolderFilter id="filter" height="{tableContainer.height}" width="245" newSearch="{newSearchFromFilter()}"
-									 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
+						 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
 		</mx:VBox>
-		
+
 		<mx:VBox id="tableContainer" height="100%" width="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
 			<mx:HBox id="entryTableContainer" width="100%">
 				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true">
@@ -302,6 +304,6 @@
 				</mx:HBox>
 			</mx:HBox>
 		</mx:VBox>
-		
+
 	</mx:HDividedBox>
 </mx:VBox>
