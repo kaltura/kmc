@@ -15,6 +15,7 @@
 			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.business.AddMenuHandler;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.business.PermissionManager;
@@ -66,6 +67,11 @@
 			 * module loader
 			 * */
 			private var _kmcModuleLoader:KmcModuleLoader;
+			
+			/**
+			 * the class that handles the add menu's position
+			 * */
+			private var _addMenuHandler:AddMenuHandler;
 
 			/**
 			 * KMC UIConf
@@ -413,6 +419,10 @@
 				//TODO get the concurrentuploads param from kmc uiconf or something
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
 				
+				
+				_addMenuHandler = new AddMenuHandler();
+				//TODO remove!!
+				_addMenuHandler.showAddPanel();
 			}
 			
 			
@@ -701,6 +711,7 @@
 				url += _flashvars.host + _helpBaseUrl + '#' + e.anchor;
 				navigateToURL(new URLRequest(url), "_blank");
 			}
+			
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>

@@ -135,5 +135,14 @@ package com.kaltura.kmc.business
 		public static function openKcw(ks:String, conversion_profile:String = ''):void {
 			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
 		}
+		
+		
+		/**
+		 * ask the page where to position the add entry menu 
+		 * @return top right point of where the menu should open.
+		 */
+		public static function getAddPanelPosition():int {
+			return ExternalInterface.call("kmc.functions.getAddPanelPosition");
+		}
 	}
 }

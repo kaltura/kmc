@@ -68,6 +68,9 @@ window.onbeforeunload = checkForOngoingProcess;
 	};
 	
 	kmc.functions = {
+		getAddPanelPosition : function() {
+			return 800;
+		},
 		expired : function() {
 			// @todo: why no cookie killing ?
 			window.location = kmc.vars.service_url + "/index.php/kmc/kmc" + location.hash; // @todo: shouldn't require '/index.php/kmc/'
