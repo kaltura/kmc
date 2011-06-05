@@ -4,14 +4,14 @@ package com.kaltura.kmc.modules.account.events
 	
 	public class ConversionSettingsEvent extends CairngormEvent
 	{
-		public static const ADD_NEW_CONVERSION_PROFILE : String = "account_addNewConversionProfile";
+		public static const ADD_CONVERSION_PROFILE : String = "account_addConversionProfile";
 		public static const DELETE_CONVERSION_PROFILE : String = "account_deleteConversionProfile";
 		public static const LIST_CONVERSION_PROFILES : String = "account_listConversionProfiles";
 		public static const LIST_FLAVOR_PARAMS : String = "account_listFlavorParams";
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
 		public static const MARK_FLAVORS : String = "account_markFlavors";
 		public static const MARK_CONVERSION_PROFILES : String = "account_markConversionProfiles";
-		public static const UPDATE_CONVERSION_PROFILE_CHANGES : String = "account_updateConversionProfileChanges";
+		public static const UPDATE_CONVERSION_PROFILE : String = "account_updateConversionProfile";
 		
 		/**
 		 * set the given profile as partner default 

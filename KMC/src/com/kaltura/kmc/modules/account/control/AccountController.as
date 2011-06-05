@@ -40,16 +40,16 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(AccessControlEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
 			
 			// Conversion Profile Events
-			addCommand(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, AddNewConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, AddNewConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE, DeleteConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS, ListConversionProfilesAndFlavorParamsCommand);
 			addCommand(ConversionSettingsEvent.LIST_CONVERSION_PROFILES, ListConversionProfilesCommand);
 			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
+			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
 			addCommand(ConversionSettingsEvent.MARK_FLAVORS, MarkFlavorsCommand);
 			addCommand(ConversionSettingsEvent.MARK_CONVERSION_PROFILES, MarkTranscodingProfilesCommand);
-			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, UpdateConversionProfileCommand);
+			addCommand(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, UpdateConversionProfileCommand);
 			addCommand(ConversionSettingsEvent.SET_AS_DEFAULT_CONVERSION_PROFILE, SetAsDefaultConversionProfileCommand);
-			addCommand(ConversionSettingsEvent.LIST_STORAGE_PROFILES, ListStorageProfilesCommand);
 			
 			//metadata profile events
 			addCommand(MetadataProfileEvent.LIST , ListMetadataProfileCommand);

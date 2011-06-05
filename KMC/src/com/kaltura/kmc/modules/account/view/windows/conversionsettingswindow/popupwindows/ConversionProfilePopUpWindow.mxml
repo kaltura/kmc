@@ -42,7 +42,7 @@
 
 
 			/**
-			 * get the accessControlProfile(acp)
+			 * get the conversion profile
 			 */
 			[Bindable]
 			public function get conversionProfile():ConversionProfileVO {
@@ -51,7 +51,7 @@
 
 
 			/**
-			 * set the accessControlProfile(acp)
+			 * set the conversion profile
 			 */
 			public function set conversionProfile(conversionProfile:ConversionProfileVO):void {
 				_conversionProfile = conversionProfile;
@@ -75,6 +75,7 @@
 				else {
 					// when we use this pop-up to create a new Conversion profile
 					conversionProfile = new ConversionProfileVO();
+					conversionProfile.flavors = new Array();
 					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_add");
 				}
 				
@@ -146,14 +147,20 @@
 					_conversionProfile.profile.name = conversionNameTextInput.text;
 					_conversionProfile.profile.description = conversionDescTextArea.text;
 					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text;
-					_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
+					if (cbRemoteProfile.selectedItem) {
+						_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
+					}
+					else {
+						//TODO make sure we send a value, and that it means "none".
+						_conversionProfile.profile.storageProfileId = int.MIN_VALUE;
+					}
 
 					if (currentState == EDIT_STATE) {
-						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, conversionProfile);
+						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
 						updateProfileEvent.dispatch();
 					}
 					else {
-						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_NEW_CONVERSION_PROFILE, false, conversionProfile);
+						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
 						addProfileEvent.dispatch();
 					}
 					closeWindow();
@@ -193,7 +200,8 @@
 		<mx:TextInput id="txtDefaultEntryId" width="100" />
 		<mx:Spacer width="20%" />
 		<mx:Label text="Ingest from Remote Storage:" />
-		<mx:ComboBox id="cbRemoteProfile" enabled="{_model.storageProfiles != null}"
+		<mx:ComboBox id="cbRemoteProfile" enabled="{_model.storageProfiles.length > 0}"
+					 width="150"
 					 labelField="name" dataProvider="{_model.storageProfiles}" />
 	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"

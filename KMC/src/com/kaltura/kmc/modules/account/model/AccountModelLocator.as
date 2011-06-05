@@ -55,30 +55,57 @@ package com.kaltura.kmc.modules.account.model {
 		public var paymentDetailsVo:PaymentDetailsVO = new PaymentDetailsVO();
 		public var listPackages:ArrayCollection;
 		public var modalWinData:Object = null;
-//		public var gaTrackUrl:String = null;
 		
+		/* ****************************************************
+		 * metadata
+		 **************************************************** */
 		public var metadataProfilesArray:ArrayCollection = new ArrayCollection();
 		public var selectedMetadataProfile:KMCMetadataProfileVO;
 		public var metadataFilterPager:KalturaFilterPager;
 		public var metadataProfilesTotalCount:int = 10;
-		//public var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
 
+		
+		/* ****************************************************
+		 * access control
+		 **************************************************** */
 		public var accessControlData:ArrayCollection = new ArrayCollection();
-
 		public var accessControlProfilesTotalCount:int = 10;
 		public var filterPager:KalturaFilterPager;
 		public var acpFilter:KalturaAccessControlFilter;
 
+		/* ****************************************************
+		 * conversion
+		 **************************************************** */
+		[ArrayElementType("ConversionProfileVO")]
+		/**
+		 * list of conversion profiles <br>
+		 * <code>ConversionProfileVO</code> objects
+		 */
 		public var conversionData:ArrayCollection = new ArrayCollection();
+		
+		/**
+		 * list of optional flavors <br>
+		 * <code>FlavorVO</code> objects
+		 * */
 		public var flavorsData:ArrayCollection = new ArrayCollection();
+		
+		/**
+		 * list of thumbnail flavors 
+		 * */
 		public var thumbsData:ArrayCollection = new ArrayCollection();
+		
+		/**
+		 * default filter for conversion profiles in KMC
+		 * */
 		public var cpFilter:KalturaConversionProfileFilter;
+		
+		
 		//---------------------------------------------------------
-		//states
+		// states
 		public var windowState:String = WindowsStates.NONE;
 
 		//---------------------------------------------------------
-		//Flags 
+		// Flags 
 		public var devFlag:Boolean = false;
 		
 		/**
@@ -95,7 +122,7 @@ package com.kaltura.kmc.modules.account.model {
 		public var saveAndExitFlag:Boolean = false;
 
 		//---------------------------------------------------------
-		//singleton methods
+		// singleton methods
 		private static var _modelLocator:AccountModelLocator;
 
 
@@ -119,6 +146,9 @@ package com.kaltura.kmc.modules.account.model {
 		}
 
 
+		/**
+		 * clone all flavours and return them 
+		 */
 		public function getClonedFlavorsData():ArrayCollection {
 			var arr:ArrayCollection = new ArrayCollection();
 			for each (var flavor:FlavorVO in flavorsData) {
@@ -129,6 +159,9 @@ package com.kaltura.kmc.modules.account.model {
 		}
 
 
+		/**
+		 * clone all flavours, mark them all as unselected and return them 
+		 */
 		public function getUnselectedClonedFlavorsData():ArrayCollection {
 			var arr:ArrayCollection = new ArrayCollection();
 			for each (var flavor:FlavorVO in flavorsData) {

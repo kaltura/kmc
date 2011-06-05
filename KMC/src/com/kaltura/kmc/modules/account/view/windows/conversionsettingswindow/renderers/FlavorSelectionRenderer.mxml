@@ -5,10 +5,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.ConversionSettingsTable;
-			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
-			
-			import mx.utils.StringUtil;
 
 
 			override public function set data(value:Object):void {
@@ -19,60 +16,15 @@
 			private function onSelectionChanged(event:Event):void {
 				var flavorObj:FlavorVO = data as FlavorVO;
 				flavorObj.selected = selectionCBox.selected;
-				updateFlavorsList();
+				dispatchEvent(new Event(ConversionSettingsTable.FLAVOR_SELECTION_CHANGED, true));
 			}
 
 
 			/**
-			 *  updating the flavors list in the conversion profile
-			 *
-			 */
-			private function updateFlavorsList():void {
-				var flavorObj:FlavorVO = data as FlavorVO;
-				var idsArr:Array;
-				var cProfile:ConversionProfileVO = (this.parent.parent as ConversionSettingsTable).cProfile;
-				if (cProfile.profile.flavorParamsIds == null) {
-					idsArr = [];
-				}
-				else {
-					idsArr = cProfile.profile.flavorParamsIds.split(',');
-				}
-
-				if (flavorObj.selected) {
-					idsArr.push(flavorObj.kFlavor.id);
-				}
-				else {
-					var index:int = 0;
-					for each (var id:String in idsArr) {
-						if (int(id) == flavorObj.kFlavor.id) {
-							idsArr.splice(index, 1);
-							break;
-						}
-						index++;
-					}
-				}
-
-				var ids:String = idsArr.join(','); //getIdsString(idsArr);
-
-				ids = StringUtil.trim(ids) == '' ? null : ids;
-
-				cProfile.profile.flavorParamsIds = ids;
-			}
-
-
-			private function getIdsString(idsArr:Array):String {
-				var ids:String = '';
-				for each (var id:String in idsArr) {
-					ids += id + ',';
-				}
-
-				return ids.substr(0, ids.length - 1);
-			}
-
-
+			 * un/mark the CB according to profile definitions
+			 * */
 			private function setSelectionCBox():void {
-				var flavorObj:FlavorVO = data as FlavorVO;
-				selectionCBox.selected = (this.parent.parent as ConversionSettingsTable).isGivenFlavorSelected(flavorObj);
+				selectionCBox.selected = (this.parent.parent as ConversionSettingsTable).isGivenFlavorSelected(data as FlavorVO);
 			}
 
 
@@ -83,7 +35,7 @@
 		]]>
 	</mx:Script>
 
-	<mx:CheckBox id='selectionCBox' buttonMode="{data.editable}" selected="{data.selected}" 
+	<mx:CheckBox id="selectionCBox" buttonMode="{data.editable}" selected="{data.selected}" 
 				 change="onSelectionChanged(event)" enabled="{data.editable}"/>
 
 </mx:HBox>

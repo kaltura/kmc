@@ -54,8 +54,6 @@
 			[Bindable]
 			public function set flavorParamData(value:ArrayCollection):void {
 				_flavorParamData = value;
-				setFlavorsTableHeight();
-
 			}
 
 
@@ -96,30 +94,14 @@
 						simpleTable.cProfile = profile.clone();
 					}
 
-					profile.addEventListener(ConversionProfileVO.SELECTED_CHANGED_EVENT, updateProflieStatus);
 					for each (var flavor:FlavorVO in _flavorParamData) {
 						flavor.addEventListener(FlavorVO.SELECTED_CHANGED_EVENT, updateFlavorsStatus);
 					}
 				}
 
 				_flavorParamData.refresh();
-				setFlavorsTableHeight();
-				setConversionProfilesTableHeight();
 			}
 
-
-			private function setConversionProfilesTableHeight():void {
-//				if (conversionProfilesTable != null) {
-//					conversionProfilesTable.height = (conversionProfilesTable.rowHeight * (conversionData.length + 0.5)) + conversionProfilesTable.headerHeight;
-//				}
-			}
-
-
-			private function setFlavorsTableHeight():void {
-//				if (simpleTable != null && _flavorParamData.length) {
-//					simpleTable.height = (simpleTable.rowHeight * (_flavorParamData.length + 0.5)) + simpleTable.headerHeight;
-//				}
-			}
 
 
 			private function updateFlavorsStatus(event:Event):void {
@@ -132,25 +114,6 @@
 			}
 
 
-			private function updateProflieStatus(event:Event):void {
-			/* 	var numSelected:int = 0;
-			   for each(var profile:ConversionProfileVO in conversionData)  {
-			   numSelected += profile.selected ? 1 : 0;
-			   }
-			   deleteProfileBtn.enabled = numSelected != 0;
-			 */
-			/* if(numSelected == 0) {
-			   deleteProfileBtn.label = resourceManager.getString('account', 'disabledDeleteButton');
-			   }else if(numSelected == 1)  {
-			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteTranscodingProfile');
-			   } else if(numSelected != conversionData.length){
-			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteTranscodingProfiles').replace("NUM_OF_DEL" , numSelected);
-			   }  else {
-			   deleteProfileBtn.label = resourceManager.getString('account', 'deleteAllTranscodingProfiles');
-			 } */
-				 //	allFlavorsSelected = (conversionData.length == numSelected);
-			}
-
 
 			private function onChangeState(event:Event):void {
 				currentState = (currentState == null) ? 'advanceModeState' : null;
@@ -160,7 +123,6 @@
 
 			private function onOpenNewConversionProfilePopUp(event:Event):void {
 				var addNewConversionProfileWindow:ConversionProfilePopUpWindow = new ConversionProfilePopUpWindow();
-//				addNewConversionProfileWindow.rootUrl = rootUrl;
 				addNewConversionProfileWindow.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
 				PopUpManager.addPopUp(addNewConversionProfileWindow, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addNewConversionProfileWindow);
@@ -222,7 +184,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (simpleTable.isFlavorsSelected() && (simpleTable.cProfile.profile.flavorParamsIds != null)) {
-					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE_CHANGES, false, simpleTable.cProfile);
+					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
 					updateProfileEvent.dispatch();
 				}
 				else {
@@ -291,8 +253,7 @@
 			<mx:VBox id="subVbox" width="100%" height="100%" verticalGap="0" >
 				<csw:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%"
 													 selectable="true" allowMultipleSelection="true"
-													 dataProvider="{conversionData}"
-													 creationComplete="{setConversionProfilesTableHeight()}"/>
+													 dataProvider="{conversionData}" />
 				<mx:HBox width="100%" styleName="DataGridActions">
 					<mx:VBox width="40%" height="100%" verticalAlign="middle">
 						<mx:LinkButton id="simpleModeBtn"

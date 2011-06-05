@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.account.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.commands.storageProfile.StorageProfileListByPartner;
+	import com.kaltura.commands.storageProfile.StorageProfileList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -18,8 +18,7 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
-			//TODO - use correct API service (waiting for tantan)
-			var list:StorageProfileListByPartner = new StorageProfileListByPartner();
+			var list:StorageProfileList = new StorageProfileList();
 			list.addEventListener(KalturaEvent.COMPLETE, result);
 			list.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(list);

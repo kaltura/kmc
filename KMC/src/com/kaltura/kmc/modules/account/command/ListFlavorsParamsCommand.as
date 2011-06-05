@@ -34,7 +34,6 @@ package com.kaltura.kmc.modules.account.command
 		public function result(event:Object):void
 		{
 			_model.loadingFlag = false;
-	//		clearOldData();
 			var response:KalturaFlavorParamsListResponse = event.data as KalturaFlavorParamsListResponse;
 			var tempArrCol:ArrayCollection = new ArrayCollection();
 			var flavor:FlavorVO;
@@ -48,8 +47,6 @@ package com.kaltura.kmc.modules.account.command
 			}
 			
 			_model.flavorsData = tempArrCol
-			
-			//_model.partnerInfoLoaded = true;
 		}
 		
 		private function clearOldData():void
@@ -65,8 +62,6 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			Alert.show(ResourceManager.getInstance().getString('account', 'notLoadFlavors') + "/n/t"  + info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-	//		clearOldData();
-	//		setDummyData();
 			_model.loadingFlag = false;
 		}
 	}

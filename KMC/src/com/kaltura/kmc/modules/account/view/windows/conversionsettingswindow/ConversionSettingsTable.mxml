@@ -1,27 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" rowHeight="30" headerRelease="preventDefault(event)"
-			 selectable="false" creationComplete="datagrid1_creationCompleteHandler(event)">
+			 selectable="false" creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 			import com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.popupwindows.ConversionFlavorSettingsPopUp;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
+			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			import com.kaltura.vo.KalturaThumbParams;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
 
 			/**
 			 * defines the value for the type attribute of the editFlavor event
 			 * */
 			public static const EDIT_FLAVOR:String = "editFlavor";
 
+			/**
+			 * defines the value for the type attribute of the flavorSelectionChanged event
+			 * */
+			public static const FLAVOR_SELECTION_CHANGED:String = "flavorSelectionChanged";
 
-			[Bindable]
+
 			private var _allSelected:Boolean = false;
 
 			/**
@@ -29,7 +35,9 @@
 			 * */
 			private var _cProfile:ConversionProfileVO;
 
-			[Bindable]
+			/**
+			 * thumbs params associated with the conversion profile
+			 * */
 			private var _thumbParamsData:ArrayCollection;
 
 			/**
@@ -40,14 +48,18 @@
 
 
 
+			/**
+			 * make sure only "real" flavours are listed on the profile. <br>
+			 * since thumbs params are part of a conversionProfile, we scan them too.
+			 * */
 			private function validateProfileFlavors():void {
-				if (!_cProfile || !dataProvider || !thumbParamsData)
+				if (!_cProfile || !dataProvider || !_thumbParamsData)
 					return;
 
 				var idsArr:Array = _cProfile.profile.flavorParamsIds.split(',');
-				var currentFlavors:Array = new Array();
+				var currentFlavors:Array = new Array(); // flavours in the CP
 				var vo:FlavorVO;
-				var isFlavor:Boolean;
+				var isFlavor:Boolean; // is a media flavour
 
 				for each (var id:String in idsArr) {
 					isFlavor = false;
@@ -58,8 +70,9 @@
 							break;
 						}
 					}
+					// if the id wasn't of a media flavour, maybe it's a thumbnail ?
 					if (!isFlavor) {
-						for each (var thumbParam:KalturaThumbParams in thumbParamsData) {
+						for each (var thumbParam:KalturaThumbParams in _thumbParamsData) {
 							if (int(id) == thumbParam.id) {
 								currentFlavors.push(id);
 								break;
@@ -71,9 +84,6 @@
 				var ids:String = currentFlavors.length == 0 ? null : currentFlavors.join(',');
 				_cProfile.profile.flavorParamsIds = ids;
 			}
-
-
-
 
 
 			private function preventDefault(event:DataGridEvent):void {
@@ -111,17 +121,81 @@
 			}
 
 
-			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(ConversionSettingsTable.EDIT_FLAVOR, openEditFlavor);
+				addEventListener(ConversionSettingsTable.FLAVOR_SELECTION_CHANGED, updateFlavorsList);
 			}
 
 
+			/**
+			 * open flavour drilldown
+			 * */
 			protected function openEditFlavor(e:Event):void {
+				var flavor:FlavorVO = e.target.data as FlavorVO;
 				var editFlavorPopup:ConversionFlavorSettingsPopUp = new ConversionFlavorSettingsPopUp();
 				editFlavorPopup.profileName = cProfile.profile.name;
-				editFlavorPopup.flavorVO = e.target.data as FlavorVO;
+				editFlavorPopup.flavorVO = flavor;
+				editFlavorPopup.cpap = getCpap(flavor.kFlavor.id);
 				PopUpManager.addPopUp(editFlavorPopup, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(editFlavorPopup);
+			}
+			
+			
+			/**
+			 * return a matching cpap from the profile's flavours list
+			 * */
+			protected function getCpap(flavorId:int):KalturaConversionProfileAssetParams {
+				for each (var cpap:KalturaConversionProfileAssetParams in cProfile.flavors) {
+					if (cpap.assetParamsId == flavorId) {
+						return cpap;
+					}
+				}
+				return null;
+			}
+
+
+			/**
+			 * updating the flavors list in the conversion profile
+			 */
+			private function updateFlavorsList(e:Event):void {
+				var flavorObj:FlavorVO = e.target.data as FlavorVO;
+				var idsArr:Array;
+				if (cProfile.profile.flavorParamsIds == null) {
+					idsArr = [];
+				}
+				else {
+					idsArr = cProfile.profile.flavorParamsIds.split(',');
+				}
+				var cpap:KalturaConversionProfileAssetParams;
+				if (flavorObj.selected) {
+					idsArr.push(flavorObj.kFlavor.id);
+					// push a cpap
+					cpap = new KalturaConversionProfileAssetParams();
+					cpap.conversionProfileId = cProfile.profile.id;
+					cpap.assetParamsId = flavorObj.kFlavor.id;
+					cProfile.flavors.push(cpap);
+				}
+				else {
+					var index:int = 0;
+					for each (var id:String in idsArr) {
+						if (int(id) == flavorObj.kFlavor.id) {
+							idsArr.splice(index, 1);
+							break;
+						}
+						index++;
+					}
+					// remove a cpap
+					for (var i:int = 0; i<cProfile.flavors.length; i++) {
+						cpap = cProfile.flavors[i] as KalturaConversionProfileAssetParams;
+						if (cpap.assetParamsId == flavorObj.kFlavor.id) {
+							cProfile.flavors.splice(i, 1);
+							break;
+						}
+					}
+				}
+				var ids:String = idsArr.join(',');
+				ids = StringUtil.trim(ids) == '' ? null : ids;
+				cProfile.profile.flavorParamsIds = ids;
 			}
 
 

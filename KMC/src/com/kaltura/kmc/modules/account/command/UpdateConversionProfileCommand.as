@@ -2,13 +2,17 @@ package com.kaltura.kmc.modules.account.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.conversionProfile.ConversionProfileUpdate;
+	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsUpdate;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	import com.kaltura.vo.KalturaConversionProfile;
+	import com.kaltura.vo.KalturaConversionProfileAssetParams;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -20,32 +24,46 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void
 		{
-			var profileVo:ConversionProfileVO = event.data as ConversionProfileVO;
+			var cProfile:ConversionProfileVO = event.data as ConversionProfileVO;
 			
-			var id:int = profileVo.profile.id;
-			var updateProfile:KalturaConversionProfile = profileVo.profile;//prepareForUpdate(profileVo.profile);
+			var mr:MultiRequest = new MultiRequest();
+			
+			var id:int = cProfile.profile.id;
+			var updateProfile:KalturaConversionProfile = cProfile.profile;//prepareForUpdate(profileVo.profile);
 			updateProfile.setUpdatedFieldsOnly(true);
-			var updateConversionProfile:ConversionProfileUpdate = new ConversionProfileUpdate(profileVo.profile.id, updateProfile);
-			updateConversionProfile.addEventListener(KalturaEvent.COMPLETE, result);
-			updateConversionProfile.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(updateConversionProfile);
+			var updateConversionProfile:ConversionProfileUpdate = new ConversionProfileUpdate(cProfile.profile.id, updateProfile);
+			mr.addAction(updateConversionProfile);
+			
+			var cpapu:ConversionProfileAssetParamsUpdate;
+			// see if any conversion flavours need to be updated:
+			for each (var cpap:KalturaConversionProfileAssetParams in cProfile.flavors) {
+				if (cpap.dirty) {
+					cpap.setUpdatedFieldsOnly(true);
+					cpapu = new ConversionProfileAssetParamsUpdate(id, cpap.assetParamsId, cpap);
+					mr.addAction(cpapu);
+				}
+			} 
+			
+			
+			mr.addEventListener(KalturaEvent.COMPLETE, result);
+			mr.addEventListener(KalturaEvent.FAILED, fault);
+			_model.context.kc.post(mr);
 		}
 		
-		private function prepareForUpdate(profile:KalturaConversionProfile):KalturaConversionProfile
-		{
-			var updatePofile:KalturaConversionProfile = new KalturaConversionProfile();
-			updatePofile.name = profile.name;
-			updatePofile.description = profile.description;
-			updatePofile.flavorParamsIds = profile.flavorParamsIds;
-			updatePofile.setUpdatedFieldsOnly(true);
-			return updatePofile;
-		}
 		
 		public function result(event:Object):void
 		{
 			_model.loadingFlag = false;
-			if(event.error == null)
-			{
+	
+			var er:KalturaError;
+			for (var i:int = 0; i<event.data.length; i++) {
+				er = event.data[0].error as KalturaError;
+				if (er) {
+					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
+					break;
+				}
+			}
+			if (!er) {
 				Alert.show(ResourceManager.getInstance().getString('account', 'changesSaved'));
 			}
 			
