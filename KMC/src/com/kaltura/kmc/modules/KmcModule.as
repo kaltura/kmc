@@ -354,6 +354,10 @@ package com.kaltura.kmc.modules {
 			isModuleReady = true;
 			dispatchEvent(new Event("moduleReady", true));
 		}
+		
+//		public function testMe():void {
+//			Alert.show("Bhaaa: " + getModuleName(), "BHOOO");
+//		}
 
 		/**
 		 * information about the current user and their role

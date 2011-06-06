@@ -113,6 +113,12 @@
 
 			private var _moduleLoader:ModuleLoader;
 			private var _currentObject:Object;
+			
+			/**
+			 * _kmcFunction[0]: module on which we expect to find the following function. <br>
+			 * _kmcFunction[1]: name of function to execute when the requested module is loaded.
+			 * */
+			private var _kmcFunction:Array;
 
 
 			// ==============================================================================
@@ -599,16 +605,24 @@
 					// tell JS it should show a html tab
 					JSGate.openIframe(mInfo.@htmlUrl.toString());
 				}
-				// check for action tabs (kmcFunction="module_id,function_name")
+				// check for action tabs (kmcFunction="module_id.function_name")
 				else if (mInfo.@kmcFunction[0]) {
-					var funky:Array = mInfo.@kmcFunction[0].split(",");
-					var module_id:String = funky[0];
-					var func_name:String = funky[1];
-					if (module_id == "") {
+					var funky:Array = mInfo.@kmcFunction[0].split(".");
+					var module_id:String;
+					var func_name:String;
+					if (funky.length > 1) { 
+						module_id = funky[0];
+						func_name = funky[1];
+					}
+					else {
+						func_name = funky[0];	
+					}
+					
+					if (!module_id) {
 						// try to trigger func_name on self
 						this[func_name]();
 					}
-					else if ((getModuleParent(module_id).child as KmcModule).isModuleReady) {
+					else if (getModuleParent(module_id) && (getModuleParent(module_id).child as KmcModule).isModuleReady) {
 						// try to trigger func_name on relevant module
 						try {
 							getModuleParent(module_id).child[func_name]();
@@ -619,17 +633,19 @@
 					}
 					else {
 						// save func_name
-						_currentObject.kmcFunction = funky;
+						_kmcFunction = funky;
 						// add listener to moduleReady event
 						addEventListener(KmcModule.MODULE_READY, handleKmcFunction, false, 0, true);
 						// start loading the relevant module
+						mInfo = _uiconf.modules.module.(@id == module_id)[0];
+						o = {moduleName: module_id, subtab: mInfo.@subtab.toString()};
+						_currentObject = o;
 						loadModule(mInfo);
 					}
 				}
 				else {
 					// load KMC module
 					loadModule(mInfo);
-
 				}
 
 				// tell html
@@ -642,16 +658,16 @@
 			 * if a kmcFunction is waiting to execute for the ready module, execute it.
 			 * */
 			private function handleKmcFunction(e:Event):void {
-				if (_currentObject.kmcFunction && (e.target as KmcModule).getModuleName() == _currentObject.kmcFunction[0]) {
+				if (_kmcFunction && (e.target as KmcModule).getModuleName() == _kmcFunction[0]) {
 					removeEventListener(KmcModule.MODULE_READY, handleKmcFunction, false);
 					// try to trigger func_name on relevant module
 					try {
-						(e.target as KmcModule)[_currentObject.kmcFunction[1]]();
+						(e.target as KmcModule)[_kmcFunction[1]]();
 					}
 					catch (e:Error) {
-						alert(resourceManager.getString('kmc', 'method_dont_exist', [_currentObject.kmcFunction[0], _currentObject.kmcFunction[1]]), resourceManager.getString('kmc', 'error_title'));
+						alert(resourceManager.getString('kmc', 'method_dont_exist', [_kmcFunction[0], _kmcFunction[1]]), resourceManager.getString('kmc', 'error_title'));
 					}
-					_currentObject.kmcFunction = null;
+					_kmcFunction = null;
 				}
 			}
 
@@ -702,7 +718,7 @@
 
 			/**
 			 * get the ModuleLoader instance that holds the required module.
-			 * mainViewstack holds ModuleLoader instances, not modules.
+			 * @internal mainViewstack holds ModuleLoader instances, not modules.
 			 * @param	name (id) of desired module.
 			 * @return 	ml holding the given module.
 			 * */
@@ -712,10 +728,11 @@
 				for (var i:int = 0; i < children; i++) {
 					ml = mainViewStack.getChildAt(i) as ModuleLoader;
 					if (ml.child && (ml.child as KmcModule).getModuleName() == moduleName) {
-						break;
+						return ml;
 					}
 				}
-				return ml;
+				return null;
+				
 			}
 
 
@@ -773,13 +790,20 @@
 			 * @param e	help request dispatched by anything on the displayList.
 			 * */
 			protected function showHelp(e:KmcHelpEvent):void {
-//				trace("caught help event");
 				var url:String = _flashvars.protocol;
 				if (!url) {
 					url = "http://";
 				}
 				url += _flashvars.host + _helpBaseUrl + '#' + e.anchor;
 				navigateToURL(new URLRequest(url), "_blank");
+			}
+			
+			/**
+			 * shows the add menu panel
+			 * @internal (triggered via uiconf)
+			 * */
+			protected function showAddPanel():void {
+				_addMenuHandler.showAddPanel();
 			}
 		]]>
 	</mx:Script>
