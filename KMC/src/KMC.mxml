@@ -51,7 +51,7 @@
 			// members
 			// ==============================================================================
 
-			
+
 			/**
 			 * a global access point to the application's flashvars,
 			 * all keys are converted to lower case and no underscores.
@@ -67,7 +67,7 @@
 			 * module loader
 			 * */
 			private var _kmcModuleLoader:KmcModuleLoader;
-			
+
 			/**
 			 * the class that handles the add menu's position
 			 * */
@@ -93,26 +93,27 @@
 			 * the module KMC should start with, as determined by the url hash
 			 * */
 			private var _startModule:Object;
-			
+
 			/**
 			 * currently showing locale code
 			 * */
 			protected var _localeCode:String;
-			
+
 			private var _kcTimer:Timer;
-			
+
 			/**
 			 * KMC version
 			 * */
 			public var VERSION:String = "4.1.2.5";
-		
+
 			/**
 			 * Singletone PermissionManager
 			 **/
 			public var permissionManager:PermissionManager;
-			
+
 			private var _moduleLoader:ModuleLoader;
 			private var _currentObject:Object;
+
 
 			// ==============================================================================
 			// methods
@@ -137,28 +138,29 @@
 				if (event.type == StyleEvent.ERROR) {
 					alert(event.errorText, ResourceManager.getInstance().getString('kmc', 'skin_load_error_title'));
 				}
-				
+
 				// remove modules that should not be loaded from the KMC uiconf
 				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(null);
 				for each (var moduleName:String in tabsToHide) {
 					removeModule(_uiconf, moduleName);
 				}
-				
+
 				setHtmlTabs();
-				
+
 				// switch to needed tab
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
 			}
-			
+
+
 			/**
 			 * if any flashvars are supposed to override uiconf values, set them here to the uiconf.
-			 * flashvars names will be constructed from module id + "." + xml structure, nodes 
+			 * flashvars names will be constructed from module id + "." + xml structure, nodes
 			 * separated by ".", i.e, "content.uiconf.metadata" or "admin.locale.language"
-			 */		
+			 */
 			protected function overrideDataByFlashvars(conf:String, flashvars:Object):String {
 				var confFile:XML = new XML(conf);
 				// override with general language definition
-				if (flashvars.language && !flashvars["kmc.locale.language"] ) {
+				if (flashvars.language && !flashvars["kmc.locale.language"]) {
 					flashvars["kmc.locale.language"] = flashvars.language;
 				}
 				// process
@@ -177,8 +179,8 @@
 				// re-set values
 				return confFile.toXMLString();
 			}
-			
-			
+
+
 			/**
 			 * show correct tabs in HTML
 			 * */
@@ -200,13 +202,14 @@
 					jstab.subtab = xmltab.@subtab.toString();
 					if (xmltab.@htmlUrl) {
 						jstab.html_url = xmltab.@htmlUrl.toString();
-					} 
+					}
 					jstabs.push(jstab);
 				}
 				// call JS function to set html tabs
 				JSGate.createTabs(jstabs);
 			}
-			
+
+
 			/**
 			 * remove a module from the KMC uiconf
 			 * @param moduleId	id of module to remove
@@ -266,7 +269,7 @@
 				_modelLocator.kalturaClient.queueing = true;
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.CALL_QUEUED, setTimer);
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.QUEUE_FLUSHED, setTimer);
-				
+
 
 				// create a module loader:
 				_kmcModuleLoader = new KmcModuleLoader();
@@ -278,26 +281,27 @@
 
 				var uiconf:UiConfGet = new UiConfGet(objParam.kmcuiconf);
 				var permissions:UiConfGet = new UiConfGet(objParam.permissionuiconf);
-				
+
 				// get user id from service, if server decides to give it..
 				var userid:String = KSUtil.getUserId(_modelLocator.kalturaClient.ks);
 				var userget:UserGet = new UserGet(userid);
 				mr.mapMultiRequestParam(3, "roleIds", 4, "userRoleId");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
-				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter);	
-				
+				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter);
+
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
 				mr.addAction(userget);
 				mr.addAction(roleGet);
 				mr.addAction(perms);
-				
+
 				mr.addEventListener(KalturaEvent.COMPLETE, dataLoadHandler, false, 0, true);
 				mr.addEventListener(KalturaEvent.FAILED, dataLoadFailedHandler, false, 0, true);
 				_modelLocator.kalturaClient.post(mr);
 			}
-			
+
+
 			/**
 			 * create the client flushing timer, activate or deactivate it as needed.
 			 * */
@@ -319,8 +323,8 @@
 						break;
 				}
 			}
-			
-			
+
+
 			/**
 			 * flush client calls.
 			 * */
@@ -333,7 +337,7 @@
 			 * UiConf failed to load, alert user
 			 */
 			protected function dataLoadFailedHandler(event:KalturaEvent):void {
-				var rm:IResourceManager = ResourceManager.getInstance(); 
+				var rm:IResourceManager = ResourceManager.getInstance();
 				var s:String = rm.getString('kmc', 'uiconf_load_fail', [event.error.errorMsg]);
 				alert(s, rm.getString('kmc', 'error_title'));
 			}
@@ -344,12 +348,13 @@
 			 */
 			protected function onModuleLoadError(event:KmcModuleEvent):void {
 				var rm:IResourceManager = ResourceManager.getInstance();
-				var s:String = rm.getString('kmc', 'module_load_fail',[event.errorText]);
+				var s:String = rm.getString('kmc', 'module_load_fail', [event.errorText]);
 				alert(s, rm.getString('kmc', 'error_title'));
 				if (progressbar.source == event.moduleLoader) {
 					hideProgressBar();
 				}
 			}
+
 
 			/**
 			 * check if the given object is an error object and respond.
@@ -360,26 +365,29 @@
 				if (errorObj) {
 					if (errorObj.code == APIErrorCode.INVALID_KS) {
 						alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'), Alert.OK, null, expired);
-					} else {
+					}
+					else {
 						alert(errorObj.message, ResourceManager.getInstance().getString('kmc', 'error_title'));
 					}
 					return true;
 				}
 				return false;
 			}
-			
-			private function expired(e:CloseEvent):void {
+
+
+			protected function expired(e:CloseEvent):void {
 				JSGate.expired();
 			}
-			
+
 
 			/**
 			 * Kmc uiConf and RolesAndPermissions loaded. Parse it and load skin and relevant modules.
 			 */
 			protected function dataLoadHandler(event:KalturaEvent):void {
 				// [0] KMC uiconf:
-				if (isError(event.data[0].error)) return;
-				
+				if (isError(event.data[0].error))
+					return;
+
 				_uiconf = new XML(overrideDataByFlashvars((event.data[0] as KalturaUiConf).confFile, _flashvars));
 				if (_uiconf.descendants().length() == 0) {
 					Alert.show("KMC UIConf is empty", "Error");
@@ -388,44 +396,47 @@
 				// help url
 				_helpBaseUrl = _uiconf.helpPage.text().toString();
 
-				
+
 				// [1] permissions:
-				if (isError(event.data[1].error)) return;
+				if (isError(event.data[1].error))
+					return;
 				var uidefinition:XML = new XML((event.data[1] as KalturaUiConf).confFile); // all permissions
-				
+
 				// [2, 3] user and role:
-				if (isError(event.data[2].error)) return;
-				if (isError(event.data[3].error)) return; 
+				if (isError(event.data[2].error))
+					return;
+				if (isError(event.data[3].error))
+					return;
 				var uvo:UserVO = new UserVO();
 				uvo.user = event.data[2] as KalturaUser;
 				uvo.role = event.data[3] as KalturaUserRole;
 				_modelLocator.userInfo = uvo;
-				
+
 				var roleOfCurrentUser:String;
-				roleOfCurrentUser = uvo.role.permissionNames; 
+				roleOfCurrentUser = uvo.role.permissionNames;
 				//roleOfCurrentUser += ",CONTENT_INGEST_DROP_FOLDER_MATCH,CONTENT_INGEST_INTO_ORPHAN,CONTENT_INGEST_INTO_READY"; 
-				
+
 				// [4] partner permissions list
-				if (isError(event.data[4].error)) return;
-				
+				if (isError(event.data[4].error))
+					return;
+
 				permissionManager = PermissionManager.getInstance();
 				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
 				// load locale
 				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
-				
+
 				// create the file uploader and set its client
 				//TODO get the concurrentuploads param from kmc uiconf or something
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
-				
-				
+
+
 				_addMenuHandler = new AddMenuHandler();
-				//TODO remove!!
 				_addMenuHandler.showAddPanel();
 			}
-			
-			
+
+
 			/**
 			 * Load locale data.
 			 * @param localePath	path to the locale (.swf) file
@@ -438,7 +449,8 @@
 				eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
 				eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 			}
-			
+
+
 			/**
 			 * Set use of loaded locale.
 			 * This is also the place to update any values which are not
@@ -455,10 +467,10 @@
 //					chain = [_localeCode];
 //				}
 //				else {
-					chain = [_localeCode, "en_US"];
+				chain = [_localeCode, "en_US"];
 //				}
 				ResourceManager.getInstance().localeChain = chain;
-				
+
 				// load skin
 				loadSkin(getUrl(_uiconf.skinPath.toString()));
 //				loadSkin(getUrl("workspaces/kmc/KMC/assets/kmc_skin.swf"));
@@ -476,15 +488,15 @@
 
 				// get the loaded module
 				var mod:KmcModule = ml.child as KmcModule;
-				
+
 				// fix size:
 				mod.percentHeight = 100;
 				mod.percentWidth = 100;
 				mod.id = mod.getModuleName();
-				
+
 				// get the uiconf id this module should load:
 				var uiconfid:String = _uiconf.modules.module.(@id == moduleid)[0].@uiconf;
-				
+
 				// init:
 				mod.init(_modelLocator.kalturaClient, uiconfid, _flashvars, _modelLocator.userInfo, _cm);
 
@@ -500,10 +512,11 @@
 				}
 			}
 
+
 			/**
 			 * get the default page for this user according to their permissions:
 			 * the first module in the KMCUiconf that is not hidden.
-			 * @return 	an object {moduleName:String}, where moduleName is an id of 
+			 * @return 	an object {moduleName:String}, where moduleName is an id of
 			 * 			a module this user is allowed to see.
 			 * */
 			protected function getDefaultPage():Object {
@@ -512,7 +525,7 @@
 				var moduleid:String;
 				var hideModule:Boolean;
 				for each (var module:XML in modules) {
-					moduleid = module.@id.toString(); 
+					moduleid = module.@id.toString();
 					for (var s:String in permissionManager.hideTabs) {
 						if (moduleid == s) {
 							// this module is hidden
@@ -523,13 +536,14 @@
 					if (!hideModule) {
 						// return this module name
 						o.moduleName = moduleid;
-						o.subtab = module.@subtab.toString(); 
+						o.subtab = module.@subtab.toString();
 						break;
 					}
-				} 
+				}
 				return o;
 			}
-			
+
+
 			/**
 			 * decide if should use relative or absolute url.
 			 * if the given path is ablsolute, return the same string.
@@ -543,11 +557,12 @@
 					url = path;
 				}
 				else {
-					var base:String = loaderInfo.url.substr(0, loaderInfo.url.lastIndexOf("/"));  
+					var base:String = loaderInfo.url.substr(0, loaderInfo.url.lastIndexOf("/"));
 					url = base + "/" + path;
 				}
 				return url;
 			}
+
 
 			/**
 			 * Switch to a different KMC module (tab).
@@ -564,55 +579,108 @@
 				else {
 					// take the first on the KMC uiconf
 					mInfo = _uiconf.modules.module[0];
-					o = {moduleName : mInfo.@id.toString(), subtab:mInfo.@subtab.toString()};
+					o = {moduleName: mInfo.@id.toString(), subtab: mInfo.@subtab.toString()};
 					_currentObject = o;
 				}
 				if (!mInfo) {
-					var s:String = ResourceManager.getInstance().getString('kmc', 'module_unavailable',[o.moduleName]);
+					var s:String = ResourceManager.getInstance().getString('kmc', 'module_unavailable', [o.moduleName]);
 					dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, s));
 					gotoPage(getDefaultPage());
 					return;
 				}
-				
+
 				// if no subtab supplied, use the one listed in the uiconf
 				if (!o.subtab || o.subtab == "") {
 					o.subtab = mInfo.@subtab.toString();
 				}
-				
+
 				// check for HTML tabs
 				if (mInfo.@htmlUrl[0]) {
 					// tell JS it should show a html tab
-					JSGate.openIframe(mInfo.@htmlUrl.toString()); 
+					JSGate.openIframe(mInfo.@htmlUrl.toString());
+				}
+				// check for action tabs (kmcFunction="module_id,function_name")
+				else if (mInfo.@kmcFunction[0]) {
+					var funky:Array = mInfo.@kmcFunction[0].split(",");
+					var module_id:String = funky[0];
+					var func_name:String = funky[1];
+					if (module_id == "") {
+						// try to trigger func_name on self
+						this[func_name]();
+					}
+					else if ((getModuleParent(module_id).child as KmcModule).isModuleReady) {
+						// try to trigger func_name on relevant module
+						try {
+							getModuleParent(module_id).child[func_name]();
+						}
+						catch (e:Error) {
+							alert(resourceManager.getString('kmc', 'method_dont_exist', [module_id, func_name]), resourceManager.getString('kmc', 'error_title'));
+						}
+					}
+					else {
+						// save func_name
+						_currentObject.kmcFunction = funky;
+						// add listener to moduleReady event
+						addEventListener(KmcModule.MODULE_READY, handleKmcFunction, false, 0, true);
+						// start loading the relevant module
+						loadModule(mInfo);
+					}
 				}
 				else {
 					// load KMC module
-					var url:String = getUrl(mInfo.@path.toString());
-					_moduleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
-					if (!_moduleLoader.parent) {
-						// this is the first time we load this module.
-						// add to the viewstack if needed
-						mainViewStack.addChild(_moduleLoader);
-						// show preloader, set its source, bla bla
-						progressbar.source = _moduleLoader;
-						progressbar.visible = true;
-					}
-					
-					if ((mainViewStack.selectedChild) && (mainViewStack.selectedChild as ModuleLoader).child)
-					{
-						this.addEventListener(KmcModule.FINISHED_SAVING, onModuleReadyToNavigate);	
-					 	((mainViewStack.selectedChild as ModuleLoader).child as KmcModule).checkForSaveSubTab();
-					}
-					else {
-						changeSelectedTab();
-					}
-			
+					loadModule(mInfo);
+
 				}
 
 				// tell html
 				JSGate.writeUrlHash(o.moduleName, o.subtab);
 				JSGate.setTab(o.moduleName);
 			}
+
 			
+			/**
+			 * if a kmcFunction is waiting to execute for the ready module, execute it.
+			 * */
+			private function handleKmcFunction(e:Event):void {
+				if (_currentObject.kmcFunction && (e.target as KmcModule).getModuleName() == _currentObject.kmcFunction[0]) {
+					removeEventListener(KmcModule.MODULE_READY, handleKmcFunction, false);
+					// try to trigger func_name on relevant module
+					try {
+						(e.target as KmcModule)[_currentObject.kmcFunction[1]]();
+					}
+					catch (e:Error) {
+						alert(resourceManager.getString('kmc', 'method_dont_exist', [_currentObject.kmcFunction[0], _currentObject.kmcFunction[1]]), resourceManager.getString('kmc', 'error_title'));
+					}
+					_currentObject.kmcFunction = null;
+				}
+			}
+
+			/**
+			 * load KMC module
+			 * @param mInfo		module info from uiconf
+			 * */
+			private function loadModule(mInfo:XML):void {
+				var url:String = getUrl(mInfo.@path.toString());
+				_moduleLoader = _kmcModuleLoader.loadKmcModule(url, mInfo.@id);
+				if (!_moduleLoader.parent) {
+					// this is the first time we load this module.
+					// add to the viewstack if needed
+					mainViewStack.addChild(_moduleLoader);
+					// show preloader, set its source
+					progressbar.source = _moduleLoader;
+					progressbar.visible = true;
+				}
+
+				if ((mainViewStack.selectedChild) && (mainViewStack.selectedChild as ModuleLoader).child) {
+					this.addEventListener(KmcModule.FINISHED_SAVING, onModuleReadyToNavigate);
+					((mainViewStack.selectedChild as ModuleLoader).child as KmcModule).checkForSaveSubTab();
+				}
+				else {
+					changeSelectedTab();
+				}
+			}
+
+
 			private function changeSelectedTab():void {
 				mainViewStack.selectedChild = _moduleLoader;
 				_startModule = _currentObject;
@@ -624,8 +692,9 @@
 				JSGate.writeUrlHash(_currentObject.moduleName, _currentObject.subtab);
 				JSGate.setTab(_currentObject.moduleName);
 			}
-			
-			private function onModuleReadyToNavigate(event:Event): void {
+
+
+			private function onModuleReadyToNavigate(event:Event):void {
 				this.removeEventListener(KmcModule.FINISHED_SAVING, onModuleReadyToNavigate);
 				changeSelectedTab();
 			}
@@ -648,7 +717,8 @@
 				}
 				return ml;
 			}
-			
+
+
 			protected function hideProgressBar():void {
 				progressbar.visible = false;
 				progressbar.source = null;
@@ -670,7 +740,7 @@
 			 * This text should already be localized by the module
 			 * which dispatched this event.
 			 * */
-			private function onError(e:KmcErrorEvent):void {
+			protected function onError(e:KmcErrorEvent):void {
 				alert(e.error, ResourceManager.getInstance().getString('kmc', 'error_title'));
 			}
 
@@ -679,16 +749,16 @@
 			 * show an alert with the default "ok" button.
 			 * @param
 			 * */
-			private function alert(text:String, header:String = "", flags:uint = 4, parent:Sprite = null, closeHandler:Function = null):void {
+			protected function alert(text:String, header:String = "", flags:uint = 4, parent:Sprite = null, closeHandler:Function = null):void {
 				Alert.show(text, header, flags, parent, closeHandler);
 			}
-			
-			
+
+
 			/**
-			 * check if any processes are going on that will 
+			 * check if any processes are going on that will
 			 * stop upon navigating away from the KMC.
 			 * */
-			private function hasOngoingProcess():String {
+			protected function hasOngoingProcess():String {
 				var result:String;
 				if (FileUploadManager.getInstance().getAllFiles().length > 0) {
 					result = resourceManager.getString('kmc', 'ongoing_uploads');
@@ -702,18 +772,17 @@
 			 * based on the anchor in the event.
 			 * @param e	help request dispatched by anything on the displayList.
 			 * */
-			private function showHelp(e:KmcHelpEvent):void {
+			protected function showHelp(e:KmcHelpEvent):void {
 //				trace("caught help event");
-				var url:String = _flashvars.protocol; 
+				var url:String = _flashvars.protocol;
 				if (!url) {
 					url = "http://";
 				}
 				url += _flashvars.host + _helpBaseUrl + '#' + e.anchor;
 				navigateToURL(new URLRequest(url), "_blank");
 			}
-			
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>
-	<mx:ProgressBar id="progressbar" y="{(height - progressbar.height) / 2}" x="{(width - progressbar.width) / 2}" />
+	<mx:ProgressBar id="progressbar" y="{(height - progressbar.height) / 2}" x="{(width - progressbar.width) / 2}"/>
 </mx:Application>

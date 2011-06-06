@@ -37,6 +37,12 @@ package com.kaltura.kmc.modules {
 		// =====================================================
 
 		/**
+		 * Dispatched when the module is ready to take action.
+		 * @eventType flash.events.Event
+		 */
+		[Event(name="moduleReady", type="flash.events.Event")]
+		
+		/**
 		 * Dispatched when the module needs to navigate to another module.
 		 * @eventType com.kaltura.kmc.events.KmcNavigationEvent
 		 */
@@ -67,6 +73,8 @@ package com.kaltura.kmc.modules {
 		// =====================================================
 
 		public static const FINISHED_SAVING:String = "finishedSaving";
+		
+		public static const MODULE_READY:String = "moduleReady";
 		
 		private const FALLBACK_LOCALE:String = "en_US";
 		
@@ -113,6 +121,11 @@ package com.kaltura.kmc.modules {
 		 * configuration object
 		 * */
 		protected var _uiconf:KalturaUiConf;
+		
+		/**
+		 * set to "true" when the module is functional
+		 */
+		public var isModuleReady:Boolean;
 
 
 		// =====================================================
@@ -331,6 +344,15 @@ package com.kaltura.kmc.modules {
 		 */
 		protected function enableHtmlTabs(enable:Boolean):void {
 			ExternalInterface.call("kmc.utils.maskHeader", enable);
+		}
+		
+		
+		/**
+		 * declare the module as ready and dispatch relevant event 
+		 */
+		protected function setModuleReady():void {
+			isModuleReady = true;
+			dispatchEvent(new Event("moduleReady", true));
 		}
 
 		/**

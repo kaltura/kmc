@@ -68,12 +68,7 @@
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(toggleLoading, _model, "isLoading");
-				if (_ready && _initialTab) {
-					switchToTab(_initialTab);
-				}
-				else {
-					_ready = true;
-				}
+				handleReady();
 			}
 			
 			protected function toggleLoading(isIt:Boolean):void {
@@ -102,8 +97,19 @@
 //				}
 				
 				initModel();
-				if (_ready && _initialTab) {
-					switchToTab(_initialTab);
+				handleReady();
+			}
+			
+			/**
+			 * wait for both <code>start()</code> call and 
+			 * <code>creationComplete</code> event, then start acting
+			 * */
+			private function handleReady():void {
+				if (_ready ) {
+					if (_initialTab) {
+						switchToTab(_initialTab);
+					}
+					setModuleReady();
 				}
 				else {
 					_ready = true;
