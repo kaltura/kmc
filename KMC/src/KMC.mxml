@@ -15,9 +15,9 @@
 			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.events.KalturaEvent;
-			import com.kaltura.kmc.business.AddMenuHandler;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.KmcModuleLoader;
+			import com.kaltura.kmc.business.KmcPluginManager;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -69,11 +69,6 @@
 			private var _kmcModuleLoader:KmcModuleLoader;
 
 			/**
-			 * the class that handles the add menu's position
-			 * */
-			private var _addMenuHandler:AddMenuHandler;
-
-			/**
 			 * KMC UIConf
 			 * */
 			private var _uiconf:XML;
@@ -119,6 +114,13 @@
 			 * _kmcFunction[1]: name of function to execute when the requested module is loaded.
 			 * */
 			private var _kmcFunction:Array;
+			
+			/**
+			 * plugins are FlexModules which do not function as KmcModules.
+			 * they are loaded as simple flex modules and can be refered to
+			 * by their id, via the plugins manager. 
+			 * */
+			private var _pluginManager:KmcPluginManager;
 
 
 			// ==============================================================================
@@ -151,11 +153,21 @@
 					removeModule(_uiconf, moduleName);
 				}
 
+				loadPlugins();
 				setHtmlTabs();
 
 				// switch to needed tab
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
 			}
+			
+			protected function loadPlugins():void {
+				_pluginManager = new KmcPluginManager(this);
+				_pluginManager.addEventListener(KmcErrorEvent.ERROR, onError);
+				_pluginManager.loadPlugins(_uiconf);
+			}
+			
+			
+			
 
 
 			/**
@@ -245,6 +257,10 @@
 				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
 				this.addEventListener(KmcErrorEvent.ERROR, onError);
 				this.addEventListener(KmcHelpEvent.HELP, showHelp);
+				// listen to popup/plugin requests
+				systemManager.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
+				systemManager.addEventListener(KmcErrorEvent.ERROR, onError);
+				systemManager.addEventListener(KmcHelpEvent.HELP, showHelp);
 
 				// save flashvars (keep original keys as well as lowercased keys)
 				var objParam:Object = Application.application.parameters;
@@ -253,7 +269,7 @@
 					objParam[key] = oLowers[key];
 				}
 				_flashvars = objParam;
-
+				
 				// hook ExternalInterface:
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("gotoPage", gotoPage);
@@ -437,9 +453,6 @@
 				//TODO get the concurrentuploads param from kmc uiconf or something
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
 
-
-				_addMenuHandler = new AddMenuHandler();
-				_addMenuHandler.showAddPanel();
 			}
 
 
@@ -599,49 +612,27 @@
 				if (!o.subtab || o.subtab == "") {
 					o.subtab = mInfo.@subtab.toString();
 				}
+				if (!o.extra) {
+					o.extra = new Object();
+				}
+				// if no html tab, use the one from uiconf
+				if (!o.extra.htmlUrl) {
+					o.extra.htmlUrl = mInfo.@htmlUrl.toString();
+				}
+				// if no kmc function, use the one from uiconf
+				if (!o.extra.kmcFunction) {
+					o.extra.kmcFunction = mInfo.@kmcFunction.toString();
+				}
 
 				// check for HTML tabs
-				if (mInfo.@htmlUrl[0]) {
+				if (o.extra.htmlUrl) {
 					// tell JS it should show a html tab
 					JSGate.openIframe(mInfo.@htmlUrl.toString());
 				}
 				// check for action tabs (kmcFunction="module_id.function_name")
-				else if (mInfo.@kmcFunction[0]) {
-					var funky:Array = mInfo.@kmcFunction[0].split(".");
-					var module_id:String;
-					var func_name:String;
-					if (funky.length > 1) { 
-						module_id = funky[0];
-						func_name = funky[1];
-					}
-					else {
-						func_name = funky[0];	
-					}
-					
-					if (!module_id) {
-						// try to trigger func_name on self
-						this[func_name]();
-					}
-					else if (getModuleParent(module_id) && (getModuleParent(module_id).child as KmcModule).isModuleReady) {
-						// try to trigger func_name on relevant module
-						try {
-							getModuleParent(module_id).child[func_name]();
-						}
-						catch (e:Error) {
-							alert(resourceManager.getString('kmc', 'method_dont_exist', [module_id, func_name]), resourceManager.getString('kmc', 'error_title'));
-						}
-					}
-					else {
-						// save func_name
-						_kmcFunction = funky;
-						// add listener to moduleReady event
-						addEventListener(KmcModule.MODULE_READY, handleKmcFunction, false, 0, true);
-						// start loading the relevant module
-						mInfo = _uiconf.modules.module.(@id == module_id)[0];
-						o = {moduleName: module_id, subtab: mInfo.@subtab.toString()};
-						_currentObject = o;
-						loadModule(mInfo);
-					}
+				else if (o.extra.kmcFunction) {
+					handleKmcFunction(o);
+					return;
 				}
 				else {
 					// load KMC module
@@ -655,11 +646,65 @@
 
 			
 			/**
+			 * execute given function either on KMC itself, a module or a plugin
+			 * */
+			private function handleKmcFunction(moduleInfo:Object):void {
+				var funky:Array = moduleInfo.extra.kmcFunction.split(".");
+				var module_id:String;
+				var func_name:String;
+				if (funky.length > 1) { 
+					module_id = funky[0];
+					func_name = funky[1];
+				}
+				else {
+					func_name = funky[0];	
+				}
+				
+				//  triggering KMC method
+				if (!module_id) {
+					// try to trigger func_name on self
+					this[func_name]();
+				}
+				// triggering module method
+				else if (getModuleParent(module_id) && (getModuleParent(module_id).child as KmcModule).isModuleReady) {
+					// module is ready
+					// try to trigger func_name on relevant module
+					try {
+						getModuleParent(module_id).child[func_name]();
+					}
+					catch (e:Error) {
+						alert(resourceManager.getString('kmc', 'method_dont_exist', [module_id, func_name]), resourceManager.getString('kmc', 'error_title'));
+					}
+				}
+				// module is not yet ready, load it and then execute method
+				else {
+					// either unloaded module or a plugin. look for a module:
+					var mInfo:XML = _uiconf.modules.module.(@id == module_id)[0];
+					if (mInfo) {
+						// save func_name
+						_kmcFunction = funky;
+						// add listener to moduleReady event
+						addEventListener(KmcModule.MODULE_READY, handleSavedKmcFunction, false, 0, true);
+						// start loading the relevant module
+						_currentObject = {moduleName: module_id, subtab: mInfo.@subtab.toString()};;
+						loadModule(mInfo);
+					
+					}
+					// no module, try triggering plugin method
+					else {
+						_pluginManager.executePluginMethod(module_id, func_name);
+						// this is our last option, and if it fails a KmcErrorEvent is dispatched
+						// so basically, wer'e good.
+					}
+				}
+			}
+			
+			/**
 			 * if a kmcFunction is waiting to execute for the ready module, execute it.
 			 * */
-			private function handleKmcFunction(e:Event):void {
+			private function handleSavedKmcFunction(e:Event):void {
 				if (_kmcFunction && (e.target as KmcModule).getModuleName() == _kmcFunction[0]) {
-					removeEventListener(KmcModule.MODULE_READY, handleKmcFunction, false);
+					removeEventListener(KmcModule.MODULE_READY, handleSavedKmcFunction, false);
 					// try to trigger func_name on relevant module
 					try {
 						(e.target as KmcModule)[_kmcFunction[1]]();
@@ -798,13 +843,6 @@
 				navigateToURL(new URLRequest(url), "_blank");
 			}
 			
-			/**
-			 * shows the add menu panel
-			 * @internal (triggered via uiconf)
-			 * */
-			protected function showAddPanel():void {
-				_addMenuHandler.showAddPanel();
-			}
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>

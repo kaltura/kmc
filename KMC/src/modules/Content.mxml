@@ -44,7 +44,6 @@
 			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDetailsWin;
 			import com.kaltura.managers.FileUploadManager;
-			import com.kaltura.types.KalturaEntryReplacementStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -59,7 +58,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.containers.TitleWindow;
@@ -94,15 +93,6 @@
 			 * */
 			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
 
-			/**
-			 * active popup window
-			 * */
-//			private var _popup:TitleWindow;
-
-			/**
-			 * a secondary popup window opened over the first one
-			 * */
-//			private var _secondPopup:TitleWindow;
 
 			/**
 			 * Google analytics tracker identifier
@@ -209,6 +199,19 @@
 
 			}
 
+			
+			/**
+			 * create a new media entry
+			 * */
+			public function createVideoEntry():void {
+				var entry:KalturaMediaEntry = new KalturaMediaEntry();
+				entry.name = resourceManager.getString('cms','defaultEntryName');
+				//TODO currently only video available
+				entry.mediaType = KalturaMediaType.VIDEO;
+				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_MEDIA, entry, true);
+				addMedia.dispatch();
+			}
+			
 
 			protected function showError(e:FileUploadEvent):void {
 				Alert.show(e.error, ResourceManager.getInstance().getString('cms', 'error'));

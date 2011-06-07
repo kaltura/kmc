@@ -136,12 +136,30 @@ package com.kaltura.kmc.business
 			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
 		}
 		
+		/**
+		 * open the KCW with webcam config
+		 * @param ks
+		 * @param conversion_profile
+		 */
+		public static function openKcwWebcam(/*ks:String, conversion_profile:String = ''*/):void {
+//			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		}
+		
+		/**
+		 * open the KCW with online services config
+		 * @param ks
+		 * @param conversion_profile
+		 */
+		public static function openKcwServices(/*ks:String, conversion_profile:String = ''*/):void {
+//			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		}
+		
 		
 		/**
 		 * ask the page where to position the add entry menu 
 		 * @return top right point of where the menu should open.
 		 */
-		public static function getAddPanelPosition():int {
+		public static function getPanelPosition():int {
 			return ExternalInterface.call("kmc.functions.getAddPanelPosition");
 		}
 	}

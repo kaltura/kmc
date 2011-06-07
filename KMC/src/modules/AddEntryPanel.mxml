@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 a menu that allows adding content
+-->
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" width="200" layout="vertical" styleName="addPanel"
+		   preinitialize="creationCompleteHandler(event)" implements="com.kaltura.kmc.business.IPopupMenu">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.business.IPopupMenu;
+			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.business.MenuHandler;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			
+			import mx.events.FlexEvent;
+			private const BTN_WIDTH:int = 150;
+
+			private var _showingHandler:MenuHandler;
+			
+			/**
+			 * application root for the menu handler
+			 * */
+			private var _approot:DisplayObjectContainer;
+
+
+			/**
+			 * Opens a desktop file selection pop-up. Allowing video, audio and image files selection
+			 * */
+			protected function btnUpload_clickHandler(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+
+
+			/**
+			 * opens a KCW with only webcam recording option
+			 * */
+			protected function btnWebcam_clickHandler(event:MouseEvent):void {
+				JSGate.openKcwWebcam();
+			}
+
+
+			/**
+			 * Opens a desktop file selection pop-up. Allowing csv/xml files selection
+			 * */
+			protected function btnBulk_clickHandler(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function btnServices_clickHandler(event:MouseEvent):void {
+				JSGate.openKcwServices();
+			}
+			
+			protected function btnVideo_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction:"content.createVideoEntry"}, true));
+				hidePanel();
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_showingHandler = new MenuHandler(this, "positionAddPanel");
+				if (_approot) {
+					_showingHandler.setRoot(_approot);
+				}
+			}
+
+			public function setRoot(doc:DisplayObjectContainer):void {
+				_approot = doc;
+				if (_showingHandler) {
+					_showingHandler.setRoot(doc);
+				}
+			}
+
+			/**
+			 * show the panel
+			 * */
+			public function showPanel():void {
+				_showingHandler.showPanel();
+			}
+
+
+			/**
+			 * hide the panel
+			 */
+			public function hidePanel(me:MouseEvent = null):void {
+				_showingHandler.hidePanel(me);
+			}
+
+
+			/**
+			 * position the panel
+			 * @param right
+			 */
+			public function positionPanel(right:Number):void {
+				_showingHandler.positionPanel(right);
+			}
+
+			
+
+		]]>
+	</mx:Script>
+	<mx:Label styleName="addPanelLabel" text="Upload"/>
+	<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="Upload File/s"/>
+	<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="Webcam Recording"/>
+	<mx:Label styleName="addPanelLabel" text="Import"/>
+	<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="Submit xml/csv"/>
+	<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="From Online Services"/>
+	<mx:Label styleName="addPanelLabel" text="Prepare Entry"/>
+	<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton" label="Video Entry"/>
+	<mx:Button id="btnAudio" click="" width="{BTN_WIDTH}" styleName="addPanelButton" label="Audeo Entry"/>
+	<mx:Button id="btnLive" click="" width="{BTN_WIDTH}" styleName="addPanelButton" label="Livestream Entry"/>
+</mx:Module>

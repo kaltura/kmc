@@ -47,6 +47,11 @@
 			 * */
 			public static const CREATE_NEW_RULE_PLAYLIST:String = "createNewRulePlaylist";
 			
+			/**
+			 * defines the value of the type property of the createNewLivestream event.
+			 * */
+			public static const CREATE_NEW_LIVESTREAM:String = "createNewLivestream";
+			
 			[Bindable]
 			/**
 			 * show New Stream button
@@ -213,19 +218,11 @@
 			}
 
 
-			private function onNewEntry():void {
-				var entry:KalturaMediaEntry = new KalturaMediaEntry();
-				entry.name = resourceManager.getString('cms','defaultEntryName');
-				//TODO currently only video available
-				entry.mediaType = KalturaMediaType.VIDEO;
-				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_MEDIA, entry, true);
-				addMedia.dispatch();
-			}
+			
 			
 			
 			private function onNewStream():void {
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
-				cgEvent.dispatch();
+				dispatchEvent(new Event(CREATE_NEW_LIVESTREAM));
 			}
 
 
@@ -247,6 +244,7 @@
 		  [Event(name="rejectSelectedEntries", type="flash.events.Event")] 
 		  [Event(name="createNewManualPlaylist", type="flash.events.Event")] 
 		  [Event(name="createNewRulePlaylist", type="flash.events.Event")] 
+		  [Event(name="createNewLivestream", type="flash.events.Event")] 
 	</mx:Metadata>
 	<mx:HBox height="100%" verticalAlign="middle" left="5" horizontalGap="0">
 		<mx:Label text="{resourceManager.getString('cms', 'selectionTitle')}"/>
@@ -311,7 +309,5 @@
 		<mx:Button id="newStreamBtn" label="{ResourceManager.getInstance().getString('cms', 'newLiveStream')}"
 				   click="onNewStream()" buttonMode="true" visible="{enablelivestream}"
 				   includeInLayout="{enablelivestream}" styleName="dataGridBtn"/>
-		<mx:Button id="newEntryBtn" label="{ResourceManager.getInstance().getString('cms', 'newEntry')}"
-				   click="onNewEntry()" buttonMode="true" styleName="dataGridBtn"/>
 	</mx:HBox>
 </mx:HBox>
