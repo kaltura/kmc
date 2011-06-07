@@ -201,12 +201,22 @@
 
 			
 			/**
-			 * create a new media entry
+			 * create a new audio entry
+			 * */
+			public function createAudioEntry():void {
+				var entry:KalturaMediaEntry = new KalturaMediaEntry();
+				entry.name = resourceManager.getString('cms','defaultEntryName');
+				entry.mediaType = KalturaMediaType.AUDIO;
+				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_MEDIA, entry, true);
+				addMedia.dispatch();
+			}
+			
+			/**
+			 * create a new video entry
 			 * */
 			public function createVideoEntry():void {
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
 				entry.name = resourceManager.getString('cms','defaultEntryName');
-				//TODO currently only video available
 				entry.mediaType = KalturaMediaType.VIDEO;
 				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_MEDIA, entry, true);
 				addMedia.dispatch();
