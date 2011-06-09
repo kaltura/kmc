@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.create.view.FilesTable;
+			import com.kaltura.types.KalturaMediaType;
+			
+			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
+			
+			public static const TYPES:Array = [
+				{value:KalturaMediaType.AUDIO, name:ResourceManager.getInstance().getString('create', 'audio_files')},
+				{value:KalturaMediaType.VIDEO, name:ResourceManager.getInstance().getString('create', 'video_files')},
+				{value:KalturaMediaType.IMAGE, name:ResourceManager.getInstance().getString('create', 'image_files')}];
+
+			protected function cb_changeHandler(event:ListEvent):void {
+				dispatchEvent(new Event(FilesTable.TYPE_SELECTED, true));
+			}
+			
+			public function get selectedType():int {
+				return cb.selectedItem.value;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="cb" change="cb_changeHandler(event)" dataProvider="{TYPES}" labelField="name" width="100%"/>
+</mx:VBox>

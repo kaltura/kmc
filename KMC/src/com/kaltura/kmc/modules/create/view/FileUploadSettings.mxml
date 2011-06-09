@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+							xmlns:containers="com.kaltura.containers.*"
+							xmlns:view="com.kaltura.kmc.modules.create.view.*"
+							width="550" height="400" layout="vertical"
+							creationComplete="creationCompleteHandler(event)"
+							>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.conversionProfile.ConversionProfileList;
+			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
+			import com.kaltura.kmc.modules.create.vo.UploadFile;
+			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.vo.KalturaConversionProfileListResponse;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+			
+			
+			public var client:KalturaClient;
+			
+			
+			private const VIDEO_TYPES:Array = ["flv","asf","qt","mov","mpg","avi","wmv","mp4","3gp","f4v","m4v"];
+			private const AUDIO_TYPES:Array = ["mp3","wav"];
+			private const IMAGE_TYPES:Array = ["jpg","bmp","png","gif","tiff"];
+
+			
+			[Bindable]
+			/**
+			 * list of available conversion profiles 
+			 * <code>KalturaConversionProfile</code> objects
+			 * */
+			private var _conversionProfiles:ArrayCollection;
+			
+			
+			
+			[Bindable][ArrayElementType("UploadFile")]
+			private var _files:ArrayCollection;
+			
+			/**
+			 * files to be uploaded 
+			 * */
+			public function uploadFiles(value:Array, addToExisting:Boolean=false):void {
+				var ar:Array = new Array();
+				var uf:UploadFile;
+				for each (var fr:FileReference in value) {
+					uf = new UploadFile();
+					uf.fr = fr;
+					uf.mediaType = getFileMediaType(fr);
+					uf.fileName = fr.name;
+					ar.push(uf);
+				}
+				if (addToExisting) {
+					_files.addAll(new ArrayCollection(ar));
+				}
+				else {
+					_files = new ArrayCollection(ar);
+				}
+			}
+			
+			/**
+			 * get media type according to file extension
+			 * @param fr	the queried file
+			 * @return matching KalturaMediaType enum value, or -1 if no match found
+			 * */
+			private function getFileMediaType(fr:FileReference):int {
+				var dot:int = fr.name.lastIndexOf(".");
+				var ext:String = fr.name.substring(dot + 1);
+				var str:String;
+				for each (str in VIDEO_TYPES) {
+					if (str == ext) {
+						return KalturaMediaType.VIDEO;
+					}
+				}
+				for each (str in AUDIO_TYPES) {
+					if (str == ext) {
+						return KalturaMediaType.AUDIO;
+					}
+				}
+				for each (str in IMAGE_TYPES) {
+					if (str == ext) {
+						return KalturaMediaType.IMAGE;
+					}
+				}
+				return -1;
+			}
+
+			
+			private function creationCompleteHandler(event:FlexEvent):void {
+				listConversionProfiels();
+			}
+			
+			private function listConversionProfiels():void {
+				var cpl:ConversionProfileList = new ConversionProfileList();
+				cpl.addEventListener(KalturaEvent.COMPLETE, conversionProfilesHandler);
+				cpl.addEventListener(KalturaEvent.FAILED, conversionProfilesHandler);
+				client.post(cpl);
+			}
+			
+			private function conversionProfilesHandler(e:KalturaEvent):void {
+				if (e.type == KalturaEvent.FAILED) {
+					Alert.show(e.error.errorMsg, resourceManager.getString('create', 'error'));
+				}
+				else {
+					_conversionProfiles = new ArrayCollection((e.data as KalturaConversionProfileListResponse).objects);
+				}
+			}
+			
+			/**
+			 * open the file browser 
+			 * */
+			protected function addMoreFiles():void {
+				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
+				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, addFilesToList);
+				neu.doFileUpload();
+			}
+			
+			protected function addFilesToList(e:Event):void {
+				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, addFilesToList);
+				uploadFiles((e.target as MultipleMediaFilesSelector).getFiles(), true);
+			}
+
+
+			protected function submit(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox verticalAlign="middle" >
+		<mx:Label text="{resourceManager.getString('create', 'convProfLbl')}:" 
+				  styleName="simpleBoldText"/>
+		<mx:ComboBox id="cnvrtProfCb" dataProvider="{_conversionProfiles}" selectedIndex="0"/>
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('create', 'uploadedFiles')}" 
+			  styleName="tableName"/>
+	<view:FilesTable id="filesTable" width="100%" dataProvider="{_files}" addFiles="addMoreFiles()"/>
+	
+	<mx:ControlBar>
+		<mx:Button id="submitBtn" click="submit(event)" buttonMode="true"
+				   label="{resourceManager.getString('create', 'submitUploadLabel')}"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

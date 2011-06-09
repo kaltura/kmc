@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.create.view.renderers.EditableNameRenderer;
+			import com.kaltura.kmc.modules.create.view.renderers.TypeRenderer;
+			import com.kaltura.kmc.modules.create.vo.UploadFile;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+			import mx.resources.ResourceManager;
+
+			public static const TYPE_SELECTED:String = "type_selected";
+			public static const NAME_CHANGED:String = "name_changed";
+			public static const DELETE_FILE:String = "delete_file";
+			public static const ADD_FILES:String = "addFiles";
+
+			[Bindable]
+			[ArrayElementType("UploadFile")]
+			protected var _dataProvider:ArrayCollection;
+
+
+
+			/**
+			 * allow adding more files, depending on nameEditable status
+			 * */
+			protected function addMoreFiles(event:MouseEvent):void {
+				// have to open file browser, etc
+				dispatchEvent(new Event(FilesTable.ADD_FILES));
+			}
+
+
+			/**
+			 * add listeners to itemrenderers events
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(FilesTable.TYPE_SELECTED, typeSelected);
+				addEventListener(FilesTable.NAME_CHANGED, nameChanged);
+				addEventListener(FilesTable.DELETE_FILE, deleteFile);
+			}
+
+
+			/**
+			 * remove relevant VO (the IR's data) from DP
+			 * */
+			protected function deleteFile(e:Event):void {
+				var ar:Array = dataProvider.source;
+				for (var i:int = 0; i < ar.length; i++) {
+					if (ar[i] == e.target.data) {
+						ar.splice(i, 1);
+					}
+				}
+				dataProvider.refresh();
+			}
+
+
+			/**
+			 * set the event target's selected item data to the relevent VO (the IR's data)
+			 * */
+			protected function typeSelected(e:Event):void {
+				var uf:UploadFile = e.target.data as UploadFile;
+				uf.mediaType = (e.target as TypeRenderer).selectedType;
+			}
+
+
+			/**
+			 * set the event target's selected item data to the relevent VO (the IR's data)
+			 * */
+			protected function nameChanged(e:Event):void {
+				var uf:UploadFile = e.target.data as UploadFile;
+				uf.fileName = (e.target as EditableNameRenderer).text;
+			}
+
+
+
+			public function get dataProvider():ArrayCollection {
+				return _dataProvider;
+			}
+
+
+			public function set dataProvider(value:ArrayCollection):void {
+				_dataProvider = value;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Event(name="addFiles", type="flash.events.Event")] 
+	</mx:Metadata>
+
+	<mx:DataGrid id="filesList" width="100%" dataProvider="{_dataProvider}">
+		<mx:columns>
+			<mx:DataGridColumn id="fileName" headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
+							   itemRenderer="com.kaltura.kmc.modules.create.view.renderers.EditableNameRenderer"
+							   width="{140}" />
+			<mx:DataGridColumn id="fileType" headerText="{ResourceManager.getInstance().getString('cms', 'convFlavorHeader')}" 
+							   itemRenderer="com.kaltura.kmc.modules.create.view.renderers.TypeRenderer"/>
+			<mx:DataGridColumn id="fileSize" width="{60}" 
+							   headerText="{ResourceManager.getInstance().getString('cms', 'fileSizeHeader')}"
+							   itemRenderer="com.kaltura.kmc.modules.create.view.renderers.SizeRenderer"/>
+			<mx:DataGridColumn id="actions" width="{60}" headerText="{ResourceManager.getInstance().getString('cms', 'actionsHeader')}"
+							   itemRenderer="com.kaltura.kmc.modules.create.view.renderers.ActionsRenderer"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:LinkButton id="addBtn" click="addMoreFiles(event)" styleName="plusIcon"
+				   label="{ResourceManager.getInstance().getString('cms', 'addFiles')}" />
+</mx:VBox>

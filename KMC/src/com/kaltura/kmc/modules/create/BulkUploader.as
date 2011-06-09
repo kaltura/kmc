@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.add
+package com.kaltura.kmc.modules.create
 {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.bulkUpload.BulkUploadAdd;

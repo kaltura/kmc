@@ -17,14 +17,21 @@
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.MenuHandler;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
-			import com.kaltura.kmc.modules.add.BulkUploader;
-
+			import com.kaltura.kmc.modules.create.BulkUploader;
+			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
+			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
 			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			
 			private const BTN_WIDTH:int = 150;
 
 			private var _showingHandler:MenuHandler;
 
-
+			
 
 			/**
 			 * application root for the menu handler
@@ -36,15 +43,26 @@
 			 * */
 			private var _kc:KalturaClient;
 
-
-
+			
+			protected function showUploadSettingsWindow(e:Event):void {
+				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+				var fus:FileUploadSettings = new FileUploadSettings();
+				fus.client = _kc;
+				fus.uploadFiles((e.target as MultipleMediaFilesSelector).getFiles());
+				PopUpManager.addPopUp(fus, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(fus);
+			}
 
 			/**
 			 * Opens a desktop file selection pop-up. Allowing video, audio and image files selection
 			 * */
 			protected function btnUpload_clickHandler(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
+				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+				neu.doFileUpload();
 			}
+			
+			
 
 
 			/**
