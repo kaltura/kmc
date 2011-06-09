@@ -3,23 +3,39 @@
 	 a menu that allows adding content
 -->
 <mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" width="200" layout="vertical" styleName="addPanel"
-		   preinitialize="creationCompleteHandler(event)" implements="com.kaltura.kmc.business.IPopupMenu">
+		   preinitialize="creationCompleteHandler(event)"
+		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu">
+	<mx:Metadata>
+		[ResourceBundle("create")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.kmc.business.IKmcPlugin;
 			import com.kaltura.kmc.business.IPopupMenu;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.MenuHandler;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.add.BulkUploader;
 			
 			import mx.events.FlexEvent;
 			private const BTN_WIDTH:int = 150;
 
 			private var _showingHandler:MenuHandler;
+
 			
+
 			/**
 			 * application root for the menu handler
 			 * */
 			private var _approot:DisplayObjectContainer;
+
+			/**
+			 * @copy #client
+			 * */
+			private var _kc:KalturaClient;
+
+
 
 
 			/**
@@ -39,28 +55,52 @@
 
 
 			/**
-			 * Opens a desktop file selection pop-up. Allowing csv/xml files selection
+			 * Opens a desktop file selection pop-up, allowing csv/xml files selection
 			 * */
 			protected function btnBulk_clickHandler(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+				var bu:BulkUploader = new BulkUploader(_kc);
+				bu.doUpload();
 			}
 
 
+			/**
+			 * Opens a KCW with audio/video/image online services options only
+			 * */
 			protected function btnServices_clickHandler(event:MouseEvent):void {
 				JSGate.openKcwServices();
 			}
-			
+
+
+			/**
+			 * Opens a video entry drill down in a "new entry" mode on top
+			 * of content management page
+			 * */
 			protected function btnVideo_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction:"content.createVideoEntry"}, true));
-				hidePanel();
-			}
-			
-			
-			protected function btnAudio_clickHandler(event:MouseEvent):void {
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction:"content.createAudioEntry"}, true));
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createVideoEntry"}, true));
 				hidePanel();
 			}
 
+
+			/**
+			 * Opens an audio entry drill down in a "new entry" mode on top
+			 * of content management page
+			 * */
+			protected function btnAudio_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createAudioEntry"}, true));
+				hidePanel();
+			}
+
+
+			/**
+			 * Opens the new live stream window on top of content management page
+			 * */
+			protected function btnLive_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createLiveEntry"}, true));
+				hidePanel();
+			}
+
+
+			
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_showingHandler = new MenuHandler(this, "positionAddPanel");
@@ -69,12 +109,14 @@
 				}
 			}
 
+
 			public function setRoot(doc:DisplayObjectContainer):void {
 				_approot = doc;
 				if (_showingHandler) {
 					_showingHandler.setRoot(doc);
 				}
 			}
+
 
 			/**
 			 * show the panel
@@ -100,20 +142,35 @@
 				_showingHandler.positionPanel(right);
 			}
 
+
+			/**
+			 * KalturaClient used for API calls
+			 * */
+			public function get client():KalturaClient {
+				return _kc;
+			}
+
+
+			public function set client(value:KalturaClient):void {
+				_kc = value;
+			}
 		]]>
 	</mx:Script>
-	<mx:Label styleName="addPanelLabel" text="Upload"/>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'upload_lbl')}"/>
 	<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="Upload File/s"/>
+			   label="{resourceManager.getString('create', 'upload_btn')}"/>
 	<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="Webcam Recording"/>
-	<mx:Label styleName="addPanelLabel" text="Import"/>
+			   label="{resourceManager.getString('create', 'webcam_btn')}"/>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'import_lbl')}"/>
 	<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="Submit xml/csv"/>
+			   label="{resourceManager.getString('create', 'bulk_btn')}"/>
 	<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="From Online Services"/>
-	<mx:Label styleName="addPanelLabel" text="Prepare Entry"/>
-	<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton" label="Video Entry"/>
-	<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton" label="Audeo Entry"/>
-	<mx:Button id="btnLive" click="" width="{BTN_WIDTH}" styleName="addPanelButton" label="Livestream Entry"/>
+			   label="{resourceManager.getString('create', 'services_btn')}"/>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'prepare_lbl')}"/>
+	<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="{resourceManager.getString('create', 'video_btn')}"/>
+	<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="{resourceManager.getString('create', 'audio_btn')}"/>
+	<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+			   label="{resourceManager.getString('create', 'live_btn')}"/>
 </mx:Module>

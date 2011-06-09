@@ -1,5 +1,6 @@
 package com.kaltura.kmc.business
 {
+	import com.kaltura.KalturaClient;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	
 	import flash.display.DisplayObjectContainer;
@@ -30,10 +31,16 @@ package com.kaltura.kmc.business
 		 */
 		private var _approot:DisplayObjectContainer;
 		
+		/**
+		 * client for API calls 
+		 */
+		private var _client:KalturaClient;
 		
-		public function KmcPluginManager(approot:DisplayObjectContainer)
+		
+		public function KmcPluginManager(approot:DisplayObjectContainer, client:KalturaClient)
 		{
 			_approot = approot;
+			_client = client;
 			_plugins = new Object(); 
 		}
 		
@@ -63,11 +70,14 @@ package com.kaltura.kmc.business
 			}
 			ml.removeEventListener(ModuleEvent.READY, onPluginLoaded);
 			ml.removeEventListener(ModuleEvent.ERROR, onPluginLoadError);
-			var pluginInfo:XML = _uiconf.plugins.plugin.(@path == ml.url)[0]; //TODO get the correct url using dictionary?
+			var pluginInfo:XML = _uiconf.plugins.plugin.(@path == ml.url)[0]; 
 			var plugin:Module = ml.child as Module;
 			plugin.id = pluginInfo.@id.toString();
 			if (plugin is IPopupMenu) {
 				(plugin as IPopupMenu).setRoot(_approot);
+			}
+			if (plugin is IKmcPlugin) {
+				(plugin as IKmcPlugin).client = _client;
 			}
 			_plugins[plugin.id] = plugin;
 			
