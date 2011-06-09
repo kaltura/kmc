@@ -8,6 +8,7 @@
 	<mx:Metadata>
 		[ResourceBundle("create")]
 	</mx:Metadata>
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -17,13 +18,13 @@
 			import com.kaltura.kmc.business.MenuHandler;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.add.BulkUploader;
-			
+
 			import mx.events.FlexEvent;
 			private const BTN_WIDTH:int = 150;
 
 			private var _showingHandler:MenuHandler;
 
-			
+
 
 			/**
 			 * application root for the menu handler
@@ -72,6 +73,14 @@
 
 
 			/**
+			 * downloads csv and xml samples
+			 * */
+			protected function btnSamples_clickHandler(event:MouseEvent):void {
+				// TODO Auto-generated method stub
+			}
+
+
+			/**
 			 * Opens a video entry drill down in a "new entry" mode on top
 			 * of content management page
 			 * */
@@ -100,7 +109,7 @@
 			}
 
 
-			
+
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_showingHandler = new MenuHandler(this, "positionAddPanel");
@@ -156,21 +165,31 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'upload_lbl')}"/>
-	<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'upload_btn')}"/>
-	<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'webcam_btn')}"/>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'import_lbl')}"/>
-	<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'bulk_btn')}"/>
-	<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'services_btn')}"/>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'prepare_lbl')}"/>
-	<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'video_btn')}"/>
-	<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'audio_btn')}"/>
-	<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-			   label="{resourceManager.getString('create', 'live_btn')}"/>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'upload_lbl')}"
+			  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
+	<mx:VBox id="uploadBox" styleName="addPanelButtonBox">
+		<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+				   label="{resourceManager.getString('create', 'upload_btn')}"/>
+		<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+				   label="{resourceManager.getString('create', 'webcam_btn')}"/>
+	</mx:VBox>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'import_lbl')}"
+			  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
+	<mx:VBox id="importBox" styleName="addPanelButtonBox">
+		<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+				   label="{resourceManager.getString('create', 'bulk_btn')}"/>
+		<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
+				   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
+		<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"/>
+	</mx:VBox>
+	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'prepare_lbl')}"
+			  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
+	<mx:VBox id="prepareBox" styleName="addPanelButtonBox">
+		<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+				   label="{resourceManager.getString('create', 'video_btn')}"/>
+		<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+				   label="{resourceManager.getString('create', 'audio_btn')}"/>
+		<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+				   label="{resourceManager.getString('create', 'live_btn')}"/>
+	</mx:VBox>
 </mx:Module>
