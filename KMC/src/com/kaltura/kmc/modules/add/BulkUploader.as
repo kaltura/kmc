@@ -61,7 +61,6 @@ package com.kaltura.kmc.modules.add
 		
 		
 		protected function bulkUploadCompleteHandler(e:KalturaEvent):void {
-			//TODO use correct locale file
 			var er:KalturaError = e.error;
 			if (!er) return;
 			if (er.errorCode == APIErrorCode.INVALID_KS) {
