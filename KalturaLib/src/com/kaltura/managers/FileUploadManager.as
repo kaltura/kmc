@@ -1,10 +1,8 @@
 package com.kaltura.managers {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.MultiRequest;
-	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
-	import com.kaltura.commands.media.MediaAddContent;
 	import com.kaltura.commands.media.MediaUpdateContent;
 	import com.kaltura.commands.uploadToken.UploadTokenAdd;
 	import com.kaltura.commands.uploadToken.UploadTokenDelete;
@@ -12,12 +10,9 @@ package com.kaltura.managers {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.FileUploadEvent;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
-	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	import com.kaltura.vo.KalturaUploadToken;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
