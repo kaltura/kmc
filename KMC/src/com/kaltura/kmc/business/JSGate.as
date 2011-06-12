@@ -141,8 +141,8 @@ package com.kaltura.kmc.business
 		 * @param ks
 		 * @param conversion_profile
 		 */
-		public static function openKcwWebcam(/*ks:String, conversion_profile:String = ''*/):void {
-//			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		public static function openKcwWebcam(ks:String, conversion_profile:String = ''):void {
+			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
 		}
 		
 		/**
@@ -150,8 +150,8 @@ package com.kaltura.kmc.business
 		 * @param ks
 		 * @param conversion_profile
 		 */
-		public static function openKcwServices(/*ks:String, conversion_profile:String = ''*/):void {
-//			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		public static function openKcwServices(ks:String, conversion_profile:String = ''):void {
+			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
 		}
 		
 		

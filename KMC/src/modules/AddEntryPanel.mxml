@@ -8,10 +8,12 @@
 	<mx:Metadata>
 		[ResourceBundle("create")]
 	</mx:Metadata>
-
+			
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.conversionProfile.ConversionProfileList;
+			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.IKmcPlugin;
 			import com.kaltura.kmc.business.IPopupMenu;
 			import com.kaltura.kmc.business.JSGate;
@@ -20,8 +22,8 @@
 			import com.kaltura.kmc.modules.create.BulkUploader;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
-
-			import mx.collections.ArrayCollection;
+			
+			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -35,12 +37,19 @@
 			public var samplesUrl:String;
 			
 			private const BTN_WIDTH:int = 150;
+			
+			/*
+				WINDOW STATES
+			*/
+			private const MENU_STATE:String = "menu_state";
+			private const WEBCAM_STATE:String = "webcam_state";
+			private const SERVICES_STATE:String = "services_state";
 
 			private var _showingHandler:MenuHandler;
 
 			private var _flashvars:Object;
 
-
+			private var _state:String = MENU_STATE;
 
 			/**
 			 * application root for the menu handler
@@ -79,7 +88,7 @@
 			 * opens a KCW with only webcam recording option
 			 * */
 			protected function btnWebcam_clickHandler(event:MouseEvent):void {
-				JSGate.openKcwWebcam();
+				showOptionsScreen(resourceManager.getString('create', 'webcam_state_title'));
 			}
 
 
@@ -96,8 +105,10 @@
 			 * Opens a KCW with audio/video/image online services options only
 			 * */
 			protected function btnServices_clickHandler(event:MouseEvent):void {
-				JSGate.openKcwServices();
+				showOptionsScreen(resourceManager.getString('create', 'services_state_title'));
 			}
+			
+			
 
 
 			/**
@@ -136,12 +147,64 @@
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.createLiveEntry"}, true));
 				hidePanel();
 			}
+			
+			
+			/**
+			 * shows the options screen
+			 * @param title	text to show at the top of the screen
+			 * */
+			protected function showOptionsScreen(title:String):void {
+				_state = WEBCAM_STATE;
+				viewStack.selectedChild = optionsScreen;
+				lblState.text = title;
+				// get conversion profiles list
+				if (!cbConvProfiles.dataProvider.length) {
+					enabled = false;
+					var cpl:ConversionProfileList = new ConversionProfileList();
+					cpl.addEventListener(KalturaEvent.COMPLETE, onConvProfListed);
+					cpl.addEventListener(KalturaEvent.FAILED, onConvProfListed);
+					_kc.post(cpl);
+				}
+			}
+			
+			protected function onConvProfListed(e:KalturaEvent):void {
+				enabled = true;
+				if (e.type == KalturaEvent.FAILED) {
+					Alert.show(e.error.errorMsg, resourceManager.getString('create', 'error'));
+				}
+				else {
+					cbConvProfiles.dataProvider = e.data.objects;
+				}
+			}
 
-
+			protected function cancel_clickHandler(event:MouseEvent):void {
+				resetPanel();
+			}
+			
+			
+			/**
+			 * open KCW with desired config
+			 * */
+			protected function openKcw(event:MouseEvent):void {
+				switch (_state) {
+					case WEBCAM_STATE:
+						JSGate.openKcwWebcam(_kc.ks, cbConvProfiles.selectedItem.id);
+						break;
+					case SERVICES_STATE:
+						JSGate.openKcwServices(_kc.ks, cbConvProfiles.selectedItem.id);
+						break;
+				}
+			}
+			
+			protected function resetPanel(e:Event = null):void {
+				_state = MENU_STATE;
+				viewStack.selectedChild = menuScreen;
+			}
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_showingHandler = new MenuHandler(this, "positionAddPanel");
+				_showingHandler.addEventListener(MenuHandler.MENU_REMOVED, resetPanel);
 				if (_approot) {
 					_showingHandler.setRoot(_approot);
 				}
@@ -169,6 +232,7 @@
 			 */
 			public function hidePanel(me:MouseEvent = null):void {
 				_showingHandler.hidePanel(me);
+				resetPanel();
 			}
 
 
@@ -179,7 +243,7 @@
 			public function positionPanel(right:Number):void {
 				_showingHandler.positionPanel(right);
 			}
-
+			
 
 			/**
 			 * KalturaClient used for API calls
@@ -202,34 +266,54 @@
 			public function set flashvars(value:Object):void {
 				_flashvars = value;
 			}
+			
 		]]>
 	</mx:Script>
-	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
-			  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
-	<mx:VBox id="uploadBox" styleName="addPanelButtonBox">
-		<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-				   label="{resourceManager.getString('create', 'upload_btn')}"/>
-		<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-				   label="{resourceManager.getString('create', 'webcam_btn')}"/>
-	</mx:VBox>
-	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'import_lbl')}"
-			  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
-	<mx:VBox id="importBox" styleName="addPanelButtonBox">
-		<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-				   label="{resourceManager.getString('create', 'bulk_btn')}"/>
-		<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
-				   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
-		<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"
-					   label="{resourceManager.getString('create', 'samples_btn')}"/>
-	</mx:VBox>
-	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
-			  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
-	<mx:VBox id="prepareBox" styleName="addPanelButtonBox">
-		<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
-				   label="{resourceManager.getString('create', 'video_btn')}"/>
-		<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
-				   label="{resourceManager.getString('create', 'audio_btn')}"/>
-		<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
-				   label="{resourceManager.getString('create', 'live_btn')}"/>
-	</mx:VBox>
+	<mx:ViewStack styleName="noPadding" id="viewStack" creationPolicy="all" >
+		<mx:VBox styleName="noPadding" id="menuScreen" >
+			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
+					  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
+			<mx:VBox id="uploadBox" styleName="addPanelButtonBox">
+				<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+						   label="{resourceManager.getString('create', 'upload_btn')}"/>
+				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+						   label="{resourceManager.getString('create', 'webcam_btn')}"/>
+			</mx:VBox>
+			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'import_lbl')}"
+					  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
+			<mx:VBox id="importBox" styleName="addPanelButtonBox">
+				<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+						   label="{resourceManager.getString('create', 'bulk_btn')}"/>
+				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
+						   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
+				<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"
+							   label="{resourceManager.getString('create', 'samples_btn')}"/>
+			</mx:VBox>
+			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
+					  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
+			<mx:VBox id="prepareBox" styleName="addPanelButtonBox">
+				<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+						   label="{resourceManager.getString('create', 'video_btn')}"/>
+				<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+						   label="{resourceManager.getString('create', 'audio_btn')}"/>
+				<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
+						   label="{resourceManager.getString('create', 'live_btn')}"/>
+			</mx:VBox>
+		</mx:VBox>
+		
+		<mx:VBox id="optionsScreen" styleName="noPadding" height="{menuScreen.height}">
+			<mx:Label id="lblState" htmlText="{resourceManager.getString('create', 'webcam_state_title')}" />
+			<mx:VBox styleName="addPanelExtraBg" height="100%">
+				<mx:Label htmlText="{resourceManager.getString('create', 'select_profile')}" />
+				<mx:ComboBox id="cbConvProfiles" labelField="name"/>
+				<mx:Spacer height="100%" />
+				<mx:HBox>
+					<mx:Button click="openKcw(event)" styleName="addPanelNextBtn"  
+							   label="{resourceManager.getString('create', 'next_label')}" />
+					<mx:LinkButton click="cancel_clickHandler(event)" styleName="addPanelCancelBtn"
+								   label="{resourceManager.getString('create', 'cancel_label')}" />
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
+	</mx:ViewStack>
 </mx:Module>

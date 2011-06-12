@@ -1,5 +1,7 @@
 package com.kaltura.kmc.business {
 	import flash.display.DisplayObjectContainer;
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	
@@ -14,8 +16,9 @@ package com.kaltura.kmc.business {
 	 * (creating, showing, hiding and positioning..) 
 	 * @author Atar
 	 */	
-	public class MenuHandler implements IPopupMenu {
+	public class MenuHandler extends EventDispatcher implements IPopupMenu {
 		
+		public static var MENU_REMOVED:String = "menu_removed";
 		
 		protected var _approot:DisplayObjectContainer;
 
@@ -30,6 +33,7 @@ package com.kaltura.kmc.business {
 		 * @param positionJsCallback	name of JS method that positions the panel
 		 */
 		public function MenuHandler(panel:Module, positionJsCallback:String) {
+			super(this);
 			_panel = panel;
 			ExternalInterface.addCallback(positionJsCallback, positionPanel);
 		}
@@ -44,7 +48,6 @@ package com.kaltura.kmc.business {
 		 * Add a stage listener to hide the popup. 
 		 */
 		public function showPanel():void {
-				
 			PopUpManager.addPopUp(_panel, _approot);
 			positionPanel(JSGate.getPanelPosition());
 			
@@ -61,6 +64,7 @@ package com.kaltura.kmc.business {
 				PopUpManager.removePopUp(_panel);
 				// remove stage listener
 				(Application.application as DisplayObjectContainer).removeEventListener(MouseEvent.MOUSE_OVER, hidePanel);
+				dispatchEvent(new Event(MENU_REMOVED));
 			}
 		}
 		
