@@ -3,6 +3,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.create.view.FilesTable;
+			import com.kaltura.kmc.modules.create.vo.UploadFile;
 			import com.kaltura.types.KalturaMediaType;
 			
 			import mx.events.ListEvent;
@@ -12,6 +13,25 @@
 				{value:KalturaMediaType.AUDIO, name:ResourceManager.getInstance().getString('create', 'audio_files')},
 				{value:KalturaMediaType.VIDEO, name:ResourceManager.getInstance().getString('create', 'video_files')},
 				{value:KalturaMediaType.IMAGE, name:ResourceManager.getInstance().getString('create', 'image_files')}];
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				// show type from VO:
+				switch ((data as UploadFile).mediaType) {
+					case KalturaMediaType.AUDIO:
+						cb.selectedIndex = 0;
+						break;
+					case KalturaMediaType.VIDEO:
+						cb.selectedIndex = 1;
+						break;
+					case KalturaMediaType.IMAGE:
+						cb.selectedIndex = 2;
+						break;
+					default:
+						cb.prompt = ResourceManager.getInstance().getString('create', 'select');
+						break;
+				}
+			}
 
 			protected function cb_changeHandler(event:ListEvent):void {
 				dispatchEvent(new Event(FilesTable.TYPE_SELECTED, true));

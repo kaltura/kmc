@@ -3,6 +3,9 @@
 							xmlns:containers="com.kaltura.containers.*"
 							xmlns:view="com.kaltura.kmc.modules.create.view.*"
 							width="550" height="400" layout="vertical"
+							styleName="TitleWindowType2"
+							showCloseButton="true" close="closeHandler(event)"
+							showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)"
 							>
 	<mx:Script>
@@ -17,8 +20,9 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
-			import mx.resources.ResourceManager;
+			import mx.managers.PopUpManager;
 			
 			
 			public var client:KalturaClient;
@@ -130,13 +134,23 @@
 				// TODO Auto-generated method stub
 			}
 
+
+			protected function closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			protected function helpHandler(event:Event):void {
+				// TODO Auto-generated method stub
+			}
+
 		]]>
 	</mx:Script>
 	
 	<mx:HBox verticalAlign="middle" >
 		<mx:Label text="{resourceManager.getString('create', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
-		<mx:ComboBox id="cnvrtProfCb" dataProvider="{_conversionProfiles}" selectedIndex="0"/>
+		<mx:ComboBox id="cnvrtProfCb" dataProvider="{_conversionProfiles}" selectedIndex="0" labelField="name"/>
 	</mx:HBox>
 	<mx:Label text="{resourceManager.getString('create', 'uploadedFiles')}" 
 			  styleName="tableName"/>
