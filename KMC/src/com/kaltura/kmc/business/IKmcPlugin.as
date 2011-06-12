@@ -7,5 +7,8 @@ package com.kaltura.kmc.business
 		function set client(value:KalturaClient):void;
 		function get client():KalturaClient;
 		
+		function set flashvars(value:Object):void;
+		function get flashvars():Object;
+		
 	}
 }

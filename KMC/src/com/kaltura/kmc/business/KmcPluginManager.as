@@ -36,11 +36,17 @@ package com.kaltura.kmc.business
 		 */
 		private var _client:KalturaClient;
 		
+		/**
+		 * application flashvars object 
+		 */		
+		private var _flashvars:Object;
 		
-		public function KmcPluginManager(approot:DisplayObjectContainer, client:KalturaClient)
+		
+		public function KmcPluginManager(approot:DisplayObjectContainer, client:KalturaClient, flashvars:Object)
 		{
 			_approot = approot;
 			_client = client;
+			_flashvars = flashvars;
 			_plugins = new Object(); 
 		}
 		
@@ -59,6 +65,7 @@ package com.kaltura.kmc.business
 			_approot.addChild(pluginLoader);
 		}
 		
+		
 		/**
 		 * when the plugin is loaded, assign it an id according
 		 * to uiconf and put it in the plugins list
@@ -72,12 +79,25 @@ package com.kaltura.kmc.business
 			ml.removeEventListener(ModuleEvent.ERROR, onPluginLoadError);
 			var pluginInfo:XML = _uiconf.plugins.plugin.(@path == ml.url)[0]; 
 			var plugin:Module = ml.child as Module;
-			plugin.id = pluginInfo.@id.toString();
+			
+			// pass all attributes as plugins vars
+			var atts:XMLList = pluginInfo.attributes();
+			var att:String;
+			for (var i:uint = 0 ; i< atts.length() ; i++) {
+				att = (atts[i] as XML).localName().toString();
+				if (att != "path" && att != "dependencies") {
+					// the above are required by KMC, not by the plugin
+					plugin[att] = atts[i].toString();
+				}
+			}
+
+			
 			if (plugin is IPopupMenu) {
 				(plugin as IPopupMenu).setRoot(_approot);
 			}
 			if (plugin is IKmcPlugin) {
 				(plugin as IKmcPlugin).client = _client;
+				(plugin as IKmcPlugin).flashvars = _flashvars;
 			}
 			_plugins[plugin.id] = plugin;
 			

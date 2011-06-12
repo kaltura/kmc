@@ -11,12 +11,18 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.conversionProfile.ConversionProfileList;
+			import com.kaltura.commands.media.MediaAdd;
+			import com.kaltura.errors.KalturaError;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.vo.UploadFile;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaConversionProfileListResponse;
+			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -107,12 +113,17 @@
 			
 			private function conversionProfilesHandler(e:KalturaEvent):void {
 				if (e.type == KalturaEvent.FAILED) {
-					Alert.show(e.error.errorMsg, resourceManager.getString('create', 'error'));
+					showError(e.error.errorMsg);
 				}
 				else {
 					_conversionProfiles = new ArrayCollection((e.data as KalturaConversionProfileListResponse).objects);
 				}
 			}
+			
+			protected function showError(str:String):void {
+				Alert.show(str, resourceManager.getString('create', 'error'));
+			}
+			
 			
 			/**
 			 * open the file browser 
@@ -123,15 +134,75 @@
 				neu.doFileUpload();
 			}
 			
+			
+			/**
+			 * adds selected files to the upload files list 
+			 * */
 			protected function addFilesToList(e:Event):void {
 				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, addFilesToList);
 				uploadFiles((e.target as MultipleMediaFilesSelector).getFiles(), true);
 			}
 
 
-			protected function submit(event:MouseEvent):void
-			{
-				// TODO Auto-generated method stub
+			/**
+			 * create new media entries, then pass FRs to the upload  
+			 * manager to upload them as source for these entries.
+			 * */
+			protected function submit(event:MouseEvent):void {
+				submitBtn.enabled = false;
+				var mr:MultiRequest = new MultiRequest();
+				var ma:MediaAdd;
+				var kme:KalturaMediaEntry;
+				for each (var file:UploadFile in _files) {
+					kme = new KalturaMediaEntry();
+					kme.name = file.fileName;
+					kme.mediaType = file.mediaType;
+					kme.conversionProfileId = cnvrtProfCb.selectedItem.id;
+					
+					ma = new MediaAdd(kme);
+					mr.addAction(ma);
+				}
+				mr.addEventListener(KalturaEvent.COMPLETE, addMediaToEntries);
+				mr.addEventListener(KalturaEvent.FAILED, addMediaToEntries);
+				client.post(mr);
+			}
+			
+			
+			/**
+			 * add media files to the newly created entries
+			 * @param e	the event dispatched by the entries creation call
+			 * */
+			protected function addMediaToEntries(e:KalturaEvent):void {
+				e.target.removeEventListener(KalturaEvent.COMPLETE, addMediaToEntries);
+				e.target.removeEventListener(KalturaEvent.FAILED, addMediaToEntries);
+				if (e.type == KalturaEvent.FAILED) {
+					showError(e.error.errorMsg);
+					return;
+				}
+				else {
+					// internal errors
+					for each (var o:Object in e.data) {
+						if (o is KalturaError) {
+							showError(o.errorMsg);
+							return;
+						}
+					}
+					// pass FRs to upload manager
+					// we assume an entry for each file, in matching order
+					var uploader:FileUploadManager = FileUploadManager.getInstance();
+					var entry:KalturaMediaEntry;
+					var entries:Array = e.data as Array;
+					var fu:UploadFile;		// local vo
+					var fuv:FileUploadVO;	// uploader vo
+					for (var i:int = 0; i< entries.length; i++) {
+						entry = entries[i];
+						fu = _files[i];
+						fuv = uploader.createFuv(entry.id, fu.fr, "0");	// always use source, this is ugly :)
+						uploader.updateEntryContent(entry.id, [fuv]);
+					}
+					// remove popup
+					closeHandler(null);
+				}
 			}
 
 
@@ -150,12 +221,11 @@
 	<mx:HBox verticalAlign="middle" >
 		<mx:Label text="{resourceManager.getString('create', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
-		<mx:ComboBox id="cnvrtProfCb" dataProvider="{_conversionProfiles}" selectedIndex="0" labelField="name"/>
+		<mx:ComboBox id="cnvrtProfCb" dataProvider="{_conversionProfiles}" 
+					 selectedIndex="0" labelField="name"/>
 	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('create', 'uploadedFiles')}" 
-			  styleName="tableName"/>
+	<mx:Label text="{resourceManager.getString('create', 'uploadedFiles')}" styleName="tableName"/>
 	<view:FilesTable id="filesTable" width="100%" dataProvider="{_files}" addFiles="addMoreFiles()"/>
-	
 	<mx:ControlBar>
 		<mx:Button id="submitBtn" click="submit(event)" buttonMode="true"
 				   label="{resourceManager.getString('create', 'submitUploadLabel')}"/>

@@ -20,18 +20,27 @@
 			import com.kaltura.kmc.modules.create.BulkUploader;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+
+
+			/**
+			 * url of samples file
+			 * @internal 
+			 * passed in from uiconf plugin node by KmcPluginManager
+			 * */
+			public var samplesUrl:String;
 			
 			private const BTN_WIDTH:int = 150;
 
 			private var _showingHandler:MenuHandler;
 
-			
+			private var _flashvars:Object;
+
+
 
 			/**
 			 * application root for the menu handler
@@ -43,7 +52,7 @@
 			 * */
 			private var _kc:KalturaClient;
 
-			
+
 			protected function showUploadSettingsWindow(e:Event):void {
 				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				var fus:FileUploadSettings = new FileUploadSettings();
@@ -53,6 +62,7 @@
 				PopUpManager.centerPopUp(fus);
 			}
 
+
 			/**
 			 * Opens a desktop file selection pop-up. Allowing video, audio and image files selection
 			 * */
@@ -61,8 +71,8 @@
 				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				neu.doFileUpload();
 			}
-			
-			
+
+
 
 
 			/**
@@ -94,7 +104,8 @@
 			 * downloads csv and xml samples
 			 * */
 			protected function btnSamples_clickHandler(event:MouseEvent):void {
-				// TODO Auto-generated method stub
+				var req:URLRequest = new URLRequest(samplesUrl);
+				navigateToURL(req);
 			}
 
 
@@ -181,9 +192,19 @@
 			public function set client(value:KalturaClient):void {
 				_kc = value;
 			}
+
+
+			public function get flashvars():Object {
+				return _flashvars;
+			}
+
+
+			public function set flashvars(value:Object):void {
+				_flashvars = value;
+			}
 		]]>
 	</mx:Script>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'upload_lbl')}"
+	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
 			  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
 	<mx:VBox id="uploadBox" styleName="addPanelButtonBox">
 		<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
@@ -191,16 +212,17 @@
 		<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 				   label="{resourceManager.getString('create', 'webcam_btn')}"/>
 	</mx:VBox>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'import_lbl')}"
+	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'import_lbl')}"
 			  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
 	<mx:VBox id="importBox" styleName="addPanelButtonBox">
 		<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 				   label="{resourceManager.getString('create', 'bulk_btn')}"/>
 		<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
 				   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
-		<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"/>
+		<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"
+					   label="{resourceManager.getString('create', 'samples_btn')}"/>
 	</mx:VBox>
-	<mx:Label styleName="addPanelLabel" text="{resourceManager.getString('create', 'prepare_lbl')}"
+	<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
 			  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
 	<mx:VBox id="prepareBox" styleName="addPanelButtonBox">
 		<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
