@@ -28,6 +28,7 @@
 			public var allowAddFiles:Boolean;
 
 			private var _nameEditable:Boolean;
+			private var _showSize:Boolean;
 
 			[ArrayElementType("KalturaFlavorParams")]
 			/**
@@ -136,10 +137,33 @@
 			public function set nameEditable(value:Boolean):void {
 				_nameEditable = value;
 				if (value) {
-					fileName.itemRenderer =  new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer);
+					fileName.itemRenderer = new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.EditableNameRenderer);
 				}
 				else {
-					fileName.itemRenderer =  new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.EditableNameRenderer);
+					fileName.itemRenderer = new ClassFactory(com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer);
+				}
+			}
+
+
+			public function get showSize():Boolean {
+				return _showSize;
+			}
+
+
+			public function set showSize(value:Boolean):void {
+				_showSize = value;
+				var temp:ArrayCollection = new ArrayCollection(filesList.columns);
+				if (value) {
+					if (!temp.contains(fileSize)) {
+						temp.addItemAt(fileSize, 2);
+						filesList.columns = temp.source;
+					}
+				}
+				else {
+					if (temp.contains(fileSize)) {
+						temp.removeItemAt(2);
+						filesList.columns = temp.source;
+					}
 				}
 			}
 		]]>
@@ -150,21 +174,22 @@
 
 	<mx:DataGrid id="filesList" width="100%" dataProvider="{_dataProvider}">
 		<mx:columns>
-			<mx:DataGridColumn id="fileName" headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
+			<mx:DataGridColumn id="fileName"
+							   headerText="{ResourceManager.getInstance().getString('cms', 'fileNameHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.NameRenderer"
-							   width="{140}" />
-			<mx:DataGridColumn id="flavor" visible="{allowAddFiles}" 
-							   headerText="{ResourceManager.getInstance().getString('cms', 'convFlavorHeader')}" 
+							   width="{140}"/>
+			<mx:DataGridColumn id="flavor" visible="{allowAddFiles}"
+							   headerText="{ResourceManager.getInstance().getString('cms', 'convFlavorHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.FlavorRenderer"/>
-			<mx:DataGridColumn id="fileSize" width="{60}" 
+			<mx:DataGridColumn id="fileSize" width="{60}"
 							   headerText="{ResourceManager.getInstance().getString('cms', 'fileSizeHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.SizeRenderer"/>
-			<mx:DataGridColumn id="actions" width="{60}" visible="{allowAddFiles}" 
+			<mx:DataGridColumn id="actions" width="{60}" visible="{allowAddFiles}"
 							   headerText="{ResourceManager.getInstance().getString('cms', 'actionsHeader')}"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.flavors.renderers.ActionsRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
 	<mx:LinkButton id="addBtn" click="addMoreFiles(event)" styleName="plusIcon"
-				   label="{ResourceManager.getInstance().getString('cms', 'addFiles')}"
-				   visible="{allowAddFiles}" includeInLayout="{allowAddFiles}"/>
+				   label="{ResourceManager.getInstance().getString('cms', 'addFiles')}" visible="{allowAddFiles}"
+				   includeInLayout="{allowAddFiles}"/>
 </mx:VBox>
