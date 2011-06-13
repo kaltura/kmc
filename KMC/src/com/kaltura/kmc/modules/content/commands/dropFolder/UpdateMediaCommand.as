@@ -4,14 +4,14 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.commands.media.MediaUpdateContent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.events.MediaEvent;
 
 	public class UpdateMediaCommand extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			var e:DropFolderFileEvent = event as MediaEvent;
+			var e:MediaEvent = event as MediaEvent;
 			// e.data here is {conversionProfileId, resource}
 			var mu:MediaUpdateContent = new MediaUpdateContent(e.entry.id, e.data.resource, e.data.conversionProfileId);
 			mu.addEventListener(KalturaEvent.COMPLETE, result);
