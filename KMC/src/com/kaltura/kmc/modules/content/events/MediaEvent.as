@@ -15,6 +15,20 @@ package com.kaltura.kmc.modules.content.events
 		 */		
 		public static const UPDATE_MEDIA:String = "updateMedia";
 		
+		/**
+		 * update media file for single flavor on entry <br>
+		 * data should be {flavorAssetId, resource}
+		 */		
+		public static const UPDATE_SINGLE_FLAVOR:String = "updateSingleFlavor";
+		
+		/**
+		 * add a single flavor to an entry and set its content (media) <br>
+		 * data should be {flavorParamsId, resource}
+		 */		
+		public static const ADD_SINGLE_FLAVOR:String = "addSingleFlavor";
+		
+		
+		
 		
 		public var entry:KalturaMediaEntry;
 		/**

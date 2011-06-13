@@ -234,8 +234,8 @@
 			protected function updateFlavor():void {
 				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
 				resource.dropFolderFileId = _selectedSlug.id;
-				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.UPDATE_SINGLE_FLAVOR, _entry, null, resource);
-				dffe.data = {flavorAssetId: flavorAssetId};
+				var dffe:MediaEvent = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+				dffe.data = {flavorAssetId: flavorAssetId, resource:resource};
 				dffe.dispatch();
 			}
 
@@ -246,10 +246,9 @@
 			protected function addFlavor():void {
 				var resource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
 				resource.dropFolderFileId = _selectedSlug.id;
-				var dffe:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_SINGLE_FLAVOR, _entry, null, resource);
-				dffe.data = {flavorParamsId: flavorParamsId};
+				var dffe:MediaEvent = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+				dffe.data = {flavorParamsId: flavorParamsId, resource:resource};
 				dffe.dispatch();
-
 			}
 
 			

@@ -62,6 +62,8 @@ package com.kaltura.kmc.modules.content.control
 			//media Event
 			addCommand( MediaEvent.ADD_ENTRY , AddMediaEntryCommand );
 			addCommand(MediaEvent.UPDATE_MEDIA, UpdateMediaCommand);
+			addCommand(MediaEvent.UPDATE_SINGLE_FLAVOR, UpdateFlavorCommand);
+			addCommand(MediaEvent.ADD_SINGLE_FLAVOR, AddFlavorCommand);
 			addCommand( MediaEvent.APPROVE_REPLACEMENT , ApproveMediaEntryReplacementCommand );
 			addCommand( MediaEvent.CANCEL_REPLACEMENT , CancelMediaEntryReplacementCommand );
 			
@@ -173,10 +175,6 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.DELETE_FILES, DeleteDropFolderFilesCommand);
-			addCommand(DropFolderFileEvent.UPDATE_SINGLE_FLAVOR, UpdateFlavorFromDropFolder);
-			addCommand(DropFolderFileEvent.ADD_SINGLE_FLAVOR, AddFlavorFromDropFolder);
-			
-			
 		}
 	}
 }

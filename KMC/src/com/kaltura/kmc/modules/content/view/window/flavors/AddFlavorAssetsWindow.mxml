@@ -232,6 +232,7 @@
 				}
 			}
 			
+				
 			
 			/**
 			 * Submit handler:
@@ -290,10 +291,26 @@
 				}
 				else {
 					// only one file
-//					ufv = filesList[0] as UploadFileVo;
-//					uploader.updateEntryFlavor(_entry.id, uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId), ufv.flavorAssetId == null);
+					ufv = filesList[0] as UploadFileVo;
+					var resource:KalturaUrlResource;
+					var dffe:MediaEvent;
+					if (ufv.flavorAssetId != null) {
+						// updating a single flavor
+						resource = new KalturaUrlResource();
+						resource.url = ufv.fileName;
+						dffe = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+						dffe.data = {flavorAssetId: ufv.flavorAssetId, resource:resource};
+						dffe.dispatch();
+					}
+					else {
+						// adding a single flavor
+						resource = new KalturaUrlResource();
+						resource.url = ufv.fileName;
+						dffe = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+						dffe.data = {flavorParamsId: ufv.flavorParamId, resource:resource};
+						dffe.dispatch();
+					}
 				}
-				
 			}
 			
 			

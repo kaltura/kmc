@@ -7,18 +7,19 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.events.MediaEvent;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	
-	public class AddFlavorFromDropFolder extends KalturaCommand {
+	public class AddFlavorCommand extends KalturaCommand {
 		
 		private var _resource:KalturaContentResource;
 		
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
-			var e:DropFolderFileEvent = event as DropFolderFileEvent;
-			_resource = e.resource as KalturaContentResource;
+			var e:MediaEvent = event as MediaEvent;
+			_resource = e.data.resource as KalturaContentResource;
 			var flavorAsset:KalturaFlavorAsset = new KalturaFlavorAsset()
 			flavorAsset.flavorParamsId = e.data.flavorParamsId;
 			flavorAsset.setUpdatedFieldsOnly(true);

@@ -12,21 +12,6 @@ package com.kaltura.kmc.modules.content.events {
 		public static const RESET_FILES_LIST:String = "df_reset_files_list";
 		
 		/**
-		 * set media to entry according to slug / file 
-		 */		
-		public static const ADD_MEDIA:String = "df_match_media";
-		
-		/**
-		 * replace a single flavor on an entry with a drop folder file.
-		 * */
-		public static const UPDATE_SINGLE_FLAVOR:String = "df_update_single_flavor";
-		
-		/**
-		 * add a drop folder file as a single flavor to an entry.
-		 * */
-		public static const ADD_SINGLE_FLAVOR:String = "df_add_single_flavor";
-		
-		/**
 		 * list all files from all drop folders
 		 * */
 		public static const LIST_ALL:String = "list_all";
