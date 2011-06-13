@@ -7,13 +7,13 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
 
-	public class MatchMediaCommand extends KalturaCommand {
+	public class UpdateMediaCommand extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			var e:DropFolderFileEvent = event as DropFolderFileEvent;
-			// e.data here is the conversionProfileId
-			var mu:MediaUpdateContent = new MediaUpdateContent(e.entry.id, e.resource, e.data);
+			var e:DropFolderFileEvent = event as MediaEvent;
+			// e.data here is {conversionProfileId, resource}
+			var mu:MediaUpdateContent = new MediaUpdateContent(e.entry.id, e.data.resource, e.data.conversionProfileId);
 			mu.addEventListener(KalturaEvent.COMPLETE, result);
 			mu.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mu);
