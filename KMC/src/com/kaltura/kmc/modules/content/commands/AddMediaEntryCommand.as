@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.content.commands
 	
 	import mx.resources.ResourceManager;
 
-	public class AddMediaCommand extends KalturaCommand {
+	public class AddMediaEntryCommand extends KalturaCommand {
 		//whether to open drilldown after media is created
 		private var _openDrilldown:Boolean;
 		
