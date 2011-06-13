@@ -248,8 +248,8 @@
 					case AddFlavorAssetsWindow.ACTION_IMPORT:
 						submitImport();
 						break;
-					case AddFlavorAssetsWindow.ACTION_UPLOAD:
-						submitUpload();
+					case AddFlavorAssetsWindow.ACTION_LINK:
+						submitLink();
 						break;
 					
 				}
@@ -258,61 +258,77 @@
 			}
 			
 			
+			protected function submitLink():void {
+				//TODO consider using the same function as import
+			}
+			
+			
 			protected function submitImport():void {
-				var n:int = filesList.length;
-				var ufv:UploadFileVo;
-				// conversion profile id
-				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
-				
-				// add uploads to the FileUploadManager
 				if (windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE) {
-					// the actual resource we send is a list of the containers for the resources we want to replace.                
-					var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
-					mediaResource.resources = new Array();
-					
-					for each (ufv in filesList) {
-						// the first resource of the flavor we want to replace
-						var subSubResource:KalturaUrlResource = new KalturaUrlResource();
-						subSubResource.url = ufv.fileName;
-						
-						// container for the resource we want to replace
-						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
-						subResource.resource = subSubResource;
-						subResource.assetParamsId = parseInt(ufv.flavorParamId);
-						
-						// add to list
-						mediaResource.resources.push(subResource);
-						
-					}
-					// dispatch the event with required data
-					var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
-					ce.data = {conversionProfileId:cnvrtProfId, resource:mediaResource};
-					ce.dispatch();
+					handleMultipleFlavours();
 				}
 				else {
 					// only one file
-					ufv = filesList[0] as UploadFileVo;
-					var resource:KalturaUrlResource;
-					var dffe:MediaEvent;
-					if (ufv.flavorAssetId != null) {
-						// updating a single flavor
-						resource = new KalturaUrlResource();
-						resource.url = ufv.fileName;
-						dffe = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
-						dffe.data = {flavorAssetId: ufv.flavorAssetId, resource:resource};
-						dffe.dispatch();
-					}
-					else {
-						// adding a single flavor
-						resource = new KalturaUrlResource();
-						resource.url = ufv.fileName;
-						dffe = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
-						dffe.data = {flavorParamsId: ufv.flavorParamId, resource:resource};
-						dffe.dispatch();
-					}
+					handleSingleFlavour(filesList[0] as UploadFileVo);
 				}
 			}
 			
+			
+			/**
+			 * update entry with new resources
+			 * */
+			protected function handleMultipleFlavours():void {
+				// conversion profile id
+				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+				// the actual resource we send is a list of the containers for the resources we want to replace.                
+				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
+				mediaResource.resources = new Array();
+				
+				for each (var ufv:UploadFileVo in filesList) {
+					// the first resource of the flavor we want to replace
+					var subSubResource:KalturaUrlResource = new KalturaUrlResource();
+					subSubResource.url = ufv.fileName;
+					
+					// container for the resource we want to replace
+					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
+					subResource.resource = subSubResource;
+					subResource.assetParamsId = parseInt(ufv.flavorParamId);
+					
+					// add to list
+					mediaResource.resources.push(subResource);
+					
+				}
+				// dispatch the event with required data
+				var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
+				ce.data = {conversionProfileId:cnvrtProfId, resource:mediaResource};
+				ce.dispatch();
+			}
+			
+			
+			/**
+			 * update / add a single flavor 
+			 * @param ufv	the upload vo that represents the flavor being updated / added
+			 * */
+			protected function handleSingleFlavour(ufv:UploadFileVo):void {
+				var resource:KalturaUrlResource;
+				var dffe:MediaEvent;
+				if (ufv.flavorAssetId != null) {
+					// updating a single flavor
+					resource = new KalturaUrlResource();
+					resource.url = ufv.fileName;
+					dffe = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+					dffe.data = {flavorAssetId: ufv.flavorAssetId, resource:resource};
+					dffe.dispatch();
+				}
+				else {
+					// adding a single flavor
+					resource = new KalturaUrlResource();
+					resource.url = ufv.fileName;
+					dffe = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
+					dffe.data = {flavorParamsId: ufv.flavorParamId, resource:resource};
+					dffe.dispatch();
+				}
+			}
 			
 			
 			/**
