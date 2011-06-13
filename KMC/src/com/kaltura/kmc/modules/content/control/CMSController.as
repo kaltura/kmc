@@ -60,7 +60,8 @@ package com.kaltura.kmc.modules.content.control
 			addCommand( EntriesEvent.UPDATE_PLAYLISTS ,  UpdateEntriesCommand );
 			addCommand( EntriesEvent.DELETE_ENTRIES , DeleteEntriesCommand );
 			//media Event
-			addCommand( MediaEvent.ADD_MEDIA , AddMediaCommand );
+			addCommand( MediaEvent.ADD_ENTRY , AddMediaEntryCommand );
+			addCommand(MediaEvent.UPDATE_MEDIA, UpdateMediaCommand);
 			addCommand( MediaEvent.APPROVE_REPLACEMENT , ApproveMediaEntryReplacementCommand );
 			addCommand( MediaEvent.CANCEL_REPLACEMENT , CancelMediaEntryReplacementCommand );
 			
@@ -167,9 +168,7 @@ package com.kaltura.kmc.modules.content.control
 			// drop folder stuff
 			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);
 			addCommand(DropFolderEvent.SET_SELECTED_FOLDER, SetSelectedFolder);
-			
 			addCommand(DropFolderFileEvent.RESET_FILES_LIST, ResetDropFolderFilesList);
-			addCommand(DropFolderFileEvent.ADD_MEDIA, MatchMediaCommand);
 			addCommand(DropFolderFileEvent.LIST_ALL, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, ListDropFoldersFilesCommand);

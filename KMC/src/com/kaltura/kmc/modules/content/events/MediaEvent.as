@@ -5,9 +5,16 @@ package com.kaltura.kmc.modules.content.events
 
 	public class MediaEvent extends CairngormEvent
 	{
-		public static const ADD_MEDIA:String = "addMedia";
+		public static const ADD_ENTRY:String = "addEntry";
 		public static const APPROVE_REPLACEMENT:String = "approveReplacement";
 		public static const CANCEL_REPLACEMENT:String = "cancelReplacement";
+		
+		/**
+		 * update media files on entry <br>
+		 * data should be {conversionProfileId, resource}
+		 */		
+		public static const UPDATE_MEDIA:String = "updateMedia";
+		
 		
 		public var entry:KalturaMediaEntry;
 		/**
