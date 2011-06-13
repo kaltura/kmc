@@ -10,6 +10,7 @@
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -19,6 +20,7 @@
 			import com.kaltura.vo.KalturaDropFolder;
 			import com.kaltura.vo.KalturaDropFolderFile;
 			import com.kaltura.vo.KalturaDropFolderFileResource;
+			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.HierarchicalData;
@@ -292,8 +294,8 @@
 						
 					}
 					// dispatch the event with required data
-					var ce:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.ADD_MEDIA, _entry, _selectedSlug.parsedSlug, mediaResource);
-					ce.data = _selectedFolder.conversionProfileId;
+					var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
+					ce.data = {conversionProfileId:_selectedFolder.conversionProfileId, resource:mediaResource};
 					ce.dispatch();
 				}
 			}
