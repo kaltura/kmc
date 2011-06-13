@@ -6,48 +6,70 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.analytics.GoogleAnalyticsConsts;
-			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.controls.tabbar.OverlappingTabBar;
 			import com.kaltura.kmc.modules.content.events.FlavorAssetEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryFlavors;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.FlavorsTable;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
-			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.kaltura.vo.FileUploadVO;
-			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			
-			import mx.controls.Alert;
 			import mx.controls.Button;
 			
-			//			[Embed(source="assets/flash/loaderwhite.swf")]
-			//			private static const progressImage:Class;
 			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
 			
 			[ArrayElementType("String")]
+			/**
+			 * actions in the combobox
+			 * */
 			private var _actionArr:Array = [];
 			
+//			[Bindable]
+//			private var oneActionLabel:String = '';
+			
 			[Bindable]
-			private var oneActionLabel:String = '';
-			//is the parent docuemnt is entryFlavors allow all actions
-			[Bindable]
+			/**
+			 * is the parent docuemnt is entryFlavors allow all actions 
+			 * */
 			private var _isFlavorsView:Boolean;
+			
+			/**
+			 * add the "upload" action to the actions list
+			 * */
 			private var _allowUpload:Boolean = true;
+			
+			/**
+			 * add the "drop folder" action to the actions list
+			 * */
 			private var _allowMatch:Boolean = true;
+			
+			/**
+			 * add the "link" action to the actions list
+			 * */
+			private var _allowLink:Boolean = true;
+			
+			/**
+			 * add the "import" action to the actions list
+			 * */
+			private var _allowImport:Boolean = true;
+			
+			
 			[Bindable]
-			private var _showBtn:Boolean = false;
+			/**
+			 * show the "preview" button
+			 * */
+			private var _showPreviewBtn:Boolean = false;
+			
+			/**
+			 * current data object
+			 * */
 			private var _flavorWithParams:FlavorAssetWithParamsVO
 			
-			override public function onCreatoinComplete():void {
-				super.onCreatoinComplete();
-				
-				
-			}
+//			override public function onCreatoinComplete():void {
+//				super.onCreatoinComplete();
+//			}
 			
 			
 			override public function set data(value:Object):void {
@@ -61,6 +83,8 @@
 					//sets actions according to r&p
 					_allowUpload = parentDocument.allowUpload && parentDocument.multiFlavorsIngestionAllowed;
 					_allowMatch = parentDocument.allowMatchFromDrop;
+					_allowLink = parentDocument.allowLink;
+					_allowImport = parentDocument.allowImport;
 				}
 				
 				setActions();
@@ -80,11 +104,11 @@
 					if (_flavorWithParams.hasOriginal) {
 						this.currentState = null;
 						_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
-						addUploadAndMatch();
+						addIngestionOptions();
 					}
-					else if (_allowUpload || _allowMatch) {
+					else if (_allowUpload || _allowMatch || _allowLink || _allowImport) {
 						this.currentState = null;
-						addUploadAndMatch();
+						addIngestionOptions();
 					}
 					else {
 						this.currentState = "emptyState";
@@ -104,10 +128,10 @@
 							this.currentState = null;
 							_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
 							_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
-							addUploadAndMatch();
+							addIngestionOptions();
 							if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 								_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-								_showBtn = true;
+								_showPreviewBtn = true;
 							}
 						}
 					}
@@ -125,11 +149,11 @@
 								if (_flavorWithParams.hasOriginal) {
 									this.currentState = null;
 									_actionArr.push(resourceManager.getString('cms', 'convertActionLabel'));
-									addUploadAndMatch();
+									addIngestionOptions();
 								}
-								else if (_allowUpload || _allowMatch) {
+								else if (_allowUpload || _allowMatch || _allowLink || _allowImport) {
 									this.currentState = null;
-									addUploadAndMatch();
+									addIngestionOptions();
 								}
 								else {
 									this.currentState = "emptyState";
@@ -141,11 +165,11 @@
 								if (_flavorWithParams.hasOriginal) {
 									this.currentState = null;
 									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
-									addUploadAndMatch();
+									addIngestionOptions();
 								}
-								else if (_allowUpload || _allowMatch) {
+								else if (_allowUpload || _allowMatch || _allowLink || _allowImport) {
 									this.currentState = null;
-									addUploadAndMatch();
+									addIngestionOptions();
 								}
 								else {
 									this.currentState = "emptyState";
@@ -157,10 +181,10 @@
 								this.currentState = null;
 								_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
 								_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
-								addUploadAndMatch();
+								addIngestionOptions();
 								if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isWeb) {
 									_actionArr.push(resourceManager.getString('cms', 'previewActionLabel'));
-									_showBtn = true;
+									_showPreviewBtn = true;
 								}
 								if (_flavorWithParams.hasOriginal) {
 									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
@@ -186,13 +210,17 @@
 			}
 			
 			/**
-			 * adds the upload and match actions to actionArr, according to permissions
+			 * adds the ingestion options to actionArr, according to permissions
 			 * */
-			private function addUploadAndMatch():void {
+			private function addIngestionOptions():void {
 				if (_allowUpload)
 					_actionArr.push(resourceManager.getString('cms', 'uploadActionLabel'));
 				if (_allowMatch)
 					_actionArr.push(resourceManager.getString('cms', 'matchActionLabel'));
+				if (_allowLink)
+					_actionArr.push(resourceManager.getString('cms', 'linkActionLabel'));
+				if (_allowImport)
+					_actionArr.push(resourceManager.getString('cms', 'importActionLabel'));
 			}
 			
 			
@@ -229,6 +257,14 @@
 					}
 					case resourceManager.getString('cms', 'matchActionLabel'): {
 						dispatchEvent(new Event(FlavorsTable.MATCH_FLAVOR, true));
+						break;
+					}
+					case resourceManager.getString('cms', 'linkActionLabel'): {
+						dispatchEvent(new Event(FlavorsTable.LINK_FLAVOR, true));
+						break;
+					}
+					case resourceManager.getString('cms', 'importActionLabel'): {
+						dispatchEvent(new Event(FlavorsTable.IMPORT_FLAVOR, true));
 						break;
 					}
 						
@@ -276,5 +312,5 @@
 				 prompt="{resourceManager.getString('cms','selectActionLabel')}" visible="{_isFlavorsView}" includeInLayout="{_isFlavorsView}">
 	</mx:ComboBox>
 	<mx:Button label="{resourceManager.getString('cms', 'previewActionLabel')}" click="{dispatchPreview()}" 
-			   visible="{_showBtn &amp;&amp; !_isFlavorsView}" includeInLayout="{_showBtn &amp;&amp; !_isFlavorsView}" styleName="dataGridBtn" fontSize="10" width="110"/>
+			   visible="{_showPreviewBtn &amp;&amp; !_isFlavorsView}" includeInLayout="{_showPreviewBtn &amp;&amp; !_isFlavorsView}" styleName="dataGridBtn" fontSize="10" width="110"/>
 </renderers:FlavorAssetRendererBase>
