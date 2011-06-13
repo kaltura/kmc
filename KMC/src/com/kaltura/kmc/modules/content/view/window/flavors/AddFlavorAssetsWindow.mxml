@@ -30,10 +30,24 @@
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
 			
+			/*
+				Events
+			*/
 			public static const CLOSE_WINDOW:String = "closeWindow";
 			
+			
+			/*
+				window states
+			*/
 			public static const SINGLE_FILE_STATE:String = "single_file_state"; 
 			public static const MULTI_FILES_STATE:String = "multi_files_state";
+			
+			/*
+				actions
+			*/
+			public static const ACTION_UPLOAD:String = "action_upload";
+			public static const ACTION_IMPORT:String = "action_import";
+			public static const ACTION_LINK:String = "action_link";
 			
 			[Bindable]
 			/**
@@ -44,6 +58,12 @@
 			 * ingestion permission, and shouldn't be.
 			 * */
 			public var windowState:String;
+			
+			[Bindable]
+			/**
+			 * @copy #windowAction
+			 * */
+			private var _windowAction:String;
 			
 			[Bindable]
 			/**
@@ -100,7 +120,8 @@
 						ResourceManager.getInstance().getString('cms', 'error'));
 					result = false;
 				}
-				else if (!validateFileSize()) {
+				// only test file size when in upload mode
+				else if (_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD && !validateFileSize()) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'filesTooBig', [getPartnerUploadLimit()]), 
 						ResourceManager.getInstance().getString('cms', 'error'));
 					result = false;
@@ -209,11 +230,85 @@
 			
 			/**
 			 * Submit handler:
-			 * 	•	Upload – add the relevant files to FileUploadManager.
+			 * 	•	Upload – 
 			 * 	•	Import – trigger media.add with matching KalturaURLResource objects.
 			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
 			 * */
 			protected function submit():void {
+				switch (_windowAction){
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						submitUpload();
+						break;
+					case AddFlavorAssetsWindow.ACTION_IMPORT:
+						submitImport();
+						break;
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						submitUpload();
+						break;
+					
+				}
+				// close the popup
+				closeHandler();
+			}
+			
+			
+			protected function submitImport():void {
+				var n:int = filesList.length;
+				var ufv:UploadFileVo;
+				// conversion profile id
+				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+				
+				// add uploads to the FileUploadManager
+				if (windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE) {
+//					var files:Array = new Array();
+//					for (var i:int = 0; i<n; i++) {
+//						ufv = filesList[i] as UploadFileVo;
+//						files.push(uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId));
+//					}
+//					// decide the correct action (add / update)
+//					uploader.updateEntryContent(_entry.id, files);
+					
+					
+					// the actual resource we send is a list of the containers for the resources we want to replace.                
+					var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
+					mediaResource.resources = new Array();
+					
+					// select the file as source for transcoding
+					
+					for each (var dff:KalturaDropFolderFile in _selectedSlug.files) {
+						// the first resource of the flavor we want to replace
+						var subSubResource:KalturaDropFolderFileResource = new KalturaDropFolderFileResource();
+						subSubResource.dropFolderFileId = dff.id;
+						
+						// container for the resource we want to replace
+						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
+						subResource.resource = subSubResource;
+						//NOTE if matching failed, this has no value (but then we shouldn't be able to select this group)
+						subResource.assetParamsId = dff.flavorParamsId;
+						
+						// add to list
+						mediaResource.resources.push(subResource);
+						
+					}
+					// dispatch the event with required data
+					var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
+					ce.data = {conversionProfileId:_selectedFolder.conversionProfileId, resource:mediaResource};
+					ce.dispatch();
+				}
+				else {
+					// only one file
+//					ufv = filesList[0] as UploadFileVo;
+//					uploader.updateEntryFlavor(_entry.id, uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId), ufv.flavorAssetId == null);
+				}
+				
+			}
+			
+			
+			
+			/**
+			 * add the relevant files to FileUploadManager.
+			 * */
+			protected function submitUpload():void {
 				var n:int = filesList.length;
 				var uploader:FileUploadManager = FileUploadManager.getInstance();
 				var ufv:UploadFileVo;
@@ -235,8 +330,6 @@
 					ufv = filesList[0] as UploadFileVo;
 					uploader.updateEntryFlavor(_entry.id, uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId), ufv.flavorAssetId == null);
 				}
-				// close the popup
-				closeHandler();
 			}
 			
 			
@@ -313,9 +406,53 @@
 						cnvrtProfCb.selectedIndex = defInd;
 					}
 				}
+				// set appearance according to action
+				setWindowAppearance(_windowAction);
 			}
 			
 			
+			/**
+			 * set texts according to selected action
+			 * @param action	one of the AddFlavorAssetsWindow.ACTION_XX consts
+			 * */
+			private function setWindowAppearance(action:String) :void {
+				if (!tableHeader) {
+					// not creationComplete yet
+					return;
+				} 
+				switch (action) {
+					case AddFlavorAssetsWindow.ACTION_IMPORT:
+						tableHeader.text = ResourceManager.getInstance().getString('cms', 'fileUrls')
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitImportLabel')
+						break;
+					case AddFlavorAssetsWindow.ACTION_LINK:
+						tableHeader.text = ResourceManager.getInstance().getString('cms', 'fileUrls')
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitLinkLabel')
+						break;
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						tableHeader.text = ResourceManager.getInstance().getString('cms', 'uploadedFiles')
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitUploadLabel')
+						break;
+				}
+			}
+			
+			
+			/**
+			 * windowAction represents the action that will be taken upon 
+			 * "submit" click. applicable values are either ACTION_UPLOAD, ACTION_IMPORT
+			 * or ACTION_LINK.
+			 * */
+			public function get windowAction():String {
+				return _windowAction;
+			}
+			
+			/**
+			 * @private
+			 */
+			public function set windowAction(value:String):void {
+				_windowAction = value;
+				setWindowAppearance(value);
+			}
 
 			/**
 			 * the entry being edited
@@ -348,12 +485,12 @@
 		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" 
 					 selectedIndex="0" dataProvider="{conversionProfiles}" />
 	</mx:HBox>
-	<mx:Label text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
+	<mx:Label id="tableHeader" text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
 			  styleName="tableName"/>
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
 						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
-						addFiles="addMoreFiles()"/>
-	
+						addFiles="addMoreFiles()" showSize="{_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD}" 
+						nameEditable="{_windowAction != AddFlavorAssetsWindow.ACTION_UPLOAD}"/>
 	<mx:ControlBar>
 		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
 				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}"/>
