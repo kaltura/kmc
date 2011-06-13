@@ -3,27 +3,45 @@
 		<!-- Content Ingestion -->
 		<permissionGroup text="Content Ingestion" id="CONTENT_INGEST_BASE" >
 			<permission text="Upload File/s" id="CONTENT_INGEST_UPLOAD" >
-				<ui id="entryDrilldown.entryAssets.uploadFilesBtn" visible="false" includeInLayout="false"/>
 				<ui id="entryDrilldown.entryAssets" allowUpload="false"/>
+				<ui id="addPanel.btnUpload" visible="false" includeInLayout="false"/>
 			</permission>
 			<!-- Bulk Upload -->
 			<permission text="Import Files" id="CONTENT_INGEST_BULK_UPLOAD">
 				<ui id="content.upload.submitBtn" enabled="false"/>
 				<ui id="content.upload" bulkUploadEnabled="false"/>
 				<ui id="dashboard.uploadPanel.uploadOption1Button" enabled="false" buttonMode="false"/>
+				<ui id="entryDrilldown.entryAssets" allowImport="false"/>
+				<ui id="addPanel.btnBulk" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- Remote Storage -->
+			<permission text="Add from remote storage" id="CONTENT_INGEST_REMOTE_STORAGE" dependsOnFeature="FEATURE_REMOTE_STORAGE">
+				<ui id="entryDrilldown.entryAssets" allowLink="false"/>
 			</permission>
 			<!-- drop folder -->
 			<permission text="Add Media from Drop Folder" id="dropFolder.CONTENT_INGEST_DROP_FOLDER_MATCH" dependsOnFeature="DROPFOLDER_PLUGIN_PERMISSION">
-				<ui id="entryDrilldown.entryAssets.matchFromDropBtn" visible="false" includeInLayout="false"/>
 				<ui id="entryDrilldown.entryAssets" allowMatchFromDrop="false"/>
 			</permission>
-			<!-- create empty entry -->
+			<!-- KCW: online services -->
+			<permission text="Add from Online Services" id="CONTENT_INGEST_EXTERNAL_SEARCH" >
+				<ui id="entryDrilldown.entryAssets" allowMatchFromDrop="false"/>
+				<ui id="addPanel.btnServices" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- KCW: webcam -->
+			<permission text="Add  from Webcam recording" id="CONTENT_INGEST_WEBCAM" >
+				<ui id="addPanel.btnWebcam" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- create empty video entry -->
 			<permission text="Add Video Entry" id="CONTENT_INGEST_ORPHAN_VIDEO">
-				<ui id="content.manage.toolBar.newEntryBtn" visible="false" includeInLayout="false"/>
+				<ui id="addPanel.btnVideo" visible="false" includeInLayout="false"/>
+			</permission>
+			<!-- create empty audio entry -->
+			<permission text="Add Audio Entry" id="CONTENT_INGEST_ORPHAN_AUDIO">
+				<ui id="addPanel.btnAudio" visible="false" includeInLayout="false"/>
 			</permission>
 			<!-- live stream -->
 			<permission text="Add Live Stream" id="LIVE_STREAM_ADD" dependsOnFeature="FEATURE_LIVE_STREAM">
-				<ui id="content.manage.toolBar.newStreamBtn" visible="false" includeInLayout="false"/>
+				<ui id="addPanel.btnLive" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
 		<!-- Content Management -->
@@ -84,7 +102,7 @@
 				<ui id="entryDrilldown.entryAssets" allowAddMedia="false"/>
 			</permission>
 			
-			<permission text="Replace Entry’s Media" id="CONTENT_INGEST_INTO_READY" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT">
+			<permission text="Replace Entryï¿½s Media" id="CONTENT_INGEST_INTO_READY" dependsOnFeature="FEATURE_ENTRY_REPLACEMENT">
 				<ui id="entryDrilldown.entryAssets" allowReplaceMedia="false"/>
 			</permission>
 			
@@ -365,10 +383,17 @@
 		<!-- ingestion of multiple flavours -->
 		<permissionGroup id="FEATURE_MULTI_FLAVOR_INGESTION">
 			<ui id="entryDrilldown.entryAssets" multiFlavorsIngestionAllowed="false" />
+			<ui id="conversionFlavorDrilldown.tiSystemName" enabled="false" />
+			<ui id="conversionFlavorDrilldown.cbConvertPolicy" enabled="false" />
 		</permissionGroup>
 		<!-- media replacement workflow -->
 		<permissionGroup id="FEATURE_ENTRY_REPLACEMENT">
 			<ui id="entryDrilldown.entryAssets.replacementInfoHBox" visible="false" includeInLayout="false"/>
+		</permissionGroup>
+		<!-- remote storage -->
+		<permissionGroup id="FEATURE_REMOTE_STORAGE">
+			<ui id="conversionProfileDrilldown_edit.remoteStorageBox" visible="false" includeInLayout="false"/>
+			<ui id="conversionProfileDrilldown_add.remoteStorageBox" visible="false" includeInLayout="false"/>
 		</permissionGroup>
 	</partnerPermissions>
 	

@@ -3,7 +3,7 @@
 	 a menu that allows adding content
 -->
 <mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" width="200" layout="vertical" styleName="addPanel"
-		   preinitialize="creationCompleteHandler(event)"
+		   preinitialize="createShowingHandler(event)" creationComplete="creationCompleteHandler(event)"
 		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu">
 	<mx:Metadata>
 		[ResourceBundle("create")]
@@ -18,12 +18,11 @@
 			import com.kaltura.kmc.business.IPopupMenu;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.MenuHandler;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.create.BulkUploader;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
-			
-			import flash.utils.setTimeout;
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -63,6 +62,10 @@
 			 * */
 			private var _kc:KalturaClient;
 
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				PermissionManager.getInstance().applyAllAttributes(this, "addPanel");
+				invalidateDisplayList();
+			}
 
 			protected function showUploadSettingsWindow(e:Event):void {
 				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
@@ -204,7 +207,7 @@
 			}
 
 
-			protected function creationCompleteHandler(event:FlexEvent):void {
+			protected function createShowingHandler(event:FlexEvent):void {
 				_showingHandler = new MenuHandler(this, "positionAddPanel");
 				_showingHandler.addEventListener(MenuHandler.MENU_REMOVED, resetPanel);
 				if (_approot) {
@@ -269,13 +272,17 @@
 				_flashvars = value;
 			}
 			
+
+			
+
 		]]>
 	</mx:Script>
 	<mx:ViewStack height="{menuScreen.measuredHeight}" styleName="noPadding" id="viewStack" creationPolicy="all" >
 		<mx:VBox styleName="noPadding" id="menuScreen" >
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
 					  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
-			<mx:VBox id="uploadBox" styleName="addPanelButtonBox">
+			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" visible="{btnUpload.visible &amp;&amp; btnWebcam.visible}"
+					 includeInLayout="{btnUpload.includeInLayout &amp;&amp; btnWebcam.includeInLayout}">
 				<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'upload_btn')}"/>
 				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
@@ -283,13 +290,15 @@
 			</mx:VBox>
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'import_lbl')}"
 					  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
-			<mx:VBox id="importBox" styleName="addPanelButtonBox">
+			<mx:VBox id="importBox" styleName="addPanelButtonBox" visible="{btnBulk.visible &amp;&amp; btnServices.visible}"
+					 includeInLayout="{btnBulk.includeInLayout &amp;&amp; btnServices.includeInLayout}">
 				<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'bulk_btn')}"/>
 				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
 						   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
 				<mx:LinkButton id="btnSamples" click="btnSamples_clickHandler(event)" styleName="addPanelLinkButton"
-							   label="{resourceManager.getString('create', 'samples_btn')}"/>
+							   label="{resourceManager.getString('create', 'samples_btn')}"
+							   visible="{btnBulk.visible}" includeInLayout="{btnBulk.includeInLayout}"/>
 			</mx:VBox>
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
 					  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
