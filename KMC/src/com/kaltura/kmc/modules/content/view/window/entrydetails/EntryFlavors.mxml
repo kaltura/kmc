@@ -477,12 +477,13 @@
 			 * */
 			private function openAddFlavorsWindow(action:String, filesList:ArrayCollection, allowAddFiles:Boolean = true):void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
-				addFlavorsAssetsWindow.entry = _selectedEntry;
+				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
-				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
 				addFlavorsAssetsWindow.windowAction = action;
+				addFlavorsAssetsWindow.flavorAssetName = _selectedFlavorWithParams ? _selectedFlavorWithParams.flavorParams.name : '';
+				addFlavorsAssetsWindow.entry = _selectedEntry;
 				addFlavorsAssetsWindow.addEventListener(AddFlavorAssetsWindow.CLOSE_WINDOW, onAddFlavorsWindowClose);
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
@@ -604,7 +605,7 @@
 
 			protected function onLinkBtnClick(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]));
 			}
 
 		]]>

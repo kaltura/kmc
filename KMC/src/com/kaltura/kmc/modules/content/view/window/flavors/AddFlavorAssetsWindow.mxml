@@ -6,7 +6,7 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 		xmlns:containers="com.kaltura.containers.*" 
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
-		width="550" height="400" styleName="TitleWindowType2" 
+		width="550" styleName="TitleWindowType2" 
 		showCloseButton="true" close="closeHandler(event)"
 		creationComplete="titlewindow1_creationCompleteHandler(event)" >
 
@@ -27,6 +27,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaRemoteStorageResource;
 			import com.kaltura.vo.KalturaUrlResource;
 			
 			import mx.collections.ArrayCollection;
@@ -76,6 +77,10 @@
 			 * */
 			public var allowAddFiles:Boolean = true;
 			
+			/**
+			 * when editing a single flavor, it's name
+			 * */
+			public var flavorAssetName:String;
 			
 			/**
 			 * @copy #selectedCPAssetParams
@@ -235,10 +240,7 @@
 				
 			
 			/**
-			 * Submit handler:
-			 * 	•	Upload – 
-			 * 	•	Import – trigger media.add with matching KalturaURLResource objects.
-			 * 	•	Link – trigger media.add with matching KalturaNetStorageResource objects.
+			 * Submit handler: trigger relevant submission
 			 * */
 			protected function submit():void {
 				switch (_windowAction){
@@ -246,24 +248,21 @@
 						submitUpload();
 						break;
 					case AddFlavorAssetsWindow.ACTION_IMPORT:
-						submitImport();
-						break;
 					case AddFlavorAssetsWindow.ACTION_LINK:
-						submitLink();
+						submitImportLink();
 						break;
-					
 				}
 				// close the popup
 				closeHandler();
 			}
 			
 			
-			protected function submitLink():void {
-				//TODO consider using the same function as import
-			}
 			
-			
-			protected function submitImport():void {
+			/**
+			 * trigger media.add with matching KalturaURLResource or
+			 * KalturaRemoteStorageResource objects
+			 * */
+			protected function submitImportLink():void {
 				if (windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE) {
 					handleMultipleFlavours();
 				}
@@ -280,14 +279,24 @@
 			protected function handleMultipleFlavours():void {
 				// conversion profile id
 				var cnvrtProfId:String = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.id.toString();
+				// remote storage id
+				var remoteStorageId:int = (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId;
 				// the actual resource we send is a list of the containers for the resources we want to replace.                
 				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
 				mediaResource.resources = new Array();
 				
 				for each (var ufv:UploadFileVo in filesList) {
 					// the first resource of the flavor we want to replace
-					var subSubResource:KalturaUrlResource = new KalturaUrlResource();
-					subSubResource.url = ufv.fileName;
+					var subSubResource:KalturaUrlResource;
+					if (_windowAction == AddFlavorAssetsWindow.ACTION_IMPORT) {
+						subSubResource = new KalturaUrlResource();
+						subSubResource.url = ufv.fileName;
+					}
+					else if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK) {
+						subSubResource = new KalturaRemoteStorageResource();
+						subSubResource.url = ufv.fileName;
+						(subSubResource as KalturaRemoteStorageResource).storageProfileId = remoteStorageId;
+					}
 					
 					// container for the resource we want to replace
 					var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
@@ -307,23 +316,28 @@
 			
 			/**
 			 * update / add a single flavor 
-			 * @param ufv	the upload vo that represents the flavor being updated / added
+			 * @param ufv	vo that represents the flavor being updated / added
 			 * */
 			protected function handleSingleFlavour(ufv:UploadFileVo):void {
 				var resource:KalturaUrlResource;
 				var dffe:MediaEvent;
-				if (ufv.flavorAssetId != null) {
-					// updating a single flavor
+				// create resource
+				if (_windowAction == AddFlavorAssetsWindow.ACTION_IMPORT) {
 					resource = new KalturaUrlResource();
-					resource.url = ufv.fileName;
+				}
+				else if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK) {
+					resource = new KalturaRemoteStorageResource();
+//					(subSubResource as KalturaRemoteStorageResource).storageProfileId = remoteStorageId;
+				}
+				resource.url = ufv.fileName;
+				// dispatch call
+				if (ufv.flavorAssetId != null) {
 					dffe = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 					dffe.data = {flavorAssetId: ufv.flavorAssetId, resource:resource};
 					dffe.dispatch();
 				}
 				else {
-					// adding a single flavor
-					resource = new KalturaUrlResource();
-					resource.url = ufv.fileName;
+					// if no flavorAssetId this is new flavour
 					dffe = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 					dffe.data = {flavorParamsId: ufv.flavorParamId, resource:resource};
 					dffe.dispatch();
@@ -498,6 +512,10 @@
 				else {
 					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
 				}
+				// when updating single flavour, say which one
+				if (windowState == AddFlavorAssetsWindow.SINGLE_FILE_STATE) {
+					title += " - " + flavorAssetName;
+				}
 			}
 			
 
@@ -517,6 +535,10 @@
 						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
 						addFiles="addMoreFiles()" showSize="{_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD}" 
 						nameEditable="{_windowAction != AddFlavorAssetsWindow.ACTION_UPLOAD}"/>
+	<mx:Text width="100%"
+			 htmlText="{resourceManager.getString('cms', 'importSourceForLink')}" 
+			 visible="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"
+			 includeInLayout="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"/>
 	<mx:ControlBar>
 		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
 				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}"/>
