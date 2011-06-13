@@ -71,6 +71,18 @@
 			 * (for r&p)
 			 * */
 			public var allowMatchFromDrop:Boolean = true;
+			
+			/**
+			 * allow link option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowLink:Boolean = true;
+			
+			/**
+			 * allow import option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowImport:Boolean = true;
 
 			[Bindable]
 			private var _approveEnabled:Boolean;
@@ -207,6 +219,8 @@
 			public function destroy():void {
 				dg.removeEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				dg.removeEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
+				dg.removeEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
 				FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
@@ -228,10 +242,41 @@
 
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				dg.addEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
+				dg.addEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
 			}
 
 
+			/**
+			 * open the AFAW with a single vo, representing relevant flavorAsset / assetParams.
+			 * @internal 
+			 * handler for dropdown "import" selection
+			 * */
+			private function onFlavorImportSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+				var filesList:ArrayCollection = new ArrayCollection(new Array(uploadFile));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, filesList, false);
+				//resets data
+				_selectedFlavorWithParams = null;
+			}
+
+			
+			/**
+			 * 
+			 * */
+			private function onFlavorLinkSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				//TODO implement
+			}
+			
 			private function onFlavorsChanged(event:Event):void {
 				refreshData();
 			}
@@ -305,7 +350,7 @@
 						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
 				}
 
-				openAddFlavorsWindow(new ArrayCollection(new Array(uploadFile)), false);
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, new ArrayCollection(new Array(uploadFile)), false);
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
@@ -426,14 +471,18 @@
 
 			/**
 			 * opens AddFlavorsAssetsWindow according to given params
+			 * @param action		the action to apply upon submit
+			 * @param filesList		list of UploadFileVo objects
+			 * @param allowAddFiles	should the popup allow adding more files after being opened
 			 * */
-			private function openAddFlavorsWindow(filesList:ArrayCollection, allowAddFiles:Boolean = true):void {
+			private function openAddFlavorsWindow(action:String, filesList:ArrayCollection, allowAddFiles:Boolean = true):void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.entry = _selectedEntry;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
+				addFlavorsAssetsWindow.windowAction = action;
 				addFlavorsAssetsWindow.addEventListener(AddFlavorAssetsWindow.CLOSE_WINDOW, onAddFlavorsWindowClose);
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, this, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
@@ -465,7 +514,7 @@
 					filesList.addItem(uploadFile);
 				}
 
-				openAddFlavorsWindow(filesList);
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, filesList);
 			}
 
 
