@@ -11,7 +11,7 @@ package com.kaltura.kmc.modules.admin.business {
 	 * This class recieves instances
 	 */
 	[Bindable]
-	public class PermissionGroupManager {
+	public class AdvancedPermissionGroupManager {
 		public static const STATUS_NONE:String = "statusNone";
 		public static const STATUS_ALL:String = "statusAll";
 		public static const STATUS_PARTIAL:String = "statusPartial";
@@ -44,7 +44,7 @@ package com.kaltura.kmc.modules.admin.business {
 		public var openLinkButton:LinkButton;
 
 
-		public function PermissionGroupManager(groupCheckbox:CheckBox, innerCheckBoxes:Array, closeLinkButton:LinkButton, openLinkButton:LinkButton, showButtons:Boolean) {
+		public function AdvancedPermissionGroupManager(groupCheckbox:CheckBox, innerCheckBoxes:Array, closeLinkButton:LinkButton, openLinkButton:LinkButton, showButtons:Boolean) {
 			this.closeLinkButton = closeLinkButton;
 			this.openLinkButton = openLinkButton;
 			this.innerCheckBoxes = innerCheckBoxes;
@@ -160,7 +160,7 @@ package com.kaltura.kmc.modules.admin.business {
 
 
 		/**
-		 * This function checks if all checkboxes are selecets, or if part of them are
+		 * This function checks if all checkboxes are selected, or if part of them are
 		 * selected or none, and changes the style of the group checkbox.
 		 * @param event
 		 *
