@@ -129,30 +129,13 @@ package com.kaltura.kmc.business
 		
 		/**
 		 * open the KCW 
-		 * @param ks
 		 * @param conversion_profile
+		 * @param uiconftag
 		 */
-		public static function openKcw(ks:String, conversion_profile:String = ''):void {
-			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
+		public static function openKcw(conversion_profile:String, uiconftag:String):void {
+			ExternalInterface.call("kmc.functions.openKcw", conversion_profile,uiconftag);
 		}
 		
-		/**
-		 * open the KCW with webcam config
-		 * @param ks
-		 * @param conversion_profile
-		 */
-		public static function openKcwWebcam(ks:String, conversion_profile:String = ''):void {
-			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
-		}
-		
-		/**
-		 * open the KCW with online services config
-		 * @param ks
-		 * @param conversion_profile
-		 */
-		public static function openKcwServices(ks:String, conversion_profile:String = ''):void {
-			ExternalInterface.call("kmc.functions.openKcw", ks, conversion_profile);
-		}
 		
 		
 		/**

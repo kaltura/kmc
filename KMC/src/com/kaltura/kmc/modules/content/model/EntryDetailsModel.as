@@ -69,11 +69,23 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var enableUpdateMetadata:Boolean = true;
 		
+		
+		/**
+		 * R&P: whether partner has remote storage feature
+		 */		
+		public var remoteStorageEnabled:Boolean = true;
+		
 		/**
 		 * a list of <code>ConversionProfileWithFlavorParamsVo</code> objects
 		 * for each conversion profile, lists the flavorparams matching objects. 
 		 */		
 		public var conversionProfsWFlavorParams:ArrayCollection;
+		
+		/**
+		 * list of partner's storage profiles, 
+		 * <code>KalturaStorageProfile</code> objects 
+		 */
+		public var storageProfiles:ArrayCollection;
 		
 		/**
 		 * replacement entry of the selected entry 

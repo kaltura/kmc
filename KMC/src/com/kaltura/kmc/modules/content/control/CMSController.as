@@ -91,6 +91,7 @@ package com.kaltura.kmc.modules.content.control
 			//Profile Event
 			addCommand(ProfileEvent.LIST_CONVERSION_PROFILE , ListConversionProfilesCommand);
 			addCommand(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS , ListConversionProfilesAndFlavorParams);
+			addCommand(ProfileEvent.LIST_STORAGE_PROFILES , ListStorageProfilesCommand);
 			
 			// flavor params
 			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);
@@ -166,6 +167,7 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(ChangeModelEvent.SET_CUSTOM_METADATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_UPDATE_CUSTOM_DATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_REMOTE_STORAGE, ChangeModelValueCommand);
 			
 			// drop folder stuff
 			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);

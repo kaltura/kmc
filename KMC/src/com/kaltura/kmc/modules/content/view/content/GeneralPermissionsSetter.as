@@ -127,5 +127,15 @@ package com.kaltura.kmc.modules.content.view.content
 			return true;
 			//TODO * return the real value from the model ?
 		}
+		
+		
+		public function set enableRemoteStorage(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_REMOTE_STORAGE, value);
+			cge.dispatch();
+		}
+		
+		public function get enableRemoteStorage():Boolean {
+			return true;
+		}
 	}
 }

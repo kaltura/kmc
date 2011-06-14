@@ -105,10 +105,11 @@
 			private var _dropFolderModel:DropFolderModel;
 			private var _flavorsWatcher:ChangeWatcher;
 
-			/**
-			 * watchers for binding to assFlavorAssetWindow
+			/*
+			 * watchers for binding to addFlavorAssetsWindow
 			 * */
 			private var _convProfilesWatcher:ChangeWatcher;
+			private var _storageProfsWatcher:ChangeWatcher;
 			
 			/**
 			 * if there is a pending request to open drilldown
@@ -215,6 +216,11 @@
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				profileEvent.dispatch();
+				// if partner has remote storage feature, list profiles. 
+				if (_entryDetailsModel.remoteStorageEnabled) {
+					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
+					profileEvent.dispatch();
+				}
 			}
 
 
@@ -272,11 +278,24 @@
 
 			
 			/**
-			 * 
+			 * open the AFAW with a single vo, representing relevant flavorAsset / assetParams.
+			 * @internal 
+			 * handler for dropdown "link" selection
 			 * */
 			private function onFlavorLinkSelected(event:Event):void {
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
-				//TODO implement
+				//TODO check
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+				var filesList:ArrayCollection = new ArrayCollection(new Array(uploadFile));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, filesList, false);
+				//resets data
+				_selectedFlavorWithParams = null;
 			}
 			
 			private function onFlavorsChanged(event:Event):void {
@@ -481,6 +500,7 @@
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
+				_storageProfsWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "storageProfiles", entryDetailsModel, "storageProfiles");
 				addFlavorsAssetsWindow.filesList = filesList;
 				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
 				addFlavorsAssetsWindow.windowAction = action;
@@ -498,7 +518,9 @@
 			private function onAddFlavorsWindowClose(event:Event):void {
 				if (_convProfilesWatcher)
 					_convProfilesWatcher.unwatch();
-
+				if (_storageProfsWatcher)
+					_storageProfsWatcher.unwatch();
+				
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}
 

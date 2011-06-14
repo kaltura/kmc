@@ -23,6 +23,9 @@ package com.kaltura.kmc.modules.content.commands
 				case ChangeModelEvent.SET_DISTRIBUTION:
 					_model.filterModel.enableDistribution = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.SET_REMOTE_STORAGE:
+					_model.entryDetailsModel.remoteStorageEnabled = (event as ChangeModelEvent).newValue;
+					break;
 			}
 		}	
 	}

@@ -15,6 +15,8 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_PLAYLIST_EMBED_STATUS : String = "playlist_setEmbedStatus";
 		
+		public static const SET_REMOTE_STORAGE : String = "content_setRemoteStorage";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

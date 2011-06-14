@@ -6,7 +6,7 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 		xmlns:containers="com.kaltura.containers.*" 
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
-		width="550" styleName="TitleWindowType2" 
+		width="550" styleName="TitleWindowType2" visible="false"
 		showCloseButton="true" close="closeHandler(event)"
 		creationComplete="titlewindow1_creationCompleteHandler(event)" >
 
@@ -28,6 +28,7 @@
 			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaRemoteStorageResource;
+			import com.kaltura.vo.KalturaStorageProfile;
 			import com.kaltura.vo.KalturaUrlResource;
 			
 			import mx.collections.ArrayCollection;
@@ -82,6 +83,7 @@
 			 * */
 			public var flavorAssetName:String;
 			
+			
 			/**
 			 * @copy #selectedCPAssetParams
 			 * */
@@ -101,6 +103,14 @@
 			 * <code>ConversionProfileWithFlavorParamsVo</code> objects
 			 * */
 			public var conversionProfiles:ArrayCollection;
+			
+			/**
+			 * partner's storage profiles
+			 * */
+			public var storageProfiles:ArrayCollection;
+			
+			[Bindable]
+			private var _selectedStorageProfile:KalturaStorageProfile;
 			
 			[Bindable]
 			/**
@@ -474,6 +484,42 @@
 						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitUploadLabel')
 						break;
 				}
+				if (!visible){
+					// for link action in single state only show panel if 
+					// entry's conversion profile has storageProfileId  
+					if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK && windowState == AddFlavorAssetsWindow.SINGLE_FILE_STATE) {
+						if ((cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId) {
+							visible = true;
+							//TODO get this storage profile to show its details
+							
+						}
+						else {
+							// Remote Storage is not set in Entry's Conversion Profile
+							Alert.show(ResourceManager.getInstance().getString('cms', 'noRemoteStorageForEntry'), 
+								ResourceManager.getInstance().getString('cms', 'error'));
+							closeHandler();
+						}	
+						
+					}
+					else {
+						visible = true;
+					}
+						
+				}
+					
+			}
+			
+			
+			
+			protected function showStorageProfileDetails(event:ListEvent):void {
+				if (storageProfiles) {
+					for each (var sp:KalturaStorageProfile in storageProfiles) {
+						if (sp.id == (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId) {
+							_selectedStorageProfile = sp;
+							break;
+						}
+					}
+				}
 			}
 			
 			
@@ -519,16 +565,40 @@
 			}
 			
 
+
 		]]>
 	</mx:Script>
 	
 	<mx:HBox verticalAlign="middle" visible="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}" 
 			 includeInLayout="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}">
+		<mx:Script>
+			<![CDATA[
+				import mx.events.ListEvent;
+			]]>
+		</mx:Script>
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
-		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" 
+		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" change="showStorageProfileDetails(event)"
 					 selectedIndex="0" dataProvider="{conversionProfiles}" />
 	</mx:HBox>
+	<mx:VBox id="storageProfileBox" styleName="flavorsReplacementVBox" width="100%"
+			 visible="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"
+			 includeInLayout="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}">
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="Remote Storage Name:" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.name}" width="100%"/>
+			<mx:VRule height="12"/>
+			<mx:Label text="ID:" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.id}" width="100%" />
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle">
+			<mx:Label text="Storage URL:" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.storageUrl}" width="100%" />
+			<mx:VRule height="12"/>
+			<mx:Label text="Storage Base Directory:" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.storageBaseDir}" width="100%" />
+		</mx:HBox>
+	</mx:VBox>
 	<mx:Label id="tableHeader" text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
 			  styleName="tableName"/>
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
