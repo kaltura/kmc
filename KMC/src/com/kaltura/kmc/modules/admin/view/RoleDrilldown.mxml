@@ -13,6 +13,7 @@
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.admin.business.AdvancedPermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.business.PermissionGroupManager;
 			import com.kaltura.kmc.modules.admin.model.DrilldownMode;
 			import com.kaltura.utils.ObjectUtil;
@@ -295,7 +296,15 @@
 					}
 				}
 
-				_allPermissionGroupManagers.push(new PermissionGroupManager(groupCb, innerCbArray, closeLinkBtn, openLinkBtn, showButtons));
+				// use correct group manager
+				var pgm:PermissionGroupManager;
+				if (group.attribute("isAdvancedGroup") == "true") {
+					pgm = new AdvancedPermissionGroupManager(groupCb, innerCbArray, closeLinkBtn, openLinkBtn, showButtons);
+				}
+				else {
+					pgm = new PermissionGroupManager(groupCb, innerCbArray, closeLinkBtn, openLinkBtn, showButtons);
+				}
+				_allPermissionGroupManagers.push(pgm);
 
 				return vb;
 			}

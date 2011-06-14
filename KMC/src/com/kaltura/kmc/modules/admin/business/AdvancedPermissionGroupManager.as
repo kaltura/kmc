@@ -1,93 +1,31 @@
 package com.kaltura.kmc.modules.admin.business {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
-
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.controls.CheckBox;
 	import mx.controls.LinkButton;
 	import mx.resources.ResourceManager;
 
-	/**
-	 * This class recieves instances
-	 */
 	[Bindable]
-	public class AdvancedPermissionGroupManager {
-		public static const STATUS_NONE:String = "statusNone";
-		public static const STATUS_ALL:String = "statusAll";
-		public static const STATUS_PARTIAL:String = "statusPartial";
-
-		public var _isOpen:Boolean = false;
-		public var _isOpenReverse:Boolean = true;
-		private var _status:String;
-
-		/**
-		 * main CheckBox for this group
-		 */
-		public var groupCheckbox:CheckBox;
-
-		private var groupCheckboxString:String;
-
-		[ArrayElementType("CheckBox")]
-		/**
-		 * list sub-checkboxes of this group
-		 */
-		public var innerCheckBoxes:Array;
-
-		/**
-		 * button that collapses this group
-		 */
-		public var closeLinkButton:LinkButton;
-
-		/**
-		 * button that expands this group
-		 */
-		public var openLinkButton:LinkButton;
-
+	/**
+	 * manages a group of permission checkboxes, allowing the 
+	 * state of only the head checkbox selected (view only state
+	 * of screens relevant to the permission) 
+	 */
+	public class AdvancedPermissionGroupManager extends PermissionGroupManager {
+		
 
 		public function AdvancedPermissionGroupManager(groupCheckbox:CheckBox, innerCheckBoxes:Array, closeLinkButton:LinkButton, openLinkButton:LinkButton, showButtons:Boolean) {
-			this.closeLinkButton = closeLinkButton;
-			this.openLinkButton = openLinkButton;
-			this.innerCheckBoxes = innerCheckBoxes;
-			this.groupCheckbox = groupCheckbox;
-			this.groupCheckbox.addEventListener(MouseEvent.CLICK, onGroupChanged, false, 0, true);
-
-			this.openLinkButton.addEventListener(MouseEvent.CLICK, onAdvancedClicked, false, 0, true);
-			this.closeLinkButton.addEventListener(MouseEvent.CLICK, onGroupClosed, false, 0, true);
-			groupCheckboxString = groupCheckbox.label;
-			if (showButtons) {
-				BindingUtils.bindProperty(this.closeLinkButton, "visible", this, "_isOpen");
-				BindingUtils.bindProperty(this.closeLinkButton, "includeInLayout", this, "_isOpen");
-
-				BindingUtils.bindProperty(this.openLinkButton, "visible", this, "_isOpenReverse");
-				BindingUtils.bindProperty(this.openLinkButton, "includeInLayout", this, "_isOpenReverse");
-			}
-			else {
-				closeLinkButton.includeInLayout = false;
-				openLinkButton.includeInLayout = false;
-				closeLinkButton.visible = false;
-				openLinkButton.visible = false;
-			}
-
-			for each (var cb:CheckBox in innerCheckBoxes) {
-				BindingUtils.bindProperty(cb, "visible", this, "_isOpen");
-				BindingUtils.bindProperty(cb, "includeInLayout", this, "_isOpen");
-				cb.addEventListener(Event.CHANGE, setMainCBState, false, 0, true);
-			}
+			super(groupCheckbox, innerCheckBoxes, closeLinkButton, openLinkButton, showButtons);
 		}
-
-
-
-		public function reverse(val:Boolean):Boolean {
-			return !val;
-		}
-
 
 		/**
 		 * click handler for main cb. 
 		 * toggles between all selected / view only / none selected  
 		 * @param event mouse click event
 		 */
-		protected function onGroupChanged(event:MouseEvent):void {
+		override protected function onGroupChanged(event:MouseEvent):void {
 			var cb:CheckBox;
 			if (_status == STATUS_ALL) {
 				groupCheckbox.selected = true;
@@ -99,7 +37,7 @@ package com.kaltura.kmc.modules.admin.business {
 				}
 				setMainCBState();
 				_status = STATUS_PARTIAL;
-
+				
 			}
 			else if (_status == STATUS_PARTIAL) {
 				groupCheckbox.selected = false;
@@ -111,7 +49,7 @@ package com.kaltura.kmc.modules.admin.business {
 				}
 				setMainCBState();
 				_status = STATUS_NONE;
-
+				
 			}
 			else {
 				groupCheckbox.selected = true;
@@ -123,39 +61,9 @@ package com.kaltura.kmc.modules.admin.business {
 				}
 				setMainCBState();
 				_status = STATUS_ALL;
-
+				
 			}
-
-		}
-
-
-
-		/**
-		 * A group option button was clicked
-		 *
-		 */
-		protected function onAdvancedClicked(event:MouseEvent):void {
-			isOpen = true;
-		}
-
-
-		/**
-		 * A group close (fold) button was clicked
-		 *
-		 */
-		protected function onGroupClosed(event:MouseEvent):void {
-			isOpen = false;
-		}
-
-
-		/**
-		 * This property indicates if the inner checkbox are visible
-		 * or is this group folded.
-		 * @return
-		 *
-		 */
-		public function get isOpen():Boolean {
-			return _isOpen;
+			
 		}
 
 
@@ -165,51 +73,17 @@ package com.kaltura.kmc.modules.admin.business {
 		 * @param event
 		 *
 		 */
-		public function setMainCBState(event:Event = null):void {
-			// n is number of unselected child cbs
-			var n:uint = innerCheckBoxes.length;
-			for each (var cb:CheckBox in innerCheckBoxes) {
-				if (cb.selected == true) {
-					n--;
-				}
-			}
-			if (n == 0) {
-				// all checkbox are selected 
-				_status = STATUS_ALL;
-				groupCheckbox.styleName = "adminMainCheckbox";
-				groupCheckbox.selected = true;
-
-			}
-			else if (n == innerCheckBoxes.length) {
-				//none of children selected 
-				_status = STATUS_NONE;
-				groupCheckbox.styleName = "adminMainCheckbox";
-			}
-			else {
-				//real partial 
-				_status = STATUS_PARTIAL;
-				groupCheckbox.styleName = "partial";
-				groupCheckbox.selected = true;
-			}
+		override public function setMainCBState(event:Event = null):void {
+			super.setMainCBState(event);
 			//view only
 			if (_status == STATUS_NONE && groupCheckbox.selected == true) {
-				groupCheckbox.label = groupCheckboxString + ResourceManager.getInstance().getString('admin', 'viewOnly');
+				groupCheckbox.label = _groupCheckboxString + ResourceManager.getInstance().getString('admin', 'viewOnly');
 				groupCheckbox.styleName = "partial";
 				groupCheckbox.selected = true;
 			}
 			else {
-				groupCheckbox.label = groupCheckboxString;
+				groupCheckbox.label = _groupCheckboxString;
 			}
-
-
 		}
-
-
-		public function set isOpen(value:Boolean):void {
-			_isOpen = value;
-			_isOpenReverse = !_isOpen;
-		}
-
-
 	}
 }
