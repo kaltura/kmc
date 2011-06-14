@@ -280,7 +280,7 @@ package com.kaltura.kmc.modules.dashboard {
 			}
 			else {
 				try {
-					JSGate.openKcw(_kc.ks);
+//					JSGate.openKcw(_kc.ks);
 //					ExternalInterface.call("cwFunction", _kc.ks);
 				}
 				catch (e:Error) {

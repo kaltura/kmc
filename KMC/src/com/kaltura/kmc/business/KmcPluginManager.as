@@ -3,11 +3,14 @@ package com.kaltura.kmc.business
 	import com.kaltura.KalturaClient;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	
+	import flash.display.DisplayObject;
 	import flash.display.DisplayObjectContainer;
+	import flash.display.LoaderInfo;
 	import flash.events.EventDispatcher;
 	import flash.system.ApplicationDomain;
 	import flash.utils.Dictionary;
 	
+	import mx.core.Application;
 	import mx.events.ModuleEvent;
 	import mx.modules.Module;
 	import mx.modules.ModuleLoader;
@@ -52,6 +55,27 @@ package com.kaltura.kmc.business
 		
 		
 		/**
+		 * decide if should use relative or absolute url.
+		 * if the given path is ablsolute, return the same string.
+		 * if the given path is relative, concatenate it to the swf url.
+		 * @param	given path
+		 * @return	path to use
+		 * */
+		protected function getUrl(path:String):String {
+			var url:String;
+			if (path.indexOf("http") == 0) {
+				url = path;
+			}
+			else {
+				var li:LoaderInfo = (Application.application as Application).loaderInfo; 
+				var base:String = li.url.substr(0, li.url.lastIndexOf("/"));
+				url = base + "/" + path;
+			}
+			return url; 
+		}
+		
+		
+		/**
 		 * load the FlexModule
 		 * @param pluginInfo xml with plugin load info 
 		 * 			<plugin id="addCode" path="modules/Add.swf" dependencies="add,admin"/>
@@ -61,7 +85,7 @@ package com.kaltura.kmc.business
 			pluginLoader.applicationDomain = ApplicationDomain.currentDomain;
 			pluginLoader.addEventListener(ModuleEvent.READY, onPluginLoaded);
 			pluginLoader.addEventListener(ModuleEvent.ERROR, onPluginLoadError);
-			pluginLoader.url = pluginInfo.@path;
+			pluginLoader.url = getUrl(pluginInfo.@path);
 			_approot.addChild(pluginLoader);
 		}
 		
@@ -77,7 +101,7 @@ package com.kaltura.kmc.business
 			}
 			ml.removeEventListener(ModuleEvent.READY, onPluginLoaded);
 			ml.removeEventListener(ModuleEvent.ERROR, onPluginLoadError);
-			var pluginInfo:XML = _uiconf.plugins.plugin.(@path == ml.url)[0]; 
+			var pluginInfo:XML = getPluginInfoByUrl(ml.url);  
 			var plugin:Module = ml.child as Module;
 			
 			// pass all attributes as plugins vars
@@ -101,6 +125,16 @@ package com.kaltura.kmc.business
 			}
 			_plugins[plugin.id] = plugin;
 			
+		}
+		
+		private function getPluginInfoByUrl(url:String):XML {
+			var plugins:XMLList = _uiconf.plugins.plugin;
+			for each (var plugin:XML in plugins) {
+				if (url.indexOf(plugin.@path) > -1) {
+					return plugin;
+				}
+			}
+			return null;
 		}
 		
 		
