@@ -108,14 +108,16 @@ package com.kaltura.kmc.business
 		 * @param email	user's current email
 		 */
 		public static function openChangeName(fName:String, lName:String, email:String):void {
-			ExternalInterface.call("kmc.functions.openChangeName", fName, lName, email);
+//			ExternalInterface.call("kmc.functions.openChangeName", fName, lName, email);
+			ExternalInterface.call("kmc.user.changeSetting", 'name', {fname: fName, lname: lName, email: email} );
 		}
 		
 		/**
 		 * open the change user password popup window 
 		 */
 		public static function openChangePwd(mail:String):void {
-			ExternalInterface.call("kmc.functions.openChangePwd", mail);
+//			ExternalInterface.call("kmc.functions.openChangePwd", mail);
+			ExternalInterface.call("kmc.user.changeSetting", 'password', {email: mail});
 		}
 		
 		/**
@@ -123,7 +125,8 @@ package com.kaltura.kmc.business
 		 * @param mail	user's current email 
 		 */
 		public static function openChangeEmail(mail:String):void {
-			ExternalInterface.call("kmc.functions.openChangeEmail", mail);
+//			ExternalInterface.call("kmc.functions.openChangeEmail", mail);
+			ExternalInterface.call("kmc.user.changeSetting", 'email', {email: mail});
 		}
 		
 		
