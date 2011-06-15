@@ -12,11 +12,13 @@
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 			import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			import com.kaltura.vo.KalturaDropFolder;
 			import com.kaltura.vo.KalturaDropFolderFile;
 			import com.kaltura.vo.KalturaDropFolderFileResource;
@@ -42,8 +44,10 @@
 			 * */
 			private static const MULTI_FLAVOUR:String = "multi_flavour";
 
-
-			private var _folders:ArrayCollection;
+			/**
+			 * conversion profiles with matching asset params (cpaps)
+			 * */
+			public var conversionProfiles:ArrayCollection;
 
 			/**
 			 * @copy #flavorAssetId
@@ -66,6 +70,8 @@
 			 * */
 			private var _entry:KalturaBaseEntry;
 
+			private var _folders:ArrayCollection;
+			
 			/**
 			 * currently selected drop folder
 			 * */
@@ -266,6 +272,23 @@
 			
 			
 			/**
+			 * get asset param id by flavour system name and conversion profile id
+			 * */
+			protected function getAssetParamsId(convProfId:int, flavorName:String):int {
+				for each (var cp:ConversionProfileWithFlavorParamsVo in conversionProfiles) {
+					if (cp.profile.id == convProfId) {
+						for each (var cpap:KalturaConversionProfileAssetParams in cp.flavors) {
+							if (cpap.systemName == flavorName) {
+								return cpap.assetParamsId;
+							}
+						}
+						break;
+					}
+				}
+				return -1;
+			}
+			
+			/**
 			 * if user confirmed, add selected files to the entry
 			 * @param e		alert closing event holding user's response
 			 */
@@ -286,7 +309,7 @@
 						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();
 						subResource.resource = subSubResource;
 						//NOTE if matching failed, this has no value (but then we shouldn't be able to select this group)
-						subResource.assetParamsId = dff.flavorParamsId;
+						subResource.assetParamsId = getAssetParamsId(_selectedFolder.conversionProfileId, dff.parsedFlavor); 
 						
 						// add to list
 						mediaResource.resources.push(subResource);
@@ -296,7 +319,7 @@
 					var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
 					ce.data = {conversionProfileId:_selectedFolder.conversionProfileId, resource:mediaResource};
 					ce.dispatch();
-				}
+				} 
 			}
 
 
@@ -483,7 +506,6 @@
 					if (value.length > 0) {
 						// got drop folders, show window
 						visible = true;
-						// prompt="{ResourceManager.getInstance().getString('cms', 'selectPrompt')}"
 						if (cbFolders) {
 							cbFolders.selectedItem = 0;
 						}
