@@ -4,7 +4,7 @@
 -->
 <mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" width="200" layout="vertical" styleName="addPanel"
 		   preinitialize="createShowingHandler(event)" creationComplete="creationCompleteHandler(event)"
-		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu">
+		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu" visible="false">
 	<mx:Metadata>
 		[ResourceBundle("create")]
 	</mx:Metadata>
@@ -64,7 +64,12 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, "addPanel");
-				invalidateDisplayList();
+				menuScreen.invalidateSize();
+				validateSize(true);
+				
+				viewStack.height = menuScreen.measuredHeight;
+				this.height = viewStack.height + getStyle("paddingTop") + getStyle("paddingBottom"); 
+				visible = true;
 			}
 
 			protected function showUploadSettingsWindow(e:Event):void {
@@ -281,8 +286,8 @@
 		<mx:VBox styleName="noPadding" id="menuScreen" >
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
 					  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
-			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" visible="{btnUpload.visible &amp;&amp; btnWebcam.visible}"
-					 includeInLayout="{btnUpload.includeInLayout &amp;&amp; btnWebcam.includeInLayout}">
+			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" visible="{btnUpload.visible || btnWebcam.visible}"
+					 includeInLayout="{btnUpload.includeInLayout || btnWebcam.includeInLayout}">
 				<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'upload_btn')}"/>
 				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
@@ -290,8 +295,8 @@
 			</mx:VBox>
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'import_lbl')}"
 					  includeInLayout="{importBox.includeInLayout}" visible="{importBox.visible}"/>
-			<mx:VBox id="importBox" styleName="addPanelButtonBox" visible="{btnBulk.visible &amp;&amp; btnServices.visible}"
-					 includeInLayout="{btnBulk.includeInLayout &amp;&amp; btnServices.includeInLayout}">
+			<mx:VBox id="importBox" styleName="addPanelButtonBox" visible="{btnBulk.visible || btnServices.visible}"
+					 includeInLayout="{btnBulk.includeInLayout || btnServices.includeInLayout}">
 				<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'bulk_btn')}"/>
 				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
@@ -302,7 +307,8 @@
 			</mx:VBox>
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
 					  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
-			<mx:VBox id="prepareBox" styleName="addPanelButtonBox">
+			<mx:VBox id="prepareBox" styleName="addPanelButtonBox" visible="{btnVideo.visible || btnAudio.visible || btnLive.visible}"
+					 includeInLayout="{btnVideo.includeInLayout || btnAudio.includeInLayout || btnLive.includeInLayout}">
 				<mx:Button id="btnVideo" click="btnVideo_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
 						   label="{resourceManager.getString('create', 'video_btn')}"/>
 				<mx:Button id="btnAudio" click="btnAudio_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"

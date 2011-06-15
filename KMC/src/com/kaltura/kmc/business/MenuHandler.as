@@ -10,6 +10,7 @@ package com.kaltura.kmc.business {
 	import mx.core.Application;
 	import mx.managers.PopUpManager;
 	import mx.modules.Module;
+	import mx.modules.ModuleLoader;
 
 	/**
 	 * this class is responsible for the visual aspecs of the add menu 
@@ -48,11 +49,13 @@ package com.kaltura.kmc.business {
 		 * Add a stage listener to hide the popup. 
 		 */
 		public function showPanel():void {
-			PopUpManager.addPopUp(_panel, _approot);
-			positionPanel(JSGate.getPanelPosition());
-			
-			// add stage listener
-			(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.MOUSE_OVER, hidePanel);
+			if (!_panel.parent || _panel.parent is ModuleLoader){
+				PopUpManager.addPopUp(_panel, _approot);
+				positionPanel(JSGate.getPanelPosition());
+				
+				// add stage listener
+				(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.MOUSE_OVER, hidePanel);
+			}
 		}
 		
 					
