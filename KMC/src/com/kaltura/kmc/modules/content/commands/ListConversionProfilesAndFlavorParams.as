@@ -31,10 +31,13 @@ package com.kaltura.kmc.modules.content.commands {
 
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
+			var p:KalturaFilterPager = new KalturaFilterPager();
+			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
+
 			var mr:MultiRequest = new MultiRequest();
 			var cpFilter:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
 			cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter);
+			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
 
 			mr.addAction(listConversionProfiles);
 
@@ -43,8 +46,6 @@ package com.kaltura.kmc.modules.content.commands {
 			
 			var f:KalturaConversionProfileAssetParamsFilter = new KalturaConversionProfileAssetParamsFilter();
 			f.originIn = KalturaAssetParamsOrigin.INGEST + "," + KalturaAssetParamsOrigin.CONVERT_WHEN_MISSING;
-			var p:KalturaFilterPager = new KalturaFilterPager();
-			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 			var listcpaps:ConversionProfileAssetParamsList = new ConversionProfileAssetParamsList(f, p);
 			mr.addAction(listcpaps);
 
