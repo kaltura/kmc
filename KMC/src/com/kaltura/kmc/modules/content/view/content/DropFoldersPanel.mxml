@@ -6,10 +6,12 @@
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
 		 xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="creationCompleteHandler(event)"
 		 width="100%" height="100%">
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.kmc.modules.content.model.DropFolderModel;
@@ -17,15 +19,12 @@
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaDropFolderFile;
-			import com.kaltura.vo.KalturaDropFolderFileFilter;
-			import com.kaltura.vo.KalturaFilterPager;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
-			import mx.events.DropdownEvent;
+			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
-			import mx.formatters.SwitchSymbolFormatter;
 			
 			//will be used to convert to MegaByetes
 			private const MB_MULTIPLIER:int = 1024*1024;
@@ -239,6 +238,11 @@
 				currentState = (currentState == null) ? 'noFilterState' : null;
 			}
 		
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+			}
+
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
