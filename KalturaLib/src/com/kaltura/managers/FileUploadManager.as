@@ -23,6 +23,7 @@ package com.kaltura.managers {
 	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
 	
+	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
 
 	/**
@@ -68,8 +69,9 @@ package com.kaltura.managers {
 		/**
 		 * list of files schedueled for upload
 		 */
-		private var _files:Vector.<FileUploadVO>;
+		private var _files : Array;//Vector.<FileUploadVO>;
 		
+		[Bindable] public var filesCollection : ArrayCollection;
 
 		/**
 		 * @copy #kc 
@@ -83,7 +85,8 @@ package com.kaltura.managers {
 		 */
 		public function FileUploadManager(enforcer:Enforcer) {
 			_preprocessedFiles = new Vector.<FileUploadVO>();
-			_files = new Vector.<FileUploadVO>();
+			_files = new Array();//Vector.<FileUploadVO>();
+			filesCollection = new ArrayCollection(_files)
 		}
 		
 		
@@ -289,6 +292,7 @@ package com.kaltura.managers {
 					if ((_preprocessedFiles[i] as FileUploadVO).entryId == entryid) {
 						(_preprocessedFiles[i] as FileUploadVO).status = FileUploadVO.STATUS_QUEUED;
 						_files.push(_preprocessedFiles[i]);
+						filesCollection.refresh();
 						_preprocessedFiles.splice(i, 1);
 					}
 				}
@@ -321,6 +325,7 @@ package com.kaltura.managers {
 					if ((_preprocessedFiles[i] as FileUploadVO) == e.target) {
 						e.target.status = FileUploadVO.STATUS_QUEUED;
 						_files.push(e.target);
+						filesCollection.refresh();
 						_preprocessedFiles.splice(i, 1);
 					}
 				}
@@ -412,6 +417,7 @@ package com.kaltura.managers {
 				// remove file from files list 
 				var ind:int = getQueuePosition(file.id);
 				_files.splice(ind, 1);
+				filesCollection.refresh();
 			}
 			else {
 				file.status = FileUploadVO.STATUS_FAILED;
@@ -566,6 +572,7 @@ package com.kaltura.managers {
 			// Remove relevant fileVo from files list.	
 			var ind:int = getQueuePosition(uploadid);
 			_files.splice(ind, 1);
+			filesCollection.refresh();
 		}
 		
 		
@@ -656,10 +663,11 @@ package com.kaltura.managers {
 			var file:FileUploadVO = getFile(uploadid);
 			_files.splice(ind, 1);
 			_files.splice(requiredIndex, 0, file);
+			filesCollection.refresh();
 			return true;
 		}
 
-
+		
 		/**
 		 * Retrieve a file vo from the list.
 		 *
@@ -678,7 +686,7 @@ package com.kaltura.managers {
 			return result;
 		}
 
-
+		[Bindable(event="filesChanged")]
 		/**
 		 * Retrieve all fileVos currently queued.
 		 * Used for creating the dataprovider of the uploads tab.
@@ -686,7 +694,8 @@ package com.kaltura.managers {
 		 * @return a vector of FileVo-s.
 		 * 		references are to the actual objects, not to clones.
 		 */
-		public function getAllFiles():Vector.<FileUploadVO> {
+		public function getAllFiles():Array //Vector.<FileUploadVO> {
+		{
 			return _files;
 		}
 
