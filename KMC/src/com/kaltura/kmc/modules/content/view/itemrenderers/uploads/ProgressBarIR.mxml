@@ -3,6 +3,9 @@
 		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.kmc.modules.create.vo.UploadFile;
+			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.vo.FileUploadVO;
 			
 			override public function set data( value : Object ) : void
@@ -14,11 +17,29 @@
 			private function onProgressHandler( event : ProgressEvent ) : void
 			{
 				if(pb)
-				{
 					pb.setProgress(event.bytesLoaded*100/event.bytesTotal,100);
-				}
 			}
+
+			protected function moveUp(event:MouseEvent):void
+			{
+				dispatchEvent( new FileUploadEvent( FileUploadEvent.MOVE_UP_IN_QUEUE , (this.data as FileUploadVO).entryId ) );
+			}
+			
+			
+			protected function moveDown(event:MouseEvent):void
+			{
+				dispatchEvent( new FileUploadEvent( FileUploadEvent.MOVE_DOWN_IN_QUEUE , (this.data as FileUploadVO).entryId ) );
+			}
+
 		]]>
 	</mx:Script>
-	<mx:ProgressBar id="pb" mode="manual" label="%3%%" />
+	<mx:ProgressBar id="pb" mode="manual" label="%3%%" 
+					visible="{(this.data as FileUploadVO).status != FileUploadVO.STATUS_QUEUED}" 
+					includeInLayout="{(this.data as FileUploadVO).status != FileUploadVO.STATUS_QUEUED}"/>
+	<mx:HBox width="100%" horizontalAlign="center" 
+			 visible="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_QUEUED}" 
+			 includeInLayout="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_QUEUED}">
+		<mx:Button click="moveUp(event)" />
+		<mx:Button click="moveDown(event)" />
+	</mx:HBox>
 </mx:VBox>

@@ -6,27 +6,28 @@
 		 verticalGap="0">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.managers.FileUploadManager;
+			import com.kaltura.vo.FileUploadVO;
 
-			override public function set data(value:Object):void {
-			
-			}
-			
 			private function retryClickHandler(event : MouseEvent) : void
 			{
-				var uploadFileVo : UploadFileVo = this.data as UploadFileVo;
-				
+				dispatchEvent( new FileUploadEvent( FileUploadEvent.RETRY_UPLOAD , (this.data as FileUploadVO).entryId ) );
 			}
 			
 			private function cancelClickHandler(event : MouseEvent) : void
 			{
-				var uploadFileVo : UploadFileVo = this.data as UploadFileVo;
-				uploadFileVo.fileData.cancel();
+				dispatchEvent( new FileUploadEvent( FileUploadEvent.CANCEL_UPLOAD , (this.data as FileUploadVO).entryId ) );
 			}
 
 		]]>
 	</mx:Script>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'cancel')}" 
+				   visible="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_UPLOADING}" 
+				   includeInLayout="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_UPLOADING}"
+				   click="cancelClickHandler(event)" styleName="deleteThumbLinkButton"/>	
+	<mx:LinkButton visible="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_FAILED}" 
+				   includeInLayout="{(this.data as FileUploadVO).status == FileUploadVO.STATUS_FAILED}"
+				   label="{resourceManager.getString('cms', 'retry')}" click="retryClickHandler(event)"  styleName="retryThumbLinkButton"/>	
 	
-	<mx:LinkButton label="{resourceManager.getString('cms', 'retry')}" click="retryClickHandler(event)"  styleName="retryThumbLinkButton"/>	
-	<mx:LinkButton label="{resourceManager.getString('cms', 'cancel')}" click="cancelClickHandler(event)" styleName="deleteThumbLinkButton"/>	
 </mx:VBox>

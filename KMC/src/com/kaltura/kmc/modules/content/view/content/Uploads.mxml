@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 verticalGap="0"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel" xmlns:content="com.kaltura.kmc.modules.content.view.content.*">
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel" xmlns:content="com.kaltura.kmc.modules.content.view.content.*" xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	
 	<mx:Script>
 		<![CDATA[
@@ -44,59 +44,8 @@
 			<mx:Text text="{resourceManager.getString('cms', 'uploadsDescription')}"/>
 			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadsDescriptionNote')}"/>
 			
-			<mx:DataGrid width="100%" height="100%"
-						 dataProvider="{_files}" rowHeight="50">
-				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'fileName')}">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-									<mx:Text text="{data.name}" />
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>	
-					</mx:DataGridColumn>
-					
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'uploadedOn')}" 
-									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.DateIR" />
-					
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'entryID')}">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-									<mx:Text text="{data.entryId}" />
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>	
-					</mx:DataGridColumn>
-			
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'fileSize')}" >
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-									<mx:Text text="{ (data.fileSize / 1000000).toFixed(2) + ' Mb'}" />
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-		
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'status')}">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-									<mx:Text text="{resourceManager.getString('cms', data.status)}" />
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-		
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'progressQueueOrder')}"
-									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ProgressBarIR" />
-		
-					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'action')}" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ActionIR" />
-					
-				</mx:columns>
-			</mx:DataGrid>
+			<view:FileUploadTable width="100%" height="100%"  dataProvider="{_files}" rowHeight="50" />
+
 		</mx:VBox>
 		<mx:VBox width="100%" height="100%" creationComplete="resizeToContent()">
 			<content:BulkUpload width="100%" height="100%" bulkUploadData="{bulkUploadDataProvider}"/>
