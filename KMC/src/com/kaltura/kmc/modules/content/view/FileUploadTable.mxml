@@ -4,79 +4,90 @@
 		<![CDATA[
 			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.managers.FileUploadManager;
+			import com.kaltura.vo.FileUploadVO;
 			
 			import mx.events.FlexEvent;
 
-			private var _fum : FileUploadManager = FileUploadManager.getInstance();
-			
-			// add event listeners for the actions fired by the item renderer instance
-			protected function init(event:FlexEvent):void
-			{
-				this.addEventListener( FileUploadEvent.RETRY_UPLOAD , onRetryUpload );
-				this.addEventListener( FileUploadEvent.UPLOAD_CANCELED , onUploadCancel );
-				this.addEventListener( FileUploadEvent.MOVE_UP_IN_QUEUE , onMoveUpInQueue );
-				this.addEventListener( FileUploadEvent.MOVE_DOWN_IN_QUEUE , onMoveDownInQueue );
-			}
-			
-			//When the file failed to upload the user will be able to retry to upload this file
-			private function onRetryUpload( event : FileUploadEvent ) : void
-			{
-				
-			}
-			//While uploading one can cancel the upload
-			private function onUploadCancel( event : FileUploadEvent ) : void
-			{
-				_fum.cancelUpload( event.uploadid );
-			}
-			
-			private function onMoveUpInQueue( event : FileUploadEvent ) : void
-			{
-			
-			}
-			
-			private function onMoveDownInQueue( event : FileUploadEvent ) : void
-			{
-				
+			private var _fum:FileUploadManager = FileUploadManager.getInstance();
+
+
+			/**
+			 * add event listeners for the actions fired by the item renderer instance
+			 * */
+			protected function init(event:FlexEvent):void {
+				this.addEventListener(FileUploadEvent.RETRY_UPLOAD, onRetryUpload);
+				this.addEventListener(FileUploadEvent.CANCEL_UPLOAD, onUploadCancel);
+				this.addEventListener(FileUploadEvent.MOVE_UP_IN_QUEUE, onMoveUpInQueue);
+				this.addEventListener(FileUploadEvent.MOVE_DOWN_IN_QUEUE, onMoveDownInQueue);
 			}
 
+
+			/**
+			 * When the file failed to upload the user will be able to retry to upload this file
+			 * */
+			private function onRetryUpload(event:FileUploadEvent):void {
+
+			}
+
+
+			/**
+			 * While uploading one can cancel the upload
+			 * */
+			private function onUploadCancel(event:FileUploadEvent):void {
+				_fum.cancelUpload(event.uploadid);
+			}
+
+
+			private function onMoveUpInQueue(event:FileUploadEvent):void {
+				var i:int = _fum.getQueuePosition(event.uploadid);
+				_fum.setQueuePosition(event.uploadid, i-1);
+			}
+
+
+			private function onMoveDownInQueue(event:FileUploadEvent):void {
+				var i:int = _fum.getQueuePosition(event.uploadid);
+				_fum.setQueuePosition(event.uploadid, i+1);
+			}
 		]]>
 	</mx:Script>
 	<mx:columns>
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'fileName')}" dataField="name"
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.TextIR" />
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.TextIR"/>
 
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'uploadedOn')}" 
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.DateIR" />
-		
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'uploadedOn')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.DateIR"/>
+
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'entryID')}" dataField="entryId"
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.TextIR" />
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.TextIR"/>
 
-		
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'fileSize')}" >
+
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'fileSize')}">
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-						<mx:Text text="{ (data.fileSize / 1000000).toFixed(2) + ' Mb'}" />
+					<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
+							 paddingLeft="2">
+						<mx:Text text="{ (data.fileSize / 1000000).toFixed(2) + ' Mb'}"/>
 					</mx:VBox>
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
-		
+
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'status')}">
 			<mx:itemRenderer>
 				<mx:Component>
-					<mx:VBox  horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingLeft="2">
-						<mx:Text text="{resourceManager.getString('cms', data.status)}" />
+					<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
+							 paddingLeft="2">
+						<mx:Text text="{resourceManager.getString('cms', data.status)}"/>
 					</mx:VBox>
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
-		
+
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'progressQueueOrder')}"
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ProgressBarIR" />
-		
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'action')}" 
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ActionIR" />
-		
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ProgressBarIR"/>
+
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'action')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.ActionIR"/>
+
 	</mx:columns>
 </mx:DataGrid>
