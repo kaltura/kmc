@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="2"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+		<mx:Script>
+			<![CDATA[
+				import mx.formatters.DateFormatter;
+				
+				private function formatDate(date:Number):String {
+					var df:DateFormatter = new DateFormatter();
+					df.formatString = resourceManager.getString('cms', 'listdateformat');
+					var dt:Date = new Date();
+					dt.setTime(date * 1000);
+					return df.format(dt);
+				}
+				
+			]]>
+		</mx:Script>
+		<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalScrollPolicy="off"
+				 verticalScrollPolicy="off">
+			<mx:Label text="{formatDate((data.uploadTime as Date).time)}"/>
+		</mx:HBox>
+</mx:VBox>

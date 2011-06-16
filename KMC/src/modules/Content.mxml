@@ -27,6 +27,7 @@
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.analytics.view.core.FileManager;
 			import com.kaltura.kmc.modules.content.business.IDataOwner;
 			import com.kaltura.kmc.modules.content.events.*;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
@@ -50,6 +51,7 @@
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.utils.SoManager;
+			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
@@ -72,6 +74,7 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.Base64Decoder;
 
+		
 			private static const VERSION:String = "4";
 			private static const DOWNLOAD_FINITE:String = "/file_name/name";
 
@@ -80,7 +83,8 @@
 			 * may be overriden with maxNumCategories flashvar
 			 * */
 			private static const DEFAULT_CATEGORIES_NUM:int = 32;
-
+			private static const SUB_MENU_HEIGHT : int = 18;
+			
 			[Bindable]
 			private var _tabBarViewStack:ViewStack;
 			[Bindable]
@@ -93,7 +97,12 @@
 			 * */
 			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
 
-
+			[Bindable]
+			/**
+			 * reference to the current files in the upload file list
+			 * */
+			private var _files : ArrayCollection = FileUploadManager.getInstance().filesCollection;
+			
 			/**
 			 * Google analytics tracker identifier
 			 * */
@@ -193,7 +202,7 @@
 				_ready = true;
 
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_ERROR, showError);
-
+	
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 
@@ -1022,7 +1031,7 @@
 						anchor = 'section17';
 						break;
 					}
-					case upload:  {
+					case uploads:  {
 						anchor = 'section16';
 						break;
 					}
@@ -1062,28 +1071,28 @@
 				<mx:Button id="manageBtn" label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 						   click="leftTabClicked(event)"
 						   styleName="{manageBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
-						   buttonMode="true" toggle="true" selected="true" height="18"/>
+						   buttonMode="true" toggle="true" selected="true" height="{SUB_MENU_HEIGHT}"/>
 				<mx:Button id="moderationBtn" label="{ResourceManager.getInstance().getString('cms','moderation')}"
 						   click="leftTabClicked(event)"
 						   styleName="{moderationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
-						   buttonMode="true" toggle="true" height="18"/>
+						   buttonMode="true" toggle="true" height="{SUB_MENU_HEIGHT}"/>
 				<mx:Button id="playlistsBtn" label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"
 						   click="leftTabClicked(event)"
 						   styleName="{playlistsBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
-						   buttonMode="true" toggle="true" height="18"/>
+						   buttonMode="true" toggle="true" height="{SUB_MENU_HEIGHT}"/>
 				<mx:Button id="syndicationBtn"
 						   label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"
 						   click="leftTabClicked(event)"
 						   styleName="{syndicationBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
-						   buttonMode="true" toggle="true" height="18"/>
-				<mx:Button id="uploadBtn" label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"
-						   click="leftTabClicked(event)"
-						   styleName="{uploadBtn.selected ? 'tlnSelectedTabStyle' : 'tlnUnSelectedTabStyle'}"
-						   height="18" buttonMode="true" toggle="true"/>
+						   buttonMode="true" toggle="true" height="{SUB_MENU_HEIGHT}"/>
 			</mx:HBox>
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
-				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="18"
+				<mx:Button id="uploadsBtn" height="{SUB_MENU_HEIGHT}" label="{resourceManager.getString('cms','uploads',[_files.length])}"
+						   click="rightTabClicked(event)" 
+						   styleName="{uploadsBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
+						   buttonMode="true" toggle="true" />
+				<mx:Button id="dropFoldersBtn" label="{resourceManager.getString('cms','dropFoldersTitle')}" height="{SUB_MENU_HEIGHT}"
 						   styleName="{dropFoldersBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" click="rightTabClicked(event)"/>
 
@@ -1111,12 +1120,15 @@
 										 flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
 										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
-			<content:BulkUpload id="upload" width="100%" height="100%" styleName="pageStyle"
-								creationComplete="resizeToContent()" ks="{_model.context.kc.ks}"
-								bulkUploadData="{_model.bulkUploadModel}"
-								label="{ResourceManager.getInstance().getString('cms','bulkUpload')}"/>
-			<content:DropFoldersPanel id="dropFolders" width="100%" height="100%" styleName="pageStyle"
+
+			<content:Uploads id="uploads" width="100%" height="100%" 
+							 files="{_files}"
+							 styleName="pageStyle" 
+							 bulkUploadDataProvider="{_model.bulkUploadModel}"
+							 creationComplete="resizeToContent()" />
+			<content:DropFoldersPanel id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
 									  dropFolderModel="{_model.dropFolderModel}" creationComplete="resizeToContent()"/>
+
 		</mx:ViewStack>
 	</mx:VBox>
 	<content:GeneralPermissionsSetter id="generalPermissions"/>

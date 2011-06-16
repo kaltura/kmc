@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="2"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.FileUploadVO;
+			
+			override public function set data( value : Object ) : void
+			{
+				super.data = value;
+				(this.data as FileUploadVO).file.addEventListener(ProgressEvent.PROGRESS,onProgressHandler);
+			}
+			
+			private function onProgressHandler( event : ProgressEvent ) : void
+			{
+				if(pb)
+				{
+					pb.setProgress(event.bytesLoaded*100/event.bytesTotal,100);
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:ProgressBar id="pb" mode="manual" label="%3%%" />
+</mx:VBox>

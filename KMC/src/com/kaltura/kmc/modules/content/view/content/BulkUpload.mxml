@@ -101,28 +101,6 @@
 				_fileReadyFlag = false;
 			}
 
-
-			private function openCw():void {
-				var selectedConvProfileIndex:Number = profilesCb.selectedIndex;
-				var selectedConvProfile:ConversionProfileVO = _convProfileData.getItemAt(selectedConvProfileIndex) as ConversionProfileVO;
-				var selectedProfileId:int = selectedConvProfile.profile.id;
-				if (bulkUploadData && bulkUploadData.openCw) {
-					ExternalInterface.call(bulkUploadData.openCw, ks, selectedProfileId);
-				}
-				else {
-					try {
-						ExternalInterface.call("cwFunction", ks, selectedProfileId);
-					}
-					catch (e:Error) {
-						trace('the openCw is missing, or the JS function does not exist');
-					}
-				}
-
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ADMIN_KCW_UPLOAD, "Upload");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADMIN_KCW_UPLOAD, GoogleAnalyticsConsts.CONTENT);
-			}
-
-
 			public function initPaging():void {
 				if (paging && _pager && _pager.allEntries)
 					paging.totalCount = _pager.numPagesTotal * _pager.localPageSize;
@@ -166,26 +144,6 @@
 			public function get pager():Pager {
 				return _pager;
 			}
-
-
-
-			private function setConvProfileData(value:ArrayCollection):void {
-				if (value) {
-					_convProfileData = value;
-					_convProfileLabels = new ArrayCollection();
-					var defaultIndex:int = -1;
-					var arr:Array = new Array();
-					for (var i:uint; i < value.length; i++) {
-						arr.push((_convProfileData[i] as ConversionProfileVO).profile.name);
-						if ((_convProfileData[i] as ConversionProfileVO).profile.isDefault)
-							defaultIndex = i;
-					}
-					_convProfileLabels.source = arr;
-					profilesCb.dataProvider = _convProfileLabels;
-					profilesCb.selectedIndex = defaultIndex;
-				}
-			}
-
 
 			public function getStatus(status:String):String {
 				return BulkTypes.getTypeName(uint(status));
@@ -240,7 +198,6 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				BindingUtils.bindSetter(setConvProfileData, bulkUploadData, "conversionData");
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				loadEntries();
 			}
@@ -258,18 +215,8 @@
 			}
 		]]>
 	</mx:Script>
-	<mx:VBox id="maincontent" width="100%" styleName="blueBoxContainer">
-		<mx:VBox id="kcwBox" width="100%" styleName="blueBox">
-			<mx:Label text="{resourceManager.getString('cms', 'upload')}" styleName="expendableButton" selectable="false"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'uploadText')}" selectable="false"/>
-			<mx:HBox>
-				<mx:ComboBox id="profilesCb"/>
-				<mx:Button id="kcwBtn" label="{resourceManager.getString('cms', 'upload')}" click="openCw()" buttonMode="true"
-						   styleName="dataGridBtn"/>
-			</mx:HBox>
-		</mx:VBox>
 
-		<mx:VBox id="bulkUploadBox" width="100%" styleName="blueBox">
+		<mx:VBox id="bulkUploadBox" width="100%" height="100%" >
 			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton"
 					  selectable="false"/>
 			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" selectable="false"/>
@@ -283,8 +230,8 @@
 			<mx:Spacer height="5"/>
 			<mx:Button id="submitBtn" label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
 			<mx:Spacer height="5"/>
-			<mx:VBox styleName="vGapBox" width="100%">
-				<mx:DataGrid id="bulkTable" width="100%" height="328" sortableColumns="false"
+			<mx:VBox styleName="vGapBox" width="100%" height="100%">
+				<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false"
 							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
 						<mx:DataGridColumn width="50" labelFunction="getScreenNameOrUserId"
@@ -362,7 +309,6 @@
 								 showRowsInPage="true" 
 								 creationComplete="onPagerCreationComplete(event)"
 								 totalCount="{bulkUploadData.bulkUploadTotalCount}"/>
-			</mx:VBox>
 		</mx:VBox>
 	</mx:VBox>
 </mx:VBox>
