@@ -204,6 +204,22 @@ package com.kaltura.managers {
 		
 		
 		/**
+		 * retry uploading a file that had failed previously
+		 * @param uploadid	id of the upload vo we wish to retry
+		 * */
+		public function retryUpload(uploadid:String):void {
+			var file:FileUploadVO = getFile(uploadid);
+			if (file && file.status == FileUploadVO.STATUS_FAILED) {
+				file.status = FileUploadVO.STATUS_QUEUED;
+				// start uploading files
+				if (_ongoingUploads < _concurrentUploads) {
+					uploadNextFile();
+				}
+			}
+		}
+		
+		
+		/**
 		 * add the received tokens to the specified media entry
 		 * @param e
 		 */		
@@ -541,7 +557,7 @@ package com.kaltura.managers {
 			}
 			_ongoingUploads--;
 			// alert user 
-			var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
+			var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, "0");
 			er.error = ResourceManager.getInstance().getString('cms', 'uploadFailedMessage');
 			dispatchEvent(er);
 		}
@@ -573,6 +589,9 @@ package com.kaltura.managers {
 			var ind:int = getQueuePosition(uploadid);
 			_files.splice(ind, 1);
 			filesCollection.refresh();
+			if (file.status == FileUploadVO.STATUS_UPLOADING) {
+				uploadNextFile();
+			}
 		}
 		
 		
