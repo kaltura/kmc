@@ -3,10 +3,10 @@
 							xmlns:containers="com.kaltura.containers.*"
 							xmlns:view="com.kaltura.kmc.modules.create.view.*"
 							width="550" height="400" layout="vertical"
-							styleName="TitleWindowType2"
 							showCloseButton="true" close="closeHandler(event)"
 							showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)"
+							title="{ResourceManager.getInstance().getString('create', 'uploadSettingTitle')}"
 							>
 	<mx:Script>
 		<![CDATA[
@@ -29,6 +29,7 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 			
 			
 			public var client:KalturaClient;
@@ -101,6 +102,7 @@
 
 			
 			private function creationCompleteHandler(event:FlexEvent):void {
+				submitBtn.enabled = false;
 				listConversionProfiels();
 			}
 			
@@ -118,6 +120,7 @@
 				else {
 					_conversionProfiles = new ArrayCollection((e.data as KalturaConversionProfileListResponse).objects);
 				}
+				submitBtn.enabled = true;
 			}
 			
 			protected function showError(str:String):void {
