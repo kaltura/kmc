@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
+			private static const DP:ArrayCollection = new ArrayCollection([
+//				{value:"delete", label:ResourceManager.getInstance().getString('cms', 'delete')},
+				{value:"dnldLog", label:ResourceManager.getInstance().getString('cms', 'dnldLog')},
+				{value:"dnldOrig", label:ResourceManager.getInstance().getString('cms', 'dnldOrig')}]);
+
+			protected function combobox1_changeHandler(event:ListEvent):void {
+				dispatchEvent(new Event(cb.selectedItem.value, true));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="cb" dataProvider="{DP}" change="combobox1_changeHandler(event)" 
+				 prompt="{ResourceManager.getInstance().getString('cms', 'selectActionLabel')}"/>
+</mx:VBox>

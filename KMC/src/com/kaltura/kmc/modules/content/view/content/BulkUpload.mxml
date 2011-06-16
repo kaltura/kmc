@@ -21,6 +21,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaBulkUpload;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -200,8 +201,25 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				loadEntries();
+				addEventListener("delete", handleBulkAction);
+				addEventListener("dnldLog", handleBulkAction);
+				addEventListener("dnldOrig", handleBulkAction);
+					
 			}
 			
+			protected function handleBulkAction(e:Event):void {
+				var bulk:KalturaBulkUpload = e.target.data as KalturaBulkUpload;
+				switch (e.type) {
+//					case "delete":
+//						break;
+					case "dnldLog":
+						downloadFile(bulk.logFileUrl,'logFile.csv');
+						break;
+					case "dnldOrig":
+						downloadFile(bulk.bulkFileUrl, 'csvFile.csv');
+						break;
+				}
+			}
 			
 			/**
 			 * get uploader name to display.
@@ -213,95 +231,82 @@
 				}
 				else return item.uploadedByUserId;
 			}
+			
+			/**
+			 * get upload type (csv / xml) by file extension
+			 * */
+			protected function getUploadType(item:Object, column:DataGridColumn):String {
+				var url:String = item.bulkFileUrl;
+				var i:int = url.lastIndexOf("/");
+				var ext:String = url.substring(i+1);
+				ext = ext.toLowerCase();
+				var res:String = resourceManager.getString('cms', ext);
+				if (res) {
+					return res;
+				}
+				return ext;
+			}
 		]]>
 	</mx:Script>
 
 		<mx:VBox id="bulkUploadBox" width="100%" height="100%" >
-			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton"
-					  selectable="false"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" selectable="false"/>
-			<mx:Spacer/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting1',[bulkUploadData.sampleFileUrl])}"
-					  selectable="true" link="downloadFileDirect(event.text)"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting2')}" selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting3')}" selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting4')}" selectable="false"/>
-			<mx:Label htmlText="{resourceManager.getString('cms', 'importFromExistingHosting5')}" selectable="false"/>
-			<mx:Spacer height="5"/>
-			<mx:Button id="submitBtn" label="{resourceManager.getString('cms', 'submitCSV')}" click="addBulk()" buttonMode="true"/>
-			<mx:Spacer height="5"/>
+			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton" />
+			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" />
+			
 			<mx:VBox styleName="vGapBox" width="100%" height="100%">
 				<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false"
 							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
+						<!-- file type -->
+						<mx:DataGridColumn width="50" labelFunction="getUploadType"
+										   headerText="{resourceManager.getString('cms', 'uploadType')}" />
+						
+						<!-- uploaded by -->
 						<mx:DataGridColumn width="50" labelFunction="getScreenNameOrUserId"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
 										   showDataTips="true" dataTipField="uploadedBy"/>
+						
+						<!-- uploaded on -->
 						<mx:DataGridColumn dataField="uploadedOn" width="60"
 										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
 										   showDataTips="true" dataTipField="uploadedOn">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" toolTip="{this.text}"
-											  selectable="false"/>
-										
+									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" toolTip="{this.text}" />
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
+						
+						<!-- number of entries -->
 						<mx:DataGridColumn dataField="numOfEntries" width="50"
 										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:HBox width="100%" horizontalAlign="center">
-										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" toolTip="{entriesLabel.text}"
-												  selectable="false"/>
+										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" toolTip="{entriesLabel.text}" />
 									</mx:HBox>
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
+						
+						<!-- status -->
 						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'status')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}"
-											  selectable="false"/>
+									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}" />
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
+						
+						<!-- error -->
 						<mx:DataGridColumn dataField="error" width="100"
 										   headerText="{resourceManager.getString('cms', 'error')}" showDataTips="true"
 										   dataTipField="error"/>
-						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'logFileUrl')}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off">
-										<mx:Script>
-											<![CDATA[
-												import flash.net.navigateToURL;
-											]]>
-										</mx:Script>
-										<mx:LinkButton label="{data.logFileUrl}"
-													   click="outerDocument.downloadFile(data.logFileUrl,'logFile.csv')"
-													   toolTip="{this.label}"/>
-									</mx:HBox>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'csvFileUrl')}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off">
-										<mx:Script>
-											<![CDATA[
-												import flash.net.navigateToURL;
-											]]>
-										</mx:Script>
-										<mx:LinkButton label="{data.csvFileUrl}"
-													   click="outerDocument.downloadFile(data.csvFileUrl, 'csvFile.csv')"
-													   toolTip="{this.label}"/>
-									</mx:HBox>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
+						
+						<!-- actions -->
+						<mx:DataGridColumn width="100" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
+										   headerText="{resourceManager.getString('cms', 'action')}" />
+						
 					</mx:columns>
 				</mx:DataGrid>
 				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
