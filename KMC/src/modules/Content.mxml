@@ -809,6 +809,11 @@
 					// add the new window
 					if (currentPopUp) {
 						addPopup(currentPopUp);
+						// if this is a replacement entry drilldown, move it a little
+						if (newState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
+							currentPopUp.x += 20;
+							currentPopUp.y += 40;
+						}
 					}
 				}
 			}
@@ -1003,8 +1008,6 @@
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PAGE_VIEW + resourceManager.getString('cms', 'externalSyndication'), GoogleAnalyticsConsts.CONTENT);
 						break;
 				}
-
-//				JSGate.writeUrlHash(label);
 
 				// reset data when moving between tabs
 				_model.selectedEntries = [];
