@@ -37,6 +37,26 @@ package com.kaltura.events {
 		 */
 		public static const UPLOAD_ERROR:String = "upload_error";
 		
+		/**
+		 * request to cancel a current uploaded file by id
+		 */
+		public static const CANCEL_UPLOAD:String = "cancel_upload";
+		
+		/**
+		 * request to retry to upload a current uploaded file that failed uploading
+		 */
+		public static const RETRY_UPLOAD:String = "retry_upload";
+		
+		/**
+		 * request to move a queued file up in queue list by id
+		 */
+		public static const MOVE_UP_IN_QUEUE:String = "move_up_in_queue";
+		
+		/**
+		 * request to move a queued file down in queue list by id
+		 */
+		public static const MOVE_DOWN_IN_QUEUE:String = "move_down_in_queue";
+		
 		public var error:String;
 
 		private var _uploadid:String;
