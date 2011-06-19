@@ -27,11 +27,18 @@ package com.kaltura.kmc.modules.account.command
 		public function result(event:Object):void {
 			_model.loadingFlag = false;
 			var temp:Array = new Array();
+			// add the "none" object
+			var rs:KalturaStorageProfile = new KalturaStorageProfile();
+			rs.id = int.MIN_VALUE; // same as the default
+			rs.name = "N/A";
+			temp.push(rs);
+			// add the rest of the storages
 			for each (var o:Object in event.data.objects) {
 				if (o is KalturaStorageProfile) {
 					temp.push(o);
 				}
 			} 
+			
 			_model.storageProfiles = new ArrayCollection(temp);
 		}
 		
