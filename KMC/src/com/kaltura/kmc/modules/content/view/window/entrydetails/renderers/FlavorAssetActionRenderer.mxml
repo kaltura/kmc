@@ -3,7 +3,7 @@
 								   horizontalAlign="center" verticalAlign="middle"
 								   creationComplete="{onCreatoinComplete()}"
 								   xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.*">
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -15,63 +15,64 @@
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.controls.Button;
-			
+
 			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
-			
+
 			[ArrayElementType("String")]
 			/**
 			 * actions in the combobox
 			 * */
 			private var _actionArr:Array = [];
-			
+
 //			[Bindable]
 //			private var oneActionLabel:String = '';
-			
+
 			[Bindable]
 			/**
-			 * is the parent docuemnt is entryFlavors allow all actions 
+			 * is the parent docuemnt is entryFlavors allow all actions
 			 * */
 			private var _isFlavorsView:Boolean;
-			
+
 			/**
 			 * add the "upload" action to the actions list
 			 * */
 			private var _allowUpload:Boolean = true;
-			
+
 			/**
 			 * add the "drop folder" action to the actions list
 			 * */
 			private var _allowMatch:Boolean = true;
-			
+
 			/**
 			 * add the "link" action to the actions list
 			 * */
 			private var _allowLink:Boolean = true;
-			
+
 			/**
 			 * add the "import" action to the actions list
 			 * */
 			private var _allowImport:Boolean = true;
-			
-			
+
+
 			[Bindable]
 			/**
 			 * show the "preview" button
 			 * */
 			private var _showPreviewBtn:Boolean = false;
-			
+
 			/**
 			 * current data object
 			 * */
 			private var _flavorWithParams:FlavorAssetWithParamsVO
-			
+
+
 //			override public function onCreatoinComplete():void {
 //				super.onCreatoinComplete();
 //			}
-			
-			
+
+
 			override public function set data(value:Object):void {
 				super.data = value;
 				_flavorWithParams = value as FlavorAssetWithParamsVO;
@@ -86,19 +87,19 @@
 					_allowLink = parentDocument.allowLink && parentDocument.multiFlavorsIngestionAllowed;
 					_allowImport = parentDocument.allowImport && parentDocument.multiFlavorsIngestionAllowed;
 				}
-				
+
 				setActions();
 			}
-			
-			
+
+
 			override public function validateNow():void {
 				setActions();
 				super.validateNow();
 			}
-			
-			
+
+
 			private function setActions():void {
-				
+
 				_actionArr = new Array();
 				if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset == null) {
 					if (_flavorWithParams.hasOriginal) {
@@ -113,18 +114,14 @@
 					else {
 						this.currentState = "emptyState";
 					}
-				} 
-				else 
-				{
+				}
+				else {
 					if (_flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.isOriginal) {
 						var status:int = _flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.status;
-						if ((status== KalturaFlavorAssetStatus.CONVERTING) ||
-							(status == KalturaFlavorAssetStatus.QUEUED) ||
-							(status == KalturaFlavorAssetStatus.IMPORTING) ||
-							(status == KalturaFlavorAssetStatus.VALIDATING)) {
+						if ((status == KalturaFlavorAssetStatus.CONVERTING) || (status == KalturaFlavorAssetStatus.QUEUED) || (status == KalturaFlavorAssetStatus.IMPORTING) || (status == KalturaFlavorAssetStatus.VALIDATING)) {
 							this.currentState = "convertingState";
 						}
-						else {			
+						else {
 							this.currentState = null;
 							_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
 							_actionArr.push(resourceManager.getString('cms', 'downloadActionLabel'));
@@ -140,8 +137,7 @@
 							case KalturaFlavorAssetStatus.CONVERTING:
 							case KalturaFlavorAssetStatus.QUEUED:
 							case KalturaFlavorAssetStatus.IMPORTING:
-							case KalturaFlavorAssetStatus.VALIDATING:
-							{
+							case KalturaFlavorAssetStatus.VALIDATING:  {
 								this.currentState = "convertingState";
 								break;
 							}
@@ -176,7 +172,7 @@
 								}
 								break;
 							}
-								
+
 							case KalturaFlavorAssetStatus.READY:  {
 								this.currentState = null;
 								_actionArr.push(resourceManager.getString('cms', 'deleteActionLabel'));
@@ -189,7 +185,7 @@
 								if (_flavorWithParams.hasOriginal) {
 									_actionArr.push(resourceManager.getString('cms', 'reconvertActionLabel'));
 								}
-								
+
 								break;
 							}
 						}
@@ -202,13 +198,14 @@
 						actionCombobox.dropdown.dataProvider = _actionArr;
 				}
 			}
-			
+
+
 			private function dispatchPreview():void {
-				var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET,
-					_flavorWithParams.kalturaFlavorAssetWithParams);
+				var preEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.PREVIEW_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 				preEvent.dispatch();
 			}
-			
+
+
 			/**
 			 * adds the ingestion options to actionArr, according to permissions
 			 * */
@@ -222,8 +219,8 @@
 				if (_allowImport)
 					_actionArr.push(resourceManager.getString('cms', 'importActionLabel'));
 			}
-			
-			
+
+
 			private function launchAction(actionName:String):void {
 				switch (actionName) {
 					case resourceManager.getString('cms', 'previewActionLabel'):  {
@@ -231,69 +228,66 @@
 						break;
 					}
 					case resourceManager.getString('cms', 'downloadActionLabel'):  {
-						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET,_flavorWithParams.kalturaFlavorAssetWithParams);
+						var dlEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DOWNLOAD_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						dlEvent.dispatch();
-						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_DOWNLOAD,
-							"EntryDrillDown>FlavorTab>DownloadAsset", _flavorWithParams.kalturaFlavorAssetWithParams.entryId);
-						
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DOWNLOAD, "EntryDrillDown>FlavorTab>DownloadAsset", _flavorWithParams.kalturaFlavorAssetWithParams.entryId);
+
 						break;
 					}
 					case resourceManager.getString('cms', 'deleteActionLabel'):  {
-						var delEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET,
-							_flavorWithParams.kalturaFlavorAssetWithParams);
+						var delEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.DELETE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						delEvent.dispatch();
 						break;
 					}
 					case resourceManager.getString('cms', 'reconvertActionLabel'):
 					case resourceManager.getString('cms', 'convertActionLabel'):  {
-						var convEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET,
-							_flavorWithParams.kalturaFlavorAssetWithParams);
+						var convEvent:FlavorAssetEvent = new FlavorAssetEvent(FlavorAssetEvent.CREATE_FLAVOR_ASSET, _flavorWithParams.kalturaFlavorAssetWithParams);
 						convEvent.dispatch();
 						break;
 					}
-					case resourceManager.getString('cms', 'uploadActionLabel'): {
+					case resourceManager.getString('cms', 'uploadActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.UPLOAD_FLAVOR, true));
 						break;
 					}
-					case resourceManager.getString('cms', 'matchActionLabel'): {
+					case resourceManager.getString('cms', 'matchActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.MATCH_FLAVOR, true));
 						break;
 					}
-					case resourceManager.getString('cms', 'linkActionLabel'): {
+					case resourceManager.getString('cms', 'linkActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.LINK_FLAVOR, true));
 						break;
 					}
-					case resourceManager.getString('cms', 'importActionLabel'): {
+					case resourceManager.getString('cms', 'importActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.IMPORT_FLAVOR, true));
 						break;
 					}
-						
+
 				}
 			}
-			
+
+
 			private function onOneActionClick(event:Event):void {
 				var btn:Button = event.target as Button;
 				launchAction(btn.label);
 			}
-			
-			
+
+
 			private function onActionChange(event:Event):void {
 				var cb:ComboBox = event.target as ComboBox;
 				var sl:String = cb.selectedLabel;
 				cb.selectedIndex = -1;
 				launchAction(sl);
 			}
-			
 		]]>
 	</mx:Script>
 	<renderers:states>
 		<!--<mx:State name="convertState">
-		<mx:RemoveChild target="{actionCombobox}"/>
-		<mx:AddChild position="lastChild">
-		<mx:Button id="oneActionBtn" label="{oneActionLabel}" useHandCursor="true" buttonMode="true"
-		fontSize="10" click="onOneActionClick(event)" styleName="dataGridBtn" width="110"/>
-		</mx:AddChild>
-		</mx:State>-->
+			 <mx:RemoveChild target="{actionCombobox}"/>
+			 <mx:AddChild position="lastChild">
+			 <mx:Button id="oneActionBtn" label="{oneActionLabel}" useHandCursor="true" buttonMode="true"
+			 fontSize="10" click="onOneActionClick(event)" styleName="dataGridBtn" width="110"/>
+			 </mx:AddChild>
+			 </mx:State>-->
 		<mx:State name="convertingState">
 			<mx:RemoveChild target="{actionCombobox}"/>
 			<mx:AddChild position="lastChild">
@@ -306,11 +300,14 @@
 			<mx:RemoveChild target="{actionCombobox}"/>
 		</mx:State>
 	</renderers:states>
-	
-	<mx:ComboBox id="actionCombobox" editable="false" fontSize="10" width="110" 
-				 buttonMode="true" change="onActionChange(event)" styleName="dataGridComboBox"
-				 prompt="{resourceManager.getString('cms','selectActionLabel')}" visible="{_isFlavorsView}" includeInLayout="{_isFlavorsView}">
+
+	<mx:ComboBox id="actionCombobox" editable="false" fontSize="10" width="110" buttonMode="true"
+				 change="onActionChange(event)" styleName="dataGridComboBox"
+				 prompt="{resourceManager.getString('cms','selectActionLabel')}" visible="{_isFlavorsView}"
+				 includeInLayout="{_isFlavorsView}">
 	</mx:ComboBox>
-	<mx:Button label="{resourceManager.getString('cms', 'previewActionLabel')}" click="{dispatchPreview()}" 
-			   visible="{_showPreviewBtn &amp;&amp; !_isFlavorsView}" includeInLayout="{_showPreviewBtn &amp;&amp; !_isFlavorsView}" styleName="dataGridBtn" fontSize="10" width="110"/>
+	<mx:Button label="{resourceManager.getString('cms', 'previewActionLabel')}" click="{dispatchPreview()}"
+			   visible="{_showPreviewBtn &amp;&amp; !_isFlavorsView}"
+			   includeInLayout="{_showPreviewBtn &amp;&amp; !_isFlavorsView}" styleName="dataGridBtn" fontSize="10"
+			   width="110"/>
 </renderers:FlavorAssetRendererBase>
