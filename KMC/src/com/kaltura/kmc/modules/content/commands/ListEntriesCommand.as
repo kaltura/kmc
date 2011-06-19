@@ -2,11 +2,11 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.baseEntry.BaseEntryList;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.SearchEvent;
 	import com.kaltura.kmc.modules.content.view.window.ManualPlaylistWindow;
 	import com.kaltura.kmc.modules.content.vo.ListableVo;
-	import com.kaltura.commands.baseEntry.BaseEntryList;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
 	import com.kaltura.vo.KalturaDocumentEntry;
@@ -46,14 +46,19 @@ package com.kaltura.kmc.modules.content.commands
 			var kme:KalturaMediaEntry; 
 			var kbe:KalturaBaseEntry;
 			var mix:KalturaMixEntry;
-			var kde:KalturaDocumentEntry;
 			var recivedData:KalturaBaseEntryListResponse = KalturaBaseEntryListResponse(data.data);
-			
 			if (!(_caller.parentCaller is ManualPlaylistWindow))
 			{
 				_model.selectedEntries = new Array();
 			}
-			_caller.arrayCollection = new ArrayCollection (recivedData.objects);
+			// only use object we can handle
+			var tempAr:Array = [];
+			for each (var o:Object in recivedData.objects) {
+				if (o is KalturaBaseEntry) {
+					tempAr.push(o);
+				}
+			}
+			_caller.arrayCollection = new ArrayCollection (tempAr);
 			_model.entryDetailsModel.totalEntriesCount = recivedData.totalCount;
 			_caller.pagingComponent.totalCount = recivedData.totalCount;
 			_model.refreshEntriesRequired = false;
