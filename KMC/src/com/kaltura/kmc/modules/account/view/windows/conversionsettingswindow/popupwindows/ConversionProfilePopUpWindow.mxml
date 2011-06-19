@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-				 title="{resourceManager.getString('account','addNewConvProfileTitle')}" height="500"
+				 title="{resourceManager.getString('account','addNewConvProfileTitle')}" 
 				 xmlns:csw="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
 				 close="closeWindow(event)" showCloseButton="true" creationComplete="onCreationComplete(event)"
 				 help="{help()}" styleName="TitleWindowType2" xmlns:validators="com.kaltura.validators.*">
@@ -31,8 +31,10 @@
 			[Bindable]
 			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 			
-			
-			
+			/**
+			 * true if partner has remote storage feature
+			 * */
+			public var allowStorageProfiles:Boolean = true;
 			
 			/**
 			 *  the conversion profile to add or edit
@@ -79,7 +81,7 @@
 				}
 				
 				// list storage profiles once
-				if (!_model.storageProfiles) {
+				if (!_model.storageProfiles && allowStorageProfiles) {
 					var cw:ChangeWatcher = BindingUtils.bindSetter(showStorageProfile, cbRemoteProfile, "dataProvider");
 					var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_STORAGE_PROFILES);
 					cg.dispatch();
@@ -205,8 +207,7 @@
 						 labelField="name" dataProvider="{_model.storageProfiles}" />
 		</mx:HBox>
 	</mx:HBox>
-	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
-				   paddingTop="2">
+	<mx:ControlBar width="100%" horizontalAlign="center" >
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','createNewConvProfile')}" 
 				   useHandCursor="true" buttonMode="true" click="saveProfile(event)"/>
 	</mx:ControlBar>
