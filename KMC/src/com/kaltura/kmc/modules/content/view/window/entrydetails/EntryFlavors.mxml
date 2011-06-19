@@ -284,7 +284,6 @@
 			 * */
 			private function onFlavorLinkSelected(event:Event):void {
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
-				//TODO check
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				if (_selectedFlavorWithParams) {
 					if (_selectedFlavorWithParams.flavorAsset)
@@ -423,12 +422,8 @@
 					//sets labels according to entry's status
 					switch (_selectedEntry.status) {
 						case KalturaEntryStatus.NO_CONTENT:
-							_showActions = true;
 							stateLabel.text = resourceManager.getString('cms', 'noContentState');
-							if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-								actionLabel.text = resourceManager.getString('cms', 'addVideo');
-							else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-								actionLabel.text = resourceManager.getString('cms', 'addAudio');
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
 							break;
 						case KalturaEntryStatus.READY:
 							//if this is a replacement entry
@@ -438,23 +433,32 @@
 							}
 							else {
 								stateLabel.text = resourceManager.getString('cms', 'readyState');
-								_showActions = true;
-								if (_selectedEntry.mediaType == KalturaMediaType.VIDEO)
-									actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
-								else if (_selectedEntry.mediaType == KalturaMediaType.AUDIO)
-									actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
+								setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
 							}
 							break;
 						case KalturaEntryStatus.ERROR_CONVERTING:
 						case KalturaEntryStatus.ERROR_IMPORTING:
 							stateLabel.text = resourceManager.getString('cms', 'errorState');
-							_showActions = false;
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
 							break;
 						default:
 							stateLabel.text = resourceManager.getString('cms', 'notReadyState');
 							_showActions = false;
 					}
 				}
+			}
+			
+			
+			/**
+			 * set actions box according to media type
+			 * @param mediaType	current entry's media type
+			 * */
+			private function setActionsLabel(mediaType:int):void {
+				_showActions = true;
+				if (mediaType == KalturaMediaType.VIDEO)
+					actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
+				else if (mediaType == KalturaMediaType.AUDIO)
+					actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
 			}
 
 
@@ -612,9 +616,14 @@
 			}
 
 
+			/**
+			 * @param entryState	show the actions button according to entry state
+			 * @param allowAdd		allow adding media to a no_content entry 
+			 * @param allowReplace	allow replacing media of a ready entry
+			 * */
 			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
 				var result:Boolean = entryState;
-				if (_selectedEntry && _selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+				if (_selectedEntry && (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT )) {
 					result &&= allowAdd;
 				}
 				else {
