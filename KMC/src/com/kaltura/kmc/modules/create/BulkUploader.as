@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.create
 {
 	import com.kaltura.KalturaClient;
+	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.bulkUpload.BulkUploadAdd;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
@@ -12,6 +13,7 @@ package com.kaltura.kmc.modules.create
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
+	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
 
 	public class BulkUploader {
@@ -39,8 +41,7 @@ package com.kaltura.kmc.modules.create
 		
 		
 		protected function addBulkUpload(event:Event):void {
-			//TODO use new API action ?
-			var defaultConversionProfileId:int = 458321;
+			var defaultConversionProfileId:int = -1;
 			var kbu:BulkUploadAdd = new BulkUploadAdd(defaultConversionProfileId, _bulkUpldFileRef);
 			kbu.addEventListener(KalturaEvent.COMPLETE, bulkUploadCompleteHandler);
 			kbu.addEventListener(KalturaEvent.FAILED, bulkUploadCompleteHandler);
@@ -62,7 +63,10 @@ package com.kaltura.kmc.modules.create
 		
 		protected function bulkUploadCompleteHandler(e:KalturaEvent):void {
 			var er:KalturaError = e.error;
-			if (!er) return;
+			if (!er)  {
+				Alert.show(ResourceManager.getInstance().getString('create', 'bulk_submitted'));
+				return;
+			}
 			if (er.errorCode == APIErrorCode.INVALID_KS) {
 				JSGate.expired();
 			}
