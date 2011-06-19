@@ -16,6 +16,7 @@
 			import com.kaltura.commands.media.MediaAdd;
 			import com.kaltura.errors.KalturaError;
 			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.vo.UploadFile;
 			import com.kaltura.managers.FileUploadManager;
@@ -28,6 +29,7 @@
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.managers.CursorManager;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
@@ -152,6 +154,7 @@
 			 * manager to upload them as source for these entries.
 			 * */
 			protected function submit(event:MouseEvent):void {
+				CursorManager.setBusyCursor();
 				submitBtn.enabled = false;
 				var mr:MultiRequest = new MultiRequest();
 				var ma:MediaAdd;
@@ -200,12 +203,15 @@
 					for (var i:int = 0; i< entries.length; i++) {
 						entry = entries[i];
 						fu = _files[i];
-						fuv = uploader.createFuv(entry.id, fu.fr, "0");	// always use source, this is ugly :)
+						fuv = uploader.createFuv(entry.id, fu.fr, "0");	// always use source, but assuming source is always 0 is ugly :)
 						uploader.updateEntryContent(entry.id, [fuv]);
 					}
+					// dispatch navigation event
+					dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content"));
 					// remove popup
 					closeHandler(null);
 				}
+				CursorManager.removeBusyCursor();
 			}
 
 
