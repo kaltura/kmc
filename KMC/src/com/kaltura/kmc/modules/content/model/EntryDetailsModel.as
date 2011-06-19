@@ -106,5 +106,11 @@ package com.kaltura.kmc.modules.content.model
 		 * whether to display "mixes" tab in entrydrilldown 
 		 */		
 		public var showMixesTab:Boolean = true;
+		
+		/**
+		 * when saving an entry we list all entries that have the same 
+		 * referenceId as the entry being saved. this is the list.
+		 */
+		public var entriesWSameRefidAsSelected:Array;
 	}
 }

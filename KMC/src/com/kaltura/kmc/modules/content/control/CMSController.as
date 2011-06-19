@@ -50,6 +50,8 @@ package com.kaltura.kmc.modules.content.control
 			
 			addCommand( EntryEvent.RESET_RULE_BASED_DATA, ResetRuleBasedDataCommand);
 			
+			addCommand( EntryEvent.LIST_ENTRIES_BY_REFID, ListEntriesByRefidCommand);
+			
 			addCommand( SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL, SetCurrentListableCommand);
 			addCommand( SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, SetRefreshRequiredCommand);
 			

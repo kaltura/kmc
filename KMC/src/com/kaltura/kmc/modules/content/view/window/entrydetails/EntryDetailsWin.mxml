@@ -14,6 +14,7 @@
 	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -105,6 +106,7 @@
 			 * entry details window data
 			 * */
 			public var entryDetailsModel:EntryDetailsModel;
+			
 			[Bindable]
 			/**
 			 * drop folders data
@@ -145,6 +147,11 @@
 			 * once only.
 			 * */
 			private var _enabledWatcher:ChangeWatcher;
+			
+			/**
+			 * watcher for binding 
+			 * */
+			private var _sameRefidWatcher:ChangeWatcher;
 			
 			[Bindable]
 			/**
@@ -483,7 +490,7 @@
 			private function newEntryQuestionHandler(event:CloseEvent) : void {
 				if (event.detail == Alert.YES) {
 					if (checkDataChanged())
-						save();
+						validate();
 					//a new entry was added so we should refresh
 					var setRefresh:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, true);
 					setRefresh.dispatch();
@@ -556,7 +563,7 @@
 				if (_untrackableChangeFlag) {
 					//so we won't have infinate loop
 					_untrackableChangeFlag = false;
-					save();
+					validate();
 					//TODO why save? we just need to refresh the entries list.
 					return;
 				}
@@ -614,9 +621,9 @@
 			}
 
 			/**
-			 * validate all panels, if validation is ok update server.
+			 * validate all panels, if validation is ok proceed to save().
 			 * */
-			private function save():void {
+			private function validate():void {
 				// validation:
 				var validationResult:EntryDetailsValidationError = entryMetaData.save();
 				if (validationResult.error == null) {
@@ -648,21 +655,68 @@
 					Alert.show(ResourceManager.getInstance().getString('cms', 'bitrateValidation'));
 				}
 				else {
-					destroyPanels();
-					// if we got here, all panels validation passed ok, the error was null.	
-					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
-					cgEvent.dispatch();	
-
-					removeWatchers();
-					
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
-//					removeMe();
-
+					// if referenceId was changed
+					if (/* _selectedEntry.referenceId && */ _undoToEntry.referenceId && _selectedEntry.referenceId != _undoToEntry.referenceId) {
+						// list all entries with the same refid
+						// if any, show message
+						if (!_sameRefidWatcher) {
+							_sameRefidWatcher = BindingUtils.bindSetter(entriesListChanged,  entryDetailsModel, "entriesWSameRefidAsSelected");
+						}
+						var cg:CairngormEvent = new EntryEvent(EntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
+						cg.dispatch();
+					}
+					else save();
 				}
+			}
+			
+			
+			/**
+			 * confirm saving entry with existing referenceId
+			 * */
+			private function entriesListChanged(value:Object):void {
+				if (!value) return;
+				
+				if (value.length > 0) {
+					// we have entries with the same refid
+					var ar:Array = [];
+					for each (var o:KalturaBaseEntry in value) {
+						ar.push(o.id);
+					} 
+					Alert.show(resourceManager.getString('cms', 'existingRefid', [_undoToEntry.referenceId, ar]), 
+						resourceManager.getString('cms', 'warning'), Alert.YES|Alert.NO, this, save);
+				}
+				else {
+					save();
+				}
+			}
+			
+			
+			
+			/**
+			 * update selected entry on server
+			 * @internal 
+			 * the close event is there in case the function is triggered from alert
+			 * */
+			private function save(e:CloseEvent = null) :void {
+				if (e && e.detail == Alert.NO) {
+					return;
+				}
+				destroyPanels();
+				// if we got here, all panels validation passed ok, the error was null.	
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
+				cgEvent.dispatch();	
+				
+				removeWatchers();
+				
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 			}
 
 
+			/**
+			 * remove column that are not relevant for  
+			 * this view from the entry contents table
+			 * */
 			private function removeColums(event:Event):void {
 				event.target.removeColumn(resourceManager.getString('cms', 'preview'));
 				event.target.removeColumn(resourceManager.getString('cms', 'idHeader'));
@@ -892,7 +946,7 @@
 
 	</mx:ViewStack>
 	<mx:ControlBar>
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="save()"
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="validate()"
 				   buttonMode="true"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>

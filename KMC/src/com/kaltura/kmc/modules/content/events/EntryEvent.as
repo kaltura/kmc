@@ -32,7 +32,14 @@ package com.kaltura.kmc.modules.content.events
 		/**
 		 * triggers a baseEntry.update with the given baseEntry, with no side effects.
 		 * */
-		public static const UPDATE_SINGLE_ENTRY:String = "update_single_entry"; 
+		public static const UPDATE_SINGLE_ENTRY:String = "content_update_single_entry";
+		
+		/**
+		 * get a list of entries with the same reference id as the given
+		 * */
+		public static const LIST_ENTRIES_BY_REFID:String = "content_list_entries_by_refid"; 
+		
+		
 		
 		
 		private var _entryVo : KalturaBaseEntry;
