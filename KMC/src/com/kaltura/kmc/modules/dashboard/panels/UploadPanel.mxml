@@ -24,22 +24,21 @@
 			public var quickStartURL:String;
 			
 			
-			private function upload1():void
+			private function doBulkUpload():void
 			{
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_IMPORT_CONTENT, GoogleAnalyticsConsts.DASHBOARD);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.DASHBOARD,KalturaStatsKmcEventType.DASHBOARD_IMPORT_CONTENT, "DashBoard>Import Content");
 				// show content>upload tab
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'upload'));
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'add', '', {kmcFunction:"addCode.addBulk"}));
 			}
 			
-			private function upload2():void
+			private function doFileUpload():void
 			{
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_UPLOAD_CONTENT, GoogleAnalyticsConsts.DASHBOARD);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.DASHBOARD,KalturaStatsKmcEventType.DASHBOARD_UPDATE_CONTENT, "DashBoard>Upload Content");
 				// show content>upload tab
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'content', 'upload'));
-				DashboardManager.instance.openKcw();
-				
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'add', '', {kmcFunction:"addCode.addUpload"}));
+//				DashboardManager.instance.openKcw();
 			}
 		]]>
 	</mx:Script>
@@ -55,13 +54,13 @@
 				<mx:Text id="uploadOption1Label" width="95%" text="{resourceManager.getString('kdashboard', 'upload_option_1_description')}" styleName="featureLineLabel"/>
 				<mx:Spacer width="5%"/>
 				<mx:Button id="uploadOption1Button" label="{resourceManager.getString('kdashboard', 'upload_option_1_button')}" 
-						   useHandCursor="true" buttonMode="true" styleName="dashboardBtn" click="upload1()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+						   useHandCursor="true" buttonMode="true" styleName="dashboardBtn" click="doBulkUpload()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Text id="uploadOption2Label" width="95%" text="{resourceManager.getString('kdashboard', 'upload_option_2_description')}" styleName="featureLineLabel"/>
 				<mx:Spacer width="5%"/>
 				<mx:Button id="uploadOption2Button" label="{resourceManager.getString('kdashboard', 'upload_option_2_button')}" 
-						   useHandCursor="true" buttonMode="true" styleName="dashboardBtn" click="upload2()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
+						   useHandCursor="true" buttonMode="true" styleName="dashboardBtn" click="doFileUpload()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
 			</mx:HBox>
 			<mx:LinkButton id='quickStartLinkButton' label="{resourceManager.getString('kdashboard', 'quick_start_link')}" 
 						   styleName="dashboardLinkBtn"

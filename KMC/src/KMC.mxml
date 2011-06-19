@@ -791,6 +791,7 @@
 			 * @param e		event holding navigation request info.
 			 * */
 			protected function navigateToModule(e:KmcNavigationEvent):void {
+				e.stopImmediatePropagation();
 				var o:Object = {moduleName: e.module, subtab: e.subtab, extra: e.data};
 				gotoPage(o);
 			}
@@ -802,6 +803,7 @@
 			 * which dispatched this event.
 			 * */
 			protected function onError(e:KmcErrorEvent):void {
+				e.stopImmediatePropagation();
 				alert(e.error, ResourceManager.getInstance().getString('kmc', 'error_title'));
 			}
 
@@ -834,6 +836,7 @@
 			 * @param e	help request dispatched by anything on the displayList.
 			 * */
 			protected function showHelp(e:KmcHelpEvent):void {
+				e.stopImmediatePropagation();
 				var url:String = _flashvars.protocol;
 				if (!url) {
 					url = "http://";

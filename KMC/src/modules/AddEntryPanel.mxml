@@ -85,7 +85,7 @@
 			/**
 			 * Opens a desktop file selection pop-up. Allowing video, audio and image files selection
 			 * */
-			protected function btnUpload_clickHandler(event:MouseEvent):void {
+			public function addUpload(event:MouseEvent = null):void {
 				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
 				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				neu.doFileUpload();
@@ -105,7 +105,7 @@
 			/**
 			 * Opens a desktop file selection pop-up, allowing csv/xml files selection
 			 * */
-			protected function btnBulk_clickHandler(event:MouseEvent):void {
+			public function addBulk(event:MouseEvent = null):void {
 				var bu:BulkUploader = new BulkUploader(_kc);
 				bu.doUpload();
 			}
@@ -283,14 +283,14 @@
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="viewStack" creationPolicy="all" 
-				  height="{menuScreen.measuredHeight}" width="100%" styleName="noPadding"  >
+				  height="{menuScreen.measuredHeight}" width="100%" styleName="noPadding" >
 		<mx:VBox styleName="noPadding" id="menuScreen" width="100%">
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
 					  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
 			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" width="100%" horizontalAlign="center"
 					 visible="{btnUpload.visible || btnWebcam.visible}"
 					 includeInLayout="{btnUpload.includeInLayout || btnWebcam.includeInLayout}">
-				<mx:Button id="btnUpload" click="btnUpload_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+				<mx:Button id="btnUpload" click="addUpload(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'upload_btn')}"/>
 				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'webcam_btn')}"/>
@@ -300,7 +300,7 @@
 			<mx:VBox id="importBox" styleName="addPanelButtonBox" width="100%" horizontalAlign="center"
 					 visible="{btnBulk.visible || btnServices.visible}"
 					 includeInLayout="{btnBulk.includeInLayout || btnServices.includeInLayout}">
-				<mx:Button id="btnBulk" click="btnBulk_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
+				<mx:Button id="btnBulk" click="addBulk(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'bulk_btn')}"/>
 				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
 						   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"/>
