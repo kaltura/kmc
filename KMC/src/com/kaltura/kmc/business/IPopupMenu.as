@@ -2,8 +2,10 @@ package com.kaltura.kmc.business
 {
 	import flash.display.DisplayObjectContainer;
 	import flash.events.Event;
+	
+	import mx.core.IFlexDisplayObject;
 
-	public interface IPopupMenu {
+	public interface IPopupMenu extends IFlexDisplayObject {
 		
 		/**
 		 * popup will be added to this root's diplaylist

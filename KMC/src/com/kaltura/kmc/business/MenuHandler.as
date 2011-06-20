@@ -5,11 +5,9 @@ package com.kaltura.kmc.business {
 	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
 	
-	import modules.AddEntryPanel;
-	
 	import mx.core.Application;
+	import mx.core.IFlexDisplayObject;
 	import mx.managers.PopUpManager;
-	import mx.modules.Module;
 	import mx.modules.ModuleLoader;
 
 	/**
@@ -17,7 +15,7 @@ package com.kaltura.kmc.business {
 	 * (creating, showing, hiding and positioning..) 
 	 * @author Atar
 	 */	
-	public class MenuHandler extends EventDispatcher implements IPopupMenu {
+	public class MenuHandler extends EventDispatcher {
 		
 		public static var MENU_REMOVED:String = "menu_removed";
 		
@@ -27,13 +25,13 @@ package com.kaltura.kmc.business {
 		/**
 		 * the menu panel 
 		 */
-		protected var _panel:Module;
+		protected var _panel:IPopupMenu;
 
 		/**
 		 * @param panel 	the flex module to handle
 		 * @param positionJsCallback	name of JS method that positions the panel
 		 */
-		public function MenuHandler(panel:Module, positionJsCallback:String) {
+		public function MenuHandler(panel:IPopupMenu, positionJsCallback:String) {
 			super(this);
 			_panel = panel;
 			ExternalInterface.addCallback(positionJsCallback, positionPanel);
@@ -76,10 +74,10 @@ package com.kaltura.kmc.business {
 		 * */
 		public function togglePanel():void {
 			if (!_panel.parent || _panel.parent is ModuleLoader){
-				showPanel();
+				_panel.showPanel();
 			}
 			else {
-				hidePanel();
+				_panel.hidePanel();
 			}
 		}
 		
