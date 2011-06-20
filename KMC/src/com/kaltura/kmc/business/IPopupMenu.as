@@ -1,7 +1,7 @@
 package com.kaltura.kmc.business
 {
 	import flash.display.DisplayObjectContainer;
-	import flash.events.MouseEvent;
+	import flash.events.Event;
 
 	public interface IPopupMenu {
 		
@@ -13,9 +13,11 @@ package com.kaltura.kmc.business
 		
 		function showPanel():void;
 		
-		function hidePanel(me:MouseEvent = null):void;
+		function hidePanel(e:Event = null):void;
 		
 		function positionPanel(right:Number):void;
+		
+		function togglePanel():void;
 		
 	}
 }

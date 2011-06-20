@@ -175,5 +175,6 @@ package com.kaltura.kmc.business
 				dispatchEvent(new KmcErrorEvent(KmcErrorEvent.ERROR, ResourceManager.getInstance().getString('kmc', 'method_dont_exist', [pluginId, methodName])));
 			}
 		}
+		
 	}
 }

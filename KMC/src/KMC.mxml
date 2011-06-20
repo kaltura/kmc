@@ -99,7 +99,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "4.2.1";
+			public var VERSION:String = "4.2.2";
 
 			/**
 			 * Singletone PermissionManager
@@ -218,6 +218,13 @@
 					jstab.display_name = tabName;
 					jstab.module_name = xmltab.@id.toString();
 					jstab.subtab = xmltab.@subtab.toString();
+					
+					if (xmltab.@kmcFunction) {
+						jstab.type = "action";
+					}
+					else {
+						jstab.type = "tab"; 
+					}
 					if (xmltab.@htmlUrl) {
 						jstab.html_url = xmltab.@htmlUrl.toString();
 					}
@@ -436,7 +443,6 @@
 
 				var roleOfCurrentUser:String;
 				roleOfCurrentUser = uvo.role.permissionNames;
-				//roleOfCurrentUser += ",CONTENT_INGEST_DROP_FOLDER_MATCH,CONTENT_INGEST_INTO_ORPHAN,CONTENT_INGEST_INTO_READY"; 
 
 				// [4] partner permissions list
 				if (isError(event.data[4].error))
@@ -492,7 +498,6 @@
 
 				// load skin
 				loadSkin(getUrl(_uiconf.skinPath.toString()));
-//				loadSkin(getUrl("workspaces/kmc/KMC/assets/kmc_skin.swf"));
 			}
 
 
@@ -592,6 +597,8 @@
 			protected function gotoPage(o:Object):void {
 				var mInfo:XML;
 				_currentObject = o;
+				// create navigation info object:
+				// ------------------------------
 				if (o) {
 					mInfo = _uiconf.modules.module.(@id == o.moduleName)[0];
 				}
@@ -624,23 +631,29 @@
 					o.extra.kmcFunction = mInfo.@kmcFunction.toString();
 				}
 
+				// actual navigation part:
+				// -----------------------
 				// check for HTML tabs
 				if (o.extra.htmlUrl) {
 					// tell JS it should show a html tab
-					JSGate.openIframe(mInfo.@htmlUrl.toString());
+					JSGate.openIframe(o.extra.htmlUrl);
+					// tell html
+					JSGate.writeUrlHash(o.moduleName, o.subtab);
+					JSGate.setTab(o.moduleName, true);
 				}
 				// check for action tabs (kmcFunction="module_id.function_name")
 				else if (o.extra.kmcFunction) {
 					handleKmcFunction(o);
+					// tell html
+					JSGate.setTab(o.moduleName, false);
+					return;
 				}
 				else {
 					// load KMC module
 					loadModule(mInfo);
 				}
-
-				// tell html
-				JSGate.writeUrlHash(o.moduleName, o.subtab);
-				JSGate.setTab(o.moduleName);
+				// tell app
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATION_COMPLETE, o.moduleName, o.subtab)); 
 			}
 
 			
@@ -659,15 +672,12 @@
 					func_name = funky[0];	
 				}
 				
-				//  triggering KMC method
+				// triggering KMC method
 				if (!module_id) {
-					// try to trigger func_name on self
 					this[func_name]();
 				}
-				// triggering module method
+				// triggering ready module method
 				else if (getModuleParent(module_id) && (getModuleParent(module_id).child as KmcModule).isModuleReady) {
-					// module is ready
-					// try to trigger func_name on relevant module
 					try {
 						getModuleParent(module_id).child[func_name]();
 					}
@@ -675,9 +685,8 @@
 						alert(resourceManager.getString('kmc', 'method_dont_exist', [module_id, func_name]), resourceManager.getString('kmc', 'error_title'));
 					}
 				}
-				// module is not yet ready, load it and then execute method
+				// either unloaded module or a plugin
 				else {
-					// either unloaded module or a plugin. look for a module:
 					var mInfo:XML = _uiconf.modules.module.(@id == module_id)[0];
 					if (mInfo) {
 						// save func_name
@@ -685,7 +694,7 @@
 						// add listener to moduleReady event
 						addEventListener(KmcModule.MODULE_READY, handleSavedKmcFunction, false, 0, true);
 						// start loading the relevant module
-						_currentObject = {moduleName: module_id, subtab: mInfo.@subtab.toString()};;
+						_currentObject = {moduleName: module_id, subtab: mInfo.@subtab.toString()};
 						loadModule(mInfo);
 					
 					}
@@ -750,7 +759,7 @@
 				JSGate.showFlash();
 				// tell html
 				JSGate.writeUrlHash(_currentObject.moduleName, _currentObject.subtab);
-				JSGate.setTab(_currentObject.moduleName);
+				JSGate.setTab(_currentObject.moduleName, true);
 			}
 
 
@@ -787,7 +796,7 @@
 
 
 			/**
-			 * Trigger module switching
+			 * Trigger module switching, triggerd in response to <code>KmcNavigationEvent.NAVIGATE</code>
 			 * @param e		event holding navigation request info.
 			 * */
 			protected function navigateToModule(e:KmcNavigationEvent):void {

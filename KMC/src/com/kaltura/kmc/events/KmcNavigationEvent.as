@@ -13,10 +13,17 @@ package com.kaltura.kmc.events {
 		 * The NavigationEvent.NAVIGATE constant defines the value of the 
 		 * <code>type</code> property of the event object 
 		 * for a <code>navigate</code> event.
+		 * dispatched by different components to ask the KMC to naivgate 
+		 * to a module as depicted by the event data.
 		 *
 		 * @eventType navigate
 		 */
 		public static const NAVIGATE:String = "navigate";
+		
+		/**
+		 * dispatched by KMC when the handling of a navigation request is complete.
+		 * */
+		public static const NAVIGATION_COMPLETE:String = "navigation_complete";
 
 		private var _module:String;
 

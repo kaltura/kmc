@@ -52,8 +52,18 @@ package com.kaltura.kmc.business
 		 * set the active tab
 		 * @param module	id of module to mark active 
 		 */
-		public static function setTab(module:String):void {
-			ExternalInterface.call("kmc.utils.setTab", module);
+		public static function setTab(module:String, resetAll:Boolean):void {
+			ExternalInterface.call("kmc.utils.setTab", module, resetAll);
+		}
+		
+		
+		/**
+		 * set the tab as not active
+		 * @param module	id of module to mark active 
+		 */
+		public static function resetTab(module:String):void {
+			ExternalInterface.call("kmc.utils.resetTab", module);
+			//TODO use this
 		}
 		
 		

@@ -63,6 +63,7 @@
 			private var _kc:KalturaClient;
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				
 				PermissionManager.getInstance().applyAllAttributes(this, "addPanel");
 				menuScreen.invalidateSize();
 				validateSize(true);
@@ -218,12 +219,14 @@
 				_showingHandler.addEventListener(MenuHandler.MENU_REMOVED, resetPanel);
 				if (_approot) {
 					_showingHandler.setRoot(_approot);
+					
 				}
 			}
 
 
 			public function setRoot(doc:DisplayObjectContainer):void {
 				_approot = doc;
+				doc.addEventListener(KmcNavigationEvent.NAVIGATION_COMPLETE, hidePanel);
 				if (_showingHandler) {
 					_showingHandler.setRoot(doc);
 				}
@@ -241,9 +244,10 @@
 			/**
 			 * hide the panel
 			 */
-			public function hidePanel(me:MouseEvent = null):void {
-				_showingHandler.hidePanel(me);
+			public function hidePanel(e:Event = null):void {
+				_showingHandler.hidePanel(e);
 				resetPanel();
+				JSGate.resetTab("add");
 			}
 
 
@@ -253,6 +257,11 @@
 			 */
 			public function positionPanel(right:Number):void {
 				_showingHandler.positionPanel(right);
+			}
+			
+			
+			public function togglePanel():void {
+				_showingHandler.togglePanel();
 			}
 			
 

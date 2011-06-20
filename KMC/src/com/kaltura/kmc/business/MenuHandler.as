@@ -62,12 +62,24 @@ package com.kaltura.kmc.business {
 		/**
 		 * Remove stage listener and hide the popup. 
 		 */
-		public function hidePanel(me:MouseEvent = null):void {
+		public function hidePanel(e:Event = null):void {
 			if (_panel && _panel.parent) {
 				PopUpManager.removePopUp(_panel);
 				// remove stage listener
 				(Application.application as DisplayObjectContainer).removeEventListener(MouseEvent.MOUSE_OVER, hidePanel);
 				dispatchEvent(new Event(MENU_REMOVED));
+			}
+		}
+		
+		/**
+		 * if the panel is visible hide it, if it is hidden show it
+		 * */
+		public function togglePanel():void {
+			if (!_panel.parent || _panel.parent is ModuleLoader){
+				showPanel();
+			}
+			else {
+				hidePanel();
 			}
 		}
 		
