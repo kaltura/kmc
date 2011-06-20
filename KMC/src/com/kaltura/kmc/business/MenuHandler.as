@@ -52,7 +52,7 @@ package com.kaltura.kmc.business {
 				positionPanel(JSGate.getPanelPosition());
 				
 				// add stage listener
-				(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.MOUSE_OVER, hidePanel);
+				(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.MOUSE_OVER, _panel.hidePanel);
 			}
 		}
 		
@@ -64,7 +64,7 @@ package com.kaltura.kmc.business {
 			if (_panel && _panel.parent) {
 				PopUpManager.removePopUp(_panel);
 				// remove stage listener
-				(Application.application as DisplayObjectContainer).removeEventListener(MouseEvent.MOUSE_OVER, hidePanel);
+				(Application.application as DisplayObjectContainer).removeEventListener(MouseEvent.MOUSE_OVER, _panel.hidePanel);
 				dispatchEvent(new Event(MENU_REMOVED));
 			}
 		}
