@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.account.command {
 	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.commands.thumbParams.ThumbParamsList;
+	import com.kaltura.controls.Paging;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
@@ -45,7 +46,12 @@ package com.kaltura.kmc.modules.account.command {
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
 			mr.addAction(listFlavorParams);
 
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, new KalturaFilterPager());
+			pager = new KalturaFilterPager();
+			if (event.data) {
+				pager.pageIndex = (event.data as Paging).selectedPage;
+				pager.pageSize = (event.data as Paging).pageSize;
+			}
+			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, pager);
 			mr.addAction(listConversionProfiles);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
@@ -122,6 +128,7 @@ package com.kaltura.kmc.modules.account.command {
 			}
 
 			_model.flavorsData = flvorsTmpArrCol;
+			_model.totalConversionProfiles = convsProfilesRespones.totalCount; 
 			_model.conversionData = convProfilesTmpArrCol;
 			_model.loadingFlag = false;
 		}

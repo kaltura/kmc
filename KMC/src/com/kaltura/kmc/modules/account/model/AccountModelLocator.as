@@ -84,6 +84,11 @@ package com.kaltura.kmc.modules.account.model {
 		public var conversionData:ArrayCollection = new ArrayCollection();
 		
 		/**
+		 * total number of conversion profiles 
+		 */		
+		public var totalConversionProfiles:int;
+		
+		/**
 		 * list of optional flavors <br>
 		 * <code>FlavorVO</code> objects
 		 * */

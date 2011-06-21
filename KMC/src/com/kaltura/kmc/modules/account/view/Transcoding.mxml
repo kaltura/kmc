@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
 		 xmlns:csw="com.kaltura.kmc.modules.account.view.windows.conversionsettingswindow.*"
-		 creationComplete="creationCompleteHandler(event)">
+		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
 	<mx:states>
 		<mx:State name="advanceModeState">
 			<mx:SetProperty target="{titleText}" name="htmlText"
@@ -60,6 +60,12 @@
 			public function get flavorParamData():ArrayCollection {
 				return _flavorParamData;
 			}
+			
+			[Bindable]
+			/**
+			 * total number of conversion profiles
+			 * */
+			public var totalProfiles:int;
 
 			[Bindable]
 			public var allFlavorsSelected:Boolean = false;
@@ -82,8 +88,7 @@
 			 * get data
 			 * */
 			public function init():void {
-				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				getAllData.dispatch();
+				listProfiles();
 			}
 
 
@@ -218,6 +223,16 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
+			
+			private function doPaging():void {
+				listProfiles(paging.selectedPage, paging.pageSize);
+			}
+			
+			private function listProfiles(page:Number = 0, pageSize:Number = 0):void {
+				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				getAllData.data = paging;
+				getAllData.dispatch();
+			}
 		]]>
 	</mx:Script>
 	<mx:Label styleName="expendableButton" width="100%" id="titleText"
@@ -254,6 +269,12 @@
 				<csw:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%"
 													 selectable="true" allowMultipleSelection="true"
 													 dataProvider="{conversionData}" />
+				
+				<controls:Paging id="paging" width="{conversionProfilesTable.width}" styleName="paging"
+								 rowsInPageChange="doPaging()" nextPage="{doPaging()}" prvPage="{doPaging()}"
+								 getPageNum="doPaging()" totalCount="{totalProfiles}"
+								 showRowsInPage="true" />
+				
 				<mx:HBox width="100%" styleName="DataGridActions">
 					<mx:VBox width="40%" height="100%" verticalAlign="middle">
 						<mx:LinkButton id="simpleModeBtn"
