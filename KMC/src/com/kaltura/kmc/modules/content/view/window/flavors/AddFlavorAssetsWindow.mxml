@@ -370,7 +370,7 @@
 					var files:Array = new Array();
 					for (var i:int = 0; i<n; i++) {
 						ufv = filesList[i] as UploadFileVo;
-						files.push(uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId));
+						files.push(uploader.createFuv(_entry.id, (_entry as KalturaMediaEntry).mediaType, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId));
 					}
 					// decide the correct action (add / update)
 					uploader.updateEntryContent(_entry.id, files);
@@ -378,7 +378,7 @@
 				else {
 					// only one file
 					ufv = filesList[0] as UploadFileVo;
-					uploader.updateEntryFlavor(_entry.id, uploader.createFuv(_entry.id, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId), ufv.flavorAssetId == null);
+					uploader.updateEntryFlavor(_entry.id, uploader.createFuv(_entry.id, (_entry as KalturaMediaEntry).mediaType, ufv.fileData, ufv.flavorParamId, ufv.flavorAssetId, cnvrtProfId), ufv.flavorAssetId == null);
 				}
 			}
 			

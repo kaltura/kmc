@@ -10,10 +10,12 @@ package com.kaltura.managers {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.FileUploadEvent;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.vo.KalturaUploadToken;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
 	
@@ -105,6 +107,7 @@ package com.kaltura.managers {
 		/**
 		 * create an upload vo based on given data
 		 * @param entryid
+		 * @param entrytype
 		 * @param file
 		 * @param flavorparamsid
 		 * @param flavorassetid
@@ -112,7 +115,7 @@ package com.kaltura.managers {
 		 * @return 
 		 * 
 		 */
-		public function createFuv(entryid:String, file:FileReference, 
+		public function createFuv(entryid:String, entrytype:int, file:FileReference, 
 	  							flavorparamsid:String = null, flavorassetid:String = null, 
 	  							convprofid:String = null):FileUploadVO {
 			// create the VO
@@ -121,6 +124,7 @@ package com.kaltura.managers {
 			vo.name = file.name;
 			vo.uploadTime = new Date();
 			vo.entryId = entryid; 
+			vo.entryType = entrytype;
 			vo.flavorParamsId = parseInt(flavorparamsid);
 			vo.flavorAssetId = flavorassetid;
 			vo.conversionProfile = convprofid;
@@ -242,7 +246,6 @@ package com.kaltura.managers {
 						}
 					}
 					else if (o is KalturaError) {
-						//TODO something that breaks the chain intelligibly, and not..
 						// dispatch error event with relevant data
 						er = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
 						er.error = "Error #209: " + (o as KalturaError).errorMsg;
@@ -254,17 +257,26 @@ package com.kaltura.managers {
 				// create uploadTokenResources, add them to the media.
 				var entryid:String = (e.target as FileUploadVO).entryId;  
 				
+				
 				// the actual resource we send is a list of the containers for the resources we want to replace.                
-				var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
+				var mediaResource:KalturaResource = new KalturaAssetsParamsResourceContainers();
 				mediaResource.resources = new Array();
 				
 				for each (file in _preprocessedFiles) {
 					if (file.entryId == entryid) {
-						// the first resource of the flavor we want to replace
+						// the resource of the flavor we want to replace
 						var subSubResource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
 						subSubResource.token = file.uploadToken;	// the token used to upload the file
 						if (!subSubResource.token) {
 							throw new Error("Token cannot be null");
+						}
+						if (file.entryType == KalturaMediaType.IMAGE) {
+							/* image entries have a single resource and it should 
+							 * not be sent in a container.
+							 * only one asset might fit this entry, so after finding the 
+							 * matching file we can break the loop. 							 */ 
+							mediaResource = subSubResource;
+							break;
 						}
 						// container for the resource we want to replace
 						var subResource:KalturaAssetParamsResourceContainer = new KalturaAssetParamsResourceContainer();

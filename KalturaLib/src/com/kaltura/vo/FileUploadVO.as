@@ -1,5 +1,6 @@
 package com.kaltura.vo {
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.types.KalturaEntryType;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.ProgressEvent;
@@ -46,6 +47,13 @@ package com.kaltura.vo {
 		 * passed as parameter.
 		 */
 		public var entryId:String;
+		
+		/**
+		 * the type of the entry to which this asset belongs (KalturaMediaType).
+		 * passed as parameter.
+		 */
+		public var entryType:int;
+		
 
 //		/**
 //		 * used to decide when all assets of a given entry have finished uploading.
