@@ -454,8 +454,13 @@
 					// if not found, use partner default.
 					if (!bFound) {
 						cnvrtProfCb.selectedIndex = defInd;
+						bFound = true;
 					}
 				}
+				if (bFound) {
+					cnvrtProfCb.dispatchEvent(new ListEvent(ListEvent.CHANGE));
+				}
+				
 				// set appearance according to action
 				setWindowAppearance(_windowAction);
 			}
@@ -516,9 +521,10 @@
 					for each (var sp:KalturaStorageProfile in storageProfiles) {
 						if (sp.id == (cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId) {
 							_selectedStorageProfile = sp;
-							break;
+							return;
 						}
 					}
+					_selectedStorageProfile = null;
 				}
 			}
 			
@@ -579,24 +585,27 @@
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
 		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" change="showStorageProfileDetails(event)"
-					 selectedIndex="0" dataProvider="{conversionProfiles}" />
+					 dataProvider="{conversionProfiles}" selectedIndex="-1"/>
 	</mx:HBox>
-	<mx:VBox id="storageProfileBox" styleName="flavorsReplacementVBox" width="100%"
-			 visible="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"
+	<mx:VBox id="storageProfileBox" styleName="flavorsReplacementVBox" width="{filesTable.width}"
+			 horizontalScrollPolicy="off"
+			 visible="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}" paddingLeft="0" paddingRight="0"
 			 includeInLayout="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}">
-		<mx:HBox verticalAlign="middle">
-			<mx:Label text="Remote Storage Name:" fontWeight="bold"/>
-			<mx:Label text="{_selectedStorageProfile.name}" width="100%"/>
+		<mx:HBox verticalAlign="middle" width="{storageProfileBox.width}">
+			<mx:Label text="{resourceManager.getString('cms', 'remoteStorageName')}" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.name}" />
 			<mx:VRule height="12"/>
-			<mx:Label text="ID:" fontWeight="bold"/>
-			<mx:Label text="{_selectedStorageProfile.id}" width="100%" />
+			<mx:Label text="{resourceManager.getString('cms', 'idHeader')}:" fontWeight="bold"/>
+			<mx:Label text="{_selectedStorageProfile.id}" />
 		</mx:HBox>
-		<mx:HBox verticalAlign="middle">
-			<mx:Label text="Storage URL:" fontWeight="bold"/>
-			<mx:Label text="{_selectedStorageProfile.storageUrl}" width="100%" />
+		<mx:HBox verticalAlign="middle" width="{storageProfileBox.width}" horizontalScrollPolicy="off">
+			<mx:Label text="{resourceManager.getString('cms', 'storageUrl')}" fontWeight="bold" />
+			<mx:Label text="{_selectedStorageProfile.storageUrl}" toolTip="{_selectedStorageProfile.storageUrl}" 
+					  width="100%"/>
 			<mx:VRule height="12"/>
-			<mx:Label text="Storage Base Directory:" fontWeight="bold"/>
-			<mx:Label text="{_selectedStorageProfile.storageBaseDir}" width="100%" />
+			<mx:Label text="{resourceManager.getString('cms', 'storageBaseDir')}" fontWeight="bold" />
+			<mx:Label text="{_selectedStorageProfile.storageBaseDir}" toolTip="{_selectedStorageProfile.storageBaseDir}" 
+					  width="100%"/>
 		</mx:HBox>
 	</mx:VBox>
 	<mx:Label id="tableHeader" text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
