@@ -256,7 +256,7 @@ package com.kaltura.kmc.modules.dashboard {
 				else if (info.error.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 					// added the support of non closable window
 					
-					Alert.show(ResourceManager.getInstance().getString('kdashboard', 'forbiddenError'), 
+					Alert.show(ResourceManager.getInstance().getString('common', 'forbiddenError'), 
 						ResourceManager.getInstance().getString('kdashboard', 'error'), Alert.OK, null, logout);
 					//de-activate the HTML tabs
 //					ExternalInterface.call("kmc.utils.activateHeader", false);

@@ -72,11 +72,11 @@ package com.kaltura.kmc.modules.create
 			}
 			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 				// added the support of non closable window
-				Alert.show(ResourceManager.getInstance().getString('create','forbiddenError',[er.errorMsg]), 
+				Alert.show(ResourceManager.getInstance().getString('common','forbiddenError',[er.errorMsg]), 
 					ResourceManager.getInstance().getString('create', 'forbiden_error_title'), Alert.OK, null, logout);
 			}
 			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('create', 'error'));
+				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('common', 'error'));
 			}
 		}
 		

@@ -27,6 +27,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.CursorManager;
@@ -126,7 +127,7 @@
 			}
 			
 			protected function showError(str:String):void {
-				Alert.show(str, resourceManager.getString('create', 'error'));
+				Alert.show(str, resourceManager.getString('common', 'error'));
 			}
 			
 			
@@ -148,17 +149,46 @@
 				uploadFiles((e.target as MultipleMediaFilesSelector).getFiles(), true);
 			}
 
+			private function getUploadLimit():Number {
+				return Application.application.parameters.maxUploadSize;
+			}
+			
+			/**
+			 * if file size of any file exceeds partner limit, return false
+			 * */
+			protected function validateFileSize():Boolean {
+				var result:Boolean = true;
+				var bytesInMega:int = 1024*1024;
+				var maxSize:Number = getUploadLimit();
+				for each (var file:UploadFile in _files) {
+					if ((file.fr.size/bytesInMega) > maxSize) {
+						result = false;
+						break;
+					}
+				}
+				return result;
+			}
 
 			/**
 			 * create new media entries, then pass FRs to the upload  
 			 * manager to upload them as source for these entries.
 			 * */
 			protected function submit(event:MouseEvent):void {
+				
+				if (!validateFileSize()) {
+					Alert.show(ResourceManager.getInstance().getString('common', 'filesTooBig', [getUploadLimit()]), 
+						ResourceManager.getInstance().getString('common', 'error'));
+					return;
+				}
+				
+				
 				CursorManager.setBusyCursor();
 				submitBtn.enabled = false;
 				var mr:MultiRequest = new MultiRequest();
 				var ma:MediaAdd;
 				var kme:KalturaMediaEntry;
+				
+				//TODO verify files size
 				for each (var file:UploadFile in _files) {
 					kme = new KalturaMediaEntry();
 					kme.name = file.fileName;

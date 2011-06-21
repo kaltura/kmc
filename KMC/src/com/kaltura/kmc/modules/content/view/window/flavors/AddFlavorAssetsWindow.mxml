@@ -33,6 +33,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
@@ -142,7 +143,7 @@
 				}
 				// only test file size when in upload mode
 				else if (_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD && !validateFileSize()) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'filesTooBig', [getPartnerUploadLimit()]), 
+					Alert.show(ResourceManager.getInstance().getString('common', 'filesTooBig', [getUploadLimit()]), 
 						ResourceManager.getInstance().getString('cms', 'error'));
 					result = false;
 				}
@@ -150,8 +151,8 @@
 			}
 			
 			
-			protected function getPartnerUploadLimit():Number {
-				return CmsModelLocator.getInstance().extSynModel.partnerData.maxUploadSize;
+			protected function getUploadLimit():Number {
+				return Application.application.parameters.maxUploadSize;
 			}
 			
 			/**
@@ -160,7 +161,7 @@
 			protected function validateFileSize():Boolean {
 				var result:Boolean = true;
 				var bytesInMega:int = 1024*1024;
-				var maxSize:Number = getPartnerUploadLimit();
+				var maxSize:Number = getUploadLimit();
 				for each (var file:UploadFileVo in filesList) {
 					if ((file.fileData.size/bytesInMega) > maxSize) {
 						result = false;

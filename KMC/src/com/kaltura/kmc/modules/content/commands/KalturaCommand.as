@@ -27,8 +27,8 @@ package com.kaltura.kmc.modules.content.commands {
 			}
 			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
 				// added the support of non closable window
-				Alert.show(ResourceManager.getInstance().getString('cms','forbiddenError',[er.errorMsg]), 
-					ResourceManager.getInstance().getString('cms', 'forbiden_error_title'), Alert.OK, null, logout);
+				Alert.show(ResourceManager.getInstance().getString('common','forbiddenError',[er.errorMsg]), 
+					ResourceManager.getInstance().getString('common', 'forbiden_error_title'), Alert.OK, null, logout);
 				//de-activate the HTML tabs
 //				ExternalInterface.call("kmc.utils.activateHeader", false);
 			}

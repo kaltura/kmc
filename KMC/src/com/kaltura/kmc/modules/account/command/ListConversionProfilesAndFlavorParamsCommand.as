@@ -67,10 +67,10 @@ package com.kaltura.kmc.modules.account.command {
 					if (kEvent.data[i].error) {
 						var rm:IResourceManager = ResourceManager.getInstance();
 						if (kEvent.data[i].error.code == APIErrorCode.SERVICE_FORBIDDEN) {
-							Alert.show(rm.getString('account', 'forbidden_service', [kEvent.data[i].error.message]), rm.getString('account', 'forbidden_service_title'));
+							Alert.show(rm.getString('common', 'forbiddenError', [kEvent.data[i].error.message]), rm.getString('common', 'forbiden_error_title'));
 						}
 						else {
-							Alert.show(kEvent.data[i].error.message, rm.getString('account', 'forbidden_service_title'));
+							Alert.show(kEvent.data[i].error.message, rm.getString('common', 'forbiden_error_title'));
 						}
 						_model.loadingFlag = false;
 						return;

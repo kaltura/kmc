@@ -455,9 +455,13 @@
 				// load locale
 				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
 
-				// create the file uploader and set its client
-				//TODO get the concurrentuploads param from kmc uiconf or something
+				// file uploader
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
+				//TODO get the concurrentuploads param from kmc uiconf or something
+				if (!_flashvars.maxUploadSize) {
+					_flashvars.maxUploadSize = parseFloat(_uiconf.upload.maxSize.toString());
+				} 
+				FileUploadManager.getInstance().concurrentUploads = _flashvars.concurrentUploads;
 
 			}
 
