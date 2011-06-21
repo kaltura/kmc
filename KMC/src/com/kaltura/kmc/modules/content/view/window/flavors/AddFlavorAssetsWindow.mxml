@@ -13,7 +13,6 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
-			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryFlavors;
 			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
@@ -36,6 +35,7 @@
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
 			import mx.resources.ResourceManager;
 			
 			/*
@@ -270,7 +270,7 @@
 			
 			
 			/**
-			 * trigger media.add with matching KalturaURLResource or
+			 * trigger media.updateContent with matching KalturaURLResource or
 			 * KalturaRemoteStorageResource objects
 			 * */
 			protected function submitImportLink():void {
@@ -493,11 +493,9 @@
 				if (!visible){
 					// for link action in single state only show panel if 
 					// entry's conversion profile has storageProfileId  
-					if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK && windowState == AddFlavorAssetsWindow.SINGLE_FILE_STATE) {
+					if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK ) {
 						if ((cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId) {
 							visible = true;
-							//TODO get this storage profile to show its details
-							
 						}
 						else {
 							// Remote Storage is not set in Entry's Conversion Profile
@@ -505,7 +503,6 @@
 								ResourceManager.getInstance().getString('cms', 'error'));
 							closeHandler();
 						}	
-						
 					}
 					else {
 						visible = true;
@@ -578,11 +575,6 @@
 	
 	<mx:HBox verticalAlign="middle" visible="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}" 
 			 includeInLayout="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}">
-		<mx:Script>
-			<![CDATA[
-				import mx.events.ListEvent;
-			]]>
-		</mx:Script>
 		<mx:Label text="{ResourceManager.getInstance().getString('cms', 'convProfLbl')}:" 
 				  styleName="simpleBoldText"/>
 		<mx:ComboBox id="cnvrtProfCb" labelFunction="cnvrtPrfLbl" change="showStorageProfileDetails(event)"
