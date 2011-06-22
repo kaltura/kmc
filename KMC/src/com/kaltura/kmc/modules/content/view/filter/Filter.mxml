@@ -166,6 +166,12 @@
 			 * metadata
 			 * */
 			private var _metadataProfilesArray:ArrayCollection;
+			
+			/**
+			 * a flag indicating the custom metadata filters should be re-created
+			 * */
+			private var _metadataDirtyFlag:Boolean;
+			
 			/**
 			 * Distribution profiles array
 			 * */
@@ -187,11 +193,15 @@
 			 */
 			public function set metadataProfilesArray(value:ArrayCollection):void
 			{
+				if (value && value != _metadataProfilesArray) {
+					invalidateDisplayList();
+					_metadataDirtyFlag = true;
+				}
 				_metadataProfilesArray = value;
 				
-				if (value) {
-					setMetadataTabVisibility();
-				}
+//				if (value) {
+//					setMetadataTabVisibility();
+//				}
 			}
 			
 			/**
@@ -305,18 +315,29 @@
 			}
 			
 			
+			
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+				trace('updateDisplayList');
+				if (_metadataDirtyFlag) {
+					_metadataDirtyFlag = false;
+					setMetadataTabVisibility();
+				}
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+			
 			/**
 			 * if there are no metadata fields that should appear
 			 * in search, remove the metadata tab from the accordion
 			 * */
 			private function setMetadataTabVisibility():void {
+				trace('setMetadataTabVisibility')
 				//clean previous metadata children
 				for (var i:int = accordion.numChildren-1; i>=0; i--) {
 					if (accordion.getChildAt(i) is MetadataAccordionTab) {
 						accordion.removeChildAt(i);
 					}
 				}
-				if (_enableCustomData) {
+				if (_enableCustomData && _metadataProfilesArray) {
 					for (var j:int = _metadataProfilesArray.length-1; j>=0; j--) {
 						//for each (var profile:KMCMetadataProfileVO in _metadataProfilesArray) {
 						var profile:KMCMetadataProfileVO = _metadataProfilesArray.getItemAt(j) as KMCMetadataProfileVO;
@@ -553,7 +574,9 @@
 					buildAccessControlList();
 				}
 				//if enableCustomData is false and metadata exists remove the metadata filter header
-				setMetadataTabVisibility();
+//				setMetadataTabVisibility();
+				_metadataDirtyFlag = true;
+				
 				// update view
 				validateNow();
 				_created = true;
@@ -821,7 +844,8 @@
 			 * */
 			public function set enableCustomData(value:Boolean):void {
 				_enableCustomData = value;
-				setMetadataTabVisibility();
+//				setMetadataTabVisibility();
+				_metadataDirtyFlag = true;
 			}
 			
 			
