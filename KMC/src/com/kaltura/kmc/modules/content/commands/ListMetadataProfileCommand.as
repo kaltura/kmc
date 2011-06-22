@@ -1,5 +1,4 @@
-package com.kaltura.kmc.modules.content.commands
-{
+package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.errors.KalturaError;
@@ -14,30 +13,30 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaMetadataProfileFilter;
 	import com.kaltura.vo.KalturaMetadataProfileListResponse;
 	import com.kaltura.vo.MetadataFieldVO;
-	
+
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	
+
 	/**
-	 * This command is being executed when the event MetadataProfileEvent.LIST is dispatched. 
+	 * This command is being executed when the event MetadataProfileEvent.LIST is dispatched.
 	 * @author Michal
-	 * 
-	 */		
+	 *
+	 */
 	public class ListMetadataProfileCommand extends KalturaCommand {
-		
+
 		/**
-		 * only if a metadata profile view contains layout with this name it will be used 
-		 */		
+		 * only if a metadata profile view contains layout with this name it will be used
+		 */
 		public static const KMC_LAYOUT_NAME:String = "KMC";
-		
+
+
 		/**
-		 * This command requests the server for the last created metadata profile 
+		 * This command requests the server for the last created metadata profile
 		 * @param event the event that triggered this command
-		 * 
-		 */		
-		override public function execute(event:CairngormEvent):void
-		{
+		 *
+		 */
+		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
@@ -45,18 +44,18 @@ package com.kaltura.kmc.modules.content.commands
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
-			
+
 			_model.context.kc.post(listMetadataProfile);
 		}
-		
+
+
 		/**
 		 * This function handles the response from the server. if a profile returned from the server then it will be
 		 * saved into the model.
 		 * @param data the data returned from the server
-		 * 
-		 */		
-		override public function result(data:Object):void
-		{
+		 *
+		 */
+		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 
 			if (data.error) {
@@ -70,36 +69,33 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			else {
 				var response:KalturaMetadataProfileListResponse = data.data as KalturaMetadataProfileListResponse;
-				_model.filterModel.metadataProfiles = new ArrayCollection();
-				_model.filterModel.formBuilders = new ArrayCollection();
-				for (var i:int = 0; i<response.objects.length; i++) 
-				{
+				var metadataProfiles:Array = new Array();
+				var formBuilders:Array = new Array();
+				for (var i:int = 0; i < response.objects.length; i++) {
 					var recievedProfile:KalturaMetadataProfile = response.objects[i];
 					if (recievedProfile) {
 						var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
 						metadataProfile.profile = recievedProfile;
 						metadataProfile.xsd = new XML(recievedProfile.xsd);
 						metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
-						
+
 						//set the displayed label of each label
 						for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
-							var label:String = ResourceManager.getInstance().getString('customFields',field.defaultLabel);
-							if (label) 
-							{
+							var label:String = ResourceManager.getInstance().getString('customFields', field.defaultLabel);
+							if (label) {
 								field.displayedLabel = label;
 							}
-							else 
-							{
+							else {
 								field.displayedLabel = field.defaultLabel;
 							}
 						}
-						
+
 						//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
-						_model.filterModel.metadataProfiles.addItem(metadataProfile);
+						metadataProfiles.push(metadataProfile);
 						var fb:FormBuilder = new FormBuilder(metadataProfile);
-						_model.filterModel.formBuilders.addItem(fb);
+						formBuilders.push(fb);
 						var isViewExist:Boolean = false;
-						
+
 						if (recievedProfile.views) {
 							try {
 								var recievedView:XML = new XML(recievedProfile.views);
@@ -122,22 +118,22 @@ package com.kaltura.kmc.modules.content.commands
 								metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
 							fb.buildInitialMxml();
 						}
-					} 	
+					}
 				}
-				
+				_model.filterModel.metadataProfiles = new ArrayCollection(metadataProfiles);
+				_model.filterModel.formBuilders = new ArrayCollection(formBuilders);
 			}
 
 		}
-		
+
+
 		/**
 		 * This function will be called if the request failed
 		 * @param info the info returned from the server
-		 * 
-		 */		
-		override public function fault(info:Object):void
-		{
-			if(info && info.error && info.error.errorMsg && info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN)
-			{
+		 *
+		 */
+		override public function fault(info:Object):void {
+			if (info && info.error && info.error.errorMsg && info.error.errorCode != APIErrorCode.SERVICE_FORBIDDEN) {
 				Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 			}
 			_model.decreaseLoadCounter();
