@@ -44,12 +44,18 @@ package com.kaltura.kmc.business
 		 */		
 		private var _flashvars:Object;
 		
+		/**
+		 * event handlers to attach to loaded plugins 
+		 * {eventType:listenerFunction, eventType2:listenerFunction2}
+		 */		
+		private var _eventHandlers:Object;
 		
-		public function KmcPluginManager(approot:DisplayObjectContainer, client:KalturaClient, flashvars:Object)
+		public function KmcPluginManager(approot:DisplayObjectContainer, client:KalturaClient, flashvars:Object, eventHandlers:Object)
 		{
 			_approot = approot;
 			_client = client;
 			_flashvars = flashvars;
+			_eventHandlers = eventHandlers;
 			_plugins = new Object(); 
 		}
 		
@@ -113,6 +119,10 @@ package com.kaltura.kmc.business
 					// the above are required by KMC, not by the plugin
 					plugin[att] = atts[i].toString();
 				}
+			}
+			
+			for (var event:String in _eventHandlers) {
+				plugin.addEventListener(event, _eventHandlers[event]);
 			}
 
 			

@@ -9,14 +9,16 @@ package com.kaltura.kmc.modules.create
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
+	import mx.validators.EmailValidator;
 
-	public class BulkUploader {
+	public class BulkUploader extends EventDispatcher {
 		
 		
 		private var _client:KalturaClient;
@@ -27,6 +29,7 @@ package com.kaltura.kmc.modules.create
 		private var _bulkUpldFileRef:FileReference;
 		
 		public function BulkUploader(client:KalturaClient) {
+			super(this);
 			_client = client;
 		}
 
@@ -65,6 +68,8 @@ package com.kaltura.kmc.modules.create
 			var er:KalturaError = e.error;
 			if (!er)  {
 				Alert.show(ResourceManager.getInstance().getString('create', 'bulk_submitted'));
+				// dispatch complete event
+				dispatchEvent(new Event(Event.COMPLETE));
 				return;
 			}
 			if (er.errorCode == APIErrorCode.INVALID_KS) {

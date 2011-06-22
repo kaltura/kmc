@@ -161,7 +161,9 @@
 			}
 			
 			protected function loadPlugins():void {
-				_pluginManager = new KmcPluginManager(this, _modelLocator.kalturaClient, _flashvars);
+				var handlers:Object = {};
+				handlers[KmcNavigationEvent.NAVIGATE] = navigateToModule;
+				_pluginManager = new KmcPluginManager(this, _modelLocator.kalturaClient, _flashvars, handlers);
 				_pluginManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				_pluginManager.loadPlugins(_uiconf);
 			}
@@ -260,11 +262,11 @@
 
 				this.contextMenu = _cm;
 
-				// listen to module requests
-				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
-				this.addEventListener(KmcErrorEvent.ERROR, onError);
-				this.addEventListener(KmcHelpEvent.HELP, showHelp);
-				// listen to popup/plugin requests
+//				// listen to module requests
+//				this.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
+//				this.addEventListener(KmcErrorEvent.ERROR, onError);
+//				this.addEventListener(KmcHelpEvent.HELP, showHelp);
+				// listen to module/popup/plugin requests
 				systemManager.addEventListener(KmcNavigationEvent.NAVIGATE, navigateToModule);
 				systemManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				systemManager.addEventListener(KmcHelpEvent.HELP, showHelp);
@@ -457,7 +459,7 @@
 
 				// file uploader
 				FileUploadManager.getInstance().kc = _modelLocator.kalturaClient;
-				//TODO get the concurrentuploads param from kmc uiconf or something
+				// get the concurrentuploads param from kmc uiconf 
 				if (!_flashvars.maxUploadSize) {
 					_flashvars.maxUploadSize = parseFloat(_uiconf.upload.maxSize.toString());
 				} 

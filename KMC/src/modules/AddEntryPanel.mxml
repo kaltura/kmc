@@ -110,6 +110,7 @@
 			 * */
 			public function addBulk(event:MouseEvent = null):void {
 				var bu:BulkUploader = new BulkUploader(_kc);
+				bu.addEventListener(Event.COMPLETE, onBulkAdded);
 				bu.doUpload();
 			}
 
@@ -223,6 +224,10 @@
 					_showingHandler.setRoot(_approot);
 					
 				}
+			}
+			
+			protected function onBulkAdded(e:Event):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.refreshBulk"}, true));
 			}
 
 
