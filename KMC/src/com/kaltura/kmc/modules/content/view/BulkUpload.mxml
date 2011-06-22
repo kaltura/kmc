@@ -25,6 +25,7 @@
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
 
+			
 			[Bindable]
 			/**
 			 * data that only bulkUpload tab uses
@@ -128,6 +129,23 @@
 
 			public function get pager():Pager {
 				return _pager;
+			}
+			
+			public function get allowActions():Boolean {
+				return true;
+			}
+			
+			public function set allowActions(value:Boolean):void {
+				if (!value) {
+					var ar:Array = bulkTable.columns;
+					for (var i:int = 0; i<ar.length; i++) {
+						if (ar[i] == actions) {
+							ar.splice(i, 1);
+							break;
+						}
+					}
+					bulkTable.columns = ar;
+				}
 			}
 
 			public function getStatus(status:String):String {
@@ -287,7 +305,8 @@
 										   dataTipField="error"/>
 						
 						<!-- actions -->
-						<mx:DataGridColumn width="100" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
+						<mx:DataGridColumn id="actions" width="100" 
+										   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
 										   headerText="{resourceManager.getString('cms', 'action')}" />
 						
 					</mx:columns>
