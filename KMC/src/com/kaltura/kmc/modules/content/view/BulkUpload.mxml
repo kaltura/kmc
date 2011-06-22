@@ -99,8 +99,7 @@
 			public function loadEntries():void {
 				if (paging)
 					_filter.page = paging.selectedPage;
-				if (bulkUploadEnabled) 
-				{
+				if (bulkUploadEnabled) {
 					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD, _filter);
 					bulkEvent.dispatch();
 				}
@@ -185,11 +184,10 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				loadEntries();
 				addEventListener("delete", handleBulkAction);
 				addEventListener("dnldLog", handleBulkAction);
 				addEventListener("dnldOrig", handleBulkAction);
-					
+				loadEntries();
 			}
 			
 			protected function handleBulkAction(e:Event):void {
