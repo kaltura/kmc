@@ -72,6 +72,17 @@
 			 * */
 			protected function setValues():void {
 				if (cbAvailability && cbConvertPolicy && tiSystemName) {
+					if (!_cpap.readyBehavior || _cpap.readyBehavior == int.MIN_VALUE) {
+						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.REQUIRED;
+					}
+					//TODO source flavor - always ingest
+					if (_flavorVO.kFlavor.tags.indexOf("source") > -1) {
+						_cpap.origin = KalturaAssetParamsOrigin.INGEST;
+						cbConvertPolicy.enabled = false;
+					}
+					else if (!_cpap.origin || _cpap.origin == int.MIN_VALUE) {
+						_cpap.origin = KalturaAssetParamsOrigin.CONVERT;
+					}
 					cbAvailability.selectedIndex = getItemIndex(_availabilityOptions, _cpap.readyBehavior);
 					cbConvertPolicy.selectedIndex = getItemIndex(_originOptions, _cpap.origin);
 					tiSystemName.text = _cpap.systemName;
