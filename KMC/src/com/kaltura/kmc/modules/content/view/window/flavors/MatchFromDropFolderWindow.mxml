@@ -24,6 +24,8 @@
 			import com.kaltura.vo.KalturaDropFolderFileResource;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.collections.ArrayCollection;
 			import mx.collections.HierarchicalData;
 			import mx.controls.Alert;
@@ -33,6 +35,13 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
+			
+			
+			/*
+				Events
+			*/
+			public static const CLOSE_WINDOW:String = "closeWindow";
+			
 
 			/**
 			 * window state - handling a single flavour
@@ -329,14 +338,17 @@
 			 * close popup
 			 * */
 			protected function closeHandler(event:CloseEvent):void {
+				if (event) {
+					event.stopImmediatePropagation();
+				}
 				// reset the selected folder
 				var cg:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null);
 				cg.dispatch();
 				// reset files list
-				cg = new DropFolderFileEvent(DropFolderFileEvent.RESET_FILES_LIST);
+				cg = new DropFolderFileEvent(DropFolderFileEvent.RESET_DROP_FOLDERS_AND_FILES);
 				cg.dispatch();
-				// remove popup
-				PopUpManager.removePopUp(this);
+				// remove popup 
+				dispatchEvent(new Event(CLOSE_WINDOW));
 			}
 
 
@@ -501,6 +513,7 @@
 			 * @private
 			 */
 			public function set folders(value:ArrayCollection):void {
+				if (_folders == value) return;
 				_folders = value;
 				if (value) {
 					if (value.length > 0) {

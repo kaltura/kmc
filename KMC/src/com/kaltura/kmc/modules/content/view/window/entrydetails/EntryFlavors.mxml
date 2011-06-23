@@ -105,6 +105,16 @@
 			private var _dropFolderModel:DropFolderModel;
 			private var _flavorsWatcher:ChangeWatcher;
 
+			
+			
+			/*
+			 * watchers for binding to matchFromDropFolderWindow
+			 * */
+			private var _dfw1:ChangeWatcher;
+			private var _dfw2:ChangeWatcher;
+			private var _dfw3:ChangeWatcher;
+			
+			
 			/*
 			 * watchers for binding to addFlavorAssetsWindow
 			 * */
@@ -609,13 +619,21 @@
 					listFolders.dispatch();
 				}
 				matchFromDropFodlerWin.entry = _selectedEntry;
-				BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
-				BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");
-				BindingUtils.bindProperty(matchFromDropFodlerWin, "conversionProfiles", _entryDetailsModel, "conversionProfsWFlavorParams");
+				_dfw1 = BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
+				_dfw2 = BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");
+				_dfw3 = BindingUtils.bindProperty(matchFromDropFodlerWin, "conversionProfiles", _entryDetailsModel, "conversionProfsWFlavorParams");
+				matchFromDropFodlerWin.addEventListener(MatchFromDropFolderWindow.CLOSE_WINDOW, onDropFolderWindowClose);
 				PopUpManager.addPopUp(matchFromDropFodlerWin, this, true);
 				PopUpManager.centerPopUp(matchFromDropFodlerWin);
 				//resets data
 				_selectedFlavorWithParams = null;
+			}
+			
+			private function onDropFolderWindowClose(e:Event):void {
+				_dfw1.unwatch();
+				_dfw2.unwatch();
+				_dfw3.unwatch();
+				PopUpManager.removePopUp(e.target as MatchFromDropFolderWindow);
 			}
 
 

@@ -9,7 +9,7 @@ package com.kaltura.kmc.modules.content.events {
 		/**
 		 * reset the drop folder files list on the model
 		 */		
-		public static const RESET_FILES_LIST:String = "df_reset_files_list";
+		public static const RESET_DROP_FOLDERS_AND_FILES:String = "df_reset_files_list";
 		
 		/**
 		 * list all files from all drop folders
