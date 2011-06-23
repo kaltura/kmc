@@ -30,7 +30,7 @@
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.containers.ViewStack;
@@ -42,9 +42,9 @@
 
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
 			public static const OPEN_PREVIEW:String = "openPreview";
-			
+
 			private const ENTRY_PLACEHOLDER:String = '{entryId}';
-			
+
 			/**
 			 * landing page according to partner's data
 			 * */
@@ -53,7 +53,6 @@
 			/**
 			 * default image to display when entry contains no content
 			 * */
-			//TODO just a temp, change default image
 			[Embed(source="assets/images/No-media.png")]
 			private static const noMediaImage:Class;
 
@@ -63,7 +62,7 @@
 			 * */
 			private static var kdp3StaticSwfLoader:SWFLoader;
 
-			
+
 			private const LABEL_WIDTH:Number = 105;
 			private const TEXT_WIDTH:Number = 320;
 
@@ -97,19 +96,22 @@
 			 * view stack of current entry details window
 			 * */
 			private var _viewStack:ViewStack;
-			
+
 			[Bindable]
 			private var _entryHasContent:Boolean = true;
+
 
 			public function initData():void {
 				var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				listCategories.dispatch();
 			}
 
+
 			public function destroy():void {
-				
+
 			}
-			
+
+
 			public function get viewStack():ViewStack {
 				return _viewStack;
 			}
@@ -226,14 +228,13 @@
 					//mix or video
 					loadKDP();
 				}
-				
-				if (landingPage && landingPage!='')
-				{
+
+				if (landingPage && landingPage != '') {
 					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
-					if (replaceIndex > -1) 
+					if (replaceIndex > -1)
 						landingPageLabel.text = landingPage.replace(ENTRY_PLACEHOLDER, selectedEntry.id);
 					else
-						landingPageLabel.text = landingPage+selectedEntry.id;
+						landingPageLabel.text = landingPage + selectedEntry.id;
 				}
 			}
 
@@ -241,7 +242,7 @@
 			protected function onCreationComplete():void {
 				name_input.setFocus();
 			}
-			
+
 
 			/**
 			 * Load KDP.
@@ -399,6 +400,7 @@
 				trace(event, event["error"]);
 			}
 
+
 			/**
 			 * Kdp loaded, initialize it.
 			 */
@@ -407,7 +409,7 @@
 				kdp3Loader.tabEnabled = false;
 				name_input.setFocus();
 				kdp3StaticSwfLoader = kdp3Loader;
-				if(kdp3Loader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
+				if (kdp3Loader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
 					IEventDispatcher(kdp3Loader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 
 				//set kdp params
@@ -655,8 +657,6 @@
 	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
 						required="true" requiredFieldError="{resourceManager.getString('cms', 'entryNameIsMandatory')}"/>
 	<mx:VBox width="100%" verticalGap="3">
-		<!--<mx:Label text="{resourceManager.getString('cms','metadataDetails')}"
-			 styleName="drillDownTitleLabel"/>-->
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms','name')}:" width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
 			<mx:TextInput id="name_input" width="{TEXT_WIDTH}" text="{selectedEntry.name}"
@@ -665,13 +665,13 @@
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms','description')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}"
+			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}" 
 						 change="{selectedEntry.description = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label id="tagsLbl" text="{resourceManager.getString('cms','tags')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
+			<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}" 
 						  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
@@ -680,28 +680,6 @@
 			<utils:AutoComplete width="{TEXT_WIDTH}" text="{selectedEntry.categories}" id='categoriesTextInput'
 								dataProvider="{entryDetailsModel.categoriesFullNameList}" styleName="autoComplete"/>
 		</mx:HBox>
-		<!--mx:HBox width="100%">
-			 <mx:Label text="{resourceManager.getString('cms','thumbnail')}:" width="{LABEL_WIDTH}"
-			 styleName="drillDownLabel"/>
-			 <mx:Image id="img" maxWidth="100" maxHeight="75" source="{selectedEntry.thumbnailUrl}"
-			 maintainAspectRatio="true" horizontalAlign="center" verticalAlign="top"
-			 horizontalCenter="0" verticalCenter="0"/>
-
-			 <mx:Canvas>
-			 <mx:VBox id="thumbnailOptionBox" height="{img.height}" verticalAlign="middle" paddingLeft="10">
-			 <mx:LinkButton id="changeThumbButton" label="{resourceManager.getString('cms','changeThumbnail')}"
-			 click="onChangeThumbnailClick(event)"/>
-			 </mx:VBox>
-			 <mx:Canvas id="captureThumbnailCanvas" backgroundColor="yellow" width="208" height="90"
-			 styleName="captureThumbnailCanvas" visible="false">
-			 <mx:Text width="100%" height="100%" selectable="false" styleName="thumbnailMessageText"
-			 text="{resourceManager.getString('cms','captureThumbnailMessage')}"/>
-			 <mx:Button id="thumbPopupCloseBtn" styleName="thumbMessageCloseBtn" right="6" top="6"
-			 width="16" height="16"
-			 click="{captureThumbnailCanvas.visible = false;captureThumbnailCanvas.includeInLayout=false}"/>
-			 </mx:Canvas>
-			 </mx:Canvas>
-			 </mx:HBox-->
 		<mx:VBox styleName="lineGap">
 			<mx:HBox width="100%" visible="{isLiveStream}" includeInLayout="{isLiveStream}">
 				<mx:Label text="{resourceManager.getString('cms','offlineMessage')}" width="{LABEL_WIDTH}"
@@ -714,7 +692,7 @@
 				<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{selectedEntry.referenceId}"
 							  change="{selectedEntry.referenceId = event.target.text}" styleName="drillDownSubLabel"/>
 			</mx:HBox>
-			
+
 			<mx:HBox width="100%">
 				<mx:Label text="{resourceManager.getString('cms','entryId')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
@@ -778,11 +756,11 @@
 					<mx:Button id="previewAndEmbed" label="{previewLabel}" buttonMode="{previewAndEmbed.enabled}"
 							   click="{openPreview()}" width="135" styleName="dataGridBtn"
 							   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
-	
+
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('cms','rating')}:" styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.rank}" styleName="drillDownSubLabel"/>
-	
+
 						<mx:Label text="{resourceManager.getString('cms','votesCount')}:" styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.votes}" styleName="drillDownSubLabel"/>
 					</mx:HBox>
@@ -791,22 +769,8 @@
 						<mx:Label text="{selectedEntry.plays}" styleName="drillDownSubLabel"/>
 					</mx:HBox>
 				</mx:VBox>
-				<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}" text="{resourceManager.getString('cms','noContentMessage')}"
-						  styleName="noContentLabel"/>
-
-				<!--				<mx:HBox width="100%" visible="false" includeInLayout="false">
-					 <mx:Label text="{resourceManager.getString('cms','playerLoades')}:" width="{LABEL_WIDTH}"
-					 styleName="drillDownLabel"/>
-					 <mx:Label text="{selectedEntry.views}"/>
-					 </mx:HBox>-->
-
-				<!--<mx:HBox width="100%">
-					 <mx:Label paddingTop="3" text="{resourceManager.getString('cms','embed')}:"
-					 width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
-					 <mx:Button id="previewAndEmbed" label="{previewLabel}"
-					 click="{openPreview()}" width="135" styleName="dataGridBtn"
-					 enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
-					 </mx:HBox>-->
+				<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}"
+						  text="{resourceManager.getString('cms','noContentMessage')}" styleName="noContentLabel"/>
 			</mx:VBox>
 		</mx:HBox>
 	</mx:VBox>
