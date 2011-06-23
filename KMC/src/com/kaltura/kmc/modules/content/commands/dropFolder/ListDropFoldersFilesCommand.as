@@ -207,11 +207,9 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 			}
 			// put the parseFailed last
 			if (dict[parseFailedStr]) {
-				ar.push(dict[slug]);
+				ar.push(dict[parseFailedStr]);
 			}
 			return ar;
 		}
-
 	}
-
 }
