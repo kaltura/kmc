@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-		 height="40" width="100%"
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="40" width="100%"
 		 creationComplete="creationCompleteHandler(event)">
-	
+
 	<mx:Metadata>
 		
 		[Style(name="pagerFirstBtn",type="String")]
@@ -24,350 +23,342 @@
 		
 		[ResourceBundle("windows")]
 	</mx:Metadata>
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.events.PagingEvent;
 			import com.kaltura.vo.KalturaFilterPager;
-			
+
 			import mx.controls.Button;
 			import mx.controls.LinkButton;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
-			
+
 			protected var rm:IResourceManager = ResourceManager.getInstance();
 			// locale for end/start button 
 			public var prevString:String = rm.getString('windows', 'prv');
 			public var nextString:String = rm.getString('windows', 'next');
-			
+
 			public var firstString:String = rm.getString('windows', 'first');
 			public var lastString:String = rm.getString('windows', 'last');
-			
+
 			[Bindable]
 			public var rowsComboLabel:String = rm.getString('windows', 'rowsInPage');
-			
+
 			[Bindable]
-			protected var _visible:Boolean = false; 
+			protected var _visible:Boolean = false;
 			/**
 			 * Show the last & first buttons
 			 */
 			public var showFirstLast:Boolean = false;
-			
+
 			/**
 			 * If the 1st or last items are selected - to show them with enable false or to
-			 * hide them  
+			 * hide them
 			 */
 			public var disableSideButtons:Boolean = false; // TODO implement
-			
+
 			/**
-			 * Total pages count 
+			 * Total pages count
 			 */
-			protected var _totalPageCount : int; 
-			
+			protected var _totalPageCount:int;
+
 			/**
 			 * Current page
 			 */
-			protected var _selectedPage : int = 1;
-			
+			protected var _selectedPage:int = 1;
+
 			/**
 			 * Total items count. The division of _totalCount with _pageSize will output the _totalPageCount
 			 */
-			protected var _totalCount : int; 
+			protected var _totalCount:int;
 			/**
-			 * Total items in page to view 
+			 * Total items in page to view
 			 */
-			protected var _pageSize : int = 10;
+			protected var _pageSize:int = 10;
 			/**
-			 * How many pages to show from each side of the selected page. 
-			 * IE value 2 with selected page 4 will show 2 3 4 5 6, 2 item in each side  
+			 * How many pages to show from each side of the selected page.
+			 * IE value 2 with selected page 4 will show 2 3 4 5 6, 2 item in each side
 			 */
-			protected var _sideLinkCount : int = 2;
+			protected var _sideLinkCount:int = 2;
 			/**
-			 * in case of page 1 and last page, to show only half of the list or full 
+			 * in case of page 1 and last page, to show only half of the list or full
 			 * IE  doubleEnd = true with selected 1 would show 12345 and with false 123
 			 */
-			public var doubleEnd : Boolean = true;
-			
-			[Bindable] 
+			public var doubleEnd:Boolean = true;
+
+			[Bindable]
 			public var kalturaFilterPager:KalturaFilterPager = new KalturaFilterPager();
-			[Bindable] 
-			public var rowsInPage : Array = [10,25,50,100,250,500];
-			[Bindable] 
-			public var showRowsInPage : Boolean = true;
-			
-			[Bindable] 
-			public function get selectedPage() : int 
-			{ 
-				return _selectedPage; 
+			[Bindable]
+			public var rowsInPage:Array = [10, 25, 50, 100, 250, 500];
+			[Bindable]
+			public var showRowsInPage:Boolean = true;
+
+
+			[Bindable]
+			public function get selectedPage():int {
+				return _selectedPage;
 			}
-			
-			public function set selectedPage( value : int ) : void
-			{
-				if( _selectedPage == value ) return;
-				
+
+
+			public function set selectedPage(value:int):void {
+				if (_selectedPage == value)
+					return;
+
 				_selectedPage = value;
 				updatePaging();
-				
-				dispatchEvent( new Event( Event.CHANGE ) ); 
+
+				dispatchEvent(new Event(Event.CHANGE));
 			}
-			
+
+
 			// the total count of the entries that the pager represent
-			[Bindable] public function get totalCount() : int 
-			{ 
-				return _totalCount; 
+			[Bindable]
+			public function get totalCount():int {
+				return _totalCount;
 			}
-			public function set totalCount( value : int ) : void 
-			{ 
-				if( _totalCount == value ) return;
-				
+
+
+			public function set totalCount(value:int):void {
+				if (_totalCount == value)
+					return;
+
 				_totalCount = value;
-				_totalPageCount = Math.ceil(_totalCount/_pageSize);
+				_totalPageCount = Math.ceil(_totalCount / _pageSize);
 				updatePaging();
 			}
+
+
 			/**
 			 * @copy _pageSize
 			 */
-			[Bindable] public function get pageSize() : int 
-			{ 
-				return _pageSize; 
+			[Bindable]
+			public function get pageSize():int {
+				return _pageSize;
 			}
+
+
 			/**
 			 * @copy _pageSize
 			 */
-			public function set pageSize( value : int ) : void 
-			{ 
-				if( _pageSize == value ) return;
-				
+			public function set pageSize(value:int):void {
+				if (_pageSize == value)
+					return;
+
 				_pageSize = value;
-				_totalPageCount = Math.ceil(_totalCount/_pageSize);
-				updatePaging(); 
+				_totalPageCount = Math.ceil(_totalCount / _pageSize);
+				updatePaging();
 			}
-			
+
+
 			/**
 			 * @copy _sideLinkCount
 			 */
-			[Bindable] public function get sideLinkCount() : int 
-			{
-				return _sideLinkCount; 
+			[Bindable]
+			public function get sideLinkCount():int {
+				return _sideLinkCount;
 			}
-			
+
+
 			/**
 			 * @copy _sideLinkCount
 			 */
-			public function set sideLinkCount(value : int) : void {
-				_sideLinkCount = value 
+			public function set sideLinkCount(value:int):void {
+				_sideLinkCount = value
 			}
-			
+
+
 			/**
 			 * This is the function that builds the paging UI.
 			 */
-			protected function updatePaging() : void
-			{
+			protected function updatePaging():void {
 				pagingContainer.removeAllChildren();
 				var btn:LinkButton;
-				if(showFirstLast && _selectedPage > 1)
-				{
+				if (showFirstLast && _selectedPage > 1) {
 					btn = new LinkButton();
 					btn.label = firstString;
 					btn.styleName = "pagerFirstBtn";
-					btn.addEventListener( MouseEvent.CLICK , first );
-					pagingContainer.addChild( btn );
+					btn.addEventListener(MouseEvent.CLICK, first);
+					pagingContainer.addChild(btn);
 				}
-				if(_selectedPage > 1)
-				{
+				if (_selectedPage > 1) {
 					//add previous button
 					btn = new LinkButton();
 					btn.label = prevString;
 					btn.styleName = "pagerPrevBtn";
-					btn.addEventListener( MouseEvent.CLICK , previous );
-					pagingContainer.addChild( btn );
+					btn.addEventListener(MouseEvent.CLICK, previous);
+					pagingContainer.addChild(btn);
 				}
-				
-				var min:int = 0;// = _selectedPage-_sideLinkCount;
+
+				var min:int = 0; // = _selectedPage-_sideLinkCount;
 				var max:int = _totalPageCount; // = _selectedPage+_sideLinkCount;
 				// case end / begin 
-				if (doubleEnd)
-				{
-					var total:int = _sideLinkCount*2+1;
-					
-					for (var j:uint=1;j<=total;j++)
-					{
-						if (Math.abs(max-min) == total-1)
-							break; 
-						
-						if (_selectedPage+j <= _totalPageCount )
-							max = _selectedPage+j;
-						if (_selectedPage-j>=1 )
-							min = _selectedPage-j;
+				if (doubleEnd) {
+					var total:int = _sideLinkCount * 2 + 1;
+
+					for (var j:uint = 1; j <= total; j++) {
+						if (Math.abs(max - min) == total - 1)
+							break;
+
+						if (_selectedPage + j <= _totalPageCount)
+							max = _selectedPage + j;
+						if (_selectedPage - j >= 1)
+							min = _selectedPage - j;
 					}
-					
+
 					// handle end case of selected is 1
-					if (_selectedPage == 1 && max < _totalPageCount &&  max < total)
+					if (_selectedPage == 1 && max < _totalPageCount && max < total)
 						max = total;
-				} else
-				{
-					min = _selectedPage-_sideLinkCount
-					max = _selectedPage+_sideLinkCount
 				}
-				
-				
-				
-				
-				for( var i:int=min; i<=max ; i++ )
-				{
+				else {
+					min = _selectedPage - _sideLinkCount
+					max = _selectedPage + _sideLinkCount
+				}
+
+
+
+
+				for (var i:int = min; i <= max; i++) {
 					//paging must be positive and less the total page count
-					if(i>0 && i<= _totalPageCount)
-					{
-						var linkBtn : LinkButton = new LinkButton();
+					if (i > 0 && i <= _totalPageCount) {
+						var linkBtn:LinkButton = new LinkButton();
 						linkBtn.toggle = true;
 						linkBtn.label = i.toString();
 						linkBtn.styleName = "pagerBtn";
-						
-						if( i == _selectedPage )
-						{
+
+						if (i == _selectedPage) {
 							linkBtn.selected = true;
 							linkBtn.enabled = false;
 						}
 						else
-							linkBtn.addEventListener( MouseEvent.CLICK , setNewPage );
-						
-						pagingContainer.addChild( linkBtn );
+							linkBtn.addEventListener(MouseEvent.CLICK, setNewPage);
+
+						pagingContainer.addChild(linkBtn);
 					}
 					_visible = true;
 				}
-				
-				if(_selectedPage < _totalPageCount)
-				{
+
+				if (_selectedPage < _totalPageCount) {
 					//add previous button
-					var btn2 : Button = new LinkButton();
+					var btn2:Button = new LinkButton();
 					btn2.label = nextString;
 					btn2.styleName = "pagerNextBtn";
-					btn2.addEventListener( MouseEvent.CLICK , next );
-					pagingContainer.addChild( btn2 );
+					btn2.addEventListener(MouseEvent.CLICK, next);
+					pagingContainer.addChild(btn2);
 				}
-				if(showFirstLast && _selectedPage < _totalPageCount)
-				{
-					btn  = new LinkButton();
+				if (showFirstLast && _selectedPage < _totalPageCount) {
+					btn = new LinkButton();
 					btn.label = lastString;
 					btn.styleName = "pagerLastBtn";
-					btn.addEventListener( MouseEvent.CLICK , last );
-					pagingContainer.addChild( btn );
+					btn.addEventListener(MouseEvent.CLICK, last);
+					pagingContainer.addChild(btn);
 				}
-				
-				
+
+
 			}
-			
-			
+
+
 			/**
-			 * User clicked on last button (number) 
+			 * User clicked on last button (number)
 			 * @mouseEvent
 			 */
-			protected function last( event : MouseEvent ) : void
-			{
+			protected function last(event:MouseEvent):void {
 				selectedPage = _totalPageCount;
 				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
+
+
 			/**
-			 * User clicked on first button (number) 
+			 * User clicked on first button (number)
 			 * @mouseEvent
 			 */
-			protected function first( event : MouseEvent ) : void
-			{
+			protected function first(event:MouseEvent):void {
 				selectedPage = 1;
 				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
-			
+
+
 			/**
-			 * User clicked on a regular button (number) 
+			 * User clicked on a regular button (number)
 			 * @mouseEvent
 			 */
-			protected function setNewPage( event : MouseEvent ) : void
-			{
-				selectedPage = int( (event.target as LinkButton).label );
+			protected function setNewPage(event:MouseEvent):void {
+				selectedPage = int((event.target as LinkButton).label);
 				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
-			
+
+
 			/**
 			 * change the page size - dispatches an event PagingEvent.ROWS_IN_PAGE_CHANGE
 			 * @ListEvent
 			 */
-			protected function resultSizeChange( event : ListEvent = null ) : void
-			{
-				var kmcSO:SharedObject=SharedObject.getLocal("kmcSO");
+			protected function resultSizeChange(event:ListEvent = null):void {
+				var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
 				pageSize = int(rowInPageCb.selectedItem);
 				kmcSO.data.rowInPage = pageSize;
 				kmcSO.flush();
 				selectedPage = 1;
-				
+
 				kalturaFilterPager.pageSize = pageSize;
 				kalturaFilterPager.pageIndex = 1;
-				
+
 				//only if not manually executed dispatch it
-				if(event)
+				if (event)
 					dispatchEvent(new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE));
 			}
+
+
 			/**
 			 * user clicked on previous button
 			 * @mouseEvent
 			 */
-			
-			public function previous( event : MouseEvent = null ) : void
-			{
-				if(_selectedPage > 1)
-				{
-					selectedPage = _selectedPage-1;
+			public function previous(event:MouseEvent = null):void {
+				if (_selectedPage > 1) {
+					selectedPage = _selectedPage - 1;
 					kalturaFilterPager.pageIndex = selectedPage;
 					dispatchEvent(new PagingEvent(PagingEvent.PRV_PAGE));
 				}
 			}
+
+
 			/**
 			 * User clicked on next button
 			 * @mouseEvent
 			 */
-			public function next( event : MouseEvent = null ) : void
-			{
-				if( _selectedPage < _totalPageCount )
-				{
-					selectedPage = _selectedPage+1;
+			public function next(event:MouseEvent = null):void {
+				if (_selectedPage < _totalPageCount) {
+					selectedPage = _selectedPage + 1;
 					kalturaFilterPager.pageIndex = selectedPage;
 					dispatchEvent(new PagingEvent(PagingEvent.NEXT_PAGE));
 				}
 			}
-			
-			protected function creationCompleteHandler(event:FlexEvent):void
-			{
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				styleName = "pagerTopBox";
-				var kmcSO:SharedObject=SharedObject.getLocal("kmcSO");
-				var soRowInPage : int = kmcSO.data.rowInPage;
-				if( int(soRowInPage) != int(rowInPageCb.selectedItem) )
-				{
-					for(var i:int=0; i<rowsInPage.length;i++)
-					{
-						if( int(rowsInPage[i]) == soRowInPage )
-							rowInPageCb.selectedIndex = i;
+				if (showRowsInPage) {
+					var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
+					var soRowInPage:int = kmcSO.data.rowInPage;
+					if (int(soRowInPage) != int(rowInPageCb.selectedItem)) {
+						for (var i:int = 0; i < rowsInPage.length; i++) {
+							if (int(rowsInPage[i]) == soRowInPage)
+								rowInPageCb.selectedIndex = i;
+						}
+						resultSizeChange();
 					}
-					
-					resultSizeChange();
 				}
 			}
-			
 		]]>
 	</mx:Script>
-	<mx:HBox id="pagingContainer" height="100%" styleName="pagerBox" />
-	<mx:HBox visible="{_visible}" includeInLayout="{_visible}" verticalAlign="middle" >
-		<mx:Label id="rowInPageLbl" text="{rowsComboLabel}" 
-				  visible="{showRowsInPage}" 
-				  styleName="selectRowsLable"
-				 />
-		<mx:ComboBox id="rowInPageCb" 
-					 visible="{showRowsInPage}" includeInLayout="{showRowsInPage}"
-					 dataProvider="{rowsInPage}" 
-					 rowCount="{rowsInPage.length}" 
-					 change="{resultSizeChange(event)}" /> 
+	<mx:HBox id="pagingContainer" height="100%" styleName="pagerBox"/>
+	<mx:HBox visible="{_visible}" includeInLayout="{_visible}" verticalAlign="middle">
+		<mx:Label id="rowInPageLbl" text="{rowsComboLabel}" visible="{showRowsInPage}" styleName="selectRowsLable"/>
+		<mx:ComboBox id="rowInPageCb" visible="{showRowsInPage}" includeInLayout="{showRowsInPage}"
+					 dataProvider="{rowsInPage}" rowCount="{rowsInPage.length}" change="{resultSizeChange(event)}"/>
 	</mx:HBox>
 </mx:HBox>

@@ -130,6 +130,7 @@
 			{
 				return _canPreviewAndEmbed;
 			}
+			
 			/**
 			 * edit selected player
 			 * */
@@ -165,7 +166,6 @@
 					//take the cloned object from request 1 and update its name (this is request 2 - UiConfUpdate); 
 					var updateUiConf:UiConfUpdate = new UiConfUpdate(int.MIN_VALUE, new KalturaUiConf());
 					//map the keys from req' 1 to req' 2 
-//					mr.addRequestParam("2:id", "{1:result:id}");
 					mr.mapMultiRequestParam(1, "id", 2, "id");
 					mr.addRequestParam("2:uiConf", "{1:result}");
 					mr.addRequestParam("2:uiConf:name", resourceManager.getString('aps', 'newPlayerPrefix') + uint(Math.random() * 1000));
@@ -379,6 +379,10 @@
 			private function onTableResize():void {
 				if (playerListDg && playerListDg.dataProvider && playerListDg.dataProvider.length > 0) {
 					playerListDg.rowHeight = (playerListDg.height / _pageSize) - (playerListDg.headerHeight / _pageSize) - 0.5;
+					//TODO if 10 rows set table height to 10 rows, otherwise set table height to 100%
+//					if (paging.pageSize == 10) {
+//						
+//					}
 				}
 			}
 
@@ -661,17 +665,6 @@
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<!--mx:DataGridColumn id="mode" headerText="{resourceManager.getString('aps','playlistModeCollumn')}"
-									   width="70">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-										 paddingLeft="2" verticalAlign="middle">
-									<mx:Label text="{outerDocument.getCreationModeLabel(data,outerDocument.mode)}"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn -->
 					<mx:DataGridColumn id="template" headerText="{resourceManager.getString('aps','template')}"
 									   width="70">
 						<mx:itemRenderer>
