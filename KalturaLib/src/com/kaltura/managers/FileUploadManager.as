@@ -326,7 +326,7 @@ package com.kaltura.managers {
 				}
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_STARTED, entryid));
 				// start uploading files
-				if (_ongoingUploads < _concurrentUploads) {
+				while (_ongoingUploads < _concurrentUploads) {
 					uploadNextFile();
 				}
 			}
