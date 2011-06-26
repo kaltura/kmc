@@ -24,6 +24,7 @@
 			import com.kaltura.kmc.modules.create.BulkUploader;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
+			import com.kaltura.vo.KalturaConversionProfile;
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -187,7 +188,22 @@
 					Alert.show(e.error.errorMsg, resourceManager.getString('common', 'error'));
 				}
 				else {
-					cbConvProfiles.dataProvider = e.data.objects;
+					var ar:Array = new Array();
+					var def:KalturaConversionProfile;
+					for each (var cp:Object in e.data.objects) {
+						if (cp is KalturaConversionProfile) {
+							if ((cp as KalturaConversionProfile).isDefault) {
+								def = cp as KalturaConversionProfile;
+							}
+							else {
+								ar.push(cp);
+							}
+						}
+					}
+					if (def) {
+						ar.unshift(def);
+					}
+					cbConvProfiles.dataProvider = ar;
 				}
 			}
 
