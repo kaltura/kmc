@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.create
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.types.KalturaBulkUploadType;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -39,13 +40,14 @@ package com.kaltura.kmc.modules.create
 		public function doUpload():void {
 			_bulkUpldFileRef = new FileReference();
 			_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUpload);
-			_bulkUpldFileRef.browse(getBulkUploadTypes());
+			_bulkUpldFileRef.browse(getBulkUploadFilter());
 		}
 		
 		
 		protected function addBulkUpload(event:Event):void {
 			var defaultConversionProfileId:int = -1;
-			var kbu:BulkUploadAdd = new BulkUploadAdd(defaultConversionProfileId, _bulkUpldFileRef);
+			// pass in xml or csv file type
+			var kbu:BulkUploadAdd = new BulkUploadAdd(defaultConversionProfileId, _bulkUpldFileRef, getUploadType(_bulkUpldFileRef.name));
 			kbu.addEventListener(KalturaEvent.COMPLETE, bulkUploadCompleteHandler);
 			kbu.addEventListener(KalturaEvent.FAILED, bulkUploadCompleteHandler);
 			kbu.queued = false;
@@ -55,12 +57,24 @@ package com.kaltura.kmc.modules.create
 		/**
 		 * create the list of optional file types for bulk upload
 		 * */
-		protected function getBulkUploadTypes():Array {
+		protected function getBulkUploadFilter():Array {
 			var types:Array = [new FileFilter(ResourceManager.getInstance().getString('create', 'file_types'), "*.csv;*.xml")];
 			return types;
 		}
 		
-		
+		/**
+		 * get upload type (csv / xml) by file extension
+		 * */
+		protected function getUploadType(url:String):String {
+			var i:int = url.lastIndexOf("/");
+			var ext:String = url.substring(i+1);
+			ext = ext.toLowerCase();
+			if (ext == "csv") {
+				return KalturaBulkUploadType.CSV;
+			}
+			return KalturaBulkUploadType.XML;
+			
+		}
 		
 		
 		
