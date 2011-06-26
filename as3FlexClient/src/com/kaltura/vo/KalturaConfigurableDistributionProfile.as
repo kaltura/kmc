@@ -1,19 +1,19 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaUrlResource;
+	import com.kaltura.vo.KalturaDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaRemoteStorageResource extends KalturaUrlResource
+	public dynamic class KalturaConfigurableDistributionProfile extends KalturaDistributionProfile
 	{
 		/** 
-		* ID of storage profile to be associated with the created file sync, used for file serving URL composing. 		* */ 
-		public var storageProfileId : int = int.MIN_VALUE;
+		* 		* */ 
+		public var fieldConfigArray : Array = new Array();
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('storageProfileId');
+			arr.push('fieldConfigArray');
 			return arr;
 		}
 

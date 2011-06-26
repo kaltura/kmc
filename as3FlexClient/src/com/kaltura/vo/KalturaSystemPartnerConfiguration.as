@@ -89,6 +89,38 @@ package com.kaltura.vo
 		public var permissions : Array = new Array();
 
 		/** 
+		* 		* */ 
+		public var notificationsConfig : String;
+
+		/** 
+		* 		* */ 
+		public var allowMultiNotification : Boolean;
+
+		/** 
+		* 		* */ 
+		public var maxLoginAttempts : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var loginBlockPeriod : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var numPrevPassToKeep : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var passReplaceFreq : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var isFirstLogin : Boolean;
+
+		/** 
+		* 		* */ 
+		public var partnerParentId : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -116,6 +148,14 @@ package com.kaltura.vo
 			arr.push('alwaysAllowedPermissionNames');
 			arr.push('importRemoteSourceForConvert');
 			arr.push('permissions');
+			arr.push('notificationsConfig');
+			arr.push('allowMultiNotification');
+			arr.push('maxLoginAttempts');
+			arr.push('loginBlockPeriod');
+			arr.push('numPrevPassToKeep');
+			arr.push('passReplaceFreq');
+			arr.push('isFirstLogin');
+			arr.push('partnerParentId');
 			return arr;
 		}
 

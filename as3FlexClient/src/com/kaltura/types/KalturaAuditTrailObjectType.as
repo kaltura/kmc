@@ -11,9 +11,12 @@ package com.kaltura.types
 		public static const ENTRY : String = 'entry';
 		public static const FILE_SYNC : String = 'FileSync';
 		public static const FLAVOR_ASSET : String = 'flavorAsset';
+		public static const THUMBNAIL_ASSET : String = 'thumbAsset';
 		public static const FLAVOR_PARAMS : String = 'flavorParams';
+		public static const THUMBNAIL_PARAMS : String = 'thumbParams';
 		public static const FLAVOR_PARAMS_CONVERSION_PROFILE : String = 'flavorParamsConversionProfile';
 		public static const FLAVOR_PARAMS_OUTPUT : String = 'flavorParamsOutput';
+		public static const THUMBNAIL_PARAMS_OUTPUT : String = 'thumbParamsOutput';
 		public static const KSHOW : String = 'kshow';
 		public static const KSHOW_KUSER : String = 'KshowKuser';
 		public static const KUSER : String = 'kuser';
