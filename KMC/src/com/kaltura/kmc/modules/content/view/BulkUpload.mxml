@@ -22,6 +22,8 @@
 			import com.kaltura.vo.KalturaBulkUpload;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.CheckBox;
+			import mx.controls.ComboBox;
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
 
@@ -209,6 +211,7 @@
 			}
 			
 			protected function handleBulkAction(e:Event):void {
+				(e.target as ComboBox).selectedIndex = -1;
 				var bulk:KalturaBulkUpload = e.target.data as KalturaBulkUpload;
 				switch (e.type) {
 //					case "delete":
@@ -217,7 +220,7 @@
 						downloadFile(bulk.logFileUrl,'logFile.csv');
 						break;
 					case "dnldOrig":
-						downloadFile(bulk.bulkFileUrl, 'csvFile.csv');
+						downloadFile(bulk.bulkFileUrl, 'origFile.' + getUploadType(bulk, null));
 						break;
 				}
 			}
