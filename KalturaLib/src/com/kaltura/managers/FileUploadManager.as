@@ -316,8 +316,10 @@ package com.kaltura.managers {
 				// pass files to files list
 				var entryid:String = e.data.id;
 				var fuv:FileUploadVO;
+				var updated:int = 0;
 				for (var i:int =_preprocessedFiles.length-1; i>=0; i--) {
 					if ((_preprocessedFiles[i] as FileUploadVO).entryId == entryid) {
+						updated ++;
 						(_preprocessedFiles[i] as FileUploadVO).status = FileUploadVO.STATUS_QUEUED;
 						_files.push(_preprocessedFiles[i]);
 						filesCollection.refresh();
@@ -326,8 +328,9 @@ package com.kaltura.managers {
 				}
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_STARTED, entryid));
 				// start uploading files
-				while (_ongoingUploads < _concurrentUploads) {
+				while (_ongoingUploads < _concurrentUploads && updated > 0) {
 					uploadNextFile();
+					updated --;
 				}
 			}
 			else {
