@@ -329,6 +329,8 @@ package com.kaltura.managers {
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.GROUP_UPLOAD_STARTED, entryid));
 				// start uploading files
 				while (_ongoingUploads < _concurrentUploads && updated > 0) {
+					/* "updated" is used to start uploading all flavours of a single entry, while   
+						not getting an infinite loop when only adding a single file to the entry */ 
 					uploadNextFile();
 					updated --;
 				}
