@@ -45,6 +45,18 @@ package com.kaltura.vo
 		public var results : Array = new Array();
 
 		/** 
+		* 		* */ 
+		public var error : String;
+
+		/** 
+		* 		* */ 
+		public var errorType : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var errorNumber : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -61,6 +73,9 @@ package com.kaltura.vo
 			arr.push('csvFileUrl');
 			arr.push('bulkFileUrl');
 			arr.push('results');
+			arr.push('error');
+			arr.push('errorType');
+			arr.push('errorNumber');
 			return arr;
 		}
 

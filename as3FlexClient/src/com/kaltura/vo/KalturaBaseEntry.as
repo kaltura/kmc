@@ -168,6 +168,16 @@ package com.kaltura.vo
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/** 
+		* ID of source root entry, used for clipped, skipped and cropped entries that created from another entry  
+		* */ 
+		public var rootEntryId : String;
+
+		/** 
+		* clipping, skipping and cropping attributes that used to create this entry  
+		* */ 
+		public var operationAttributes : Array = new Array();
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -191,6 +201,8 @@ package com.kaltura.vo
 			arr.push('referenceId');
 			arr.push('partnerSortValue');
 			arr.push('conversionProfileId');
+			arr.push('rootEntryId');
+			arr.push('operationAttributes');
 			return arr;
 		}
 
