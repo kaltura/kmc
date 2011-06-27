@@ -23,6 +23,7 @@
 			import com.kaltura.vo.KalturaBulkUpload;
 			
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.controls.CheckBox;
 			import mx.controls.ComboBox;
 			import mx.events.FlexEvent;
@@ -172,17 +173,26 @@
 
 
 			public function downloadFile(filePath:String, fileNmae:String):void {
-				_fm.fr = new FileReference();
-				_fm.downloadFile(filePath, "Download", fileNmae);
-//				var request:URLRequest = new URLRequest(filePath);
-//				var ldr:URLLoader = new URLLoader();
-//				ldr.addEventListener(Event.COMPLETE, completeHandler);
-//				ldr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-//				ldr.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-//				ldr.load(request);
+//				_fm.fr = new FileReference();
+//				_fm.downloadFile(filePath, "Download", fileNmae);
+				var request:URLRequest = new URLRequest(filePath);
+				var fr:FileReference = new FileReference();
+				fr.addEventListener(Event.CANCEL, downloadHandler);
+				fr.addEventListener(Event.COMPLETE, downloadHandler);
+				fr.addEventListener(IOErrorEvent.IO_ERROR, downloadHandler);
+				fr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, downloadHandler);
+				fr.download(request, fileNmae);
 			}
 			
-			
+			private function downloadHandler(e:Event):void {
+				e.target.removeEventListener(Event.CANCEL, downloadHandler);
+				e.target.removeEventListener(Event.COMPLETE, downloadHandler);
+				e.target.removeEventListener(IOErrorEvent.IO_ERROR, downloadHandler);
+				e.target.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, downloadHandler);
+				if (e is IOErrorEvent || e is SecurityErrorEvent) {
+					Alert.show(resourceManager.getString('cms', 'downloadFailed'));
+				}
+			}
 
 
 			/**
