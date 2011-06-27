@@ -6,7 +6,10 @@ package com.kaltura.kmc.modules.account.command
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+	import com.kaltura.types.KalturaStorageProfileStatus;
+	import com.kaltura.vo.KalturaFilter;
 	import com.kaltura.vo.KalturaStorageProfile;
+	import com.kaltura.vo.KalturaStorageProfileFilter;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -18,7 +21,9 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
-			var list:StorageProfileList = new StorageProfileList();
+			var f:KalturaStorageProfileFilter = new KalturaStorageProfileFilter();
+			f.statusEqual = KalturaStorageProfileStatus.AUTOMATIC + "," + KalturaStorageProfileStatus.MANUAL;
+			var list:StorageProfileList = new StorageProfileList(f);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
 			list.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(list);
