@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:AccessControlRendererBase 
+									 xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+									 verticalAlign="middle" paddingLeft="4"
+									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
+
+	<mx:Script>
+		<![CDATA[
+			private function setCreatedAtData():void {
+				var miliSecs:Number = data.profile.createdAt * 1000;
+
+				var date:Date = new Date(miliSecs);
+				createdAtLabel.text = date.toLocaleDateString();
+			}
+
+
+			override public function validateNow():void {
+				super.validateNow();
+				setCreatedAtData();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label id="createdAtLabel" creationComplete="setCreatedAtData()"/>
+</renderers:AccessControlRendererBase>

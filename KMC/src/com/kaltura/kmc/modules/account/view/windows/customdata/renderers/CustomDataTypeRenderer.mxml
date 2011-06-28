@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" dataChange="setLabel(event)"
+		 horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.vo.MetadataFieldVO;
+			private function setLabel(event:Event):void {
+				var currentField:MetadataFieldVO = MetadataFieldVO(data);
+				switch (currentField.type) {
+					case MetadataCustomFieldTypes.DATE:
+						typeLabel.text = resourceManager.getString('account','fieldDateType');
+						break;
+					case MetadataCustomFieldTypes.TEXT:
+						typeLabel.text = resourceManager.getString('account','fieldTextType');
+						break;
+					case MetadataCustomFieldTypes.OBJECT:
+						typeLabel.text = resourceManager.getString('account','fieldObjectType');
+						break;
+					case MetadataCustomFieldTypes.LIST:
+						typeLabel.text = resourceManager.getString('account','fieldListType');
+						break;
+				}
+				
+				typeLabel.toolTip = typeLabel.text;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label id="typeLabel" width="100%" toolTip="{typeLabel.text}"/>
+</mx:HBox>

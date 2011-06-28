@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" allowMultipleSelection="true"
+			 selectable="true" itemClick="onItemClick(event)" rowHeight="30" headerRelease="headerReleaseHandler(event)"
+			 change="onSelectionsChange(event)" creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.events.KmcEvent;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.events.AccessControlEvent;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
+			import com.kaltura.types.KalturaAccessControlOrderBy;
+			import com.kaltura.vo.AccessControlProfileVO;
+			
+			import mx.core.Application;
+			import mx.events.DataGridEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			public static const ASCENDING:String = "ASC";
+			public static const DESCENDING:String = "DESC";
+
+			private var columnsSortMap:HashMap = new HashMap();
+			private var _sortIndex:int = -1; // the current sort index
+			private var _sortDirection:String = DESCENDING; // the current sort direction
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+			override public function set dataProvider(data:Object):void {
+				super.dataProvider = data;
+				setSortIndicator();
+			}
+
+
+			private function setSortIndicator():void {
+				this.mx_internal::sortIndex = _sortIndex;
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+
+
+			private function headerReleaseHandler(event:DataGridEvent):void {
+				event.preventDefault();
+
+				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
+					var headerText:String = event.itemRenderer.data.headerText;
+					if (!columnsSortMap.containsKey(headerText)) {
+						columnsSortMap.put(headerText, false);
+					}
+
+					var sortDir:Boolean = columnsSortMap.getValue(headerText) as Boolean;
+					var orederByStr:String;
+					switch (headerText) {
+						case resourceManager.getString('account', 'nameColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'descriptionColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'createdAtColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'authorizedSitesColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'authorizedCountriesColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'kalturaDirectoryColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+						case resourceManager.getString('account', 'advancedSecurityColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
+					}
+					//remmber the direction and change the sign
+					_sortIndex = event.columnIndex;
+					_sortDirection = sortDir ? ASCENDING : DESCENDING;
+					columnsSortMap.setValue(headerText, !sortDir);
+					setSortIndicator();
+
+					AccountModelLocator.getInstance().acpFilter.orderBy = orederByStr;
+					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES);
+					getAllProfilesEvent.dispatch();
+
+				}
+			}
+
+
+			private function onItemClick(event:Event):void {
+				for each (var acpVo1:AccessControlProfileVO in this.dataProvider) {
+					acpVo1.selected = false;
+				}
+				for each (var acpVo:AccessControlProfileVO in this.selectedItems) {
+					acpVo.selected = true && !acpVo.profile.isDefault;
+					acpVo.dispatchEvent(new Event(AccessControlEvent.ACCOUNT_MARK_PROFILES));
+				}
+			}
+
+
+			private function onSelectionsChange(event:Event):void {
+				var acpVo:AccessControlProfileVO = this.selectedItem as AccessControlProfileVO;
+				if (acpVo != null) {
+					if (acpVo.profile.isDefault) {
+						this.selectedItem = null;
+					}
+				}
+			}
+
+
+			public function dispatchSelection(event:Event):void {
+				var cbEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_MARK_PROFILES, !allSelected);
+				cbEvent.dispatch();
+			}
+			
+			
+			private function saveUpdatedProfile(e:Event):void {
+				dispatchEvent(new KmcEvent(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, (e.target as AccessControlProfilePopUpWindow).accessControlProfile, true)); 
+				/* var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE);
+				saveProfileChangesEvent.data = (e.target as AccessControlProfilePopUpWindow).accessControlProfile;
+				saveProfileChangesEvent.dispatch();  */
+			}
+
+
+			private function onClickProfileName(event:KmcEvent):void {
+				var editProfileWin:AccessControlProfilePopUpWindow = new AccessControlProfilePopUpWindow();
+				editProfileWin.accessControlProfile = event.data as AccessControlProfileVO;
+				editProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfile);
+				editProfileWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
+				PopUpManager.addPopUp(editProfileWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(editProfileWin);
+			}
+			
+			protected function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
+			} 
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				addEventListener("profileNameClicked", onClickProfileName);
+			}
+
+		]]>
+	</mx:Script>
+
+
+	<mx:columns>
+		<!--<mx:DataGridColumn editorDataField="selected" width="40" dataField="selected" itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.renderers.AccessControlSelectionRenderer">
+			 <mx:headerRenderer>
+			 <mx:Component>
+			 <mx:HBox horizontalAlign="center" verticalAlign="middle">
+			 <mx:CheckBox id="hcb" buttonMode="true"
+			 selected="{outerDocument.allSelected}"
+			 change="{outerDocument.dispatchSelection( event )}"/>
+			 </mx:HBox>
+			 </mx:Component>
+			 </mx:headerRenderer>
+			 </mx:DataGridColumn>-->
+		<mx:DataGridColumn width="45" headerText="{resourceManager.getString('account','id')}" dataField="id"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlIdRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','nameColumnTitle')}" dataField="name"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlNameRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','descriptionColumnTitle')}"
+						   dataField="profile.description"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlDescriptionRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','createdAtColumnTitle')}"
+						   dataField="profile.description"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlCreatedAtRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedSitesColumnTitle')}"
+						   dataField="authoSites"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoSitesRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedCountriesColumnTitle')}"
+						   dataField="authoCountries"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoCountriesRenderer"/>
+		<!--<mx:DataGridColumn headerText="Authorized Times" dataField="authoTimes"/>
+			 <mx:DataGridColumn headerText="Mixes &amp; Playlists" dataField="mixPlaylist"/>-->
+		<!--<mx:DataGridColumn headerText="{resourceManager.getString('account','kalturaDirectoryColumnTitle')}" dataField="kDir" itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.renderers.AccessControlKalDirRenderer"/>-->
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','advancedSecurityColumnTitle')}"
+						   dataField="advance"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAdvancedSecRenderer"/>
+	</mx:columns>
+</mx:DataGrid>

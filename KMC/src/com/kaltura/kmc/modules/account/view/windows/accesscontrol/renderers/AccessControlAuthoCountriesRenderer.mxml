@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<renderers:AccessControlRendererBase 
+									 xmlns:mx="http://www.adobe.com/2006/mxml"
+									 creationComplete="onCreationComplete(event)" width="100%"
+									 horizontalScrollPolicy="off" styleName="tableCellBoxRendererStyle" paddingLeft="4"
+									 verticalAlign="middle"
+									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.AccessControlProfileVO;
+			import mx.controls.Image;
+			import com.kaltura.utils.KCountriesUtil;
+			import com.kaltura.types.KalturaCountryRestrictionType;
+			import com.kaltura.vo.KalturaCountryRestriction;
+			import com.kaltura.types.KalturaSiteRestrictionType;
+			import com.kaltura.vo.KalturaSiteRestriction;
+			import com.kaltura.vo.KalturaBaseRestriction;
+
+
+			private function onCreationComplete(event:Event = null):void {
+				var acProfile:AccessControlProfileVO = this.data as AccessControlProfileVO;
+				if (acProfile != null) {
+					var foundRestriction:Boolean = false;
+					for each (var restriction:KalturaBaseRestriction in acProfile.profile.restrictions) {
+						if (restriction is KalturaCountryRestriction) {
+							foundRestriction = true;
+							countryLabel.text = (restriction as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST ? resourceManager.getString('account', 'ALLOW_COUNTRIES') + ":  " : resourceManager.getString('account', 'RESTRICT_COUNTRIES') + ":  ";
+
+							//		countryLabel.text += getCountriesList((restriction as KalturaCountryRestriction).countryList);
+
+							setCountriesFlags((restriction as KalturaCountryRestriction).countryList);
+
+							break;
+						}
+					}
+
+					countryLabel.text = foundRestriction ? countryLabel.text : resourceManager.getString('account', 'ANY_COUNTRY');
+				}
+			}
+
+
+			private function setCountriesFlags(countriesCodesList:String):void {
+				var cArr:Array = countriesCodesList.split(',');
+				var countriesList:String = '';
+				for each (var countryCode:String in cArr) {
+					var flag:Image = new Image();
+					flag.source = KCountriesUtil.instance.getCountryFlag(countryCode);
+					flag.toolTip = KCountriesUtil.instance.getCountryName(countryCode);
+					this.addChild(flag);
+					countriesList += KCountriesUtil.instance.getCountryName(countryCode) + ', ';
+				}
+
+				countryLabel.toolTip = countryLabel.text + ' ' + countriesList.substr(0, countriesList.length - 2);
+			}
+
+
+			private function getCountriesList(countriesCodesList:String):String {
+				var cArr:Array = countriesCodesList.split(',');
+				var countriesList:String = '';
+				for each (var countryCode:String in cArr) {
+					countriesList += KCountriesUtil.instance.getCountryName(countryCode) + ', ';
+				}
+
+				return countriesList.substr(0, countriesList.length - 2);
+			}
+
+
+			override public function validateNow():void {
+				super.validateNow();
+				removeFlags();
+				onCreationComplete();
+			}
+
+
+			private function removeFlags():void {
+				for each (var child:DisplayObject in this.getChildren()) {
+					if (child is Image) {
+						this.removeChild(child);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label id='countryLabel'/>
+</renderers:AccessControlRendererBase>

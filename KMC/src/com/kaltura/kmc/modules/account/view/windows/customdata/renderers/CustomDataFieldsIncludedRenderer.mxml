@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"  width="100%" height="100%" horizontalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			override public function set data(value:Object):void {
+				var profile:KMCMetadataProfileVO = value as KMCMetadataProfileVO;
+				var fieldsIncludedString:String = '';
+				for each (var field:MetadataFieldVO in profile.metadataFieldVOArray) {
+					fieldsIncludedString += field.defaultLabel + ',';
+				}
+				//remove last redundant ','
+				fieldsIncludedString = fieldsIncludedString.substr(0, fieldsIncludedString.length-1);
+				descriptionLabel.text = fieldsIncludedString;
+				
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label id="descriptionLabel" width="100%" textAlign="left"
+			  toolTip="{descriptionLabel.text}"/>
+</mx:HBox>

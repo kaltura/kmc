@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+			 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.*"
+			 sortableColumns="false" creationComplete="datagrid1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.CustomDataAddEditPopup;
+			import com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataNameRenderer;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			private var _metadataProfile:KMCMetadataProfileVO;
+
+			
+
+			[Bindable]
+			public function get metadataProfile():KMCMetadataProfileVO
+			{
+				return _metadataProfile;
+			}
+
+			public function set metadataProfile(value:KMCMetadataProfileVO):void
+			{
+				_metadataProfile = value;
+			}
+
+			public function get hideColumns():String{
+				return '';
+			}
+
+			public function set hideColumns(value:String):void {
+				var cols:Array = value.split(',');
+				for (var col:String in cols) {
+					var arrCol:ArrayCollection = new ArrayCollection(this.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('account', cols[col])) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
+				}
+				this.columns = arrCol.source;
+			}
+			
+			
+			private function onClickFieldName(event:Event):void {
+				var editCustomFieldPopup:CustomDataAddEditPopup = new CustomDataAddEditPopup();
+				editCustomFieldPopup.metadataField = event.target.data as MetadataFieldVO;
+				editCustomFieldPopup.currentState = CustomDataAddEditPopup.EDIT_MODE_STATE;
+				editCustomFieldPopup.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
+					
+				PopUpManager.addPopUp(editCustomFieldPopup, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(editCustomFieldPopup);
+			}
+			
+			private function dispatchHelp(e:KmcHelpEvent):void {
+				dispatchEvent(e.clone());
+			}
+
+
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// listen to IR events
+				addEventListener(CustomDataNameRenderer.FIELD_NAME_CLICKED, onClickFieldName, false, 0, true);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:columns>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsSystemName')}" paddingLeft="5">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:Label text="{data.name}" toolTip="{data.name}" selectable="true"/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsName')}"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataNameRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsDescription')}"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataDescriptionRenderer"
+						   paddingLeft="5"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsFullDescription')}"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataFullDescRenderer"
+						   paddingLeft="5"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsType')}" width="90"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataTypeRenderer"
+						   paddingLeft="5"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsMaxValues')}" width="80"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataMaxOccursRenderer"
+						   paddingLeft="5"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsAppearInSearch')}" width="72"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataAppearInSearchRenderer"
+						   paddingLeft="5"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customFieldsPositions')}"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataPositionsRenderer"/>
+	</mx:columns>
+
+</mx:DataGrid>

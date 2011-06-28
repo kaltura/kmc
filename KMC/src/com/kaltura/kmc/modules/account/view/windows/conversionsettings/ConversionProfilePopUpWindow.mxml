@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+				 title="{resourceManager.getString('account','addNewConvProfileTitle')}" 
+				 xmlns:conversionsettings="com.kaltura.kmc.modules.account.view.windows.conversionsettings.*"
+				 close="closeWindow(event)" showCloseButton="true" creationComplete="onCreationComplete(event)"
+				 help="{help()}" styleName="TitleWindowType2" xmlns:validators="com.kaltura.validators.*">
+	<states>
+		<mx:State name="{EDIT_STATE}">
+			<mx:SetProperty name="title" value="{resourceManager.getString('account','editConvProfileTitle')}"/>
+			<mx:SetProperty target="{submitBtn}" name="label"
+							value="{resourceManager.getString('account','saveConProfileChanges')}"/>
+		</mx:State>
+	</states>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.vo.KalturaStorageProfile;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+
+			public static const EDIT_STATE:String = "edit_state";
+			
+
+			[Bindable]
+			private var _model:AccountModelLocator = AccountModelLocator.getInstance();
+			
+			/**
+			 * true if partner has remote storage feature
+			 * */
+			public var allowStorageProfiles:Boolean = true;
+			
+			/**
+			 *  the conversion profile to add or edit
+			 */
+			private var _conversionProfile:ConversionProfileVO;
+
+
+			/**
+			 * get the conversion profile
+			 */
+			[Bindable]
+			public function get conversionProfile():ConversionProfileVO {
+				return _conversionProfile;
+			}
+
+
+			/**
+			 * set the conversion profile
+			 */
+			public function set conversionProfile(conversionProfile:ConversionProfileVO):void {
+				_conversionProfile = conversionProfile;
+			}
+
+
+			private function help():void {
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section242'));
+			}
+
+
+			/**
+			 * creation complete of the main window.
+			 * for edit we clone the acp, for add new one we create a new acp.
+			 */
+			private function onCreationComplete(event:Event):void {
+				if (currentState == EDIT_STATE) {
+					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_edit");
+					showConvProfData();
+				}
+				else {
+					// when we use this pop-up to create a new Conversion profile
+					conversionProfile = new ConversionProfileVO();
+					conversionProfile.flavors = new Array();
+					PermissionManager.getInstance().applyAllAttributes(this, "conversionProfileDrilldown_add");
+				}
+				
+				// list storage profiles once
+				if (!_model.storageProfiles && allowStorageProfiles) {
+					var cw:ChangeWatcher = BindingUtils.bindSetter(showStorageProfile, cbRemoteProfile, "dataProvider");
+					var cg:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_STORAGE_PROFILES);
+					cg.dispatch();
+				}
+			}
+
+
+			/**
+			 * show conversion profile data
+			 */
+			private function showConvProfData():void {
+				conversionNameTextInput.text = _conversionProfile.profile.name;
+				conversionDescTextArea.text = _conversionProfile.profile.description;
+				txtDefaultEntryId.text = _conversionProfile.profile.defaultEntryId;
+				showStorageProfile(cbRemoteProfile.dataProvider);
+				// flavors are set in the cProfile
+				validateInput();
+			}
+			
+			/**
+			 * select the correct storage profile.
+			 * @param value		cbRemoteProfile's dp
+			 * */
+			private function showStorageProfile(value:Object):void {
+				if (value) {
+					var bFound:Boolean = false;
+					
+					for each (var sp:KalturaStorageProfile in _model.storageProfiles) {
+						if (sp.id == _conversionProfile.profile.storageProfileId) {
+							cbRemoteProfile.selectedItem = sp;
+							bFound = true;
+							break;
+						}
+					}
+					if (!bFound) {
+						cbRemoteProfile.prompt = "N/A";
+					}
+				}
+			}
+
+
+
+			
+			private function validateInput(event:Event = null):Boolean {
+				var isValid:Boolean = true
+				var name:String = conversionNameTextInput.text;
+				name = name.replace(new RegExp(' ', 'g'), '');
+				isValid = (name != '');
+
+				return isValid && flavorsTable.isFlavorsSelected();
+			}
+
+
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event = null):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function saveProfile(event:Event):void {
+				if (validateInput()) {
+					_conversionProfile.profile.name = conversionNameTextInput.text;
+					_conversionProfile.profile.description = conversionDescTextArea.text;
+					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text;
+					if (cbRemoteProfile.selectedItem) {
+						_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
+					}
+					else {
+						//TODO make sure we send a value, and that it means "none".
+						_conversionProfile.profile.storageProfileId = int.MIN_VALUE;
+					}
+
+					if (currentState == EDIT_STATE) {
+						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
+						updateProfileEvent.dispatch();
+					}
+					else {
+						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
+						addProfileEvent.dispatch();
+					}
+					closeWindow();
+				}
+				else {
+					Alert.show(resourceManager.getString('account', 'invalidInputErrorMsg'), resourceManager.getString('account', 'invalidInputErrorTitle'));
+				}
+
+			}
+		]]>
+	</mx:Script>
+
+
+	<mx:StringValidator source="{conversionNameTextInput}" property="text" trigger="{conversionNameTextInput}"
+						triggerEvent="change" required="true"
+						requiredFieldError="{resourceManager.getString('account','requiredNameError')}"/>
+	<mx:Form width="100%" height="100%">
+		<mx:FormItem label="{resourceManager.getString('account','requiredName')}" width="100%"
+					 toolTip="{resourceManager.getString('account','requiredNameToolTip')}">
+			<mx:TextInput id="conversionNameTextInput" width="100%" change='validateInput(event)'/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('account','description')}" width="100%">
+			<mx:TextArea id="conversionDescTextArea" width="100%"/>
+		</mx:FormItem>
+		<mx:FormItem label="{resourceManager.getString('account','requiredFlavors')}" height="100%"
+					 toolTip="{resourceManager.getString('account','requiredFlavorsToolTip')}">
+			<conversionsettings:ConversionSettingsTable id="flavorsTable" height="100%" 
+					dataProvider="{currentState == EDIT_STATE ? _model.getClonedFlavorsData() : _model.getUnselectedClonedFlavorsData()}"
+					thumbParamsData="{_model.thumbsData}" cProfile="{conversionProfile}"  />
+		</mx:FormItem>
+	</mx:Form>
+	<mx:HRule width="100%" />
+	<mx:HBox horizontalGap="3" width="100%" verticalAlign="middle">
+		<mx:Text htmlText="&lt;b&gt;Default Ingestion Settings:&lt;/b&gt;&lt;br&gt;(Optional)" />
+		<mx:Spacer width="20%"/>
+		<mx:Label text="Entry ID:" />
+		<mx:TextInput id="txtDefaultEntryId" width="100" />
+		<mx:Spacer width="20%" />
+		<mx:HBox id="remoteStorageBox" styleName="noPadding">
+			<mx:Label text="Ingest from Remote Storage:" />
+			<mx:ComboBox id="cbRemoteProfile" enabled="{_model.storageProfiles.length > 1}"
+						 width="150"
+						 labelField="name" dataProvider="{_model.storageProfiles}" />
+		</mx:HBox>
+	</mx:HBox>
+	<mx:ControlBar width="100%" horizontalAlign="center" >
+		<mx:Button id="submitBtn" label="{resourceManager.getString('account','createNewConvProfile')}" 
+				   useHandCursor="true" buttonMode="true" click="saveProfile(event)"/>
+	</mx:ControlBar>
+</HelpTitleWindow>

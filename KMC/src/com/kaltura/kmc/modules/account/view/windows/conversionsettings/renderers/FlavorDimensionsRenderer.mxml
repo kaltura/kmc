@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
+		 verticalScrollPolicy="off" horizontalScrollPolicy="off" paddingLeft="4">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.vo.FlavorVO;
+
+
+			private function setDimLabel():void {
+				var dimStr:String = '';
+
+				var w:int = (data as FlavorVO).kFlavor.width;
+				var h:int = (data as FlavorVO).kFlavor.height;
+
+				var sWi:String = (w == 0) ? resourceManager.getString('account', 'autoDim') : w + '';
+				var sHi:String = (h == 0) ? resourceManager.getString('account', 'autoDim') : h + '';
+
+				dimLabel.text = sWi + ' x ' + sHi;
+			}
+
+
+			override public function validateNow():void {
+				super.validateNow();
+				setDimLabel();
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id='dimLabel' toolTip="{dimLabel.text}" creationComplete="setDimLabel()"/>
+</mx:HBox>
