@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.account.command
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			var f:KalturaStorageProfileFilter = new KalturaStorageProfileFilter();
-			f.statusEqual = KalturaStorageProfileStatus.AUTOMATIC + "," + KalturaStorageProfileStatus.MANUAL;
+			f.statusIn = KalturaStorageProfileStatus.AUTOMATIC + "," + KalturaStorageProfileStatus.MANUAL;
 			var list:StorageProfileList = new StorageProfileList(f);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
 			list.addEventListener(KalturaEvent.FAILED, fault);
