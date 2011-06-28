@@ -26,6 +26,7 @@
 			
 			import flash.utils.setTimeout;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.HierarchicalData;
 			import mx.controls.Alert;
@@ -515,12 +516,17 @@
 			public function set folders(value:ArrayCollection):void {
 				if (_folders == value) return;
 				_folders = value;
+				
 				if (value) {
 					if (value.length > 0) {
 						// got drop folders, show window
 						visible = true;
 						if (cbFolders) {
-							cbFolders.selectedItem = 0;
+							// if DP is set via binding, we can't set selectedItem here.
+							cbFolders.dataProvider = value;
+							var fl:KalturaDropFolder = _folders.getItemAt(0) as KalturaDropFolder; 
+							cbFolders.selectedItem = fl;
+							cbFolders.dispatchEvent(new ListEvent(ListEvent.CHANGE));
 						}
 					}
 					else {
@@ -531,12 +537,14 @@
 					}
 				}
 			}
+
+
 		]]>
 	</mx:Script>
 
 	<mx:HBox width="100%">
 		<mx:Label id="headerLbl" styleName="simpleBoldText"/>
-		<mx:ComboBox id="cbFolders" dataProvider="{folders}" labelField="name" 
+		<mx:ComboBox id="cbFolders" labelField="name" 
 					 change="folderChangeHandler(event)" width="100%"/>
 	</mx:HBox>
 	<mx:Text id="instructionsTxt" width="100%" styleName="simpleText"/>
