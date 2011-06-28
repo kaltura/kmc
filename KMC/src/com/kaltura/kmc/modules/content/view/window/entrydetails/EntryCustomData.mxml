@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 verticalGap="{customDataVerticalGap}">
+		 verticalGap="{customDataVerticalGap}" show="onShow()">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
@@ -97,6 +97,13 @@
 					scrollPos += this.getChildAt(i).height + customDataVerticalGap;
 				}
 				this.verticalScrollPosition = scrollPos;
+			}
+			
+			private function onShow():void {
+				for (var i:int = 1; i < this.numChildren; i++) {
+					if (getChildAt(i) is SingleCustomData)
+						(getChildAt(i) as SingleCustomData).onShow();
+				}
 			}
 			
 		]]>
