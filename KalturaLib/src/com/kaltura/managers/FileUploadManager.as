@@ -732,7 +732,7 @@ package com.kaltura.managers {
 		 */
 		public function getAllFiles():Array //Vector.<FileUploadVO> {
 		{
-			return _files;
+			return _files.concat(_preprocessedFiles);
 		}
 
 
