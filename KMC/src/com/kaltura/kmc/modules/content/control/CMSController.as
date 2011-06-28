@@ -179,6 +179,9 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.DELETE_FILES, DeleteDropFolderFilesCommand);
+			
+			//captions
+			addCommand(CaptionsEvent.LIST_CAPTIONS, ListCaptionsCommand);
 		}
 	}
 }

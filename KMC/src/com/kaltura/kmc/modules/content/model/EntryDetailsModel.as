@@ -112,5 +112,10 @@ package com.kaltura.kmc.modules.content.model
 		 * referenceId as the entry being saved. this is the list.
 		 */
 		public var entriesWSameRefidAsSelected:Array;
+		
+		/**
+		 * Current entry captions Array
+		 * */
+		public var captionsArray:Array;
 	}
 }

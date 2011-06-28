@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			public static const CAPTIONS_TYPES:Array = new Array("SRT", "XML", "TXT");
+			public static const EXTERNAL_STATE:String = "externalState";
+			public static const EMBEDDED_STATE:String = "embeddedState";
+		
+			private function onCreationComplete():void {
+				this.currentState = EXTERNAL_STATE;
+			}
+			
+			private function onButtonChange(event:Event):void {
+				if (sources.selection==external)
+					this.currentState = EXTERNAL_STATE;
+				else
+					this.currentState = EMBEDDED_STATE;
+			}
+
+			
+		]]>
+	</mx:Script>
+	<mx:RadioButtonGroup id="sources" change="onButtonChange(event)"/>
+	<mx:HBox id="raioBtns">
+		<mx:RadioButton id="external" group="{sources}" label="{resourceManager.getString('cms','externalFile')}" selected="true"
+						width="100"/>
+		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
+	</mx:HBox>
+
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100"/>
+		<mx:TextInput id="languageTi" width="100"/>
+		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}"/>
+		<mx:TextInput id="labelTi" width="100"/>
+	</mx:HBox>
+	<mx:states>
+		<mx:State name="{EXTERNAL_STATE}">
+			<mx:AddChild position="after" relativeTo="{raioBtns}">
+				<mx:VBox>
+					<mx:HBox>
+						<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100"/>
+						<mx:TextInput id="urlTi" width="200"/>
+						<mx:Button label="{resourceManager.getString('cms','uploadCaption')}"/>
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100"/>
+						<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="{EMBEDDED_STATE}">
+			<mx:AddChild position="after" relativeTo="{raioBtns}">
+				<mx:VBox>
+					<mx:HBox>
+						<mx:Label text="{resourceManager.getString('cms','embeddedFlavorId')}" width="100"/>
+						<mx:TextInput id="flavorTi" width="200"/>
+					</mx:HBox>
+					<mx:HBox>
+						<mx:Label text="{resourceManager.getString('cms','embeddedTrackId')}" width="100"/>
+						<mx:TextInput id="tackTi" width="200"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+</mx:VBox>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+Captions tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" creationComplete="onCreationComplete(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.captionsComponents.Caption;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.events.FlexEvent;
+			
+			private var _selectedEntry:KalturaBaseEntry;
+			private var _entryCaptionsArr:Array;
+			
+			public function get entryCaptionsArr():Array
+			{
+				return _entryCaptionsArr;
+			}
+
+			/**
+			 * The current entry available captions
+			 * */
+			public function set entryCaptionsArr(value:Array):void
+			{
+				_entryCaptionsArr = value;
+				populateCaptions();
+			}
+
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+
+			/**
+			 * The current drilled down entry
+			 * */
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				_selectedEntry = value;
+			}
+
+			/**
+			 * initialize required data
+			 * */
+			public function initData():void {
+				var listCaptionsEvt:CaptionsEvent = new CaptionsEvent(CaptionsEvent.LIST_CAPTIONS);
+				listCaptionsEvt.dispatch();	
+			}
+			
+			/**
+			 * load captions to the form
+			 * */
+			private function populateCaptions():void {
+				if (!_entryCaptionsArr || !captions)
+					return;
+				captions.removeAllChildren();
+				if (_entryCaptionsArr.length == 0) {
+					var emptyCaption:Caption = new Caption();
+					captions.addChild(emptyCaption);
+				}
+				else {
+					for (var i:int = 0; i<_entryCaptionsArr.length; i++) {
+						var caption:Caption = new Caption();
+						//TODO add the KalturaCaption object here
+						captions.addChild(caption);
+					}
+				}
+			}
+
+			private function onCreationComplete(event:FlexEvent):void
+			{
+				populateCaptions();
+			}
+			
+			public function destroy():void {
+				
+			}
+			
+			private function addCaption():void {
+				var newCaption:Caption = new Caption();
+				captions.addChild(newCaption);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Button label="{resourceManager.getString('cms','addCaptions')}" click="addCaption()"/>
+	<mx:VBox id="captions"/>
+</mx:VBox>
