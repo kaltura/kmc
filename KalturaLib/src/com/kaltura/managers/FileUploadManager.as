@@ -64,12 +64,14 @@ package com.kaltura.managers {
 		/**
 		 * files that are not ready for upload yet 
 		 * (tokens not created or not added to entry) 
+		 * <code>FileUploadVO</code> elements
 		 */		
-		private var _preprocessedFiles:Vector.<FileUploadVO>;
+		private var _preprocessedFiles:Array;
 		
 
 		/**
 		 * list of files schedueled for upload
+		 * <code>FileUploadVO</code> elements
 		 */
 		private var _files : Array;//Vector.<FileUploadVO>;
 		
@@ -86,7 +88,7 @@ package com.kaltura.managers {
 		 * @param enforcer
 		 */
 		public function FileUploadManager(enforcer:Enforcer) {
-			_preprocessedFiles = new Vector.<FileUploadVO>();
+			_preprocessedFiles = new Array();
 			_files = new Array();//Vector.<FileUploadVO>();
 			filesCollection = new ArrayCollection(_files)
 		}
