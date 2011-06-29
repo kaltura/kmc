@@ -24,16 +24,19 @@
 			 * data provider for the asset's ready behaviour
 			 * */
 			private const _availabilityOptions:Array = [
+				{value:KalturaFlavorReadyBehaviorType.INHERIT_FLAVOR_PARAMS, name:ResourceManager.getInstance().getString('account', 'flavor_inherit')}, 
 				{value:KalturaFlavorReadyBehaviorType.REQUIRED, name:ResourceManager.getInstance().getString('account', 'flavor_required')}, 
-				{value:KalturaFlavorReadyBehaviorType.OPTIONAL, name:ResourceManager.getInstance().getString('account', 'flavor_optional')}];
+				{value:KalturaFlavorReadyBehaviorType.OPTIONAL, name:ResourceManager.getInstance().getString('account', 'flavor_optional')}
+			];
 			
 			/**
 			 * data provider for the asset's origin
 			 * */
 			private const _originOptions:Array = [
-				{value:KalturaAssetParamsOrigin.INGEST, name:ResourceManager.getInstance().getString('account', 'flavor_ingest')},
+				{value:KalturaAssetParamsOrigin.CONVERT, name:ResourceManager.getInstance().getString('account', 'flavor_convert')},
 				{value:KalturaAssetParamsOrigin.CONVERT_WHEN_MISSING, name:ResourceManager.getInstance().getString('account', 'flavor_cwm')},
-				{value:KalturaAssetParamsOrigin.CONVERT, name:ResourceManager.getInstance().getString('account', 'flavor_convert')}];
+				{value:KalturaAssetParamsOrigin.INGEST, name:ResourceManager.getInstance().getString('account', 'flavor_ingest')}
+			];
 			
 			private var _cpap:KalturaConversionProfileAssetParams;
 			
@@ -72,16 +75,22 @@
 			 * */
 			protected function setValues():void {
 				if (cbAvailability && cbConvertPolicy && tiSystemName) {
-					if (!_cpap.readyBehavior || _cpap.readyBehavior == int.MIN_VALUE) {
-						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.REQUIRED;
-					}
-					// source flavor - always ingest
+					// source flavor - always ingest, inherit
 					if (_flavorVO.kFlavor.tags.indexOf("source") > -1) {
 						_cpap.origin = KalturaAssetParamsOrigin.INGEST;
+						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.INHERIT_FLAVOR_PARAMS;
 						cbConvertPolicy.enabled = false;
 					}
-					else if (!_cpap.origin || _cpap.origin == int.MIN_VALUE) {
+					// default values:
+					if (!_cpap.readyBehavior || _cpap.readyBehavior == int.MIN_VALUE) {
+						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.OPTIONAL/* _flavorVO.kFlavor.?? */;
+						//TODO in server there's a readyBehavior value on the KalturaFlavorParams, if they expose it we should use it (Atar).
+					}
+					if (!_cpap.origin || _cpap.origin == int.MIN_VALUE) {
 						_cpap.origin = KalturaAssetParamsOrigin.CONVERT;
+					}
+					if (!_cpap.systemName) {
+						_cpap.systemName = _flavorVO.kFlavor.systemName;
 					}
 					cbAvailability.selectedIndex = getItemIndex(_availabilityOptions, _cpap.readyBehavior);
 					cbConvertPolicy.selectedIndex = getItemIndex(_originOptions, _cpap.origin);
