@@ -472,24 +472,10 @@
 			 * @param action	one of the AddFlavorAssetsWindow.ACTION_XX consts
 			 * */
 			private function setWindowAppearance(action:String) :void {
-				if (!tableHeader) {
+				if (!cnvrtProfCb) {
 					// not creationComplete yet
 					return;
 				} 
-				switch (action) {
-					case AddFlavorAssetsWindow.ACTION_IMPORT:
-						tableHeader.text = ResourceManager.getInstance().getString('cms', 'fileUrls')
-						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitImportLabel')
-						break;
-					case AddFlavorAssetsWindow.ACTION_LINK:
-						tableHeader.text = ResourceManager.getInstance().getString('cms', 'fileUrls')
-						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitLinkLabel')
-						break;
-					case AddFlavorAssetsWindow.ACTION_UPLOAD:
-						tableHeader.text = ResourceManager.getInstance().getString('cms', 'uploadedFiles')
-						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitUploadLabel')
-						break;
-				}
 				if (!visible){
 					// for link action in single state only show panel if 
 					// entry's conversion profile has storageProfileId  
@@ -601,8 +587,6 @@
 					  />
 		</mx:HBox>
 	</mx:VBox>
-	<mx:Label id="tableHeader" text="{ResourceManager.getInstance().getString('cms', 'uploadedFiles')}" 
-			  styleName="tableName"/>
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
 						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
 						addFiles="addMoreFiles()" showSize="{_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD}" 
