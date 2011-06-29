@@ -20,7 +20,7 @@ The value of the current connector field will be the one that is returned from t
 
 		/** 
 		* Is the field required to have a value for submission ?		* */ 
-		public var isRequired : Boolean;
+		public var isRequired : int = int.MIN_VALUE;
 
 		/** 
 		* Trigger distribution update when this field changes or not ?		* */ 

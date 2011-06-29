@@ -201,7 +201,6 @@ package com.kaltura.vo
 			arr.push('referenceId');
 			arr.push('partnerSortValue');
 			arr.push('conversionProfileId');
-			arr.push('rootEntryId');
 			arr.push('operationAttributes');
 			return arr;
 		}

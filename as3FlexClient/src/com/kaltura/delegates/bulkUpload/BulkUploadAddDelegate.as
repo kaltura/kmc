@@ -28,7 +28,7 @@ package com.kaltura.delegates.bulkUpload
 		}
 
 		override public function parse(result:XML):* {
-			if ((call as BulkUploadAdd).fileData is FileReference) {
+			if ((call as BulkUploadAdd).csvFileData is FileReference) {
 				return super.parse(result);
 			}
 			else {
@@ -45,13 +45,13 @@ package com.kaltura.delegates.bulkUpload
 			//create the service request for normal calls
 			var variables:String = decodeURIComponent(call.args.toString());
 			var req:String = _config.protocol + _config.domain + "/" + _config.srvUrl + "?service=" + call.service + "&action=" + call.action + "&" + variables;
-			if ((call as BulkUploadAdd).fileData is FileReference) {
-				(call as BulkUploadAdd).fileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
+			if ((call as BulkUploadAdd).csvFileData is FileReference) {
+				(call as BulkUploadAdd).csvFileData.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,onDataComplete);
 				var urlRequest:URLRequest = new URLRequest(req);
-				((call as BulkUploadAdd).fileData as FileReference).upload(urlRequest,"fileData");
+				((call as BulkUploadAdd).csvFileData as FileReference).upload(urlRequest,"csvFileData");
 			}
 			else{
-				mrloader.addFile(((call as BulkUploadAdd).fileData as ByteArray), UIDUtil.createUID(), 'fileData');	
+				mrloader.addFile(((call as BulkUploadAdd).csvFileData as ByteArray), UIDUtil.createUID(), 'csvFileData');	
 				mrloader.dataFormat = URLLoaderDataFormat.TEXT;
 				mrloader.load(req);
 			}
@@ -60,7 +60,7 @@ package com.kaltura.delegates.bulkUpload
 		// Event Handlers
 		override protected function onDataComplete(event:Event):void {
 			try{
-				if ((call as BulkUploadAdd).fileData is FileReference) {
+				if ((call as BulkUploadAdd).csvFileData is FileReference) {
 					handleResult( XML(event["data"]) );
 				}
 				else {

@@ -30,10 +30,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var maxBulkSize : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
 		public var partnerPackage : int = int.MIN_VALUE;
 
 		/** 
@@ -66,10 +62,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var adminLoginUsersQuota : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
 		public var userSessionRoleId : int = int.MIN_VALUE;
 
 		/** 
@@ -98,10 +90,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var maxLoginAttempts : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
 		public var loginBlockPeriod : int = int.MIN_VALUE;
 
 		/** 
@@ -118,7 +106,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var partnerGroupType : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var partnerParentId : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var limits : Array = new Array();
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -133,7 +129,6 @@ package com.kaltura.vo
 			arr.push('adminEmail');
 			arr.push('host');
 			arr.push('cdnHost');
-			arr.push('maxBulkSize');
 			arr.push('partnerPackage');
 			arr.push('monitorUsage');
 			arr.push('moderateContent');
@@ -142,7 +137,6 @@ package com.kaltura.vo
 			arr.push('storageServePriority');
 			arr.push('kmcVersion');
 			arr.push('defThumbOffset');
-			arr.push('adminLoginUsersQuota');
 			arr.push('userSessionRoleId');
 			arr.push('adminSessionRoleId');
 			arr.push('alwaysAllowedPermissionNames');
@@ -150,12 +144,13 @@ package com.kaltura.vo
 			arr.push('permissions');
 			arr.push('notificationsConfig');
 			arr.push('allowMultiNotification');
-			arr.push('maxLoginAttempts');
 			arr.push('loginBlockPeriod');
 			arr.push('numPrevPassToKeep');
 			arr.push('passReplaceFreq');
 			arr.push('isFirstLogin');
+			arr.push('partnerGroupType');
 			arr.push('partnerParentId');
+			arr.push('limits');
 			return arr;
 		}
 

@@ -259,6 +259,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var rootEntryIdEqual : String;
+
+		/** 
+		* 		* */ 
+		public var rootEntryIdIn : String;
+
+		/** 
+		* 		* */ 
 		public var tagsNameMultiLikeOr : String;
 
 		/** 
@@ -342,6 +350,8 @@ package com.kaltura.vo
 			arr.push('replacementStatusIn');
 			arr.push('partnerSortValueGreaterThanOrEqual');
 			arr.push('partnerSortValueLessThanOrEqual');
+			arr.push('rootEntryIdEqual');
+			arr.push('rootEntryIdIn');
 			arr.push('tagsNameMultiLikeOr');
 			arr.push('tagsAdminTagsMultiLikeOr');
 			arr.push('tagsAdminTagsNameMultiLikeOr');

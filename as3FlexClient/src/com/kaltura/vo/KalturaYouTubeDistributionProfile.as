@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaConfigurableDistributionProfile;
+	import com.kaltura.vo.KalturaDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaYouTubeDistributionProfile extends KalturaConfigurableDistributionProfile
+	public dynamic class KalturaYouTubeDistributionProfile extends KalturaDistributionProfile
 	{
 		/** 
 		* 		* */ 
@@ -65,6 +65,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var target : String;
 
+		/** 
+		* 		* */ 
+		public var metadataProfileId : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -84,6 +88,7 @@ package com.kaltura.vo
 			arr.push('commercialPolicy');
 			arr.push('ugcPolicy');
 			arr.push('target');
+			arr.push('metadataProfileId');
 			return arr;
 		}
 

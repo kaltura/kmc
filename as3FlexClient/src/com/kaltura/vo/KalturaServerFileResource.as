@@ -1,14 +1,19 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
+	import com.kaltura.vo.KalturaDataCenterContentResource;
 
 	[Bindable]
-	public dynamic class KalturaYouTubeDistributionProfileBaseFilter extends KalturaDistributionProfileFilter
+	public dynamic class KalturaServerFileResource extends KalturaDataCenterContentResource
 	{
+		/** 
+		* Full path to the local file 		* */ 
+		public var localFilePath : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('localFilePath');
 			return arr;
 		}
 

@@ -1,24 +1,29 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaBaseEntryBaseFilter;
+	import com.kaltura.vo.KalturaDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaBaseEntryFilter extends KalturaBaseEntryBaseFilter
+	public dynamic class KalturaHuluDistributionProfile extends KalturaDistributionProfile
 	{
 		/** 
 		* 		* */ 
-		public var freeText : String;
+		public var username : String;
 
 		/** 
 		* 		* */ 
-		public var isRoot : Boolean;
+		public var password : String;
+
+		/** 
+		* 		* */ 
+		public var metadataProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('freeText');
-			arr.push('isRoot');
+			arr.push('username');
+			arr.push('password');
+			arr.push('metadataProfileId');
 			return arr;
 		}
 

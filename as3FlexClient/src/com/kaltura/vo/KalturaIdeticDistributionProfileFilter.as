@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
+	import com.kaltura.vo.KalturaIdeticDistributionProfileBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaYouTubeDistributionProfileBaseFilter extends KalturaDistributionProfileFilter
+	public dynamic class KalturaIdeticDistributionProfileFilter extends KalturaIdeticDistributionProfileBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{
