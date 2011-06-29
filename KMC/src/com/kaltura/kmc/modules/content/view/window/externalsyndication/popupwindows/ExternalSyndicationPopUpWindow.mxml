@@ -37,6 +37,7 @@
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 			import mx.validators.ValidationResult;
 
@@ -50,16 +51,16 @@
 			 * optional syndication feed types
 			 * */
 			[ArrayElementType("Object")]
-			private const FEED_TYPES:Array = [{label: 'Google', code: KalturaSyndicationFeedType.GOOGLE_VIDEO}, {label: 'Yahoo!', code: KalturaSyndicationFeedType.YAHOO}, {label: 'ITunes', code: KalturaSyndicationFeedType.ITUNES}, {label: 'TubeMogul', code: KalturaSyndicationFeedType.TUBE_MOGUL}];
+			private const FEED_TYPES:Array = [{label: 'Google', code: KalturaSyndicationFeedType.GOOGLE_VIDEO}, 
+				{label: 'Yahoo!', code: KalturaSyndicationFeedType.YAHOO}, {label: 'ITunes', code: KalturaSyndicationFeedType.ITUNES}, 
+				{label: 'TubeMogul', code: KalturaSyndicationFeedType.TUBE_MOGUL}, {label: ResourceManager.getInstance().getString('cms','flexibleFormatFeed'), code: KalturaSyndicationFeedType.KALTURA_XSLT}];
 
 			[Bindable]
 			public var flavorParams:ArrayCollection;
 			[Bindable]
 			public var _playlistsProvider:ArrayCollection;
-
-			
+	
 			private var _extSynModel:ExtSynModel;
-
 
 			/**
 			 * address of the server the application is running with
@@ -112,7 +113,10 @@
 					// content:
 					setFeedContent();
 					// feed type:
-					feedTypeComboBox.selectedIndex = selectedExSynVo.kSyndicationFeed.type - 1;
+					if (selectedExSynVo.kSyndicationFeed.type == KalturaSyndicationFeedType.KALTURA_XSLT)
+						feedTypeComboBox.selectedIndex = selectedExSynVo.kSyndicationFeed.type - 2;
+					else
+						feedTypeComboBox.selectedIndex = selectedExSynVo.kSyndicationFeed.type - 1;
 					currentState = "editFeedSate";
 					// feed data:
 					var syndicationFeedTemplate:IExternalSyndicationFeed = syndicationTypeOptions.selectedChild as IExternalSyndicationFeed;
@@ -235,6 +239,8 @@
 			public function get editable():Boolean {
 				return submitBtn.enabled;
 			}
+			
+
 
 		]]>
 	</mx:Script>
@@ -261,9 +267,9 @@
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms','feedTypleLabel')}" width="180" styleName="feedParamLabel"/>
-			<mx:ComboBox width="100%" id="feedTypeComboBox" dataProvider="{FEED_TYPES}" editable="false">
-			</mx:ComboBox>
+			<mx:ComboBox width="100%" id="feedTypeComboBox" dataProvider="{FEED_TYPES}" editable="false"/>
 		</mx:HBox>
+	
 	</mx:VBox>
 
 	<mx:ViewStack id="syndicationTypeOptions" width="100%" height="100%" creationPolicy="all"
@@ -273,6 +279,7 @@
 		<exts:ITuneExtSyn width="100%" height="100%" partnerData="{extSynModel.partnerData}"
 						  flavorParams="{flavorParams}"/>
 		<exts:TubeMogulExtSyn width="100%" height="100%" flavorParams="{flavorParams}"/>
+		<exts:FlexibleExtSyn width="100%" height="100%"/>
 	</mx:ViewStack>
 	<mx:ControlBar horizontalAlign="center" paddingBottom="6" paddingLeft="2" paddingRight="2" paddingTop="6"
 				   verticalAlign="middle">
