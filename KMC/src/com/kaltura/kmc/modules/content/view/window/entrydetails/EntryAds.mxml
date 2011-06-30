@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
+		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.applications.kClipInterface.ICuePointsAPI;
+			import com.kaltura.applications.kdp3.IKDP3;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.events.FlexEvent;
+			
+			
+			
+			/**
+			 * clipper ruler is kept between different  
+			 * instances of the window as optimisation
+			 * */
+			private static var kClip:ICuePointsAPI;
+			
+			/**
+			 * player is kept between different  
+			 * instances of the window as optimisation
+			 * */
+			private static var kdp:IKDP3;
+			
+			
+
+			/**
+			 * @copy @selectedEntry
+			 * */
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			
+
+
+			public function destroy():void {
+
+			}
+
+
+			public function initData():void {
+
+			}
+
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			/**
+			 * The entry being edited
+			 * */
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:VBox>
+			<mx:HBox width="100%" >
+				<mx:Button id="btnAdd" label="add cuepoint" />
+				<mx:ComboBox id="cbActions" width="100%" />
+			</mx:HBox>
+			<mx:VBox id="details">
+				<mx:Label text="Timing" styleName="formLabel" />
+				<controls:SM_TimeEntry id="teTiming" />
+				<mx:Spacer height="10"/>
+				
+				<mx:Label text="Name (Optional)" styleName="formLabel" />
+				<mx:TextInput id="tiName" width="100%" />
+				<mx:Spacer height="10"/>
+							  
+				<mx:Label text="Type" styleName="formLabel" />
+				<mx:HBox width="100%">
+					<mx:ComboBox id="cbType" width="100%"/>
+					<controls:SM_TimeEntry id="teDuration" />
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+							  
+				<mx:Label text="Data (Optional)" styleName="formLabel" />
+				<mx:TextArea id="taData" width="100%" />
+			</mx:VBox>
+		</mx:VBox>
+		<mx:HBox id="kdpHolder" />
+	</mx:HBox>
+	<mx:HBox id="kClipHolder" width="100%" />
+</mx:VBox>
