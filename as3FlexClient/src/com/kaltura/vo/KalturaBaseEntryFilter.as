@@ -11,14 +11,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var isRoot : Boolean;
+		//public var isRoot : Boolean;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('freeText');
-			arr.push('isRoot');
+		//	arr.push('isRoot');
 			return arr;
 		}
 
