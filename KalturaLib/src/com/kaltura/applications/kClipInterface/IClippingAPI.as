@@ -21,7 +21,7 @@ package com.kaltura.applications.kClipInterface
 		 * @param timeInMS the new length, in milliseconds
 		 * 
 		 */		
-		 function updateClipLength(timeInMS:Number):void ;
+		function updateClipLength(timeInMS:Number):void ;
 		
 	}
 }

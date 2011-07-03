@@ -1,14 +1,16 @@
 package com.kaltura.applications.kClipInterface
 {
-	public interface IClipperAPI
-	{
+	import flash.events.IEventDispatcher;
 	
+	public interface IClipperAPI extends IEventDispatcher
+	{
+		
 		/**
 		 * set given entry id to clipper
 		 * @param entryId the entry id to load
 		 * 
 		 */		
-		 function setEntryId(entryId:String):void;
+		function setEntryId(entryId:String):void;
 		
 		/**
 		 * remove all time based assets from the timeline
@@ -50,5 +52,17 @@ package com.kaltura.applications.kClipInterface
 		 * save
 		 * */
 		function save():void;
+		
+		/**
+		 * is saved required
+		 * */
+		function isSavedRequired():Boolean;
+		
+		/**
+		 * init the clipper
+		 * @param params
+		 * 
+		 */		
+		function init(params:Object):void;
 	}
 }
