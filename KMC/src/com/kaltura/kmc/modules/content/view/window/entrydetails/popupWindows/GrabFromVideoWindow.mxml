@@ -10,12 +10,11 @@
 				creationComplete="{onCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
-			import com.kaltura.kmc.modules.content.model.types.KDPEventTypes;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
-			import mx.controls.Alert;
 			import mx.managers.PopUpManager;
 			private var _selectedEntry:KalturaBaseEntry;
 			private var _refreshRequired:Boolean = true;
@@ -39,7 +38,7 @@
 				}
 				
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
-					_kdp3SwfLoader.content['sendNotification'](KDPEventTypes.DO_PAUSE);
+					_kdp3SwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
 				}
 				PopUpManager.removePopUp(this);
 			}
@@ -60,9 +59,9 @@
 					//listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
 					//because this is static KDP (due to performance issue that we fixed)
 					_kdp3SwfLoader.visible = false;
-					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
-					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
-					_kdp3SwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA,
+					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.ENTRY_READY, showKDP);
+					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA,
 						{entryId: _selectedEntry.id});
 				}
 				else {
@@ -104,7 +103,7 @@
 				
 				//				params.cdnUrl = context.rootUrl;
 				params.debugMode = context.debugMode;
-				_kdp3SwfLoader.content.addEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+				_kdp3SwfLoader.content.addEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_kdp3SwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp3SwfLoader.content["init"]();
@@ -112,7 +111,7 @@
 			}
 			
 			private function onThumbnailSaved(event:Event):void {
-				_kdp3SwfLoader.content.removeEventListener(KDPEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+				_kdp3SwfLoader.content.removeEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_refreshRequired = true;
 			}
 			

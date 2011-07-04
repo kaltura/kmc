@@ -11,12 +11,12 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-			import com.kaltura.kmc.modules.content.model.types.KDPEventTypes;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
@@ -26,13 +26,11 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
-			import mx.collections.ArrayCollection;
 			import mx.containers.ViewStack;
 			import mx.controls.Image;
 			import mx.core.Container;
@@ -127,8 +125,8 @@
 			 * */
 			public function clearPlayer():void {
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
-					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
-					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
+					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
+					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
 			}
 
@@ -260,8 +258,8 @@
 					// listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
 					// because this is static KDP (due to performance issue)
 					kdp3StaticSwfLoader.visible = false;
-					kdp3StaticSwfLoader.content.addEventListener(KDPEventTypes.ENTRY_READY, showKDP);
-					kdp3StaticSwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA, {entryId: entryDetailsModel.selectedEntry.id});
+					kdp3StaticSwfLoader.content.addEventListener(KdpEventTypes.ENTRY_READY, showKDP);
+					kdp3StaticSwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entryDetailsModel.selectedEntry.id});
 				}
 				else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
@@ -307,7 +305,7 @@
 			 * */
 			public function pausePreview():void {
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
-					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_PAUSE);
+					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
 				}
 			}
 
@@ -389,7 +387,7 @@
 			private function openPreview():void {
 				//stop the player from playing 
 				if (kdp3StaticSwfLoader) {
-					kdp3StaticSwfLoader.content['sendNotification'](KDPEventTypes.DO_STOP);
+					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 				}
 				dispatchEvent(new Event(EntryMetadata.OPEN_PREVIEW));
 			}
@@ -436,7 +434,7 @@
 				kdp3StaticSwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				kdp3StaticSwfLoader.content["init"]();
-				kdp3StaticSwfLoader.addEventListener(KDPEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
+				kdp3StaticSwfLoader.addEventListener(KdpEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
 			}
 
 

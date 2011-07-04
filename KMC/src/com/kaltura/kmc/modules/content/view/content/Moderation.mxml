@@ -16,29 +16,21 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.modules.content.events.CategoryEvent;
-			import com.kaltura.kmc.modules.content.events.ConversionSettingsEvent;
-			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.FilterEvent;
 			import com.kaltura.kmc.modules.content.events.LoadEvent;
-			import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
 			import com.kaltura.kmc.modules.content.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
 			import com.kaltura.kmc.modules.content.events.UserEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
-			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.kmc.modules.content.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.ModerationModel;
-			import com.kaltura.kmc.modules.content.model.types.KDPEventTypes;
 			import com.kaltura.kmc.modules.content.vo.ListableVo;
 			import com.kaltura.kmc.modules.content.vo.UserVO;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
@@ -322,10 +314,10 @@
 					cgEvent.dispatch();
 				}
 				if (kdp3Loader && _kdp3SwfLoader.content) {
-					kdp3Loader.content["sendNotification"](KDPEventTypes.DO_PAUSE);
+					kdp3Loader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
 					_playerHasMedia = false;
-					_kdp3SwfLoader.content["sendNotification"](KDPEventTypes.CHANGE_MEDIA, {entryId: entry.id});
-					_kdp3SwfLoader.content.addEventListener(KDPEventTypes.MEDIA_LOADED, onKdpMediaLoaded);
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entry.id});
+					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.MEDIA_LOADED, onKdpMediaLoaded);
 				}
 			}
 
