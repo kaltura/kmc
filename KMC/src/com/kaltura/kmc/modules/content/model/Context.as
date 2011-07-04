@@ -16,6 +16,12 @@ package com.kaltura.kmc.modules.content.model
 		public var moderationUiconf:String = DEFAULT_UI_CONFIG_ID;
 		public var drilldownUiconf:String = DEFAULT_UI_CONFIG_ID;
 		public var captureThumbnailUiconf:String;
+		
+		/**
+		 * id of the uiconf used for kClip in drilldown ads tab
+		 */
+		public var kClipAdsUiconf:String;
+		
 		public var permissions:int = -1;
 		public var groupId:String;
 		public var debugMode:Boolean = false;

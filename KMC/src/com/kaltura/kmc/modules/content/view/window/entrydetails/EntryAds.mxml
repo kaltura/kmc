@@ -5,9 +5,11 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.applications.kClipInterface.ICuePointsAPI;
-			import com.kaltura.applications.kdp3.IKDP3;
+			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
+			import mx.controls.SWFLoader;
 			import mx.events.FlexEvent;
 			
 			
@@ -22,9 +24,9 @@
 			 * player is kept between different  
 			 * instances of the window as optimisation
 			 * */
-			private static var kdp:IKDP3;
+			private static var kdp:DisplayObject;
 			
-			
+			public var context:Context;
 
 			/**
 			 * @copy @selectedEntry
@@ -35,7 +37,7 @@
 
 
 			public function destroy():void {
-
+				kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false);
 			}
 
 
@@ -57,19 +59,124 @@
 			}
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				
+				if (!EntryAds.kClip) {
+					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
+//					var url:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.kClipAdsUiconf+ "/nowrapper/1";
+					var kClipLoader:SWFLoader = new SWFLoader();
+					kClipLoader.addEventListener(Event.COMPLETE, onKClipLoaded);
+					kClipLoader.scaleContent = false;
+					kClipLoader.loaderContext = new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain);
+					kClipLoader.load(url);
+				}
+				if (!EntryAds.kdp) {
+					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
+					var kdp3Loader:SWFLoader = new SWFLoader();
+					kdp3Loader.addEventListener(Event.COMPLETE, onKdpLoaded);
+					kdp3Loader.scaleContent = false;
+					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+					kdp3Loader.load(newUrl);
+				}
 			}
+			
+			
+			private function onKClipLoaded(e:Event):void {
+				var loader:SWFLoader = e.target as SWFLoader;
+				loader.removeEventListener(Event.COMPLETE, onKClipLoaded);
+				loader.width = kdpHolder.width; 
+				loader.height = kdpHolder.height; 
+				loader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
+				kClipHolder.addChild(loader);
+			}
+			
+			private function onKClipApplicationReady(e:Event):void {
+				// e.target is the systemManager for KClip
+				e.target.removeEventListener(FlexEvent.APPLICATION_COMPLETE,onKClipApplicationReady); 
+				kClip = e.target.application as ICuePointsAPI;
+				initKClip();
+			}
+			
+			
+			/**
+			 * initialize kClip
+			 * */
+			private function initKClip():void {
+				var params:Object = {};
+				params.ks = context.kc.ks; 
+				params.entry_id = _selectedEntry.id;
+				params.host = context.rootUrl;
+				params.state = "cuePointsState";
+				params.partner_id = context.kc.partnerId;
+				params.uiconf_id = context.kClipAdsUiconf;
+//				params.show_control_bar = true 
+//				params.js_ready_func = ready 
+//				params.show_add_delete_buttons = true 
+//				params.max_allowed_rows = 5 
+				kClip.init(params);
+//				kClip.setEntryId(_selectedEntry.id);
+			}
+			
+			
+			private function onKdpLoaded(e:Event):void {
+				var loader:SWFLoader = e.target as SWFLoader;
+				loader.width = kdpHolder.width; 
+				loader.height = kdpHolder.height; 
+				kdp = loader.content;
+				kdpHolder.addChild(loader);
+				initKdp();
+			}
+			
+			
+			/**
+			 * initialize KDP
+			 */
+			private function initKdp():void {
+				//set kdp params
+				var params:Object = new Object();
+				params.widgetId = "_" + context.kc.partnerId;
+				params.cdnHost = context.cdnHost;
+				params.host = context.rootUrl;
+				params.autoPlay = "false";
+				params.loop = "false";
+				params.autoRewind = "false";
+				params.sourceType = "entryId";
+				params.entryId = _selectedEntry.id;
+				if (context.drilldownUiconf)
+					params.uiConfId = context.drilldownUiconf;
+				params.ks = context.kc.ks;
+				params.partnerId = context.kc.partnerId;
+				params.subpId = context.kc.partnerId + "00";
+				
+				params.debugMode = context.debugMode;
+				
+				kdp["flashvars"] = params;
+				//start the loading sqeunce of the kdp	
+				kdp["init"](); 
+				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
+				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
+				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
+			}
+			
+			
+			/**
+			 * update kClip with new time (event body is time)
+			 * */
+			private function onKDPPlayheadUpdate(e:Event):void {
+				if (kClip) {
+					kClip.scrollToPoint(parseFloat(e["data"]) * 1000)
+				}
+			}
+			
 
 		]]>
 	</mx:Script>
 	
 	<mx:HBox width="100%">
-		<mx:VBox>
+		<mx:VBox width="100%">
 			<mx:HBox width="100%" >
 				<mx:Button id="btnAdd" label="add cuepoint" />
 				<mx:ComboBox id="cbActions" width="100%" />
 			</mx:HBox>
-			<mx:VBox id="details">
+			<mx:VBox id="details" width="100%" >
 				<mx:Label text="Timing" styleName="formLabel" />
 				<controls:SM_TimeEntry id="teTiming" />
 				<mx:Spacer height="10"/>
@@ -89,7 +196,7 @@
 				<mx:TextArea id="taData" width="100%" />
 			</mx:VBox>
 		</mx:VBox>
-		<mx:HBox id="kdpHolder" />
+		<mx:HBox id="kdpHolder" width="300" height="255" tabChildren="false" tabEnabled="false"/>
 	</mx:HBox>
-	<mx:HBox id="kClipHolder" width="100%" />
+	<mx:HBox id="kClipHolder" width="100%" height="150"/>
 </mx:VBox>
