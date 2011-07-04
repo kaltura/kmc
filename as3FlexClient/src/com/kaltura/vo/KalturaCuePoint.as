@@ -61,6 +61,10 @@ package com.kaltura.vo
 		public var thumbOffset : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var systemName : String;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -76,6 +80,7 @@ package com.kaltura.vo
 			arr.push('partnerSortValue');
 			arr.push('forceStop');
 			arr.push('thumbOffset');
+			arr.push('systemName');
 			return arr;
 		}
 
