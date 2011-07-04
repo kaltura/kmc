@@ -1,9 +1,7 @@
 package com.kaltura.types
 {
-	public class KalturaAnnotationOrderBy
+	public class KalturaCuePointOrderBy
 	{
-		public static const END_TIME_ASC : String = '+endTime';
-		public static const END_TIME_DESC : String = '-endTime';
 		public static const CREATED_AT_ASC : String = '+createdAt';
 		public static const CREATED_AT_DESC : String = '-createdAt';
 		public static const UPDATED_AT_ASC : String = '+updatedAt';

@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfile;
+	import com.kaltura.vo.KalturaConfigurableDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaYouTubeDistributionProfile extends KalturaDistributionProfile
+	public dynamic class KalturaYouTubeDistributionProfile extends KalturaConfigurableDistributionProfile
 	{
 		/** 
 		* 		* */ 
@@ -28,6 +28,10 @@ package com.kaltura.vo
 		/** 
 		* 		* */ 
 		public var sftpPrivateKey : String;
+
+		/** 
+		* 		* */ 
+		public var sftpBaseDir : String;
 
 		/** 
 		* 		* */ 
@@ -65,10 +69,6 @@ package com.kaltura.vo
 		* 		* */ 
 		public var target : String;
 
-		/** 
-		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -79,6 +79,7 @@ package com.kaltura.vo
 			arr.push('sftpLogin');
 			arr.push('sftpPublicKey');
 			arr.push('sftpPrivateKey');
+			arr.push('sftpBaseDir');
 			arr.push('ownerName');
 			arr.push('defaultCategory');
 			arr.push('allowComments');
@@ -88,7 +89,6 @@ package com.kaltura.vo
 			arr.push('commercialPolicy');
 			arr.push('ugcPolicy');
 			arr.push('target');
-			arr.push('metadataProfileId');
 			return arr;
 		}
 

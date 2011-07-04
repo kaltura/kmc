@@ -1,18 +1,10 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaFilter;
+	import com.kaltura.vo.KalturaCuePointFilter;
 
 	[Bindable]
-	public dynamic class KalturaAnnotationBaseFilter extends KalturaFilter
+	public dynamic class KalturaAnnotationBaseFilter extends KalturaCuePointFilter
 	{
-		/** 
-		* 		* */ 
-		public var idEqual : String;
-
-		/** 
-		* 		* */ 
-		public var entryIdEqual : String;
-
 		/** 
 		* 		* */ 
 		public var parentIdEqual : String;
@@ -23,42 +15,20 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
+		public var endTimeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
-		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var userIdEqual : String;
-
-		/** 
-		* 		* */ 
-		public var userIdIn : String;
+		public var endTimeLessThanOrEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('idEqual');
-			arr.push('entryIdEqual');
 			arr.push('parentIdEqual');
 			arr.push('parentIdIn');
-			arr.push('createdAtGreaterThanOrEqual');
-			arr.push('createdAtLessThanOrEqual');
-			arr.push('updatedAtGreaterThanOrEqual');
-			arr.push('updatedAtLessThanOrEqual');
-			arr.push('userIdEqual');
-			arr.push('userIdIn');
+			arr.push('endTimeGreaterThanOrEqual');
+			arr.push('endTimeLessThanOrEqual');
 			return arr;
 		}
 

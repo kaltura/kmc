@@ -1,24 +1,14 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaBaseEntryBaseFilter;
+	import com.kaltura.vo.KalturaCuePointBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaBaseEntryFilter extends KalturaBaseEntryBaseFilter
+	public dynamic class KalturaCuePointFilter extends KalturaCuePointBaseFilter
 	{
-		/** 
-		* 		* */ 
-		public var freeText : String;
-
-		/** 
-		* 		* */ 
-		public var isRoot : int = int.MIN_VALUE;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('freeText');
-			arr.push('isRoot');
 			return arr;
 		}
 
