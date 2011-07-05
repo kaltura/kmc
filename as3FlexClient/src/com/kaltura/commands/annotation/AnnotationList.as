@@ -1,6 +1,6 @@
 package com.kaltura.commands.annotation
 {
-	import com.kaltura.vo.KalturaCuePointFilter;
+	import com.kaltura.vo.KalturaAnnotationFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.annotation.AnnotationListDelegate;
 	import com.kaltura.net.KalturaCall;
@@ -9,10 +9,10 @@ package com.kaltura.commands.annotation
 	{
 		public var filterFields : String;
 		/**
-		 * @param filter KalturaCuePointFilter
+		 * @param filter KalturaAnnotationFilter
 		 * @param pager KalturaFilterPager
 		 **/
-		public function AnnotationList( filter : KalturaCuePointFilter=null,pager : KalturaFilterPager=null )
+		public function AnnotationList( filter : KalturaAnnotationFilter=null,pager : KalturaFilterPager=null )
 		{
 			service= 'annotation_annotation';
 			action= 'list';

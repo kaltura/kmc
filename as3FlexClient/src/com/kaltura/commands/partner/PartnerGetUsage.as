@@ -11,7 +11,7 @@ package com.kaltura.commands.partner
 		 * @param month int
 		 * @param resolution String
 		 **/
-		public function PartnerGetUsage( year : int=undefined,month : int=1,resolution : String='days' )
+		public function PartnerGetUsage( year : int=undefined, month : int=1,resolution : String='days' )
 		{
 			service= 'partner';
 			action= 'getUsage';

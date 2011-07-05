@@ -93,6 +93,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var forceStopIn : String;
 
+		/** 
+		* 		* */ 
+		public var systemNameEqual : String;
+
+		/** 
+		* 		* */ 
+		public var systemNameIn : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -119,6 +127,8 @@ package com.kaltura.vo
 			arr.push('partnerSortValueLessThanOrEqual');
 			arr.push('forceStopEqual');
 			arr.push('forceStopIn');
+			arr.push('systemNameEqual');
+			arr.push('systemNameIn');
 			return arr;
 		}
 
