@@ -71,11 +71,9 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('type');
-			arr.push('status');
-			arr.push('entryId');
 			arr.push('tags');
 			arr.push('startTime');
+			arr.push('userId');
 			arr.push('partnerData');
 			arr.push('partnerSortValue');
 			arr.push('forceStop');
@@ -91,6 +89,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('entryId');
 			return arr;
 		}
 

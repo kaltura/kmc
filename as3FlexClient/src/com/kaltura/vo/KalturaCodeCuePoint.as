@@ -3,26 +3,22 @@ package com.kaltura.vo
 	import com.kaltura.vo.KalturaCuePoint;
 
 	[Bindable]
-	public dynamic class KalturaAnnotation extends KalturaCuePoint
+	public dynamic class KalturaCodeCuePoint extends KalturaCuePoint
 	{
 		/** 
 		* 		* */ 
-		public var parentId : String;
+		public var code : String;
 
 		/** 
 		* 		* */ 
-		public var text : String;
-
-		/** 
-		* 		* */ 
-		public var endTime : int = int.MIN_VALUE;
+		public var description : String;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('text');
-			arr.push('endTime');
+			arr.push('code');
+			arr.push('description');
 			return arr;
 		}
 
@@ -30,7 +26,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
-			arr.push('parentId');
 			return arr;
 		}
 

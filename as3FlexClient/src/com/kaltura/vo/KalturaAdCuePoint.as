@@ -29,7 +29,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('providerType');
 			arr.push('sourceUrl');
 			arr.push('adType');
 			arr.push('title');
@@ -41,6 +40,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
+			arr.push('providerType');
 			return arr;
 		}
 
