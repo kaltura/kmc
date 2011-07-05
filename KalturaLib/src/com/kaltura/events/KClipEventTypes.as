@@ -16,6 +16,8 @@ package com.kaltura.events
 		
 		public static const CLIP_END_CHANGED:String = "clipEndChanged";
 		
+		public static const CLIP_CHANGED:String = "clipChanged";
+		
 		public static const CUE_POINT_CHANGED:String = "cuePointChanged";
 		
 		public static const CLIP_ADDED:String = "clipAdded";
@@ -38,8 +40,7 @@ package com.kaltura.events
 		 */		
 		public static const SELECTED_ASSET_CHANGED:String = "selectedAssetChanged";
 		
-		
-		public static const TIME_BASED_ASSET_UPDATED:String = "timeBasedAssetUpdated";
+		public static const CLIPPER_ERROR:String = "clipperError"; 
 
 	}
 }
