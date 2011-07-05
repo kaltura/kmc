@@ -1,48 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.applications.kClipInterface.ICuePointsAPI;
+			import com.kaltura.events.KClipEventTypes;
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.modules.content.model.Context;
+			import com.kaltura.types.KalturaAdType;
+			import com.kaltura.types.KalturaCuePointType;
+			import com.kaltura.utils.ObjectUtil;
+			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
-			
+
+			import mx.controls.Alert;
 			import mx.controls.SWFLoader;
 			import mx.events.FlexEvent;
-			
-			
-			
+			import mx.resources.ResourceManager;
+
+
+
+			private static const AD_TYPES:Array = [{label: ResourceManager.getInstance().getString('cms', 'type_midroll'), value: KalturaAdType.MIDROLL},
+				{label: ResourceManager.getInstance().getString('cms', 'type_overlay'), value: KalturaAdType.OVERLAY}];
+
+			private static const PROVIDERS:Array = [{label: ResourceManager.getInstance().getString('cms', 'provider_vast'), value: 'vast'},
+				{label: ResourceManager.getInstance().getString('cms', 'provider_freewheel'), value: 'freewheel'},
+				{label: ResourceManager.getInstance().getString('cms', 'provider_other'), value: 'other'}];
+
+			private const LABEL_WIDTH:int = 80;
+
 			/**
-			 * clipper ruler is kept between different  
+			 * clipper ruler is kept between different
 			 * instances of the window as optimisation
 			 * */
-			private static var kClip:ICuePointsAPI;
-			
+			private var kClip:DisplayObject;
+			private static var kClipLoader:SWFLoader;
+
 			/**
-			 * player is kept between different  
+			 * player is kept between different
 			 * instances of the window as optimisation
 			 * */
-			private static var kdp:DisplayObject;
-			
+			private var kdp:DisplayObject;
+			private static var kdpLoader:SWFLoader;
+
 			public var context:Context;
+
+			[Bindable]
+			/**
+			 * number of currently present cuepoints on kClip
+			 * */
+			private var _counter:int = 0;
 
 			/**
 			 * @copy @selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
-			
-			
+
+			[Bindable]
+			/**
+			 * is the cuepoints details form enabled
+			 * */
+			private var _formEnabled:Boolean = false;
+
+			[Bindable]
+			/**
+			 * the cuepoint currently being edited
+			 * */
+			private var _selectedCuePoint:KalturaAdCuePoint;
 
 
 			public function destroy():void {
-				kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false);
+				kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, updateKclipPlayhead, false);
+				kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, startTrackKdpProgress, false);
+				kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, stopTrackKdpProgress, false);
+				kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, stopTrackKdpProgress, false);
+				removeKClipListeners();
 			}
 
 
 			public function initData():void {
-
+				loadWidgets(null);
 			}
 
 
@@ -56,76 +92,187 @@
 			 * */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
+				if (kClip) {
+					kClip["setEntryId"](_selectedEntry.id);
+				}
+				if (kdp) {
+					kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+				}
 			}
 
-			protected function creationCompleteHandler(event:FlexEvent):void {
-				if (!EntryAds.kClip) {
+
+
+			/**
+			 * set the given CP's values in the details form.
+			 * */
+			private function editCuePoint(o:Object):void {
+				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
+				ObjectUtil.copyObject(o, cp);
+//				trace(e["data"].startTime, "<------------------");
+				_selectedCuePoint = cp;
+				if (cp) {
+					_formEnabled = true;
+					cbType.selectedItem = getAdType(cp);
+					cbProvider.selectedItem = getAdProvider(cp);
+				} else {
+					_formEnabled = false;
+				}
+			}
+
+
+			protected function loadWidgets(event:FlexEvent):void {
+				if (EntryAds.kClipLoader) {
+					kClipHolder.addChild(kClipLoader);
+					kClip = kClipLoader.content["application"] as DisplayObject;
+					kClip.width = kClipHolder.width;
+					addKClipListeners();
+					if (_selectedEntry) {
+						kClip["setEntryId"](_selectedEntry.id);
+					}
+				} else {
 					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
-//					var url:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.kClipAdsUiconf+ "/nowrapper/1";
-					var kClipLoader:SWFLoader = new SWFLoader();
+					EntryAds.kClipLoader = new SWFLoader();
+					kClipHolder.addChild(kClipLoader);
 					kClipLoader.addEventListener(Event.COMPLETE, onKClipLoaded);
-					kClipLoader.scaleContent = false;
-					kClipLoader.loaderContext = new LoaderContext(true, ApplicationDomain.currentDomain, SecurityDomain.currentDomain);
+					kClipLoader.scaleContent = true;
+					kClipLoader.loaderContext = new LoaderContext(false, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kClipLoader.load(url);
 				}
-				if (!EntryAds.kdp) {
+
+				if (EntryAds.kdpLoader) {
+					kdpHolder.addChild(kdpLoader);
+					kdp = kdpLoader.content;
+					if (_selectedEntry) {
+						kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+					}
+				} else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
-					var kdp3Loader:SWFLoader = new SWFLoader();
-					kdp3Loader.addEventListener(Event.COMPLETE, onKdpLoaded);
-					kdp3Loader.scaleContent = false;
-					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
-					kdp3Loader.load(newUrl);
+					EntryAds.kdpLoader = new SWFLoader();
+					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
+					kdpLoader.scaleContent = false;
+					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+					kdpLoader.load(newUrl);
 				}
+
 			}
-			
-			
+
+
 			private function onKClipLoaded(e:Event):void {
-				var loader:SWFLoader = e.target as SWFLoader;
-				loader.removeEventListener(Event.COMPLETE, onKClipLoaded);
-				loader.width = kdpHolder.width; 
-				loader.height = kdpHolder.height; 
-				loader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
-				kClipHolder.addChild(loader);
+				kClipLoader.removeEventListener(Event.COMPLETE, onKClipLoaded);
+				kClipLoader.width = kClipHolder.width;
+				kClipLoader.height = kClipHolder.height;
+				kClipLoader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
+
 			}
-			
+
+
 			private function onKClipApplicationReady(e:Event):void {
 				// e.target is the systemManager for KClip
-				e.target.removeEventListener(FlexEvent.APPLICATION_COMPLETE,onKClipApplicationReady); 
-				kClip = e.target.application as ICuePointsAPI;
+				e.target.removeEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
+				kClip = e.target.application as DisplayObject;
 				initKClip();
 			}
-			
-			
+
+
 			/**
 			 * initialize kClip
 			 * */
 			private function initKClip():void {
 				var params:Object = {};
-				params.ks = context.kc.ks; 
+				params.ks = context.kc.ks;
 				params.entry_id = _selectedEntry.id;
 				params.host = context.rootUrl;
 				params.state = "cuePointsState";
+				params.showControlBar = "true";
 				params.partner_id = context.kc.partnerId;
 				params.uiconf_id = context.kClipAdsUiconf;
-//				params.show_control_bar = true 
-//				params.js_ready_func = ready 
-//				params.show_add_delete_buttons = true 
-//				params.max_allowed_rows = 5 
-				kClip.init(params);
-//				kClip.setEntryId(_selectedEntry.id);
+				addKClipListeners();
+				kClip["init"](params);
+				kClip.width = kClipHolder.width;
 			}
-			
-			
+
+
+			private function addKClipListeners():void {
+				kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
+				kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+			}
+
+
+			private function removeKClipListeners():void {
+				kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
+				kClip.removeEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+			}
+
+
+			private function handleKClipEvents(e:Event):void {
+				switch (e.type) {
+					case KClipEventTypes.PLAYHEAD_UPDATED:
+						updateKdpPlayhead(e);
+						break;
+					case KClipEventTypes.SELECTED_ASSET_REMOVED:
+						_formEnabled = false;
+						_counter--;
+						if (_counter < 0) {
+							_counter = 0;
+							trace("removing more cuepoints than we have..");
+						}
+						break;
+					case KClipEventTypes.ALL_ASSETS_REMOVED:
+						_formEnabled = false;
+						_counter = 0;
+						break;
+					case KClipEventTypes.CUE_POINT_CHANGED:
+						editCuePoint(e["data"]);
+						break;
+					case KClipEventTypes.SELECTED_ASSET_CHANGED:
+						editCuePoint(e["data"]);
+						break;
+					case KClipEventTypes.ENTRY_READY:
+						trace("kclip ready");
+						break;
+					case KClipEventTypes.CLIPPER_ERROR:
+						onKClipError(e["data"]);
+						break;
+					case KClipEventTypes.CUE_POINT_ADDED:
+						_counter++;
+						break;
+				}
+			}
+
+
+			/**
+			 * show user the error.
+			 * @internal
+			 * error localization should be done in kClip, not KMC.
+			 * */
+			private function onKClipError(str:String):void {
+				Alert.show(str);
+			}
+
+
+
 			private function onKdpLoaded(e:Event):void {
 				var loader:SWFLoader = e.target as SWFLoader;
-				loader.width = kdpHolder.width; 
-				loader.height = kdpHolder.height; 
+				loader.width = kdpHolder.width;
+				loader.height = kdpHolder.height;
 				kdp = loader.content;
 				kdpHolder.addChild(loader);
 				initKdp();
 			}
-			
-			
+
+
 			/**
 			 * initialize KDP
 			 */
@@ -145,58 +292,207 @@
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
-				
+
 				params.debugMode = context.debugMode;
-				
+
 				kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
-				kdp["init"](); 
-				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
-				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
-				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, onKDPPlayheadUpdate, false, 0, true);
+				kdp["init"]();
+				kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, startTrackKdpProgress, false, 0, true);
+				kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, stopTrackKdpProgress, false, 0, true);
+				kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, stopTrackKdpProgress, false, 0, true);
 			}
-			
-			
+
+
 			/**
-			 * update kClip with new time (event body is time)
+			 * stop tracking KDP playhead progress
 			 * */
-			private function onKDPPlayheadUpdate(e:Event):void {
+			private function stopTrackKdpProgress(e:Event):void {
+				kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, updateKclipPlayhead, false);
+			}
+
+
+			/**
+			 * start tracking KDP playhead progress
+			 * */
+			private function startTrackKdpProgress(e:Event):void {
+				kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, updateKclipPlayhead, false, 0, true);
+			}
+
+
+			/**
+			 * update kClip with new time (event data is time in seconds)
+			 * */
+			private function updateKclipPlayhead(e:Event):void {
 				if (kClip) {
-					kClip.scrollToPoint(parseFloat(e["data"]) * 1000)
+					kClip["scrollToPoint"](parseFloat(e["data"]) * 1000)
 				}
 			}
-			
 
+
+			/**
+			 * update kdp with new time (event data is new time in ms)
+			 * */
+			private function updateKdpPlayhead(e:Event):void {
+				if (kdp) {
+					kdp["sendNotification"](KdpEventTypes.DO_SEEK, parseFloat(e["data"]) / 1000);
+				}
+			}
+
+
+			private function updateCuePointData(e:Event):void {
+				switch (e.target) {
+					case teTiming:
+						_selectedCuePoint.startTime = teTiming.getTimeAsSeconds()*1000;
+						break;
+					case tiName:
+						_selectedCuePoint.title = tiName.text;
+						break;
+					case cbType:
+						_selectedCuePoint.adType = cbType.selectedItem.value;
+						break;
+					case teDuration:
+						_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds()*1000;
+						break;
+//					case taData:
+//						_selectedCuePoint.partnerData = taData.text;
+//						break;
+				}
+				kClip["updateCuePoint"](_selectedCuePoint);
+			}
+
+
+			/**
+			 * calculate cuepoint duration
+			 * */
+			private function getDuration(acp:KalturaAdCuePoint):int {
+				if (acp.endTime) {
+					return (acp.endTime - acp.startTime)/1000;
+				} else
+					return 0;
+			}
+
+
+			/**
+			 * return the correct string to show in the ad provider text field,
+			 * i.e. nothing for vast or freewheel, or the tags string for "other".
+			 * */
+			private function getAdProviderText(acp:KalturaAdCuePoint):String {
+				if (acp.tags == "vast" || acp.tags == "freewheel") {
+					return '';
+				} else if (!acp.tags) {
+					return resourceManager.getString('cms', 'ads_default_provider');
+				}
+				return acp.tags;
+			}
+
+
+			/**
+			 * get the object in PROVIDERS that represents the tags of the given CP
+			 * @param cp
+			 * */
+			private function getAdProvider(cp:KalturaAdCuePoint):Object {
+				for (var i:int = 0; i < PROVIDERS.length; i++) {
+					if (PROVIDERS[i].value == cp.tags) {
+						return PROVIDERS[i];
+					}
+				}
+				// the last object is the "Other"
+				return PROVIDERS[PROVIDERS.length - 1];
+			}
+
+
+			/**
+			 * get the object in AD_TYPES that represents the adType of the given CP
+			 * @param cp
+			 * */
+			private function getAdType(cp:KalturaAdCuePoint):Object {
+				for (var i:int = 0; i < AD_TYPES.length; i++) {
+					if (AD_TYPES[i].value == cp.adType) {
+						return AD_TYPES[i];
+					}
+				}
+				return null;
+			}
+
+
+			protected function addCuePoint(event:Event):void {
+				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
+				cp.type = KalturaCuePointType.AD;
+				kClip["addCuePoint"](cp);
+			}
+
+
+			protected function updateKClipWidth(event:FlexEvent):void {
+				if (kClipLoader) {
+					kClipLoader.width = kClipHolder.width - 1;
+					if (kClip) {
+						kClip.width = kClipLoader.width;
+					}
+				}
+			}
+
+
+			protected function removeAllCuePoints(event:MouseEvent):void {
+				if (kClip) {
+					kClip["removeAll"]();
+				}
+			}
 		]]>
 	</mx:Script>
-	
+
 	<mx:HBox width="100%">
-		<mx:VBox width="100%">
-			<mx:HBox width="100%" >
-				<mx:Button id="btnAdd" label="add cuepoint" />
-				<mx:ComboBox id="cbActions" width="100%" />
+		<mx:VBox width="100%" height="{kdpHolder.height}">
+			<mx:HBox width="100%">
+				<mx:Spacer width="100%"/>
+				<mx:ComboBox id="cbActions" width="100%"/>
 			</mx:HBox>
-			<mx:VBox id="details" width="100%" >
-				<mx:Label text="Timing" styleName="formLabel" />
-				<controls:SM_TimeEntry id="teTiming" />
-				<mx:Spacer height="10"/>
-				
-				<mx:Label text="Name (Optional)" styleName="formLabel" />
-				<mx:TextInput id="tiName" width="100%" />
-				<mx:Spacer height="10"/>
-							  
-				<mx:Label text="Type" styleName="formLabel" />
-				<mx:HBox width="100%">
-					<mx:ComboBox id="cbType" width="100%"/>
-					<controls:SM_TimeEntry id="teDuration" />
+			<mx:VBox id="details" width="100%" enabled="{_formEnabled}">
+				<mx:HBox styleName="noPadding">
+					<mx:Label text="{resourceManager.getString('cms', 'timing')}" styleName="formLabel"
+							  width="{LABEL_WIDTH}"/>
+					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" change="updateCuePointData(event)"
+										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
+										  showHours="true" showSeconds="true"/>
 				</mx:HBox>
-				<mx:Spacer height="10"/>
-							  
-				<mx:Label text="Data (Optional)" styleName="formLabel" />
-				<mx:TextArea id="taData" width="100%" />
+				<mx:HBox width="100%" styleName="noPadding">
+					<mx:Label text="{resourceManager.getString('cms', 'ads_type')}" styleName="formLabel"
+							  width="{LABEL_WIDTH}"/>
+					<mx:ComboBox id="cbType" width="100%" enabled="{_formEnabled}" dataProvider="{AD_TYPES}"
+								 change="updateCuePointData(event)"/>
+					<controls:TimeStepper id="teDuration" enabled="{_formEnabled}"
+										  timeValue="{getDuration(_selectedCuePoint)}" showHours="true"
+										  showSeconds="true" change="updateCuePointData(event)"/>
+				</mx:HBox>
+				<mx:HBox width="100%" styleName="noPadding">
+					<mx:Label text="{resourceManager.getString('cms', 'ads_provider')}" styleName="formLabel"
+							  width="{LABEL_WIDTH}"/>
+					<mx:VBox width="100%" styleName="noPadding">
+						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" change="updateCuePointData(event)"
+									 dataProvider="{PROVIDERS}"/>
+						<mx:TextInput id="tiProvider" width="100%" text="{getAdProviderText(_selectedCuePoint)}"
+									  focusOut="updateCuePointData(event)" enabled="{cbProvider.selectedItem.value == 'other'}"/>
+					</mx:VBox>
+				</mx:HBox>
+				<mx:HBox width="100%" styleName="noPadding">
+					<mx:Label text="{resourceManager.getString('cms', 'ads_name')}" styleName="formLabel"
+							  width="{LABEL_WIDTH}"/>
+					<mx:TextInput id="tiName" width="100%" enabled="{_formEnabled}" text="{_selectedCuePoint.title}"
+								  focusOut="updateCuePointData(event)"/>
+				</mx:HBox>
+				<!--<mx:HBox width="100%" styleName="noPadding">
+					 <mx:Label text="{resourceManager.getString('cms', 'ads_data')}" styleName="formLabel"
+					 width="{LABEL_WIDTH}"/>
+					 <mx:TextArea id="taData" width="100%" enabled="{_formEnabled}"/>
+					 </mx:HBox>-->
 			</mx:VBox>
 		</mx:VBox>
 		<mx:HBox id="kdpHolder" width="300" height="255" tabChildren="false" tabEnabled="false"/>
 	</mx:HBox>
-	<mx:HBox id="kClipHolder" width="100%" height="150"/>
+	<mx:HBox id="kClipHolder" width="100%" height="120" updateComplete="updateKClipWidth(event)"/>
+	<mx:HBox width="100%">
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton label="{resourceManager.getString('cms', 'ads_remove_all')}" click="removeAllCuePoints(event)"
+					   visible="{_counter > 0}" includeInLayout="{_counter > 0}"/>
+	</mx:HBox>
 </mx:VBox>
