@@ -3,8 +3,11 @@ package com.kaltura.controls {
 	import flash.events.Event;
 	import flash.events.KeyboardEvent;
 	
+	import mx.events.FlexEvent;
 	import mx.events.NumericStepperEvent;
 
+	[Event(name="change", type="mx.events.FlexEvent")]
+	
 	/**
 	 * A NumericStepper for time values. <br/>
 	 * extends SM_TimeEntry to support minimum value.
@@ -22,7 +25,15 @@ package com.kaltura.controls {
 			super();
 		}
 
-
+		
+		/**
+		 * transform time from object properties to a single secnods value.
+		 * */
+		public function getTimeAsSeconds():int {
+			var h:int = hour * 3600; // 60 * 60 = 3600
+			var m:int = minute * 60;
+			return second + m + h;
+		}
 
 		/**
 		 * transforms time from a single (seconds) value to an object 
@@ -69,6 +80,7 @@ package com.kaltura.controls {
 		override protected function changeStepValue(event:Event):void {
 			super.changeStepValue(event);
 			avoidLessThanMinimum();
+			dispatchEvent(new FlexEvent("change"));
 		}
 		
 		
@@ -219,6 +231,7 @@ package com.kaltura.controls {
 			_minimum = value;
 		}
 
-
+				
+		
 	}
 }
