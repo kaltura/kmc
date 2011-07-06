@@ -71,6 +71,9 @@ package com.kaltura.kmc.modules.content.commands
 		private var _caller:IDataOwner;
 		
 		override public function execute(event:CairngormEvent):void {
+			if (!_model.filterModel.loadingRequired)
+				return;
+			
 			_model.increaseLoadCounter();
 			_caller = (event as LoadEvent).caller;
 			
@@ -155,6 +158,7 @@ package com.kaltura.kmc.modules.content.commands
 			// categories
 			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
 			
+			_model.filterModel.loadingRequired = false;
 			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
 

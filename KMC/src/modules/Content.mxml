@@ -152,7 +152,8 @@
 				_initialTab = subtab;
 				if (_ready) {
 					handleEntryId();
-
+					_model.filterModel.loadingRequired = true;
+					_model.entryDetailsModel.conversionProfileLoaded = false;
 					switchToTab(subtab);
 					//loads data that might have changed from a different tab
 					loadChangableData();
@@ -647,6 +648,8 @@
 					newEntryDetailsModel.selectedEntry = _model.entryDetailsModel.selectedReplacementEntry;
 					newEntryDetailsModel.replacedEntryName = _model.entryDetailsModel.selectedEntry.name;
 					newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
+					newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
+					newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
 					//we open another drilldown, should add another model
 					_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 					edw.loadRoughcuts = false;
@@ -667,6 +670,7 @@
 				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
 				edw.maxNumCategories = this._flashvars.maxnumcategories;
+				edw.entriesAC = _model.listableVo.arrayCollection;
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 

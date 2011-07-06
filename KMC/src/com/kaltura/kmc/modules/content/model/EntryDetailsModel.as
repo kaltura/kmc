@@ -37,6 +37,11 @@ package com.kaltura.kmc.modules.content.model
 		 * Current Viewed Entry
 		 */
 		public var selectedEntry:KalturaBaseEntry;
+	
+		/**
+		 * index of Current Viewed Entry
+		 */
+		public var selectedIndex:int;
 		
 		/**
 		 * array of EntryMetadataDataVO;
@@ -97,7 +102,7 @@ package com.kaltura.kmc.modules.content.model
 		 * Name of the replaced entry for the replacement entry
 		 * */
 		public var replacedEntryName:String;
-		
+
 		/**
 		 * if selected entry was refreshed
 		 * */
@@ -117,5 +122,12 @@ package com.kaltura.kmc.modules.content.model
 		 * Current entry captions Array
 		 * */
 		public var captionsArray:Array;
+		
+		/**
+		 * indicates if this is the first drilldown
+		 * */
+		public var conversionProfileLoaded:Boolean;
+		
+		public var conversionProfiles:Array;
 	}
 }

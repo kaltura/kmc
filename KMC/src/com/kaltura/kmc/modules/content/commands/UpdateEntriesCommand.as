@@ -10,6 +10,8 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.EntriesEvent;
+	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
 	import com.kaltura.kmc.modules.content.events.SearchEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
@@ -36,11 +38,12 @@ package com.kaltura.kmc.modules.content.commands {
 
 		private var _entries:ArrayCollection;
 		private var _isPlaylist:Boolean;
+		private var _closeDrilldown:Boolean;
 
 
 		override public function execute(event:CairngormEvent):void {
 			var e:EntriesEvent = event as EntriesEvent;
-
+			_closeDrilldown = e.closeWindow;
 			if (e.entries.length > 50) {
 				_entries = e.entries;
 
@@ -115,9 +118,17 @@ package com.kaltura.kmc.modules.content.commands {
 											
 					}
 				}
+				
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
+				//reload changeble data
+				if (!_closeDrilldown) {
+				//	var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, _model.entryDetailsModel.selectedEntry.id);
+				//	getSelectedEntry.dispatch();
+					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
+					listCustomData.dispatch();
+				}
 			}
 		}
 
@@ -197,8 +208,15 @@ package com.kaltura.kmc.modules.content.commands {
 				var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				categoriesEvent.dispatch();
 			}
-			var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-			cgEvent.dispatch();
+			if (_closeDrilldown) {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
+			}
+			else {//refresh selected entry
+				var entriesArr:Array = data.data as Array;
+				//selected entry is the last updated
+				_model.entryDetailsModel.selectedEntry = entriesArr[entriesArr.length - 1] as KalturaBaseEntry;
+			} 
 			_model.decreaseLoadCounter();
 		}
 

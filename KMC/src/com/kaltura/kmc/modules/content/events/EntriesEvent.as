@@ -18,25 +18,36 @@ package com.kaltura.kmc.modules.content.events {
 		 * each entry is <code>KalturaBaseEntry</code> 
 		 */
 		private var _entries:ArrayCollection;
+		
+		/**
+		 * whether to close drilldown window after action is complete 
+		 */		
+		private var _closeWindow:Boolean;
 
 
 		/**
 		 * Constructor. 
 		 * @param type		event type
 		 * @param entries	entries this event effects
+		 * @param closeWindow whether to close drilldown
 		 * @param bubbles	should the event bubble
 		 * @param cancelable	should the event be cancelable
 		 * 
 		 */		
-		public function EntriesEvent(type:String, entries:ArrayCollection = null, bubbles:Boolean = false,
+		public function EntriesEvent(type:String, entries:ArrayCollection = null, closeWindow:Boolean = true,bubbles:Boolean = false,
 									 cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			this._entries = entries;
+			this._closeWindow = closeWindow;
 		}
 
 		public function get entries():ArrayCollection
 		{
 			return _entries;
+		}
+		
+		public function get closeWindow():Boolean {
+			return _closeWindow;
 		}
 	}
 }

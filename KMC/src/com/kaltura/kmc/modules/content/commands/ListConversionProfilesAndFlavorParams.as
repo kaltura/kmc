@@ -35,11 +35,13 @@ package com.kaltura.kmc.modules.content.commands {
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 
 			var mr:MultiRequest = new MultiRequest();
-			var cpFilter:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
-			cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
-
-			mr.addAction(listConversionProfiles);
+			if (!_model.entryDetailsModel.conversionProfileLoaded) {
+				var cpFilter:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
+				cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+				var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
+	
+				mr.addAction(listConversionProfiles);
+			}
 
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList();
 			mr.addAction(listFlavorParams);
@@ -64,32 +66,36 @@ package com.kaltura.kmc.modules.content.commands {
 					Alert.show(er.errorMsg, "Error");
 				}
 			}
-			else if (event.data[0].error) {
-				er = event.data[0].error as KalturaError;
-				if (er) {
-					Alert.show(er.errorMsg, "Error");
-				}
-			}
-			else if (event.data[1].error) {
-				er = event.data[1].error as KalturaError;
-				if (er) {
-					Alert.show(er.errorMsg, "Error");
-				}
-			}
-			else if (event.data[2].error) {
-				er = event.data[2].error as KalturaError;
-				if (er) {
-					Alert.show(er.errorMsg, "Error");
-				}
-			}
-			// result
 			else {
+				for (var i:int = 0; i<event.data.length; i++) {
+					if (event.data[i].error) {
+						er = event.data[i].error as KalturaError;
+						if (er) {
+							Alert.show(er.errorMsg, "Error");
+						}
+					}
+				}
+			}
+			
+			// result
+			if (!er) {
+				var startIndex:int; 
+				var profs:Array;
+				if (_model.entryDetailsModel.conversionProfileLoaded) {
+					startIndex = 0;
+					profs = _model.entryDetailsModel.conversionProfiles;
+				}
+				else {
+					startIndex = 1;
+					profs = (event.data[0] as KalturaConversionProfileListResponse).objects;
+					_model.entryDetailsModel.conversionProfiles = profs;
+					_model.entryDetailsModel.conversionProfileLoaded = true;
+				}
 				// conversion profiles
-				var profs:Array = (event.data[0] as KalturaConversionProfileListResponse).objects;
 				// flavor params
-				var params:Array = (event.data[1] as KalturaFlavorParamsListResponse).objects;
+				var params:Array = (event.data[startIndex] as KalturaFlavorParamsListResponse).objects;
 				
-				var cpaps:Array = (event.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
+				var cpaps:Array = (event.data[startIndex+1] as KalturaConversionProfileAssetParamsListResponse).objects;
 				
 				var tempArrCol:ArrayCollection = new ArrayCollection();
 

@@ -44,12 +44,14 @@ package com.kaltura.kmc.modules.content.events
 		
 		private var _entryVo : KalturaBaseEntry;
 		private var _entryId : String;
+		private var _entryIndex: int;
 		
-		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, entryId:String = '',  bubbles:Boolean=false, cancelable:Boolean=false)
+		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, entryId:String = '', entryIIndex:int = -1,  bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			_entryVo = entryVo;
 			_entryId = entryId;
+			_entryIndex = entryIIndex;
 		}
 
 		public function get entryVo():KalturaBaseEntry
@@ -60,6 +62,11 @@ package com.kaltura.kmc.modules.content.events
 		public function get entryId():String
 		{
 			return _entryId;
+		}
+		
+		public function get entryIndex():int 
+		{
+			return _entryIndex;
 		}
 
 

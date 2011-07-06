@@ -59,6 +59,11 @@ package com.kaltura.kmc.modules.content.model
 		 * indicates if we have the distribution plugin
 		 * */
 		public var enableDistribution:Boolean = true;
+		
+		/**
+		 * indicates if re-loading of filter data is required
+		 * */
+		public var loadingRequired:Boolean = true;
 
 	}
 }

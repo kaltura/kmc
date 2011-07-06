@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.entryDetailsModel.selectedEntry = (event as EntryEvent).entryVo;	
+			_model.entryDetailsModel.selectedIndex = (event as EntryEvent).entryIndex;
 		}
 	}
 }

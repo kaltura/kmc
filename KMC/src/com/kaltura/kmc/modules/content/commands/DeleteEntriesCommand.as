@@ -154,6 +154,7 @@ package com.kaltura.kmc.modules.content.commands {
 				//refresh the playlist 
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
+				return;
 			}
 			else {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);

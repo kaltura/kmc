@@ -60,6 +60,7 @@
 			
 			
 			private var _entryWatcher:ChangeWatcher;
+			private var _entryIndexWatcher:ChangeWatcher;
 			private var _statusWatcher:ChangeWatcher;
 			private var _replacementWatcher:ChangeWatcher;
 			private var _replacingEntryWatcher:ChangeWatcher;
@@ -165,6 +166,31 @@
 			
 			private var _isReady:Boolean = false;
 			private var _dataInitialized:Boolean = false;
+
+			public var entriesAC:ArrayCollection;
+			private var _entryIndex:int;
+			[Bindable]
+			private var _nextEnabled:Boolean = true;
+			[Bindable]
+			private var _prevEnabled:Boolean;
+
+			[Bindable]
+			public function get entryIndex():int
+			{
+				return _entryIndex;
+			}
+
+			public function set entryIndex(value:int):void
+			{
+				_entryIndex = value;
+				if (entriesAC) {
+					_prevEnabled = (_entryIndex > 0)
+					_nextEnabled = (_entryIndex < entriesAC.length - 1)	
+				}
+				else {
+					_prevEnabled = _nextEnabled = false;
+				}
+			}
 
 			/**
 			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
@@ -306,6 +332,8 @@
 			
 				if (!_entryWatcher)
 					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
+				if (!_entryIndexWatcher)
+					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", entryDetailsModel, "selectedIndex");
 				if (!_statusWatcher)
 					_statusWatcher = BindingUtils.bindSetter(onStatusChange, entryDetailsModel.selectedEntry, "status");
 				if (!_replacementWatcher)
@@ -593,6 +621,9 @@
 				if (_entryWatcher) {
 					_entryWatcher.unwatch();
 				}
+				if (_entryIndexWatcher) {
+					_entryIndexWatcher.unwatch();
+				}
 				if (_statusWatcher) {
 					_statusWatcher.unwatch();
 				}
@@ -617,7 +648,7 @@
 			/**
 			 * validate all panels, if validation is ok proceed to save().
 			 * */
-			private function validate():void {
+			private function validate(close:Boolean = true):void {
 				// validation:
 				var validationResult:EntryDetailsValidationError = entryMetaData.save();
 				if (validationResult.error == null) {
@@ -659,7 +690,7 @@
 						var cg:CairngormEvent = new EntryEvent(EntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
 						cg.dispatch();
 					}
-					else save();
+					else save(null,close);
 				}
 			}
 			
@@ -692,16 +723,16 @@
 			 * @internal 
 			 * the close event is there in case the function is triggered from alert
 			 * */
-			private function save(e:CloseEvent = null) :void {
+			private function save(e:CloseEvent = null, close:Boolean = true) :void {
 				if (e && e.detail == Alert.NO) {
 					return;
 				}
 				destroyPanels();
 				// if we got here, all panels validation passed ok, the error was null.	
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]));
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]), close);
 				cgEvent.dispatch();	
-				
-				removeWatchers();
+				if (close)
+					removeWatchers();
 				
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
@@ -879,6 +910,18 @@
 				
 				_dataInitialized = true;
 			}
+			
+			private function gotoNextEntry():void {
+				entryIndex++;
+				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry,'',entryIndex);
+				selectEntry.dispatch();
+			}
+			
+			private function gotoPrevEntry():void {
+				entryIndex--;
+				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry,'',entryIndex);
+				selectEntry.dispatch();
+			}
 
 			
 		]]>
@@ -947,8 +990,14 @@
 		<ed:EntryAds id="ads" label="{resourceManager.getString('cms','ads')}" selectedEntry="{_undoToEntry}" 
 					 context="{context}" />
 	</mx:ViewStack>
-	<mx:ControlBar>
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="validate()"
+	<mx:ControlBar horizontalGap="5">
+		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="validate(false)"
 				   buttonMode="true"/>
+		<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'saveAndClose')}" click="validate()"
+				   buttonMode="true"/>
+		<mx:Button label="{resourceManager.getString('cms', 'prevEntry')}" click="gotoPrevEntry()"
+				   buttonMode="true" enabled="{_prevEnabled}"/>
+		<mx:Button label="{resourceManager.getString('cms', 'nextEntry')}" click="gotoNextEntry()"
+				   buttonMode="true" enabled="{_nextEnabled}"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
