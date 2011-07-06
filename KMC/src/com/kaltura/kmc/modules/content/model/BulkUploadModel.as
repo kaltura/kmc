@@ -38,10 +38,10 @@ package com.kaltura.kmc.modules.content.model
 		 */
 		public var bulkUploadFilterPager:KalturaFilterPager;
 		
-		/**
-		 * path to the bulkupload sample file 
-		 */		
-		public var sampleFileUrl:String;
+//		/**
+//		 * path to the bulkupload sample file 
+//		 */		
+//		public var sampleFileUrl:String;
 		
 		/**
 		 * call this JS function to open CW

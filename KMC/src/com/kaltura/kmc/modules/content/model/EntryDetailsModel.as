@@ -124,10 +124,22 @@ package com.kaltura.kmc.modules.content.model
 		public var captionsArray:Array;
 		
 		/**
+		 * number of cuepoints associated with current entry 
+		 */
+		public var cuepointsCount:int;
+		
+		/**
+		 * url of cuepoints samples file 
+		 */		
+		public var cuepointsSamplesUrl:String;
+
+		
+		/**
 		 * indicates if this is the first drilldown
 		 * */
 		public var conversionProfileLoaded:Boolean;
 		
 		public var conversionProfiles:Array;
+
 	}
 }

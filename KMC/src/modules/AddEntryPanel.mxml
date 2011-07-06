@@ -131,9 +131,20 @@
 			 * downloads csv and xml samples
 			 * */
 			protected function btnSamples_clickHandler(event:MouseEvent):void {
-				var req:URLRequest = new URLRequest(samplesUrl);
+				var req:URLRequest = new URLRequest(getFullUrl(samplesUrl));
 				navigateToURL(req);
 			}
+			
+			
+			protected function getFullUrl(url:String):String {
+				if (url.indexOf('://') == -1) {
+					// no protocol, concat from client
+					url = _kc.protocol + _kc.domain + url; 
+				}
+				return url;
+			}
+			
+			
 
 
 			/**

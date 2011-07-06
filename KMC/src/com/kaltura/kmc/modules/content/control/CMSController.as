@@ -3,6 +3,8 @@ package com.kaltura.kmc.modules.content.control
 	import com.adobe.cairngorm.control.FrontController;
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
+	import com.kaltura.kmc.modules.content.commands.cuepoints.CountCuePoints;
+	import com.kaltura.kmc.modules.content.commands.cuepoints.DownloadCuePoints;
 	import com.kaltura.kmc.modules.content.commands.dropFolder.*;
 	import com.kaltura.kmc.modules.content.events.*;
 	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
@@ -182,6 +184,10 @@ package com.kaltura.kmc.modules.content.control
 			
 			//captions
 			addCommand(CaptionsEvent.LIST_CAPTIONS, ListCaptionsCommand);
+			
+			// cuepoints
+			addCommand(CuePointEvent.COUNT_CUEPOINTS, CountCuePoints);
+			addCommand(CuePointEvent.DOWNLOAD_CUEPOINTS, DownloadCuePoints);
 		}
 	}
 }
