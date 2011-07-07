@@ -421,7 +421,7 @@
 						_selectedCuePoint.adType = cbType.selectedItem.value;
 						break;
 					case teDuration:
-						_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds()*1000;
+						_selectedCuePoint.duration = /* _selectedCuePoint.startTime + */ teDuration.getTimeAsSeconds()*1000;
 						break;
 //					case taData:
 //						_selectedCuePoint.partnerData = taData.text;
@@ -431,15 +431,15 @@
 			}
 
 
-			/**
-			 * calculate cuepoint duration
-			 * */
-			private function getDuration(acp:KalturaAdCuePoint):int {
-				if (acp.endTime) {
-					return (acp.endTime - acp.startTime)/1000;
-				} else
-					return 0;
-			}
+//			/**
+//			 * calculate cuepoint duration
+//			 * */
+//			private function getDuration(acp:KalturaAdCuePoint):int {
+//				if (acp.endTime) {
+//					return (acp.endTime - acp.startTime)/1000;
+//				} else
+//					return 0;
+//			}
 
 
 			/**
@@ -547,7 +547,7 @@
 					<mx:ComboBox id="cbType" width="100%" enabled="{_formEnabled}" dataProvider="{AD_TYPES}"
 								 change="updateCuePointData(event)" prompt="{resourceManager.getString('cms', 'ads_ad_type')}"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled}"
-										  timeValue="{getDuration(_selectedCuePoint)}" showHours="true"
+										  timeValue="{_selectedCuePoint.duration}" showHours="true"
 										  showSeconds="true" change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
