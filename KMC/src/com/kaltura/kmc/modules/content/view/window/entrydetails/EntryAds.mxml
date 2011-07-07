@@ -91,12 +91,16 @@
 
 			
 			public function destroy():void {
-				kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-				kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
-				kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
-				kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
-				kdp["sendNotification"](KdpEventTypes.DO_STOP);
-				removeKClipListeners();
+				if (kdp) {
+					kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+					kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
+					kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
+					kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
+					kdp["sendNotification"](KdpEventTypes.DO_STOP);
+				}
+				if (kClip) {
+					removeKClipListeners();
+				}
 				if (_watchCPCount) {
 					_watchCPCount.unwatch();
 				}
