@@ -58,6 +58,8 @@
 			 * conversion profiles with matching asset params (cpaps)
 			 * */
 			public var conversionProfiles:ArrayCollection;
+			
+			
 
 			/**
 			 * @copy #flavorAssetId
@@ -107,6 +109,10 @@
 			private var _selectedSlug:KalturaDropFolderFile;
 
 
+			/**
+			 * true if entry drilldown data need to be refreshed after the window is closed.
+			 * */
+			public var isEntryRefreshRequired:Boolean = false;
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(Event.CHANGE, onRadioChange, false, 0, true);
@@ -228,6 +234,7 @@
 			 * +*/
 			protected function updateSingleFile(e:CloseEvent):void {
 				if (e.detail == Alert.YES) {
+					isEntryRefreshRequired = true
 					if (_flavorAssetId) {
 						// replacing existing flavor
 						updateFlavor();
@@ -304,6 +311,7 @@
 			 */
 			protected function updateMediaFiles(e:CloseEvent):void {
 				if (e.detail == Alert.YES) {
+					isEntryRefreshRequired = true;
 					// the actual resource we send is a list of the containers for the resources we want to replace.                
 					var mediaResource:KalturaAssetsParamsResourceContainers = new KalturaAssetsParamsResourceContainers();
 					mediaResource.resources = new Array();
