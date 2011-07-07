@@ -56,6 +56,11 @@
 			private var kdp:DisplayObject;
 			private static var kdpLoader:SWFLoader;
 			
+			/**
+			 * should components in the tab be editable
+			 * */
+			public var editable:Boolean = true;
+			
 			public var context:Context;
 			
 			
@@ -160,6 +165,10 @@
 					// remove the download option
 					BULK_ACTIONS.splice(1,1);
 				}
+				if (!editable) {
+					// remove the upload action
+					BULK_ACTIONS.splice(0,1);
+				}
 				cbActions.selectedIndex = -1;
 				cbActions.enabled = true;
 			}
@@ -172,7 +181,10 @@
 				ObjectUtil.copyObject(o, cp);
 				_selectedCuePoint = cp;
 				if (cp) {
-					_formEnabled = true;
+					// if roles and permissions allow editing, make the form editable
+					if (editable){	
+						_formEnabled = true;
+					}
 					cbType.selectedIndex = getAdType(cp);
 					cbProvider.selectedItem = getAdProvider(cp);
 				} else {
@@ -291,6 +303,9 @@
 				switch (e.type) {
 					case KClipEventTypes.ENTRY_READY:
 						trace("kclip ready");
+						if (!editable) {
+							kClip["setDisabled"](true);
+						}
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
 						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
@@ -410,12 +425,25 @@
 
 
 			private function updateCuePointData(e:Event):void {
-				switch (e.target) {
+				switch (e.currentTarget) {
 					case teTiming:
 						_selectedCuePoint.startTime = teTiming.getTimeAsSeconds()*1000;
 						break;
 					case tiName:
 						_selectedCuePoint.title = tiName.text;
+						break;
+					case cbProvider:
+						var value:String = cbProvider.selectedItem.value;
+						if (value == "vast" ||  value == "freewheel") {
+							_selectedCuePoint.tags = value;
+						}
+						// "other" - only reset tags if they were not custom
+						else if (_selectedCuePoint.tags == 'vast' || _selectedCuePoint.tags == 'freewheel') {
+							_selectedCuePoint.tags = '';
+						}
+						break;
+					case tiProvider:
+						_selectedCuePoint.tags = tiProvider.text;
 						break;
 					case cbType:
 						_selectedCuePoint.adType = cbType.selectedItem.value;
@@ -423,9 +451,6 @@
 					case teDuration:
 						_selectedCuePoint.duration = /* _selectedCuePoint.startTime + */ teDuration.getTimeAsSeconds()*1000;
 						break;
-//					case taData:
-//						_selectedCuePoint.partnerData = taData.text;
-//						break;
 				}
 				kClip["updateCuePoint"](_selectedCuePoint);
 			}
@@ -447,6 +472,7 @@
 			 * i.e. nothing for vast or freewheel, or the tags string for "other".
 			 * */
 			private function getAdProviderText(acp:KalturaAdCuePoint):String {
+				if (!acp) return '';
 				if (acp.tags == "vast" || acp.tags == "freewheel") {
 					return '';
 				} else if (!acp.tags) {
@@ -566,11 +592,6 @@
 					<mx:TextInput id="tiName" width="100%" enabled="{_formEnabled}" text="{_selectedCuePoint.title}"
 								  focusOut="updateCuePointData(event)"/>
 				</mx:HBox>
-				<!--<mx:HBox width="100%" styleName="noPadding">
-					 <mx:Label text="{resourceManager.getString('cms', 'ads_data')}" styleName="formLabel"
-					 width="{LABEL_WIDTH}"/>
-					 <mx:TextArea id="taData" width="100%" enabled="{_formEnabled}"/>
-					 </mx:HBox>-->
 			</mx:VBox>
 		</mx:VBox>
 		<mx:HBox id="kdpHolder" width="300" height="255" tabChildren="false" tabEnabled="false"/>
