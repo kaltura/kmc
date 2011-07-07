@@ -156,6 +156,7 @@
 					// remove the download option
 					BULK_ACTIONS.splice(1,1);
 				}
+				cbActions.selectedIndex = -1;
 				cbActions.enabled = true;
 			}
 
@@ -165,11 +166,10 @@
 			private function editCuePoint(o:Object):void {
 				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
 				ObjectUtil.copyObject(o, cp);
-//				trace(o.startTime, "<------------------");
 				_selectedCuePoint = cp;
 				if (cp) {
 					_formEnabled = true;
-					cbType.selectedItem = getAdType(cp);
+					cbType.selectedIndex = getAdType(cp);
 					cbProvider.selectedItem = getAdProvider(cp);
 				} else {
 					_formEnabled = false;
@@ -471,13 +471,13 @@
 			 * get the object in AD_TYPES that represents the adType of the given CP
 			 * @param cp
 			 * */
-			private function getAdType(cp:KalturaAdCuePoint):Object {
+			private function getAdType(cp:KalturaAdCuePoint):int {
 				for (var i:int = 0; i < AD_TYPES.length; i++) {
 					if (AD_TYPES[i].value == cp.adType) {
-						return AD_TYPES[i];
+						return i;
 					}
 				}
-				return null;
+				return -1;
 			}
 
 
@@ -541,7 +541,7 @@
 					<mx:Label text="{resourceManager.getString('cms', 'ads_type')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:ComboBox id="cbType" width="100%" enabled="{_formEnabled}" dataProvider="{AD_TYPES}"
-								 change="updateCuePointData(event)"/>
+								 change="updateCuePointData(event)" prompt="{resourceManager.getString('cms', 'ads_ad_type')}"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled}"
 										  timeValue="{getDuration(_selectedCuePoint)}" showHours="true"
 										  showSeconds="true" change="updateCuePointData(event)"/>
