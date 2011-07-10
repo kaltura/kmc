@@ -52,7 +52,7 @@ package com.kaltura.kmc.business {
 				positionPanel(JSGate.getPanelPosition());
 				
 				// add stage listener
-				(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.MOUSE_OVER, _panel.hidePanel);
+				(Application.application as DisplayObjectContainer).addEventListener(MouseEvent.CLICK, _panel.hidePanel);
 			}
 		}
 		
