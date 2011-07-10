@@ -38,8 +38,12 @@
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.DASHBOARD,KalturaStatsKmcEventType.DASHBOARD_UPDATE_CONTENT, "DashBoard>Upload Content");
 				// show content>upload tab
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'add', '', {kmcFunction:"addCode.addUpload"}));
-//				DashboardManager.instance.openKcw();
 			}
+
+			protected function dnldSamples(event:MouseEvent):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'add', '', {kmcFunction:"addCode.downloadSampleFiles"}));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" styleName="featureTitleBox">
@@ -62,9 +66,18 @@
 				<mx:Button id="uploadOption2Button" label="{resourceManager.getString('kdashboard', 'upload_option_2_button')}" 
 						   useHandCursor="true" buttonMode="true" styleName="dashboardBtn" click="doFileUpload()" width="{Dashboard.BUTTON_WIDTH_SIZE}"/>
 			</mx:HBox>
-			<mx:LinkButton id='quickStartLinkButton' label="{resourceManager.getString('kdashboard', 'quick_start_link')}" 
-						   styleName="dashboardLinkBtn"
-						   click="{DashboardManager.instance.launchExactOuterLink(quickStartURL)}"/>
+			<mx:HBox styleName="noPadding">
+				<mx:LinkButton id='quickStartLinkButton' label="{resourceManager.getString('kdashboard', 'quick_start_link')}" 
+							   styleName="dashboardLinkBtn"
+							   click="{DashboardManager.instance.launchExactOuterLink(quickStartURL)}"/>
+				<mx:VRule height="20" />
+				<mx:LinkButton id='bulkSamplesLinkButton' label="{resourceManager.getString('kdashboard', 'samples_link')}" 
+							   styleName="dashboardLinkBtn" click="dnldSamples(event)"/>
+			</mx:HBox>
+			<mx:HBox styleName="noPadding" verticalAlign="middle">
+				<mx:Button label="{resourceManager.getString('kdashboard', 'tip')}" styleName="tipStyle" />
+				<mx:Label text="{resourceManager.getString('kdashboard', 'addContentEasily')}" />
+			</mx:HBox>
 		</mx:VBox>
 	</mx:HBox>
 	
