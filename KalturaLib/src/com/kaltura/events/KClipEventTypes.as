@@ -28,6 +28,8 @@ package com.kaltura.events
 		
 		public static const ENTRY_READY:String = "entryReady";
 		
+		public static const CLIPPER_READY:String = "clipperReady";
+		
 		/**
 		 * dispatched when all assets have been removed 
 		 */
