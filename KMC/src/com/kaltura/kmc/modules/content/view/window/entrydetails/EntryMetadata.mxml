@@ -95,10 +95,31 @@
 			private var _viewStack:ViewStack;
 
 			[Bindable]
-			private var _entryHasContent:Boolean = true;
+			private var _entryHasContent:Boolean;
+			
+			private var _selectedEntryId:String;
 
 
 			public function initData():void {
+				//reset values to starting point
+				_entryHasContent = true;
+				kdp3Loader.includeInLayout = kdp3Loader.visible = true;
+				if (kdpContainer.getChildAt(0) is Image)
+					kdpContainer.removeChildAt(0);
+				
+				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
+					addImageThumb(noMediaImage);
+					_entryHasContent = false;
+				}
+				else if ((selectedEntry is KalturaMediaEntry) && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
+					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
+					addImageThumb();
+				}
+				else {
+					//mix or video
+					loadKDP();
+				}	
 				//redundant: we already got this info from the filter
 				//var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				//listCategories.dispatch();
@@ -213,19 +234,7 @@
 
 				// ===========================================================
 
-				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
-					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
-					addImageThumb(noMediaImage);
-					_entryHasContent = false;
-				}
-				else if ((selectedEntry is KalturaMediaEntry) && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
-					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
-					addImageThumb();
-				}
-				else {
-					//mix or video
-					loadKDP();
-				}
+			
 
 				if (landingPage && landingPage != '') {
 					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
@@ -252,9 +261,12 @@
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
 					// parent of instance loader
 					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
-					// add the static loader instead of the instance loader:
-					kdp3LoaderParent.addChildAt(kdp3StaticSwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
-					kdp3LoaderParent.removeChild(kdp3Loader);
+					// add the static loader instead of the instance loader: (if kdp3Loader has content it means we are in the same 
+					// drill down session)
+					if (kdp3LoaderParent && !kdp3Loader.content) {
+						kdp3LoaderParent.addChildAt(kdp3StaticSwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
+						kdp3LoaderParent.removeChild(kdp3Loader);
+					}
 					// listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
 					// because this is static KDP (due to performance issue)
 					kdp3StaticSwfLoader.visible = false;
@@ -747,7 +759,7 @@
 	<mx:VBox id="kdpContainer" width="100%" height="100%" styleName="lineGap" horizontalAlign="center">
 		<mx:HBox width="100%" paddingTop="5">
 			<mx:VBox width="100%" horizontalAlign="center">
-				<mx:HBox width="100%" paddingLeft="0">
+				<mx:HBox id="loaderContainer" width="100%" paddingLeft="0" >
 					<mx:SWFLoader id="kdp3Loader" width="300" height="255" complete="{onKDP3Loaded(event)}"/>
 				</mx:HBox>
 				<mx:VBox visible="{_entryHasContent}" includeInLayout="{_entryHasContent}" horizontalAlign="center">

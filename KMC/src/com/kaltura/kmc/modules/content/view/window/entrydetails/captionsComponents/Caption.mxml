@@ -3,14 +3,45 @@
 		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.EntryCaption;
+			import com.kaltura.types.KalturaNullableBoolean;
+			import com.kaltura.vo.KalturaCaptionAsset;
 			public static const CAPTIONS_TYPES:Array = new Array("SRT", "XML", "TXT");
 			public static const EXTERNAL_STATE:String = "externalState";
 			public static const EMBEDDED_STATE:String = "embeddedState";
 		
+	
+			private var _caption:EntryCaption;
+			[Bindable]
+			private var _showActionsBox:Boolean;
+			[Bindable]
+			private var _isDefault:Boolean;
+			
+			[Bindable]
+			public function get caption():EntryCaption
+			{
+				return _caption;
+			}
+
+			public function set caption(value:EntryCaption):void
+			{
+				_caption = value;
+				if (_caption && _caption.caption) {
+					_showActionsBox = true;
+					if (_caption.caption.isDefault == KalturaNullableBoolean.TRUE_VALUE)
+						_isDefault = true;
+					else 
+						_isDefault = false;
+				}
+				else
+					_showActionsBox = false;
+			}
+
 			private function onCreationComplete():void {
-				this.currentState = EXTERNAL_STATE;
+			//	this.currentState = EXTERNAL_STATE;
 			}
 			
+		/* 	currently not implemented on server side
 			private function onButtonChange(event:Event):void {
 				if (sources.selection==external)
 					this.currentState = EXTERNAL_STATE;
@@ -18,23 +49,52 @@
 					this.currentState = EMBEDDED_STATE;
 			}
 
-			
+			 */
+
+			protected function download_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			protected function remove_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+
 		]]>
 	</mx:Script>
-	<mx:RadioButtonGroup id="sources" change="onButtonChange(event)"/>
+	<!--<mx:RadioButtonGroup id="sources" change="onButtonChange(event)"/>
 	<mx:HBox id="raioBtns">
 		<mx:RadioButton id="external" group="{sources}" label="{resourceManager.getString('cms','externalFile')}" selected="true"
 						width="100"/>
 		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
+	</mx:HBox>-->
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100"/>
+		<mx:TextInput id="urlTi" width="200" text="{caption.downloadUrl}"/>
+		<mx:Button label="{resourceManager.getString('cms','uploadCaption')}"/>
 	</mx:HBox>
-
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100"/>
+		<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>
+	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100"/>
 		<mx:TextInput id="languageTi" width="100"/>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}"/>
 		<mx:TextInput id="labelTi" width="100"/>
 	</mx:HBox>
-	<mx:states>
+	<mx:HBox visible="{_showActionsBox}" includeInLayout="{_showActionsBox}" width="100%">
+		<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="download_clickHandler(event)"/>
+		<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="remove_clickHandler(event)"/>
+		<mx:Spacer width="100%"/>
+		<mx:Label text="{resourceManager.getString('cms','default')}" visible="{_isDefault}"
+					includeInLayout="{_isDefault}"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','setAsDefault')}" 
+					   visible="{!_isDefault}" includeInLayout="{!_isDefault}"/>
+	</mx:HBox>
+	<!--<mx:states>
 		<mx:State name="{EXTERNAL_STATE}">
 			<mx:AddChild position="after" relativeTo="{raioBtns}">
 				<mx:VBox>
@@ -64,5 +124,5 @@
 				</mx:VBox>
 			</mx:AddChild>
 		</mx:State>
-	</mx:states>
+	</mx:states>-->
 </mx:VBox>

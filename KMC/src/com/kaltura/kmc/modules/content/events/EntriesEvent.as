@@ -24,6 +24,11 @@ package com.kaltura.kmc.modules.content.events {
 		 */		
 		private var _closeWindow:Boolean;
 
+		/**
+		 * whether to display updated entry or next entry
+		 */		
+		private var _displayNextEntry:Boolean;
+
 
 		/**
 		 * Constructor. 
@@ -34,11 +39,12 @@ package com.kaltura.kmc.modules.content.events {
 		 * @param cancelable	should the event be cancelable
 		 * 
 		 */		
-		public function EntriesEvent(type:String, entries:ArrayCollection = null, closeWindow:Boolean = true,bubbles:Boolean = false,
+		public function EntriesEvent(type:String, entries:ArrayCollection = null, closeWindow:Boolean = true, displayNextEntry:Boolean = false,bubbles:Boolean = false,
 									 cancelable:Boolean = false) {
 			super(type, bubbles, cancelable);
 			this._entries = entries;
 			this._closeWindow = closeWindow;
+			this._displayNextEntry = displayNextEntry;
 		}
 
 		public function get entries():ArrayCollection
@@ -48,6 +54,10 @@ package com.kaltura.kmc.modules.content.events {
 		
 		public function get closeWindow():Boolean {
 			return _closeWindow;
+		}
+		
+		public function get displayNextEntry():Boolean{
+			return _displayNextEntry;
 		}
 	}
 }

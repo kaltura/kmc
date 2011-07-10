@@ -39,11 +39,13 @@ package com.kaltura.kmc.modules.content.commands {
 		private var _entries:ArrayCollection;
 		private var _isPlaylist:Boolean;
 		private var _closeDrilldown:Boolean;
+		private var _displayNextEntry:Boolean;
 
 
 		override public function execute(event:CairngormEvent):void {
 			var e:EntriesEvent = event as EntriesEvent;
 			_closeDrilldown = e.closeWindow;
+			_displayNextEntry = e.displayNextEntry;
 			if (e.entries.length > 50) {
 				_entries = e.entries;
 
@@ -109,7 +111,7 @@ package com.kaltura.kmc.modules.content.commands {
 								else if (newMetadataXML.children().length() > 0) {
 									var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
 										KalturaMetadataObjectType.ENTRY,
-										_model.entryDetailsModel.selectedEntry.id,
+										keepId,
 										newMetadataXML.toXMLString());
 									mr.addAction(metadataAdd);
 								}
@@ -123,9 +125,7 @@ package com.kaltura.kmc.modules.content.commands {
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
 				//reload changeble data
-				if (!_closeDrilldown) {
-				//	var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null, _model.entryDetailsModel.selectedEntry.id);
-				//	getSelectedEntry.dispatch();
+				if (!_closeDrilldown && !_displayNextEntry) {
 					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
 					listCustomData.dispatch();
 				}
@@ -201,18 +201,22 @@ package com.kaltura.kmc.modules.content.commands {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
 			}
-				// only re-load entries if this is the only popup
+				// only re-load entries if this is the only popup and will be closed
 			else if (_model.popups.length == 1) {
-				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
-				searchEvent.dispatch();
-				var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				categoriesEvent.dispatch();
+				if (!_closeDrilldown)
+					_model.refreshEntriesRequired = true;
+				else {
+					searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
+					searchEvent.dispatch();
+					var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+					categoriesEvent.dispatch();
+				}
 			}
 			if (_closeDrilldown) {
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
 				cgEvent.dispatch();
 			}
-			else {//refresh selected entry
+			else if (!_displayNextEntry){//refresh selected entry
 				var entriesArr:Array = data.data as Array;
 				//selected entry is the last updated
 				_model.entryDetailsModel.selectedEntry = entriesArr[entriesArr.length - 1] as KalturaBaseEntry;

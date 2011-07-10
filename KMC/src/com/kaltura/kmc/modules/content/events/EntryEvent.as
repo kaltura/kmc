@@ -45,13 +45,15 @@ package com.kaltura.kmc.modules.content.events
 		private var _entryVo : KalturaBaseEntry;
 		private var _entryId : String;
 		private var _entryIndex: int;
+		private var _reloadEntry:Boolean;
 		
-		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, entryId:String = '', entryIIndex:int = -1,  bubbles:Boolean=false, cancelable:Boolean=false)
+		public function EntryEvent(type:String, entryVo:KalturaBaseEntry, entryId:String = '', entryIIndex:int = -1, reloadEntry:Boolean = false, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			_entryVo = entryVo;
 			_entryId = entryId;
 			_entryIndex = entryIIndex;
+			_reloadEntry = reloadEntry;
 		}
 
 		public function get entryVo():KalturaBaseEntry
@@ -67,6 +69,10 @@ package com.kaltura.kmc.modules.content.events
 		public function get entryIndex():int 
 		{
 			return _entryIndex;
+		}
+		
+		public function get reloadEntry():Boolean {
+			return _reloadEntry;
 		}
 
 

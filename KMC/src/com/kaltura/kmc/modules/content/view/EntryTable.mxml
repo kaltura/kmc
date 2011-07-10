@@ -56,11 +56,8 @@
 
 
 
-			[Bindable]
-			/**
-			 * the latest selected entry in the table
-			 * */
-			public var selectedEntry:KalturaBaseEntry;
+		
+			private var _selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
 			/**
@@ -109,6 +106,24 @@
 			 * */
 			private var _sortDirection:String = "DESC";
 
+			
+			[Bindable]
+			/**
+			 * the latest selected entry in the table
+			 * */
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				_selectedEntry = value;
+				markSelectedEntry(false);
+			}
 
 			override public function get dataProvider():Object {
 				return super.dataProvider;
@@ -149,7 +164,7 @@
 			}
 
 
-			private function markSelectedEntry():void {
+			private function markSelectedEntry(dispatchSelectEvent:Boolean = true):void {
 				if (selectedEntry != null) {
 					// gotta find the correct entry by its id, because these are new objects.
 					var n:int = dataProvider.length;
@@ -163,8 +178,11 @@
 						}
 					}
 					// the selectedEntry is not relevant anymore - should remember the new one
-					var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
-					ee.dispatch();
+					if (dispatchSelectEvent) {
+						var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
+						ee.dispatch();
+						
+					}
 				}
 			}
 

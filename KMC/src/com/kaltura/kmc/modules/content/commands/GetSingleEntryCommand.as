@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.kmc.modules.content.utils.EntryUtil;
 	import com.kaltura.types.KalturaEntryReplacementStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaClipAttributes;
 	
 	import modules.Content;
 	
@@ -41,6 +42,8 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function result(data:Object):void {
+			//dummy, to compile this object into KMC
+			var clipAttributes:KalturaClipAttributes;
 			super.result(data);
 			
 			if (data.data && data.data is KalturaBaseEntry) {

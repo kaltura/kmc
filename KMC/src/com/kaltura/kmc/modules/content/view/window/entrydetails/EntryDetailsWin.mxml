@@ -22,6 +22,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -170,18 +171,24 @@
 			private var _isReady:Boolean = false;
 			private var _dataInitialized:Boolean = false;
 
+			[Bindable]
 			public var entriesAC:ArrayCollection;
 			private var _entryIndex:int;
 			[Bindable]
 			private var _nextEnabled:Boolean = true;
 			[Bindable]
 			private var _prevEnabled:Boolean;
+		
+			//original tabs in view stack
+			private var _originalTabs:Array;
 			
 			/**
 			 * should the window be closed after saving entry data
 			 * */
 			private var _closeAfterSave:Boolean;
-
+			[Bindable]
+			private var _showNextPrevBtns:Boolean = true;
+			private var _nextEntryPending:Boolean = false;
 
 			[Bindable]
 			public function get entryIndex():int {
@@ -199,7 +206,6 @@
 				}
 			}
 
-
 			/**
 			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
 			 * */
@@ -213,9 +219,22 @@
 			 * @private
 			 */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
-				_selectedEntry = value;
-				_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
-				setWindowTitle();
+				if (value && value!=_selectedEntry) {
+					_selectedEntry = value;
+					_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
+					setWindowTitle();
+					_statusWatcher = BindingUtils.bindSetter(onStatusChange, selectedEntry, "status");
+					_replacementWatcher = BindingUtils.bindSetter(onReplacementStatusChange, selectedEntry, "replacementStatus");
+					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, selectedEntry, "replacingEntryId");
+					
+					if (_undoToEntry is KalturaLiveStreamAdminEntry) {
+						_isLiveStream = true;
+					}
+
+					if (_isReady)
+						setTabsByEntryType();
+				}
+				
 			}
 
 
@@ -241,8 +260,6 @@
 			 * reorder tabs and show only relevant tabs for normal (not mix) entries
 			 * */
 			private function showNormalSetup():void {
-				viewStack.removeChild(liveStream);
-
 				// for mix/content tab, show "mixesTab" header
 				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
 			}
@@ -253,33 +270,19 @@
 			 * */
 			private function setViewPerEntryType(tabsToRemove:Array):void {
 				for each (var tab:DisplayObject in tabsToRemove) {
-					if (tab.parent is ViewStack)
+					if (tab.parent is ViewStack) {
 						viewStack.removeChild(tab);
+					}
 				}
 			}
-
 
 			/**
 			 * reorder tabs and show only relevant tabs for mix entries
 			 * */
 			private function showMixSetup():void {
-				viewStack.removeChild(entryAssets);
-				viewStack.removeChild(liveStream);
-
 				// for mix/content tab, show "mixesTab" header
 				contentTab.label = ResourceManager.getInstance().getString('cms', 'content');
 			}
-
-
-			/**
-			 * reorder tabs and show only relevant tabs for live Entries
-			 * */
-			private function showLiveStreamSetup():void {
-				viewStack.removeChild(entryAssets);
-				viewStack.removeChild(contentTab);
-
-			}
-
 
 			/**
 			 * sets the window title, if entry doesn't have content and title yet,
@@ -305,10 +308,16 @@
 				}
 
 				title = resourceManager.getString('cms', 'editEntry') + ' - ';
-				if (_undoToEntry.replacedEntryId)
+				if (_undoToEntry.replacedEntryId) {
 					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('cms', 'assetReplacement') + ')';
-				else
+					_showNextPrevBtns = false;
+					
+				}
+				else {
 					title += _undoToEntry.name;
+					_showNextPrevBtns = true;
+					
+				}
 			}
 
 
@@ -345,38 +354,47 @@
 
 
 			private function onWindowCreationComplete():void {
-
 				if (!_entryWatcher)
 					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
-				if (!_entryIndexWatcher)
+				if (_entryIndexWatcher)
 					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", entryDetailsModel, "selectedIndex");
-				if (!_statusWatcher)
-					_statusWatcher = BindingUtils.bindSetter(onStatusChange, entryDetailsModel.selectedEntry, "status");
-				if (!_replacementWatcher)
-					_replacementWatcher = BindingUtils.bindSetter(onReplacementStatusChange, entryDetailsModel.selectedEntry, "replacementStatus");
-				if (!_replacingEntryWatcher)
-					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, entryDetailsModel.selectedEntry, "replacingEntryId");
-
-				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
-					_isLiveStream = true;
-				}
-
 				// mixes:
 				/* if (!_undoToEntry is KalturaMixEntry) {
 				   partsTable.text = resourceManager.getString('cms', 'usageInMixes');
 				 } */
 
-
+			//	setTabsByEntryType();
+				_originalTabs = new Array();
+				for (var i:int = 0; i< viewStack.numChildren; i++) {
+					_originalTabs.push(viewStack.getChildAt(i));
+				}
+				setTabsByEntryType();
+				// roles and permissions 
+				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
+				if (viewStack.getChildByName('entryMetaData'))
+					entryMetaData.init();
+				_isReady = true;
+				
+			}
+			
+			private function setTabsByEntryType():void {
+				//reset viewStack to its starting point
+				viewStack.removeAllChildren();
+				for each (var tab:DisplayObject in _originalTabs)
+					viewStack.addChild(tab);
+				_dataInitialized = false;
 				// show correct panels according to entry type
 				// live entry
 				if (_isLiveStream) {
-					showLiveStreamSetup();
+					setViewPerEntryType(new Array(entryAssets, contentTab));
 				} else if (selectedEntry is KalturaMixEntry) {
 					//this is a mix
 					showMixSetup();
+					setViewPerEntryType(new Array(entryAssets, liveStream));
 				} else {
 					// this entry is a regular video/image/audio
 					showNormalSetup();
+					setViewPerEntryType(new Array(liveStream));
 					//remove redundant tabs in image and audio cases
 					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
 						setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution));
@@ -387,14 +405,13 @@
 				hideTabsFromUiconf();
 				loadEntries();
 
-				// roles and permissions 
-				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
 				for each (var subtabName:String in tabsToHide) {
 					if (viewStack.getChildByName(subtabName)) {
 						viewStack.removeChild(this[subtabName]);
 					}
 				}
+				
 				//adds custom data profiles
 				if (customData.parent is ViewStack) {
 					if (filterModel.enableCustomData) {
@@ -407,15 +424,13 @@
 					if (customData.numChildren < 2)
 						viewStack.removeChild(customData);
 				}
-
-				_isReady = true;
+				
 				if (_visibleTabsAC)
 					setVisibleTabs();
 				else
 					initTabs();
-
-				if (viewStack.getChildByName('entryMetaData'))
-					entryMetaData.init();
+				
+				viewStack.selectedIndex = dtn.selectedIndex = 0;
 			}
 
 
@@ -677,19 +692,24 @@
 				}
 
 				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
+					_nextEntryPending = false;
 					// Atar: need to alert no name? there's validation on the TF itself 
 				} else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
 					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg', []), resourceManager.getString('cms', 'categoriesErrorTitle'));
+					_nextEntryPending = false;
 				}
 				// scheduling validation:
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
 					Alert.show(resourceManager.getString('cms', 'scedualingStartDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
+					_nextEntryPending = false;
 				} else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_END_DATE) {
 					Alert.show(resourceManager.getString('cms', 'scedualingEndDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
+					_nextEntryPending = false;
 				}
 				// livestream validation:
 				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'bitrateValidation'));
+					_nextEntryPending = false;
 				} else {
 					// if referenceId was changed
 					if ( /* _selectedEntry.referenceId && */_undoToEntry.referenceId && _selectedEntry.referenceId != _undoToEntry.referenceId) {
@@ -736,6 +756,7 @@
 			 * */
 			private function saveCuepoints(e:CloseEvent = null):void {
 				if (e && e.detail == Alert.NO) {
+					_nextEntryPending = false;
 					return;
 				}
 				// save cuepoints if needed
@@ -750,10 +771,13 @@
 			 * update selected entry on server
 			 * */
 			private function saveEntryDetails(e:Event):void {
+				//_entriesToSave[entryIndex] = _undoToEntry;
 				destroyPanels();
 				// if we got here, all panels validation passed ok, the error was null.	
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]), _closeAfterSave);
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]), _closeAfterSave, _nextEntryPending);
 				cgEvent.dispatch();
+				if (_nextEntryPending)
+					setNextEntry();
 				if (_closeAfterSave)
 					removeWatchers();
 
@@ -937,20 +961,32 @@
 			}
 
 
-			private function gotoNextEntry():void {
-				entryIndex++;
-				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex);
-				selectEntry.dispatch();
+			private function gotoNextEntry(ascending:Boolean):void {
+				if (ascending)
+					entryIndex++;
+				else
+					entryIndex--;
+				_nextEntryPending = true;
+				//save current entry
+				if (checkDataChanged())
+					validate();
+				else
+					setNextEntry();
 			}
-
-
+			
+			private function setNextEntry():void {
+				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
+				selectEntry.dispatch();
+				_nextEntryPending = false;
+			}
+/* 
 			private function gotoPrevEntry():void {
 				entryIndex--;
-				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex);
-				selectEntry.dispatch();
+				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
+				selectEntry.dispatch();		     
 			}
-
-			
+			 */
+					
 			/**
 			 * initializes save process
 			 * */
@@ -958,6 +994,7 @@
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}
+			
 		]]>
 	</mx:Script>
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
@@ -1028,13 +1065,20 @@
 					 cuepointsSaved="saveEntryDetails(event)"/>
 	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="submitChanges(false)"
-				   buttonMode="true"/>
-		<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'saveAndClose')}" click="submitChanges(true)"
-				   buttonMode="true"/>
-		<mx:Button label="{resourceManager.getString('cms', 'prevEntry')}" click="gotoPrevEntry()" buttonMode="true"
-				   enabled="{_prevEnabled}"/>
-		<mx:Button label="{resourceManager.getString('cms', 'nextEntry')}" click="gotoNextEntry()" buttonMode="true"
-				   enabled="{_nextEnabled}"/>
+		<mx:HBox horizontalAlign="left" width="33%">
+			<mx:LinkButton label="{resourceManager.getString('cms', 'prevEntry')}" click="gotoNextEntry(false)" buttonMode="true"
+						   enabled="{_prevEnabled}" visible="{_showNextPrevBtns}"/>
+			<mx:LinkButton label="{resourceManager.getString('cms', 'nextEntry')}" click="gotoNextEntry(true)" buttonMode="true"
+						   enabled="{_nextEnabled}" visible="{_showNextPrevBtns}"/>
+			
+		</mx:HBox>
+		<mx:HBox width="33%" horizontalAlign="center">
+			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="submitChanges(false)"
+					   buttonMode="true"/>
+			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'done')}" click="submitChanges(true)"
+					   buttonMode="true"/>
+			
+		</mx:HBox>
+
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
