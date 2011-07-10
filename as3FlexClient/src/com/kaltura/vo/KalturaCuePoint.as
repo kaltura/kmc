@@ -73,7 +73,6 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('tags');
 			arr.push('startTime');
-			arr.push('userId');
 			arr.push('partnerData');
 			arr.push('partnerSortValue');
 			arr.push('forceStop');

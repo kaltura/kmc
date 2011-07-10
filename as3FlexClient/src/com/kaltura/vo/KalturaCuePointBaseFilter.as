@@ -91,10 +91,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var forceStopIn : String;
-
-		/** 
-		* 		* */ 
 		public var systemNameEqual : String;
 
 		/** 
@@ -126,7 +122,6 @@ package com.kaltura.vo
 			arr.push('partnerSortValueGreaterThanOrEqual');
 			arr.push('partnerSortValueLessThanOrEqual');
 			arr.push('forceStopEqual');
-			arr.push('forceStopIn');
 			arr.push('systemNameEqual');
 			arr.push('systemNameIn');
 			return arr;

@@ -60,6 +60,10 @@ package com.kaltura.vo
 		public var description : String;
 
 		/** 
+		* 		* */ 
+		public var partnerData : String;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -67,6 +71,7 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('tags');
+			arr.push('partnerData');
 			return arr;
 		}
 

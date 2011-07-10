@@ -12,5 +12,7 @@ package com.kaltura.types
 		public static const NO_MATCH : int = 8;
 		public static const ERROR_HANDLING : int = 9;
 		public static const ERROR_DELETING : int = 10;
+		public static const DOWNLOADING : int = 11;
+		public static const ERROR_DOWNLOADING : int = 12;
 	}
 }
