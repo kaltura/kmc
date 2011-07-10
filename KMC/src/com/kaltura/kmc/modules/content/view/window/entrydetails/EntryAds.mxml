@@ -13,6 +13,7 @@
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
 			import com.kaltura.types.KalturaAdType;
 			import com.kaltura.types.KalturaCuePointType;
+			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -20,6 +21,7 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
+			import mx.controls.Image;
 			import mx.controls.SWFLoader;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
@@ -46,14 +48,14 @@
 			 * clipper ruler is kept between different
 			 * instances of the window as optimisation
 			 * */
-			private var kClip:DisplayObject;
+			private var _kClip:DisplayObject;
 			private static var kClipLoader:SWFLoader;
 
 			/**
 			 * player is kept between different
 			 * instances of the window as optimisation
 			 * */
-			private var kdp:DisplayObject;
+			private var _kdp:DisplayObject;
 			private static var kdpLoader:SWFLoader;
 			
 			[Bindable]
@@ -94,17 +96,22 @@
 			 * change watcher for reacting to cueopints count being set on model
 			 * */
 			private var _watchCPCount:ChangeWatcher;
+			
+			/**
+			 * image for KDP when entry is in no_content status
+			 * */
+			private var _img:Image;
 
 			
 			public function destroy():void {
-				if (kdp) {
-					kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-					kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
-					kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
-					kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
-					kdp["sendNotification"](KdpEventTypes.DO_STOP);
+				if (_kdp) {
+					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
+					_kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
+					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
+					_kdp["sendNotification"](KdpEventTypes.DO_STOP);
 				}
-				if (kClip) {
+				if (_kClip) {
 					removeKClipListeners();
 				}
 				if (_watchCPCount) {
@@ -128,10 +135,10 @@
 			 * */
 			public function saveCuepoints():Boolean {
 				var res:Boolean = false;
-				if (kClip) {
-					if (kClip["isSavedRequired"]()) {
-						kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
-						kClip["save"]();
+				if (_kClip) {
+					if (_kClip["isSavedRequired"]()) {
+						_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
+						_kClip["save"]();
 						res = true;
 					}
 				}
@@ -143,17 +150,46 @@
 			}
 
 
+			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true):void {
+				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+					if (updateKClip && _kClip) {
+						_kClip["setDisabled"](true);
+					}
+					if (updateKdp) {
+						if (!_img) {
+							_img = new Image();
+						}
+						_img.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("noContentImg");
+						if (!_img.parent) {
+							kdpHolder.addChild(_img);
+						}
+						if (_kdp && kdpLoader.parent) {
+							kdpHolder.removeChild(kdpLoader);
+						}
+					}
+				}
+				else {
+					if (updateKClip && _kClip) {
+						_kClip["setEntryId"](_selectedEntry.id);
+					}
+					if (updateKdp && _kdp) {
+						if (!kdpLoader.parent) {
+							kdpHolder.addChild(kdpLoader);	
+						}
+						_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+					}
+					if (updateKdp && _img && _img.parent) {
+						kdpHolder.removeChild(_img);
+					}
+				}
+			}
+			
 			/**
 			 * The entry being edited
 			 * */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
-				if (kClip) {
-					kClip["setEntryId"](_selectedEntry.id);
-				}
-				if (kdp) {
-					kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
-				}
+				updateWidgetsStatus();
 			}
 
 
@@ -200,11 +236,11 @@
 			private function loadWidgets(event:FlexEvent):void {
 				if (EntryAds.kClipLoader) {
 					kClipHolder.addChild(kClipLoader);
-					kClip = kClipLoader.content["application"] as DisplayObject;
-					kClip.width = kClipHolder.width;
+					_kClip = kClipLoader.content["application"] as DisplayObject;
+					_kClip.width = kClipHolder.width;
 					addKClipListeners();
 					if (_selectedEntry) {
-						kClip["setEntryId"](_selectedEntry.id);
+						updateWidgetsStatus(true, false);
 					}
 				} else {
 					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
@@ -218,9 +254,9 @@
 
 				if (EntryAds.kdpLoader) {
 					kdpHolder.addChild(kdpLoader);
-					kdp = kdpLoader.content;
+					_kdp = kdpLoader.content;
 					if (_selectedEntry) {
-						kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+						updateWidgetsStatus(false, true);
 					}
 				} else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
@@ -248,7 +284,7 @@
 			private function onKClipApplicationReady(e:Event):void {
 				// e.target is the systemManager for KClip
 				e.target.removeEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
-				kClip = e.target.application as DisplayObject;
+				_kClip = e.target.application as DisplayObject;
 				initKClip();
 			}
 
@@ -267,32 +303,34 @@
 				params.uiconf_id = context.kClipAdsUiconf;
 				params.cuepointType = KalturaCuePointType.AD; 
 				addKClipListeners();
-				kClip["init"](params);
-				kClip.width = kClipHolder.width;
+				_kClip["init"](params);
+//TODO disable if no content entry	
+//				updateWidgetsStatus(true, false);
+				_kClip.width = kClipHolder.width;
 			}
 
 
 			private function addKClipListeners():void {
-				kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
-				kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
 			}
 
 
 			private function removeKClipListeners():void {
-				kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
-				kClip.removeEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
 			}
 
 
@@ -303,10 +341,7 @@
 //				trace("kclip: " , e.type, e["data"]);
 				switch (e.type) {
 					case KClipEventTypes.ENTRY_READY:
-						trace("kclip ready");
-						if (!editable) {
-							kClip["setDisabled"](true);
-						}
+						_kClip["setDisabled"](!editable);
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
 						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
@@ -357,8 +392,8 @@
 				var loader:SWFLoader = e.target as SWFLoader;
 				loader.width = kdpHolder.width;
 				loader.height = kdpHolder.height;
-				kdp = loader.content;
-				kdpHolder.addChild(loader);
+				_kdp = loader.content;
+				updateWidgetsStatus(false, true);
 				initKdp();
 			}
 
@@ -385,12 +420,12 @@
 
 				params.debugMode = context.debugMode;
 
-				kdp["flashvars"] = params;
+				_kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
-				kdp["init"]();
-				kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
-				kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
-				kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+				_kdp["init"]();
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
 			}
 			
 			
@@ -398,17 +433,17 @@
 //				trace("kdp: ", e.type, e["data"]);
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
-						kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-						kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
+						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
-						kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-						kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KdpEventTypes.PLAYER_UPDATE_PLAYHEAD:
-						if (kClip) {
-							kClip["scrollToPoint"](parseFloat(e["data"]) * 1000)
+						if (_kClip) {
+							_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000)
 						}
 						break;
 				}
@@ -419,8 +454,8 @@
 			 * update kdp with new time (event data is new time in ms)
 			 * */
 			private function updateKdpPlayhead(n:Number):void {
-				if (kdp) {
-					kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
+				if (_kdp) {
+					_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
 				}
 			}
 
@@ -456,7 +491,7 @@
 						_selectedCuePoint.duration = /* _selectedCuePoint.startTime + */ teDuration.getTimeAsSeconds()*1000;
 						break;
 				}
-				kClip["updateCuePoint"](_selectedCuePoint);
+				_kClip["updateCuePoint"](_selectedCuePoint);
 			}
 
 
@@ -518,16 +553,16 @@
 			private function updateKClipWidth(event:FlexEvent):void {
 				if (kClipLoader) {
 					kClipLoader.width = kClipHolder.width - 1;
-					if (kClip) {
-						kClip.width = kClipLoader.width;
+					if (_kClip) {
+						_kClip.width = kClipLoader.width;
 					}
 				}
 			}
 
 
 			protected function removeAllCuePoints(event:MouseEvent):void {
-				if (kClip) {
-					kClip["removeAll"]();
+				if (_kClip) {
+					_kClip["removeAll"]();
 				}
 			}
 
