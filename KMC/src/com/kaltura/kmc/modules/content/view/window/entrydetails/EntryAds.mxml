@@ -302,7 +302,7 @@
 			private function initKClip():void {
 				var params:Object = {};
 				params.ks = context.kc.ks;
-				params.entry_id = _selectedEntry.id;
+//				params.entry_id = _selectedEntry.id;
 				params.host = context.rootUrl;
 				params.state = "cuePointsState";
 				params.showControlBar = "true";
@@ -311,7 +311,6 @@
 				params.cuepointType = KalturaCuePointType.AD;
 				addKClipListeners();
 				_kClip["init"](params);
-//TODO disable if no content entry	
 //				updateWidgetsStatus(true, false);
 				_kClip.width = kClipHolder.width;
 			}
@@ -347,6 +346,15 @@
 			private function handleKClipEvents(e:Event):void {
 //				trace("kclip: " , e.type, e["data"]);
 				switch (e.type) {
+					case KClipEventTypes.CLIPPER_READY:
+						//TODO disable or set entry id
+						if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+							_kClip["setDisabled"](true);
+						}
+						else {
+							_kClip["setEntryId"](_selectedEntry.id);
+						}
+						break;
 					case KClipEventTypes.ENTRY_READY:
 						_kClip["setDisabled"](!editable);
 						break;
