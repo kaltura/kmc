@@ -7,6 +7,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
 			import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -59,7 +60,11 @@
 			 * */
 			public var conversionProfiles:ArrayCollection;
 			
-			
+			/**
+			 * for roles and permissions, when user doesn't have 
+			 * CONTENT_INGEST_REFERENCE_MODIFY this is set to false.
+			 * */
+			public var allowSetRefid:Boolean = true;
 
 			/**
 			 * @copy #flavorAssetId
@@ -122,6 +127,7 @@
 				if (_folders && _folders.length > 0) {
 					cbFolders.dispatchEvent(new ListEvent("change"));
 				}
+				PermissionManager.getInstance().applyAllAttributes(this, "matchFromDropWin");
 			}
 
 
@@ -140,7 +146,7 @@
 				_selectedSlug = e.target.data as KalturaDropFolderFile;
 				_entry.referenceId = _selectedSlug.parsedSlug;
 				// enable / disable action buttons according to slug status
-				updateBtn.enabled = _selectedSlug.status != KalturaDropFolderFileStatus.WAITING; 
+				updateBtn.enabled = _selectedSlug.status != KalturaDropFolderFileStatus.WAITING && allowSetRefid; // and permission
 				submitBtn.enabled = _selectedSlug.status == KalturaDropFolderFileStatus.WAITING || _windowState == SINGLE_FLAVOUR;
 			}
 
