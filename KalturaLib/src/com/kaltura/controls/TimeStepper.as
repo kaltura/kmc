@@ -372,9 +372,10 @@ package com.kaltura.controls {
 				timeStepper.value = _currentStepValue;
 				_focusArea.setSelection(0, 3);
 				
-				// fix minimum:
+				// fix boundaries:
 				var n:Number = timeStepper.value;
 				avoidLessThanMinimum();
+				avoidMoreThanMaximum();
 				// dispatch "change" event only if value has changed
 				var dispatch:Boolean = false;
 				switch(_focusArea) {
@@ -482,6 +483,7 @@ package com.kaltura.controls {
 			this.second = value.second;
 			this.milisecond = value.milisecond;
 			avoidLessThanMinimum();
+			avoidMoreThanMaximum();
 		}
 		
 		/**
