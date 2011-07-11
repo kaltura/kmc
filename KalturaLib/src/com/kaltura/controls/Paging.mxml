@@ -28,7 +28,7 @@
 		<![CDATA[
 			import com.kaltura.events.PagingEvent;
 			import com.kaltura.vo.KalturaFilterPager;
-
+			
 			import mx.controls.Button;
 			import mx.controls.LinkButton;
 			import mx.events.FlexEvent;
@@ -95,6 +95,7 @@
 			public var rowsInPage:Array = [10, 25, 50, 100, 250, 500];
 			[Bindable]
 			public var showRowsInPage:Boolean = true;
+			public var defaultPageSize:int = 10;
 
 
 			[Bindable]
@@ -341,17 +342,31 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				styleName = "pagerTopBox";
+				var selectedFromSO:Boolean = true;
+				var selectedIndex:int;
 				// if page size selection available, used saved value:
 				if (showRowsInPage) {
 					var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
 					var soRowInPage:int = kmcSO.data.rowInPage;
 					if (int(soRowInPage) != int(rowInPageCb.selectedItem)) {
+						selectedFromSO = false;
 						for (var i:int = 0; i < rowsInPage.length; i++) {
-							if (int(rowsInPage[i]) == soRowInPage)
+							if (int(rowsInPage[i]) == soRowInPage) {
 								rowInPageCb.selectedIndex = i;
+								selectedFromSO = true;
+								resultSizeChange();
+							}
+							//will be used in case we have no saved value in the SO
+							else if (int(rowsInPage[i]) == defaultPageSize) {
+								selectedIndex = i;
+							}
 						}
-						resultSizeChange();
+						
 					}
+				}
+				if (!selectedFromSO) {
+					rowInPageCb.selectedIndex = selectedIndex;
+					resultSizeChange();
 				}
 			}
 		]]>
