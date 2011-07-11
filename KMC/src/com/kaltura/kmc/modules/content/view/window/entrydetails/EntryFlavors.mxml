@@ -433,7 +433,8 @@
 					switch (_selectedEntry.status) {
 						case KalturaEntryStatus.NO_CONTENT:
 							stateLabel.text = resourceManager.getString('cms', 'noContentState');
-							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
+							//TODO add media text
 							break;
 						case KalturaEntryStatus.READY:
 							//if this is a replacement entry
@@ -443,13 +444,13 @@
 							}
 							else {
 								stateLabel.text = resourceManager.getString('cms', 'readyState');
-								setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
+								setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
 							}
 							break;
 						case KalturaEntryStatus.ERROR_CONVERTING:
 						case KalturaEntryStatus.ERROR_IMPORTING:
 							stateLabel.text = resourceManager.getString('cms', 'errorState');
-							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType);
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
 							if (_selectedEntry.replacedEntryId) {
 								_showActions = false;
 							}
@@ -466,12 +467,24 @@
 			 * set actions box according to media type
 			 * @param mediaType	current entry's media type
 			 * */
-			private function setActionsLabel(mediaType:int):void {
+			private function setActionsLabel(mediaType:int, entryStatus:String):void {
 				_showActions = true;
-				if (mediaType == KalturaMediaType.VIDEO)
-					actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
-				else if (mediaType == KalturaMediaType.AUDIO)
-					actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
+				if (mediaType == KalturaMediaType.VIDEO) {
+					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
+						actionLabel.text = resourceManager.getString('cms', 'addVideo');
+					}
+					else {
+						actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
+					}
+				}
+				else if (mediaType == KalturaMediaType.AUDIO) {
+					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
+						actionLabel.text = resourceManager.getString('cms', 'addAudio');
+					}
+					else {
+						actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
+					}
+				}
 			}
 
 
