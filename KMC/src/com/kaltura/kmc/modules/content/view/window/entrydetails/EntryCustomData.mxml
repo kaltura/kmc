@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 verticalGap="{customDataVerticalGap}" show="onShow()">
+		 show="onShow()" verticalGap="{customDataVerticalGap}" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
@@ -39,7 +39,7 @@
 			public function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
 				var profilesArray:Array = new Array();
 				//indicates the custom data child number inside the custom data tab. will be used for navigation on a button click
-				var childIndex:int = 1;
+				var childIndex:int = 0;
 						
 				for (var i:int = 0; i<profilesAC.length; i++) {					
 					var curProfile:KMCMetadataProfileVO = profilesAC.getItemAt(i) as KMCMetadataProfileVO;
@@ -51,14 +51,14 @@
 						
 						var hrule:HRule = new HRule();
 						hrule.percentWidth = 100;
-						this.addChild(hrule);
+						profilesVBox.addChild(hrule);
 						childIndex ++;
 						
 						var obj:Object = new Object();
 						obj.name = curProfile.profile.name;
 						obj.childIndex = childIndex;
 						profilesArray.push(obj);
-						this.addChild(curCustomData);
+						profilesVBox.addChild(curCustomData);
 						childIndex++;				
 					}
 				}
@@ -94,15 +94,15 @@
 				var childIndex:int = (event as ScrollToProfileEvent).selectedIndexToScroll;
 				//sums up all heights before the desired profile
 				for (var i:int = 0; i< childIndex; i++) {
-					scrollPos += this.getChildAt(i).height + customDataVerticalGap;
+					scrollPos += profilesVBox.getChildAt(i).height + customDataVerticalGap;
 				}
-				this.verticalScrollPosition = scrollPos;
+				profilesVBox.verticalScrollPosition = scrollPos;
 			}
 			
 			private function onShow():void {
-				for (var i:int = 1; i < this.numChildren; i++) {
-					if (getChildAt(i) is SingleCustomData)
-						(getChildAt(i) as SingleCustomData).onShow();
+				for (var i:int = 0; i < profilesVBox.numChildren; i++) {
+					if (profilesVBox.getChildAt(i) is SingleCustomData)
+						(profilesVBox.getChildAt(i) as SingleCustomData).onShow();
 				}
 			}
 			
@@ -117,4 +117,5 @@
 		<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" includeInLayout="{!_pager.isFirstPage}" click="{onPrevClick()}" styleName="moveLeftButton"/>
 		<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}" click="{onNextClick()}" styleName="moveRightButton"/>
 	</mx:HBox>
+	<mx:VBox id="profilesVBox" verticalGap="{customDataVerticalGap}" height="{this.height - navigationHbox.height - customDataVerticalGap}" width="100%"/>
 </mx:VBox>
