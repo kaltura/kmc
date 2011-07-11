@@ -150,7 +150,7 @@
 			}
 
 
-			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true):void {
+			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true, setEntryId:Boolean = true):void {
 				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					if (updateKClip && _kClip) {
 						_kClip["setDisabled"](true);
@@ -169,14 +169,16 @@
 					}
 				}
 				else {
-					if (updateKClip && _kClip) {
+					if (updateKClip && _kClip && setEntryId) {
 						_kClip["setEntryId"](_selectedEntry.id);
 					}
 					if (updateKdp && _kdp) {
 						if (!kdpLoader.parent) {
 							kdpHolder.addChild(kdpLoader);	
 						}
-						_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+						if (setEntryId) {
+							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+						}
 					}
 					if (updateKdp && _img && _img.parent) {
 						kdpHolder.removeChild(_img);
@@ -393,7 +395,14 @@
 				loader.width = kdpHolder.width;
 				loader.height = kdpHolder.height;
 				_kdp = loader.content;
-				updateWidgetsStatus(false, true);
+				updateWidgetsStatus(false, true, false);
+				if (!kdpLoader.parent) {
+					kdpHolder.addChild(kdpLoader);	
+				}
+				if (_img && _img.parent) {
+					kdpHolder.removeChild(_img);
+				}
+				
 				initKdp();
 			}
 
