@@ -89,6 +89,7 @@ package com.kaltura.controls {
 			o.hour = h;
 			o.minute = m;
 			o.second = s;
+			o.milisecond = 0;
 			return o;
 		}
 		
@@ -250,6 +251,7 @@ package com.kaltura.controls {
 		 * minimum value, if so sets value to minimum.
 		 * */
 		private  function avoidLessThanMinimum():void {
+			if (!_minimum) return;
 			var oMin:Object = getTimeAsObject(_minimum);
 			if (hour < oMin.hour) {
 				setMinValue();
@@ -287,6 +289,7 @@ package com.kaltura.controls {
 		 * maximum value, if so sets value to maximum.
 		 * */
 		private  function avoidMoreThanMaximum():void {
+			if (!_maximum) return;
 			var oMax:Object = getTimeAsObject(_maximum);
 			if (hour > oMax.hour) {
 				setMaxValue(); 
@@ -335,7 +338,6 @@ package com.kaltura.controls {
 					}
 				}
 				else if (_focusArea == minuteText || _focusArea == secondText) {
-					//TODO null?
 					if (_currentStepValue > 59) {
 						_currentStepValue = 0;
 					}
@@ -356,7 +358,6 @@ package com.kaltura.controls {
 					}
 				}
 				else  if (_focusArea == minuteText || _focusArea == secondText) {
-					//TODO OR NULL  
 					if (_currentStepValue < 0) {
 						_currentStepValue = 59;
 					}
@@ -478,10 +479,10 @@ package com.kaltura.controls {
 		
 		
 		override public function set timeValue(value:Object):void {
-			this.hour = value.hour;
-			this.minute = value.minute;
-			this.second = value.second;
-			this.milisecond = value.milisecond;
+			this.hour = value.hour ? value.hour : 0;
+			this.minute = value.minute ? value.minute : 0;
+			this.second = value.second ? value.second : 0;
+			this.milisecond = value.milisecond ? value.milisecond : 0;
 			avoidLessThanMinimum();
 			avoidMoreThanMaximum();
 		}
