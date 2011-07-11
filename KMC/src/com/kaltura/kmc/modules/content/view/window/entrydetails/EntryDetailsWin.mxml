@@ -462,7 +462,7 @@
 				if (openPlayerFunc) {
 
 					var html5Compatible:Boolean = (_undoToEntry is KalturaMediaEntry && (_undoToEntry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO) ? true : false;
-					JSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, hasMobileFlavors(), html5Compatible);
+					JSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, allFlavorAssets(entryDetailsModel.flavorParamsAndAssetsByEntryId), html5Compatible);
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");
@@ -472,43 +472,54 @@
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED, GoogleAnalyticsConsts.CONTENT);
 			}
 
-
-			/**
-			 * does the current entry have mobile flavors?
-			 * */
-			private function hasMobileFlavors():Boolean {
-				var result:Boolean = false;
+			private function allFlavorAssets(flavorParamsAndAssetsByEntryId:ArrayCollection) : Array {
 				var fa:KalturaFlavorAsset;
-				if (entryDetailsModel.flavorParamsAndAssetsByEntryId && entryDetailsModel.flavorParamsAndAssetsByEntryId.length) {
-					for each (var kawp:FlavorAssetWithParamsVO in entryDetailsModel.flavorParamsAndAssetsByEntryId) {
-						fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
-						if (fa && fa.tags) {
-							if (fa.tags.indexOf('iphone') > -1) {
-								result = true;
-								break;
-							};
-							if (fa.tags.indexOf('ipad') > -1) {
-								result = true;
-								break;
-							};
-							if (fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga') {
-								result = true;
-								break;
-							};
-							if (fa.fileExt == '3gp') {
-								result = true;
-								break;
-							};
-							if (fa.tags.indexOf('applembr') > -1) {
-								result = true;
-								break;
-							};
-						}
+				var result:Array = new Array();
+				for each (var kawp:FlavorAssetWithParamsVO in flavorParamsAndAssetsByEntryId) {
+					fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
+					if (fa) {
+						result.push(fa);
 					}
 				}
 				return result;
-
 			}
+
+//			/**
+//			 * does the current entry have mobile flavors?
+//			 * */
+//			private function hasMobileFlavors():Boolean {
+//				var result:Boolean = false;
+//				var fa:KalturaFlavorAsset;
+//				if (entryDetailsModel.flavorParamsAndAssetsByEntryId && entryDetailsModel.flavorParamsAndAssetsByEntryId.length) {
+//					for each (var kawp:FlavorAssetWithParamsVO in entryDetailsModel.flavorParamsAndAssetsByEntryId) {
+//						fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
+//						if (fa && fa.tags) {
+//							if (fa.tags.indexOf('iphone') > -1) {
+//								result = true;
+//								break;
+//							};
+//							if (fa.tags.indexOf('ipad') > -1) {
+//								result = true;
+//								break;
+//							};
+//							if (fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga') {
+//								result = true;
+//								break;
+//							};
+//							if (fa.fileExt == '3gp') {
+//								result = true;
+//								break;
+//							};
+//							if (fa.tags.indexOf('applembr') > -1) {
+//								result = true;
+//								break;
+//							};
+//						}
+//					}
+//				}
+//				return result;
+//
+//			}
 
 
 			/**

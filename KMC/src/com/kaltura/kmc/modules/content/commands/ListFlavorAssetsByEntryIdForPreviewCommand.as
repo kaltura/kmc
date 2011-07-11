@@ -51,7 +51,9 @@ package com.kaltura.kmc.modules.content.commands
 			{
 				isHtml5 = true;	
 			}
-			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description), !_model.showSingleEntryEmbedCode, false, _model.attic.previewuiconf, null, hasMobileFlavors(ac), isHtml5);
+			JSGate.doPreviewEmbed(_model.openPlayer, _entry.id, _entry.name, StringUtil.cutTo512Chars(_entry.description),
+				!_model.showSingleEntryEmbedCode, false, _model.attic.previewuiconf, null, 
+				allFlavorAssets(ac)/*hasMobileFlavors(ac)*/, isHtml5);
 			_model.attic.previewuiconf = null;
 			_model.decreaseLoadCounter();
 		}
@@ -89,36 +91,49 @@ package com.kaltura.kmc.modules.content.commands
 			return flavorParamsAndAssetsByEntryId;
 		}
 		
-		/**
-		 * is any of the given assets a mobile asset?
-		 * */
-		private function hasMobileFlavors(flavorParamsAndAssetsByEntryId:ArrayCollection):Boolean {
-			var result:Boolean = false;
+		
+		private function allFlavorAssets(flavorParamsAndAssetsByEntryId:ArrayCollection) : Array {
 			var fa:KalturaFlavorAsset;
-			
+			var result:Array = new Array();
 			for each (var kawp:FlavorAssetWithParamsVO in flavorParamsAndAssetsByEntryId) {
-				fa = kawp.kalturaFlavorAssetWithParams.flavorAsset; 
-				if (!fa) return false;
-				if(fa.tags.indexOf('iphone') > -1 ){
-					result = true;
-					break;
-				};
-				if(fa.tags.indexOf('ipad') > -1 ){
-					result = true; 
-					break;
-				};
-				if(fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga'){
-					result = true;
-					break;
-				};
-				if(fa.fileExt == '3gp') {
-					result = true;
-					break;
-				};
+				fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
+				if (fa) {
+					result.push(fa);
+				}
 			}
 			return result;
-			
 		}
+		
+//		/**
+//		 * is any of the given assets a mobile asset?
+//		 * */
+//		private function hasMobileFlavors(flavorParamsAndAssetsByEntryId:ArrayCollection):Boolean {
+//			var result:Boolean = false;
+//			var fa:KalturaFlavorAsset;
+//			
+//			for each (var kawp:FlavorAssetWithParamsVO in flavorParamsAndAssetsByEntryId) {
+//				fa = kawp.kalturaFlavorAssetWithParams.flavorAsset; 
+//				if (!fa) return false;
+//				if(fa.tags.indexOf('iphone') > -1 ){
+//					result = true;
+//					break;
+//				};
+//				if(fa.tags.indexOf('ipad') > -1 ){
+//					result = true; 
+//					break;
+//				};
+//				if(fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga'){
+//					result = true;
+//					break;
+//				};
+//				if(fa.fileExt == '3gp') {
+//					result = true;
+//					break;
+//				};
+//			}
+//			return result;
+//			
+//		}
 
 	}
 }
