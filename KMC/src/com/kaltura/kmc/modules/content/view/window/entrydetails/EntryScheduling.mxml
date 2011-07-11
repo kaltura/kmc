@@ -44,8 +44,30 @@
 			public function getEndTime():int {
 				return (anyTimeRBtn.selected || !specificEndCBBtn.selected || (specificEndDate.selectedDate == null)) ? -1 : getTimeInSeconds(specificEndDate, specificEndHour);
 			}
-
-
+			
+			/**
+			 * return true if dates were changed
+			 * */
+			public function wasChanged():Boolean {
+				var startTime:int = getStartTime();
+				var endTime:int = getEndTime();
+				
+				//start time was reset
+				if ((_selectedEntry.startDate!=int.MIN_VALUE) && (startTime < 0))
+					return true;
+				//start time was changed
+				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
+					return true;
+				//end time was reset
+				if ((_selectedEntry.endDate!=int.MIN_VALUE) && (endTime < 0))
+					return true;
+				//end time was changed
+				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
+					return true;
+				
+				return false;
+			}
+			
 			/**
 			 * see all data on the panel is legal and save data
 			 * @return an object with error code
