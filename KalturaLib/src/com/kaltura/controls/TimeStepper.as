@@ -18,7 +18,7 @@ package com.kaltura.controls {
 	
 	/**
 	 * A NumericStepper for time values. <br/>
-	 * extends SM_TimeEntry to support minimum value.
+	 * extends SM_TimeEntry to support minimum/maximum value + miliseconds.
 	 * @author Atar
 	 */	
 	public class TimeStepper extends SM_TimeEntry {
@@ -53,6 +53,11 @@ package com.kaltura.controls {
 		 * @copy #minimum 
 		 */		
 		private var _minimum:int;
+		
+		/**
+		 * @copy #maximum 
+		 */		
+		private var _maximum:int;
 		
 		
 		public function TimeStepper() {
@@ -209,6 +214,7 @@ package com.kaltura.controls {
 				this.milisecond = Number(timeStepper.value);
 				
 			avoidLessThanMinimum();
+			avoidMoreThanMaximum();
 		}
 
 		/**
@@ -227,7 +233,7 @@ package com.kaltura.controls {
 				this.milisecond = NumericStepper(event.target).value;
 			}
 			avoidLessThanMinimum();
-			
+			avoidMoreThanMaximum();
 			dispatchEvent(new FlexEvent("change"));
 		}
 		
@@ -240,7 +246,7 @@ package com.kaltura.controls {
 		}
 		
 		/**
-		 * checks if curent value is less then the 
+		 * checks if curent value is less than the 
 		 * minimum value, if so sets value to minimum.
 		 * */
 		private  function avoidLessThanMinimum():void {
@@ -257,6 +263,43 @@ package com.kaltura.controls {
 						setMinValue();
 					}
 					//TODO support minimal ms value
+				}
+			}
+			// correct _currentStepValue:
+			switch (_focusArea) {
+				case hourText:
+					_currentStepValue = this.hour;
+					break;
+				case minuteText:
+					_currentStepValue = this.minute;
+					break;
+				case secondText:
+					_currentStepValue = this.second;
+					break;
+				case msText:
+					_currentStepValue = this.milisecond;
+					break;
+			}
+		}
+		
+		/**
+		 * checks if curent value is more than the 
+		 * maximum value, if so sets value to maximum.
+		 * */
+		private  function avoidMoreThanMaximum():void {
+			var oMax:Object = getTimeAsObject(_maximum);
+			if (hour > oMax.hour) {
+				setMaxValue(); 
+			}
+			else if (hour == oMax.hour) {
+				if (minute > oMax.minute) {
+					setMaxValue();
+				}
+				else if (minute == oMax.minute) {
+					if (second > oMax.second) {
+						setMaxValue();
+					}
+					//TODO support maximal ms value
 				}
 			}
 			// correct _currentStepValue:
@@ -410,6 +453,27 @@ package com.kaltura.controls {
 					timeStepper.value = this.milisecond;
 			}
 		}
+		/**
+		 * display (and rememebr) maximum value in the component 
+		 */		
+		protected function setMaxValue():void {
+			var oMin:Object = getTimeAsObject(_maximum);
+			this.hour = oMin.hour;
+			this.minute = oMin.minute;
+			this.second = oMin.second;
+			this.milisecond = oMin.milisecond;
+			
+			if (timeStepper != null) {
+				if (_focusArea == hourText)
+					timeStepper.value = this.hour;
+				if (_focusArea == minuteText)
+					timeStepper.value = this.minute;
+				if (_focusArea == secondText)
+					timeStepper.value = this.second;
+				if (_focusArea == msText)
+					timeStepper.value = this.milisecond;
+			}
+		}
 		
 		
 		override public function set timeValue(value:Object):void {
@@ -434,6 +498,22 @@ package com.kaltura.controls {
 		public function set minimum(value:int):void
 		{
 			_minimum = value;
+		}
+		
+		/**
+		 * maximum value for this component (in seconds) 
+		 */
+		public function get maximum():int
+		{
+			return _maximum;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set maximum(value:int):void
+		{
+			_maximum = value;
 		}
 
 				
