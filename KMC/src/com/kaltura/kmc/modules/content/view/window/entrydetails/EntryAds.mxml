@@ -325,6 +325,7 @@
 				_kClip.addEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
 				_kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
 				_kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+				_kClip.addEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
 			}
 
 
@@ -337,6 +338,7 @@
 				_kClip.removeEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
 			}
 
 
@@ -347,7 +349,7 @@
 //				trace("kclip: " , e.type, e["data"]);
 				switch (e.type) {
 					case KClipEventTypes.CLIPPER_READY:
-						//TODO disable or set entry id
+						// disable or set entry id
 						if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 							_kClip["setDisabled"](true);
 						}
@@ -501,7 +503,7 @@
 				// "other" provider
 				_selectedCuePoint.tags = tiProvider.text;
 				// ad type
-				_selectedCuePoint.adType = cbType.selectedItem.value;
+				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
 				// duration
 				_selectedCuePoint.endTime =  _selectedCuePoint.startTime +  teDuration.getTimeAsSeconds() * 1000;
 				
