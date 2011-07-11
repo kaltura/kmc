@@ -125,7 +125,7 @@ package com.kaltura.kmc.modules.content.commands {
 			for each (var cpap:KalturaConversionProfileAssetParams in cpaps) {
 				if (cpap && cpap.conversionProfileId == profid && cpap.origin != KalturaAssetParamsOrigin.CONVERT) {
 					for each (var ap:KalturaFlavorParams in params) {
-						if (ap.id == cpap.assetParamsId) {
+						if (ap && ap.id == cpap.assetParamsId) {
 							// add flavor name to the cpap, to be used in dropdown in IR
 							cpap.name = ap.name;
 							cp.flavors.addItem(cpap);
