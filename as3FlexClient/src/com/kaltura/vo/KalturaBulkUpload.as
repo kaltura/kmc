@@ -42,6 +42,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var bulkUploadType : String;
+
+		/** 
+		* 		* */ 
 		public var results : Array = new Array();
 
 		/** 
@@ -72,6 +76,7 @@ package com.kaltura.vo
 			arr.push('logFileUrl');
 			arr.push('csvFileUrl');
 			arr.push('bulkFileUrl');
+			arr.push('bulkUploadType');
 			arr.push('results');
 			arr.push('error');
 			arr.push('errorType');
