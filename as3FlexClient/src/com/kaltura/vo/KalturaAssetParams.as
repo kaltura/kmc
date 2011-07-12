@@ -44,11 +44,6 @@ package com.kaltura.vo
 		public var tags : String;
 
 		/** 
-		* The container format of the Flavor Params
-		* */ 
-		public var format : String;
-
-		/** 
 		* Array of partner permisison names that required for using this asset params
 		* */ 
 		public var requiredPermissions : Array = new Array();
@@ -64,7 +59,6 @@ package com.kaltura.vo
 			arr.push('systemName');
 			arr.push('description');
 			arr.push('tags');
-			arr.push('format');
 			arr.push('requiredPermissions');
 			return arr;
 		}

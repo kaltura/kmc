@@ -23,7 +23,7 @@ package com.kaltura.vo
 		/** 
 		* The caption format
 		* */ 
-	//	public var format : String;
+		public var format : String;
 
 		/** 
 		* Id of the caption params or the flavor params to be used as source for the caption creation		* */ 

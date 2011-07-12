@@ -85,6 +85,11 @@ package com.kaltura.vo
 		* 		* */ 
 		public var engineVersion : int = int.MIN_VALUE;
 
+		/** 
+		* The container format of the Flavor Params
+		* */ 
+		public var format : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -106,6 +111,7 @@ package com.kaltura.vo
 			arr.push('rotate');
 			arr.push('operators');
 			arr.push('engineVersion');
+			arr.push('format');
 			return arr;
 		}
 

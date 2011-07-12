@@ -21,6 +21,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var assetVersionEqual : String;
 
+		/** 
+		* 		* */ 
+		public var formatEqual : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -29,6 +33,7 @@ package com.kaltura.vo
 			arr.push('assetParamsVersionEqual');
 			arr.push('assetIdEqual');
 			arr.push('assetVersionEqual');
+			arr.push('formatEqual');
 			return arr;
 		}
 

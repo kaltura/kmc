@@ -97,6 +97,10 @@ package com.kaltura.vo
 		public var urlManagerClass : String;
 
 		/** 
+		* 		* */ 
+		public var urlManagerParams : Array = new Array();
+
+		/** 
 		* No need to create enum for temp field
 		* */ 
 		public var trigger : int = int.MIN_VALUE;
@@ -127,6 +131,7 @@ package com.kaltura.vo
 			arr.push('maxConcurrentConnections');
 			arr.push('pathManagerClass');
 			arr.push('urlManagerClass');
+			arr.push('urlManagerParams');
 			arr.push('trigger');
 			return arr;
 		}

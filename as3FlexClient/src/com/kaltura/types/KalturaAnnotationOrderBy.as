@@ -4,6 +4,8 @@ package com.kaltura.types
 	{
 		public static const END_TIME_ASC : String = '+endTime';
 		public static const END_TIME_DESC : String = '-endTime';
+		public static const DURATION_ASC : String = '+duration';
+		public static const DURATION_DESC : String = '-duration';
 		public static const CREATED_AT_ASC : String = '+createdAt';
 		public static const CREATED_AT_DESC : String = '-createdAt';
 		public static const UPDATED_AT_ASC : String = '+updatedAt';

@@ -5,10 +5,15 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaFlavorParamsBaseFilter extends KalturaAssetParamsFilter
 	{
+		/** 
+		* 		* */ 
+		public var formatEqual : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('formatEqual');
 			return arr;
 		}
 

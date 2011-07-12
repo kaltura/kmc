@@ -25,6 +25,11 @@ package com.kaltura.vo
 		* 		* */ 
 		public var readyBehavior : int = int.MIN_VALUE;
 
+		/** 
+		* The container format of the Flavor Params
+		* */ 
+		public var format : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -34,6 +39,7 @@ package com.kaltura.vo
 			arr.push('assetId');
 			arr.push('assetVersion');
 			arr.push('readyBehavior');
+			arr.push('format');
 			return arr;
 		}
 

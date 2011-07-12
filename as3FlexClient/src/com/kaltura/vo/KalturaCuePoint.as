@@ -10,7 +10,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var cuePointType : String;
 
 		/** 
 		* 		* */ 
@@ -37,7 +37,7 @@ package com.kaltura.vo
 		public var tags : String;
 
 		/** 
-		* 		* */ 
+		* Start tim ein milliseconds		* */ 
 		public var startTime : int = int.MIN_VALUE;
 
 		/** 

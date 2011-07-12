@@ -21,10 +21,6 @@ package com.kaltura.vo
 		* 		* */ 
 		public var tagsEqual : String;
 
-		/** 
-		* 		* */ 
-		public var formatEqual : String;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -33,7 +29,6 @@ package com.kaltura.vo
 			arr.push('systemNameIn');
 			arr.push('isSystemDefaultEqual');
 			arr.push('tagsEqual');
-			arr.push('formatEqual');
 			return arr;
 		}
 

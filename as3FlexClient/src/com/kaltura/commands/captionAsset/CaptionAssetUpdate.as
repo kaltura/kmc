@@ -1,19 +1,19 @@
-package com.kaltura.commands.thumbAsset
+package com.kaltura.commands.captionAsset
 {
-	import com.kaltura.vo.KalturaThumbAsset;
-	import com.kaltura.delegates.thumbAsset.ThumbAssetUpdateDelegate;
+	import com.kaltura.vo.KalturaCaptionAsset;
+	import com.kaltura.delegates.captionAsset.CaptionAssetUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
-	public class ThumbAssetUpdate extends KalturaCall
+	public class CaptionAssetUpdate extends KalturaCall
 	{
 		public var filterFields : String;
 		/**
 		 * @param id String
-		 * @param thumbAsset KalturaThumbAsset
+		 * @param captionAsset KalturaCaptionAsset
 		 **/
-		public function ThumbAssetUpdate( id : String,thumbAsset : KalturaThumbAsset )
+		public function CaptionAssetUpdate( id : String,captionAsset : KalturaCaptionAsset )
 		{
-			service= 'thumbasset';
+			service= 'caption_captionasset';
 			action= 'update';
 
 			var keyArr : Array = new Array();
@@ -21,7 +21,7 @@ package com.kaltura.commands.thumbAsset
 			var keyValArr : Array = new Array();
 			keyArr.push('id');
 			valueArr.push(id);
- 			keyValArr = kalturaObject2Arrays(thumbAsset, 'thumbAsset');
+ 			keyValArr = kalturaObject2Arrays(captionAsset, 'captionAsset');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);
@@ -30,7 +30,7 @@ package com.kaltura.commands.thumbAsset
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new ThumbAssetUpdateDelegate( this , config );
+			delegate = new CaptionAssetUpdateDelegate( this , config );
 		}
 	}
 }

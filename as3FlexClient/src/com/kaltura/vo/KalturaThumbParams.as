@@ -57,6 +57,11 @@ package com.kaltura.vo
 		* Id of the flavor params or the thumbnail params to be used as source for the thumbnail creation		* */ 
 		public var sourceParamsId : int = int.MIN_VALUE;
 
+		/** 
+		* The container format of the Flavor Params
+		* */ 
+		public var format : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -74,6 +79,7 @@ package com.kaltura.vo
 			arr.push('scaleHeight');
 			arr.push('backgroundColor');
 			arr.push('sourceParamsId');
+			arr.push('format');
 			return arr;
 		}
 

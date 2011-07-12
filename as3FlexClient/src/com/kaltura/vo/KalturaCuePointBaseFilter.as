@@ -15,11 +15,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var typeEqual : String;
+		public var cuePointTypeEqual : String;
 
 		/** 
 		* 		* */ 
-		public var typeIn : String;
+		public var cuePointTypeIn : String;
 
 		/** 
 		* 		* */ 
@@ -103,8 +103,8 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('idEqual');
 			arr.push('idIn');
-			arr.push('typeEqual');
-			arr.push('typeIn');
+			arr.push('cuePointTypeEqual');
+			arr.push('cuePointTypeIn');
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('entryIdEqual');
