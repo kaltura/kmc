@@ -532,6 +532,22 @@
 			}
 			
 			
+			protected function getFileHeaderText(action:String):String {
+				switch (action) {
+					case AddFlavorAssetsWindow.ACTION_IMPORT:
+						return resourceManager.getString('cms', 'afa_import_header');
+						break;
+					case AddFlavorAssetsWindow.ACTION_LINK:
+						return resourceManager.getString('cms', 'afa_link_header');
+						break;
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						return resourceManager.getString('cms', 'afa_upload_header');
+						break;
+				}
+				return '';
+			}
+			
+			
 			/**
 			 * windowAction represents the action that will be taken upon 
 			 * "submit" click. applicable values are either ACTION_UPLOAD, ACTION_IMPORT
@@ -573,6 +589,7 @@
 				}
 			}
 			
+			
 
 
 		]]>
@@ -610,7 +627,7 @@
 	</mx:VBox>
 	<mx:Spacer height="4" />
 	<flavors:FilesTable id="filesTable" width="100%" flavors="{cnvrtProfCb.selectedItem.flavors}"
-						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}"
+						dataProvider="{filesList}" allowAddFiles="{allowAddFiles}" fileHeaderText="{getFileHeaderText(_windowAction)}"
 						addFiles="addMoreFiles()" showSize="{_windowAction == AddFlavorAssetsWindow.ACTION_UPLOAD}" 
 						nameEditable="{_windowAction != AddFlavorAssetsWindow.ACTION_UPLOAD}"/>
 	<mx:Text width="100%"
