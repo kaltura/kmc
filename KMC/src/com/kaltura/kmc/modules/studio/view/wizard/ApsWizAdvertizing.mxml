@@ -108,6 +108,7 @@
 					tiPlayerKv.text = ResourceManager.getInstance().getString("advertising", "keyval");
 				}
 
+				ynCuePoints.selected = _playerUiconfVO.advertizing.trackCuePoints;
 				ynNotice.selected = _playerUiconfVO.advertizing.noticeEnabled;
 				tiNotice.text = _playerUiconfVO.advertizing.noticeText;
 				ynSkip.selected = _playerUiconfVO.advertizing.skipEnabled;
@@ -285,6 +286,8 @@
 				// id and label can't change.
 
 				advo.timeout = parseFloat(tiTimeout.text);
+				
+				advo.trackCuePoints = ynCuePoints.selected;
 
 				advo.noticeEnabled = ynNotice.selected;
 
@@ -622,6 +625,8 @@
 			<!-- - - - - - - - - - - - - - - player config - - - - - - - - - - - - - - - -->
 			<form:DisablableBox id="playerConfigBox" direction="vertical" enabled="{KUtils.logicalAnd((adsourceCB.selectedItem.id == VAST), _editable)}" width="100%">
 				<mx:Label text="{resourceManager.getString('advertising', 'playerConfig')}" styleName="pageTitle"/>
+				<form:YesNoQuestion id="ynCuePoints" labelWidth="180" yesLabel="Yes" noLabel="No"
+									text="{resourceManager.getString('advertising', 'useCuePoints')}:"/>
 				<form:YesNoQuestion id="ynNotice" labelWidth="180" yesLabel="Yes" noLabel="No"
 									text="{resourceManager.getString('advertising', 'notice')}:"/>
 				<mx:HBox>

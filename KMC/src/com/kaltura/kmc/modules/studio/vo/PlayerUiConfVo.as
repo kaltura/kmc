@@ -108,6 +108,8 @@ package com.kaltura.kmc.modules.studio.vo {
 
 
 			_advertizing.timeout = parseFloat(adData.playerConfig.@timeout);
+			
+			_advertizing.trackCuePoints = (adData.playerConfig.@trackCuePoints == "true");
 
 			_advertizing.noticeEnabled = (adData.playerConfig.notice.@enabled == "true");
 			_advertizing.noticeText = adData.playerConfig.notice.text().toString();

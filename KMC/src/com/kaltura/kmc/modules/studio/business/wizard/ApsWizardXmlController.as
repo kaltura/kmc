@@ -572,6 +572,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					// set vast attributes
 					var vast:XML = player..Plugin.(@id == "vast")[0];
 					vast.@timeout = advo.timeout;
+					vast.@trackCuePoints = advo.trackCuePoints;
 					// preroll
 					if (advo.preroll.enabled) {
 						vast.@numPreroll = advo.preroll.nAds;
@@ -594,6 +595,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						vast.@overlayUrl = advo.overlay.url;
 						var overlay:XML = player..Plugin.(@id == "overlay")[0];
 						overlay.@displayDuration = advo.overlay.nAds;
+						overlay.@trackCuePoints = advo.trackCuePoints;
 					}
 					else {
 						delete vast.attribute("overlayInterval")[0];
@@ -844,6 +846,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			// PLAYER CONFIG
 			xml = adData.playerConfig[0];
 			xml.@timeout = adVo.timeout;
+			xml.@trackCuePoints = adVo.trackCuePoints;
 			// notice
 			xml = xml.notice[0];
 			xml.@enabled = adVo.noticeEnabled;

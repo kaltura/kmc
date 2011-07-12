@@ -24,6 +24,11 @@ package com.kaltura.kmc.modules.studio.vo.ads {
 		public var adSources:ArrayCollection/*AdSourceVo*/;
 		
 		/**
+		 * should video cuepoints be tracked by player
+		 * */
+		public var trackCuePoints:Boolean;
+		
+		/**
 		 * The length of time to wait for an ad to load before skipping it.
 		 */
 		public var timeout:Number;
