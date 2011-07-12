@@ -187,7 +187,7 @@
 			 * */
 			private var _closeAfterSave:Boolean;
 			[Bindable]
-			private var _showNextPrevBtns:Boolean = true;
+			public var showNextPrevBtns:Boolean = true;
 			private var _nextEntryPending:Boolean = false;
 
 			[Bindable]
@@ -233,8 +233,7 @@
 
 					if (_isReady)
 						setTabsByEntryType();
-				}
-				
+				}				
 			}
 
 
@@ -310,12 +309,10 @@
 				title = resourceManager.getString('cms', 'editEntry') + ' - ';
 				if (_undoToEntry.replacedEntryId) {
 					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('cms', 'assetReplacement') + ')';
-					_showNextPrevBtns = false;
 					
 				}
 				else {
 					title += _undoToEntry.name;
-					_showNextPrevBtns = true;
 					
 				}
 			}
@@ -397,7 +394,7 @@
 					setViewPerEntryType(new Array(liveStream));
 					//remove redundant tabs in image and audio cases
 					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-						setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution));
+						setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution, entryCaptions));
 					} else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
 						setViewPerEntryType(new Array(entryDistribution));
 					}
@@ -608,8 +605,11 @@
 						}
 					}
 				}
+				var captionsChanged:Boolean = false;
+				if (entryCaptions.parent is ViewStack)
+					captionsChanged = entryCaptions.wasChanged();
 
-				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged || entrySch.wasChanged())
+				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged || entrySch.wasChanged() || captionsChanged)
 			}
 
 
@@ -695,6 +695,9 @@
 					// metadata validation passed.
 					validationResult = entrySch.save();
 					if (validationResult.error == null) {
+						if (entryCaptions.parent is ViewStack) {
+							validationResult = entryCaptions.save();
+						}
 						// scheduling validation passed.
 						if (_isLiveStream) {
 							validationResult = liveStream.save();
@@ -721,7 +724,17 @@
 				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'bitrateValidation'));
 					_nextEntryPending = false;
-				} else {
+				} 
+				//captions validations
+				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_URL) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'missingURLError'));
+					_nextEntryPending = false;
+				}
+				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_LANGUAGE) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'missingLanguageError'));
+					_nextEntryPending = false;
+				} 
+				else {
 					// if referenceId was changed
 					if ( /* _selectedEntry.referenceId && */_undoToEntry.referenceId && _selectedEntry.referenceId != _undoToEntry.referenceId) {
 						// list all entries with the same refid
@@ -1078,9 +1091,9 @@
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox horizontalAlign="left" width="33%">
 			<mx:LinkButton label="{resourceManager.getString('cms', 'prevEntry')}" click="gotoNextEntry(false)" buttonMode="true"
-						   enabled="{_prevEnabled}" visible="{_showNextPrevBtns}"/>
+						   enabled="{_prevEnabled}" visible="{showNextPrevBtns}" styleName="drillDownNavBtns"/>
 			<mx:LinkButton label="{resourceManager.getString('cms', 'nextEntry')}" click="gotoNextEntry(true)" buttonMode="true"
-						   enabled="{_nextEnabled}" visible="{_showNextPrevBtns}"/>
+						   enabled="{_nextEnabled}" visible="{showNextPrevBtns}" styleName="drillDownNavBtns"/>
 			
 		</mx:HBox>
 		<mx:HBox width="33%" horizontalAlign="center">

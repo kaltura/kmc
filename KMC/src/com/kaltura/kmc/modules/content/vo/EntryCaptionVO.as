@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.model
+package com.kaltura.kmc.modules.content.vo
 {
 	import com.kaltura.vo.KalturaCaptionAsset;
 
@@ -8,12 +8,13 @@ package com.kaltura.kmc.modules.content.model
 	 * @author Michal
 	 * 
 	 */	
-	public class EntryCaption
+	public class EntryCaptionVO
 	{
 		public var caption:KalturaCaptionAsset;
 		public var downloadUrl:String;
+		public var uploadTokenId:String;
 		
-		public function EntryCaption()
+		public function EntryCaptionVO()
 		{
 		}
 	}

@@ -119,7 +119,7 @@ package com.kaltura.kmc.modules.content.model
 		public var entriesWSameRefidAsSelected:Array;
 		
 		/**
-		 * Current entry captions Array
+		 * Array of captionEntryVO
 		 * */
 		public var captionsArray:Array;
 		

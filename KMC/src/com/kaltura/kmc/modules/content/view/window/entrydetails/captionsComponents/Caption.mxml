@@ -3,42 +3,265 @@
 		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.content.model.EntryCaption;
+			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.types.KalturaCaptionType;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
+			import com.kaltura.types.KalturaLanguage;
 			import com.kaltura.types.KalturaNullableBoolean;
-			import com.kaltura.vo.KalturaCaptionAsset;
-			public static const CAPTIONS_TYPES:Array = new Array("SRT", "XML", "TXT");
-			public static const EXTERNAL_STATE:String = "externalState";
-			public static const EMBEDDED_STATE:String = "embeddedState";
+			
+			import mx.binding.utils.BindingUtils;
+			
+			//events
+			public static const REMOVE_CAPTION:String = "removeCaption";
+			public static const CHANGE_DEFAULT:String = "changeDefault";
+			
+			//public static const EXTERNAL_STATE:String = "externalState";
+			//public static const EMBEDDED_STATE:String = "embeddedState";
+			public static const LANGUAGES_ARRAY:Array = new Array(
+														KalturaLanguage.AB,
+														KalturaLanguage.AA,
+														KalturaLanguage.AF,
+														KalturaLanguage.SQ,
+														KalturaLanguage.AM,
+														KalturaLanguage.AR,
+														KalturaLanguage.HY,
+														KalturaLanguage.AS_,
+														KalturaLanguage.AY,
+														KalturaLanguage.AZ,
+														KalturaLanguage.BA,
+														KalturaLanguage.EU,
+														KalturaLanguage.BN,
+														KalturaLanguage.DZ,
+														KalturaLanguage.BH,
+														KalturaLanguage.BI,
+														KalturaLanguage.BR,
+														KalturaLanguage.BG,
+														KalturaLanguage.MY,
+														KalturaLanguage.BE,
+														KalturaLanguage.KM,
+														KalturaLanguage.CA,
+														KalturaLanguage.ZH,
+														KalturaLanguage.CO,
+														KalturaLanguage.HR,
+														KalturaLanguage.CS,
+														KalturaLanguage.DA,
+														KalturaLanguage.NL,
+														KalturaLanguage.EN,
+														KalturaLanguage.EO,
+														KalturaLanguage.ET,
+														KalturaLanguage.FO,
+														KalturaLanguage.FA,
+														KalturaLanguage.FJ,
+														KalturaLanguage.FI,
+														KalturaLanguage.FR,
+														KalturaLanguage.FY,
+														KalturaLanguage.GL,
+														KalturaLanguage.GD,
+														KalturaLanguage.GV,
+														KalturaLanguage.KA,
+														KalturaLanguage.DE,
+														KalturaLanguage.EL,
+														KalturaLanguage.KL,
+														KalturaLanguage.GN,
+														KalturaLanguage.GU,
+														KalturaLanguage.HA,
+														KalturaLanguage.HE,
+														KalturaLanguage.IW,
+														KalturaLanguage.HI,
+														KalturaLanguage.HU,
+														KalturaLanguage.IS,
+														KalturaLanguage.ID,
+														KalturaLanguage.IN,
+														KalturaLanguage.IA,
+														KalturaLanguage.IE,
+														KalturaLanguage.IU,
+														KalturaLanguage.IK,
+														KalturaLanguage.GA,
+														KalturaLanguage.IT,
+														KalturaLanguage.JA,
+														KalturaLanguage.JV,
+														KalturaLanguage.KN,
+														KalturaLanguage.KS,
+														KalturaLanguage.KK,
+														KalturaLanguage.RW,
+														KalturaLanguage.KY,
+														KalturaLanguage.RN,
+														KalturaLanguage.KO,
+														KalturaLanguage.KU,
+														KalturaLanguage.LO,
+														KalturaLanguage.LA,
+														KalturaLanguage.LV,
+														KalturaLanguage.LI,
+														KalturaLanguage.LN,
+														KalturaLanguage.LT,
+														KalturaLanguage.MK,
+														KalturaLanguage.MG,
+														KalturaLanguage.MS,
+														KalturaLanguage.ML,
+														KalturaLanguage.MT,
+														KalturaLanguage.MI,
+														KalturaLanguage.MR,
+														KalturaLanguage.MO,
+														KalturaLanguage.MN,
+														KalturaLanguage.NA,
+														KalturaLanguage.NE,
+														KalturaLanguage.NO,
+														KalturaLanguage.OC,
+														KalturaLanguage.OR_,
+														KalturaLanguage.OM,
+														KalturaLanguage.PS,
+														KalturaLanguage.PL,
+														KalturaLanguage.PT,
+														KalturaLanguage.PA,
+														KalturaLanguage.QU,
+														KalturaLanguage.RM,
+														KalturaLanguage.RO,
+														KalturaLanguage.RU,
+														KalturaLanguage.SM,
+														KalturaLanguage.SG,
+														KalturaLanguage.SA,
+														KalturaLanguage.SR,
+														KalturaLanguage.SH,
+														KalturaLanguage.ST,
+														KalturaLanguage.TN,
+														KalturaLanguage.SN,
+														KalturaLanguage.SD,
+														KalturaLanguage.SI,
+														KalturaLanguage.SS,
+														KalturaLanguage.SK,
+														KalturaLanguage.SL,
+														KalturaLanguage.SO,
+														KalturaLanguage.ES,
+														KalturaLanguage.SU,
+														KalturaLanguage.SW,
+														KalturaLanguage.SV,
+														KalturaLanguage.TL,
+														KalturaLanguage.TG,
+														KalturaLanguage.TA,
+														KalturaLanguage.TT,
+														KalturaLanguage.TE,
+														KalturaLanguage.TH,
+														KalturaLanguage.BO,
+														KalturaLanguage.TI,
+														KalturaLanguage.TO,
+														KalturaLanguage.TS,
+														KalturaLanguage.TR,
+														KalturaLanguage.TK,
+														KalturaLanguage.TW,
+														KalturaLanguage.UG,
+														KalturaLanguage.UK,
+														KalturaLanguage.UR,
+														KalturaLanguage.UZ,
+														KalturaLanguage.VI,
+														KalturaLanguage.VO,
+														KalturaLanguage.CY,
+														KalturaLanguage.WO,
+														KalturaLanguage.XH,
+														KalturaLanguage.YI,
+														KalturaLanguage.JI,
+														KalturaLanguage.YO,
+														KalturaLanguage.ZU);
 		
+			
+			public static const XML_EXT:String = "*.xml";
+			public static const SRT_EXT:String = "*.srt";
+			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
 	
-			private var _caption:EntryCaption;
+			private var _caption:EntryCaptionVO;
+			private var _fileExtension:String;
 			[Bindable]
 			private var _showActionsBox:Boolean;
 			[Bindable]
 			private var _isDefault:Boolean;
-			
+			private var _fileReference:FileReference;
 			[Bindable]
-			public function get caption():EntryCaption
+			private var _isLoading:Boolean = false;
+			[Bindable]
+			private var _formatText:String;
+			[Bindable]
+			private var _languageIndex:int = -1;
+			[Bindable]
+			private var _languageLabel:String;
+			[Bindable]
+			private var _isError:Boolean;
+			[Bindable]
+			private var _captionExists:Boolean;
+			
+			/**
+			 * is it the default caption
+			 * */
+			public function get isDefault():Boolean
+			{
+				return _isDefault;
+			}
+
+			public function set isDefault(value:Boolean):void
+			{
+				_isDefault = value;
+			}
+
+			[Bindable]
+			public function get caption():EntryCaptionVO
 			{
 				return _caption;
 			}
 
-			public function set caption(value:EntryCaption):void
+			/**
+			 * the entryCaptionVo of this caption component
+			 * */
+			public function set caption(value:EntryCaptionVO):void
 			{
 				_caption = value;
-				if (_caption && _caption.caption) {
+				 if (_caption &&_caption.caption) 
+				{
 					_showActionsBox = true;
-					if (_caption.caption.isDefault == KalturaNullableBoolean.TRUE_VALUE)
-						_isDefault = true;
-					else 
-						_isDefault = false;
+					_captionExists = _caption.caption.id ? true : false;
+					if (_caption.caption.format)
+						_formatText = getFormat(_caption.caption.format);
+					if (_caption.caption.language) {
+						for (var i:int = 0; i<LANGUAGES_ARRAY.length; i++) {
+							if (String(LANGUAGES_ARRAY[i])==_caption.caption.language) {
+								_languageIndex = i;
+								break;
+							}
+						}
+					}	
+					_languageLabel = _caption.caption.label;
+				 	switch (_caption.caption.status) {
+						case KalturaFlavorAssetStatus.ERROR:
+							_isError = true;
+							_isLoading = false;
+							break;
+						case KalturaFlavorAssetStatus.READY:
+							_isError = false;
+							_isLoading = false;
+							break;
+						default:
+							_isLoading = true;
+							_isError = false;			
+					} 
 				}
 				else
-					_showActionsBox = false;
+					_showActionsBox = false; 
 			}
 
 			private function onCreationComplete():void {
 			//	this.currentState = EXTERNAL_STATE;
+				BindingUtils.bindSetter(onUpload, caption, 'uploadTokenId');
+			}
+			
+			/**
+			 * if upload has begun, change to loading state
+			 * */
+			private function onUpload(value:String):void {
+				if (value) {
+					_isLoading = true;
+				}
+				else {
+					_isLoading = false;
+				}
 			}
 			
 		/* 	currently not implemented on server side
@@ -51,16 +274,120 @@
 
 			 */
 
-			protected function download_clickHandler(event:MouseEvent):void
+			/**
+			 * download caption
+			 * */
+			protected function downloadCaption():void
 			{
-				// TODO Auto-generated method stub
+				var urlRequest:URLRequest = new URLRequest(caption.downloadUrl);
+				navigateToURL(urlRequest , '_self');
 			}
 
 
-			protected function remove_clickHandler(event:MouseEvent):void
+			protected function removeCaption():void
 			{
-				// TODO Auto-generated method stub
+				dispatchEvent(new Event(REMOVE_CAPTION));
 			}
+			
+			protected function setAsDefault():void
+			{
+				dispatchEvent(new Event(CHANGE_DEFAULT));
+			}
+
+
+			/**
+			 * will open browse window so the user can select a file to upload
+			 * */
+			protected function browse():void
+			{
+				_fileReference = new FileReference();
+				_fileReference.addEventListener(Event.SELECT, onFileSelected);
+				var fileTypes:String;
+				if (_captionExists) {
+					if (caption.caption.format == KalturaCaptionType.SRT)
+						fileTypes = SRT_EXT;
+					else
+						fileTypes = XML_EXT;
+				}
+				else {
+					fileTypes = SRT_EXT + ';' + XML_EXT;
+				}
+				_fileReference.browse(new Array(new FileFilter(resourceManager.getString('cms','files') +' (' + fileTypes + ')' ,fileTypes)));
+			}
+			
+			/**
+			 * set the format according to the selected file, will start upload process
+			 * */
+			private function onFileSelected(event:Event):void {
+				_fileReference.removeEventListener(Event.SELECT, onFileSelected);
+				_fileExtension = _fileReference.name.substring(_fileReference.name.lastIndexOf('.')+1, _fileReference.name.length);
+				if (_fileExtension=='xml')
+					_formatText = getFormat(KalturaCaptionType.DFXP);
+				else
+					_formatText = getFormat(KalturaCaptionType.SRT);
+				var uploadFile:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPLOAD_FILE);
+				uploadFile.caption = _caption;
+				uploadFile.fr = _fileReference;
+				uploadFile.dispatch();
+			}
+			
+			/**
+			 * save caption
+			 * */
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				if (!_isLoading) 
+				{
+					if (!urlTi.text || urlTi.text=='')
+						result.error = EntryDetailsValidationError.CAPTIONS_URL;
+				}
+				if (languageCB.selectedIndex==-1)
+					result.error = EntryDetailsValidationError.CAPTIONS_LANGUAGE;
+				
+				if (!result.error) {
+					if (_fileExtension) 
+					{
+						_caption.caption.fileExt = _fileExtension;
+						_caption.caption.format = (_fileExtension == 'xml') ? KalturaCaptionType.DFXP : KalturaCaptionType.SRT;
+					}
+					_caption.caption.language = languageCB.selectedItem as String;
+					_caption.caption.label = labelTi.text;
+				}
+				
+				return result;
+			}
+			
+			/**
+			 * was content of current caption changed
+			 * */
+			public function wasChanged():Boolean {
+				if (languageCB.selectedItem && (!_caption.caption.language || (String(languageCB.selectedItem) != _caption.caption.language)))
+					return true;
+				if (labelTi.text && (!_caption.caption.label || (labelTi.text != _caption.caption.label)))
+					return true;
+				if (_isLoading)
+					return true;
+				
+				return false;
+			}
+		
+			/**
+			 * return label according to given enum
+			 * */
+			private function getFormat(enum:String):String {
+				if (enum == KalturaCaptionType.SRT)
+					return resourceManager.getString('cms','srtLabel');
+				return resourceManager.getString('cms','dfxpLabel');
+			}
+			
+			/**
+			 * return enum according to given string
+			 * */
+			private function getFormatEnum(name:String):String {
+				if (name == resourceManager.getString('cms','srtLabel'))
+					return KalturaCaptionType.SRT;
+				return KalturaCaptionType.DFXP;
+			}	
 
 		]]>
 	</mx:Script>
@@ -70,29 +397,43 @@
 						width="100"/>
 		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
 	</mx:HBox>-->
+	
+<!--	<mx:StringValidator id="urlValidator" property="text" required="true" requiredFieldError=""/>
+	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{LANGUAGES_ARRAY.length -1}"
+						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>-->
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100"/>
-		<mx:TextInput id="urlTi" width="200" text="{caption.downloadUrl}"/>
-		<mx:Button label="{resourceManager.getString('cms','uploadCaption')}"/>
+		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
+		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" editable="false"/>
+		<mx:Button label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
+				   visible="{!_isLoading}" includeInLayout="{!_isLoading}"/>
+		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
+				  source="{SpinnerImg}" visible="{_isLoading}" includeInLayout="{_isLoading}"/>
+		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{_isError}" styleName="distributionError"/>
 	</mx:HBox>
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100"/>
-		<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>
+		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100" styleName="drillDownLabel"/>
+		<mx:Label text="{_formatText}"/>
+		<!--<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>-->
 	</mx:HBox>
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100"/>
-		<mx:TextInput id="languageTi" width="100"/>
-		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}"/>
-		<mx:TextInput id="labelTi" width="100"/>
+		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100" styleName="drillDownLabel"/>
+		<mx:ComboBox id="languageCB" dataProvider="{LANGUAGES_ARRAY}" selectedIndex="{_languageIndex}" 
+					 prompt="{resourceManager.getString('cms','languagePrompt')}" enabled="{!_captionExists}"/>
+		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}" styleName="drillDownLabel"/>
+		<mx:TextInput id="labelTi" width="100" text="{_languageLabel}"/>
 	</mx:HBox>
-	<mx:HBox visible="{_showActionsBox}" includeInLayout="{_showActionsBox}" width="100%">
-		<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="download_clickHandler(event)"/>
-		<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="remove_clickHandler(event)"/>
-		<mx:Spacer width="100%"/>
+	<mx:HBox visible="{_showActionsBox}" includeInLayout="{_showActionsBox}">
+		<mx:Spacer width="100"/>
+		<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="downloadCaption()"
+					   visible="{caption.downloadUrl!=null}" includeInLayout="{caption.downloadUrl!=null}" styleName="downloadThumbLinkButton"/>
+		<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="removeCaption()"
+					   styleName="deleteThumbLinkButton"/>
+		<mx:Spacer width="{400- download.width - remove.width}"/>
 		<mx:Label text="{resourceManager.getString('cms','default')}" visible="{_isDefault}"
 					includeInLayout="{_isDefault}"/>
 		<mx:LinkButton label="{resourceManager.getString('cms','setAsDefault')}" 
-					   visible="{!_isDefault}" includeInLayout="{!_isDefault}"/>
+					   visible="{(_captionExists &amp;&amp; !_isDefault)}" includeInLayout="{(_captionExists &amp;&amp; !_isDefault)}"
+					   styleName="setDefaultLinkButton" click="setAsDefault()"/>
 	</mx:HBox>
 	<!--<mx:states>
 		<mx:State name="{EXTERNAL_STATE}">

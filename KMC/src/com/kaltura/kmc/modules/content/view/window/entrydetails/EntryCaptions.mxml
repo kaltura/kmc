@@ -7,14 +7,19 @@ Captions tab of EntryDetailsWin
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
-			import com.kaltura.kmc.modules.content.model.EntryCaption;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.captionsComponents.Caption;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaCaptionAsset;
 			
 			import mx.events.FlexEvent;
 			
 			private var _selectedEntry:KalturaBaseEntry;
 			private var _entryCaptionsArr:Array;
+			private var _captionsToRemove:Array;
+			private var _defaultCaption:Caption;
 			
 			public function get entryCaptionsArr():Array
 			{
@@ -52,6 +57,47 @@ Captions tab of EntryDetailsWin
 			}
 			
 			/**
+			 * create a Caption object with given captionVO or a new EntryCaptionVO
+			 * */
+			private function createCaption(captionVO:EntryCaptionVO = null):Caption {
+				var newCaption:Caption = new Caption();
+				if (!captionVO) {
+					captionVO = new EntryCaptionVO();
+					captionVO.caption = new KalturaCaptionAsset();		
+				}
+				else {
+					if (captionVO.caption.isDefault==KalturaNullableBoolean.TRUE_VALUE) {
+						newCaption.isDefault = true;
+						_defaultCaption = newCaption;
+					}
+				}
+				newCaption.caption = captionVO;
+				newCaption.addEventListener(Caption.REMOVE_CAPTION, removeCaption);
+				newCaption.addEventListener(Caption.CHANGE_DEFAULT, changeDefaultCaption);
+				return newCaption;
+			}
+			
+			private function changeDefaultCaption(event:Event):void {
+				var caption:Caption = event.target as Caption;
+				caption.isDefault = true;
+				_defaultCaption.isDefault = false;
+				_defaultCaption = caption;
+			}
+			
+			/**
+			 * When a caption is removed- remove from display list and remember it for save
+			 * */
+			private function removeCaption(event:Event):void {
+				for (var i:int = 0 ; i<captions.numChildren; i++) {
+					if (captions.getChildAt(i) == event.target) {
+						captions.removeChildAt(i);
+						if ((event.target as Caption).caption.caption.id)
+							_captionsToRemove.push((event.target as Caption).caption);
+					}
+				}
+			}
+			
+			/**
 			 * load captions to the form
 			 * */
 			private function populateCaptions():void {
@@ -59,20 +105,18 @@ Captions tab of EntryDetailsWin
 					return;
 				captions.removeAllChildren();
 				if (_entryCaptionsArr.length == 0) {
-					var emptyCaption:Caption = new Caption();
-					captions.addChild(emptyCaption);
+					captions.addChild(createCaption());
 				}
 				else {
 					for (var i:int = 0; i<_entryCaptionsArr.length; i++) {
-						var caption:Caption = new Caption();
-						//TODO add the KalturaCaption object here
-						captions.addChild(caption);
+						captions.addChild(createCaption(_entryCaptionsArr[i] as EntryCaptionVO));
 					}
 				}
 			}
 
 			private function onCreationComplete(event:FlexEvent):void
 			{
+				_captionsToRemove = new Array();
 				populateCaptions();
 			}
 			
@@ -80,10 +124,60 @@ Captions tab of EntryDetailsWin
 				
 			}
 			
+			/**
+			 * add a new empty Caption to captions VBox
+			 * */
 			private function addCaption():void {
-				var newCaption:Caption = new Caption();
-				newCaption.caption = new EntryCaption();
-				captions.addChild(newCaption);
+				captions.addChild(createCaption());
+			}
+			
+			/**
+			 * save all changes- added/removed captions
+			 * */
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				var captionsToSave:Array = new Array();
+				for (var i:int = 0; i<captions.numChildren; i++) {
+					var curCaption:Caption = captions.getChildAt(i) as Caption;
+					if (curCaption.wasChanged()) {
+						var curCaptionRes:EntryDetailsValidationError = curCaption.save();
+						if (curCaptionRes.error) {
+							result = curCaptionRes;
+						}
+						else {
+							captionsToSave.push(curCaption.caption);
+						}
+					}
+				}
+				
+				if (!result.error && 
+					(captionsToSave.length || _captionsToRemove.length || (_defaultCaption && _defaultCaption.isDefault!=KalturaNullableBoolean.TRUE_VALUE)))
+				{
+					var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
+					saveEvent.captionsToSave = captionsToSave;
+					saveEvent.captionToRemove = _captionsToRemove;
+					if (_defaultCaption)
+						saveEvent.defaultCaption = _defaultCaption.caption;
+					saveEvent.dispatch();
+				}
+				
+				return result;
+			}
+			
+			/**
+			 * return true if there are changes to save
+			 * */
+			public function wasChanged():Boolean {
+				if (_captionsToRemove.length)
+					return true;
+				
+				for (var i:int =0; i<captions.numChildren; i++) {
+					var curCaption:Caption = captions.getChildAt(i) as Caption;
+					if (curCaption.wasChanged() || (curCaption.isDefault!= (curCaption.caption.caption.isDefault==KalturaNullableBoolean.TRUE_VALUE)))
+						return true;
+				}
+				
+				return false;
 			}
 
 		]]>
