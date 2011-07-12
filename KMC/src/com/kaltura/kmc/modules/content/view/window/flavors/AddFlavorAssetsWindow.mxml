@@ -8,7 +8,7 @@
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
 		width="550" styleName="TitleWindowType2" visible="false"
 		showCloseButton="true" close="closeHandler(event)"
-		creationComplete="titlewindow1_creationCompleteHandler(event)" >
+		creationComplete="titlewindow1_creationCompleteHandler(event)" xmlns:validators="com.kaltura.validators.*" >
 
 	<mx:Script>
 		<![CDATA[
@@ -36,6 +36,7 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			import mx.events.ValidationResultEvent;
 			import mx.resources.ResourceManager;
 			
 			/*
@@ -147,12 +148,30 @@
 						ResourceManager.getInstance().getString('cms', 'error'));
 					result = false;
 				}
+				// only validate urls for import
+				else if (_windowAction == AddFlavorAssetsWindow.ACTION_IMPORT && !validateURLs()){
+					Alert.show(ResourceManager.getInstance().getString('cms', 'urlValidationError'), 
+						ResourceManager.getInstance().getString('cms', 'error'));
+					result = false;
+				}
 				return result;
 			}
 			
 			
 			protected function getUploadLimit():Number {
 				return Application.application.parameters.maxUploadSize;
+			}
+			
+			
+			protected function validateURLs():Boolean {
+				var e:ValidationResultEvent;
+				for each (var ff:UploadFileVo in filesList) {
+					e = urlValidator.validate(ff.fileName);
+					if (e.results) {
+						return false;
+					}
+				}
+				return true;
 			}
 			
 			/**
@@ -558,6 +577,7 @@
 
 		]]>
 	</mx:Script>
+	<validators:URLValidator id="urlValidator" required="true" property="text"/>
 	
 	<mx:HBox verticalAlign="middle" visible="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}" 
 			 includeInLayout="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}">
