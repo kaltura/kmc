@@ -7,18 +7,18 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var providerTypeEqual : String;
+		public var protocolTypeEqual : String;
 
 		/** 
 		* 		* */ 
-		public var providerTypeIn : String;
+		public var protocolTypeIn : String;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('providerTypeEqual');
-			arr.push('providerTypeIn');
+			arr.push('protocolTypeEqual');
+			arr.push('protocolTypeIn');
 			return arr;
 		}
 

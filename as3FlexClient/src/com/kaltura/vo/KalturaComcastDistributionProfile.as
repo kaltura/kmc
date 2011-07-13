@@ -27,11 +27,31 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var category : String;
+
+		/** 
+		* 		* */ 
 		public var author : String;
 
 		/** 
 		* 		* */ 
 		public var album : String;
+
+		/** 
+		* 		* */ 
+		public var copyright : String;
+
+		/** 
+		* 		* */ 
+		public var linkHref : String;
+
+		/** 
+		* 		* */ 
+		public var linkText : String;
+
+		/** 
+		* 		* */ 
+		public var notesToComcast : String;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -42,8 +62,13 @@ package com.kaltura.vo
 			arr.push('account');
 			arr.push('metadataProfileId');
 			arr.push('keywords');
+			arr.push('category');
 			arr.push('author');
 			arr.push('album');
+			arr.push('copyright');
+			arr.push('linkHref');
+			arr.push('linkText');
+			arr.push('notesToComcast');
 			return arr;
 		}
 

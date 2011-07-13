@@ -8,11 +8,11 @@ package com.kaltura.commands.metadata
 		public var filterFields : String;
 		/**
 		 * @param metadataProfileId int
-		 * @param objectType int
+		 * @param objectType String
 		 * @param objectId String
 		 * @param url String
 		 **/
-		public function MetadataAddFromUrl( metadataProfileId : int,objectType : int,objectId : String,url : String )
+		public function MetadataAddFromUrl( metadataProfileId : int,objectType : String,objectId : String,url : String )
 		{
 			service= 'metadata_metadata';
 			action= 'addFromUrl';

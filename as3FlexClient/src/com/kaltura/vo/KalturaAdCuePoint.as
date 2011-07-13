@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var providerType : String;
+		public var protocolType : String;
 
 		/** 
 		* 		* */ 
@@ -44,7 +44,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
-			arr.push('providerType');
+			arr.push('protocolType');
 			return arr;
 		}
 

@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var metadataObjectType : int = int.MIN_VALUE;
+		public var metadataObjectType : String;
 
 		/** 
 		* 		* */ 

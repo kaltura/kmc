@@ -10,11 +10,11 @@ package com.kaltura.commands.metadata
 
 		/**
 		 * @param metadataProfileId int
-		 * @param objectType int
+		 * @param objectType String
 		 * @param objectId String
 		 * @param xmlFile Object - FileReference or ByteArray
 		 **/
-		public function MetadataAddFromFile( metadataProfileId : int,objectType : int,objectId : String,xmlFile : Object )
+		public function MetadataAddFromFile( metadataProfileId : int,objectType : String,objectId : String,xmlFile : Object )
 		{
 			service= 'metadata_metadata';
 			action= 'addFromFile';
