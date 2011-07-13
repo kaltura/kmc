@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%" styleName="acpPopUpSectionBox">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaIpAddressRestrictionType;
+			import com.kaltura.utils.KArrayUtil;
+			import com.kaltura.vo.KalturaAccessControl;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaIpAddressRestriction;
+			import com.kaltura.windows.popUpWindows.AddIpRestrictionPopup;
+			import com.kaltura.windows.popUpWindows.AddNewDomainPopUpWindow;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			/**
+			 * the access control object being edited
+			 * */
+			public var profile:KalturaAccessControl;
+			
+			[Bindable]
+			/**
+			 * are controls in the panel editable
+			 * */
+			public var editable:Boolean = true;
+			
+			
+			[Bindable]
+			private var allowedIPsArr:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var notAllowedIPsArr:ArrayCollection = new ArrayCollection();
+			
+			
+			public var isOk:Boolean = true;
+			
+			/**
+			 * saved list to be used after user responds 
+			 * to delete domains approval request
+			 * */
+			private var _selectedList:List;
+			
+			public function setIPRestrictions():void {
+				var restrictionFound:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
+					if (restriction is KalturaIpAddressRestriction) {
+						restrictionFound = true;
+						var arr:ArrayCollection;
+						if ((restriction as KalturaIpAddressRestriction).ipAddressRestrictionType == KalturaIpAddressRestrictionType.ALLOW_LIST) {
+							approvedIPsRadioBtn.selected = true;
+							arr = allowedIPsArr;
+						}
+						else {
+							notApprovedIPsRadioBtn.selected = true;
+							arr = notAllowedIPsArr;
+						}
+						
+						setIPsFromString(arr, (restriction as KalturaIpAddressRestriction).ipAddressList);
+						break;
+					}
+				}
+				
+				allIPsRaddioBtn.selected = !restrictionFound;
+			}
+			
+			
+			public function updateIPsRestrictions():void {
+				if (allIPsRaddioBtn.selected != true) {
+					var ipRestriction:KalturaIpAddressRestriction = new KalturaIpAddressRestriction();
+					ipRestriction.ipAddressRestrictionType = approvedIPsRadioBtn.selected ? KalturaIpAddressRestrictionType.ALLOW_LIST : KalturaIpAddressRestrictionType.RESTRICT_LIST;
+					
+					var list:List = (approvedIPsRadioBtn.selected == true) ? approvedIPsList : notApprovedIPsList;
+					ipRestriction.ipAddressList = getIPsList(list.dataProvider as ArrayCollection);
+					
+					if ((list.dataProvider as ArrayCollection).length > 0) {
+						isOk = true;
+						profile.restrictions.push(ipRestriction);
+					}
+					else {
+						isOk = false;
+					}
+				}
+				else {
+					isOk = true;
+				}
+			}
+			
+			
+			private function getIPsList(ac:ArrayCollection):String {
+				var ipsList:String = "";
+				for each (var item:String in ac) {
+					ipsList += item + ',';
+				}
+				if (ipsList.length > 0) {
+					ipsList = ipsList.substr(0, ipsList.length - 1)
+				}
+				return ipsList;
+			}
+			
+			private function setIPsFromString(ac:ArrayCollection, itemStr:String):void {
+				var arr:Array = itemStr.split(',');
+				for each (var item:String in arr) {
+					ac.addItem(item);
+				}
+			}
+			
+			
+			
+			/**
+			 * show an alert asking the user's approval to remove the selected domains
+			 * @param list the list from which we want to remove selected items
+			 */
+			private function approveRemoveIPs(list:List):void {
+				if (list.selectedItems.length == 0) {
+					Alert.show(resourceManager.getString('windows', 'noSelectedIPToDelete'));
+				}
+				else {
+					_selectedList = list;
+					var ipsStrings:String = '';
+					for each (var domain:String in list.selectedItems) {
+						ipsStrings += '\t\t' + domain + '\n';
+					}
+					Alert.show(resourceManager.getString('windows', 'areYouSureToRemoveIPs') + ipsStrings, 
+						resourceManager.getString('windows', 'removeIPTitle'), Alert.YES | Alert.NO, 
+						this, alertHandler, null, Alert.NO);
+				}
+			}
+			
+			
+			/**
+			 * remove the selected items from the saved list
+			 * */
+			private function alertHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					for each (var domain:String in _selectedList.selectedItems) {
+						KArrayUtil.removeItemFromArray(domain, _selectedList.dataProvider.source);
+					}
+					_selectedList.dataProvider.refresh();
+				}
+			}
+			
+			
+			private function showNewIPWindow(event:Event, list:List):void {
+				var addNewIPPopUp:AddIpRestrictionPopup = new AddIpRestrictionPopup();
+				addNewIPPopUp.ipsListData = list.dataProvider as ArrayCollection;
+				PopUpManager.addPopUp(addNewIPPopUp, this, true);
+				PopUpManager.centerPopUp(addNewIPPopUp);
+			}
+		]]>
+	</mx:Script>
+		
+	
+		<mx:Label text="{resourceManager.getString('windows', 'authoIPsBigLabel')}" styleName="acpPopUpTitleLabel"/>
+		<mx:Spacer height="10"/>
+		<mx:RadioButtonGroup id='authoIPsGroup'/>
+		<mx:Form width="100%">
+			<mx:Label text="{resourceManager.getString('windows', 'authoIPsSmallLabel')}"
+					  styleName="acpPopUpSmallTitleLabel"/>
+			<!-- IP restriction : any IP -->
+			<mx:FormItem>
+				<mx:RadioButton label="{resourceManager.getString('windows', 'anyIPRadioBtn')}"
+								groupName="authoIPsGroup" id='allIPsRaddioBtn' selected="true"
+								styleName="acpRadioButton"/>
+			</mx:FormItem>
+			<!-- IP restriction : allowed IPs -->
+			<mx:FormItem width="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:RadioButton label="{resourceManager.getString('windows', 'authoIPsRaddioBtn')}" groupName="authoIPsGroup"
+									id="approvedIPsRadioBtn" enabled="{editable}" styleName="acpRadioButton"/>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('windows', 'ips')}" enabled="{approvedIPsRadioBtn.selected}"/>
+						<mx:List width="100%" id="approvedIPsList" enabled="{approvedIPsRadioBtn.selected}"
+								 allowMultipleSelection="true" rowCount="5" dataProvider="{allowedIPsArr}"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:HBox>
+					<mx:LinkButton label="{resourceManager.getString('windows', 'addIPBtn')}"
+								   enabled="{approvedIPsRadioBtn.selected &amp;&amp; editable}"
+								   click='showNewIPWindow(event, approvedIPsList)' id="addAuthorisedBtn"
+								   styleName="acpLinkButton"/>
+					<mx:LinkButton label="{resourceManager.getString('windows', 'removeIPBtn')}"
+								   enabled="{approvedIPsRadioBtn.selected &amp;&amp; editable}"
+								   click='approveRemoveIPs(approvedIPsList)' id="removeAuthorisedBtn"
+								   styleName="acpLinkButton"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<!-- IP restriction : restricted IPs -->
+			<mx:FormItem width="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:RadioButton label="{resourceManager.getString('windows', 'noAuthoIPsRadioBtn')}" groupName="authoIPsGroup"
+									id="notApprovedIPsRadioBtn" enabled="{editable}" styleName="acpRadioButton"/>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('windows', 'ips')}" enabled="{notApprovedIPsRadioBtn.selected}"/>
+						<mx:List width="100%" id="notApprovedIPsList" enabled="{notApprovedIPsRadioBtn.selected}"
+								 rowCount="5" dataProvider="{notAllowedIPsArr}" allowMultipleSelection="true"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:HBox>
+					<mx:LinkButton label="{resourceManager.getString('windows', 'addIPBtn')}"
+								   enabled="{notApprovedIPsRadioBtn.selected &amp;&amp; editable}"
+								   click='showNewIPWindow(event, notApprovedIPsList)' id="addUnauthorisedBtn"
+								   styleName="acpLinkButton"/>
+					<mx:LinkButton label="{resourceManager.getString('windows', 'removeIPBtn')}"
+								   enabled="{notApprovedIPsRadioBtn.selected &amp;&amp; editable}"
+								   styleName="acpLinkButton"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
+	</mx:VBox>

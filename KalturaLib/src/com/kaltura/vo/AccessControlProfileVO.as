@@ -111,6 +111,13 @@ package com.kaltura.vo
 					kdr.directoryRestrictionType = (restriction as KalturaDirectoryRestriction).directoryRestrictionType;
 					newAcp.profile.restrictions.push(kdr);
 				}
+				else if(restriction is KalturaIpAddressRestriction)
+				{
+					var kir:KalturaIpAddressRestriction = new KalturaIpAddressRestriction();
+					kir.ipAddressRestrictionType = (restriction as KalturaIpAddressRestriction).ipAddressRestrictionType;
+					kir.ipAddressList = (restriction as KalturaIpAddressRestriction).ipAddressList;
+					newAcp.profile.restrictions.push(kir);
+				}
 			}
 
 			

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
+				 title="{resourceManager.getString('windows', 'addNewIPTitle')}" layout="vertical"
+				 close="closeWindow(event)" showHelpButton="false">
+	<mx:Metadata>
+		[ResourceBundle("windows")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.IResourceBundle;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+
+//			/**
+//			 * regex to identify valid ip addresses
+//			 * */
+//			private var regex:RegExp = /\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
+			
+			public var ipsListData:ArrayCollection;
+
+
+			/**
+			 * close window event - when pressing the X button, cancel button or after saving the data
+			 */
+			private function closeWindow(event:Event):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+//			private function validateIP():Boolean {
+//				var e:ValidationResultEvent = regExpV.validate();
+//				if (e.type == ValidationResultEvent.VALID) {
+//					return true;
+//				}
+//				return false;
+//			}
+			
+			private function saveData(event:Event):void {
+				var newIP:String = tiIP.text
+				var rm:IResourceManager = ResourceManager.getInstance();
+				if (StringUtil.trim(newIP) == '') {
+					Alert.show(rm.getString('windows', 'emptyIpMsg'), rm.getString('windows', 'error'));
+					return;
+				} 
+				// ip validation is done on serverside
+//				else if (!validateIP()) {
+//					Alert.show(rm.getString('windows', 'invalidIpNameMsg'), rm.getString('windows', 'error'));
+//					return;
+//				}
+
+				for each (var ip:String in ipsListData) {
+					if (ip == newIP) {
+						Alert.show(rm.getString('windows', 'sameIpMsg'), rm.getString('windows', 'error'));
+						return;
+					}
+				}
+				ipsListData.addItem(newIP);
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<!--mx:RegExpValidator id="regExpV" 
+						source="{tiIP}" property="text" 
+						flags="g" expression="{regex}" /-->
+	<mx:Form defaultButton='{saveBtn}'>
+		<mx:Text htmlText="{resourceManager.getString('windows', 'ipExampleLabel')}"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('windows', 'ipLabel')}"/>
+			<mx:TextInput id='tiIP' width="100%" restrict="0-9\.\-\\"/>
+		</mx:HBox>
+		<mx:ControlBar width="100%" horizontalAlign="center">
+			<mx:Button id='saveBtn' click="saveData(event)" buttonMode="true"
+					   label="{resourceManager.getString('windows', 'saveBtn')}"/>
+		</mx:ControlBar>
+	</mx:Form>
+</HelpTitleWindow>

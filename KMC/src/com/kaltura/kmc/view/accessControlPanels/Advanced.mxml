@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.kaltura.controls.*"
+	width="100%" styleName="acpPopUpSectionBox">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaAccessControl;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaPreviewRestriction;
+			import com.kaltura.vo.KalturaSessionRestriction;
+		
+			/**
+			 * the access control object being edited
+			 * */	
+			public var profile:KalturaAccessControl;
+			
+			[Bindable]
+			/**
+			 * are controls in the panel editable
+			 * */
+			public var editable:Boolean = true;
+			
+			
+			public function setSessionRestriction():void {
+				var restrictionFound:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
+					if (restriction is KalturaSessionRestriction) {
+						secureKSCBBtn.selected = true;
+						break;
+					}
+				}
+			}
+			
+			public function setPreviewRestrictions():void {
+				var restrictionFound:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
+					if (restriction is KalturaPreviewRestriction) {
+						freePerviewCBBtn.selected = true;
+						var len:int = (restriction as KalturaPreviewRestriction).previewLength;
+						freePreviewDuration.minute = Math.floor(len / 60);
+						freePreviewDuration.second = len % 60;
+						break;
+					}
+				}
+			}
+			
+			public function updateSessionRestrictions():void {
+				if (secureKSCBBtn.selected == true) {
+					var sessionRestriction:KalturaSessionRestriction = new KalturaSessionRestriction();
+					profile.restrictions.push(sessionRestriction);
+				}
+			}
+			
+			public function UpdatePreviewRestrictions():void {
+				if (freePerviewCBBtn.selected == true) {
+					var previewRestriction:KalturaPreviewRestriction = new KalturaPreviewRestriction();
+					previewRestriction.previewLength = (freePreviewDuration.minute * 60) + freePreviewDuration.second;
+					
+					profile.restrictions.push(previewRestriction);
+				}
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('windows', 'advanceSecLabel')}" styleName="acpPopUpTitleLabel"/>
+	<mx:Form width="100%">
+		<mx:FormItem>
+			<mx:VBox width="100%" height="100%">
+				<mx:CheckBox label="{resourceManager.getString('windows', 'secKSCheckBoxBtn')}" id='secureKSCBBtn'
+							 styleName="acpCheckButton" enabled="{editable}"
+							 change="{if(!secureKSCBBtn.selected) freePerviewCBBtn.selected=false;}"/>
+				<mx:Text width="100%" enabled="false" styleName="acpText">
+					<mx:text>{resourceManager.getString('windows', 'secKSDescription')}</mx:text>
+				</mx:Text>
+			</mx:VBox>
+		</mx:FormItem>
+		
+		<mx:FormItem enabled="{secureKSCBBtn.selected}">
+			<mx:CheckBox label="{resourceManager.getString('windows', 'freePreviewCheckBoxBtn')}" id='freePerviewCBBtn'
+						 enabled="{editable}" styleName="acpCheckButton"/>
+			<mx:HBox verticalAlign="bottom">
+				<mx:Label text="{resourceManager.getString('windows', 'freePreviewLabel1')}"
+						  enabled="{secureKSCBBtn.selected &amp;&amp; freePerviewCBBtn.selected}"/>
+				<controls:SM_TimeEntry height="25" id='freePreviewDuration' showSeconds="true" showHours="false"
+									   is24Hour="false" showAMPMLabel="false" styleName="timeEntry"
+									   enabled="{secureKSCBBtn.selected &amp;&amp; freePerviewCBBtn.selected &amp;&amp; editable}"/>
+				<mx:Label text="{resourceManager.getString('windows', 'previewTimeLabel')}"
+						  enabled="{secureKSCBBtn.selected &amp;&amp; freePerviewCBBtn.selected}"/>
+			</mx:HBox>
+			<mx:Label text="{resourceManager.getString('windows', 'freePreviewLabel2')}"
+					  enabled="{secureKSCBBtn.selected &amp;&amp; freePerviewCBBtn.selected}"/>
+		</mx:FormItem>
+	</mx:Form>
+</mx:VBox>
