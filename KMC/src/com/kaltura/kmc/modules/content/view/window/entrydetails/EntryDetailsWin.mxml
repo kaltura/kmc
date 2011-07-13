@@ -683,6 +683,16 @@
 						(viewStack.getChildAt(i) as IDrilldownPanel).destroy();
 				}
 			}
+			
+			/**
+			 * displays the validation error and navigates to the relevant tab
+			 * */
+			private function handleValidationError(tabToGo:DisplayObject, errorString:String = '', errorTitle:String = ''):void {
+				if (errorString!='')
+					Alert.show(errorString, errorTitle);
+				_nextEntryPending = false;
+				viewStack.selectedIndex = viewStack.getChildIndex(tabToGo);
+			}
 
 
 			/**
@@ -706,33 +716,27 @@
 				}
 
 				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
-					_nextEntryPending = false;
-					// Atar: need to alert no name? there's validation on the TF itself 
+					handleValidationError(entryMetaData, resourceManager.getString('cms','entryNameIsMandatory'), resourceManager.getString('cms','metadataError'));
 				} else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
-					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg', []), resourceManager.getString('cms', 'categoriesErrorTitle'));
-					_nextEntryPending = false;
+					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg', new Array(maxNumCategories)), resourceManager.getString('cms', 'categoriesErrorTitle'));
+					handleValidationError(entryMetaData)
 				}
 				// scheduling validation:
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
-					Alert.show(resourceManager.getString('cms', 'scedualingStartDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
-					_nextEntryPending = false;
+					handleValidationError(entrySch, resourceManager.getString('cms', 'scedualingStartDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
 				} else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_END_DATE) {
-					Alert.show(resourceManager.getString('cms', 'scedualingEndDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
-					_nextEntryPending = false;
+					handleValidationError(entrySch, resourceManager.getString('cms', 'scedualingEndDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
 				}
 				// livestream validation:
 				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'bitrateValidation'));
-					_nextEntryPending = false;
+					handleValidationError(liveStream,ResourceManager.getInstance().getString('cms', 'bitrateValidation'), resourceManager.getString('cms','liveStreamError'));
 				} 
 				//captions validations
 				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_URL) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'missingURLError'));
-					_nextEntryPending = false;
+					handleValidationError(entryCaptions,ResourceManager.getInstance().getString('cms', 'missingURLError'), resourceManager.getString('cms', 'captionsError'));
 				}
 				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_LANGUAGE) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'missingLanguageError'));
-					_nextEntryPending = false;
+					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('cms', 'missingLanguageError'),resourceManager.getString('cms', 'captionsError'));
 				} 
 				else {
 					// if referenceId was changed
