@@ -34,6 +34,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 				for each (var caption:KalturaCaptionAsset in listResponse.objects) {
 					var entryCaption:EntryCaptionVO = new EntryCaptionVO();
 					entryCaption.caption = caption;
+					entryCaption.serveUrl = _model.context.kc.protocol + _model.context.kc.domain + EntryCaptionVO.serveURL + "/ks/" + _model.context.kc.ks + "/captionAssetId/" + caption.id;
 					_captionsArray.push(entryCaption);
 					var getUrl:CaptionAssetGetDownloadUrl = new CaptionAssetGetDownloadUrl(caption.id, true);
 					mr.addAction(getUrl);
@@ -54,5 +55,6 @@ package com.kaltura.kmc.modules.content.commands.captions
 			_model.entryDetailsModel.captionsArray = _captionsArray;
 			_model.decreaseLoadCounter();
 		}
+		
 	}
 }

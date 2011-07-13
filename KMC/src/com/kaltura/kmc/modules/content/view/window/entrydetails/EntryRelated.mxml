@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
+		 width="100%" height="100%">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
+			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+			
+			//will be used to convert size to KB
+			private const KB_MULTIPLIER:int = 1024;
+			//in files size: number of digits to show after the decimal point
+			private const DIGITS_AFTER_DEC_POINT:int = 2;
+			
+			private var _relatedFiles:Array;
+			public var selectedEntry:KalturaBaseEntry;
+			//[Bindable]
+			//public var typeArray:Array = new Array('Document','Media');
+
+			[Bindable]
+			/**
+			 * related files of current entry
+			 * */
+			public function get relatedFiles():Array
+			{
+				return _relatedFiles;
+			}
+
+			public function set relatedFiles(value:Array):void
+			{
+				_relatedFiles = value;
+			}
+
+			/**
+			 * get relevant data from server
+			 * */
+			public function initData():void {
+				var list:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.LIST_RELATED_FILES);
+				list.dispatch();
+			}
+			
+			public function destroy():void {
+				
+			}
+
+			protected function addFile(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+			}
+			
+			/**
+			 * Create suitable string to display in the "File Size" column
+			 * */
+			private function fileSizeLabelFunc(item:Object, column:DataGridColumn): String {
+				if ((item as RelatedFileVO).file["size"]==int.MIN_VALUE)
+					return '';
+				return (((item as RelatedFileVO).file["size"]/KB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','kiloBytes');
+				
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Button label="{resourceManager.getString('cms','addFiles')}" click="addFile(event)"/>
+	<mx:DataGrid dataProvider="{relatedFiles}" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:TextInput text="{data.file.name}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}" dataField="{data.file.type}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox>
+							<mx:ComboBox dataProvider="{new Array('Document', 'Media')}" selectedIndex="-1" 
+										 prompt="{resourceManager.getString('cms','selectType')}"/>
+							
+						</mx:VBox>
+					
+							
+						</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}" dataField="{data.file.size}" labelFunction="{fileSizeLabelFunc}"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','kalturaId')}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:Label text="{data.file.id}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actions')}"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:VBox>

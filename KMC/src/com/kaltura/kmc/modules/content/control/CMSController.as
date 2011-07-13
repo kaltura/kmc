@@ -192,6 +192,10 @@ package com.kaltura.kmc.modules.content.control
 			// cuepoints
 			addCommand(CuePointEvent.COUNT_CUEPOINTS, CountCuePoints);
 			addCommand(CuePointEvent.DOWNLOAD_CUEPOINTS, DownloadCuePoints);
+			
+			//related files
+			addCommand(RelatedFileEvent.LIST_RELATED_FILES, ListRelatedFilesCommand);
+			
 		}
 	}
 }

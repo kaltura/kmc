@@ -140,6 +140,11 @@ package com.kaltura.kmc.modules.content.model
 		public var conversionProfileLoaded:Boolean;
 		
 		public var conversionProfiles:Array;
+		
+		/**
+		 * Array of RelatedFileVO  
+		 */		
+		public var relatedFilesArray:Array;
 
 	}
 }

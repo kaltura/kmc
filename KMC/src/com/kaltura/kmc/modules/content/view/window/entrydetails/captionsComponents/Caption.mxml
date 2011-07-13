@@ -12,6 +12,7 @@
 			import com.kaltura.types.KalturaNullableBoolean;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.events.ValidationResultEvent;
 			
 			//events
 			public static const REMOVE_CAPTION:String = "removeCaption";
@@ -279,7 +280,7 @@
 			 * */
 			protected function downloadCaption():void
 			{
-				var urlRequest:URLRequest = new URLRequest(caption.downloadUrl);
+				var urlRequest:URLRequest = new URLRequest(caption.serveUrl);
 				navigateToURL(urlRequest , '_self');
 			}
 
@@ -338,10 +339,12 @@
 				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
 				if (!_isLoading) 
 				{
-					if (!urlTi.text || urlTi.text=='')
+					urlValidator.source = urlTi
+					if ((urlValidator.validate() as ValidationResultEvent).results)
 						result.error = EntryDetailsValidationError.CAPTIONS_URL;
 				}
-				if (languageCB.selectedIndex==-1)
+				comboValidator.source = languageCB;
+				if ((comboValidator.validate() as ValidationResultEvent).results)
 					result.error = EntryDetailsValidationError.CAPTIONS_LANGUAGE;
 				
 				if (!result.error) {
@@ -398,9 +401,9 @@
 		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
 	</mx:HBox>-->
 	
-<!--	<mx:StringValidator id="urlValidator" property="text" required="true" requiredFieldError=""/>
+	<mx:StringValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('cms','emptyUrlError')}"/>
 	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{LANGUAGES_ARRAY.length -1}"
-						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>-->
+						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
 		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" editable="false"/>
