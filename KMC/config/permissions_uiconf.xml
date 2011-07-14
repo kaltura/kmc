@@ -388,7 +388,10 @@
 		<!-- custom metadata -->
 		<permissionGroup id="METADATA_PLUGIN_PERMISSION">
 			<ui id="content.generalPermissions" enableCustomData="false"/>
-			<ui id="entryDrilldown" hideTabs="customData"/>
+		</permissionGroup>
+		<!-- entry advertisements -->
+		<permissionGroup id="ADCUEPOINT_PLUGIN_PERMISSION">
+			<ui id="entryDrilldown" hideTabs="ads"/>
 		</permissionGroup>
 		<!-- content analytics -->
 		<permissionGroup id="FEATURE_ANALYTICS_TAB">
@@ -400,7 +403,6 @@
 		<!-- content distribution -->
 		<permissionGroup id="CONTENTDISTRIBUTION_PLUGIN_PERMISSION">
 			<ui id="content.generalPermissions" enableDistribution="false"/>
-			<ui id="entryDrilldown" hideTabs="entryDistribution"/>
 			<ui id="distributionDetailsWindow" enableXMLViews="false"/>
 		</permissionGroup>
 		<!-- vast advertising in appstudio -->
@@ -559,6 +561,23 @@
 			<!-- upload permission -->
 			<permission id="CONTENT_INGEST_UPLOAD"/>
 			<permission id="CONTENT_INGEST_BULK_UPLOAD"/>
+		</module>
+		
+		<!-- this module is not removed even if all specified tabs are removed
+			 (it has more tabs that don't require any permissions) -->
+		<module id="entryDrilldown" keepOnEmpty="true">
+			<tab id="entryMetaData">
+				<permission id="METADATA_PLUGIN_PERMISSION"/>
+			</tab>
+			<tab id="entryDistribution">
+				<permission id="CONTENTDISTRIBUTION_PLUGIN_PERMISSION"/>
+			</tab>
+			<tab id="entryCaptions">
+				<permission id="CAPTION_PLUGIN_PERMISSION"/>
+			</tab>
+			<tab id="ads">
+				<permission id="ADCUEPOINT_PLUGIN_PERMISSION"/>
+			</tab>
 		</module>
 	</uimapping>
 </root>
