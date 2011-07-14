@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			for (i = 0; i<_model.userDtnDp.length; i++) {
 				if (_model.userDtnDp[i] == event.data) {
 					_model.userDtnDp.removeItemAt(i);
+					_model.userDtnDp.refresh();
 					return;
 				}
 			}
@@ -21,6 +22,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			for (i = 0; i<_model.contentDtnDp.length; i++) {
 				if (_model.contentDtnDp[i] == event.data) {
 					_model.contentDtnDp.removeItemAt(i);
+					_model.contentDtnDp.refresh();
 					return;
 				}
 			}

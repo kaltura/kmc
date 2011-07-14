@@ -30,12 +30,17 @@
 			
 			public function set selectedIndex( index : int ) : void
 			{
+				if (_selectedIndex >= numChildren) return;
+				
 				clearAllSelectedStlye()
 				
-				if(_selectedIndex >= 0)
+				if( _selectedIndex >= 0)
 				{
-					(this.getChildAt( _selectedIndex ) as DTNItem).data.selected = false;
-					(this.getChildAt( _selectedIndex ) as DTNItem).btn.styleName = "dtnButton";
+					var a:DTNItem = this.getChildAt( _selectedIndex ) as DTNItem;
+					if (a.data) {
+						a.data.selected = false;
+					}
+					a.btn.styleName = "dtnButton";
 				}
 				
 				_selectedIndex = index;
@@ -44,7 +49,9 @@
 				{
 					
 					var dtnItem : DTNItem =  this.getChildAt( index ) as DTNItem;
-					dtnItem.data.selected = true;
+					if (dtnItem.data) {
+						dtnItem.data.selected = true;
+					}
 					dtnItem.btn.styleName = "selectedDtnBtn";
 					var changeEvent : Event = new Event( Event.CHANGE );
 					dispatchEvent( changeEvent );
@@ -62,19 +69,21 @@
 					
 				_dataProvider = dp;
 				
+				if (!dp) return;
+				
 				for( var i:int=0; i<_dataProvider.length; i++)
 				{
 					var dtnItem : DTNItem = new DTNItem();
 					dtnItem.percentWidth = 100;
-					dtnItem.addEventListener( FlexEvent.CREATION_COMPLETE , onDtnBtnCreationComplete );
+					dtnItem.addEventListener( Event.ADDED_TO_STAGE , onDtnBtnCreationComplete );
 					this.addChild( dtnItem );
 				}
 			}
 			
-			private function onDtnBtnCreationComplete( event : FlexEvent ) :void
+			private function onDtnBtnCreationComplete( event : Event ) :void
 			{
 				var dtnItem : DTNItem = event.target as DTNItem;
-				dtnItem.btn.addEventListener( MouseEvent.CLICK , onItemClick );
+				dtnItem.addEventListener( MouseEvent.CLICK , onItemClick );
 				
 				var index : int = this.getChildIndex(dtnItem);		
 				var tlVo : ToggleLinkVo = new ToggleLinkVo();
