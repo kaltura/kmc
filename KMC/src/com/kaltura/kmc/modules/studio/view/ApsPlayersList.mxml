@@ -96,6 +96,7 @@
 
 
 			private function onCreationComplete():void {
+				resourceManager.addEventListener(Event.CHANGE, setComboTexts, false, 0, true);
 				_dateFormatter = new DateFormatter();
 				_dateFormatter.formatString = "DD-MMM H:NN";
 
@@ -112,7 +113,20 @@
 				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'delete'), id: 'delete'});
 			}
 
-
+			/**
+			 * set values from locale when locale changes
+			 * */
+			private function setComboTexts(e:Event):void {
+				var o:Object;
+				for each (o in comboDataProviderNormal) {
+					o.label = resourceManager.getString('aps', o.id);
+				} 
+				for each (o in comboDataProviderMulti) {
+					o.label = resourceManager.getString('aps', o.id);
+				} 
+			}
+			
+			
 			/**
 			 * gets a list of existing players
 			 * */
