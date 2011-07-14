@@ -46,7 +46,7 @@ kmc.functions = {
 			openPlayer			: "kmc.preview_embed.doPreviewEmbed", // @todo: remove for 2.0.9 ?
 			openPlaylist		: "kmc.preview_embed.doPreviewEmbed",
 			openCw				: "kmc.functions.openKcw",
-			language			: kmc.vars.language
+			language			: kmc.vars.language ? kmc.vars.language : ''
 		};
 		var params = {
 			allowNetworking: "all",
