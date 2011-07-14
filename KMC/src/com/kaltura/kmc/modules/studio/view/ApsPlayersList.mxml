@@ -343,11 +343,11 @@
 			 * (used in item renderer)
 			 * */
 			public function onActionChange(event:ListEvent):void {
-				switch (event.target.selectedItem.label) {
-					case resourceManager.getString('aps', 'edit'):
+				switch (event.target.selectedItem.id) {
+					case 'edit':
 						onEdit();
 						break;
-					case resourceManager.getString('aps', 'selectContent'):
+					case 'selectContent':
 						var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
 						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
 						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
@@ -358,13 +358,13 @@
 							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
 						}
 						break;
-					case resourceManager.getString('aps', 'previewAndEmbed'):
+					case 'previewAndEmbed':
 						ExternalInterface.call("openPlayer", "", playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(), _previewOnly);
 						break;
-					case resourceManager.getString('aps', 'duplicate'):
+					case 'duplicate':
 						onDuplicate();
 						break;
-					case resourceManager.getString('aps', 'delete'):
+					case 'delete':
 						onDelete();
 						break;
 				}
