@@ -40,6 +40,10 @@ package com.kaltura.kmc.modules.analytics.control
 			
 			// Categories Event
 			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand );
+			
+			// permissions events
+			addCommand(PermissionEvent.REMOVE_REPORT, RemoveReportCommand );
+			
 		}
 	}
 }
