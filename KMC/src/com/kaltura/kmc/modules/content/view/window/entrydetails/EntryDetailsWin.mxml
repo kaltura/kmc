@@ -178,16 +178,22 @@
 			 * */
 			public var entriesAC:ArrayCollection;
 			
-			
 			private var _entryIndex:int;
 			
-			
 			[Bindable]
+			/**
+			 * whether next button is available
+			 * */
 			private var _nextEnabled:Boolean = true;
 			[Bindable]
+			/**
+			 * whether previous button is available
+			 * */
 			private var _prevEnabled:Boolean;
 		
-			//original tabs in view stack
+			/**
+			 * original tabs in initial view stack
+			 * */
 			private var _originalTabs:Array;
 			
 			/**
@@ -195,7 +201,13 @@
 			 * */
 			private var _closeAfterSave:Boolean;
 			[Bindable]
+			/**
+			 * whether to display the next/previous buttons
+			 * */
 			public var showNextPrevBtns:Boolean = true;
+			/**
+			 * indicates if we should move to the next entry after save is complete
+			 * */
 			private var _nextEntryPending:Boolean = false;
 
 			[Bindable]
@@ -204,6 +216,9 @@
 			}
 
 
+			/**
+			 * Index of current entry within the listableVo array
+			 * */
 			public function set entryIndex(value:int):void {
 				_entryIndex = value;
 				if (entriesAC) {
@@ -715,9 +730,11 @@
 						if (entryCaptions.parent is ViewStack) {
 							validationResult = entryCaptions.save();
 						}
-						// scheduling validation passed.
-						if (_isLiveStream) {
-							validationResult = liveStream.save();
+						// scheduling (and captions, if exist) validation passed
+						if (validationResult.error == null) {
+							if (_isLiveStream) {
+								validationResult = liveStream.save();
+							}
 						}
 					}
 				}
@@ -1100,8 +1117,8 @@
 					 cuepointsSaved="saveEntryDetails(event)"/>
 		
 		<!-- related entries -->
-		<!--<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
-						  selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesArray}"/>-->
+<!--		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
+						  selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}"/>-->
 	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox horizontalAlign="left" width="33%">

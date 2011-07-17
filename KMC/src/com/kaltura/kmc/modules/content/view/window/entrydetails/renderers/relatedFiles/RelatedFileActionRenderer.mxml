@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="6" horizontalAlign="center"
+		 verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
+			
+			import mx.events.ListEvent;
+			import mx.formatters.SwitchSymbolFormatter;
+			
+			public static const FILE_CHANGED:String = "fileChanged";
+			public static const FILE_DELETED:String = "fileDeleted";
+			
+			[Bindable]
+			private var _actionsAvailable:Boolean;
+			private var _relatedVo:RelatedFileVO;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				_relatedVo = data as RelatedFileVO;
+				//if the file is already saved on server
+				if (_relatedVo.file.id)
+					_actionsAvailable = true;
+				else
+					_actionsAvailable = false;
+			}
+
+			protected function onActionChanged():void
+			{
+				var action:String = String(actionsCB.selectedItem);
+				switch (action) {
+					case resourceManager.getString('cms','edit'):
+					case resourceManager.getString('cms','delete'):
+					case resourceManager.getString('cms','download'):
+						var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
+						navigateToURL(urlRequest , '_self');
+				}
+			}
+			
+
+		]]>
+	</mx:Script>
+	
+	<mx:Button label="{resourceManager.getString('cms','upload')}" visible="{!_actionsAvailable}" includeInLayout="{!_actionsAvailable}" width="100" styleName="dataGridBtn"/>
+	<mx:ComboBox id="actionsCB" dataProvider="{new Array(resourceManager.getString('cms','edit'), resourceManager.getString('cms','delete'), resourceManager.getString('cms','download'))}" 
+				 visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}"
+				 selectedIndex="-1" prompt="{resourceManager.getString('cms','actions')}" width="100" change="onActionChanged()"/>
+</mx:VBox>

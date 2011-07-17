@@ -142,9 +142,9 @@ package com.kaltura.kmc.modules.content.model
 		public var conversionProfiles:Array;
 		
 		/**
-		 * Array of RelatedFileVO  
+		 * ArrayCollection of RelatedFileVO  
 		 */		
-		public var relatedFilesArray:Array;
+		public var relatedFilesAC:ArrayCollection;
 
 	}
 }

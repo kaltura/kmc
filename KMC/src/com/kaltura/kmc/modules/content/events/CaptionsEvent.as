@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.content.events
 		public var caption:EntryCaptionVO;
 		public var fr:FileReference;
 		public var captionsToSave:Array;
-		public var captionToRemove:Array;
+		public var captionsToRemove:Array;
 		public var defaultCaption:EntryCaptionVO
 		
 		public function CaptionsEvent(type:String,bubbles:Boolean=false, cancelable:Boolean=false)

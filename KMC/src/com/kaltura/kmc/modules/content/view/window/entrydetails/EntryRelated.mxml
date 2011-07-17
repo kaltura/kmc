@@ -4,31 +4,35 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
+			import com.kaltura.vo.KalturaAttachmentAsset;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
+			
+			public static const ALLOWED_EXT:String = "*.*";
 			
 			//will be used to convert size to KB
 			private const KB_MULTIPLIER:int = 1024;
 			//in files size: number of digits to show after the decimal point
 			private const DIGITS_AFTER_DEC_POINT:int = 2;
 			
-			private var _relatedFiles:Array;
+			//list of related files
+			private var _relatedFiles:ArrayCollection;
 			public var selectedEntry:KalturaBaseEntry;
-			//[Bindable]
-			//public var typeArray:Array = new Array('Document','Media');
+			private var _fileReference:FileReference;
 
 			[Bindable]
 			/**
 			 * related files of current entry
 			 * */
-			public function get relatedFiles():Array
+			public function get relatedFiles():ArrayCollection
 			{
 				return _relatedFiles;
 			}
 
-			public function set relatedFiles(value:Array):void
+			public function set relatedFiles(value:ArrayCollection):void
 			{
 				_relatedFiles = value;
 			}
@@ -45,18 +49,39 @@
 				
 			}
 
+			/**
+			 * Open browse window and adds the selected file to the related files
+			 * */
 			protected function addFile(event:MouseEvent):void
 			{
-				// TODO Auto-generated method stub
+				_fileReference = new FileReference();
+				_fileReference.addEventListener(Event.SELECT, onFileSelected);
+				_fileReference.browse(new Array(new FileFilter(resourceManager.getString('cms','files') +' (' + ALLOWED_EXT + ')' ,ALLOWED_EXT)));
+			}
+			
+			private function onFileSelected(event:Event):void {
+				_fileReference.removeEventListener(Event.SELECT, onFileSelected);
+				var newRelated:RelatedFileVO = new RelatedFileVO();
+				newRelated.file = new KalturaAttachmentAsset();
+				newRelated.fileReference = _fileReference;
+				_relatedFiles.addItemAt(newRelated, 0);
+				
 			}
 			
 			/**
 			 * Create suitable string to display in the "File Size" column
 			 * */
 			private function fileSizeLabelFunc(item:Object, column:DataGridColumn): String {
-				if ((item as RelatedFileVO).file["size"]==int.MIN_VALUE)
+				var curItem:RelatedFileVO = item as RelatedFileVO;
+				var size:int;
+				if (curItem.fileReference)
+					size = curItem.fileReference.size;
+				else
+					size = curItem.file.size;
+				
+				if (size==int.MIN_VALUE)
 					return '';
-				return (((item as RelatedFileVO).file["size"]/KB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','kiloBytes');
+				return ((size/KB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','kiloBytes');
 				
 			}
 
@@ -68,32 +93,34 @@
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}">
 				<mx:itemRenderer>
 					<mx:Component>
-						<mx:TextInput text="{data.file.name}"/>
+						<mx:VBox paddingLeft="5" paddingRight="5" width="100%" height="100%" horizontalScrollPolicy="off">
+							<mx:TextInput text="{data.file.filename}" width="100%"/>
+						</mx:VBox>
 					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}" dataField="{data.file.type}">
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}">
 				<mx:itemRenderer>
 					<mx:Component>
-						<mx:VBox>
-							<mx:ComboBox dataProvider="{new Array('Document', 'Media')}" selectedIndex="-1" 
+						<mx:VBox paddingLeft="5">
+							<mx:ComboBox dataProvider="{new Array(resourceManager.getString('cms','document'), resourceManager.getString('cms','media'))}" selectedIndex="-1" 
 										 prompt="{resourceManager.getString('cms','selectType')}"/>
 							
-						</mx:VBox>
-					
-							
-						</mx:Component>
+						</mx:VBox>				
+					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}" dataField="{data.file.size}" labelFunction="{fileSizeLabelFunc}"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}" labelFunction="{fileSizeLabelFunc}"/>
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','kalturaId')}">
 				<mx:itemRenderer>
 					<mx:Component>
-						<mx:Label text="{data.file.id}"/>
+						<mx:VBox paddingLeft="6">
+							<mx:Label text="{data.file.id}"/>
+						</mx:VBox>
 					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actions')}"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actions')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
 </mx:VBox>

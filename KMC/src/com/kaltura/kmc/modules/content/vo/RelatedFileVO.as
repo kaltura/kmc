@@ -1,5 +1,8 @@
 package com.kaltura.kmc.modules.content.vo
 {
+	import com.kaltura.vo.KalturaAttachmentAsset;
+	
+	import flash.net.FileReference;
 
 	[Bindable]
 	/**
@@ -9,15 +12,17 @@ package com.kaltura.kmc.modules.content.vo
 	 */	
 	public class RelatedFileVO
 	{
-		///TODO change to KalturaAttachmentAsset
+		public static var serveURL:String = "/api_v3/index.php/service/attachment_attachmentasset/action/serve";		
 		/**
 		 * file asset
 		 * */
-		public var file:Object;
+		public var file:KalturaAttachmentAsset;
 		/**
 		 * download url of the file
 		 * */
-		public var downloadUrl:String;
+		public var serveUrl:String;
+		
+		public var fileReference:FileReference;
 		
 		public function RelatedFileVO()
 		{

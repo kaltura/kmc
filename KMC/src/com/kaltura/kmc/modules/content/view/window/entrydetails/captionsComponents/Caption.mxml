@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 creationComplete="onCreationComplete()">
+		 creationComplete="onCreationComplete()" xmlns:validators="com.kaltura.validators.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
@@ -180,7 +180,7 @@
 			[Bindable]
 			private var _isLoading:Boolean = false;
 			[Bindable]
-			private var _formatText:String;
+			private var _selectedTypeIndex:int = 0;
 			[Bindable]
 			private var _languageIndex:int = -1;
 			[Bindable]
@@ -220,7 +220,7 @@
 					_showActionsBox = true;
 					_captionExists = _caption.caption.id ? true : false;
 					if (_caption.caption.format)
-						_formatText = getFormat(_caption.caption.format);
+						_selectedTypeIndex = getFormat(_caption.caption.format);
 					if (_caption.caption.language) {
 						for (var i:int = 0; i<LANGUAGES_ARRAY.length; i++) {
 							if (String(LANGUAGES_ARRAY[i])==_caption.caption.language) {
@@ -323,9 +323,9 @@
 				_fileReference.removeEventListener(Event.SELECT, onFileSelected);
 				_fileExtension = _fileReference.name.substring(_fileReference.name.lastIndexOf('.')+1, _fileReference.name.length);
 				if (_fileExtension=='xml')
-					_formatText = getFormat(KalturaCaptionType.DFXP);
+					_selectedTypeIndex = getFormat(KalturaCaptionType.DFXP);
 				else
-					_formatText = getFormat(KalturaCaptionType.SRT);
+					_selectedTypeIndex = getFormat(KalturaCaptionType.SRT);
 				var uploadFile:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPLOAD_FILE);
 				uploadFile.caption = _caption;
 				uploadFile.fr = _fileReference;
@@ -351,10 +351,11 @@
 					if (_fileExtension) 
 					{
 						_caption.caption.fileExt = _fileExtension;
-						_caption.caption.format = (_fileExtension == 'xml') ? KalturaCaptionType.DFXP : KalturaCaptionType.SRT;
 					}
+					_caption.caption.format = getFormatEnum(String(typeCB.selectedItem));
 					_caption.caption.language = languageCB.selectedItem as String;
 					_caption.caption.label = labelTi.text;
+					_caption.resourceUrl = urlTi.text;
 				}
 				
 				return result;
@@ -370,17 +371,19 @@
 					return true;
 				if (_isLoading)
 					return true;
+				if (urlTi.text && (!_caption.downloadUrl || (urlTi.text != _caption.downloadUrl)))
+					return true;
 				
 				return false;
 			}
 		
 			/**
-			 * return label according to given enum
+			 * return selected index according to given enum
 			 * */
-			private function getFormat(enum:String):String {
+			private function getFormat(enum:String):int {
 				if (enum == KalturaCaptionType.SRT)
-					return resourceManager.getString('cms','srtLabel');
-				return resourceManager.getString('cms','dfxpLabel');
+					return 0;
+				return 1;
 			}
 			
 			/**
@@ -392,6 +395,7 @@
 				return KalturaCaptionType.DFXP;
 			}	
 
+
 		]]>
 	</mx:Script>
 	<!--<mx:RadioButtonGroup id="sources" change="onButtonChange(event)"/>
@@ -401,22 +405,23 @@
 		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
 	</mx:HBox>-->
 	
-	<mx:StringValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('cms','emptyUrlError')}"/>
+	<validators:URLValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('cms','emptyUrlError')}"/>
 	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{LANGUAGES_ARRAY.length -1}"
 						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
-		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" editable="false"/>
+		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading}"/>
 		<mx:Button label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
 				   visible="{!_isLoading}" includeInLayout="{!_isLoading}"/>
 		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
 				  source="{SpinnerImg}" visible="{_isLoading}" includeInLayout="{_isLoading}"/>
-		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{_isError}" styleName="distributionError"/>
+		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{(_isError &amp;&amp; !_isLoading)}" styleName="distributionError"/>
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100" styleName="drillDownLabel"/>
-		<mx:Label text="{_formatText}"/>
-		<!--<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>-->
+		<!--<mx:Label text="{_formatText}"/>-->
+		<mx:ComboBox id="typeCB" enabled="{!_captionExists}" selectedIndex="{_selectedTypeIndex}"
+					 dataProvider="{new Array(resourceManager.getString('cms','srtLabel'), resourceManager.getString('cms','dfxpLabel'))}"/>
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100" styleName="drillDownLabel"/>

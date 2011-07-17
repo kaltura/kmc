@@ -12,7 +12,9 @@ package com.kaltura.kmc.modules.content.commands.captions
 	import com.kaltura.kmc.modules.content.events.CaptionsEvent;
 	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
 	import com.kaltura.types.KalturaNullableBoolean;
+	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
+	import com.kaltura.vo.KalturaUrlResource;
 	
 	public class SaveCaptionsCommand extends KalturaCommand
 	{
@@ -23,16 +25,22 @@ package com.kaltura.kmc.modules.content.commands.captions
 			var requestIndex:int = 1;
 			if (evt.captionsToSave) {
 				for each (var caption:EntryCaptionVO in evt.captionsToSave) {
-					var resource:KalturaUploadedFileTokenResource = new KalturaUploadedFileTokenResource();
+					//handle resource
+					var resource:KalturaContentResource; 
 					if (caption.uploadTokenId) {
+						resource = new KalturaUploadedFileTokenResource();
 						resource.token = caption.uploadTokenId;
+					}
+					else if (caption.resourceUrl && (!caption.downloadUrl || (caption.resourceUrl!=caption.downloadUrl))) {
+						resource = new KalturaUrlResource();
+						resource.url = caption.resourceUrl;
 					}
 					//new caption
 					if (!caption.caption.id) {		
 						var addCaption:CaptionAssetAdd = new CaptionAssetAdd(_model.entryDetailsModel.selectedEntry.id, caption.caption);
 						mr.addAction(addCaption);
 						requestIndex++;
-						if (resource.token) {
+						if (resource) {
 							var addContent:CaptionAssetSetContent = new CaptionAssetSetContent('0', resource);
 							mr.mapMultiRequestParam(requestIndex-1, "id", requestIndex, "id");
 							mr.addAction(addContent);
@@ -45,7 +53,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 						var update:CaptionAssetUpdate = new CaptionAssetUpdate(caption.caption.id, caption.caption);
 						mr.addAction(update);
 						requestIndex++;
-						if (resource.token) {
+						if (resource) {
 							var updateContent:CaptionAssetSetContent = new CaptionAssetSetContent(caption.caption.id, resource);
 							mr.addAction(updateContent);
 							requestIndex++;
@@ -54,8 +62,8 @@ package com.kaltura.kmc.modules.content.commands.captions
 				}
 			}
 			//delete captions
-			if (evt.captionToRemove) {
-				for each (var delCap:EntryCaptionVO in evt.captionToRemove) {
+			if (evt.captionsToRemove) {
+				for each (var delCap:EntryCaptionVO in evt.captionsToRemove) {
 					var deleteAsset:CaptionAssetDelete = new CaptionAssetDelete(delCap.caption.id);
 					mr.addAction(deleteAsset);
 					requestIndex++;
