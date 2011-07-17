@@ -93,7 +93,7 @@
 			/**
 			 * the cuepoint currently being edited
 			 * */
-			private var _selectedCuePoint:KalturaAdCuePoint = new KalturaAdCuePoint();
+			private var _selectedCuePoint:KalturaAdCuePoint/*  = new KalturaAdCuePoint() */;
 
 			/**
 			 * change watcher for reacting to cueopints count being set on model
@@ -105,6 +105,12 @@
 			 * */
 			private var _img:Image;
 
+			/**
+			 * kClip event selectedAssetChanged should only be handled
+			 * if it wasn't fired because KMC triggered kClip.setSelected.
+			 * this flag is used for determining that. 
+			 * */
+			private var _kmcTriggeredEvent:Boolean;
 
 			public function destroy():void {
 				if (_kdp) {
@@ -222,9 +228,9 @@
 			 * set the given CP's values in the details form.
 			 * */
 			private function editCuePoint(o:Object):void {
-//				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
-				ObjectUtil.copyObject(o, _selectedCuePoint);
-//				_selectedCuePoint = cp;
+				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
+				ObjectUtil.copyObject(o, cp);
+				_selectedCuePoint = cp;
 //				if (cp) {
 					// if roles and permissions allow editing, make the form editable
 					if (editable) {
@@ -380,7 +386,22 @@
 						editCuePoint(e["data"]);
 						break;
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
-						editCuePoint(e["data"]);
+						// only do the following if the event is not a result of KMC calling kClip.setSelected.
+						if (_kmcTriggeredEvent)  {
+							_kmcTriggeredEvent = false;
+							return;
+						}
+						// only switch if the cp wer'e leaving has saved valid values
+						// (attributes on _selectedCuepoint are updated only when 
+						// "apply" is clicked, so these are the values we test)
+						if (!_selectedCuePoint || validateCuePoint(_selectedCuePoint)) {
+							editCuePoint(e["data"]);
+						}
+						else {
+							_kmcTriggeredEvent = true;
+							// reset the previous cp to the clipper
+							_kClip["setSelected"](_selectedCuePoint.id);
+						}
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
 						onKClipError(e["data"]);
@@ -392,6 +413,21 @@
 						dispatchEvent(new Event("cuepointsSaved"));
 						break;
 				}
+			}
+			
+			/**
+			 * make sure cuepoint values are valid, and show  
+			 * relevant error message if required. 
+			 * @param cp	the cuepoint to validate
+			 * @return true if cp valid, false otherwise.
+			 * */
+			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
+				var result:Boolean = true;
+				if (!cp.adType) {
+					result = false;
+					Alert.show(resourceManager.getString('cms', 'ads_invalid_ad_type'));
+				}
+				return result;
 			}
 
 
@@ -580,13 +616,30 @@
 			 * @param cp
 			 * */
 			private function getAdProvider(cp:KalturaAdCuePoint):Object {
+				var value:String = cbProvider.selectedItem.value;
+				if (_selectedCuePoint.protocolType == KalturaAdProtocolType.VAST 
+					&& _selectedCuePoint.tags == '') {
+					value == "vast"
+				}
+				else if (_selectedCuePoint.protocolType == KalturaAdProtocolType.CUSTOM
+					&& _selectedCuePoint.tags == "freewheel") {
+					value = "freewheel";
+				}
+				else {
+					value = "other";
+				}
+				
+				
 				for (var i:int = 0; i < PROVIDERS.length; i++) {
-					if (PROVIDERS[i].value == cp.tags) {
+					if (PROVIDERS[i].value == value) {
 						return PROVIDERS[i];
 					}
 				}
 				// the last object is the "Other"
 				return PROVIDERS[PROVIDERS.length - 1];
+				
+				
+				
 			}
 
 
