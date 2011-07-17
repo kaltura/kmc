@@ -26,6 +26,9 @@
 			private var _sortDirection:String = DESCENDING; // the current sort direction
 			[Bindable]
 			public var allSelected:Boolean = false;
+			
+			[Bindable]
+			public var showIp2Loc:Boolean = true;
 
 			override public function set dataProvider(data:Object):void {
 				super.dataProvider = data;
@@ -76,6 +79,11 @@
 							break;
 						}
 
+						case resourceManager.getString('account', 'authorizedIPsColumnTitle'):  {
+							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
+							break;
+						}
+
 						case resourceManager.getString('account', 'kalturaDirectoryColumnTitle'):  {
 							orederByStr = sortDir ? KalturaAccessControlOrderBy.CREATED_AT_ASC : KalturaAccessControlOrderBy.CREATED_AT_DESC;
 							break;
@@ -87,7 +95,7 @@
 						}
 
 					}
-					//remmber the direction and change the sign
+					//remember the direction and change the sign
 					_sortIndex = event.columnIndex;
 					_sortDirection = sortDir ? ASCENDING : DESCENDING;
 					columnsSortMap.setValue(headerText, !sortDir);
@@ -159,17 +167,6 @@
 
 
 	<mx:columns>
-		<!--<mx:DataGridColumn editorDataField="selected" width="40" dataField="selected" itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.renderers.AccessControlSelectionRenderer">
-			 <mx:headerRenderer>
-			 <mx:Component>
-			 <mx:HBox horizontalAlign="center" verticalAlign="middle">
-			 <mx:CheckBox id="hcb" buttonMode="true"
-			 selected="{outerDocument.allSelected}"
-			 change="{outerDocument.dispatchSelection( event )}"/>
-			 </mx:HBox>
-			 </mx:Component>
-			 </mx:headerRenderer>
-			 </mx:DataGridColumn>-->
 		<mx:DataGridColumn width="45" headerText="{resourceManager.getString('account','id')}" dataField="id"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlIdRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','nameColumnTitle')}" dataField="name"
@@ -178,17 +175,17 @@
 						   dataField="profile.description"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlDescriptionRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','createdAtColumnTitle')}"
-						   dataField="profile.description"
+						   dataField="profile.createdAt"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlCreatedAtRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedSitesColumnTitle')}"
 						   dataField="authoSites"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoSitesRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedCountriesColumnTitle')}"
-						   dataField="authoCountries"
+						   dataField="authoCountries" visible="{showIp2Loc}" 
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoCountriesRenderer"/>
-		<!--<mx:DataGridColumn headerText="Authorized Times" dataField="authoTimes"/>
-			 <mx:DataGridColumn headerText="Mixes &amp; Playlists" dataField="mixPlaylist"/>-->
-		<!--<mx:DataGridColumn headerText="{resourceManager.getString('account','kalturaDirectoryColumnTitle')}" dataField="kDir" itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrolwindow.renderers.AccessControlKalDirRenderer"/>-->
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','authorizedIPsColumnTitle')}"
+						   dataField="authoIps"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAuthoIpsRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','advancedSecurityColumnTitle')}"
 						   dataField="advance"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.AccessControlAdvancedSecRenderer"/>

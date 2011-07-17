@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="mainACPvBox"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
 		 xmlns:controls="com.kaltura.controls.*" creationComplete="creationCompleteHandler(event)"
-		 xmlns:accesscontrol="com.kaltura.kmc.modules.account.view.windows.accesscontrol.*">
+		 xmlns:ac="com.kaltura.kmc.modules.account.view.windows.accesscontrol.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -96,22 +96,6 @@
 
 				addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc);
 				addNewProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc);
-				addNewProfileWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
-
-			}
-			
-			private function dispatchHelp(e:KmcHelpEvent):void {
-				dispatchEvent(e.clone());
-			}
-
-
-			/**
-			 * run the permissions manager.
-			 * this is done here and not inside because the popup class is from kalturalib
-			 * and therefore doesn't know the permissions manager.
-			 * */
-			private function setPermissions(e:Event):void {
-				PermissionManager.getInstance().applyAllAttributes(e.target, "acDrilldown");
 			}
 
 
@@ -233,14 +217,13 @@
 	</mx:Script>
 	<mx:Text styleName="expendableButton" text="{resourceManager.getString('account','accessControlProfiles')}"/>
 	<mx:HBox width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10">
-		<mx:Text
-				 text="{resourceManager.getString('account','accessControlIntroText')}" width="100%"
-				 id="accessControlIntroText" styleName="pageDescription"/>
+		<mx:Text id="accessControlIntroText" width="100%" styleName="pageDescription"
+				 text="{resourceManager.getString('account','accessControlIntroText')}" />
 	</mx:HBox>
 	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">
-			<accesscontrol:AccessControlProfilesTable id='accessControlProfilesTable' dataProvider="{accessControlsList}"
-											allSelected="{allSelected}"/>
+			<ac:AccessControlProfilesTable id='accessControlProfilesTable' 
+				dataProvider="{accessControlsList}" allSelected="{allSelected}"/>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"

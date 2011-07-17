@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<renderers:AccessControlRendererBase 
-									 xmlns:mx="http://www.adobe.com/2006/mxml"
-									 creationComplete="onCreationComplete(event)" width="100%"
-									 horizontalScrollPolicy="off" styleName="tableCellBoxRendererStyle" paddingLeft="4"
-									 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
+<renderers:AccessControlRendererBase xmlns:mx="http://www.adobe.com/2006/mxml"
+			 creationComplete="onCreationComplete(event)" width="100%"
+			 horizontalScrollPolicy="off" styleName="tableCellBoxRendererStyle" paddingLeft="4"
+			 xmlns:renderers="com.kaltura.kmc.modules.account.view.windows.accesscontrol.renderers.*">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.types.KalturaSiteRestrictionType;
-			import com.kaltura.vo.KalturaSiteRestriction;
+			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaSiteRestriction;
 
 
 			private function onCreationComplete(event:Event = null):void {
@@ -19,10 +18,12 @@
 					for each (var restriction:KalturaBaseRestriction in acProfile.profile.restrictions) {
 						if (restriction is KalturaSiteRestriction) {
 							foundRestriction = true;
-							siteLabel.text = (restriction as KalturaSiteRestriction).siteRestrictionType == KalturaSiteRestrictionType.ALLOW_SITE_LIST ? resourceManager.getString('account', 'ALLOW_SITES') + ":  " : resourceManager.getString('account', 'RESTRICT_SITES') + ":  ";
+							siteLabel.text = (restriction as KalturaSiteRestriction).siteRestrictionType == KalturaSiteRestrictionType.ALLOW_SITE_LIST 
+								? resourceManager.getString('account', 'ALLOW_SITES') + ":  " 
+								: resourceManager.getString('account', 'RESTRICT_SITES') + ":  ";
 
 							siteLabel.text += (restriction as KalturaSiteRestriction).siteList;
-							siteLabel.toolTip = siteLabel.text
+							siteLabel.toolTip = siteLabel.text;
 							break;
 						}
 					}
