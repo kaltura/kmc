@@ -11,6 +11,7 @@
 			import com.kaltura.kmc.modules.content.events.CuePointEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.types.KalturaAdProtocolType;
 			import com.kaltura.types.KalturaAdType;
 			import com.kaltura.types.KalturaCuePointType;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -491,11 +492,17 @@
 				_selectedCuePoint.title = tiName.text;
 				// provider
 				var value:String = cbProvider.selectedItem.value;
-				if (value == "vast" || value == "freewheel") {
+				if (value == "vast") {
+					_selectedCuePoint.protocolType = KalturaAdProtocolType.VAST;
+					_selectedCuePoint.tags = '';
+				}
+				else if (value == "freewheel") {
+					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
 					_selectedCuePoint.tags = value;
 				}
 				else {
 					// "other" provider
+					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
 					_selectedCuePoint.tags = tiProvider.text;
 				}
 				// source url
@@ -550,14 +557,21 @@
 			 * i.e. nothing for vast or freewheel, or the tags string for "other".
 			 * */
 			private function getAdProviderText(acp:KalturaAdCuePoint):String {
-				if (!acp)
-					return '';
-				if (acp.tags == "vast" || acp.tags == "freewheel") {
-					return '';
-				} else if (!acp.tags) {
-					return resourceManager.getString('cms', 'ads_default_provider');
+				if (!acp || acp.protocolType == KalturaAdProtocolType.VAST) {
+					return 'aaa';
+				} 
+				else if (acp.protocolType == KalturaAdProtocolType.CUSTOM) {
+					if (acp.tags == "freewheel") {
+						return 'sss';
+					}
+					else if (!acp.tags) {
+						return resourceManager.getString('cms', 'ads_default_provider');
+					}
+					else {
+						return acp.tags + "ggg";
+					}
 				}
-				return acp.tags;
+				return resourceManager.getString('cms', 'ads_default_provider');
 			}
 
 
@@ -679,6 +693,12 @@
 						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"/>
 						<mx:TextInput id="tiProvider" width="100%" text="{getAdProviderText(_selectedCuePoint)}"
 									  enabled="{cbProvider.selectedItem.value == 'other'}"/>
+					</mx:VBox>
+				</mx:HBox>
+				<mx:HBox width="100%" styleName="noPadding">
+					<mx:Label text="{resourceManager.getString('cms', 'ads_url')}" styleName="formLabel"
+							  width="{LABEL_WIDTH}"/>
+					<mx:VBox width="100%" styleName="noPadding">
 						<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}" />
 						<!-- fix tiUrl text to show default text -->
 					</mx:VBox>
