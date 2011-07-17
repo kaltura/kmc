@@ -21,10 +21,6 @@ package com.kaltura.vo
 		* 		* */ 
 		public var password : String;
 
-		/** 
-		* 		* */ 
-		public var remoteFolderPath : String;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -33,7 +29,6 @@ package com.kaltura.vo
 			arr.push('port');
 			arr.push('username');
 			arr.push('password');
-			arr.push('remoteFolderPath');
 			return arr;
 		}
 

@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaConfigurableDistributionProfileFilter;
+	import com.kaltura.vo.KalturaAttachmentAssetBaseFilter;
 
 	[Bindable]
-	public dynamic class KalturaTVComDistributionProfileBaseFilter extends KalturaConfigurableDistributionProfileFilter
+	public dynamic class KalturaAttachmentAssetFilter extends KalturaAttachmentAssetBaseFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{
