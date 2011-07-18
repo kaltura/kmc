@@ -526,7 +526,7 @@
 			 * @param filesList		list of UploadFileVo objects
 			 * @param allowAddFiles	should the popup allow adding more files after being opened
 			 * */
-			private function openAddFlavorsWindow(action:String, filesList:ArrayCollection, allowAddFiles:Boolean = true):void {
+			private function openAddFlavorsWindow(action:String, filesList:ArrayCollection, allowAddFiles:Boolean):void {
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
@@ -569,7 +569,7 @@
 					filesList.addItem(uploadFile);
 				}
 
-				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, filesList);
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, filesList, true);
 			}
 
 
@@ -670,13 +670,13 @@
 			}
 
 			protected function onImportBtnClick(event:MouseEvent):void {
-				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, new ArrayCollection([new UploadFileVo()]));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
 			}
 
 
 			protected function onLinkBtnClick(event:MouseEvent):void
 			{
-				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
 			}
 
 		]]>
