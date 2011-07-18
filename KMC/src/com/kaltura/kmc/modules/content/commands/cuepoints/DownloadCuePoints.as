@@ -26,7 +26,7 @@ package com.kaltura.kmc.modules.content.commands.cuepoints
 			fr.addEventListener(Event.COMPLETE, downloadHandler);
 			fr.addEventListener(IOErrorEvent.IO_ERROR, downloadHandler);
 			fr.addEventListener(SecurityErrorEvent.SECURITY_ERROR, downloadHandler);
-			fr.download(request, 'cuepoints.xml');
+			fr.download(request, 'cuepoints_'+event.data+'.xml');
 			
 		}
 		
