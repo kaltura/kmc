@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.vo
 		public static const BITRATE:String = "bitrateError";
 		public static const CAPTIONS_URL:String = "captionsUrl";
 		public static const CAPTIONS_LANGUAGE:String = "captionsLanguage";
+		public static const CUEPOINTS_DATA:String = "cuepointsData";
 		
 		
 		public var error:String;

@@ -11,6 +11,7 @@
 			import com.kaltura.kmc.modules.content.events.CuePointEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaAdProtocolType;
 			import com.kaltura.types.KalturaAdType;
 			import com.kaltura.types.KalturaCuePointType;
@@ -105,12 +106,12 @@
 			 * */
 			private var _img:Image;
 
-			/**
-			 * kClip event selectedAssetChanged should only be handled
-			 * if it wasn't fired because KMC triggered kClip.setSelected.
-			 * this flag is used for determining that. 
-			 * */
-			private var _kmcTriggeredEvent:Boolean;
+//			/**
+//			 * kClip event selectedAssetChanged should only be handled
+//			 * if it wasn't fired because KMC triggered kClip.setSelected.
+//			 * this flag is used for determining that. 
+//			 * */
+//			private var _kmcTriggeredEvent:Boolean;
 
 			public function destroy():void {
 				if (_kdp) {
@@ -159,6 +160,14 @@
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
+			
+			/**
+			 * The entry being edited
+			 * */
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+				updateWidgetsStatus();
+			}
 
 
 			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true, setEntryId:Boolean = true):void {
@@ -196,14 +205,25 @@
 				}
 			}
 
-
+			
 			/**
-			 * The entry being edited
+			 * trigger cuepoints validation
+			 * @return validation result
+			 * @internal
+			 * in other entry details panels, this function also sets the values 
+			 * from the view to the KalturaBaseEntry being edited. since cuepoint
+			 * data is not saved on the entry itself, this part is irrelevant for
+			 * this panel. the name is retained for consistency. 
 			 * */
-			public function set selectedEntry(value:KalturaBaseEntry):void {
-				_selectedEntry = value;
-				updateWidgetsStatus();
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				if (!validate()) {
+					//failed validation
+					result.error = EntryDetailsValidationError.CUEPOINTS_DATA;
+				}
+				return result;
 			}
+
 
 
 			/**
@@ -386,22 +406,22 @@
 						editCuePoint(e["data"]);
 						break;
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
-						// only do the following if the event is not a result of KMC calling kClip.setSelected.
-						if (_kmcTriggeredEvent)  {
-							_kmcTriggeredEvent = false;
-							return;
-						}
-						// only switch if the cp wer'e leaving has saved valid values
-						// (attributes on _selectedCuepoint are updated only when 
-						// "apply" is clicked, so these are the values we test)
-						if (!_selectedCuePoint || validateCuePoint(_selectedCuePoint)) {
+//						// only do the following if the event is not a result of KMC calling kClip.setSelected.
+//						if (_kmcTriggeredEvent)  {
+//							_kmcTriggeredEvent = false;
+//							return;
+//						}
+//						// only switch if the cp wer'e leaving has saved valid values
+//						// (attributes on _selectedCuepoint are updated only when 
+//						// "apply" is clicked, so these are the values we test)
+//						if (!_selectedCuePoint || validateCuePoint(_selectedCuePoint)) {
 							editCuePoint(e["data"]);
-						}
-						else {
-							_kmcTriggeredEvent = true;
-							// reset the previous cp to the clipper
-							_kClip["setSelected"](_selectedCuePoint.id);
-						}
+//						}
+//						else {
+//							_kmcTriggeredEvent = true;
+//							// reset the previous cp to the clipper
+//							_kClip["setSelected"](_selectedCuePoint.id);
+//						}
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
 						onKClipError(e["data"]);
@@ -413,21 +433,6 @@
 						dispatchEvent(new Event("cuepointsSaved"));
 						break;
 				}
-			}
-			
-			/**
-			 * make sure cuepoint values are valid, and show  
-			 * relevant error message if required. 
-			 * @param cp	the cuepoint to validate
-			 * @return true if cp valid, false otherwise.
-			 * */
-			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
-				var result:Boolean = true;
-				if (!cp.adType) {
-					result = false;
-					Alert.show(resourceManager.getString('cms', 'ads_invalid_ad_type'));
-				}
-				return result;
 			}
 
 
@@ -547,36 +552,74 @@
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
 				// duration
 				_selectedCuePoint.endTime =  _selectedCuePoint.startTime +  teDuration.getTimeAsSeconds() * 1000;
-				
-				if (validate()) {
+//				if (validate()) {
 					// update
 					_kClip["updateCuePoint"](_selectedCuePoint);
-				}
+//				}
 			}
 			
 			
 			/**
-			 * validate required fields
-			 * @return true if validation passed, false otherwise.
+			 * validate all the cuepoints on kClip
+			 * @return false if at least one cuepoint is invalid, true otherwise.
 			 * */
 			private function validate():Boolean {
+				var ret:Boolean = true;
+				var cpresult:Boolean;
+				var cps:Array = getCuepoints();
+				for each (var cp:KalturaAdCuePoint in cps) {
+					cpresult = validateCuePoint(cp);
+					// mark this cp as in/valid
+					_kClip["setError"](!cpresult, cp.id);
+					ret &&= cpresult;
+				}
+				return ret;
+			}
+			
+			
+			/**
+			 * validate required fields of the given cuepoint
+			 * @param cp	cuepoint to test
+			 * @return true if validation passed, false otherwise.
+			 * */
+			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
 				// ad type
-				if (_selectedCuePoint.adType != KalturaAdType.VIDEO && _selectedCuePoint.adType != KalturaAdType.OVERLAY) {
-					Alert.show(resourceManager.getString('cms', 'ads_invalid_ad_type'));
+				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
+//					Alert.show(resourceManager.getString('cms', 'ads_invalid_ad_type'));
 					return false;
 				}  
 				// duration
-				if (_selectedCuePoint.adType == KalturaAdType.OVERLAY) {
-					if (_selectedCuePoint.endTime < _selectedCuePoint.startTime) {
-						Alert.show(resourceManager.getString('cms', 'ads_invalid_out_time'));
+				if (cp.adType == KalturaAdType.OVERLAY) {
+					if (cp.endTime < cp.startTime) {
+//						Alert.show(resourceManager.getString('cms', 'ads_invalid_out_time'));
 						return false;
 					}
 				}
 				return true;
 			}
 			
+			/**
+			 * retreive a list of cuepoints from kClip.
+			 * @return all cuepoints currently displayed on kClip.
+			 * 
+			 * @internal
+			 * we have to translate kclip cps to kmc cps, because
+			 * of the different ApplicationDomains.
+			 * */
+			private function getCuepoints():Array {
+				var kclipcps:Array = _kClip["getAll"]();
+				var cps:Array = new Array();
+				var cp:KalturaAdCuePoint;
+				for each (var o:Object in kclipcps) {
+					cp = new KalturaAdCuePoint();
+					ObjectUtil.copyObject(o, cp);
+					cps.push(cp);
+				}
+				return cps;
+			}
 
-
+			
+			
 			/**
 			 * calculate cuepoint duration
 			 * */
@@ -594,17 +637,17 @@
 			 * */
 			private function getAdProviderText(acp:KalturaAdCuePoint):String {
 				if (!acp || acp.protocolType == KalturaAdProtocolType.VAST) {
-					return 'aaa';
+					return '';
 				} 
 				else if (acp.protocolType == KalturaAdProtocolType.CUSTOM) {
 					if (acp.tags == "freewheel") {
-						return 'sss';
+						return '';
 					}
 					else if (!acp.tags) {
 						return resourceManager.getString('cms', 'ads_default_provider');
 					}
 					else {
-						return acp.tags + "ggg";
+						return acp.tags + "";
 					}
 				}
 				return resourceManager.getString('cms', 'ads_default_provider');
@@ -629,7 +672,6 @@
 					value = "other";
 				}
 				
-				
 				for (var i:int = 0; i < PROVIDERS.length; i++) {
 					if (PROVIDERS[i].value == value) {
 						return PROVIDERS[i];
@@ -637,9 +679,6 @@
 				}
 				// the last object is the "Other"
 				return PROVIDERS[PROVIDERS.length - 1];
-				
-				
-				
 			}
 
 
@@ -694,22 +733,22 @@
 				cbActions.selectedIndex = -1;
 			}
 
-			protected function resetForm(event:MouseEvent):void {
-				// timing doesn't change
-				// name
-				tiName.text = '';
-				// provider
-				cbProvider.selectedIndex = -1;
-				// source url
-				tiUrl.text  = '';
-				// "other" provider
-				tiProvider.text = getAdProviderText(null);
-				// ad type
-				cbType.selectedIndex = -1;
-				// duration
-				teDuration.timeValue = teTiming.timeValue;
-				
-			}
+//			protected function resetForm(event:MouseEvent):void {
+//				// timing doesn't change
+//				// name
+//				tiName.text = '';
+//				// provider
+//				cbProvider.selectedIndex = -1;
+//				// source url
+//				tiUrl.text  = '';
+//				// "other" provider
+//				tiProvider.text = getAdProviderText(null);
+//				// ad type
+//				cbType.selectedIndex = -1;
+//				// duration
+//				teDuration.timeValue = teTiming.timeValue;
+//				
+//			}
 
 		]]>
 	</mx:Script>
@@ -721,49 +760,54 @@
 				<mx:ComboBox id="cbActions" width="100%" dataProvider="{BULK_ACTIONS}" change="handleBulkActions(event)"
 							 prompt="{resourceManager.getString('cms', 'ads_bulk_actions')}" enabled="false"/>
 			</mx:HBox>
-			<mx:VBox id="details" width="100%" enabled="{_formEnabled}">
+			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%"
+					 visible="{!_formEnabled}" includeInLayout="{!_formEnabled}" />
+			<mx:VBox id="details" width="100%" visible="{_formEnabled}" includeInLayout="{_formEnabled}">
 				<mx:HBox styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'timing')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" 
 										  maximum="{(_selectedEntry as KalturaMediaEntry).duration}"
 										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
-										  showHours="true" showSeconds="true" showMiliseconds="true" />
+										  showHours="true" showSeconds="true" showMiliseconds="true" 
+										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_type')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:ComboBox id="cbType" width="100%" enabled="{_formEnabled}" dataProvider="{AD_TYPES}"
-								 prompt="{resourceManager.getString('cms', 'ads_ad_type')}"/>
+								 prompt="{resourceManager.getString('cms', 'ads_ad_type')}"
+								 change="updateCuePointData(event)"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}" 
 										  showMiliseconds="true" showHours="true" showSeconds="true"
-										  timeValue="{getDuration(_selectedCuePoint)}" />
+										  timeValue="{getDuration(_selectedCuePoint)}"
+										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_provider')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:VBox width="100%" styleName="noPadding">
-						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"/>
+						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"
+									 change="updateCuePointData(event)"/>
 						<mx:TextInput id="tiProvider" width="100%" text="{getAdProviderText(_selectedCuePoint)}"
-									  enabled="{cbProvider.selectedItem.value == 'other'}"/>
+									  enabled="{cbProvider.selectedItem.value == 'other'}"
+									  change="updateCuePointData(event)"/>
 					</mx:VBox>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_url')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:VBox width="100%" styleName="noPadding">
-						<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}" />
+						<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}" 
+									  change="updateCuePointData(event)"/>
 						<!-- fix tiUrl text to show default text -->
 					</mx:VBox>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_name')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
-					<mx:TextInput id="tiName" width="100%" enabled="{_formEnabled}" text="{_selectedCuePoint.title}" />
-				</mx:HBox>
-				<mx:HBox>
-					<mx:Button label="apply" click="updateCuePointData(event)"/>
-					<mx:Button label="clear" click="resetForm(event)"/>
+					<mx:TextInput id="tiName" width="100%" enabled="{_formEnabled}" text="{_selectedCuePoint.title}" 
+								  change="updateCuePointData(event)"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:VBox>

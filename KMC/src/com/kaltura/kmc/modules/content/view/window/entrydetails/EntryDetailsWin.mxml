@@ -727,14 +727,18 @@
 					// metadata validation passed.
 					validationResult = entrySch.save();
 					if (validationResult.error == null) {
+						// scheduling validation passed
 						if (entryCaptions.parent is ViewStack) {
+							// captions validation (if exists)
 							validationResult = entryCaptions.save();
 						}
-						// scheduling (and captions, if exist) validation passed
-						if (validationResult.error == null) {
-							if (_isLiveStream) {
-								validationResult = liveStream.save();
-							}
+						if (validationResult.error == null && _isLiveStream) {
+							// live validation (if exists)
+							validationResult = liveStream.save();
+						}
+						if (validationResult.error == null && ads.parent is ViewStack) {
+							// advertisements validation (if exists)
+							validationResult = ads.save();
 						}
 					}
 				}
@@ -761,6 +765,10 @@
 				}
 				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_LANGUAGE) {
 					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('cms', 'missingLanguageError'),resourceManager.getString('cms', 'captionsError'));
+				}
+				// advertisements validation:
+				else if (validationResult.error == EntryDetailsValidationError.CUEPOINTS_DATA) {
+					handleValidationError(ads, ResourceManager.getInstance().getString('cms', 'ads_error_string'),resourceManager.getString('cms', 'ads_error_title'));
 				} 
 				else {
 					// if referenceId was changed
