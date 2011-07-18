@@ -66,14 +66,12 @@ package com.kaltura.kmc.modules.create
 		 * get upload type (csv / xml) by file extension
 		 * */
 		protected function getUploadType(url:String):String {
-			var i:int = url.lastIndexOf("/");
-			var ext:String = url.substring(i+1);
+			var ext:String = url.substring(url.length - 3);
 			ext = ext.toLowerCase();
 			if (ext == "csv") {
 				return KalturaBulkUploadType.CSV;
 			}
 			return KalturaBulkUploadType.XML;
-			
 		}
 		
 		
