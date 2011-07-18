@@ -1085,6 +1085,14 @@
 					uploads.bulk.loadEntries();
 				}
 			}
+			
+			private function getUploadsTabLabel(files:int):String {
+				var s:String = resourceManager.getString('cms','uploads'); 
+				if (files > 0) {
+					s += resourceManager.getString('cms','parantheses',[files]);
+				}
+				return s; 
+			}
 		]]>
 	</mx:Script>
 
@@ -1116,7 +1124,8 @@
 			</mx:HBox>
 			<mx:Spacer width="100%"/>
 			<mx:HBox id="rightBtnsHBox">
-				<mx:Button id="uploadsBtn" height="{SUB_MENU_HEIGHT}" label="{resourceManager.getString('cms','uploads',[_files.length])}"
+				<mx:Button id="uploadsBtn" height="{SUB_MENU_HEIGHT}" 
+						   label="{getUploadsTabLabel(_files.length)}"
 						   click="rightTabClicked(event)" 
 						   styleName="{uploadsBtn.selected ? 'rightTlnSelectedTabStyle' : 'rightTlnUnSelectedTabStyle'}"
 						   buttonMode="true" toggle="true" />
