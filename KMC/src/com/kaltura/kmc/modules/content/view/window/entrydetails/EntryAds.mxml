@@ -169,7 +169,7 @@
 
 
 			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true, setEntryId:Boolean = true):void {
-				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+				if (_selectedEntry.status != KalturaEntryStatus.READY) {
 					if (updateKClip && _kClip) {
 						_kClip["setDisabled"](true);
 					}
@@ -377,7 +377,7 @@
 				switch (e.type) {
 					case KClipEventTypes.CLIPPER_READY:
 						// disable or set entry id
-						if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+						if (_selectedEntry.status != KalturaEntryStatus.READY) {
 							_kClip["setDisabled"](true);
 						}
 						else {
