@@ -31,11 +31,8 @@
 			import mx.events.ListEvent;
 			import mx.resources.ResourceManager;
 
-			/**
-			 * @internal
-			 * not static, so the array will be reset for each entry
-			 * */
-			private const BULK_ACTIONS:Array = [{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_upload'), value: 'ads_bulk_upload'},
+			
+			private static const BULK_ACTIONS:Array = [{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_upload'), value: 'ads_bulk_upload'},
 				{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_download'), value: 'ads_bulk_download'},
 				{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_sample'), value: 'ads_bulk_sample'}];
 
@@ -47,6 +44,7 @@
 				{label: ResourceManager.getInstance().getString('cms', 'provider_other'), value: 'other'}];
 
 			private const LABEL_WIDTH:int = 80;
+			
 
 			/**
 			 * clipper ruler is kept between different
@@ -126,10 +124,15 @@
 
 
 			public function initData():void {
-				_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, entryDetailsModel, "cuepointsCount");
+				// reset number of cuepoints
+				var cg:CuePointEvent = new CuePointEvent(CuePointEvent.RESET_CUEPOINTS_COUNT);
+				cg.dispatch();
+				if (!_watchCPCount) {
+					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, entryDetailsModel, "cuepointsCount");
+				}
 				loadWidgets(null);
 				// get number of entry cuepoints
-				var cg:CuePointEvent = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
+				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
 				cg.data = _selectedEntry.id;
 				cg.dispatch();
 			}
@@ -226,15 +229,20 @@
 			 * @param cuepoints count
 			 * */
 			private function adjustBulkActions(value:Object):void {
+				// copy the array for the new entry
+				var ar:Array = BULK_ACTIONS.concat();
+				
 				if (value != null && value == 0) {
 					// remove the download option
-					BULK_ACTIONS.splice(1, 1);
+					ar.splice(1, 1);
 				}
 				if (!editable) {
 					// remove the upload action
-					BULK_ACTIONS.splice(0, 1);
+					ar.splice(0, 1);
 				}
-				cbActions.selectedIndex = -1;
+				cbActions.dropdown.dataProvider = ar;
+				cbActions.dataProvider = ar;
+				cbActions.selectedIndex = -1; 
 				cbActions.enabled = true;
 			}
 
@@ -707,6 +715,14 @@
 				cbActions.selectedIndex = -1;
 			}
 
+
+			protected function cbActions_updateCompleteHandler(event:FlexEvent):void
+			{
+				if (cbActions.dropdown) {
+					cbActions.dropdown.width = cbActions.width;
+				}
+			}
+
 		]]>
 	</mx:Script>
 
@@ -714,7 +730,7 @@
 		<mx:VBox width="100%" height="{kdpHolder.height}">
 			<mx:HBox width="100%">
 				<mx:Spacer width="100%"/>
-				<mx:ComboBox id="cbActions" width="100%" dataProvider="{BULK_ACTIONS}" change="handleBulkActions(event)"
+				<mx:ComboBox id="cbActions" width="100%" change="handleBulkActions(event)" updateComplete="cbActions_updateCompleteHandler(event)"
 							 prompt="{resourceManager.getString('cms', 'ads_bulk_actions')}" enabled="false"/>
 			</mx:HBox>
 			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%"

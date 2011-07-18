@@ -5,6 +5,11 @@ package com.kaltura.kmc.modules.content.events
 	public class CuePointEvent extends CairngormEvent {
 		
 		/**
+		 * reset cuepoints count on model.
+		 */		
+		public static const RESET_CUEPOINTS_COUNT:String = "reset_cuepoints_count";
+		
+		/**
 		 * count the cuepoints for a given entry.
 		 * event.data should be entryid. 
 		 */		
