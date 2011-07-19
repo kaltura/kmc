@@ -67,6 +67,14 @@
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				var tabsToHide:Array = permissionManager.getRelevantSubTabsToHide(NAME);
+				for each (var subtabName:String in tabsToHide) {
+					var tabToRemove:DisplayObject = contentView.getChildByName(subtabName);
+					if (tabToRemove) {
+						contentView.removeChild(tabToRemove);
+					}
+				}
+				
 				BindingUtils.bindSetter(toggleLoading, _model, "isLoading");
 				handleReady();
 			}
