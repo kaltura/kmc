@@ -1,12 +1,10 @@
-package com.kaltura.kmc.modules.content.commands
+package com.kaltura.kmc.modules.content.commands.relatedFiles
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryDetailsWin;
-	import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer;
+	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
-	import com.kaltura.vo.KalturaAsset;
 	import com.kaltura.vo.KalturaAssetFilter;
 	import com.kaltura.vo.KalturaAttachmentAsset;
 	import com.kaltura.vo.KalturaAttachmentAssetListResponse;

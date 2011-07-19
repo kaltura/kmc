@@ -1,28 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 width="100%" height="100%">
+		 width="100%" height="100%" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
 			import com.kaltura.vo.KalturaAttachmentAsset;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
 			
+			public static const FILE_CHANGED:String = "fileChanged";
 			public static const ALLOWED_EXT:String = "*.*";
 			
-			//will be used to convert size to KB
+			/**
+			 * will be used to convert size to KB
+			 * */
 			private const KB_MULTIPLIER:int = 1024;
-			//in files size: number of digits to show after the decimal point
+			/**
+			 * in files size: number of digits to show after the decimal point
+			 * */
 			private const DIGITS_AFTER_DEC_POINT:int = 2;
 			
-			//list of related files
+			/**
+			 * entire list of related files
+			 * */
 			private var _relatedFiles:ArrayCollection;
+			/**
+			 * current selecred entry
+			 * */
 			public var selectedEntry:KalturaBaseEntry;
+			/**
+			 * will be used to upload new files
+			 * */
 			private var _fileReference:FileReference;
+			/**
+			 * list of related files to delete on save
+			 * */
+			private var _filesToDelete:ArrayCollection;
+			/**
+			 * list of related files to add on save
+			 * */
+			private var _filesToAdd:ArrayCollection;
+			/**
+			 * list of related files to update on save
+			 * */
+			private var _filesToUpdate:ArrayCollection;
+			/**
+			 * indicated if a change was made
+			 * */
+			private var _wasChanged:Boolean;
 
+			protected function onCreationComplete():void {
+
+			}
+			
+			private function onFileChanged(event:Event):void {
+				_wasChanged = true;
+				var _changedFile:RelatedFileVO = event.target.data as RelatedFileVO;
+				//add to the updated array only if doesn't exist there yet, or doesn't belong to the added ones
+				if (_changedFile.file.id && (_filesToUpdate.getItemIndex(_changedFile) == -1))
+					_filesToUpdate.addItem(_changedFile);
+			}
+			
+			private function onFileDeleted(event:Event):void {
+				_wasChanged = true;
+				var deletedFile:RelatedFileVO = event.target.data as RelatedFileVO;
+				//if this file was already saved on the server
+				if (deletedFile.file.id)
+					_filesToDelete.addItem(deletedFile);
+				relatedFiles.removeItemAt(relatedFiles.getItemIndex(deletedFile));
+			}
+			
 			[Bindable]
 			/**
 			 * related files of current entry
@@ -35,18 +86,25 @@
 			public function set relatedFiles(value:ArrayCollection):void
 			{
 				_relatedFiles = value;
+				_filesToAdd = new ArrayCollection();
+				_filesToDelete = new ArrayCollection();
+				_filesToUpdate = new ArrayCollection();
 			}
 
 			/**
 			 * get relevant data from server
 			 * */
 			public function initData():void {
+				_wasChanged = false;
 				var list:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.LIST_RELATED_FILES);
 				list.dispatch();
+				dataGrid.addEventListener(FILE_CHANGED, onFileChanged, false, 0, true);
+				dataGrid.addEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted, false, 0, true);
 			}
 			
 			public function destroy():void {
-				
+				dataGrid.removeEventListener(FILE_CHANGED, onFileChanged);
+				dataGrid.removeEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted);
 			}
 
 			/**
@@ -60,18 +118,20 @@
 			}
 			
 			private function onFileSelected(event:Event):void {
+				_wasChanged = true;
 				_fileReference.removeEventListener(Event.SELECT, onFileSelected);
 				var newRelated:RelatedFileVO = new RelatedFileVO();
 				newRelated.file = new KalturaAttachmentAsset();
+				newRelated.file.filename = _fileReference.name;
 				newRelated.fileReference = _fileReference;
-				_relatedFiles.addItemAt(newRelated, 0);
-				
+				_relatedFiles.addItem(newRelated);
+				_filesToAdd.addItem(newRelated);
 			}
 			
 			/**
 			 * Create suitable string to display in the "File Size" column
 			 * */
-			private function fileSizeLabelFunc(item:Object, column:DataGridColumn): String {
+			public function getSizeText(item:Object): String {
 				var curItem:RelatedFileVO = item as RelatedFileVO;
 				var size:int;
 				if (curItem.fileReference)
@@ -84,38 +144,76 @@
 				return ((size/KB_MULTIPLIER).toFixed(DIGITS_AFTER_DEC_POINT)) + ' ' + resourceManager.getString('cms','kiloBytes');
 				
 			}
+			
+			/**
+			 * save all changes on related files
+			 * */
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				for each (var related:RelatedFileVO in _relatedFiles) {
+					//if a file was selected but not uploaded
+					if (related.fileReference && !related.uploadTokenId) {
+						result.error = EntryDetailsValidationError.RELATED_FILES_NOT_UPLOADED;
+						break;
+					}
+				}
+				
+				if (!result.error)
+				{
+					var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
+					saveEvent.relatedToAdd = _filesToAdd.source;
+					saveEvent.relatedToUpdate = _filesToUpdate.source;
+					saveEvent.relatedToDelete = _filesToDelete.source;
+					saveEvent.dispatch();
+				}
+				
+				return result;
+			}
+			
+			public function wasChanged():Boolean {
+				return _wasChanged;
+			}
 
 		]]>
 	</mx:Script>
+	
 	<mx:Button label="{resourceManager.getString('cms','addFiles')}" click="addFile(event)"/>
-	<mx:DataGrid dataProvider="{relatedFiles}" width="100%" height="100%">
+	<mx:DataGrid id="dataGrid" dataProvider="{relatedFiles}" width="100%" height="100%" rowHeight="30">
 		<mx:columns>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}">
-				<mx:itemRenderer>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileNameRenderer"/>
+				<!--<mx:itemRenderer>
 					<mx:Component>
-						<mx:VBox paddingLeft="5" paddingRight="5" width="100%" height="100%" horizontalScrollPolicy="off">
-							<mx:TextInput text="{data.file.filename}" width="100%"/>
+						<mx:VBox paddingLeft="5" paddingRight="5" verticalAlign="middle" width="100%" height="100%" horizontalScrollPolicy="off">
+						
 						</mx:VBox>
 					</mx:Component>
 				</mx:itemRenderer>
-			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}">
-				<mx:itemRenderer>
+			</mx:DataGridColumn>-->
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileTypeRenderer"/>
+				<!--<mx:itemRenderer>
 					<mx:Component>
-						<mx:VBox paddingLeft="5">
-							<mx:ComboBox dataProvider="{new Array(resourceManager.getString('cms','document'), resourceManager.getString('cms','media'))}" selectedIndex="-1" 
-										 prompt="{resourceManager.getString('cms','selectType')}"/>
+						<mx:VBox paddingLeft="5" verticalAlign="middle">
+							
 							
 						</mx:VBox>				
 					</mx:Component>
 				</mx:itemRenderer>
+			</mx:DataGridColumn>-->
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox paddingLeft="5" verticalAlign="middle">
+							<mx:Label text="{outerDocument.getSizeText(data)}"/>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}" labelFunction="{fileSizeLabelFunc}"/>
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','kalturaId')}">
 				<mx:itemRenderer>
 					<mx:Component>
-						<mx:VBox paddingLeft="6">
-							<mx:Label text="{data.file.id}"/>
+						<mx:VBox paddingLeft="5" verticalAlign="middle">
+							<mx:Label text="{data.file.id}" selectable="true"/>
 						</mx:VBox>
 					</mx:Component>
 				</mx:itemRenderer>

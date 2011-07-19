@@ -3,13 +3,12 @@
 		 creationComplete="onCreationComplete()" xmlns:validators="com.kaltura.validators.*">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
+			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryCaptions;
 			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaCaptionType;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
-			import com.kaltura.types.KalturaLanguage;
-			import com.kaltura.types.KalturaNullableBoolean;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.events.ValidationResultEvent;
@@ -20,150 +19,7 @@
 			
 			//public static const EXTERNAL_STATE:String = "externalState";
 			//public static const EMBEDDED_STATE:String = "embeddedState";
-			public static const LANGUAGES_ARRAY:Array = new Array(
-														KalturaLanguage.AB,
-														KalturaLanguage.AA,
-														KalturaLanguage.AF,
-														KalturaLanguage.SQ,
-														KalturaLanguage.AM,
-														KalturaLanguage.AR,
-														KalturaLanguage.HY,
-														KalturaLanguage.AS_,
-														KalturaLanguage.AY,
-														KalturaLanguage.AZ,
-														KalturaLanguage.BA,
-														KalturaLanguage.EU,
-														KalturaLanguage.BN,
-														KalturaLanguage.DZ,
-														KalturaLanguage.BH,
-														KalturaLanguage.BI,
-														KalturaLanguage.BR,
-														KalturaLanguage.BG,
-														KalturaLanguage.MY,
-														KalturaLanguage.BE,
-														KalturaLanguage.KM,
-														KalturaLanguage.CA,
-														KalturaLanguage.ZH,
-														KalturaLanguage.CO,
-														KalturaLanguage.HR,
-														KalturaLanguage.CS,
-														KalturaLanguage.DA,
-														KalturaLanguage.NL,
-														KalturaLanguage.EN,
-														KalturaLanguage.EO,
-														KalturaLanguage.ET,
-														KalturaLanguage.FO,
-														KalturaLanguage.FA,
-														KalturaLanguage.FJ,
-														KalturaLanguage.FI,
-														KalturaLanguage.FR,
-														KalturaLanguage.FY,
-														KalturaLanguage.GL,
-														KalturaLanguage.GD,
-														KalturaLanguage.GV,
-														KalturaLanguage.KA,
-														KalturaLanguage.DE,
-														KalturaLanguage.EL,
-														KalturaLanguage.KL,
-														KalturaLanguage.GN,
-														KalturaLanguage.GU,
-														KalturaLanguage.HA,
-														KalturaLanguage.HE,
-														KalturaLanguage.IW,
-														KalturaLanguage.HI,
-														KalturaLanguage.HU,
-														KalturaLanguage.IS,
-														KalturaLanguage.ID,
-														KalturaLanguage.IN,
-														KalturaLanguage.IA,
-														KalturaLanguage.IE,
-														KalturaLanguage.IU,
-														KalturaLanguage.IK,
-														KalturaLanguage.GA,
-														KalturaLanguage.IT,
-														KalturaLanguage.JA,
-														KalturaLanguage.JV,
-														KalturaLanguage.KN,
-														KalturaLanguage.KS,
-														KalturaLanguage.KK,
-														KalturaLanguage.RW,
-														KalturaLanguage.KY,
-														KalturaLanguage.RN,
-														KalturaLanguage.KO,
-														KalturaLanguage.KU,
-														KalturaLanguage.LO,
-														KalturaLanguage.LA,
-														KalturaLanguage.LV,
-														KalturaLanguage.LI,
-														KalturaLanguage.LN,
-														KalturaLanguage.LT,
-														KalturaLanguage.MK,
-														KalturaLanguage.MG,
-														KalturaLanguage.MS,
-														KalturaLanguage.ML,
-														KalturaLanguage.MT,
-														KalturaLanguage.MI,
-														KalturaLanguage.MR,
-														KalturaLanguage.MO,
-														KalturaLanguage.MN,
-														KalturaLanguage.NA,
-														KalturaLanguage.NE,
-														KalturaLanguage.NO,
-														KalturaLanguage.OC,
-														KalturaLanguage.OR_,
-														KalturaLanguage.OM,
-														KalturaLanguage.PS,
-														KalturaLanguage.PL,
-														KalturaLanguage.PT,
-														KalturaLanguage.PA,
-														KalturaLanguage.QU,
-														KalturaLanguage.RM,
-														KalturaLanguage.RO,
-														KalturaLanguage.RU,
-														KalturaLanguage.SM,
-														KalturaLanguage.SG,
-														KalturaLanguage.SA,
-														KalturaLanguage.SR,
-														KalturaLanguage.SH,
-														KalturaLanguage.ST,
-														KalturaLanguage.TN,
-														KalturaLanguage.SN,
-														KalturaLanguage.SD,
-														KalturaLanguage.SI,
-														KalturaLanguage.SS,
-														KalturaLanguage.SK,
-														KalturaLanguage.SL,
-														KalturaLanguage.SO,
-														KalturaLanguage.ES,
-														KalturaLanguage.SU,
-														KalturaLanguage.SW,
-														KalturaLanguage.SV,
-														KalturaLanguage.TL,
-														KalturaLanguage.TG,
-														KalturaLanguage.TA,
-														KalturaLanguage.TT,
-														KalturaLanguage.TE,
-														KalturaLanguage.TH,
-														KalturaLanguage.BO,
-														KalturaLanguage.TI,
-														KalturaLanguage.TO,
-														KalturaLanguage.TS,
-														KalturaLanguage.TR,
-														KalturaLanguage.TK,
-														KalturaLanguage.TW,
-														KalturaLanguage.UG,
-														KalturaLanguage.UK,
-														KalturaLanguage.UR,
-														KalturaLanguage.UZ,
-														KalturaLanguage.VI,
-														KalturaLanguage.VO,
-														KalturaLanguage.CY,
-														KalturaLanguage.WO,
-														KalturaLanguage.XH,
-														KalturaLanguage.YI,
-														KalturaLanguage.JI,
-														KalturaLanguage.YO,
-														KalturaLanguage.ZU);
+
 		
 			
 			public static const XML_EXT:String = "*.xml";
@@ -222,8 +78,8 @@
 					if (_caption.caption.format)
 						_selectedTypeIndex = getFormat(_caption.caption.format);
 					if (_caption.caption.language) {
-						for (var i:int = 0; i<LANGUAGES_ARRAY.length; i++) {
-							if (String(LANGUAGES_ARRAY[i])==_caption.caption.language) {
+						for (var i:int = 0; i<EntryCaptions.LANGUAGES_ARRAY.length; i++) {
+							if (String(EntryCaptions.LANGUAGES_ARRAY[i])==_caption.caption.language) {
 								_languageIndex = i;
 								break;
 							}
@@ -326,10 +182,10 @@
 					_selectedTypeIndex = getFormat(KalturaCaptionType.DFXP);
 				else
 					_selectedTypeIndex = getFormat(KalturaCaptionType.SRT);
-				var uploadFile:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPLOAD_FILE);
-				uploadFile.caption = _caption;
-				uploadFile.fr = _fileReference;
+				
+				var uploadFile:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _fileReference, _caption);
 				uploadFile.dispatch();
+				_caption.downloadUrl = null;
 			}
 			
 			/**
@@ -406,7 +262,7 @@
 	</mx:HBox>-->
 	
 	<validators:URLValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('cms','emptyUrlError')}"/>
-	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{LANGUAGES_ARRAY.length -1}"
+	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{EntryCaptions.LANGUAGES_ARRAY.length -1}"
 						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
@@ -425,7 +281,7 @@
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100" styleName="drillDownLabel"/>
-		<mx:ComboBox id="languageCB" dataProvider="{LANGUAGES_ARRAY}" selectedIndex="{_languageIndex}" 
+		<mx:ComboBox id="languageCB" dataProvider="{EntryCaptions.LANGUAGES_ARRAY}" selectedIndex="{_languageIndex}" 
 					 prompt="{resourceManager.getString('cms','languagePrompt')}" enabled="{!_captionExists}"/>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}" styleName="drillDownLabel"/>
 		<mx:TextInput id="labelTi" width="100" text="{_languageLabel}"/>

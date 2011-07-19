@@ -8,12 +8,9 @@ package com.kaltura.kmc.modules.content.events
 	public class CaptionsEvent extends CairngormEvent
 	{
 		public static const LIST_CAPTIONS:String = "listCaptions";
-		public static const UPLOAD_FILE:String = "uploadFile";
 		public static const SAVE_ALL:String = "saveAll";
 		
 		
-		public var caption:EntryCaptionVO;
-		public var fr:FileReference;
 		public var captionsToSave:Array;
 		public var captionsToRemove:Array;
 		public var defaultCaption:EntryCaptionVO

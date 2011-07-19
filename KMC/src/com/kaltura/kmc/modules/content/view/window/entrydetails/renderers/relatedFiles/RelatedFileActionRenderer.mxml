@@ -3,16 +3,21 @@
 		 verticalAlign="middle">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.EditRelatedFileWindow;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
 			
-			import mx.events.ListEvent;
-			import mx.formatters.SwitchSymbolFormatter;
+			import mx.binding.utils.BindingUtils;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
 			
-			public static const FILE_CHANGED:String = "fileChanged";
 			public static const FILE_DELETED:String = "fileDeleted";
+			
+			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
 			
 			[Bindable]
 			private var _actionsAvailable:Boolean;
+			[Bindable]
 			private var _relatedVo:RelatedFileVO;
 			
 			override public function set data(value:Object):void {
@@ -21,8 +26,9 @@
 				//if the file is already saved on server
 				if (_relatedVo.file.id)
 					_actionsAvailable = true;
-				else
+				else 
 					_actionsAvailable = false;
+			
 			}
 
 			protected function onActionChanged():void
@@ -30,18 +36,35 @@
 				var action:String = String(actionsCB.selectedItem);
 				switch (action) {
 					case resourceManager.getString('cms','edit'):
+						var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
+						editWindow.file = _relatedVo.file;
+						PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
+						PopUpManager.centerPopUp(editWindow);
+						break;
 					case resourceManager.getString('cms','delete'):
+						dispatchEvent(new Event(FILE_DELETED, true));
+						break;
 					case resourceManager.getString('cms','download'):
 						var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
 						navigateToURL(urlRequest , '_self');
 				}
+				
+				actionsCB.selectedIndex = -1;
+			}
+			
+			protected function onUploadClick():void {
+				var uploadEvent:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _relatedVo.fileReference, _relatedVo);
+				uploadEvent.dispatch();
 			}
 			
 
 		]]>
 	</mx:Script>
 	
-	<mx:Button label="{resourceManager.getString('cms','upload')}" visible="{!_actionsAvailable}" includeInLayout="{!_actionsAvailable}" width="100" styleName="dataGridBtn"/>
+	<mx:Button label="{resourceManager.getString('cms','upload')}" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
+			   includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId==null))}" width="100" styleName="dataGridBtn"/>
+	<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
+			  source="{SpinnerImg}" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}" includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}"/>
 	<mx:ComboBox id="actionsCB" dataProvider="{new Array(resourceManager.getString('cms','edit'), resourceManager.getString('cms','delete'), resourceManager.getString('cms','download'))}" 
 				 visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}"
 				 selectedIndex="-1" prompt="{resourceManager.getString('cms','actions')}" width="100" change="onActionChanged()"/>

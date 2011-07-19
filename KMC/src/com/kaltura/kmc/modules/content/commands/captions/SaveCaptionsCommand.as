@@ -19,8 +19,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 	public class SaveCaptionsCommand extends KalturaCommand
 	{
 		override public function execute(event:CairngormEvent):void {
-			var evt:CaptionsEvent = event as CaptionsEvent;
-			_model.increaseLoadCounter();
+			var evt:CaptionsEvent = event as CaptionsEvent;	
 			var mr:MultiRequest = new MultiRequest();
 			var requestIndex:int = 1;
 			if (evt.captionsToSave) {
@@ -76,13 +75,17 @@ package com.kaltura.kmc.modules.content.commands.captions
 				requestIndex++;
 			}
 			
-			mr.addEventListener(KalturaEvent.COMPLETE, result);
-			mr.addEventListener(KalturaEvent.FAILED, fault);
-			
-			_model.context.kc.post(mr);
+			if (requestIndex > 1) {
+				_model.increaseLoadCounter();
+				mr.addEventListener(KalturaEvent.COMPLETE, result);
+				mr.addEventListener(KalturaEvent.FAILED, fault);
+				
+				_model.context.kc.post(mr);
+			}
 		}
 		
 		override public function result(data:Object):void {
+			super.result(data);
 			_model.decreaseLoadCounter();
 		}
 	}

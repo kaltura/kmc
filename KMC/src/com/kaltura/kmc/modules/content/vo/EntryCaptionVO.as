@@ -8,7 +8,7 @@ package com.kaltura.kmc.modules.content.vo
 	 * @author Michal
 	 * 
 	 */	
-	public class EntryCaptionVO
+	public class EntryCaptionVO extends AssetVO
 	{
 		public static var serveURL:String = "/api_v3/index.php/service/caption_captionasset/action/serve";
 		/**
@@ -19,14 +19,7 @@ package com.kaltura.kmc.modules.content.vo
 		 * The download url from server 
 		 */		
 		public var downloadUrl:String;
-		/**
-		 * Url to serve the caption asset 
-		 */		
-		public var serveUrl:String;
-		/**
-		 * Upload token id. Indicates the current caption is being uploaded 
-		 */		
-		public var uploadTokenId:String;
+
 		/**
 		 * Extenral URL for the caption asset 
 		 */		

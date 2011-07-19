@@ -3,9 +3,13 @@ package com.kaltura.kmc.modules.content.control
 	import com.adobe.cairngorm.control.FrontController;
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
+
 	import com.kaltura.kmc.modules.content.commands.captions.*;
 	import com.kaltura.kmc.modules.content.commands.cuepoints.*;
 	import com.kaltura.kmc.modules.content.commands.dropFolder.*;
+	import com.kaltura.kmc.modules.content.commands.relatedFiles.ListRelatedFilesCommand;
+	import com.kaltura.kmc.modules.content.commands.relatedFiles.SaveRelatedFilesCommand;
+	import com.kaltura.kmc.modules.content.commands.relatedFiles.UpdateRelatedFileCommand;
 	import com.kaltura.kmc.modules.content.events.*;
 
 	public class CMSController extends FrontController
@@ -181,9 +185,11 @@ package com.kaltura.kmc.modules.content.control
 			addCommand(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, ListDropFoldersFilesCommand);
 			addCommand(DropFolderFileEvent.DELETE_FILES, DeleteDropFolderFilesCommand);
 			
+			//upload token
+			addCommand(UploadTokenEvent.UPLOAD_TOKEN, UploadTokenCommand);
+			
 			//captions
-			addCommand(CaptionsEvent.LIST_CAPTIONS, ListCaptionsCommand);
-			addCommand(CaptionsEvent.UPLOAD_FILE, UploadCaptionCommand);		
+			addCommand(CaptionsEvent.LIST_CAPTIONS, ListCaptionsCommand);		
 			addCommand(CaptionsEvent.SAVE_ALL, SaveCaptionsCommand);		
 			
 			// cuepoints
@@ -193,6 +199,9 @@ package com.kaltura.kmc.modules.content.control
 			
 			//related files
 			addCommand(RelatedFileEvent.LIST_RELATED_FILES, ListRelatedFilesCommand);
+			addCommand(RelatedFileEvent.SAVE_ALL_RELATED, SaveRelatedFilesCommand);
+			addCommand(RelatedFileEvent.UPDATE_RELATED_FILE, UpdateRelatedFileCommand);
+
 			
 		}
 	}

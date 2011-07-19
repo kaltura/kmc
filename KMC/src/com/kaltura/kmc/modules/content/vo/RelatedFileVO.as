@@ -10,20 +10,16 @@ package com.kaltura.kmc.modules.content.vo
 	 * @author Michal
 	 * 
 	 */	
-	public class RelatedFileVO
+	public class RelatedFileVO extends AssetVO
 	{
 		public static var serveURL:String = "/api_v3/index.php/service/attachment_attachmentasset/action/serve";		
 		/**
 		 * file asset
 		 * */
 		public var file:KalturaAttachmentAsset;
-		/**
-		 * download url of the file
-		 * */
-		public var serveUrl:String;
 		
 		public var fileReference:FileReference;
-		
+	
 		public function RelatedFileVO()
 		{
 		}

@@ -1,25 +1,32 @@
-package com.kaltura.kmc.modules.content.commands.captions
+package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.uploadToken.UploadTokenAdd;
 	import com.kaltura.commands.uploadToken.UploadTokenUpload;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.CaptionsEvent;
-	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+	import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
+	import com.kaltura.kmc.modules.content.vo.AssetVO;
 	import com.kaltura.vo.KalturaUploadToken;
 	
 	import flash.net.FileReference;
 
-	public class UploadCaptionCommand extends KalturaCommand
+	/**
+	 * This class will start an upload using uploadToken service. will save the token
+	 * on the given object 
+	 * @author Michal
+	 * 
+	 */	
+	public class UploadTokenCommand extends KalturaCommand
 	{
 		private var _fr:FileReference;
-		private var _caption:EntryCaptionVO;
+		private var _asset:AssetVO;
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			_fr = (event as CaptionsEvent).fr;
-			_caption = (event as CaptionsEvent).caption;
+			_fr = (event as UploadTokenEvent).fileReference
+			_asset = (event as UploadTokenEvent).assetVo;
+			
 			var uploadToken:KalturaUploadToken = new KalturaUploadToken();
 			var uploadTokenAdd:UploadTokenAdd = new UploadTokenAdd(uploadToken);
 			
@@ -31,8 +38,8 @@ package com.kaltura.kmc.modules.content.commands.captions
 		private function uploadTokenAddHandler(event:KalturaEvent):void {
 			var result:KalturaUploadToken = event.data as KalturaUploadToken;
 			if (result) {
-				_caption.uploadTokenId = result.id;
-				_caption.downloadUrl = null;
+				_asset.uploadTokenId = result.id;
+				//_caption.downloadUrl = null;
 				var uploadTokenUpload:UploadTokenUpload = new UploadTokenUpload(result.id, _fr);
 				uploadTokenUpload.addEventListener(KalturaEvent.FAILED, fault);
 				

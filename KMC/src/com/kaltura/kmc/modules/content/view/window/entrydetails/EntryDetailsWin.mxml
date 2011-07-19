@@ -18,6 +18,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.adobe.viewsource.ViewSource;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -627,11 +628,14 @@
 						}
 					}
 				}
-				var captionsChanged:Boolean = false;
+				
+				var otherChanged:Boolean = false;
 				if (entryCaptions.parent is ViewStack)
-					captionsChanged = entryCaptions.wasChanged();
+					otherChanged = entryCaptions.wasChanged();
+				if (entryRelated.parent is ViewStack)
+					otherChanged = otherChanged || entryRelated.wasChanged();
 
-				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged || entrySch.wasChanged() || captionsChanged)
+				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged || entrySch.wasChanged() || otherChanged)
 			}
 
 
@@ -732,6 +736,7 @@
 							// captions validation (if exists)
 							validationResult = entryCaptions.save();
 						}
+
 						if (validationResult.error == null && _isLiveStream) {
 							// live validation (if exists)
 							validationResult = liveStream.save();
@@ -739,6 +744,10 @@
 						if (validationResult.error == null && ads.parent is ViewStack) {
 							// advertisements validation (if exists)
 							validationResult = ads.save();
+						}
+						if (validationResult.error == null && entryRelated.parent is ViewStack) {
+							// related files validation (if exsits)
+								validationResult = entryRelated.save();
 						}
 					}
 				}
@@ -770,6 +779,10 @@
 				else if (validationResult.error == EntryDetailsValidationError.CUEPOINTS_DATA) {
 					handleValidationError(ads, ResourceManager.getInstance().getString('cms', 'ads_error_string'),resourceManager.getString('cms', 'ads_error_title'));
 				} 
+				//TODO related files
+			/* 	else if (validationResult.error == EntryDetailsValidationError.RELATED_FILES_NOT_UPLOADED) {
+					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('cms', 'missingLanguageError'),resourceManager.getString('cms', 'captionsError'));
+				} */
 				else {
 					// if referenceId was changed
 					if ( /* _selectedEntry.referenceId && */_undoToEntry.referenceId && _selectedEntry.referenceId != _undoToEntry.referenceId) {
@@ -1125,8 +1138,8 @@
 					 cuepointsSaved="saveEntryDetails(event)"/>
 		
 		<!-- related entries -->
-<!--		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
-						  selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}"/>-->
+		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
+						  selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}"/>
 	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox horizontalAlign="left" width="33%">
