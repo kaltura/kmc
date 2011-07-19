@@ -137,7 +137,7 @@ package com.kaltura.types
 		public static const UR : String = 'Urdu';
 		public static const UZ : String = 'Uzbek';
 		public static const VI : String = 'Vietnamese';
-		public static const VO : String = 'Volap?k';
+		public static const VO : String = 'Volapuk';
 		public static const CY : String = 'Welsh';
 		public static const WO : String = 'Wolof';
 		public static const XH : String = 'Xhosa';

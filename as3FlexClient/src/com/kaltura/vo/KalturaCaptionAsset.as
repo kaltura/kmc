@@ -34,6 +34,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('language');
 			arr.push('isDefault');
 			arr.push('label');
 			return arr;
@@ -44,7 +45,6 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
 			arr.push('captionParamsId');
-			arr.push('language');
 			arr.push('format');
 			return arr;
 		}

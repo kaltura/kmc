@@ -29,6 +29,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var publicKey : String;
 
+		/** 
+		* 		* */ 
+		public var passPhrase : String;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -39,6 +43,7 @@ package com.kaltura.vo
 			arr.push('password');
 			arr.push('privateKey');
 			arr.push('publicKey');
+			arr.push('passPhrase');
 			return arr;
 		}
 
