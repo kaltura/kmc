@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml"
+	creationComplete="{isDisplayAsPassword=displayAsPassword;restoreField()}"
+	focusIn="cleanField()" focusOut="restoreField()">
+	<mx:Script>
+		<![CDATA[
+			private var _promptText : String = "";
+			private var isDisplayAsPassword : Boolean = false;
+			
+			private function cleanField() : void
+			{
+				if(this.text == _promptText )
+					this.text = "";
+					
+				this.displayAsPassword = isDisplayAsPassword;
+			}
+			
+			private function restoreField() : void
+			{
+				if(this.text == "" )
+				{
+					this.text = _promptText;
+					this.displayAsPassword = false;
+				}
+				else
+					this.displayAsPassword = isDisplayAsPassword;
+			}
+			
+			public function set promptText( value : String ) : void
+			{
+				_promptText = value;
+			}
+			
+			public function get promptText() : String
+			{
+				return _promptText;
+			}
+		]]>
+	</mx:Script>
+</mx:TextInput>
