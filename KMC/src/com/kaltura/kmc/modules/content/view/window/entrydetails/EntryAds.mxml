@@ -52,6 +52,11 @@
 			 * */
 			private var _kClip:DisplayObject;
 			private static var kClipLoader:SWFLoader;
+			
+			/**
+			 * a flag used to determine we can talk with the kClip
+			 * */
+			private static var kClipReady:Boolean = false; 
 
 			/**
 			 * player is kept between different
@@ -144,13 +149,14 @@
 			 * */
 			public function saveCuepoints():Boolean {
 				var res:Boolean = false;
-				if (_kClip) {
+				if (_kClip && kClipReady) {
 					if (_kClip["isSavedRequired"]()) {
 						_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 						_kClip["save"]();
 						res = true;
 					}
 				}
+				// if the component wasn't ready data couldn't change, therefore save isn't required.
 				return res;
 			}
 
@@ -170,7 +176,7 @@
 
 			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true, setEntryId:Boolean = true):void {
 				if (_selectedEntry.status != KalturaEntryStatus.READY) {
-					if (updateKClip && _kClip) {
+					if (updateKClip && _kClip && kClipReady) {
 						_kClip["setDisabled"](true);
 					}
 					if (updateKdp) {
@@ -186,7 +192,7 @@
 						}
 					}
 				} else {
-					if (updateKClip && _kClip && setEntryId) {
+					if (updateKClip && _kClip && setEntryId && kClipReady) {
 						_kClip["setEntryId"](_selectedEntry.id);
 					}
 					if (updateKdp && _kdp) {
@@ -376,6 +382,7 @@
 			private function handleKClipEvents(e:Event):void {
 				switch (e.type) {
 					case KClipEventTypes.CLIPPER_READY:
+						kClipReady = true;
 						// disable or set entry id
 						if (_selectedEntry.status != KalturaEntryStatus.READY) {
 							_kClip["setDisabled"](true);
@@ -546,6 +553,11 @@
 			 * @return false if at least one cuepoint is invalid, true otherwise.
 			 * */
 			private function validate():Boolean {
+				if (!kClipReady) {
+					// the component wasn't ready so no data 
+					// could have changed to invalid data
+					return true;
+				}
 				var ret:Boolean = true;
 				var cpresult:Boolean;
 				var cps:Array = getCuepoints();
@@ -689,7 +701,7 @@
 
 
 			protected function removeAllCuePoints(event:MouseEvent):void {
-				if (_kClip) {
+				if (_kClip && kClipReady) {
 					_kClip["removeAll"]();
 				}
 			}
