@@ -691,14 +691,20 @@ package com.kaltura.managers {
 		 * @return	true if move succeeded, false otherwise (i.e. illegal index).
 		 */
 		public function setQueuePosition(uploadid:String, requiredIndex:int):Boolean {
-			if (requiredIndex > _files.length) {
+			if (requiredIndex > _files.length - 1) {
 				return false;
 			}
+			// if the item at requiredIndex is already upoloading, return false
+			var file:FileUploadVO = _files[requiredIndex] as FileUploadVO;
+			if (file.status == FileUploadVO.STATUS_UPLOADING) {
+				return false;
+			} 
 			var ind:int = getQueuePosition(uploadid);
 			if (ind == -1) {
 				return false;
 			}
-			var file:FileUploadVO = getFile(uploadid);
+			// move file
+			file = getFile(uploadid);
 			_files.splice(ind, 1);
 			_files.splice(requiredIndex, 0, file);
 			filesCollection.refresh();
