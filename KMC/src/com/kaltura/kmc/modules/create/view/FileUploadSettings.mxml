@@ -22,6 +22,7 @@
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.FileUploadVO;
+			import com.kaltura.vo.KalturaConversionProfile;
 			import com.kaltura.vo.KalturaConversionProfileListResponse;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
@@ -121,7 +122,23 @@
 					showError(e.error.errorMsg);
 				}
 				else {
-					_conversionProfiles = new ArrayCollection((e.data as KalturaConversionProfileListResponse).objects);
+					var resp:Array = (e.data as KalturaConversionProfileListResponse).objects;
+					var ar:Array = new Array();
+					var def:KalturaConversionProfile;
+					for each (var o:Object in resp) {
+						if (o is KalturaConversionProfile) {
+							if ((o as KalturaConversionProfile).isDefault) {
+								def = o as KalturaConversionProfile;
+							}
+							else {
+								ar.push(o as KalturaConversionProfile);
+							}
+						}
+					}
+					if (def) {
+						ar.unshift(def);
+					}
+					_conversionProfiles = new ArrayCollection(ar);
 				}
 				submitBtn.enabled = true;
 			}
