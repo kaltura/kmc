@@ -25,7 +25,7 @@
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -60,7 +60,7 @@
 			public function get flavorParamData():ArrayCollection {
 				return _flavorParamData;
 			}
-			
+
 			[Bindable]
 			/**
 			 * total number of conversion profiles
@@ -71,7 +71,8 @@
 			public var allFlavorsSelected:Boolean = false;
 
 
-			[Bindable][ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
+			[Bindable]
+			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
 			public function get conversionData():ArrayCollection {
 				return _conversionData;
 			}
@@ -132,7 +133,8 @@
 				PopUpManager.addPopUp(addNewConversionProfileWindow, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addNewConversionProfileWindow);
 			}
-			
+
+
 			private function dispatchHelp(e:KmcHelpEvent):void {
 				dispatchEvent(e.clone());
 			}
@@ -142,8 +144,7 @@
 				var selItems:Array = conversionProfilesTable.selectedItems;
 				if (selItems.length == 0) {
 					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
-				}
-				else {
+				} else {
 					var delStr:String = "";
 					for each (var cp:ConversionProfileVO in selItems) {
 						if (!cp.profile.isDefault) {
@@ -156,8 +157,7 @@
 					if (selItems.length == conversionData.length) {
 						msg = resourceManager.getString('account', 'deleteAllAlertMsg');
 						title = resourceManager.getString('account', 'deleteAllAlertTitle');
-					}
-					else {
+					} else {
 						msg = resourceManager.getString('account', 'deleteAlertMsg') + delStr + " ?";
 						title = resourceManager.getString('account', 'deleteAlertTitle');
 					}
@@ -189,10 +189,9 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 
 				if (simpleTable.isFlavorsSelected() && (simpleTable.cProfile.profile.flavorParamsIds != null)) {
-					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
-					updateProfileEvent.dispatch();
-				}
-				else {
+					var up:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
+					up.dispatch();
+				} else {
 					Alert.show(resourceManager.getString('account', 'oneFlvorSelection'), resourceManager.getString('account', 'missingFlavorTitle'));
 				}
 			}
@@ -223,11 +222,13 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
-			
+
+
 			private function doPaging():void {
 				listProfiles(paging.selectedPage, paging.pageSize);
 			}
-			
+
+
 			private function listProfiles(page:Number = 0, pageSize:Number = 0):void {
 				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				getAllData.data = paging;
@@ -240,16 +241,17 @@
 	<mx:HBox id="hbox1" width="100%" styleName="featureDescriptionTitleBox" verticalAlign="middle" paddingRight="10"
 			 horizontalScrollPolicy="off" verticalScrollPolicy="off">
 		<mx:Text width="100%" selectable="false" id="introText"
-				 htmlText="{resourceManager.getString('account','transcodingSettingsSimpleModeIntroText')}" styleName="pageDescription"/>
+				 htmlText="{resourceManager.getString('account','transcodingSettingsSimpleModeIntroText')}"
+				 styleName="pageDescription"/>
 	</mx:HBox>
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
 		<!-- simple mode -->
 		<mx:VBox width="100%" verticalGap="0">
 			<conversionsettings:ConversionSettingsTable id="simpleTable" height="100%"
-										 allSelected="{allFlavorsSelected}"
-										 dataProvider="{flavorParamData}" thumbParamsData="{thumbParamData}"
-										 creationComplete="setData()"/>
+														allSelected="{allFlavorsSelected}"
+														dataProvider="{flavorParamData}"
+														thumbParamsData="{thumbParamData}" creationComplete="setData()"/>
 			<mx:HBox width="100%" styleName="DataGridActions">
 				<mx:VBox width="40%" height="100%" verticalAlign="middle">
 					<mx:LinkButton id="advancedModeBtn"
@@ -265,16 +267,16 @@
 
 		<!-- advanced mode -->
 		<mx:HBox width="100%" height="100%">
-			<mx:VBox id="subVbox" width="100%" height="100%" verticalGap="0" >
-				<conversionsettings:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%" height="100%"
-													 selectable="true" allowMultipleSelection="true"
-													 dataProvider="{conversionData}" />
-				
+			<mx:VBox id="subVbox" width="100%" height="100%" verticalGap="0">
+				<conversionsettings:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%"
+																	height="100%" selectable="true"
+																	allowMultipleSelection="true"
+																	dataProvider="{conversionData}"/>
+
 				<controls:Paging id="paging" width="{conversionProfilesTable.width}" styleName="paging"
 								 rowsInPageChange="doPaging()" nextPage="{doPaging()}" prvPage="{doPaging()}"
-								 getPageNum="doPaging()" totalCount="{totalProfiles}"
-								 showRowsInPage="true" />
-				
+								 getPageNum="doPaging()" totalCount="{totalProfiles}" showRowsInPage="true"/>
+
 				<mx:HBox width="100%" styleName="DataGridActions">
 					<mx:VBox width="40%" height="100%" verticalAlign="middle">
 						<mx:LinkButton id="simpleModeBtn"

@@ -20,14 +20,15 @@ package com.kaltura.kmc.modules.account.command {
 	import mx.rpc.IResponder;
 
 	public class ListConversionProfilesCommand implements ICommand, IResponder {
+		
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 
 
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			var mr:MultiRequest = new MultiRequest();
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, new KalturaFilterPager());
-			mr.addAction(listConversionProfiles);
+			var lcp:ConversionProfileList = new ConversionProfileList(_model.cpFilter, new KalturaFilterPager());
+			mr.addAction(lcp);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
@@ -56,9 +57,10 @@ package com.kaltura.kmc.modules.account.command {
 			}
 			else {
 				var response:KalturaConversionProfileListResponse = event.data[0] as KalturaConversionProfileListResponse;
-				_model.conversionData = ListConversionProfilesUtil.handleConversionProfilesList(response.objects);
+				var ac:ArrayCollection = ListConversionProfilesUtil.handleConversionProfilesList(response.objects);
 				var cpaps:Array = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
-				ListConversionProfilesUtil.addAssetParams(_model.conversionData, cpaps);
+				ListConversionProfilesUtil.addAssetParams(ac, cpaps);
+				_model.conversionData = ac;
 			}
 			_model.loadingFlag = false;
 		}
