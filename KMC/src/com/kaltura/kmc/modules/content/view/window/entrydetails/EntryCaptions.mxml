@@ -163,6 +163,12 @@ Captions tab of EntryDetailsWin
 			private var _captionsToRemove:Array;
 			private var _defaultCaption:Caption;
 			
+			[Bindable]
+			/**
+			 * for r&p
+			 * */
+			public var editable:Boolean = true;
+			
 			public function get entryCaptionsArr():Array
 			{
 				return _entryCaptionsArr;
@@ -214,6 +220,7 @@ Captions tab of EntryDetailsWin
 					}
 				}
 				newCaption.caption = captionVO;
+				newCaption.editable = editable;
 				newCaption.addEventListener(Caption.REMOVE_CAPTION, removeCaption);
 				newCaption.addEventListener(Caption.CHANGE_DEFAULT, changeDefaultCaption);
 				return newCaption;
@@ -324,6 +331,7 @@ Captions tab of EntryDetailsWin
 
 		]]>
 	</mx:Script>
-	<mx:Button label="{resourceManager.getString('cms','addCaptions')}" click="addCaption()"/>
-	<mx:VBox id="captions"/>
+	<mx:Text text="{resourceManager.getString('cms','captionsInfo')}" styleName="tipText"/>
+	<mx:VBox id="captions" paddingTop="10" paddingBottom="10"/>
+	<mx:Button label="{resourceManager.getString('cms','addCaptions')}" click="addCaption()" visible="{editable}"/>
 </mx:VBox>

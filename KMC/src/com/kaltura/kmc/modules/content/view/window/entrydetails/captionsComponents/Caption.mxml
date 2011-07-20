@@ -45,6 +45,11 @@
 			private var _isError:Boolean;
 			[Bindable]
 			private var _captionExists:Boolean;
+			[Bindable]
+			/**
+			 * for r&p
+			 * */
+			public var editable:Boolean = true;
 			
 			/**
 			 * is it the default caption
@@ -266,27 +271,31 @@
 						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
-		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading}"/>
-		<mx:Button label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
-				   visible="{!_isLoading}" includeInLayout="{!_isLoading}"/>
+		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading}" editable="{editable}"/>
 		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
 				  source="{SpinnerImg}" visible="{_isLoading}" includeInLayout="{_isLoading}"/>
 		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{(_isError &amp;&amp; !_isLoading)}" styleName="distributionError"/>
 	</mx:HBox>
+	<mx:HBox visible="{editable}" includeInLayout="{editable}">
+		<mx:Spacer width="100"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
+					   visible="{!_isLoading}"/>
+		
+	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100" styleName="drillDownLabel"/>
 		<!--<mx:Label text="{_formatText}"/>-->
-		<mx:ComboBox id="typeCB" enabled="{!_captionExists}" selectedIndex="{_selectedTypeIndex}"
+		<mx:ComboBox id="typeCB" enabled="{(!_captionExists &amp;&amp; editable)}" selectedIndex="{_selectedTypeIndex}"
 					 dataProvider="{new Array(resourceManager.getString('cms','srtLabel'), resourceManager.getString('cms','dfxpLabel'))}"/>
 	</mx:HBox>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100" styleName="drillDownLabel"/>
 		<mx:ComboBox id="languageCB" dataProvider="{EntryCaptions.LANGUAGES_ARRAY}" selectedIndex="{_languageIndex}" 
-					 prompt="{resourceManager.getString('cms','languagePrompt')}"/>
+					 prompt="{resourceManager.getString('cms','languagePrompt')}" enabled="{editable}"/>
 		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}" styleName="drillDownLabel"/>
-		<mx:TextInput id="labelTi" width="100" text="{_languageLabel}"/>
+		<mx:TextInput id="labelTi" width="100" text="{_languageLabel}" editable="{editable}"/>
 	</mx:HBox>
-	<mx:HBox visible="{_showActionsBox}" includeInLayout="{_showActionsBox}">
+	<mx:HBox visible="{_showActionsBox &amp;&amp; editable}" includeInLayout="{_showActionsBox &amp;&amp; editable}">
 		<mx:Spacer width="100"/>
 		<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="downloadCaption()"
 					   visible="{caption.downloadUrl!=null}" includeInLayout="{caption.downloadUrl!=null}" styleName="downloadThumbLinkButton"/>
