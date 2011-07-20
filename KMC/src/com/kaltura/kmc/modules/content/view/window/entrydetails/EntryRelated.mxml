@@ -15,6 +15,7 @@
 			public static const FILE_CHANGED:String = "fileChanged";
 			public static const ALLOWED_EXT:String = "*.*";
 			
+			private var _editable:Boolean = false;
 			/**
 			 * will be used to convert size to KB
 			 * */
@@ -52,6 +53,29 @@
 			 * indicated if a change was made
 			 * */
 			private var _wasChanged:Boolean;
+
+			[Bindable]
+			/**
+			 * r&p
+			 * */
+			public function get editable():Boolean
+			{
+				return _editable;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set editable(value:Boolean):void
+			{
+				_editable = value;
+				if (!value) {
+					var cols:Array = dataGrid.columns;
+					cols.pop();
+					dataGrid.columns = cols;
+					
+				}
+			}
 
 			protected function onCreationComplete():void {
 
@@ -177,7 +201,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Button label="{resourceManager.getString('cms','addFiles')}" click="addFile(event)"/>
+	<mx:Button label="{resourceManager.getString('cms','addFiles')}" click="addFile(event)" visible="{editable}" includeInLayout="{editable}"/>
 	<mx:DataGrid id="dataGrid" dataProvider="{relatedFiles}" width="100%" height="100%" rowHeight="30">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileNameRenderer"/>
