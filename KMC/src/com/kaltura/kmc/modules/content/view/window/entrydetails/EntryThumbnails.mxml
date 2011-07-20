@@ -92,9 +92,14 @@ Thumbnails tab of EntryDetailsWin
 				if (!value) {
 					actionCB.visible = false;
 					//remove action column from datagrid
-					var columnsArray:Array = dataGrid.columns;
-					columnsArray.pop();
-					dataGrid.columns = columnsArray;		
+					var arrCol:ArrayCollection = new ArrayCollection(dataGrid.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('cms', 'actionCol')) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
+					dataGrid.columns = arrCol.source;		
 				}
 			}
 			

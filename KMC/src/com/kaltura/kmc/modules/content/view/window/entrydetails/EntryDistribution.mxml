@@ -21,6 +21,7 @@ Distribution tab of EntryDetailsWin
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
 			import mx.containers.ViewStack;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
@@ -67,9 +68,17 @@ Distribution tab of EntryDetailsWin
 			}
 			
 			public function set showActions(value:Boolean):void {
-				var cols:Array = dataGrid.columns;
-				cols.pop();
-				dataGrid.columns = cols;
+				if (!value) {
+					//remove action column from datagrid
+					var arrCol:ArrayCollection = new ArrayCollection(dataGrid.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('cms', 'actionAvailableCol')) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
+					dataGrid.columns = arrCol.source;	
+				}
 			}
 			
 			public function get showActions():Boolean {

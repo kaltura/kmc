@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 width="100%" height="100%" creationComplete="onCreationComplete()">
+		 width="100%" height="100%">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
@@ -15,7 +15,11 @@
 			public static const FILE_CHANGED:String = "fileChanged";
 			public static const ALLOWED_EXT:String = "*.*";
 			
-			private var _editable:Boolean = false;
+			[Bindable]
+			/**
+			 * r&p
+			 * */
+			public var editable:Boolean = true;
 			/**
 			 * will be used to convert size to KB
 			 * */
@@ -54,31 +58,26 @@
 			 * */
 			private var _wasChanged:Boolean;
 
-			[Bindable]
+
 			/**
-			 * r&p
+			 * R&P
 			 * */
-			public function get editable():Boolean
-			{
-				return _editable;
+			public function get hideColumns():String{
+				return '';
 			}
-
-			/**
-			 * @private
-			 */
-			public function set editable(value:Boolean):void
-			{
-				_editable = value;
-				if (!value) {
-					var cols:Array = dataGrid.columns;
-					cols.pop();
-					dataGrid.columns = cols;
-					
+			
+			public function set hideColumns(value:String):void {
+				var cols:Array = value.split(',');
+				for (var col:String in cols) {
+					var arrCol:ArrayCollection = new ArrayCollection(dataGrid.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('cms', cols[col])) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
 				}
-			}
-
-			protected function onCreationComplete():void {
-
+				dataGrid.columns = arrCol.source;
 			}
 			
 			private function onFileChanged(event:Event):void {

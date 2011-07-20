@@ -488,15 +488,20 @@
 			}
 
 
-			public function set hideColumns(indices:String):void {
-				var ind:Array = indices.split(",");
-				var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
-				for (var i:int = 0; i < ind.length; i++) {
-					arrCol.removeItemAt(int(ind[i]));
+			public function set hideColumns(value:String):void {
+				var cols:Array = value.split(',');
+				for (var col:String in cols) {
+					var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('cms', cols[col])) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
 				}
 				dg.columns = arrCol.source;
-				for each (var col:DataGridColumn in arrCol) {
-					col.width = col.width;
+				for each (var col2:DataGridColumn in arrCol) {
+					col2.width = col2.width;
 				}
 			}
 
