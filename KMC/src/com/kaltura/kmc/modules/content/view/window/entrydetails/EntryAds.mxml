@@ -542,7 +542,7 @@
 				// ad type
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
 				// duration
-				_selectedCuePoint.endTime =  _selectedCuePoint.startTime +  teDuration.getTimeAsSeconds() * 1000;
+				_selectedCuePoint.endTime =  _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
 				// update
 				_kClip["updateCuePoint"](_selectedCuePoint);
 			}
@@ -754,7 +754,7 @@
 					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" 
 										  maximum="{(_selectedEntry as KalturaMediaEntry).duration}"
 										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
-										  showHours="true" showSeconds="true" showMiliseconds="true" 
+										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" showSeconds="true" showMiliseconds="true" 
 										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
@@ -764,8 +764,8 @@
 								 prompt="{resourceManager.getString('cms', 'ads_ad_type')}"
 								 change="updateCuePointData(event)"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}" 
-										  showMiliseconds="true" showHours="true" showSeconds="true"
-										  timeValue="{getDuration(_selectedCuePoint)}"
+										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" 
+										  showMiliseconds="true" showSeconds="true" timeValue="{getDuration(_selectedCuePoint)}"
 										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
