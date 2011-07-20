@@ -185,6 +185,7 @@ package com.kaltura.kmc.modules.admin.business {
 				//none of children selected 
 				_status = STATUS_NONE;
 				groupCheckbox.styleName = "adminMainCheckbox";
+				groupCheckbox.selected = false;
 			}
 			else {
 				//real partial 

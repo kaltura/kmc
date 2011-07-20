@@ -74,7 +74,34 @@ package com.kaltura.kmc.modules.admin.business {
 		 *
 		 */
 		override public function setMainCBState(event:Event = null):void {
-			super.setMainCBState(event);
+			// n is number of unselected child cbs
+			var n:uint = innerCheckBoxes.length;
+			for each (var cb:CheckBox in innerCheckBoxes) {
+				if (cb.selected == true) {
+					n--;
+				}
+			}
+			if (n == 0) {
+				// all checkbox are selected 
+				_status = STATUS_ALL;
+				groupCheckbox.styleName = "adminMainCheckbox";
+				groupCheckbox.selected = true;
+				
+			}
+			else if (n == innerCheckBoxes.length) {
+				//none of children selected 
+				_status = STATUS_NONE;
+				groupCheckbox.styleName = "adminMainCheckbox";
+				// we have to duplicate the function instead of calling 
+				// super.setMainCBState because of this line:
+//				groupCheckbox.selected = false;
+			}
+			else {
+				//real partial 
+				_status = STATUS_PARTIAL;
+				groupCheckbox.styleName = "partial";
+				groupCheckbox.selected = true;
+			}
 			//view only
 			if (_status == STATUS_NONE && groupCheckbox.selected == true) {
 				groupCheckbox.label = _groupCheckboxString + ResourceManager.getInstance().getString('admin', 'viewOnly');
