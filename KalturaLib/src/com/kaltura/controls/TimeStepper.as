@@ -79,17 +79,18 @@ package com.kaltura.controls {
 		 * @param time	the time in seconds
 		 * @return an object with <code>{hour, minute, second}</code> attributes. 
 		 * */
-		public function getTimeAsObject(time:int):Object {
+		public function getTimeAsObject(time:Number):Object {
+			var secondsForCalc:int = Math.floor(time);
 			var o:Object = new Object();
-			var h:int = Math.floor(time / 3600); // 60 * 60 = 3600
+			var h:int = Math.floor(secondsForCalc / 3600); // 60 * 60 = 3600
 			var sh:int = h * 3600;
-			var m:int = Math.floor((time - sh) / 60);
+			var m:int = Math.floor((secondsForCalc - sh) / 60);
 			var sm:int = m * 60;
-			var s:int = time - sh - sm;
+			var s:int = secondsForCalc - sh - sm;
 			o.hour = h;
 			o.minute = m;
 			o.second = s;
-			o.milisecond = 0;
+			o.milisecond = int((time - secondsForCalc)*1000);
 			return o;
 		}
 		
