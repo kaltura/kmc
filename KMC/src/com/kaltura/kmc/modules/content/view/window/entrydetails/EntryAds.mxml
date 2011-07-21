@@ -717,7 +717,16 @@
 				var action:String = (event.target as ComboBox).selectedItem.value;
 				switch (action) {
 					case 'ads_bulk_upload':
+						
+						_bulkUpldFileRef = new FileReference();
+						_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUpload);
+						_bulkUpldFileRef.browse(getBulkUploadFilter());
+						
+						
 						//TODO implement upload
+						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.UPLOAD_CUEPOINTS);
+						cg.data = _selectedEntry.id;
+						cg.dispatch();
 						break;
 					case 'ads_bulk_download':
 						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.DOWNLOAD_CUEPOINTS);
