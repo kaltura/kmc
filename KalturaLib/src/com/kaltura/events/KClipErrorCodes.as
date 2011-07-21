@@ -35,5 +35,7 @@ package com.kaltura.events
 		
 		public static const ENTRY_PROCESSING:String = "entryProcessing";
 		
+		public static const ENTRY_REPLACED:String = "entryReplaced";
+		
 	}
 }
