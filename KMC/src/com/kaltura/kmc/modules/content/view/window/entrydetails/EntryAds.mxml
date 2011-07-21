@@ -7,6 +7,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.events.KClipErrorCodes;
 			import com.kaltura.events.KClipEventTypes;
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.modules.content.events.CuePointEvent;
@@ -433,8 +434,13 @@
 			 * @internal
 			 * error localization should be done in kClip, not KMC.
 			 * */
-			private function onKClipError(str:String):void {
-				Alert.show(str);
+			private function onKClipError(errorVo:Object):void {
+				// errorVo.messageText, errorVo.messageCode
+				//TODO KClipErrorCodes.CUEPOINT_LOCATION_FAILED - don't show error right away, wait for 
+				// the panel to show and only then show.
+				if (errorVo.messageCode != KClipErrorCodes.CUEPOINT_LOCATION_FAILED) {
+					Alert.show(errorVo.messageText);
+				}
 			}
 
 
