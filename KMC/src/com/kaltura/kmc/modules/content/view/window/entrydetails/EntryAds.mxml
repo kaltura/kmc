@@ -46,6 +46,7 @@
 
 			private const LABEL_WIDTH:int = 80;
 			
+			public static const XML_EXL:String = "*.xml";
 
 			/**
 			 * clipper ruler is kept between different
@@ -110,7 +111,25 @@
 			 * image for KDP when entry is in no_content status
 			 * */
 			private var _img:Image;
+			
+			private var _bulkUpldFileRef:FileReference;
+			
 
+			public function get reloadCuePoints():Boolean
+			{
+				return false;
+			}
+
+			/**
+			 * reload cue points if true
+			 * */
+			public function set reloadCuePoints(value:Boolean):void
+			{
+				if (value &&_kClip) {
+					// reload cue points
+					_kClip["loadCuePoints"]();
+				}
+			}
 
 			public function destroy():void {
 				if (_kdp) {
@@ -717,16 +736,9 @@
 				var action:String = (event.target as ComboBox).selectedItem.value;
 				switch (action) {
 					case 'ads_bulk_upload':
-						
 						_bulkUpldFileRef = new FileReference();
 						_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUpload);
-						_bulkUpldFileRef.browse(getBulkUploadFilter());
-						
-						
-						//TODO implement upload
-						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.UPLOAD_CUEPOINTS);
-						cg.data = _selectedEntry.id;
-						cg.dispatch();
+						_bulkUpldFileRef.browse(new Array(new FileFilter(resourceManager.getString('cms','files') +' (' + XML_EXL + ')' ,XML_EXL)));
 						break;
 					case 'ads_bulk_download':
 						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.DOWNLOAD_CUEPOINTS);
@@ -740,6 +752,16 @@
 						break;
 				}
 				cbActions.selectedIndex = -1;
+			}
+			
+			/**
+			 * on buld file selected
+			 * */
+			private function addBulkUpload(event:Event):void {
+				_bulkUpldFileRef.removeEventListener(Event.SELECT, addBulkUpload);
+				var cg:CuePointEvent = new CuePointEvent(CuePointEvent.UPLOAD_CUEPOINTS);
+				cg.data = _bulkUpldFileRef;
+				cg.dispatch();
 			}
 
 

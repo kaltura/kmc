@@ -15,11 +15,14 @@ package com.kaltura.kmc.modules.content.commands.cuepoints
 			cnt.addEventListener(KalturaEvent.COMPLETE, result);
 			cnt.addEventListener(KalturaEvent.FAILED, fault);
 			
+			_model.entryDetailsModel.reloadCuePoints = false;
 			_model.context.kc.post(cnt);	 
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
+			//refresh cue points
+			_model.entryDetailsModel.reloadCuePoints = true;
 			_model.decreaseLoadCounter();
 		}
 	}

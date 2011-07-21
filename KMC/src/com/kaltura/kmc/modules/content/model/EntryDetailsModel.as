@@ -145,6 +145,11 @@ package com.kaltura.kmc.modules.content.model
 		 * ArrayCollection of RelatedFileVO  
 		 */		
 		public var relatedFilesAC:ArrayCollection;
+		
+		/**
+		 * Will be used to make the KClip reload cue points upon bulk upload
+		 * */
+		public var reloadCuePoints:Boolean;
 
 	}
 }
