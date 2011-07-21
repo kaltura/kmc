@@ -139,7 +139,7 @@
 
 			public function set status(value:String):void {
 				if (value && (!_status || (_status != value))) {
-					refreshData();
+					refreshData(false);
 				}
 				_status = value;
 				selectedEntry = _selectedEntry;
@@ -181,7 +181,7 @@
 				}
 
 				if (value && (!_replacementStatus || (_replacementStatus != value))) {
-					refreshData();
+					refreshData(false);
 				}
 				_replacementStatus = value;
 				selectedEntry = _selectedEntry;
@@ -248,10 +248,15 @@
 			/**
 			 * load flavors
 			 * */
-			private function refreshData():void {
+			private function refreshData(refreshEntry:Boolean):void {
 				if (_selectedEntry != null) {
 					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
 					cgEvent.dispatch();
+					if (refreshEntry) {
+						var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.GET_SELECTED_ENTRY, null,_selectedEntry.id);
+						getSelectedEntry.dispatch();
+					}
+						
 				}
 			}
 
@@ -308,7 +313,7 @@
 			}
 			
 			private function onFlavorsChanged(event:Event):void {
-				refreshData();
+				refreshData(true);
 			}
 
 
@@ -653,7 +658,7 @@
 				_dfw3.unwatch();
 				PopUpManager.removePopUp(e.target as MatchFromDropFolderWindow);
 				if ((e.target as MatchFromDropFolderWindow).isEntryRefreshRequired) {
-					refreshData();					
+					refreshData(true);					
 				}
 			}
 
@@ -733,7 +738,7 @@
 	<mx:HRule width="100%"/>
 	<mx:HBox width="100%">
 		<mx:Text text="{resourceManager.getString('cms','flavorAssetsDescription')}" width="100%" />
-		<mx:LinkButton click="refreshData()" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
+		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
 	</mx:HBox>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
 
