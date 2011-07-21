@@ -6,9 +6,10 @@
 		<![CDATA[
 			import com.kaltura.kmc.modules.studio.events.ApsPrefixEvent;
 			import com.kaltura.kmc.modules.studio.vo.ApsOptionItemVo;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.CheckBox;
+			import mx.controls.ColorPicker;
 			import mx.controls.ComboBox;
 			import mx.controls.HRule;
 			import mx.controls.NumericStepper;
@@ -16,6 +17,7 @@
 			import mx.controls.Text;
 			import mx.controls.TextInput;
 			import mx.core.UIComponent;
+			import mx.events.ColorPickerEvent;
 			import mx.events.ListEvent;
 			import mx.events.NumericStepperEvent;
 
@@ -257,6 +259,16 @@
 						input.percentWidth = 95;
 						ui = input;
 						break;
+					case "ColorPicker":
+						var picker:ColorPicker = new ColorPicker();
+						if (componentXML.@k_value.toString() != "") {
+							picker.selectedColor = parseInt(componentXML.@k_value.toString());
+						}
+						picker.addEventListener(Event.CHANGE, onColorPickerChanged, false, 0, true)
+						picker.id = componentXML.@id.toString();
+						picker.name = componentXML.@id.toString();
+						ui = picker;
+						break;
 				}
 				return ui;
 			}
@@ -267,6 +279,13 @@
 				var newValue:String = evt.target.selectedItem.data.toString();
 				featureFormXML..ComboBox.(@id == comboName)[0].@selected = newValue;
 				featureFormXML..ComboBox.(@id == comboName)[0].@k_value = newValue;
+			}
+			
+			private function onColorPickerChanged(evt:ColorPickerEvent):void {
+				var pickerName:String = evt.target.name;
+				var newValue:String = evt.target.selectedColor.toString();
+				featureFormXML..ColorPicker.(@id == pickerName)[0].@selected = newValue;
+				featureFormXML..ColorPicker.(@id == pickerName)[0].@k_value = newValue;
 			}
 
 
