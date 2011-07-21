@@ -75,8 +75,12 @@
 			
 				<VBox id="generalPluginContainer" width="100%" height="100%">
 					<Spacer id="contentPusher" height="100%"/>
+					<!-- captions plugin over the player -->
+					<Plugin id="closedCaptionsOverPlayer" width="100%" height="15%" fontsize="15" bg="0x000000" fontFamily="Arial" fontColor="0xFFFFFF" opacity="0"/>
 				</VBox>
 			</Canvas>
+			<!-- closed captions plugin under the player -->
+			<Plugin id="closedCaptionsUnderPlayer" width="100%" height="15%" fontsize="15" bg="0x000000" fontFamily="Arial" fontColor="0xFFFFFF" opacity="0"/>
 			<Canvas id="controlsHolder" width="100%" height="30">
 				<HBox id="ControllerScreenHolder" width="100%" height="30" verticalAlign="middle" styleName="darkBg">
 					<HBox id="ControllerScreen" width="100%" height="30" horizontalGap="9" paddingLeft="9"
@@ -114,6 +118,8 @@
 						</VBox>
 
 						<VolumeBar id="volumeBar" styleName="volumeBtn" buttonWidth="20" width="20" height="20" buttonType="iconButton" tooltip="Change volume"/>
+						<!-- Combo box for captions control -->
+						<ComboBox id="ccComboBox" width="90" selectedIndex="{closedCaptions.currentCCFileIndex}" kevent_change="sendNotification( 'closedCaptionsSelected' , ccComboBox.selectedItem)" dataProvider="{closedCaptions.availableCCFilesLabels}" prompt="Captions"/>
 						<Button id="shareBtnControllerScreen" label="" buttonType="iconButton"
 								kClick="sendNotification('doGigya')" height="22" styleName="controllerScreen"
 								focusRectPadding="0" icon="shareIcon" tooltip="Share with friends"/>
