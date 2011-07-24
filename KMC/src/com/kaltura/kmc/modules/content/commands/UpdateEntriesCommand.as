@@ -63,6 +63,34 @@ package com.kaltura.kmc.modules.content.commands {
 				var mr:MultiRequest = new MultiRequest();
 				for (var i:uint = 0; i < e.entries.length; i++) {
 					var keepId:String = (e.entries[i] as KalturaBaseEntry).id;
+					//update custom data
+					if (_model.entryDetailsModel.enableUpdateMetadata && !(e.entries[i] is KalturaPlaylist) && _model.entryDetailsModel.metadataInfoArray) {
+						for (var j:int = 0; j< _model.entryDetailsModel.metadataInfoArray.length; j++) {
+							var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfoArray[j] as EntryMetadataDataVO;
+							var profile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[j] as KMCMetadataProfileVO;
+							if (metadataInfo && profile && profile.profile) {
+								var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, profile);
+								//metadata exists--> update request
+								if (metadataInfo.metadata) {
+									var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+									if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+										var metadataUpdate:MetadataUpdate = new MetadataUpdate(metadataInfo.metadata.id,
+											newMetadataXML.toXMLString());
+										mr.addAction(metadataUpdate);
+									}
+								}
+								else if (newMetadataXML.children().length() > 0) {
+									var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
+										KalturaMetadataObjectType.ENTRY,
+										keepId,
+										newMetadataXML.toXMLString());
+									mr.addAction(metadataAdd);
+								}
+							}
+						}
+						
+					}
+							
 					// only send conversionProfileId if the entry is in no_content status
 					if (e.entries[i].status != KalturaEntryStatus.NO_CONTENT) {
 						e.entries[i].conversionProfileId = int.MIN_VALUE;
@@ -92,43 +120,17 @@ package com.kaltura.kmc.modules.content.commands {
 						mr.addAction(updateEntry1);
 					}
 					
-					//var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
-					if (_model.entryDetailsModel.enableUpdateMetadata && !(e.entries[i] is KalturaPlaylist) && _model.entryDetailsModel.metadataInfoArray) {
-						for (var j:int = 0; j< _model.entryDetailsModel.metadataInfoArray.length; j++) {
-							var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfoArray[j] as EntryMetadataDataVO;
-							var profile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[j] as KMCMetadataProfileVO;
-							if (metadataInfo && profile && profile.profile) {
-								var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, profile);
-								//metadata exists--> update request
-								if (metadataInfo.metadata) {
-									var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-									if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
-										var metadataUpdate:MetadataUpdate = new MetadataUpdate(metadataInfo.metadata.id,
-											newMetadataXML.toXMLString());
-										mr.addAction(metadataUpdate);
-									}
-								}
-								else if (newMetadataXML.children().length() > 0) {
-									var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
-										KalturaMetadataObjectType.ENTRY,
-										keepId,
-										newMetadataXML.toXMLString());
-									mr.addAction(metadataAdd);
-								}
-							}
-						}
-											
-					}
+
 				}
 				
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
 				//reload changeble data
-				if (!_closeDrilldown && !_displayNextEntry) {
+				/*if (!_closeDrilldown && !_displayNextEntry) {
 					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
 					listCustomData.dispatch();
-				}
+				}*/
 			}
 		}
 

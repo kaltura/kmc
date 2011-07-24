@@ -245,6 +245,8 @@
 			 */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value && value!=_selectedEntry) {
+					//if the given entry is a different entry
+					var isDifferentEntry:Boolean = (_selectedEntry ? value.id != _selectedEntry.id : true);
 					_selectedEntry = value;
 					_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
 					setWindowTitle();
@@ -257,7 +259,7 @@
 					}
 
 					if (_isReady)
-						setTabsByEntryType();
+						setTabsByEntryType(isDifferentEntry);
 				}				
 			}
 
@@ -389,7 +391,7 @@
 				for (var i:int = 0; i< viewStack.numChildren; i++) {
 					_originalTabs.push(viewStack.getChildAt(i));
 				}
-				setTabsByEntryType();
+				setTabsByEntryType(true);
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				if (viewStack.getChildByName('entryMetaData'))
@@ -398,60 +400,69 @@
 				
 			}
 			
-			private function setTabsByEntryType():void {
-				//reset viewStack to its starting point
-				viewStack.removeAllChildren();
-				for each (var tab:DisplayObject in _originalTabs)
-					viewStack.addChild(tab);
+			/**
+			 * if entryChanged will reset all tabs according to entry type
+			 * else, will just reload tabs data
+			 * */
+			private function setTabsByEntryType(entryChanged:Boolean):void {
 				_dataInitialized = false;
-				// show correct panels according to entry type
-				// live entry
-				if (_isLiveStream) {
-					setViewPerEntryType(new Array(entryAssets, contentTab));
-				} else if (selectedEntry is KalturaMixEntry) {
-					//this is a mix
-					showMixSetup();
-					setViewPerEntryType(new Array(entryAssets, liveStream));
-				} else {
-					// this entry is a regular video/image/audio
-					showNormalSetup();
-					setViewPerEntryType(new Array(liveStream));
-					//remove redundant tabs in image and audio cases
-					if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-						setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution, entryCaptions));
-					} else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
-						setViewPerEntryType(new Array(entryDistribution));
-					}
-				}
-				hideTabsFromUiconf();
-				loadEntries();
-
-				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
-				for each (var subtabName:String in tabsToHide) {
-					if (viewStack.getChildByName(subtabName)) {
-						viewStack.removeChild(this[subtabName]);
-					}
-				}
 				
-				//adds custom data profiles
-				if (customData.parent is ViewStack) {
-					if (filterModel.enableCustomData) {
-						if (filterModel.metadataProfiles && filterModel.metadataProfiles.length > 0) {
-							entryDetailsModel.metadataInfoArray = new ArrayCollection();
-							customData.buildProfiles(filterModel.metadataProfiles, filterModel.formBuilders);
+				if (entryChanged) {
+					//reset viewStack to its starting point
+					viewStack.removeAllChildren();
+					for each (var tab:DisplayObject in _originalTabs)
+					viewStack.addChild(tab);
+					// show correct panels according to entry type
+					// live entry
+					if (_isLiveStream) {
+						setViewPerEntryType(new Array(entryAssets, contentTab));
+					} else if (selectedEntry is KalturaMixEntry) {
+						//this is a mix
+						showMixSetup();
+						setViewPerEntryType(new Array(entryAssets, liveStream));
+					} else {
+						// this entry is a regular video/image/audio
+						showNormalSetup();
+						setViewPerEntryType(new Array(liveStream));
+						//remove redundant tabs in image and audio cases
+						if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
+							setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution, entryCaptions));
+						} else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
+							setViewPerEntryType(new Array(entryDistribution));
 						}
 					}
-					//if none of the profiles contain fields (the only child is the navigation hbox)
-					if (customData.numChildren < 2)
-						viewStack.removeChild(customData);
+					hideTabsFromUiconf();
+					loadEntries();
+					
+					var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
+					for each (var subtabName:String in tabsToHide) {
+						if (viewStack.getChildByName(subtabName)) {
+							viewStack.removeChild(this[subtabName]);
+						}
+					}
+					
+					//adds custom data profiles
+					if (customData.parent is ViewStack) {
+						if (filterModel.enableCustomData) {
+							if (filterModel.metadataProfiles && filterModel.metadataProfiles.length > 0) {
+								entryDetailsModel.metadataInfoArray = new ArrayCollection();
+								customData.buildProfiles(filterModel.metadataProfiles, filterModel.formBuilders);
+							}
+						}
+						//if none of the profiles contain fields (the only child is the navigation hbox)
+						if (customData.numChildren < 2)
+							viewStack.removeChild(customData);
+					}
+					
+					viewStack.selectedIndex = dtn.selectedIndex = 0;
 				}
+				
 				
 				if (_visibleTabsAC)
 					setVisibleTabs();
 				else
-					initTabs();
-				
-				viewStack.selectedIndex = dtn.selectedIndex = 0;
+					initTabs();	
+					
 			}
 
 
