@@ -22,6 +22,12 @@ package com.kaltura.kmc.modules.content.commands.captions
 			var evt:CaptionsEvent = event as CaptionsEvent;	
 			var mr:MultiRequest = new MultiRequest();
 			var requestIndex:int = 1;
+			//set as default
+			if (evt.defaultCaption && evt.defaultCaption.caption.isDefault!=KalturaNullableBoolean.TRUE_VALUE) {
+				var setDefault:CaptionAssetSetAsDefault = new CaptionAssetSetAsDefault(evt.defaultCaption.caption.id);
+				mr.addAction(setDefault);
+				requestIndex++;
+			}
 			if (evt.captionsToSave) {
 				for each (var caption:EntryCaptionVO in evt.captionsToSave) {
 					//handle resource
@@ -68,12 +74,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 					requestIndex++;
 				}
 			}
-			//set as default
-			if (evt.defaultCaption) {
-				var setDefault:CaptionAssetSetAsDefault = new CaptionAssetSetAsDefault(evt.defaultCaption.caption.id);
-				mr.addAction(setDefault);
-				requestIndex++;
-			}
+			
 			
 			if (requestIndex > 1) {
 				_model.increaseLoadCounter();
