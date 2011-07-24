@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.model.states
 		public static const ENTRY_DETAILS_WINDOW_CLOSED_ONE : String = "entryDetailsWindowClosedOne";
 		public static const ENTRY_DETAILS_WINDOW_NEW_ENTRY : String = "entryDetailsWindowNewEntry";
 		public static const REPLACEMENT_ENTRY_DETAILS_WINDOW : String = "replacementEntryDetailsWindow";
+//		public static const ROOT_ENTRY_DETAILS_WINDOW : String = "rootEntryDetailsWindow";
 		public static const ENTRY_DETAILS_WINDOW : String = "entryDetailsWindow";
 		public static const PLAYLIST_DETAILS_WINDOW_ADD : String = "playlistDetailsWindowAdd";
 		public static const PLAYLIST_DETAILS_WINDOW_EDIT : String = "playlistDetailsWindowEdit";

@@ -5,6 +5,9 @@ package com.kaltura.kmc.modules.content.events
 
 	public class EntryEvent extends CairngormEvent
 	{
+		/**
+		 * set the given entry as selected entry on the current entryDetailsModel 
+		 */
 		public static const SET_SELECTED_ENTRY : String = "content_setSelectedEntry";
 		public static const ADD_CHECKED_ENTRY : String = "content_addCheckedEntry";
 		public static const REMOVE_CHECKED_ENTRY : String = "content_removeCheckedEntry";
@@ -24,10 +27,24 @@ package com.kaltura.kmc.modules.content.events
 		public static const GET_RULE_BASED_PLAYLIST : String = "content_getRuleBasedPlaylist";
 		public static const RESET_RULE_BASED_DATA : String = "content_resetRuleBasedData";
 		public static const PREVIEW : String = "content_preview";
-		public static const GET_ENTRY : String = "content_get_entry";
+		
+//		/**
+//		 * load the required entry and set it as selected on the model.
+//		 */
+//		public static const GET_ENTRY : String = "content_get_entry";
+		
+		/**
+		 * after getting the entry, open the drilldown with its details.
+		 * this event changes the selected entry on the entryDetailsModel
+		 */
+		public static const GET_ENTRY_AND_DRILLDOWN : String = "content_get_entry_and_drilldown";
 		public static const DELETE_ENTRY : String = "content_delete_entry";
 		public static const GET_REPLACEMENT_ENTRY : String = "content_get_replacement_entry";
-		public static const GET_SELECTED_ENTRY : String = "content_get_selected_entry";
+		
+		/**
+		 * get the selected entry and update only replacement status related fields
+		 * */
+		public static const UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS : String = "content_update_selected_entry_replacement_status";
 		
 		/**
 		 * triggers a baseEntry.update with the given baseEntry, with no side effects.

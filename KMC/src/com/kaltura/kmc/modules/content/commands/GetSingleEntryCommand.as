@@ -28,7 +28,7 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.increaseLoadCounter();
 			var e:EntryEvent = event as EntryEvent;
 			_eventType = e.type;
-			if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
+			if (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 				_model.entryDetailsModel.selectedEntryReloaded = false;
 			}
 			
@@ -51,7 +51,7 @@ package com.kaltura.kmc.modules.content.commands {
 				if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) {
 					_model.entryDetailsModel.selectedReplacementEntry = resultEntry;
 				}
-				else if (_eventType == EntryEvent.GET_SELECTED_ENTRY) {
+				else if (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 					EntryUtil.updateChangebleFieldsOnly(resultEntry);
 					_model.entryDetailsModel.selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.entryDetailsModel.selectedEntry, 'replacementStatus',
 						_model.entryDetailsModel.selectedEntry.replacementStatus,_model.entryDetailsModel.selectedEntry.replacementStatus));
@@ -59,6 +59,9 @@ package com.kaltura.kmc.modules.content.commands {
 					EntryUtil.updateSelectedEntryInList(_model.entryDetailsModel.selectedEntry);
 					_model.entryDetailsModel.selectedEntryReloaded = true;
 				}
+//				else if (_eventType == EntryEvent.GET_ENTRY) {
+//					_model.entryDetailsModel.selectedEntry = resultEntry;
+//				}
 				else {
 					(_model.app as Content).requestEntryDrilldown(data.data);
 				}
@@ -72,7 +75,7 @@ package com.kaltura.kmc.modules.content.commands {
 		
 		override public function fault(info:Object):void {
 			//if entry replacement doesn't exist it means that the replacement is ready
-			if ((_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) || (_eventType == EntryEvent.GET_SELECTED_ENTRY)) {
+			if ((_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) || (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS)) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					_model.decreaseLoadCounter();

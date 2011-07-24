@@ -7,6 +7,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -14,9 +15,13 @@
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.ModelEvent;
 			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
@@ -662,6 +667,20 @@
 			public function set maxNumCategories(value:int):void {
 				_maxNumCategories = value;
 			}
+
+			/**
+			 * open drilldown window wit the parent entry
+			 * (the entry this clip was made from)
+			 * */
+			protected function showParentEntryddddd(event:MouseEvent):void
+			{
+				// create the new model 
+				var cg:CairngormEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
+				cg.dispatch();
+				cg = new EntryEvent(EntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
+				cg.dispatch();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
@@ -680,7 +699,7 @@
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label id="tagsLbl" text="{resourceManager.getString('cms','tags')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
+					  styleName="drillDownLabel"/> 
 			<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}" 
 						  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
@@ -744,15 +763,10 @@
 						  styleName="drillDownLabel"/>
 				<mx:Label text="{selectedEntry.userId}" styleName="drillDownSubLabel"/>
 			</mx:HBox>
-			<mx:HBox width="100%" visible="false" includeInLayout="false">
-				<mx:Label text="{resourceManager.getString('cms','contentWidth')}:" width="{LABEL_WIDTH}"
+			<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}" includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
+				<mx:Label text="{resourceManager.getString('cms','clippedFrom')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
-				<mx:Label text="{selectedEntry.width}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%" visible="false" includeInLayout="false">
-				<mx:Label text="{resourceManager.getString('cms','contentHeight')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{selectedEntry.height}" styleName="drillDownSubLabel"/>
+				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntryddddd(event)"/>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:VBox>
