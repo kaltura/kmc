@@ -578,6 +578,7 @@
 			 * @return false if at least one cuepoint is invalid, true otherwise.
 			 * */
 			private function validate():Boolean {
+				_selectedCuePoint = null;
 				if (!kClipReady) {
 					// the component wasn't ready so no data 
 					// could have changed to invalid data
@@ -811,9 +812,10 @@
 					<mx:VBox width="100%" styleName="noPadding">
 						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"
 									 change="updateCuePointData(event)"/>
-						<mx:TextInput id="tiProvider" width="100%" text="{getAdProviderText(_selectedCuePoint)}"
-									  enabled="{cbProvider.selectedItem.value == 'other'}"
-									  change="updateCuePointData(event)"/>
+						<controls:DefaultLabelTextArea id="tiProvider" width="100%" height="{tiUrl.height}" 
+									 defaultLabel="{resourceManager.getString('cms', 'ads_default_provider')}"
+									 enabled="{cbProvider.selectedItem.value == 'other'}" defaultLabelStyleName="textAreaDefaultLabel"
+									 change="updateCuePointData(event)"/>
 					</mx:VBox>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
