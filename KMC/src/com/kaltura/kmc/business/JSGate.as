@@ -13,6 +13,10 @@ package com.kaltura.kmc.business
 	 */
 	public class JSGate {
 		
+		public static function openClipApp(entryId:String, mode:String):void {
+			ExternalInterface.call("kmc.functions.openClipApp", entryId, mode);
+		} 
+		
 		/**
 		 * ks expired 
 		 */

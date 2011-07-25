@@ -5,6 +5,8 @@
 		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
 	</mx:Metadata>
+
+
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -672,13 +674,27 @@
 			 * open drilldown window wit the parent entry
 			 * (the entry this clip was made from)
 			 * */
-			protected function showParentEntryddddd(event:MouseEvent):void
+			protected function showParentEntry(event:MouseEvent):void
 			{
 				// create the new model 
 				var cg:CairngormEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
 				cg.dispatch();
 				cg = new EntryEvent(EntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
 				cg.dispatch();
+			}
+			
+			/**
+			 * request JS to open the clipApp in clipping mode
+			 * */
+			protected function openClipping(event:MouseEvent):void {
+				JSGate.openClipApp(selectedEntry.id, "clip");
+			}
+			
+			/**
+			 * request JS to open the clipApp in trimming mode
+			 * */
+			protected function openTrimming(event:MouseEvent):void {
+				JSGate.openClipApp(selectedEntry.id, "trim");
 			}
 
 		]]>
@@ -766,7 +782,7 @@
 			<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}" includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
 				<mx:Label text="{resourceManager.getString('cms','clippedFrom')}:" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
-				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntryddddd(event)"/>
+				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"/>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:VBox>
@@ -781,12 +797,17 @@
 							   click="{openPreview()}" width="135" styleName="dataGridBtn"
 							   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
 
+					<mx:HBox width="100%" horizontalAlign="center">
+						<mx:LinkButton id="btnClipping" label="{resourceManager.getString('cms','openClipping')}" click="openClipping(event)" />
+						<mx:LinkButton id="btnTrimming" label="{resourceManager.getString('cms','openTrimming')}" click="openTrimming(event)" />
+					</mx:HBox>
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('cms','rating')}:" styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.rank}" styleName="drillDownSubLabel"/>
 
 						<mx:Label text="{resourceManager.getString('cms','votesCount')}:" styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.votes}" styleName="drillDownSubLabel"/>
+						
 					</mx:HBox>
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('cms','plays')}:" styleName="drillDownLabel"/>
