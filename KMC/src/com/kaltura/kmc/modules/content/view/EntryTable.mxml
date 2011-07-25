@@ -25,9 +25,11 @@
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaClipAttributes;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaOperationAttributes;
 			import com.kaltura.vo.KalturaPlaylist;
 			
 			import mx.collections.ArrayCollection;
@@ -799,6 +801,19 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, id);
 			}
+			
+			
+			protected function getClipIntime(value:Object, column:DataGridColumn):String {
+				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
+				var result:String = '';
+				for each (var opatt:KalturaOperationAttributes in entry.operationAttributes) {
+					if (opatt is KalturaClipAttributes) {
+						result = formatDate((opatt as KalturaClipAttributes).offset);
+						break;
+					}
+				}
+				return result;
+			}
 		]]>
 	</mx:Script>
 
@@ -874,9 +889,9 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="rank" width="50"
 						   headerText="{resourceManager.getString('cms', 'rating')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="creator" width="90"
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
 						   headerText="{resourceManager.getString('cms', 'creator')}" showDataTips="true"
-						   dataTipField="creator"
+						   dataTipField="userId"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel"/>
 
 
@@ -898,8 +913,12 @@
 			 <mx:DataGridColumn  paddingLeft="4" paddingRight="4"  dataField="tags"  width="100" headerText="{resourceManager.getString('cms', 'tags')}"
 			 showDataTips="true" dataTipField="tags" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel" /-->
 
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" labelFunction="getClipIntime"
+						   headerText="{resourceManager.getString('cms', 'intime')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel"/>
+			
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" dataField="duration"
-						   headerText="{resourceManager.getString('cms', 'duration')}">
+						   headerText="{resourceManager.getString('cms', 'duration')}" >
 			<mx:itemRenderer>
 				<mx:Component>
 					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">

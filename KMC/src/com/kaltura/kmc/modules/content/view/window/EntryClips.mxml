@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
+		 width="100%" height="100%" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ClipEvent;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaFilterPager;
+			
+			import mx.events.FlexEvent;
+
+			/**
+			 * current selecred entry
+			 * */
+			public var selectedEntry:KalturaBaseEntry;
+
+			[Bindable]
+			/**
+			 * vos for the clips to show in the table
+			 * */
+			public var clips:Array;
+
+
+			public function initData():void {
+				getNext();
+			}
+
+			private function getNext():void {
+				var gc:ClipEvent = new ClipEvent(ClipEvent.GET_ENTRY_CLIPS);
+				gc.data = {id: selectedEntry.id};
+				if (paging) {
+					gc.data.pager = paging.kalturaFilterPager;
+				}
+				gc.dispatch();
+			}
+
+			public function destroy():void {
+
+			}
+
+
+
+			private function removeColumns(event:FlexEvent):void {
+				entryTable.removeColumn(resourceManager.getString('cms', 'thumbnail'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'idHeader'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'name'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'playlistType'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'type'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'playerLoads'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'plays'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'rating'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'creator'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'createAt'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'duration'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'flags'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'moderationStatus'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'preview'));
+
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%" >
+		<view:EntryTable id="entryTable" width="100%" height="100%" kalturaSorting="false" showLinks="false" 
+						 dataProvider="{clips}" creationComplete="removeColumns(event)"/>
+		
+		<controls:Paging id="paging" width="100%" styleName="paging"
+						 rowsInPageChange="getNext()" nextPage="getNext()" prvPage="getNext()"
+						 getPageNum="getNext()" totalCount="{clips.length}"
+						 showRowsInPage="true" defaultPageSize="10" />
+	</mx:VBox>
+</mx:VBox>

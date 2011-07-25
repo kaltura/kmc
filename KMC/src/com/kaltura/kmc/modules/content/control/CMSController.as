@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.captions.*;
+	import com.kaltura.kmc.modules.content.commands.clips.*;
 	import com.kaltura.kmc.modules.content.commands.cuepoints.*;
 	import com.kaltura.kmc.modules.content.commands.dropFolder.*;
 	import com.kaltura.kmc.modules.content.commands.relatedFiles.ListRelatedFilesCommand;
@@ -204,7 +205,11 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(RelatedFileEvent.SAVE_ALL_RELATED, SaveRelatedFilesCommand);
 			addCommand(RelatedFileEvent.UPDATE_RELATED_FILE, UpdateRelatedFileCommand);
 
-
+			// clips
+			addCommand(ClipEvent.GET_ENTRY_CLIPS, GetEntryClipsCommand);
+			
+			
+			
 		}
 	}
 }

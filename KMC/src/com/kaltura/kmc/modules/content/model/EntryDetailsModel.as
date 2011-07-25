@@ -150,6 +150,12 @@ package com.kaltura.kmc.modules.content.model
 		 * Will be used to make the KClip reload cue points upon bulk upload
 		 * */
 		public var reloadCuePoints:Boolean;
+		
+		/**
+		 * clips derived from the current entry, 
+		 * <code>KalturaBaseEntry</code> objects
+		 */		
+		public var clips:Array;
 
 	}
 }

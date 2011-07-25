@@ -14,7 +14,7 @@
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 							xmlns:adobe="http://www.adobe.com/2006/fc" creationComplete="{onWindowCreationComplete()}"
-							styleName="WinTitleStyle">
+							styleName="WinTitleStyle" xmlns:window="com.kaltura.kmc.modules.content.view.window.*">
 	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
 	<mx:Script>
 		<![CDATA[
@@ -885,6 +885,7 @@
 				event.target.removeColumn(resourceManager.getString('cms', 'creator'));
 				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
 				event.target.removeColumn(resourceManager.getString('cms', 'playerLoads'));
+				event.target.removeColumn(resourceManager.getString('cms', 'intime'));
 			}
 
 
@@ -1153,6 +1154,13 @@
 		<!-- related entries -->
 		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
 						  selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}"/>
+		
+		
+		<!-- clips -->
+		<window:EntryClips id="entryClips" label="{resourceManager.getString('cms','clips')}"
+						  selectedEntry="{_undoToEntry}" clips="{entryDetailsModel.clips}" />
+		
+		
 	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox horizontalAlign="left" width="33%">
