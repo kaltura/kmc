@@ -259,22 +259,42 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			var attributeToWrite:String;
 			var attributeValue:String;
 			
+			var param:XML, element:XML;
+			
 			// setting k_param. a general kapram that is defined as changable 
 			for each (featureXml in activeFeatures) {
 				activeFeatureName = featureXml.attribute("id")[0].toString();
-				// get all parameters
-				var attributesToUpdate:XMLList = featureXml.descendants().(attribute("k_param").toString().length != 0);
-				// search the matching feature in the real player XML 
-				var features:XMLList = getElementsWithSubStringInId(fullPlayerCopy, activeFeatureName);
+				// first take only the ones that have no "applyTo" and put values on feature element
 				
-				for each (featureXml in features) {
-					for each (var param:XML in attributesToUpdate) {
+				// get all parameters
+				var attributesToUpdate:XMLList = featureXml.descendants().(attribute("k_param").toString().length != 0 && attribute("applyTo").toString().length == 0);
+				// get the matching elements in the real player XML 
+				var playerElements:XMLList = getElementsWithSubStringInId(fullPlayerCopy, activeFeatureName);
+				
+				for each (element in playerElements) {
+					for each (param in attributesToUpdate) {
 						// save data to the snapshot :
 						attributeToWrite = param.attribute("k_param").toString();
 						attributeValue = param.attribute("k_value").toString();
-						featureXml.attribute(attributeToWrite)[0] = attributeValue;
+						element.attribute(attributeToWrite)[0] = attributeValue;
 					}
 				}
+				
+				// then take the ones that have "applyTo", for each one get relevant node and apply attributes to the node
+				// get all parameters
+				attributesToUpdate = featureXml.descendants().(attribute("k_param").toString().length != 0 && attribute("applyTo").toString().length > 0);
+				// search the matching feature in the real player XML
+				for each (param in attributesToUpdate) {
+					playerElements = fullPlayerCopy.descendants().(attribute("id") == param.@applyTo);
+					// (Atar: I think there should only be one)				
+					for each (element in playerElements) {
+						// save data to the snapshot :
+						attributeToWrite = param.attribute("k_param").toString();
+						attributeValue = param.attribute("k_value").toString();
+						element.attribute(attributeToWrite)[0] = attributeValue;
+					}
+				}
+				
 			} 
 			
 			var colorObj:Object = {color1: style.color1, color2: style.color2, color3: style.color3, color4: style.color4, color5: style.color5};
