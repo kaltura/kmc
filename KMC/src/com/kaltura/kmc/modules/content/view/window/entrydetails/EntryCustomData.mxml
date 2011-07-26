@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 show="onShow()" verticalGap="{customDataVerticalGap}" >
+		 show="onShow()" verticalGap="{customDataVerticalGap}" creationComplete="onCreationComplete()" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
@@ -24,6 +24,10 @@
 			private var _pager:Pager;
 			
 			
+			private function onCreationComplete():void {
+				navBtnsList.addEventListener(ScrollToProfileEvent.SCROLL_TO_SELECTED_CHILD,onMetadataShortcutBtnClick);
+			}
+			
 			public function destroy():void {
 				
 			}
@@ -39,6 +43,7 @@
 			public function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
 				var profilesArray:Array = new Array();
 				//indicates the custom data child number inside the custom data tab. will be used for navigation on a button click
+				profilesVBox.removeAllChildren();
 				var childIndex:int = 0;
 						
 				for (var i:int = 0; i<profilesAC.length; i++) {					
@@ -68,7 +73,7 @@
 				_pager.addDataSet(profilesArray);
 				_pager.lastPageIndex = Math.floor(profilesAC.length / MAX_PROFILES);
 				
-				navBtnsList.addEventListener(ScrollToProfileEvent.SCROLL_TO_SELECTED_CHILD,onMetadataShortcutBtnClick);
+				
 			}
 			
 			/**
