@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.commands
+package com.kaltura.kmc.modules.content.commands.bulk
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.content.commands
 	
 	import flash.events.Event;
 	import flash.net.FileReference;
+	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 
 	public class AddBulkUploadCommand extends KalturaCommand implements ICommand
 	{

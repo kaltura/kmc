@@ -233,15 +233,16 @@
 			protected function handleBulkAction(e:Event):void {
 				var bulk:KalturaBulkUpload = e.target.data as KalturaBulkUpload;
 				switch (e.type) {
-//					case "delete":
-//						break;
+					case "delete":
+						var be:BulkEvent = new BulkEvent(BulkEvent.DELETE_BULK_UPLOAD);
+						be.data = bulk.id;
+						be.dispatch();
+						break;
 					case "dnldLog":
 						downloadFile(bulk.logFileUrl,'logFile.csv');
-//						downloadFileDirect(bulk.logFileUrl);
 						break;
 					case "dnldOrig":
 						downloadFile(bulk.bulkFileUrl, 'origFile.' + getUploadType(bulk, null));
-//						downloadFileDirect(bulk.bulkFileUrl);
 						break;
 				}
 			}

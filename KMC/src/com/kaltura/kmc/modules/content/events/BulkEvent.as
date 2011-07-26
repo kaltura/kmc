@@ -9,6 +9,11 @@ package com.kaltura.kmc.modules.content.events
 		public static const LIST_BULK_UPLOAD : String = "content_listBulkUpload";
 		public static const ADD_BULK_UPLOAD : String = "content_addBulkUpload";
 		
+		/**
+		 * use the <code>event.data</code> for object id 
+		 */		
+		public static const DELETE_BULK_UPLOAD : String = "content_deleteBulkUpload";
+		
 		public var filterVO : FilterVO;
 		public var fm : FileManager;
 		

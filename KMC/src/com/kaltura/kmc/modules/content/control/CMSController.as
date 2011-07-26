@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.content.control {
 	import com.adobe.cairngorm.control.FrontController;
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.kmc.modules.content.commands.*;
+	import com.kaltura.kmc.modules.content.commands.bulk.*;
 	import com.kaltura.kmc.modules.content.commands.captions.*;
 	import com.kaltura.kmc.modules.content.commands.clips.*;
 	import com.kaltura.kmc.modules.content.commands.cuepoints.*;
@@ -98,6 +99,7 @@ package com.kaltura.kmc.modules.content.control {
 			//Bulk Upload Event
 			addCommand(BulkEvent.LIST_BULK_UPLOAD, ListBulkUploadCommand);
 			addCommand(BulkEvent.ADD_BULK_UPLOAD, AddBulkUploadCommand);
+			addCommand(BulkEvent.DELETE_BULK_UPLOAD, DeleteBulkUploadCommand);
 
 			//Profile Event
 			addCommand(ProfileEvent.LIST_CONVERSION_PROFILE, ListConversionProfilesCommand);
