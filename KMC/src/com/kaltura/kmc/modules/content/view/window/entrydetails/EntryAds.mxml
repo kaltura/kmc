@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 
+		 clipContent="false"
+		 
 		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" 
 		 xmlns:controls="com.kaltura.controls.*">
 	<mx:Metadata>
@@ -300,22 +303,24 @@
 				if (EntryAds.kClipLoader) {
 					kClipHolder.addChild(kClipLoader);
 					_kClip = kClipLoader.content["application"] as DisplayObject;
-					_kClip.width = kClipHolder.width;
+				//	_kClip.width = kClipHolder.width;
 					addKClipListeners();
 					if (_selectedEntry) {
 						updateWidgetsStatus(true, false);
 					}
 				} else {
-					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
+					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/3549120" // + context.kClipAdsUiconf;
 					EntryAds.kClipLoader = new SWFLoader();
 					kClipHolder.addChild(kClipLoader);
 					kClipLoader.addEventListener(Event.COMPLETE, onKClipLoaded);
 					kClipLoader.scaleContent = true;
+					kClipLoader.percentWidth = 100;
+					kClipLoader.percentHeight = 100;
 					kClipLoader.loaderContext = new LoaderContext(false, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kClipLoader.load(url);
 				}
 
-				if (EntryAds.kdpLoader) {
+			/* 	if (EntryAds.kdpLoader) {
 					kdpHolder.addChild(kdpLoader);
 					_kdp = kdpLoader.content;
 					if (_selectedEntry) {
@@ -328,7 +333,7 @@
 					kdpLoader.scaleContent = false;
 					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
 					kdpLoader.load(newUrl);
-				}
+				} */
 
 			}
 
@@ -338,8 +343,8 @@
 			 * */
 			private function onKClipLoaded(e:Event):void {
 				kClipLoader.removeEventListener(Event.COMPLETE, onKClipLoaded);
-				kClipLoader.width = kClipHolder.width;
-				kClipLoader.height = kClipHolder.height;
+				//kClipLoader.width = kClipHolder.width;
+				//kClipLoader.height = kClipHolder.height;
 				kClipLoader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
 			}
 
@@ -362,11 +367,11 @@
 				params.state = "cuePointsState";
 				params.showControlBar = "true";
 				params.partner_id = context.kc.partnerId;
-				params.uiconf_id = context.kClipAdsUiconf;
+				params.uiconf_id = "3549120";//context.kClipAdsUiconf;
 				params.cuepointType = KalturaCuePointType.AD;
 				addKClipListeners();
 				_kClip["init"](params);
-				_kClip.width = kClipHolder.width;
+				//_kClip.width = kClipHolder.width;
 			}
 
 
@@ -839,7 +844,7 @@
 		</mx:VBox>
 		<mx:HBox id="kdpHolder" width="300" height="255" tabChildren="false" tabEnabled="false"/>
 	</mx:HBox>
-	<mx:HBox id="kClipHolder" width="100%" height="120" updateComplete="updateKClipWidth(event)"/>
+	<mx:HBox id="kClipHolder" width="100%" height="120" updateComplete="updateKClipWidth(event)" clipContent="false"/>
 	<mx:HBox width="100%">
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('cms', 'ads_remove_all')}" click="removeAllCuePoints(event)"

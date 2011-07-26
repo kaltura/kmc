@@ -412,6 +412,9 @@
 				if (tmpStr) 
 					currentFilter.durationTypeMatchOr = tmpStr;
 				
+				// clips or original
+				currentFilter.isRoot = parseInt(clipsFilter.getFilterString());
+				
 				// media types
 				tmpStr = mediaTypes.getFilterString();
 				if (tmpStr)
@@ -699,6 +702,7 @@
 					catTree.dataProvider = categories;
 				updateImageButton(mediaTypes.buttons);
 				updateImageButton(durationStatus.buttons);
+				updateImageButton(clipsFilter.buttons);
 				updateImageButton(moderationStatus.buttons);
 				updateImageButton(conversionStatus.buttons);
 				updateImageButton(replacementStatus.buttons);
@@ -753,6 +757,9 @@
 				
 				// duration
 				durationStatus.setFilter(filterVo);
+				
+				//clips
+				clipsFilter.setFilter(filterVo);
 				
 				// moderation
 				moderationStatus.setFilter(filterVo);
@@ -999,29 +1006,32 @@
 			</mx:VBox>
 			<filter:MediaTypesTab id="mediaTypes" width="100%" styleName="typesVBox"
 								  enablelivestream="{enablelivestream}" filterChanged="{onTabChanged(event)}"/>
-			<filter:ConversionStatusTab id="conversionStatus" width="100%" styleName="moderationVBox"
+			<filter:ConversionStatusTab id="conversionStatus" width="100%" styleName="typesVBox"
 										label="{resourceManager.getString('cms', 'status')}"
 										visible="{showStatusOptions}" includeInLayout="{showStatusOptions}"
 										filterChanged="{onTabChanged(event)}"/>
-			<filter:DurationTab id="durationStatus" width="100%" styleName="durationVBox"
+			<filter:DurationTab id="durationStatus" width="100%" styleName="typesVBox"
 								label="{resourceManager.getString('cms', 'durationLabel')}"
 								filterChanged="{onTabChanged(event)}"/>
-			<filter:SchedulingTab id="scheduling" width="100%" styleName="bottomSchedulingVBox"
+			<filter:ClipsTab id="clipsFilter" width="100%" styleName="typesVBox"
+								label="{resourceManager.getString('cms', 'allOrigClipEntries')}"
+								filterChanged="{onTabChanged(event)}"/>
+			<filter:SchedulingTab id="scheduling" width="100%" styleName="typesVBox"
 								  filterChanged="{onTabChanged(event)}" visible="{showSchedulingOptions}"
 								  includeInLayout="{showSchedulingOptions}"/>
 			<filter:ModerationStatusTab id="moderationStatus" label="{resourceManager.getString('cms', 'status')}"
 										filterChanged="{onTabChanged(event)}"
 										showPendingModerationOption="{showPendingModerationOption}"
 										showRejectedOption="{showRejectedOption}"
-										showApprovedOption="{showApprovedOption}" styleName="moderationVBox"
+										showApprovedOption="{showApprovedOption}" styleName="typesVBox"
 										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}"/>
-			<filter:ReplacementStatusTab id="replacementStatus" width="100%" styleName="moderationVBox"
+			<filter:ReplacementStatusTab id="replacementStatus" width="100%" styleName="typesVBox"
 										label="{resourceManager.getString('cms', 'status')}"
 										visible="{showReplacementOptions}" includeInLayout="{showReplacementOptions}"
 										filterChanged="{onTabChanged(event)}"/>
-			<mx:VBox id="accessControl" width="100%" styleName="accessControlVBox" visible="{showAccessControlOptions}"
+			<mx:VBox id="accessControl" width="100%" styleName="typesVBox" visible="{showAccessControlOptions}"
 					 includeInLayout="{showAccessControlOptions}"/>
-			<mx:VBox id="transcodingFlavor" width="100%" styleName="transcodingFlavorVBox"
+			<mx:VBox id="transcodingFlavor" width="100%" styleName="typesVBox"
 					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}"/>
 		</mx:VBox>
 

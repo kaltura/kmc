@@ -41,6 +41,8 @@ package com.kaltura.kmc.modules.content.commands
 				_asset.uploadTokenId = result.id;
 				//_caption.downloadUrl = null;
 				var uploadTokenUpload:UploadTokenUpload = new UploadTokenUpload(result.id, _fr);
+				uploadTokenUpload.queued = false;
+				uploadTokenUpload.useTimeout = false;
 				uploadTokenUpload.addEventListener(KalturaEvent.FAILED, fault);
 				
 				_model.context.kc.post(uploadTokenUpload);

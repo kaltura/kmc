@@ -94,6 +94,10 @@
 				//if this file was already saved on the server
 				if (deletedFile.file.id)
 					_filesToDelete.addItem(deletedFile);
+				//look for the file in the added array, and remove it from there
+				else if (deletedFile.isNewUploaded) {
+					_filesToAdd.removeItemAt(_filesToAdd.getItemIndex(deletedFile));
+				}
 				relatedFiles.removeItemAt(relatedFiles.getItemIndex(deletedFile));
 			}
 			
@@ -204,25 +208,8 @@
 	<mx:DataGrid id="dataGrid" dataProvider="{relatedFiles}" width="100%" height="100%" rowHeight="30">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileName')}" sortable="false" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileNameRenderer"/>
-				<!--<mx:itemRenderer>
-					<mx:Component>
-						<mx:VBox paddingLeft="5" paddingRight="5" verticalAlign="middle" width="100%" height="100%" horizontalScrollPolicy="off">
-						
-						</mx:VBox>
-					</mx:Component>
-				</mx:itemRenderer>
-			</mx:DataGridColumn>-->
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileType')}" sortable="false"
 							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileTypeRenderer"/>
-				<!--<mx:itemRenderer>
-					<mx:Component>
-						<mx:VBox paddingLeft="5" verticalAlign="middle">
-							
-							
-						</mx:VBox>				
-					</mx:Component>
-				</mx:itemRenderer>
-			</mx:DataGridColumn>-->
 			<mx:DataGridColumn headerText="{resourceManager.getString('cms','fileSize')}" sortable="false">
 				<mx:itemRenderer>
 					<mx:Component>
@@ -241,7 +228,7 @@
 					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actions')}" sortable="false" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('cms','actions')}" width="185" sortable="false" itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
 </mx:VBox>

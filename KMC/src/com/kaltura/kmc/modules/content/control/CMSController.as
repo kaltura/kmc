@@ -10,6 +10,8 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.kmc.modules.content.commands.relatedFiles.SaveRelatedFilesCommand;
 	import com.kaltura.kmc.modules.content.commands.relatedFiles.UpdateRelatedFileCommand;
 	import com.kaltura.kmc.modules.content.events.*;
+	
+	import org.flexunit.internals.namespaces.classInternal;
 
 	public class CMSController extends FrontController {
 		public function CMSController() {
@@ -193,6 +195,7 @@ package com.kaltura.kmc.modules.content.control {
 			//captions
 			addCommand(CaptionsEvent.LIST_CAPTIONS, ListCaptionsCommand);
 			addCommand(CaptionsEvent.SAVE_ALL, SaveCaptionsCommand);
+			addCommand(CaptionsEvent.UPDATE_CAPTION, GetCaptionDownloadUrl);
 
 			// cuepoints
 			addCommand(CuePointEvent.COUNT_CUEPOINTS, CountCuePoints);

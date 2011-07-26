@@ -18,5 +18,9 @@ package com.kaltura.kmc.modules.content.vo
 		 * */
 		public var uploadTokenId:String;
 		
+		/**
+		 * is current asset is new, and fileReference was upload successfully
+		 * */
+		public var isNewUploaded:Boolean = false;
 	}
 }

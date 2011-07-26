@@ -3,6 +3,7 @@
 		 creationComplete="onCreationComplete()" xmlns:validators="com.kaltura.validators.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
 			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryCaptions;
 			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
@@ -110,7 +111,6 @@
 			}
 
 			private function onCreationComplete():void {
-			//	this.currentState = EXTERNAL_STATE;
 				BindingUtils.bindSetter(onUpload, caption, 'uploadTokenId');
 			}
 			
@@ -187,10 +187,43 @@
 					_selectedTypeIndex = getFormat(KalturaCaptionType.DFXP);
 				else
 					_selectedTypeIndex = getFormat(KalturaCaptionType.SRT);
-				
+	
+				_isLoading = true;
 				var uploadFile:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _fileReference, _caption);
+				uploadFile.fileReference.addEventListener(Event.COMPLETE, onUploadComplete);
+				uploadFile.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				uploadFile.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
 				uploadFile.dispatch();
 				_caption.downloadUrl = null;
+				
+			}
+			
+			
+			private function onUploadComplete(event:Event):void {
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onUploadComplete);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+				// will get the latest status from the server
+				if (caption.caption.id) {
+					var update:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPDATE_CAPTION);
+					update.captionVo = caption;
+					update.dispatch();
+				}
+				else {
+					caption.isNewUploaded = true;
+					_isLoading = false;
+				}
+				
+			}
+			
+			private function onUploadError(event:Event):void {
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onUploadComplete);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+				
+				//caption.uploadTokenId = null;
+				_isError = true;
+				caption.isNewUploaded = true;
 			}
 			
 			/**
@@ -198,7 +231,7 @@
 			 * */
 			public function save():EntryDetailsValidationError {
 				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-				if (!_isLoading) 
+				if (!_isLoading && !caption.isNewUploaded) 
 				{
 					urlValidator.source = urlTi
 					if ((urlValidator.validate() as ValidationResultEvent).results)
@@ -230,7 +263,7 @@
 					return true;
 				if (labelTi.text && (!_caption.caption.label || (labelTi.text != _caption.caption.label)))
 					return true;
-				if (_isLoading)
+				if (_isLoading || caption.isNewUploaded)
 					return true;
 				if (urlTi.text && (!_caption.downloadUrl || (urlTi.text != _caption.downloadUrl)))
 					return true;
@@ -271,7 +304,7 @@
 						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
-		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading}" editable="{editable}"/>
+		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading &amp;&amp; !caption.isNewUploaded}" editable="{editable}"/>
 		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
 				  source="{SpinnerImg}" visible="{_isLoading}" includeInLayout="{_isLoading}"/>
 		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{(_isError &amp;&amp; !_isLoading)}" styleName="distributionError"/>
@@ -279,7 +312,9 @@
 	<mx:HBox visible="{editable}" includeInLayout="{editable}">
 		<mx:Spacer width="100"/>
 		<mx:LinkButton label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
-					   visible="{!_isLoading}"/>
+					   visible="{!_isLoading &amp;&amp; !caption.isNewUploaded}" includeInLayout="{!_isLoading &amp;&amp; !caption.isNewUploaded}"
+					   styleName="plusIcon"/>
+		<mx:Label visible="{caption.isNewUploaded}" text="{resourceManager.getString('cms','captionUploadedTip')}"/>
 		
 	</mx:HBox>
 	<mx:HBox>
@@ -297,17 +332,21 @@
 	</mx:HBox>
 	<mx:HBox visible="{_showActionsBox &amp;&amp; editable}" includeInLayout="{_showActionsBox &amp;&amp; editable}">
 		<mx:Spacer width="100"/>
-		<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="downloadCaption()"
-					   visible="{caption.downloadUrl!=null}" includeInLayout="{caption.downloadUrl!=null}" styleName="downloadThumbLinkButton"/>
-		<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="removeCaption()"
-					   styleName="deleteThumbLinkButton" enabled="{!_isDefault}"/>
-		<mx:Spacer width="{400- download.width - remove.width}"/>
-		<mx:Label text="{resourceManager.getString('cms','default')}" visible="{_isDefault}"
-					includeInLayout="{_isDefault}"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','setAsDefault')}" 
-					   visible="{(_captionExists &amp;&amp; !_isDefault)}" includeInLayout="{(_captionExists &amp;&amp; !_isDefault)}"
-					   styleName="setDefaultLinkButton" click="setAsDefault()"/>
+		<mx:HBox width="400">
+			<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="downloadCaption()"
+						   visible="{caption.downloadUrl!=null}" includeInLayout="{caption.downloadUrl!=null}" styleName="downloadThumbLinkButton"/>
+			<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="removeCaption()"
+						   styleName="deleteThumbLinkButton" enabled="{!_isDefault}"/>
+			<mx:Spacer width="100%"/>
+			<mx:Label text="{resourceManager.getString('cms','default')}" visible="{_isDefault}"
+					  includeInLayout="{_isDefault}"/>
+			<mx:LinkButton label="{resourceManager.getString('cms','setAsDefault')}" 
+						   visible="{(_captionExists &amp;&amp; !_isDefault)}" includeInLayout="{(_captionExists &amp;&amp; !_isDefault)}"
+						   styleName="setDefaultLinkButton" click="setAsDefault()"/>
+		</mx:HBox>
+		
 	</mx:HBox>
+	<mx:Spacer height="16"/>
 	<!--<mx:states>
 		<mx:State name="{EXTERNAL_STATE}">
 			<mx:AddChild position="after" relativeTo="{raioBtns}">

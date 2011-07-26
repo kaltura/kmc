@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="6" horizontalAlign="center"
-		 verticalAlign="middle">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="6" horizontalAlign="center"
+		 verticalAlign="middle" horizontalGap="0">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.EditRelatedFileWindow;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			
@@ -19,53 +21,123 @@
 			private var _actionsAvailable:Boolean;
 			[Bindable]
 			private var _relatedVo:RelatedFileVO;
+			[Bindable]
+			private var _isError:Boolean = false;
+			[Bindable]
+			private var _errorString:String;
 			
 			override public function set data(value:Object):void {
 				super.data = value;
 				_relatedVo = data as RelatedFileVO;
 				//if the file is already saved on server
-				if (_relatedVo.file.id)
+				if (_relatedVo.file.id) {
+					if (_relatedVo.file.status != KalturaFlavorAssetStatus.READY) {
+						_isError = true;
+						_actionsAvailable = false;
+						switch (_relatedVo.file.status) {
+							case KalturaFlavorAssetStatus.DELETED:
+								_errorString = resourceManager.getString('cms','deleteStatus');
+								break;
+							case KalturaFlavorAssetStatus.QUEUED:
+								_errorString = resourceManager.getString('cms','inqueueStatus');
+								break;
+							case KalturaFlavorAssetStatus.IMPORTING:
+								_errorString = resourceManager.getString('cms','importStatus');
+								break;
+							case KalturaFlavorAssetStatus.ERROR:
+								_errorString = resourceManager.getString('cms','errorStatus');
+						}
+					}
+					else {
+						_actionsAvailable = true;
+						_isError = false;
+					}
+					
+				}
+				else if (_relatedVo.isNewUploaded) {
 					_actionsAvailable = true;
-				else 
+					_isError = false;
+				}
+				else {
 					_actionsAvailable = false;
-			
+					_isError = false;
+				}	
 			}
-
-			protected function onActionChanged():void
-			{
-				var action:String = String(actionsCB.selectedItem);
-				switch (action) {
-					case resourceManager.getString('cms','edit'):
-						var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
-						editWindow.file = _relatedVo.file;
-						PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
-						PopUpManager.centerPopUp(editWindow);
-						break;
-					case resourceManager.getString('cms','delete'):
-						dispatchEvent(new Event(FILE_DELETED, true));
-						break;
-					case resourceManager.getString('cms','download'):
-						var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
-						navigateToURL(urlRequest , '_self');
+			
+			/**
+			 * will check if its a new file, and display an alert
+			 * return tru if its not saved
+			 * */
+			private function isNotSaved(message:String):Boolean {
+				if (!_relatedVo.file.id && _relatedVo.isNewUploaded) {
+					Alert.show(message, resourceManager.getString('cms','saveRequired'));
+					return true;
 				}
 				
-				actionsCB.selectedIndex = -1;
+				return false;
 			}
 			
+			private function editFile():void {
+				if (!isNotSaved(resourceManager.getString('cms','unsavedEditAlert'))) {				
+					var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
+					editWindow.file = _relatedVo.file;
+					PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(editWindow);
+				}
+			}
+			
+			private function downloadFile():void {
+				if (!isNotSaved(resourceManager.getString('cms','unsavedDownloadAlert'))) {
+					var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
+					navigateToURL(urlRequest , '_self');
+				}
+			}
+
 			protected function onUploadClick():void {
 				var uploadEvent:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _relatedVo.fileReference, _relatedVo);
+				uploadEvent.fileReference.addEventListener(Event.COMPLETE, onFileUploaded);
+				uploadEvent.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				uploadEvent.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
 				uploadEvent.dispatch();
+			}
+			
+			private function onFileUploaded(event:Event):void {
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onFileUploaded);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
+				
+				_relatedVo.isNewUploaded = true;
+			}
+			
+			private function onFileFailed(event:Event):void {
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onFileUploaded);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
+
+				_isError = true;
+				_errorString = resourceManager.getString('cms','errorStatus');
+				_relatedVo.isNewUploaded = true;
+			}
+			
+			private function removeFile():void {
+				dispatchEvent(new Event(FILE_DELETED, true));
 			}
 			
 
 		]]>
 	</mx:Script>
-	
-	<mx:Button label="{resourceManager.getString('cms','upload')}" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
-			   includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId==null))}" width="100" styleName="dataGridBtn"/>
-	<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
-			  source="{SpinnerImg}" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}" includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}"/>
-	<mx:ComboBox id="actionsCB" dataProvider="{new Array(resourceManager.getString('cms','edit'), resourceManager.getString('cms','delete'), resourceManager.getString('cms','download'))}" 
-				 visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}"
-				 selectedIndex="-1" prompt="{resourceManager.getString('cms','actions')}" width="100" change="onActionChanged()"/>
-</mx:VBox>
+	<mx:LinkButton label="{resourceManager.getString('cms','edit')}" click="editFile()"
+				  visible="{_actionsAvailable}"/>
+	<mx:LinkButton label="{resourceManager.getString('cms','download')}" click="downloadFile()"
+				   styleName="downloadThumbLinkButton" visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}" width="80"/>
+	<mx:LinkButton label="{resourceManager.getString('cms','upload')}" visible="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
+				   includeInLayout="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" 
+				   styleName="plusIcon" width="80"/>
+	<mx:Label text="{_errorString}" visible="{_isError}" includeInLayout="{_isError}" width="80" textAlign="center"/>
+	<mx:HBox width="80" horizontalAlign="center" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}" includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}">
+		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
+				  source="{SpinnerImg}" />
+	</mx:HBox>
+	<mx:LinkButton label="{resourceManager.getString('cms','remove')}" click="removeFile()"
+				   styleName="deleteThumbLinkButton" width="70"/>
+</mx:HBox>
