@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="400" 
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="420" 
 				 styleName="TitleWindowType2" creationComplete="creationCompleteHandler(event)"
 				 title="{resourceManager.getString('account','conversionFlavorSettingsTitle')}" 
 				 showCloseButton="true" close="{onClose()}">
@@ -9,6 +9,7 @@
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaAssetParamsOrigin;
 			import com.kaltura.types.KalturaFlavorReadyBehaviorType;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.vo.KalturaConversionProfileAssetParams;
 			
 			import mx.events.FlexEvent;
@@ -17,7 +18,7 @@
 
 
 			private const LABEL_WIDTH:int = 200;
-			private const ELEMENT_WIDTH:int = 160;
+			private const ELEMENT_WIDTH:int = 180;
 			
 			
 			/**
@@ -37,6 +38,17 @@
 				{value:KalturaAssetParamsOrigin.CONVERT_WHEN_MISSING, name:ResourceManager.getInstance().getString('account', 'flavor_cwm')},
 				{value:KalturaAssetParamsOrigin.INGEST, name:ResourceManager.getInstance().getString('account', 'flavor_ingest')}
 			];
+			
+			/**
+			 * data provider for the asset's generation policy
+			 * */
+			private const _genOptions:Array = [
+				{value:KalturaNullableBoolean.FALSE_VALUE, name:ResourceManager.getInstance().getString('account', 'gen_no_force')},
+				{value:KalturaNullableBoolean.TRUE_VALUE, name:ResourceManager.getInstance().getString('account', 'gen_force')},
+			];
+			
+			
+			
 			
 			private var _cpap:KalturaConversionProfileAssetParams;
 			
@@ -61,6 +73,7 @@
 			 * edit cpap and mark it as dirty
 			 * */
 			private function save():void {
+				_cpap.forceNoneComplied = cbGenPolicy.selectedItem.value;
 				_cpap.readyBehavior = cbAvailability.selectedItem.value;
 				_cpap.origin = cbConvertPolicy.selectedItem.value;
 				_cpap.systemName = tiSystemName.text;
@@ -74,12 +87,16 @@
 			 * show the values from the cpap in the window
 			 * */
 			protected function setValues():void {
-				if (cbAvailability && cbConvertPolicy && tiSystemName) {
+				if (cbAvailability && cbConvertPolicy && tiSystemName && cbGenPolicy) {
 					// source flavor - always ingest, inherit
 					if (_flavorVO.kFlavor.tags.indexOf("source") > -1) {
 						_cpap.origin = KalturaAssetParamsOrigin.INGEST;
 						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.INHERIT_FLAVOR_PARAMS;
 						cbConvertPolicy.enabled = false;
+					}
+					if (_flavorVO.kFlavor.id == 0) {
+						cbGenPolicy.enabled = false;
+						_cpap.forceNoneComplied = KalturaNullableBoolean.NULL_VALUE;
 					}
 					// default values:
 					if (!_cpap.readyBehavior || _cpap.readyBehavior == int.MIN_VALUE) {
@@ -94,6 +111,7 @@
 					}
 					cbAvailability.selectedIndex = getItemIndex(_availabilityOptions, _cpap.readyBehavior);
 					cbConvertPolicy.selectedIndex = getItemIndex(_originOptions, _cpap.origin);
+					cbGenPolicy.selectedIndex = getItemIndex(_genOptions, _cpap.forceNoneComplied);
 					tiSystemName.text = _cpap.systemName;
 				}
 			}
@@ -182,6 +200,12 @@
 	<mx:HBox>
 		<mx:Text htmlText="{resourceManager.getString('account','systemName')}" width="{LABEL_WIDTH}"/>
 		<mx:TextInput id="tiSystemName" width="{ELEMENT_WIDTH}" />
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('account','generationPolicy')}" 
+				  styleName="boldLabel" width="{LABEL_WIDTH}"/>
+		<mx:ComboBox id="cbGenPolicy" dataProvider="{_genOptions}" 
+					 labelField="name" width="{ELEMENT_WIDTH}" />
 	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center">
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','saveFlavor')}" useHandCursor="true"
