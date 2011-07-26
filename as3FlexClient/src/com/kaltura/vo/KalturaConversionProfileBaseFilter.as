@@ -11,43 +11,43 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var statusEqual : String;
+		public var statusEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultEntryIdEqual : String;
+		public var defaultEntryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultEntryIdIn : String;
+		public var defaultEntryIdIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

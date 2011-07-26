@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var idEqual : String;
+		public var idEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 

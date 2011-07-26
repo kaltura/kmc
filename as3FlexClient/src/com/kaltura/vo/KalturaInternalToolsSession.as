@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partner_pattern : String;
+		public var partner_pattern : String = null;
 
 		/** 
 		* 		* */ 
@@ -22,7 +22,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var error : String;
+		public var error : String = null;
 
 		/** 
 		* 		* */ 
@@ -30,11 +30,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var user : String;
+		public var user : String = null;
 
 		/** 
 		* 		* */ 
-		public var privileges : String;
+		public var privileges : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

@@ -7,12 +7,12 @@ package com.kaltura.vo
 		/** 
 		* The ID of the Flavor Asset
 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* The entry ID of the Flavor Asset
 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -36,12 +36,12 @@ package com.kaltura.vo
 		/** 
 		* Tags used to identify the Flavor Asset in various scenarios
 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* The file extension
 		* */ 
-		public var fileExt : String;
+		public var fileExt : String = null;
 
 		/** 
 		* 		* */ 
@@ -56,12 +56,16 @@ package com.kaltura.vo
 		public var deletedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
-		public var description : String;
+		* System description, error message, warnings and failure cause.		* */ 
+		public var description : String = null;
 
 		/** 
-		* 		* */ 
-		public var partnerData : String;
+		* Partner private data		* */ 
+		public var partnerData : String = null;
+
+		/** 
+		* Partner friendly description		* */ 
+		public var partnerDescription : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -72,6 +76,7 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('tags');
 			arr.push('partnerData');
+			arr.push('partnerDescription');
 			return arr;
 		}
 

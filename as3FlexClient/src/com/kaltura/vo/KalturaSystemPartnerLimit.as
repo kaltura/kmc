@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* 		* */ 
@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var overagePrice : Number = NaN;
+		public var overagePrice : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* a list of attributes which may be updated on this object 

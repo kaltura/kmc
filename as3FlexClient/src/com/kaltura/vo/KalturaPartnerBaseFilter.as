@@ -11,23 +11,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameLike : String;
+		public var nameLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameMultiLikeOr : String;
+		public var nameMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameMultiLikeAnd : String;
+		public var nameMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -35,7 +35,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,7 +51,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String;
+		public var partnerNameDescriptionWebsiteAdminNameAdminEmailLike : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

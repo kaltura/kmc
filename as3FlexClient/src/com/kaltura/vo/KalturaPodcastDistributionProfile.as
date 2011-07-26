@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var xsl : String;
+		public var xsl : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedId : String;
+		public var feedId : String = null;
 
 		/** 
 		* 		* */ 

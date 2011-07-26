@@ -11,15 +11,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var typeEqual : String;
+		public var typeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var typeIn : String;
+		public var typeIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,15 +27,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 

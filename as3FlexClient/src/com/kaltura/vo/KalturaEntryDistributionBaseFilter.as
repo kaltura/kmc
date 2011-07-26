@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,11 +39,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdIn : String;
+		public var entryIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,7 +51,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var distributionProfileIdIn : String;
+		public var distributionProfileIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -59,7 +59,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -67,7 +67,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var dirtyStatusIn : String;
+		public var dirtyStatusIn : String = null;
 
 		/** 
 		* 		* */ 

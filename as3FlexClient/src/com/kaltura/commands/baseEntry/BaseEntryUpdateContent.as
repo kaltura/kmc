@@ -12,7 +12,7 @@ package com.kaltura.commands.baseEntry
 		 * @param resource KalturaResource
 		 * @param conversionProfileId int
 		 **/
-		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=undefined )
+		public function BaseEntryUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=int.MIN_VALUE )
 		{
 			service= 'baseentry';
 			action= 'updateContent';

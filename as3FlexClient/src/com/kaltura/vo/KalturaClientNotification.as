@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* The URL where the notification should be sent to 		* */ 
-		public var url : String;
+		public var url : String = null;
 
 		/** 
 		* The serialized notification data to send		* */ 
-		public var data : String;
+		public var data : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

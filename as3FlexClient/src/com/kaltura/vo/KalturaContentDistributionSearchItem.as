@@ -31,7 +31,7 @@ package com.kaltura.vo
 
 		/** 
 		* Comma seperated validation error types		* */ 
-		public var entryDistributionValidationErrors : String;
+		public var entryDistributionValidationErrors : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

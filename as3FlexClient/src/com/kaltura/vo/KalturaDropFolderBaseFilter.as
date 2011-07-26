@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,19 +19,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameLike : String;
+		public var nameLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var typeEqual : String;
+		public var typeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var typeIn : String;
+		public var typeIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,7 +39,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -47,7 +47,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var conversionProfileIdIn : String;
+		public var conversionProfileIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -55,43 +55,43 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var dcIn : String;
+		public var dcIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var pathLike : String;
+		public var pathLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileHandlerTypeEqual : String;
+		public var fileHandlerTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileHandlerTypeIn : String;
+		public var fileHandlerTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNamePatternsLike : String;
+		public var fileNamePatternsLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNamePatternsMultiLikeOr : String;
+		public var fileNamePatternsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNamePatternsMultiLikeAnd : String;
+		public var fileNamePatternsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsLike : String;
+		public var tagsLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 

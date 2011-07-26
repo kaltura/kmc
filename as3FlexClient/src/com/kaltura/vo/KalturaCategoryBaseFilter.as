@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,7 +19,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parentIdIn : String;
+		public var parentIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,11 +27,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fullNameEqual : String;
+		public var fullNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var fullNameStartsWith : String;
+		public var fullNameStartsWith : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

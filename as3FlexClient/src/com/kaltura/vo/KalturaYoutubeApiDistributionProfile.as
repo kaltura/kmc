@@ -7,31 +7,31 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultCategory : String;
+		public var defaultCategory : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowComments : String;
+		public var allowComments : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowEmbedding : String;
+		public var allowEmbedding : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowRatings : String;
+		public var allowRatings : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowResponses : String;
+		public var allowResponses : String = null;
 
 		/** 
 		* 		* */ 

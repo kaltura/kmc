@@ -15,11 +15,11 @@ package com.kaltura.vo
 
 		/** 
 		* The object id of the file sync object 		* */ 
-		public var objectId : String;
+		public var objectId : String = null;
 
 		/** 
 		* The version of the file sync object 		* */ 
-		public var version : String;
+		public var version : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

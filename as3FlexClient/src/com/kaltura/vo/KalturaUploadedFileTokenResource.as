@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* Token that returned from upload.upload action or uploadToken.add action. 		* */ 
-		public var token : String;
+		public var token : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* ID of the source asset 		* */ 
-		public var assetId : String;
+		public var assetId : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -13,7 +13,7 @@ package com.kaltura.vo
 		/** 
 		* Comma separated list of country codes to allow to deny 
 		* */ 
-		public var countryList : String;
+		public var countryList : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

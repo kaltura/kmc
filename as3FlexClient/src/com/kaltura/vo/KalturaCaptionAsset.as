@@ -13,7 +13,12 @@ package com.kaltura.vo
 		/** 
 		* The language of the caption asset content
 		* */ 
-		public var language : String;
+		public var language : String = null;
+
+		/** 
+		* The language of the caption asset content
+		* */ 
+		public var languageCode : String = null;
 
 		/** 
 		* Is default caption asset of the entry
@@ -23,12 +28,12 @@ package com.kaltura.vo
 		/** 
 		* Friendly label
 		* */ 
-		public var label : String;
+		public var label : String = null;
 
 		/** 
 		* The caption format
 		* */ 
-		public var format : String;
+		public var format : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

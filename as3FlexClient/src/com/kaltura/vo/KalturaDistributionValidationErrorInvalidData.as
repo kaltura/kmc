@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var fieldName : String;
+		public var fieldName : String = null;
 
 		/** 
 		* 		* */ 
@@ -16,7 +16,7 @@ package com.kaltura.vo
 		/** 
 		* Parameter of the validation error
 For example, minimum value for KalturaDistributionValidationErrorType::STRING_TOO_SHORT validation error		* */ 
-		public var validationErrorParam : String;
+		public var validationErrorParam : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -7,17 +7,17 @@ package com.kaltura.vo
 		/** 
 		* Auto generated 10 characters alphanumeric string
 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* Entry name (Min 1 chars)
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* Entry description
 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -26,29 +26,29 @@ package com.kaltura.vo
 		/** 
 		* The ID of the user who is the owner of this entry 
 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* Entry tags
 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* Entry admin tags can be updated only by administrators
 		* */ 
-		public var adminTags : String;
+		public var adminTags : String = null;
 
 		/** 
 		* 		* */ 
-		public var categories : String;
+		public var categories : String = null;
 
 		/** 
 		* 		* */ 
-		public var categoriesIds : String;
+		public var categoriesIds : String = null;
 
 		/** 
 		* 		* */ 
-		public var status : String;
+		public var status : String = null;
 
 		/** 
 		* Entry moderation status
@@ -63,7 +63,7 @@ package com.kaltura.vo
 		/** 
 		* The type of the entry, this is auto filled by the derived entry object
 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* Entry creation date as Unix timestamp (In seconds)
@@ -78,7 +78,7 @@ package com.kaltura.vo
 		/** 
 		* Calculated rank
 		* */ 
-		public var rank : Number = NaN;
+		public var rank : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* The total (sum) of all votes
@@ -97,16 +97,16 @@ package com.kaltura.vo
 		/** 
 		* Can be used to store various partner related data as a string 
 		* */ 
-		public var partnerData : String;
+		public var partnerData : String = null;
 
 		/** 
 		* Download URL for the entry
 		* */ 
-		public var downloadUrl : String;
+		public var downloadUrl : String = null;
 
 		/** 
 		* Indexed search text for full text search		* */ 
-		public var searchText : String;
+		public var searchText : String = null;
 
 		/** 
 		* License type used for this entry
@@ -120,7 +120,7 @@ package com.kaltura.vo
 		/** 
 		* Thumbnail URL
 		* */ 
-		public var thumbnailUrl : String;
+		public var thumbnailUrl : String = null;
 
 		/** 
 		* The Access Control ID assigned to this entry (null when not set, send -1 to remove)  
@@ -140,22 +140,22 @@ package com.kaltura.vo
 		/** 
 		* Entry external reference id
 		* */ 
-		public var referenceId : String;
+		public var referenceId : String = null;
 
 		/** 
 		* ID of temporary entry that will replace this entry when it's approved and ready for replacement
 		* */ 
-		public var replacingEntryId : String;
+		public var replacingEntryId : String = null;
 
 		/** 
 		* ID of the entry that will be replaced when the replacement approved and this entry is ready
 		* */ 
-		public var replacedEntryId : String;
+		public var replacedEntryId : String = null;
 
 		/** 
 		* Status of the replacement readiness and approval
 		* */ 
-		public var replacementStatus : String;
+		public var replacementStatus : String = null;
 
 		/** 
 		* Can be used to store various partner related data as a numeric value
@@ -170,7 +170,7 @@ package com.kaltura.vo
 		/** 
 		* ID of source root entry, used for clipped, skipped and cropped entries that created from another entry  
 		* */ 
-		public var rootEntryId : String;
+		public var rootEntryId : String = null;
 
 		/** 
 		* clipping, skipping and cropping attributes that used to create this entry  

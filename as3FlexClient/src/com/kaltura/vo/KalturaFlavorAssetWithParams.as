@@ -21,7 +21,7 @@ package com.kaltura.vo
 		/** 
 		* The entry id
 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

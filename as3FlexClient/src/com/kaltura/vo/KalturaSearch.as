@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var keyWords : String;
+		public var keyWords : String = null;
 
 		/** 
 		* 		* */ 
@@ -21,11 +21,11 @@ package com.kaltura.vo
 For example - if you set this field to "mymovies_$partner_id"
 The $partner_id will be automatically replcaed with your real partner Id
 		* */ 
-		public var extraData : String;
+		public var extraData : String = null;
 
 		/** 
 		* 		* */ 
-		public var authData : String;
+		public var authData : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

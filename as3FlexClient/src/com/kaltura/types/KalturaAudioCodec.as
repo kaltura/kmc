@@ -7,6 +7,7 @@ package com.kaltura.types
 		public static const AAC : String = 'aac';
 		public static const VORBIS : String = 'vorbis';
 		public static const WMA : String = 'wma';
+		public static const AMRNB : String = 'amrnb';
 		public static const COPY : String = 'copy';
 	}
 }

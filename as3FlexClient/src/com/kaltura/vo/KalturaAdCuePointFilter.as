@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var protocolTypeEqual : String;
+		public var protocolTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var protocolTypeIn : String;
+		public var protocolTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

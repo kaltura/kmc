@@ -7,19 +7,19 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var idEqual : String;
+		public var idEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var sourceWidgetIdEqual : String;
+		public var sourceWidgetIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var rootWidgetIdEqual : String;
+		public var rootWidgetIdEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,7 +27,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,7 +51,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerDataLike : String;
+		public var partnerDataLike : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

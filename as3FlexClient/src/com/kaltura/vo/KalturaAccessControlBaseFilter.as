@@ -11,15 +11,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		/** 
 		* 		* */ 

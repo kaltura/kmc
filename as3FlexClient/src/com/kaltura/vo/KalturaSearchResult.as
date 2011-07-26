@@ -7,35 +7,35 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
-		public var title : String;
+		public var title : String = null;
 
 		/** 
 		* 		* */ 
-		public var thumbUrl : String;
+		public var thumbUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 
-		public var url : String;
+		public var url : String = null;
 
 		/** 
 		* 		* */ 
-		public var sourceLink : String;
+		public var sourceLink : String = null;
 
 		/** 
 		* 		* */ 
-		public var credit : String;
+		public var credit : String = null;
 
 		/** 
 		* 		* */ 
@@ -43,7 +43,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var flashPlaybackType : String;
+		public var flashPlaybackType : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

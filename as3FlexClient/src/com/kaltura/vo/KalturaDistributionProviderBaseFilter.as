@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var typeEqual : String;
+		public var typeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var typeIn : String;
+		public var typeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

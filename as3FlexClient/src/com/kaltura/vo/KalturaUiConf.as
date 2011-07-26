@@ -10,11 +10,11 @@ package com.kaltura.vo
 
 		/** 
 		* Name of the uiConf, this is not a primary key		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -26,7 +26,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var objTypeAsString : String;
+		public var objTypeAsString : String = null;
 
 		/** 
 		* 		* */ 
@@ -38,27 +38,27 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var htmlParams : String;
+		public var htmlParams : String = null;
 
 		/** 
 		* 		* */ 
-		public var swfUrl : String;
+		public var swfUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var confFilePath : String;
+		public var confFilePath : String = null;
 
 		/** 
 		* 		* */ 
-		public var confFile : String;
+		public var confFile : String = null;
 
 		/** 
 		* 		* */ 
-		public var confFileFeatures : String;
+		public var confFileFeatures : String = null;
 
 		/** 
 		* 		* */ 
-		public var confVars : String;
+		public var confVars : String = null;
 
 		/** 
 		* 		* */ 
@@ -66,11 +66,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 
-		public var swfUrlVersion : String;
+		public var swfUrlVersion : String = null;
 
 		/** 
 		* Entry creation date as Unix timestamp (In seconds)		* */ 

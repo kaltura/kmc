@@ -10,19 +10,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var emailAddress : String;
+		public var emailAddress : String = null;
 
 		/** 
 		* 		* */ 
-		public var mailboxId : String;
+		public var mailboxId : String = null;
 
 		/** 
 		* 		* */ 
@@ -42,23 +42,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var createdAt : String;
+		public var createdAt : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultCategory : String;
+		public var defaultCategory : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultUserId : String;
+		public var defaultUserId : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultTags : String;
+		public var defaultTags : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultAdminTags : String;
+		public var defaultAdminTags : String = null;
 
 		/** 
 		* 		* */ 

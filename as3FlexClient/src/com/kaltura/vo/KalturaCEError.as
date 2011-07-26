@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
@@ -14,35 +14,35 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var browser : String;
+		public var browser : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverIp : String;
+		public var serverIp : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverOs : String;
+		public var serverOs : String = null;
 
 		/** 
 		* 		* */ 
-		public var phpVersion : String;
+		public var phpVersion : String = null;
 
 		/** 
 		* 		* */ 
-		public var ceAdminEmail : String;
+		public var ceAdminEmail : String = null;
 
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var data : String;
+		public var data : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

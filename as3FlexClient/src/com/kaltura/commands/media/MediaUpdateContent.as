@@ -12,7 +12,7 @@ package com.kaltura.commands.media
 		 * @param resource KalturaResource
 		 * @param conversionProfileId int
 		 **/
-		public function MediaUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=undefined )
+		public function MediaUpdateContent( entryId : String,resource : KalturaResource,conversionProfileId : int=int.MIN_VALUE )
 		{
 			service= 'media';
 			action= 'updateContent';

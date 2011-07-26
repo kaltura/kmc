@@ -7,19 +7,19 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var jobTypeEqual : String;
+		public var jobTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var jobTypeIn : String;
+		public var jobTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var jobTypeNotIn : String;
+		public var jobTypeNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,11 +27,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var jobSubTypeIn : String;
+		public var jobSubTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var jobSubTypeNotIn : String;
+		public var jobSubTypeNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,11 +39,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var onStressDivertToIn : String;
+		public var onStressDivertToIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var onStressDivertToNotIn : String;
+		public var onStressDivertToNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,11 +51,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var statusNotIn : String;
+		public var statusNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -99,11 +99,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var priorityIn : String;
+		public var priorityIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var priorityNotIn : String;
+		public var priorityNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -111,11 +111,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var twinJobIdIn : String;
+		public var twinJobIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var twinJobIdNotIn : String;
+		public var twinJobIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -123,11 +123,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var bulkJobIdIn : String;
+		public var bulkJobIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var bulkJobIdNotIn : String;
+		public var bulkJobIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -135,11 +135,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parentJobIdIn : String;
+		public var parentJobIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var parentJobIdNotIn : String;
+		public var parentJobIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -147,11 +147,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var rootJobIdIn : String;
+		public var rootJobIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var rootJobIdNotIn : String;
+		public var rootJobIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -175,11 +175,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errTypeIn : String;
+		public var errTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var errTypeNotIn : String;
+		public var errTypeNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -187,11 +187,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errNumberIn : String;
+		public var errNumberIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var errNumberNotIn : String;
+		public var errNumberNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -211,11 +211,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var schedulerIdIn : String;
+		public var schedulerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var schedulerIdNotIn : String;
+		public var schedulerIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -223,11 +223,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var workerIdIn : String;
+		public var workerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var workerIdNotIn : String;
+		public var workerIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -235,11 +235,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var batchIndexIn : String;
+		public var batchIndexIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var batchIndexNotIn : String;
+		public var batchIndexNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -247,11 +247,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var lastSchedulerIdIn : String;
+		public var lastSchedulerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var lastSchedulerIdNotIn : String;
+		public var lastSchedulerIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -259,11 +259,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var lastWorkerIdIn : String;
+		public var lastWorkerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var lastWorkerIdNotIn : String;
+		public var lastWorkerIdNotIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -271,11 +271,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var dcIn : String;
+		public var dcIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var dcNotIn : String;
+		public var dcNotIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

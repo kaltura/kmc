@@ -43,12 +43,12 @@ package com.kaltura.vo
 		/** 
 		* The container format
 		* */ 
-		public var containerFormat : String;
+		public var containerFormat : String = null;
 
 		/** 
 		* The video codec
 		* */ 
-		public var videoCodecId : String;
+		public var videoCodecId : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -15,7 +15,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var metadataObjectTypeEqual : String;
+		public var metadataObjectTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -23,15 +23,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -55,7 +55,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var info : String;
+		public var info : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

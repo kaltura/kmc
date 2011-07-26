@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var freeText : String;
+		public var freeText : String = null;
 
 		/** 
 		* 		* */ 

@@ -10,11 +10,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var ks : String;
+		public var ks : String = null;
 
 		/** 
 		* 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

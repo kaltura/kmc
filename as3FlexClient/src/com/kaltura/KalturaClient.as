@@ -14,6 +14,10 @@ package com.kaltura {
 		
 		public static const CALL_QUEUED:String = "callQueued"; 
 		public static const QUEUE_FLUSHED:String = "queueFlushed"; 
+
+		public static const NULL_INT:int = int.MAX_VALUE; 
+		public static const NULL_NUMBER:Number = Number.POSITIVE_INFINITY; 
+		public static const NULL_STRING:String = "__null_string__"; 
 		
 		
 		protected var _currentConfig:KalturaConfig;

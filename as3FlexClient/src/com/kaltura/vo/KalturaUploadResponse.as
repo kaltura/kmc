@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var uploadTokenId : String;
+		public var uploadTokenId : String = null;
 
 		/** 
 		* 		* */ 
@@ -18,7 +18,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String;
+		public var errorDescription : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

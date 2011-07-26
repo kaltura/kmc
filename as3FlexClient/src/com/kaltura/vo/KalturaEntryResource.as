@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* ID of the source entry 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* ID of the source flavor params, set to null to use the source flavor		* */ 

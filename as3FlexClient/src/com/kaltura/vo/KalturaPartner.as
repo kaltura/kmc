@@ -10,15 +10,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var website : String;
+		public var website : String = null;
 
 		/** 
 		* 		* */ 
-		public var notificationUrl : String;
+		public var notificationUrl : String = null;
 
 		/** 
 		* 		* */ 
@@ -30,15 +30,15 @@ package com.kaltura.vo
 
 		/** 
 		* deprecated - lastName and firstName replaces this field		* */ 
-		public var adminName : String;
+		public var adminName : String = null;
 
 		/** 
 		* 		* */ 
-		public var adminEmail : String;
+		public var adminEmail : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -46,15 +46,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var landingPage : String;
+		public var landingPage : String = null;
 
 		/** 
 		* 		* */ 
-		public var userLandingPage : String;
+		public var userLandingPage : String = null;
 
 		/** 
 		* 		* */ 
-		public var contentCategories : String;
+		public var contentCategories : String = null;
 
 		/** 
 		* 		* */ 
@@ -62,11 +62,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var phone : String;
+		public var phone : String = null;
 
 		/** 
 		* 		* */ 
-		public var describeYourself : String;
+		public var describeYourself : String = null;
 
 		/** 
 		* 		* */ 
@@ -74,7 +74,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var defConversionProfileType : String;
+		public var defConversionProfileType : String = null;
 
 		/** 
 		* 		* */ 
@@ -94,7 +94,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var notificationsConfig : String;
+		public var notificationsConfig : String = null;
 
 		/** 
 		* 		* */ 
@@ -106,15 +106,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var secret : String;
+		public var secret : String = null;
 
 		/** 
 		* 		* */ 
-		public var adminSecret : String;
+		public var adminSecret : String = null;
 
 		/** 
 		* 		* */ 
-		public var cmsPassword : String;
+		public var cmsPassword : String = null;
 
 		/** 
 		* 		* */ 
@@ -126,24 +126,24 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var adminUserId : String;
+		public var adminUserId : String = null;
 
 		/** 
 		* firstName and lastName replace the old (deprecated) adminName		* */ 
-		public var firstName : String;
+		public var firstName : String = null;
 
 		/** 
 		* lastName and firstName replace the old (deprecated) adminName		* */ 
-		public var lastName : String;
+		public var lastName : String = null;
 
 		/** 
 		* country code (2char) - this field is optional
 		* */ 
-		public var country : String;
+		public var country : String = null;
 
 		/** 
 		* state code (2char) - this field is optional		* */ 
-		public var state : String;
+		public var state : String = null;
 
 		/** 
 		* 		* */ 

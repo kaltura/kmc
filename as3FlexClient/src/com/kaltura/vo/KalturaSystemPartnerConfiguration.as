@@ -6,27 +6,27 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var partnerName : String;
+		public var partnerName : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var adminName : String;
+		public var adminName : String = null;
 
 		/** 
 		* 		* */ 
-		public var adminEmail : String;
+		public var adminEmail : String = null;
 
 		/** 
 		* 		* */ 
-		public var host : String;
+		public var host : String = null;
 
 		/** 
 		* 		* */ 
-		public var cdnHost : String;
+		public var cdnHost : String = null;
 
 		/** 
 		* 		* */ 
@@ -42,7 +42,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var rtmpUrl : String;
+		public var rtmpUrl : String = null;
 
 		/** 
 		* 		* */ 
@@ -70,7 +70,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var alwaysAllowedPermissionNames : String;
+		public var alwaysAllowedPermissionNames : String = null;
 
 		/** 
 		* 		* */ 
@@ -82,7 +82,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var notificationsConfig : String;
+		public var notificationsConfig : String = null;
 
 		/** 
 		* 		* */ 

@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,7 +19,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var tagsEqual : String;
+		public var tagsEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

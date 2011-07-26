@@ -11,27 +11,27 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileObjectTypeEqual : String;
+		public var fileObjectTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileObjectTypeIn : String;
+		public var fileObjectTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectIdEqual : String;
+		public var objectIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectIdIn : String;
+		public var objectIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var versionEqual : String;
+		public var versionEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var versionIn : String;
+		public var versionIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,15 +39,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var objectSubTypeIn : String;
+		public var objectSubTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var dcEqual : String;
+		public var dcEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var dcIn : String;
+		public var dcIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -91,7 +91,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -99,7 +99,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileTypeIn : String;
+		public var fileTypeIn : String = null;
 
 		/** 
 		* 		* */ 

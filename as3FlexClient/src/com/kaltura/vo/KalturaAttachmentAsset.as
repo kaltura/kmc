@@ -7,19 +7,15 @@ package com.kaltura.vo
 	{
 		/** 
 		* The filename of the attachment asset content		* */ 
-		public var filename : String;
+		public var filename : String = null;
 
 		/** 
 		* Attachment asset title		* */ 
-		public var title : String;
-
-		/** 
-		* Friendly description		* */ 
-		override public var description : String;
+		public var title : String = null;
 
 		/** 
 		* The attachment format		* */ 
-		public var format : String;
+		public var format : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -27,7 +23,6 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('filename');
 			arr.push('title');
-			arr.push('description');
 			return arr;
 		}
 

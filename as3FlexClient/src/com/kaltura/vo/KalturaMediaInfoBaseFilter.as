@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var flavorAssetIdEqual : String;
+		public var flavorAssetIdEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

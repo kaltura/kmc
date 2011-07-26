@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.account.command
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.storageProfile.StorageProfileList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
@@ -34,7 +35,7 @@ package com.kaltura.kmc.modules.account.command
 			var temp:Array = new Array();
 			// add the "none" object
 			var rs:KalturaStorageProfile = new KalturaStorageProfile();
-			rs.id = int.MIN_VALUE; // same as the default
+			rs.id = KalturaClient.NULL_INT; // same as "delete value" of the client
 			rs.name = "N/A";
 			temp.push(rs);
 			// add the rest of the storages

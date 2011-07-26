@@ -17,12 +17,12 @@ package com.kaltura.vo
 		/** 
 		* The direcotry this type is saved at
 		* */ 
-		public var directory : String;
+		public var directory : String = null;
 
 		/** 
 		* Filename for this UiConf type
 		* */ 
-		public var filename : String;
+		public var filename : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

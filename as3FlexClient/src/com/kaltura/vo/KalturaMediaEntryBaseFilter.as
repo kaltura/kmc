@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var mediaTypeIn : String;
+		public var mediaTypeIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -23,11 +23,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var flavorParamsIdsMatchOr : String;
+		public var flavorParamsIdsMatchOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorParamsIdsMatchAnd : String;
+		public var flavorParamsIdsMatchAnd : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

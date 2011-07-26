@@ -11,19 +11,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameIn : String;
+		public var nameIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var descriptionLike : String;
+		public var descriptionLike : String = null;
 
 		/** 
 		* 		* */ 
@@ -31,7 +31,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,15 +39,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 

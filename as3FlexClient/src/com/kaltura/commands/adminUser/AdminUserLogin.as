@@ -11,7 +11,7 @@ package com.kaltura.commands.adminUser
 		 * @param password String
 		 * @param partnerId int
 		 **/
-		public function AdminUserLogin( email : String,password : String,partnerId : int=undefined )
+		public function AdminUserLogin( email : String,password : String,partnerId : int=int.MIN_VALUE )
 		{
 			service= 'adminuser';
 			action= 'login';

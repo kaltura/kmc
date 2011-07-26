@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,23 +19,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var typeIn : String;
+		public var typeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameIn : String;
+		public var nameIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var friendlyNameLike : String;
+		public var friendlyNameLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var descriptionLike : String;
+		public var descriptionLike : String = null;
 
 		/** 
 		* 		* */ 
@@ -43,7 +43,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,23 +51,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var dependsOnPermissionNamesMultiLikeOr : String;
+		public var dependsOnPermissionNamesMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var dependsOnPermissionNamesMultiLikeAnd : String;
+		public var dependsOnPermissionNamesMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 

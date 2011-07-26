@@ -7,21 +7,21 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var category : String;
+		public var category : String = null;
 
 		/** 
 		* 		* */ 
-		public var adultContent : String;
+		public var adultContent : String = null;
 
 		/** 
 		* feed description
 		* */ 
-		public var feedDescription : String;
+		public var feedDescription : String = null;
 
 		/** 
 		* feed landing page (i.e publisher website)
 		* */ 
-		public var feedLandingPage : String;
+		public var feedLandingPage : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

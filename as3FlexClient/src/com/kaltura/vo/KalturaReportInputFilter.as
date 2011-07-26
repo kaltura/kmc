@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var keywords : String;
+		public var keywords : String = null;
 
 		/** 
 		* 		* */ 
@@ -26,7 +26,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var categories : String;
+		public var categories : String = null;
 
 		/** 
 		* time zone offset in minutes		* */ 

@@ -10,7 +10,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* 		* */ 
@@ -18,7 +18,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 

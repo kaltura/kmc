@@ -39,7 +39,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var durationTypeMatchOr : String;
+		public var durationTypeMatchOr : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

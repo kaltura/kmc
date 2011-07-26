@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* The user id that added the moderation flag		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* The type of the moderation flag (entry or user)		* */ 
@@ -22,11 +22,11 @@ package com.kaltura.vo
 
 		/** 
 		* If moderation flag is set for entry, this is the flagged entry id		* */ 
-		public var flaggedEntryId : String;
+		public var flaggedEntryId : String = null;
 
 		/** 
 		* If moderation flag is set for user, this is the flagged user id		* */ 
-		public var flaggedUserId : String;
+		public var flaggedUserId : String = null;
 
 		/** 
 		* The moderation flag status		* */ 
@@ -34,7 +34,7 @@ package com.kaltura.vo
 
 		/** 
 		* The comment that was added to the flag		* */ 
-		public var comments : String;
+		public var comments : String = null;
 
 		/** 
 		* 		* */ 

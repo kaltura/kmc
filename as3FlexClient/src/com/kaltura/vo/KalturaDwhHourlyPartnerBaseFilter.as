@@ -19,19 +19,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var sumTimeViewedLessThanOrEqual : Number = NaN;
+		public var sumTimeViewedLessThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
-		public var sumTimeViewedGreaterThanOrEqual : Number = NaN;
+		public var sumTimeViewedGreaterThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
-		public var averageTimeViewedLessThanOrEqual : Number = NaN;
+		public var averageTimeViewedLessThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
-		public var averageTimeViewedGreaterThanOrEqual : Number = NaN;
+		public var averageTimeViewedGreaterThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
@@ -163,19 +163,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var countBandwidthLessThanOrEqual : String;
+		public var countBandwidthLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var countBandwidthGreaterThanOrEqual : String;
+		public var countBandwidthGreaterThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var countStorageLessThanOrEqual : String;
+		public var countStorageLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var countStorageGreaterThanOrEqual : String;
+		public var countStorageGreaterThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -195,19 +195,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var aggregatedStorageLessThanOrEqual : String;
+		public var aggregatedStorageLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var aggregatedStorageGreaterThanOrEqual : String;
+		public var aggregatedStorageGreaterThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var aggregatedBandwidthLessThanOrEqual : String;
+		public var aggregatedBandwidthLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var aggregatedBandwidthGreaterThanOrEqual : String;
+		public var aggregatedBandwidthGreaterThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -443,19 +443,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var countLiveStreamingBandwidthLessThanOrEqual : String;
+		public var countLiveStreamingBandwidthLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var countLiveStreamingBandwidthGreaterThanOrEqual : String;
+		public var countLiveStreamingBandwidthGreaterThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var aggregatedLiveStreamingBandwidthLessThanOrEqual : String;
+		public var aggregatedLiveStreamingBandwidthLessThanOrEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var aggregatedLiveStreamingBandwidthGreaterThanOrEqual : String;
+		public var aggregatedLiveStreamingBandwidthGreaterThanOrEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

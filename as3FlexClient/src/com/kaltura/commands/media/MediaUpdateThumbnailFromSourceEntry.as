@@ -12,7 +12,7 @@ package com.kaltura.commands.media
 		 * @param timeOffset int
 		 * @param flavorParamsId int
 		 **/
-		public function MediaUpdateThumbnailFromSourceEntry( entryId : String,sourceEntryId : String,timeOffset : int,flavorParamsId : int=undefined )
+		public function MediaUpdateThumbnailFromSourceEntry( entryId : String,sourceEntryId : String,timeOffset : int,flavorParamsId : int=int.MIN_VALUE )
 		{
 			service= 'media';
 			action= 'updateThumbnailFromSourceEntry';

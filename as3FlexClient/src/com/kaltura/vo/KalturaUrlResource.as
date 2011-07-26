@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* Remote URL, FTP, HTTP or HTTPS 		* */ 
-		public var url : String;
+		public var url : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* Token that returned from media server such as FMS or red5. 		* */ 
-		public var token : String;
+		public var token : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

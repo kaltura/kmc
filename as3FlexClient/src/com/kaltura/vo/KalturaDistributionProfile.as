@@ -25,11 +25,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var providerType : String;
+		public var providerType : String = null;
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
@@ -53,19 +53,19 @@ package com.kaltura.vo
 
 		/** 
 		* Comma separated flavor params ids that should be auto converted		* */ 
-		public var autoCreateFlavors : String;
+		public var autoCreateFlavors : String = null;
 
 		/** 
 		* Comma separated thumbnail params ids that should be auto generated		* */ 
-		public var autoCreateThumb : String;
+		public var autoCreateThumb : String = null;
 
 		/** 
 		* Comma separated flavor params ids that should be submitted if ready		* */ 
-		public var optionalFlavorParamsIds : String;
+		public var optionalFlavorParamsIds : String = null;
 
 		/** 
 		* Comma separated flavor params ids that required to be readt before submission		* */ 
-		public var requiredFlavorParamsIds : String;
+		public var requiredFlavorParamsIds : String = null;
 
 		/** 
 		* Thumbnail dimensions that should be submitted if ready		* */ 

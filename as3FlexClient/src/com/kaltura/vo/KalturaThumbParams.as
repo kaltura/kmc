@@ -31,7 +31,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var videoOffset : Number = NaN;
+		public var videoOffset : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
@@ -43,15 +43,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var scaleWidth : Number = NaN;
+		public var scaleWidth : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
-		public var scaleHeight : Number = NaN;
+		public var scaleHeight : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* Hexadecimal value		* */ 
-		public var backgroundColor : String;
+		public var backgroundColor : String = null;
 
 		/** 
 		* Id of the flavor params or the thumbnail params to be used as source for the thumbnail creation		* */ 
@@ -60,7 +60,7 @@ package com.kaltura.vo
 		/** 
 		* The container format of the Flavor Params
 		* */ 
-		public var format : String;
+		public var format : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

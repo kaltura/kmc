@@ -6,15 +6,15 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var descriptor : String;
+		public var descriptor : String = null;
 
 		/** 
 		* 		* */ 
-		public var oldValue : String;
+		public var oldValue : String = null;
 
 		/** 
 		* 		* */ 
-		public var newValue : String;
+		public var newValue : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var metadataObjectType : String;
+		public var metadataObjectType : String = null;
 
 		/** 
 		* 		* */ 
@@ -22,15 +22,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -46,11 +46,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var xsd : String;
+		public var xsd : String = null;
 
 		/** 
 		* 		* */ 
-		public var views : String;
+		public var views : String = null;
 
 		/** 
 		* 		* */ 

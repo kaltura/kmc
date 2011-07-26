@@ -11,7 +11,7 @@ package com.kaltura.commands.document
 		 * @param conversionProfileId int
 		 * @param dynamicConversionAttributes Array
 		 **/
-		public function DocumentConvert( entryId : String,conversionProfileId : int=undefined,dynamicConversionAttributes : Array=null )
+		public function DocumentConvert( entryId : String,conversionProfileId : int=int.MIN_VALUE,dynamicConversionAttributes : Array=null )
 		{
 			service= 'document';
 			action= 'convert';

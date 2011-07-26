@@ -11,15 +11,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var thumbParamsVersion : String;
+		public var thumbParamsVersion : String = null;
 
 		/** 
 		* 		* */ 
-		public var thumbAssetId : String;
+		public var thumbAssetId : String = null;
 
 		/** 
 		* 		* */ 
-		public var thumbAssetVersion : String;
+		public var thumbAssetVersion : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

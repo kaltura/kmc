@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
@@ -14,15 +14,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var screenName : String;
+		public var screenName : String = null;
 
 		/** 
 		* DEPRECATED		* */ 
-		public var fullName : String;
+		public var fullName : String = null;
 
 		/** 
 		* 		* */ 
-		public var email : String;
+		public var email : String = null;
 
 		/** 
 		* 		* */ 
@@ -30,35 +30,35 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var country : String;
+		public var country : String = null;
 
 		/** 
 		* 		* */ 
-		public var state : String;
+		public var state : String = null;
 
 		/** 
 		* 		* */ 
-		public var city : String;
+		public var city : String = null;
 
 		/** 
 		* 		* */ 
-		public var zip : String;
+		public var zip : String = null;
 
 		/** 
 		* 		* */ 
-		public var thumbnailUrl : String;
+		public var thumbnailUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* Admin tags can be updated only by using an admin session		* */ 
-		public var adminTags : String;
+		public var adminTags : String = null;
 
 		/** 
 		* 		* */ 
@@ -78,7 +78,7 @@ package com.kaltura.vo
 
 		/** 
 		* Can be used to store various partner related data as a string 		* */ 
-		public var partnerData : String;
+		public var partnerData : String = null;
 
 		/** 
 		* 		* */ 
@@ -86,7 +86,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var indexedPartnerDataString : String;
+		public var indexedPartnerDataString : String = null;
 
 		/** 
 		* 		* */ 
@@ -94,15 +94,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		/** 
 		* 		* */ 
-		public var firstName : String;
+		public var firstName : String = null;
 
 		/** 
 		* 		* */ 
-		public var lastName : String;
+		public var lastName : String = null;
 
 		/** 
 		* 		* */ 
@@ -126,11 +126,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var roleIds : String;
+		public var roleIds : String = null;
 
 		/** 
 		* 		* */ 
-		public var roleNames : String;
+		public var roleNames : String = null;
 
 		/** 
 		* 		* */ 

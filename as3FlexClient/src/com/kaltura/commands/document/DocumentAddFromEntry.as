@@ -12,7 +12,7 @@ package com.kaltura.commands.document
 		 * @param documentEntry KalturaDocumentEntry
 		 * @param sourceFlavorParamsId int
 		 **/
-		public function DocumentAddFromEntry( sourceEntryId : String,documentEntry : KalturaDocumentEntry=null,sourceFlavorParamsId : int=undefined )
+		public function DocumentAddFromEntry( sourceEntryId : String,documentEntry : KalturaDocumentEntry=null,sourceFlavorParamsId : int=int.MIN_VALUE )
 		{
 			service= 'document';
 			action= 'addFromEntry';

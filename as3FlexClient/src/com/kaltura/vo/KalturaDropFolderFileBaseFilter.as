@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,7 +19,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,19 +27,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var dropFolderIdIn : String;
+		public var dropFolderIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNameEqual : String;
+		public var fileNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNameIn : String;
+		public var fileNameIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNameLike : String;
+		public var fileNameLike : String = null;
 
 		/** 
 		* 		* */ 
@@ -47,39 +47,39 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedSlugEqual : String;
+		public var parsedSlugEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedSlugIn : String;
+		public var parsedSlugIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedSlugLike : String;
+		public var parsedSlugLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedFlavorEqual : String;
+		public var parsedFlavorEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedFlavorIn : String;
+		public var parsedFlavorIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedFlavorLike : String;
+		public var parsedFlavorLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorCodeEqual : String;
+		public var errorCodeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorCodeIn : String;
+		public var errorCodeIn : String = null;
 
 		/** 
 		* 		* */ 

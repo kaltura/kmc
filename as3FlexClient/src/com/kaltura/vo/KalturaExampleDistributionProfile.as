@@ -7,15 +7,15 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		/** 
 		* 		* */ 
-		public var accountId : String;
+		public var accountId : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

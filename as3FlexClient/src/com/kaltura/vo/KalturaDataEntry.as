@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* The data of the entry		* */ 
-		public var dataContent : String;
+		public var dataContent : String = null;
 
 		/** 
 		* indicator whether to return the object for get action with the dataContent field.		* */ 

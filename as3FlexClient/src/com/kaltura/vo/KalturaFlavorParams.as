@@ -8,7 +8,7 @@ package com.kaltura.vo
 		/** 
 		* The video codec of the Flavor Params
 		* */ 
-		public var videoCodec : String;
+		public var videoCodec : String = null;
 
 		/** 
 		* The video bitrate (in KBits) of the Flavor Params
@@ -18,7 +18,7 @@ package com.kaltura.vo
 		/** 
 		* The audio codec of the Flavor Params
 		* */ 
-		public var audioCodec : String;
+		public var audioCodec : String = null;
 
 		/** 
 		* The audio bitrate (in KBits) of the Flavor Params
@@ -58,12 +58,12 @@ package com.kaltura.vo
 		/** 
 		* The list of conversion engines (comma separated)
 		* */ 
-		public var conversionEngines : String;
+		public var conversionEngines : String = null;
 
 		/** 
 		* The list of conversion engines extra params (separated with "|")
 		* */ 
-		public var conversionEnginesExtraParams : String;
+		public var conversionEnginesExtraParams : String = null;
 
 		/** 
 		* 		* */ 
@@ -79,7 +79,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var operators : String;
+		public var operators : String = null;
 
 		/** 
 		* 		* */ 
@@ -88,7 +88,7 @@ package com.kaltura.vo
 		/** 
 		* The container format of the Flavor Params
 		* */ 
-		public var format : String;
+		public var format : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -7,67 +7,67 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var notificationEmail : String;
+		public var notificationEmail : String = null;
 
 		/** 
 		* 		* */ 
-		public var sftpHost : String;
+		public var sftpHost : String = null;
 
 		/** 
 		* 		* */ 
-		public var sftpLogin : String;
+		public var sftpLogin : String = null;
 
 		/** 
 		* 		* */ 
-		public var sftpPublicKey : String;
+		public var sftpPublicKey : String = null;
 
 		/** 
 		* 		* */ 
-		public var sftpPrivateKey : String;
+		public var sftpPrivateKey : String = null;
 
 		/** 
 		* 		* */ 
-		public var sftpBaseDir : String;
+		public var sftpBaseDir : String = null;
 
 		/** 
 		* 		* */ 
-		public var ownerName : String;
+		public var ownerName : String = null;
 
 		/** 
 		* 		* */ 
-		public var defaultCategory : String;
+		public var defaultCategory : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowComments : String;
+		public var allowComments : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowEmbedding : String;
+		public var allowEmbedding : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowRatings : String;
+		public var allowRatings : String = null;
 
 		/** 
 		* 		* */ 
-		public var allowResponses : String;
+		public var allowResponses : String = null;
 
 		/** 
 		* 		* */ 
-		public var commercialPolicy : String;
+		public var commercialPolicy : String = null;
 
 		/** 
 		* 		* */ 
-		public var ugcPolicy : String;
+		public var ugcPolicy : String = null;
 
 		/** 
 		* 		* */ 
-		public var target : String;
+		public var target : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -34,11 +34,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var optionalFlavorParamsIds : String;
+		public var optionalFlavorParamsIds : String = null;
 
 		/** 
 		* 		* */ 
-		public var requiredFlavorParamsIds : String;
+		public var requiredFlavorParamsIds : String = null;
 
 		/** 
 		* 		* */ 
@@ -50,11 +50,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var editableFields : String;
+		public var editableFields : String = null;
 
 		/** 
 		* 		* */ 
-		public var mandatoryFields : String;
+		public var mandatoryFields : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

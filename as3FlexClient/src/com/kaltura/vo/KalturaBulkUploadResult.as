@@ -25,7 +25,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -34,27 +34,27 @@ package com.kaltura.vo
 		/** 
 		* The data as recieved in the csv
 		* */ 
-		public var rowData : String;
+		public var rowData : String = null;
 
 		/** 
 		* 		* */ 
-		public var title : String;
+		public var title : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 
-		public var url : String;
+		public var url : String = null;
 
 		/** 
 		* 		* */ 
-		public var contentType : String;
+		public var contentType : String = null;
 
 		/** 
 		* 		* */ 
@@ -66,7 +66,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var category : String;
+		public var category : String = null;
 
 		/** 
 		* 		* */ 
@@ -78,7 +78,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var thumbnailUrl : String;
+		public var thumbnailUrl : String = null;
 
 		/** 
 		* 		* */ 
@@ -86,11 +86,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerData : String;
+		public var partnerData : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String;
+		public var errorDescription : String = null;
 
 		/** 
 		* 		* */ 

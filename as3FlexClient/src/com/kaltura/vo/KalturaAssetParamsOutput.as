@@ -11,15 +11,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var assetParamsVersion : String;
+		public var assetParamsVersion : String = null;
 
 		/** 
 		* 		* */ 
-		public var assetId : String;
+		public var assetId : String = null;
 
 		/** 
 		* 		* */ 
-		public var assetVersion : String;
+		public var assetVersion : String = null;
 
 		/** 
 		* 		* */ 
@@ -28,7 +28,7 @@ package com.kaltura.vo
 		/** 
 		* The container format of the Flavor Params
 		* */ 
-		public var format : String;
+		public var format : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

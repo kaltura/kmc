@@ -16,15 +16,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* 		* */ 
@@ -40,7 +40,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var path : String;
+		public var path : String = null;
 
 		/** 
 		* The ammount of time, in seconds, that should pass so that a file with no change in size we'll be treated as "finished uploading to folder"		* */ 
@@ -56,11 +56,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileHandlerType : String;
+		public var fileHandlerType : String = null;
 
 		/** 
 		* 		* */ 
-		public var fileNamePatterns : String;
+		public var fileNamePatterns : String = null;
 
 		/** 
 		* 		* */ 
@@ -68,11 +68,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 
-		public var ignoreFileNamePatterns : String;
+		public var ignoreFileNamePatterns : String = null;
 
 		/** 
 		* 		* */ 

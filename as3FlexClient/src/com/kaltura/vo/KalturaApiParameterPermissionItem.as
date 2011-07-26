@@ -7,15 +7,15 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var object : String;
+		public var object : String = null;
 
 		/** 
 		* 		* */ 
-		public var parameter : String;
+		public var parameter : String = null;
 
 		/** 
 		* 		* */ 
-		public var action : String;
+		public var action : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

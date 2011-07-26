@@ -24,7 +24,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
@@ -32,7 +32,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var engineType : String;
+		public var engineType : String = null;
 
 		/** 
 		* 		* */ 

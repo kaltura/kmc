@@ -12,7 +12,7 @@ package com.kaltura.vo
 		/** 
 		* The id of the related flavor asset
 		* */ 
-		public var flavorAssetId : String;
+		public var flavorAssetId : String = null;
 
 		/** 
 		* The file size
@@ -22,17 +22,17 @@ package com.kaltura.vo
 		/** 
 		* The container format
 		* */ 
-		public var containerFormat : String;
+		public var containerFormat : String = null;
 
 		/** 
 		* The container id
 		* */ 
-		public var containerId : String;
+		public var containerId : String = null;
 
 		/** 
 		* The container profile
 		* */ 
-		public var containerProfile : String;
+		public var containerProfile : String = null;
 
 		/** 
 		* The container duration
@@ -47,12 +47,12 @@ package com.kaltura.vo
 		/** 
 		* The video format
 		* */ 
-		public var videoFormat : String;
+		public var videoFormat : String = null;
 
 		/** 
 		* The video codec id
 		* */ 
-		public var videoCodecId : String;
+		public var videoCodecId : String = null;
 
 		/** 
 		* The video duration
@@ -82,12 +82,12 @@ package com.kaltura.vo
 		/** 
 		* The video frame rate
 		* */ 
-		public var videoFrameRate : Number = NaN;
+		public var videoFrameRate : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* The video display aspect ratio (dar)
 		* */ 
-		public var videoDar : Number = NaN;
+		public var videoDar : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
@@ -96,12 +96,12 @@ package com.kaltura.vo
 		/** 
 		* The audio format
 		* */ 
-		public var audioFormat : String;
+		public var audioFormat : String = null;
 
 		/** 
 		* The audio codec id
 		* */ 
-		public var audioCodecId : String;
+		public var audioCodecId : String = null;
 
 		/** 
 		* The audio duration
@@ -136,16 +136,16 @@ package com.kaltura.vo
 		/** 
 		* The writing library
 		* */ 
-		public var writingLib : String;
+		public var writingLib : String = null;
 
 		/** 
 		* The data as returned by the mediainfo command line
 		* */ 
-		public var rawData : String;
+		public var rawData : String = null;
 
 		/** 
 		* 		* */ 
-		public var multiStreamInfo : String;
+		public var multiStreamInfo : String = null;
 
 		/** 
 		* 		* */ 
@@ -153,7 +153,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var multiStream : String;
+		public var multiStream : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

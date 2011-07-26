@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -35,15 +35,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameEqual : String;
+		public var nameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var nameLike : String;
+		public var nameLike : String = null;
 
 		/** 
 		* 		* */ 
@@ -51,15 +51,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var engineTypeEqual : String;
+		public var engineTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var engineTypeIn : String;
+		public var engineTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

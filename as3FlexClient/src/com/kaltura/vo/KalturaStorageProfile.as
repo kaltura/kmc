@@ -22,15 +22,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* 		* */ 
-		public var desciption : String;
+		public var desciption : String = null;
 
 		/** 
 		* 		* */ 
@@ -42,19 +42,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var storageUrl : String;
+		public var storageUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var storageBaseDir : String;
+		public var storageBaseDir : String = null;
 
 		/** 
 		* 		* */ 
-		public var storageUsername : String;
+		public var storageUsername : String = null;
 
 		/** 
 		* 		* */ 
-		public var storagePassword : String;
+		public var storagePassword : String = null;
 
 		/** 
 		* 		* */ 
@@ -62,15 +62,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var deliveryHttpBaseUrl : String;
+		public var deliveryHttpBaseUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var deliveryRmpBaseUrl : String;
+		public var deliveryRmpBaseUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var deliveryIisBaseUrl : String;
+		public var deliveryIisBaseUrl : String = null;
 
 		/** 
 		* 		* */ 
@@ -82,7 +82,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var flavorParamsIds : String;
+		public var flavorParamsIds : String = null;
 
 		/** 
 		* 		* */ 
@@ -90,11 +90,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var pathManagerClass : String;
+		public var pathManagerClass : String = null;
 
 		/** 
 		* 		* */ 
-		public var urlManagerClass : String;
+		public var urlManagerClass : String = null;
 
 		/** 
 		* 		* */ 

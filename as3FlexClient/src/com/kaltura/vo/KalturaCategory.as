@@ -25,12 +25,12 @@ package com.kaltura.vo
 		* The name of the Category. 
 The following characters are not allowed: '<', '>', ','
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* The full name of the Category
 		* */ 
-		public var fullName : String;
+		public var fullName : String = null;
 
 		/** 
 		* Number of entries in this Category (including child categories)

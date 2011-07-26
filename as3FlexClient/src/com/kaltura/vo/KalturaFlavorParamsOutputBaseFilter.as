@@ -11,15 +11,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var flavorParamsVersionEqual : String;
+		public var flavorParamsVersionEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorAssetIdEqual : String;
+		public var flavorAssetIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorAssetVersionEqual : String;
+		public var flavorAssetVersionEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

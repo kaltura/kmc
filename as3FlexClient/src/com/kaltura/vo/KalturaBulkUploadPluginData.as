@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var field : String;
+		public var field : String = null;
 
 		/** 
 		* 		* */ 
-		public var value : String;
+		public var value : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

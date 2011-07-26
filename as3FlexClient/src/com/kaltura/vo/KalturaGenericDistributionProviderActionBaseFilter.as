@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -35,7 +35,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var genericDistributionProviderIdIn : String;
+		public var genericDistributionProviderIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -43,7 +43,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var actionIn : String;
+		public var actionIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

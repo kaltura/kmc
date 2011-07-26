@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var header : String;
+		public var header : String = null;
 
 		/** 
 		* 		* */ 
-		public var data : String;
+		public var data : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

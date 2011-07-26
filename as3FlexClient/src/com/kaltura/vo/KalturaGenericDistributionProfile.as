@@ -35,11 +35,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var updateRequiredEntryFields : String;
+		public var updateRequiredEntryFields : String = null;
 
 		/** 
 		* 		* */ 
-		public var updateRequiredMetadataXPaths : String;
+		public var updateRequiredMetadataXPaths : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

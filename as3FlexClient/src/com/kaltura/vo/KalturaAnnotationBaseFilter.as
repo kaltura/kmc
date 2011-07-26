@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var parentIdEqual : String;
+		public var parentIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var parentIdIn : String;
+		public var parentIdIn : String = null;
 
 		/** 
 		* 		* */ 

@@ -17,7 +17,7 @@ package com.kaltura.vo
 
 		/** 
 		* The xml data of the mix		* */ 
-		public var dataContent : String;
+		public var dataContent : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

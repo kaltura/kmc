@@ -8,22 +8,22 @@ package com.kaltura.vo
 		/** 
 		* The broadcast primary ip
 		* */ 
-		public var encodingIP1 : String;
+		public var encodingIP1 : String = null;
 
 		/** 
 		* The broadcast secondary ip
 		* */ 
-		public var encodingIP2 : String;
+		public var encodingIP2 : String = null;
 
 		/** 
 		* The broadcast password
 		* */ 
-		public var streamPassword : String;
+		public var streamPassword : String = null;
 
 		/** 
 		* The broadcast username
 		* */ 
-		public var streamUsername : String;
+		public var streamUsername : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

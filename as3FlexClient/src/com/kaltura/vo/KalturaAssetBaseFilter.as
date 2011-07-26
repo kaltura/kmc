@@ -7,19 +7,19 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var idEqual : String;
+		public var idEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdIn : String;
+		public var entryIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,7 +27,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -35,11 +35,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var statusNotIn : String;
+		public var statusNotIn : String = null;
 
 		/** 
 		* 		* */ 

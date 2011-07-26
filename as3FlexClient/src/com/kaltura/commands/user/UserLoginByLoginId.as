@@ -13,7 +13,7 @@ package com.kaltura.commands.user
 		 * @param expiry int
 		 * @param privileges String
 		 **/
-		public function UserLoginByLoginId( loginId : String,password : String,partnerId : int=undefined,expiry : int=86400,privileges : String='*' )
+		public function UserLoginByLoginId( loginId : String,password : String,partnerId : int=int.MIN_VALUE,expiry : int=86400,privileges : String='*' )
 		{
 			service= 'user';
 			action= 'loginByLoginId';

@@ -16,17 +16,17 @@ package com.kaltura.vo
 		/** 
 		* The name of the Flavor Params
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* System name of the Flavor Params
 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* The description of the Flavor Params
 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* Creation date as Unix timestamp (In seconds)
@@ -41,7 +41,7 @@ package com.kaltura.vo
 		/** 
 		* The Flavor Params tags are used to identify the flavor for different usage (e.g. web, hd, mobile)
 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* Array of partner permisison names that required for using this asset params

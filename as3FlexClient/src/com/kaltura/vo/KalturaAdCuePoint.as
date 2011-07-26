@@ -7,19 +7,19 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var protocolType : String;
+		public var protocolType : String = null;
 
 		/** 
 		* 		* */ 
-		public var sourceUrl : String;
+		public var sourceUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var adType : String;
+		public var adType : String = null;
 
 		/** 
 		* 		* */ 
-		public var title : String;
+		public var title : String = null;
 
 		/** 
 		* 		* */ 

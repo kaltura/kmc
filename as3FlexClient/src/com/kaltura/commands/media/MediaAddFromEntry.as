@@ -12,7 +12,7 @@ package com.kaltura.commands.media
 		 * @param mediaEntry KalturaMediaEntry
 		 * @param sourceFlavorParamsId int
 		 **/
-		public function MediaAddFromEntry( sourceEntryId : String,mediaEntry : KalturaMediaEntry=null,sourceFlavorParamsId : int=undefined )
+		public function MediaAddFromEntry( sourceEntryId : String,mediaEntry : KalturaMediaEntry=null,sourceFlavorParamsId : int=int.MIN_VALUE )
 		{
 			service= 'media';
 			action= 'addFromEntry';

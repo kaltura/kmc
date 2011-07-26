@@ -10,11 +10,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var uploadedBy : String;
+		public var uploadedBy : String = null;
 
 		/** 
 		* 		* */ 
-		public var uploadedByUserId : String;
+		public var uploadedByUserId : String = null;
 
 		/** 
 		* 		* */ 
@@ -30,19 +30,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var logFileUrl : String;
+		public var logFileUrl : String = null;
 
 		/** 
 		* DEPRECATED		* */ 
-		public var csvFileUrl : String;
+		public var csvFileUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var bulkFileUrl : String;
+		public var bulkFileUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var bulkUploadType : String;
+		public var bulkUploadType : String = null;
 
 		/** 
 		* 		* */ 
@@ -50,7 +50,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var error : String;
+		public var error : String = null;
 
 		/** 
 		* 		* */ 

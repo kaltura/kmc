@@ -18,7 +18,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileName : String;
+		public var fileName : String = null;
 
 		/** 
 		* 		* */ 
@@ -34,19 +34,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var parsedSlug : String;
+		public var parsedSlug : String = null;
 
 		/** 
 		* 		* */ 
-		public var parsedFlavor : String;
+		public var parsedFlavor : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorCode : String;
+		public var errorCode : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String;
+		public var errorDescription : String = null;
+
+		/** 
+		* 		* */ 
+		public var lastModificationTime : String = null;
 
 		/** 
 		* 		* */ 
@@ -69,6 +73,7 @@ package com.kaltura.vo
 			arr.push('parsedFlavor');
 			arr.push('errorCode');
 			arr.push('errorDescription');
+			arr.push('lastModificationTime');
 			return arr;
 		}
 

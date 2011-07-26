@@ -10,19 +10,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var serverUrl : String;
+		public var serverUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverPath : String;
+		public var serverPath : String = null;
 
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		/** 
 		* 		* */ 
@@ -30,11 +30,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var httpFieldName : String;
+		public var httpFieldName : String = null;
 
 		/** 
 		* 		* */ 
-		public var httpFileName : String;
+		public var httpFileName : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

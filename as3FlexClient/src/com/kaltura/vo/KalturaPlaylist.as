@@ -10,7 +10,7 @@ package com.kaltura.vo
 XML if the playlistType is dynamic 
 text if the playlistType is static 
 url if the playlistType is mRss 		* */ 
-		public var playlistContent : String;
+		public var playlistContent : String = null;
 
 		/** 
 		* 		* */ 

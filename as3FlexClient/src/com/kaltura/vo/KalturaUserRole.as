@@ -10,11 +10,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -26,11 +26,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var permissionNames : String;
+		public var permissionNames : String = null;
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 

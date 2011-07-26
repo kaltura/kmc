@@ -19,11 +19,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var partnerIdNotIn : String;
+		public var partnerIdNotIn : String = null;
 
 		/** 
 		* 		* */ 

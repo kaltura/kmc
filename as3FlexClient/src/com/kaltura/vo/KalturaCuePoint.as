@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
-		public var cuePointType : String;
+		public var cuePointType : String = null;
 
 		/** 
 		* 		* */ 
@@ -18,7 +18,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -34,7 +34,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* Start tim ein milliseconds		* */ 
@@ -42,11 +42,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* 		* */ 
-		public var partnerData : String;
+		public var partnerData : String = null;
 
 		/** 
 		* 		* */ 
@@ -62,7 +62,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

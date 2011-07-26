@@ -11,39 +11,39 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var feedUrl : String;
+		public var feedUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedTitle : String;
+		public var feedTitle : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedLink : String;
+		public var feedLink : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedDescription : String;
+		public var feedDescription : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedLanguage : String;
+		public var feedLanguage : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedCopyright : String;
+		public var feedCopyright : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedImageTitle : String;
+		public var feedImageTitle : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedImageUrl : String;
+		public var feedImageUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedImageLink : String;
+		public var feedImageLink : String = null;
 
 		/** 
 		* 		* */ 

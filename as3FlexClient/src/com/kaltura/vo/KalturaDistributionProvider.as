@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var type : String;
+		public var type : String = null;
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
@@ -34,11 +34,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var updateRequiredEntryFields : String;
+		public var updateRequiredEntryFields : String = null;
 
 		/** 
 		* 		* */ 
-		public var updateRequiredMetadataXPaths : String;
+		public var updateRequiredMetadataXPaths : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

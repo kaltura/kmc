@@ -13,7 +13,7 @@ package com.kaltura.vo
 		/** 
 		* Comma separated list of ip address to allow to deny 
 		* */ 
-		public var ipAddressList : String;
+		public var ipAddressList : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

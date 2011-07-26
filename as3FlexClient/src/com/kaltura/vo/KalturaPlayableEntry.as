@@ -38,7 +38,7 @@ package com.kaltura.vo
 		/** 
 		* The duration type (short for 0-4 mins, medium for 4-20 mins, long for 20+ mins)
 		* */ 
-		public var durationType : String;
+		public var durationType : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

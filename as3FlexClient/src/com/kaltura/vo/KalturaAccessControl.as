@@ -16,17 +16,17 @@ package com.kaltura.vo
 		/** 
 		* The name of the Access Control Profile
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* System name of the Access Control Profile
 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* The description of the Access Control Profile
 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* Creation date as Unix timestamp (In seconds) 

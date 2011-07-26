@@ -11,19 +11,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var assetParamsVersionEqual : String;
+		public var assetParamsVersionEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var assetIdEqual : String;
+		public var assetIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var assetVersionEqual : String;
+		public var assetVersionEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var formatEqual : String;
+		public var formatEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

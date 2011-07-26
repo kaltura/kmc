@@ -7,12 +7,12 @@ package com.kaltura.vo
 		/** 
 		* Partner total hosting in GB on the disk
 		* */ 
-		public var hostingGB : Number = NaN;
+		public var hostingGB : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* percent of usage out of partner's package. if usageGB is 5 and package is 10GB, this value will be 50
 		* */ 
-		public var Percent : Number = NaN;
+		public var Percent : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* package total BW - actually this is usage, which represents BW+storage
@@ -34,7 +34,7 @@ package com.kaltura.vo
 keys could be 1-12 for a year view (1,1.2;2,1.1;3,0.9;...;12,1.4;)
 keys could be 1-[28,29,30,31] depending on the requested month, for a daily view in a given month (1,0.4;2,0.2;...;31,0.1;)
 		* */ 
-		public var usageGraph : String;
+		public var usageGraph : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

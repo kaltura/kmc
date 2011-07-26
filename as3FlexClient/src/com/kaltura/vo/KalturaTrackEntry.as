@@ -14,11 +14,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var psVersion : String;
+		public var psVersion : String = null;
 
 		/** 
 		* 		* */ 
-		public var context : String;
+		public var context : String = null;
 
 		/** 
 		* 		* */ 
@@ -26,39 +26,39 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
-		public var hostName : String;
+		public var hostName : String = null;
 
 		/** 
 		* 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* 		* */ 
-		public var changedProperties : String;
+		public var changedProperties : String = null;
 
 		/** 
 		* 		* */ 
-		public var paramStr1 : String;
+		public var paramStr1 : String = null;
 
 		/** 
 		* 		* */ 
-		public var paramStr2 : String;
+		public var paramStr2 : String = null;
 
 		/** 
 		* 		* */ 
-		public var paramStr3 : String;
+		public var paramStr3 : String = null;
 
 		/** 
 		* 		* */ 
-		public var ks : String;
+		public var ks : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -70,7 +70,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var userIp : String;
+		public var userIp : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

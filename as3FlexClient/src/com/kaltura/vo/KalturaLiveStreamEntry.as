@@ -8,17 +8,17 @@ package com.kaltura.vo
 		/** 
 		* The message to be presented when the stream is offline
 		* */ 
-		public var offlineMessage : String;
+		public var offlineMessage : String = null;
 
 		/** 
 		* The stream id as provided by the provider
 		* */ 
-		public var streamRemoteId : String;
+		public var streamRemoteId : String = null;
 
 		/** 
 		* The backup stream id as provided by the provider
 		* */ 
-		public var streamRemoteBackupId : String;
+		public var streamRemoteBackupId : String = null;
 
 		/** 
 		* Array of supported bitrates
@@ -27,15 +27,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var primaryBroadcastingUrl : String;
+		public var primaryBroadcastingUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var secondaryBroadcastingUrl : String;
+		public var secondaryBroadcastingUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var streamName : String;
+		public var streamName : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

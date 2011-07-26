@@ -11,7 +11,7 @@ package com.kaltura.commands.liveStream
 		 * @param liveStreamEntry KalturaLiveStreamAdminEntry
 		 * @param sourceType int
 		 **/
-		public function LiveStreamAdd( liveStreamEntry : KalturaLiveStreamAdminEntry,sourceType : int=undefined )
+		public function LiveStreamAdd( liveStreamEntry : KalturaLiveStreamAdminEntry,sourceType : int=int.MIN_VALUE )
 		{
 			service= 'livestream';
 			action= 'add';

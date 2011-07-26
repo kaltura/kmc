@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDropFolderFilter;
+	import com.kaltura.vo.KalturaRemoteDropFolderFilter;
 
 	[Bindable]
-	public dynamic class KalturaFtpDropFolderBaseFilter extends KalturaDropFolderFilter
+	public dynamic class KalturaFtpDropFolderBaseFilter extends KalturaRemoteDropFolderFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

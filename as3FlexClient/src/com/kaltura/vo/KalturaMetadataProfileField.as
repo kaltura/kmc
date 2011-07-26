@@ -10,15 +10,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var xPath : String;
+		public var xPath : String = null;
 
 		/** 
 		* 		* */ 
-		public var key : String;
+		public var key : String = null;
 
 		/** 
 		* 		* */ 
-		public var label : String;
+		public var label : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

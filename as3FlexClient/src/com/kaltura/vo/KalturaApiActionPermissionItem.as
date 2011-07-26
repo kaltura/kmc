@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var service : String;
+		public var service : String = null;
 
 		/** 
 		* 		* */ 
-		public var action : String;
+		public var action : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

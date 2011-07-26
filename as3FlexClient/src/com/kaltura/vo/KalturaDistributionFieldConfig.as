@@ -7,16 +7,16 @@ package com.kaltura.vo
 		/** 
 		* A value taken from a connector field enum which associates the current configuration to that connector field
 Field enum class should be returned by the provider's getFieldEnumClass function.		* */ 
-		public var fieldName : String;
+		public var fieldName : String = null;
 
 		/** 
 		* A string that will be shown to the user as the field name in error messages related to the current field		* */ 
-		public var userFriendlyFieldName : String;
+		public var userFriendlyFieldName : String = null;
 
 		/** 
 		* An XSLT string that extracts the right value from the Kaltura entry MRSS XML.
 The value of the current connector field will be the one that is returned from transforming the Kaltura entry MRSS XML using this XSLT string.		* */ 
-		public var entryMrssXslt : String;
+		public var entryMrssXslt : String = null;
 
 		/** 
 		* Is the field required to have a value for submission ?		* */ 

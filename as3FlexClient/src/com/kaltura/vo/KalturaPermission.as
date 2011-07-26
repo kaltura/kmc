@@ -14,15 +14,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var friendlyName : String;
+		public var friendlyName : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
@@ -34,15 +34,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var dependsOnPermissionNames : String;
+		public var dependsOnPermissionNames : String = null;
 
 		/** 
 		* 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* 		* */ 
-		public var permissionItemsIds : String;
+		public var permissionItemsIds : String = null;
 
 		/** 
 		* 		* */ 
@@ -54,7 +54,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerGroup : String;
+		public var partnerGroup : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

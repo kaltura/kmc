@@ -1,13 +1,13 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDropFolder;
+	import com.kaltura.vo.KalturaRemoteDropFolder;
 
 	[Bindable]
-	public dynamic class KalturaFtpDropFolder extends KalturaDropFolder
+	public dynamic class KalturaFtpDropFolder extends KalturaRemoteDropFolder
 	{
 		/** 
 		* 		* */ 
-		public var host : String;
+		public var host : String = null;
 
 		/** 
 		* 		* */ 
@@ -15,11 +15,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

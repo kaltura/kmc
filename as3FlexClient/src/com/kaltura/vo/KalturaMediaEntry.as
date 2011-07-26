@@ -13,7 +13,7 @@ package com.kaltura.vo
 		/** 
 		* Override the default conversion quality
 DEPRECATED - use conversionProfileId instead		* */ 
-		public var conversionQuality : String;
+		public var conversionQuality : String = null;
 
 		/** 
 		* The source type of the entry 		* */ 
@@ -25,15 +25,15 @@ DEPRECATED - use conversionProfileId instead		* */
 
 		/** 
 		* The ID of the media in the importing site		* */ 
-		public var searchProviderId : String;
+		public var searchProviderId : String = null;
 
 		/** 
 		* The user name used for credits		* */ 
-		public var creditUserName : String;
+		public var creditUserName : String = null;
 
 		/** 
 		* The URL for credits		* */ 
-		public var creditUrl : String;
+		public var creditUrl : String = null;
 
 		/** 
 		* The media date extracted from EXIF data (For images) as Unix timestamp (In seconds)		* */ 
@@ -41,12 +41,12 @@ DEPRECATED - use conversionProfileId instead		* */
 
 		/** 
 		* The URL used for playback. This is not the download URL.		* */ 
-		public var dataUrl : String;
+		public var dataUrl : String = null;
 
 		/** 
 		* Comma separated flavor params ids that exists for this media entry
 		* */ 
-		public var flavorParamsIds : String;
+		public var flavorParamsIds : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

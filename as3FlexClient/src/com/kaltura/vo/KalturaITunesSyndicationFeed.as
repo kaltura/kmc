@@ -8,44 +8,44 @@ package com.kaltura.vo
 		/** 
 		* feed description
 		* */ 
-		public var feedDescription : String;
+		public var feedDescription : String = null;
 
 		/** 
 		* feed language
 		* */ 
-		public var language : String;
+		public var language : String = null;
 
 		/** 
 		* feed landing page (i.e publisher website)
 		* */ 
-		public var feedLandingPage : String;
+		public var feedLandingPage : String = null;
 
 		/** 
 		* author/publisher name
 		* */ 
-		public var ownerName : String;
+		public var ownerName : String = null;
 
 		/** 
 		* publisher email
 		* */ 
-		public var ownerEmail : String;
+		public var ownerEmail : String = null;
 
 		/** 
 		* podcast thumbnail
 		* */ 
-		public var feedImageUrl : String;
+		public var feedImageUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var category : String;
+		public var category : String = null;
 
 		/** 
 		* 		* */ 
-		public var adultContent : String;
+		public var adultContent : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedAuthor : String;
+		public var feedAuthor : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -11,7 +11,7 @@ package com.kaltura.commands.media
 		 * @param conversionProfileId int
 		 * @param dynamicConversionAttributes Array
 		 **/
-		public function MediaConvert( entryId : String,conversionProfileId : int=undefined,dynamicConversionAttributes : Array=null )
+		public function MediaConvert( entryId : String,conversionProfileId : int=int.MIN_VALUE,dynamicConversionAttributes : Array=null )
 		{
 			service= 'media';
 			action= 'convert';

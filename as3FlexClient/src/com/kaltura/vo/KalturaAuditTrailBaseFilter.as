@@ -31,47 +31,47 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var auditObjectTypeEqual : String;
+		public var auditObjectTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var auditObjectTypeIn : String;
+		public var auditObjectTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectIdEqual : String;
+		public var objectIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectIdIn : String;
+		public var objectIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectIdEqual : String;
+		public var relatedObjectIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectIdIn : String;
+		public var relatedObjectIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectTypeEqual : String;
+		public var relatedObjectTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectTypeIn : String;
+		public var relatedObjectTypeIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdIn : String;
+		public var entryIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -79,7 +79,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var masterPartnerIdIn : String;
+		public var masterPartnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -87,35 +87,35 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerIdIn : String;
+		public var partnerIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var requestIdEqual : String;
+		public var requestIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var requestIdIn : String;
+		public var requestIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var userIdEqual : String;
+		public var userIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var userIdIn : String;
+		public var userIdIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var actionEqual : String;
+		public var actionEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var actionIn : String;
+		public var actionIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var ksEqual : String;
+		public var ksEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -123,35 +123,35 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var contextIn : String;
+		public var contextIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryPointEqual : String;
+		public var entryPointEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryPointIn : String;
+		public var entryPointIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverNameEqual : String;
+		public var serverNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverNameIn : String;
+		public var serverNameIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var ipAddressEqual : String;
+		public var ipAddressEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var ipAddressIn : String;
+		public var ipAddressIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var clientTagEqual : String;
+		public var clientTagEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

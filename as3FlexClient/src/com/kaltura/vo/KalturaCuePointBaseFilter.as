@@ -7,19 +7,19 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var idEqual : String;
+		public var idEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var idIn : String;
+		public var idIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var cuePointTypeEqual : String;
+		public var cuePointTypeEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var cuePointTypeIn : String;
+		public var cuePointTypeIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,15 +27,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdEqual : String;
+		public var entryIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryIdIn : String;
+		public var entryIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -63,11 +63,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var userIdEqual : String;
+		public var userIdEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var userIdIn : String;
+		public var userIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -75,7 +75,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var partnerSortValueIn : String;
+		public var partnerSortValueIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -91,11 +91,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

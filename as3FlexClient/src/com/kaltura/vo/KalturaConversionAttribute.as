@@ -12,12 +12,12 @@ package com.kaltura.vo
 		/** 
 		* Attribute name  
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* Attribute value  
 		* */ 
-		public var value : String;
+		public var value : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

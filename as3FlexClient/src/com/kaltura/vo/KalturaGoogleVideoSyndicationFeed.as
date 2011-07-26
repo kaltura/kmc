@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var adultContent : String;
+		public var adultContent : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

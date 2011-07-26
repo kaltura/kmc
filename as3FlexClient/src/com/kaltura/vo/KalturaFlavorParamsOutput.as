@@ -11,19 +11,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var commandLinesStr : String;
+		public var commandLinesStr : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorParamsVersion : String;
+		public var flavorParamsVersion : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorAssetId : String;
+		public var flavorAssetId : String = null;
 
 		/** 
 		* 		* */ 
-		public var flavorAssetVersion : String;
+		public var flavorAssetVersion : String = null;
 
 		/** 
 		* 		* */ 

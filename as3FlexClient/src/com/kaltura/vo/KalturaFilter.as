@@ -8,7 +8,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var orderBy : String;
+		public var orderBy : String = null;
 
 		/** 
 		* 		* */ 

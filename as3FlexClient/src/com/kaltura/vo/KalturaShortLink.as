@@ -26,19 +26,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* 		* */ 
-		public var fullUrl : String;
+		public var fullUrl : String = null;
 
 		/** 
 		* 		* */ 

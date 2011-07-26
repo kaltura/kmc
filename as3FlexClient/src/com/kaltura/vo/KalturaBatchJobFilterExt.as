@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var jobTypeAndSubTypeIn : String;
+		public var jobTypeAndSubTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -6,11 +6,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
-		public var feedUrl : String;
+		public var feedUrl : String = null;
 
 		/** 
 		* 		* */ 
@@ -20,12 +20,12 @@ package com.kaltura.vo
 		* link a playlist that will set what content the feed will include
 if empty, all content will be included in feed
 		* */ 
-		public var playlistId : String;
+		public var playlistId : String = null;
 
 		/** 
 		* feed name
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* feed status
@@ -40,7 +40,7 @@ if empty, all content will be included in feed
 		/** 
 		* Base URL for each video, on the partners site
 This is required by all syndication types.		* */ 
-		public var landingPage : String;
+		public var landingPage : String = null;
 
 		/** 
 		* Creation date as Unix timestamp (In seconds)
@@ -72,7 +72,7 @@ and addes media-player tag (yahoo)		* */
 
 		/** 
 		* 		* */ 
-		public var categories : String;
+		public var categories : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

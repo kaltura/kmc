@@ -11,27 +11,27 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var screenNameLike : String;
+		public var screenNameLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var screenNameStartsWith : String;
+		public var screenNameStartsWith : String = null;
 
 		/** 
 		* 		* */ 
-		public var emailLike : String;
+		public var emailLike : String = null;
 
 		/** 
 		* 		* */ 
-		public var emailStartsWith : String;
+		public var emailStartsWith : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeOr : String;
+		public var tagsMultiLikeOr : String = null;
 
 		/** 
 		* 		* */ 
-		public var tagsMultiLikeAnd : String;
+		public var tagsMultiLikeAnd : String = null;
 
 		/** 
 		* 		* */ 
@@ -39,7 +39,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusIn : String;
+		public var statusIn : String = null;
 
 		/** 
 		* 		* */ 

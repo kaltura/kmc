@@ -26,7 +26,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -50,11 +50,11 @@ package com.kaltura.vo
 
 		/** 
 		* Comma separated thumbnail asset ids		* */ 
-		public var thumbAssetIds : String;
+		public var thumbAssetIds : String = null;
 
 		/** 
 		* Comma separated flavor asset ids		* */ 
-		public var flavorAssetIds : String;
+		public var flavorAssetIds : String = null;
 
 		/** 
 		* Entry distribution publish time as Unix timestamp (In seconds)
@@ -68,7 +68,7 @@ package com.kaltura.vo
 
 		/** 
 		* The id as returned from the distributed destination		* */ 
-		public var remoteId : String;
+		public var remoteId : String = null;
 
 		/** 
 		* The plays as retrieved from the remote destination reports		* */ 
@@ -92,7 +92,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String;
+		public var errorDescription : String = null;
 
 		/** 
 		* 		* */ 

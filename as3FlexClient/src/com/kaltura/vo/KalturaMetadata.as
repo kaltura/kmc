@@ -22,11 +22,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var metadataObjectType : String;
+		public var metadataObjectType : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectId : String;
+		public var objectId : String = null;
 
 		/** 
 		* 		* */ 
@@ -46,7 +46,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var xml : String;
+		public var xml : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

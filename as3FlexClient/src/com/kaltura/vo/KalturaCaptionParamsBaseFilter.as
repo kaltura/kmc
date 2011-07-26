@@ -7,11 +7,11 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var formatEqual : String;
+		public var formatEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var formatIn : String;
+		public var formatIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

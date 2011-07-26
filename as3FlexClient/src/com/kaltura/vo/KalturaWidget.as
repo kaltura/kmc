@@ -6,15 +6,15 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* 		* */ 
-		public var sourceWidgetId : String;
+		public var sourceWidgetId : String = null;
 
 		/** 
 		* 		* */ 
-		public var rootWidgetId : String;
+		public var rootWidgetId : String = null;
 
 		/** 
 		* 		* */ 
@@ -22,7 +22,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -46,11 +46,11 @@ package com.kaltura.vo
 
 		/** 
 		* Can be used to store various partner related data as a string 		* */ 
-		public var partnerData : String;
+		public var partnerData : String = null;
 
 		/** 
 		* 		* */ 
-		public var widgetHTML : String;
+		public var widgetHTML : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

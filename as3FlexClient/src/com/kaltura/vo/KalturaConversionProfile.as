@@ -17,32 +17,32 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var status : String;
+		public var status : String = null;
 
 		/** 
 		* The name of the Conversion Profile
 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* System name of the Conversion Profile
 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
 
 		/** 
 		* Comma separated tags
 		* */ 
-		public var tags : String;
+		public var tags : String = null;
 
 		/** 
 		* The description of the Conversion Profile
 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* ID of the default entry to be used for template data
 		* */ 
-		public var defaultEntryId : String;
+		public var defaultEntryId : String = null;
 
 		/** 
 		* Creation date as Unix timestamp (In seconds) 
@@ -52,7 +52,7 @@ package com.kaltura.vo
 		/** 
 		* List of included flavor ids (comma separated)
 		* */ 
-		public var flavorParamsIds : String;
+		public var flavorParamsIds : String = null;
 
 		/** 
 		* Indicates that this conversion profile is system default
@@ -82,7 +82,7 @@ DEPRECATED		* */
 		/** 
 		* XSL to transform ingestion MRSS XML
 		* */ 
-		public var xslTransformation : String;
+		public var xslTransformation : String = null;
 
 		/** 
 		* ID of default storage profile to be used for linked net-storage file syncs

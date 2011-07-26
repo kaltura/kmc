@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var conversionProfileIdIn : String;
+		public var conversionProfileIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -19,7 +19,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var assetParamsIdIn : String;
+		public var assetParamsIdIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -27,7 +27,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var readyBehaviorIn : String;
+		public var readyBehaviorIn : String = null;
 
 		/** 
 		* 		* */ 
@@ -35,15 +35,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var originIn : String;
+		public var originIn : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameEqual : String;
+		public var systemNameEqual : String = null;
 
 		/** 
 		* 		* */ 
-		public var systemNameIn : String;
+		public var systemNameIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

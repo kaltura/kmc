@@ -11,7 +11,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var documentTypeIn : String;
+		public var documentTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

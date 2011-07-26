@@ -13,6 +13,7 @@
 	</states>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
@@ -149,13 +150,13 @@
 				if (validateInput()) {
 					_conversionProfile.profile.name = conversionNameTextInput.text;
 					_conversionProfile.profile.description = conversionDescTextArea.text;
-					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text;
+					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text != '' ? txtDefaultEntryId.text : KalturaClient.NULL_STRING;
 					if (cbRemoteProfile.selectedItem) {
 						_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
 					}
 					else {
 						//TODO make sure we send a value, and that it means "none".
-						_conversionProfile.profile.storageProfileId = int.MIN_VALUE;
+						_conversionProfile.profile.storageProfileId = KalturaClient.NULL_INT;
 					}
 
 					if (currentState == EDIT_STATE) {

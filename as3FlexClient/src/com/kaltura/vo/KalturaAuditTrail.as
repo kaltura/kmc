@@ -24,23 +24,23 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var auditObjectType : String;
+		public var auditObjectType : String = null;
 
 		/** 
 		* 		* */ 
-		public var objectId : String;
+		public var objectId : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectId : String;
+		public var relatedObjectId : String = null;
 
 		/** 
 		* 		* */ 
-		public var relatedObjectType : String;
+		public var relatedObjectType : String = null;
 
 		/** 
 		* 		* */ 
-		public var entryId : String;
+		public var entryId : String = null;
 
 		/** 
 		* 		* */ 
@@ -52,15 +52,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var requestId : String;
+		public var requestId : String = null;
 
 		/** 
 		* 		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* 		* */ 
-		public var action : String;
+		public var action : String = null;
 
 		/** 
 		* 		* */ 
@@ -68,7 +68,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var ks : String;
+		public var ks : String = null;
 
 		/** 
 		* 		* */ 
@@ -76,31 +76,31 @@ package com.kaltura.vo
 
 		/** 
 		* The API service and action that called and caused this audit		* */ 
-		public var entryPoint : String;
+		public var entryPoint : String = null;
 
 		/** 
 		* 		* */ 
-		public var serverName : String;
+		public var serverName : String = null;
 
 		/** 
 		* 		* */ 
-		public var ipAddress : String;
+		public var ipAddress : String = null;
 
 		/** 
 		* 		* */ 
-		public var userAgent : String;
+		public var userAgent : String = null;
 
 		/** 
 		* 		* */ 
-		public var clientTag : String;
+		public var clientTag : String = null;
 
 		/** 
 		* 		* */ 
-		public var description : String;
+		public var description : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String;
+		public var errorDescription : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

@@ -12,7 +12,7 @@ package com.kaltura.vo
 		/** 
 		* Partner name
 		* */ 
-		public var partnerName : String;
+		public var partnerName : String = null;
 
 		/** 
 		* Partner status
@@ -72,17 +72,17 @@ package com.kaltura.vo
 		/** 
 		* The total bandwidth usage during the given date range (in MB)
 		* */ 
-		public var bandwidth : Number = NaN;
+		public var bandwidth : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* The total storage consumption (in MB)
 		* */ 
-		public var totalStorage : Number = NaN;
+		public var totalStorage : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* The change in storage consumption (new uploads) during the given date range (in MB)
 		* */ 
-		public var storage : Number = NaN;
+		public var storage : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* a list of attributes which may be updated on this object 

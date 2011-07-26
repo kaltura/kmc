@@ -6,7 +6,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* Upload token unique ID		* */ 
-		public var id : String;
+		public var id : String = null;
 
 		/** 
 		* Partner ID of the upload token		* */ 
@@ -14,7 +14,7 @@ package com.kaltura.vo
 
 		/** 
 		* User id for the upload token		* */ 
-		public var userId : String;
+		public var userId : String = null;
 
 		/** 
 		* Status of the upload token		* */ 
@@ -22,15 +22,15 @@ package com.kaltura.vo
 
 		/** 
 		* Name of the file for the upload token, can be empty when the upload token is created and will be updated internally after the file is uploaded		* */ 
-		public var fileName : String;
+		public var fileName : String = null;
 
 		/** 
 		* File size in bytes, can be empty when the upload token is created and will be updated internally after the file is uploaded		* */ 
-		public var fileSize : Number = NaN;
+		public var fileSize : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* Uploaded file size in bytes, can be used to identify how many bytes were uploaded before resuming		* */ 
-		public var uploadedFileSize : Number = NaN;
+		public var uploadedFileSize : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* Creation date as Unix timestamp (In seconds)		* */ 

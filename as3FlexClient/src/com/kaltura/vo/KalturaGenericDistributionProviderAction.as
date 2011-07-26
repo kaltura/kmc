@@ -41,39 +41,39 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var serverAddress : String;
+		public var serverAddress : String = null;
 
 		/** 
 		* 		* */ 
-		public var remotePath : String;
+		public var remotePath : String = null;
 
 		/** 
 		* 		* */ 
-		public var remoteUsername : String;
+		public var remoteUsername : String = null;
 
 		/** 
 		* 		* */ 
-		public var remotePassword : String;
+		public var remotePassword : String = null;
 
 		/** 
 		* 		* */ 
-		public var editableFields : String;
+		public var editableFields : String = null;
 
 		/** 
 		* 		* */ 
-		public var mandatoryFields : String;
+		public var mandatoryFields : String = null;
 
 		/** 
 		* 		* */ 
-		public var mrssTransformer : String;
+		public var mrssTransformer : String = null;
 
 		/** 
 		* 		* */ 
-		public var mrssValidator : String;
+		public var mrssValidator : String = null;
 
 		/** 
 		* 		* */ 
-		public var resultsTransformer : String;
+		public var resultsTransformer : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

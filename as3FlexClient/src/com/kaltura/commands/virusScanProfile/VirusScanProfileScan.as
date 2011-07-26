@@ -10,7 +10,7 @@ package com.kaltura.commands.virusScanProfile
 		 * @param flavorAssetId String
 		 * @param virusScanProfileId int
 		 **/
-		public function VirusScanProfileScan( flavorAssetId : String,virusScanProfileId : int=undefined )
+		public function VirusScanProfileScan( flavorAssetId : String,virusScanProfileId : int=int.MIN_VALUE )
 		{
 			service= 'virusscan_virusscanprofile';
 			action= 'scan';

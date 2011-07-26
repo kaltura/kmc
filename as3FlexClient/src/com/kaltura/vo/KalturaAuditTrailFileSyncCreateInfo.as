@@ -7,7 +7,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var version : String;
+		public var version : String = null;
 
 		/** 
 		* 		* */ 

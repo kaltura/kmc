@@ -10,7 +10,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var name : String;
+		public var name : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 

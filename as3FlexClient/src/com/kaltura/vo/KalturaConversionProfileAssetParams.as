@@ -27,7 +27,11 @@ package com.kaltura.vo
 		/** 
 		* Asset params system name
 		* */ 
-		public var systemName : String;
+		public var systemName : String = null;
+
+		/** 
+		* Starts conversion even if the decision layer reduced the configuration to comply with the source		* */ 
+		public var forceNoneComplied : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -39,6 +43,7 @@ package com.kaltura.vo
 			arr.push('readyBehavior');
 			arr.push('origin');
 			arr.push('systemName');
+			arr.push('forceNoneComplied');
 			return arr;
 		}
 
