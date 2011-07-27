@@ -25,6 +25,8 @@ package com.kaltura.kmc.modules.content.commands
 			if(_model.entryDetailsModel.selectedEntry != null) {
 				var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _model.entryDetailsModel.selectedEntry);
 				cgEvent.dispatch();
+				cgEvent = new EntryEvent(EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,_model.entryDetailsModel.selectedEntry.id);
+				cgEvent.dispatch();
 			}
 		}
 	}
