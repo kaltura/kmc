@@ -382,6 +382,7 @@
 					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
 				if (!_entryIndexWatcher)
 					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", entryDetailsModel, "selectedIndex");
+				ads.addEventListener(EntryAds.CUE_POINTS_SAVED, saveEntryDetails);
 				// mixes:
 				/* if (!_undoToEntry is KalturaMixEntry) {
 				   partsTable.text = resourceManager.getString('cms', 'usageInMixes');
@@ -682,6 +683,7 @@
 			 * to fix performance bug: remove all metadata view watchers
 			 * */
 			private function removeWatchers():void {
+				ads.removeEventListener(EntryAds.CUE_POINTS_SAVED, saveEntryDetails);
 				if (customData) {
 					//first child is navigation hbox
 					for (var i:int = 1; i < customData.numChildren; i++) {
@@ -1148,7 +1150,6 @@
 		<!-- advertisments -->
 		<ed:EntryAds id="ads" label="{resourceManager.getString('cms','ads')}" selectedEntry="{_undoToEntry}"
 					 context="{context}" entryDetailsModel="{entryDetailsModel}"
-					 cuepointsSaved="saveEntryDetails(event)"
 					 reloadCuePoints="{entryDetailsModel.reloadCuePoints}"/>
 		
 		<!-- related entries -->
