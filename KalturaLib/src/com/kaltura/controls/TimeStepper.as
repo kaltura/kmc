@@ -201,22 +201,49 @@ package com.kaltura.controls {
 		 * @param event
 		 */
 		override protected function fixText(event:Event):void {
+			var changed:Boolean = false;
+			var newVal:Number;
 			if (!(event.currentTarget == hourText && !is24Hour)) {
 				_focusArea.text = (_focusArea.text.length < 2) ? "0" + _focusArea.text : _focusArea.text;
 			}
 			_focusArea.setSelection(0, 3);
 			
-			if (event.currentTarget == hourText)
-				this.hour = Number(event.currentTarget.text);
-			else if (event.currentTarget == minuteText)
-				this.minute = Number(timeStepper.value);
-			else if (event.currentTarget == secondText)
-				this.second = Number(timeStepper.value);
-			else if (event.currentTarget == msText)
-				this.milisecond = Number(timeStepper.value);
+			if (event.currentTarget == hourText) {
+				newVal = Number(event.currentTarget.text);
+				if (newVal != this.hour) {
+					this.hour = newVal; 
+					changed = true;
+				}
+			}
+			else if (event.currentTarget == minuteText) {
+				newVal = Number(timeStepper.value);
+				if (newVal != this.minute) {
+					this.minute = newVal;
+					changed = true;
+				}
+			}
+			else if (event.currentTarget == secondText) {
+				newVal = Number(timeStepper.value);
+				if (newVal != this.second ) {
+					this.second = newVal;
+					changed = true;
+				}
+			}
+			else if (event.currentTarget == msText) {
+				newVal = Number(timeStepper.value);
+				if (newVal != this.milisecond ) {
+					this.milisecond = newVal;
+					changed = true;
+				}
+			}
 				
 			avoidLessThanMinimum();
 			avoidMoreThanMaximum();
+			
+			//TODO dispatch change event if needed
+			if (changed) {
+				dispatchEvent(new FlexEvent("change"));	
+			}
 		}
 
 		/**
