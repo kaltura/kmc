@@ -600,9 +600,14 @@
 				// source url
 				_selectedCuePoint.sourceUrl = tiUrl.text;
 				// ad type
+				var prevadtype:String = _selectedCuePoint.adType; 
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
+				if (prevadtype != _selectedCuePoint.adType && _selectedCuePoint.adType == KalturaAdType.VIDEO){
+					teDuration.timeValue = {};
+					return;
+				}
 				// duration
-				_selectedCuePoint.endTime =  _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
+				_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
 				// update
 				_kClip["updateCuePoint"](_selectedCuePoint);
 			}
