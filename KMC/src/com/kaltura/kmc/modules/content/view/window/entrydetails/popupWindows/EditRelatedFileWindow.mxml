@@ -22,15 +22,6 @@
 				this.mx_internal::closeButton.buttonMode = true;
 			}
 			
-		/* 	protected function onTitleChanged(event:Event):void {
-				file.title = event.target.text;
-				dispatchEvent(new Event(EntryRelated.FILE_CHANGED, true));
-			}
-			protected function onDescriptionChanged(event:Event):void {
-				file.description = event.target.text;
-				dispatchEvent(new Event(EntryRelated.FILE_CHANGED, true));
-			} */
-			
 			protected function onClose():void {
 				if (_changed) {
 					Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
@@ -48,7 +39,7 @@
 			
 			protected function apply():void {
 				file.title = titleTi.text;
-				file.description = descriptionTi.text;
+				file.partnerDescription = descriptionTi.text;
 				
 				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.UPDATE_RELATED_FILE);
 				saveEvent.attachmentAsset = file;
@@ -62,7 +53,7 @@
 	<mx:Label text="{resourceManager.getString('cms','title')}"/>
 	<mx:TextInput id="titleTi" width="200" text="{file.title}" change="{_changed = true;}"/>
 	<mx:Label text="{resourceManager.getString('cms','description')}"/>
-	<mx:TextArea id="descriptionTi" width="200" text="{file.description}" change="{_changed = true;}"/>
+	<mx:TextArea id="descriptionTi" width="200" text="{file.partnerDescription}" change="{_changed = true;}"/>
 	<mx:ControlBar>
 		<mx:Button id="applyBtn" label="{resourceManager.getString('cms', 'saveChanges')}" click="apply()"
 				   buttonMode="true"/>
