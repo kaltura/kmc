@@ -56,7 +56,7 @@ package com.kaltura.applications.kClipInterface
 		/**
 		 * is saved required
 		 * */
-		function isSavedRequired():Boolean;
+		function isSaveRequired():Boolean;
 		
 		/**
 		 * init the clipper

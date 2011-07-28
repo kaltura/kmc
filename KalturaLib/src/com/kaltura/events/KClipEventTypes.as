@@ -6,6 +6,14 @@ package com.kaltura.events
 		 * dispatched whenever the playhead is updated 
 		 */		
 		public static const PLAYHEAD_UPDATED:String = "playheadUpdated";
+		/**
+		 * dispatched on playhead drag start
+		 */		
+		public static const PLAYHEAD_DRAG_START:String = "playheadDragStart";
+		/**
+		 * dispatched on playhead drag drop
+		 */		
+		public static const PLAYHEAD_DRAG_DROP:String = "playheadDragDrop";
 		
 		/**
 		 * dispatched when save operation is complete 
