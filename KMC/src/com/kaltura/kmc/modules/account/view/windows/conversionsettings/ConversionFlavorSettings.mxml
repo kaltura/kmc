@@ -99,15 +99,18 @@
 						_cpap.forceNoneComplied = KalturaNullableBoolean.NULL_VALUE;
 					}
 					// default values:
-					if (!_cpap.readyBehavior || _cpap.readyBehavior == int.MIN_VALUE) {
+					if (_cpap.readyBehavior == int.MIN_VALUE) {
 						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.OPTIONAL/* _flavorVO.kFlavor.?? */;
 						//TODO in server there's a readyBehavior value on the KalturaFlavorParams, if they expose it we should use it (Atar).
 					}
-					if (!_cpap.origin || _cpap.origin == int.MIN_VALUE) {
+					if (_cpap.origin == int.MIN_VALUE) {
 						_cpap.origin = KalturaAssetParamsOrigin.CONVERT;
 					}
 					if (!_cpap.systemName) {
 						_cpap.systemName = _flavorVO.kFlavor.systemName;
+					}
+					if (_cpap.forceNoneComplied == int.MIN_VALUE) {	// KalturaNullableBoolean is generated in the client as int
+						_cpap.forceNoneComplied = KalturaNullableBoolean.FALSE_VALUE;
 					}
 					cbAvailability.selectedIndex = getItemIndex(_availabilityOptions, _cpap.readyBehavior);
 					cbConvertPolicy.selectedIndex = getItemIndex(_originOptions, _cpap.origin);
