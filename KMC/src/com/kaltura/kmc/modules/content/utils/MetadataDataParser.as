@@ -206,7 +206,7 @@ package com.kaltura.kmc.modules.content.utils
 				if (value=="" && node.children().length()>0) {
 					updatedArray.push(getMetadataDataValues(node));
 				}
-				else	
+				else if (value!="")	
 					updatedArray.push(value);
 				
 				dataValues.put(currentField, updatedArray);
