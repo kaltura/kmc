@@ -71,11 +71,13 @@ package com.kaltura.kmc.modules.content.commands
 		private var _caller:IDataOwner;
 		
 		override public function execute(event:CairngormEvent):void {
-			if (!_model.filterModel.loadingRequired)
+			_caller = (event as LoadEvent).caller;
+			if (!_model.filterModel.loadingRequired) {
+				_caller.onRequestedDataLoaded();				
 				return;
+			}
 			
 			_model.increaseLoadCounter();
-			_caller = (event as LoadEvent).caller;
 			
 			var multiRequest:MultiRequest = new MultiRequest();
 			
