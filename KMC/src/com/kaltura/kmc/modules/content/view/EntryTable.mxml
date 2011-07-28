@@ -753,6 +753,16 @@
 				dt.setTime(date * 1000);
 				return df.format(dt);
 			};
+			
+			
+			public function formatTime(offset:Number):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = resourceManager.getString('cms', 'h_m_s_ms');
+				var dt:Date = new Date();
+				dt.hours = dt.minutes = dt.seconds = 0;
+				dt.milliseconds = offset;
+				return df.format(dt);
+			}
 
 
 			public function and(term1:Boolean, term2:Boolean):Boolean {
@@ -803,12 +813,12 @@
 			}
 			
 			
-			protected function getClipIntime(value:Object, column:DataGridColumn):String {
+			public function getClipIntime(value:Object):String {
 				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
 				var result:String = '';
 				for each (var opatt:KalturaOperationAttributes in entry.operationAttributes) {
 					if (opatt is KalturaClipAttributes) {
-						result = formatDate((opatt as KalturaClipAttributes).offset);
+						result = formatTime((opatt as KalturaClipAttributes).offset);
 						break;
 					}
 				}
@@ -913,9 +923,17 @@
 			 <mx:DataGridColumn  paddingLeft="4" paddingRight="4"  dataField="tags"  width="100" headerText="{resourceManager.getString('cms', 'tags')}"
 			 showDataTips="true" dataTipField="tags" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel" /-->
 
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" labelFunction="getClipIntime"
-						   headerText="{resourceManager.getString('cms', 'intime')}"
-						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75"
+						   headerText="{resourceManager.getString('cms', 'intime')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalScrollPolicy="off"
+							 verticalScrollPolicy="off">
+						<mx:Label text="{outerDocument.getClipIntime(data)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
 			
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" dataField="duration"
 						   headerText="{resourceManager.getString('cms', 'duration')}" >
