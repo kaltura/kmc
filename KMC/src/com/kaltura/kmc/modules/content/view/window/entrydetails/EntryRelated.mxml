@@ -4,6 +4,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
+			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
@@ -151,9 +152,44 @@
 				newRelated.file = new KalturaAttachmentAsset();
 				newRelated.file.filename = _fileReference.name;
 				newRelated.fileReference = _fileReference;
+				//upload the file
+				var uploadEvent:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, newRelated.fileReference, newRelated);
+				newRelated.fileReference.addEventListener(Event.COMPLETE, onFileUploaded);
+				newRelated.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				newRelated.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
+				uploadEvent.dispatch();
+				
 				_relatedFiles.addItem(newRelated);
 				_filesToAdd.addItem(newRelated);
 			}
+	
+			private function onFileUploaded(event:Event):void {
+				var targetFR:FileReference = event.target as FileReference;
+				targetFR.removeEventListener(Event.COMPLETE, onFileUploaded);
+				targetFR.removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				targetFR.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
+				for each (var related:RelatedFileVO in relatedFiles) {
+					if (related.fileReference == targetFR) {
+						related.isNewUploaded = true;
+						break;
+					}
+				}
+			}
+			
+			private function onFileFailed(event:Event):void {
+				var targetFR:FileReference = event.target as FileReference;
+				targetFR.removeEventListener(Event.COMPLETE, onFileUploaded);
+				targetFR.removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
+				targetFR.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
+				for each (var related:RelatedFileVO in relatedFiles) {
+					if (related.fileReference == targetFR) {
+						related.isNewUploadError = true;
+						related.uploadTokenId = null;
+						break;
+					}
+				}
+			}
+			
 			
 			/**
 			 * Create suitable string to display in the "File Size" column

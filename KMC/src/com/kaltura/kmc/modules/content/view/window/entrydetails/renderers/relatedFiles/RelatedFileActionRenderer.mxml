@@ -58,6 +58,11 @@
 					_actionsAvailable = true;
 					_isError = false;
 				}
+				else if (_relatedVo.isNewUploadError) {
+					_isError = true;
+					_actionsAvailable = false;
+					_errorString = resourceManager.getString('cms','errorStatus');
+				}
 				else {
 					_actionsAvailable = false;
 					_isError = false;
@@ -93,32 +98,7 @@
 				}
 			}
 
-			protected function onUploadClick():void {
-				var uploadEvent:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _relatedVo.fileReference, _relatedVo);
-				uploadEvent.fileReference.addEventListener(Event.COMPLETE, onFileUploaded);
-				uploadEvent.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
-				uploadEvent.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
-				uploadEvent.dispatch();
-			}
-			
-			private function onFileUploaded(event:Event):void {
-				(event.target as FileReference).removeEventListener(Event.COMPLETE, onFileUploaded);
-				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
-				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
-				
-				_relatedVo.isNewUploaded = true;
-			}
-			
-			private function onFileFailed(event:Event):void {
-				(event.target as FileReference).removeEventListener(Event.COMPLETE, onFileUploaded);
-				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
-				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
-
-				_isError = true;
-				_errorString = resourceManager.getString('cms','errorStatus');
-				_relatedVo.isNewUploaded = true;
-			}
-			
+		
 			private function removeFile():void {
 				dispatchEvent(new Event(FILE_DELETED, true));
 			}
@@ -130,9 +110,9 @@
 				  visible="{_actionsAvailable}"/>
 	<mx:LinkButton label="{resourceManager.getString('cms','download')}" click="downloadFile()"
 				   styleName="downloadThumbLinkButton" visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}" width="80"/>
-	<mx:LinkButton label="{resourceManager.getString('cms','upload')}" visible="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
+	<!--<mx:LinkButton label="{resourceManager.getString('cms','upload')}" visible="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
 				   includeInLayout="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" 
-				   styleName="plusIcon" width="80"/>
+				   styleName="plusIcon" width="80"/>-->
 	<mx:Label text="{_errorString}" visible="{_isError}" includeInLayout="{_isError}" width="80" textAlign="center"/>
 	<mx:HBox width="80" horizontalAlign="center" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}" includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}">
 		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"

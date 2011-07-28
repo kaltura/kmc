@@ -22,5 +22,9 @@ package com.kaltura.kmc.modules.content.vo
 		 * is current asset is new, and fileReference was upload successfully
 		 * */
 		public var isNewUploaded:Boolean = false;
+		/**
+		 * is current asset is new, and fileReference has failed to upload
+		 * */
+		public var isNewUploadError:Boolean = false;
 	}
 }
