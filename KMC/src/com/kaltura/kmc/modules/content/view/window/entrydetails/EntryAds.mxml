@@ -185,11 +185,11 @@
 			public function saveCuepoints():Boolean {
 				var res:Boolean = false;
 				if (_kClip && kClipReady) {
-					if (_kClip["isSavedRequired"]()) {
-						_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
-						_kClip["save"]();
-						res = true;
-					}
+//					if (_kClip["isSavedRequired"]()) {
+					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
+					_kClip["save"]();
+					res = true;
+//					}
 				}
 				// if the component wasn't ready data couldn't change, therefore save isn't required.
 				return res;
@@ -263,6 +263,13 @@
 				return result;
 			}
 
+			
+			public function wasChanged():Boolean {
+				if (_kClip && kClipReady) {
+					return _kClip["isSavedRequired"]();
+				}
+				return false;
+			}
 
 
 			/**
