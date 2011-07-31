@@ -6,7 +6,6 @@
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
 			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.relatedFiles.RelatedFileActionRenderer;
-			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
 			import com.kaltura.vo.KalturaAttachmentAsset;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -211,26 +210,13 @@
 			/**
 			 * save all changes on related files
 			 * */
-			public function save():EntryDetailsValidationError {
-				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-				for each (var related:RelatedFileVO in _relatedFiles) {
-					//if a file was selected but not uploaded
-					if (related.fileReference && !related.uploadTokenId) {
-						result.error = EntryDetailsValidationError.RELATED_FILES_NOT_UPLOADED;
-						break;
-					}
-				}
+			public function save():void {		
+				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
+				saveEvent.relatedToAdd = _filesToAdd.source;
+				saveEvent.relatedToUpdate = _filesToUpdate.source;
+				saveEvent.relatedToDelete = _filesToDelete.source;
+				saveEvent.dispatch();
 				
-				if (!result.error)
-				{
-					var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
-					saveEvent.relatedToAdd = _filesToAdd.source;
-					saveEvent.relatedToUpdate = _filesToUpdate.source;
-					saveEvent.relatedToDelete = _filesToDelete.source;
-					saveEvent.dispatch();
-				}
-				
-				return result;
 			}
 			
 			public function wasChanged():Boolean {
