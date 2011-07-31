@@ -212,6 +212,7 @@ package com.kaltura.kmc.modules.content.control {
 
 			// clips
 			addCommand(ClipEvent.GET_ENTRY_CLIPS, GetEntryClipsCommand);
+			addCommand(ClipEvent.RESET_MODEL_ENTRY_CLIPS, ResetEntryClipsCommand);
 			
 			
 			

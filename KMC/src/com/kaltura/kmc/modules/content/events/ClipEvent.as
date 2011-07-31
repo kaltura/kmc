@@ -10,6 +10,11 @@ package com.kaltura.kmc.modules.content.events
 		 */		
 		public static const GET_ENTRY_CLIPS:String = "GET_ENTRY_CLIPS";
 		
+		/**
+		 * reset the list on the model of entry clips
+		 * */
+		public static const RESET_MODEL_ENTRY_CLIPS:String = "RESET_MODEL_ENTRY_CLIPS";
+		
 		
 		public function ClipEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
