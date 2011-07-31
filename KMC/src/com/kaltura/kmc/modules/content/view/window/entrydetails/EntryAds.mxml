@@ -236,6 +236,7 @@
 						}
 						if (setEntryId) {
 							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+							_kdpFirstPlay = false;
 						}
 					}
 					if (updateKdp && _img && _img.parent) {
@@ -611,10 +612,13 @@
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
 				if (prevadtype != _selectedCuePoint.adType && _selectedCuePoint.adType == KalturaAdType.VIDEO){
 					teDuration.timeValue = {};
-					return;
+//					return;
+					//TODO should we reset _selectedCuePoint.endTime ? 
 				}
-				// duration
-				_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
+				else {
+					// duration
+					_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
+				}
 				// update
 				_kClip["updateCuePoint"](_selectedCuePoint);
 			}
@@ -626,6 +630,7 @@
 			 * */
 			private function validate():Boolean {
 				_selectedCuePoint = null;
+				_formEnabled = false;
 				if (!kClipReady) {
 					// the component wasn't ready so no data 
 					// could have changed to invalid data
