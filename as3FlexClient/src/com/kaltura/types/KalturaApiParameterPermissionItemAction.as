@@ -5,5 +5,6 @@ package com.kaltura.types
 		public static const READ : String = 'read';
 		public static const UPDATE : String = 'update';
 		public static const INSERT : String = 'insert';
+		public static const USEAGE : String = 'all';
 	}
 }

@@ -50,6 +50,11 @@ package com.kaltura.vo
 		* */ 
 		public var videoCodecId : String = null;
 
+		/** 
+		* The status of the Flavor Asset
+		* */ 
+		public var status : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

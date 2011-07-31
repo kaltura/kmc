@@ -7,6 +7,26 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
+		public var protocolTypeEqual : String = null;
+
+		/** 
+		* 		* */ 
+		public var protocolTypeIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var titleLike : String = null;
+
+		/** 
+		* 		* */ 
+		public var titleMultiLikeOr : String = null;
+
+		/** 
+		* 		* */ 
+		public var titleMultiLikeAnd : String = null;
+
+		/** 
+		* 		* */ 
 		public var endTimeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -25,6 +45,11 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('protocolTypeEqual');
+			arr.push('protocolTypeIn');
+			arr.push('titleLike');
+			arr.push('titleMultiLikeOr');
+			arr.push('titleMultiLikeAnd');
 			arr.push('endTimeGreaterThanOrEqual');
 			arr.push('endTimeLessThanOrEqual');
 			arr.push('durationGreaterThanOrEqual');

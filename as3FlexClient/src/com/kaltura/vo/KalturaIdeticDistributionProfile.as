@@ -1,25 +1,21 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfile;
+	import com.kaltura.vo.KalturaConfigurableDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaIdeticDistributionProfile extends KalturaDistributionProfile
+	public dynamic class KalturaIdeticDistributionProfile extends KalturaConfigurableDistributionProfile
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var username : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var password : String = null;
 
 		/** 
 		* 		* */ 
-		public var domain : String;
-
-		/** 
-		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
+		public var domain : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -28,7 +24,6 @@ package com.kaltura.vo
 			arr.push('username');
 			arr.push('password');
 			arr.push('domain');
-			arr.push('metadataProfileId');
 			return arr;
 		}
 

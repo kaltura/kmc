@@ -35,6 +35,11 @@ package com.kaltura.vo
 		* */ 
 		public var format : String = null;
 
+		/** 
+		* The status of the asset
+		* */ 
+		public var status : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;

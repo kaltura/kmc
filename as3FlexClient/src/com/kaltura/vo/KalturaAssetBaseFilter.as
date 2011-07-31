@@ -31,18 +31,6 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var statusEqual : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var statusIn : String = null;
-
-		/** 
-		* 		* */ 
-		public var statusNotIn : String = null;
-
-		/** 
-		* 		* */ 
 		public var sizeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -83,9 +71,6 @@ package com.kaltura.vo
 			arr.push('entryIdIn');
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
-			arr.push('statusEqual');
-			arr.push('statusIn');
-			arr.push('statusNotIn');
 			arr.push('sizeGreaterThanOrEqual');
 			arr.push('sizeLessThanOrEqual');
 			arr.push('createdAtGreaterThanOrEqual');

@@ -25,7 +25,19 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var action : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var entryId : String = null;
+
+		/** 
+		* 		* */ 
+		public var objectId : String = null;
+
+		/** 
+		* 		* */ 
+		public var bulkUploadResultObjectType : String = null;
 
 		/** 
 		* 		* */ 
@@ -106,7 +118,10 @@ package com.kaltura.vo
 			arr.push('bulkUploadJobId');
 			arr.push('lineIndex');
 			arr.push('partnerId');
+			arr.push('action');
 			arr.push('entryId');
+			arr.push('objectId');
+			arr.push('bulkUploadResultObjectType');
 			arr.push('entryStatus');
 			arr.push('rowData');
 			arr.push('title');

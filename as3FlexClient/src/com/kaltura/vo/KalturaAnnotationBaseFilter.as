@@ -15,6 +15,18 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var textLike : String = null;
+
+		/** 
+		* 		* */ 
+		public var textMultiLikeOr : String = null;
+
+		/** 
+		* 		* */ 
+		public var textMultiLikeAnd : String = null;
+
+		/** 
+		* 		* */ 
 		public var endTimeGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -35,6 +47,9 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('parentIdEqual');
 			arr.push('parentIdIn');
+			arr.push('textLike');
+			arr.push('textMultiLikeOr');
+			arr.push('textMultiLikeAnd');
 			arr.push('endTimeGreaterThanOrEqual');
 			arr.push('endTimeLessThanOrEqual');
 			arr.push('durationGreaterThanOrEqual');

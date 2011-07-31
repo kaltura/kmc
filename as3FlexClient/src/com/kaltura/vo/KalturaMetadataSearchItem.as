@@ -9,16 +9,11 @@ package com.kaltura.vo
 		* 		* */ 
 		public var metadataProfileId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
-		public var orderBy : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('metadataProfileId');
-			arr.push('orderBy');
 			return arr;
 		}
 

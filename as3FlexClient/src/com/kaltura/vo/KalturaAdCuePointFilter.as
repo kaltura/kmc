@@ -5,20 +5,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAdCuePointFilter extends KalturaAdCuePointBaseFilter
 	{
-		/** 
-		* 		* */ 
-		public var protocolTypeEqual : String = null;
-
-		/** 
-		* 		* */ 
-		public var protocolTypeIn : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('protocolTypeEqual');
-			arr.push('protocolTypeIn');
 			return arr;
 		}
 

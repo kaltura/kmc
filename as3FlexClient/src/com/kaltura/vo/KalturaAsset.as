@@ -19,11 +19,6 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* The status of the Flavor Asset
-		* */ 
-		public var status : int = int.MIN_VALUE;
-
-		/** 
 		* The version of the Flavor Asset
 		* */ 
 		public var version : int = int.MIN_VALUE;
