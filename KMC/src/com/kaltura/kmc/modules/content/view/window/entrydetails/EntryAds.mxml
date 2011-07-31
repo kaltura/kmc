@@ -826,17 +826,20 @@
 	<mx:HBox width="100%">
 		<mx:VBox width="100%" height="{kdpHolder.height}">
 			<mx:HBox width="100%">
-				<mx:Spacer width="100%"/>
 				<mx:ComboBox id="cbActions" width="100%" change="handleBulkActions(event)" updateComplete="cbActions_updateCompleteHandler(event)"
 							 prompt="{resourceManager.getString('cms', 'ads_bulk_actions')}" enabled="false"/>
+				<mx:Spacer width="100%"/>
 			</mx:HBox>
+			<mx:Spacer height="10" />
+			<mx:HRule width="100%" />
+			<mx:Spacer height="10" />
 			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%"
 					 visible="{!_formEnabled}" includeInLayout="{!_formEnabled}" />
 			<mx:VBox id="details" width="100%" visible="{_formEnabled}" includeInLayout="{_formEnabled}">
 				<mx:HBox styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'timing')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
-					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" 
+					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" styleName="timeEntry" 
 										  maximum="{(_selectedEntry as KalturaMediaEntry).duration}"
 										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
 										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" showSeconds="true" showMiliseconds="true" 
@@ -853,7 +856,7 @@
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}" 
 										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" 
 										  showMiliseconds="true" showSeconds="true" timeValue="{getDuration(_selectedCuePoint)}"
-										  change="updateCuePointData(event)"/>
+										  change="updateCuePointData(event)" styleName="timeEntry" />
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_provider')}" styleName="formLabel"
