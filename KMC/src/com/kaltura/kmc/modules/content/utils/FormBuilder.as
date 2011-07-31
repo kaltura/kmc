@@ -38,7 +38,7 @@ package com.kaltura.kmc.modules.content.utils {
 	[Bindable]
 	public class FormBuilder {
 		//spacer height between container fields
-		private static const FIELDS_GAP:int = 10;
+		private static const FIELDS_GAP:int = 4;
 		//padding left for each hierarich level
 		private static const FIELD_INDENT:int = 12;
 		private var _model:CmsModelLocator = CmsModelLocator.getInstance();
