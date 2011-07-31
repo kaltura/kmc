@@ -10,7 +10,6 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							height="545" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
-							xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*"
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 							xmlns:adobe="http://www.adobe.com/2006/fc" creationComplete="{onWindowCreationComplete()}"
@@ -165,6 +164,7 @@
 			 * */
 			private var _visibleTabsAC:ArrayCollection;
 
+			[Bindable]
 			/**
 			 * whether we should load roughcuts
 			 * */
@@ -420,7 +420,7 @@
 					} else if (selectedEntry is KalturaMixEntry) {
 						//this is a mix
 						showMixSetup();
-						setViewPerEntryType(new Array(entryAssets, liveStream));
+						setViewPerEntryType(new Array(entryAssets, liveStream, ads));
 					} else {
 						// this entry is a regular video/image/audio
 						showNormalSetup();
@@ -433,7 +433,7 @@
 						}
 					}
 					hideTabsFromUiconf();
-					loadEntries();
+//					loadEntries();
 					
 					var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
 					for each (var subtabName:String in tabsToHide) {
@@ -476,17 +476,6 @@
 			}
 
 
-			/**
-			 * set screen contents according to data
-			 * */
-			public function init():void {
-//				loadEntries();
-//				PopUpManager.centerPopUp(this);
-
-//				dtn.visible = true;
-//				visible = true;
-			}
-
 
 			/**
 			 * ask JS to open the preview player, log the action to analytics
@@ -517,66 +506,12 @@
 				return result;
 			}
 
-//			/**
-//			 * does the current entry have mobile flavors?
-//			 * */
-//			private function hasMobileFlavors():Boolean {
-//				var result:Boolean = false;
-//				var fa:KalturaFlavorAsset;
-//				if (entryDetailsModel.flavorParamsAndAssetsByEntryId && entryDetailsModel.flavorParamsAndAssetsByEntryId.length) {
-//					for each (var kawp:FlavorAssetWithParamsVO in entryDetailsModel.flavorParamsAndAssetsByEntryId) {
-//						fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
-//						if (fa && fa.tags) {
-//							if (fa.tags.indexOf('iphone') > -1) {
-//								result = true;
-//								break;
-//							};
-//							if (fa.tags.indexOf('ipad') > -1) {
-//								result = true;
-//								break;
-//							};
-//							if (fa.fileExt == 'ogg' || fa.fileExt == 'ogv' || fa.fileExt == 'oga') {
-//								result = true;
-//								break;
-//							};
-//							if (fa.fileExt == '3gp') {
-//								result = true;
-//								break;
-//							};
-//							if (fa.tags.indexOf('applembr') > -1) {
-//								result = true;
-//								break;
-//							};
-//						}
-//					}
-//				}
-//				return result;
-//
-//			}
 
 
-			/**
-			 * load all mix entries or load mixes that uses this entry if it is not a mix
-			 */
-			private function loadEntries():void {
-				if (_undoToEntry is KalturaMixEntry) {
-					//get all mix entries
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, selectedEntry);
-					cgEvent.dispatch();
-				} else if (loadRoughcuts && !_isLiveStream) {
-					//get all entries that uses this mix 
-					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, selectedEntry);
-					getRoughcuts.dispatch();
-				}
-
-			}
+			
 
 
-			private function onPaging():void {
-				loadEntries();
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
-			}
+			
 
 
 			/**
@@ -870,23 +805,6 @@
 			}
 
 
-			/**
-			 * remove column that are not relevant for
-			 * this view from the entry contents table
-			 * */
-			private function removeColums(event:Event):void {
-				event.target.removeColumn(resourceManager.getString('cms', 'preview'));
-				event.target.removeColumn(resourceManager.getString('cms', 'idHeader'));
-				event.target.removeColumn(resourceManager.getString('cms', 'mediaType'));
-				event.target.removeColumn(resourceManager.getString('cms', 'playlistType'));
-				event.target.removeColumn(resourceManager.getString('cms', 'flags'));
-				event.target.removeColumn(resourceManager.getString('cms', 'moderationStatus'));
-				event.target.removeColumn(resourceManager.getString('cms', 'creator'));
-				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
-				event.target.removeColumn(resourceManager.getString('cms', 'playerLoads'));
-				event.target.removeColumn(resourceManager.getString('cms', 'intime'));
-			}
-
 
 			/**
 			 * Check if a string is longer than 512. if it is it will cut it and add ...
@@ -1116,15 +1034,10 @@
 						 dropFolderModel="{dropFolderModel}" replacementStatus="{_undoToEntry.replacementStatus}"
 						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}"/>
 
-		<!-- content Tab -->
-		<mx:VBox id="contentTab" width="100%" height="100%" styleName="contentVbox"
-				 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}">
-			<!--<mx:Label id="partsTable" styleName="drillDownTitleLabel"/>-->
-			<view:EntryTable width="100%" height="100%" dataProvider="{selectedEntry.parts}"
-							 creationComplete="{removeColums(event)}" sortableColumns="false"/>
-			<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" getPageNum="onPaging()"
-							 showRowsInPage="false"/>
-		</mx:VBox>
+		<!-- content Tab --> 
+		<ed:EntryContent id="contentTab" selectedEntry="{selectedEntry}" isLiveStream="{_isLiveStream}"
+						 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}"
+						 loadRoughcuts="{loadRoughcuts}"/>
 
 		<!-- Live stream -->
 		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
@@ -1155,7 +1068,7 @@
 		
 		
 		<!-- clips -->
-		<window:EntryClips id="entryClips" label="{resourceManager.getString('cms','clips')}"
+		<ed:EntryClips id="entryClips" label="{resourceManager.getString('cms','clips')}"
 						  selectedEntry="{_undoToEntry}" clips="{entryDetailsModel.clips}" />
 		
 		

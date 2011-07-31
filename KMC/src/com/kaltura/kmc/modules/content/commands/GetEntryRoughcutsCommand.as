@@ -2,9 +2,11 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.commands.mixing.MixingGetMixesByMediaId;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	
+	import flash.events.Event;
 	
 	import mx.rpc.IResponder;
 
@@ -29,6 +31,7 @@ package com.kaltura.kmc.modules.content.commands
 			
 			if(data.data && data.data is Array) {
 				_model.entryDetailsModel.selectedEntry.parts = data.data;
+				_model.entryDetailsModel.selectedEntry.dispatchEvent(new Event("partsChanged"));
 			}
 			else
 				trace("Error getting the list of roughcut entries");
