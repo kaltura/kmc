@@ -14,6 +14,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.vo.KalturaDropFolderContentFileHandlerConfig;
 	import com.kaltura.vo.KalturaDropFolderFilter;
 	import com.kaltura.vo.KalturaDropFolderListResponse;
+	import com.kaltura.vo.KalturaFtpDropFolder;
+	import com.kaltura.vo.KalturaRemoteDropFolder;
+	import com.kaltura.vo.KalturaScpDropFolder;
+	import com.kaltura.vo.KalturaSftpDropFolder;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -56,10 +60,15 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		 * put the folders in an array collection on the model 
 		 * */
 		protected function handleDropFolderList(lr:KalturaDropFolderListResponse):void {
+			// so that the classes will be comiled in
+			var dummy1:KalturaScpDropFolder;
+			var dummy2:KalturaSftpDropFolder;
+			var dummy3:KalturaFtpDropFolder;
+			
 			var df:KalturaDropFolder;
 			var ar:Array = new Array();
 			for each (var o:Object in lr.objects) {
-				if (o is KalturaDropFolder) {
+				if (o is KalturaDropFolder ) {
 					df = o as KalturaDropFolder;
 					var cfg:KalturaDropFolderContentFileHandlerConfig = df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig;
 					if (_flags & DropFolderEvent.ADD_NEW && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW) {
