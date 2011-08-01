@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" 
-		 xmlns:controls="com.kaltura.controls.*" hide="hideHandler(event)">
+		 xmlns:controls="com.kaltura.controls.*" hide="hideHandler(event)" >
 	<mx:Metadata>
 		[Event(name="cuepointsSaved", type="flash.events.Event")]
 	</mx:Metadata>
@@ -59,7 +59,7 @@
 			/**
 			 * a flag used to determine we can talk with the kClip
 			 * */
-			private static var kClipReady:Boolean = false; 
+			private static var _kClipReady:Boolean = false; 
 
 			/**
 			 * player is kept between different
@@ -81,6 +81,7 @@
 			 * */
 			private var _kClipInitiatedPlay:Boolean = false;
 			
+			private var _kdpInitiatedUpdate:Boolean = false;
 
 			[Bindable]
 			/**
@@ -101,9 +102,9 @@
 
 			[Bindable]
 			/**
-			 * @copy @selectedEntry
+			 * the entry being edited
 			 * */
-			private var _selectedEntry:KalturaBaseEntry;
+			public var selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
 			/**
@@ -127,23 +128,26 @@
 			 * */
 			private var _img:Image;
 			
+			/**
+			 * file reference object used for bulk upload
+			 * */
 			private var _bulkUpldFileRef:FileReference;
 			
-
-			public function get reloadCuePoints():Boolean
-			{
-				return false;
+			/**
+			 * trace the error instead of crashing the browser
+			 * */
+			private function uncaughtErrorHandler(event:Event):void {
+				event.preventDefault();
+				trace(event, event["error"]);
 			}
+			
+			
 
 			/**
-			 * reload cue points if true
+			 * stop KDP if it happens to be playing
 			 * */
-			public function set reloadCuePoints(value:Boolean):void
-			{
-				if (value &&_kClip) {
-					// reload cue points
-					_kClip["loadCuePoints"]();
-				}
+			private function hideHandler(event:FlexEvent):void {
+				_kdp["sendNotification"](KdpEventTypes.DO_STOP);
 			}
 
 			public function destroy():void {
@@ -173,7 +177,7 @@
 				loadWidgets(null);
 				// get number of entry cuepoints
 				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
-				cg.data = _selectedEntry.id;
+				cg.data = selectedEntry.id;
 				cg.dispatch();
 			}
 
@@ -184,66 +188,75 @@
 			 * */
 			public function saveCuepoints():Boolean {
 				var res:Boolean = false;
-				if (_kClip && kClipReady) {
-//					if (_kClip["isSavedRequired"]()) {
+				if (_kClipReady) {
 					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 					_kClip["save"]();
 					res = true;
-//					}
 				}
 				// if the component wasn't ready data couldn't change, therefore save isn't required.
 				return res;
 			}
-
-
-			public function get selectedEntry():KalturaBaseEntry {
-				return _selectedEntry;
-			}
 			
 			/**
-			 * The entry being edited
+			 * reload cue points if true
+			 * @internal
+			 * used after bulk uploads - the command changes this value on the model.
 			 * */
-			public function set selectedEntry(value:KalturaBaseEntry):void {
-				_selectedEntry = value;
-//				updateWidgetsStatus();
+			public function set reloadCuePoints(value:Boolean):void {
+				if (value &&_kClip) {
+					// reload cue points
+					_kClip["loadCuePoints"]();
+				}
 			}
 
 
-			private function updateWidgetsStatus(updateKClip:Boolean = true, updateKdp:Boolean = true, setEntryId:Boolean = true):void {
-				if (_selectedEntry.status != KalturaEntryStatus.READY) {
-					if (updateKClip && _kClip && kClipReady) {
+
+			private function updateKClipStatus(setEntryId:Boolean = true):void {
+				if (selectedEntry.status != KalturaEntryStatus.READY) {
+					if (_kClipReady) {
 						_kClip["setDisabled"](true);
 					}
-					if (updateKdp) {
-						if (!_img) {
-							_img = new Image();
-						}
-						_img.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("noContentImg");
-						if (!_img.parent) {
-							kdpHolder.addChild(_img);
-						}
-						if (_kdp && kdpLoader.parent) {
-							kdpHolder.removeChild(kdpLoader);
-						}
+				}
+				else {
+					if (setEntryId && _kClipReady) {
+						_kClipReady = false;
+						_kClip["setEntryId"](selectedEntry.id);
 					}
-				} else {
-					if (updateKClip && _kClip && setEntryId && kClipReady) {
-						_kClip["setEntryId"](_selectedEntry.id);
+				}
+			}
+			
+			
+			private function updateKdpStatus(setEntryId:Boolean = true):void {
+				if (selectedEntry.status != KalturaEntryStatus.READY) {
+					// entry not ready, show image and hide KDP
+					if (!_img) {
+						_img = new Image();
 					}
-					if (updateKdp && _kdp) {
+					_img.source = StyleManager.getStyleDeclaration(".imageBank").getStyle("noContentImg");
+					if (!_img.parent) {
+						kdpHolder.addChild(_img);
+					}
+					if (_kdp && kdpLoader.parent) {
+						kdpHolder.removeChild(kdpLoader);
+					}
+				}
+				else {
+					// add kdp, remove image, set entry id
+					if (_kdp) {
 						if (!kdpLoader.parent) {
 							kdpHolder.addChild(kdpLoader);
 						}
 						if (setEntryId) {
-							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: selectedEntry.id});
 							_kdpFirstPlay = false;
 						}
 					}
-					if (updateKdp && _img && _img.parent) {
+					if (_img && _img.parent) {
 						kdpHolder.removeChild(_img);
 					}
 				}
 			}
+			
 
 			
 			/**
@@ -265,54 +278,31 @@
 			}
 
 			
+			/**
+			 * has the data in the panel changed since last save?
+			 * */
 			public function wasChanged():Boolean {
-				if (_kClip && kClipReady) {
+				if (_kClipReady) {
 					return _kClip["isSaveRequired"]();
 				}
 				return false;
 			}
 
 
-			/**
-			 * adjust the dataprovider for file actions dropdown
-			 * @param cuepoints count
-			 * */
-			private function adjustBulkActions(value:Object):void {
-				// copy the array for the new entry
-				var ar:Array = BULK_ACTIONS.concat();
-				
-				if (value != null && value == 0) {
-					// remove the download option
-					ar.splice(1, 1);
-				}
-				if (!editable) {
-					// remove the upload action
-					ar.splice(0, 1);
-				}
-				cbActions.dropdown.dataProvider = ar;
-				cbActions.dataProvider = ar;
-				cbActions.selectedIndex = -1; 
-				cbActions.enabled = true;
-			}
-
 
 			/**
 			 * set the given CP's values in the details form.
 			 * */
-			private function editCuePoint(o:Object):void {
+			private function showCuePointDetails(o:Object):void {
 				var cp:KalturaAdCuePoint = new KalturaAdCuePoint();
 				ObjectUtil.copyObject(o, cp);
 				_selectedCuePoint = cp;
-//				if (cp) {
-					// if roles and permissions allow editing, make the form editable
-					if (editable) {
-						_formEnabled = true;
-					}
-					cbType.selectedIndex = getAdType(_selectedCuePoint);
-					cbProvider.selectedItem = getAdProvider(_selectedCuePoint);
-//				} else {
-//					_formEnabled = false;
-//				}
+				// if roles and permissions allow editing, make the form editable
+				if (editable) {
+					_formEnabled = true;
+				}
+				cbType.selectedIndex = getAdType(_selectedCuePoint);
+				cbProvider.selectedItem = getAdProvider(_selectedCuePoint);
 			}
 
 
@@ -325,12 +315,13 @@
 					_kClip = kClipLoader.content["application"] as DisplayObject;
 					_kClip.width = kClipHolder.width;
 					addKClipListeners();
-					if (_selectedEntry) {
-						updateWidgetsStatus(true, false);
+					if (selectedEntry) {
+						updateKClipStatus(true);
 					}
 				} else {
 					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
 					EntryAds.kClipLoader = new SWFLoader();
+					kClipLoader.trustContent = true;
 					kClipHolder.addChild(kClipLoader);
 					kClipLoader.addEventListener(Event.COMPLETE, onKClipLoaded);
 					kClipLoader.scaleContent = true;
@@ -343,11 +334,12 @@
 			  	if (EntryAds.kdpLoader) {
 					kdpHolder.addChild(kdpLoader);
 					_kdp = kdpLoader.content;
+					_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 					_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
 					_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
 					_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
-					if (_selectedEntry) {
-						updateWidgetsStatus(false, true);
+					if (selectedEntry) {
+						updateKdpStatus(true);
 					}
 				} else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
@@ -357,7 +349,6 @@
 					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
 					kdpLoader.load(newUrl);
 				}  
-
 			}
 
 
@@ -369,6 +360,8 @@
 				kClipLoader.width = kClipHolder.width;
 				kClipLoader.height = kClipHolder.height;
 				kClipLoader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
+//				if (kClipLoader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
+//					IEventDispatcher(kClipLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 			}
 
 
@@ -430,23 +423,33 @@
 			private function handleKClipEvents(e:Event):void {
 				switch (e.type) {
 					case KClipEventTypes.CLIPPER_READY:
-						kClipReady = true;
-						// disable or set entry id
-						if (_selectedEntry.status != KalturaEntryStatus.READY) {
-							_kClip["setDisabled"](true);
-						}
-						else {
-							_kClip["setEntryId"](_selectedEntry.id);
-						}
+						// we get this the first time kclip is initialized 
+//						// disable or set entry id
+//						if (selectedEntry.status != KalturaEntryStatus.READY) {
+//							_kClip["setDisabled"](true);
+//						}
+//						else {
+//							_kClip["setEntryId"](selectedEntry.id);
+//						}
+						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
+						updateKClipStatus(true);
 						break;
 					case KClipEventTypes.ENTRY_READY:
+						// we get this after kclip finished loading entry data
+						_kClipReady = true;
 						_kClip["setDisabled"](!editable);
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
-						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
+						if (_kdpInitiatedUpdate) {
+							_kdpInitiatedUpdate = false;
+						}
+						else {
+							updateKdpPlayhead(parseFloat(e["data"]) / 1000);
+						}
 						break;
 					case KClipEventTypes.SELECTED_ASSET_REMOVED:
 						_formEnabled = false;
+						_selectedCuePoint = null;
 						_counter--;
 						if (_counter < 0) {
 							_counter = 0;
@@ -458,10 +461,8 @@
 						_counter = 0;
 						break;
 					case KClipEventTypes.CUE_POINT_CHANGED:
-						editCuePoint(e["data"]);
-						break;
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
-						editCuePoint(e["data"]);
+						showCuePointDetails(e["data"]);
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
 						onKClipError(e["data"]);
@@ -497,14 +498,15 @@
 				loader.width = kdpHolder.width;
 				loader.height = kdpHolder.height;
 				_kdp = loader.content;
-				updateWidgetsStatus(false, true, false);
+				updateKdpStatus(false);
 				if (!kdpLoader.parent) {
 					kdpHolder.addChild(kdpLoader);
 				}
 				if (_img && _img.parent) {
 					kdpHolder.removeChild(_img);
 				}
-
+				if (kdpLoader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
+					IEventDispatcher(kdpLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 				initKdp();
 			}
 
@@ -522,7 +524,7 @@
 				params.loop = "false";
 				params.autoRewind = "false";
 				params.sourceType = "entryId";
-				params.entryId = _selectedEntry.id;
+				params.entryId = selectedEntry.id;
 				if (context.drilldownUiconf)
 					params.uiConfId = context.drilldownUiconf;
 				params.ks = context.kc.ks;
@@ -534,6 +536,7 @@
 				_kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp["init"]();
+				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
@@ -543,8 +546,8 @@
 			private function handleKdpEvents(e:Event):void {
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
-						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+//						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
+//						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						if (!_kdpFirstPlay) {
 							_kdpFirstPlay = true;
 							if (_kClipInitiatedPlay) {
@@ -556,11 +559,12 @@
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
-						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+//						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+//						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KdpEventTypes.PLAYER_UPDATE_PLAYHEAD:
-						if (_kClip) {
+						if (_kClipReady) {
+							_kdpInitiatedUpdate = true;
 							_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000)
 						}
 						break;
@@ -569,14 +573,17 @@
 
 
 			/**
-			 * update kdp with new time (event data is new time in ms)
+			 * update kdp with new time
+			 * @param n new time in seconds
 			 * */
 			private function updateKdpPlayhead(n:Number):void {
 				if (_kdp) {
 					if (_kdpFirstPlay) {
+						// kdp played before. just seek
 						_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
 					}
 					else {
+						// cause first play
 						_kClipInitiatedPlay = true;
 						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
 						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
@@ -612,8 +619,6 @@
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
 				if (prevadtype != _selectedCuePoint.adType && _selectedCuePoint.adType == KalturaAdType.VIDEO){
 					teDuration.timeValue = {};
-//					return;
-					//TODO should we reset _selectedCuePoint.endTime ? 
 				}
 				else {
 					// duration
@@ -631,7 +636,7 @@
 			private function validate():Boolean {
 				_selectedCuePoint = null;
 				_formEnabled = false;
-				if (!kClipReady) {
+				if (!_kClipReady) {
 					// the component wasn't ready so no data 
 					// could have changed to invalid data
 					return true;
@@ -778,12 +783,40 @@
 			}
 
 
-			protected function removeAllCuePoints(event:MouseEvent):void {
-				if (_kClip && kClipReady) {
+			private function removeAllCuePoints(event:MouseEvent):void {
+				if (_kClipReady) {
 					_kClip["removeAll"]();
 				}
 			}
+			
+			
+			
+			
+			// =====================================================================
+			// BULK RELATED STUFF
+			// =====================================================================
 
+			/**
+			 * adjust the dataprovider for file actions dropdown
+			 * @param cuepoints count
+			 * */
+			private function adjustBulkActions(value:Object):void {
+				// copy the array for the new entry
+				var ar:Array = BULK_ACTIONS.concat();
+				
+				if (value != null && value == 0) {
+					// remove the download option
+					ar.splice(1, 1);
+				}
+				if (!editable) {
+					// remove the upload action
+					ar.splice(0, 1);
+				}
+				cbActions.dropdown.dataProvider = ar;
+				cbActions.dataProvider = ar;
+				cbActions.selectedIndex = -1; 
+				cbActions.enabled = true;
+			}
 
 			private function handleBulkActions(event:ListEvent):void {
 				var action:String = (event.target as ComboBox).selectedItem.value;
@@ -795,7 +828,7 @@
 						break;
 					case 'ads_bulk_download':
 						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.DOWNLOAD_CUEPOINTS);
-						cg.data = _selectedEntry.id;
+						cg.data = selectedEntry.id;
 						cg.dispatch();
 						break;
 					case 'ads_bulk_sample':
@@ -818,20 +851,19 @@
 			}
 
 
-			protected function cbActions_updateCompleteHandler(event:FlexEvent):void
-			{
+			/**
+			 * after changing the CB dataprovider, fix dropdown size
+			 * (Flex 3.5 bug)
+			 * */
+			private function cbActions_updateCompleteHandler(event:FlexEvent):void {
 				if (cbActions.dropdown) {
 					cbActions.dropdown.width = cbActions.width;
 				}
 			}
 
-
-			/**
-			 * stop KDP if it happens to be playing
-			 * */
-			protected function hideHandler(event:FlexEvent):void {
-				_kdp["sendNotification"](KdpEventTypes.DO_STOP);
-			}
+			// =====================================================================
+			
+			
 
 		]]>
 	</mx:Script>
@@ -853,9 +885,9 @@
 					<mx:Label text="{resourceManager.getString('cms', 'timing')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" styleName="timeEntry" 
-										  maximum="{(_selectedEntry as KalturaMediaEntry).duration}"
+										  maximum="{(selectedEntry as KalturaMediaEntry).duration}"
 										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
-										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" showSeconds="true" showMiliseconds="true" 
+										  showHours="{(selectedEntry as KalturaMediaEntry).duration > 3600}" showSeconds="true" showMiliseconds="true" 
 										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
@@ -867,7 +899,7 @@
 					<mx:Spacer />
 					<mx:Label text="{resourceManager.getString('cms', 'durationLabel')}" styleName="formLabel" enabled="{teDuration.enabled}" />
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}" 
-										  showHours="{(_selectedEntry as KalturaMediaEntry).duration > 3600}" 
+										  showHours="{(selectedEntry as KalturaMediaEntry).duration > 3600}" 
 										  showMiliseconds="true" showSeconds="true" timeValue="{getDuration(_selectedCuePoint)}"
 										  change="updateCuePointData(event)" styleName="timeEntry" />
 				</mx:HBox>
