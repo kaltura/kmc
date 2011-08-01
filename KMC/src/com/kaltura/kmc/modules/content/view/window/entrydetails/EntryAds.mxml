@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
 		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" 
-		 xmlns:controls="com.kaltura.controls.*">
+		 xmlns:controls="com.kaltura.controls.*" hide="hideHandler(event)">
 	<mx:Metadata>
 		[Event(name="cuepointsSaved", type="flash.events.Event")]
 	</mx:Metadata>
@@ -823,6 +823,14 @@
 				if (cbActions.dropdown) {
 					cbActions.dropdown.width = cbActions.width;
 				}
+			}
+
+
+			/**
+			 * stop KDP if it happens to be playing
+			 * */
+			protected function hideHandler(event:FlexEvent):void {
+				_kdp["sendNotification"](KdpEventTypes.DO_STOP);
 			}
 
 		]]>
