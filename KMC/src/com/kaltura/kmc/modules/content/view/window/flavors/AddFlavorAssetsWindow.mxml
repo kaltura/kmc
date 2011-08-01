@@ -59,6 +59,21 @@
 			public static const ACTION_IMPORT:String = "action_import";
 			public static const ACTION_LINK:String = "action_link";
 			
+			
+//			private const strRegex:String = "^((https?)|(ftp)):\\/\\/" +
+//				"(([0-9a-zA-Z_!~*'().&=+$%-]+:)?[0-9a-zA-Z_!~*'().&=+$%-]+@)?" + //user@
+//				"(([0-9]{1,3}\\.){3}[0-9]{1,3}" + // IP- 199.194.52.184
+//				"|" + // allows either IP or domain
+//				"([0-9a-zA-Z_!~*'()-]+\\.)*" + // tertiary domain(s)- www.
+//				"([0-9a-zA-Z][0-9a-zA-Z-]{0,61})?[0-9a-zA-Z]\\." + // second level domain
+//				"[a-zA-Z]{2,6})" + // first level domain- .com or .museum
+//				"(.[a-zA-Z]{2,6})*" + // additional domain level .il
+//				"(:[0-9]{1,4})?" + // port number- :80
+//				"((\\/?)|" + // a slash isn't required if there is no file name
+//				"(\\/[0-9a-zA-Z_!~*'().;?:@&=+$,%#-]+)+)$";
+			
+			
+			
 			[Bindable]
 			/**
 			 * windowState is the state the window is currently functioning at.
@@ -165,13 +180,14 @@
 			
 			
 			protected function validateURLs():Boolean {
-				var e:ValidationResultEvent;
-				for each (var ff:UploadFileVo in filesList) {
-					e = urlValidator.validate(ff.fileName);
-					if (e.results) {
-						return false;
-					}
-				}
+//				var e:ValidationResultEvent;
+//				for each (var ff:UploadFileVo in filesList) {
+//					e = regExpV.validate(ff.fileName);
+////					e = urlValidator.validate(ff.fileName);
+//					if (e.results) {
+//						return false;
+//					}
+//				}
 				return true;
 			}
 			
@@ -595,7 +611,8 @@
 
 		]]>
 	</mx:Script>
-	<validators:URLValidator id="urlValidator" required="true" property="text"/>
+	<!--<mx:RegExpValidator id="regExpV" expression="{strRegex}"  />
+	<validators:URLValidator id="urlValidator" required="true" property="text"/>-->
 	
 	<mx:HBox verticalAlign="middle" visible="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}" 
 			 includeInLayout="{windowState == AddFlavorAssetsWindow.MULTI_FILES_STATE}">
