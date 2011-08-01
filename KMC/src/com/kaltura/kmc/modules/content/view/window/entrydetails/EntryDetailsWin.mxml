@@ -791,14 +791,16 @@
 			 * */
 			private function saveEntryDetails(e:Event):void {
 				//_entriesToSave[entryIndex] = _undoToEntry;
-				destroyPanels();
+				
 				// if we got here, all panels validation passed ok, the error was null.	
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]), _closeAfterSave, _nextEntryPending);
 				cgEvent.dispatch();
 				if (_nextEntryPending)
 					setNextEntry();
-				if (_closeAfterSave)
+				if (_closeAfterSave) {
+					destroyPanels();
 					removeWatchers();
+				}
 
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
