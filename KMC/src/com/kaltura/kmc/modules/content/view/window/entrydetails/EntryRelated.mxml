@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
-		 width="100%" height="100%">
+		 width="100%" height="100%" creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
@@ -80,6 +80,11 @@
 				dataGrid.columns = arrCol.source;
 			}
 			
+			private function onCreationComplete():void {
+				dataGrid.addEventListener(FILE_CHANGED, onFileChanged);
+				dataGrid.addEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted);
+			}
+			
 			private function onFileChanged(event:Event):void {
 				_wasChanged = true;
 				var _changedFile:RelatedFileVO = event.target.data as RelatedFileVO;
@@ -125,8 +130,6 @@
 				_wasChanged = false;
 				var list:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.LIST_RELATED_FILES);
 				list.dispatch();
-				dataGrid.addEventListener(FILE_CHANGED, onFileChanged, false, 0, true);
-				dataGrid.addEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted, false, 0, true);
 			}
 			
 			public function destroy():void {
