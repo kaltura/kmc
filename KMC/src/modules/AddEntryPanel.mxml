@@ -76,7 +76,8 @@
 			}
 
 			protected function showUploadSettingsWindow(e:Event):void {
-				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+//				trace("showUploadSettingsWindow");
+				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow, false);
 				var fus:FileUploadSettings = new FileUploadSettings();
 				fus.client = _kc;
 				fus.uploadFiles((e.target as MultipleMediaFilesSelector).getFiles());
@@ -90,8 +91,9 @@
 			 * */
 			public function addUpload(event:MouseEvent = null):void {
 				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
-				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow, false, 0, true);
 				neu.doFileUpload();
+//				trace("addUpload");
 			}
 
 
