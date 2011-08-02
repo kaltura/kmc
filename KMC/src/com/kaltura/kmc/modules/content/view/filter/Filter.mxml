@@ -474,7 +474,7 @@
 					var mainKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
 					mainKalturaMetadataSearchItem.type = KalturaSearchOperatorType.SEARCH_AND;
 					mainKalturaMetadataSearchItem.metadataProfileId = metadataProfile.profile.id;
-					
+					var btnArr:Array;
 					//Setting the advanced filter when one change the filter of the metadata
 					for (var i:int = 0; i < metadataProfile.metadataFieldVOArray.length; i++) {
 						var fieldKalturaMetadataSearchItem:KalturaMetadataSearchItem = new KalturaMetadataSearchItem();
@@ -486,7 +486,6 @@
 						
 						//recive the buttons array according to the list fiels vo that saved if not saved return null
 						//and bypass
-						var btnArr:Array;
 						if (_metadataFilters[metadataProfile.profile.id])
 							btnArr = _metadataFilters[metadataProfile.profile.id][StringUtil.trim(metadataFieldVo.name)];
 						
@@ -506,6 +505,7 @@
 								}
 							}
 						}
+						btnArr = null;
 						
 						//if we have items in the array add them to main filter
 						if (fieldKalturaMetadataSearchItem.items.length > 0) {
