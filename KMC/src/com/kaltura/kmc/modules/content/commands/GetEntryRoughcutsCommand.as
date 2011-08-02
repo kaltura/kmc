@@ -30,8 +30,8 @@ package com.kaltura.kmc.modules.content.commands
 			_model.decreaseLoadCounter();
 			
 			if(data.data && data.data is Array) {
-				_model.entryDetailsModel.selectedEntry.parts = data.data;
-				_model.entryDetailsModel.selectedEntry.dispatchEvent(new Event("partsChanged"));
+				_model.entryDetailsModel.contentParts = data.data;
+//				_model.entryDetailsModel.selectedEntry.dispatchEvent(new Event("partsChanged"));
 			}
 			else
 				trace("Error getting the list of roughcut entries");

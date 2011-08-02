@@ -107,10 +107,18 @@ package com.kaltura.kmc.modules.content.model
 		 * if selected entry was refreshed
 		 * */
 		public var selectedEntryReloaded:Boolean;		
+		
 		/**
 		 * whether to display "mixes" tab in entrydrilldown 
 		 */		
 		public var showMixesTab:Boolean = true;
+		
+		/**
+		 * for mix entries, all the entries that make up the mix.
+		 * for other entries, all the mixes this entry appears in. 
+		 */
+		public var contentParts:Array;
+		
 		
 		/**
 		 * when saving an entry we list all entries that have the same 

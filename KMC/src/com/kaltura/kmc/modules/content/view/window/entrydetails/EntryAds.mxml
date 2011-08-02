@@ -187,8 +187,9 @@
 			 * @return true if save process required (and began), false otherwise
 			 * */
 			public function saveCuepoints():Boolean {
+				trace("ads.saveCuepoints");
 				var res:Boolean = false;
-				if (_kClipReady) {
+				if (_kClipReady && _kClip["isSaveRequired"]()) {
 					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
 					_kClip["save"]();
 					res = true;
@@ -878,7 +879,7 @@
 			<mx:Spacer height="10" />
 			<mx:HRule width="100%" />
 			<mx:Spacer height="10" />
-			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%"
+			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%" styleName="adsExplain"
 					 visible="{!_formEnabled}" includeInLayout="{!_formEnabled}" />
 			<mx:VBox id="details" width="100%" visible="{_formEnabled}" includeInLayout="{_formEnabled}">
 				<mx:HBox styleName="noPadding">

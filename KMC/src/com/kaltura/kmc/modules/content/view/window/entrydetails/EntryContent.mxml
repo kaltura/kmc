@@ -19,6 +19,9 @@
 			[Bindable]
 			public var selectedEntry:KalturaBaseEntry;
 			
+			[Bindable]
+			public var parts:Array;
+			
 			/**
 			 * indicates the current entry is a livestream entry
 			 * */
@@ -36,17 +39,17 @@
 			
 			public function initData():void {
 				// monitor data change if needed
-//				if (!_cw) {
-//					_cw = BindingUtils.bindSetter(removeTab, selectedEntry, "parts");
-//				}
-				selectedEntry.addEventListener("partsChanged", removeTab, false, 0, true);
+				if (!_cw) {
+					_cw = BindingUtils.bindSetter(removeTab, this, "parts");
+				}
+//				selectedEntry.addEventListener("partsChanged", removeTab, false, 0, true);
 				// get data
 				loadEntries();
 			}
 
 			public function destroy():void {
-//				_cw.unwatch();
-				selectedEntry.removeEventListener("partsChanged", removeTab, false);
+				_cw.unwatch();
+//				selectedEntry.removeEventListener("partsChanged", removeTab, false);
 			}
 			
 			private function onPaging():void {
@@ -88,9 +91,9 @@
 				event.target.removeColumn(resourceManager.getString('cms', 'intime'));
 			}
 			
-			private function removeTab(e:Event):void {
-//			private function removeTab(value:Array):void {
-				var value:Array = selectedEntry.parts;
+//			private function removeTab(e:Event):void {
+			private function removeTab(value:Array):void {
+//				var value:Array = selectedEntry.parts;
 				if (value && value.length == 0 && this.parent) {
 					this.parent.removeChild(this);
 				}
