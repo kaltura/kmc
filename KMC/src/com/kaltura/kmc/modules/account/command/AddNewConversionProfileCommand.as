@@ -24,7 +24,8 @@ package com.kaltura.kmc.modules.account.command {
 			
 			var mr:MultiRequest = new MultiRequest();
 			var cnt:int = 1;	// mr index counter
-			
+			cProfile.profile.setUpdatedFieldsOnly(true);
+			cProfile.profile.setInsertedFields(true);
 			var addConversionProfile:ConversionProfileAdd = new ConversionProfileAdd(cProfile.profile);
 			mr.addAction(addConversionProfile);
 			
@@ -40,9 +41,9 @@ package com.kaltura.kmc.modules.account.command {
 				}
 			} 
 			
-			addConversionProfile.addEventListener(KalturaEvent.COMPLETE, result);
-			addConversionProfile.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(addConversionProfile);
+			mr.addEventListener(KalturaEvent.COMPLETE, result);
+			mr.addEventListener(KalturaEvent.FAILED, fault);
+			_model.context.kc.post(mr);
 		}
 
 
