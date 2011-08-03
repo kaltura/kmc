@@ -18,6 +18,7 @@
 			import com.kaltura.types.KalturaDropFolderFileErrorCode;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaDropFolder;
 			import com.kaltura.vo.KalturaDropFolderFile;
 			
 			import mx.collections.ArrayCollection;
@@ -58,6 +59,21 @@
 				paging.selectedPage = 1;
 				loadDropFolderFiles();
 				updateExpenderLabel();
+			}
+			
+			/**
+			 * Create suitable string to display in the "Folder Name" column
+			 * */
+			private function folderNameFunc(item:Object, column:DataGridColumn): String {
+				var curFile:KalturaDropFolderFile = item as KalturaDropFolderFile;
+				
+				for each (var folder:KalturaDropFolder in dropFolderModel.dropFolders) {
+					if (curFile.dropFolderId == folder.id) {
+						return folder.name;
+					}
+				}
+				
+				return '';
 			}
 			
 			/**
@@ -279,6 +295,7 @@
 				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true">
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" labelFunction="{folderNameFunc}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
