@@ -90,6 +90,7 @@
 			 * Opens a desktop file selection pop-up. Allowing video, audio and image files selection
 			 * */
 			public function addUpload(event:MouseEvent = null):void {
+				hidePanel();
 				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
 				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow, false, 0, true);
 				neu.doFileUpload();
@@ -112,6 +113,7 @@
 			 * Opens a desktop file selection pop-up, allowing csv/xml files selection
 			 * */
 			public function addBulk(event:MouseEvent = null):void {
+				hidePanel();
 				var bu:BulkUploader = new BulkUploader(_kc);
 				bu.addEventListener(Event.COMPLETE, onBulkAdded);
 				bu.doUpload();
@@ -258,7 +260,7 @@
 			
 			protected function onBulkAdded(e:Event):void {
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.refreshBulk"}, true));
-				hidePanel();
+//				hidePanel();
 			}
 
 
