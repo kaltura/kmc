@@ -22,7 +22,7 @@
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
@@ -81,7 +81,16 @@
 			 * */
 			private var _kClipInitiatedPlay:Boolean = false;
 
+			/**
+			 * to stop loop between updating playhead in kclip/kdp
+			 * */
 			private var _kdpInitiatedUpdate:Boolean = false;
+			
+			/**
+			 * so that we won't add listeners to kclip and KDP every time 
+			 * initData is called (when paging between entries)
+			 * */
+			private var _widgetsLoaded:Boolean = false;
 
 			[Bindable]
 			/**
@@ -139,6 +148,7 @@
 			 * */
 			private function uncaughtErrorHandler(event:Event):void {
 				event.preventDefault();
+				trace("uncaughtErrorHandler: ");
 				trace(event, event["error"]);
 			}
 
@@ -178,7 +188,10 @@
 				if (!_watchCPCount) {
 					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, entryDetailsModel, "cuepointsCount");
 				}
-				loadWidgets(null);
+				if (!_widgetsLoaded) {
+					_widgetsLoaded = true;
+					loadWidgets();
+				}
 				// get number of entry cuepoints
 				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
 				cg.data = selectedEntry.id;
@@ -191,7 +204,6 @@
 			 * @return true if save process required (and began), false otherwise
 			 * */
 			public function saveCuepoints():Boolean {
-				trace("ads.saveCuepoints");
 				var res:Boolean = false;
 				if (_kClipReady && _kClip["isSaveRequired"]()) {
 					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
@@ -313,7 +325,7 @@
 			/**
 			 * load KDP and KClip or add them to stage, as needed.
 			 * */
-			private function loadWidgets(event:FlexEvent):void {
+			private function loadWidgets():void {
 				if (EntryAds.kClipLoader) {
 					kClipHolder.addChild(kClipLoader);
 					_kClip = kClipLoader.content["application"] as DisplayObject;
@@ -396,23 +408,14 @@
 
 
 			private function addKClipListeners():void {
-				if (!_kClip.willTrigger(KClipEventTypes.PLAYHEAD_UPDATED))
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.SELECTED_ASSET_REMOVED))
 					_kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.ALL_ASSETS_REMOVED))
 					_kClip.addEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.CUE_POINT_CHANGED))
 					_kClip.addEventListener(KClipEventTypes.CUE_POINT_CHANGED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.SELECTED_ASSET_CHANGED))
 					_kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_CHANGED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.ENTRY_READY))
 					_kClip.addEventListener(KClipEventTypes.ENTRY_READY, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.CLIPPER_ERROR))
 					_kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.CUE_POINT_ADDED))
 					_kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
-				if (!_kClip.willTrigger(KClipEventTypes.CLIPPER_READY))
 					_kClip.addEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
 			}
 
