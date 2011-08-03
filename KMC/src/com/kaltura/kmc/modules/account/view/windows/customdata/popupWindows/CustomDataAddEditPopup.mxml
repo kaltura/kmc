@@ -32,7 +32,8 @@
 			public static const FIELD_ID_PREFIX:String = "md_";
 			public static const MAX_NAME_LENGTH:int = 25;
 			public static var INVALID_CHARS_REGEXP:RegExp = /[<>'"&]/;
-			public static var INVALID_OPTIONS_REGEXP:RegExp = /[`~:;!@#$%\^&*()\-+=|',.?\/\\{}<>"\[\]]/;
+			public static var INVALID_OPTIONS_REGEXP:RegExp = /[`~:;!@#$%\^&*()\+=|',.?\/\\{}<>"\[\]]/;
+			public static var INVALID_OPTIONS_PREFIX_REGEXP:RegExp = /^-/;
 			public static var INVALID_NAME_PREFIX_REGEXP:RegExp = /^[0-9`~:;!@#$%\^&*()\-_+=|',.?\/\\{}<>"\[\]]/;
 
 			//private var rootUrl:String;
@@ -230,6 +231,13 @@
 				if (INVALID_OPTIONS_REGEXP.test(optionalValuesInput.text)) {
 					Alert.show(resourceManager.getString('account', 'customFieldsValuesError'), resourceManager.getString('account', 'metadataInvalidInput'));
 					return;
+				}
+				var values:Array = optionalValuesInput.text.split('\r');
+				for each (var value:String in values) {
+					if (INVALID_OPTIONS_PREFIX_REGEXP.test(value)) {
+						Alert.show(resourceManager.getString('account', 'customFieldsValuesPrefixError'), resourceManager.getString('account', 'metadataInvalidInput'));
+						return;
+					}		
 				}
 
 				if (currentState != EDIT_MODE_STATE) {
