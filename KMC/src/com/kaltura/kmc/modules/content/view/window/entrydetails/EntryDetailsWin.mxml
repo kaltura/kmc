@@ -679,7 +679,6 @@
 			 * validate all panels, if validation is ok proceed to save().
 			 * */
 			private function validate():void {
-				trace('validate');
 				// validation:
 				var validationResult:EntryDetailsValidationError = entryMetaData.save();
 				if (validationResult.error == null) {
@@ -705,7 +704,6 @@
 						}
 					}
 				}
-				trace("validation result error:", validationResult.error); 
 				
 				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
 					handleValidationError(entryMetaData, resourceManager.getString('cms','entryNameIsMandatory'), resourceManager.getString('cms','metadataError'));
@@ -739,7 +737,6 @@
 				else {
 					// if referenceId was changed
 					if ( /* _selectedEntry.referenceId && */_undoToEntry.referenceId && _selectedEntry.referenceId != _undoToEntry.referenceId) {
-						trace("getting entry with same refid");
 						// list all entries with the same refid
 						// if any, show message
 						if (!_sameRefidWatcher) {
@@ -748,7 +745,6 @@
 						var cg:CairngormEvent = new EntryEvent(EntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
 						cg.dispatch();
 					} else
-						trace("calling saveCuepoints");
 						saveCuepoints();
 				}
 			}
@@ -784,15 +780,12 @@
 			 * the close event is there in case the function is triggered from alert
 			 * */
 			private function saveCuepoints(e:CloseEvent = null):void {
-				trace("saveCuepoints")
 				if (e && e.detail == Alert.NO) {
 					_nextEntryPending = false;
-					trace("> not saving");
 					return;
 				}
 				// save cuepoints if needed
 				if (!ads.saveCuepoints()) {
-					trace("> not saving cuepoints");
 					saveEntryDetails(null);
 				}
 				// when saving cuepoints, saveEntryDetails will be triggered when save is done. 
@@ -803,7 +796,6 @@
 			 * update selected entry on server
 			 * */
 			private function saveEntryDetails(e:Event):void {
-				trace("saveEntryDetails");
 				//_entriesToSave[entryIndex] = _undoToEntry;
 				
 				// if we got here, all panels validation passed ok, the error was null.	
@@ -1010,7 +1002,6 @@
 			 * initializes save process
 			 * */
 			private function submitChanges(closeAfterSave:Boolean):void {
-				trace('submitChanges');
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}

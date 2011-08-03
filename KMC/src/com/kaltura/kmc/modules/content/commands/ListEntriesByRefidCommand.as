@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
@@ -19,6 +20,10 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
+//			var refid:String = (event as EntryEvent).entryVo.referenceId;
+//			if (refid == KalturaClient.NULL_STRING) { 
+//				refid = '';
+//			}
 			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
 			f.referenceIdEqual = (event as EntryEvent).entryVo.referenceId;
 			var getMediaList:BaseEntryList = new BaseEntryList(f);

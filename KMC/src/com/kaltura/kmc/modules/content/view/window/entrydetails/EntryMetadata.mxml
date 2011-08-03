@@ -10,6 +10,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -45,6 +46,8 @@
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
+			
+			import org.flexunit.internals.runners.statements.StackAndFrameManagement;
 
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
 			public static const OPEN_PREVIEW:String = "openPreview";
@@ -107,10 +110,12 @@
 			
 			private var _selectedEntryId:String;
 
+			private var _originalRefid:String;
 
 			public function initData():void {
 				//reset values to starting point
 				_entryHasContent = true;
+				_originalRefid = selectedEntry.referenceId;
 				kdp3Loader.includeInLayout = kdp3Loader.visible = true;
 				if (kdpContainer.getChildAt(0) is Image)
 					kdpContainer.removeChildAt(0);
@@ -170,9 +175,8 @@
 				// entry name
 				if (name_input.text == "") {
 					result.error = EntryDetailsValidationError.ENTRY_NAME_MISSING;
-
 				}
-				else {
+				if (result.error == null) {
 					// categories section
 					// auto-complete event isn't full so we need to add this here
 					var catArr:Array = categoriesTextInput.text.split(',');
@@ -189,11 +193,14 @@
 					else {
 						// set the categories on the entry
 						selectedEntry.categories = tempArr.join(',');
-
-						if (isLiveStream)
-							(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 					}
 				}
+//				if (!selectedEntry.referenceId) {
+//					// so we'll delete older values
+//					selectedEntry.referenceId = KalturaClient.NULL_STRING;
+//				}
+				if (isLiveStream)
+					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 				return result;
 			}
 
@@ -706,6 +713,32 @@
 			protected function openTrimming(event:MouseEvent):void {
 				JSGate.openClipApp(selectedEntry.id, "trim");
 			}
+			
+			private function getRefid(refid:String):String {
+				if (refid == KalturaClient.NULL_STRING) {
+					return '';
+				}
+				else return refid;
+			}
+
+
+			protected function referenceId_changeHandler(event:Event):void
+			{
+//				selectedEntry.referenceId = event.target.text;
+				if(event.target.text == '') {
+					if (_originalRefid == null){
+						// no change from original empty value
+						selectedEntry.referenceId = null;
+					}
+					else {
+						// used to have value, delete it
+						selectedEntry.referenceId = KalturaClient.NULL_STRING;
+					}
+				}
+				else {
+					selectedEntry.referenceId = event.target.text;
+				}
+			}
 
 		]]>
 	</mx:Script>
@@ -744,8 +777,8 @@
 			</mx:HBox>
 			<mx:HBox width="100%">
 				<mx:Text htmlText="{resourceManager.getString('cms','referenceId')}" width="{LABEL_WIDTH}"/>
-				<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{selectedEntry.referenceId}"
-							  change="{selectedEntry.referenceId = event.target.text}" styleName="drillDownSubLabel"/>
+				<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{getRefid(selectedEntry.referenceId)}"
+							  change="referenceId_changeHandler(event)" styleName="drillDownSubLabel"/>
 			</mx:HBox>
 
 			<mx:HBox width="100%">
