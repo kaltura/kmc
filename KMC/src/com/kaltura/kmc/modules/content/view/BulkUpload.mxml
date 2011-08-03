@@ -20,16 +20,18 @@
 			import com.kaltura.types.KalturaBulkUploadType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
-			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaBulkUpload;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			import mx.controls.CheckBox;
-			import mx.controls.ComboBox;
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
+			import mx.resources.ResourceManager;
 
+			public const actionsDP:ArrayCollection = new ArrayCollection([
+				{value:"delete", label:ResourceManager.getInstance().getString('cms', 'delete')},
+				{value:"dnldLog", label:ResourceManager.getInstance().getString('cms', 'dnldLog')},
+				{value:"dnldOrig", label:ResourceManager.getInstance().getString('cms', 'dnldOrig')}]);
 			
 			[Bindable]
 			/**
@@ -85,6 +87,10 @@
 				return _pager;
 			}
 			
+			
+			// =============================================
+			// 			permissions stuff
+			// =============================================
 			public function get allowActions():Boolean {
 				return true;
 			}
@@ -101,7 +107,47 @@
 					bulkTable.columns = ar;
 				}
 			}
-
+			
+			
+			
+			public function get allowDownload():Boolean {
+				return true;
+			}
+			
+			public function set allowDownload(value:Boolean):void {
+				if (!value) {
+					for (var i:int = 0; i<actionsDP.length; i++) {
+						if (actionsDP[i].value == "dnldLog") {
+							actionsDP.removeItemAt(i);
+						}
+						if (actionsDP[i].value == "dnldOrig") {
+							actionsDP.removeItemAt(i);
+						}
+					}
+					if (actionsDP.length == 0) {
+						allowActions = false;
+					}
+				}
+			}
+			
+			public function get allowDelete():Boolean {
+				return true;
+			}
+			
+			public function set allowDelete(value:Boolean):void {
+				if (!value) {
+					for (var i:int = 0; i<actionsDP.length; i++) {
+						if (actionsDP[i].value == "delete") {
+							actionsDP.removeItemAt(i);
+						}
+					}
+					if (actionsDP.length == 0) {
+						allowActions = false;
+					}
+				}
+			}
+			
+			
 			public function getStatus(status:String):String {
 				return BulkTypes.getTypeName(uint(status));
 			}
@@ -222,6 +268,7 @@
 			private function getFailedReason (item:Object, column:DataGridColumn):String {
 				return BulkFailedReasonTranslator.getReason(item as KalturaBulkUpload);
 			}
+			
 		]]>
 	</mx:Script>
 
