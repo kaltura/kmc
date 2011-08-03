@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 xmlns:controls="com.kaltura.controls.*"
 		 horizontalAlign="left" width="100%" height="100%" 
 		 creationComplete="{creationCompleteHandler(event)}">
 
@@ -40,11 +40,6 @@
 			[Bindable]
 			public var bulkUploadEnabled : Boolean = true; 
 
-//			[Bindable]
-//			/**
-//			 * Kaltura Session key, used with EI call.
-//			 * */
-//			public var ks:String;
 
 			private var _pager:Pager;
 
@@ -53,45 +48,6 @@
 
 			private var _filter:FilterVO = new FilterVO();
 
-//			private var _fileReadyFlag:Boolean = false;
-
-
-
-			/**
-			 * this panel does not support initial filtering data, the kmef param is ignored.
-			 * @inheritDoc
-			 * */
-			public function init(kmef:KalturaBaseEntryFilter = null):void {
-				
-			}
-			
-//
-//
-//			private function setFileName(event:Event):void {
-//				_fileReadyFlag = true;
-//				var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.ADD_BULK_UPLOAD, _filter, _fm);
-//				bulkEvent.dispatch();
-//			}
-
-
-//			private function submitCSV():void {
-//				if (_fileReadyFlag) {
-//					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.ADD_BULK_UPLOAD, _filter, _fm);
-//					bulkEvent.dispatch();
-//					clearUpload();
-//
-//					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_BULK_UPLOAD, "Upload>SubmitCSV");
-//					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_BULK_UPLOAD, GoogleAnalyticsConsts.CONTENT);
-//				}
-//				else
-//					Alert.show(resourceManager.getString('cms', 'browseFirst'));
-//			}
-
-//
-//
-//			private function clearUpload():void {
-//				_fileReadyFlag = false;
-//			}
 
 			public function initPaging():void {
 				if (paging && _pager && _pager.allEntries)
@@ -111,13 +67,6 @@
 				}
 			}
 
-//
-//			public function addBulk():void {
-//				clearUpload();
-//				_fm.fr = new FileReference();
-//				_fm.fr.addEventListener(Event.SELECT, setFileName);
-//				_fm.fr.browse(getTypes());
-//			}
 
 
 			private function getTypes():Array {
@@ -284,23 +233,27 @@
 
 		<mx:VBox id="bulkUploadBox" width="100%" height="100%" >
 			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton" />
-			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" />
+			<mx:HBox styleName="noPadding" width="100%">
+				<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" />
+				<mx:Spacer width="100%" />
+				<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
+			</mx:HBox>
 			
 			<mx:VBox styleName="vGapBox" width="100%" height="100%">
-				<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false"
+				<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false" verticalAlign="middle"
 							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
 					<mx:columns>
 						<!-- file type -->
-						<mx:DataGridColumn width="50" labelFunction="getUploadType"
+						<mx:DataGridColumn width="50" labelFunction="getUploadType" 
 										   headerText="{resourceManager.getString('cms', 'uploadType')}" />
 						
 						<!-- uploaded by -->
-						<mx:DataGridColumn width="50" labelFunction="getScreenNameOrUserId"
+						<mx:DataGridColumn labelFunction="getScreenNameOrUserId"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
 										   showDataTips="true" dataTipField="uploadedBy"/>
 						
 						<!-- uploaded on -->
-						<mx:DataGridColumn dataField="uploadedOn" width="60"
+						<mx:DataGridColumn dataField="uploadedOn" width="100"
 										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
 										   showDataTips="true" dataTipField="uploadedOn">
 							<mx:itemRenderer>
@@ -311,7 +264,7 @@
 						</mx:DataGridColumn>
 						
 						<!-- number of entries -->
-						<mx:DataGridColumn dataField="numOfEntries" width="50"
+						<mx:DataGridColumn dataField="numOfEntries" width="110"
 										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
 							<mx:itemRenderer>
 								<mx:Component>
@@ -323,7 +276,7 @@
 						</mx:DataGridColumn>
 						
 						<!-- status -->
-						<mx:DataGridColumn width="60" headerText="{resourceManager.getString('cms', 'status')}">
+						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'status')}">
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}" />
@@ -332,12 +285,11 @@
 						</mx:DataGridColumn>
 						
 						<!-- error -->
-						<mx:DataGridColumn dataField="error" width="100" labelFunction="getFailedReason"
-										   headerText="{resourceManager.getString('cms', 'error')}" showDataTips="true"
-										   dataTipField="error"/>
+						<mx:DataGridColumn dataField="error" dataTipField="error"
+										   headerText="{resourceManager.getString('cms', 'error')}" showDataTips="true" />
 						
 						<!-- actions -->
-						<mx:DataGridColumn id="actions" width="100" paddingLeft="7" paddingRight="7"
+						<mx:DataGridColumn id="actions" width="200" paddingLeft="7" paddingRight="7"
 										   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
 										   headerText="{resourceManager.getString('cms', 'action')}" />
 						
