@@ -141,6 +141,11 @@
 			 * file reference object used for bulk upload
 			 * */
 			private var _bulkUpldFileRef:FileReference;
+			
+			/**
+			 * current playhead position, in ms.
+			 * */
+			private var _playheadPosition:Number;
 
 
 			/**
@@ -460,11 +465,15 @@
 						_kClip["setDisabled"](!editable);
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
+						var value:Number = parseFloat(e["data"]); 
 						if (_kdpInitiatedUpdate) {
 							_kdpInitiatedUpdate = false;
 						} else {
-							updateKdpPlayhead(parseFloat(e["data"]) / 1000);
+							if (value != _playheadPosition) {
+								updateKdpPlayhead(value / 1000);
+							}
 						}
+						_playheadPosition = value; 
 						break;
 					case KClipEventTypes.SELECTED_ASSET_REMOVED:
 						_formEnabled = false;
