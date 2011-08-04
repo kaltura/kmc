@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.kmc.modules.content.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import mx.collections.ArrayCollection;
@@ -57,6 +58,12 @@ package com.kaltura.kmc.modules.content.commands {
 			var tempAc:ArrayCollection = new ArrayCollection();
 			var foundIsOriginal:Boolean = false;
 			for each (var assetWithParam:KalturaFlavorAssetWithParams in arrCol) {
+				if (assetWithParam.flavorAsset && assetWithParam.flavorAsset.status == KalturaFlavorAssetStatus.TEMP) {
+					// flavor assets will have status temp if it's source of conversion 
+					// profile that has no source, during transcoding. we don't want to 
+					// show these.
+					continue;
+				}
 				if ((assetWithParam.flavorAsset != null) && (assetWithParam.flavorAsset.isOriginal)) {
 					foundIsOriginal = true;
 				}
