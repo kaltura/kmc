@@ -70,10 +70,10 @@
 
 			/**
 			 * remember if the kdp already got its first "doPlay" call.
-			 * when we get updatePlayhead from kclip, if kdpFirstPlay
+			 * when we get updatePlayhead from kclip, if kdpFirstPlayed
 			 * we do doSeek, otherwise we do mediaPlayFrom and doPlay+doPause
 			 * */
-			private var _kdpFirstPlay:Boolean = false;
+			private var _kdpFirstPlayed:Boolean = false;
 
 			/**
 			 * when the KDP plays for the first time, if kClip initiated the play
@@ -264,7 +264,7 @@
 						}
 						if (setEntryId) {
 							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: selectedEntry.id});
-							_kdpFirstPlay = false;
+							_kdpFirstPlayed = false;
 						}
 					}
 					if (_img && _img.parent) {
@@ -417,6 +417,8 @@
 					_kClip.addEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
+					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_DROP, handleKClipEvents);
+					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
 			}
 
 
@@ -430,6 +432,8 @@
 				_kClip.removeEventListener(KClipEventTypes.CLIPPER_ERROR, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.CUE_POINT_ADDED, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_DRAG_DROP, handleKClipEvents);
+				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
 			}
 
 
@@ -438,15 +442,17 @@
 			 * */
 			private function handleKClipEvents(e:Event):void {
 				switch (e.type) {
+					case KClipEventTypes.PLAYHEAD_DRAG_START:
+						trace("got KClipEventTypes.PLAYHEAD_DRAG_START");
+						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+						break;
+					case KClipEventTypes.PLAYHEAD_DRAG_DROP:
+						trace("got KClipEventTypes.PLAYHEAD_DRAG_DROP");
+						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
+						break;
+					
 					case KClipEventTypes.CLIPPER_READY:
-						// we get this the first time kclip is initialized 
-//						// disable or set entry id
-//						if (selectedEntry.status != KalturaEntryStatus.READY) {
-//							_kClip["setDisabled"](true);
-//						}
-//						else {
-//							_kClip["setEntryId"](selectedEntry.id);
-//						}
 						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
 						updateKClipStatus(true);
 						break;
@@ -459,6 +465,7 @@
 						if (_kdpInitiatedUpdate) {
 							_kdpInitiatedUpdate = false;
 						} else {
+							trace("got KClipEventTypes.PLAYHEAD_UPDATED"); 
 							updateKdpPlayhead(parseFloat(e["data"]) / 1000);
 						}
 						break;
@@ -563,10 +570,11 @@
 					case KdpEventTypes.PLAYER_PLAYED:
 //						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 //						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
-						if (!_kdpFirstPlay) {
-							_kdpFirstPlay = true;
+						if (!_kdpFirstPlayed) {
+							_kdpFirstPlayed = true;
 							if (_kClipInitiatedPlay) {
 								// if kclip initiated, doPause
+								trace("kdp doPause");
 								_kdp["sendNotification"](KdpEventTypes.DO_PAUSE);
 								_kClipInitiatedPlay = false;
 							}
@@ -580,7 +588,10 @@
 					case KdpEventTypes.PLAYER_UPDATE_PLAYHEAD:
 						if (_kClipReady) {
 							_kdpInitiatedUpdate = true;
-							_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000)
+							if (!isNaN(parseFloat(e["data"]))) {
+								trace("kclip scrollToPoint: ", e["data"]);
+								_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000);
+							}
 						}
 						break;
 				}
@@ -593,12 +604,14 @@
 			 * */
 			private function updateKdpPlayhead(n:Number):void {
 				if (_kdp) {
-					if (_kdpFirstPlay) {
+					if (_kdpFirstPlayed) {
 						// kdp played before. just seek
+						trace("kdp doSeek");
 						_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
 					} else {
 						// cause first play
 						_kClipInitiatedPlay = true;
+						trace("kdp doPlay");
 						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
 						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
 					}
