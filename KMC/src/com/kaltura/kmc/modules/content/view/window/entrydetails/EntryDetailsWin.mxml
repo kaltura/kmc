@@ -412,7 +412,7 @@
 					//reset viewStack to its starting point
 					viewStack.removeAllChildren();
 					for each (var tab:DisplayObject in _originalTabs)
-					viewStack.addChild(tab);
+						viewStack.addChild(tab);
 					// show correct panels according to entry type
 					// live entry
 					if (_isLiveStream) {
@@ -954,13 +954,13 @@
 				if (_dataInitialized)
 					return;
 
-				for (var i:int = 0; i < viewStack.numChildren; i++) {
+				for (var i:int = viewStack.numChildren -1; i >= 0; i--) {
 					if (viewStack.getChildAt(i) is IDrilldownPanel)
 						(viewStack.getChildAt(i) as IDrilldownPanel).initData();
 				}
 
 				//distribution panel requires the data flavors and thumbnails tab are loading,
-				//so if they aren't exist, will still call their initData func
+				//so if they doesn't exist, will still call their initData func
 				if (viewStack.getChildByName('entryDistribution')) {
 					if (!viewStack.getChildByName('entryAssets'))
 						entryAssets.initData();
