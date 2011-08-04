@@ -1,6 +1,7 @@
 package com.kaltura.kmc.business.module
 {
 	import com.kaltura.kmc.modules.KmcModule;
+	import com.kaltura.kmc.utils.XMLUtils;
 	
 	import flexunit.framework.Assert;
 	
@@ -53,7 +54,7 @@ package com.kaltura.kmc.business.module
 							</b>
 						</a>;
 			
-			var res:XML = getElement(xml, ["a", "b", "c"]);
+			var res:XML = XMLUtils.getElement(xml, ["a", "b", "c"]);
 			Assert.assertEquals(<c>aaa</c>, res);
 		}
 	}

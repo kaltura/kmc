@@ -46,7 +46,7 @@ package com.kaltura.kmc.dropFolder.tests
 				dff.status = 9;
 				dff.parsedSlug = "Pinky";
 				dff.parsedFlavor = "Source";
-				dff.errorCode = 1;
+				dff.errorCode = '1';
 				dff.errorDescription = "Internal error updating entry";
 				dff.createdAt = 1305120068;
 				dff.updatedAt = 1305120454;
