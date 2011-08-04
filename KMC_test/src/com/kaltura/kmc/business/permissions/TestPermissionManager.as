@@ -89,7 +89,6 @@ package com.kaltura.kmc.business.permissions {
 			Assert.assertEquals(1, arr.length);
 		}
 		
-		[ignore]
 		[Test]
 		/**
 		 * test hideTabs
@@ -99,7 +98,6 @@ package com.kaltura.kmc.business.permissions {
 			Assert.assertEquals(2, arr.length);
 		}
 
-		[ignore]
 		[Test]
 		/**
 		 * test permissions
@@ -109,7 +107,6 @@ package com.kaltura.kmc.business.permissions {
 			Assert.assertEquals(5, arr.length);
 		}
 
-		[ignore]
 		[Test]
 		/**
 		 * test general creation of VOs
