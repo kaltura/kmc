@@ -111,23 +111,16 @@ package com.kaltura.kmc.business {
 				}
 			}
 
-			// scan permissionGroups that need to be removed and remove them if they are empty.
-			// we want to keep these groups:
-//			var permissionGroupsToDeny:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
-			//TODO in the above line we keep groups that have permissions that are denied, even if the group itself is not denied.
-			
 			// banned "BASE" permissions:
 			var permissionGroupsToDeny:XMLList = _deniedPermissions.permissions.permissionGroup.(rolePermissions.indexOf(@id) == -1);
 			
-			// for these groups, we have to see if the base is denied. if so, we need to remove all ui elements from them before
-			// adding them to the main list.
-			var groupsInDoubt:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0);
+			// for these groups the base is granted but the contents are denied. 
+			// we need to remove all ui elements from them before adding them to the main list.
+			var groupsInDoubt:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0 && rolePermissions.indexOf(@id) > -1);
 			var nodeList:XMLList = groupsInDoubt.child("ui");
 			for(var i:int = nodeList.length() -1; i >= 0; i--) {
 				delete nodeList[i];
 			}
-			
-			
 
 			// replace the original permissions node with the "clean" one
 			delete _deniedPermissions.permissions[0];
@@ -145,7 +138,9 @@ package com.kaltura.kmc.business {
 			
 			var permissionIdList:XMLList = _deniedPermissions.permissions.descendants().attribute("id");
 			for each (var xml:XML in permissionIdList) {
-				_deniedPermissionsIds.push(xml.toString());
+				if (rolePermissions.indexOf(xml.toString()) == -1) { // this is for the granted groups with denied children
+					_deniedPermissionsIds.push(xml.toString());
+				}
 			}
 			
 			
