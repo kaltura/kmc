@@ -443,11 +443,9 @@
 			private function handleKClipEvents(e:Event):void {
 				switch (e.type) {
 					case KClipEventTypes.PLAYHEAD_DRAG_START:
-						trace("got KClipEventTypes.PLAYHEAD_DRAG_START");
 						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KClipEventTypes.PLAYHEAD_DRAG_DROP:
-						trace("got KClipEventTypes.PLAYHEAD_DRAG_DROP");
 						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
 						break;
@@ -465,7 +463,6 @@
 						if (_kdpInitiatedUpdate) {
 							_kdpInitiatedUpdate = false;
 						} else {
-							trace("got KClipEventTypes.PLAYHEAD_UPDATED"); 
 							updateKdpPlayhead(parseFloat(e["data"]) / 1000);
 						}
 						break;
@@ -574,7 +571,6 @@
 							_kdpFirstPlayed = true;
 							if (_kClipInitiatedPlay) {
 								// if kclip initiated, doPause
-								trace("kdp doPause");
 								_kdp["sendNotification"](KdpEventTypes.DO_PAUSE);
 								_kClipInitiatedPlay = false;
 							}
@@ -589,7 +585,6 @@
 						if (_kClipReady) {
 							_kdpInitiatedUpdate = true;
 							if (!isNaN(parseFloat(e["data"]))) {
-								trace("kclip scrollToPoint: ", e["data"]);
 								_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000);
 							}
 						}
@@ -606,12 +601,10 @@
 				if (_kdp) {
 					if (_kdpFirstPlayed) {
 						// kdp played before. just seek
-						trace("kdp doSeek");
 						_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
 					} else {
 						// cause first play
 						_kClipInitiatedPlay = true;
-						trace("kdp doPlay");
 						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
 						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
 					}
