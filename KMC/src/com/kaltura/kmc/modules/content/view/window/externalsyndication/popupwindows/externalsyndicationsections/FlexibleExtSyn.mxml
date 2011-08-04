@@ -8,12 +8,17 @@
 			import com.kaltura.vo.KalturaGenericXsltSyndicationFeed;
 			
 			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
 			
 			private var _syndication:KalturaBaseSyndicationFeed;
 			private var _fileReference:FileReference;
 			
 			public function validate():Boolean {
-				return true; //doesn't needed in this syndication type
+				xslValidator.source = transFileTi;
+				if ((xslValidator.validate() as ValidationResultEvent).results)
+					return false;
+				
+				return true;
 			}
 			
 			public function get syndication():KalturaBaseSyndicationFeed {
@@ -55,9 +60,10 @@
 			}
 		]]>
 	</mx:Script>
+	<mx:StringValidator id="xslValidator" property="text" required="true"/>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms','xslCodeLabel')}" width="180" styleName="feedParamLabel"/>
-		<mx:TextArea width="100%" id="transFileTi" selectable="true" editable="false" height="200"/>
+		<mx:TextArea id="transFileTi" width="100%" selectable="true" editable="false" height="200"/>
 		<mx:Button label="{resourceManager.getString('cms','browseBtn')}" click="onBrowseClick()"/>
 	</mx:HBox>
 </mx:VBox>

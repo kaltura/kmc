@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.utils.FormBuilder;
+	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -13,7 +14,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.vo.KalturaMetadataProfileFilter;
 	import com.kaltura.vo.KalturaMetadataProfileListResponse;
 	import com.kaltura.vo.MetadataFieldVO;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -40,6 +41,7 @@ package com.kaltura.kmc.modules.content.commands {
 			_model.increaseLoadCounter();
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
+			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
