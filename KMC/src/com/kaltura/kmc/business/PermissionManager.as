@@ -113,11 +113,26 @@ package com.kaltura.kmc.business {
 
 			// scan permissionGroups that need to be removed and remove them if they are empty.
 			// we want to keep these groups:
-			var permissionsToKeep:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
+//			var permissionGroupsToDeny:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0 || rolePermissions.indexOf(@id) == -1);
+			//TODO in the above line we keep groups that have permissions that are denied, even if the group itself is not denied.
+			
+			// banned "BASE" permissions:
+			var permissionGroupsToDeny:XMLList = _deniedPermissions.permissions.permissionGroup.(rolePermissions.indexOf(@id) == -1);
+			
+			// for these groups, we have to see if the base is denied. if so, we need to remove all ui elements from them before
+			// adding them to the main list.
+			var groupsInDoubt:XMLList = _deniedPermissions.permissions.permissionGroup.(child("permission").length() > 0);
+			var nodeList:XMLList = groupsInDoubt.child("ui");
+			for(var i:int = nodeList.length() -1; i >= 0; i--) {
+				delete nodeList[i];
+			}
+			
+			
 
 			// replace the original permissions node with the "clean" one
 			delete _deniedPermissions.permissions[0];
-			_deniedPermissions.appendChild(XML(<permissions/>).appendChild(permissionsToKeep));
+			_deniedPermissions.appendChild(XML(<permissions/>).appendChild(permissionGroupsToDeny));
+			_deniedPermissions.permissions.appendChild(groupsInDoubt);
 
 			// remove colliding attributes between granted and denied permissions
 			removeCollisions(_grantedPermissions, _deniedPermissions.permissions[0]);
