@@ -13,7 +13,7 @@
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 							xmlns:adobe="http://www.adobe.com/2006/fc" creationComplete="{onWindowCreationComplete()}"
-							styleName="WinTitleStyle" xmlns:window="com.kaltura.kmc.modules.content.view.window.*">
+							xmlns:window="com.kaltura.kmc.modules.content.view.window.*">
 	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
 	<mx:Script>
 		<![CDATA[
@@ -292,7 +292,7 @@
 			/**
 			 * removes given tabs
 			 * */
-			private function setViewPerEntryType(tabsToRemove:Array):void {
+			private function removeTab(tabsToRemove:Array):void {
 				for each (var tab:DisplayObject in tabsToRemove) {
 					if (tab.parent is ViewStack) {
 						viewStack.removeChild(tab);
@@ -414,20 +414,20 @@
 					// show correct panels according to entry type
 					// live entry
 					if (_isLiveStream) {
-						setViewPerEntryType(new Array(entryAssets, contentTab));
+						removeTab([entryAssets, contentTab]);
 					} else if (selectedEntry is KalturaMixEntry) {
 						//this is a mix
 						showMixSetup();
-						setViewPerEntryType(new Array(entryAssets, liveStream, ads));
+						removeTab([entryAssets, liveStream, ads]);
 					} else {
 						// this entry is a regular video/image/audio
 						showNormalSetup();
-						setViewPerEntryType(new Array(liveStream));
+						removeTab([liveStream]);
 						//remove redundant tabs in image and audio cases
 						if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-							setViewPerEntryType(new Array(entryThumbnails, entryAssets, entryDistribution, entryCaptions));
+							removeTab([entryThumbnails, entryAssets, entryDistribution, entryCaptions]);
 						} else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
-							setViewPerEntryType(new Array(entryDistribution));
+							removeTab([entryDistribution]);
 						}
 					}
 					hideTabsFromUiconf();

@@ -482,7 +482,6 @@
 
 				// model:
 				_model.entryDetailsModel.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
-//				_model.bulkUploadModel.sampleFileUrl = getFullUrl(confFile.bulkupload.text().toString());
 				_model.entryDetailsModel.cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
 				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString() != '') {
 					_model.entryDetailsModel.showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
@@ -643,7 +642,7 @@
 				edw.loadRoughcuts = false;
 				edw.showNextPrevBtns = false;
 				edw.visibleTabsAC = new ArrayCollection(new Array("entryAssets", "ads"));
-				edw.styleName = "TitleWindowType3";
+				edw.styleName = "WinTitleStyle2";
 				edw.setStyle("modalTransparency", 0);
 			}
 			
@@ -658,6 +657,7 @@
 			 * */
 			private function openEntryDetails(state:String):EntryDetailsWin {
 				var edw:EntryDetailsWin = new EntryDetailsWin();
+				edw.styleName = "WinTitleStyle";
 				edw.isNewEntry = state == EntryDetailsWindowState.NEW_ENTRY;
 				if (state == EntryDetailsWindowState.REPLACEMENT_ENTRY) {
 					// opens drill down to reference entry, with partial tabs list
@@ -680,6 +680,7 @@
 				edw.maxNumCategories = this._flashvars.maxnumcategories;
 				if (_model.listableVo)
 					edw.entriesAC = _model.listableVo.arrayCollection;
+//				edw.visibleTabsAC = new ArrayCollection(["entryAssets", "ads"]);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 
