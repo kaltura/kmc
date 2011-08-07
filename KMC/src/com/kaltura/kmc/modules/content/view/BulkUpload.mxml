@@ -269,6 +269,15 @@
 				return BulkFailedReasonTranslator.getReason(item as KalturaBulkUpload);
 			}
 			
+			/**
+			 * replace '&lt;' and '&gt;' with '<' and '>', respectfuly.
+			 * @param str 	a string that might contain the above chars
+			 * @return	string after replacement.
+			 * */
+			public function replaceBrackets(str:String):String {
+				return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -291,15 +300,15 @@
 						<!-- uploaded by -->
 						<mx:DataGridColumn labelFunction="getScreenNameOrUserId"
 										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
-										   showDataTips="true" dataTipField="uploadedBy"/>
+										   showDataTips="true" />
 						
 						<!-- uploaded on -->
 						<mx:DataGridColumn dataField="uploadedOn" width="100"
 										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
-										   showDataTips="true" dataTipField="uploadedOn">
+										   showDataTips="true" >
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" toolTip="{this.text}" />
+									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" />
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
@@ -310,7 +319,7 @@
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:HBox width="100%" horizontalAlign="center">
-										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" toolTip="{entriesLabel.text}" />
+										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" />
 									</mx:HBox>
 								</mx:Component>
 							</mx:itemRenderer>
@@ -320,14 +329,19 @@
 						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'status')}">
 							<mx:itemRenderer>
 								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" toolTip="{this.text}" />
+									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" />
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						
 						<!-- error -->
-						<mx:DataGridColumn dataField="error" dataTipField="error"
-										   headerText="{resourceManager.getString('cms', 'error')}" showDataTips="true" />
+						<mx:DataGridColumn dataField="error" headerText="{resourceManager.getString('cms', 'error')}" >
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Text paddingLeft="7" text="{outerDocument.replaceBrackets(data.error)}"/>
+								</mx:Component>
+							</mx:itemRenderer>	
+						</mx:DataGridColumn>
 						
 						<!-- actions -->
 						<mx:DataGridColumn id="actions" width="200" paddingLeft="7" paddingRight="7"
