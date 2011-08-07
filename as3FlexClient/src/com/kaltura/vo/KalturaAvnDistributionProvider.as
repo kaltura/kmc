@@ -1,24 +1,14 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaSearchOperator;
+	import com.kaltura.vo.KalturaDistributionProvider;
 
 	[Bindable]
-	public dynamic class KalturaMetadataSearchItem extends KalturaSearchOperator
+	public dynamic class KalturaAvnDistributionProvider extends KalturaDistributionProvider
 	{
-		/** 
-		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var orderBy : String = null;
-
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('metadataProfileId');
-			arr.push('orderBy');
 			return arr;
 		}
 

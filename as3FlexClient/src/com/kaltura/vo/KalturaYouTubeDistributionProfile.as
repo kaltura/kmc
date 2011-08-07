@@ -69,6 +69,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var target : String = null;
 
+		/** 
+		* 		* */ 
+		public var adServerPartnerId : String = null;
+
+		/** 
+		* 		* */ 
+		public var enableAdServer : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -89,6 +97,8 @@ package com.kaltura.vo
 			arr.push('commercialPolicy');
 			arr.push('ugcPolicy');
 			arr.push('target');
+			arr.push('adServerPartnerId');
+			arr.push('enableAdServer');
 			return arr;
 		}
 

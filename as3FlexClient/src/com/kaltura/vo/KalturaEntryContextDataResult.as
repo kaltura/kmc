@@ -22,6 +22,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var isUserAgentRestricted : Boolean;
+
+		/** 
+		* 		* */ 
 		public var previewLength : int = int.MIN_VALUE;
 
 		/** 
@@ -43,6 +47,7 @@ package com.kaltura.vo
 			arr.push('isCountryRestricted');
 			arr.push('isSessionRestricted');
 			arr.push('isIpAddressRestricted');
+			arr.push('isUserAgentRestricted');
 			arr.push('previewLength');
 			arr.push('isScheduledNow');
 			arr.push('isAdmin');

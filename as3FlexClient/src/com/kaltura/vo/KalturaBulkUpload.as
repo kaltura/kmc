@@ -61,6 +61,10 @@ package com.kaltura.vo
 		public var errorNumber : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var fileName : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -81,6 +85,7 @@ package com.kaltura.vo
 			arr.push('error');
 			arr.push('errorType');
 			arr.push('errorNumber');
+			arr.push('fileName');
 			return arr;
 		}
 

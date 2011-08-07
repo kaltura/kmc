@@ -1,24 +1,23 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaSearchOperator;
+	import com.kaltura.vo.KalturaConfigurableDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaMetadataSearchItem extends KalturaSearchOperator
+	public dynamic class KalturaAvnDistributionProfile extends KalturaConfigurableDistributionProfile
 	{
 		/** 
 		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
+		public var feedUrl : String = null;
 
 		/** 
 		* 		* */ 
-		public var orderBy : String = null;
+		public var feedTitle : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('metadataProfileId');
-			arr.push('orderBy');
+			arr.push('feedTitle');
 			return arr;
 		}
 
