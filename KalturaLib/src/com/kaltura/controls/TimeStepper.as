@@ -137,14 +137,14 @@ package com.kaltura.controls {
 				msText.setStyle("focusAlpha", 0);
 				BindingUtils.bindProperty(msText, "visible", this, "showMiliseconds");
 				BindingUtils.bindProperty(msText, "includeInLayout", this, "showMiliseconds");
-				BindingUtils.bindSetter(myFunc, this, "milisecond");
+				BindingUtils.bindSetter(formatMilisecondText, this, "milisecond");
 				timeBox.addChildAt(msText, insertionIndex++);
 			}
 		}
 		
 		
 		
-		private function myFunc(value:Object):void {
+		private function formatMilisecondText(value:Object):void {
 			msText.text = formatText(String(milisecond), 'msText');
 		}
 		
@@ -240,7 +240,7 @@ package com.kaltura.controls {
 			avoidLessThanMinimum();
 			avoidMoreThanMaximum();
 			
-			//TODO dispatch change event if needed
+			// dispatch change event if needed
 			if (changed) {
 				dispatchEvent(new FlexEvent("change"));	
 			}
@@ -439,15 +439,18 @@ package com.kaltura.controls {
 			if (_focusArea) {
 				_focusArea.setSelection(0, 3);
 			}
-			if (Number(value) > 12 && !is24Hour && theField == 'hourText') {
-				value = String(Number(value) % 12);
-			}
-			if (theField == 'hourText' && !is24Hour) {
+			// hours when not is24Hours - use hour % 12
+			if (theField == 'hourText' && !is24Hour ) {
+				if (Number(value) > 12) {
+					value = String(Number(value) % 12);
+				}
 				return value;
 			}
-			else if (theField == 'minuteText' || theField == 'secondText') {
+			// hours when is24Hours, minutes, seconds - add trailing 0 to 2 digits
+			else if (theField != 'msText') {
 				return (value.length < 2) ? ("0" + value) : value;
 			}
+			// miliseconds - add trailing 0 to 3 digits
 			else if (theField == 'msText') {
 				if (value.length < 2) {
 					return "00" + value;
