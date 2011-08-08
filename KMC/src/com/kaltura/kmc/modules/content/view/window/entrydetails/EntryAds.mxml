@@ -90,7 +90,8 @@
 			 * so that we won't add listeners to kclip and KDP every time 
 			 * initData is called (when paging between entries)
 			 * */
-			private var _widgetsLoaded:Boolean = false;
+			private var _listenersAddedKDP:Boolean = false;
+			private var _listenersAddedKClip:Boolean = false;
 
 			[Bindable]
 			/**
@@ -193,10 +194,7 @@
 				if (!_watchCPCount) {
 					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, entryDetailsModel, "cuepointsCount");
 				}
-				if (!_widgetsLoaded) {
-					_widgetsLoaded = true;
-					loadWidgets();
-				}
+				loadWidgets();
 				// get number of entry cuepoints
 				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
 				cg.data = selectedEntry.id;
@@ -355,10 +353,13 @@
 				if (EntryAds.kdpLoader) {
 					kdpHolder.addChild(kdpLoader);
 					_kdp = kdpLoader.content;
-					_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-					_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
-					_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
-					_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+					if (!_listenersAddedKDP) {
+						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
+						_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
+						_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
+						_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+						_listenersAddedKDP = true;
+					}
 					if (selectedEntry) {
 						updateKdpStatus(true);
 					}
@@ -413,6 +414,7 @@
 
 
 			private function addKClipListeners():void {
+				if (!_listenersAddedKClip) {
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.ALL_ASSETS_REMOVED, handleKClipEvents);
@@ -424,6 +426,8 @@
 					_kClip.addEventListener(KClipEventTypes.CLIPPER_READY, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_DROP, handleKClipEvents);
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
+					_listenersAddedKClip = true;
+				}
 			}
 
 
