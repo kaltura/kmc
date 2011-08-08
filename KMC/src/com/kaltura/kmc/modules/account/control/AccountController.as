@@ -24,6 +24,10 @@ package com.kaltura.kmc.modules.account.control
 			// user events
 			addCommand( UserEvent.LIST_USERS, ListUsersCommand );
 			
+			// entry event
+			addCommand(EntryEvent.GET_DEFAULT_ENTRY, GetDefaultEntryCommand);
+			addCommand(EntryEvent.RESET_DEFAULT_ENTRY, ResetDefaultEntryCommand);
+			
 			
 			// Kaltura Events
 			 addCommand( ContactEvent.CONTACT_US , ContactSalesForceCommand );

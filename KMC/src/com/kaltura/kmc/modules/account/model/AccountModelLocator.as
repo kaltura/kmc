@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.account.model {
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControlFilter;
+	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaStorageProfile;
@@ -103,6 +104,12 @@ package com.kaltura.kmc.modules.account.model {
 		 * default filter for conversion profiles in KMC
 		 * */
 		public var cpFilter:KalturaConversionProfileFilter;
+		
+		/**
+		 * the default entry for the current conversion profile
+		 * (only loaded during save for validation) 
+		 */
+		public var defaultEntry:KalturaBaseEntry;
 		
 		
 		//---------------------------------------------------------

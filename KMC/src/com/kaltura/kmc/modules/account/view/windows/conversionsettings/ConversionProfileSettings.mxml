@@ -17,8 +17,10 @@
 			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.events.EntryEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
+			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaStorageProfile;
 			
 			import mx.binding.utils.BindingUtils;
@@ -44,6 +46,10 @@
 			 */
 			private var _conversionProfile:ConversionProfileVO;
 
+			/**
+			 * chagne watcher for default entry
+			 * */
+			private var _cw:ChangeWatcher;
 
 			/**
 			 * get the conversion profile
@@ -66,6 +72,16 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section242'));
 			}
 
+			/**
+			 * clear listeners, bindings, etc.
+			 * */
+			private function destroy():void {
+				if (_cw) {
+					_cw.unwatch();
+				}
+				var cg:EntryEvent = new EntryEvent(EntryEvent.RESET_DEFAULT_ENTRY);
+				cg.dispatch();
+			}
 
 			/**
 			 * creation complete of the main window.
@@ -142,32 +158,57 @@
 			 * close window event - when pressing the X button, cancel button or after saving the data
 			 */
 			private function closeWindow(event:Event = null):void {
+				destroy();
 				PopUpManager.removePopUp(this);
 			}
 
 
-			private function saveProfile(event:Event):void {
+			/**
+			 * save the profile
+			 * @param value the entry that is set as default for the profile
+			 * @param forceSave	if true, save even if no value
+			 * */
+			private function save(value:KalturaBaseEntry, forceSave:Boolean = false):void {
+				if (!(value || forceSave)) return; // initial binding
+				_conversionProfile.profile.name = conversionNameTextInput.text;
+				_conversionProfile.profile.description = conversionDescTextArea.text;
+				_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text != '' ? txtDefaultEntryId.text : KalturaClient.NULL_STRING;
+				if (cbRemoteProfile.selectedItem) {
+					_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
+				}
+				else {
+					// make sure we send a value, and that it means "none".
+					_conversionProfile.profile.storageProfileId = KalturaClient.NULL_INT;
+				}
+				
+				if (currentState == EDIT_STATE) {
+					var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
+					updateProfileEvent.dispatch();
+				}
+				else {
+					var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
+					addProfileEvent.dispatch();
+				}
+				closeWindow();
+			}
+			
+			private function validateBeforeSave(event:Event):void {
 				if (validateInput()) {
-					_conversionProfile.profile.name = conversionNameTextInput.text;
-					_conversionProfile.profile.description = conversionDescTextArea.text;
-					_conversionProfile.profile.defaultEntryId = txtDefaultEntryId.text != '' ? txtDefaultEntryId.text : KalturaClient.NULL_STRING;
-					if (cbRemoteProfile.selectedItem) {
-						_conversionProfile.profile.storageProfileId = cbRemoteProfile.selectedItem.id;
+					if (txtDefaultEntryId.text && txtDefaultEntryId.text != _conversionProfile.profile.defaultEntryId) {
+						// get this entry to make sure it's valid
+						// dispatch list, bind to model (_model.defaultEntry) and respond
+						if (!_cw) {
+							_cw = BindingUtils.bindSetter(save, _model, 'defaultEntry');
+						}
+						
+						var ee:EntryEvent = new EntryEvent(EntryEvent.GET_DEFAULT_ENTRY);
+						ee.data = txtDefaultEntryId.text;
+						ee.dispatch();
 					}
 					else {
-						//TODO make sure we send a value, and that it means "none".
-						_conversionProfile.profile.storageProfileId = KalturaClient.NULL_INT;
+						// deleting default entry
+						save(null, true);
 					}
-
-					if (currentState == EDIT_STATE) {
-						var updateProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, conversionProfile);
-						updateProfileEvent.dispatch();
-					}
-					else {
-						var addProfileEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.ADD_CONVERSION_PROFILE, false, conversionProfile);
-						addProfileEvent.dispatch();
-					}
-					closeWindow();
 				}
 				else {
 					Alert.show(resourceManager.getString('account', 'invalidInputErrorMsg'), resourceManager.getString('account', 'invalidInputErrorTitle'));
@@ -217,6 +258,6 @@
 	</mx:HBox>
 	<mx:ControlBar width="100%" horizontalAlign="center" >
 		<mx:Button id="submitBtn" label="{resourceManager.getString('account','createNewConvProfile')}" 
-				   useHandCursor="true" buttonMode="true" click="saveProfile(event)"/>
+				   useHandCursor="true" buttonMode="true" click="validateBeforeSave(event)"/>
 	</mx:ControlBar>
 </HelpTitleWindow>
