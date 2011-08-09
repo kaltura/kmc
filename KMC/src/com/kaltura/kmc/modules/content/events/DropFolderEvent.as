@@ -13,9 +13,17 @@ package com.kaltura.kmc.modules.content.events {
 		public static const LIST_MATCH_FOLDERS:String = "df_list_match_folders";
 		
 		/**
-		 * list all drop folders 
+		 * list all enabled drop folders 
 		 */
 		public static const LIST_FOLDERS:String = "df_list_folders";
+		
+		
+		/**
+		 * list all enabled drop folders, then list files for the folders in the list 
+		 */
+		public static const LIST_FOLDERS_AND_FILES:String = "df_list_folders_and_files";
+		
+		
 		
 		/**
 		 * set selected drop folder to the supplied drop folder 

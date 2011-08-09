@@ -184,6 +184,7 @@ package com.kaltura.kmc.modules.content.control {
 
 			// drop folder stuff
 			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);
+			addCommand(DropFolderEvent.LIST_FOLDERS_AND_FILES, ListDropFoldersAndFiles);
 			addCommand(DropFolderEvent.SET_SELECTED_FOLDER, SetSelectedFolder);
 			addCommand(DropFolderFileEvent.RESET_DROP_FOLDERS_AND_FILES, ResetDropFoldersAndFiles);
 			addCommand(DropFolderFileEvent.LIST_ALL, ListDropFoldersFilesCommand);
