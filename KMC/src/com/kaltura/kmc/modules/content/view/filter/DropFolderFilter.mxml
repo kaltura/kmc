@@ -260,15 +260,26 @@
 					}
 				}
 				//mark suitable buttons
-				for (var j:int = 0; j < _listButtonsArray.length; j++) {
+				var selectAll:Boolean = true;
+				for (var j:int = 1; j < _listButtonsArray.length; j++) {
 					var curBtn:Button = _listButtonsArray[j] as Button;
 					if (selectedFoldersNames.contains(curBtn.label)) {
 						curBtn.selected = true;
 					}
 					else {
 						curBtn.selected = false;
+						selectAll = false;
 					}
 				}
+				//if all folders are selected - select the title button
+			 	if (selectAll) {
+					for (var k:int = 1; k<_listButtonsArray.length; k++) {
+						(_listButtonsArray[k] as Button).selected = false;
+					}
+					(_listButtonsArray[0] as Button).selected = true;
+				} 
+				else
+					(_listButtonsArray[0] as Button).selected = false;
 
 				validateNow();
 			}
