@@ -39,9 +39,7 @@
 			 * @inheritDoc
 			 * */
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
-				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
-				listFoldersEvent.dispatch();
-				loadDropFolderFiles();
+				refreshList();
 				updateExpenderLabel();
 			}
 			
@@ -49,13 +47,13 @@
 			 * refresh page data
 			 * */
 			private function refreshList():void {
-				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW);
+				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
 				listFoldersEvent.dispatch();
 				loadDropFolderFiles();
+				//TODO only get files from the folders that return in the folders list
 			}
 			
 			private function newSearchFromFilter():void {
-				paging.kalturaFilterPager.pageIndex = 1;
 				paging.selectedPage = 1;
 				loadDropFolderFiles();
 				updateExpenderLabel();
@@ -201,7 +199,6 @@
 			 * */
 		 	private function gotoPage():void {
 				// update filter here
-				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
 				loadDropFolderFiles();
 			}
 			
@@ -234,8 +231,8 @@
 			
 			private function onPagerCreationComplete(event:Event):void {
 				dropFolderModel.pager = paging.kalturaFilterPager;
-				paging.kalturaFilterPager.pageIndex = 0;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				paging.selectedPage = 0;
+				paging.pageSize = paging.rowInPageCb.value as int;
 			}
 			
 			private function updateExpenderLabel():void {

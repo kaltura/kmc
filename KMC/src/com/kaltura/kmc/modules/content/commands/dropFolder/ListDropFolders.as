@@ -28,12 +28,10 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 		private var _flags:uint;
 		
 		override public function execute(event:CairngormEvent):void {
-//			createHandleDummy();
-			// ---------------------
 			_flags = (event as DropFolderEvent).flags;
 			_model.increaseLoadCounter();
 			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
-			filter.fileHandlerTypeEqual = KalturaDropFolderFileHandlerType.CONTENT;
+//			filter.fileHandlerTypeEqual = KalturaDropFolderFileHandlerType.CONTENT;
 			filter.orderBy = KalturaDropFolderOrderBy.NAME_DESC;
 			filter.statusEqual = KalturaDropFolderStatus.ENABLED;
 			var listFolders:DropFolderList = new DropFolderList(filter);
@@ -72,52 +70,26 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			for each (var o:Object in lr.objects) {
 				if (o is KalturaDropFolder ) {
 					df = o as KalturaDropFolder;
-					var cfg:KalturaDropFolderContentFileHandlerConfig = df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig;
-					if (_flags & DropFolderEvent.ADD_NEW && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW) {
+					if (df.fileHandlerType == KalturaDropFolderFileHandlerType.CONTENT) {
+						var cfg:KalturaDropFolderContentFileHandlerConfig = df.fileHandlerConfig as KalturaDropFolderContentFileHandlerConfig;
+						if (_flags & DropFolderEvent.ADD_NEW && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.ADD_AS_NEW) {
+							ar.push(df);
+						}
+						else if (_flags & DropFolderEvent.MATCH_OR_KEEP && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.MATCH_EXISTING_OR_KEEP_IN_FOLDER) {
+							ar.push(df);
+						} 
+						else if (_flags & DropFolderEvent.MATCH_OR_NEW && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.MATCH_EXISTING_OR_ADD_AS_NEW) {
+							ar.push(df);
+						} 
+					}
+					else if (_flags & DropFolderEvent.XML_FOLDER && df.fileHandlerType == KalturaDropFolderFileHandlerType.XML){
 						ar.push(df);
 					}
-					else if (_flags & DropFolderEvent.MATCH_OR_KEEP && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.MATCH_EXISTING_OR_KEEP_IN_FOLDER) {
-						ar.push(df);
-					} 
-					else if (_flags & DropFolderEvent.MATCH_OR_NEW && cfg.contentMatchPolicy == KalturaDropFolderContentFileHandlerMatchPolicy.MATCH_EXISTING_OR_ADD_AS_NEW) {
-						ar.push(df);
-					} 
 				}
 			}
 			
 			_model.dropFolderModel.dropFolders = new ArrayCollection(ar);
 		}
 		
-	/*	protected function createHandleDummy() :void {
-			var response:KalturaDropFolderListResponse = new KalturaDropFolderListResponse();
-			response.objects = new Array();
-			var dff:KalturaDropFolder = new KalturaDropFolder();
-			dff.createdAt = 105348965;
-			dff.id = 6;
-			dff.name = "folder_1";
-			response.objects.push(dff);
-			
-			dff = new KalturaDropFolder();
-			dff.createdAt = 1153480065;
-			dff.id = 7;
-			dff.name = "folder_2";
-			dff.slugField = "atar";
-			response.objects.push(dff);
-			
-			dff = new KalturaDropFolder();
-			dff.createdAt = 125348565;
-			dff.id = 8;
-			dff.name = "folder_3";
-			response.objects.push(dff);
-			
-			dff = new KalturaDropFolder();
-			dff.createdAt = 135348565;
-			dff.id = 9;
-			dff.name = "folder_4";
-			dff.slugField = "atarsh";
-			response.objects.push(dff);
-			
-			handleDropFolderList(response);
-		}*/
 	}
 }
