@@ -95,9 +95,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * @param initFilter	filter for initial entry loading.
 			 * */
 			public function init(initFilter:KalturaBaseEntryFilter = null):void {
-				
-				paging.kalturaFilterPager.pageIndex = 0; 
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
 				//init as 10 lines 
 				if (initFilter && initFilter is KalturaMediaEntryFilter) {
 					filter.ps3filter = initFilter as KalturaMediaEntryFilter;
@@ -115,25 +114,6 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * load all the data the filter needs
 			 * */
 			private function loadFilterData():void {
-				//				// distribution
-				//				if (filterModel.enableDistribution) {
-				//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-				//					listDistribution.dispatch();
-				//				}
-				//				// flavor params
-				//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
-				//				getAllFlavorParams.dispatch();
-				//				// metadata profile
-				//				if (filterModel.enableCustomData) {
-				//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-				//					listMetadataProfile.dispatch();
-				//				}
-				//				// access control
-				//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-				//				getAllProfilesEvent.dispatch();
-				//				//categories
-				//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				//				getCategoriesList.dispatch();
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
 				fe.dispatch();
 			}

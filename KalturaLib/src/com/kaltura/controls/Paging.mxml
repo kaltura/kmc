@@ -90,7 +90,7 @@
 			public var doubleEnd:Boolean = true;
 
 			[Bindable]
-			public var kalturaFilterPager:KalturaFilterPager = new KalturaFilterPager();
+			public var kalturaFilterPager:KalturaFilterPager;
 			[Bindable]
 			public var rowsInPage:Array = [10, 25, 50, 100, 250, 500];
 			[Bindable]
@@ -109,6 +109,7 @@
 					return;
 
 				_selectedPage = value;
+				kalturaFilterPager.pageIndex = value;
 				updatePaging();
 
 				dispatchEvent(new Event(Event.CHANGE));
@@ -149,6 +150,7 @@
 					return;
 
 				_pageSize = value;
+				kalturaFilterPager.pageSize = value;
 				_totalPageCount = Math.ceil(_totalCount / _pageSize);
 				updatePaging();
 			}
@@ -267,7 +269,7 @@
 			 */
 			protected function last(event:MouseEvent):void {
 				selectedPage = _totalPageCount;
-				kalturaFilterPager.pageIndex = selectedPage;
+//				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
 
@@ -278,7 +280,7 @@
 			 */
 			protected function first(event:MouseEvent):void {
 				selectedPage = 1;
-				kalturaFilterPager.pageIndex = selectedPage;
+//				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
 
@@ -289,7 +291,7 @@
 			 */
 			protected function setNewPage(event:MouseEvent):void {
 				selectedPage = int((event.target as LinkButton).label);
-				kalturaFilterPager.pageIndex = selectedPage;
+//				kalturaFilterPager.pageIndex = selectedPage;
 				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
 			}
 
@@ -305,8 +307,8 @@
 				kmcSO.flush();
 				selectedPage = 1;
 
-				kalturaFilterPager.pageSize = pageSize;
-				kalturaFilterPager.pageIndex = 1;
+//				kalturaFilterPager.pageSize = pageSize;
+//				kalturaFilterPager.pageIndex = 1;
 
 				//only if not manually executed dispatch it
 				if (event)
@@ -321,7 +323,7 @@
 			public function previous(event:MouseEvent = null):void {
 				if (_selectedPage > 1) {
 					selectedPage = _selectedPage - 1;
-					kalturaFilterPager.pageIndex = selectedPage;
+//					kalturaFilterPager.pageIndex = selectedPage;
 					dispatchEvent(new PagingEvent(PagingEvent.PRV_PAGE));
 				}
 			}
@@ -334,13 +336,14 @@
 			public function next(event:MouseEvent = null):void {
 				if (_selectedPage < _totalPageCount) {
 					selectedPage = _selectedPage + 1;
-					kalturaFilterPager.pageIndex = selectedPage;
+//					kalturaFilterPager.pageIndex = selectedPage;
 					dispatchEvent(new PagingEvent(PagingEvent.NEXT_PAGE));
 				}
 			}
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				kalturaFilterPager = new KalturaFilterPager();
 				styleName = "pagerTopBox";
 				var selectedFromSO:Boolean = true;
 				var selectedIndex:int;
