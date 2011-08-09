@@ -37,7 +37,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 			// match from drop folder popup
 			else {
 				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
-				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
+				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_ASC;
 				// use selected folder
 				filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
 				// if searching for slug
