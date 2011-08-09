@@ -28,6 +28,11 @@ package com.kaltura.kmc.modules.content.model.types
 		 * drilldown to an entry that a clip was created from.
 		 */		
 		public static const ROOT_ENTRY:String = "root_entry";
+
+		/**
+		 * drilldown to an entry from playlist window
+		 */		
+		public static const PLAYLIST_ENTRY:String = "playlistEntry";
 		
 	}
 }

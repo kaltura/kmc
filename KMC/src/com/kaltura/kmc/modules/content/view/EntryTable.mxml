@@ -55,8 +55,11 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
-
-
+			
+			/**
+			 * is this table appear in playlist window
+			 * */
+			public var isPlaylistEntries:Boolean = false;
 
 		
 			private var _selectedEntry:KalturaBaseEntry;
@@ -108,7 +111,7 @@
 			 * */
 			private var _sortDirection:String = "DESC";
 
-			
+
 			[Bindable]
 			/**
 			 * the latest selected entry in the table
@@ -263,7 +266,8 @@
 						}
 					}
 					else {
-						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+						var newState:String =  isPlaylistEntries ? WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW : WindowsStates.ENTRY_DETAILS_WINDOW
+						cgEvent = new WindowEvent(WindowEvent.OPEN, newState);
 						cgEvent.dispatch();
 					}
 				}
