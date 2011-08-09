@@ -18,6 +18,7 @@
 					allDropStatusBtn.selected = true;
 					transferringBtn.selected = false;
 					pendingBtn.selected = false;
+					dnldingBtn.selected = false;
 					waitingBtn.selected = false;
 					noMatchBtn.selected = false;
 					errHandlingBtn.selected = false;
@@ -32,6 +33,8 @@
 								transferringBtn.selected = true;
 								break;
 							case KalturaDropFolderFileStatus.DOWNLOADING:
+								dnldingBtn.selected = true;
+								break;
 							case KalturaDropFolderFileStatus.PENDING:
 								pendingBtn.selected = true;
 								break;
@@ -77,6 +80,8 @@
 					}
 					if (pendingBtn.selected) { // pending
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.PENDING);
+					}
+					if (dnldingBtn.selected) { // downloading
 						dropFolderFileStatusArray.push(KalturaDropFolderFileStatus.DOWNLOADING);
 					}
 					if (waitingBtn.selected) { // pending
@@ -113,6 +118,7 @@
 					pendingBtn.selected = false;
 					waitingBtn.selected = false;
 					noMatchBtn.selected = false;
+					dnldingBtn.selected = false;
 					errHandlingBtn.selected = false;
 					errDeletingBtn.selected = false;
 					handledBtn.selected = false;
@@ -144,14 +150,14 @@
 			 */
 			private function validateDropStatus():Boolean {
 				return !transferringBtn.selected && !pendingBtn.selected && !waitingBtn.selected && 
-					!noMatchBtn.selected && !errHandlingBtn.selected && !errDeletingBtn.selected && 
-					!handledBtn.selected && !errDnldBtn.selected;
+					!noMatchBtn.selected && !dnldingBtn.selected && !errHandlingBtn.selected && 
+					!errDeletingBtn.selected && !handledBtn.selected && !errDnldBtn.selected;
 			}
 
 
 			public function get buttons():Array {
 				return [allDropStatusBtn, transferringBtn, pendingBtn, waitingBtn,
-					noMatchBtn, errHandlingBtn, errDeletingBtn, handledBtn, errDnldBtn];
+					noMatchBtn, dnldingBtn, errHandlingBtn, errDeletingBtn, handledBtn, errDnldBtn];
 			}
 		]]>
 	</mx:Script>
@@ -168,6 +174,9 @@
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
 	<mx:Button id="noMatchBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'noMatchBtn')}"
+			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
+			   click="{changeDropStatusFilter(event)}"/>
+	<mx:Button id="dnldingBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'downloadingBtn')}"
 			   buttonMode="true" toggle="true" styleName="innerFilterGroupButton"
 			   click="{changeDropStatusFilter(event)}"/>
 	<mx:Button id="handledBtn" width="100%" selected="false" label="{resourceManager.getString('cms', 'handledBtn')}"
