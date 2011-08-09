@@ -5,6 +5,7 @@
 				   xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.types.KalturaDropFolderFileOrderBy;
 			import com.kaltura.vo.KalturaDropFolder;
 			import com.kaltura.vo.KalturaDropFolderFileFilter;
 			
@@ -157,6 +158,7 @@
 			public function get dropFolderFileFilter():KalturaDropFolderFileFilter {
 				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
 				filter.statusIn = dropFolderFileStatus.getFilterString();
+				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 				if (fromDate && fromDate.selectedDate)
 					filter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
 				if (toDate && toDate.selectedDate)

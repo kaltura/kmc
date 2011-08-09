@@ -34,7 +34,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 			_flags = (event as DropFolderEvent).flags;
 			_model.increaseLoadCounter();
 			var filter:KalturaDropFolderFilter = new KalturaDropFolderFilter();
-			filter.orderBy = KalturaDropFolderOrderBy.NAME_DESC;
+			filter.orderBy = KalturaDropFolderOrderBy.CREATED_AT_DESC;
 			filter.statusEqual = KalturaDropFolderStatus.ENABLED;
 			var listFolders:DropFolderList = new DropFolderList(filter);
 			listFolders.addEventListener(KalturaEvent.COMPLETE, result);
