@@ -52,6 +52,8 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -256,8 +258,12 @@
 						_isLiveStream = true;
 					}
 
-					if (_isReady)
-						setTabsByEntryType(isDifferentEntry);
+					if (_isReady) {
+						if (!isDifferentEntry)
+							setTimeout(reinitTabs, 100);
+						else
+							setTabsByEntryType(isDifferentEntry);
+					}
 				}				
 			}
 
@@ -397,6 +403,16 @@
 					entryMetaData.init();
 				_isReady = true;
 				
+			}
+			
+			/**
+			 * To fix cuepoints synchronization issue: 
+			 * in case we are still editing the same entry - will re-init tabs after
+			 * timeout passed
+			 * */
+			private function reinitTabs():void {
+				trace ("timeout passed");
+				setTabsByEntryType(false);
 			}
 			
 			/**
