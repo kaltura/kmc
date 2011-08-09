@@ -20,6 +20,7 @@
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaDropFolder;
 			import com.kaltura.vo.KalturaDropFolderFile;
+			import com.kaltura.vo.KalturaDropFolderFileFilter;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -48,12 +49,12 @@
 			 * refresh page data
 			 * */
 			private function refreshList():void {
+				// only get files from the folders that return in the folders list
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS_AND_FILES, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
 				listFoldersEvent.dispatch();
 //				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
 //				listFoldersEvent.dispatch();
 //				loadDropFolderFiles();
-				//TODO only get files from the folders that return in the folders list
 			}
 			
 			private function newSearchFromFilter():void {
@@ -226,12 +227,26 @@
 					dropFolderModel.pager = paging.kalturaFilterPager;
 				}
 				
-				if (filter)
-					dropFolderModel.filter = filter.dropFolderFileFilter;
+				if (filter) {
+					var dfFilter:KalturaDropFolderFileFilter = filter.dropFolderFileFilter;
+					if (dfFilter.dropFolderIdEqual == int.MIN_VALUE && !dfFilter.dropFolderIdIn) {
+						dfFilter.dropFolderIdIn = getEnabledFolderIds();
+					}
+					dropFolderModel.filter = dfFilter;
+					//TODO make sure we only ask for files from enabled folders
+				}
 
 				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
 				listFiles.dispatch();
 			} 
+			
+			private function getEnabledFolderIds():String {
+				var str:String = '';
+				for each (var kdf:KalturaDropFolder in dropFolderModel.dropFolders) {
+					str += kdf.id + ",";
+				}
+				return str;
+			}
 			
 			private function setSortIndicator(event:CollectionEvent = null):void {
 				var ar:Array = dg.columns;
