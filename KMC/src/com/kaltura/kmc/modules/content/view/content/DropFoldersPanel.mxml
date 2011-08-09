@@ -24,6 +24,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			import mx.events.CollectionEvent;
 			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
 			
@@ -231,6 +232,18 @@
 				listFiles.dispatch();
 			} 
 			
+			private function setSortIndicator(event:CollectionEvent = null):void {
+				var ar:Array = dg.columns;
+				var i:int;
+				for (i = 0; i<dg.columnCount; i++) {
+					if (ar[i].dataField == "createdAt") {
+						break;
+					}
+				}
+				dg.mx_internal::sortIndex = i;
+				dg.mx_internal::sortDirection = 'DESC';
+			}
+			
 			private function onPagerCreationComplete(event:Event):void {
 				dropFolderModel.pager = paging.kalturaFilterPager;
 				paging.selectedPage = 0;
@@ -259,6 +272,7 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				dg.addEventListener(CollectionEvent.COLLECTION_CHANGE, setSortIndicator);
 			}
 
 		]]>
@@ -291,7 +305,7 @@
 
 		<mx:VBox id="tableContainer" height="100%" width="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
 			<mx:HBox id="entryTableContainer" width="100%">
-				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true">
+				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true" >
 					<mx:columns>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
 						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" labelFunction="{folderNameFunc}"/>
