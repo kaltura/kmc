@@ -17,14 +17,11 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.business.JSGate;
-			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.ModelEvent;
 			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.Context;
 			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
 			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
@@ -46,8 +43,6 @@
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
-			
-			import org.flexunit.internals.runners.statements.StackAndFrameManagement;
 
 			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
 			public static const OPEN_PREVIEW:String = "openPreview";
@@ -765,10 +760,11 @@
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms','drillDownCategories')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<utils:AutoComplete width="{TEXT_WIDTH}" text="{selectedEntry.categories}" id='categoriesTextInput'
-								dataProvider="{entryDetailsModel.categoriesFullNameList}" styleName="autoComplete"/>
+			<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" height="{tagsTi.height}" 
+								text="{selectedEntry.categories}" styleName="autoComplete"
+								dataProvider="{entryDetailsModel.categoriesFullNameList}" />
 		</mx:HBox>
-		<mx:VBox styleName="lineGap">
+		<!--<mx:VBox styleName="lineGap">-->
 			<mx:HBox width="100%" visible="{isLiveStream}" includeInLayout="{isLiveStream}">
 				<mx:Label text="{resourceManager.getString('cms','offlineMessage')}" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
@@ -776,7 +772,8 @@
 							 styleName="drillDownSubLabel"/>
 			</mx:HBox>
 			<mx:HBox width="100%">
-				<mx:Text htmlText="{resourceManager.getString('cms','referenceId')}" width="{LABEL_WIDTH}"/>
+				<mx:Label htmlText="{resourceManager.getString('cms','referenceId')}" width="{LABEL_WIDTH}"
+						  styleName="drillDownLabel"/>
 				<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{getRefid(selectedEntry.referenceId)}"
 							  change="referenceId_changeHandler(event)" styleName="drillDownSubLabel"/>
 			</mx:HBox>
@@ -827,7 +824,7 @@
 						  styleName="drillDownLabel"/>
 				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"/>
 			</mx:HBox>
-		</mx:VBox>
+		<!--</mx:VBox>-->
 	</mx:VBox>
 	<mx:VBox id="kdpContainer" width="100%" height="100%" styleName="lineGap" horizontalAlign="center">
 		<mx:HBox width="100%" paddingTop="5">
