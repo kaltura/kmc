@@ -227,6 +227,7 @@
 			
 			protected function handleBulkAction(e:Event):void {
 				var bulk:KalturaBulkUpload = e.target.data as KalturaBulkUpload;
+				var fileName:String;
 				switch (e.type) {
 					case "delete":
 						var be:BulkEvent = new BulkEvent(BulkEvent.DELETE_BULK_UPLOAD);
@@ -234,10 +235,22 @@
 						be.dispatch();
 						break;
 					case "dnldLog":
-						downloadFile(bulk.logFileUrl,'logFile.csv');
+						if (bulk.fileName) {
+							fileName = bulk.fileName + '_log.' + getUploadType(bulk, null); 
+						}
+						else {
+							fileName = bulk.id + '_log.' + getUploadType(bulk, null);
+						}
+						downloadFile(bulk.logFileUrl, fileName);
 						break;
 					case "dnldOrig":
-						downloadFile(bulk.bulkFileUrl, 'origFile.' + getUploadType(bulk, null));
+						if (bulk.fileName) {
+							fileName = bulk.fileName/*  + '.' + getUploadType(bulk, null) */; 
+						}
+						else {
+							fileName = bulk.id + '.' + getUploadType(bulk, null);
+						}
+						downloadFile(bulk.bulkFileUrl, fileName);
 						break;
 				}
 			}
