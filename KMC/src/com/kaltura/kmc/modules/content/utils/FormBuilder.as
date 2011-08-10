@@ -281,8 +281,10 @@ package com.kaltura.kmc.modules.content.utils {
 			var ClassReference:Class = getDefinitionByName(componentName) as Class;
 			var compInstance:UIComponent = new ClassReference();
 			//!setting the context param should be here, we will need it to set the dataArray property
-			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE)
+			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
 				compInstance["context"] = _model.context;
+				compInstance["profileName"] = metadataProfile.profile.name;			
+			}
 			
 			var attributes:XMLList = component.attributes();
 			for each (var attr:Object in attributes) {

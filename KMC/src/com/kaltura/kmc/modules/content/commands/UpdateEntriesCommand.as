@@ -122,7 +122,6 @@ package com.kaltura.kmc.modules.content.commands {
 					
 
 				}
-				
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);

@@ -24,6 +24,7 @@
 				import mx.collections.ArrayCollection;
 				import mx.controls.Alert;
 				import mx.managers.PopUpManager;
+				import mx.messaging.messages.ErrorMessage;
 				
 				public static const OPEN_ENTRY:String = "openEntry";
 				
@@ -32,7 +33,6 @@
 				 * application context
 				 * */
 				public var context:Context;
-				
 				
 				/**
 				 * data required by filter in manual playlist window
@@ -43,6 +43,11 @@
 				 * the selected entry
 				 * */
 				public var selectedEntry:KalturaBaseEntry;
+				
+				/**
+				 * the custom data profile name
+				 * */
+				public var profileName:String;
 				
 				private var _maxAllowedValues:int = 0;
 				
@@ -58,16 +63,20 @@
 				[Bindable]
 				public var distributionProfilesArr : Array;
 				
+				/**
+				 * list of requested entry IDs
+				 * */
+				private var _idArray:Array;
 				
 				/**
 				 * This function gets an array of entries Id's and sends the server a request
 				 * to get all of these entries
 				 * */
 				public function set dataArray(value:Object):void {
-					var idArray:Array = value as Array;
-					if (idArray) {
+					_idArray = value as Array;
+					if (_idArray) {
 						var multiRequest:MultiRequest = new MultiRequest();
-						for each (var entryId:String in idArray) {
+						for each (var entryId:String in _idArray) {
 							var getEntry:BaseEntryGet = new BaseEntryGet(entryId);
 							multiRequest.addAction(getEntry);
 						}
@@ -91,7 +100,20 @@
 				 * handles the result of the entries list request
 				 * */
 				private function listEntriesResult(event:KalturaEvent):void {
-					_entriesArray = new ArrayCollection(event.data as Array);
+					_entriesArray = new ArrayCollection();
+					var resArray:Array = event.data as Array;
+					var errorsEntries:String = '';
+					for (var i:int = 0; i<resArray.length; i++) {
+						if (resArray[i] is KalturaBaseEntry)
+							_entriesArray.addItem(resArray[i]);
+						else
+							errorsEntries += _idArray[i] +", ";
+					}
+					
+					if (errorsEntries!='') {
+						Alert.show(resourceManager.getString('cms','relatedEntriesNotFound') + errorsEntries.substr(0, errorsEntries.length -2),
+							resourceManager.getString('cms','relatedEntriesNotFoundTitle', new Array(profileName)));
+					}
 					saveNewData(event);
 				}
 				
