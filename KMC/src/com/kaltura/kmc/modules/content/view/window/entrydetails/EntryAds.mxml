@@ -18,6 +18,7 @@
 			import com.kaltura.types.KalturaAdType;
 			import com.kaltura.types.KalturaCuePointType;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -233,7 +234,9 @@
 
 
 			private function updateKClipStatus(setEntryId:Boolean = true):void {
-				if (selectedEntry.status != KalturaEntryStatus.READY) {
+				var sm:KalturaMediaEntry = selectedEntry as KalturaMediaEntry;
+				if (sm.status != KalturaEntryStatus.READY 
+					|| (sm.mediaType != KalturaMediaType.AUDIO && sm.mediaType != KalturaMediaType.VIDEO)) {
 					if (_kClipReady) {
 						_kClip["setDisabled"](true);
 					}
