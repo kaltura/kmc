@@ -3,11 +3,13 @@ package com.kaltura.kmc.modules.content.commands.captions
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.captionAsset.CaptionAssetGetDownloadUrl;
+	import com.kaltura.commands.captionAsset.CaptionAssetGetUrl;
 	import com.kaltura.commands.captionAsset.CaptionAssetList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
+	import com.kaltura.vo.KalturaAsset;
 	import com.kaltura.vo.KalturaAssetFilter;
 	import com.kaltura.vo.KalturaCaptionAsset;
 	import com.kaltura.vo.KalturaCaptionAssetListResponse;
@@ -44,7 +46,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 					_captionsArray.push(entryCaption);
 					if (caption.status == KalturaFlavorAssetStatus.READY) {
 						//TODO should we use cdn? waiting for server to answer it
-						var getUrl:CaptionAssetGetDownloadUrl = new CaptionAssetGetDownloadUrl(caption.id);
+						var getUrl:CaptionAssetGetUrl = new CaptionAssetGetUrl(caption.id);
 						mr.addAction(getUrl);
 						_readyCaptionsArray.push(entryCaption);
 					}

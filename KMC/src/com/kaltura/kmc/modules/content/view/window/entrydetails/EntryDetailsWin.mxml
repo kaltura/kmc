@@ -1005,18 +1005,14 @@
 				selectEntry.dispatch();
 				_nextEntryPending = false;
 			}
-/* 
-			private function gotoPrevEntry():void {
-				entryIndex--;
-				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
-				selectEntry.dispatch();		     
-			}
-			 */
+
 					
 			/**
 			 * initializes save process
 			 * */
 			private function submitChanges(closeAfterSave:Boolean):void {
+				//to handle cases of slow system - disable buttons even before sending server calls
+				saveBtn.enabled = saveAndCloseBtn.enabled = false;
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}

@@ -111,18 +111,17 @@
 				//reset values to starting point
 				_entryHasContent = true;
 				_originalRefid = selectedEntry.referenceId;
-				kdp3Loader.includeInLayout = kdp3Loader.visible = true;
 				if (kdpContainer.getChildAt(0) is Image)
 					kdpContainer.removeChildAt(0);
 				
+				loaderContainer.includeInLayout = loaderContainer.visible = true;
+				
 				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
-					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
 					addImageThumb(noMediaImage);
 					_entryHasContent = false;
 				}
 				else if ((selectedEntry is KalturaMediaEntry) && 
 					(selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
-					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
 					addImageThumb();
 				}
 				else {
@@ -301,6 +300,7 @@
 
 			private function showKDP(event:Event = null):void {
 				kdp3StaticSwfLoader.visible = true;
+				kdpContainer.validateNow();
 //				kdp3StaticSwfLoader.content["focusManager"].deactivate();
 			}
 
@@ -351,6 +351,7 @@
 
 
 			private function addImageThumb(imgSource:Object = null):void {
+				loaderContainer.includeInLayout = loaderContainer.visible = false;
 				_entryImg = new Image();
 				_entryImg.width = 300;
 				_entryImg.height = 255;
