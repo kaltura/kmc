@@ -8,7 +8,7 @@ package com.kaltura.vo
 	public dynamic class KalturaOperationResource extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* Only KalturaEntryResource and KalturaAssetResource are supported		* */ 
 		public var resource : KalturaContentResource;
 
 		/** 

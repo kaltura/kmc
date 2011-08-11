@@ -28,6 +28,7 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('filename');
 			arr.push('title');
+			arr.push('format');
 			return arr;
 		}
 
@@ -35,7 +36,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getInsertableParamKeys();
-			arr.push('format');
 			return arr;
 		}
 

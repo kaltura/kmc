@@ -1,19 +1,19 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaSearchOperator;
+	import com.kaltura.vo.KalturaContentResource;
 
 	[Bindable]
-	public dynamic class KalturaMetadataSearchItem extends KalturaSearchOperator
+	public dynamic class KalturaRemoteStorageResources extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
+		* Array of remote stoage resources 		* */ 
+		public var resources : Array = new Array();
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('metadataProfileId');
+			arr.push('resources');
 			return arr;
 		}
 

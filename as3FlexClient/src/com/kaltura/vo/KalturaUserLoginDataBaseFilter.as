@@ -1,19 +1,19 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaSearchOperator;
+	import com.kaltura.vo.KalturaFilter;
 
 	[Bindable]
-	public dynamic class KalturaMetadataSearchItem extends KalturaSearchOperator
+	public dynamic class KalturaUserLoginDataBaseFilter extends KalturaFilter
 	{
 		/** 
 		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
+		public var loginEmailEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('metadataProfileId');
+			arr.push('loginEmailEqual');
 			return arr;
 		}
 
