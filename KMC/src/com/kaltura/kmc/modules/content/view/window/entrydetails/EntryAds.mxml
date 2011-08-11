@@ -702,15 +702,17 @@
 			 * @return true if validation passed, false otherwise.
 			 * */
 			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
-				// ad type
+				// ad type - must have value
 				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
-//					Alert.show(resourceManager.getString('cms', 'ads_invalid_ad_type'));
 					return false;
 				}
 				// duration
 				if (cp.adType == KalturaAdType.OVERLAY) {
 					if (cp.endTime < cp.startTime) {
-//						Alert.show(resourceManager.getString('cms', 'ads_invalid_out_time'));
+						return false;
+					}
+					
+					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration) {
 						return false;
 					}
 				}
