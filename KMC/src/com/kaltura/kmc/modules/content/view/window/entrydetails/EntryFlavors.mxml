@@ -131,6 +131,10 @@
 			private var _replacingEntryId:String;
 			private var _status:String;
 
+			/**
+			 * indicates if event listener to uploadManager.uploadStarted was already added
+			 * */
+			private var _listenToUpload:Boolean = false;
 
 			public function get status():String {
 				return _status;
@@ -231,6 +235,11 @@
 					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
 					profileEvent.dispatch();
 				}
+				//to listen only once
+				if (!_listenToUpload) {
+					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = true;
+				}
 			}
 
 
@@ -267,7 +276,6 @@
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 				dg.addEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
 				dg.addEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
-				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
 			}
 
 
