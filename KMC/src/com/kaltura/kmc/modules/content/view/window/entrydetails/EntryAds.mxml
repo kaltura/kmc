@@ -133,6 +133,10 @@
 			 * change watcher for reacting to cueopints count being set on model
 			 * */
 			private var _watchCPCount:ChangeWatcher;
+			/**
+			 * change watcher for reacting to reloadCuePoints being set on model
+			 * */
+			private var _watchCPReload:ChangeWatcher;
 
 			/**
 			 * image for KDP when entry is in no_content status
@@ -148,7 +152,7 @@
 			 * current playhead position, in ms.
 			 * */
 			private var _playheadPosition:Number;
-
+		
 
 			/**
 			 * trace the error instead of crashing the browser
@@ -183,6 +187,9 @@
 				if (_watchCPCount) {
 					_watchCPCount.unwatch();
 				}
+				if (_watchCPReload) {
+					_watchCPReload.unwatch();
+				}
 			}
 
 
@@ -194,6 +201,9 @@
 				cg.dispatch();
 				if (!_watchCPCount) {
 					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, entryDetailsModel, "cuepointsCount");
+				}
+				if (!_watchCPReload) {
+					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, entryDetailsModel, "reloadCuePoints");
 				}
 				loadWidgets();
 				// get number of entry cuepoints
@@ -224,7 +234,7 @@
 			 * @internal
 			 * used after bulk uploads - the command changes this value on the model.
 			 * */
-			public function set reloadCuePoints(value:Boolean):void {
+			private function callReloadCuePoints(value:Boolean):void {
 				if (value && _kClip) {
 					// reload cue points
 					_kClip["loadCuePoints"]();
