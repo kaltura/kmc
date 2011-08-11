@@ -52,6 +52,7 @@
 				// only get files from the folders that return in the folders list
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS_AND_FILES, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
 				listFoldersEvent.dispatch();
+				dropFolderModel.filter = new KalturaDropFolderFileFilter();
 //				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
 //				listFoldersEvent.dispatch();
 //				loadDropFolderFiles();
@@ -233,12 +234,19 @@
 						dfFilter.dropFolderIdIn = getEnabledFolderIds();
 					}
 					dropFolderModel.filter = dfFilter;
+					
+					//TODO when loading initial data (init) set the filter to empty filter
 				}
 
 				var listFiles:DropFolderFileEvent = new DropFolderFileEvent(DropFolderFileEvent.LIST_ALL);
 				listFiles.dispatch();
 			} 
 			
+			
+			/**
+			 * get the ids of the folders that show in the filter, 
+			 * whilch are supposed to be tha partner's enabled folders
+			 * */
 			private function getEnabledFolderIds():String {
 				var str:String = '';
 				for each (var kdf:KalturaDropFolder in dropFolderModel.dropFolders) {
