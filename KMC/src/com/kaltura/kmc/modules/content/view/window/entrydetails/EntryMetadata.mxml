@@ -35,6 +35,8 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
+			import flash.utils.getQualifiedClassName;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.containers.ViewStack;
 			import mx.controls.Image;
@@ -292,7 +294,8 @@
 			}
 
 			private function stopEvent(e:Event):void {
-				if (e.type == "resize"  && e.target != systemManager) {
+				var cl:String = getQualifiedClassName(e);
+				if (e.type == "resize" &&  cl == "fl.events::ComponentEvent") {
 					e.stopImmediatePropagation();
 					e.preventDefault();
 				}
