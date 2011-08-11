@@ -64,5 +64,12 @@ package com.kaltura.applications.kClipInterface
 		 * 
 		 */		
 		function init(params:Object):void;
+		
+		/**
+		 * Is KClip ready 
+		 * @return true if ready
+		 * 
+		 */		
+		function isReady():Boolean;
 	}
 }
