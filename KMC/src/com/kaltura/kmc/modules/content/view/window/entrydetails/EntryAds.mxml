@@ -60,7 +60,7 @@
 			/**
 			 * a flag used to determine we can talk with the kClip
 			 * */
-			private static var _kClipReady:Boolean = false;
+			private var _kClipReady:Boolean = false;
 
 			/**
 			 * player is kept between different
@@ -237,11 +237,11 @@
 				var sm:KalturaMediaEntry = selectedEntry as KalturaMediaEntry;
 				if (sm.status != KalturaEntryStatus.READY 
 					|| (sm.mediaType != KalturaMediaType.AUDIO && sm.mediaType != KalturaMediaType.VIDEO)) {
-					if (_kClipReady) {
+					if (_kClip["isReady"]()) {
 						_kClip["setDisabled"](true);
 					}
 				} else {
-					if (setEntryId && _kClipReady) {
+					if (setEntryId && _kClip["isReady"]()) {
 						_kClipReady = false;
 						_kClip["setEntryId"](selectedEntry.id);
 					}
@@ -463,7 +463,7 @@
 						break;
 					
 					case KClipEventTypes.CLIPPER_READY:
-						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
+//						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
 						updateKClipStatus(true);
 						break;
 					case KClipEventTypes.ENTRY_READY:
