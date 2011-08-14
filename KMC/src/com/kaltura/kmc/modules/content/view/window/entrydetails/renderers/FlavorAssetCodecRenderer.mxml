@@ -5,22 +5,26 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.vo.KalturaFlavorAsset;
 			
 			override public function set data(value:Object):void
 			{
 				super.data = value;
-				onCreatoinComplete();
+//				onCreatoinComplete();
 				setCodecLabel();
 			}
 			
 			private function setCodecLabel():void
 			{
-				codecLabel.enabled = (data.kalturaFlavorAssetWithParams.flavorAsset != null);
+				var kfa:KalturaFlavorAsset = (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset;
+				codecLabel.enabled = (kfa != null);
 				
-				if ((data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams 
-					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset
-					&& (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.videoCodecId )
-				codecLabel.text = (data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset.videoCodecId;
+				if (kfa && kfa.videoCodecId) {
+					codecLabel.text = kfa.videoCodecId;
+				}
+				else {
+					codecLabel.text = '';
+				}
 				codecLabel.toolTip = codecLabel.text;
 			}
 
