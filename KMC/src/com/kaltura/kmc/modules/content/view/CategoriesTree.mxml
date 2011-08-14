@@ -193,7 +193,17 @@
 					this.selectedItems = [this.dataProvider[0]];
 				}
 				else {
-					var catFullNames:Array = _selectedFilterCategories.split(',');
+					var catIds:Array = _selectedFilterCategories.split(',');
+					var catFullNames:Array = new Array;
+					//finds the names of the categories
+					for each (var catId:String in catIds) {
+						if (catId!='') {
+							var catFullName:String = findCategoryFullName(parseInt(catId), dataProvider as ArrayCollection);
+							if (catFullName)
+								catFullNames.push(catFullName);	
+						}
+					}
+				//	var catFullNames:Array = _selectedFilterCategories.split(',');
 					_catSelectedNames = new HashMap();
 					for each (var name:String in catFullNames) {
 						_catSelectedNames.put(name, name);
@@ -210,7 +220,23 @@
 
 			}
 			
-
+			/**
+			 * retrun the full name of the given category id
+			 * */
+			private function findCategoryFullName(catId:int, catArray:ArrayCollection) : String {	
+				for each (var cat:CategoryVO in catArray) {
+					if (catId==cat.category.id) {
+						return cat.category.fullName;
+					}		
+					if (cat.children) {
+						var catName:String = findCategoryFullName(catId, cat.children);
+						if (catName)
+							return catName;
+					}
+				}
+				
+				return null;
+			}
 
 			private function explorChildren(childParent:CategoryVO):Boolean {
 				var foundName:Boolean;
