@@ -208,8 +208,41 @@
 			 * Use the data(vo) and the UI to check if the filter is on.
 			 * */
 			private function updateFilterStatus(currentFilter:KalturaBaseEntryFilter):void {
-				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) || (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) || (currentFilter.durationTypeMatchOr != '') || (!mediaTypes.selectAllTypesBtn.selected) || (currentFilter.moderationStatusIn != '') || (!conversionStatus.allConversionStatusBtn.selected) || (!replacementStatus.allReplacementStatusBtn.selected) || (currentFilter.freeText != '') || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) || (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) || (currentFilter.accessControlIdIn != null) || (currentFilter.flavorParamsIdsMatchOr != '') || (currentFilter.categoriesMatchOr != '') || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length > 1) || (((currentFilter.advancedSearch as KalturaSearchOperator).items.length) && (((currentFilter.advancedSearch as KalturaSearchOperator).items[0] as KalturaSearchOperator).items.length)));
+				_isFilterOn = (currentFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) 
+					|| (currentFilter.createdAtLessThanOrEqual != int.MIN_VALUE) 
+					|| (currentFilter.durationTypeMatchOr != null) 
+					|| (!mediaTypes.selectAllTypesBtn.selected) 
+					|| (currentFilter.moderationStatusIn != null) 
+					|| (!conversionStatus.allConversionStatusBtn.selected) 
+					|| (!replacementStatus.allReplacementStatusBtn.selected) 
+					|| (currentFilter.freeText != null) 
+					|| (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) 
+					|| (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) 
+					|| (currentFilter.endDateLessThanOrEqual != int.MIN_VALUE) 
+//					|| (currentFilter.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) 
+//					|| (currentFilter.startDateLessThanOrEqualOrNull != int.MIN_VALUE) 
+					|| (currentFilter.accessControlIdIn != null) 
+					|| (currentFilter.flavorParamsIdsMatchOr != '') 
+					|| (currentFilter.categoriesMatchOr != null) 
+					// ----------------------------------------------------------------------
+					|| isAdvancedSearchFilterOn(currentFilter);
 			}
+			
+			private function isAdvancedSearchFilterOn(currentFilter:KalturaBaseEntryFilter):Boolean {
+				var result:Boolean = false;
+				var profiles:Array = (currentFilter.advancedSearch as KalturaSearchOperator).items; // either metadata of distribution profiles 
+				if (profiles.length > 0){
+					// for each item (profile), see if it has items (actual search stuff)
+					for (var i:int = 0; i<profiles.length; i++) {
+						if ((profiles[i] as KalturaSearchOperator).items.length > 0) {
+							result = true;
+							break;
+						}
+					}
+				}
+				return result;
+			}
+			
 			
 			private function clearDates():void {
 				clearGivenDates(fromDate, toDate);
