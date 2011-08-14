@@ -77,6 +77,10 @@
 		}
 		public function setSelectedOrderBy(orderBy:String):void
 		{
+			if (orderBy == KalturaPlayableEntryOrderBy.CREATED_AT_DESC) {
+				// somewhere during Caasiopeia we broke backwards compat., this is a fix.
+				orderBy = "recent";		
+			}
 			for (var i:uint = 0 ; i<ORDER_BY_ARR.length ; i++ )
 			{
 				if (ORDER_BY_ARR[i] == orderBy )
