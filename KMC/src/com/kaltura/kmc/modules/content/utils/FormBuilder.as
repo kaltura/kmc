@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.kmc.modules.content.model.MetadataDataObject;
 	import com.kaltura.kmc.modules.content.model.types.CustomMetadataConstantTypes;
+	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.DateFieldWithTime;
 	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.EntryIDLinkTable;
 	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.MultiComponent;
 	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
@@ -235,7 +236,10 @@ package com.kaltura.kmc.modules.content.utils {
 						}
 						break;
 					case MetadataCustomFieldTypes.DATE:
-						fieldNode = XML(componentsMap.getValue(CustomMetadataConstantTypes.DATE_FIELD)).copy();
+						if (field.timeControl) 
+							fieldNode = XML(componentsMap.getValue(CustomMetadataConstantTypes.DATE_FIELD_WITH_TIME)).copy();
+						else
+							fieldNode = XML(componentsMap.getValue(CustomMetadataConstantTypes.DATE_FIELD)).copy();
 						break;
 					case MetadataCustomFieldTypes.OBJECT:
 						fieldNode = XML(componentsMap.getValue(CustomMetadataConstantTypes.ENTRY_LINK_TABLE)).copy();
@@ -381,6 +385,7 @@ package com.kaltura.kmc.modules.content.utils {
 			//In order to have a class definition it should compile, so we point to it
 			var dummyTable:EntryIDLinkTable;
 			var dummyMulti:MultiComponent;
+			var dummyDateFieldWithTime:DateFieldWithTime;
 			
 			var newLayout:VBox = new VBox();
 			var fieldsArray:ArrayCollection =_metadataProfile.metadataFieldVOArray;
@@ -471,7 +476,9 @@ package com.kaltura.kmc.modules.content.utils {
 				case "Date":
 					//translate to milliseconds
 					var timeStamp:Number = Number(input) * 1000;
-					return new Date(timeStamp);
+					var date:Date = new Date();
+					date.time = timeStamp;
+					return date;
 				case "Boolean":
 					return input == "true";
 				case "Array":

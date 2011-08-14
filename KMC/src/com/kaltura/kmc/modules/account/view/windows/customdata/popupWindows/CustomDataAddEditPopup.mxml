@@ -140,7 +140,7 @@
 						break;
 				}
 
-				typeChanged();
+			//	typeChanged();
 				appearInSearchList.selectedItem = field.appearInSearch ? _appearYes : _appearNo;
 				maxValuesList.selectedItem = field.maxNumberOfValues == MetadataCustomFieldMaxOcuursTypes.SINGLE ? _singleValue : _unboundValues;
 				descriptionInput.text = field.description;
@@ -321,16 +321,16 @@
 			}
 
 
-			private function typeChanged():void {
-				if ((fieldTypeList.selectedItem == _dateType) || (fieldTypeList.selectedItem == _objectType)) {
+		/* 	private function typeChanged():void {
+				 if ((fieldTypeList.selectedItem == _dateType) || (fieldTypeList.selectedItem == _objectType)) {
 					appearInSearchList.selectedItem = _appearNo;
 					appearInSearchList.enabled = false;
-				}
+				} 
 				else {
 					appearInSearchList.selectedItem = _appearYes;
-					appearInSearchList.enabled = true && _editable;
+					appearInSearchList.enabled = _editable;
 				}
-			}
+			} */
 
 			[Bindable]
 			/**
@@ -365,7 +365,7 @@
 		<mx:Spacer height="{_spacerHeight}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldType')}" labelStyleName="metadataFormLabel">
 			<mx:ComboBox id="fieldTypeList" dataProvider="{_typeList}" width="180" paddingLeft="5" editable="false"
-						 enabled="{currentState!=EDIT_MODE_STATE}" change="typeChanged()"/>
+						 enabled="{currentState!=EDIT_MODE_STATE}"/>
 		</mx:FormItem>
 		<mx:Spacer height="{_spacerHeight}"/>
 		<mx:HBox visible="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}"
