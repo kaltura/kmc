@@ -133,6 +133,9 @@ package com.kaltura.utils.parsers
 							case "searchable":
 								node.appendChild(fieldToUpdate.appearInSearch);
 								break;
+							case "timeControl":
+								node.appendChild(fieldToUpdate.timeControl);
+								break;
 							case "description":
 								node.appendChild(fieldToUpdate.description);
 								break;
@@ -219,6 +222,9 @@ package com.kaltura.utils.parsers
 								break;
 							case "searchable":
 								field.appearInSearch = node.text() == "true";
+								break;
+							case "timeControl":
+								field.timeControl = node.text() == "true";
 								break;
 							case "description":
 								field.description = node.text();

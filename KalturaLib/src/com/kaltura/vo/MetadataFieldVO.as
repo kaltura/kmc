@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 package com.kaltura.vo
 {
 	import com.adobe.cairngorm.vo.IValueObject;
+	
 	import mx.collections.ArrayCollection;
 	/**
 	 *	This class represents a custom metadata field 
@@ -38,6 +39,7 @@ package com.kaltura.vo
 		public var optionalValues:Array = new Array();
 		public var maxNumberOfValues:int;
 		public var appearInSearch:Boolean;
+		public var timeControl:Boolean;
 		public var defaultLabel:String = "";
 		public var displayedLabel:String = "";
 		public var fullDescription:String = "";

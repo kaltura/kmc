@@ -33,6 +33,7 @@ package com.kaltura.base.types
 				'<label></label>' + 
 				'<key></key>' + 
 				'<searchable></searchable>' + 
+				'<timeControl></timeControl>' + 
 				'<description></description>' + 
 				'</appinfo>' +
 				'</annotation>' + 
