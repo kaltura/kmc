@@ -27,9 +27,8 @@
 			import mx.events.ListEvent;
 			import mx.events.ValidationResultEvent;
 
-			private const LBL_WIDTH:Number = 150;
-			private const MAX_WIDTH:Number = 300;
-			private const TXT_WIDTH:Number = 190;
+			private const LBL_WIDTH:Number = 180;
+			private const TXT_WIDTH:Number = 240;
 
 			[Bindable]
 			public var partnerData:PartnerVO;
@@ -129,9 +128,15 @@
 
 
 			private function setDescribeYourself():void {
+				var bFound:Boolean = false;
 				for (var i:int = 0; i < dyCB.dataProvider.length; i++) {
-					if (partnerData.describeYourself == dyCB.dataProvider[i])
+					if (partnerData.describeYourself == dyCB.dataProvider[i]) {
 						dyCB.selectedIndex = i;
+						bFound = true;
+					}
+				}
+				if (!bFound) {
+					dyCB.selectedIndex = _ctComboBox.length - 1;
 				}
 			}
 
@@ -239,43 +244,45 @@
 		<!--<mx:HBox width="100%">-->
 			<mx:Label styleName="expendableButton" text="{resourceManager.getString('account', 'partnerInfo')}"/>
 		<!--</mx:HBox>-->
-		<mx:Text id="partnerInfoText" width="{MAX_WIDTH}" height="40"
+		<mx:Text id="partnerInfoText" width="100%" height="40"
 				 text="{resourceManager.getString('account', 'partnerInfoText')}" styleName="pageDescription"/>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'partnerIdB')}"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'partnerIdB')}" styleName="boldLabel"/>
 			<mx:Label width="{TXT_WIDTH}" text="{partnerData.pId}" selectable="true"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'company_name')}*"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'company_name')} *" styleName="boldLabel"/>
 			<mx:TextInput id="pName" width="{TXT_WIDTH}" text="{partnerData.name}"
 						  change="{partnerData.name = pName.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'owner_name')}*"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'owner_name')} *" styleName="boldLabel"/>
 			<mx:ComboBox id="pOwner" width="{TXT_WIDTH}"
 						 change="changeAccountOwner(event)" labelField="fullName" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'email')}"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'email')}" styleName="boldLabel"/>
 			<mx:Label id="pEmail" width="{TXT_WIDTH}" text="{(pOwner.selectedItem as KalturaUser).email}" enabled="{infoBox.enabled}" selectable="true"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'phone')}*"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'phone')} *" styleName="boldLabel"/>
 			<mx:TextInput id="pPhone" width="{TXT_WIDTH}" text="{partnerData.phone}"
 						  change="{partnerData.phone = pPhone.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}"/>
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'website')}" styleName="boldLabel"/>
 			<mx:TextInput id="pWebsite" width="{TXT_WIDTH}" text="{partnerData.url1}"
 						  change="{partnerData.url1 = pWebsite.text}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
-		<mx:HBox>
-			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'describeYourself')}"/>
+		<mx:HBox id="dyContainer">
+			<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('account', 'describeYourself')}" styleName="boldLabel"/>
 			<mx:ComboBox id="dyCB" width="{TXT_WIDTH}" dataProvider="{_ctComboBox}"
 						 change="{partnerData.describeYourself = dyCB.selectedItem.toString()}" enabled="{infoBox.enabled}"/>
 		</mx:HBox>
 		<mx:Label text="{resourceManager.getString('account', 'reqF')}" fontSize="9"/>
-		<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
-				   click="savePartnerInfo( true )" buttonMode="true"/>
+		<mx:HBox width="{dyContainer.width}" horizontalAlign="right">
+			<mx:Button id="saveChangesBtn" label="{resourceManager.getString('account', 'saveChanges')}"
+					   click="savePartnerInfo( true )" buttonMode="true"/>
+		</mx:HBox>
 	</mx:VBox>
 </mx:HBox>
