@@ -122,9 +122,13 @@ package com.kaltura.kmc.modules.content.commands {
 					
 
 				}
+				
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
+				//update categories
+				var updateCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				updateCategoriesEvent.dispatch();
 				//reload changeble data
 				/*if (!_closeDrilldown && !_displayNextEntry) {
 					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
