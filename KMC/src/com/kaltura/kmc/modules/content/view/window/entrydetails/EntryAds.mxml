@@ -659,21 +659,12 @@
 				// source url
 				_selectedCuePoint.sourceUrl = tiUrl.text;
 				// ad type
-				var prevadtype:String = _selectedCuePoint.adType;
 				_selectedCuePoint.adType = (cbType.selectedItem) ? cbType.selectedItem.value : null;
-				if (prevadtype != _selectedCuePoint.adType){
-//					// if value changed, if video - make duration 0. if overlay - make duration 4.
-//					if ( _selectedCuePoint.adType == KalturaAdType.VIDEO) {
-//						teDuration.hour = 0;
-//						teDuration.minute = 0;
-//						teDuration.second = 0;
-//						teDuration.milisecond = 0;
-//					}
-//					else {
-//						teDuration.timeValue = teDuration.getTimeAsObject(4);
-//					}
-				} else {
-					// duration
+				// duration
+				if (_selectedCuePoint.adType == KalturaAdType.VIDEO) {
+					_selectedCuePoint.endTime = _selectedCuePoint.startTime;
+				}
+				else {
 					_selectedCuePoint.endTime = _selectedCuePoint.startTime + teDuration.getTimeAsSeconds() * 1000;
 				}
 				// update
@@ -722,7 +713,7 @@
 						return false;
 					}
 					
-					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration) {
+					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration * 1000) {
 						return false;
 					}
 				}
