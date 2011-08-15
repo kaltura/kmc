@@ -165,7 +165,7 @@ package com.kaltura.kmc.modules.content.commands {
 						be.setUpdatedFieldsOnly(true);
 						// only send conversionProfileId if the entry is in no_content status
 						if (be.status != KalturaEntryStatus.NO_CONTENT) {
-							be.ingestionProfileId = null;
+							be.conversionProfileId = int.MIN_VALUE;
 						}
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry);

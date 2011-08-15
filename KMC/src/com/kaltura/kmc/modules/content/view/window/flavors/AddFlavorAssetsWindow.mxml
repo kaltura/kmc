@@ -374,7 +374,7 @@
 				}
 				else if (_windowAction == AddFlavorAssetsWindow.ACTION_LINK) {
 					resource = new KalturaRemoteStorageResource();
-//					(subSubResource as KalturaRemoteStorageResource).storageProfileId = remoteStorageId;
+					(resource as KalturaRemoteStorageResource).storageProfileId = _selectedStorageProfile.id;
 				}
 				resource.url = ufv.fileName;
 				// dispatch call
@@ -479,7 +479,7 @@
 					// select the conversion profile that matches the entry's default
 					for (var i:int = 0; i<conversionProfiles.length; i++) {
 						vo = conversionProfiles[i] as ConversionProfileWithFlavorParamsVo; 
-						if (vo.profile.id.toString() == _entry.ingestionProfileId) {
+						if (vo.profile.id == _entry.conversionProfileId) {
 							cnvrtProfCb.selectedIndex = i;
 							bFound = true;
 							break;
