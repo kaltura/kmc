@@ -5,23 +5,26 @@ package com.kaltura.kmc.modules.content.commands.clips
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.vo.KalturaBaseEntryFilter;
+	import com.kaltura.vo.KalturaBaseEntryListResponse;
 	import com.kaltura.vo.KalturaFilterPager;
 	
 	public class GetEntryClipsCommand extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
+			_model.increaseLoadCounter();
 			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
 			f.rootEntryIdEqual = event.data.id;
 			
 			var list:BaseEntryList = new BaseEntryList(f, event.data.pager);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
-			list.addEventListener(KalturaEvent.COMPLETE, fault);
+			list.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(list);
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			_model.entryDetailsModel.clips = data.data.objects;
+			_model.entryDetailsModel.clips = (data.data as KalturaBaseEntryListResponse).objects;
+			_model.decreaseLoadCounter();
 		}
 	}
 }

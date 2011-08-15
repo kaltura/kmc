@@ -27,6 +27,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMixEntry;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -249,7 +250,10 @@
 				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 				dg.removeEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
 				dg.removeEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
-				FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+				if (_listenToUpload) {
+					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = false;
+				}
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
 			}
@@ -419,6 +423,14 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
+				
+				//TODO ugly solution until we add mid-destroy function to all IDrilldownPanel
+				if (_listenToUpload &&
+					((value is KalturaMixEntry) || 
+						((value is KalturaMediaEntry) && ((value as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE)))) {
+					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = false;
+				}
 
 				_selectedEntry = value;
 
