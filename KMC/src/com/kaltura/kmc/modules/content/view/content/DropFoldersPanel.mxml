@@ -41,21 +41,21 @@
 			 * @inheritDoc
 			 * */
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
-				refreshList();
-				updateExpenderLabel();
+				dropFolderModel.filter = new KalturaDropFolderFileFilter();
+				refreshList(null);
 			}
 			
 			/**
 			 * refresh page data
 			 * */
-			private function refreshList():void {
+			private function refreshList(event:Event):void {
 				// only get files from the folders that return in the folders list
 				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS_AND_FILES, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
+				if (event) {
+					listFoldersEvent.data = dropFolderModel.filter;
+				}
 				listFoldersEvent.dispatch();
-				dropFolderModel.filter = new KalturaDropFolderFileFilter();
-//				var listFoldersEvent:DropFolderEvent = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.ADD_NEW|DropFolderEvent.MATCH_OR_KEEP|DropFolderEvent.MATCH_OR_NEW|DropFolderEvent.XML_FOLDER);
-//				listFoldersEvent.dispatch();
-//				loadDropFolderFiles();
+				updateExpenderLabel();
 			}
 			
 			private function newSearchFromFilter():void {
@@ -316,7 +316,7 @@
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList()" styleName="recycleIcon"/>
+		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList(event)" styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
 		<mx:VBox id="vbox1">

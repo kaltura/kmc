@@ -26,8 +26,9 @@
 			private function updateIsFilterOn(curFilter:KalturaDropFolderFileFilter):void {
 				isFilterOn = (curFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) 
 					|| (curFilter.createdAtLessThanOrEqual != int.MIN_VALUE) 
-					|| checkSpecificDropFoldersSelcted() || !dropFolderFileStatus.allDropStatusBtn.selected 
-					|| (curFilter.fileNameLike != '');
+					|| checkSpecificDropFoldersSelcted() 
+					|| !dropFolderFileStatus.allDropStatusBtn.selected 
+					|| curFilter.fileNameLike;
 			}
 
 
@@ -38,7 +39,7 @@
 				if (!_listButtonsArray || _listButtonsArray.length == 0)
 					return false;
 
-				return !((_listButtonsArray[0] as Button).selected);
+				return !(_listButtonsArray[0] as Button).selected;
 			}
 
 
@@ -156,17 +157,17 @@
 
 
 			public function get dropFolderFileFilter():KalturaDropFolderFileFilter {
-				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
-				filter.statusIn = dropFolderFileStatus.getFilterString();
-				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
+//				var filter:KalturaDropFolderFileFilter = _dropFolderFileFilter;
+				_dropFolderFileFilter.statusIn = dropFolderFileStatus.getFilterString();
+				_dropFolderFileFilter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 				if (fromDate && fromDate.selectedDate)
-					filter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
+					_dropFolderFileFilter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
 				if (toDate && toDate.selectedDate)
-					filter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
-				filter.dropFolderIdIn = getSelectedDropFoldersIds();
-				filter.fileNameLike = searchBox.getFilterString();
-				updateIsFilterOn(filter);
-				return filter;
+					_dropFolderFileFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
+				_dropFolderFileFilter.dropFolderIdIn = getSelectedDropFoldersIds();
+				_dropFolderFileFilter.fileNameLike = searchBox.getFilterString();
+				updateIsFilterOn(_dropFolderFileFilter);
+				return _dropFolderFileFilter;
 			}
 
 
@@ -177,9 +178,9 @@
 					showDropFoldersData(_dropFolderFileFilter);
 					dropFolderFileStatus.setFilter(_dropFolderFileFilter);
 					updateImageButton(_listButtonsArray);
-
 				}
 				validateNow();
+				updateIsFilterOn(value);
 			}
 
 
@@ -245,10 +246,16 @@
 			 * selects the suitable data accoding to the given filterVo
 			 * */
 			private function showDropFoldersData(filterVo:KalturaDropFolderFileFilter):void {
-				if (!_listButtonsArray || !filterVo.dropFolderIdIn)
+				if (!_listButtonsArray /* || !filterVo.dropFolderIdIn */)
 					return;
 				var container:Container = dropFolders.getChildAt(0) as Container;
-				var foldersArr:Array = filterVo.dropFolderIdIn.split(',');
+				var foldersArr:Array;
+				if (filterVo.dropFolderIdIn) {
+					foldersArr = filterVo.dropFolderIdIn.split(',');
+				}
+				else {
+					foldersArr = [];
+				}
 				var selectedFoldersNames:ArrayCollection = new ArrayCollection();
 				//get suitable names
 				for (var i:int = 0; i < foldersArr.length; i++) {
@@ -272,7 +279,7 @@
 					}
 				}
 				//if all folders are selected - select the title button
-			 	if (selectAll) {
+			 	if (selectAll || !filterVo.dropFolderIdIn) {
 					for (var k:int = 1; k<_listButtonsArray.length; k++) {
 						(_listButtonsArray[k] as Button).selected = false;
 					}
