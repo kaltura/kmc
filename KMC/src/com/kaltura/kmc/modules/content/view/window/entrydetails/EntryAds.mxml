@@ -705,20 +705,24 @@
 			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
 				// ad type - must have value
 				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
+					trace("cpid:", cp.id, "no adType selected");
 					return false;
 				}
 				// duration
 				if (cp.adType == KalturaAdType.OVERLAY) {
 					if (cp.endTime < cp.startTime) {
+						trace("cpid:", cp.id, "endTime before startTime");
 						return false;
 					}
 					
 					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration * 1000) {
+						trace("cpid:", cp.id, "endTime after entry.duration");
 						return false;
 					}
 				}
 				// for vast - url is mandatory
 				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
+					trace("cpid:", cp.id, "vast, no sourceUrl");
 					return false;
 				}
 				return true;
