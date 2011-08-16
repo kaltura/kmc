@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.commands.cuepoints
 			
 			cnt.addEventListener(KalturaEvent.COMPLETE, result);
 			cnt.addEventListener(KalturaEvent.FAILED, fault);
+			cnt.queued = false;
 			
 			_model.entryDetailsModel.reloadCuePoints = false;
 			_model.context.kc.post(cnt);	 
