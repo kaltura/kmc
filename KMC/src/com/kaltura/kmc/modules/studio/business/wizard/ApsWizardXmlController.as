@@ -609,11 +609,12 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						delete vast.attribute("preSequence")[0];
 					}
 					// overlay
+					var overlay:XML;
 					if (advo.overlay.enabled) {
 						vast.@overlayInterval = advo.overlay.frequency;
 						vast.@overlayStartAt = advo.overlay.start;
 						vast.@overlayUrl = advo.overlay.url;
-						var overlay:XML = player..Plugin.(@id == "overlay")[0];
+						overlay = player..Plugin.(@id == "overlay")[0];
 						overlay.@displayDuration = advo.overlay.nAds;
 						overlay.@trackCuePoints = advo.trackCuePoints;
 					}
@@ -621,8 +622,18 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						delete vast.attribute("overlayInterval")[0];
 						delete vast.attribute("overlayStartAt")[0];
 						delete vast.attribute("overlayUrl")[0];
-						// delete overlay plugin
-						delete player..Plugin.(@id == "overlay")[0];
+						
+						// overlay plugin is not needed for vast purposes.
+						if (advo.trackCuePoints) {
+							overlay = player..Plugin.(@id == "overlay")[0];
+							delete overlay.attribute("displayDuration")[0];
+							//TODO see what other attributes need to be removed
+							overlay.@trackCuePoints = advo.trackCuePoints;
+						}
+						// delete overlay plugin if not required for cuepoints or vast
+						else {
+							delete player..Plugin.(@id == "overlay")[0];
+						}
 					}
 					// postroll
 					if (advo.postroll.enabled) {

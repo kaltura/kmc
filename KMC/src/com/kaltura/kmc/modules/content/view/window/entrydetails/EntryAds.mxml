@@ -717,6 +717,10 @@
 						return false;
 					}
 				}
+				// for vast - url is mandatory
+				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
+					return false;
+				}
 				return true;
 			}
 
@@ -964,11 +968,8 @@
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_url')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
-					<mx:VBox width="100%" styleName="noPadding">
 						<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}"
 									  change="updateCuePointData(event)"/>
-						<!-- fix tiUrl text to show default text -->
-					</mx:VBox>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_name')}" styleName="formLabel"
