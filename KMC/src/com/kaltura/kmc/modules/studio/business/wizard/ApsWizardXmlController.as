@@ -627,7 +627,6 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						if (advo.trackCuePoints) {
 							overlay = player..Plugin.(@id == "overlay")[0];
 							delete overlay.attribute("displayDuration")[0];
-							//TODO see what other attributes need to be removed
 							overlay.@trackCuePoints = advo.trackCuePoints;
 						}
 						// delete overlay plugin if not required for cuepoints or vast
