@@ -53,8 +53,6 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
-			import flash.utils.setTimeout;
-			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -70,7 +68,7 @@
 			private var _statusWatcher:ChangeWatcher;
 			private var _replacementWatcher:ChangeWatcher;
 			private var _replacingEntryWatcher:ChangeWatcher;
-
+			
 			[Bindable]
 			/**
 			 * copy of the selected entry.
@@ -225,11 +223,30 @@
 			public function set entryIndex(value:int):void {
 				_entryIndex = value;
 				if (entriesAC) {
-					_prevEnabled = (_entryIndex > 0);
-					_nextEnabled = (_entryIndex < entriesAC.length - 1);
-					//TODO if no more entries are drillable, disable buttons accordingly
+					
+					_prevEnabled = checkNavigatableEntryExists(false, _entryIndex);
+					_nextEnabled = checkNavigatableEntryExists(true, _entryIndex);
 				} else {
 					_prevEnabled = _nextEnabled = false;
+				}
+			}
+			
+			private function checkNavigatableEntryExists(goForward:Boolean, entryInd:int): Boolean{
+				return getNavigatableEntryIndex(goForward, entryInd) != -1;
+			}
+			
+			// Gets the next entry index it's possible to navigate to, or -1 if no entry in that direction can be navigated to.
+			private function getNavigatableEntryIndex(goForward:Boolean, entryInd:int) : int{
+				var nextEntryIndex: int = goForward ? entryInd + 1 : entryInd - 1;
+				if (nextEntryIndex < 0 || nextEntryIndex > entriesAC.length - 1){
+					return -1;
+				}
+				
+				var nextEntry:KalturaMediaEntry = entriesAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
+				if (nextEntry && nextEntry.mediaType == KalturaMediaType.LIVE_STREAM_FLASH && nextEntry.status != KalturaEntryStatus.READY){
+					return getNavigatableEntryIndex(goForward, nextEntryIndex);
+				} else {
+					return nextEntryIndex;
 				}
 			}
 
@@ -258,8 +275,6 @@
 					
 					if (_undoToEntry is KalturaLiveStreamAdminEntry) {
 						_isLiveStream = true;
-					} else {
-						_isLiveStream = false;
 					}
 
 					if (_isReady) {
@@ -445,7 +460,7 @@
 						removeTab([liveStream]);
 						//remove redundant tabs in image and audio cases
 						if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
-							removeTab([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads, entryRelated]);
+							removeTab([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads]);
 						} else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
 							removeTab([entryDistribution]);
 						}
@@ -763,8 +778,9 @@
 						}
 						var cg:CairngormEvent = new EntryEvent(EntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
 						cg.dispatch();
-					} else
+					} else{
 						saveCuepoints();
+					}
 				}
 			}
 
@@ -992,10 +1008,7 @@
 
 
 			private function gotoNextEntry(ascending:Boolean):void {
-				if (ascending)
-					entryIndex++;
-				else
-					entryIndex--;
+				entryIndex = getNavigatableEntryIndex(ascending, entryIndex);
 				_nextEntryPending = true;
 				//save current entry
 				if (checkDataChanged())
@@ -1020,7 +1033,7 @@
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}
-
+			
 		]]>
 	</mx:Script>
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
