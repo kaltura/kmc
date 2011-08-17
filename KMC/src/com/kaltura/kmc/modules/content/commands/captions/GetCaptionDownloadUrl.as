@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.content.commands.captions
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.captionAsset.CaptionAssetGet;
 	import com.kaltura.commands.captionAsset.CaptionAssetGetDownloadUrl;
+	import com.kaltura.commands.captionAsset.CaptionAssetGetUrl;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CaptionsEvent;
@@ -44,7 +45,8 @@ package com.kaltura.kmc.modules.content.commands.captions
 				var resultCaption:KalturaCaptionAsset = event.data as KalturaCaptionAsset;
 				_captionVo.caption.status = resultCaption.status;
 				if (_captionVo.caption.status == KalturaFlavorAssetStatus.READY) {
-					var getUrl:CaptionAssetGetDownloadUrl = new CaptionAssetGetDownloadUrl(_captionVo.caption.id);
+//					var getUrl:CaptionAssetGetDownloadUrl = new CaptionAssetGetDownloadUrl(_captionVo.caption.id);
+					var getUrl:CaptionAssetGetUrl = new CaptionAssetGetUrl(_captionVo.caption.id);
 					getUrl.addEventListener(KalturaEvent.COMPLETE, result);
 					getUrl.addEventListener(KalturaEvent.FAILED, fault);
 					_model.context.kc.post(getUrl);

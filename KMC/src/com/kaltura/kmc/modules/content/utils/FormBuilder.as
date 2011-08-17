@@ -382,6 +382,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 * @return	a form
 		 * */
 		public function buildLayout(mxml:XML):UIComponent {
+			//TODO load these classes from module 
 			//In order to have a class definition it should compile, so we point to it
 			var dummyTable:EntryIDLinkTable;
 			var dummyMulti:MultiComponent;

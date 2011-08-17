@@ -116,8 +116,9 @@ package com.kaltura.kmc.modules.content.commands {
 						}
 						if (!isViewExist) {
 							//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-							if (_model.entryDetailsModel.metadataDefaultUiconfXML)
+							if (_model.entryDetailsModel.metadataDefaultUiconfXML){
 								metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
+							}
 							fb.buildInitialMxml();
 						}
 					}
