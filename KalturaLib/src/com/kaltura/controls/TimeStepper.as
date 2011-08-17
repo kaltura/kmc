@@ -90,7 +90,8 @@ package com.kaltura.controls {
 			o.hour = h;
 			o.minute = m;
 			o.second = s;
-			o.milisecond = int((time - secondsForCalc)*1000);
+			o.milisecond = Math.floor(time*1000 - secondsForCalc*1000);  // (time - secondsForCalc)*1000 causes rounding error!!!
+//			trace("time as object: ", time, "[",h,m,s,o.milisecond,"]");
 			return o;
 		}
 		
@@ -469,6 +470,7 @@ package com.kaltura.controls {
 		 * display (and rememebr) minimum value in the component 
 		 */		
 		protected function setMinValue():void {
+//			trace("set min value");
 			var oMin:Object = getTimeAsObject(_minimum);
 			this.hour = oMin.hour;
 			this.minute = oMin.minute;
@@ -490,6 +492,7 @@ package com.kaltura.controls {
 		 * display (and rememebr) maximum value in the component 
 		 */		
 		protected function setMaxValue():void {
+//			trace("set max value");
 			var oMin:Object = getTimeAsObject(_maximum);
 			this.hour = oMin.hour;
 			this.minute = oMin.minute;
