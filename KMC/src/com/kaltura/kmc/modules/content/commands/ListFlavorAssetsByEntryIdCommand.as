@@ -25,8 +25,6 @@ package com.kaltura.kmc.modules.content.commands {
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.COMPLETE, result);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(getAssetsAndFlavorsByEntryId);
-
-
 		}
 
 
@@ -36,11 +34,11 @@ package com.kaltura.kmc.modules.content.commands {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					Alert.show(ResourceManager.getInstance().getString('cms','replacementNotExistMsg'),ResourceManager.getInstance().getString('cms','replacementNotExistTitle'));
-					return;
 				}		
 			}
-			
-			Alert.show(ResourceManager.getInstance().getString('cms', 'flavorAssetsErrorMsg') + ":\n" + info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			else {
+				Alert.show(ResourceManager.getInstance().getString('cms', 'flavorAssetsErrorMsg') + ":\n" + info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+			}
 		}
 
 

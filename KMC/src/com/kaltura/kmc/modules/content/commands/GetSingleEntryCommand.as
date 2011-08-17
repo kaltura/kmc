@@ -42,9 +42,11 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function result(data:Object):void {
-			//dummy, to compile this object into KMC
-			var clipAttributes:KalturaClipAttributes;
-			super.result(data);
+			var clipAttributes:KalturaClipAttributes; // compile this type into KMC
+//			if (_eventType != EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
+				//TODO when replacement entry wasn't found, we handle separately.
+				super.result(data);
+//			}
 			
 			if (data.data && data.data is KalturaBaseEntry) {
 				var resultEntry:KalturaBaseEntry = data.data as KalturaBaseEntry;
@@ -52,22 +54,20 @@ package com.kaltura.kmc.modules.content.commands {
 					_model.entryDetailsModel.selectedReplacementEntry = resultEntry;
 				}
 				else if (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
+					var selectedEntry:KalturaBaseEntry = _model.entryDetailsModel.selectedEntry;
 					EntryUtil.updateChangebleFieldsOnly(resultEntry);
-					_model.entryDetailsModel.selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.entryDetailsModel.selectedEntry, 'replacementStatus',
-						_model.entryDetailsModel.selectedEntry.replacementStatus,_model.entryDetailsModel.selectedEntry.replacementStatus));
+					selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(selectedEntry, 
+						'replacementStatus', selectedEntry.replacementStatus, selectedEntry.replacementStatus));
 					//if in the entries list there's an entry with the same id, replace it.
-					EntryUtil.updateSelectedEntryInList(_model.entryDetailsModel.selectedEntry);
+					EntryUtil.updateSelectedEntryInList(selectedEntry);
 					_model.entryDetailsModel.selectedEntryReloaded = true;
 				}
-//				else if (_eventType == EntryEvent.GET_ENTRY) {
-//					_model.entryDetailsModel.selectedEntry = resultEntry;
-//				}
 				else {
-					(_model.app as Content).requestEntryDrilldown(data.data);
+					(_model.app as Content).requestEntryDrilldown(resultEntry);
 				}
 			}
 			else {
-				trace("Error getting entry");
+				trace(_eventType, ": Error getting entry");
 			}
 			_model.decreaseLoadCounter();
 		}
@@ -75,9 +75,10 @@ package com.kaltura.kmc.modules.content.commands {
 		
 		override public function fault(info:Object):void {
 			//if entry replacement doesn't exist it means that the replacement is ready
-			if ((_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) || (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS)) {
+			if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY || _eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
+					trace("GetSingleEntryCommand 703");
 					_model.decreaseLoadCounter();
 					return;
 				}
