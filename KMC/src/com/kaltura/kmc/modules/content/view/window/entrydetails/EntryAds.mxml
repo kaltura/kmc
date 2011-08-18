@@ -23,7 +23,7 @@
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
@@ -76,6 +76,8 @@
 			 * */
 			private var _kdpFirstPlayed:Boolean = false;
 
+//			private var _kdpReady:Boolean = false;
+
 			/**
 			 * when the KDP plays for the first time, if kClip initiated the play
 			 * we need to pause the KDP. otherwise, keep playing.
@@ -86,9 +88,9 @@
 			 * to stop loop between updating playhead in kclip/kdp
 			 * */
 			private var _kdpInitiatedUpdate:Boolean = false;
-			
+
 			/**
-			 * so that we won't add listeners to kclip and KDP every time 
+			 * so that we won't add listeners to kclip and KDP every time
 			 * initData is called (when paging between entries)
 			 * */
 			private var _listenersAddedKDP:Boolean = false;
@@ -147,12 +149,12 @@
 			 * file reference object used for bulk upload
 			 * */
 			private var _bulkUpldFileRef:FileReference;
-			
+
 			/**
 			 * current playhead position, in ms.
 			 * */
 			private var _playheadPosition:Number;
-		
+
 
 			/**
 			 * trace the error instead of crashing the browser
@@ -245,12 +247,12 @@
 
 			private function updateKClipStatus(setEntryId:Boolean = true):void {
 				var sm:KalturaMediaEntry = selectedEntry as KalturaMediaEntry;
-				if (sm.status != KalturaEntryStatus.READY 
-					|| (sm.mediaType != KalturaMediaType.AUDIO && sm.mediaType != KalturaMediaType.VIDEO)) {
+				if (sm.status != KalturaEntryStatus.READY || (sm.mediaType != KalturaMediaType.AUDIO && sm.mediaType != KalturaMediaType.VIDEO)) {
 					if (_kClip["isReady"]()) {
 						_kClip["setDisabled"](true);
 					}
-				} else {
+				}
+				else {
 					if (setEntryId && _kClip["isReady"]()) {
 						_kClipReady = false;
 						_kClip["setEntryId"](selectedEntry.id);
@@ -272,13 +274,15 @@
 					if (_kdp && kdpLoader.parent) {
 						kdpHolder.removeChild(kdpLoader);
 					}
-				} else {
+				}
+				else {
 					// add kdp, remove image, set entry id
 					if (_kdp) {
 						if (!kdpLoader.parent) {
 							kdpHolder.addChild(kdpLoader);
 						}
 						if (setEntryId) {
+//							_kdpReady = false;
 							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: selectedEntry.id});
 							_kdpFirstPlayed = false;
 						}
@@ -350,7 +354,8 @@
 					if (selectedEntry) {
 						updateKClipStatus(true);
 					}
-				} else {
+				}
+				else {
 					var url:String = "http://" + context.rootUrl + "/kgeneric/ui_conf_id/" + context.kClipAdsUiconf;
 					EntryAds.kClipLoader = new SWFLoader();
 					kClipLoader.trustContent = true;
@@ -376,7 +381,8 @@
 					if (selectedEntry) {
 						updateKdpStatus(true);
 					}
-				} else {
+				}
+				else {
 					var newUrl:String = "http://" + context.rootUrl + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
 					EntryAds.kdpLoader = new SWFLoader();
 					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
@@ -463,6 +469,7 @@
 			 * handle all kClip events
 			 * */
 			private function handleKClipEvents(e:Event):void {
+//				trace("EntryAds.handleKClipEvents:", e.type, e["data"]);
 				switch (e.type) {
 					case KClipEventTypes.PLAYHEAD_DRAG_START:
 						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
@@ -471,7 +478,7 @@
 						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
 						break;
-					
+
 					case KClipEventTypes.CLIPPER_READY:
 //						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
 						updateKClipStatus(true);
@@ -482,14 +489,17 @@
 						_kClip["setDisabled"](!editable);
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
-						var value:Number = parseFloat(e["data"]); 
+//						if (!_kdpReady) {
+//							// kdp is being crappy at his time, don't talk with him. 
+//							break;
+//						}
+						var value:Number = parseFloat(e["data"]);
 						if (_kdpInitiatedUpdate) {
 							_kdpInitiatedUpdate = false;
-						} else {
-							if (value != _playheadPosition) {
-								updateKdpPlayhead(value / 1000);
-							}
-							_playheadPosition = value; 
+						}
+						else if (value != _playheadPosition) {
+							updateKdpPlayhead(value / 1000);
+							_playheadPosition = value;
 						}
 						break;
 					case KClipEventTypes.SELECTED_ASSET_REMOVED:
@@ -507,6 +517,7 @@
 						break;
 					case KClipEventTypes.CUE_POINT_CHANGED:
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
+						trace(e["data"].startTime);
 						showCuePointDetails(e["data"]);
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
@@ -576,7 +587,7 @@
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
 
-				params.debugMode = context.debugMode;// "true";//
+				params.debugMode = context.debugMode; // "true";//
 
 				_kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
@@ -589,10 +600,10 @@
 
 
 			private function handleKdpEvents(e:Event):void {
+//				trace("EntryAds.handleKdpEvents, ", e.type);
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
-//						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-//						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
+//						_kdpReady = true;
 						if (!_kdpFirstPlayed) {
 							_kdpFirstPlayed = true;
 							if (_kClipInitiatedPlay) {
@@ -604,8 +615,6 @@
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
-//						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-//						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KdpEventTypes.PLAYER_UPDATE_PLAYHEAD:
 						if (_kClipReady) {
@@ -628,10 +637,12 @@
 					if (_kdpFirstPlayed) {
 						// kdp played before. just seek
 						_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
-					} else {
+					}
+					else {
 						// cause first play
 						_kClipInitiatedPlay = true;
 						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
+//						_kdpReady = false;
 						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
 					}
 				}
@@ -648,10 +659,12 @@
 				if (value == "vast") {
 					_selectedCuePoint.protocolType = KalturaAdProtocolType.VAST;
 					_selectedCuePoint.tags = '';
-				} else if (value == "freewheel") {
+				}
+				else if (value == "freewheel") {
 					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
 					_selectedCuePoint.tags = value;
-				} else {
+				}
+				else {
 					// "other" provider
 					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
 					_selectedCuePoint.tags = tiProvider.text;
@@ -714,7 +727,7 @@
 						trace("cpid:", cp.id, "endTime before startTime");
 						return false;
 					}
-					
+
 					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration * 1000) {
 						trace("cpid:", cp.id, "endTime after entry.duration");
 						return false;
@@ -757,7 +770,7 @@
 			private function getDuration(acp:KalturaAdCuePoint):Object {
 				if (acp.adType == KalturaAdType.VIDEO) {
 					return teDuration.getTimeAsObject(0);
-				} 
+				}
 				else if (acp.endTime && acp.endTime != acp.startTime) {
 					return teDuration.getTimeAsObject(Math.floor((acp.endTime - acp.startTime) / 1000));
 				}
@@ -774,12 +787,15 @@
 			private function getAdProviderText(acp:KalturaAdCuePoint):String {
 				if (!acp || acp.protocolType == KalturaAdProtocolType.VAST) {
 					return '';
-				} else if (acp.protocolType == KalturaAdProtocolType.CUSTOM) {
+				}
+				else if (acp.protocolType == KalturaAdProtocolType.CUSTOM) {
 					if (acp.tags == "freewheel") {
 						return '';
-					} else if (!acp.tags) {
+					}
+					else if (!acp.tags) {
 						return resourceManager.getString('cms', 'ads_default_provider');
-					} else {
+					}
+					else {
 						return acp.tags + "";
 					}
 				}
@@ -795,9 +811,11 @@
 				var value:String = cbProvider.selectedItem.value;
 				if (_selectedCuePoint.protocolType == KalturaAdProtocolType.VAST && _selectedCuePoint.tags == '') {
 					value == "vast"
-				} else if (_selectedCuePoint.protocolType == KalturaAdProtocolType.CUSTOM && _selectedCuePoint.tags == "freewheel") {
+				}
+				else if (_selectedCuePoint.protocolType == KalturaAdProtocolType.CUSTOM && _selectedCuePoint.tags == "freewheel") {
 					value = "freewheel";
-				} else {
+				}
+				else {
 					value = "other";
 				}
 
@@ -825,14 +843,14 @@
 			}
 
 
-		/* 	private function updateKClipWidth(event:FlexEvent):void {
-				if (kClipLoader) {
-					kClipLoader.width = kClipHolder.width ;
-					if (_kClip) {
-						_kClip.width = kClipLoader.width;
-					}
-				}
-			} */
+			/* 	private function updateKClipWidth(event:FlexEvent):void {
+			   if (kClipLoader) {
+			   kClipLoader.width = kClipHolder.width ;
+			   if (_kClip) {
+			   _kClip.width = kClipLoader.width;
+			   }
+			   }
+			 } */
 
 
 			private function removeAllCuePoints(event:MouseEvent):void {
@@ -939,8 +957,8 @@
 					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" styleName="timeEntry"
 										  maximum="{(selectedEntry as KalturaMediaEntry).duration}"
 										  timeValue="{teTiming.getTimeAsObject(_selectedCuePoint.startTime/1000)}"
-										  showHours="true" showSeconds="true" showMiliseconds="true" 
-										  is24Hour="true" change="updateCuePointData(event)"/>
+										  showHours="true" showSeconds="true" showMiliseconds="true" is24Hour="true"
+										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_type')}" styleName="formLabel"
@@ -952,8 +970,8 @@
 					<mx:Label text="{resourceManager.getString('cms', 'durationLabel')}" styleName="formLabel"
 							  enabled="{teDuration.enabled}"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}"
-										  showHours="true" showMiliseconds="true" showSeconds="true"
-										  is24Hour="true" timeValue="{getDuration(_selectedCuePoint)}"
+										  showHours="true" showMiliseconds="true" showSeconds="true" is24Hour="true"
+										  timeValue="{getDuration(_selectedCuePoint)}"
 										  change="updateCuePointData(event)" styleName="timeEntry"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
@@ -972,8 +990,8 @@
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_url')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
-						<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}"
-									  change="updateCuePointData(event)"/>
+					<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}"
+								  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
 					<mx:Label text="{resourceManager.getString('cms', 'ads_name')}" styleName="formLabel"
