@@ -23,10 +23,16 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 	import com.kaltura.vo.KalturaSftpDropFolder;
 	
 	import mx.collections.ArrayCollection;
+	import mx.core.mx_internal;
 	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
+	
+//	use namespace mx.core.mx_internal;
+	
 
 	public class ListDropFoldersAndFiles extends KalturaCommand {
 
+		
 		private var _flags:uint;
 		private var _fileFilter:KalturaDropFolderFileFilter;
 
@@ -58,21 +64,32 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 			else {
 				var ar:Array = handleDropFolderList(data.data as KalturaDropFolderListResponse);
 				_model.dropFolderModel.dropFolders = new ArrayCollection(ar);
-				if (!_fileFilter) {
-					var folderIds:String = '';
-					for each (var kdf:KalturaDropFolder in ar) {
-						folderIds += kdf.id + ",";
-					}
-					_fileFilter = new KalturaDropFolderFileFilter();
-					_fileFilter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
-					// use selected folder
-					_fileFilter.dropFolderIdIn = folderIds;
+				
+				if (ar.length == 0) {
+					// show the annoying product-team alert
+					var str:String = ResourceManager.getInstance().getString('cms', 'dfUpsale');
+					var alert:Alert = Alert.show(str, ResourceManager.getInstance().getString('cms', 'attention'));
+					alert.mx_internal::alertForm.mx_internal::textField.htmlText = str; // because it includes links and stuff
+					_model.decreaseLoadCounter();
 				}
-				var listFiles:DropFolderFileList = new DropFolderFileList(_fileFilter);
-
-				listFiles.addEventListener(KalturaEvent.COMPLETE, filesResult);
-				listFiles.addEventListener(KalturaEvent.FAILED, fault);
-				_model.context.kc.post(listFiles);
+				else {
+					// load files from the returned folders
+					if (!_fileFilter) {
+						var folderIds:String = '';
+						for each (var kdf:KalturaDropFolder in ar) {
+							folderIds += kdf.id + ",";
+						}
+						_fileFilter = new KalturaDropFolderFileFilter();
+						_fileFilter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
+						// use selected folder
+						_fileFilter.dropFolderIdIn = folderIds;
+					}
+					var listFiles:DropFolderFileList = new DropFolderFileList(_fileFilter);
+	
+					listFiles.addEventListener(KalturaEvent.COMPLETE, filesResult);
+					listFiles.addEventListener(KalturaEvent.FAILED, fault);
+					_model.context.kc.post(listFiles);
+				}
 			}
 //			_model.decreaseLoadCounter();
 		}
