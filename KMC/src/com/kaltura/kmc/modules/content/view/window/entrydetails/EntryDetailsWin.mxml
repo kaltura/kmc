@@ -52,7 +52,7 @@
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -309,8 +309,10 @@
 
 			public function set visibleTabsAC(value:ArrayCollection):void {
 				_visibleTabsAC = value;
-				if (_isReady)
+				if (_isReady) {
 					setVisibleTabs();
+					initTabs();
+				}
 			}
 
 
@@ -433,7 +435,7 @@
 				setTabsByEntryType(true);
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
-				if (viewStack.getChildByName('entryMetaData'))
+				if (entryMetaData.parent == viewStack)
 					entryMetaData.init();
 				_isReady = true;
 
@@ -478,17 +480,17 @@
 						contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
 						removeTab([liveStream]);
 						//remove redundant tabs in image and audio cases
-						if (int(selectedEntry.mediaType) == KalturaMediaType.IMAGE) {
+						if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
 							removeTab([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads, entryRelated]);
 						}
-						else if (int(selectedEntry.mediaType) == KalturaMediaType.AUDIO) {
+						else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
 							removeTab([entryDistribution]);
 						}
 					}
 
 					// if uiconf requires removing content tab
-					if (!entryDetailsModel.showMixesTab && viewStack.getChildByName('contentTab')) {
-						viewStack.removeChild(contentTab);
+					if (!entryDetailsModel.showMixesTab && contentTab.parent == viewStack) {
+						removeTab([contentTab]);
 					}
 
 					var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
@@ -498,6 +500,7 @@
 						}
 					}
 
+					
 					//adds custom data profiles
 					if (customData.parent is ViewStack) {
 						if (filterModel.enableCustomData) {
@@ -507,19 +510,20 @@
 							}
 						}
 						//if none of the profiles contain fields (the only child is the navigation hbox)
-						if (customData.profilesVBox.numChildren == 0)
-							viewStack.removeChild(customData);
+						if (customData.profilesVBox.numChildren == 0) {
+							removeTab([customData]);
+						}
 					}
-
+					
 					viewStack.selectedIndex = dtn.selectedIndex = 0;
 				}
 
-
-				if (_visibleTabsAC)
+				
+				if (_visibleTabsAC) {
 					setVisibleTabs();
-				else
-					initTabs();
-
+				}
+				
+				initTabs();
 			}
 
 
@@ -527,8 +531,9 @@
 			 * remove tabs according to uiconf configuration
 			 * */
 			private function hideTabsFromUiconf():void {
-				if (!entryDetailsModel.showMixesTab && viewStack.getChildByName('contentTab'))
+				if (!entryDetailsModel.showMixesTab && contentTab.parent == viewStack) {
 					viewStack.removeChild(contentTab);
+				}
 			}
 
 
@@ -1005,7 +1010,7 @@
 					if (!_visibleTabsAC.contains(child.id))
 						viewStack.removeChild(child);
 				}
-				initTabs();
+				
 			}
 
 
@@ -1017,17 +1022,20 @@
 				if (_dataInitialized)
 					return;
 
+//				var timer:MyTimer = new MyTimer();
+//				timer.start("initTabs");
 				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
 					if (viewStack.getChildAt(i) is IDrilldownPanel)
 						(viewStack.getChildAt(i) as IDrilldownPanel).initData();
 				}
+//				timer.end("initTabs init all");
 
 				//distribution panel requires the data flavors and thumbnails tab are loading,
 				//so if they doesn't exist, will still call their initData func
-				if (viewStack.getChildByName('entryDistribution')) {
-					if (!viewStack.getChildByName('entryAssets'))
+				if (entryDistribution.parent == viewStack) {
+					if (entryAssets.parent != viewStack)
 						entryAssets.initData();
-					if (!viewStack.getChildByName('entryThumbnails'))
+					if (entryThumbnails.parent != viewStack)
 						entryThumbnails.initData();
 				}
 
