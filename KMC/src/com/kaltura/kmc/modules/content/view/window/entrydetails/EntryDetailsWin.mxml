@@ -60,6 +60,8 @@
 			import mx.events.CloseEvent;
 			import mx.events.PropertyChangeEvent;
 			import mx.resources.ResourceManager;
+			
+			import org.flexunit.internals.namespaces.classInternal;
 
 
 			private var _entryWatcher:ChangeWatcher;
@@ -67,6 +69,7 @@
 			private var _statusWatcher:ChangeWatcher;
 			private var _replacementWatcher:ChangeWatcher;
 			private var _replacingEntryWatcher:ChangeWatcher;
+			private var _uiEnabledWatcher:ChangeWatcher;
 
 			[Bindable]
 			/**
@@ -216,8 +219,10 @@
 			 * indicates if we should move to the next entry after save is complete
 			 * */
 			private var _nextEntryPending:Boolean = false;
-
-
+			
+			[Bindable]
+			private var _uiEnabled:Boolean = true;
+			
 			[Bindable]
 			public function get entryIndex():int {
 				return _entryIndex;
@@ -425,6 +430,10 @@
 				if (!_entryIndexWatcher)
 					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", entryDetailsModel, "selectedIndex");
 				ads.addEventListener(EntryAds.CUE_POINTS_SAVED, saveEntryDetails);
+				
+				if (! _uiEnabledWatcher){
+					_uiEnabledWatcher = BindingUtils.bindSetter(setUIEnbaled, entryDetailsModel, "loadingFlag");
+				}
 				// mixes:
 				/* if (!_undoToEntry is KalturaMixEntry) {
 				   partsTable.text = resourceManager.getString('cms', 'usageInMixes');
@@ -441,6 +450,10 @@
 					entryMetaData.init();
 				_isReady = true;
 
+			}
+			
+			private function setUIEnbaled(value:Boolean):void{
+				_uiEnabled = ! value;
 			}
 
 
@@ -716,6 +729,9 @@
 				if (_sameRefidWatcher) {
 					_sameRefidWatcher.unwatch();
 				}
+				if (_uiEnabledWatcher) {
+					_uiEnabledWatcher.unwatch();
+				}
 			}
 
 
@@ -736,7 +752,8 @@
 			private function handleValidationError(tabToGo:DisplayObject, errorString:String = '', errorTitle:String = ''):void {
 				if (errorString != '')
 					Alert.show(errorString, errorTitle);
-				saveBtn.enabled = saveAndCloseBtn.enabled = true;
+//				saveBtn.enabled = saveAndCloseBtn.enabled = true;
+				_uiEnabled = true;
 				_nextEntryPending = false;
 				viewStack.selectedIndex = viewStack.getChildIndex(tabToGo);
 			}
@@ -1067,11 +1084,12 @@
 			 * initializes save process
 			 * */
 			private function submitChanges(closeAfterSave:Boolean):void {
-				//to handle cases of slow system - disable buttons even before sending server calls
-				saveBtn.enabled = saveAndCloseBtn.enabled = false;
+				//to handle cases of slow system - disable UI even before sending server calls
+				_uiEnabled = false;
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}
+			
 		]]>
 	</mx:Script>
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
@@ -1085,64 +1103,64 @@
 						  selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}" context="{context}"
 						  entryDetailsModel="{entryDetailsModel}" untrackableChange="{setUntrackableChange()}"
 						  openPreview="{openPreview(event)}" viewStack="{viewStack}" showEmbed="{showEmbedCode}"
-						  maxNumCategories="{maxNumCategories}" landingPage="{landingPage}"/>
+						  maxNumCategories="{maxNumCategories}" landingPage="{landingPage}" enabled="{_uiEnabled}"/>
 		<!-- Thumbnails Tab -->
 		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
 							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" context="{context}"
-							enableDistribution="{filterModel.enableDistribution}"/>
+							enableDistribution="{filterModel.enableDistribution}" enabled="{_uiEnabled}"/>
 
 		<!-- Access Control Tab -->
 		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
 							   label="{ResourceManager.getInstance().getString('cms', 'accessControl')}"
 							   selectedEntry="{_undoToEntry}" filterModel="{filterModel}"
-							   accessControlData="{filterModel.accessControlProfiles}"/>
+							   accessControlData="{filterModel.accessControlProfiles}" enabled="{_uiEnabled}"/>
 
 		<!-- Scheduling Tab -->
 		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('cms', 'scheduling')}"
-							selectedEntry="{_undoToEntry}"/>
+							selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
 
 		<!-- Flavor Assets Tab -->
 		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
 						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
 						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
 						 dropFolderModel="{dropFolderModel}" replacementStatus="{_undoToEntry.replacementStatus}"
-						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}"/>
+						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}" enabled="{_uiEnabled}"/>
 
 		<!-- content Tab -->
 		<ed:EntryContent id="contentTab" selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}"
 						 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}"
-						 loadRoughcuts="{loadRoughcuts}" parts="{entryDetailsModel.contentParts}"/>
+						 loadRoughcuts="{loadRoughcuts}" parts="{entryDetailsModel.contentParts}" enabled="{_uiEnabled}"/>
 
 		<!-- Live stream -->
 		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
 							   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}"
-							   selectedEntry="{_undoToEntry}"/>
+							   selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
 
 		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" enabled="{_uiEnabled}"/>
 
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution"
 							  label="{ResourceManager.getInstance().getString('cms', 'distribution')}"
 							  selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
-							  viewStack="{viewStack}"/>
+							  viewStack="{viewStack}" enabled="{_uiEnabled}"/>
 
 		<!-- captions -->
 		<ed:EntryCaptions id="entryCaptions" label="{resourceManager.getString('cms','captions')}"
-						  selectedEntry="{_undoToEntry}" entryCaptionsArr="{entryDetailsModel.captionsArray}"/>
+						  selectedEntry="{_undoToEntry}" entryCaptionsArr="{entryDetailsModel.captionsArray}" enabled="{_uiEnabled}"/>
 
 		<!-- advertisments -->
 		<ed:EntryAds id="ads" label="{resourceManager.getString('cms','ads')}" selectedEntry="{_undoToEntry}"
-					 context="{context}" entryDetailsModel="{entryDetailsModel}"/>
+					 context="{context}" entryDetailsModel="{entryDetailsModel}" enabled="{_uiEnabled}"/>
 
 		<!-- related entries -->
 		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
-						 selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}"/>
+						 selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}" enabled="{_uiEnabled}"/>
 
 
 		<!-- clips -->
 		<ed:EntryClips id="entryClips" label="{resourceManager.getString('cms','clips')}" selectedEntry="{_undoToEntry}"
-					   clips="{entryDetailsModel.clips}"/>
+					   clips="{entryDetailsModel.clips}" enabled="{_uiEnabled}"/>
 
 
 	</mx:ViewStack>
@@ -1150,9 +1168,9 @@
 		<mx:HBox width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="submitChanges(false)"
-					   buttonMode="true" enabled="{!entryDetailsModel.loadingFlag}"/>
+					   buttonMode="true" enabled="{_uiEnabled}"/>
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'saveAndClose')}"
-					   click="submitChanges(true)" buttonMode="true" enabled="{!entryDetailsModel.loadingFlag}"/>
+					   click="submitChanges(true)" buttonMode="true" enabled="{_uiEnabled}"/>
 
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
