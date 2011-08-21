@@ -524,98 +524,35 @@
 
 			public function getStatusForModeration(obj:Object):String {
 				var entry:KalturaBaseEntry = obj as KalturaBaseEntry;
-				var status:String = entry.status;
-				switch (status) {
-					case KalturaEntryStatus.DELETED:
-					case KalturaEntryStatus.ERROR_CONVERTING:
-					case KalturaEntryStatus.ERROR_IMPORTING:
-					case KalturaEntryStatus.IMPORT:
-					case KalturaEntryStatus.PRECONVERT:  {
-						return '';
-					}
-					case KalturaEntryStatus.READY:  {
-						var now:Date = new Date();
-						var time:int = now.time / 1000;
-						var schedulingType:int = 0;
-
-						if (((entry.startDate == int.MIN_VALUE) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate <= time) && (entry.endDate >= time)) || ((entry.startDate < time) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate == int.MIN_VALUE) && (entry.endDate > time))) {
-							schedulingType = RUNNING;
-						}
-						else if (entry.startDate > time) {
-							schedulingType = SCHEDULED;
-						}
-						else if (entry.endDate < time) {
-							schedulingType = FINISHED;
-						}
-
-						var moderationStatus:int = entry.moderationStatus;
-
-						switch (schedulingType) {
-							case SCHEDULED:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'approvedStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'autoApprovedStatus');
-									}
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'flaggedStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
+//				switch (entry.status) {
+//					case KalturaEntryStatus.DELETED:
+//					case KalturaEntryStatus.ERROR_CONVERTING:
+//					case KalturaEntryStatus.ERROR_IMPORTING:
+//					case KalturaEntryStatus.IMPORT:
+//					case KalturaEntryStatus.PRECONVERT:  {
+//						return '';
+//					}
+//					case KalturaEntryStatus.READY:  {
+						switch (entry.moderationStatus) {
+							case KalturaEntryModerationStatus.APPROVED:  {
+								return resourceManager.getString('cms', 'approvedStatus');
 							}
-							case RUNNING:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'approvedStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'autoApprovedStatus');
-									}
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'flaggedStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
+							case KalturaEntryModerationStatus.AUTO_APPROVED:  {
+								return resourceManager.getString('cms', 'autoApprovedStatus');
 							}
-							case FINISHED:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:  {
-										return resourceManager.getString('cms', 'approvedStatus');
-									}
-									case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-										return resourceManager.getString('cms', 'autoApprovedStatus');
-									}
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'flaggedStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
+							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+								return resourceManager.getString('cms', 'flaggedStatus');
+							}
+							case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+								return resourceManager.getString('cms', 'pendingStatus');
+							}
+							case KalturaEntryModerationStatus.REJECTED:  {
+								return resourceManager.getString('cms', 'rejectedStatus');
 							}
 						}
-					}
-
-				}
-
+//						break;
+//					}
+//				}
 				return '';
 			}
 
