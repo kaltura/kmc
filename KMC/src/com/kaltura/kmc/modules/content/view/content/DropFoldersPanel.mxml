@@ -211,18 +211,12 @@
 			private function loadDropFolderFiles():void {
 				if (paging) {	
 					if (paging.pageSize == 10) {
-						entryTableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + 10;
-						dg.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
 						dg.rowCount = 10;
-						vbox1.height = dg.height + paging.height + bottomActionBox.height;
-						topContainer.height = vbox1.height;
+						topContainer.height = (dg.rowHeight * 10) + dg.headerHeight + 10 + paging.height + bottomActionBox.height;
 					}
 					else {
 						topContainer.percentHeight = 100;
-						entryTableContainer.percentHeight = 100;
-						dg.percentHeight = 100;
 						dg.rowCount = -1;
-						vbox1.percentHeight = 100;
 					}
 					
 					dropFolderModel.pager = paging.kalturaFilterPager;
@@ -299,15 +293,17 @@
 		]]>
 	</mx:Script>
 	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY JJ:NN"/>
+	
 	<mx:states>
 		<mx:State name="noFilterState">
-			<mx:SetProperty target="{vbox1}" name="visible" value="false"/>
-			<mx:SetProperty target="{vbox1}" name="includeInLayout" value="false"/>
+			<mx:SetProperty target="{filterContainer}" name="visible" value="false"/>
+			<mx:SetProperty target="{filterContainer}" name="includeInLayout" value="false"/>
 			<mx:RemoveChild target="{filterLabel}"/>
 			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left"/>
-			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
+			<mx:SetProperty target="{filterContainer}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
+	
 	<mx:HBox styleName="filtersHeadTitleHBox" width="100%">
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
@@ -318,36 +314,37 @@
 		<mx:Spacer width="100%"/>
 		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList(event)" styleName="recycleIcon"/>
 	</mx:HBox>
-	<mx:HDividedBox id="topContainer" width="100%" verticalScrollPolicy="off">
-		<mx:VBox id="vbox1">
-			<filter:DropFolderFilter id="filter" height="{tableContainer.height}" width="245" newSearch="{newSearchFromFilter()}"
-						 dropFoldersAC="{dropFolderModel.dropFolders}" dropFolderFileFilter="{dropFolderModel.filter}"/>
+	<mx:HDividedBox id="topContainer" width="100%" height="100%" verticalScrollPolicy="off" >
+		<mx:VBox id="filterContainer" height="100%">
+			<filter:DropFolderFilter id="filter" height="100%" width="245" 
+					newSearch="{newSearchFromFilter()}" dropFoldersAC="{dropFolderModel.dropFolders}" 
+					dropFolderFileFilter="{dropFolderModel.filter}"/>
 		</mx:VBox>
 
-		<mx:VBox id="tableContainer" height="100%" width="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
-			<mx:HBox id="entryTableContainer" width="100%">
-				<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" width="100%" allowMultipleSelection="true" >
-					<mx:columns>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" labelFunction="{folderNameFunc}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Label text="{outerDocument.getErrorDescription(data)}" paddingLeft="7"/>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-					</mx:columns>
-				</mx:DataGrid>
-			</mx:HBox>
+		<mx:VBox id="tableContainer" width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
+			<mx:DataGrid id="dg" dataProvider="{dropFolderModel.files}" rowCount="10" rowHeight="36" 
+						 width="100%" height="100%" allowMultipleSelection="true" >
+				<mx:columns>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileNameTitle')}" dataField="fileName"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFolderNameTitle')}" dataField="fileName" labelFunction="{folderNameFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileCreatedAtTitle')}" dataField="createdAt" labelFunction="{dateCreatedLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileSizeTitle')}" dataField="fileSize" labelFunction="{fileSizeLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileStatusTitle')}" dataField="status" labelFunction="{statusLabelFunc}"/>
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms','dropFileErrTitle')}">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label text="{outerDocument.getErrorDescription(data)}" paddingLeft="7"/>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
 			
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{dropFolderModel.filesTotalCount}"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
 							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
+			
 			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions" height="30">
 				<mx:HBox height="100%" verticalAlign="middle" left="5" horizontalGap="0">
 					<mx:Label text="{resourceManager.getString('cms', 'selectionTitle')}"/>
@@ -362,6 +359,5 @@
 				</mx:HBox>
 			</mx:HBox>
 		</mx:VBox>
-
 	</mx:HDividedBox>
 </mx:VBox>

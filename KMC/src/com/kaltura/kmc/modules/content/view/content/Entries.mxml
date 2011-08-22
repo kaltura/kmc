@@ -9,11 +9,11 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 		 creationComplete="creationCompleteHandler(event)" >
 	<mx:states>
 		<mx:State name="noFilterState">
-			<mx:SetProperty target="{vbox1}" name="visible" value="false"/>
-			<mx:SetProperty target="{vbox1}" name="includeInLayout" value="false"/>
+			<mx:SetProperty target="{filterContainer}" name="visible" value="false"/>
+			<mx:SetProperty target="{filterContainer}" name="includeInLayout" value="false"/>
 			<mx:RemoveChild target="{filterLabel}"/>
 			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left"/>
-			<mx:SetProperty target="{vbox1}" name="height" value="20"/>
+			<mx:SetProperty target="{filterContainer}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
 	
@@ -129,18 +129,12 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			
 			public function loadEntries():void {
 				if (paging.pageSize == 10) {
-					entryTableContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10;
-					entryTable.height = entryTableContainer.height; //entryTable.rowHeight*11+entryTable.headerHeight;
 					entryTable.rowCount = 10;
-					vbox1.height = entryTable.height + paging.height + toolBar.height;
-					topContainer.height = entryTableContainer.height + paging.height + toolBar.height;
+					topContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10 + paging.height + toolBar.height;
 				}
 				else {
 					topContainer.percentHeight = 100;
-					entryTableContainer.percentHeight = 100;
-					entryTable.percentHeight = 100;
 					entryTable.rowCount = -1;
-					vbox1.percentHeight = 100;
 				}
 				
 				_listableVo = new ListableVo(filter.ps3filter, paging, null);
@@ -195,12 +189,11 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				event.target.updateDefaultSortColumn();
 				percentWidth = 100;
 				topContainer.percentWidth = 100;
-				vbox2.percentWidth = 100;
 				entryTableContainer.percentWidth = 100;
 				entryTable.percentWidth = 100;
 				paging.percentWidth = 100;
 				toolBar.percentWidth = 100;
-				vbox1.width = 245;
+				filterContainer.width = 245;
 				filter.percentWidth = 100;
 				validateNow();
 				validateDisplayList()
@@ -373,8 +366,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 		<mx:Spacer width="100%" />
 		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
 	</mx:HBox>
-	<mx:HDividedBox id="topContainer" verticalScrollPolicy="off">
-		<mx:VBox id="vbox1">
+	<mx:HDividedBox id="topContainer" width="100%" height="100%" verticalScrollPolicy="off">
+		<mx:VBox id="filterContainer" height="100%">
 			<filter:Filter id="filter" height="100%" width="245"
 						   enableCustomData="{filterModel.enableCustomData}"
 						   enableDistribution="{filterModel.enableDistribution}"
@@ -387,25 +380,25 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 						   newSearch="newSearchhFromFilter()"
 						   showAccordionHeaderButtons="true" />
 		</mx:VBox>
-		<mx:VBox id="vbox2" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox" width="100%">
-			<mx:HBox id="entryTableContainer" height="100%" width="100%">
-				<view:EntryTable id="entryTable" rowCount="10" width="100%" dataProvider="{_listableVo.arrayCollection}"
+		
+			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
+				<view:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
+								 dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
 								 selectedEntry="{entryDetailsModel.selectedEntry}" showEmbed="{showEmbed}"
-								 orderByChanged="{onOrderByChanged()}" creationComplete="removeColums( event )"/>
-			</mx:HBox>
+								 orderByChanged="{onOrderByChanged()}" />
 			
-			<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
-							 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
-							 getPageNum="gotoPageNum()" totalCount="{entryDetailsModel.totalEntriesCount}"
-							 showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}" />
-			
-			<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}" 
-								 selectAllEntries="onSelectAllEntries(event)"
-								 deselectAllEntries="onDeselectAllEntries(event)"
-								 createNewManualPlaylist="onNewManualPlaylist()"
-								 createNewRulePlaylist="onNewRulePlaylist()"
-								 createNewLivestream="createNewLivestreamHandler(event)"/>
-		</mx:VBox>
+				<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
+								 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
+								 getPageNum="gotoPageNum()" totalCount="{entryDetailsModel.totalEntriesCount}"
+								 showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}" />
+				
+				<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}" 
+									 selectAllEntries="onSelectAllEntries(event)"
+									 deselectAllEntries="onDeselectAllEntries(event)"
+									 createNewManualPlaylist="onNewManualPlaylist()"
+									 createNewRulePlaylist="onNewRulePlaylist()"
+									 createNewLivestream="createNewLivestreamHandler(event)"/>
+			</mx:VBox>
 	</mx:HDividedBox>
 	
 </mx:VBox>
