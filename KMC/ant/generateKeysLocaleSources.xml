@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="Generate Keys Sources" basedir="." default="build">
+	
+	<property name="DEPLOY_DIR" value="../locale/keys"/>
+	<property name="SOURCE_DIR" value="../locale/en_US"/>
+
+	
+	<target name="compile" description="compile the desired locale module">
+			<replaceregexp match="(.*)=(.*)" replace="\1=\1" byline="true" >
+				<fileset dir="${DEPLOY_DIR}" includes="**/*.properties"/>
+			</replaceregexp>
+    </target>
+
+		
+	<target name="build" depends="clean, init, compile">
+		<echo>Sources for keys-keys locale created successfully</echo>
+	</target>
+	
+	
+	<target name="clean" description="delete old file">
+		<echo>Deleting old sources</echo>
+        <delete failonerror="false">
+            <fileset dir="${DEPLOY_DIR}" includes="**/*"/>
+        </delete>
+    </target>
+	
+	
+	<target name="init">
+		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a directory"/>
+		<copy todir="${DEPLOY_DIR}">
+			<fileset dir="${SOURCE_DIR}" includes="**/*"/>
+		</copy>
+	</target>
+</project>
+
