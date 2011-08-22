@@ -7,22 +7,17 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.category.CategoryList;
 	import com.kaltura.commands.distributionProfile.DistributionProfileList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
-	import com.kaltura.commands.metadataProfile.MetadataProfileList;
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.business.IDataOwner;
 	import com.kaltura.kmc.modules.content.events.LoadEvent;
-	import com.kaltura.kmc.modules.content.utils.FormBuilder;
 	import com.kaltura.kmc.modules.content.vo.CategoryVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.types.KalturaDistributionProfileStatus;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
-	import com.kaltura.types.KalturaMetadataOrderBy;
-	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.AccessControlProfileVO;
-	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaAccessControlListResponse;
@@ -36,10 +31,6 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
 	import com.kaltura.vo.KalturaMediaEntryFilter;
-	import com.kaltura.vo.KalturaMetadataProfile;
-	import com.kaltura.vo.KalturaMetadataProfileFilter;
-	import com.kaltura.vo.KalturaMetadataProfileListResponse;
-	import com.kaltura.vo.MetadataFieldVO;
 	
 	import flash.xml.XMLDocument;
 	import flash.xml.XMLNode;
