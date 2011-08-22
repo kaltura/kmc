@@ -12,6 +12,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.dashboard.DashboardManager;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -42,6 +43,12 @@
 
 			protected function dnldSamples(event:MouseEvent):void {
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'add', '', {kmcFunction:"addCode.downloadSampleFiles"}));
+			}
+
+
+			protected function onHelp(event:MouseEvent):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "upload_menu"));
 			}
 
 		]]>
@@ -77,6 +84,8 @@
 			<mx:HBox styleName="noPadding" verticalAlign="middle">
 				<mx:Button label="{resourceManager.getString('kdashboard', 'tip')}" styleName="tipStyle" />
 				<mx:Label htmlText="{resourceManager.getString('kdashboard', 'addContentEasily')}" />
+				<mx:LinkButton label="{resourceManager.getString('kdashboard', 'learn_more')}"
+							   click="onHelp(event)" paddingLeft="-10"/>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HBox>
