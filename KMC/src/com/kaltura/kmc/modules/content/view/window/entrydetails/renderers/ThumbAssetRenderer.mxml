@@ -40,17 +40,28 @@
 					{
 						setImageAndDimensions(thumb.thumbUrl, THUMB_WIDTH, THUMB_HEIGHT);	
 					}
+				
+					isDefault = getIsDefault();
 					
-					if (thumb.thumbAsset.tags == ThumbnailWithDimensions.DEFAULT_THUMB)
-						isDefault = true;
-					else
-						isDefault = false;
 				}
 				else {
 					thumbAssetExist = false;
 					thumbImage.source = null;
 					isDefault = false;
 				}
+			}
+			
+			private function getIsDefault():Boolean {
+				var result = false;
+				var ar:Array = thumb.thumbAsset.tags.split(",");
+				for each (var tag:String in ar){
+					if (tag == ThumbnailWithDimensions.DEFAULT_THUMB) {
+						result = true;
+						break;
+					} 
+				}
+				return result;
+				
 			}
 			
 			private function setImageAndDimensions(source:Object, width:int, height:int):void {
