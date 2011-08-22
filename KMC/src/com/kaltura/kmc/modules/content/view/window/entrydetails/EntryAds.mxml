@@ -23,7 +23,7 @@
 			import com.kaltura.vo.KalturaAdCuePoint;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.Alert;
@@ -76,7 +76,6 @@
 			 * */
 			private var _kdpFirstPlayed:Boolean = false;
 
-//			private var _kdpReady:Boolean = false;
 
 			/**
 			 * when the KDP plays for the first time, if kClip initiated the play
@@ -177,10 +176,11 @@
 
 			public function destroy():void {
 				if (_kdp) {
-					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+//					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
+					_kdp.removeEventListener(KdpEventTypes.DO_SEEK, handleKdpEvents, false);
 					_kdp["sendNotification"](KdpEventTypes.DO_STOP);
 				}
 				if (_kClip) {
@@ -282,7 +282,6 @@
 							kdpHolder.addChild(kdpLoader);
 						}
 						if (setEntryId) {
-//							_kdpReady = false;
 							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: selectedEntry.id});
 							_kdpFirstPlayed = false;
 						}
@@ -372,10 +371,8 @@
 					kdpHolder.addChild(kdpLoader);
 					_kdp = kdpLoader.content;
 					if (!_listenersAddedKDP) {
-						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-						_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
-						_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
-						_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+
+						addKDPListeners();
 						_listenersAddedKDP = true;
 					}
 					if (selectedEntry) {
@@ -392,6 +389,13 @@
 				}
 			}
 
+			private function addKDPListeners():void {
+//				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+				_kdp.addEventListener(KdpEventTypes.DO_SEEK, handleKdpEvents, false, 0, true);
+			}
 
 			/**
 			 * wait for kClip application to be ready
@@ -480,7 +484,6 @@
 						break;
 
 					case KClipEventTypes.CLIPPER_READY:
-//						_kClipReady = true; // this is a little misuse, first time set flag here so function will run well.
 						updateKClipStatus(true);
 						break;
 					case KClipEventTypes.ENTRY_READY:
@@ -489,15 +492,8 @@
 						_kClip["setDisabled"](!editable);
 						break;
 					case KClipEventTypes.PLAYHEAD_UPDATED:
-//						if (!_kdpReady) {
-//							// kdp is being crappy at his time, don't talk with him. 
-//							break;
-//						}
 						var value:Number = parseFloat(e["data"]);
-						if (_kdpInitiatedUpdate) {
-							_kdpInitiatedUpdate = false;
-						}
-						else if (value != _playheadPosition) {
+						if (value != _playheadPosition) {
 							updateKdpPlayhead(value / 1000);
 							_playheadPosition = value;
 						}
@@ -517,7 +513,6 @@
 						break;
 					case KClipEventTypes.CUE_POINT_CHANGED:
 					case KClipEventTypes.SELECTED_ASSET_CHANGED:
-						trace(e["data"].startTime);
 						showCuePointDetails(e["data"]);
 						break;
 					case KClipEventTypes.CLIPPER_ERROR:
@@ -587,15 +582,12 @@
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
 
-				params.debugMode = context.debugMode; // "true";//
+				params.debugMode =  "true";//context.debugMode; //
 
 				_kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp["init"]();
-				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
-				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
-				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
+				addKDPListeners();
 			}
 
 
@@ -603,7 +595,8 @@
 //				trace("EntryAds.handleKdpEvents, ", e.type);
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
-//						_kdpReady = true;
+						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false);
+						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 						if (!_kdpFirstPlayed) {
 							_kdpFirstPlayed = true;
 							if (_kClipInitiatedPlay) {
@@ -615,10 +608,23 @@
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
+						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false, 0, true);
+						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+						break;
+					case KdpEventTypes.DO_SEEK:
+						if (_kClipReady) {
+							if (_kdpInitiatedUpdate)  {
+								if (!isNaN(parseFloat(e["data"]))) {
+									_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000);
+								}
+							}
+							else {
+								_kdpInitiatedUpdate = true;
+							}
+						}
 						break;
 					case KdpEventTypes.PLAYER_UPDATE_PLAYHEAD:
 						if (_kClipReady) {
-							_kdpInitiatedUpdate = true;
 							if (!isNaN(parseFloat(e["data"]))) {
 								_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000);
 							}
@@ -633,6 +639,7 @@
 			 * @param n new time in seconds
 			 * */
 			private function updateKdpPlayhead(n:Number):void {
+				_kdpInitiatedUpdate = false;
 				if (_kdp) {
 					if (_kdpFirstPlayed) {
 						// kdp played before. just seek
@@ -642,7 +649,6 @@
 						// cause first play
 						_kClipInitiatedPlay = true;
 						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
-//						_kdpReady = false;
 						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
 					}
 				}
