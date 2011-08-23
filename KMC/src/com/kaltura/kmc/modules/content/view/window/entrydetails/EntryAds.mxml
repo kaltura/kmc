@@ -42,7 +42,6 @@
 				{label: ResourceManager.getInstance().getString('cms', 'type_overlay'), value: KalturaAdType.OVERLAY}];
 
 			private static const PROVIDERS:Array = [{label: ResourceManager.getInstance().getString('cms', 'provider_vast'), value: 'vast'},
-				{label: ResourceManager.getInstance().getString('cms', 'provider_freewheel'), value: 'freewheel'},
 				{label: ResourceManager.getInstance().getString('cms', 'provider_other'), value: 'other'}];
 
 			private const LABEL_WIDTH:int = 80;
@@ -666,10 +665,6 @@
 					_selectedCuePoint.protocolType = KalturaAdProtocolType.VAST;
 					_selectedCuePoint.tags = '';
 				}
-				else if (value == "freewheel") {
-					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
-					_selectedCuePoint.tags = value;
-				}
 				else {
 					// "other" provider
 					_selectedCuePoint.protocolType = KalturaAdProtocolType.CUSTOM;
@@ -788,21 +783,18 @@
 
 			/**
 			 * return the correct string to show in the ad provider text field,
-			 * i.e. nothing for vast or freewheel, or the tags string for "other".
+			 * i.e. nothing for vast, or the tags string for "other".
 			 * */
 			private function getAdProviderText(acp:KalturaAdCuePoint):String {
 				if (!acp || acp.protocolType == KalturaAdProtocolType.VAST) {
 					return '';
 				}
 				else if (acp.protocolType == KalturaAdProtocolType.CUSTOM) {
-					if (acp.tags == "freewheel") {
-						return '';
-					}
-					else if (!acp.tags) {
-						return resourceManager.getString('cms', 'ads_default_provider');
+					if (acp.tags) {
+						return acp.tags;
 					}
 					else {
-						return acp.tags + "";
+						return resourceManager.getString('cms', 'ads_default_provider');
 					}
 				}
 				return resourceManager.getString('cms', 'ads_default_provider');
@@ -815,13 +807,10 @@
 			 * */
 			private function getAdProvider(cp:KalturaAdCuePoint):Object {
 				var value:String;
-				if (cp.protocolType == KalturaAdProtocolType.VAST && cp.tags == '') {
+				if (cp.protocolType == KalturaAdProtocolType.VAST) {
 					value = "vast"
 				}
-				else if (cp.protocolType == KalturaAdProtocolType.CUSTOM && cp.tags == "freewheel") {
-					value = "freewheel";
-				}
-				else {
+				else if (cp.protocolType == KalturaAdProtocolType.CUSTOM) {
 					value = "other";
 				}
 
