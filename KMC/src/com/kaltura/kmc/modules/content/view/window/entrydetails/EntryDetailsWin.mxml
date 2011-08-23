@@ -60,8 +60,6 @@
 			import mx.events.CloseEvent;
 			import mx.events.PropertyChangeEvent;
 			import mx.resources.ResourceManager;
-			
-			import org.flexunit.internals.namespaces.classInternal;
 
 
 			private var _entryWatcher:ChangeWatcher;
@@ -523,7 +521,6 @@
 
 				if (entryChanged) {
 					//reset viewStack to its starting point
-//					viewStack.removeAllChildren();
 					for each (var tab:DisplayObject in _originalTabs) {
 						viewStack.addChild(tab);
 					}
@@ -887,7 +884,6 @@
 			 * confirm saving entry with existing referenceId
 			 * */
 			private function entriesListChanged(value:Object):void {
-				trace("entriesListChanged, value:", value);
 				if (!value)
 					return;
 
@@ -1088,13 +1084,10 @@
 				if (_dataInitialized)
 					return;
 
-//				var timer:MyTimer = new MyTimer();
-//				timer.start("initTabs");
+				
 				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
-					if (viewStack.getChildAt(i) is IDrilldownPanel)
-						(viewStack.getChildAt(i) as IDrilldownPanel).initData();
+					(viewStack.getChildAt(i) as IDrilldownPanel).initData();
 				}
-//				timer.end("initTabs init all");
 
 				//distribution panel requires the data flavors and thumbnails tab are loading,
 				//so if they doesn't exist, will still call their initData func
