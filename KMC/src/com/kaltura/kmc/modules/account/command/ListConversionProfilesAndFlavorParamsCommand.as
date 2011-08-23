@@ -119,7 +119,14 @@ package com.kaltura.kmc.modules.account.command {
 			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, cpaps);
 			
 			// mark flavors of first profile
-			var selectedItems:Array = (convProfilesTmpArrCol[0] as ConversionProfileVO).profile.flavorParamsIds.split(",");
+			var selectedItems:Array;
+			if ((convProfilesTmpArrCol[0] as ConversionProfileVO).profile.flavorParamsIds) {
+				// some partner managed to remove all flavors from his default profile, so KMC crashed on this line.
+				selectedItems = (convProfilesTmpArrCol[0] as ConversionProfileVO).profile.flavorParamsIds.split(",");
+			}
+			else {
+				selectedItems = new Array();
+			}
 			for each (var flavora:String in selectedItems) {
 				for each (var flavorVO:FlavorVO in flvorsTmpArrCol) {
 					if (flavora == flavorVO.kFlavor.id.toString())
