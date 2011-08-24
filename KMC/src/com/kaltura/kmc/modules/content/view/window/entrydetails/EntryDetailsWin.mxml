@@ -378,7 +378,7 @@
 //			 * */
 //			private function showNormalSetup():void {
 //				// for mix/content tab, show "mixesTab" header
-//				contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
+//				contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
 //			}
 
 //			/**
@@ -386,7 +386,7 @@
 //			 * */
 //			private function showMixSetup():void {
 //				// for mix/content tab, show "mixesTab" header
-//				contentTab.label = ResourceManager.getInstance().getString('cms', 'content');
+//				contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
 //			}
 
 			/**
@@ -411,22 +411,22 @@
 						var mediaType:int = parseInt(_undoToEntry.mediaType);
 						switch (mediaType) {
 							case KalturaMediaType.IMAGE:
-								title = resourceManager.getString('cms', 'newImageEntry');
+								title = resourceManager.getString('drilldown', 'newImageEntry');
 								break;
 							case KalturaMediaType.AUDIO:
-								title = resourceManager.getString('cms', 'newAudioEntry');
+								title = resourceManager.getString('drilldown', 'newAudioEntry');
 								break;
 							case KalturaMediaType.VIDEO:
-								title = resourceManager.getString('cms', 'newVideoEntry');
+								title = resourceManager.getString('drilldown', 'newVideoEntry');
 								break;
 						}
 						return;
 					}
 				}
 
-				title = resourceManager.getString('cms', 'editEntry') + ' - ';
+				title = resourceManager.getString('drilldown', 'editEntry') + ' - ';
 				if (_undoToEntry.replacedEntryId) {
-					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('cms', 'assetReplacement') + ')';
+					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('drilldown', 'assetReplacement') + ')';
 
 				}
 				else {
@@ -481,7 +481,7 @@
 				}
 				// mixes:
 				/* if (!_undoToEntry is KalturaMixEntry) {
-				   partsTable.text = resourceManager.getString('cms', 'usageInMixes');
+				   partsTable.text = resourceManager.getString('drilldown', 'usageInMixes');
 				 } */
 
 				_originalTabs = new Array();
@@ -531,12 +531,12 @@
 					}
 					else if (selectedEntry is KalturaMixEntry) {
 						//this is a mix
-						contentTab.label = ResourceManager.getInstance().getString('cms', 'content');
+						contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
 						removeTab([entryAssets, liveStream, ads]);
 					}
 					else {
 						// this entry is a regular video/image/audio
-						contentTab.label = ResourceManager.getInstance().getString('cms', 'mixesTab');
+						contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
 						removeTab([liveStream]);
 						//remove redundant tabs in image and audio cases
 						if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
@@ -658,12 +658,12 @@
 			 * */
 			private function onClose():void {
 				if (isNewEntry) {
-					Alert.show(resourceManager.getString('cms', 'saveNoMediaEntryQ'), resourceManager.getString('cms', 'save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
+					Alert.show(resourceManager.getString('drilldown', 'saveNoMediaEntryQ'), resourceManager.getString('drilldown', 'save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
 				}
 				else {
 					if (checkDataChanged()) {
 						// had change, ask for save
-						Alert.show(resourceManager.getString('cms', 'undoEntryDetails'), resourceManager.getString('cms', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
+						Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
 					}
 					else {
 						// remove window
@@ -834,33 +834,33 @@
 				}
 
 				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
-					handleValidationError(entryMetaData, resourceManager.getString('cms', 'entryNameIsMandatory'), resourceManager.getString('cms', 'metadataError'));
+					handleValidationError(entryMetaData, resourceManager.getString('drilldown', 'entryNameIsMandatory'), resourceManager.getString('drilldown', 'metadataError'));
 				}
 				else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
-					Alert.show(resourceManager.getString('cms', 'categoriesLimitErrorMsg', new Array(maxNumCategories)), resourceManager.getString('cms', 'categoriesErrorTitle'));
+					Alert.show(resourceManager.getString('drilldown', 'categoriesLimitErrorMsg', new Array(maxNumCategories)), resourceManager.getString('drilldown', 'categoriesErrorTitle'));
 					handleValidationError(entryMetaData)
 				}
 				// scheduling validation:
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
-					handleValidationError(entrySch, resourceManager.getString('cms', 'scedualingStartDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
+					handleValidationError(entrySch, resourceManager.getString('drilldown', 'scedualingStartDateError'), resourceManager.getString('drilldown', 'scedualingErrorTitle'));
 				}
 				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_END_DATE) {
-					handleValidationError(entrySch, resourceManager.getString('cms', 'scedualingEndDateError'), resourceManager.getString('cms', 'scedualingErrorTitle'));
+					handleValidationError(entrySch, resourceManager.getString('drilldown', 'scedualingEndDateError'), resourceManager.getString('drilldown', 'scedualingErrorTitle'));
 				}
 				// livestream validation:
 				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
-					handleValidationError(liveStream, ResourceManager.getInstance().getString('cms', 'bitrateValidation'), resourceManager.getString('cms', 'liveStreamError'));
+					handleValidationError(liveStream, ResourceManager.getInstance().getString('drilldown', 'bitrateValidation'), resourceManager.getString('drilldown', 'liveStreamError'));
 				}
 				//captions validations
 				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_URL) {
-					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('cms', 'missingURLError'), resourceManager.getString('cms', 'captionsError'));
+					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('drilldown', 'missingURLError'), resourceManager.getString('drilldown', 'captionsError'));
 				}
 				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_LANGUAGE) {
-					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('cms', 'missingLanguageError'), resourceManager.getString('cms', 'captionsError'));
+					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('drilldown', 'missingLanguageError'), resourceManager.getString('drilldown', 'captionsError'));
 				}
 				// advertisements validation:
 				else if (validationResult.error == EntryDetailsValidationError.CUEPOINTS_DATA) {
-					handleValidationError(ads, ResourceManager.getInstance().getString('cms', 'ads_error_string'), resourceManager.getString('cms', 'ads_error_title'));
+					handleValidationError(ads, ResourceManager.getInstance().getString('drilldown', 'ads_error_string'), resourceManager.getString('drilldown', 'ads_error_title'));
 				}
 				else {
 					// if referenceId was changed
@@ -893,8 +893,8 @@
 					for each (var o:KalturaBaseEntry in value) {
 						ar.push(o.id);
 					}
-					Alert.show(resourceManager.getString('cms', 'existingRefid', [_undoToEntry.referenceId, ar]),
-						resourceManager.getString('cms', 'warning'), Alert.YES | Alert.NO, this, saveCuepoints);
+					Alert.show(resourceManager.getString('drilldown', 'existingRefid', [_undoToEntry.referenceId, ar]),
+						resourceManager.getString('drilldown', 'warning'), Alert.YES | Alert.NO, this, saveCuepoints);
 				}
 				else {
 					saveCuepoints();
@@ -961,39 +961,39 @@
 			}
 
 
-			/**
-			 * Translate the status enum type to matching status string
-			 */
-			public function getStatusString(str:String):String {
-				var result:String;
-				switch (str) {
-					case KalturaEntryStatus.MODERATE:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-					case KalturaEntryStatus.BLOCKED:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-					case KalturaEntryStatus.DELETED:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-					case KalturaEntryStatus.ERROR_CONVERTING:
-						result = resourceManager.getString('cms', 'statuserrorconverting');
-						break;
-					case KalturaEntryStatus.IMPORT:
-						result = resourceManager.getString('cms', 'import');
-						break;
-					case KalturaEntryStatus.PENDING:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-					case KalturaEntryStatus.PRECONVERT:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-					case KalturaEntryStatus.READY:
-						result = resourceManager.getString('cms', 'metadata');
-						break;
-				}
-				return result;
-			};
+//			/**
+//			 * Translate the status enum type to matching status string
+//			 */
+//			private function getStatusString(str:String):String {
+//				var result:String;
+//				switch (str) {
+//					case KalturaEntryStatus.MODERATE:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//					case KalturaEntryStatus.BLOCKED:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//					case KalturaEntryStatus.DELETED:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//					case KalturaEntryStatus.ERROR_CONVERTING:
+//						result = resourceManager.getString('drilldown', 'statuserrorconverting');
+//						break;
+//					case KalturaEntryStatus.IMPORT:
+//						result = resourceManager.getString('drilldown', 'import');
+//						break;
+//					case KalturaEntryStatus.PENDING:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//					case KalturaEntryStatus.PRECONVERT:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//					case KalturaEntryStatus.READY:
+//						result = resourceManager.getString('drilldown', 'metadata');
+//						break;
+//				}
+//				return result;
+//			};
 
 
 			/**
@@ -1139,67 +1139,67 @@
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack">
 		<!-- Metadata Tab -->
 		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
-						  label="{ResourceManager.getInstance().getString('cms', 'metadata')}"
+						  label="{ResourceManager.getInstance().getString('drilldown', 'metadata')}"
 						  selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}" context="{context}"
 						  entryDetailsModel="{entryDetailsModel}" untrackableChange="{setUntrackableChange()}"
 						  openPreview="{openPreview(event)}" viewStack="{viewStack}" showEmbed="{showEmbedCode}"
 						  maxNumCategories="{maxNumCategories}" landingPage="{landingPage}" enabled="{_uiEnabled}"/>
 		<!-- Thumbnails Tab -->
-		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('cms', 'thumbnails')}"
+		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('drilldown', 'thumbnails')}"
 							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" context="{context}"
 							enableDistribution="{filterModel.enableDistribution}" enabled="{_uiEnabled}"/>
 
 		<!-- Access Control Tab -->
 		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
-							   label="{ResourceManager.getInstance().getString('cms', 'accessControl')}"
+							   label="{ResourceManager.getInstance().getString('drilldown', 'accessControl')}"
 							   selectedEntry="{_undoToEntry}" filterModel="{filterModel}"
 							   accessControlData="{filterModel.accessControlProfiles}" enabled="{_uiEnabled}"/>
 
 		<!-- Scheduling Tab -->
-		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('cms', 'scheduling')}"
+		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('drilldown', 'scheduling')}"
 							selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
 
 		<!-- Flavor Assets Tab -->
 		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
-						 label="{ResourceManager.getInstance().getString('cms', 'videoFiles')}"
+						 label="{ResourceManager.getInstance().getString('drilldown', 'videoFiles')}"
 						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
 						 dropFolderModel="{dropFolderModel}" replacementStatus="{_undoToEntry.replacementStatus}"
 						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}" enabled="{_uiEnabled}"/>
 
 		<!-- content Tab -->
 		<ed:EntryContent id="contentTab" selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}"
-						 label="{ResourceManager.getInstance().getString('cms', 'mixesTab')}"
+						 label="{ResourceManager.getInstance().getString('drilldown', 'mixesTab')}"
 						 loadRoughcuts="{loadRoughcuts}" parts="{entryDetailsModel.contentParts}" enabled="{_uiEnabled}"/>
 
 		<!-- Live stream -->
 		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
-							   label="{ResourceManager.getInstance().getString('cms', 'liveStream')}"
+							   label="{ResourceManager.getInstance().getString('drilldown', 'liveStream')}"
 							   selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
 
 		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('cms', 'customData')}" enabled="{_uiEnabled}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('drilldown', 'customData')}" enabled="{_uiEnabled}"/>
 
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution"
-							  label="{ResourceManager.getInstance().getString('cms', 'distribution')}"
+							  label="{ResourceManager.getInstance().getString('drilldown', 'distribution')}"
 							  selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
 							  viewStack="{viewStack}" enabled="{_uiEnabled}"/>
 
 		<!-- captions -->
-		<ed:EntryCaptions id="entryCaptions" label="{resourceManager.getString('cms','captions')}"
+		<ed:EntryCaptions id="entryCaptions" label="{resourceManager.getString('drilldown','captions')}"
 						  selectedEntry="{_undoToEntry}" entryCaptionsArr="{entryDetailsModel.captionsArray}" enabled="{_uiEnabled}"/>
 
 		<!-- advertisments -->
-		<ed:EntryAds id="ads" label="{resourceManager.getString('cms','ads')}" selectedEntry="{_undoToEntry}"
+		<ed:EntryAds id="ads" label="{resourceManager.getString('drilldown','ads')}" selectedEntry="{_undoToEntry}"
 					 context="{context}" entryDetailsModel="{entryDetailsModel}" enabled="{_uiEnabled}"/>
 
 		<!-- related entries -->
-		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('cms','relatedEntries')}"
+		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('drilldown','relatedEntries')}"
 						 selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}" enabled="{_uiEnabled}"/>
 
 
 		<!-- clips -->
-		<ed:EntryClips id="entryClips" label="{resourceManager.getString('cms','clips')}" selectedEntry="{_undoToEntry}"
+		<ed:EntryClips id="entryClips" label="{resourceManager.getString('drilldown','clips')}" selectedEntry="{_undoToEntry}"
 					   clips="{entryDetailsModel.clips}" enabled="{_uiEnabled}"/>
 
 
@@ -1207,17 +1207,17 @@
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
-			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'save')}" click="submitChanges(false)"
+			<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}" click="submitChanges(false)"
 					   buttonMode="true" enabled="{_uiEnabled &amp;&amp; saveEnabled}"/>
-			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'saveAndClose')}"
+			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('drilldown', 'saveAndClose')}"
 					   click="submitChanges(true)" buttonMode="true" enabled="{_uiEnabled &amp;&amp; saveEnabled}"/>
 
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
-			<mx:LinkButton label="{resourceManager.getString('cms', 'prevEntry')}" click="gotoNextEntry(false)"
+			<mx:LinkButton label="{resourceManager.getString('drilldown', 'prevEntry')}" click="gotoNextEntry(false)"
 						   buttonMode="true" enabled="{_prevEnabled}" visible="{showNextPrevBtns}"
 						   styleName="drillDownNavPrevBtn"/>
-			<mx:LinkButton label="{resourceManager.getString('cms', 'nextEntry')}" click="gotoNextEntry(true)"
+			<mx:LinkButton label="{resourceManager.getString('drilldown', 'nextEntry')}" click="gotoNextEntry(true)"
 						   buttonMode="true" enabled="{_nextEnabled}" visible="{showNextPrevBtns}"
 						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
 

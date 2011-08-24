@@ -181,7 +181,7 @@
 					}
 					//if replacement entry doesn't exist anymore
 					else {
-						Alert.show(resourceManager.getString('cms', 'replacementNotExistMsg'), resourceManager.getString('cms', 'replacementNotExistTitle'));
+						Alert.show(resourceManager.getString('drilldown', 'replacementNotExistMsg'), resourceManager.getString('drilldown', 'replacementNotExistTitle'));
 					}
 					_drillDownClicked = false;
 				}
@@ -444,12 +444,12 @@
 						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
 							_approveEnabled = false;
 						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
-							stateLabel.text = resourceManager.getString('cms', 'readyState') + resourceManager.getString('cms', 'replacementProcessState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'processClickToReview');
+							stateLabel.text = resourceManager.getString('drilldown', 'readyState') + resourceManager.getString('drilldown', 'replacementProcessState');
+							replacementStatusBtn.label = resourceManager.getString('drilldown', 'processClickToReview');
 							break;
 						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
-							stateLabel.text = resourceManager.getString('cms', 'readyState') + resourceManager.getString('cms', 'replacementRFRState');
-							replacementStatusBtn.label = resourceManager.getString('cms', 'readyClickToReview');
+							stateLabel.text = resourceManager.getString('drilldown', 'readyState') + resourceManager.getString('drilldown', 'replacementRFRState');
+							replacementStatusBtn.label = resourceManager.getString('drilldown', 'readyClickToReview');
 							break;
 					}
 				}
@@ -458,31 +458,31 @@
 					//sets labels according to entry's status
 					switch (_selectedEntry.status) {
 						case KalturaEntryStatus.NO_CONTENT:
-							stateLabel.text = resourceManager.getString('cms', 'noContentState');
+							stateLabel.text = resourceManager.getString('drilldown', 'noContentState');
 							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
 							//TODO add media text
 							break;
 						case KalturaEntryStatus.READY:
 							//if this is a replacement entry
 							if (_selectedEntry.replacedEntryId) {
-								stateLabel.text = resourceManager.getString('cms', 'replacementReadyState');
+								stateLabel.text = resourceManager.getString('drilldown', 'replacementReadyState');
 								_showActions = false;
 							}
 							else {
-								stateLabel.text = resourceManager.getString('cms', 'readyState');
+								stateLabel.text = resourceManager.getString('drilldown', 'readyState');
 								setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
 							}
 							break;
 						case KalturaEntryStatus.ERROR_CONVERTING:
 						case KalturaEntryStatus.ERROR_IMPORTING:
-							stateLabel.text = resourceManager.getString('cms', 'errorState');
+							stateLabel.text = resourceManager.getString('drilldown', 'errorState');
 							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
 							if (_selectedEntry.replacedEntryId) {
 								_showActions = false;
 							}
 							break;
 						default:
-							stateLabel.text = resourceManager.getString('cms', 'notReadyState');
+							stateLabel.text = resourceManager.getString('drilldown', 'notReadyState');
 							_showActions = false;
 					}
 				}
@@ -497,18 +497,18 @@
 				_showActions = true;
 				if (mediaType == KalturaMediaType.VIDEO) {
 					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
-						actionLabel.text = resourceManager.getString('cms', 'addVideo');
+						actionLabel.text = resourceManager.getString('drilldown', 'addVideo');
 					}
 					else {
-						actionLabel.text = resourceManager.getString('cms', 'replaceVideo');
+						actionLabel.text = resourceManager.getString('drilldown', 'replaceVideo');
 					}
 				}
 				else if (mediaType == KalturaMediaType.AUDIO) {
 					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
-						actionLabel.text = resourceManager.getString('cms', 'addAudio');
+						actionLabel.text = resourceManager.getString('drilldown', 'addAudio');
 					}
 					else {
-						actionLabel.text = resourceManager.getString('cms', 'replaceAudio');
+						actionLabel.text = resourceManager.getString('drilldown', 'replaceAudio');
 					}
 				}
 			}
@@ -519,7 +519,7 @@
 				for (var col:String in cols) {
 					var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
 					for (var i:int = 0; i < arrCol.length; ++i) {
-						if (arrCol[i].headerText == resourceManager.getString('cms', cols[col])) {
+						if (arrCol[i].headerText == resourceManager.getString('drilldown', cols[col])) {
 							arrCol.removeItemAt(i);
 							break;
 						}
@@ -543,9 +543,9 @@
 			private function getTypeFilter(mediaType:int):FileFilter {
 				var fileFilter:FileFilter;
 				if (mediaType == KalturaMediaType.VIDEO)
-					fileFilter = new FileFilter(resourceManager.getString('cms', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
 				else if (mediaType == KalturaMediaType.AUDIO)
-					fileFilter = new FileFilter(resourceManager.getString('cms', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
 
 				return fileFilter;
 			}
@@ -718,51 +718,51 @@
 
 
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','currentState')}" styleName="drillDownLabel"/>
+		<mx:Label text="{resourceManager.getString('drilldown','currentState')}" styleName="drillDownLabel"/>
 		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}"
 			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
-		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('cms','uploadFiles')}"
+		<mx:Button id="uploadFilesBtn" label="{resourceManager.getString('drilldown','uploadFiles')}"
 				   click="{onUploadBtnClick()}" styleName="dataGridBtn"
 				   visible="{allowUpload}" includeInLayout="{allowUpload}"/>
-		<mx:Button id="importFilesBtn" label="{resourceManager.getString('cms','importFiles')}"
+		<mx:Button id="importFilesBtn" label="{resourceManager.getString('drilldown','importFiles')}"
 				   click="onImportBtnClick(event)" styleName="dataGridBtn"
 				   visible="{allowImport}" includeInLayout="{allowImport}"/>
-		<mx:Button id="linkFilesBtn" label="{resourceManager.getString('cms','linkRemote')}"
+		<mx:Button id="linkFilesBtn" label="{resourceManager.getString('drilldown','linkRemote')}"
 				   click="onLinkBtnClick(event)" styleName="dataGridBtn"
 				   visible="{allowLink}" includeInLayout="{allowLink}"/>
-		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('cms','matchFromDrop')}"
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('drilldown','matchFromDrop')}"
 				   click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn"
 				   visible="{allowMatchFromDrop}" includeInLayout="{allowMatchFromDrop}"/>
 	</mx:HBox>
 	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%"
 			 styleName="flavorsReplacementVBox" >
 		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('cms','replementDetailsTitle')}" styleName="drillDownLabel"/>
-			<mx:Label text="{resourceManager.getString('cms','replacementNote')}" styleName="drillDownSubLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','replementDetailsTitle')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','replacementNote')}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox id="replacementInfoHBox" horizontalGap="0">
-			<mx:Label text="{resourceManager.getString('cms','replacementEntryId')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','replacementEntryId')}" styleName="drillDownLabel"/>
 			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
 			<mx:Label text="|" width="15" enabled="false"/>
-			<mx:Label text="{resourceManager.getString('cms','status') + ':'}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','status') + ':'}" styleName="drillDownLabel"/>
 			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStautsBtnClick()}"/>
 			<mx:HBox id="replacementActionsHBox" horizontalGap="0" paddingLeft="0">
 				<mx:Label text="|" width="15" enabled="false"/>
-				<mx:LinkButton label="{resourceManager.getString('cms','cancelReplacement')}"
+				<mx:LinkButton label="{resourceManager.getString('drilldown','cancelReplacement')}"
 							   click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
 				<mx:Label text="/" width="15" enabled="false"/>
-				<mx:LinkButton label="{resourceManager.getString('cms','approveReplacement')}"
+				<mx:LinkButton label="{resourceManager.getString('drilldown','approveReplacement')}"
 							   click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
 			</mx:HBox>
 		</mx:HBox>
 	</mx:VBox>
 	<mx:HRule width="100%"/>
 	<mx:HBox width="100%">
-		<mx:Text text="{resourceManager.getString('cms','flavorAssetsDescription')}" width="100%" />
-		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
+		<mx:Text text="{resourceManager.getString('drilldown','flavorAssetsDescription')}" width="100%" />
+		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('drilldown','refresh')}" styleName="recycleIcon"/>
 	</mx:HBox>
 	<entryDetails:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
 

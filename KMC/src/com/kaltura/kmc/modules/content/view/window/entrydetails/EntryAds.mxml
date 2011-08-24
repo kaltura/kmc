@@ -34,15 +34,15 @@
 			import mx.resources.ResourceManager;
 
 
-			private static const BULK_ACTIONS:Array = [{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_upload'), value: 'ads_bulk_upload'},
-				{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_download'), value: 'ads_bulk_download'},
-				{label: ResourceManager.getInstance().getString('cms', 'ads_bulk_sample'), value: 'ads_bulk_sample'}];
+			private static const BULK_ACTIONS:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_upload'), value: 'ads_bulk_upload'},
+				{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_download'), value: 'ads_bulk_download'},
+				{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_sample'), value: 'ads_bulk_sample'}];
 
-			private static const AD_TYPES:Array = [{label: ResourceManager.getInstance().getString('cms', 'type_midroll'), value: KalturaAdType.VIDEO},
-				{label: ResourceManager.getInstance().getString('cms', 'type_overlay'), value: KalturaAdType.OVERLAY}];
+			private static const AD_TYPES:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'type_midroll'), value: KalturaAdType.VIDEO},
+				{label: ResourceManager.getInstance().getString('drilldown', 'type_overlay'), value: KalturaAdType.OVERLAY}];
 
-			private static const PROVIDERS:Array = [{label: ResourceManager.getInstance().getString('cms', 'provider_vast'), value: 'vast'},
-				{label: ResourceManager.getInstance().getString('cms', 'provider_other'), value: 'other'}];
+			private static const PROVIDERS:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'provider_vast'), value: 'vast'},
+				{label: ResourceManager.getInstance().getString('drilldown', 'provider_other'), value: 'other'}];
 
 			private const LABEL_WIDTH:int = 80;
 
@@ -794,10 +794,10 @@
 						return acp.tags;
 					}
 					else {
-						return resourceManager.getString('cms', 'ads_default_provider');
+						return resourceManager.getString('drilldown', 'ads_default_provider');
 					}
 				}
-				return resourceManager.getString('cms', 'ads_default_provider');
+				return resourceManager.getString('drilldown', 'ads_default_provider');
 			}
 
 
@@ -890,7 +890,7 @@
 					case 'ads_bulk_upload':
 						_bulkUpldFileRef = new FileReference();
 						_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUpload);
-						_bulkUpldFileRef.browse(new Array(new FileFilter(resourceManager.getString('cms', 'files') + ' (' + XML_EXL + ')', XML_EXL)));
+						_bulkUpldFileRef.browse(new Array(new FileFilter(resourceManager.getString('drilldown', 'files') + ' (' + XML_EXL + ')', XML_EXL)));
 						break;
 					case 'ads_bulk_download':
 						var cg:CuePointEvent = new CuePointEvent(CuePointEvent.DOWNLOAD_CUEPOINTS);
@@ -937,17 +937,17 @@
 			<mx:HBox width="100%">
 				<mx:ComboBox id="cbActions" width="100%" change="handleBulkActions(event)"
 							 updateComplete="cbActions_updateCompleteHandler(event)"
-							 prompt="{resourceManager.getString('cms', 'ads_bulk_actions')}" enabled="false"/>
+							 prompt="{resourceManager.getString('drilldown', 'ads_bulk_actions')}" enabled="false"/>
 				<mx:Spacer width="100%"/>
 			</mx:HBox>
 			<mx:Spacer height="10"/>
 			<mx:HRule width="100%"/>
 			<mx:Spacer height="10"/>
-			<mx:Text htmlText="{resourceManager.getString('cms', 'ads_explain')}" width="100%" styleName="adsExplain"
+			<mx:Text htmlText="{resourceManager.getString('drilldown', 'ads_explain')}" width="100%" styleName="adsExplain"
 					 visible="{!_formEnabled}" includeInLayout="{!_formEnabled}"/>
 			<mx:VBox id="details" width="100%" visible="{_formEnabled}" includeInLayout="{_formEnabled}">
 				<mx:HBox styleName="noPadding">
-					<mx:Label text="{resourceManager.getString('cms', 'timing')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'timing')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<controls:TimeStepper id="teTiming" enabled="{_formEnabled}" styleName="timeEntry"
 										  maximum="{(selectedEntry as KalturaMediaEntry).duration}"
@@ -956,13 +956,13 @@
 										  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
-					<mx:Label text="{resourceManager.getString('cms', 'ads_type')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'ads_type')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:ComboBox id="cbType" width="100%" enabled="{_formEnabled}" dataProvider="{AD_TYPES}"
-								 prompt="{resourceManager.getString('cms', 'ads_ad_type')}"
+								 prompt="{resourceManager.getString('drilldown', 'ads_ad_type')}"
 								 change="updateCuePointData(event)"/>
 					<mx:Spacer/>
-					<mx:Label text="{resourceManager.getString('cms', 'durationLabel')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'durationLabel')}" styleName="formLabel"
 							  enabled="{teDuration.enabled}"/>
 					<controls:TimeStepper id="teDuration" enabled="{_formEnabled &amp;&amp; cbType.selectedIndex == 1}"
 										  showHours="true" showMiliseconds="true" showSeconds="true" is24Hour="true"
@@ -970,26 +970,26 @@
 										  change="updateCuePointData(event)" styleName="timeEntry"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
-					<mx:Label text="{resourceManager.getString('cms', 'ads_provider')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'ads_provider')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:VBox width="100%" styleName="noPadding">
 						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"
 									 change="updateCuePointData(event)"/>
 						<controls:DefaultLabelTextArea id="tiProvider" width="100%" height="{tiUrl.height}"
-													   defaultLabel="{resourceManager.getString('cms', 'ads_default_provider')}"
+													   defaultLabel="{resourceManager.getString('drilldown', 'ads_default_provider')}"
 													   enabled="{cbProvider.selectedItem.value == 'other'}"
 													   defaultLabelStyleName="textAreaDefaultLabel"
 													   change="updateCuePointData(event)"/>
 					</mx:VBox>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
-					<mx:Label text="{resourceManager.getString('cms', 'ads_url')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'ads_url')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:TextInput id="tiUrl" width="100%" text="{_selectedCuePoint.sourceUrl}"
 								  change="updateCuePointData(event)"/>
 				</mx:HBox>
 				<mx:HBox width="100%" styleName="noPadding">
-					<mx:Label text="{resourceManager.getString('cms', 'ads_name')}" styleName="formLabel"
+					<mx:Label text="{resourceManager.getString('drilldown', 'ads_name')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:TextInput id="tiName" width="100%" enabled="{_formEnabled}" text="{_selectedCuePoint.title}"
 								  change="updateCuePointData(event)"/>
@@ -1001,7 +1001,7 @@
 	<mx:HBox id="kClipHolder" width="754" height="120"/>
 	<mx:HBox width="100%">
 		<mx:Spacer width="100%"/>
-		<mx:LinkButton label="{resourceManager.getString('cms', 'ads_remove_all')}" click="removeAllCuePoints(event)"
+		<mx:LinkButton label="{resourceManager.getString('drilldown', 'ads_remove_all')}" click="removeAllCuePoints(event)"
 					   visible="{_counter > 0 &amp;&amp; editable}"
 					   includeInLayout="{_counter > 0  &amp;&amp; editable}"/>
 	</mx:HBox>
