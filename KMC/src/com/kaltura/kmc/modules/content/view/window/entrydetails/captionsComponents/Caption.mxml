@@ -178,7 +178,7 @@
 				else {
 					fileTypes = SRT_EXT + ';' + XML_EXT;
 				}
-				_fileReference.browse(new Array(new FileFilter(resourceManager.getString('cms','files') +' (' + fileTypes + ')' ,fileTypes)));
+				_fileReference.browse(new Array(new FileFilter(resourceManager.getString('drilldown','files') +' (' + fileTypes + ')' ,fileTypes)));
 			}
 			
 			/**
@@ -289,7 +289,7 @@
 			 * return enum according to given string
 			 * */
 			private function getFormatEnum(name:String):String {
-				if (name == resourceManager.getString('cms','srtLabel'))
+				if (name == resourceManager.getString('drilldown','srtLabel'))
 					return KalturaCaptionType.SRT;
 				return KalturaCaptionType.DFXP;
 			}	
@@ -299,54 +299,54 @@
 	</mx:Script>
 	<!--<mx:RadioButtonGroup id="sources" change="onButtonChange(event)"/>
 	<mx:HBox id="raioBtns">
-		<mx:RadioButton id="external" group="{sources}" label="{resourceManager.getString('cms','externalFile')}" selected="true"
+		<mx:RadioButton id="external" group="{sources}" label="{resourceManager.getString('drilldown','externalFile')}" selected="true"
 						width="100"/>
-		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('cms','embeddedTrack')}"/>
+		<mx:RadioButton id="embedded" group="{sources}" label="{resourceManager.getString('drilldown','embeddedTrack')}"/>
 	</mx:HBox>-->
 	
-	<validators:URLValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('cms','emptyUrlError')}"/>
+	<validators:URLValidator id="urlValidator" property="text" required="true" requiredFieldError="{resourceManager.getString('drilldown','emptyUrlError')}"/>
 	<mx:NumberValidator id="comboValidator" minValue="0" maxValue="{EntryCaptions.LANGUAGES_ARRAY.length -1}"
-						property="selectedIndex" lowerThanMinError="{resourceManager.getString('cms','emptyLanguageError')}"/>
+						property="selectedIndex" lowerThanMinError="{resourceManager.getString('drilldown','emptyLanguageError')}"/>
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100" styleName="drillDownLabel"/>
+		<mx:Label text="{resourceManager.getString('drilldown','captionUrl')}" width="100" styleName="drillDownLabel"/>
 		<mx:TextInput id="urlTi" width="400" text="{caption.downloadUrl}" enabled="{!_isLoading &amp;&amp; !caption.isNewUploaded}" editable="{editable}"/>
-		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
+		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('drilldown','convertingToolTip')}"
 				  source="{SpinnerImg}" visible="{_isLoading}" includeInLayout="{_isLoading}"/>
-		<mx:Label text="{resourceManager.getString('cms','uploadFailed')}" visible="{(_isError &amp;&amp; !_isLoading)}" styleName="distributionError"/>
+		<mx:Label text="{resourceManager.getString('drilldown','uploadFailed')}" visible="{(_isError &amp;&amp; !_isLoading)}" styleName="distributionError"/>
 	</mx:HBox>
 	<mx:HBox visible="{editable}" includeInLayout="{editable}">
 		<mx:Spacer width="100"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','uploadCaption')}" click="browse()"
+		<mx:LinkButton label="{resourceManager.getString('drilldown','uploadCaption')}" click="browse()"
 					   visible="{!_isLoading &amp;&amp; !caption.isNewUploaded}" includeInLayout="{!_isLoading &amp;&amp; !caption.isNewUploaded}"
 					   styleName="plusIcon"/>
-		<mx:Label visible="{caption.isNewUploaded}" text="{resourceManager.getString('cms','captionUploadedTip')}"/>
+		<mx:Label visible="{caption.isNewUploaded}" text="{resourceManager.getString('drilldown','captionUploadedTip')}"/>
 		
 	</mx:HBox>
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100" styleName="drillDownLabel"/>
+		<mx:Label text="{resourceManager.getString('drilldown','captionType')}" width="100" styleName="drillDownLabel"/>
 		<!--<mx:Label text="{_formatText}"/>-->
 		<mx:ComboBox id="typeCB" width="170" enabled="{(!_captionExists &amp;&amp; editable)}" selectedIndex="{_selectedTypeIndex}"
-					 dataProvider="{new Array(resourceManager.getString('cms','srtLabel'), resourceManager.getString('cms','dfxpLabel'))}"/>
+					 dataProvider="{new Array(resourceManager.getString('drilldown','srtLabel'), resourceManager.getString('drilldown','dfxpLabel'))}"/>
 	</mx:HBox>
 	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('cms','captionLanguage')}" width="100" styleName="drillDownLabel"/>
+		<mx:Label text="{resourceManager.getString('drilldown','captionLanguage')}" width="100" styleName="drillDownLabel"/>
 		<mx:ComboBox id="languageCB" width="170" dataProvider="{EntryCaptions.LANGUAGES_ARRAY}" selectedIndex="{_languageIndex}" 
-					 prompt="{resourceManager.getString('cms','languagePrompt')}" enabled="{editable}"/>
+					 prompt="{resourceManager.getString('drilldown','languagePrompt')}" enabled="{editable}"/>
 		<mx:Spacer width="6"/>
-		<mx:Label text="{resourceManager.getString('cms','captionLanguageLabel')}" styleName="drillDownLabel"/>
+		<mx:Label text="{resourceManager.getString('drilldown','captionLanguageLabel')}" styleName="drillDownLabel"/>
 		<mx:TextInput id="labelTi" text="{_languageLabel}" editable="{editable}" width="162"/>
 	</mx:HBox>
 	<mx:HBox visible="{_showActionsBox &amp;&amp; editable}" includeInLayout="{_showActionsBox &amp;&amp; editable}">
 		<mx:Spacer width="100"/>
 		<mx:HBox width="400">
-			<mx:LinkButton id="download" label="{resourceManager.getString('cms','downloadFile')}" click="downloadCaption()"
+			<mx:LinkButton id="download" label="{resourceManager.getString('drilldown','downloadFile')}" click="downloadCaption()"
 						   visible="{caption.downloadUrl!=null}" includeInLayout="{caption.downloadUrl!=null}" styleName="downloadThumbLinkButton"/>
-			<mx:LinkButton id="remove" label="{resourceManager.getString('cms','remove')}" click="removeCaption()"
+			<mx:LinkButton id="remove" label="{resourceManager.getString('drilldown','remove')}" click="removeCaption()"
 						   styleName="deleteThumbLinkButton"/>
 			<mx:Spacer width="100%"/>
-			<mx:Label text="{resourceManager.getString('cms','default')}" visible="{_isDefault}"
+			<mx:Label text="{resourceManager.getString('drilldown','default')}" visible="{_isDefault}"
 					  includeInLayout="{_isDefault}"/>
-			<mx:LinkButton label="{resourceManager.getString('cms','setAsDefault')}" 
+			<mx:LinkButton label="{resourceManager.getString('drilldown','setAsDefault')}" 
 						   visible="{(_captionExists &amp;&amp; !_isDefault)}" includeInLayout="{(_captionExists &amp;&amp; !_isDefault)}"
 						   styleName="setDefaultLinkButton" click="setAsDefault()"/>
 		</mx:HBox>
@@ -358,13 +358,13 @@
 			<mx:AddChild position="after" relativeTo="{raioBtns}">
 				<mx:VBox>
 					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('cms','captionUrl')}" width="100"/>
+						<mx:Label text="{resourceManager.getString('drilldown','captionUrl')}" width="100"/>
 						<mx:TextInput id="urlTi" width="200"/>
-						<mx:Button label="{resourceManager.getString('cms','uploadCaption')}"/>
+						<mx:Button label="{resourceManager.getString('drilldown','uploadCaption')}"/>
 					</mx:HBox>
 					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('cms','captionType')}" width="100"/>
-						<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('cms','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>
+						<mx:Label text="{resourceManager.getString('drilldown','captionType')}" width="100"/>
+						<mx:ComboBox id="typeCB" prompt="{resourceManager.getString('drilldown','typePrompt')}" dataProvider="{CAPTIONS_TYPES}"/>
 					</mx:HBox>
 				</mx:VBox>
 			</mx:AddChild>
@@ -373,11 +373,11 @@
 			<mx:AddChild position="after" relativeTo="{raioBtns}">
 				<mx:VBox>
 					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('cms','embeddedFlavorId')}" width="100"/>
+						<mx:Label text="{resourceManager.getString('drilldown','embeddedFlavorId')}" width="100"/>
 						<mx:TextInput id="flavorTi" width="200"/>
 					</mx:HBox>
 					<mx:HBox>
-						<mx:Label text="{resourceManager.getString('cms','embeddedTrackId')}" width="100"/>
+						<mx:Label text="{resourceManager.getString('drilldown','embeddedTrackId')}" width="100"/>
 						<mx:TextInput id="tackTi" width="200"/>
 					</mx:HBox>
 				</mx:VBox>

@@ -2,14 +2,12 @@
 
 <!--- Crop Thumbnail Window. Enables the user to crop new thumbnails from the existing thumbnails.-->
 
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-				layout="vertical" styleName="TitleWindowType2"
-				showCloseButton="true"
-				close="{closeWindow(event)}"
-				creationComplete="{onCreationComplete(event)}"
-				horizontalAlign="center"
-				verticalScrollPolicy="off" horizontalScrollPolicy="off">
-	
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" styleName="TitleWindowType2"
+				showCloseButton="true" close="{closeWindow(event)}" creationComplete="{onCreationComplete(event)}"
+				horizontalAlign="center" verticalScrollPolicy="off" horizontalScrollPolicy="off" xmlns:metadata="com.flexspy.imp.metadata.*">
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.GenerateThumbAssetEvent;
@@ -22,7 +20,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaThumbAsset;
 			import com.kaltura.vo.KalturaThumbParams;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -58,7 +56,7 @@
 			 * time in milliseconds that will determine the intervals for refreshing the preview image
 			 * */
 			public static const REFRESH_PREVIEW_IMG_INTERVAL:int = 100;
-			
+
 			private static var enterClicked:Boolean = false;
 			[Bindable]
 			private var _maxImageHeight:int;
@@ -85,42 +83,42 @@
 			private var _firstLoaded:Boolean = false;
 			private var _cropperTimer:Timer = new Timer(REFRESH_PREVIEW_IMG_INTERVAL);
 
-			
+
 			private function onCreationComplete(event:Event):void {
 				this.mx_internal::closeButton.buttonMode = true;
 				imgList.selectedIndex = 0;
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				//no sources to crop from - close the window
 				if (!_selectedThumbnail) {
-					Alert.show(resourceManager.getString('cms','unavailableCropMsg'),resourceManager.getString('cms','unavalilableCropTitle'), Alert.OK, null, alertOkHandler);
+					Alert.show(resourceManager.getString('drilldown', 'unavailableCropMsg'), resourceManager.getString('drilldown', 'unavalilableCropTitle'), Alert.OK, null, alertOkHandler);
 					return;
 				}
-			
-				_maxImageHeight = this.height - this.titleBar.height - saveBtnControlBar.height - 2*IMG_OFFSET ;
-				_maxImageWidth = this.width - controlVBox.width- 3*IMG_OFFSET;
-				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
-	
+
+				_maxImageHeight = this.height - this.titleBar.height - saveBtnControlBar.height - 2 * IMG_OFFSET;
+				_maxImageWidth = this.width - controlVBox.width - 3 * IMG_OFFSET;
+				_selectedImgRatio = _selectedThumbnail.width / _selectedThumbnail.height;
+
 				if (_isPreSize) {
 					_presetSizesExist = true;
 					_lastSelectedSizeIndex = presetComboBox.selectedIndex = 0;
 				}
-				
+
 				_cropperTimer.addEventListener(TimerEvent.TIMER, onCropChanged);
-				
+
 				setCropperImage();
 			}
-			
-			public function get entryDetailsModel():EntryDetailsModel
-			{
+
+
+			public function get entryDetailsModel():EntryDetailsModel {
 				return _entryDetailsModel;
 			}
-			
-			public function set entryDetailsModel(value:EntryDetailsModel):void
-			{
+
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void {
 				_entryDetailsModel = value;
 			}
-			
-			
+
+
 			/**
 			 * loads the _selectedThumbnail img to the cropper tool
 			 * */
@@ -130,26 +128,27 @@
 				_imageCrop.loadImage(_selectedThumbnail.thumbUrl);
 				imageBox.addChild(_imageCrop);
 				var cropBox:CropBox = _imageCrop.cropBox;
-			//	cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
+				//	cropBox.addEventListener(CropBox.EVENT_CHANGED, onCropChanged);
 				BindingUtils.bindSetter(onCropperChanging, cropBox, 'cropChanging');
-				
-				
+
+
 				var imageHeight:Number = _maxImageHeight;
-				var imageWidth:Number = _maxImageHeight*_selectedImgRatio;
+				var imageWidth:Number = _maxImageHeight * _selectedImgRatio;
 				if (imageWidth > _maxImageWidth) {
 					imageWidth = _maxImageWidth;
-					imageHeight = _maxImageHeight/_selectedImgRatio;
+					imageHeight = _maxImageHeight / _selectedImgRatio;
 				}
 				_imageCrop.maxImageHeight = imageHeight;
-				_imageCrop.maxImageWidth = imageWidth;	
-				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);			
+				_imageCrop.maxImageWidth = imageWidth;
+				_imageCrop.addEventListener(ImageCrop.LOADED, onCroppedImgLoaded);
 			}
-			
+
+
 			/**
 			 * To improve performance: when the cropper is changing we will refresh the view
 			 * only every [REFRESH_PREVIEW_IMG_INTERVAL] milliseconds by using the _croppperTimer
 			 * */
-			private function onCropperChanging(value:Boolean) : void {
+			private function onCropperChanging(value:Boolean):void {
 				if (!value && _cropperTimer.running) {
 					_cropperTimer.stop();
 				}
@@ -157,7 +156,8 @@
 					_cropperTimer.start();
 				}
 			}
-			
+
+
 			/**
 			 * this function will be called when a new image was loaded to the cropper tool
 			 * */
@@ -165,22 +165,23 @@
 				if (_imageCrop.image) {
 					var cropWidth:Number;
 					var cropHeight:Number;
-					
-					if (_isPreSize && presetComboBox.selectedIndex >=0) {
+
+					if (_isPreSize && presetComboBox.selectedIndex >= 0) {
 						cropWidth = (presetComboBox.selectedItem["data"] as ThumbnailWithDimensions).width
 						cropHeight = (presetComboBox.selectedItem["data"] as ThumbnailWithDimensions).height
 					}
-					else{
+					else {
 						cropWidth = DEFAULT_CROP_WIDTH;
 						cropHeight = DEFAULT_CROP_HEIGHT;
 					}
-					
-					setCropValues(cropWidth, cropHeight, false);		
+
+					setCropValues(cropWidth, cropHeight, false);
 					_imageCrop.cropBox.keepAspectRatio = _isPreSize;
 					setPreviewBitmap(_imageCrop.cropBox.cropX, _imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
 				}
 			}
-			
+
+
 			/**
 			 * this function will set the crop x and y to the center of the image,
 			 * unless it will get out of image bounds. In this case the x and y will be set to (0,0)
@@ -202,13 +203,10 @@
 					_imageCrop.cropBox.cropWidth = cropWidth;
 					_imageCrop.cropBox.cropHeight = cropHeight;
 					//get the center of the image
-					var newCropX:Number = _selectedThumbnail.width/2 - cropWidth/2;
-					var newCropY:Number = _selectedThumbnail.height/2 - cropHeight/2;
-					
-					if ((newCropX + cropWidth) > 0
-						&& (newCropX + cropWidth) < _selectedThumbnail.width
-						&& (newCropY + cropHeight) < _selectedThumbnail.height
-						&& (newCropY + cropHeight) > 0) {
+					var newCropX:Number = _selectedThumbnail.width / 2 - cropWidth / 2;
+					var newCropY:Number = _selectedThumbnail.height / 2 - cropHeight / 2;
+
+					if ((newCropX + cropWidth) > 0 && (newCropX + cropWidth) < _selectedThumbnail.width && (newCropY + cropHeight) < _selectedThumbnail.height && (newCropY + cropHeight) > 0) {
 						_imageCrop.cropBox.cropX = newCropX;
 						_imageCrop.cropBox.cropY = newCropY;
 					}
@@ -216,9 +214,10 @@
 						_imageCrop.cropBox.cropX = 0;
 						_imageCrop.cropBox.cropY = 0;
 					}
-				}	
+				}
 			}
-			
+
+
 			private function warningCloseHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					var requestedDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
@@ -229,7 +228,8 @@
 					setCropperOnEntireImage();
 				}
 			}
-			
+
+
 			/**
 			 * set the cropper box on the entire image
 			 * */
@@ -239,43 +239,45 @@
 				_imageCrop.cropBox.cropWidth = _imageCrop.image.width;
 				_imageCrop.cropBox.cropHeight = _imageCrop.image.height;
 			}
-			
+
+
 			/**
 			 * this function will recieve requested values that are larger than the max values, and
 			 * will try to set the cropper with the maximum values while keeping aspet ratio
 			 * */
 			private function adjustPresetDimensions(maxWidth:int, maxHeight:int, requestedWidth:int, requestedHeight:int, xPos:int = 0, yPos:int = 0):void {
-				var ratio:Number = maxWidth/requestedWidth; //ratio must be < 1, since max < requested
+				var ratio:Number = maxWidth / requestedWidth; //ratio must be < 1, since max < requested
 				_upscaleMultiplier = ratio;
 				var tempWidth:Number = maxWidth;
 				var tempHeight:Number = requestedHeight * ratio; //will keep the ratio between requested width and height since we multiplied them in the same number
 				if (tempHeight > maxHeight) {
-					var secondRatio:Number = maxHeight/tempHeight;
+					var secondRatio:Number = maxHeight / tempHeight;
 					_upscaleMultiplier = ratio * secondRatio;
 					tempWidth = tempWidth * secondRatio;
 					tempHeight = maxHeight;
 				}
-				
+
 				_imageCrop.cropBox.cropWidth = tempWidth;
 				_imageCrop.cropBox.cropHeight = tempHeight;
 				_imageCrop.cropBox.cropX = xPos;
 				_imageCrop.cropBox.cropY = yPos;
 			}
-			
+
+
 			/**
 			 * adjust the preview image according to the current cropping box
 			 * */
 			private function setPreviewBitmap(x:int, y:int, width:int, height:int):void {
-				if (width>0 && height>0 && _imageCrop.image) 
-				{
+				if (width > 0 && height > 0 && _imageCrop.image) {
 					var bitmapData:BitmapData = new BitmapData(width, height);
-					bitmapData.draw(_imageCrop.image, new Matrix(1,0,0,1, -1*x, -1*y), null, null, new Rectangle(0,0, width, height));
+					bitmapData.draw(_imageCrop.image, new Matrix(1, 0, 0, 1, -1 * x, -1 * y), null, null, new Rectangle(0, 0, width, height));
 					var bitmap:Bitmap = new Bitmap(bitmapData);
-					previewImg.source = bitmap;	
+					previewImg.source = bitmap;
 					setPreviewImgDim();
 				}
 			}
-			
+
+
 			/**
 			 * this function will be called with every change in the cropping box size
 			 * will set the new values to the suitable text inputs
@@ -284,12 +286,13 @@
 			private function onCropChanged(event:Event):void {
 				if (_imageCrop.cropBox != null) {
 					getCropperValues();
-					setPreviewBitmap(_imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
+					setPreviewBitmap(_imageCrop.cropBox.cropX, _imageCrop.cropBox.cropY, _imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight);
 					if (!_isDirty)
 						_isDirty = true;
 				}
 			}
-			
+
+
 			/**
 			 * updates the text inputs with the current cropping values
 			 * */
@@ -299,97 +302,101 @@
 				widthTextInput.text = (Math.floor(_imageCrop.cropBox.cropWidth / _upscaleMultiplier)).toString();
 				heightTextInput.text = (Math.floor(_imageCrop.cropBox.cropHeight / _upscaleMultiplier)).toString();
 			}
-			
+
+
 			/**
 			 * returns the current visible data in the thumbnails tile list
 			 * */
-			public function get thumbnailsList():Array
-			{
+			public function get thumbnailsList():Array {
 				return _thumbnailsList;
 			}
-			
+
+
 			/**
 			 * set the thumbnails list according to the given array. will save only thumbnails that contain thumbAsset
 			 * */
-			public function set thumbnailsList(value:Array):void
-			{
+			public function set thumbnailsList(value:Array):void {
 				//saves only thumbnails with assets
 				_thumbnailsList = new Array();
 				_presetSizeList = new Array();
-				for (var i:int = 0; i<value.length; i++) {
+				for (var i:int = 0; i < value.length; i++) {
 					var currentThumb:ThumbnailWithDimensions = value[i] as ThumbnailWithDimensions;
 					if (currentThumb.thumbAsset && currentThumb.thumbAsset.status == KalturaFlavorAssetStatus.READY)
 						_thumbnailsList.push(currentThumb);
-					if (currentThumb.usedDistributionProfilesArray.length>0) {
+					if (currentThumb.usedDistributionProfilesArray.length > 0) {
 						var presetAlreadyExist:Boolean = false;
-						for (var j:int = 0; j<_presetSizeList.length; j++) {
+						for (var j:int = 0; j < _presetSizeList.length; j++) {
 							var thumbToCheck:ThumbnailWithDimensions = _presetSizeList[j].data as ThumbnailWithDimensions;
-							if ((thumbToCheck.width == currentThumb.width) && (thumbToCheck.height == currentThumb.height)){
+							if ((thumbToCheck.width == currentThumb.width) && (thumbToCheck.height == currentThumb.height)) {
 								presetAlreadyExist = true;
 								break;
 							}
 						}
 						if (!presetAlreadyExist)
-							_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data:currentThumb});
+							_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data: currentThumb});
 					}
 				}
-				
+
 				if (_firstLoaded) {
 					if (imgList)
 						imgList.selectedItem = _thumbnailsList[_lastSelectedThumbIndex];
 				}
 				else {
 					_firstLoaded = true;
-					if (_presetSizeList.length>0)
-					_isPreSize = true;
-				}	
-				
-			 	if (presetComboBox && _lastSelectedSizeIndex<_presetSizeList.length) 
-					presetComboBox.selectedIndex = _lastSelectedSizeIndex; 
+					if (_presetSizeList.length > 0)
+						_isPreSize = true;
+				}
+
+				if (presetComboBox && _lastSelectedSizeIndex < _presetSizeList.length)
+					presetComboBox.selectedIndex = _lastSelectedSizeIndex;
 			}
-			
-			private function alertOkHandler(event:CloseEvent): void {
+
+
+			private function alertOkHandler(event:CloseEvent):void {
 				dispatchCloseEvent();
 			}
-			
+
+
 			/**
 			 * returns selected entry
 			 * */
-			public function get selectedEntry():KalturaBaseEntry
-			{
+			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-			
+
+
 			/**
 			 * sets the selected entry and builds the window title accrodingly
 			 * */
-			public function set selectedEntry(value:KalturaBaseEntry):void
-			{
+			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
 				buildTitle();
 			}
-			
+
+
 			/**
 			 * build the string for the window title
 			 * */
 			private function buildTitle():void {
-				this.title = resourceManager.getString('cms','editEntry') + " - " + _selectedEntry.name + " - " + resourceManager.getString('cms','createThumb');
+				this.title = resourceManager.getString('drilldown', 'editEntry') + " - " + _selectedEntry.name + " - " + resourceManager.getString('drilldown', 'createThumb');
 			}
-			
+
+
 			/**
 			 * on close function
 			 * */
 			private function closeWindow(event:Event):void {
 				dispatchCloseEvent();
 			}
-			
+
+
 			/**
 			 * on saving the new crop
 			 * */
 			private function onSave():void {
 				var thumbParams:KalturaThumbParams = new KalturaThumbParams();
 				thumbParams.cropWidth = _imageCrop.cropBox.cropWidth;
-				thumbParams.cropHeight = _imageCrop.cropBox.cropHeight;				
+				thumbParams.cropHeight = _imageCrop.cropBox.cropHeight;
 				thumbParams.cropX = _imageCrop.cropBox.cropX;
 				thumbParams.cropY = _imageCrop.cropBox.cropY;
 				if (_isPreSize) {
@@ -399,39 +406,42 @@
 					}
 					//will save on the selected dimensions
 					var selectedDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
-					thumbParams.scaleWidth = selectedDimensions.width/thumbParams.cropWidth;
-					thumbParams.scaleHeight = selectedDimensions.height/thumbParams.cropHeight;
+					thumbParams.scaleWidth = selectedDimensions.width / thumbParams.cropWidth;
+					thumbParams.scaleHeight = selectedDimensions.height / thumbParams.cropHeight;
 				}
 				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
 				generateThumbEvent.dispatch();
-				
+
 				_isDirty = false;
 			}
-			
+
+
 			/**
 			 * selecting a new thumbnail to edit
 			 * */
 			private function onImgItemClick():void {
 				_selectedThumbnail = imgList.selectedItem as ThumbnailWithDimensions;
 				_lastSelectedThumbIndex = imgList.selectedIndex;
-				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length>0))
+				if ((presetComboBox.selectedIndex == -1) && (_presetSizeList.length > 0))
 					_lastSelectedSizeIndex = presetComboBox.selectedIndex = 0;
-				_selectedImgRatio = _selectedThumbnail.width/_selectedThumbnail.height;
+				_selectedImgRatio = _selectedThumbnail.width / _selectedThumbnail.height;
 				imageBox.removeChild(_imageCrop);
 				setCropperImage();
 			}
-			
+
+
 			private function setPreviewImgDim():void {
 				var newHeight:Number = MAX_PREVIEW_HEIGHT;
 				var newWidth:Number = newHeight * _selectedImgRatio;
-				if (newWidth > MAX_PREVIEW_WIDTH)  {
+				if (newWidth > MAX_PREVIEW_WIDTH) {
 					newWidth = MAX_PREVIEW_WIDTH;
 					newHeight = MAX_PREVIEW_HEIGHT / _selectedImgRatio;
 				}
 				previewImg.height = newHeight;
 				previewImg.width = newWidth;
 			}
-			
+
+
 			/**
 			 * on preset check box change
 			 * */
@@ -442,29 +452,32 @@
 				if (_isPreSize && presetComboBox.selectedItem) {
 					var currentDimensions:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 					setCropValues(currentDimensions.width, currentDimensions.height);
-					
-				} 
+
+				}
 			}
-			
+
+
 			private function onFocusOut(event:Event):void {
 				//to avoid double validation, if enter was clicked than validation was already made
 				if (enterClicked)
 					enterClicked = false;
 				else
-					validateTextInputs(event);		
+					validateTextInputs(event);
 			}
-			
+
+
 			/**
 			 * will be called when changing any text input (top/left/width/height)
 			 * and will update the cropper if needed
 			 * */
 			private function onKeyDown(event:KeyboardEvent):void {
-				if (event.keyCode== Keyboard.ENTER) {
+				if (event.keyCode == Keyboard.ENTER) {
 					enterClicked = true;
 					validateTextInputs(event);
 				}
 			}
-			
+
+
 			private function validateTextInputs(event:Event):void {
 				if (!_imageCrop.cropBox)
 					return;
@@ -473,77 +486,82 @@
 				if (input < 0)
 					invalidInput = true;
 				else {
-					if (event.currentTarget==topTextInput) {
+					if (event.currentTarget == topTextInput) {
 						if ((_imageCrop.cropBox.cropHeight + input) > _selectedThumbnail.height)
 							invalidInput = true;
 						else
 							_imageCrop.cropBox.cropY = input;
 					}
-					else if (event.currentTarget==leftTextInput) {
+					else if (event.currentTarget == leftTextInput) {
 						if ((_imageCrop.cropBox.cropWidth + input) > _selectedThumbnail.width)
 							invalidInput = true;
 						else
 							_imageCrop.cropBox.cropX = input;
 					}
-					else if (event.currentTarget==widthTextInput) {
+					else if (event.currentTarget == widthTextInput) {
 						if ((_imageCrop.cropBox.cropX + input) > _selectedThumbnail.width)
 							invalidInput = true;
 						else
 							_imageCrop.cropBox.cropWidth = input;
 					}
-					else if (event.currentTarget==heightTextInput) {
+					else if (event.currentTarget == heightTextInput) {
 						if ((_imageCrop.cropBox.cropY + input) > _selectedThumbnail.height)
 							invalidInput = true;
 						else
 							_imageCrop.cropBox.cropHeight = input;
 					}
 				}
-				
+
 				if (invalidInput) {
 					displayInvalidAlert();
 				}
 			}
-			
+
+
 			private function onPresetSizeChange(event:Event):void {
 				_lastSelectedSizeIndex = presetComboBox.selectedIndex;
 				var selectedSize:ThumbnailWithDimensions = presetComboBox.selectedItem["data"] as ThumbnailWithDimensions;
 				if (_imageCrop && _imageCrop.cropBox) {
 					//dimensions are too big
-					if (selectedSize.width > _selectedThumbnail.width || selectedSize.height > _selectedThumbnail.height)
-					{
-						displayUpscaleWarning();						
+					if (selectedSize.width > _selectedThumbnail.width || selectedSize.height > _selectedThumbnail.height) {
+						displayUpscaleWarning();
 					}
-					else
-					{
-						var newRatio:Number = selectedSize.height/selectedSize.width;
+					else {
+						var newRatio:Number = selectedSize.height / selectedSize.width;
 						var requestedHeight:Number = _imageCrop.cropBox.cropWidth * newRatio;
-						adjustPresetDimensions(_imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight, _imageCrop.cropBox.cropWidth, requestedHeight, _imageCrop.cropBox.cropX,_imageCrop.cropBox.cropY);
+						adjustPresetDimensions(_imageCrop.cropBox.cropWidth, _imageCrop.cropBox.cropHeight, _imageCrop.cropBox.cropWidth, requestedHeight, _imageCrop.cropBox.cropX, _imageCrop.cropBox.cropY);
 					}
 				}
 			}
-			
+
+
 			/**
 			 * displays invalid  dimensions and position alert message
 			 * */
 			private function displayInvalidAlert():void {
-				Alert.show(resourceManager.getString('cms','invalidDimensions'),resourceManager.getString('cms','invalidInputTitle'));
+				Alert.show(resourceManager.getString('drilldown', 'invalidDimensions'),
+					resourceManager.getString('drilldown', 'invalidInputTitle'));
 			}
-			
+
+
 			/**
 			 * displays a warning saying the image is about to be upscaled
 			 * */
-			private function displayUpscaleWarning():void {	
-				Alert.yesLabel = resourceManager.getString('cms', 'continue');
-				Alert.noLabel = resourceManager.getString('cms', 'ignore');
+			private function displayUpscaleWarning():void {
+				Alert.yesLabel = resourceManager.getString('drilldown', 'continue');
+				Alert.noLabel = resourceManager.getString('drilldown', 'ignore');
 				var previousBtnWidth:Number = Alert.buttonWidth;
 				Alert.buttonWidth = 80;
-				Alert.show(resourceManager.getString('cms', 'upscaleWarningMessage'),resourceManager.getString('cms','upscaleWarningTitle'), Alert.YES | Alert.NO, null, warningCloseHandler);
+				Alert.show(resourceManager.getString('drilldown', 'upscaleWarningMessage'),
+					resourceManager.getString('drilldown', 'upscaleWarningTitle'),
+					Alert.YES | Alert.NO, null, warningCloseHandler);
 				//restore default labels
-				Alert.yesLabel = resourceManager.getString('cms', 'yes');
-				Alert.noLabel = resourceManager.getString('cms', 'no');
+				Alert.yesLabel = resourceManager.getString('drilldown', 'yes');
+				Alert.noLabel = resourceManager.getString('drilldown', 'no');
 				Alert.buttonWidth = previousBtnWidth;
 			}
-			
+
+
 			/**
 			 * dispatches window close event
 			 * */
@@ -551,93 +569,109 @@
 				_cropperTimer.removeEventListener(TimerEvent.TIMER, onCropChanged);
 				this.dispatchEvent(new Event(WINDOW_CLOSE));
 			}
-			
+
+
 			override public function set width(value:Number):void {
 				var newWidth:Number = value * 0.9; //making it a bit shorter than the whole stage
 				super.width = newWidth;
 			}
-			
+
+
 			override public function set height(value:Number):void {
 				var newHeight:Number = value * 0.98; //to see the borders of the window
 				super.height = newHeight;
 			}
-			
-			
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%">
-		<mx:VBox id="controlVBox" paddingLeft="0" width="216" height="{imageBox.height}" verticalGap="0" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+		<mx:VBox id="controlVBox" paddingLeft="0" width="216" height="{imageBox.height}" verticalGap="0"
+				 verticalScrollPolicy="off" horizontalScrollPolicy="off">
 			<mx:VBox id="listBox" styleName="cropperControlsVBox" width="100%">
 				<mx:HBox paddingLeft="12">
-					<mx:Label text="{resourceManager.getString('cms','chooseThumbnail')}" styleName="cropperLabel" width="100%"/>		
+					<mx:Label text="{resourceManager.getString('drilldown','chooseThumbnail')}" styleName="cropperLabel"
+							  width="100%"/>
 				</mx:HBox>
-				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0" verticalCenter="0" 
-						 horizontalScrollPolicy="off" verticalScrollPolicy="off">		
+				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0"
+						 verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 					<mx:HRule width="100%"/>
-					
-					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick()}"
-							 enabled="true" styleName="thumbsList" selectable="true" 
-							 allowMultipleSelection="false" width="100%" height="140">
+
+					<mx:List id="imgList" dataProvider="{_thumbnailsList}" itemClick="{onImgItemClick()}" enabled="true"
+							 styleName="thumbsList" selectable="true" allowMultipleSelection="false" width="100%"
+							 height="140">
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalAlign="center" verticalAlign="middle" buttonMode="true" width="120" height="100" backgroundColor="white"
-										 verticalScrollPolicy="off" horizontalScrollPolicy="off">						
-									<mx:Image source="{data.thumbUrl}" width="120" height="100" horizontalAlign="center" verticalAlign="middle" toolTip="{data.width + ' X ' + data.height}"/>
-								</mx:VBox>	
+								<mx:VBox horizontalAlign="center" verticalAlign="middle" buttonMode="true" width="120"
+										 height="100" backgroundColor="white" verticalScrollPolicy="off"
+										 horizontalScrollPolicy="off">
+									<mx:Image source="{data.thumbUrl}" width="120" height="100" horizontalAlign="center"
+											  verticalAlign="middle" toolTip="{data.width + ' X ' + data.height}"/>
+								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:List>
 				</mx:VBox>
 			</mx:VBox>
-			
-			<mx:VBox id="labelVbox"  width="100%" height="32" styleName="cropperLabelVBox">
+
+			<mx:VBox id="labelVbox" width="100%" height="32" styleName="cropperLabelVBox">
 				<mx:HBox paddingLeft="12">
-					<mx:Label text="{resourceManager.getString('cms','positionAndSize')}" styleName="cropperLabel" width="100%"/>
+					<mx:Label text="{resourceManager.getString('drilldown','positionAndSize')}" styleName="cropperLabel"
+							  width="100%"/>
 				</mx:HBox>
 			</mx:VBox>
-			<mx:VBox borderStyle="solid" width="100%" height="{controlVBox.height - listBox.height - labelVbox.height}" paddingLeft="12" verticalScrollPolicy="on" horizontalScrollPolicy="off" >	
+			<mx:VBox borderStyle="solid" width="100%" height="{controlVBox.height - listBox.height - labelVbox.height}"
+					 paddingLeft="12" verticalScrollPolicy="on" horizontalScrollPolicy="off">
 				<mx:VBox verticalGap="0">
 					<mx:HBox paddingTop="15" width="100%">
-						<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}" enabled="{_presetSizesExist}"/>
-						<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{resourceManager.getString('cms','presetSizeText')}" width="110" wordWrap="true" fontWeight="bold"/>
+						<mx:CheckBox id="presetCheckBox" selected="{_isPreSize}" change="{onPresetCBChange(event)}"
+									 enabled="{_presetSizesExist}"/>
+						<mx:TextArea backgroundAlpha="0" borderStyle="none"
+									 text="{resourceManager.getString('drilldown','presetSizeText')}" width="110"
+									 wordWrap="true" fontWeight="bold"/>
 					</mx:HBox>
-					<mx:ComboBox id="presetComboBox" prompt="{resourceManager.getString('cms', 'selectValidDimensionsMsg')}"
-								 enabled="{_isPreSize}" dataProvider="{_presetSizeList}" change="{onPresetSizeChange(event)}"/>					
+					<mx:ComboBox id="presetComboBox"
+								 prompt="{resourceManager.getString('drilldown', 'selectValidDimensionsMsg')}"
+								 enabled="{_isPreSize}" dataProvider="{_presetSizeList}"
+								 change="{onPresetSizeChange(event)}"/>
 				</mx:VBox>
-				<mx:Label text="{resourceManager.getString('cms','positionTitle')}" fontWeight="bold"/>
-				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
-					<mx:Label text="{resourceManager.getString('cms','leftTitle')}" width="50" textAlign="right"/>
-					<mx:TextInput id="leftTextInput" restrict="0-9" width="45" 
-								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
-				</mx:HBox>
-				<mx:HBox height="100%" horizontalAlign="right"   verticalAlign="middle">
-					<mx:Label text="{resourceManager.getString('cms','topTitle')}" width="50" textAlign="right"/>
-					<mx:TextInput id="topTextInput" restrict="0-9" width="45" 
-								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}" />
-				</mx:HBox>
-				<mx:Label text="{resourceManager.getString('cms','cropTitle')}" fontWeight="bold"/>
+				<mx:Label text="{resourceManager.getString('drilldown','positionTitle')}" fontWeight="bold"/>
 				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
-					<mx:Label text="{resourceManager.getString('cms','widthTitle')}" width="50" textAlign="right" enabled="{!_isPreSize}"/>
-					<mx:TextInput id="widthTextInput" restrict="0-9" width="45" text="{_selectedThumbnail.width}" 
-								  enabled="{!_isPreSize}" editable="{!_isPreSize}"
-								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+					<mx:Label text="{resourceManager.getString('drilldown','leftTitle')}" width="50" textAlign="right"/>
+					<mx:TextInput id="leftTextInput" restrict="0-9" width="45" focusOut="{onFocusOut(event)}"
+								  keyDown="{onKeyDown(event)}"/>
 				</mx:HBox>
 				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
-					<mx:Label text="{resourceManager.getString('cms','heightTitle')}" width="50" textAlign="right" enabled="{!_isPreSize}"/>
-					<mx:TextInput id="heightTextInput" restrict="0-9" width="45" text="{_selectedThumbnail.height}" 
-								  enabled="{!_isPreSize}" editable="{!_isPreSize}"
-								  focusOut="{onFocusOut(event)}" keyDown="{onKeyDown(event)}"/>
+					<mx:Label text="{resourceManager.getString('drilldown','topTitle')}" width="50" textAlign="right"/>
+					<mx:TextInput id="topTextInput" restrict="0-9" width="45" focusOut="{onFocusOut(event)}"
+								  keyDown="{onKeyDown(event)}"/>
 				</mx:HBox>
-				<mx:Label text="{resourceManager.getString('cms','thumbnailPreview')}" fontWeight="bold"/>
-				<mx:HBox width="100%" height="100" paddingBottom="0" paddingTop="0" horizontalAlign="center" verticalAlign="middle">
+				<mx:Label text="{resourceManager.getString('drilldown','cropTitle')}" fontWeight="bold"/>
+				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('drilldown','widthTitle')}" width="50" textAlign="right"
+							  enabled="{!_isPreSize}"/>
+					<mx:TextInput id="widthTextInput" restrict="0-9" width="45" text="{_selectedThumbnail.width}"
+								  enabled="{!_isPreSize}" editable="{!_isPreSize}" focusOut="{onFocusOut(event)}"
+								  keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+				<mx:HBox height="100%" horizontalAlign="right" verticalAlign="middle">
+					<mx:Label text="{resourceManager.getString('drilldown','heightTitle')}" width="50" textAlign="right"
+							  enabled="{!_isPreSize}"/>
+					<mx:TextInput id="heightTextInput" restrict="0-9" width="45" text="{_selectedThumbnail.height}"
+								  enabled="{!_isPreSize}" editable="{!_isPreSize}" focusOut="{onFocusOut(event)}"
+								  keyDown="{onKeyDown(event)}"/>
+				</mx:HBox>
+				<mx:Label text="{resourceManager.getString('drilldown','thumbnailPreview')}" fontWeight="bold"/>
+				<mx:HBox width="100%" height="100" paddingBottom="0" paddingTop="0" horizontalAlign="center"
+						 verticalAlign="middle">
 					<mx:Image id="previewImg" height="{MAX_PREVIEW_HEIGHT}" width="{MAX_PREVIEW_WIDTH}"/>
 				</mx:HBox>
 			</mx:VBox>
-	
+
 		</mx:VBox>
-		<mx:HBox id="imageBox" width="100%" verticalAlign="middle" horizontalAlign="center" height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}" backgroundColor="#e5e5e5"/>
+		<mx:HBox id="imageBox" width="100%" verticalAlign="middle" horizontalAlign="center"
+				 height="{_maxImageHeight + IMG_OFFSET}" paddingBottom="{IMG_OFFSET/2}" paddingTop="{IMG_OFFSET/2}"
+				 backgroundColor="#e5e5e5"/>
 	</mx:HBox>
 	<mx:ControlBar id="saveBtnControlBar">
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','generateThumbnail')}" click="{onSave()}"/>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown','generateThumbnail')}" click="{onSave()}"/>
 	</mx:ControlBar>
 </mx:TitleWindow>

@@ -2,7 +2,9 @@
 <mx:VBox verticalAlign="middle" horizontalAlign="left"
 		 paddingLeft="6" xmlns:mx="http://www.adobe.com/2006/mxml">
 	
-	
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
 	<mx:Tile id="tile" paddingLeft="0" paddingRight="0" direction="horizontal" horizontalGap="0">
 		<mx:Script>
 			<![CDATA[
@@ -102,14 +104,14 @@
 					}
 					
 					if (status) {
-						statusLabel.text = resourceManager.getString('cms',status);
+						statusLabel.text = resourceManager.getString('drilldown',status);
 						if (status2) {
-							statusLabel.text = statusLabel.text + ", " + resourceManager.getString('cms',status2);
+							statusLabel.text = statusLabel.text + ", " + resourceManager.getString('drilldown',status2);
 						}
 					}
 					
 					if (status == DISTRIBUTION_ERROR || status == REMOVAL_ERROR) {
-						distributionErrorLink.label = resourceManager.getString('cms',status);
+						distributionErrorLink.label = resourceManager.getString('drilldown',status);
 						_statusVisible = false;
 						_distributionError = true;
 						_errorsVisible = false;
@@ -194,17 +196,17 @@
 						/* case KalturaBatchJobErrorTypes.APP:
 						case KalturaBatchJobErrorTypes.KALTURA_API:
 						case KalturaBatchJobErrorTypes.KALTURA_CLIENT:
-						errorLabel = resourceManager.getString('cms','kalturaError');
+						errorLabel = resourceManager.getString('drilldown','kalturaError');
 						break; */
 						case KalturaBatchJobErrorTypes.HTTP:
-							errorLabel = resourceManager.getString('cms','transferError');
+							errorLabel = resourceManager.getString('drilldown','transferError');
 							break;
 						case KalturaBatchJobErrorTypes.CURL:
 						case KalturaBatchJobErrorTypes.RUNTIME:
-							errorLabel = resourceManager.getString('cms','destintaionError');
+							errorLabel = resourceManager.getString('drilldown','destintaionError');
 							break;
 						default:
-							errorLabel = resourceManager.getString('cms','kalturaError');
+							errorLabel = resourceManager.getString('drilldown','kalturaError');
 					}
 					errorDetails.setGeneralLabel(errorLabel);
 					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
@@ -212,7 +214,7 @@
 				}
 				
 				private function onThumbErrorLink():void {
-					var errorWindow:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_THUMB_ERROR, resourceManager.getString('cms','missingThumbnail'));
+					var errorWindow:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_THUMB_ERROR, resourceManager.getString('drilldown','missingThumbnail'));
 					for each (var err:KalturaDistributionValidationErrorMissingThumbnail in _thumbErrorsArray) {
 						errorWindow.addErrorDetail(getDimensionsError(err));
 					}
@@ -257,7 +259,7 @@
 				}
 				
 				private function onFlavorErrorClick():void {
-					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_FLAVOR_ERROR, resourceManager.getString('cms','missingFlavor'));
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_FLAVOR_ERROR, resourceManager.getString('drilldown','missingFlavor'));
 					for each (var err:KalturaDistributionValidationErrorMissingFlavor in _flavorErrorsArray) {
 						errorDetails.addErrorDetail(getFlavorsError(err));
 					}
@@ -266,7 +268,7 @@
 				}
 				
 				private function onMissingMetadataErrorLink():void {
-					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_METADATA, resourceManager.getString('cms','missingMetadata'));
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_METADATA, resourceManager.getString('drilldown','missingMetadata'));
 					errorDetails.showCustomDataBtn = true;
 					for each (var err:KalturaDistributionValidationErrorMissingMetadata in _metadataMissingArray) {
 						errorDetails.addErrorDetail( err.fieldName);
@@ -278,7 +280,7 @@
 				
 				private function onMetadataErrorLink():void {
 					//buildMockUpErrors();
-					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('cms','metadataValidationFailed'));
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('drilldown','metadataValidationFailed'));
 					for (var i:int = 0; i<_metadataErrorsArray.length; i++) {
 						if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
 							errorDetails.showCustomDataBtn = true;
@@ -296,16 +298,16 @@
 					var errorString:String = '- '+ error.fieldName;
 					switch (error.validationErrorType) {
 						case KalturaDistributionValidationErrorType.STRING_EMPTY:
-							errorString += ' ' + resourceManager.getString('cms','metadataValidationRequired');
+							errorString += ' ' + resourceManager.getString('drilldown','metadataValidationRequired');
 							break;
 						case KalturaDistributionValidationErrorType.STRING_TOO_LONG:
-							errorString += ' '+ resourceManager.getString('cms','metadataValidationTooLong', new Array(error.validationErrorParam));
+							errorString += ' '+ resourceManager.getString('drilldown','metadataValidationTooLong', new Array(error.validationErrorParam));
 							break;
 						case KalturaDistributionValidationErrorType.STRING_TOO_SHORT:
-							errorString += ' '+  resourceManager.getString('cms','metadataValidationTooShort', new Array(error.validationErrorParam));
+							errorString += ' '+  resourceManager.getString('drilldown','metadataValidationTooShort', new Array(error.validationErrorParam));
 							break;
 						case KalturaDistributionValidationErrorType.INVALID_FORMAT:
-							errorString += ' '+ resourceManager.getString('cms','metadataValidationFormat', new Array(error.validationErrorParam));
+							errorString += ' '+ resourceManager.getString('drilldown','metadataValidationFormat', new Array(error.validationErrorParam));
 							break;
 						case KalturaDistributionValidationErrorType.CUSTOM_ERROR:
 							errorString = '- '+ error.validationErrorParam;
@@ -347,22 +349,22 @@
 		</mx:Script>
 		
 		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" paddingLeft="0" paddingRight="0"/>
-		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('cms','distributionError')}" visible="{_distributionError}" 
+		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('drilldown','distributionError')}" visible="{_distributionError}" 
 					   includeInLayout="{_distributionError}" styleName="distributionError"
 					   click="{onDistributionErrorClick()}"/>
 		
 		
-		<mx:LinkButton id="missingThumbLink" label="{resourceManager.getString('cms','missingThumbnail')}"
+		<mx:LinkButton id="missingThumbLink" label="{resourceManager.getString('drilldown','missingThumbnail')}"
 					   visible="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}"
 					   includeInLayout="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}" styleName="distributionError"
 					   click="{onThumbErrorLink()}"/>	
-		<mx:LinkButton id="missingFlavorLink" label="{resourceManager.getString('cms','missingFlavor')}"
+		<mx:LinkButton id="missingFlavorLink" label="{resourceManager.getString('drilldown','missingFlavor')}"
 					   visible="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}"
 					   styleName="distributionError" click="{onFlavorErrorClick()}"/>
-		<mx:LinkButton id="missingMetadataLink" label="{resourceManager.getString('cms','missingMetadata')}"
+		<mx:LinkButton id="missingMetadataLink" label="{resourceManager.getString('drilldown','missingMetadata')}"
 					   visible="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
 					   styleName="distributionError" click="{onMissingMetadataErrorLink()}"/>
-		<mx:LinkButton id="invalidMetadataLink" label="{resourceManager.getString('cms','metadataError')}"
+		<mx:LinkButton id="invalidMetadataLink" label="{resourceManager.getString('drilldown','metadataError')}"
 					   visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
 					   styleName="distributionError" click="{onMetadataErrorLink()}"/>
 	</mx:Tile>

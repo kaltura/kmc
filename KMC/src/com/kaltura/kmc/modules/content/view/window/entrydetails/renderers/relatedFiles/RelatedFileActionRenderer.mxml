@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="6" horizontalAlign="center"
 		 verticalAlign="middle" horizontalGap="0">
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
@@ -36,16 +37,16 @@
 						_actionsAvailable = false;
 						switch (_relatedVo.file.status) {
 							case KalturaFlavorAssetStatus.DELETED:
-								_errorString = resourceManager.getString('cms','deleteStatus');
+								_errorString = resourceManager.getString('drilldown','deleteStatus');
 								break;
 							case KalturaFlavorAssetStatus.QUEUED:
-								_errorString = resourceManager.getString('cms','inqueueStatus');
+								_errorString = resourceManager.getString('drilldown','inqueueStatus');
 								break;
 							case KalturaFlavorAssetStatus.IMPORTING:
-								_errorString = resourceManager.getString('cms','importStatus');
+								_errorString = resourceManager.getString('drilldown','importStatus');
 								break;
 							case KalturaFlavorAssetStatus.ERROR:
-								_errorString = resourceManager.getString('cms','errorStatus');
+								_errorString = resourceManager.getString('drilldown','errorStatus');
 						}
 					}
 					else {
@@ -61,7 +62,7 @@
 				else if (_relatedVo.isNewUploadError) {
 					_isError = true;
 					_actionsAvailable = false;
-					_errorString = resourceManager.getString('cms','errorStatus');
+					_errorString = resourceManager.getString('drilldown','errorStatus');
 				}
 				else {
 					_actionsAvailable = false;
@@ -75,7 +76,7 @@
 			 * */
 			private function isNotSaved(message:String):Boolean {
 				if (!_relatedVo.file.id && _relatedVo.isNewUploaded) {
-					Alert.show(message, resourceManager.getString('cms','saveRequired'));
+					Alert.show(message, resourceManager.getString('drilldown','saveRequired'));
 					return true;
 				}
 				
@@ -83,7 +84,7 @@
 			}
 			
 			private function editFile():void {
-				if (!isNotSaved(resourceManager.getString('cms','unsavedEditAlert'))) {				
+				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {				
 					var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
 					editWindow.file = _relatedVo.file;
 					PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
@@ -92,7 +93,7 @@
 			}
 			
 			private function downloadFile():void {
-				if (!isNotSaved(resourceManager.getString('cms','unsavedDownloadAlert'))) {
+				if (!isNotSaved(resourceManager.getString('drilldown','unsavedDownloadAlert'))) {
 					var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
 					navigateToURL(urlRequest , '_self');
 				}
@@ -106,18 +107,18 @@
 
 		]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('cms','edit')}" click="editFile()"
+	<mx:LinkButton label="{resourceManager.getString('drilldown','edit')}" click="editFile()"
 				  visible="{_actionsAvailable}"/>
-	<mx:LinkButton label="{resourceManager.getString('cms','download')}" click="downloadFile()"
+	<mx:LinkButton label="{resourceManager.getString('drilldown','download')}" click="downloadFile()"
 				   styleName="downloadThumbLinkButton" visible="{_actionsAvailable}" includeInLayout="{_actionsAvailable}" width="80"/>
-	<!--<mx:LinkButton label="{resourceManager.getString('cms','upload')}" visible="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
+	<!--<mx:LinkButton label="{resourceManager.getString('drilldown','upload')}" visible="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" click="onUploadClick()"
 				   includeInLayout="{((!_actionsAvailable &amp;&amp; !_isError) &amp;&amp; (_relatedVo.uploadTokenId==null))}" 
 				   styleName="plusIcon" width="80"/>-->
 	<mx:Label text="{_errorString}" visible="{_isError}" includeInLayout="{_isError}" width="80" textAlign="center"/>
 	<mx:HBox width="80" horizontalAlign="center" visible="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}" includeInLayout="{(!_actionsAvailable &amp;&amp; (_relatedVo.uploadTokenId!=null))}">
-		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('cms','convertingToolTip')}"
+		<mx:Image width="24" height="24" toolTip="{resourceManager.getString('drilldown','convertingToolTip')}"
 				  source="{SpinnerImg}" />
 	</mx:HBox>
-	<mx:LinkButton label="{resourceManager.getString('cms','remove')}" click="removeFile()"
+	<mx:LinkButton label="{resourceManager.getString('drilldown','remove')}" click="removeFile()"
 				   styleName="deleteThumbLinkButton" width="70"/>
 </mx:HBox>

@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalAlign="middle">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="5" paddingRight="5"
+		 verticalAlign="middle">
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryRelated;
 			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
 			import com.kaltura.types.KalturaAttachmentType;
-			
+
 			import mx.events.ListEvent;
 			private var _relatedFile:RelatedFileVO;
 			[Bindable]
 			private var _selectedIndex:int;
-			
+
+
 			override public function set data(value:Object):void {
 				super.data = value;
 				_relatedFile = value as RelatedFileVO;
@@ -23,19 +28,20 @@
 						_selectedIndex = 0;
 				}
 			}
-			
-			protected function onTypeChange():void
-			{
-				if (typeCb.selectedIndex ==1)
+
+
+			protected function onTypeChange():void {
+				if (typeCb.selectedIndex == 1)
 					_relatedFile.file.format = KalturaAttachmentType.MEDIA;
 				else
 					_relatedFile.file.format = KalturaAttachmentType.DOCUMENT;
-				
+
 				dispatchEvent(new Event(EntryRelated.FILE_CHANGED, true));
 			}
-
+			//dataProvider="{new Array(resourceManager.getString('cms','document'), resourceManager.getString('cms','media'))}"
 		]]>
 	</mx:Script>
-	<mx:ComboBox id="typeCb" dataProvider="{new Array(resourceManager.getString('cms','document'), resourceManager.getString('cms','media'))}" selectedIndex="{_selectedIndex}" 
-				 prompt="{resourceManager.getString('cms','selectType')}" change="onTypeChange()" enabled="{parentDocument.editable}"/>
+	<mx:ComboBox id="typeCb" selectedIndex="{_selectedIndex}" enabled="{parentDocument.editable}"
+				 dataProvider="{new Array(resourceManager.getString('drilldown','document'), resourceManager.getString('drilldown','media'))}"
+				 prompt="{resourceManager.getString('drilldown','selectType')}" change="onTypeChange()"/>
 </mx:VBox>
