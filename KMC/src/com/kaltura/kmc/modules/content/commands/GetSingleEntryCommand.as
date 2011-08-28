@@ -43,10 +43,7 @@ package com.kaltura.kmc.modules.content.commands {
 
 		override public function result(data:Object):void {
 			var clipAttributes:KalturaClipAttributes; // compile this type into KMC
-//			if (_eventType != EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
-				//TODO when replacement entry wasn't found, we handle separately.
-				super.result(data);
-//			}
+			super.result(data);
 			
 			if (data.data && data.data is KalturaBaseEntry) {
 				var resultEntry:KalturaBaseEntry = data.data as KalturaBaseEntry;
