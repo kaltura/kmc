@@ -35,6 +35,9 @@ package com.kaltura.kmc.modules.content.commands {
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					Alert.show(ResourceManager.getInstance().getString('cms','replacementNotExistMsg'),ResourceManager.getInstance().getString('cms','replacementNotExistTitle'));
 				}		
+				else {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'flavorAssetsErrorMsg') + ":\n" + er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+				}
 			}
 			else {
 				Alert.show(ResourceManager.getInstance().getString('cms', 'flavorAssetsErrorMsg') + ":\n" + info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));

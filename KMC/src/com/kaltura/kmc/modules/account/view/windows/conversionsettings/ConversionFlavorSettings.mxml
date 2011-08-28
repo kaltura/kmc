@@ -91,7 +91,9 @@
 					// source flavor - always ingest, inherit
 					if (_flavorVO.kFlavor.tags.indexOf("source") > -1) {
 						_cpap.origin = KalturaAssetParamsOrigin.INGEST;
-						_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.INHERIT_FLAVOR_PARAMS;
+						if (_cpap.readyBehavior == int.MIN_VALUE) {
+							_cpap.readyBehavior = KalturaFlavorReadyBehaviorType.INHERIT_FLAVOR_PARAMS;
+						}
 						cbConvertPolicy.enabled = false;
 					}
 					if (_flavorVO.kFlavor.id == 0) {
