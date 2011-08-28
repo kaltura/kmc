@@ -4,7 +4,7 @@
 				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
 				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
-				   implements="com.kaltura.kmc.modules.content.business.IDataOwner" layout="vertical" minHeight="520"
+				   implements="com.kaltura.kmc.modules.content.business.IDataOwner" layout="vertical" 
 				   minWidth="950" borderThickness="0" borderStyle="solid" verticalGap="0" paddingLeft="0"
 				   paddingRight="0" paddingTop="0" paddingBottom="0" preloader="com.kaltura.preloaders.KmcPreloader"
 				   enabled="{!_model.loadingFlag}">
@@ -1082,9 +1082,9 @@
 			}
 
 
-			protected function resizeToContent():void {
-				contentView.height = contentView.selectedChild.height;
-			}
+//			protected function resizeToContent():void {
+//				contentView.height = contentView.selectedChild.height;
+//			}
 			
 			
 			/**
@@ -1113,7 +1113,7 @@
 
 	<!--<mx:Button click="button1_clickHandler(event)" />-->
 
-	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView">
+	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView" verticalScrollPolicy="off">
 		<mx:HBox width="100%" styleName="tabsContainer" verticalAlign="middle">
 			<mx:HBox id="leftBtnsHBox" styleName="tln">
 				<mx:Button id="manageBtn" label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
@@ -1148,24 +1148,23 @@
 				<mx:Button styleName="help" buttonMode="true" click="{onHelpClick(event)}"/>
 			</mx:HBox>
 		</mx:HBox>
-		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
-					  minHeight="500" change="initSelectedTab(event)">
+		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" 
+					  change="initSelectedTab(event)" >
 			<content:Entries id="manage" height="100%" styleName="pageStyle"
-							 entryDetailsModel="{_model.entryDetailsModel}" creationComplete="resizeToContent()"
+							 entryDetailsModel="{_model.entryDetailsModel}" 
 							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 							 windowState="{_model.windowState}"/>
-			<content:Moderation id="moderation" styleName="pageStyle" height="100%" creationComplete="resizeToContent()"
+			<content:Moderation id="moderation" styleName="pageStyle" height="100%" 
 								context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
 								label="{ResourceManager.getInstance().getString('cms','moderation')}"
 								distributionProfilesArray="{_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"/>
 			<playlist:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
-							   creationComplete="resizeToContent()"
 							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
 							   showEmbed="{_model.showPlaylistEmbedCode}"
 							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
-			<content:ExternalSyndication id="syndication" styleName="pageStyle" creationComplete="resizeToContent()"
+			<content:ExternalSyndication id="syndication" styleName="pageStyle" 
 										 flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
 										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
@@ -1173,10 +1172,9 @@
 			<content:Uploads id="uploads" width="100%" height="100%" 
 							 files="{_files}"
 							 styleName="pageStyle" 
-							 bulkUploadDataProvider="{_model.bulkUploadModel}"
-							 creationComplete="resizeToContent()" />
+							 bulkUploadDataProvider="{_model.bulkUploadModel}" />
 			<content:DropFoldersPanel id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
-									  dropFolderModel="{_model.dropFolderModel}" creationComplete="resizeToContent()"/>
+									  dropFolderModel="{_model.dropFolderModel}" />
 
 		</mx:ViewStack>
 	</mx:VBox>
