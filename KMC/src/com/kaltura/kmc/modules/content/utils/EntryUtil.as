@@ -38,9 +38,9 @@ package com.kaltura.kmc.modules.content.utils
 		 * */
 		public static function updateChangebleFieldsOnly(entry:KalturaBaseEntry):void {
 			_model.entryDetailsModel.selectedEntry.status = entry.status;
-			_model.entryDetailsModel.selectedEntry.replacementStatus = entry.replacementStatus;
 			_model.entryDetailsModel.selectedEntry.replacedEntryId = entry.replacedEntryId;
 			_model.entryDetailsModel.selectedEntry.replacingEntryId = entry.replacingEntryId;
+			_model.entryDetailsModel.selectedEntry.replacementStatus = entry.replacementStatus;
 		}
 	}
 }

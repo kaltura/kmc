@@ -29,6 +29,8 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -131,49 +133,44 @@
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
 			private var _replacementStatus:String;
 			private var _replacingEntryId:String;
-			private var _status:String;
 
 			/**
 			 * indicates if event listener to uploadManager.uploadStarted was already added
 			 * */
 			private var _listenToUpload:Boolean = false;
 
+			/**
+			 * entry status
+			 * */
+			private var _status:String;
+			
+			// ================================================================================================
+			
 			public function get status():String {
 				return _status;
 			}
-
-
 			public function set status(value:String):void {
 				if (value && (!_status || (_status != value))) {
-					refreshData(false);
+//					refreshData(false);
+					_refreshOnce = true;
+					setTimeout(refreshOnce, 5);
 				}
 				_status = value;
 				selectedEntry = _selectedEntry;
 			}
 
-
-			public function get replacingEntryId():String {
-				return _replacingEntryId;
-			}
-
-
-			public function set replacingEntryId(value:String):void {
-				//if we have a replacement entry that we didn't have before, request the entry from server
-				if (value && (!_replacingEntryId || (_replacingEntryId != value))) {
-					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
-					getReferenceEntry.dispatch();
+			private var _refreshOnce:Boolean;
+			
+			private function refreshOnce():void {
+				if (_refreshOnce) {
+					refreshData(false);
+					_refreshOnce = false;
 				}
-
-				_replacingEntryId = value;
-				selectedEntry = _selectedEntry;
 			}
-
-
+			
 			public function get replacementStatus():String {
 				return _replacementStatus;
 			}
-
-
 			public function set replacementStatus(value:String):void {
 				if (_drillDownClicked) {
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
@@ -187,11 +184,32 @@
 				}
 
 				if (value && (!_replacementStatus || (_replacementStatus != value))) {
-					refreshData(false);
+//					refreshData(false);
+					_refreshOnce = true;
+					setTimeout(refreshOnce, 5);
 				}
 				_replacementStatus = value;
 				selectedEntry = _selectedEntry;
 			}
+			
+			// ================================================================================================
+
+			public function get replacingEntryId():String {
+				return _replacingEntryId;
+			}
+			
+			
+			public function set replacingEntryId(value:String):void {
+				//if we have a replacement entry that we didn't have before, request the entry from server
+				if (value && (!_replacingEntryId || (_replacingEntryId != value))) {
+					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
+					getReferenceEntry.dispatch();
+				}
+				
+				_replacingEntryId = value;
+				selectedEntry = _selectedEntry;
+			}
+			
 
 
 			/**
