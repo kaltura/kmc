@@ -41,6 +41,9 @@
 			import mx.utils.StringUtil;
 			import mx.validators.ValidationResult;
 
+			private const LABEL_WIDTH:int = 180;
+			
+			
 			[Bindable]
 			/**
 			 * edited feed settings
@@ -248,11 +251,11 @@
 
 	<mx:VBox width="100%">
 		<mx:HBox width="100%">
-			<mx:Label text="*{resourceManager.getString('cms','feedNameLabel')}" width="180" styleName="feedParamLabel"/>
+			<mx:Label text="*{resourceManager.getString('cms','feedNameLabel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
 			<mx:TextInput id='generalFeedNameTextInput' width="100%" text="{selectedExSynVo.kSyndicationFeed.name}"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('cms','selectedContentLabel')}" width="180"
+			<mx:Label text="{resourceManager.getString('cms','selectedContentLabel')}" width="{LABEL_WIDTH}"
 					  styleName="feedParamLabel"/>
 			<mx:VBox width="100%" height="100%">
 				<mx:RadioButtonGroup id='contentRadioBtnsGroup'/>
@@ -266,7 +269,7 @@
 			</mx:VBox>
 		</mx:HBox>
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('cms','feedTypleLabel')}" width="180" styleName="feedParamLabel"/>
+			<mx:Label text="{resourceManager.getString('cms','feedTypleLabel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
 			<mx:ComboBox width="100%" id="feedTypeComboBox" dataProvider="{FEED_TYPES}" editable="false"/>
 		</mx:HBox>
 	
@@ -275,7 +278,8 @@
 	<mx:ViewStack id="syndicationTypeOptions" width="100%" height="100%" creationPolicy="all"
 				  selectedIndex="{feedTypeComboBox.selectedIndex}">
 		<exts:GoogleExtSyn width="100%" height="100%" extSynData="{extSynModel}" flavorParams="{flavorParams}"/>
-		<exts:YahooExtSyn width="100%" height="100%" flavorParams="{flavorParams}" players="{extSynModel.uiConfData}"/>
+		<exts:YahooExtSyn width="100%" height="100%" flavorParams="{flavorParams}" players="{extSynModel.uiConfData}"
+						  horizontalScrollPolicy="off"/>
 		<exts:ITuneExtSyn width="100%" height="100%" partnerData="{extSynModel.partnerData}"
 						  flavorParams="{flavorParams}"/>
 		<exts:TubeMogulExtSyn width="100%" height="100%" flavorParams="{flavorParams}"/>

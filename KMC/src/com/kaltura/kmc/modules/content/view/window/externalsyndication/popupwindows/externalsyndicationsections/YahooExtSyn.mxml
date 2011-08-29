@@ -22,6 +22,7 @@ used as part of <Code>ExternalSyndicationPopUpWindow</code>
 			import mx.collections.ListCollectionView;
 			import mx.controls.Alert;
 			import mx.controls.listClasses.ListBase;
+			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.utils.StringUtil;
 			import mx.validators.ValidationResult;
@@ -35,10 +36,22 @@ used as part of <Code>ExternalSyndicationPopUpWindow</code>
 			public var flavorParams:ArrayCollection;
 			
 			[Bindable]
+			private var _players:ArrayCollection;
+			
+			
 			/**
 			 * a list of player uiconfs (descriptions)
 			 * */
-			public var players:ArrayCollection; 
+			public function set players(ar:ArrayCollection):void {
+				_players = ar;
+				if (feed.allowEmbed) {
+					setPlayerUIConf(feed.playerUiconfId);
+				}
+			} 
+			
+			public function get players():ArrayCollection {
+				return _players;
+			}
 			
 			
 
@@ -197,10 +210,10 @@ used as part of <Code>ExternalSyndicationPopUpWindow</code>
 			}
 		]]>
 	</mx:Script>
-	<validators:URLValidator id='feedLandingPageValidator' 
+	<validators:URLValidator id="feedLandingPageValidator" 
 							 source="{landingPageInputText}"
 							 property="text" required="true"/>
-	<validators:URLValidator id='webSiteValidator'
+	<validators:URLValidator id="webSiteValidator"
 							 source="{webSiteTextInput}"
 							 property="text" required="false"/>
 	<mx:HBox width="100%" styleName="formInnerTitle">
@@ -211,13 +224,11 @@ used as part of <Code>ExternalSyndicationPopUpWindow</code>
 	<mx:Spacer height="10"/>
 	
 	<mx:HBox width="100%" >
-		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}"
-				  width="180" styleName="feedParamLabel"/>
-		<mx:ComboBox id='flavorsComboBox'
-					 dataProvider="{flavorParams}"
-					 labelField="name"/>
-		<mx:CheckBox id='defaultCPCheckBox' selected="true"
-					 label="{resourceManager.getString('cms','addDefaultConversionProfile')}"/>
+		<mx:Label text="{resourceManager.getString('cms','flavorLabel')}" width="180" styleName="feedParamLabel"/>
+		<mx:ComboBox id="flavorsComboBox" labelField="name" width="180"
+					 dataProvider="{flavorParams}" />
+		<mx:CheckBox id="defaultCPCheckBox" selected="true" 
+					 label="{resourceManager.getString('cms','addDefaultConversionProfile')}" />
 	</mx:HBox>
 	
 	<mx:HBox width="100%" >
@@ -240,7 +251,7 @@ used as part of <Code>ExternalSyndicationPopUpWindow</code>
 							label="{resourceManager.getString('cms', 'yesAndUsePlayerRadioBtn')}"
 							groupName="playBackRadioBtnsGroup" />
 			<mx:ComboBox id="videoPlayerComboBox"
-						 dataProvider="{players}"
+						 dataProvider="{_players}"
 						 labelField="name" width="385"
 						 itemRenderer="mx.controls.Label"
 						 enabled="{playBackRadioBtn.selected}"/>
