@@ -54,7 +54,7 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		private function setDataInModel(arrCol:Array):void {
-			var flavorParamsAndAssetsByEntryId:ArrayCollection = _model.entryDetailsModel.flavorParamsAndAssetsByEntryId;
+			var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
 			flavorParamsAndAssetsByEntryId.removeAll();
 			var tempAc:ArrayCollection = new ArrayCollection();
 			var foundIsOriginal:Boolean = false;
@@ -89,7 +89,7 @@ package com.kaltura.kmc.modules.content.commands {
 					afwps.hasOriginal = true;
 				}
 			}
-			
+			_model.entryDetailsModel.flavorParamsAndAssetsByEntryId = flavorParamsAndAssetsByEntryId;
 		
 		}
 	}
