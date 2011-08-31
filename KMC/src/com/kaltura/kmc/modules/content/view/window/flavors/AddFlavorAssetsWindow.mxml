@@ -3,16 +3,18 @@
 	A popup window that allows matching files with the flavor they represent. 
 	The same window with different configurations will be used for upload, link and import.
 -->
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 		xmlns:containers="com.kaltura.containers.*" 
 		xmlns:flavors="com.kaltura.kmc.modules.content.view.window.flavors.*"
 		xmlns:validators="com.kaltura.validators.*" 
 		width="550" styleName="TitleWindowType2" visible="false"
 		showCloseButton="true" close="closeHandler(event)"
+		showHelpButton="true" help="helpHandler(event)"
 		creationComplete="titlewindow1_creationCompleteHandler(event)" >
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.MediaEvent;
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.EntryFlavors;
 			import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
@@ -609,6 +611,24 @@
 			
 
 
+
+			protected function helpHandler(event:Event):void
+			{
+				var anchor:String;
+				switch (_windowAction) {
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						anchor = 'flavor_upload';
+						break;
+					case AddFlavorAssetsWindow.ACTION_IMPORT:
+						anchor = 'flavor_import';
+						break;
+					case AddFlavorAssetsWindow.ACTION_LINK:
+						anchor = 'flavor_link';
+						break;
+				}
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+			}
+
 		]]>
 	</mx:Script>
 	<!--<mx:RegExpValidator id="regExpV" expression="{strRegex}"  />
@@ -656,4 +676,4 @@
 		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
 				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}"/>
 	</mx:ControlBar>
-</mx:TitleWindow>
+</containers:HelpTitleWindow>
