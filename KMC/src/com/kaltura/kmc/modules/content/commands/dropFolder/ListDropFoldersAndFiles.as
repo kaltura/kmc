@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 	import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
 	import com.kaltura.types.KalturaDropFolderFileHandlerType;
 	import com.kaltura.types.KalturaDropFolderFileOrderBy;
+	import com.kaltura.types.KalturaDropFolderFileStatus;
 	import com.kaltura.types.KalturaDropFolderOrderBy;
 	import com.kaltura.types.KalturaDropFolderStatus;
 	import com.kaltura.vo.KalturaDropFolder;
@@ -23,8 +24,8 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 	import com.kaltura.vo.KalturaSftpDropFolder;
 	
 	import mx.collections.ArrayCollection;
-	import mx.core.mx_internal;
 	import mx.controls.Alert;
+	import mx.core.mx_internal;
 	import mx.resources.ResourceManager;
 	
 //	use namespace mx.core.mx_internal;
@@ -83,6 +84,16 @@ package com.kaltura.kmc.modules.content.commands.dropFolder {
 						_fileFilter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 						// use selected folder
 						_fileFilter.dropFolderIdIn = folderIds;
+						_fileFilter.statusIn = KalturaDropFolderFileStatus.DOWNLOADING + "," +
+							KalturaDropFolderFileStatus.ERROR_DELETING + "," + 
+							KalturaDropFolderFileStatus.ERROR_DOWNLOADING + "," + 
+							KalturaDropFolderFileStatus.ERROR_HANDLING + "," + 
+							KalturaDropFolderFileStatus.HANDLED + "," + 
+							KalturaDropFolderFileStatus.NO_MATCH + "," + 
+							KalturaDropFolderFileStatus.PENDING + "," + 
+							KalturaDropFolderFileStatus.UPLOADING + "," + 
+							KalturaDropFolderFileStatus.WAITING; 
+						_model.dropFolderModel.filter = _fileFilter;
 					}
 					var listFiles:DropFolderFileList = new DropFolderFileList(_fileFilter);
 	

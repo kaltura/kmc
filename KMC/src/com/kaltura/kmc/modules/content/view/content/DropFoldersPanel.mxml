@@ -41,7 +41,16 @@
 			 * @inheritDoc
 			 * */
 			public function init(kbef:KalturaBaseEntryFilter = null):void {
-				dropFolderModel.filter = new KalturaDropFolderFileFilter();
+//				dropFolderModel.filter = new KalturaDropFolderFileFilter();
+//				dropFolderModel.filter.statusIn = KalturaDropFolderFileStatus.DOWNLOADING + "," +
+//					KalturaDropFolderFileStatus.ERROR_DELETING + "," + 
+//					KalturaDropFolderFileStatus.ERROR_DOWNLOADING + "," + 
+//					KalturaDropFolderFileStatus.ERROR_HANDLING + "," + 
+//					KalturaDropFolderFileStatus.HANDLED + "," + 
+//					KalturaDropFolderFileStatus.NO_MATCH + "," + 
+//					KalturaDropFolderFileStatus.PENDING + "," + 
+//					KalturaDropFolderFileStatus.UPLOADING + "," + 
+//					KalturaDropFolderFileStatus.WAITING; 
 				refreshList(null);
 			}
 			
@@ -226,6 +235,17 @@
 					var dfFilter:KalturaDropFolderFileFilter = filter.dropFolderFileFilter;
 					if (dfFilter.dropFolderIdEqual == int.MIN_VALUE && !dfFilter.dropFolderIdIn) {
 						dfFilter.dropFolderIdIn = getEnabledFolderIds();
+					}
+					if (!dfFilter.statusIn && dfFilter.statusEqual == int.MIN_VALUE) {
+						dfFilter.statusIn = KalturaDropFolderFileStatus.DOWNLOADING + "," +
+							KalturaDropFolderFileStatus.ERROR_DELETING + "," + 
+							KalturaDropFolderFileStatus.ERROR_DOWNLOADING + "," + 
+							KalturaDropFolderFileStatus.ERROR_HANDLING + "," + 
+							KalturaDropFolderFileStatus.HANDLED + "," + 
+							KalturaDropFolderFileStatus.NO_MATCH + "," + 
+							KalturaDropFolderFileStatus.PENDING + "," + 
+							KalturaDropFolderFileStatus.UPLOADING + "," + 
+							KalturaDropFolderFileStatus.WAITING;
 					}
 					dropFolderModel.filter = dfFilter;
 				}
