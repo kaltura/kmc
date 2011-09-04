@@ -2,11 +2,13 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 	import com.kaltura.commands.syndicationFeed.SyndicationFeedList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 	import com.kaltura.vo.KalturaBaseSyndicationFeed;
 	import com.kaltura.vo.KalturaBaseSyndicationFeedListResponse;
+	import com.kaltura.vo.KalturaGenericSyndicationFeed;
+	import com.kaltura.vo.KalturaGenericXsltSyndicationFeed;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -37,6 +39,10 @@ package com.kaltura.kmc.modules.content.commands
 			for each(var feed:Object in response.objects)
 			{
 				if (feed is KalturaBaseSyndicationFeed) {
+					if (feed is KalturaGenericSyndicationFeed && !(feed is KalturaGenericXsltSyndicationFeed)) {
+						// in KMC we only support the xslt generic type 
+						continue;
+					}
 					var exSyn:ExternalSyndicationVO = new ExternalSyndicationVO();
 					exSyn.kSyndicationFeed = feed as KalturaBaseSyndicationFeed;
 					tempArr.addItem(exSyn);
