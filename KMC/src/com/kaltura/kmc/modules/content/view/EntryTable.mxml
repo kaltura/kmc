@@ -55,13 +55,13 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
-			
+
 			/**
 			 * is this table appear in playlist window
 			 * */
 			public var isPlaylistEntries:Boolean = false;
 
-		
+
 			private var _selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
@@ -116,19 +116,19 @@
 			/**
 			 * the latest selected entry in the table
 			 * */
-			public function get selectedEntry():KalturaBaseEntry
-			{
+			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
+
 
 			/**
 			 * @private
 			 */
-			public function set selectedEntry(value:KalturaBaseEntry):void
-			{
+			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
 				markSelectedEntry(false);
 			}
+
 
 			override public function get dataProvider():Object {
 				return super.dataProvider;
@@ -186,7 +186,7 @@
 					if (dispatchSelectEvent) {
 						var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
 						ee.dispatch();
-						
+
 					}
 				}
 			}
@@ -266,7 +266,7 @@
 						}
 					}
 					else {
-						var newState:String =  isPlaylistEntries ? WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW : WindowsStates.ENTRY_DETAILS_WINDOW
+						var newState:String = isPlaylistEntries ? WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW : WindowsStates.ENTRY_DETAILS_WINDOW
 						cgEvent = new WindowEvent(WindowEvent.OPEN, newState);
 						cgEvent.dispatch();
 					}
@@ -533,23 +533,23 @@
 //						return '';
 //					}
 //					case KalturaEntryStatus.READY:  {
-						switch (entry.moderationStatus) {
-							case KalturaEntryModerationStatus.APPROVED:  {
-								return resourceManager.getString('cms', 'approvedStatus');
-							}
-							case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-								return resourceManager.getString('cms', 'autoApprovedStatus');
-							}
-							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-								return resourceManager.getString('cms', 'flaggedStatus');
-							}
-							case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-								return resourceManager.getString('cms', 'pendingStatus');
-							}
-							case KalturaEntryModerationStatus.REJECTED:  {
-								return resourceManager.getString('cms', 'rejectedStatus');
-							}
-						}
+				switch (entry.moderationStatus) {
+					case KalturaEntryModerationStatus.APPROVED:  {
+						return resourceManager.getString('cms', 'approvedStatus');
+					}
+					case KalturaEntryModerationStatus.AUTO_APPROVED:  {
+						return resourceManager.getString('cms', 'autoApprovedStatus');
+					}
+					case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+						return resourceManager.getString('cms', 'flaggedStatus');
+					}
+					case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+						return resourceManager.getString('cms', 'pendingStatus');
+					}
+					case KalturaEntryModerationStatus.REJECTED:  {
+						return resourceManager.getString('cms', 'rejectedStatus');
+					}
+				}
 //						break;
 //					}
 //				}
@@ -570,38 +570,36 @@
 				var entry:KalturaBaseEntry = obj as KalturaBaseEntry;
 				var status:String = entry.status;
 				switch (status) {
-					case KalturaEntryStatus.DELETED: //fixed to all states
-					{
+					case KalturaEntryStatus.DELETED: 
+						//fixed to all states
 						return resourceManager.getString('cms', 'statusdeleted');
+						break;
 
-					}
-
-					case KalturaEntryStatus.ERROR_IMPORTING: //fixed to all states
-					{
+					case KalturaEntryStatus.ERROR_IMPORTING: 
+						//fixed to all states
 						return resourceManager.getString('cms', 'statuserrorimporting');
+						break;
 
-					}
-
-					case KalturaEntryStatus.ERROR_CONVERTING: //fixed to all states
-					{
+					case KalturaEntryStatus.ERROR_CONVERTING: 
+						//fixed to all states
 						return resourceManager.getString('cms', 'statuserrorconverting');
+						break;
 
-					}
-
-					case KalturaEntryStatus.IMPORT: //fixed to all states
-					{
-						if (entry is KalturaLiveStreamAdminEntry)
+					case KalturaEntryStatus.IMPORT: 
+						//fixed to all states
+						if (entry is KalturaLiveStreamAdminEntry) {
 							return resourceManager.getString('cms', 'provisioning');
-						else
+						}
+						else {
 							return resourceManager.getString('cms', 'statusimport');
+						}
+						break;
 
-					}
-
-					case KalturaEntryStatus.PRECONVERT: //fixed to all states
-					{
+					case KalturaEntryStatus.PRECONVERT: 
+						//fixed to all states
 						return resourceManager.getString('cms', 'statuspreconvert');
-
-					}
+						break;
+					
 					/* case KalturaEntryStatus.MODERATE:
 					   return resourceManager.getString('cms', 'statusmoderate');
 					 break;*/
@@ -609,81 +607,117 @@
 					case KalturaEntryStatus.PENDING:
 						return resourceManager.getString('cms', 'statuspending');
 						break;
-					case KalturaEntryStatus.NO_CONTENT:  {
+					
+					case KalturaEntryStatus.NO_CONTENT:  
 						return resourceManager.getString('cms', 'statusNoMedia');
-					}
-					case KalturaEntryStatus.READY:  {
-						var now:Date = new Date();
-						var time:int = now.time / 1000;
-						var schedulingType:int = 0;
-
-						if (((entry.startDate == int.MIN_VALUE) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate <= time) && (entry.endDate >= time)) || ((entry.startDate < time) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate == int.MIN_VALUE) && (entry.endDate > time))) {
-							schedulingType = SCHEDULING_ALL_OR_IN_FRAME;
-						}
-						else if (entry.startDate > time) {
-							schedulingType = SCHEDULING_BEFORE_FRAME;
-						}
-						else if (entry.endDate < time) {
-							schedulingType = SCHEDULING_AFTER_FRAME;
-						}
-
-						var moderationStatus:int = entry.moderationStatus;
-
-						switch (schedulingType) {
-							case SCHEDULING_ALL_OR_IN_FRAME:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:
-									case KalturaEntryModerationStatus.AUTO_APPROVED:
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'liveStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
-							}
-							case SCHEDULING_BEFORE_FRAME:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:
-									case KalturaEntryModerationStatus.AUTO_APPROVED:
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'scheduledStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
-							}
-							case SCHEDULING_AFTER_FRAME:  {
-								switch (moderationStatus) {
-									case KalturaEntryModerationStatus.APPROVED:
-									case KalturaEntryModerationStatus.AUTO_APPROVED:
-									case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-										return resourceManager.getString('cms', 'finishedStatus');
-									}
-									case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-										return resourceManager.getString('cms', 'pendingStatus');
-									}
-									case KalturaEntryModerationStatus.REJECTED:  {
-										return resourceManager.getString('cms', 'rejectedStatus');
-									}
-								}
-								break;
-							}
-						}
-
 						break;
-					}
+					
+					case KalturaEntryStatus.READY:  
+						return getStatusForReadyEntry(entry);
+						break;
+					
 				}
 				return '';
+			}
+			
+			private function getStatusForReadyEntry(entry:KalturaBaseEntry):String {
+				var result:String = '';
+				var now:Date = new Date();
+				var time:int = now.time / 1000;
+				var schedulingType:int = 0;
+				
+				if (((entry.startDate == int.MIN_VALUE) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate <= time) && (entry.endDate >= time)) || ((entry.startDate < time) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate == int.MIN_VALUE) && (entry.endDate > time))) {
+					schedulingType = SCHEDULING_ALL_OR_IN_FRAME;
+				}
+				else if (entry.startDate > time) {
+					schedulingType = SCHEDULING_BEFORE_FRAME;
+				}
+				else if (entry.endDate < time) {
+					schedulingType = SCHEDULING_AFTER_FRAME;
+				}
+				
+				var moderationStatus:int = entry.moderationStatus;
+				
+				
+				switch (moderationStatus) {
+					case KalturaEntryModerationStatus.APPROVED:
+					case KalturaEntryModerationStatus.AUTO_APPROVED:
+					case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  
+						if (schedulingType == SCHEDULING_ALL_OR_IN_FRAME){
+							result = resourceManager.getString('cms', 'liveStatus');
+						}
+						else if (schedulingType == SCHEDULING_BEFORE_FRAME) {
+							result = resourceManager.getString('cms', 'scheduledStatus');
+						}
+						else if (schedulingType == SCHEDULING_AFTER_FRAME) {
+							result = resourceManager.getString('cms', 'finishedStatus');
+						}
+						break;
+					
+					case KalturaEntryModerationStatus.PENDING_MODERATION:  
+						result = resourceManager.getString('cms', 'pendingStatus');
+						break;
+					
+					case KalturaEntryModerationStatus.REJECTED:  
+						result = resourceManager.getString('cms', 'rejectedStatus');
+						break;
+					
+				}
+				
+				
+				//=====================================================
+				
+//				switch (schedulingType) {
+//					case SCHEDULING_ALL_OR_IN_FRAME:  
+//						switch (moderationStatus) {
+//							case KalturaEntryModerationStatus.APPROVED:
+//							case KalturaEntryModerationStatus.AUTO_APPROVED:
+//							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+//								return resourceManager.getString('cms', 'liveStatus');
+//							}
+//							case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+//								return resourceManager.getString('cms', 'pendingStatus');
+//							}
+//							case KalturaEntryModerationStatus.REJECTED:  {
+//								return resourceManager.getString('cms', 'rejectedStatus');
+//							}
+//						}
+//						break;
+//					
+//					case SCHEDULING_BEFORE_FRAME:  
+//						switch (moderationStatus) {
+//							case KalturaEntryModerationStatus.APPROVED:
+//							case KalturaEntryModerationStatus.AUTO_APPROVED:
+//							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+//								return resourceManager.getString('cms', 'scheduledStatus');
+//							}
+//							case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+//								return resourceManager.getString('cms', 'pendingStatus');
+//							}
+//							case KalturaEntryModerationStatus.REJECTED:  {
+//								return resourceManager.getString('cms', 'rejectedStatus');
+//							}
+//						}
+//						break;
+//					
+//					case SCHEDULING_AFTER_FRAME:  
+//						switch (moderationStatus) {
+//							case KalturaEntryModerationStatus.APPROVED:
+//							case KalturaEntryModerationStatus.AUTO_APPROVED:
+//							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+//								return resourceManager.getString('cms', 'finishedStatus');
+//							}
+//							case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+//								return resourceManager.getString('cms', 'pendingStatus');
+//							}
+//							case KalturaEntryModerationStatus.REJECTED:  {
+//								return resourceManager.getString('cms', 'rejectedStatus');
+//							}
+//						}
+//						break;
+//					
+//				}
+				return result;
 			}
 
 
@@ -694,8 +728,8 @@
 				dt.setTime(date * 1000);
 				return df.format(dt);
 			};
-			
-			
+
+
 			public function formatTime(offset:Number):String {
 				var df:DateFormatter = new DateFormatter();
 				df.formatString = resourceManager.getString('cms', 'h_m_s_ms');
@@ -752,8 +786,8 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, id);
 			}
-			
-			
+
+
 			public function getClipIntime(value:Object):String {
 				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
 				var result:String = '';
@@ -775,9 +809,10 @@
 			<mx:itemRenderer>
 				<mx:Component>
 					<mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
-						<mx:Image id="img" source="{data.thumbnailUrl+'/bgcolor/F7F7F7/type/2'}" ioError="{img.source = brokenImg}" width="40"
-								  height="30" maintainAspectRatio="true" horizontalAlign="center" verticalAlign="middle"
-								  horizontalCenter="0" verticalCenter="0" toolTip="{data.id}"/>
+						<mx:Image id="img" source="{data.thumbnailUrl+'/bgcolor/F7F7F7/type/2'}"
+								  ioError="{img.source = brokenImg}" width="40" height="30" maintainAspectRatio="true"
+								  horizontalAlign="center" verticalAlign="middle" horizontalCenter="0"
+								  verticalCenter="0" toolTip="{data.id}"/>
 					</mx:VBox>
 				</mx:Component>
 			</mx:itemRenderer>
@@ -785,7 +820,7 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" width="90"
 						   headerText="{resourceManager.getString('cms', 'idHeader')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.EntryIdIR"/>
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name" 
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
 						   headerText="{resourceManager.getString('cms', 'name')}">
 			<mx:itemRenderer>
 				<mx:Component>
@@ -825,7 +860,7 @@
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
-		
+
 		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('cms', 'type')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.MediaTypeRenderer"
 						   headerStyleName="centerTableColumnHeader"/>
@@ -875,9 +910,9 @@
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
-			
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" dataField="duration"
-						   headerText="{resourceManager.getString('cms', 'duration')}" >
+						   headerText="{resourceManager.getString('cms', 'duration')}">
 			<mx:itemRenderer>
 				<mx:Component>
 					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
