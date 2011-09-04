@@ -501,7 +501,7 @@
 				}
 				
 				// set appearance according to action
-				setWindowAppearance(_windowAction);
+				showOrClose(_windowAction);
 			}
 			
 			
@@ -509,7 +509,7 @@
 			 * set texts according to selected action
 			 * @param action	one of the AddFlavorAssetsWindow.ACTION_XX consts
 			 * */
-			private function setWindowAppearance(action:String) :void {
+			private function showOrClose(action:String) :void {
 				if (!cnvrtProfCb) {
 					// not creationComplete yet
 					return;
@@ -519,6 +519,7 @@
 					// entry's conversion profile has storageProfileId  
 					if (action == AddFlavorAssetsWindow.ACTION_LINK && windowState == AddFlavorAssetsWindow.SINGLE_FILE_STATE) {
 						if ((cnvrtProfCb.selectedItem as ConversionProfileWithFlavorParamsVo).profile.storageProfileId != int.MIN_VALUE) {
+							setSubmitText(action);
 							visible = true;
 						}
 						else {
@@ -529,6 +530,7 @@
 						}	
 					}
 					else {
+						setSubmitText(action);
 						visible = true;
 					}
 						
@@ -536,7 +538,20 @@
 					
 			}
 			
-			
+			private function setSubmitText(action:String):void {
+				switch (action){
+					case AddFlavorAssetsWindow.ACTION_LINK:
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitLinkLabel');
+						break;
+					case AddFlavorAssetsWindow.ACTION_IMPORT:
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitImportLabel');
+						break;
+					case AddFlavorAssetsWindow.ACTION_UPLOAD:
+						submitBtn.label = ResourceManager.getInstance().getString('cms', 'submitUploadLabel');
+						break;
+						
+				}
+			}
 			
 			protected function showStorageProfileDetails(event:ListEvent):void {
 				if (storageProfiles) {
@@ -581,7 +596,7 @@
 			 */
 			public function set windowAction(value:String):void {
 				_windowAction = value;
-				setWindowAppearance(value);
+				showOrClose(value);
 			}
 
 			/**
@@ -673,7 +688,6 @@
 			 visible="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"
 			 includeInLayout="{_windowAction == AddFlavorAssetsWindow.ACTION_LINK}"/>
 	<mx:ControlBar>
-		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true"
-				   label="{ResourceManager.getInstance().getString('cms', 'submitUploadLabel')}"/>
+		<mx:Button id="submitBtn" click="initSubmitSequence(event)" buttonMode="true" />
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
