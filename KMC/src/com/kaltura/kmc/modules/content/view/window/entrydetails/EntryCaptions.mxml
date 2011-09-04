@@ -15,6 +15,7 @@ Captions tab of EntryDetailsWin
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaCaptionAsset;
 			
+			import mx.events.ChildExistenceChangedEvent;
 			import mx.events.FlexEvent;
 			
 			public static const LANGUAGES_ARRAY:Array = new Array(
@@ -281,7 +282,9 @@ Captions tab of EntryDetailsWin
 			 * add a new empty Caption to captions VBox
 			 * */
 			private function addCaption():void {
-				captions.addChild(createCaption());
+				var c:Caption = createCaption();
+				c.addEventListener(FlexEvent.CREATION_COMPLETE, captionAddedHandler);
+				captions.addChild(c);
 			}
 			
 			/**
@@ -334,9 +337,15 @@ Captions tab of EntryDetailsWin
 				
 			}
 		
+
+			private function captionAddedHandler(event:Event):void {
+				event.target.removeEventListener(FlexEvent.CREATION_COMPLETE, captionAddedHandler);
+				captions.verticalScrollPosition = captions.measuredHeight;
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Text text="{resourceManager.getString('drilldown','captionsInfo')}" styleName="tipText"/>
-	<mx:VBox id="captions" styleName="profilesVBox" width="100%" height="{MAX_HEIGHT}"/>
+	<mx:VBox id="captions" styleName="profilesVBox" width="100%" height="{MAX_HEIGHT}" />
 	<mx:Button label="{resourceManager.getString('drilldown','addCaptions')}" click="addCaption()" visible="{editable}"/>
 </mx:VBox>
