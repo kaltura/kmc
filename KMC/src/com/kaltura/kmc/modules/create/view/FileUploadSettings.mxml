@@ -67,7 +67,7 @@
 					uf = new UploadFile();
 					uf.fr = fr;
 					uf.mediaType = getFileMediaType(fr);
-					uf.fileName = fr.name;
+					uf.fileName = removeFileExt(fr.name);
 					ar.push(uf);
 				}
 				if (addToExisting) {
@@ -75,6 +75,21 @@
 				}
 				else {
 					_files = new ArrayCollection(ar);
+				}
+			}
+			
+			/**
+			 * remove file extension from the given string, if exists
+			 * @param str	the string to truncate
+			 * @return 	truncated string
+			 * */
+			private function removeFileExt(str:String):String {
+				var ind:int = str.lastIndexOf(".");
+				if (ind > 0) {
+					return str.substring(0, ind);
+				}
+				else {
+					return str;
 				}
 			}
 			
