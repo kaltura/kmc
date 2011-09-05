@@ -54,6 +54,7 @@ package com.kaltura.kmc.modules.create
 		 * handle user files selection to upload
 		 * */
 		private function onFilesSelected(event:Event):void {
+//			trace("MultipleMediaFilesSelector.onFilesSelected");
 			_fileReferenceList.removeEventListener(Event.SELECT, onFilesSelected);
 			
 			dispatchEvent(new Event(FILES_SELECTED));
