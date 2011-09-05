@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="pack compiled files into the version folder" basedir="." default="build">
 	
-	<property name="KMC_VERSION" value="v4.2.12.3"/>
+	<property name="KMC_VERSION" value="v4.2.13"/>
 	
-	<property name="DEPLOY_DIR" value="../../${KMC_VERSION}"/>
+	<property name="PACK_DEPLOY_DIR" value="../../${KMC_VERSION}"/>
 	
-	<property name="SOURCE_DIR" value="../bin-debug"/>
+	<property name="PACK_SOURCE_DIR" value="../bin-debug"/>
 
 	
 	<target name="build" depends="clean, init, update_config, copy_assets, copy_locale, copy_modules, copy_xml">
@@ -17,62 +17,62 @@
 			<fileset dir="${SOURCE_DIR}" includes="**/*"/>
 		</copy-->
 		
-		<copy file="${SOURCE_DIR}/kmc.swf" 
-			tofile="${DEPLOY_DIR}/kmc.swf" />
+		<copy file="${PACK_SOURCE_DIR}/kmc.swf" 
+			tofile="${PACK_DEPLOY_DIR}/kmc.swf" />
 		
-		<copy file="${SOURCE_DIR}/framework_3.5.0.12683.swf" 
-			tofile="${DEPLOY_DIR}/framework_3.5.0.12683.swf" />
+		<copy file="${PACK_SOURCE_DIR}/framework_3.5.0.12683.swf" 
+			tofile="${PACK_DEPLOY_DIR}/framework_3.5.0.12683.swf" />
 		
-		<copy file="${SOURCE_DIR}/framework_3.5.0.12683.swz" 
-			tofile="${DEPLOY_DIR}/framework_3.5.0.12683.swz" />
+		<copy file="${PACK_SOURCE_DIR}/framework_3.5.0.12683.swz" 
+			tofile="${PACK_DEPLOY_DIR}/framework_3.5.0.12683.swz" />
 		
-		<copy file="${SOURCE_DIR}/../config/config.ini" 
-			tofile="${DEPLOY_DIR}/config.ini" />
+		<copy file="${PACK_SOURCE_DIR}/../config/config.ini" 
+			tofile="${PACK_DEPLOY_DIR}/config.ini" />
 		
     </target>
 	
 	<target name="update_config" description="update version numbers in config file" depends="copy_root">
-		<replace file="${DEPLOY_DIR}/config.ini" token="@@KMC_VERSION@@" value="${KMC_VERSION}"/>
+		<replace file="${PACK_DEPLOY_DIR}/config.ini" token="@@KMC_VERSION@@" value="${KMC_VERSION}"/>
 	</target>
 	
 	<target name="copy_assets" description="copy required files to the version assets directory">
-		<copy todir="${DEPLOY_DIR}/assets/flags">
-			<fileset dir="${SOURCE_DIR}/assets/flags" includes="**/*"/>
+		<copy todir="${PACK_DEPLOY_DIR}/assets/flags">
+			<fileset dir="${PACK_SOURCE_DIR}/assets/flags" includes="**/*"/>
 		</copy>
-		<copy file="${SOURCE_DIR}/workspaces/kmc/KMC/assets/kmc_skin.swf" 
-			tofile="${DEPLOY_DIR}/assets/kmc_skin.swf" />
+		<copy file="${PACK_SOURCE_DIR}/workspaces/kmc/KMC/assets/kmc_skin.swf" 
+			tofile="${PACK_DEPLOY_DIR}/assets/kmc_skin.swf" />
     </target>
 	
 	<target name="copy_locale" description="copy locale files to the version locale directory">
-		<copy todir="${DEPLOY_DIR}/locale">
-			<fileset dir="${SOURCE_DIR}/locale" includes="**/*"/>
+		<copy todir="${PACK_DEPLOY_DIR}/locale">
+			<fileset dir="${PACK_SOURCE_DIR}/locale" includes="**/*"/>
 		</copy>
     </target>
 	
 	<target name="copy_modules" description="copy compiled modules to the version modules directory">
-		<copy todir="${DEPLOY_DIR}/modules">
-			<fileset dir="${SOURCE_DIR}/modules" includes="**/*"/>
+		<copy todir="${PACK_DEPLOY_DIR}/modules">
+			<fileset dir="${PACK_SOURCE_DIR}/modules" includes="**/*"/>
 		</copy>
     </target>
 	
 	<target name="copy_xml" description="copy compiled modules to the version modules directory">
-		<copy todir="${DEPLOY_DIR}/xml">
-			<fileset dir="${SOURCE_DIR}/../config" includes="**/*.xml"/>
+		<copy todir="${PACK_DEPLOY_DIR}/xml">
+			<fileset dir="${PACK_SOURCE_DIR}/../config" includes="**/*.xml"/>
 		</copy>
     </target>
 
 	<target name="clean" description="delete old files">
 		<echo>Deleting old files</echo>
         <delete failonerror="false" includeemptydirs="true">
-            <fileset dir="${DEPLOY_DIR}" excludes="**/*.project,**/*.svn"/>
+            <fileset dir="${PACK_DEPLOY_DIR}" excludes="**/*.project,**/*.svn"/>
         </delete>
     </target>
 	
 	<target name="init">
-		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a root directory"/>
-		<mkdir dir="${DEPLOY_DIR}/assets" description="Make sure there is assets directory"/>
-		<mkdir dir="${DEPLOY_DIR}/locale" description="Make sure there is locale directory"/>
-		<mkdir dir="${DEPLOY_DIR}/modules" description="Make sure there is modules directory"/>
-		<mkdir dir="${DEPLOY_DIR}/xml" description="Make sure there is xml directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}" description="Make sure there is a root directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}/assets" description="Make sure there is assets directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}/locale" description="Make sure there is locale directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}/modules" description="Make sure there is modules directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}/xml" description="Make sure there is xml directory"/>
 	</target>
 </project>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<project name="KMC Compiler" basedir="." default="build">
+	
+	<!-- path to Flex SDK -->
+    <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4/sdks/3.5.0"/>
+	
+	<!-- directory for the compiled locale swf -->
+    <property name="DEPLOY_DIR" value="../bin-release"/>
+	
+	<!-- directory for the compiled locale swf -->
+    <property name="PACK_SOURCE_DIR" value="${DEPLOY_DIR}"/>
+	
+	<!-- include flex tasks -->
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+    
+	<target name="build" description="general build" depends="clean, init, compile_locales, compile, pack">
+		<echo>WOOHOO! KMC is ready!</echo>
+	</target>
+	
+	
+	<target name="create_keys_locale" description="set 'keys' locale files" >
+		<ant antfile="generateKeysLocaleSources.xml" target="build" /> 
+	</target>
+		
+	<target name="compile_locales" description="compile locale files" depends="create_keys_locale">
+		<ant antfile="compileLocale.xml" target="build">
+			<property name="LANGUAGE" value="en_US"/>
+		</ant> 
+		<!--ant antfile="compileLocale.xml" target="build">
+			<property name="LANGUAGE" value="keys"/>
+		</ant--> 
+	</target>
+	
+	<target name="compile" description="compile release build of KMC">
+		<fb.exportReleaseBuild project="KMC" /> 
+		<echo>KMC release build created</echo>
+	</target>
+			
+	<target name="pack" description="copy all version files to version folder">
+		<ant antfile="packVersion.xml" target="build" >
+			<property name="PACK_SOURCE_DIR" value="${DEPLOY_DIR}"/>
+		</ant>
+	</target>
+	
+	
+	<target name="clean" description="delete old files">
+        <delete failonerror="false">
+            <fileset dir="${DEPLOY_DIR}" includes="**/*"/>
+        </delete>
+    </target>
+	
+	
+	<target name="init">
+		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+	</target>
+	
+</project>
+

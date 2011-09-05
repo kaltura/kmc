@@ -2,13 +2,13 @@
 
 <project name="Generate Keys Sources" basedir="." default="build">
 	
-	<property name="DEPLOY_DIR" value="../locale/keys"/>
-	<property name="SOURCE_DIR" value="../locale/en_US"/>
+	<property name="KEYS_SOURCE_DEPLOY_DIR" value="../locale/keys"/>
+	<property name="KEYS_SOURCE_SOURCE_DIR" value="../locale/en_US"/>
 
 	
 	<target name="compile" description="compile the desired locale module">
 		<replaceregexp match="([^=]+)=(.*)" replace="\1= \1" byline="true" >
-			<fileset dir="${DEPLOY_DIR}" includes="**/*.properties"/>
+			<fileset dir="${KEYS_SOURCE_DEPLOY_DIR}" includes="**/*.properties"/>
 		</replaceregexp>
     </target>
 
@@ -21,15 +21,15 @@
 	<target name="clean" description="delete old file">
 		<echo>Deleting old sources</echo>
         <delete failonerror="false">
-            <fileset dir="${DEPLOY_DIR}" includes="**/*"/>
+            <fileset dir="${KEYS_SOURCE_DEPLOY_DIR}" includes="**/*"/>
         </delete>
     </target>
 	
 	
 	<target name="init">
-		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a directory"/>
-		<copy todir="${DEPLOY_DIR}">
-			<fileset dir="${SOURCE_DIR}" includes="**/*"/>
+		<mkdir dir="${KEYS_SOURCE_DEPLOY_DIR}" description="Make sure there is a directory"/>
+		<copy todir="${KEYS_SOURCE_DEPLOY_DIR}">
+			<fileset dir="${KEYS_SOURCE_SOURCE_DIR}" includes="**/*"/>
 		</copy>
 	</target>
 </project>

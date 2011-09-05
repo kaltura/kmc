@@ -8,8 +8,9 @@
 	<!-- path to Flex SDK -->
     <property name="FLEX_HOME" value="C:/Program Files/Adobe/Adobe Flash Builder 4/sdks/3.5.0"/>
 	
+	
 	<!-- directory for the compiled locale swf -->
-    <property name="DEPLOY_DIR" value="../html-template/locale/${LANGUAGE}"/>
+    <property name="LOCALE_DEPLOY_DIR" value="../html-template/locale"/>
 	
 	
 	
@@ -19,23 +20,23 @@
 
 	
 	<target name="compile" description="compile all locales">
-        <echo>Compiling all KMC locales:</echo>
+        <echo>Compiling all KMC locales..</echo>
         <echo>Compiling locale: KMC</echo>
-		<ant antfile="locale_kmc.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_kmc.xml" target="compile"/>
         <echo>Compiling locale: account</echo>
-		<ant antfile="locale_account.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_account.xml" target="compile"/>
         <echo>Compiling locale: admin</echo>
-		<ant antfile="locale_admin.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_admin.xml" target="compile"/>
         <echo>Compiling locale: analytics</echo>
-		<ant antfile="locale_analytics.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_analytics.xml" target="compile"/>
         <echo>Compiling locale: content</echo>
-		<ant antfile="locale_content.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_content.xml" target="compile"/>
         <echo>Compiling locale: dashboard</echo>
-		<ant antfile="locale_dashboard.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_dashboard.xml" target="compile"/>
         <echo>Compiling locale: studio</echo>
-		<ant antfile="locale_studio.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_studio.xml" target="compile"/>
         <echo>Compiling locale: create</echo>
-		<ant antfile="locale_create.xml" inheritAll="true" target="compile"/>
+		<ant antfile="locale_create.xml" target="compile"/>
     </target>
 
 		
@@ -47,14 +48,14 @@
 	<target name="clean" description="delete old file">
 		<echo>Deleting compiled files for locale ${LANGUAGE}</echo>
         <delete failonerror="false">
-            <fileset dir="${DEPLOY_DIR}" />
-			<!-- includes="${MODULE}_${LANGUAGE}_ResourceModule.swf" -->
+            <fileset dir="${LOCALE_DEPLOY_DIR}/${LANGUAGE}" />
         </delete>
     </target>
 	
 	
 	<target name="init">
-		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+		<echo>Creating directory ${LOCALE_DEPLOY_DIR}/${LANGUAGE}</echo>
+		<mkdir dir="${LOCALE_DEPLOY_DIR}/${LANGUAGE}" description="Make sure there is a bin directory"/>
 	</target>
 </project>
 

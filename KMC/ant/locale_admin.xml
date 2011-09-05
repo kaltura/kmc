@@ -22,7 +22,7 @@
 
 	
 	<target name="compile" description="compile the desired locale module">
-        <mxmlc output="${DEPLOY_DIR}/${MODULE}_${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
+        <mxmlc output="${LOCALE_DEPLOY_DIR}/${LANGUAGE}/${MODULE}_${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
 			
             <!-- Get default compiler options. -->
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
@@ -50,13 +50,13 @@
 	<target name="clean" description="delete old file">
 		<echo>Deleting ${MODULE}_${LANGUAGE}_ResourceModule.swf</echo>
         <delete failonerror="false">
-            <fileset dir="${DEPLOY_DIR}" includes="${MODULE}_${LANGUAGE}_ResourceModule.swf"/>
+            <fileset dir="${LOCALE_DEPLOY_DIR}/${LANGUAGE}" includes="${MODULE}_${LANGUAGE}_ResourceModule.swf"/>
         </delete>
     </target>
 	
 	
 	<target name="init">
-		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+		<mkdir dir="${LOCALE_DEPLOY_DIR}/${LANGUAGE}" description="Make sure there is a bin directory"/>
 	</target>
 </project>
 
