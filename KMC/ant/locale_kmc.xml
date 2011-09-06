@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<project name="Locale Compiler" basedir="." default="build">
+<project name="Locale Compiler" default="build">
 	
 	<!-- the module (folder name) for which we compile locale -->
     <property name="MODULE" value="kmc"/>
@@ -11,6 +11,7 @@
 
 	
 	<target name="compile" description="compile the desired locale module">
+		
 		<echo>base dir ${basedir}</echo>
         <mxmlc output="${LOCALE_DEPLOY_DIR}/${LANGUAGE}/${MODULE}_${LANGUAGE}_ResourceModule.swf" locale="${LANGUAGE}">
 			
@@ -18,11 +19,10 @@
             <load-config filename="${FLEX_HOME}/frameworks/flex-config.xml"/>
 
             <!-- List of path elements that form the roots of ActionScript class hierarchies. -->
-            <source-path path-element="../locale/{locale}"/>
+            <source-path path-element="${basedir}/locale/{locale}"/>
 
 			<!-- List of resource bundles to compile in the resourceModule -->
 			<include-resource-bundles>kmc</include-resource-bundles>
-
 
         </mxmlc>
 		<echo>${MODULE}_${LANGUAGE}_ResourceModule.swf compiled.</echo>
