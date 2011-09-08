@@ -15,10 +15,10 @@ package com.kaltura.kmc.modules.content.utils {
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaUiConf;
 	import com.kaltura.vo.MetadataFieldVO;
-
+	
 	import flash.display.DisplayObject;
 	import flash.utils.getDefinitionByName;
-
+	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.HBox;
@@ -47,7 +47,15 @@ package com.kaltura.kmc.modules.content.utils {
 
 		private var _metadataProfile:KMCMetadataProfileVO;
 		private var _metadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
-
+			
+		/**
+		 * map of objects that will be bound to others
+		 * */
+		private var _objectsHM:HashMap;
+		/**
+		 * Regular expressions that matches binding syntax
+		 * */
+		private static const BINDING_REGEXP:RegExp = /\{.*?\}/;
 
 		/**
 		 * The metadataProfile which according to it the builder will
@@ -88,6 +96,7 @@ package com.kaltura.kmc.modules.content.utils {
 		 */
 		public function FormBuilder(metadataProfile:KMCMetadataProfileVO) {
 			_metadataProfile = metadataProfile;
+			_objectsHM = new HashMap();
 		}
 
 
@@ -272,7 +281,6 @@ package com.kaltura.kmc.modules.content.utils {
 			_metadataProfile.viewXML = mxml;
 		}
 
-
 		/**
 		 * Builds the suitable component, according to its XML description
 		 * @param component the XML description of the component to build
@@ -304,15 +312,24 @@ package com.kaltura.kmc.modules.content.utils {
 					compInstance[attrName] = attrValue.split(",");
 				}
 				else {
-					compInstance.setStyle(attrName, attrValue); // try to set the property as a style
-					var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
-					// if the style value is null the propery is not a style
-					try {
-						compInstance[attrName] = processedValue;
+					//if the attribute should be bound to another component
+					if (BINDING_REGEXP.test(attrValue)) {
+						//remove brackets and split to object and property
+						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
+						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
-					catch (e:Error) {
-						//this case is ok, we have a few attributes that are only used for the building of the view
-						//trace("could not push", attrName, "=", attrValue, "to", compInstance);
+					else {
+						compInstance.setStyle(attrName, attrValue); // try to set the property as a style
+						var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
+						// if the style value is null the propery is not a style
+						try {
+							compInstance[attrName] = processedValue;
+						}
+						catch (e:Error) {
+							//this case is ok, we have a few attributes that are only used for the building of the view
+							//trace("could not push", attrName, "=", attrValue, "to", compInstance);
+						}
+						
 					}
 				}
 			}
@@ -355,6 +372,10 @@ package com.kaltura.kmc.modules.content.utils {
 				BindingUtils.bindProperty(boundModel, newProperty, compInstance, metadataProperty);
 			}
 
+			//if this object will be used for binding
+			if (component.@linkage) {
+				_objectsHM.put(component.@linkage, compInstance);	
+			}
 			return compInstance;
 		}
 
@@ -459,6 +480,8 @@ package com.kaltura.kmc.modules.content.utils {
 					spacer.height = FIELDS_GAP;
 					item.addChild(spacer);
 				}
+				BindingUtils.bindProperty(item, "visible", child, "visible");
+				BindingUtils.bindProperty(item, "includeInLayout", child, "visible");
 			}
 
 			return item;
