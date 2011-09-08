@@ -18,7 +18,7 @@ package com.kaltura.kmc.modules.content.commands.cuepoints
 		{
 //			http://devtests.kaltura.co.cc/api_v3/index.php/service/cuepoint_cuepoint/action/serveBulk/filter:entryIdEqual/0_sfdsfsf/pager:pageSize/1000/ks/NzU1Zm
 			var serveURL:String = "/api_v3/index.php/service/cuepoint_cuepoint/action/serveBulk";
-			var fp:String = "/filter:entryIdEqual/" + event.data + "/pager:pageSize/1000";
+			var fp:String = "/filter:entryIdEqual/" + event.data + "/filter:orderBy/+startTime/pager:pageSize/1000";
 			var filePath:String = _model.context.kc.protocol + _model.context.kc.domain + serveURL + fp + "/ks/" + _model.context.kc.ks;
 			var request:URLRequest = new URLRequest(filePath);
 			var fr:FileReference = new FileReference();
