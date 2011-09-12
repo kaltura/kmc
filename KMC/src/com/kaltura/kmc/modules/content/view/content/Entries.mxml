@@ -60,6 +60,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			 * */
 			public var showEmbed:Boolean = true;
 			
+			
 			[Bindable]
 			private var _listableVo:ListableVo;
 			
@@ -174,19 +175,29 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			}
 			
 			
+			/**
+			 * should thumbnails be shown in entries table
+			 * */
+			public function set showThumbnails(value:Boolean):void {
+				if (value) {
+					entryTable.returnThumbnailsColumn();
+				}
+			}
+			
+			
 			private function removeColums(event:Event):void {
-//				event.target.removeColumn(resourceManager.getString('cms', 'idHeader'));
-				event.target.removeColumn(resourceManager.getString('cms', 'rating'));
-				event.target.removeColumn(resourceManager.getString('cms', 'creator'));
-				event.target.removeColumn(resourceManager.getString('cms', 'playerLoads'));
-				event.target.removeColumn(resourceManager.getString('cms', 'flags'));
-				event.target.removeColumn(resourceManager.getString('cms', 'intime'));
-				//			event.target.removeColumn(resourceManager.getString('cms', 'duration'));
-				event.target.removeColumn(resourceManager.getString('cms', 'playlistType'));
-				//		event.target.removeColumn(resourceManager.getString('cms', 'preview'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'thumbnail')); // we always remove the thumbnail column
+//				entryTable.removeColumn(resourceManager.getString('cms', 'idHeader'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'rating'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'creator'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'playerLoads'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'flags'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'intime'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'duration'));
+				entryTable.removeColumn(resourceManager.getString('cms', 'playlistType'));
+//				entryTable.removeColumn(resourceManager.getString('cms', 'preview'));
 				
-				
-				event.target.updateDefaultSortColumn();
+				entryTable.updateDefaultSortColumn();
 				percentWidth = 100;
 				topContainer.percentWidth = 100;
 				entryTableContainer.percentWidth = 100;
@@ -196,7 +207,6 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				filterContainer.width = 245;
 				filter.percentWidth = 100;
 				validateNow();
-//				validateDisplayList()
 			}
 			
 			

@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules.content.commands
 			newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
 			newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
 			newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
+			newEntryDetailsModel.enableThumbResize = _model.entryDetailsModel.enableThumbResize;
 			// we open another drilldown, should add another model
 			_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 		}

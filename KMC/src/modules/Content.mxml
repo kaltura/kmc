@@ -642,6 +642,8 @@
 				newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
 				newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
 				newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
+				newEntryDetailsModel.enableThumbResize = _model.entryDetailsModel.enableThumbResize;
+				newEntryDetailsModel.enableThumbsList = _model.entryDetailsModel.enableThumbsList;
 				// we open another drilldown, should add another model
 				_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 				edw.loadRoughcuts = false;
@@ -1125,6 +1127,8 @@
 
 	<!-- the FrontController, containing Commands specific to this appliation -->
 	<control:CMSController/>
+	
+	<content:GeneralPermissionsSetter id="generalPermissions"/>
 
 	<!--<mx:Button click="button1_clickHandler(event)" />-->
 
@@ -1166,11 +1170,12 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" 
 					  change="initSelectedTab(event)" >
 			<content:Entries id="manage" height="100%" styleName="pageStyle"
-							 entryDetailsModel="{_model.entryDetailsModel}" 
+							 entryDetailsModel="{_model.entryDetailsModel}" showThumbnails="{_model.entryDetailsModel.enableThumbsList}"
 							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 							 windowState="{_model.windowState}"/>
 			<content:Moderation id="moderation" styleName="pageStyle" height="100%" 
+								showThumbnails="{_model.entryDetailsModel.enableThumbsList}"
 								context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
 								label="{ResourceManager.getInstance().getString('cms','moderation')}"
@@ -1193,5 +1198,4 @@
 
 		</mx:ViewStack>
 	</mx:VBox>
-	<content:GeneralPermissionsSetter id="generalPermissions"/>
 </modules:KmcModule>

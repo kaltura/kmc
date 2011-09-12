@@ -137,5 +137,23 @@ package com.kaltura.kmc.modules.content.view.content
 		public function get enableRemoteStorage():Boolean {
 			return true;
 		}
+		
+		public function set enableThumbResize(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, value);
+			cge.dispatch();
+		}
+		
+		public function get enableThumbResize():Boolean {
+			return true;
+		}
+		
+		public function set enableThumbsList(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ENABLE_THUMBS_LIST, value);
+			cge.dispatch();
+		}
+		
+		public function get enableThumbsList():Boolean {
+			return true;
+		}
 	}
 }

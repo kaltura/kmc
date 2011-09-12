@@ -62,6 +62,15 @@
 			public var isPlaylistEntries:Boolean = false;
 
 
+			/**
+			 * reference to the thumbnails column so we can add it back.
+			 * thumbnails column is by default non-existant, and if it is required
+			 * it is added. this is an ugly hack because of roles and permissions 
+			 * issue that requires it sometimes be shown (instead of sometimes be hidden).
+			 * */
+			private var _thumbnailsColumn:DataGridColumn;
+			
+			
 			private var _selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
@@ -287,7 +296,13 @@
 						return;
 					}
 				}
-				this.columns = arrCol.source;
+//				this.columns = arrCol.source;
+			}
+			
+			public function returnThumbnailsColumn():void {
+				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
+				arrCol.addItemAt(_thumbnailsColumn, 0);
+				columns = arrCol.source;
 			}
 
 
@@ -751,6 +766,30 @@
 				else
 					return "";
 			}
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				for (var i:int = 0; i < columns.length; ++i) {
+					if (columns[i].headerText == resourceManager.getString('cms', 'thumbnail')) {
+						_thumbnailsColumn = columns[i]; 
+						break;
+					}
+				}
+				PermissionManager.getInstance().applyAllAttributes(this, id);
+			}
+			
+			
+			public function getClipIntime(value:Object):String {
+				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
+				var result:String = '';
+				for each (var opatt:KalturaOperationAttributes in entry.operationAttributes) {
+					if (opatt is KalturaClipAttributes) {
+						result = formatTime((opatt as KalturaClipAttributes).offset);
+						break;
+					}
+				}
+				return result;
+			}
 
 
 			/**
@@ -780,25 +819,7 @@
 			}
 
 
-			/**
-			 * Roles and permission
-			 */
-			protected function creationCompleteHandler(event:FlexEvent):void {
-				PermissionManager.getInstance().applyAllAttributes(this, id);
-			}
-
-
-			public function getClipIntime(value:Object):String {
-				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
-				var result:String = '';
-				for each (var opatt:KalturaOperationAttributes in entry.operationAttributes) {
-					if (opatt is KalturaClipAttributes) {
-						result = formatTime((opatt as KalturaClipAttributes).offset);
-						break;
-					}
-				}
-				return result;
-			}
+			
 		]]>
 	</mx:Script>
 

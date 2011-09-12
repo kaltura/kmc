@@ -181,6 +181,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_UPDATE_CUSTOM_DATA, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_REMOTE_STORAGE, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_ENABLE_THUMBS_LIST, ChangeModelValueCommand);
 
 			// drop folder stuff
 			addCommand(DropFolderEvent.LIST_FOLDERS, ListDropFolders);

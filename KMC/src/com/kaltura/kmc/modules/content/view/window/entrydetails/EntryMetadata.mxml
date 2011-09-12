@@ -123,7 +123,7 @@
 			
 			
 			/**
-			 * for trip / clip buttons, decide if the button should be
+			 * for trim / clip buttons, decide if the button should be
 			 * enabled according to whether entry has source flavor.
 			 * @param flavors	the list of flavors associated with this entry
 			 * @return whether the button should be enabled or not
@@ -394,10 +394,17 @@
 				_entryImg.maintainAspectRatio = true;
 				_entryImg.setStyle("horizontalAlign", "center");
 				_entryImg.setStyle("verticalAlign", "middle");
-				if (imgSource)
+				if (imgSource) {
 					_entryImg.source = imgSource;
-				else
-					_entryImg.source = selectedEntry.thumbnailUrl + "/width/240/height/180/bgcolor/F7F7F7/type/2";
+				}
+				else {
+					if (entryDetailsModel.enableThumbResize) {
+						_entryImg.source = selectedEntry.thumbnailUrl + "/width/240/height/180/bgcolor/F7F7F7/type/2";
+					}
+					else {
+						_entryImg.source = selectedEntry.thumbnailUrl;
+					}
+				}
 				kdpContainer.addChildAt(_entryImg, 0);
 			}
 

@@ -16,6 +16,10 @@ package com.kaltura.kmc.modules.content.events
 		public static const SET_PLAYLIST_EMBED_STATUS : String = "playlist_setEmbedStatus";
 		
 		public static const SET_REMOTE_STORAGE : String = "content_setRemoteStorage";
+
+		public static const SET_ENABLE_THUMB_RESIZE : String = "content_setDisableThumbResize";
+
+		public static const SET_ENABLE_THUMBS_LIST : String = "content_SET_ENABLE_THUMBS_LIST";
 		
 		private var _newValue:*;
 		
