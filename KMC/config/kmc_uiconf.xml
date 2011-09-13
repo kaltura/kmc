@@ -30,7 +30,17 @@
 		<module id="add" displayName="Upload" subtab="" kmcFunction="addCode.togglePanel"/>
 	</modules>
 	<plugins>
+		<!-- all attributes on the plugin node are passed to the plugin as vars (plugin[att] = plugin.@att) -->
 		<plugin id="addCode" path="modules/AddEntryPanel.swf" dependencies="add"
-				samplesUrl="/content/docs/kaltura_batch_upload_eagle.zip"/>
+				samplesUrl="/content/docs/kaltura_batch_upload_eagle.zip">
+			<!-- hierarchical data can be passed in the "config" node (plugin["config"] = plugin.config[0]). 
+				This is better than loading extra uiconfs, if not really necessary -->
+			<config>
+				<!-- "name" is first searched in locale, and if not available shown as is -->
+				<filter name="video_files" ext="*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v"/>
+				<filter name="audio_files" ext="*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav"/>
+				<filter name="image_files" ext="*.jpg;*.jpeg;*.gif;*.png"/>
+			</config>
+		</plugin>
 	</plugins>
 </root>

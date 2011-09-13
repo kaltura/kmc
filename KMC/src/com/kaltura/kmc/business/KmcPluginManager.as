@@ -120,6 +120,10 @@ package com.kaltura.kmc.business
 					plugin[att] = atts[i].toString();
 				}
 			}
+			// pass the config node if exists
+			if (pluginInfo.config.length() > 0) {
+				plugin["config"] = pluginInfo.config[0]; 
+			}
 			
 			for (var event:String in _eventHandlers) {
 				plugin.addEventListener(event, _eventHandlers[event]);

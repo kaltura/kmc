@@ -57,6 +57,12 @@
 			[Bindable][ArrayElementType("UploadFile")]
 			private var _files:ArrayCollection;
 			
+			
+			/**
+			 * XMLList that describes the filters that has to be shown for file selection
+			 * */
+			public var filterDefinitions:XMLList;
+			
 			/**
 			 * files to be uploaded 
 			 * */
@@ -168,7 +174,7 @@
 			 * open the file browser 
 			 * */
 			protected function addMoreFiles():void {
-				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector();
+				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector(filterDefinitions);
 				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, addFilesToList);
 				neu.doFileUpload();
 			}

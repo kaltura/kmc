@@ -12,9 +12,9 @@ package com.kaltura.kmc.modules.create
 
 	public class MultipleMediaFilesSelector extends EventDispatcher {
 		
-		public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
-		public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
-		public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
+//		public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
+//		public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
+//		public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
 		
 		public static const FILES_SELECTED:String = "filesSelected";
 		
@@ -23,9 +23,13 @@ package com.kaltura.kmc.modules.create
 		 * */
 		private var _fileReferenceList:FileReferenceList;
 		
+		/**
+		 * XMLList that describes the filters that has to be shown for file selection
+		 * */
+		private var _filterDefinitions:XMLList;
 		
-		public function MultipleMediaFilesSelector() {
-			
+		public function MultipleMediaFilesSelector(filters:XMLList) {
+			_filterDefinitions = filters;
 		}
 		
 		
@@ -43,11 +47,26 @@ package com.kaltura.kmc.modules.create
 		 * */
 		private function getFileFilters():Array {
 			var rm:IResourceManager = ResourceManager.getInstance();
-			var	vidFilter:FileFilter = new FileFilter(rm.getString('create', 'video_files') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
-			var	audFilter:FileFilter = new FileFilter(rm.getString('create', 'audio_files') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
-			var	imgFilter:FileFilter = new FileFilter(rm.getString('create', 'image_files') + "(" + IMAGE_TYPES + ")", IMAGE_TYPES);
+			var result:Array = [];
+			var ff:FileFilter;
+			var fName:String;
+			for each (var filter:XML in _filterDefinitions) {
+				// seek name in locale, or use as is.
+				fName = rm.getString('create', filter.@name);
+				if (!fName) {
+					fName = filter.@name;
+				}
+				// create the filter:
+				ff = new FileFilter(fName + "(" + filter.@ext + ")", filter.@ext);
+				result.push(ff);
+			}
 			
-			return [vidFilter, audFilter, imgFilter];
+			return result;
+//			var	vidFilter:FileFilter = new FileFilter(rm.getString('create', 'video_files') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
+//			var	audFilter:FileFilter = new FileFilter(rm.getString('create', 'audio_files') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
+//			var	imgFilter:FileFilter = new FileFilter(rm.getString('create', 'image_files') + "(" + IMAGE_TYPES + ")", IMAGE_TYPES);
+//			
+//			return [vidFilter, audFilter, imgFilter];
 		}
 		
 		/**
