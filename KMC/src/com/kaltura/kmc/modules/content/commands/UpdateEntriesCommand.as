@@ -36,9 +36,24 @@ package com.kaltura.kmc.modules.content.commands {
 	 * */
 	public class UpdateEntriesCommand extends KalturaCommand implements ICommand, IResponder {
 
+		/**
+		 * the updated entries.
+		 * */
 		private var _entries:ArrayCollection;
+
+		/**
+		 * are the entries being updated playlist entries
+		 * */
 		private var _isPlaylist:Boolean;
+
+		/**
+		 * should the drilldown window be closed after the update is processed
+		 * */
 		private var _closeDrilldown:Boolean;
+
+		/**
+		 * will another entry be shown after the update is complete (prev/next paging)
+		 * */
 		private var _displayNextEntry:Boolean;
 
 
@@ -46,26 +61,24 @@ package com.kaltura.kmc.modules.content.commands {
 			var e:EntriesEvent = event as EntriesEvent;
 			_closeDrilldown = e.closeWindow;
 			_displayNextEntry = e.displayNextEntry;
+			_entries = e.entries;
 			if (e.entries.length > 50) {
-				_entries = e.entries;
-
 				Alert.show(ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesMsgPart1') +
 					' ' + _entries.length + ' ' +
 					ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesMsgPart2'),
-															ResourceManager.getInstance().getString('cms',
-																									'updateLotsOfEntriesTitle'),
-															Alert.YES | Alert.NO, null, responesFnc);
+					ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesTitle'),
+					Alert.YES | Alert.NO, null, responesFnc);
 
 			}
-			else // for small update
-			{
+			// for small update
+			else {
 				_model.increaseLoadCounter();
 				var mr:MultiRequest = new MultiRequest();
 				for (var i:uint = 0; i < e.entries.length; i++) {
 					var keepId:String = (e.entries[i] as KalturaBaseEntry).id;
 					//update custom data
 					if (_model.entryDetailsModel.enableUpdateMetadata && !(e.entries[i] is KalturaPlaylist) && _model.entryDetailsModel.metadataInfoArray) {
-						for (var j:int = 0; j< _model.entryDetailsModel.metadataInfoArray.length; j++) {
+						for (var j:int = 0; j < _model.entryDetailsModel.metadataInfoArray.length; j++) {
 							var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfoArray[j] as EntryMetadataDataVO;
 							var profile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[j] as KMCMetadataProfileVO;
 							if (metadataInfo && profile && profile.profile) {
@@ -88,23 +101,24 @@ package com.kaltura.kmc.modules.content.commands {
 								}
 							}
 						}
-						
+
 					}
-							
+
 					// only send conversionProfileId if the entry is in no_content status
 					if (e.entries[i].status != KalturaEntryStatus.NO_CONTENT) {
 						e.entries[i].conversionProfileId = int.MIN_VALUE;
 					}
+					
+					//handle playlist items
 					if (e.entries[i] is KalturaPlaylist) {
-						//handle playlist items
 						_isPlaylist = true;
 						var plE:KalturaPlaylist = e.entries[i] as KalturaPlaylist;
 						plE.setUpdatedFieldsOnly(true);
 						var updatePlEntry:PlaylistUpdate = new PlaylistUpdate(keepId, plE);
 						mr.addAction(updatePlEntry);
 					}
+					//handle live stream
 					else if (e.entries[i] is KalturaLiveStreamAdminEntry) {
-						//handle live stream
 						//TODO - atar - why do wee need this?
 						var kle:KalturaLiveStreamAdminEntry = e.entries[i] as KalturaLiveStreamAdminEntry;
 						kle.setUpdatedFieldsOnly(true);
@@ -114,32 +128,26 @@ package com.kaltura.kmc.modules.content.commands {
 					else {
 						var be:KalturaBaseEntry = e.entries[i] as KalturaBaseEntry;
 						be.setUpdatedFieldsOnly(true);
-						if(be is KalturaMixEntry)
+						if (be is KalturaMixEntry)
 							(be as KalturaMixEntry).dataContent = null;
 						var updateEntry1:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry1);
 					}
-					
-
 				}
-				
+
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
-				//update categories
+				
+				// update categories contents
 				var updateCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				updateCategoriesEvent.dispatch();
-				//reload changeble data
-				/*if (!_closeDrilldown && !_displayNextEntry) {
-					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST)
-					listCustomData.dispatch();
-				}*/
 			}
 		}
 
-		
+
 		/**
-		 * alert window closed 
+		 * alert window closed
 		 * */
 		private function responesFnc(event:CloseEvent):void {
 			if (event.detail == Alert.YES) {
@@ -176,11 +184,10 @@ package com.kaltura.kmc.modules.content.commands {
 			else {
 				// announce no update:
 				Alert.show(ResourceManager.getInstance().getString('cms', 'noUpdateMadeMsg'),
-																   ResourceManager.getInstance().getString('cms',
-																										   'noUpdateMadeTitle'));
+					ResourceManager.getInstance().getString('cms', 'noUpdateMadeTitle'));
 			}
 		}
-		
+
 
 		/**
 		 * load success handler
@@ -197,35 +204,42 @@ package com.kaltura.kmc.modules.content.commands {
 					}
 					else if ((data.data as Array)[i].hasOwnProperty("error")) {
 						Alert.show((data.data as Array)[i].error.message, ResourceManager.getInstance().getString('cms', 'error'));
-					} 
+					}
 				}
 			}
-			
+
 			// refresh playlists list
 			if (_isPlaylist) {
 				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
+				return;
 			}
-				// only re-load entries if this is the only popup and will be closed
+			// only re-load entries if this is the only popup and will be closed
 			else if (_model.popups.length == 1) {
 				if (!_closeDrilldown)
 					_model.refreshEntriesRequired = true;
 				else {
 					searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
 					searchEvent.dispatch();
-					var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-					categoriesEvent.dispatch();
 				}
 			}
 			if (_closeDrilldown) {
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
 				cgEvent.dispatch();
 			}
-			else if (!_displayNextEntry){//refresh selected entry
-				var entriesArr:Array = data.data as Array;
-				//selected entry is the last updated
-				_model.entryDetailsModel.selectedEntry = entriesArr[entriesArr.length - 1] as KalturaBaseEntry;
-			} 
+			else if (!_displayNextEntry) {
+				if (_model.popups.length > 0) {
+					// "save" clicked, refresh selected entry
+					var entriesArr:Array = data.data as Array;
+					// selected entry is the last updated
+					_model.entryDetailsModel.selectedEntry = entriesArr[entriesArr.length - 1] as KalturaBaseEntry;
+				}
+				else {
+					// update categories, list entries again.
+					searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
+					searchEvent.dispatch();
+				}
+			}
 			_model.decreaseLoadCounter();
 		}
 
