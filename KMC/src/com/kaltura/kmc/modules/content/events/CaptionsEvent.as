@@ -9,7 +9,11 @@ package com.kaltura.kmc.modules.content.events
 	public class CaptionsEvent extends CairngormEvent
 	{
 		public static const LIST_CAPTIONS:String = "listCaptions";
-		public static const SAVE_ALL:String = "saveAll";
+		public static const SAVE_ALL:String = "saveAllCaptions";
+		
+		/**
+		 * get the captionAsset, if its status=ready ask for the updated donwload URL
+		 * */
 		public static const UPDATE_CAPTION:String = "updateCaption";
 		
 		

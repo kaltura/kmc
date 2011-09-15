@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.captionsComponents.CaptionsTable;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			import com.kaltura.types.KalturaCaptionType;
+			
+			import mx.events.ListEvent;
+			import mx.resources.ResourceManager;
+			
+			[Bindable]
+			private static var captionTypes:Array = [
+				{label:ResourceManager.getInstance().getString('drilldown','srtLabel') , value:KalturaCaptionType.SRT},
+				{label:ResourceManager.getInstance().getString('drilldown','dfxpLabel'), value:KalturaCaptionType.DFXP}];
+			
+			
+//			override public function set data(value:Object):void {
+//				super.data = value;
+//				var vo:EntryCaptionVO = value as EntryCaptionVO; 
+//				// cb enabled if caption doesn't already exist and user is allowed to edit 
+//				typeCB.enabled = vo.caption.id ? false : true;
+//				typeCB.enabled &&= EntryCaptionVO.editable;
+//			}
+			
+			/**
+			 * get the index of the required value in the captionTypes array
+			 * */
+			private function getFormatIndex(value:Object):int {
+				var enum:String = value.caption.format;
+				for (var i:int = 0; i<captionTypes.length; i++) {
+					if (enum == captionTypes[i].value) {
+						return i;
+					}
+				}
+				return 0; // default value is SRT
+			}
+
+			protected function typeCB_changeHandler(event:ListEvent):void
+			{
+				dispatchEvent(new Event(CaptionsTable.TYPE_CHANGED, true));
+			}
+			
+			public function getValue():String {
+				return typeCB.selectedItem.value;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:ComboBox id="typeCB" dataProvider="{captionTypes}" width="90%" 
+				 selectedIndex="{getFormatIndex(data)}" change="typeCB_changeHandler(event)"
+				 enabled="{EntryCaptionVO.editable &amp;&amp; !(data.caption.id)}"/>
+</mx:VBox>

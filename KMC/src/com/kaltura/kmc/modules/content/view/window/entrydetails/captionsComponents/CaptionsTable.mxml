@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		[Event(name="captionRemoved", type="com.kaltura.kmc.modules.content.events.GeneralNonCairngormEvent")]
+		[Event(name="changeDefault", type="com.kaltura.kmc.modules.content.events.GeneralNonCairngormEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CaptionsEvent;
+			import com.kaltura.kmc.modules.content.events.GeneralNonCairngormEvent;
+			import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.ActionsRenderer;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.FileTypeRenderer;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LabelRenderer;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LanguageRenderer;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LocationRenderer;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			import com.kaltura.types.KalturaCaptionType;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+
+
+			/*
+			 * Events dispatched from renderers
+			 */
+			public static const LOCATION_CHANGED:String = 'captionLocationChanged';
+			public static const TYPE_CHANGED:String = 'captionTypeChanged';
+			public static const LANGUAGE_CHANGED:String = 'captionLanguageChanged';
+			public static const LABEL_CHANGED:String = 'captionLabelChanged';
+			public static const ACTION_DOWNLOAD:String = 'actionDownload';
+			public static const ACTION_UPLOAD:String = 'actionUpload';
+			public static const ACTION_SET_DEFAULT:String = 'actionSetDefault';
+			public static const ACTION_REMOVE:String = 'actionRemove';
+			
+			
+			/*
+			 * Events the table dispatches
+			 */
+			public static const CAPTION_REMOVED:String = "captionRemoved";
+			public static const CHANGE_DEFAULT:String = "changeDefault";
+
+
+			/*
+			 * captions files extensions
+			 * */
+			public static const XML_EXT:String = "*.xml";
+			public static const SRT_EXT:String = "*.srt";
+
+
+
+			/**
+			 * file reference object used to upload new files
+			 * */
+			private var _uploadFR:FileReference;
+			
+			/**
+			 * when uploading caption file, the caption vo being edited
+			 * */
+			private var _activeCaption:EntryCaptionVO;
+
+
+			/**
+			 * add listeners to all renderers events
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				// data changed listeners
+				addEventListener(LOCATION_CHANGED, handleDataChanged);
+				addEventListener(TYPE_CHANGED, handleDataChanged);
+				addEventListener(LANGUAGE_CHANGED, handleDataChanged);
+				addEventListener(LABEL_CHANGED, handleDataChanged);
+
+				// actions listeners
+				addEventListener(ACTION_DOWNLOAD, handleAction);
+				addEventListener(ACTION_UPLOAD, handleAction);
+				addEventListener(ACTION_SET_DEFAULT, handleAction);
+				addEventListener(ACTION_REMOVE, handleAction);
+
+			}
+
+
+			/**
+			 * handle selected action
+			 * */
+			private function handleAction(e:Event):void {
+				var vo:EntryCaptionVO = e.target.data as EntryCaptionVO;
+				switch (e.type) {
+					case ACTION_DOWNLOAD:
+						download(vo);
+						break;
+					case ACTION_UPLOAD:
+						browse(vo);
+						break;
+					case ACTION_SET_DEFAULT:
+						setAsDefault(e.target, vo);
+						break;
+					case ACTION_REMOVE:
+						remove(vo);
+						break;
+				}
+			}
+
+
+			/**
+			 * update relevant vo with changed data
+			 * */
+			private function handleDataChanged(e:Event):void {
+				var vo:EntryCaptionVO = e.target.data as EntryCaptionVO;
+				switch (e.type) {
+					case LOCATION_CHANGED:
+						vo.resourceUrl = (e.target as LocationRenderer).getValue();
+						break;
+					case TYPE_CHANGED:
+						vo.caption.format = (e.target as FileTypeRenderer).getValue();
+						break;
+					case LANGUAGE_CHANGED:
+						vo.caption.language = (e.target as LanguageRenderer).getValue();
+						break;
+					case LABEL_CHANGED:
+						vo.caption.label = (e.target as LabelRenderer).getValue();
+						break;
+				}
+				vo.isChanged = true;
+			}
+
+
+			/**
+			 * save caption file to disk
+			 * @param caption 	the vo which represents the required caption
+			 * */
+			protected function download(caption:EntryCaptionVO):void {
+				var urlRequest:URLRequest = new URLRequest(caption.serveUrl);
+				var fileName:String = caption.caption.id;
+				if (caption.caption.format == KalturaCaptionType.SRT) {
+					fileName += '.srt';
+				}
+				else if (caption.caption.format == KalturaCaptionType.DFXP){
+					fileName += '.xml';
+				}
+				var fr:FileReference = new FileReference();
+				fr.download(urlRequest, fileName);
+			}
+
+
+			/**
+			 * remove a single caption
+			 * @param caption 	the vo which represents the required caption
+			 * */
+			protected function remove(caption:EntryCaptionVO):void {
+				// remove the caption from the data provider so it won't show in ui
+				var ar:ArrayCollection = dataProvider as ArrayCollection;
+				for (var i:int = 0; i< ar.length; i++) {
+					if (ar.getItemAt(i) == caption) {
+						ar.removeItemAt(i);
+						break;
+					}
+				}
+					
+				// tell the panel to remember to remove it on save.
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CAPTION_REMOVED, true);
+				e.data = caption; 
+				dispatchEvent(e);
+			}
+
+
+			protected function setAsDefault(ir:Object, caption:EntryCaptionVO):void {
+				// update ui
+				for each (var vo:EntryCaptionVO in dataProvider) {
+					vo.isKmcDefault = false;
+				}
+				caption.isKmcDefault = true;
+				
+				// tell the panel to set it as default on save.
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CHANGE_DEFAULT, true);
+				e.data = caption; 
+				dispatchEvent(e);
+			}
+
+
+			/**
+			 * open file selection window with captions file types
+			 * */
+			protected function browse(caption:EntryCaptionVO):void {
+				_uploadFR = new FileReference();
+				_uploadFR.addEventListener(Event.SELECT, onFileSelected);
+				var fileTypes:String;
+				if (caption.caption.id) {
+					// caption was already saved in server, it's format can't change
+					if (caption.caption.format == KalturaCaptionType.SRT)
+						fileTypes = SRT_EXT;
+					else
+						fileTypes = XML_EXT;
+				}
+				else {
+					// new caption - allow both types
+					fileTypes = SRT_EXT + ';' + XML_EXT;
+				}
+				
+				_activeCaption = caption;
+				_uploadFR.browse([new FileFilter(resourceManager.getString('drilldown', 'files') + ' (' + fileTypes + ')', fileTypes)]);
+			}
+
+
+			/**
+			 * set the format according to the selected file and start upload process
+			 * */
+			private function onFileSelected(event:Event):void {
+				_uploadFR.removeEventListener(Event.SELECT, onFileSelected);
+				// set file type dropdown according to file extension
+				var fileExtension:String = _uploadFR.name.substring(_uploadFR.name.lastIndexOf('.') + 1, _uploadFR.name.length);
+				if (fileExtension.toLowerCase() == 'xml') {
+					_activeCaption.caption.format = KalturaCaptionType.DFXP;
+				}
+				else {
+					_activeCaption.caption.format = KalturaCaptionType.SRT;
+				}
+				_activeCaption.caption.fileExt = fileExtension.toLowerCase();
+
+				// upload the file
+				var uploadFile:UploadTokenEvent = new UploadTokenEvent(UploadTokenEvent.UPLOAD_TOKEN, _uploadFR, _activeCaption);
+				uploadFile.fileReference.addEventListener(Event.COMPLETE, onUploadComplete);
+				uploadFile.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				uploadFile.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+				uploadFile.dispatch();
+				
+				// update kmc status
+				_activeCaption.kmcStatus = EntryCaptionVO.UPLOADING;
+				
+				// reset downloadUrl, in case there was a previous file.
+				_activeCaption.downloadUrl = null;
+
+			}
+			
+			private function onUploadComplete(event:Event):void {
+				// clear listeners
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onUploadComplete);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+				
+				if (_activeCaption.caption.id) {
+					// get updated object from the server
+					var update:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPDATE_CAPTION);
+					update.captionVo = _activeCaption;
+					update.dispatch();
+					
+					// update kmc status
+					_activeCaption.kmcStatus = EntryCaptionVO.PROCESSING;
+				}
+				else {
+					// remember to save new object
+					_activeCaption.isNewUploaded = true;
+					_activeCaption.isChanged = true;
+					// update kmc status
+					_activeCaption.kmcStatus = EntryCaptionVO.READY_FOR_SAVE;
+				}
+			}
+			
+			private function onUploadError(event:Event):void {
+				// clear listeners
+				(event.target as FileReference).removeEventListener(Event.COMPLETE, onUploadComplete);
+				(event.target as FileReference).removeEventListener(IOErrorEvent.IO_ERROR, onUploadError);
+				(event.target as FileReference).removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
+				
+				// update kmc status
+				_activeCaption.kmcStatus = EntryCaptionVO.ERROR;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:columns>
+		<mx:DataGridColumn id="location" headerText="{resourceManager.getString('drilldown','captionUrl')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LocationRenderer"/>
+		<mx:DataGridColumn id="fileType" headerText="{resourceManager.getString('drilldown','captionType')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.FileTypeRenderer"/>
+		<mx:DataGridColumn id="language" headerText="{resourceManager.getString('drilldown','captionLanguage')}" width="168"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LanguageRenderer"/>
+		<mx:DataGridColumn id="fileLabel" headerText="{resourceManager.getString('drilldown','captionLanguageLabel')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.LabelRenderer"/>
+		<mx:DataGridColumn id="status" headerText="{resourceManager.getString('drilldown','captionStatus')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.StatusRenderer"/>
+		<mx:DataGridColumn id="actions" headerText="{resourceManager.getString('drilldown','captionActions')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.captions.ActionsRenderer"/>
+	</mx:columns>
+</mx:DataGrid>
