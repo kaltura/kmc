@@ -153,6 +153,8 @@
 			 * */
 			private var _playheadPosition:Number;
 
+			private var _doValidation:Boolean = false;
+			
 
 			/**
 			 * trace the error instead of crashing the browser
@@ -195,6 +197,7 @@
 
 
 			public function initData():void {
+				_doValidation = false;
 				_selectedCuePoint = null;
 				_formEnabled = false;
 				// reset number of cuepoints
@@ -337,6 +340,9 @@
 				}
 				cbType.selectedIndex = getAdType(_selectedCuePoint);
 				cbProvider.selectedItem = getAdProvider(_selectedCuePoint);
+				if (_doValidation) {
+					validateCuePoint(_selectedCuePoint, true);
+				}
 			}
 
 
@@ -707,6 +713,7 @@
 					_kClip["setError"](!cpresult, cp.id);
 					ret &&= cpresult;
 				}
+				_doValidation = true;
 				return ret;
 			}
 
@@ -716,30 +723,54 @@
 			 * @param cp	cuepoint to test
 			 * @return true if validation passed, false otherwise.
 			 * */
-			private function validateCuePoint(cp:KalturaAdCuePoint):Boolean {
+			private function validateCuePoint(cp:KalturaAdCuePoint, showUI:Boolean = false):Boolean {
+				var result:Boolean = true;
 				// ad type - must have value
 				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
-					trace("cpid:", cp.id, "no adType selected");
-					return false;
+//					trace("cpid:", cp.id, "no adType selected");
+					if (showUI) {
+						cbType.errorString = "no adType selected";
+					}
+					result = false;
+				}
+				else if (showUI) {
+					cbType.errorString = "";
 				}
 				// duration
 				if (cp.adType == KalturaAdType.OVERLAY) {
 					if (cp.endTime < cp.startTime) {
-						trace("cpid:", cp.id, "endTime before startTime");
-						return false;
+//						trace("cpid:", cp.id, "endTime before startTime");
+						if (showUI) {
+							teDuration.errorString = "endTime before startTime";
+						}
+						result &&= false;
 					}
-
-					if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration * 1000) {
-						trace("cpid:", cp.id, "endTime after entry.duration");
-						return false;
+					else if (cp.endTime > (selectedEntry as KalturaMediaEntry).duration * 1000) {
+//						trace("cpid:", cp.id, "endTime after entry.duration");
+						if (showUI) {
+							teDuration.errorString = "endTime after entry.duration";
+						}
+						result &&= false;
 					}
+					else if (showUI) {
+						teDuration.errorString = "";
+					}
+				}
+				else if (showUI) {
+					teDuration.errorString = "";
 				}
 				// for vast - url is mandatory
 				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
-					trace("cpid:", cp.id, "vast, no sourceUrl");
-					return false;
+//					trace("cpid:", cp.id, "vast, no sourceUrl");
+					if (showUI) {
+						tiUrl.errorString = "vast, no sourceUrl";
+					}
+					result &&= false;
 				}
-				return true;
+				else if (showUI) {
+					tiUrl.errorString = "";
+				}
+				return result;
 			}
 
 
