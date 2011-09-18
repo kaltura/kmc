@@ -204,7 +204,8 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		
 		
 		/**
-		 * delete all features that are not active at all for the given player (feature selected=false)
+		 * delete all features that are not active at all for the given player 
+		 * (not selected from the main accordion screen, feature selected=false)
 		 * @param player	player data
 		 * @return 		same player data without the nonactive features
 		 */		
@@ -222,7 +223,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					var nameOfFeatureToDelete:String = featureToDelete.attribute("id").toString();
 					delete(player.descendants().(attribute("id") == nameOfFeatureToDelete)[0]);
 				}
-				// KDP 3 feature. If a special feature has a plugin - remove it from the UI xml
+				// if a special feature has a plugin - remove it from the UI xml
 				if (featureFormXml.attribute("pluginId").length()) {
 					var nameOfPluginToDelete:String = featureFormXml.attribute("pluginId")[0].toString();
 					delete(player.descendants().(attribute("id") == nameOfPluginToDelete)[0]);
@@ -263,6 +264,11 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			
 			// setting k_param. a general kapram that is defined as changable 
 			for each (featureXml in activeFeatures) {
+				// skip radio buttons, they are there for the ui and their relevant valueis taken from their group
+				if (featureXml.localName() == "RadioButton") {
+					continue;
+				}
+				
 				activeFeatureName = featureXml.attribute("id")[0].toString();
 				// first take only the ones that have no "applyTo" and put values on feature element
 				
@@ -273,7 +279,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				
 				for each (element in playerElements) {
 					for each (param in attributesToUpdate) {
-						// save data to the snapshot :
+						// save data to the player :
 						attributeToWrite = param.attribute("k_param").toString();
 						attributeValue = param.attribute("k_value").toString();
 						element.attribute(attributeToWrite)[0] = attributeValue;
@@ -288,7 +294,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					playerElements = fullPlayerCopy.descendants().(attribute("id") == param.@applyTo);
 					// (Atar: I think there should only be one)				
 					for each (element in playerElements) {
-						// save data to the snapshot :
+						// save data to the player:
 						attributeToWrite = param.attribute("k_param").toString();
 						attributeValue = param.attribute("k_value").toString();
 						element.attribute(attributeToWrite)[0] = attributeValue;
@@ -298,7 +304,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			} 
 			
 			var colorObj:Object = {color1: style.color1, color2: style.color2, color3: style.color3, color4: style.color4, color5: style.color5};
-			// Handeling the buttons. remove the icons / label in button that 
+			// Handling the buttons. remove the icons / label in button that 
 			// should not have them (Remove attributes from XML), add colors tags
 			// and add the button type
 			var contButton:XML;

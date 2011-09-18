@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" backgroundColor="#f7f7f7" borderColor="#cfd7d7"
-		 borderStyle="solid" paddingRight="5" paddingLeft="5" horizontalScrollPolicy="off" visible="false"
+		 borderStyle="solid" paddingRight="5" paddingLeft="5" horizontalScrollPolicy="off" 
 		 creationComplete="onCreationComplete()">
 	<mx:Script>
 		<![CDATA[
@@ -8,14 +8,18 @@
 			import com.kaltura.kmc.modules.studio.vo.ApsOptionItemVo;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.CheckBox;
 			import mx.controls.ColorPicker;
 			import mx.controls.ComboBox;
 			import mx.controls.HRule;
 			import mx.controls.NumericStepper;
+			import mx.controls.RadioButton;
+			import mx.controls.RadioButtonGroup;
 			import mx.controls.Spacer;
 			import mx.controls.Text;
 			import mx.controls.TextInput;
+			import mx.core.Application;
 			import mx.core.UIComponent;
 			import mx.events.ColorPickerEvent;
 			import mx.events.ListEvent;
@@ -31,7 +35,7 @@
 			 * */
 			public var featureFormXML:XML;
 
-			public var customXML:XML;
+			private var customXML:XML;
 
 			private var _originalfeatureXML:XML;
 			private var _featurePrefixName:String;
@@ -46,6 +50,7 @@
 			[Bindable]
 			private var _editable:Boolean = true;
 
+			private var _bindWatchers:Array;
 
 
 			private function onCreationComplete():void {
@@ -68,12 +73,13 @@
 			public function initFeature(localfeatureXML:XML):void {
 				featureFormXML = localfeatureXML;
 				_originalfeatureXML = localfeatureXML.copy();
-				_componentsArray = new Array();
-				addFormControllers(featureFormXML);
-				_featurePrefixName = featureFormXML.@id.toString();
-				addFormButtonsBehavior();
+				_bindWatchers = new Array();
+//				_componentsArray = new Array();
+//				addFormControllers(featureFormXML);
+//				_featurePrefixName = featureFormXML.@id.toString();
+//				addFormButtonsBehavior();
 				initPrefixes();
-				dispose();
+//				dispose();
 			}
 
 
@@ -113,8 +119,8 @@
 			 * */
 			private function cancelFeatureChange(evt:MouseEvent = null):void {
 				featureFormXML.setChildren(_originalfeatureXML.children());
-				var paramsXmls:XMLList = _originalfeatureXML.descendants().(attribute("k_param").toString().length > 0);
-				initFeature(_originalfeatureXML);
+//				var paramsXmls:XMLList = _originalfeatureXML.descendants().(attribute("k_param").toString().length > 0);
+//				initFeature(_originalfeatureXML);
 				visible = false;
 				dispose();
 			}
@@ -157,29 +163,46 @@
 							uiComponent.visible = false;
 							uiComponent.includeInLayout = false;
 						}
+						// bindings (uiComponent.prop = host.chain):
+						addBindingExpressions(xml, uiComponent);
 					}
 				}
 			}
-
-//			/**
-//			 * passes all valid attributes from component xml to actual component
-//			 * @param component 	the actual component to act on
-//			 * @param componentXML	component definition in features uiconf
-//			 * */
-//			private function addComponentGeneralAttributes(component:UIComponent, componentXML:XML):void {
-//				for each (var att:XML in componentXML.attributes()) {
-//					if (component.hasOwnProperty(att.localName())) {
-//						if (component[att.localName()] is Boolean){
-//							// boolean values
-//							component[att.localName()] = att.toString() != "false";
-//						}
-//						else {
-//							// strings and numbers
-//							component[att.localName()] = att.toString();
-//						}
-//					}
-//				}
-//			}
+			
+			/**
+			 * create change watchers for required attributes
+			 * @param xml	component definition
+			 * @param uiComponent	ui element 
+			 * */
+			private function addBindingExpressions(xml:XML, uiComponent:UIComponent):void {
+				var atts:XMLList = xml.attributes();
+				var prop:String;	// the prop to bind if needed
+				var val:String;		// the original binding definition
+				var host:Object;	// binding source
+				var chain:String;	// attribute to watch on source
+				var lastDot:int;	// index of last dot in value
+				for (var j:uint = 0 ; j< atts.length() ; j++) {
+					prop = (atts[j] as XML).localName().toString();
+					val = atts[j].toString();
+					if (val.indexOf("{") == 0 && val.indexOf("}") == val.length-1) {
+						// handle binding expression
+						lastDot = val.lastIndexOf(".");
+						chain = val.substring(lastDot +1, val.length - 1);
+						host = val.substring(1, lastDot);  // host name
+						for each (var aoiv:ApsOptionItemVo in _componentsArray){
+							if (aoiv.name == host) {
+								host = aoiv.component;	// host component
+								break;
+							}
+						}
+						if (!(host is String)) {
+							// only if found host
+							_bindWatchers.push(BindingUtils.bindProperty(uiComponent, prop, host, chain));
+						}
+					}
+				}
+			}
+				
 			
 
 			/**
@@ -191,21 +214,6 @@
 				var type:String = componentXML.name().toString();
 				var ui:UIComponent;
 				switch (type) {
-					case "NumericStepper":
-						var numericStepper:NumericStepper = new NumericStepper();
-						numericStepper.name = componentXML.@id.toString();
-						if (componentXML.@maximum.toString())
-							numericStepper.maximum = componentXML.@maximum;
-						else
-							numericStepper.maximum = 10000000;
-						if (componentXML.@minimum)
-							numericStepper.minimum = componentXML.@minimum;
-						if (componentXML.@k_value)
-							numericStepper.value = componentXML.@k_value;
-						numericStepper.addEventListener(NumericStepperEvent.CHANGE, onNumericStepperChange, false, 0, true);
-						numericStepper.addEventListener(FocusEvent.FOCUS_OUT, numericChange);
-						ui = numericStepper;
-						break;
 					case "Spacer":
 						var spacer:Spacer = new Spacer();
 						spacer.height = 10;
@@ -215,6 +223,20 @@
 						var hrule:HRule = new HRule();
 						hrule.percentWidth = 80;
 						ui = hrule;
+						break;
+					case "RadioButtonGroup":
+						var rbg:RadioButtonGroup = new RadioButtonGroup();
+						rbg.initialized(Application.application, componentXML.@id);
+						break;
+					case "RadioButton":
+						var rb:RadioButton = new RadioButton();
+						rb.id = componentXML.@id.toString();
+						rb.name = componentXML.@id.toString();
+						rb.groupName = componentXML.@groupName.toString();
+						rb.selected = componentXML.@k_value.toString() == "true";
+						rb.label = componentXML.@label.toString();
+						rb.addEventListener(Event.CHANGE, onRadioChanged, false, 0, true);
+						ui = rb;
 						break;
 					case "CheckBox":
 						var cb:CheckBox = new CheckBox();
@@ -289,6 +311,21 @@
 						picker.name = componentXML.@id.toString();
 						ui = picker;
 						break;
+					case "NumericStepper":
+						var numericStepper:NumericStepper = new NumericStepper();
+						numericStepper.name = componentXML.@id.toString();
+						if (componentXML.@maximum.toString())
+							numericStepper.maximum = componentXML.@maximum;
+						else
+							numericStepper.maximum = 10000000;
+						if (componentXML.@minimum)
+							numericStepper.minimum = componentXML.@minimum;
+						if (componentXML.@k_value)
+							numericStepper.value = componentXML.@k_value;
+						numericStepper.addEventListener(NumericStepperEvent.CHANGE, onNumericStepperChange, false, 0, true);
+						numericStepper.addEventListener(FocusEvent.FOCUS_OUT, numericChange);
+						ui = numericStepper;
+						break;
 				}
 				return ui;
 			}
@@ -334,6 +371,28 @@
 				}
 			}
 
+			/**
+			 * set k_value and selected value of other group elements to false, 
+			 * and those of the selected button to true, and main group value
+			 * */
+			private function onRadioChanged(evt:Event):void {
+				var btnName:String = evt.target.id;
+				var groupItems:XMLList = featureFormXML..RadioButton.(@groupName == evt.target.groupName);	
+				for each (var btn:XML in groupItems) {
+					if (btn.@id == btnName) { 
+//						btn.@selected = "true";
+						btn.@k_value = "true";
+						// set value on group:
+						var group:XML = featureFormXML..RadioButtonGroup.(@id == evt.target.groupName)[0];
+						group.@k_value = btn.@value;
+					}
+					else {
+//						btn.@selected = "false";
+						btn.@k_value = "false";
+					}
+				}
+				
+			}
 
 			/**
 			 * unselect screen checkboxes from the video section
@@ -416,7 +475,6 @@
 				visible = false;
 				dispose();
 				dispatchEvent(new Event(SAVED_FEATURE));
-
 			}
 
 
@@ -428,13 +486,18 @@
 				featureForm.removeAllChildren();
 				for each (var o:ApsOptionItemVo in _componentsArray) {
 					o.dispose();
-					o = null;
 				}
+				o = null;
 				_isTypingFlag = false;
 				_lastInput = null;
 				_lastNumeric = null;
-				_componentsArray = new Array();
+				_componentsArray = null;
 				applyBtn.removeEventListener(MouseEvent.CLICK, saveFeature);
+				cancelBtn.removeEventListener(MouseEvent.CLICK, cancelFeatureChange);
+				
+				for each (var cw:ChangeWatcher in _bindWatchers) {
+					cw.unwatch();
+				}
 			}
 
 

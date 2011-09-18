@@ -97,18 +97,15 @@
 			 * In response to click on the "options" button
 			 * */
 			private function openOptionScreen(evt:ApsFeatureEvent):void {
-				featureScreen.initFeature(_selectedFeatureData as XML);
+				featureScreen.initFeature(_selectedFeatureData);
 
-				featureScreen.featureFormXML = _selectedFeatureData;
-
-				var xmlIdToGet:String = featureScreen.featureFormXML.(attribute("customXmlId"));
-				xmlIdToGet = featureScreen.featureFormXML.@customXmlId.toString();
-				if (xmlIdToGet) {
-					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
-					featureScreen.customXML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
-				}
+//				var xmlIdToGet:String = _selectedFeatureData.(attribute("customXmlId"));
+//				if (xmlIdToGet) {
+//					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
+//					featureScreen.customXML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
+//				}
 				featureScreen.renderFeatureScreen();
-				featureScreen.visible = true;
+				featureScreen.visible = true; // "false" in mxml
 			}
 
 
@@ -344,7 +341,7 @@
 		</mx:VBox>
 	</mx:HBox>
 	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%" editable="{editable}"
-									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));"/>
+									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));" visible="false"/>
 	<mx:VBox id="keyValueBox" visible="false" width="100%" height="90%" paddingLeft="5" paddingRight="5"
 			 horizontalScrollPolicy="off" includeInLayout="false" disabledOverlayAlpha="0" enabled="{editable}">
 		<mx:Spacer height="10"/>
