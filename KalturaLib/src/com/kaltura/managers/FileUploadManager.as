@@ -577,7 +577,7 @@ package com.kaltura.managers {
 			_ongoingUploads--;
 			// alert user 
 			var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, "0");
-			er.error = ResourceManager.getInstance().getString('cms', 'uploadFailedMessage');
+			er.error = ResourceManager.getInstance().getString('cms', 'uploadFailedMessage') + ", " + file.name;
 			dispatchEvent(er);
 		}
 
