@@ -15,6 +15,15 @@
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	
 	<target name="build" description="general build" depends="clean, init, compile_locales, compile, pack">
+		
+		<length property="length" mode="each">
+		    <fileset dir="${basedir}/../${KMC_VERSION}" >
+				<exclude name="**/locale/**"/>
+				<include name="**/*.swf"/>
+			</fileset>
+		</length>
+		<echo>${length}</echo>
+
 		<sound>
 			<success source="C:/WINDOWS/media/tada.wav"/>
 			<fail source="C:/WINDOWS/media"/>
