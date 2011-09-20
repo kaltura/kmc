@@ -5,10 +5,15 @@
 			import com.kaltura.kmc.modules.content.view.window.entrydetails.captionsComponents.CaptionsTable;
 			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
 			
-//			override public function set data(value:Object):void {
-//				super.data = value;
-//				txt.text = (value as EntryCaptionVO).downloadUrl;
-//			}
+			override public function set data(value:Object):void {
+				super.data = value;
+				if ((value as EntryCaptionVO).resourceUrl) {
+					txt.text = (value as EntryCaptionVO).resourceUrl;
+				}
+				else {
+					txt.text = (value as EntryCaptionVO).downloadUrl;
+				}
+			}
 			
 //			protected function txt_focusInHandler(event:FocusEvent):void {
 //				txt.setSelection(0, txt.text.length);
@@ -25,5 +30,5 @@
 		]]>
 	</mx:Script>
 
-	<mx:TextInput id="txt" width="90%" change="txt_changeHandler(event)" text="{data.downloadUrl}" />
+	<mx:TextInput id="txt" width="90%" change="txt_changeHandler(event)" />
 </mx:VBox>
