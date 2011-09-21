@@ -7,6 +7,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 	import com.kaltura.vo.KalturaBaseSyndicationFeed;
 	import com.kaltura.vo.KalturaBaseSyndicationFeedListResponse;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaGenericSyndicationFeed;
 	import com.kaltura.vo.KalturaGenericXsltSyndicationFeed;
 	
@@ -21,7 +22,11 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
-			var listFeeds:SyndicationFeedList = new SyndicationFeedList(_model.extSynModel.syndicationFeedsFilter, _model.extSynModel.syndicationFeedsFilterPager);
+			var kfp:KalturaFilterPager = _model.extSynModel.syndicationFeedsFilterPager;
+			if (event.data is KalturaFilterPager) {
+				kfp = event.data;
+			}
+			var listFeeds:SyndicationFeedList = new SyndicationFeedList(_model.extSynModel.syndicationFeedsFilter, kfp);
 		 	listFeeds.addEventListener(KalturaEvent.COMPLETE, result);
 			listFeeds.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(listFeeds);	  
