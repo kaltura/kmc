@@ -417,7 +417,7 @@
 			 * @param data	player data
 			 * */
 			public function isMulti(data:Object):ArrayCollection {
-				if (data) {
+				if (data && data.confFile && data.confFileFeatures) {
 					var xml:XML = XML(data.confFile.toString());
 					if (xml.attribute('isPlaylist')[0] == 'multi') {
 						return comboDataProviderMulti;
@@ -425,6 +425,7 @@
 					}
 				}
 				return comboDataProviderNormal;
+//				return new ArrayCollection();
 			}
 
 
@@ -693,21 +694,8 @@
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
 					<mx:DataGridColumn id="actions" width="130"
-									   headerText="{resourceManager.getString('aps','actions')}">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
-										 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-									<mx:ComboBox width="130" selectedIndex="-1"
-												 prompt="{resourceManager.getString('aps','selectAction')}"
-												 dataProvider="{outerDocument.isMulti(data)}"
-												 change="{outerDocument.onActionChange(event)}">
-
-									</mx:ComboBox>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
+									   headerText="{resourceManager.getString('aps','actions')}"
+									   itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.ActionsIR" />
 				</mx:columns>
 			</mx:DataGrid>
 			<controls:Paging id="paging" width="100%" rowsInPageChange="{gotoPage()}" nextPage="{gotoPage()}"

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle" paddingLeft="2"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			private var _dp:ArrayCollection;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				_dp = parentDocument.isMulti(value); 
+			}
+		]]>
+	</mx:Script>
+	<mx:ComboBox width="130" selectedIndex="-1"
+				 prompt="{resourceManager.getString('aps','selectAction')}"
+				 dataProvider="{_dp}"
+				 change="{parentDocument.onActionChange(event)}">
+	</mx:ComboBox>
+</mx:VBox>
+
