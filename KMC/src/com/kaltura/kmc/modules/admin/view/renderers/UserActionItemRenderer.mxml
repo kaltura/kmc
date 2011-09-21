@@ -8,14 +8,15 @@
 			
 			import mx.collections.ArrayCollection;
 			
-			
+			[Bindable] private var _cpDp : ArrayCollection;
 			override public function set data(value:Object):void {
-				cb.dataProvider = getActionsDP(value);
-				if (cb.dropdown) {
-					cb.dropdown.dataProvider = cb.dataProvider;
-				}
-				(cb.dataProvider as ArrayCollection).refresh();
 				super.data = value;
+				_cpDp = getActionsDP(value);
+//				cb.dataProvider = getActionsDP(value);
+//				if (cb.dropdown) {
+//					cb.dropdown.dataProvider = cb.dataProvider;
+//				}
+//				(cb.dataProvider as ArrayCollection).refresh();
 			}
 			
 			protected function getActionsDP(data:Object):ArrayCollection {
@@ -42,7 +43,7 @@
 	</mx:Script>
 	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="100%"
 			 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-		<mx:ComboBox width="130" id="cb" selectedIndex="-1"
+		<mx:ComboBox width="130" id="cb" selectedIndex="-1" dataProvider="{_cpDp}"
 					 prompt="{resourceManager.getString('admin','select_action')}"
 					 change="{onActionSelected()}" 
 					 enabled="{data.enableActionDropdown}"/>
