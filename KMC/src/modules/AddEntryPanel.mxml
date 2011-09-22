@@ -69,6 +69,11 @@
 			 * @copy #client
 			 * */
 			private var _kc:KalturaClient;
+			
+			/**
+			 * files selector for media upload
+			 * */
+			private var _mmfs:MultipleMediaFilesSelector;
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				
@@ -83,13 +88,14 @@
 
 			protected function showUploadSettingsWindow(e:Event):void {
 //				trace("AddEntryPanel.showUploadSettingsWindow");
-				e.target.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+				_mmfs.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				var fus:FileUploadSettings = new FileUploadSettings();
 				fus.client = _kc;
 				fus.filterDefinitions = config.filter;
-				fus.uploadFiles((e.target as MultipleMediaFilesSelector).getFiles());
+				fus.uploadFiles(_mmfs.getFiles());
 				PopUpManager.addPopUp(fus, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(fus);
+				_mmfs = null;
 			}
 
 
@@ -98,9 +104,9 @@
 			 * */
 			public function addUpload(event:MouseEvent = null):void {
 				hidePanel();
-				var neu:MultipleMediaFilesSelector = new MultipleMediaFilesSelector(config.filter);
-				neu.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
-				neu.doFileUpload();
+				_mmfs = new MultipleMediaFilesSelector(config.filter);
+				_mmfs.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
+				_mmfs.doFileUpload();
 //				trace("addUpload");
 			}
 
