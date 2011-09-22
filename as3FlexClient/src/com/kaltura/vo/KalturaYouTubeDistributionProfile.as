@@ -77,6 +77,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var enableAdServer : Boolean;
 
+		/** 
+		* 		* */ 
+		public var allowPreRollAds : Boolean;
+
+		/** 
+		* 		* */ 
+		public var allowPostRollAds : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -99,6 +107,8 @@ package com.kaltura.vo
 			arr.push('target');
 			arr.push('adServerPartnerId');
 			arr.push('enableAdServer');
+			arr.push('allowPreRollAds');
+			arr.push('allowPostRollAds');
 			return arr;
 		}
 

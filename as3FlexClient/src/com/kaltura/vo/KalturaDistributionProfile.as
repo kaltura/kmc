@@ -84,6 +84,14 @@ package com.kaltura.vo
 		public var sunsetDefaultOffset : int = int.MIN_VALUE;
 
 		/** 
+		* The best external storage to be used to download the asset files from		* */ 
+		public var recommendedStorageProfileForDownload : int = int.MIN_VALUE;
+
+		/** 
+		* The best Kaltura data center to be used to download the asset files to		* */ 
+		public var recommendedDcForDownload : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -104,6 +112,8 @@ package com.kaltura.vo
 			arr.push('requiredThumbDimensions');
 			arr.push('sunriseDefaultOffset');
 			arr.push('sunsetDefaultOffset');
+			arr.push('recommendedStorageProfileForDownload');
+			arr.push('recommendedDcForDownload');
 			return arr;
 		}
 

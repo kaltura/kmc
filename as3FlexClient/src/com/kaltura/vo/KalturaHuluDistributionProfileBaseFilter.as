@@ -1,9 +1,9 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
+	import com.kaltura.vo.KalturaConfigurableDistributionProfileFilter;
 
 	[Bindable]
-	public dynamic class KalturaHuluDistributionProfileBaseFilter extends KalturaDistributionProfileFilter
+	public dynamic class KalturaHuluDistributionProfileBaseFilter extends KalturaConfigurableDistributionProfileFilter
 	{
 		override public function getUpdateableParamKeys():Array
 		{

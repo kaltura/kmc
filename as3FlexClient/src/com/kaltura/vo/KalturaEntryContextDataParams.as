@@ -9,6 +9,14 @@ package com.kaltura.vo
 		public var referrer : String = null;
 
 		/** 
+		* 		* */ 
+		public var flavorAssetId : String = null;
+
+		/** 
+		* 		* */ 
+		public var streamerType : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -16,6 +24,8 @@ package com.kaltura.vo
 			var arr : Array;
 			arr = new Array();
 			arr.push('referrer');
+			arr.push('flavorAssetId');
+			arr.push('streamerType');
 			return arr;
 		}
 

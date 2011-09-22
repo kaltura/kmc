@@ -90,6 +90,11 @@ DEPRECATED		* */
 		public var storageProfileId : int = int.MIN_VALUE;
 
 		/** 
+		* Media parser type to be used for extract media
+		* */ 
+		public var mediaParserType : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -109,6 +114,7 @@ DEPRECATED		* */
 			arr.push('clipDuration');
 			arr.push('xslTransformation');
 			arr.push('storageProfileId');
+			arr.push('mediaParserType');
 			return arr;
 		}
 

@@ -13,12 +13,21 @@ package com.kaltura.vo
 		* 		* */ 
 		public var description : String = null;
 
+		/** 
+		* 		* */ 
+		public var endTime : int = int.MIN_VALUE;
+
+		/** 
+		* Duration in milliseconds		* */ 
+		public var duration : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('code');
 			arr.push('description');
+			arr.push('endTime');
 			return arr;
 		}
 

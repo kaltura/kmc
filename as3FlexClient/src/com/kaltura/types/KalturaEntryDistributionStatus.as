@@ -13,5 +13,7 @@ package com.kaltura.types
 		public static const ERROR_UPDATING : int = 8;
 		public static const ERROR_DELETING : int = 9;
 		public static const REMOVED : int = 10;
+		public static const IMPORT_SUBMITTING : int = 11;
+		public static const IMPORT_UPDATING : int = 12;
 	}
 }

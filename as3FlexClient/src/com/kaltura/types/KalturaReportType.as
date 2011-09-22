@@ -9,5 +9,6 @@ package com.kaltura.types
 		public static const TOP_CONTRIBUTORS : int = 5;
 		public static const TOP_SYNDICATION : int = 6;
 		public static const CONTENT_CONTRIBUTIONS : int = 7;
+		public static const WIDGETS_STATS : int = 8;
 	}
 }

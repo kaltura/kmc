@@ -13,12 +13,22 @@ package com.kaltura.vo
 		* 		* */ 
 		public var documentTypeIn : String = null;
 
+		/** 
+		* 		* */ 
+		public var assetParamsIdsMatchOr : String = null;
+
+		/** 
+		* 		* */ 
+		public var assetParamsIdsMatchAnd : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('documentTypeEqual');
 			arr.push('documentTypeIn');
+			arr.push('assetParamsIdsMatchOr');
+			arr.push('assetParamsIdsMatchAnd');
 			return arr;
 		}
 

@@ -7,18 +7,6 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var tagsLike : String = null;
-
-		/** 
-		* 		* */ 
-		public var tagsMultiLikeOr : String = null;
-
-		/** 
-		* 		* */ 
-		public var tagsMultiLikeAnd : String = null;
-
-		/** 
-		* 		* */ 
 		public var contentLike : String = null;
 
 		/** 
@@ -77,9 +65,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('tagsLike');
-			arr.push('tagsMultiLikeOr');
-			arr.push('tagsMultiLikeAnd');
 			arr.push('contentLike');
 			arr.push('contentMultiLikeOr');
 			arr.push('contentMultiLikeAnd');

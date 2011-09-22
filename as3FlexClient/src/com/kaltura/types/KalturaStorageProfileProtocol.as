@@ -6,5 +6,6 @@ package com.kaltura.types
 		public static const FTP : int = 1;
 		public static const SCP : int = 2;
 		public static const SFTP : int = 3;
+		public static const S3 : int = 6;
 	}
 }

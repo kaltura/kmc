@@ -10,11 +10,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var max : int = int.MIN_VALUE;
+		public var max : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
 		public var overagePrice : Number = Number.NEGATIVE_INFINITY;
+
+		/** 
+		* 		* */ 
+		public var overageUnit : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -26,6 +30,7 @@ package com.kaltura.vo
 			arr.push('type');
 			arr.push('max');
 			arr.push('overagePrice');
+			arr.push('overageUnit');
 			return arr;
 		}
 

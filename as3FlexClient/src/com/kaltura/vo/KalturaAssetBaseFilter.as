@@ -39,6 +39,18 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var tagsLike : String = null;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeOr : String = null;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeAnd : String = null;
+
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -73,6 +85,9 @@ package com.kaltura.vo
 			arr.push('partnerIdIn');
 			arr.push('sizeGreaterThanOrEqual');
 			arr.push('sizeLessThanOrEqual');
+			arr.push('tagsLike');
+			arr.push('tagsMultiLikeOr');
+			arr.push('tagsMultiLikeAnd');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');

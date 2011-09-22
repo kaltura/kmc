@@ -49,6 +49,16 @@ package com.kaltura.vo
 		public var requiredPermissions : Array = new Array();
 
 		/** 
+		* Id of remote storage profile that used to get the source, zero indicates Kaltura data center
+		* */ 
+		public var sourceRemoteStorageProfileId : int = int.MIN_VALUE;
+
+		/** 
+		* Media parser type to be used for post-conversion validation
+		* */ 
+		public var mediaParserType : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -60,6 +70,8 @@ package com.kaltura.vo
 			arr.push('description');
 			arr.push('tags');
 			arr.push('requiredPermissions');
+			arr.push('sourceRemoteStorageProfileId');
+			arr.push('mediaParserType');
 			return arr;
 		}
 

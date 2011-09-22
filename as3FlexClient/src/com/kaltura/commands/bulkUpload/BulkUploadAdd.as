@@ -12,8 +12,10 @@ package com.kaltura.commands.bulkUpload
 		 * @param conversionProfileId int
 		 * @param csvFileData Object - FileReference or ByteArray
 		 * @param bulkUploadType String
+		 * @param uploadedBy String
+		 * @param fileName String
 		 **/
-		public function BulkUploadAdd( conversionProfileId : int,csvFileData : Object,bulkUploadType : String = null )
+		public function BulkUploadAdd( conversionProfileId : int,csvFileData : Object,bulkUploadType : String = null,uploadedBy : String = null,fileName : String = null )
 		{
 			service= 'bulkupload';
 			action= 'add';
@@ -26,6 +28,10 @@ package com.kaltura.commands.bulkUpload
 			this.csvFileData = csvFileData;
 			keyArr.push('bulkUploadType');
 			valueArr.push(bulkUploadType);
+			keyArr.push('uploadedBy');
+			valueArr.push(uploadedBy);
+			keyArr.push('fileName');
+			valueArr.push(fileName);
 			applySchema(keyArr, valueArr);
 		}
 

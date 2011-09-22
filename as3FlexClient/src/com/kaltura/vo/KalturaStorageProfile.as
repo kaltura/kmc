@@ -106,6 +106,15 @@ package com.kaltura.vo
 		public var trigger : int = int.MIN_VALUE;
 
 		/** 
+		* Delivery Priority
+		* */ 
+		public var deliveryPriority : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var deliveryStatus : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -133,6 +142,8 @@ package com.kaltura.vo
 			arr.push('urlManagerClass');
 			arr.push('urlManagerParams');
 			arr.push('trigger');
+			arr.push('deliveryPriority');
+			arr.push('deliveryStatus');
 			return arr;
 		}
 

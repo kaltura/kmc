@@ -131,6 +131,7 @@ package com.kaltura.delegates {
 		}
 		
 		protected function sendRequest():void {
+			
 			//construct the loader
 			createURLLoader();
 			
@@ -282,6 +283,22 @@ package com.kaltura.delegates {
 		{ 
 			var ke : KalturaError = new KalturaError();
 			return ke; 
+		}
+		
+		
+		/**
+		 * create the url that is used for serve actions
+		 * @param call	the KalturaCall that defines the required parameters 
+		 * @return URLRequest with relevant parameters
+		 * */
+		public function getServeUrl(call:KalturaCall):URLRequest
+		{
+			var url : String = _config.protocol + _config.domain +"/"+_config.srvUrl+"?service="+call.service+"&action="+call.action;
+			var req:URLRequest = new URLRequest( url );
+			req.contentType = "application/x-www-form-urlencoded";
+			req.method = call.method; 
+			req.data = call.args; 
+			return req;
 		}
 	}
 }

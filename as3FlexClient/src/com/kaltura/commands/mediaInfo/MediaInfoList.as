@@ -14,7 +14,7 @@ package com.kaltura.commands.mediaInfo
 		 **/
 		public function MediaInfoList( filter : KalturaMediaInfoFilter=null,pager : KalturaFilterPager=null )
 		{
-			service= 'adminconsole_mediainfo';
+			service= 'mediainfo';
 			action= 'list';
 
 			var keyArr : Array = new Array();

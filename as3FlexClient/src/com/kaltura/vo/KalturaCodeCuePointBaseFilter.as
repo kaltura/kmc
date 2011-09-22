@@ -37,6 +37,22 @@ package com.kaltura.vo
 		* 		* */ 
 		public var descriptionMultiLikeAnd : String = null;
 
+		/** 
+		* 		* */ 
+		public var endTimeGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var endTimeLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var durationGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var durationLessThanOrEqual : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -49,6 +65,10 @@ package com.kaltura.vo
 			arr.push('descriptionLike');
 			arr.push('descriptionMultiLikeOr');
 			arr.push('descriptionMultiLikeAnd');
+			arr.push('endTimeGreaterThanOrEqual');
+			arr.push('endTimeLessThanOrEqual');
+			arr.push('durationGreaterThanOrEqual');
+			arr.push('durationLessThanOrEqual');
 			return arr;
 		}
 

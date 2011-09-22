@@ -28,7 +28,7 @@ The value of the current connector field will be the one that is returned from t
 
 		/** 
 		* Entry column or metadata xpath that should trigger an update
-TODO: find a better solution for this		* */ 
+		* */ 
 		public var updateParams : Array = new Array();
 
 		/** 

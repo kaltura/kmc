@@ -9,11 +9,16 @@ package com.kaltura.vo
 		* 		* */ 
 		public var fieldConfigArray : Array = new Array();
 
+		/** 
+		* 		* */ 
+		public var itemXpathsToExtend : Array = new Array();
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('fieldConfigArray');
+			arr.push('itemXpathsToExtend');
 			return arr;
 		}
 

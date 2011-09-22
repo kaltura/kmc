@@ -1,6 +1,6 @@
 package com.kaltura.commands.annotation
 {
-	import com.kaltura.vo.KalturaCuePoint;
+	import com.kaltura.vo.KalturaAnnotation;
 	import com.kaltura.delegates.annotation.AnnotationAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -8,9 +8,9 @@ package com.kaltura.commands.annotation
 	{
 		public var filterFields : String;
 		/**
-		 * @param cuePoint KalturaCuePoint
+		 * @param annotation KalturaAnnotation
 		 **/
-		public function AnnotationAdd( cuePoint : KalturaCuePoint )
+		public function AnnotationAdd( annotation : KalturaAnnotation )
 		{
 			service= 'annotation_annotation';
 			action= 'add';
@@ -18,7 +18,7 @@ package com.kaltura.commands.annotation
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(cuePoint, 'cuePoint');
+ 			keyValArr = kalturaObject2Arrays(annotation, 'annotation');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
 			applySchema(keyArr, valueArr);

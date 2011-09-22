@@ -65,6 +65,10 @@ package com.kaltura.vo
 		public var fileName : String = null;
 
 		/** 
+		* 		* */ 
+		public var description : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -86,6 +90,7 @@ package com.kaltura.vo
 			arr.push('errorType');
 			arr.push('errorNumber');
 			arr.push('fileName');
+			arr.push('description');
 			return arr;
 		}
 

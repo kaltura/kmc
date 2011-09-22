@@ -1,29 +1,64 @@
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaDistributionProfile;
+	import com.kaltura.vo.KalturaConfigurableDistributionProfile;
 
 	[Bindable]
-	public dynamic class KalturaHuluDistributionProfile extends KalturaDistributionProfile
+	public dynamic class KalturaHuluDistributionProfile extends KalturaConfigurableDistributionProfile
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var sftpHost : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var sftpLogin : String = null;
 
 		/** 
 		* 		* */ 
-		public var metadataProfileId : int = int.MIN_VALUE;
+		public var sftpPass : String = null;
+
+		/** 
+		* 		* */ 
+		public var seriesChannel : String = null;
+
+		/** 
+		* 		* */ 
+		public var seriesPrimaryCategory : String = null;
+
+		/** 
+		* 		* */ 
+		public var seriesAdditionalCategories : Array = new Array();
+
+		/** 
+		* 		* */ 
+		public var seasonNumber : String = null;
+
+		/** 
+		* 		* */ 
+		public var seasonSynopsis : String = null;
+
+		/** 
+		* 		* */ 
+		public var seasonTuneInInformation : String = null;
+
+		/** 
+		* 		* */ 
+		public var videoMediaType : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('username');
-			arr.push('password');
-			arr.push('metadataProfileId');
+			arr.push('sftpHost');
+			arr.push('sftpLogin');
+			arr.push('sftpPass');
+			arr.push('seriesChannel');
+			arr.push('seriesPrimaryCategory');
+			arr.push('seriesAdditionalCategories');
+			arr.push('seasonNumber');
+			arr.push('seasonSynopsis');
+			arr.push('seasonTuneInInformation');
+			arr.push('videoMediaType');
 			return arr;
 		}
 

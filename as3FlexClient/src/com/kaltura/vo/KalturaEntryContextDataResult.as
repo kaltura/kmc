@@ -37,6 +37,18 @@ package com.kaltura.vo
 		public var isAdmin : Boolean;
 
 		/** 
+		* http/rtmp/hdnetwork		* */ 
+		public var streamerType : String = null;
+
+		/** 
+		* http/https, rtmp/rtmpe		* */ 
+		public var mediaProtocol : String = null;
+
+		/** 
+		* 		* */ 
+		public var storageProfileIds : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -51,6 +63,9 @@ package com.kaltura.vo
 			arr.push('previewLength');
 			arr.push('isScheduledNow');
 			arr.push('isAdmin');
+			arr.push('streamerType');
+			arr.push('mediaProtocol');
+			arr.push('storageProfileIds');
 			return arr;
 		}
 

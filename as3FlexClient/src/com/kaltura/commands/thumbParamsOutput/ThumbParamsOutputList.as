@@ -14,7 +14,7 @@ package com.kaltura.commands.thumbParamsOutput
 		 **/
 		public function ThumbParamsOutputList( filter : KalturaThumbParamsOutputFilter=null,pager : KalturaFilterPager=null )
 		{
-			service= 'adminconsole_thumbparamsoutput';
+			service= 'thumbparamsoutput';
 			action= 'list';
 
 			var keyArr : Array = new Array();

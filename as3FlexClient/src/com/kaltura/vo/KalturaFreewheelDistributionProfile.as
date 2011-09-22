@@ -7,15 +7,23 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var username : String;
+		public var apikey : String = null;
 
 		/** 
 		* 		* */ 
-		public var password : String;
+		public var email : String = null;
 
 		/** 
 		* 		* */ 
-		public var contact : String;
+		public var sftpPass : String = null;
+
+		/** 
+		* 		* */ 
+		public var sftpLogin : String = null;
+
+		/** 
+		* 		* */ 
+		public var accountId : String = null;
 
 		/** 
 		* 		* */ 
@@ -25,9 +33,11 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('username');
-			arr.push('password');
-			arr.push('contact');
+			arr.push('apikey');
+			arr.push('email');
+			arr.push('sftpPass');
+			arr.push('sftpLogin');
+			arr.push('accountId');
 			arr.push('metadataProfileId');
 			return arr;
 		}

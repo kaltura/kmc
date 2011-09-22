@@ -6,6 +6,10 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
+		public var id : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var partnerName : String = null;
 
 		/** 
@@ -55,6 +59,10 @@ package com.kaltura.vo
 		/** 
 		* 		* */ 
 		public var kmcVersion : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var restrictThumbnailByKs : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
@@ -117,6 +125,55 @@ package com.kaltura.vo
 		public var limits : Array = new Array();
 
 		/** 
+		* http/rtmp/hdnetwork		* */ 
+		public var streamerType : String = null;
+
+		/** 
+		* http/https, rtmp/rtmpe		* */ 
+		public var mediaProtocol : String = null;
+
+		/** 
+		* 		* */ 
+		public var extendedFreeTrailExpiryReason : String = null;
+
+		/** 
+		* Unix timestamp (In seconds)
+		* */ 
+		public var extendedFreeTrailExpiryDate : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var extendedFreeTrail : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var crmId : String = null;
+
+		/** 
+		* 		* */ 
+		public var crmLink : String = null;
+
+		/** 
+		* 		* */ 
+		public var verticalClasiffication : String = null;
+
+		/** 
+		* 		* */ 
+		public var partnerPackageClassOfService : String = null;
+
+		/** 
+		* 		* */ 
+		public var enableBulkUploadNotificationsEmails : Boolean;
+
+		/** 
+		* 		* */ 
+		public var deliveryRestrictions : String = null;
+
+		/** 
+		* 		* */ 
+		public var bulkUploadNotificationsEmail : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -136,6 +193,7 @@ package com.kaltura.vo
 			arr.push('storageDeleteFromKaltura');
 			arr.push('storageServePriority');
 			arr.push('kmcVersion');
+			arr.push('restrictThumbnailByKs');
 			arr.push('defThumbOffset');
 			arr.push('userSessionRoleId');
 			arr.push('adminSessionRoleId');
@@ -151,6 +209,18 @@ package com.kaltura.vo
 			arr.push('partnerGroupType');
 			arr.push('partnerParentId');
 			arr.push('limits');
+			arr.push('streamerType');
+			arr.push('mediaProtocol');
+			arr.push('extendedFreeTrailExpiryReason');
+			arr.push('extendedFreeTrailExpiryDate');
+			arr.push('extendedFreeTrail');
+			arr.push('crmId');
+			arr.push('crmLink');
+			arr.push('verticalClasiffication');
+			arr.push('partnerPackageClassOfService');
+			arr.push('enableBulkUploadNotificationsEmails');
+			arr.push('deliveryRestrictions');
+			arr.push('bulkUploadNotificationsEmail');
 			return arr;
 		}
 

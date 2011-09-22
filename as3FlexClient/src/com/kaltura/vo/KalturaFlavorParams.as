@@ -90,6 +90,14 @@ package com.kaltura.vo
 		* */ 
 		public var format : String = null;
 
+		/** 
+		* 		* */ 
+		public var aspectRatioProcessingMode : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var forceFrameToMultiplication16 : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -112,6 +120,8 @@ package com.kaltura.vo
 			arr.push('operators');
 			arr.push('engineVersion');
 			arr.push('format');
+			arr.push('aspectRatioProcessingMode');
+			arr.push('forceFrameToMultiplication16');
 			return arr;
 		}
 

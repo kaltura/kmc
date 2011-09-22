@@ -109,6 +109,18 @@ package com.kaltura.vo
 		public var pluginsData : Array = new Array();
 
 		/** 
+		* 		* */ 
+		public var sshPrivateKey : String = null;
+
+		/** 
+		* 		* */ 
+		public var sshPublicKey : String = null;
+
+		/** 
+		* 		* */ 
+		public var sshKeyPassphrase : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -139,6 +151,9 @@ package com.kaltura.vo
 			arr.push('partnerData');
 			arr.push('errorDescription');
 			arr.push('pluginsData');
+			arr.push('sshPrivateKey');
+			arr.push('sshPublicKey');
+			arr.push('sshKeyPassphrase');
 			return arr;
 		}
 

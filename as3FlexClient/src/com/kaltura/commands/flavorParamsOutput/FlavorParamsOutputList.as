@@ -14,7 +14,7 @@ package com.kaltura.commands.flavorParamsOutput
 		 **/
 		public function FlavorParamsOutputList( filter : KalturaFlavorParamsOutputFilter=null,pager : KalturaFilterPager=null )
 		{
-			service= 'adminconsole_flavorparamsoutput';
+			service= 'flavorparamsoutput';
 			action= 'list';
 
 			var keyArr : Array = new Array();
