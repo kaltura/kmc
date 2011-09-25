@@ -2,12 +2,10 @@ package com.kaltura.kmc.modules.content.commands.captions
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.captionAsset.CaptionAssetGet;
-	import com.kaltura.commands.captionAsset.CaptionAssetGetDownloadUrl;
 	import com.kaltura.commands.captionAsset.CaptionAssetGetUrl;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CaptionsEvent;
-	import com.kaltura.kmc.modules.content.view.window.entrydetails.captionsComponents.Caption;
 	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.vo.KalturaCaptionAsset;
