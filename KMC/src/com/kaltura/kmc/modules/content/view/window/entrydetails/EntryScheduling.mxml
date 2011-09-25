@@ -5,7 +5,7 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
 		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" 
-		 show="setSchedulerData()" creationComplete="onCreationComplete()">
+		 creationComplete="onCreationComplete()">
 
 	<mx:Script>
 		<![CDATA[
@@ -129,6 +129,7 @@
 
 					if (((startTime == -1) || (startTime == int.MIN_VALUE)) && ((endTime == -1) || (endTime == int.MIN_VALUE))) {
 						anyTimeRBtn.selected = true;
+						clearDates();
 					}
 					else {
 						spcificRangeRBtn.selected = true;
@@ -139,11 +140,21 @@
 							sepcificStartDate.selectedDate = startDate;
 							_timeManager.setTime(sepcificStartHour, startDate.hours, startDate.minutes);
 						}
+						else {
+							// else clear values 
+							sepcificStartDate.selectedDate = null;
+							setTime(sepcificStartHour, 0, 0);
+						}
 
 						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
 							var endDate:Date = new Date(endTime * 1000);
 							specificEndDate.selectedDate = endDate;
 							_timeManager.setTime(specificEndHour, endDate.hours, endDate.minutes);
+						}
+						else {
+							// else clear values 
+							specificEndDate.selectedDate = null;
+							setTime(specificEndHour, 0, 0);
 						}
 
 					}
