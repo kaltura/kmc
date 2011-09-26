@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="90" verticalAlign="middle" horizontalAlign="center">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			public static const KB_MULTIPLIER:int = 1024;
+			[Bindable]
+			private var _size:int;
+			
+			override public function set data(value:Object):void {
+				var thumbDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				if (thumbDimensions.thumbAsset)
+					_size = thumbDimensions.thumbAsset.size / KB_MULTIPLIER;
+				else
+					_size = -1;
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:NumberFormatter id="numberFormatter" thousandsSeparatorFrom=","/>
+	<mx:TextArea backgroundAlpha="0" borderStyle="none" text="{(_size >=0 ) ? numberFormatter.format(_size) : '-'}" width="100%" textAlign="center" editable="false"/>
+</mx:HBox>

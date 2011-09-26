@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox verticalAlign="middle" horizontalAlign="left" paddingLeft="6" xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
+	<mx:Tile id="tile" paddingLeft="0" paddingRight="0" direction="horizontal" horizontalGap="0">
+		<mx:Script>
+			<![CDATA[
+				import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+				import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.DistributionDetailsWindow;
+				import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.ErrorDetailsWindow;
+				import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+				import com.kaltura.types.KalturaBatchJobErrorTypes;
+				import com.kaltura.types.KalturaDistributionValidationErrorType;
+				import com.kaltura.types.KalturaEntryDistributionFlag;
+				import com.kaltura.types.KalturaEntryDistributionStatus;
+				import com.kaltura.types.KalturaEntryStatus;
+				import com.kaltura.vo.KalturaDistributionValidationError;
+				import com.kaltura.vo.KalturaDistributionValidationErrorInvalidData;
+				import com.kaltura.vo.KalturaDistributionValidationErrorInvalidMetadata;
+				import com.kaltura.vo.KalturaDistributionValidationErrorMissingFlavor;
+				import com.kaltura.vo.KalturaDistributionValidationErrorMissingMetadata;
+				import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
+				import com.kaltura.vo.KalturaEntryDistribution;
+
+				import mx.collections.ArrayCollection;
+				import mx.controls.Button;
+				import mx.core.Application;
+				import mx.managers.PopUpManager;
+				import mx.resources.ResourceManager;
+
+
+				private static const READY_FOR_DISTRIBUTION:String = "readyForDistribution";
+				private static const APPROVED_FOR_DISTRIBUTION:String = "approvedForDistribution";
+				private static const SCHEDULED_FOR_DISTRIBUTION:String = "scheduledForDistribution";
+				private static const DISTRIBUTED:String = "distributed";
+				private static const UPDATE_REQUIRED:String = "updateRequired";
+				private static const DELETED:String = "deleted";
+				private static const SUBMITTING:String = "submitting";
+				private static const REMOVING:String = "removing";
+				private static const UPDATING:String = "updating";
+				private static const DISTRIBUTION_ERROR:String = "distributionError";
+				private static const REMOVAL_ERROR:String = "removalError";
+
+				[Bindable]
+				private var _errorsVisible:Boolean;
+				[Bindable]
+				private var _thumbMissingErrorVisible:Boolean;
+				[Bindable]
+				private var _flavorMissingErrorVisible:Boolean;
+				[Bindable]
+				private var _metadataMissingErrorVisible:Boolean;
+				[Bindable]
+				private var _metadataErrorVisible:Boolean;
+				[Bindable]
+				private var _statusVisible:Boolean;
+				[Bindable]
+				private var _distributionError:Boolean;
+				private var _thumbErrorsArray:Array;
+				private var _flavorErrorsArray:Array;
+				private var _metadataMissingArray:Array;
+				private var _metadataErrorsArray:Array;
+
+				private var _entryDis:KalturaEntryDistribution;
+
+
+				override public function set data(value:Object):void {
+					_entryDis = (value as EntryDistributionWithProfile).kalturaEntryDistribution;
+					var status:String;
+					var status2:String;
+
+					switch (_entryDis.status) {
+						case KalturaEntryDistributionStatus.PENDING:
+							if (!_entryDis.validationErrors || _entryDis.validationErrors.length == 0)
+								status = READY_FOR_DISTRIBUTION;
+							if (_entryDis.dirtyStatus == KalturaEntryDistributionFlag.SUBMIT_REQUIRED)
+								status = SCHEDULED_FOR_DISTRIBUTION;
+							break;
+						case KalturaEntryDistributionStatus.QUEUED:
+							status = APPROVED_FOR_DISTRIBUTION;
+							break;
+						case KalturaEntryDistributionStatus.SUBMITTING:
+							status = SUBMITTING;
+							break;
+						case KalturaEntryDistributionStatus.UPDATING:
+							status = UPDATING;
+							break;
+						case KalturaEntryDistributionStatus.DELETING:
+							status = REMOVING;
+							break;
+						case KalturaEntryDistributionStatus.ERROR_DELETING:
+							status = REMOVAL_ERROR;
+							break;
+						case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
+						case KalturaEntryDistributionStatus.ERROR_UPDATING:
+							status = DISTRIBUTION_ERROR;
+							break;
+						case KalturaEntryDistributionStatus.READY:
+							status = DISTRIBUTED;
+							if (_entryDis.dirtyStatus == KalturaEntryDistributionFlag.UPDATE_REQUIRED)
+								status2 = UPDATE_REQUIRED;
+							break;
+					}
+
+					if (status) {
+						statusLabel.text = resourceManager.getString('drilldown', status);
+						if (status2) {
+							statusLabel.text = statusLabel.text + ", " + resourceManager.getString('drilldown', status2);
+						}
+					}
+
+					if (status == DISTRIBUTION_ERROR || status == REMOVAL_ERROR) {
+						distributionErrorLink.label = resourceManager.getString('drilldown', status);
+						_statusVisible = false;
+						_distributionError = true;
+						_errorsVisible = false;
+					}
+					else if (_entryDis.validationErrors.length > 0) {
+						_errorsVisible = true;
+						_distributionError = false;
+						if (status) {
+							_statusVisible = true;
+							statusLabel.text = statusLabel.text + ", ";
+						}
+						else {
+							_statusVisible = false;
+						}
+
+						parseErrors(_entryDis.validationErrors);
+						setErrosTexts();
+					}
+					else {
+						_errorsVisible = false;
+						_statusVisible = true;
+						_distributionError = false;
+					}
+				}
+
+
+				/**
+				 * add commas if needed
+				 * */
+				private function setErrosTexts():void {
+					//whether latest link buttons are visible, will indicate if we need to add comma to the earlier buttons labels
+					var previousVisibleBtn:Boolean = false;
+					for (var i:int = (tile.numChildren - 1); i >= 0; i--) {
+						var curBtn:LinkButton = tile.getChildAt(i) as LinkButton;
+						if (curBtn && (curBtn.label.charAt(curBtn.label.length - 1) != ',')) {
+							if (previousVisibleBtn) {
+								curBtn.label = curBtn.label + ',';
+							}
+							//will be used in next iterations
+							else if (curBtn.visible) {
+								previousVisibleBtn = true;
+							}
+						}
+					}
+				}
+
+
+				private function parseErrors(errors:Array):void {
+					_thumbErrorsArray = new Array();
+					_flavorErrorsArray = new Array();
+					_metadataMissingArray = new Array();
+					_metadataErrorsArray = new Array();
+					_metadataMissingErrorVisible = false;
+					_flavorMissingErrorVisible = false;
+					_thumbMissingErrorVisible = false;
+					_metadataErrorVisible = false;
+
+					for (var i:int = 0; i < errors.length; i++) {
+						if (errors[i] is KalturaDistributionValidationErrorInvalidData) {
+							_metadataErrorsArray.push(errors[i]);
+							_metadataErrorVisible = true;
+						}
+						else if (errors[i] is KalturaDistributionValidationErrorMissingMetadata) {
+							_metadataMissingArray.push(errors[i]);
+							_metadataMissingErrorVisible = true;
+						}
+						else if (errors[i] is KalturaDistributionValidationErrorMissingFlavor) {
+							_flavorErrorsArray.push(errors[i]);
+							_flavorMissingErrorVisible = true;
+						}
+						else if (errors[i] is KalturaDistributionValidationErrorMissingThumbnail) {
+							_thumbErrorsArray.push(errors[i]);
+							_thumbMissingErrorVisible = true;
+						}
+					}
+
+				}
+
+
+				private function onDistributionErrorClick():void {
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.GENERAL_ERROR, distributionErrorLink.label);
+					var errorLabel:String;
+					switch (_entryDis.errorType) {
+						/* case KalturaBatchJobErrorTypes.APP:
+						   case KalturaBatchJobErrorTypes.KALTURA_API:
+						   case KalturaBatchJobErrorTypes.KALTURA_CLIENT:
+						   errorLabel = resourceManager.getString('drilldown','kalturaError');
+						 break; */
+						case KalturaBatchJobErrorTypes.HTTP:
+							errorLabel = resourceManager.getString('drilldown', 'transferError');
+							break;
+						case KalturaBatchJobErrorTypes.CURL:
+						case KalturaBatchJobErrorTypes.RUNTIME:
+							errorLabel = resourceManager.getString('drilldown', 'destintaionError');
+							break;
+						default:
+							errorLabel = resourceManager.getString('drilldown', 'kalturaError');
+					}
+					errorDetails.setGeneralLabel(errorLabel);
+					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(errorDetails);
+				}
+
+
+				private function onThumbErrorLink():void {
+					var errorWindow:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_THUMB_ERROR, resourceManager.getString('drilldown', 'missingThumbnail'));
+					for each (var err:KalturaDistributionValidationErrorMissingThumbnail in _thumbErrorsArray) {
+						errorWindow.addErrorDetail(getDimensionsError(err));
+					}
+					PopUpManager.addPopUp(errorWindow, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(errorWindow);
+				}
+
+
+				/**
+				 * creates a new errorDetailsWindow and sets the given params
+				 * */
+				private function createErrorPopup(type:String, title:String):ErrorDetailsWindow {
+					var errorDetails:ErrorDetailsWindow = new ErrorDetailsWindow();
+					if (parentDocument is DistributionDetailsWindow)
+						errorDetails.enableLinks = false;
+					else {
+						errorDetails.enableLinks = true;
+						errorDetails.viewStack = parentDocument.viewStack;
+					}
+					errorDetails.setType(type);
+					errorDetails.title = title;
+
+					return errorDetails;
+				}
+
+
+				private function getDimensionsError(error:KalturaDistributionValidationErrorMissingThumbnail):String {
+					var st:String = error.dimensions.width + " X " + error.dimensions.height;
+					return st;
+				}
+
+
+				private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
+					var id:int = parseInt(error.flavorParamsId);
+					var flavorName:String;
+					var flavors:ArrayCollection = parentDocument.entryDetailsModel.flavorParamsAndAssetsByEntryId;
+					for each (var flavorWithParams:FlavorAssetWithParamsVO in flavors) {
+						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == id) {
+							flavorName = flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.name;
+							break;
+						}
+					}
+
+					return flavorName;
+				}
+
+
+				private function onFlavorErrorClick():void {
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_FLAVOR_ERROR, resourceManager.getString('drilldown', 'missingFlavor'));
+					for each (var err:KalturaDistributionValidationErrorMissingFlavor in _flavorErrorsArray) {
+						errorDetails.addErrorDetail(getFlavorsError(err));
+					}
+					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(errorDetails);
+				}
+
+
+				private function onMissingMetadataErrorLink():void {
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.MISSING_METADATA, resourceManager.getString('drilldown', 'missingMetadata'));
+					errorDetails.showCustomDataBtn = true;
+					for each (var err:KalturaDistributionValidationErrorMissingMetadata in _metadataMissingArray) {
+						errorDetails.addErrorDetail(err.fieldName);
+					}
+
+					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(errorDetails);
+				}
+
+
+				private function onMetadataErrorLink():void {
+					//buildMockUpErrors();
+					var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('drilldown', 'metadataValidationFailed'));
+					for (var i:int = 0; i < _metadataErrorsArray.length; i++) {
+						if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
+							errorDetails.showCustomDataBtn = true;
+						errorDetails.addErrorDetail(returnValidationErroString(_metadataErrorsArray[i] as KalturaDistributionValidationErrorInvalidData), true);
+					}
+
+					PopUpManager.addPopUp(errorDetails, (Application.application as DisplayObject), true);
+					PopUpManager.centerPopUp(errorDetails);
+				}
+
+
+				/**
+				 * builds the suitable error string according to error type and uses error validation param
+				 * */
+				private function returnValidationErroString(error:KalturaDistributionValidationErrorInvalidData):String {
+					var errorString:String = '- ' + error.fieldName;
+					switch (error.validationErrorType) {
+						case KalturaDistributionValidationErrorType.STRING_EMPTY:
+							errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationRequired');
+							break;
+						case KalturaDistributionValidationErrorType.STRING_TOO_LONG:
+							errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationTooLong', new Array(error.validationErrorParam));
+							break;
+						case KalturaDistributionValidationErrorType.STRING_TOO_SHORT:
+							errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationTooShort', new Array(error.validationErrorParam));
+							break;
+						case KalturaDistributionValidationErrorType.INVALID_FORMAT:
+							errorString += ' ' + resourceManager.getString('drilldown', 'metadataValidationFormat', new Array(error.validationErrorParam));
+							break;
+						case KalturaDistributionValidationErrorType.CUSTOM_ERROR:
+							errorString = '- ' + error.validationErrorParam;
+					}
+					return errorString;
+				}
+
+				//for testing: until Tantan will create a use case that can demo these errors
+				/* 		private function buildMockUpErrors():void {
+				   _metadataErrorsArray = new Array();
+				   var err1:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				   err1.fieldName = "description";
+				   err1.validationErrorType = KalturaDistributionValidationErrorType.STRING_EMPTY;
+				   _metadataErrorsArray.push(err1);
+				   var err2:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				   err2.fieldName = "Name";
+				   err2.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_LONG;
+				   err2.validationErrorParam = "100";
+				   _metadataErrorsArray.push(err2);
+				   var err3:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				   err3.fieldName = "Tags";
+				   err3.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_SHORT;
+				   err3.validationErrorParam = "50";
+				   _metadataErrorsArray.push(err3);
+				   var err4:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				   err4.fieldName = "ttt";
+				   err4.validationErrorType = KalturaDistributionValidationErrorType.INVALID_FORMAT;
+				   err4.validationErrorParam = "flv";
+				   _metadataErrorsArray.push(err4);
+				   var err5:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
+				   err5.fieldName = "babbba";
+				   err5.validationErrorType = KalturaDistributionValidationErrorType.CUSTOM_ERROR;
+				   err5.validationErrorParam = "NOT good not good";
+				   _metadataErrorsArray.push(err5);
+
+				 } */
+			]]>
+		</mx:Script>
+
+		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" paddingLeft="0"
+				  paddingRight="0"/>
+		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('drilldown','distributionError')}"
+					   visible="{_distributionError}" includeInLayout="{_distributionError}"
+					   styleName="distributionError" click="{onDistributionErrorClick()}"/>
+
+
+		<mx:LinkButton id="missingThumbLink" label="{resourceManager.getString('drilldown','missingThumbnail')}"
+					   visible="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}"
+					   includeInLayout="{(_errorsVisible &amp;&amp; _thumbMissingErrorVisible)}"
+					   styleName="distributionError" click="{onThumbErrorLink()}"/>
+		<mx:LinkButton id="missingFlavorLink" label="{resourceManager.getString('drilldown','missingFlavor')}"
+					   visible="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}"
+					   includeInLayout="{(_errorsVisible &amp;&amp; _flavorMissingErrorVisible)}"
+					   styleName="distributionError" click="{onFlavorErrorClick()}"/>
+		<mx:LinkButton id="missingMetadataLink" label="{resourceManager.getString('drilldown','missingMetadata')}"
+					   visible="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
+					   includeInLayout="{(_errorsVisible &amp;&amp; _metadataMissingErrorVisible)}"
+					   styleName="distributionError" click="{onMissingMetadataErrorLink()}"/>
+		<mx:LinkButton id="invalidMetadataLink" label="{resourceManager.getString('drilldown','metadataError')}"
+					   visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
+					   includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
+					   styleName="distributionError" click="{onMetadataErrorLink()}"/>
+	</mx:Tile>
+</mx:VBox>

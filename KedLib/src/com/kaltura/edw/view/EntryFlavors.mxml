@@ -1,0 +1,798 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 Flavours tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*" width="100%" height="100%"
+		 creationComplete="onCreationComplete()" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" xmlns:edw="com.kaltura.edw.*" xmlns:view="com.kaltura.edw.view.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.kmc.modules.content.events.DropFolderEvent;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.kmc.modules.content.events.MediaEvent;
+			import com.kaltura.kmc.modules.content.events.ProfileEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.DropFolderModel;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+			import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
+			import com.kaltura.kmc.modules.content.view.window.flavors.MatchFromDropFolderWindow;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.kmc.modules.content.vo.UploadFileVo;
+			import com.kaltura.managers.FileUploadManager;
+			import com.kaltura.types.KalturaEntryReplacementStatus;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaFlavorAssetWithParams;
+			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+
+			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
+			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
+
+			[Bindable]
+			/**
+			 * show action buttons based on business logic
+			 * */
+			private var _showActions:Boolean;
+
+			[Bindable]
+			/**
+			 * show action buttons for no_content entry
+			 * (for r&p)
+			 * */
+			public var allowAddMedia:Boolean = true;
+
+			[Bindable]
+			/**
+			 * show action buttons for ready entry
+			 * (for r&p)
+			 * */
+			public var allowReplaceMedia:Boolean = true;
+
+			[Bindable]
+			/**
+			 * allow upload option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowUpload:Boolean = true;
+
+			[Bindable]
+			/**
+			 * allow match option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowMatchFromDrop:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * allow link option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowLink:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * allow import option, will be used in flavorAssetAction item renderer
+			 * (for r&p)
+			 * */
+			public var allowImport:Boolean = true;
+
+			[Bindable]
+			private var _approveEnabled:Boolean;
+
+
+			[Bindable]
+			private var _showReplacenentInfo:Boolean;
+			private var _selectedEntry:KalturaBaseEntry;
+
+			[Bindable]
+			public var flavorAssets:ArrayCollection;
+
+			private var _fileReferenceList:FileReferenceList;
+			private var _fileReference:FileReference;
+			private var _selectedFlavorWithParams:KalturaFlavorAssetWithParams;
+
+			private var _entryDetailsModel:EntryDetailsModel;
+			private var _dropFolderModel:DropFolderModel;
+			private var _flavorsWatcher:ChangeWatcher;
+
+			
+			
+			/*
+			 * watchers for binding to matchFromDropFolderWindow
+			 * */
+			private var _dfw1:ChangeWatcher;
+			private var _dfw2:ChangeWatcher;
+			private var _dfw3:ChangeWatcher;
+			
+			
+			/*
+			 * watchers for binding to addFlavorAssetsWindow
+			 * */
+			private var _convProfilesWatcher:ChangeWatcher;
+			private var _storageProfsWatcher:ChangeWatcher;
+			
+			/**
+			 * if there is a pending request to open drilldown
+			 * */
+			private var _drillDownClicked:Boolean = false;
+
+			private var _multiFlavorsIngestionAllowed:Boolean = true;
+			private var _replacementStatus:String;
+			private var _replacingEntryId:String;
+
+			/**
+			 * indicates if event listener to uploadManager.uploadStarted was already added
+			 * */
+			private var _listenToUpload:Boolean = false;
+
+			/**
+			 * entry status
+			 * */
+			private var _status:String;
+			
+			
+			public function get status():String {
+				return _status;
+			}
+			public function set status(value:String):void {
+				if (value && (!_status || (_status != value))) {
+//					refreshData(false);
+					_refreshOnce = true;
+					setTimeout(refreshOnce, 5);
+				}
+				_status = value;
+				selectedEntry = _selectedEntry;
+			}
+
+			/**
+			 * should flavor data be listed
+			 * */
+			private var _refreshOnce:Boolean;
+			
+			
+			/**
+			 * since refreshData is triggered by both set status and set replacement status, 
+			 * we get a redundant call if both change. this function removes one call.
+			 * */
+			private function refreshOnce():void {
+				if (_refreshOnce) {
+					refreshData(false);
+					_refreshOnce = false;
+				}
+			}
+			
+			public function get replacementStatus():String {
+				return _replacementStatus;
+			}
+			public function set replacementStatus(value:String):void {
+				if (_drillDownClicked) {
+					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
+						openReplacementDrilldown();
+					}
+					//if replacement entry doesn't exist anymore
+					else {
+						Alert.show(resourceManager.getString('drilldown', 'replacementNotExistMsg'), resourceManager.getString('drilldown', 'replacementNotExistTitle'));
+					}
+					_drillDownClicked = false;
+				}
+
+				if (value && (!_replacementStatus || (_replacementStatus != value))) {
+//					refreshData(false);
+					_refreshOnce = true;
+					setTimeout(refreshOnce, 5);
+				}
+				_replacementStatus = value;
+				selectedEntry = _selectedEntry;
+			}
+			
+
+			public function get replacingEntryId():String {
+				return _replacingEntryId;
+			}
+			
+			
+			public function set replacingEntryId(value:String):void {
+				//if we have a replacement entry that we didn't have before, request the entry from server
+				if (value && (!_replacingEntryId || (_replacingEntryId != value))) {
+					var getReferenceEntry:EntryEvent = new EntryEvent(EntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
+					getReferenceEntry.dispatch();
+				}
+				
+				_replacingEntryId = value;
+				selectedEntry = _selectedEntry;
+			}
+			
+
+
+			/**
+			 * allow multiple flavours to be ingested simultaneously
+			 * */
+			public function get multiFlavorsIngestionAllowed():Boolean {
+				return _multiFlavorsIngestionAllowed;
+			}
+
+
+			[Bindable]
+			/**
+			 * @private
+			 */
+			public function set multiFlavorsIngestionAllowed(value:Boolean):void {
+				_multiFlavorsIngestionAllowed = value;
+			}
+
+
+			[Bindable]
+			public function get dropFolderModel():DropFolderModel {
+				return _dropFolderModel;
+			}
+
+
+			public function set dropFolderModel(value:DropFolderModel):void {
+				_dropFolderModel = value;
+			}
+
+
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
+				//fix bug in performance
+				if (!_flavorsWatcher)
+					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", entryDetailsModel, "flavorParamsAndAssetsByEntryId");
+				//the following data is required for the actions buttons
+				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+				profileEvent.dispatch();
+				// if partner has remote storage feature, list profiles. 
+				if (_entryDetailsModel.remoteStorageEnabled) {
+					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
+					profileEvent.dispatch();
+				}
+				//to listen only once
+				if (!_listenToUpload) {
+					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = true;
+				}
+				
+				_refreshOnce = true;
+				setTimeout(refreshOnce, 5);
+			}
+
+
+			public function destroy():void {
+				dg.removeEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
+				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				dg.removeEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
+				dg.removeEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
+				if (_listenToUpload) {
+					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = false;
+				}
+				if (_flavorsWatcher)
+					_flavorsWatcher.unwatch();
+			}
+
+
+			/**
+			 * load flavors
+			 * */
+			private function refreshData(refreshEntry:Boolean):void {
+				if (_selectedEntry != null) {
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _selectedEntry);
+					cgEvent.dispatch();
+					if (refreshEntry) {
+						var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,_selectedEntry.id);
+						getSelectedEntry.dispatch();
+					}
+						
+				}
+			}
+
+
+			private function onCreationComplete():void {
+
+				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
+				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
+				dg.addEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
+				dg.addEventListener(FlavorsTable.IMPORT_FLAVOR, onFlavorImportSelected);
+			}
+
+
+			/**
+			 * open the AFAW with a single vo, representing relevant flavorAsset / assetParams.
+			 * @internal 
+			 * handler for dropdown "import" selection
+			 * */
+			private function onFlavorImportSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+				var filesList:ArrayCollection = new ArrayCollection(new Array(uploadFile));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, filesList, false);
+				//resets data
+				_selectedFlavorWithParams = null;
+			}
+
+			
+			/**
+			 * open the AFAW with a single vo, representing relevant flavorAsset / assetParams.
+			 * @internal 
+			 * handler for dropdown "link" selection
+			 * */
+			private function onFlavorLinkSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+				var filesList:ArrayCollection = new ArrayCollection(new Array(uploadFile));
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, filesList, false);
+				//resets data
+				_selectedFlavorWithParams = null;
+			}
+			
+			private function onFlavorsChanged(event:Event):void {
+				refreshData(true);
+			}
+
+
+			/**
+			 * will be called when selecting to upload a specific flavor
+			 * */
+			private function onFlavorUploadSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				uploadSingleFlavor();
+			}
+
+
+			private function onUploadBtnClick():void {
+				if (multiFlavorsIngestionAllowed)
+					uploadMultiFlavors();
+				else
+					uploadSingleFlavor();
+			}
+
+
+			/**
+			 * will open a browse window and allow a single selection
+			 * */
+			private function uploadSingleFlavor():void {
+				_fileReference = new FileReference();
+				var fileFilter:FileFilter = getTypeFilter(parseInt(_selectedEntry.mediaType));
+				if (fileFilter) {
+					_fileReference.addEventListener(Event.SELECT, onFlavorSelected);
+					_fileReference.browse(new Array(fileFilter));
+				}
+			}
+
+
+			/**
+			 * will open a browse window and allow multiple selection
+			 * */
+			private function uploadMultiFlavors():void {
+				_fileReferenceList = new FileReferenceList();
+				var fileFilter:FileFilter = getTypeFilter(parseInt(selectedEntry.mediaType));
+				if (fileFilter) {
+					_fileReferenceList.addEventListener(Event.SELECT, onFlavorsSelected);
+					_fileReferenceList.browse(new Array(fileFilter));
+				}
+			}
+
+
+			/**
+			 * user selects to match from a drop folder a selected flavor
+			 * */
+			private function onFlavorMatchSelected(event:Event):void {
+				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
+				openMatchFromDropFolderWindow();
+			}
+
+
+			/**
+			 * handles user selection for a single flavor
+			 * */
+			private function onFlavorSelected(event:Event):void {
+				_fileReference.removeEventListener(Event.SELECT, onFlavorSelected);
+
+				var uploadFile:UploadFileVo = new UploadFileVo();
+				uploadFile.fileName = _fileReference.name;
+				uploadFile.fileData = _fileReference;
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset)
+						uploadFile.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id
+					else if (_selectedFlavorWithParams.flavorParams)
+						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
+				}
+
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, new ArrayCollection(new Array(uploadFile)), false);
+				//resets data
+				_selectedFlavorWithParams = null;
+			}
+
+
+			[Bindable]
+			public function get entryDetailsModel():EntryDetailsModel {
+				return _entryDetailsModel;
+			}
+
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void {
+				_entryDetailsModel = value;
+			}
+
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (!value)
+					return;
+				
+				//TODO ugly solution until we add mid-destroy function to all IDrilldownPanel
+				if (_listenToUpload &&
+					((value is KalturaMixEntry) || 
+						((value is KalturaMediaEntry) && ((value as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE)))) {
+					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+					_listenToUpload = false;
+				}
+
+				_selectedEntry = value;
+
+				if (_selectedEntry.replacingEntryId) {
+					replacementEntryId.text = _selectedEntry.replacingEntryId;
+					_showActions = false;
+					_showReplacenentInfo = true;
+					_approveEnabled = true;
+
+					switch (_selectedEntry.replacementStatus) {
+						case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
+							_approveEnabled = false;
+						case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
+							stateLabel.text = resourceManager.getString('drilldown', 'readyState') + resourceManager.getString('drilldown', 'replacementProcessState');
+							replacementStatusBtn.label = resourceManager.getString('drilldown', 'processClickToReview');
+							break;
+						case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
+							stateLabel.text = resourceManager.getString('drilldown', 'readyState') + resourceManager.getString('drilldown', 'replacementRFRState');
+							replacementStatusBtn.label = resourceManager.getString('drilldown', 'readyClickToReview');
+							break;
+					}
+				}
+				else {
+					_showReplacenentInfo = false;
+					//sets labels according to entry's status
+					switch (_selectedEntry.status) {
+						case KalturaEntryStatus.NO_CONTENT:
+							stateLabel.text = resourceManager.getString('drilldown', 'noContentState');
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
+							//TODO add media text
+							break;
+						case KalturaEntryStatus.READY:
+							//if this is a replacement entry
+							if (_selectedEntry.replacedEntryId) {
+								stateLabel.text = resourceManager.getString('drilldown', 'replacementReadyState');
+								_showActions = false;
+							}
+							else {
+								stateLabel.text = resourceManager.getString('drilldown', 'readyState');
+								setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
+							}
+							break;
+						case KalturaEntryStatus.ERROR_CONVERTING:
+						case KalturaEntryStatus.ERROR_IMPORTING:
+							stateLabel.text = resourceManager.getString('drilldown', 'errorState');
+							setActionsLabel((_selectedEntry as KalturaMediaEntry).mediaType, _selectedEntry.status);
+							if (_selectedEntry.replacedEntryId) {
+								_showActions = false;
+							}
+							break;
+						default:
+							stateLabel.text = resourceManager.getString('drilldown', 'notReadyState');
+							_showActions = false;
+					}
+				}
+			}
+			
+			
+			/**
+			 * set actions box according to media type
+			 * @param mediaType	current entry's media type
+			 * */
+			private function setActionsLabel(mediaType:int, entryStatus:String):void {
+				_showActions = true;
+				if (mediaType == KalturaMediaType.VIDEO) {
+					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
+						actionLabel.text = resourceManager.getString('drilldown', 'addVideo');
+					}
+					else {
+						actionLabel.text = resourceManager.getString('drilldown', 'replaceVideo');
+					}
+				}
+				else if (mediaType == KalturaMediaType.AUDIO) {
+					if (entryStatus == KalturaEntryStatus.NO_CONTENT) {
+						actionLabel.text = resourceManager.getString('drilldown', 'addAudio');
+					}
+					else {
+						actionLabel.text = resourceManager.getString('drilldown', 'replaceAudio');
+					}
+				}
+			}
+
+
+			public function set hideColumns(value:String):void {
+				var cols:Array = value.split(',');
+				for (var col:String in cols) {
+					var arrCol:ArrayCollection = new ArrayCollection(dg.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('drilldown', cols[col])) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
+				}
+				dg.columns = arrCol.source;
+				for each (var col2:DataGridColumn in arrCol) {
+					col2.width = col2.width;
+				}
+			}
+
+
+			public function get hideColumns():String {
+				return '';
+			}
+
+
+			/**
+			 * returns the suitable fileFilter according to given mediaType
+			 * */
+			private function getTypeFilter(mediaType:int):FileFilter {
+				var fileFilter:FileFilter;
+				if (mediaType == KalturaMediaType.VIDEO)
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
+				else if (mediaType == KalturaMediaType.AUDIO)
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
+
+				return fileFilter;
+			}
+
+
+			/**
+			 * opens AddFlavorsAssetsWindow according to given params
+			 * @param action		the action to apply upon submit
+			 * @param filesList		list of UploadFileVo objects
+			 * @param allowAddFiles	should the popup allow adding more files after being opened
+			 * */
+			private function openAddFlavorsWindow(action:String, filesList:ArrayCollection, allowAddFiles:Boolean):void {
+				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
+				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
+				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", entryDetailsModel, "conversionProfsWFlavorParams");
+				_storageProfsWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "storageProfiles", entryDetailsModel, "storageProfiles");
+				addFlavorsAssetsWindow.filesList = filesList;
+				addFlavorsAssetsWindow.allowAddFiles = allowAddFiles;
+				addFlavorsAssetsWindow.windowAction = action;
+				addFlavorsAssetsWindow.flavorAssetName = _selectedFlavorWithParams ? _selectedFlavorWithParams.flavorParams.name : '';
+				addFlavorsAssetsWindow.entry = _selectedEntry;
+				addFlavorsAssetsWindow.addEventListener(AddFlavorAssetsWindow.CLOSE_WINDOW, onAddFlavorsWindowClose);
+				PopUpManager.addPopUp(addFlavorsAssetsWindow, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
+			}
+
+
+			/**
+			 * remove binding and close addFlavorAssetWindow
+			 * */
+			private function onAddFlavorsWindowClose(event:Event):void {
+				if (_convProfilesWatcher)
+					_convProfilesWatcher.unwatch();
+				if (_storageProfsWatcher)
+					_storageProfsWatcher.unwatch();
+				
+				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
+			}
+
+
+			/**
+			 * handle user files selection to upload
+			 * */
+			private function onFlavorsSelected(event:Event):void {
+				_fileReferenceList.removeEventListener(Event.SELECT, onFlavorsSelected);
+
+				var filesList:ArrayCollection = new ArrayCollection();
+				for each (var fileReference:FileReference in _fileReferenceList.fileList) {
+					var uploadFile:UploadFileVo = new UploadFileVo();
+					uploadFile.fileName = fileReference.name;
+					uploadFile.fileData = fileReference;
+					filesList.addItem(uploadFile);
+				}
+
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, filesList, true);
+			}
+
+
+			/**
+			 * opens another entry drill down window, for the replacement entry
+			 * */
+			private function onReplacementStautsBtnClick():void {
+				//replacement entry is processing - check for updates
+				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
+					entryDetailsModel.selectedEntryReloaded = false;
+					_drillDownClicked = true;
+					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryDetailsModel.selectedEntry.id);
+					getSelectedEntry.dispatch();
+				}
+				else {
+					openReplacementDrilldown();
+				}
+			}
+
+			
+			/**
+			 * opens another entry drill down window, for the replacement entry
+			 * */
+			private function openReplacementDrilldown():void {
+				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
+				openWindow.dispatch();
+			}
+
+
+			/**
+			 * cancel entry replacement
+			 * */
+			private function onCancelReplacementClick():void {
+				var cancelReplacement:MediaEvent = new MediaEvent(MediaEvent.CANCEL_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
+				cancelReplacement.dispatch();
+			}
+
+
+			/**
+			 * approve replacement
+			 * */
+			private function onApproveReplacementClick():void {
+				var approveReplacement:MediaEvent = new MediaEvent(MediaEvent.APPROVE_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
+				approveReplacement.dispatch();
+			}
+
+
+			private function openMatchFromDropFolderWindow():void {
+				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
+				var listFolders:DropFolderEvent;
+				if (_selectedFlavorWithParams) {
+					if (_selectedFlavorWithParams.flavorAsset) {
+						matchFromDropFodlerWin.flavorAssetId = _selectedFlavorWithParams.flavorAsset.id;
+					}
+					else if (_selectedFlavorWithParams.flavorParams) {
+						matchFromDropFodlerWin.flavorParamsId = _selectedFlavorWithParams.flavorParams.id;
+					}
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP | DropFolderEvent.MATCH_OR_NEW | DropFolderEvent.ADD_NEW);
+					listFolders.dispatch();
+				}
+				else {
+					listFolders = new DropFolderEvent(DropFolderEvent.LIST_FOLDERS, null, DropFolderEvent.MATCH_OR_KEEP | DropFolderEvent.MATCH_OR_NEW);
+					listFolders.dispatch();
+				}
+				matchFromDropFodlerWin.entry = _selectedEntry;
+				_dfw1 = BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dropFolderModel, "dropFolderFiles");
+				_dfw2 = BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dropFolderModel, "dropFolders");
+				_dfw3 = BindingUtils.bindProperty(matchFromDropFodlerWin, "conversionProfiles", _entryDetailsModel, "conversionProfsWFlavorParams");
+				matchFromDropFodlerWin.addEventListener(MatchFromDropFolderWindow.CLOSE_WINDOW, onDropFolderWindowClose);
+				PopUpManager.addPopUp(matchFromDropFodlerWin, Application.application as DisplayObject, true);
+				PopUpManager.centerPopUp(matchFromDropFodlerWin);
+				//resets data
+				_selectedFlavorWithParams = null;
+			}
+			
+			private function onDropFolderWindowClose(e:Event):void {
+				_dfw1.unwatch();
+				_dfw2.unwatch();
+				_dfw3.unwatch();
+				PopUpManager.removePopUp(e.target as MatchFromDropFolderWindow);
+				if ((e.target as MatchFromDropFolderWindow).isEntryRefreshRequired) {
+					refreshData(true);					
+				}
+			}
+
+
+			/**
+			 * @param entryState	show the actions button according to entry state
+			 * @param allowAdd		allow adding media to a no_content entry 
+			 * @param allowReplace	allow replacing media of a ready entry
+			 * */
+			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
+				var result:Boolean = entryState;
+				if (_selectedEntry && (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT )) {
+					result &&= allowAdd;
+				}
+				else {
+					result &&= allowReplace;
+				}
+				return result;
+			}
+
+			protected function onImportBtnClick(event:MouseEvent):void {
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
+			}
+
+
+			protected function onLinkBtnClick(event:MouseEvent):void
+			{
+				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
+			}
+
+		]]>
+	</mx:Script>
+
+
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','currentState')}" styleName="drillDownLabel"/>
+		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
+	</mx:HBox>
+	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}"
+			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
+		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
+		<mx:Button id="uploadFilesBtn" 
+				   label="{multiFlavorsIngestionAllowed ? resourceManager.getString('drilldown','uploadFiles') : resourceManager.getString('drilldown','uploadFile')}"
+				   click="{onUploadBtnClick()}" styleName="dataGridBtn"
+				   visible="{allowUpload}" includeInLayout="{allowUpload}"/>
+		<mx:Button id="importFilesBtn" 
+				   label="{multiFlavorsIngestionAllowed ? resourceManager.getString('drilldown','importFiles') : resourceManager.getString('drilldown','importFile')}"
+				   click="onImportBtnClick(event)" styleName="dataGridBtn"
+				   visible="{allowImport}" includeInLayout="{allowImport}"/>
+		<mx:Button id="linkFilesBtn" label="{resourceManager.getString('drilldown','linkRemote')}"
+				   click="onLinkBtnClick(event)" styleName="dataGridBtn"
+				   visible="{allowLink}" includeInLayout="{allowLink}"/>
+		<mx:Button id="matchFromDropBtn" label="{resourceManager.getString('drilldown','matchFromDrop')}"
+				   click="{openMatchFromDropFolderWindow()}" styleName="dataGridBtn"
+				   visible="{allowMatchFromDrop}" includeInLayout="{allowMatchFromDrop}"/>
+	</mx:HBox>
+	<mx:VBox visible="{_showReplacenentInfo}" includeInLayout="{_showReplacenentInfo}" width="100%"
+			 styleName="flavorsReplacementVBox" >
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('drilldown','replementDetailsTitle')}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','replacementNote')}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox id="replacementInfoHBox" horizontalGap="0">
+			<mx:Label text="{resourceManager.getString('drilldown','replacementEntryId')}" styleName="drillDownLabel"/>
+			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
+			<mx:Label text="|" width="15" enabled="false"/>
+			<mx:Label text="{resourceManager.getString('drilldown','status') + ':'}" styleName="drillDownLabel"/>
+			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStautsBtnClick()}"/>
+			<mx:HBox id="replacementActionsHBox" horizontalGap="0" paddingLeft="0">
+				<mx:Label text="|" width="15" enabled="false"/>
+				<mx:LinkButton label="{resourceManager.getString('drilldown','cancelReplacement')}"
+							   click="{onCancelReplacementClick()}" styleName="deleteIcon"/>
+				<mx:Label text="/" width="15" enabled="false"/>
+				<mx:LinkButton label="{resourceManager.getString('drilldown','approveReplacement')}"
+							   click="{onApproveReplacementClick()}" styleName="yesIcon" enabled="{_approveEnabled}"/>
+			</mx:HBox>
+		</mx:HBox>
+	</mx:VBox>
+	<mx:HRule width="100%"/>
+	<mx:HBox width="100%">
+		<mx:Text text="{resourceManager.getString('drilldown','flavorAssetsDescription')}" width="100%" />
+		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('drilldown','refresh')}" styleName="recycleIcon"/>
+	</mx:HBox>
+	<view:FlavorsTable id="dg" flavorAssets="{flavorAssets}"/>
+
+</mx:VBox>

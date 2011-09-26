@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	single custom metadata of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete(event)"
+		 styleName="customDataProfileContainer" width="100%">
+<mx:Script>
+	<![CDATA[
+		import com.kaltura.commands.uiConf.UiConfAdd;
+		import com.kaltura.kmc.business.PermissionManager;
+		import com.kaltura.kmc.modules.content.events.MetadataDataEvent;
+		import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
+		import com.kaltura.kmc.modules.content.utils.FormBuilder;
+		import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
+		import com.kaltura.types.KalturaMetadataProfileStatus;
+		import com.kaltura.vo.KMCMetadataProfileVO;
+		
+		import mx.binding.utils.BindingUtils;
+		import mx.binding.utils.ChangeWatcher;
+		import mx.controls.Alert;
+		import mx.core.Application;
+		import mx.core.Container;
+		import mx.core.UIComponent;
+
+		public static const SCROLL_TO_TOP:String = "scrollToTop";
+		
+		public var metadataViewWatcher:ChangeWatcher;
+		
+		private var _pending:Boolean = false;
+		private var _form:UIComponent ;
+		private var _isReady:Boolean = false;
+		
+		private var _finalMxml:XML;
+		private var _formBuilder:FormBuilder;
+		private var _isFormReady:Boolean = false;
+		
+		
+		//roles and permissions: if we can edit metadata
+		private var _metadataEditable:Boolean = true;
+
+		[Bindable]
+		public function get metadataEditable():Boolean
+		{
+			return _metadataEditable;
+		}
+
+		public function set metadataEditable(value:Boolean):void
+		{
+			_metadataEditable = value;
+			if (_form && !value) {
+				formBuilder.disableComponents(_form as Container);
+			}
+		}
+
+		/**
+		 * The form builder for current custom data tab
+		 * */
+		public function get formBuilder():FormBuilder
+		{
+			return _formBuilder;
+		}
+
+		public function set formBuilder(value:FormBuilder):void
+		{
+			_formBuilder = value;
+			if (!_isFormReady && _isReady)
+				checkProfile();
+			_isFormReady = true;
+			if (_finalMxml) 
+				buildForm();
+		}
+
+		private function onCreationComplete(event:Event):void {
+			PermissionManager.getInstance().applyAllAttributes(this, "entryCustomData");
+			if (_isFormReady)
+				checkProfile();
+			_isReady= true;
+			
+		
+		}
+		
+		/**
+		 * once the window is ready and all relvent data is ready we should check for the
+		 * state of the profile
+		 * */
+		private function checkProfile():void {
+			if (!_formBuilder.metadataProfile || !_formBuilder.metadataProfile.profile)
+				return;
+			_formBuilder.metadataInfo = new EntryMetadataDataVO();
+			profileName.text =  _formBuilder.metadataProfile.profile.name;
+			if (_formBuilder.metadataProfile && _formBuilder.metadataProfile.profile &&
+				(_formBuilder.metadataProfile.profile.status == KalturaMetadataProfileStatus.TRANSFORMING)) {
+				//if current profile is transforming, will request it again from the server, to see if ready
+				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET, _formBuilder.metadataProfile.profile.id);
+				getMetadataProfile.dispatch();
+				_pending = true;
+			}
+			else {
+				metadataViewWatcher = BindingUtils.bindSetter(addForm, _formBuilder,["metadataInfo","finalViewMxml"]);
+			}
+		}
+		
+		
+		/**
+		 * not building a form if metadataProfile is pending
+		 * */
+		public function onShow():void {
+			if (_pending) {
+				Alert.show(profileName.text + ' ' +resourceManager.getString('drilldown', 'metadataPending'), resourceManager.getString('drilldown', 'metadataPendingTitle'));
+			}
+		}
+		
+		/**
+		 * will be called when the final mxml is ready
+		 * */
+		private function addForm(finalMxml:XML) : void{
+			if (finalMxml) {
+				_finalMxml = finalMxml;
+				if (_isFormReady) 
+					buildForm();
+			}
+		}
+		
+		/**
+		 * once the formBuilder and the _finalmxml are available we can build the form
+		 * */
+		private function buildForm():void {
+			_form = formBuilder.buildLayout(_finalMxml);
+			//clear old data
+			all.removeAllChildren();
+			all.addChild(_form);
+			if (_form && !all.enabled) {
+				formBuilder.disableComponents(_form as Container);
+			}
+		}
+		
+		public function destroy():void {
+			if (metadataViewWatcher)
+				metadataViewWatcher.unwatch();
+		}
+
+	]]>
+</mx:Script>
+
+	<mx:Label id="profileName" styleName="drillDownTitleLabel"/>
+	<mx:VBox id="all" width="100%" disabledOverlayAlpha="0" enabled="{metadataEditable}"/>
+	<mx:HBox width="100%" horizontalAlign="right">
+		
+		<mx:LinkButton label="{resourceManager.getString('drilldown','backToTop')}" styleName="upIconBtn" click="{dispatchEvent(new Event(SCROLL_TO_TOP))}"/>
+	</mx:HBox>
+	
+<!--	<mx:HRule width="100%"/>-->
+<!--	<mx:Spacer height="16"/>-->
+</mx:VBox>

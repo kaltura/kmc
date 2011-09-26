@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 scheduling tab of EntryDetailsWin.
+	 also used in SetSchedulingWin.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
+		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" 
+		 creationComplete="onCreationComplete()">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.business.IDrilldownPanel;
+			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
+			import com.kaltura.utils.KUtils;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.controls.Alert;
+
+			public static const POP_UP_MODE:String = 'popUpMode';
+
+			private var _selectedEntry:KalturaBaseEntry;
+			private var _timeManager:DateFieldWithTimeStepperLogic;
+
+			[Bindable]
+			/**
+			 * roles and permissions way of disabling
+			 * things that are already bound to app logic
+			 * */
+			public var editable:Boolean = true;
+
+			/**
+			 * @inheritDoc
+			 * 
+			 * @internal
+			 * this panel doesn't require any special data, so the implementation is empty
+			 * */
+			public function initData():void {
+				
+			}
+			
+			/**
+			 * @inheritDoc
+			 * 
+			 * @internal
+			 * this panel doesn't require any special destructors, so the implementation is empty
+			 * */
+			public function destroy():void {
+				
+			}
+
+			private function onCreationComplete():void {
+				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
+
+			}
+
+
+			private function isInit():Boolean {
+				return (spcificRangeRBtn != null);
+			}
+
+
+			public function getStartTime():int {
+				return (anyTimeRBtn.selected || (sepcificStartDate.selectedDate == null)) ? -1 : getTimeInSeconds(sepcificStartDate, sepcificStartHour);
+			}
+
+
+			public function getEndTime():int {
+				return (anyTimeRBtn.selected || !specificEndCBBtn.selected || (specificEndDate.selectedDate == null)) ? -1 : getTimeInSeconds(specificEndDate, specificEndHour);
+			}
+
+
+			/**
+			 * return true if dates were changed
+			 * */
+			public function wasChanged():Boolean {
+				var startTime:int = getStartTime();
+				var endTime:int = getEndTime();
+
+				//start time was reset
+				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
+					return true;
+				//start time was changed
+				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
+					return true;
+				//end time was reset
+				if ((_selectedEntry.endDate != int.MIN_VALUE) && (endTime < 0))
+					return true;
+				//end time was changed
+				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
+					return true;
+
+				return false;
+			}
+
+
+			/**
+			 * see all data on the panel is legal and save data
+			 * @return an object with error code
+			 * */
+			public function save():EntryDetailsValidationError {
+				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+
+				// scheduling section 
+				if (isInit()) {
+					var startTime:int = getStartTime();
+					var endTime:int = getEndTime();
+
+					_selectedEntry.startDate = startTime;
+					_selectedEntry.endDate = endTime;
+
+
+					if (spcificRangeRBtn.selected && sepcificStartDate.selectedDate == null) {
+						result.error = EntryDetailsValidationError.SCHEDULING_START_DATE;
+					}
+					else if (specificEndCBBtn.selected && specificEndDate.selectedDate == null) {
+						result.error = EntryDetailsValidationError.SCHEDULING_END_DATE;
+					}
+				}
+				// if the panel didn't init no data was changed and therefore is legal. hopefully.
+				return result;
+			}
+
+
+			private function setSchedulerData():void {
+				if (_selectedEntry != null) {
+					var startTime:int = _selectedEntry.startDate;
+					var endTime:int = _selectedEntry.endDate;
+
+					if (((startTime == -1) || (startTime == int.MIN_VALUE)) && ((endTime == -1) || (endTime == int.MIN_VALUE))) {
+						anyTimeRBtn.selected = true;
+						clearDates();
+					}
+					else {
+						spcificRangeRBtn.selected = true;
+						specificEndCBBtn.selected = (endTime != int.MIN_VALUE) && (endTime != -1);
+
+						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
+							var startDate:Date = new Date(startTime * 1000);
+							sepcificStartDate.selectedDate = startDate;
+							_timeManager.setTime(sepcificStartHour, startDate.hours, startDate.minutes);
+						}
+						else {
+							// else clear values 
+							sepcificStartDate.selectedDate = null;
+							setTime(sepcificStartHour, 0, 0);
+						}
+
+						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
+							var endDate:Date = new Date(endTime * 1000);
+							specificEndDate.selectedDate = endDate;
+							_timeManager.setTime(specificEndHour, endDate.hours, endDate.minutes);
+						}
+						else {
+							// else clear values 
+							specificEndDate.selectedDate = null;
+							setTime(specificEndHour, 0, 0);
+						}
+
+					}
+				}
+			}
+
+
+			private function setTime(timeEntry:SM_TimeEntry, hours:int, minutes:int):void {
+				timeEntry.minute = minutes;
+				timeEntry.am_pm = hours >= 12 ? 'pm' : 'am'
+				timeEntry.hour = hours % 12;
+				if (timeEntry.hour == 0) {
+					timeEntry.hour = 12;
+				}
+			}
+
+
+			private function onGridCreationComplete(event:Event):void {
+				var today:Date = new Date();
+				sepcificStartDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
+				specificEndDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
+				setSchedulerData();
+			}
+
+			private var oldStartDate:Date = null;
+			private var oldEndDate:Date = null;
+
+
+			private function validateTimes():void {
+				_timeManager.validateTimes();
+			}
+
+
+			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
+				var seconds:int = 0;
+				seconds += dateField.selectedDate.time / 1000;
+				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
+				return seconds;
+			}
+
+
+
+
+			private function clearDates():void {
+				sepcificStartDate.selectedDate = null;
+				setTime(sepcificStartHour, 0, 0);
+				specificEndDate.selectedDate = null;
+				setTime(specificEndHour, 0, 0);
+			}
+
+
+			private function setTimeZoneLabel():void {
+				var now:Date = new Date();
+				var zoneTimeOffset:int = (now.getTimezoneOffset() / 60) * (-1);
+				var ztStr:String = (zoneTimeOffset == 0) ? '' : (zoneTimeOffset > 0) ? ('+' + zoneTimeOffset) : zoneTimeOffset + '';
+				timeZoneLabel.text = resourceManager.getString('drilldown', 'timeOffsetLabel').replace("(NUM)", ztStr);
+			}
+
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
+				_selectedEntry = selectedEntry;
+				setSchedulerData();
+			}
+
+
+			private function timeGroup_changeHandler(event:Event):void {
+				if (anyTimeRBtn.selected) {
+					specificEndCBBtn.selected = false;
+				}
+				else {
+					validateTimes()
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:states>
+		<mx:State name="{POP_UP_MODE}">
+			<!--<mx:RemoveChild target="{label1}"/>-->
+		</mx:State>
+	</mx:states>
+	<mx:VBox id="topContainer" width="100%" height="100%">
+
+		<!--<mx:Label text="{resourceManager.getString('drilldown', 'entrySchedulingTitle')}" styleName="drillDownTitleLabel"
+			 id="label1"/>-->
+		<mx:RadioButtonGroup id='timeGroup' change="timeGroup_changeHandler(event)"/>
+		<mx:RadioButton label="{resourceManager.getString('drilldown', 'ANY_TIME')}" groupName="timeGroup" id="anyTimeRBtn"
+						selected="true"/>
+		<mx:RadioButton label="{resourceManager.getString('drilldown', 'rangeRadioBtn')}" groupName="timeGroup"
+						id="spcificRangeRBtn"/>
+		<mx:VBox width="100%">
+			<mx:Grid verticalGap="10" creationComplete="onGridCreationComplete(event)">
+				<mx:GridRow width="100%" height="30">
+					<mx:GridItem width="100%" height="100%" colSpan="4" horizontalAlign="center">
+						<mx:Label width="100%" id='timeZoneLabel' enabled="{spcificRangeRBtn.selected}"
+								  creationComplete="{setTimeZoneLabel()}"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="30">
+					<mx:GridItem width="100%" height="100%">
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="right" verticalAlign="middle">
+						<mx:Label text="{resourceManager.getString('drilldown', 'startDateLabel')}"
+								  enabled="{spcificRangeRBtn.selected}"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<mx:DateField id='sepcificStartDate' showToday="true" width="120"
+									  enabled="{KUtils.logicalAnd(editable, spcificRangeRBtn.selected)}"
+									  change="validateTimes()"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true" id="sepcificStartHour"
+											   styleName="timeEntry"
+											   enabled="{KUtils.logicalAnd(editable, spcificRangeRBtn.selected)}"
+											   click="validateTimes()"/>
+					</mx:GridItem>
+				</mx:GridRow>
+				<mx:GridRow width="100%" height="30">
+					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<mx:CheckBox id="specificEndCBBtn"
+									 enabled="{KUtils.logicalAnd(editable, spcificRangeRBtn.selected)}"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="right" verticalAlign="middle">
+						<mx:Label text="{resourceManager.getString('drilldown', 'endDateLabel')}"
+								  enabled="{KUtils.logicalAnd(specificEndCBBtn.selected, spcificRangeRBtn.selected)}"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<mx:DateField 
+									  enabled="{KUtils.logicalAnd(editable, KUtils.logicalAnd(specificEndCBBtn.selected, spcificRangeRBtn.selected))}"
+									  id='specificEndDate' width="120" change="validateTimes()"/>
+					</mx:GridItem>
+					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true"
+											   enabled="{KUtils.logicalAnd(editable, KUtils.logicalAnd(specificEndCBBtn.selected, spcificRangeRBtn.selected))}"
+											   id='specificEndHour' styleName="timeEntry" click="validateTimes()"/>
+					</mx:GridItem>
+				</mx:GridRow>
+			</mx:Grid>
+			<mx:LinkButton id='clearDatesBtn' label="{resourceManager.getString('drilldown', 'clearDates')}"
+						   enabled="{spcificRangeRBtn.selected}" click="clearDates()" height="17"
+						   styleName="clearDateButton"/>
+		</mx:VBox>
+	</mx:VBox>
+</mx:VBox>

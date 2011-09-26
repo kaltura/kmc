@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- This window holds a list of available distributors and their distribution state -->
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="550" height="500"
+				title="{resourceManager.getString('drilldown','selectDistributors')}" layout="vertical"
+				showCloseButton="true" close="onClose()"
+				paddingLeft="15" paddingRight="15"
+				styleName="TitleWindowType2"
+				backgroundColor="#f7f7f7"
+				creationComplete="{onCreationComplete()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.types.KalturaDistributionProfileActionStatus;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaDistributionProfile;
+			import com.kaltura.vo.KalturaDistributionThumbDimensions;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			import com.kaltura.vo.KalturaThumbAsset;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			public var selectedEntry:KalturaBaseEntry;
+			[Bindable]
+			private var _distributionDataProvider:Array;
+			public var entryFlavors:ArrayCollection;
+			public var entryThumbs:Array;
+			//permission to add distributions
+			public var enableAddDistribution:Boolean = true;
+			//permission to distribute
+			public var enableDistribution:Boolean = true;
+			//permission to remove distributions
+			public var enableRemoveDistribution:Boolean = true;
+			
+			
+			private function onCreationComplete():void {
+				this.mx_internal::closeButton.buttonMode = true;
+			}
+			
+			private function onClose():void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			
+			/**
+			 * This function sets the given values and builds the window components according
+			 * to its input
+			 * */
+			public function buildDistributorsWindow(distributionProfiles:Array, entryDistributions:Array):void {
+				PermissionManager.getInstance().applyAllAttributes(this, "selectDistributorsWindow");	
+				//containes all profiles that entries weren't distributed to them yet
+				var unusedDistributionProfiles:ArrayCollection = new ArrayCollection(distributionProfiles.concat());
+			
+				_distributionDataProvider = new Array;
+				for each (var distribution:EntryDistributionWithProfile in entryDistributions) {	
+					if ((distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.QUEUED) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.PENDING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.READY) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.ERROR_DELETING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.ERROR_SUBMITTING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.ERROR_UPDATING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.DELETING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.SUBMITTING) ||
+						(distribution.kalturaEntryDistribution.status ==KalturaEntryDistributionStatus.UPDATING)) 
+					{
+						distribution.distributorSelected = distribution.distributorInitState = true;
+					}	
+					setAutomaticDistribute(distribution);
+					_distributionDataProvider.push(distribution);
+					unusedDistributionProfiles.removeItemAt(unusedDistributionProfiles.getItemIndex(distribution.kalturaDistributionProfile));					
+				}
+				
+				for each (var profile:KalturaDistributionProfile in unusedDistributionProfiles) {
+					var newDistributionWithProfile:EntryDistributionWithProfile = new EntryDistributionWithProfile();
+					var newDistribution:KalturaEntryDistribution = new KalturaEntryDistribution();
+					newDistribution.entryId = selectedEntry.id;
+					newDistribution.distributionProfileId = profile.id;
+					newDistributionWithProfile.kalturaEntryDistribution = newDistribution;
+					newDistributionWithProfile.kalturaDistributionProfile = profile;
+					setAutomaticDistribute(newDistributionWithProfile);
+					_distributionDataProvider.push(newDistributionWithProfile);
+				}	
+			} 
+			
+			/**
+			 * sets whether the entry is automatic distributed or not
+			 * */
+			private function setAutomaticDistribute(distribution:EntryDistributionWithProfile) : void {
+				if ((distribution.kalturaDistributionProfile.submitEnabled == KalturaDistributionProfileActionStatus.AUTOMATIC) ||
+					(distribution.kalturaEntryDistribution.status == KalturaEntryDistributionStatus.QUEUED)) {
+					distribution.distributeAutomatically = true;
+				}
+			}
+			
+			/**
+			 * Sends update to the server with all distribution points that were changed
+			 * */
+			private function apply():void {
+				var addDistributors:Array = new Array();
+				var removeDistributors:Array = new Array();
+				var profilesToUpdate:Array = new Array();
+				for each (var distribution:EntryDistributionWithProfile in _distributionDataProvider) {
+					if (distribution.distributorInitState && !distribution.distributorSelected) {
+						removeDistributors.push(distribution.kalturaEntryDistribution);
+					}
+					else if (!distribution.distributorInitState && distribution.distributorSelected) {
+						if (distribution.distributeAutomatically) {
+							distribution.manualQualityControl = false;
+						}
+						addDistributors.push(distribution);
+					}
+				}
+				
+				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE_LIST, addDistributors, removeDistributors);
+				updateEntryDistributions.dispatch();
+				
+				PopUpManager.removePopUp(this);
+			}
+			
+			/**
+			 * selects all/none of the given column id
+			 * */
+			public function selectAll(value:Boolean, columnID:int) : void {
+				for each (var entryDis:EntryDistributionWithProfile in _distributionDataProvider) {
+					if (columnID == 0) {
+						if (entryDis.enableSelectingDistributor)
+							entryDis.distributorSelected = value;
+					}
+					else {
+						if (entryDis.enableAutomaticSubmission)
+							entryDis.distributeAutomatically = value;
+					} 
+				}
+			}
+		
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('drilldown','distributors')}" styleName="drillDownTitleLabel"/>
+	<mx:Text text="{resourceManager.getString('drilldown','selectDistributorsText')}" width="100%"/>
+	<mx:Spacer height="4"/>
+	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_distributionDataProvider}" draggableColumns="false" 
+				 sortableColumns="false" selectable="false" rowHeight="40">
+		<mx:columns>
+			<mx:DataGridColumn width="235" itemRenderer="com.kaltura.edw.view.distribution.DistributorComponent">
+				<mx:headerRenderer>
+					<mx:Component>
+						<mx:HBox width="100%" horizontalGap="0" paddingLeft="6" paddingRight="6"  horizontalScrollPolicy="off" paddingTop="0" paddingBottom="0">
+							<mx:Label text="{resourceManager.getString('drilldown','distributorName')}"/>
+							<mx:Spacer width="100%"/>
+							<mx:LinkButton id="allDistributorsBtn" width="25" label="{resourceManager.getString('drilldown','allButton')}" styleName="selectionLinkbutton" click="{outerDocument.selectAll(true, 0)}"/>
+							<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
+							<mx:LinkButton id="noneDistributorsBtn" width="30" label="{resourceManager.getString('drilldown','noneButton')}" styleName="selectionLinkbutton" click="{outerDocument.selectAll(false, 0)}"/>
+						</mx:HBox>	
+					</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn width="235" itemRenderer="com.kaltura.edw.view.distribution.DistributeWhenReadyComponent">
+				<mx:headerRenderer>
+					<mx:Component>
+						<mx:HBox width="100%" horizontalGap="0" paddingLeft="6" paddingRight="6" horizontalScrollPolicy="off" paddingTop="0" paddingBottom="0">
+							<mx:Label text="{resourceManager.getString('drilldown','notManualQC')}"/>
+							<mx:Spacer width="100%"/>
+							<mx:LinkButton id="allDWRBtn" width="25" label="{resourceManager.getString('drilldown','allButton')}" click="{outerDocument.selectAll(true, 1)}"  styleName="selectionLinkbutton"/>
+							<mx:Label width="10" text="/" styleName="buttonsSeperatorLabel"/>
+							<mx:LinkButton id="noneDWRBtn" width="30" label="{resourceManager.getString('drilldown','noneButton')}" click="{outerDocument.selectAll(false, 1)}" styleName="selectionLinkbutton"/>
+						</mx:HBox>
+					</mx:Component>
+				</mx:headerRenderer>
+			</mx:DataGridColumn>
+		
+		</mx:columns>
+	</mx:DataGrid>
+
+
+	<mx:ControlBar>
+		<mx:Button id="applyBtn" label="{resourceManager.getString('drilldown', 'apply')}" click="apply()"
+				   buttonMode="true"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

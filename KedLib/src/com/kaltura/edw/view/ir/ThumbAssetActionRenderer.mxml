@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle" horizontalAlign="left" paddingLeft="6"
+		 verticalGap="0">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			private var _thumbAsset:ThumbnailWithDimensions;
+			[Bindable]
+			private var _enableActions:Boolean;
+			[Bindable]
+			private var _enableDelete:Boolean;
+			[Bindable]
+			private var _isDefault:Boolean;
+			
+			override public function set data(value:Object):void {
+				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
+				if (thumbsWithDimensions.thumbAsset) {
+					_thumbAsset = thumbsWithDimensions;
+					if (_thumbAsset.thumbAsset.tags == ThumbnailWithDimensions.DEFAULT_THUMB)
+						_isDefault = true;
+					else
+						_isDefault = false;
+					
+					if (_thumbAsset.thumbAsset.status == KalturaFlavorAssetStatus.READY) {
+						_enableActions = true;
+						return;
+					}
+					if (_thumbAsset.thumbAsset.status == KalturaFlavorAssetStatus.ERROR) {
+						_enableDelete = true;
+						_enableActions = false;
+						return;
+					}
+				}
+				
+				_enableDelete = false;
+				_enableActions = false;
+			}
+			
+			
+			protected function setDefaultClickHandler(event:MouseEvent):void
+			{
+				var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, _thumbAsset);
+				setDefaultEvent.dispatch();
+			}
+			
+			protected function deleteClickHandler(event:MouseEvent):void
+			{
+				Alert.show(resourceManager.getString('drilldown','deleteThumbnailMsg'), resourceManager.getString('drilldown','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);	
+			}
+			
+			protected function downloadClickHandler(event:MouseEvent):void
+			{
+				var urlRequest:URLRequest = new URLRequest(_thumbAsset.thumbUrl);
+				navigateToURL(urlRequest , '_self');
+			}
+			
+			private function deleteHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
+					deleteThumbEvent.dispatch();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:LinkButton label="{resourceManager.getString('drilldown', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{!_isDefault &amp;&amp; _enableActions}" styleName="setDefaultLinkButton"/>
+	<mx:LinkButton label="{resourceManager.getString('drilldown', 'download')}" click="downloadClickHandler(event)" enabled="{_enableActions}" styleName="downloadThumbLinkButton"/>	
+	<mx:LinkButton label="{resourceManager.getString('drilldown', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(!_isDefault &amp;&amp; (_enableActions || _enableDelete))}" styleName="deleteThumbLinkButton"/>	
+</mx:VBox>

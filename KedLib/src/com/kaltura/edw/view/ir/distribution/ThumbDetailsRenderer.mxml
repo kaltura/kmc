@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" horizontalAlign="center" paddingLeft="5" paddingRight="5" borderSides="right" borderStyle="solid">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			[Bindable]
+			private var _dimensionsString:String;
+			[Bindable]
+			private var _visibleImg:Boolean;
+			[Bindable]
+			private var _noneVisibe:Boolean;
+			private var _thumbArray:Array;
+			private var _lastIndex:int = 0;
+			private var _oldId:String = "";
+			
+			override public function set data(value:Object):void {
+				if (!value)
+					return;
+		
+				var thumbnail:ThumbnailWithDimensions;
+				if (value is Array) {
+					_thumbArray = value as Array;
+					thumbnail = _thumbArray[_lastIndex] as ThumbnailWithDimensions;
+					_visibleImg = true;
+					if (!thumbnail.thumbAsset) {
+						_noneVisibe = true;
+						_oldId  = '';
+					}
+				}
+				//when we are missing thumbnails and have no thumbnails to swap
+				else {
+					thumbnail = value as ThumbnailWithDimensions;
+					_visibleImg = false;
+				}
+				
+				_dimensionsString = thumbnail.width + ' X ' + thumbnail.height;
+				if (thumbnail.thumbUrl && thumbnail.thumbAsset) {
+					img.source = thumbnail.thumbUrl;
+					_oldId = thumbnail.thumbAsset.id;
+				}
+				
+			}
+			
+			private function onSwapBtnClick():void {
+				var newID:String;
+				_lastIndex = (_lastIndex + 1) % _thumbArray.length;
+				var thumbnail:ThumbnailWithDimensions = _thumbArray[_lastIndex];
+				if (!thumbnail.thumbAsset) {
+					_noneVisibe = true;
+					newID  = '';
+				}
+				else {
+					_noneVisibe = false;
+					wipeLeft.play();
+					newID = thumbnail.thumbAsset.id
+					img.source = thumbnail.thumbUrl;
+				}
+
+				parentDocument.swapThumbs(_oldId, newID);
+				_oldId = newID;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:WipeLeft id="wipeLeft" duration="500" target="{img}"/>
+	<mx:Label id="dimensionsLabel" text="{_dimensionsString}"/>
+	<mx:Image horizontalAlign="center" verticalAlign="middle" id="img" width="90" height="90" visible="{_visibleImg &amp;&amp; !_noneVisibe}"
+			  includeInLayout="{!_noneVisibe}"/>
+	<mx:VBox verticalAlign="middle" horizontalAlign="center" width="90" height="90" visible="{_noneVisibe}" includeInLayout="{_noneVisibe}">
+		<mx:Label text="{resourceManager.getString('drilldown','emptyThumbnail')}" fontWeight="bold"/>
+	</mx:VBox>
+	<mx:Label id="missingLbl" bottom="5" visible="{!_visibleImg}" includeInLayout="{!_visibleImg}" text="{resourceManager.getString('cms','missing')}"/>
+	<mx:HBox horizontalAlign="center" width="100%" horizontalGap="0" bottom="5" visible="{_visibleImg}" includeInLayout="{_visibleImg}">
+		<mx:LinkButton id="swapBtn" visible="{_visibleImg}" includeInLayout="{_visibleImg}"
+					   label="{resourceManager.getString('drilldown','swap')}" click="{onSwapBtnClick()}"
+					   enabled="{parentDocument.enableChanges}"/>
+	</mx:HBox>
+
+	
+</mx:VBox>

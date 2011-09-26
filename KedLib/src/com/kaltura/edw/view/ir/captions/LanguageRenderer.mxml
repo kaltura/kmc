@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.view.EntryCaptions2;
+			import com.kaltura.edw.view.captions.CaptionsTable;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+
+
+			override public function set data(value:Object):void {
+				super.data = value;
+				var vo:EntryCaptionVO = value as EntryCaptionVO;
+				if (vo.caption.language) {
+					for (var i:int = 0; i < EntryCaptions2.LANGUAGES_ARRAY.length; i++) {
+						if (String(EntryCaptions2.LANGUAGES_ARRAY[i]) == vo.caption.language) {
+							languageCB.selectedIndex = i;
+							break;
+						}
+					}
+				}
+				else {
+					languageCB.selectedIndex = -1;
+				}
+			}
+
+
+			protected function languageCB_changeHandler(event:ListEvent):void {
+				dispatchEvent(new Event(CaptionsTable.LANGUAGE_CHANGED, true));
+			}
+
+
+			public function getValue():String {
+				return languageCB.selectedItem.toString();
+			}
+
+//			protected function languageCB_updateCompleteHandler(event:FlexEvent):void
+//			{
+//				languageCB.percentWidth = 90;
+//			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="languageCB" enabled="{EntryCaptionVO.editable}" width="160" 
+				 dataProvider="{EntryCaptions2.LANGUAGES_ARRAY}" change="languageCB_changeHandler(event)" 
+				 prompt="{resourceManager.getString('drilldown','languagePrompt')}"/>
+</mx:VBox>

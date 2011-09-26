@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="contentVbox"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel"
+		 xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:controls="com.kaltura.controls.*" >
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+		
+			[Bindable]
+			public var selectedEntry:KalturaBaseEntry;
+			
+			[Bindable]
+			public var parts:Array;
+			
+			/**
+			 * indicates the current entry is a livestream entry
+			 * */
+			public var isLiveStream:Boolean;
+			
+			/**
+			 * to watch when <code>selectedEntry.parts</code> change
+			 * */
+			private var _cw:ChangeWatcher;
+			
+			/**
+			 * whether we should load roughcuts
+			 * */
+			public var loadRoughcuts:Boolean = true;
+			
+			public function initData():void {
+				// monitor data change if needed
+				if (!_cw) {
+					_cw = BindingUtils.bindSetter(removeTab, this, "parts");
+				}
+//				selectedEntry.addEventListener("partsChanged", removeTab, false, 0, true);
+				// get data
+				loadEntries();
+			}
+
+			public function destroy():void {
+				_cw.unwatch();
+//				selectedEntry.removeEventListener("partsChanged", removeTab, false);
+			}
+			
+			private function onPaging():void {
+				loadEntries();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
+			}
+			
+			/**
+			 * load all mix entries or load mixes that uses this entry if it is not a mix
+			 */
+			private function loadEntries():void {
+				if (selectedEntry is KalturaMixEntry) {
+					//get all mix entries
+					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, selectedEntry);
+					cgEvent.dispatch();
+				} else if (loadRoughcuts && !isLiveStream) {
+					//get all entries that uses this mix 
+					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, selectedEntry);
+					getRoughcuts.dispatch();
+				}
+				
+			}
+			
+			/**
+			 * remove column that are not relevant for
+			 * this view from the entry contents table
+			 * */
+			private function removeColums(event:Event):void {
+				event.target.removeColumn(resourceManager.getString('drilldown', 'preview'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'idHeader'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'mediaType'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'playlistType'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'flags'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'moderationStatus'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'creator'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'rating'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'playerLoads'));
+				event.target.removeColumn(resourceManager.getString('drilldown', 'intime'));
+			}
+			
+//			private function removeTab(e:Event):void {
+			private function removeTab(value:Array):void {
+//				var value:Array = selectedEntry.parts;
+				if (value && value.length == 0 && this.parent) {
+					this.parent.removeChild(this);
+				}
+			}
+		]]>
+	</mx:Script> 
+	<view:EntryTable width="100%" height="100%" dataProvider="{selectedEntry.parts}"
+					 creationComplete="{removeColums(event)}" sortableColumns="false"/>
+	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" getPageNum="onPaging()"
+					 showRowsInPage="false"/>
+</mx:VBox>

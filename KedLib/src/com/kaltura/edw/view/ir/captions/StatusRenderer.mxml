@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+			
+//			•	Uploading
+//			•	Error
+//			•	Ready for Save
+//			•	Saved
+//			Once file has finished uploading, the status changes to “Ready for Save”. 
+//			Only after save will the caption location will be displayed. 
+//			In case of error, display “Error” in status column. 
+//			User will need to upload again. Once clicking on upload button, the field is cleared.
+			
+			
+			/**
+			 * return the text to show for this vo
+			 * */
+			private function getStatusText(value:Object):String {
+				var vo:EntryCaptionVO = value as EntryCaptionVO;
+				var result:String = '';
+				switch (vo.kmcStatus){
+					case EntryCaptionVO.ERROR:
+						result = resourceManager.getString('drilldown', 'captions_error_status');
+						break;
+					case EntryCaptionVO.READY_FOR_SAVE:
+						result = resourceManager.getString('drilldown', 'captions_readyForSave_status');
+						break;
+					case EntryCaptionVO.SAVED:
+						result = resourceManager.getString('drilldown', 'captions_saved_status');
+						break;
+					case EntryCaptionVO.UPLOADING:
+						result = resourceManager.getString('drilldown', 'captions_uploading_status');
+						break;
+					case EntryCaptionVO.PROCESSING:
+						result = resourceManager.getString('drilldown', 'captions_processing_status');
+						break;
+				}
+				return result;
+			}
+			
+		]]>
+	</mx:Script>
+		<mx:Label text="{getStatusText(data)}" width="90%" textAlign="center"/>
+</mx:VBox>

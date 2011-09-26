@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
+				layout="vertical" styleName="TitleWindowType2" width="300" height="300"  
+				title="{resourceManager.getString('drilldown','editRelatedFileTitle')}"
+				showCloseButton="true" close="onClose()"
+				creationComplete="onCreationComplete()">
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
+			import com.kaltura.edw.view.EntryRelated;
+			import com.kaltura.vo.KalturaAttachmentAsset;
+
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			[Bindable]
+			public var file:KalturaAttachmentAsset;
+			private var _changed:Boolean = false;
+
+
+			protected function onCreationComplete():void {
+				this.mx_internal::closeButton.buttonMode = true;
+			}
+
+
+			protected function onClose():void {
+				if (_changed) {
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), 
+						resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), 
+						Alert.YES | Alert.NO, null, removeMe);
+				}
+				else
+					removeMe();
+			}
+
+
+			private function removeMe(event:CloseEvent = null):void {
+				if (event && (event.detail == Alert.NO))
+					return;
+
+				PopUpManager.removePopUp(this);
+			}
+
+
+			protected function apply():void {
+				file.title = titleTi.text;
+				file.partnerDescription = descriptionTi.text;
+
+				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.UPDATE_RELATED_FILE);
+				saveEvent.attachmentAsset = file;
+				saveEvent.dispatch();
+
+				removeMe();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Label text="{resourceManager.getString('drilldown','title')}"/>
+	<mx:TextInput id="titleTi" width="200" text="{file.title}" change="{_changed = true;}"/>
+	<mx:Label text="{resourceManager.getString('drilldown','description')}"/>
+	<mx:TextArea id="descriptionTi" width="200" text="{file.partnerDescription}" change="{_changed = true;}"/>
+	<mx:ControlBar>
+		<mx:Button id="applyBtn" label="{resourceManager.getString('drilldown', 'saveChanges')}" click="apply()"
+				   buttonMode="true"/>
+	</mx:ControlBar>
+
+</mx:TitleWindow>

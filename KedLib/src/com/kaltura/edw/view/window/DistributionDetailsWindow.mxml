@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--- Distribution details window. Contains all information regarding selected entry and distribution profile:
+	 distribution status, sunrise, sunset, metadata, thumbnail and flavors	-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+				xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.*"
+				width="710" height="545" layout="vertical" styleName="TitleWindowType2" backgroundColor="#f7f7f7"
+				showCloseButton="true" close="{closeWindow()}" xmlns:controls="com.kaltura.controls.*"
+				creationComplete="{onCreationComplete()}" show="setSchedulerData()" paddingLeft="15" xmlns:edw="com.kaltura.edw.*" xmlns:distribution="com.kaltura.edw.view.ir.distribution.*" xmlns:view="com.kaltura.edw.view.*">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.kmc.business.PermissionManager;
+			import com.kaltura.kmc.modules.content.business.Cloner;
+			import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.edw.view.EntryDistribution;
+			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.types.KalturaNullableBoolean;
+			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
+			import com.kaltura.utils.pager.Pager;
+			import com.kaltura.vo.KalturaDistributionProfile;
+			import com.kaltura.vo.KalturaDistributionThumbDimensions;
+			import com.kaltura.vo.KalturaEntryDistribution;
+
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.UITextField;
+			import mx.events.CloseEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.validators.ValidationResult;
+
+			import org.hamcrest.collection.array;
+
+			/**
+			 * will be sent when the window closes
+			 * */
+			public static const WINDOW_CLOSE:String = "windowClose";
+			/**
+			 * maximum length for this window title
+			 * */
+			public static const MAX_TITLE_LENGTH:int = 85;
+			[Bindable]
+			private var _entryDis:EntryDistributionWithProfile;
+			private var _entryDetailsModel:EntryDetailsModel;
+			[Bindable]
+			private var _destinationName:String;
+			private var _timeManager:DateFieldWithTimeStepperLogic;
+			//array of arrays containing thumbnails
+			[Bindable]
+			private var _thumbsArray:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var _flavorAssets:ArrayCollection = new ArrayCollection();
+			[Bindable]
+			private var _name:String;
+			[Bindable]
+			private var _description:String;
+			[Bindable]
+			private var _tags:String;
+			private var _isDirty:Boolean = false;
+			private var _oldStartDate:Number;
+			private var _oldEndDate:Number;
+			private var _oldThumbs:String;
+			[Bindable]
+			private var _requestXMLAvailable:Boolean;
+			[Bindable]
+			private var _responseXMLAvailable:Boolean;
+			//for roles and permissions: is where permission exists
+			[Bindable]
+			public var enableChanges:Boolean = true;
+			//for roles and permissions: is where permission exists
+			[Bindable]
+			public var enableXMLViews:Boolean = true;
+			public static const MAX_THUMBS:int = 5;
+			public static const MAX_HEIGHT:int = 650;
+			[Bindable]
+			private var _pager:Pager;
+
+
+			public function get entryDetailsModel():EntryDetailsModel {
+				return _entryDetailsModel;
+			}
+
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void {
+				_entryDetailsModel = value;
+				_name = _entryDetailsModel.selectedEntry.name;
+				_description = _entryDetailsModel.selectedEntry.description;
+				_tags = _entryDetailsModel.selectedEntry.tags;
+				buildTitle();
+
+				BindingUtils.bindSetter(refreshFlavors, _entryDetailsModel, "flavorsLoaded");
+			}
+
+
+			public function get entryDis():EntryDistributionWithProfile {
+				return _entryDis;
+			}
+
+
+			public function set entryDis(value:EntryDistributionWithProfile):void {
+				_entryDis = value;
+				setOldData(_entryDis.kalturaEntryDistribution);
+				_destinationName = _entryDis.kalturaDistributionProfile.name;
+				_requestXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitSentDataLog == KalturaNullableBoolean.TRUE_VALUE);
+				_responseXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitResultsLog == KalturaNullableBoolean.TRUE_VALUE);
+				buildTitle();
+				buildThumbsArray();
+				buildFlavorsAssets();
+			}
+
+
+			/**
+			 * builds a hash map with given ids as the keys, given thumbs as the values
+			 * */
+			private function buildThumbsMap(idsArray:Array, thumbsArray:Array):HashMap {
+				var thumbsMap:HashMap = new HashMap();
+				for each (var st:String in idsArray) {
+					for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
+						if (thumb.thumbAsset && (thumb.thumbAsset.id == st)) {
+							thumbsMap.put(st, thumb);
+							break;
+						}
+					}
+				}
+
+				return thumbsMap;
+			}
+
+
+			/**
+			 * builds the data provider for thumbnails table, according to required thumbs and existing thumbs.
+			 * */
+			private function buildThumbsArray():void {
+				_thumbsArray = new ArrayCollection();
+				var existingThumbs:Array = _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				var requiredDim:Array = _entryDis.kalturaDistributionProfile.requiredThumbDimensions;
+				var thumbsIds:String = _entryDis.kalturaEntryDistribution.thumbAssetIds;
+				var thumbsIdsArray:Array;
+				if (thumbsIds)
+					thumbsIdsArray = thumbsIds.split(",");
+
+				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray);
+				//first check all thumbs with  required dimensions
+				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
+					var isArray:Boolean = false;
+					var thumbnail:ThumbnailWithDimensions = new ThumbnailWithDimensions(dim.width, dim.height);
+					for each (var st:String in thumbsIdsArray) {
+						if (st != "") {
+							var thumb:ThumbnailWithDimensions = thumbsMap.getValue(st) as ThumbnailWithDimensions;
+							if (thumb && thumb.width == dim.width && thumb.height == dim.height) {
+								thumbnail.thumbAsset = thumb.thumbAsset;
+								thumbnail.thumbUrl = thumb.thumbUrl;
+								//we handled this thumb, so we can remove it
+								thumbsMap.remove(st);
+								var arr:Array = new Array(thumbnail);
+								isArray = true;
+								var suitsArray:Array = searchForSuitableThumbs(thumb, existingThumbs);
+								for each (var suitThumb:ThumbnailWithDimensions in suitsArray) {
+									if (thumbsMap.containsKey(suitThumb.thumbAsset.id))
+										thumbsMap.remove(suitThumb.thumbAsset.id);
+								}
+								arr = arr.concat(suitsArray);
+								addNoneThumb(thumbnail.width, thumbnail.height, arr);
+								if (isArray)
+									_thumbsArray.addItem(arr);
+
+								break;
+							}
+						}
+					}
+					//only thumbnails with thumbAssets were added as arrays, others should be added now
+					if (!isArray) {
+						var optionsArray:Array = searchForSuitableThumbs(thumbnail, existingThumbs);
+						if (optionsArray.length) {
+							addNoneThumb(thumbnail.width, thumbnail.height, optionsArray, true);
+							_thumbsArray.addItem(optionsArray);
+						}
+						else {
+							_thumbsArray.addItem(thumbnail);
+						}
+					}
+				}
+				//go over all remaind thumbnails, copy them and add them to the data provider
+				for (var key:String in thumbsMap) {
+					var remainedThumb:ThumbnailWithDimensions = thumbsMap.getValue(key) as ThumbnailWithDimensions;
+					var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(remainedThumb.width, remainedThumb.height, remainedThumb.thumbAsset);
+					thumbToAdd.thumbUrl = remainedThumb.thumbUrl;
+					var array:Array = new Array(thumbToAdd);
+					addNoneThumb(remainedThumb.width, remainedThumb.height, array);
+					_thumbsArray.addItem(array);
+				}
+
+
+				_pager = new Pager();
+				_pager.localPageSize = MAX_THUMBS;
+				_pager.addDataSet(_thumbsArray.source);
+				_pager.lastPageIndex = Math.floor(_thumbsArray.length / MAX_THUMBS);
+			}
+
+
+			/**
+			 * page to the previous page
+			 * */
+			private function onPrevClick():void {
+				_pager.prevPage();
+			}
+
+
+			/***
+			 * pages to the next page
+			 * */
+			private function onNextClick():void {
+				_pager.nextPage();
+			}
+
+
+			/**
+			 * adds an empty thumb to the given array, for the "none" option
+			 * @param width the width of the new thumbnail
+			 * @param height the height of the new thumbnail
+			 * @param arr the array to add the thumbnail to
+			 * @param addFirst if true then will be added to the begining of the array
+			 * */
+			private function addNoneThumb(width:int, height:int, arr:Array, addFirst:Boolean = false):void {
+				var noneThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(width, height);
+				if (addFirst) {
+					arr.splice(0, 0, noneThumb);
+				}
+				else
+					arr.push(noneThumb);
+			}
+
+
+			/**
+			 * This function will search for suitable thumbs in the existingThumbs array.
+			 * Will return array containing all thumbs with identical dimensions
+			 * */
+			private function searchForSuitableThumbs(thumbnail:ThumbnailWithDimensions, existingThumbs:Array):Array {
+				//check if there are more suitable thumbnails
+				var resultArray:Array = new Array();
+				for each (var existingThumb:ThumbnailWithDimensions in existingThumbs) {
+
+					if (thumbnail.thumbAsset && existingThumb.thumbAsset && (thumbnail.thumbAsset.id == existingThumb.thumbAsset.id))
+						continue;
+
+					if (existingThumb.thumbAsset && (existingThumb.width == thumbnail.width) && (existingThumb.height == thumbnail.height)) {
+						var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(existingThumb.width, existingThumb.height, existingThumb.thumbAsset);
+						newThumb.thumbUrl = existingThumb.thumbUrl;
+						resultArray.push(newThumb);
+					}
+				}
+
+				return resultArray;
+			}
+
+
+			private function onCreationComplete():void {
+				this.mx_internal::closeButton.buttonMode = true;
+				PermissionManager.getInstance().applyAllAttributes(this, "distributionDetailsWindow");
+				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
+				setSchedulerData();
+			}
+
+
+			private function refreshFlavors(value:Boolean):void {
+				if (value && _entryDis) {
+					buildFlavorsAssets();
+				}
+			}
+
+
+			/**
+			 * build the data provider for the flavors table, according to the used flavors in current distirbution
+			 * and the required flavor params of the distribution profile
+			 * */
+			private function buildFlavorsAssets():void {
+				_flavorAssets = new ArrayCollection();
+				var entryFlavors:ArrayCollection = _entryDetailsModel.flavorParamsAndAssetsByEntryId;
+				var requiredFlavors:String = _entryDis.kalturaDistributionProfile.requiredFlavorParamsIds;
+				var requiredFlavorsArray:Array;
+				if (requiredFlavors)
+					requiredFlavorsArray = requiredFlavors.split(",");
+				var flavorsAssetsIds:String = _entryDis.kalturaEntryDistribution.flavorAssetIds;
+				var flavorsAssetsArray:Array;
+				if (flavorsAssetsIds)
+					flavorsAssetsArray = flavorsAssetsIds.split(",");
+
+				for each (var flavorWithParams:FlavorAssetWithParamsVO in entryFlavors) {
+					var isRequiredParam:Boolean = false;
+					for each (var stringId:String in requiredFlavorsArray) {
+						var flavorId:int = parseInt(stringId);
+						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == flavorId) {
+							_flavorAssets.addItem(flavorWithParams);
+							isRequiredParam = true;
+							break;
+						}
+					}
+					if (!isRequiredParam && flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset) {
+						for each (var assetId:String in flavorsAssetsArray) {
+							if (flavorWithParams.kalturaFlavorAssetWithParams.flavorAsset.id == assetId) {
+								_flavorAssets.addItem(flavorWithParams);
+								break;
+							}
+						}
+					}
+				}
+			}
+
+
+			/**
+			 * build the string for the window title
+			 * */
+			private function buildTitle():void {
+				if (_destinationName && _entryDetailsModel) {
+					var title:String = resourceManager.getString('drilldown', 'editEntry') + " - " +
+						_entryDetailsModel.selectedEntry.name + " - " + _destinationName + " " +
+						resourceManager.getString('drilldown', 'distributionDetails');
+					if (title.length > MAX_TITLE_LENGTH) {
+						title = title.substr(0, MAX_TITLE_LENGTH) + "...";
+					}
+
+					this.title = title;
+				}
+
+			}
+
+
+			private function closeWindow():void {
+				var errors:String = validateDates();
+				if (errors) {
+					Alert.show(errors, resourceManager.getString('drilldown', 'invalidDate'));
+					return;
+				}
+
+				if (_isDirty)
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'exitDistributionDetails'), Alert.YES | Alert.NO, null, closeHandler);
+				else
+					dispatchCloseEvent();
+			}
+
+
+			private function dispatchCloseEvent():void {
+				this.dispatchEvent(new Event(WINDOW_CLOSE));
+			}
+
+
+			private function closeHandler(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					getOldData(entryDis.kalturaEntryDistribution);
+					dispatchCloseEvent();
+				}
+			}
+
+
+			private function validateTimes():void {
+				_isDirty = true;
+				_timeManager.validateTimes();
+			}
+
+
+			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
+				if (!dateField.selectedDate)
+					return int.MIN_VALUE;
+
+				var seconds:int = 0;
+				seconds += dateField.selectedDate.time / 1000;
+				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
+				return seconds;
+			}
+
+
+			/**
+			 * display suitbale dates according to distribution sunrise/sunset times
+			 * */
+			private function setSchedulerData():void {
+				if (_entryDis != null) {
+					var startTime:int = _entryDis.kalturaEntryDistribution.sunrise;
+					var endTime:int = _entryDis.kalturaEntryDistribution.sunset;
+
+
+					if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
+						var startDate:Date = new Date(startTime * 1000);
+						startDateField.selectedDate = startDate;
+						_timeManager.setTime(startDateHour, startDate.hours, startDate.minutes);
+					}
+
+					if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
+						var endDate:Date = new Date(endTime * 1000);
+						endDateField.selectedDate = endDate;
+						_timeManager.setTime(endDateHour, endDate.hours, endDate.minutes);
+					}
+
+				}
+			}
+
+
+			/**
+			 * swaps between the given thumb and the new thumb in the thumbAssedIds string
+			 * if the original is empty, will just add the new thumb
+			 * if the new is empty, will remove the original
+			 * @param originalThumbId id of the original thumbnail to replace
+			 * @param newThumbId id of the new thumbnail to replace
+			 * */
+			public function swapThumbs(originalThumbId:String, newThumbId:String):void {
+				var entryToUpdate:KalturaEntryDistribution = _entryDis.kalturaEntryDistribution;
+				var thumbsArray:Array = entryToUpdate.thumbAssetIds.split(",");
+				var deleteThumb:Boolean = false;
+				if (originalThumbId == "") {
+					thumbsArray.push(newThumbId);
+				}
+				else {
+					if (newThumbId == "") {
+						deleteThumb = true;
+					}
+					for (var i:int = 0; i < thumbsArray.length; i++) {
+						if (thumbsArray[i] == originalThumbId) {
+							if (deleteThumb)
+								thumbsArray.splice(i, 1);
+							else
+								thumbsArray[i] = newThumbId;
+
+							break;
+						}
+					}
+				}
+
+				entryToUpdate.thumbAssetIds = thumbsArray.join(",");
+				_isDirty = true;
+			}
+
+
+			/**
+			 * saves data that might could've changed in this window with backup values
+			 * */
+			private function setOldData(entryDistribution:KalturaEntryDistribution):void {
+				_oldStartDate = entryDistribution.sunrise;
+				_oldEndDate = entryDistribution.sunset;
+				_oldThumbs = entryDistribution.thumbAssetIds;
+			}
+
+
+			/**
+			 * sets the original data back to the given entry
+			 * */
+			private function getOldData(entryDistribution:KalturaEntryDistribution):void {
+				entryDistribution.sunrise = _oldStartDate;
+				entryDistribution.sunset = _oldEndDate;
+				entryDistribution.thumbAssetIds = _oldThumbs;
+			}
+
+
+			private function validateDates():String {
+				var validator:ValidationResultEvent = fromDateValidator.validate();
+				if (validator.type == ValidationResultEvent.VALID) {
+					validator = toDateValidator.validate();
+					if (validator.type == ValidationResultEvent.VALID)
+						return null
+				}
+
+				return validator.message;
+			}
+
+
+			private function save():void {
+				var errors:String = validateDates();
+				if (errors) {
+					Alert.show(errors, resourceManager.getString('drilldown', 'invalidDate'));
+					return;
+				}
+
+				if (_isDirty) {
+					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
+					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour);
+					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, entryDis.kalturaEntryDistribution);
+					updateEntryDistribution.dispatch();
+					setOldData(entryDis.kalturaEntryDistribution);
+					_isDirty = false;
+				}
+
+				dispatchCloseEvent();
+			}
+
+
+			/**
+			 * dispatches a request for xml,
+			 * if getSentData is true, will send a request for request XML
+			 * otherwise for response XML
+			 * */
+			private function getXML(getSentData:Boolean):void {
+				var type:String = getSentData ? EntryDistributionEvent.GET_SENT_DATA : EntryDistributionEvent.GET_RETURNED_DATA;
+				var requestXML:EntryDistributionEvent = new EntryDistributionEvent(type, null, null, _entryDis.kalturaEntryDistribution);
+				requestXML.dispatch();
+			}
+
+
+			public function set hideColumns(indices:String):void {
+				var ind:Array = indices.split(",");
+				var arrCol:ArrayCollection = new ArrayCollection(flavorsTable.columns);
+				for (var i:int = 0; i < ind.length; i++) {
+					arrCol.removeItemAt(int(ind[i]));
+				}
+				flavorsTable.columns = arrCol.source;
+			}
+
+
+			public function get hideColumns():String {
+				return '';
+			}
+		]]>
+	</mx:Script>
+	<mx:DateValidator id="fromDateValidator" required="false" source="{startDateField}" property="text"/>
+	<mx:DateValidator id="toDateValidator" required="false" source="{endDateField}" property="text"/>
+	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('drilldown','distributionDetails')}"
+			  styleName="drillDownTitleLabel"/>
+
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','statusLabel')}" width="75" styleName="drillDownLabel"/>
+		<distribution:SubmissionStatusRenderer data="{_entryDis}"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','remoteId')}" width="75" styleName="drillDownLabel"/>
+		<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}" styleName="drillDownSubLabel" selectable="true"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','logs')}" width="75"
+				  visible="{_requestXMLAvailable || _responseXMLAvailable}"
+				  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>
+		<mx:LinkButton label="{resourceManager.getString('drilldown','requestXML')}" click="{getXML(true)}"
+					   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"
+					   enabled="{enableXMLViews}"/>
+		<mx:LinkButton label="{resourceManager.getString('drilldown','responseXML')}" click="{getXML(false)}"
+					   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
+					   enabled="{enableXMLViews}"/>
+	</mx:HBox>
+
+
+	<mx:HBox>
+		<mx:VBox>
+			<mx:Label text="{resourceManager.getString('drilldown','startDateLabel')}" width="75" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','endDateLabel')}" width="75" styleName="drillDownLabel"/>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
+						  editable="true"/>
+			<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
+						  editable="true"/>
+		</mx:VBox>
+		<mx:VBox>
+			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
+								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
+
+			<controls:SM_TimeEntry id="endDateHour" height="25" showAMPMLabel="true" showHours="true"
+								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:Label text="{resourceManager.getString('drilldown','metadataDetails')}" styleName="drillDownTitleLabel"/>
+
+	<mx:VBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('drilldown','name') + ':'}" width="75" styleName="drillDownLabel"/>
+			<mx:Text text="{_name}" width="500" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('drilldown','description') +':'}" width="75" styleName="drillDownLabel"/>
+			<mx:Text text="{_description}" width="500" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('drilldown','tags') + ':'}" width="75" styleName="drillDownLabel"/>
+			<mx:Text text="{_tags}" width="500" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+	</mx:VBox>
+
+	<mx:Label text="{resourceManager.getString('drilldown','thumbnails')}" styleName="drillDownTitleLabel"/>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}"
+				  includeInLayout="{_thumbsArray.length==0}"/>
+		<mx:HBox height="100%" verticalAlign="middle" visible="{(_thumbsArray.length > 0)}"
+				 includeInLayout="{(_thumbsArray.length>0)}">
+			<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" includeInLayout="{!_pager.isFirstPage}"
+						   click="{onPrevClick()}" styleName="moveLeftButton"/>
+			<mx:HorizontalList width="100%" columnCount="{_pager.visiblePageData.length}" rowCount="1"
+							   dataProvider="{_pager.visiblePageData}" borderStyle="solid" paddingRight="0"
+							   itemRenderer="com.kaltura.edw.view.ir.distribution.ThumbDetailsRenderer"
+							   height="175" borderSides="top,left,bottom"/>
+			<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}"
+						   click="{onNextClick()}" styleName="moveRightButton"/>
+		</mx:HBox>
+	</mx:HBox>
+
+	<mx:Label text="{resourceManager.getString('drilldown','videoFlavors')}" styleName="drillDownTitleLabel"/>
+	<mx:HBox>
+		<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}"
+				  includeInLayout="{_flavorAssets.length==0}"/>
+		<view:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" flavorAssets="{_flavorAssets}"
+								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>
+	</mx:HBox>
+
+
+	<mx:ControlBar>
+		<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}" click="save()" buttonMode="true"
+				   enabled="{enableChanges}"/>
+	</mx:ControlBar>
+</mx:TitleWindow>

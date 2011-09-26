@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	 Thumbnails tab of EntryDetailsWin
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.DistributionProfileEvent;
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.events.UploadFromImageThumbAssetEvent;
+			import com.kaltura.kmc.modules.content.model.Context;
+			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.CropThumbnailWindow;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.popupWindows.GrabFromVideoWindow;
+			import com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaFlavorAssetStatus;
+			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.utils.ObjectUtil;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
+
+			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
+			private var _fileReference:FileReference;
+
+			[Bindable]
+			private var _selectedEntry:KalturaBaseEntry;
+			private var _entryDetailsModel:EntryDetailsModel;
+			private var _context:Context;
+			[Bindable]
+			private var _dimensionsArray:Array;
+			[Bindable]
+			private var _uploadThumbnailActionsDP:Array;
+			private var _cropperWindow:CropThumbnailWindow;
+
+
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
+				var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+				listThumbs.dispatch();
+			}
+
+
+			public function destroy():void {
+
+			}
+
+
+			public function get context():Context {
+				return _context;
+			}
+
+
+			public function set context(value:Context):void {
+				_context = value;
+			}
+
+
+			public function get entryDetailsModel():EntryDetailsModel {
+				return _entryDetailsModel;
+			}
+
+
+			public function set entryDetailsModel(value:EntryDetailsModel):void {
+				_entryDetailsModel = value;
+				if (!_entryDetailsModel)
+					return;
+				BindingUtils.bindSetter(setDimensionsArray, _entryDetailsModel.distributionProfileInfo, "thumbnailDimensionsArray");
+
+			}
+
+
+			/**
+			 * will add the "profiles" column if we have distribution
+			 * */
+			public function set enableDistribution(value:Boolean):void {
+				if (value) {
+					var columnsArray:Array = dataGrid.columns;
+					columnsArray.splice(3, 0, partnersCol);
+					dataGrid.columns = columnsArray;
+				}
+			}
+
+
+			public function set editable(value:Boolean):void {
+				if (!value) {
+					actionCB.visible = false;
+					//remove action column from datagrid
+					var arrCol:ArrayCollection = new ArrayCollection(dataGrid.columns);
+					for (var i:int = 0; i < arrCol.length; ++i) {
+						if (arrCol[i].headerText == resourceManager.getString('drilldown', 'actionCol')) {
+							arrCol.removeItemAt(i);
+							break;
+						}
+					}
+					dataGrid.columns = arrCol.source;
+				}
+			}
+
+
+			public function get editable():Boolean {
+				return true;
+			}
+
+
+			public function setDimensionsArray(array:Array):void {
+				_dimensionsArray = array;
+				if (_cropperWindow)
+					_cropperWindow.thumbnailsList = array;
+			}
+
+
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (!value)
+					return;
+				_selectedEntry = value;
+
+				//set the available operations for current entry
+				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
+				if ((_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) && ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
+					_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
+					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
+						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
+				}
+			}
+
+
+			private function onActionCBItemClick(event:Event):void {
+				switch (actionCB.selectedItem) {
+					case resourceManager.getString('drilldown', 'upload'):
+						uploadNewThumbnail();
+						break;
+					case resourceManager.getString('drilldown', 'grabFromVideo'):
+						openGrabFromVideoPopup();
+						break;
+					case resourceManager.getString('drilldown', 'cropNewThumbnail'):
+						openCropThumbPopup();
+						break;
+				}
+				//to set the prompt back
+				actionCB.selectedIndex = -1;
+			}
+
+
+			private function uploadNewThumbnail():void {
+				_fileReference = new FileReference();
+				_fileReference.addEventListener(Event.SELECT, onThumbnailSelected);
+				_fileReference.browse(new Array(getImageTypeFilter()));
+			}
+
+
+			private function getImageTypeFilter():FileFilter {
+				return new FileFilter("Images (" + IMAGE_TYPES + ")", IMAGE_TYPES);
+			}
+
+
+			private function onThumbnailSelected(event:Event):void {
+				var uploadThumbnailEvent:UploadFromImageThumbAssetEvent = new UploadFromImageThumbAssetEvent(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE, selectedEntry.id, _fileReference);
+				uploadThumbnailEvent.dispatch();
+			}
+
+
+			private function openGrabFromVideoPopup():void {
+				var grabWindow:GrabFromVideoWindow = new GrabFromVideoWindow();
+				grabWindow.selectedEntry = _selectedEntry;
+				grabWindow.context = _context;
+				PopUpManager.addPopUp(grabWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(grabWindow);
+			}
+
+
+			private function openCropThumbPopup():void {
+				_cropperWindow = new CropThumbnailWindow();
+				_cropperWindow.width = this.stage.stageWidth;
+				_cropperWindow.height = this.stage.stageHeight;
+				_cropperWindow.thumbnailsList = entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				_cropperWindow.entryDetailsModel = _entryDetailsModel;
+				_cropperWindow.selectedEntry = selectedEntry;
+				//BindingUtils.bindProperty(_cropperWindow, "width", this.stage, "width");
+				//BindingUtils.bindProperty(_cropperWindow, "height", this.stage, "height");
+				_cropperWindow.addEventListener(CropThumbnailWindow.WINDOW_CLOSE, onCropperClosed);
+				PopUpManager.addPopUp(_cropperWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(_cropperWindow);
+			}
+
+
+			private function onCropperClosed(event:Event):void {
+				PopUpManager.removePopUp(_cropperWindow);
+				_cropperWindow = null;
+			}
+
+
+			private function compareDimensions(obj1:ThumbnailWithDimensions, obj2:ThumbnailWithDimensions):int {
+				if (obj1.width < obj2.width)
+					return -1;
+				if (obj1.width == obj2.width) {
+					if (obj1.height < obj2.height)
+						return -1;
+					if (obj1.height == obj2.height)
+						return 0;
+					return 1;
+				}
+				return 1;
+			}
+		]]>
+	</mx:Script>
+	<mx:DataGridColumn id="partnersCol" headerText="{resourceManager.getString('drilldown','distributionPartnersCol')}"
+					   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDistributionProfilesRenderer"
+					   sortable="false" width="135"/>
+	<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('drilldown','addThumbnail')}"
+				 dataProvider="{_uploadThumbnailActionsDP}" change="{onActionCBItemClick(event)}" selectedIndex="-1"
+				 tabIndex="0"/>
+
+	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" draggableColumns="false"
+				 selectable="false" rowHeight="100" editable="false">
+		<mx:columns>
+			<mx:DataGridColumn id="thumbCol" headerText="{resourceManager.getString('drilldown','thumbnailCol')}"
+							   editable="false" sortable="false" width="130"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetRenderer" />
+			<mx:DataGridColumn id="dimensionsCol" headerText="{resourceManager.getString('drilldown','dimensionsCol')}"
+							   editable="false" sortable="true" sortCompareFunction="{compareDimensions}"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetDimensionsRenderer" />
+			<mx:DataGridColumn id="sizeCol" headerText="{resourceManager.getString('drilldown','thumbSizeCol')}"
+							   editable="false" sortable="false"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetSizeRenderer" />
+			<mx:DataGridColumn id="statusCol" headerText="{resourceManager.getString('drilldown','statusCol')}"
+							   editable="false" sortable="false"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetStatusRenderer" />
+			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('drilldown','actionCol')}"
+							   editable="false" sortable="false" minWidth="115"
+							   itemRenderer="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.ThumbAssetActionRenderer" />
+		</mx:columns>
+	</mx:DataGrid>
+
+</mx:VBox>

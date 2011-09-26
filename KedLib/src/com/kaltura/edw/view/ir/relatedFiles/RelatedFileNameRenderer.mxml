@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" paddingLeft="5" paddingRight="5" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.view.EntryRelated;
+			import com.kaltura.kmc.modules.content.vo.RelatedFileVO;
+			import com.kaltura.types.KalturaAttachmentType;
+			import com.kaltura.vo.KalturaAssetFilter;
+			[Bindable]
+			private var _relatedVO:RelatedFileVO;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				_relatedVO = data as RelatedFileVO;
+				//nameValidator.source = nameField;
+			}
+			
+			protected function onNameChanged():void {
+				if (nameField.text!='') {
+					_relatedVO.file.filename = nameField.text;
+					dispatchEvent(new Event(EntryRelated.FILE_CHANGED, true));
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<!--<mx:StringValidator id="nameValidator" property="text" required="true" 
+						requiredFieldError="{resourceManager.getString('cms','emptyFileNameError')}" invalid="{_relatedVO.isValid = false;}"
+						valid="{_relatedVO.isValid = true;}"/>-->
+	<mx:TextInput id="nameField" text="{_relatedVO.file.filename}"
+				  width="100%" change="onNameChanged()" editable="{parentDocument.editable}"/>
+</mx:VBox>

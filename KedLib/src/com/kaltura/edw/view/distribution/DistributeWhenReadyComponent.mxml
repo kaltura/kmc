@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- Represents the check box for "Distribute Automatically" column. only one component can appear: check box OR label -->
+<distribution:CBLabelComponent xmlns:mx="http://www.adobe.com/2006/mxml" 
+							 xmlns:components="com.kaltura.kmc.modules.content.view.window.entrydetails.distributionComponents.*" xmlns:distribution="com.kaltura.edw.view.distribution.*">
+	<mx:Metadata>
+		[ResourceBundle("drilldown")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+			import com.kaltura.types.KalturaDistributionProfileActionStatus;
+			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.vo.KalturaEntryDistribution;
+			
+			import mx.binding.utils.BindingUtils;
+			private var _distributionWithProfile:EntryDistributionWithProfile
+			
+			override public function set data(value:Object):void {
+				_distributionWithProfile = value as EntryDistributionWithProfile;
+
+				switch (_distributionWithProfile.kalturaEntryDistribution.status) {
+					case KalturaEntryDistributionStatus.READY:
+					case KalturaEntryDistributionStatus.ERROR_DELETING:
+					case KalturaEntryDistributionStatus.ERROR_UPDATING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('drilldown','distributed');
+						break;
+					case KalturaEntryDistributionStatus.SUBMITTING:
+					case KalturaEntryDistributionStatus.DELETING:
+					case KalturaEntryDistributionStatus.UPDATING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('drilldown','inProgress');
+						break;
+					case KalturaEntryDistributionStatus.ERROR_SUBMITTING:
+						this.labelVisible = true;
+						this.labelText = resourceManager.getString('drilldown','distributionError');
+						break;
+					default:
+						this.cbVisible = true;
+				}
+				
+				BindingUtils.bindProperty(this, 'cbSelected', _distributionWithProfile, 'distributeAutomatically');
+				BindingUtils.bindSetter(setCBEnabled, _distributionWithProfile, 'distributorSelected');
+						
+			}
+			
+			/**
+			 * CB will be enabled only if distributor was selected and the profile is not configured to 
+			 * distribute automatically
+			 * */
+			private function setCBEnabled(value:Boolean) : void {
+				if ((_distributionWithProfile.kalturaDistributionProfile.submitEnabled != KalturaDistributionProfileActionStatus.AUTOMATIC) &&
+					(_distributionWithProfile.kalturaEntryDistribution.status != KalturaEntryDistributionStatus.QUEUED))
+					cbEnabled = value && parentDocument.enableDistribution;
+				else
+					cbEnabled = false;
+				
+				_distributionWithProfile.enableAutomaticSubmission = cbEnabled;
+			}
+			
+			/**
+			 * updates the distributeAutomatically value in the entry distribution
+			 * */
+			override protected function onCbClick():void {
+				super.onCbClick();
+				_distributionWithProfile.distributeAutomatically = cbSelected;
+			}
+			
+			override public function set labelVisible(value:Boolean):void {
+				super.labelVisible = value;
+				super.cbVisible = !value;
+			}
+			
+			override public function set cbVisible(value:Boolean):void {
+				super.cbVisible = value;
+				super.labelVisible = !value;
+			}
+			
+		]]>
+	</mx:Script>
+</distribution:CBLabelComponent>

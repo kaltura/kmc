@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center">
+
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.view.captions.CaptionsTable;
+			import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+
+
+			protected function labelTi_changeHandler(event:Event):void {
+				event.stopImmediatePropagation();
+				dispatchEvent(new Event(CaptionsTable.LABEL_CHANGED, true));
+			}
+
+
+			public function getValue():String {
+				return labelTi.text;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:TextInput id="labelTi" change="labelTi_changeHandler(event)" text="{data.caption.label}"
+				  editable="{EntryCaptionVO.editable}" width="90%"/>
+</mx:VBox>

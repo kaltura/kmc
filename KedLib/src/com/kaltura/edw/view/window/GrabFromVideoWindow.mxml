@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+				layout="vertical" styleName="TitleWindowType2"
+				title="{resourceManager.getString('drilldown','grabFromVideo')}"
+				showCloseButton="true"
+				horizontalAlign="center"
+				close="{closeWindow(event)}"
+				height="400"
+				width="500"
+				creationComplete="{onCreationComplete()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
+			import com.kaltura.kmc.modules.content.model.Context;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.managers.PopUpManager;
+			private var _selectedEntry:KalturaBaseEntry;
+			private var _refreshRequired:Boolean = true;
+			private static var _kdp3SwfLoader:SWFLoader;
+			public var context:Context;
+			
+			public function get selectedEntry():KalturaBaseEntry
+			{
+				return _selectedEntry;
+			}
+
+			public function set selectedEntry(value:KalturaBaseEntry):void
+			{
+				_selectedEntry = value;
+			}
+
+			private function closeWindow(event:Event):void {
+				if (_refreshRequired){
+					var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+					listThumbs.dispatch();
+				}
+				
+				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
+					_kdp3SwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
+				}
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onCreationComplete():void {
+				this.mx_internal::closeButton.buttonMode = true;
+				_refreshRequired = false;
+				loadKdp();	
+			}
+			
+			private function loadKdp():void {
+				//if this is the second time we open the content
+				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
+					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
+					
+					kdp3LoaderParent.addChildAt(_kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
+					kdp3LoaderParent.removeChild(kdp3Loader);
+					//listen to kdp ready to show it because on the second time if we won't do that we will see the prev thumb
+					//because this is static KDP (due to performance issue that we fixed)
+					_kdp3SwfLoader.visible = false;
+					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.ENTRY_READY, showKDP);
+					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA,
+						{entryId: _selectedEntry.id});
+				}
+				else {
+					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.captureThumbnailUiconf + "/nowrapper/1/a";
+					kdp3Loader.scaleContent = false;
+					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+					kdp3Loader.load(newUrl);
+				}
+			}
+		
+			
+			private function showKDP(event:Event = null):void {
+				_kdp3SwfLoader.visible = true;
+			}
+			
+			/**
+			 * Kdp loaded, initialize it.
+			 */
+			private function onKDP3Loaded(event:Event):void {
+				_kdp3SwfLoader = kdp3Loader;
+
+				//set kdp params
+				var params:Object = new Object();
+				params.widgetId = "_" + context.kc.partnerId;
+				params.cdnHost = context.cdnHost;
+				params.host = context.rootUrl;
+				params.autoPlay = "false";
+				params.loop = "false";
+				params.autoRewind = "false";
+				params.sourceType = "entryId";
+				params.entryId = _selectedEntry.id;
+				if (context.captureThumbnailUiconf)
+					params.uiConfId = context.captureThumbnailUiconf;
+				params.ks = context.kc.ks;
+				params.partnerId = context.kc.partnerId;
+				params.subpId = context.kc.partnerId + "00";
+				
+				//				params.cdnUrl = context.rootUrl;
+				params.debugMode = context.debugMode;
+				_kdp3SwfLoader.content.addEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+				_kdp3SwfLoader.content["flashvars"] = params;
+				//start the loading sqeunce of the kdp	
+				_kdp3SwfLoader.content["init"]();
+
+			}
+			
+			private function onThumbnailSaved(event:Event):void {
+				_kdp3SwfLoader.content.removeEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
+				_refreshRequired = true;
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="300" height="285" verticalAlign="middle" horizontalAlign="center">
+		<mx:SWFLoader id="kdp3Loader" width="300" height="255" complete="{onKDP3Loaded(event)}"/>
+	</mx:VBox>
+	
+	<mx:Text width="300" text="{resourceManager.getString('drilldown','grabFromVideoText')}"/>
+	
+</mx:TitleWindow>
