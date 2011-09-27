@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<CanvasButtonAccordionHeader verticalScrollPolicy="off" horizontalScrollPolicy="off" styleName="accordionHeader"
+							 xmlns="http://code.google.com/p/flexlib/" mouseChildren="true"
+							 xmlns:mx="http://www.adobe.com/2006/mxml">
+	<states>
+		<mx:State name="viewModeState">
+			<mx:SetProperty target="{editBtn}" name="label"
+							value="{resourceManager.getString('cms', 'viewModeLabel')}"/>
+			<mx:SetProperty target="{editBtn}" name="toolTip"
+							value="{resourceManager.getString('cms', 'viewModeLabelToolTip')}"/>
+		</mx:State>
+	</states>
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			public static const EDIT_CATEGORIES_MODE_EVENT:String = "editModeCategoriesEvent";
+
+			[Bindable]
+			/**
+			 * indicates whether header button should be visible
+			 * */
+			public var showHeaderButton:Boolean = false;
+
+			[Bindable]
+			/**
+			 * text to show on this header
+			 * */
+			private var _label:String;
+
+
+
+			override public function set label(value:String):void {
+				super.label = "";
+				_label = value;
+			}
+
+
+			private function onClick(event:Event):void {
+				this.parent.dispatchEvent(new Event(EDIT_CATEGORIES_MODE_EVENT));
+				currentState = (currentState == null) ? 'viewModeState' : null;
+			}
+
+
+			private function and(terma:Boolean, termb:Boolean):Boolean {
+				return terma && termb;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" verticalGap="0" verticalAlign="middle" paddingLeft="5">
+		<mx:Label text="{_label}"/>
+	</mx:VBox>
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="right" paddingRight="5"
+			 includeInLayout="{and((_label==resourceManager.getString('cms', 'categoriesLabel')), showHeaderButton)}"
+			 visible="{and((_label==resourceManager.getString('cms', 'categoriesLabel')), showHeaderButton)}">
+		<mx:LinkButton label="{resourceManager.getString('cms', 'editModeLabel')}"
+					   click="event.stopImmediatePropagation();onClick(event)"
+					   mouseDown="event.stopImmediatePropagation()" id="editBtn"
+					   toolTip="{resourceManager.getString('cms', 'editModeLabelToolTip')}">
+		</mx:LinkButton>
+	</mx:VBox>
+</CanvasButtonAccordionHeader>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%" styleName="acpPopUpSectionBox">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaCountryRestrictionType;
+			import com.kaltura.utils.KCountriesUtil;
+			import com.kaltura.vo.KalturaAccessControl;
+			import com.kaltura.vo.KalturaBaseRestriction;
+			import com.kaltura.vo.KalturaCountryRestriction;
+			import com.kaltura.windows.popUpWindows.AddRemoveCountriesPopUpWindow;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			/**
+			 * the access control object being edited
+			 * */	
+			public var profile:KalturaAccessControl;
+			
+			[Bindable]
+			/**
+			 * are controls in the panel editable
+			 * */
+			public var editable:Boolean = true;
+			
+			[Bindable]
+			private var allowedCountriesArr:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			private var notAllowedCountriesArr:ArrayCollection = new ArrayCollection();
+			
+			
+
+			
+			public var isOk:Boolean = true;
+			
+			public function setCountriesRestrictions():void {
+				var restrictionFound:Boolean = false;
+				for each (var restriction:KalturaBaseRestriction in profile.restrictions) {
+					if (restriction is KalturaCountryRestriction) {
+						restrictionFound = true;
+						var arr:ArrayCollection;
+						if ((restriction as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST) {
+							approvedCountriesRadioBtn.selected = true;
+							arr = allowedCountriesArr;
+						}
+						else {
+							notApprovedCountriesRadioBtn.selected = true;
+							arr = notAllowedCountriesArr;
+						}
+						
+						setCountriesFromString(arr, (restriction as KalturaCountryRestriction).countryList);
+						break;
+					}
+				}
+				
+				allCountriesRaddioBtn.selected = !restrictionFound;
+			}
+			
+			public function updateCountriesRestrictions():void {
+				if (allCountriesRaddioBtn.selected != true) {
+					var countryRestriction:KalturaCountryRestriction = new KalturaCountryRestriction();
+					countryRestriction.countryRestrictionType = approvedCountriesRadioBtn.selected ? KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST : KalturaCountryRestrictionType.RESTRICT_COUNTRY_LIST;
+					
+					var list:List = (approvedCountriesRadioBtn.selected == true) ? approvedCountriesList : notApprovedCountriesList;
+					countryRestriction.countryList = getCountriesList(list.dataProvider as ArrayCollection);
+					
+					if ((list.dataProvider as ArrayCollection).length > 0) {
+						isOk = true;
+						profile.restrictions.push(countryRestriction);
+					}
+					else {
+						isOk = false;
+					}
+				}
+				else {
+					isOk = true;
+				}
+			}
+			
+			private function getCountriesList(ac:ArrayCollection):String {
+				var countriesList:String = "";
+				for each (var item:Object in ac) {
+					countriesList += item.code + ',';
+				}
+				if (countriesList.length > 0) {
+					countriesList = countriesList.substr(0, countriesList.length - 1)
+				}
+				return countriesList;
+			}
+			
+			private function setCountriesFromString(ac:ArrayCollection, itemStr:String):void {
+				var arr:Array = itemStr.split(',');
+				for each (var countryCode:String in arr) {
+					ac.addItem({name: KCountriesUtil.instance.getCountryName(countryCode), code: countryCode});
+				}
+			}
+			
+			/**
+			 * shows the add / remove countries popup
+			 * @param event
+			 * @param list the list from which we want to remove the selected items
+			 */
+			private function showAddRemoveCountriesPopUp(event:Event, list:List):void {
+				var addRmvCountriesPopUp:AddRemoveCountriesPopUpWindow = new AddRemoveCountriesPopUpWindow();
+				if ((event.target as LinkButton).id == "restrictCountriesLinkButton") {
+					addRmvCountriesPopUp.currentState = AddRemoveCountriesPopUpWindow.RESTRICT_STATE;
+				}
+				addRmvCountriesPopUp.selectedData = list.dataProvider as ArrayCollection;
+				
+				PopUpManager.addPopUp(addRmvCountriesPopUp, this, true);
+				PopUpManager.centerPopUp(addRmvCountriesPopUp);
+			}
+
+		]]>
+	</mx:Script>
+		<mx:Label text="{resourceManager.getString('windows', 'authoCountriesBigLabel')}" styleName="acpPopUpTitleLabel"/>
+		<mx:Spacer height="10"/>
+		<mx:RadioButtonGroup id='authoCountriesGroup'/>
+		<mx:Form width="100%">
+			<mx:Label text="{resourceManager.getString('windows', 'authoCountriesSmallLabel')}"
+					  styleName="acpPopUpSmallTitleLabel"/>
+			<!-- country restriction restriction : any country -->
+			<mx:FormItem>
+				<mx:RadioButton label="{resourceManager.getString('windows', 'anyCountryRadioBtn')}"
+								groupName="authoCountriesGroup" id='allCountriesRaddioBtn' selected="true"
+								styleName="acpRadioButton" enabled="{editable}"/>
+			</mx:FormItem>
+			<!-- country restriction restriction : allowed countries -->
+			<mx:FormItem width="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:RadioButton label="{resourceManager.getString('windows', 'authoCountriesRadioBtn')}"
+									groupName="authoCountriesGroup" id="approvedCountriesRadioBtn"
+									styleName="acpRadioButton" enabled="{editable}"/>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('windows', 'countriesLabel')}"
+								  enabled="{approvedCountriesRadioBtn.selected}"/>
+						<mx:List width="100%" id="approvedCountriesList"
+								 enabled="{approvedCountriesRadioBtn.selected}" dataProvider="{allowedCountriesArr}"
+								 rowCount="5" itemRenderer="com.kaltura.renderers.CountryListItemRenderer"
+								 selectable="false"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:HBox>
+					<mx:LinkButton id="addRemoveCountriesBtn" 
+								   label="{resourceManager.getString('windows', 'addRemoveCountriesBtn')}"
+								   enabled="{approvedCountriesRadioBtn.selected &amp;&amp; editable}"
+								   click="showAddRemoveCountriesPopUp(event, approvedCountriesList)"
+								   styleName="acpLinkButton"/>
+				</mx:HBox>
+			</mx:FormItem>
+			<!-- country restriction restriction : restricted countries -->
+			<mx:FormItem width="100%">
+				<mx:VBox width="100%" height="100%">
+					<mx:RadioButton label="{resourceManager.getString('windows', 'noAuthoCountriesRadioBtn')}"
+									groupName="authoCountriesGroup" id="notApprovedCountriesRadioBtn"
+									styleName="acpRadioButton" enabled="{editable}"/>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('windows', 'countriesLabel')}"
+								  enabled="{notApprovedCountriesRadioBtn.selected}"/>
+						<mx:List width="100%" id="notApprovedCountriesList" dataProvider="{notAllowedCountriesArr}"
+								 enabled="{notApprovedCountriesRadioBtn.selected}" rowCount="5"
+								 itemRenderer="com.kaltura.renderers.CountryListItemRenderer" selectable="false"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:HBox>
+					<mx:LinkButton id="restrictCountriesLinkButton"
+								   label="{resourceManager.getString('windows', 'addRemoveCountriesBtn')}"
+								   enabled="{notApprovedCountriesRadioBtn.selected &amp;&amp; editable}"
+								   click="showAddRemoveCountriesPopUp(event, notApprovedCountriesList)"
+								   styleName="acpLinkButton"/>
+				</mx:HBox>
+			</mx:FormItem>
+		</mx:Form>
+</mx:VBox>

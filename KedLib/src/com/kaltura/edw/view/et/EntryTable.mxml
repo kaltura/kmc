@@ -1,0 +1,914 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
+			 allowMultipleSelection="true" rowHeight="36" itemClick="{ setSelection ( event ) }"
+			 change="{setSelection ( event )}" headerRelease="{ headerReleaseHandler( event ) }" dragEnabled="true"
+			 dropEnabled="true" dragMoveEnabled="false" dragDrop="onDragDrop(event)" dragOver="onDragOver(event)"
+			 creationComplete="creationCompleteHandler(event)" dragExit="onDragExit(event)"
+			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
+	<mx:Metadata>
+		[Event(name="orderByChanged", type="flash.events.Event")] 
+		[Event(name="openEntry", type="flash.events.Event")] 
+	</mx:Metadata>
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.SelectionEvent;
+			import com.kaltura.edw.control.events.WindowEvent;
+			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaPlaylistType;
+			import com.kaltura.utils.KTimeUtil;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaClipAttributes;
+			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaOperationAttributes;
+			import com.kaltura.vo.KalturaPlaylist;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.DataGridEvent;
+			import mx.events.DragEvent;
+			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			import mx.formatters.DateFormatter;
+			import mx.managers.CursorManager;
+			import mx.resources.ResourceManager;
+
+			public static const ASCENDING:String = "ASC";
+			public static const DESCENDING:String = "DESC";
+
+			/**
+			 * defines the value of the type property for the <code>orderByChanged</code> event.
+			 * */
+			public static const ORDER_BY_CHANGED:String = "orderByChanged";
+
+			/**
+			 * defines the value of the type property for the <code>openEntry</code> event.
+			 * */
+			public static const OPEN_ENTRY:String = "openEntry";
+
+			/**
+			 * is this table appear in playlist window
+			 * */
+			public var isPlaylistEntries:Boolean = false;
+
+
+			/**
+			 * reference to the thumbnails column so we can add it back.
+			 * thumbnails column is by default non-existant, and if it is required
+			 * it is added. this is an ugly hack because of roles and permissions 
+			 * issue that requires it sometimes be shown (instead of sometimes be hidden).
+			 * */
+			private var _thumbnailsColumn:DataGridColumn;
+			
+			
+			private var _selectedEntry:KalturaBaseEntry;
+
+			[Bindable]
+			/**
+			 * the text to show under "publish" column.
+			 * (public because it is used in the item renderer)
+			 * */
+			public var previewLabel:String = ResourceManager.getInstance().getString('cms', 'previewAndEmbed');
+
+			[Bindable]
+			public var allSelected:Boolean = false;
+
+			public var kalturaSorting:Boolean = true;
+
+			/**
+			 * this parameter will show/hide the links for the entries names
+			 * */
+			public var showLinks:Boolean = true;
+
+			[Bindable]
+			/**
+			 * used for setting a difference between entries table
+			 * for moderation screen and entry screen
+			 */
+			public var usedForModeration:Boolean = false;
+
+			/**
+			 * For RnP, we need to seperate the preview and the previewAndEmbed cases
+			 */
+			private var _showEmbed:Boolean = true;
+
+			/**
+			 * @copy #orderBy
+			 * */
+			private var _orderBy:String = "";
+
+			private var _columnsSortMap:HashMap = new HashMap();
+
+			/**
+			 * the current sort index
+			 * */
+			private var _sortIndex:int = 4;
+
+			[Bindable]
+			/**
+			 * the current sort direction
+			 * */
+			private var _sortDirection:String = "DESC";
+
+
+			[Bindable]
+			/**
+			 * the latest selected entry in the table
+			 * */
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+
+
+			/**
+			 * @private
+			 */
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+				markSelectedEntry(false);
+			}
+
+
+			override public function get dataProvider():Object {
+				return super.dataProvider;
+			}
+
+
+			[Bindable]
+			override public function set dataProvider(value:Object):void {
+				super.dataProvider = value;
+				setIsAllSelected();
+				setSortIndicator();
+				markSelectedEntry();
+			}
+
+
+			[Bindable]
+			public function get sortDirection():String {
+				return _sortDirection;
+			}
+
+
+			public function set sortDirection(sortDirection:String):void {
+				_sortDirection = sortDirection;
+			}
+
+
+			public function updateDefaultSortColumn():void {
+				var index:int = 0;
+				for each (var col:DataGridColumn in this.columns) {
+					if (col.headerText == resourceManager.getString('cms', 'createAt')) {
+						_sortIndex = index;
+						break;
+					}
+					index++;
+				}
+
+				setSortIndicator();
+			}
+
+
+			private function markSelectedEntry(dispatchSelectEvent:Boolean = true):void {
+				if (selectedEntry != null) {
+					// gotta find the correct entry by its id, because these are new objects.
+					var n:int = dataProvider.length;
+					var entries:Array = (dataProvider as ArrayCollection).source;
+					var entry:KalturaBaseEntry;
+					for (var i:int = 0; i < n; i++) {
+						entry = entries[i] as KalturaBaseEntry;
+						if (entry.id == selectedEntry.id) {
+							selectedItems = [entry];
+							break;
+						}
+					}
+					// the selectedEntry is not relevant anymore - should remember the new one
+					if (dispatchSelectEvent) {
+						var ee:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
+						ee.dispatch();
+
+					}
+				}
+			}
+
+
+			private function dataChanged(data:Object):void {
+				setSortIndicator();
+			}
+
+
+			/**
+			 * The function translate media type enum to the matching locale string
+			 * @param str
+			 * @param type - special param for mix since mix is type 2 and other types are type 1 with different mediaTypes
+			 */
+			public function getMediaTypes(mediaType:String, type:String):String {
+				if (type == "2") {
+					return resourceManager.getString('cms', 'videoMix');
+				}
+				switch (mediaType) {
+					case "1":
+						return resourceManager.getString('cms', 'video');
+						break;
+					case "2":
+						return resourceManager.getString('cms', 'image');
+						break;
+					case "5":
+						return resourceManager.getString('cms', 'audio');
+						break;
+					case "6":
+						return resourceManager.getString('cms', 'videoMix');
+						break;
+					case "10":
+						return resourceManager.getString('cms', 'xml');
+						break;
+				}
+
+				return "";
+			}
+
+
+			/**
+			 * This function builds the tooltip for the entry name
+			 * @param tags
+			 * @ param adminTags
+			 */
+			public function tagsAndAdminTags(tags:String, adminTags:String):String {
+				if (!tags && !adminTags)
+					return '';
+				var str:String = "";
+				if (tags)
+					str += "Tags:\n" + tags + "\n";
+				if (adminTags)
+					str += "Categories:\n" + adminTags;
+
+				return str;
+			}
+
+
+			public function openEditEntry(entry:Object):void {
+				if (!showLinks)
+					return;
+				if (entry) {
+					var cgEvent:CairngormEvent;
+					cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (dataProvider as ArrayCollection).getItemIndex(entry));
+					cgEvent.dispatch();
+					if (entry is KalturaPlaylist) {
+						//switch manual / rule base
+						if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
+							// manual list
+							cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+							cgEvent.dispatch();
+						}
+						if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
+							cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+							cgEvent.dispatch();
+						}
+					}
+					else {
+						var newState:String = isPlaylistEntries ? WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW : WindowsStates.ENTRY_DETAILS_WINDOW
+						cgEvent = new WindowEvent(WindowEvent.OPEN, newState);
+						cgEvent.dispatch();
+					}
+				}
+				else {
+					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
+				}
+				dispatchEvent(new Event(OPEN_ENTRY));
+			}
+
+
+			public function removeColumn(headerTxt:String):void {
+				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
+				for (var i:int = 0; i < arrCol.length; ++i) {
+					if (arrCol[i].headerText == headerTxt) {
+						arrCol.removeItemAt(i);
+						this.columns = arrCol.source;
+						return;
+					}
+				}
+//				this.columns = arrCol.source;
+			}
+			
+			public function returnThumbnailsColumn():void {
+				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
+				arrCol.addItemAt(_thumbnailsColumn, 0);
+				columns = arrCol.source;
+			}
+
+
+			public function toggoleCheckbox(event:ListEvent):void {
+				if (event.itemRenderer.data) {
+					event.itemRenderer.data.selected = !event.itemRenderer.data.selected;
+
+					var cgEvent:EntryEvent;
+					// CHANGED KalturaBaseEntry
+					if (event.itemRenderer.data.selected)
+						cgEvent = new EntryEvent(EntryEvent.ADD_CHECKED_ENTRY, event.itemRenderer.data as KalturaBaseEntry);
+					else
+						cgEvent = new EntryEvent(EntryEvent.REMOVE_CHECKED_ENTRY, event.itemRenderer.data as KalturaBaseEntry);
+
+					cgEvent.dispatch();
+				}
+
+				setIsAllSelected();
+			}
+
+
+			/**
+			 * selection or deselection was made
+			 */
+			public function setSelection(event:ListEvent):void {
+				if (event.itemRenderer.data) {
+					var cgEvent:SelectionEvent;
+					cgEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, this.selectedItems);
+					cgEvent.dispatch();
+				}
+
+			}
+
+
+			private function onDragExit(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(false);
+				}
+			}
+
+
+			private function onDragOver(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(true);
+				}
+			}
+
+
+			private function onDragDrop(event:DragEvent):void {
+				if (this == event.dragInitiator) {
+					event.preventDefault();
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(false);
+				}
+			}
+
+			/**
+			 * Update: Show a reject drop cursor or clear it. Depending on the
+			 * situation one might want to walk up to the parent node to
+			 * get it&apos;s status in order to show a reject for all child nodes
+			 * of a node that has the rejection.
+			 **/
+			private var rejectCursorID:int;
+
+
+			private function showRejectDropCursor(value:Boolean):void {
+				if (value == true && CursorManager.currentCursorID != rejectCursorID) {
+					var newCursorClass:Class;
+
+					//grab the reject cursor from the dragmanager style declaration
+					var styleSheet:CSSStyleDeclaration = StyleManager.getStyleDeclaration("DragManager");
+					newCursorClass = styleSheet.getStyle("rejectCursor");
+
+					//assign it as top level
+					rejectCursorID = CursorManager.setCursor(newCursorClass, 0);
+
+				}
+				else if (value == false) {
+					//remove our rejectCursorID from the list    
+					CursorManager.removeCursor(rejectCursorID);
+					rejectCursorID = -1;
+				}
+
+			}
+
+
+
+			private function headerReleaseHandler(event:DataGridEvent):void {
+				if (!kalturaSorting) {
+					return;
+				}
+
+				event.preventDefault();
+
+				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
+					var headerText:String = event.itemRenderer.data.headerText;
+					if (!_columnsSortMap.containsKey(headerText)) {
+						_columnsSortMap.put(headerText, false);
+					}
+
+
+					var sortDir:Boolean = _columnsSortMap.getValue(headerText) as Boolean;
+					switch (event.itemRenderer.data.headerText) {
+						/*case resourceManager.getString('cms', '') :
+						   return;
+						 break;*/
+						case resourceManager.getString('cms', 'createAt'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.CREATED_AT_ASC : KalturaMediaEntryOrderBy.CREATED_AT_DESC;
+							break;
+						case resourceManager.getString('cms', 'name'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.NAME_ASC : KalturaMediaEntryOrderBy.NAME_DESC;
+							break;
+						case resourceManager.getString('cms', 'playerLoads'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.VIEWS_ASC : KalturaMediaEntryOrderBy.VIEWS_ASC;
+							break;
+						case resourceManager.getString('cms', 'plays'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.PLAYS_ASC : KalturaMediaEntryOrderBy.PLAYS_DESC;
+							break;
+						/* 		  			case resourceManager.getString('cms', 'mediaData') :
+						   orderBy = _sortDirectionMap[headerText] == DESCENDING ? OrderByServerTypes.MEDIA_DATA_ASC : OrderByServerTypes.MEDIA_DATA_DESC;
+						 break; */
+						/* 					case resourceManager.getString('cms', 'mediaType') :
+						   orderBy = _sortDirectionMap[headerText] == DESCENDING ? OrderByServerTypes.MEDIA_TYPE_ASC : OrderByServerTypes.MEDIA_TYPE_DESC;
+						 break;*/
+						case resourceManager.getString('cms', 'type'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MEDIA_TYPE_ASC : KalturaMediaEntryOrderBy.MEDIA_TYPE_DESC;
+							break;
+						case resourceManager.getString('cms', 'flags'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MODERATION_COUNT_ASC : KalturaMediaEntryOrderBy.MODERATION_COUNT_DESC;
+							break;
+						case resourceManager.getString('cms', 'rating'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.RANK_ASC : KalturaMediaEntryOrderBy.RANK_DESC;
+							break;
+						/* 					case resourceManager.getString('cms', 'moderationStatus') :
+						   orderBy = _sortDirectionMap[headerText] == DESCENDING ? OrderByServerTypes.MODERATION_STATUS_ASC: OrderByServerTypes.MODERATION_STATUS_DESC;
+						 break; */
+						case resourceManager.getString('cms', 'duration'):
+							_orderBy = sortDir ? KalturaMediaEntryOrderBy.DURATION_ASC : KalturaMediaEntryOrderBy.DURATION_DESC;
+							break;
+						default:
+							Alert.show(resourceManager.getString('cms', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('cms', 'cannotOrderByItTitle'));
+							return;
+							break;
+					}
+
+					// remember the direction and change the sign
+					_sortIndex = event.columnIndex;
+					_sortDirection = sortDir ? ASCENDING : DESCENDING;
+					_columnsSortMap.setValue(headerText, !sortDir);
+					setSortIndicator();
+
+					dispatchEvent(new Event(ORDER_BY_CHANGED));
+				}
+			}
+
+
+			private function setSortIndicator():void {
+				this.mx_internal::sortIndex = _sortIndex;
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+
+
+			public function preview(entry:Object):void {
+				var cgEvent:EntryEvent;
+				if (entry is KalturaPlaylist)
+					cgEvent = new EntryEvent(EntryEvent.PREVIEW, entry as KalturaPlaylist);
+				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
+					cgEvent = new EntryEvent(EntryEvent.PREVIEW, entry as KalturaBaseEntry);
+				else {
+					trace("Error: no PlaylistVO nor EntryVO");
+					return;
+				}
+
+				cgEvent.dispatch();
+			}
+
+
+			public function deselectAll(event:Event = null):void {
+				selectedItems = [];
+			}
+
+
+			public function selectAll(event:Event = null):void {
+				selectedItems = (dataProvider as ArrayCollection).source;
+			}
+
+
+			public function setIsAllSelected():void {
+				var isIt:Boolean = true;
+
+				if (this.dataProvider.length == 0)
+					isIt = false;
+
+				for (var i:int = 0; i < this.dataProvider.length; i++) {
+					if (!this.dataProvider[i].selected)
+						isIt = false;
+				}
+
+				allSelected = isIt;
+			}
+
+
+			public function getPlaylistMediaTypes(type:int):String {
+				switch (type) {
+					case KalturaPlaylistType.STATIC_LIST:
+						return resourceManager.getString('cms', 'manuall');
+						break;
+					case KalturaPlaylistType.DYNAMIC:
+						return resourceManager.getString('cms', 'ruleBased');
+						break;
+					case KalturaPlaylistType.EXTERNAL:
+						return resourceManager.getString('cms', 'externalRss');
+						break;
+				}
+				return "";
+			}
+
+
+			/**
+			 * format the timer
+			 */
+			public function getTimeFormat(sec:Number):String {
+				return KTimeUtil.formatTime(sec);
+			}
+
+			private const SCHEDULED:int = 1;
+			private const RUNNING:int = 2;
+			private const FINISHED:int = 3;
+
+
+			public function getStatusForModeration(obj:Object):String {
+				var entry:KalturaBaseEntry = obj as KalturaBaseEntry;
+				switch (entry.moderationStatus) {
+					case KalturaEntryModerationStatus.APPROVED:  {
+						return resourceManager.getString('cms', 'approvedStatus');
+					}
+					case KalturaEntryModerationStatus.AUTO_APPROVED:  {
+						return resourceManager.getString('cms', 'autoApprovedStatus');
+					}
+					case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
+						return resourceManager.getString('cms', 'flaggedStatus');
+					}
+					case KalturaEntryModerationStatus.PENDING_MODERATION:  {
+						return resourceManager.getString('cms', 'pendingStatus');
+					}
+					case KalturaEntryModerationStatus.REJECTED:  {
+						return resourceManager.getString('cms', 'rejectedStatus');
+					}
+				}
+				return '';
+			}
+
+
+			private const SCHEDULING_ALL_OR_IN_FRAME:int = 1;
+			private const SCHEDULING_BEFORE_FRAME:int = 2;
+			private const SCHEDULING_AFTER_FRAME:int = 3;
+
+
+			/**
+			 * the function translate status type enum to the matching locale string
+			 * @param obj	data object for the itemrenderer
+			 */
+			public function getStatus(obj:Object):String {
+				var entry:KalturaBaseEntry = obj as KalturaBaseEntry;
+				var status:String = entry.status;
+				switch (status) {
+					case KalturaEntryStatus.DELETED: 
+						//fixed to all states
+						return resourceManager.getString('cms', 'statusdeleted');
+						break;
+
+					case KalturaEntryStatus.ERROR_IMPORTING: 
+						//fixed to all states
+						return resourceManager.getString('cms', 'statuserrorimporting');
+						break;
+
+					case KalturaEntryStatus.ERROR_CONVERTING: 
+						//fixed to all states
+						return resourceManager.getString('cms', 'statuserrorconverting');
+						break;
+
+					case KalturaEntryStatus.IMPORT: 
+						//fixed to all states
+						if (entry is KalturaLiveStreamAdminEntry) {
+							return resourceManager.getString('cms', 'provisioning');
+						}
+						else {
+							return resourceManager.getString('cms', 'statusimport');
+						}
+						break;
+
+					case KalturaEntryStatus.PRECONVERT: 
+						//fixed to all states
+						return resourceManager.getString('cms', 'statuspreconvert');
+						break;
+					
+					/* case KalturaEntryStatus.MODERATE:
+					   return resourceManager.getString('cms', 'statusmoderate');
+					 break;*/
+
+					case KalturaEntryStatus.PENDING:
+						return resourceManager.getString('cms', 'statuspending');
+						break;
+					
+					case KalturaEntryStatus.NO_CONTENT:  
+						return resourceManager.getString('cms', 'statusNoMedia');
+						break;
+					
+					case KalturaEntryStatus.READY:  
+						return getStatusForReadyEntry(entry);
+						break;
+					
+				}
+				return '';
+			}
+			
+			private function getStatusForReadyEntry(entry:KalturaBaseEntry):String {
+				var result:String = '';
+				var now:Date = new Date();
+				var time:int = now.time / 1000;
+				var schedulingType:int = 0;
+				
+				if (((entry.startDate == int.MIN_VALUE) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate <= time) && (entry.endDate >= time)) || ((entry.startDate < time) && (entry.endDate == int.MIN_VALUE)) || ((entry.startDate == int.MIN_VALUE) && (entry.endDate > time))) {
+					schedulingType = SCHEDULING_ALL_OR_IN_FRAME;
+				}
+				else if (entry.startDate > time) {
+					schedulingType = SCHEDULING_BEFORE_FRAME;
+				}
+				else if (entry.endDate < time) {
+					schedulingType = SCHEDULING_AFTER_FRAME;
+				}
+				
+				var moderationStatus:int = entry.moderationStatus;
+				
+				
+				switch (moderationStatus) {
+					case KalturaEntryModerationStatus.APPROVED:
+					case KalturaEntryModerationStatus.AUTO_APPROVED:
+					case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  
+						if (schedulingType == SCHEDULING_ALL_OR_IN_FRAME){
+							result = resourceManager.getString('cms', 'liveStatus');
+						}
+						else if (schedulingType == SCHEDULING_BEFORE_FRAME) {
+							result = resourceManager.getString('cms', 'scheduledStatus');
+						}
+						else if (schedulingType == SCHEDULING_AFTER_FRAME) {
+							result = resourceManager.getString('cms', 'finishedStatus');
+						}
+						break;
+					
+					case KalturaEntryModerationStatus.PENDING_MODERATION:  
+						result = resourceManager.getString('cms', 'pendingStatus');
+						break;
+					
+					case KalturaEntryModerationStatus.REJECTED:  
+						result = resourceManager.getString('cms', 'rejectedStatus');
+						break;
+					
+				}
+				
+				
+				return result;
+			}
+
+
+			public function formatDate(date:Number):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = resourceManager.getString('cms', 'listdateformat');
+				var dt:Date = new Date();
+				dt.setTime(date * 1000);
+				return df.format(dt);
+			};
+
+
+			public function formatTime(offset:Number):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = resourceManager.getString('cms', 'h_m_s_ms');
+				var dt:Date = new Date();
+				dt.hours = dt.minutes = dt.seconds = 0;
+				dt.milliseconds = offset;
+				return df.format(dt);
+			}
+
+
+			public function and(term1:Boolean, term2:Boolean):Boolean {
+				return term1 && term2;
+			}
+
+
+			public function getUnderlineType(data:Object):String {
+				if (showLinks)
+					return "underline"
+				else
+					return "";
+			}
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				for (var i:int = 0; i < columns.length; ++i) {
+					if (columns[i].headerText == resourceManager.getString('cms', 'thumbnail')) {
+						_thumbnailsColumn = columns[i]; 
+						break;
+					}
+				}
+				PermissionManager.getInstance().applyAllAttributes(this, id);
+			}
+			
+			
+			public function getClipIntime(value:Object):String {
+				var entry:KalturaBaseEntry = value as KalturaBaseEntry;
+				var result:String = '';
+				for each (var opatt:KalturaOperationAttributes in entry.operationAttributes) {
+					if (opatt is KalturaClipAttributes) {
+						result = formatTime((opatt as KalturaClipAttributes).offset);
+						break;
+					}
+				}
+				return result;
+			}
+
+
+			/**
+			 * table ordering, optional values listed in <code>KalturaMediaEntryOrderBy</code>
+			 * */
+			public function get orderBy():String {
+				return _orderBy;
+			}
+
+
+			[Bindable]
+			/**
+			 * @copy #_previewOnly
+			 */
+			public function set showEmbed(value:Boolean):void {
+				if (value)
+					previewLabel = ResourceManager.getInstance().getString('cms', 'previewAndEmbed');
+				else {
+					previewLabel = resourceManager.getString('cms', 'previewOnly');
+				}
+				_showEmbed = value;
+			}
+
+
+			public function get showEmbed():Boolean {
+				return _showEmbed;
+			}
+
+
+			
+		]]>
+	</mx:Script>
+
+
+
+	<mx:columns>
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'thumbnail')}" width="72" minWidth="54">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
+						<mx:Image id="img" source="{data.thumbnailUrl+'/bgcolor/F7F7F7/type/2'}"
+								  ioError="{img.source = brokenImg}" width="40" height="30" maintainAspectRatio="true"
+								  horizontalAlign="center" verticalAlign="middle" horizontalCenter="0"
+								  verticalCenter="0" toolTip="{data.id}"/>
+					</mx:VBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" width="90"
+						   headerText="{resourceManager.getString('cms', 'idHeader')}"
+						   itemRenderer="com.kaltura.edw.view.et.EntryIdIR"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
+						   headerText="{resourceManager.getString('cms', 'name')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+						<!-- Must be in a container ( Bug in naked linkbutton in datagrid ) -->
+						<mx:Script>
+							<![CDATA[
+								import com.kaltura.types.KalturaEntryStatus;
+								import com.kaltura.types.KalturaMediaType;
+
+
+								private function getDrillDownEnabled(type:int):Boolean {
+									if (type == KalturaMediaType.LIVE_STREAM_FLASH) {
+										return data.status == KalturaEntryStatus.READY && !outerDocument.usedForModeration && outerDocument.showLinks;
+									}
+									else
+										return outerDocument.showLinks;
+								}
+							]]>
+						</mx:Script>
+						<mx:LinkButton label="{data.name}" textDecoration="{outerDocument.getUnderlineType(data)}"
+									   enabled="{getDrillDownEnabled(data.mediaType)}"
+									   click="{event.stopImmediatePropagation(); outerDocument.openEditEntry(data)}"
+									   toolTip="{outerDocument.tagsAndAdminTags(data.tags,data.adminTags)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80"
+						   headerText="{resourceManager.getString('cms', 'playlistType')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalScrollPolicy="off"
+							 verticalScrollPolicy="off">
+						<mx:Label text="{outerDocument.getPlaylistMediaTypes(data.playlistType)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+
+		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('cms', 'type')}"
+						   itemRenderer="com.kaltura.edw.view.et.MediaTypeRenderer"
+						   headerStyleName="centerTableColumnHeader"/>
+
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="views" width="80"
+						   headerText="{resourceManager.getString('cms', 'playerLoads')}"
+						   itemRenderer="com.kaltura.edw.view.et.DataGridColumnLabel"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="plays" width="55"
+						   headerText="{resourceManager.getString('cms', 'plays')}"
+						   itemRenderer="com.kaltura.edw.view.et.DataGridColumnLabel"
+						   headerStyleName="centerTableColumnHeader"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="rank" width="50"
+						   headerText="{resourceManager.getString('cms', 'rating')}"
+						   itemRenderer="com.kaltura.edw.view.et.DataGridColumnLabel"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
+						   headerText="{resourceManager.getString('cms', 'creator')}" showDataTips="true"
+						   dataTipField="userId"
+						   itemRenderer="com.kaltura.edw.view.et.DataGridColumnLabel"/>
+
+
+
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
+						   headerText="{resourceManager.getString('cms', 'createAt')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalScrollPolicy="off"
+							 verticalScrollPolicy="off">
+						<mx:Label text="{outerDocument.formatDate(data.createdAt)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+
+		<!--mx:DataGridColumn  paddingLeft="4" paddingRight="4"  dataField="adminTags" width="100" headerText="{resourceManager.getString('cms', 'adminTags')}"
+			 showDataTips="true" dataTipField="adminTags" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel" />
+			 <mx:DataGridColumn  paddingLeft="4" paddingRight="4"  dataField="tags"  width="100" headerText="{resourceManager.getString('cms', 'tags')}"
+			 showDataTips="true" dataTipField="tags" itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.DataGridColumnLabel" /-->
+
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75"
+						   headerText="{resourceManager.getString('cms', 'intime')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalScrollPolicy="off"
+							 verticalScrollPolicy="off">
+						<mx:Label text="{outerDocument.getClipIntime(data)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" dataField="duration"
+						   headerText="{resourceManager.getString('cms', 'duration')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+						<mx:Label id="lbl" text="{outerDocument.getTimeFormat(data.duration)}" toolTip="{lbl.text}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="moderationCount" width="40"
+						   headerText="{resourceManager.getString('cms', 'flags')}"
+						   itemRenderer="com.kaltura.edw.view.et.DataGridColumnLabel"/>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
+						   headerText="{usedForModeration ? resourceManager.getString('cms', 'moderationStatus') : resourceManager.getString('cms', 'status')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+						<mx:Label id="lbl" toolTip="{lbl.text}"
+								  text="{outerDocument.usedForModeration ? outerDocument.getStatusForModeration(data) : outerDocument.getStatus(data)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="130"
+						   headerText="{resourceManager.getString('cms', 'preview')}">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+						<mx:Script>
+							<![CDATA[
+								import com.kaltura.types.KalturaEntryStatus;
+							]]>
+						</mx:Script>
+						<mx:LinkButton label="{outerDocument.previewLabel}" textDecoration="underline"
+									   click="{outerDocument.preview(data);event.stopImmediatePropagation();}"
+									   visible="{outerDocument.and((data.status == KalturaEntryStatus.READY), !outerDocument.usedForModeration)}"
+									   includeInLayout="{outerDocument.and((data.status == KalturaEntryStatus.READY), !outerDocument.usedForModeration)}"/>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+	</mx:columns>
+</mx:DataGrid>

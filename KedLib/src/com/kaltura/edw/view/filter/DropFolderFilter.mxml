@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<filter1:BaseFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*"
+				   styleName="filter" paddingTop="0" paddingBottom="0" horizontalScrollPolicy="off"
+				   verticalScrollPolicy="off" width="100%" height="100%"
+				   xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*" xmlns:filter1="com.kaltura.edw.view.filter.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaDropFolderFileOrderBy;
+			import com.kaltura.vo.KalturaDropFolder;
+			import com.kaltura.vo.KalturaDropFolderFileFilter;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.core.Container;
+
+			private const DATE_FIELD_WIDTH:Number = 80;
+
+			private var _dropFolderFileFilter:KalturaDropFolderFileFilter;
+			private var _dropFoldersAC:ArrayCollection;
+
+			public var isFilterOn:Boolean;
+
+			private var _listButtonsArray:Array;
+
+
+			private function updateIsFilterOn(curFilter:KalturaDropFolderFileFilter):void {
+				isFilterOn = (curFilter.createdAtGreaterThanOrEqual != int.MIN_VALUE) 
+					|| (curFilter.createdAtLessThanOrEqual != int.MIN_VALUE) 
+					|| checkSpecificDropFoldersSelcted() 
+					|| !dropFolderFileStatus.allDropStatusBtn.selected 
+					|| curFilter.fileNameLike;
+			}
+
+
+			/**
+			 * checks if "all drop folders" buttons is selected, or are we filtering according to a specific folder
+			 * */
+			private function checkSpecificDropFoldersSelcted():Boolean {
+				if (!_listButtonsArray || _listButtonsArray.length == 0)
+					return false;
+
+				return !(_listButtonsArray[0] as Button).selected;
+			}
+
+
+			public function get dropFoldersAC():ArrayCollection {
+				return _dropFoldersAC;
+			}
+
+
+			public function set dropFoldersAC(value:ArrayCollection):void {
+				_dropFoldersAC = value;
+
+				if (value && value.length) {
+					buildDropFoldersFilter();
+					showDropFoldersData(_dropFolderFileFilter);
+				}
+			}
+
+
+			/**
+			 * builds the UI for dropfolders filter
+			 * */
+			private function buildDropFoldersFilter():void {
+				dropFolders.removeAllChildren();
+
+				if (dropFoldersAC && dropFoldersAC.length) {
+					var container:Container = createDynamicDropFoldersFilter();
+
+					if (container) // if we need to add visual filter
+						dropFolders.addChild(container);
+				}
+			}
+
+
+			/**
+			 * get select drop folders ids
+			 * */
+			private function getSelectedDropFoldersIds():String {
+				if (!_listButtonsArray)
+					return '';
+				var idsArr:Array = new Array();
+
+				for (var i:int = 0; i < _listButtonsArray.length; i++) {
+					if ((_listButtonsArray[i] as Button).selected) {
+						for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
+							if (dropFolder.name == ((_listButtonsArray[i] as Button).label)) {
+								idsArr.push(dropFolder.id);
+								break;
+							}
+						}
+					}
+				}
+//				if (idsArr.length == 0) {
+//					for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
+//						idsArr.push(dropFolder.id);
+//					}
+//				}
+
+				return idsArr.join(',');
+			}
+
+
+			/**
+			 * create the UI for the drop folders filter section of the main Filter
+			 * */
+			private function createDynamicDropFoldersFilter():Container {
+				var container:Container = new VBox();
+				container.percentWidth = 100;
+				container.styleName = "defualtFilter";
+
+				_listButtonsArray = createButtonsGroup(resourceManager.getString("cms", "dropFoldersTitle"), "dropFolders",
+					_dropFoldersAC.source, "name", onAutoTitleClick, onDropFolderSelected);
+				//_dropFoldersBtnsAC["dropFolders"] = listButtonsArray;
+				injectGroupToContainer(container, _listButtonsArray);
+
+				return container;
+			}
+
+
+			/**
+			 * handle a drop folder click
+			 */
+			public function onDropFolderSelected(evt:MouseEvent):void {
+				// target button:
+				var btn:Button = evt.target as Button;
+
+				// name of relevant button group
+				var groupName:String = (btn.data as String).split(' - ')[0];
+
+				// all the buttons in the group
+				var arr:Array = dynamicFilterData[groupName] as Array;
+				if (btn.selected) {
+					// deselect all other button
+					for (var i:int = 0; i < arr.length; i++) {
+						var curBtn:Button = arr[i] as Button;
+						if (curBtn != btn)
+							curBtn.selected = false;
+					}
+				}
+				else {
+					//check if this unselect it the last one on the group. if so - select the title
+					var counter:Number = 0;
+					for (var j:uint = 1; j < arr.length; j++) {
+						if ((arr[j] as Button) != btn && (arr[j] as Button).selected) {
+							counter++;
+						}
+					}
+					if (counter == 0) {
+						//this is the last button unselected - turn on the title button 
+						(arr[0] as Button).selected = true;
+					}
+				}
+				updateImageButton(arr);
+				preformNewSearch();
+			}
+
+
+			public function get dropFolderFileFilter():KalturaDropFolderFileFilter {
+//				var filter:KalturaDropFolderFileFilter = _dropFolderFileFilter;
+				_dropFolderFileFilter.statusIn = dropFolderFileStatus.getFilterString();
+				_dropFolderFileFilter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
+				if (fromDate && fromDate.selectedDate)
+					_dropFolderFileFilter.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
+				if (toDate && toDate.selectedDate)
+					_dropFolderFileFilter.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
+				_dropFolderFileFilter.dropFolderIdIn = getSelectedDropFoldersIds();
+				_dropFolderFileFilter.fileNameLike = searchBox.getFilterString();
+				updateIsFilterOn(_dropFolderFileFilter);
+				return _dropFolderFileFilter;
+			}
+
+
+			public function set dropFolderFileFilter(value:KalturaDropFolderFileFilter):void {
+				_dropFolderFileFilter = value;
+				if (value && dropFolderFileStatus) {
+					showDatesData(_dropFolderFileFilter);
+					showDropFoldersData(_dropFolderFileFilter);
+					dropFolderFileStatus.setFilter(_dropFolderFileFilter);
+					updateImageButton(_listButtonsArray);
+				}
+				validateNow();
+				updateIsFilterOn(value);
+			}
+
+
+			/**
+			 * show dates filtering data on filter
+			 * */
+			private function showDatesData(filterVo:KalturaDropFolderFileFilter):void {
+				var date:Date;
+				// from date:
+				if (!filterVo.createdAtGreaterThanOrEqual || filterVo.createdAtGreaterThanOrEqual == int.MIN_VALUE) {
+					fromDate.selectedDate = null;
+				}
+				else {
+					date = new Date();
+					date.time = filterVo.createdAtGreaterThanOrEqual * 1000;
+					fromDate.selectedDate = date;
+				}
+
+				// to date:
+				if (!filterVo.createdAtLessThanOrEqual || filterVo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+					toDate.selectedDate = null;
+				}
+				else {
+					date = new Date();
+					date.time = filterVo.createdAtLessThanOrEqual * 1000;
+					toDate.selectedDate = date;
+				}
+
+			}
+
+
+			private function clearDates():void {
+				super.clearGivenDates(fromDate, toDate);
+			}
+
+
+			private function currentDatesChange(event:Event):void {
+				super.currentGivenDatesChange(fromDate, toDate);
+			}
+
+
+			/**
+			 * updates images etc.
+			 * */
+			override public function validateNow():void {
+				super.validateNow();
+				updateImageButton(dropFolderFileStatus.buttons);
+				updateImageButton(_listButtonsArray);
+			}
+
+
+			/**
+			 * update button icons and start a search with new data
+			 * */
+			private function onDropFilterChanged():void {
+				var btns:Array = dropFolderFileStatus.buttons;
+				updateImageButton(btns);
+				preformNewSearch();
+			}
+
+
+			/**
+			 * selects the suitable data accoding to the given filterVo
+			 * */
+			private function showDropFoldersData(filterVo:KalturaDropFolderFileFilter):void {
+				if (!_listButtonsArray /* || !filterVo.dropFolderIdIn */)
+					return;
+				var container:Container = dropFolders.getChildAt(0) as Container;
+				var foldersArr:Array;
+				if (filterVo.dropFolderIdIn) {
+					foldersArr = filterVo.dropFolderIdIn.split(',');
+				}
+				else {
+					foldersArr = [];
+				}
+				var selectedFoldersNames:ArrayCollection = new ArrayCollection();
+				//get suitable names
+				for (var i:int = 0; i < foldersArr.length; i++) {
+					for each (var dropFolder:KalturaDropFolder in dropFoldersAC) {
+						if (dropFolder.id == foldersArr[i]) {
+							selectedFoldersNames.addItem(dropFolder.name);
+							break;
+						}
+					}
+				}
+				//mark suitable buttons
+				var selectAll:Boolean = true;
+				for (var j:int = 1; j < _listButtonsArray.length; j++) {
+					var curBtn:Button = _listButtonsArray[j] as Button;
+					if (selectedFoldersNames.contains(curBtn.label)) {
+						curBtn.selected = true;
+					}
+					else {
+						curBtn.selected = false;
+						selectAll = false;
+					}
+				}
+				//if all folders are selected - select the title button
+			 	if (selectAll || !filterVo.dropFolderIdIn) {
+					for (var k:int = 1; k<_listButtonsArray.length; k++) {
+						(_listButtonsArray[k] as Button).selected = false;
+					}
+					(_listButtonsArray[0] as Button).selected = true;
+				} 
+				else
+					(_listButtonsArray[0] as Button).selected = false;
+
+				validateNow();
+			}
+		]]>
+	</mx:Script>
+	<mx:Metadata>
+		[Event(name="newSearch", type="flash.events.Event")] 
+		[Event(name="close", type="flash.events.Event")] 
+		[Event(name="open", type="flash.events.Event")] 
+	</mx:Metadata>
+
+	<filter1:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
+						  label="{resourceManager.getString('cms', 'searchFilter')}" width="100%"
+						  filterChanged="{preformNewSearch()}"/>
+	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30" selectedIndex="1" creationPolicy="all">
+		<mx:headerRenderer>
+			<mx:Component>
+				<filter1:FilterAccordionHeader showHeaderButton="{outerDocument.showAccordionHeaderButtons}"/>
+			</mx:Component>
+		</mx:headerRenderer>
+		<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%"
+				 height="100%" styleName="additinalFilterVBox">
+			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
+					 styleName="upperDatesVBox">
+				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
+				<mx:HBox styleName="innerUpperDatesHBox">
+					<mx:DateField id="fromDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'from')}"
+								  change="{currentDatesChange(event)}"/>
+					<mx:Label id="toDateTxt" text="-"/>
+					<mx:DateField id="toDate" width="{DATE_FIELD_WIDTH}" fontSize="11"
+								  toolTip="{resourceManager.getString('cms', 'to')}"
+								  change="{currentDatesChange(event)}"/>
+				</mx:HBox>
+				<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
+							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
+			</mx:VBox>
+			<filter1:DropFolderStatusesTab id="dropFolderFileStatus" width="100%" styleName="typesVBox"
+										  label="{resourceManager.getString('cms', 'status')}" 
+										  filterChanged="{onDropFilterChanged()}"/>
+		</mx:VBox>
+		<mx:VBox id="dropFolders" label="{resourceManager.getString('cms', 'dropFoldersTitle')}" width="100%"
+				 height="100%" styleName="additinalFilterVBox"/>
+	</mx:Accordion>
+
+</filter1:BaseFilter>

@@ -1,6 +1,6 @@
 package com.kaltura.edw.view.ir
 {
-	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.managers.FileUploadManager;
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;

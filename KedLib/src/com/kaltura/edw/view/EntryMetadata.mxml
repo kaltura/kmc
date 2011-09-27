@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.kmc.modules.content.utils.*"
-		 creationComplete="onCreationComplete()" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.edw.business.*"
+		 creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel">
 	<mx:Metadata>
 		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
@@ -16,14 +16,14 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.KdpEventTypes;
-			import com.kaltura.kmc.business.JSGate;
-			import com.kaltura.kmc.modules.content.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.ModelEvent;
-			import com.kaltura.kmc.modules.content.events.UploadEntryEvent;
-			import com.kaltura.kmc.modules.content.model.Context;
-			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
-			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.edw.business.JSGate;
+			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.ModelEvent;
+			import com.kaltura.edw.control.events.UploadEntryEvent;
+			import com.kaltura.edw.model.Context;
+			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.vo.EntryDetailsValidationError;
+			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -340,19 +340,19 @@
 //				kdp3StaticSwfLoader.content["focusManager"].deactivate();
 			}
 
+//
+//			private function onStandardClick():void {
+//				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.SIMPLE);
+//				deleayEditors();
+//				pausePreview();
+//			}
 
-			private function onStandardClick():void {
-				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.SIMPLE);
-				deleayEditors();
-				pausePreview();
-			}
 
-
-			private function onAdvancedEditor():void {
-				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.ADVANCED);
-				deleayEditors();
-				pausePreview();
-			}
+//			private function onAdvancedEditor():void {
+//				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.ADVANCED);
+//				deleayEditors();
+//				pausePreview();
+//			}
 
 
 			/**
@@ -432,30 +432,30 @@
 			}
 
 
-			/**
-			 * Mix action - create a mix from this entry or open editor
-			 */
-			private function mix(mediaType:String, type:String, editorType:int):void {
-				dispatchEvent(new Event(EntryMetadata.UNTRACKABLE_CHANGE));
-				if (type == KalturaEntryType.MIX) {
-					//this is a mix
-					var mixEditorType:String = (selectedEntry as KalturaMixEntry).editorType.toString();
-					// arguments: entryId, name , editorType , isNewMix (true: create a mix and then
-					// open an editor, false - edit this mix with the matching editor type)
-					JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, false);
-				}
-				switch (mediaType) {
-					//this is an entry (video image or audio)
-					case "1":
-					case "2":
-					case "5":
-						// arguments: entryId, name , editorType , isNewMix (true: create a mix and then open an editor, 
-						//false - edit this mix with the matching editor type)
-						JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, true);
-						break;
-				}
-
-			}
+//			/**
+//			 * Mix action - create a mix from this entry or open editor
+//			 */
+//			private function mix(mediaType:String, type:String, editorType:int):void {
+//				dispatchEvent(new Event(EntryMetadata.UNTRACKABLE_CHANGE));
+//				if (type == KalturaEntryType.MIX) {
+//					//this is a mix
+//					var mixEditorType:String = (selectedEntry as KalturaMixEntry).editorType.toString();
+//					// arguments: entryId, name , editorType , isNewMix (true: create a mix and then
+//					// open an editor, false - edit this mix with the matching editor type)
+//					JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, false);
+//				}
+//				switch (mediaType) {
+//					//this is an entry (video image or audio)
+//					case "1":
+//					case "2":
+//					case "5":
+//						// arguments: entryId, name , editorType , isNewMix (true: create a mix and then open an editor, 
+//						//false - edit this mix with the matching editor type)
+//						JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, true);
+//						break;
+//				}
+//
+//			}
 
 
 			private function openPreview():void {

@@ -3,13 +3,12 @@
 	 access control tab of EntryDetailsWin
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" initialize="{updateAccessSection()}"
-		 show="{init()}" implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel">
+		 show="{init()}" implements="com.kaltura.edw.business.IDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.events.AccessControlProfileEvent;
-			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.model.FilterModel;
-			import com.kaltura.kmc.view.AccessControlProfilePopUpWindow;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.view.window.accessControl.AccessControlProfilePopUpWindow;
 			import com.kaltura.types.*;
 			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
@@ -109,18 +108,8 @@
 
 				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc, false, 0, true);
 				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc, false, 0, true);
-				newProfileWin.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
-
 			}
 
-
-			/**
-			 * pass the event to whomever is listening
-			 * (because events from popups don't naturally propagate to the main app, not the same displaylist)
-			 * */
-			private function dispatchHelp(e:KmcHelpEvent):void {
-				dispatchEvent(e.clone());
-			}
 
 
 			private function saveUpdatedProfileFunc(event:Event):void {

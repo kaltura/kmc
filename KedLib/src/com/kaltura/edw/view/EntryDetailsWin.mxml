@@ -10,7 +10,7 @@
 							height="595" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-							xmlns:ed="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
+							xmlns:ed="com.kaltura.edw.view.*"
 							xmlns:adobe="http://www.adobe.com/2006/fc" creationComplete="{onWindowCreationComplete()}"
 							xmlns:window="com.kaltura.kmc.modules.content.view.window.*">
 	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
@@ -25,24 +25,24 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.kmc.business.JSGate;
-			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.business.Cloner;
-			import com.kaltura.kmc.modules.content.business.IDrilldownPanel;
-			import com.kaltura.kmc.modules.content.events.EntriesEvent;
-			import com.kaltura.kmc.modules.content.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
-			import com.kaltura.kmc.modules.content.model.Context;
-			import com.kaltura.kmc.modules.content.model.DropFolderModel;
-			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-			import com.kaltura.kmc.modules.content.model.FilterModel;
-			import com.kaltura.kmc.modules.content.utils.MetadataDataParser;
-			import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.SingleCustomData;
-			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
-			import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
-			import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.edw.business.Cloner;
+			import com.kaltura.edw.business.IDrilldownPanel;
+			import com.kaltura.edw.business.JSGate;
+			import com.kaltura.edw.business.MetadataDataParser;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.control.events.EntriesEvent;
+			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.WindowEvent;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
+			import com.kaltura.edw.model.Context;
+			import com.kaltura.edw.model.DropFolderModel;
+			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.view.customData.SingleCustomData;
+			import com.kaltura.edw.vo.EntryDetailsValidationError;
+			import com.kaltura.edw.vo.EntryMetadataDataVO;
+			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.edw.control.events.SetRefreshRequiredEvent;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -64,6 +64,10 @@
 			import mx.events.PropertyChangeEvent;
 			import mx.resources.ResourceManager;
 
+			/**
+			 * the string to dispatch on help events so KMC can interpret them 
+			 * */
+			public static const HELP_REQUEST:String = 'helpRequest';
 
 			private var _entryWatcher:ChangeWatcher;
 			private var _entryIndexWatcher:ChangeWatcher;
@@ -378,7 +382,9 @@
 						break;
 					
 				}
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
+				e.data = anchor;
+				dispatchEvent(e);
 			}
 
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+	translate int to Date and  format it
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" verticalAlign="middle" width="100%" height="100%" paddingLeft="6">
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			private var _date:Date;
+			[Bindable]
+			private var _dateExist:Boolean = false;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				if (value) {
+					var dateInput:int = value.createdAt as int;
+					if ((dateInput != int.MIN_VALUE) && (dateInput != -1) && (dateInput != 0)) {
+						_date = new Date(dateInput*1000);
+						_dateExist = true;
+					}
+					else {
+						_dateExist = false;
+					}
+				} else {
+					_dateExist = false;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:DateFormatter id="dateDisplay" formatString="MM/DD/YYYY"/>
+	<mx:Label id="dateLabel" text="{_dateExist ? dateDisplay.format(_date) : ''}" styleName="simpleIrLabel"/>
+	
+</mx:HBox>

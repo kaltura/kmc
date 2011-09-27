@@ -3,12 +3,12 @@
 	live streaming control tab of EntryDetailsWin
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 implements="com.kaltura.kmc.modules.content.business.IDrilldownPanel" >
+		 implements="com.kaltura.edw.business.IDrilldownPanel" >
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.view.window.SettingsExample;
-			import com.kaltura.kmc.modules.content.vo.EntryDetailsValidationError;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
+			import com.kaltura.edw.view.window.SettingsExample;
+			import com.kaltura.edw.vo.EntryDetailsValidationError;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
@@ -170,7 +170,9 @@
 			}
 			
 			private function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section11'));
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
+				e.data = 'section11';
+				dispatchEvent(e);
 			}
 
 
@@ -315,8 +317,8 @@
 				(encode.video.datarate[0] as XML).appendChild(bitratesString);
 				(encode.video.outputsize[0] as XML).appendChild(dimenssionsStrings);
 
-				var MyFile:FileReference = new FileReference();
-				MyFile.save(xml.toXMLString(),
+				var myFile:FileReference = new FileReference();
+				myFile.save(xml.toXMLString(),
 							ResourceManager.getInstance().getString('drilldown', 'ExportToFme.xml'));
 
 			}

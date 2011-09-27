@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
+		  implements="com.kaltura.edw.view.filter.IFilterTab">
+	<mx:Metadata>
+		[Event(name="filterChanged", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaNullableBoolean;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+			/**
+			 * filter by "isRoot"
+			 * */
+			public function getFilterString():String {
+				var clipsString:String;
+				//if non of the items are selected or all selected
+				if ((original.selected && clipped.selected) || (!original.selected && !clipped.selected)) {
+					clipsString = KalturaNullableBoolean.NULL_VALUE.toString();
+				}
+				else {
+					if (original.selected) {
+						clipsString = KalturaNullableBoolean.TRUE_VALUE.toString();
+					}
+					else if (clipped.selected) {
+						clipsString = KalturaNullableBoolean.FALSE_VALUE.toString();
+					}
+				}
+				
+				return clipsString;
+			}
+			
+			/**
+			 * show clips or original on filter
+			 * */
+			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
+				//show all
+				if (filterVo.isRoot == KalturaNullableBoolean.NULL_VALUE || filterVo.isRoot == int.MIN_VALUE) {
+					origAndClipsBtn.selected = true;
+					original.selected = false;
+					clipped.selected = false;
+				}
+				else {
+					origAndClipsBtn.selected = false;
+					if (filterVo.isRoot == KalturaNullableBoolean.TRUE_VALUE) {
+						original.selected = true;
+						clipped.selected = false;
+					}
+					else {
+						original.selected = false;
+						clipped.selected = true;
+					}
+				}
+			}
+			
+			/**
+			 * the 'origAndClipsBtn' was clicked
+			 */
+			private function allSelected(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (!isSelected) {
+					(evt.target as Button).selected = true;
+					original.selected = false;
+					clipped.selected = false;
+				}
+				dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
+			}
+			
+			/**
+			 * check if all buttons are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateBtns():Boolean {
+				var result:Boolean = false;
+				if (!original.selected && !clipped.selected) {
+					result = true;
+				}
+				return result;
+			}
+				
+			private function onChange(evt:Event):void {
+				//if a button was selected deselect the 'origAndClipsBtn' 
+				if ((evt.target as Button).selected) {
+					origAndClipsBtn.selected = false;
+				}
+				//if non is selected - highlight the 'origAndClipsBtn' button
+				if (validateBtns()) {
+					origAndClipsBtn.selected = true;
+				}
+				dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
+			}
+			
+			public function get buttons():Array {
+				return [origAndClipsBtn, original, clipped];
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:Button id="origAndClipsBtn" width="100%" label="{resourceManager.getString('cms', 'allOrigClipEntries')}"
+			   selected="true" click="{allSelected(event)}" styleName="mainFilterGroupButton"/>
+	<mx:Button id="original" width="100%" label="{resourceManager.getString('cms', 'originalEntries')}" toggle="true"
+			   click="{onChange(event)}" styleName="innerFilterGroupButton"/>
+	<mx:Button id="clipped" width="100%" label="{resourceManager.getString('cms', 'clippedEntries')}"
+			   toggle="true" click="{onChange(event)}" styleName="innerFilterGroupButton"/>
+	
+</mx:VBox>
