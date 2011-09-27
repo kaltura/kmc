@@ -4,11 +4,11 @@
 	 allows moderating flagged entries.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}"
-		 xmlns:view="com.kaltura.kmc.modules.content.view.*" verticalScrollPolicy="off"
+		 verticalScrollPolicy="off"
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
-		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
-		 creationComplete="init()" xmlns:view1="com.kaltura.edw.view.*" xmlns:filter1="com.kaltura.edw.view.filter.*">
+		 creationComplete="init()" 
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -520,7 +520,7 @@
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer">
 		<mx:VBox id='filterContainer'>
-			<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
+			<filter:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
 						   enableCustomData="{filterModel.enableCustomData}" metadataProfilesArray="{filterModel.metadataProfiles}"
 						   flavorParams="{filterModel.flavorParams}"
 						   catMap="{filterModel.categoriesMap}"
@@ -531,7 +531,7 @@
 		</mx:VBox>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
-				<view1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
+				<et:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
 								 sortDirection="{EntryTable.ASCENDING}" dataProvider="{_listableVo.arrayCollection}"
 								 selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
 								 creationComplete="removeColums( event )" change="getModeration( event )"

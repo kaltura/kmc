@@ -1,5 +1,8 @@
 package com.kaltura.kmc.modules.content.control {
 	import com.adobe.cairngorm.control.FrontController;
+	import com.kaltura.edw.control.commands.*;
+	import com.kaltura.edw.control.commands.dropFolder.*;
+	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;
 	import com.kaltura.kmc.modules.content.events.*;
@@ -45,7 +48,7 @@ package com.kaltura.kmc.modules.content.control {
 			//execute playlist to see current entries in a rule based running
 			addCommand(EntryEvent.GET_RULE_BASED_PLAYLIST, GetRuleBasedPlaylistCommand);
 			addCommand(EntryEvent.GET_FLAVOR_ASSETS, ListFlavorAssetsByEntryIdCommand);
-//			addCommand(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, ListFlavorAssetsByEntryIdForPreviewCommand);
+			addCommand(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, ListFlavorAssetsByEntryIdForPreviewCommand);
 
 			addCommand(EntryEvent.RESET_RULE_BASED_DATA, ResetRuleBasedDataCommand);
 

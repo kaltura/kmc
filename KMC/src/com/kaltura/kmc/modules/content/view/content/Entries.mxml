@@ -3,10 +3,11 @@
 "Manage" part of the content viewstack.
 lists all entries, allows filtering, preview and drill-down to entry details.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
-		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"  
+		 xmlns:controls="com.kaltura.controls.*" 
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner" 
-		 creationComplete="creationCompleteHandler(event)" xmlns:view1="com.kaltura.edw.view.*" xmlns:filter1="com.kaltura.edw.view.filter.*" >
+		 creationComplete="creationCompleteHandler(event)" 
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" >
 	<mx:states>
 		<mx:State name="noFilterState">
 			<mx:SetProperty target="{filterContainer}" name="visible" value="false"/>
@@ -378,7 +379,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" height="100%" >
 		<mx:VBox id="filterContainer" height="100%">
-			<filter1:Filter id="filter" height="100%" width="245"
+			<filter:Filter id="filter" height="100%" width="245"
 						   enableCustomData="{filterModel.enableCustomData}"
 						   enableDistribution="{filterModel.enableDistribution}"
 						   distributionProfileArr="{entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"
@@ -392,7 +393,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 		</mx:VBox>
 		
 			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
-				<view1:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
+				<et:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
 								 dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
 								 selectedEntry="{entryDetailsModel.selectedEntry}" showEmbed="{showEmbed}"
 								 orderByChanged="{onOrderByChanged()}" />
