@@ -36,5 +36,12 @@ package com.kaltura.edw.business
 			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId,
 				live_bitrates, flavors, isHtml5);
 		}
+		
+		/**
+		 * ks expired 
+		 */
+		public static function expired():void {
+			ExternalInterface.call("kmc.functions.expired");
+		}
 	}
 }

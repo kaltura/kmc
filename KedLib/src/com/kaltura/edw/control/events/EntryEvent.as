@@ -9,15 +9,27 @@ package com.kaltura.edw.control.events
 		 * set the given entry as selected entry on the current entryDetailsModel 
 		 */
 		public static const SET_SELECTED_ENTRY : String = "content_setSelectedEntry";
+		
+		/**
+		 * add an entry vo to the checked entries list 
+		 */
 		public static const ADD_CHECKED_ENTRY : String = "content_addCheckedEntry";
 		public static const REMOVE_CHECKED_ENTRY : String = "content_removeCheckedEntry";
 		public static const LIST_ENTRY_MODERATION : String = "content_listEntryModeration";
 		public static const GET_ALL_ENTRIES : String = "content_getAllEntries";
 		public static const GET_ENTRY_ROUGHCUTS : String = "content_getEntryRoughcuts";
+		
+		/**
+		 * execute playlist to see current entries
+		 * */
 		public static const GET_PLAYLIST : String = "content_getPlaylist";
+		
+		/**
+		 * execute playlist to see current entries in a rule based running
+		 * */
 		public static const GET_FLAVOR_ASSETS : String = "content_getFlavorAssets";
 		public static const GET_FLAVOR_PARAMS : String = "content_getFlavorParams";
-		public static const GET_FLAVOR_ASSETS_FOR_PREVIEW : String = "content_getFlavorAssetsForPreview";
+//		public static const GET_FLAVOR_ASSETS_FOR_PREVIEW : String = "content_getFlavorAssetsForPreview";
 		public static const ADD_PLAYLIST : String = "content_addPlaylist";
 		public static const GET_PLAYLIST_STATS_FROM_CONTENT : String = "content_getPlaylistStatsFromcontent";
 		
