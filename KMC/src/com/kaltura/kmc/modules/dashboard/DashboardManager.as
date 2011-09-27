@@ -8,7 +8,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.KmcModule;
 	import com.kaltura.vo.KalturaPartner;
 	import com.kaltura.vo.KalturaPartnerUsage;

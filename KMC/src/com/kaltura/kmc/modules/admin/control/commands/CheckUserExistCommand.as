@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 	import com.kaltura.commands.user.UserGetByLoginId;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.admin.control.events.UserEvent;
 	import com.kaltura.vo.KalturaUser;
 	

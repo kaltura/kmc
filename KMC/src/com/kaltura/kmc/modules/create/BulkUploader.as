@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.create
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.types.KalturaBulkUploadType;
 	
 	import flash.events.Event;

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class ListFlavorsParamsCommand extends KalturaCommand implements ICommand, IResponder {
 		public static const DEFAULT_PAGE_SIZE:int = 500;

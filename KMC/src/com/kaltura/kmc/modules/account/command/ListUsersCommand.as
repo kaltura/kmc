@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.account.command {
 	import com.kaltura.commands.userRole.UserRoleList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.types.KalturaUserRoleStatus;
 	import com.kaltura.types.KalturaUserStatus;

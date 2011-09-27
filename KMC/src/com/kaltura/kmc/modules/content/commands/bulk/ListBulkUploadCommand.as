@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.content.commands.bulk {
 	import com.kaltura.vo.KalturaBulkUploadResult;
 	
 	import mx.collections.ArrayCollection;
-	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class ListBulkUploadCommand extends KalturaCommand {
 		override public function execute(event:CairngormEvent):void {

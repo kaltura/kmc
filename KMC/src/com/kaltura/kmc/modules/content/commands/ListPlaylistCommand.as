@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class ListPlaylistCommand extends KalturaCommand implements ICommand, IResponder {
 		// Atar: I have no idea why we need this.

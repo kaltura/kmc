@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaPlaylist;
 	
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class GetRuleBasedPlaylistCommand extends KalturaCommand implements ICommand, IResponder
 	{

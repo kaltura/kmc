@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.content.commands
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	/**
 	 * list flavor params for required entry, then open preview&embed with relevant data 

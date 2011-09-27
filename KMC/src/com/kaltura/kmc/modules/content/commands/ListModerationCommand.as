@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaModerationFlagListResponse;
 	
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class ListModerationCommand extends KalturaCommand implements ICommand, IResponder
 	{

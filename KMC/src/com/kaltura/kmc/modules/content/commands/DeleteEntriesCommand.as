@@ -24,6 +24,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class DeleteEntriesCommand extends KalturaCommand implements ICommand, IResponder {
 		private var _isPlaylist:Boolean = false;

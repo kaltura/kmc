@@ -23,7 +23,7 @@ package com.kaltura.kmc.business
 		 * ks expired 
 		 */
 		public static function expired():void {
-			ExternalInterface.call("kmc.functions.expired");
+			KedJSGate.expired();
 		}
 		
 		/**

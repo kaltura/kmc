@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class GetPartnerInfoCommand extends KalturaCommand implements ICommand, IResponder {
 		override public function execute(event:CairngormEvent):void {

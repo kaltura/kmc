@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaMediaEntry;
 	
 	import mx.resources.ResourceManager;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class AddMediaEntryCommand extends KalturaCommand {
 		//whether to open drilldown after media is created

@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.admin.control.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.model.types.APIErrorCode;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.admin.model.AdminModelLocator;
 	
 	import flash.external.ExternalInterface;

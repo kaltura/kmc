@@ -10,7 +10,7 @@ package com.kaltura.kmc.modules.content.commands.bulk
 	
 	import flash.events.Event;
 	import flash.net.FileReference;
-	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class AddBulkUploadCommand extends KalturaCommand implements ICommand
 	{
