@@ -5,8 +5,8 @@ package com.kaltura.kmc.modules.content.commands.captions
 	import com.kaltura.commands.captionAsset.CaptionAssetGetUrl;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.CaptionsEvent;
-	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+	import com.kaltura.edw.control.events.CaptionsEvent;
+	import com.kaltura.edw.vo.EntryCaptionVO;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.vo.KalturaCaptionAsset;
 	

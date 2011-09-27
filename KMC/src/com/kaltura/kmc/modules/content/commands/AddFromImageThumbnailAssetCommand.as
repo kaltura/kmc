@@ -3,8 +3,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.thumbAsset.ThumbAssetAddFromImage;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.UploadFromImageThumbAssetEvent;
-	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+	import com.kaltura.edw.control.events.UploadFromImageThumbAssetEvent;
+	import com.kaltura.edw.vo.ThumbnailWithDimensions;
 	import com.kaltura.vo.KalturaThumbAsset;
 
 	public class AddFromImageThumbnailAssetCommand extends KalturaCommand

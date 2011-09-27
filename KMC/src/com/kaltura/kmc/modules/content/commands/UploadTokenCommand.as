@@ -5,8 +5,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.uploadToken.UploadTokenUpload;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.UploadTokenEvent;
-	import com.kaltura.kmc.modules.content.vo.AssetVO;
+	import com.kaltura.edw.control.events.UploadTokenEvent;
+	import com.kaltura.edw.vo.AssetVO;
 	import com.kaltura.vo.KalturaUploadToken;
 	
 	import flash.net.FileReference;

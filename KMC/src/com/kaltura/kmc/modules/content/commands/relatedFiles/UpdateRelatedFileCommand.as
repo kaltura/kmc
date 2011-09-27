@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands.relatedFiles
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.RelatedFileEvent;
+	import com.kaltura.edw.control.events.RelatedFileEvent;
 	import com.kaltura.vo.KalturaAttachmentAsset;
 	
 	public class UpdateRelatedFileCommand extends KalturaCommand

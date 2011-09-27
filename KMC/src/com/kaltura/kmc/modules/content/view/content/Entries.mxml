@@ -5,8 +5,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
 		 xmlns:controls="com.kaltura.controls.*" xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.kmc.modules.content.business.IDataOwner" 
-		 creationComplete="creationCompleteHandler(event)" >
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner" 
+		 creationComplete="creationCompleteHandler(event)" xmlns:view1="com.kaltura.edw.view.*" xmlns:filter1="com.kaltura.edw.view.filter.*" >
 	<mx:states>
 		<mx:State name="noFilterState">
 			<mx:SetProperty target="{filterContainer}" name="visible" value="false"/>
@@ -25,22 +25,22 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.FileUploadEvent;
-			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.modules.content.events.EntriesEvent;
-			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.control.events.EntriesEvent;
+			import com.kaltura.edw.control.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.FilterEvent;
 			import com.kaltura.kmc.modules.content.events.GeneralUiconfEvent;
-			import com.kaltura.kmc.modules.content.events.LoadEvent;
+			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
-			import com.kaltura.kmc.modules.content.events.SearchEvent;
+			import com.kaltura.edw.control.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
-			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
-			import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
-			import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
-			import com.kaltura.kmc.modules.content.model.FilterModel;
-			import com.kaltura.kmc.modules.content.model.states.WindowsStates;
-			import com.kaltura.kmc.modules.content.vo.ListableVo;
+			import com.kaltura.edw.control.events.SetPlaylistTypeEvent;
+			import com.kaltura.edw.control.events.SetRefreshRequiredEvent;
+			import com.kaltura.edw.control.events.WindowEvent;
+			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaPlayableEntryOrderBy;
@@ -378,7 +378,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" height="100%" >
 		<mx:VBox id="filterContainer" height="100%">
-			<filter:Filter id="filter" height="100%" width="245"
+			<filter1:Filter id="filter" height="100%" width="245"
 						   enableCustomData="{filterModel.enableCustomData}"
 						   enableDistribution="{filterModel.enableDistribution}"
 						   distributionProfileArr="{entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"
@@ -392,7 +392,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 		</mx:VBox>
 		
 			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
-				<view:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
+				<view1:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
 								 dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
 								 selectedEntry="{entryDetailsModel.selectedEntry}" showEmbed="{showEmbed}"
 								 orderByChanged="{onOrderByChanged()}" />

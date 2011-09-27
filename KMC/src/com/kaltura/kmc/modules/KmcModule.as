@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.uiConf.UiConfGet;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.business.PermissionManager;
+	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.utils.XMLUtils;

@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.content.events
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.vo.ListableVo;
+	import com.kaltura.edw.vo.ListableVo;
 
 	public class SetCurrentListableEvent extends CairngormEvent
 	{

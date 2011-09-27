@@ -1,8 +1,8 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
-	import com.kaltura.kmc.modules.content.vo.ListableVo;
+	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.edw.vo.ListableVo;
 	import com.kaltura.commands.playlist.PlaylistList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.types.KalturaPlaylistOrderBy;

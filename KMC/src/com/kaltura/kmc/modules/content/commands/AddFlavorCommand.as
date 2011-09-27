@@ -4,9 +4,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
-	import com.kaltura.kmc.modules.content.events.MediaEvent;
+	import com.kaltura.edw.control.events.DropFolderFileEvent;
+	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.edw.control.events.MediaEvent;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	

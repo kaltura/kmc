@@ -10,9 +10,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.business.IDataOwner;
-	import com.kaltura.kmc.modules.content.events.LoadEvent;
-	import com.kaltura.kmc.modules.content.vo.CategoryVO;
+	import com.kaltura.edw.business.IDataOwner;
+	import com.kaltura.edw.control.events.LoadEvent;
+	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.types.KalturaDistributionProfileStatus;
 	import com.kaltura.types.KalturaEntryStatus;

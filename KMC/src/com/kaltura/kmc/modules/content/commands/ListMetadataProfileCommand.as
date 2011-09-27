@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.content.utils.FormBuilder;
+	import com.kaltura.edw.business.FormBuilder;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;

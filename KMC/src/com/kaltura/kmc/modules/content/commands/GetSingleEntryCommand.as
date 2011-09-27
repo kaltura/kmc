@@ -5,8 +5,8 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.content.business.Cloner;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.edw.business.Cloner;
+	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.utils.EntryUtil;
 	import com.kaltura.types.KalturaEntryReplacementStatus;
 	import com.kaltura.vo.KalturaBaseEntry;

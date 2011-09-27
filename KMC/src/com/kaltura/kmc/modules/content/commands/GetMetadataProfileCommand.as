@@ -3,8 +3,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileGet;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.MetadataProfileEvent;
-	import com.kaltura.kmc.modules.content.utils.FormBuilder;
+	import com.kaltura.edw.control.events.MetadataProfileEvent;
+	import com.kaltura.edw.business.FormBuilder;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadataProfile;
 

@@ -4,8 +4,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.media.MediaApproveReplace;
 	import com.kaltura.controls.tabbar.OverlappingTabBar;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.business.Cloner;
-	import com.kaltura.kmc.modules.content.events.MediaEvent;
+	import com.kaltura.edw.business.Cloner;
+	import com.kaltura.edw.control.events.MediaEvent;
 	import com.kaltura.kmc.modules.content.utils.EntryUtil;
 	import com.kaltura.vo.KalturaMediaEntry;
 

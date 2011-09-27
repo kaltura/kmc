@@ -10,9 +10,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.baseEntry.BaseEntryApprove;
 	import com.kaltura.commands.baseEntry.BaseEntryReject;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.edw.control.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.ModerationsEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	

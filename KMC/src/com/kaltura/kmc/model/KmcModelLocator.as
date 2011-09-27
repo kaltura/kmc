@@ -1,7 +1,7 @@
 package com.kaltura.kmc.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.KalturaClient;
-	import com.kaltura.kmc.business.PermissionManager;
+	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.vo.UserVO;
 	import com.kaltura.types.KalturaPermissionStatus;
 	import com.kaltura.types.KalturaPermissionType;

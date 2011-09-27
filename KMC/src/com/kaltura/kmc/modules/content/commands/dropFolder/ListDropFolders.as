@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.DropFolderEvent;
+	import com.kaltura.edw.control.events.DropFolderEvent;
 	import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
 	import com.kaltura.types.KalturaDropFolderFileHandlerType;
 	import com.kaltura.types.KalturaDropFolderOrderBy;

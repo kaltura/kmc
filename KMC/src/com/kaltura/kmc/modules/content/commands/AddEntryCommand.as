@@ -7,9 +7,9 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.analytics.KAnalyticsTrackerConsts;
 	import com.kaltura.commands.playlist.PlaylistAdd;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
-	import com.kaltura.kmc.modules.content.events.WindowEvent;
+	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.edw.control.events.WindowEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.SoManager;
 	import com.kaltura.vo.KalturaPlaylist;

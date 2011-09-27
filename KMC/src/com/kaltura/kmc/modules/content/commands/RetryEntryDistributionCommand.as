@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.entryDistribution.EntryDistributionRetrySubmit;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+	import com.kaltura.edw.control.events.EntryDistributionEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
 
 	public class RetryEntryDistributionCommand extends KalturaCommand

@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.vo.ConversionProfileWithFlavorParamsVo;
+	import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
 	import com.kaltura.types.KalturaAssetParamsOrigin;
 	import com.kaltura.types.KalturaConversionProfileOrderBy;
 	import com.kaltura.vo.KalturaAssetParams;

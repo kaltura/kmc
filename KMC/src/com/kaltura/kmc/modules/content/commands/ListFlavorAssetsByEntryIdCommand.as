@@ -5,9 +5,9 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
-	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
-	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.edw.model.types.WindowsStates;
+	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	

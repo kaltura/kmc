@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseEntryFilter;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;

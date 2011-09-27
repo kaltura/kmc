@@ -5,8 +5,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.thumbAsset.ThumbAssetGetByEntryId;
 	import com.kaltura.commands.thumbAsset.ThumbAssetSetAsDefault;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.ThumbnailAssetEvent;
-	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+	import com.kaltura.edw.control.events.ThumbnailAssetEvent;
+	import com.kaltura.edw.vo.ThumbnailWithDimensions;
 	import com.kaltura.vo.KalturaThumbAsset;
 
 	public class SetAsDefaultThumbnailAsset extends KalturaCommand

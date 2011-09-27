@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands.cuepoints
 	import com.kaltura.commands.cuePoint.CuePointCount;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.CuePointEvent;
+	import com.kaltura.edw.control.events.CuePointEvent;
 	import com.kaltura.vo.KalturaCuePointFilter;
 	
 	public class CountCuePoints extends KalturaCommand {

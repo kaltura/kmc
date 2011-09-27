@@ -7,8 +7,8 @@
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*" verticalScrollPolicy="off"
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.kmc.modules.content.business.IDataOwner"
-		 creationComplete="init()">
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
+		 creationComplete="init()" xmlns:view1="com.kaltura.edw.view.*" xmlns:filter1="com.kaltura.edw.view.filter.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -17,17 +17,17 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.events.KdpEventTypes;
-			import com.kaltura.kmc.business.PermissionManager;
-			import com.kaltura.kmc.modules.content.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.LoadEvent;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
-			import com.kaltura.kmc.modules.content.events.SearchEvent;
+			import com.kaltura.edw.control.events.SearchEvent;
 			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
 			import com.kaltura.kmc.modules.content.events.UserEvent;
-			import com.kaltura.kmc.modules.content.model.Context;
-			import com.kaltura.kmc.modules.content.model.FilterModel;
+			import com.kaltura.edw.model.Context;
+			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.ModerationModel;
-			import com.kaltura.kmc.modules.content.vo.ListableVo;
+			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.kmc.modules.content.vo.UserVO;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -520,7 +520,7 @@
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer">
 		<mx:VBox id='filterContainer'>
-			<filter:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
+			<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
 						   enableCustomData="{filterModel.enableCustomData}" metadataProfilesArray="{filterModel.metadataProfiles}"
 						   flavorParams="{filterModel.flavorParams}"
 						   catMap="{filterModel.categoriesMap}"
@@ -531,7 +531,7 @@
 		</mx:VBox>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
-				<view:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
+				<view1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
 								 sortDirection="{EntryTable.ASCENDING}" dataProvider="{_listableVo.arrayCollection}"
 								 selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
 								 creationComplete="removeColums( event )" change="getModeration( event )"

@@ -6,8 +6,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.content.model.DistributionProfileInfo;
-	import com.kaltura.kmc.modules.content.model.ThumbnailWithDimensions;
+	import com.kaltura.edw.vo.DistributionProfileInfo;
+	import com.kaltura.edw.vo.ThumbnailWithDimensions;
 	import com.kaltura.vo.KalturaDistributionProfile;
 	import com.kaltura.vo.KalturaDistributionProfileFilter;
 	import com.kaltura.vo.KalturaDistributionProfileListResponse;

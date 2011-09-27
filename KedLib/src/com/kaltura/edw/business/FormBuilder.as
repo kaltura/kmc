@@ -4,7 +4,7 @@ package com.kaltura.edw.business {
 	import com.kaltura.commands.uiConf.UiConfGet;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.business.JSGate;
+	import com.kaltura.edw.business.KedJSGate;
 	import com.kaltura.edw.model.DummyModelLocator;
 	import com.kaltura.edw.model.MetadataDataObject;
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;

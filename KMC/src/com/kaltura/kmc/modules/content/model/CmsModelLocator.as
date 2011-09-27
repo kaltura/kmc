@@ -1,10 +1,10 @@
 package com.kaltura.kmc.modules.content.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
-	import com.kaltura.kmc.modules.content.vo.CategoryVO;
-	import com.kaltura.kmc.modules.content.vo.EntryMetadataDataVO;
-	import com.kaltura.kmc.modules.content.vo.ListableVo;
+	import com.kaltura.edw.model.types.WindowsStates;
+	import com.kaltura.edw.vo.CategoryVO;
+	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.ListableVo;
 	import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseSyndicationFeedFilter;
@@ -16,6 +16,11 @@ package com.kaltura.kmc.modules.content.model {
 	import mx.collections.ArrayCollection;
 	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
+	import com.kaltura.edw.model.Context;
+	import com.kaltura.edw.model.EntryDetailsModel;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.DropFolderModel;
+	import com.kaltura.edw.model.PlaylistModel;
 
 	[Bindable]
 	public class CmsModelLocator extends EventDispatcher implements IModelLocator {

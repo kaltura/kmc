@@ -4,9 +4,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
-	import com.kaltura.kmc.modules.content.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;

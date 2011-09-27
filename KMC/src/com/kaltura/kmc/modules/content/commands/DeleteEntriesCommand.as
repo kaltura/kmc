@@ -10,8 +10,8 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.mixing.MixingDelete;
 	import com.kaltura.commands.playlist.PlaylistDelete;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.edw.control.events.CategoryEvent;
+	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;

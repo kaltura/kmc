@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.SetRefreshRequiredEvent;
+	import com.kaltura.edw.control.events.SetRefreshRequiredEvent;
 
 	public class SetRefreshRequiredCommand extends KalturaCommand
 	{

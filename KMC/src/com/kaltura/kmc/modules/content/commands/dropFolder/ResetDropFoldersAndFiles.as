@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.content.commands.dropFolder
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.events.DropFolderEvent;
+	import com.kaltura.edw.control.events.DropFolderEvent;
 	
 	public class ResetDropFoldersAndFiles extends KalturaCommand {
 		

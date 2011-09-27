@@ -4,9 +4,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
-	import com.kaltura.kmc.modules.content.view.window.ManualPlaylistWindow;
-	import com.kaltura.kmc.modules.content.vo.ListableVo;
+	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.edw.view.window.ManualPlaylistWindow;
+	import com.kaltura.edw.vo.ListableVo;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
 	import com.kaltura.vo.KalturaDocumentEntry;

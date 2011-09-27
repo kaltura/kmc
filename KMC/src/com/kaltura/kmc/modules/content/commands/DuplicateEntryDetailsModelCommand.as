@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.model.EntryDetailsModel;
+	import com.kaltura.edw.model.EntryDetailsModel;
 
 	public class DuplicateEntryDetailsModelCommand extends KalturaCommand {
 		

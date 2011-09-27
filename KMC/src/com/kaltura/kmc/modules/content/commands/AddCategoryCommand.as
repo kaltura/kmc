@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.edw.control.events.CategoryEvent;
 	import com.kaltura.commands.category.CategoryAdd;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;

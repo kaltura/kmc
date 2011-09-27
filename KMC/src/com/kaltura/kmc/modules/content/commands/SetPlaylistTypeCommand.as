@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
+	import com.kaltura.edw.control.events.SetPlaylistTypeEvent;
 
 	/**
 	 * set the _model.playlistModel.onTheFlyPlaylistType 

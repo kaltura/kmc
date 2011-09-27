@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.commands.captions {
 	import com.kaltura.commands.captionAsset.CaptionAssetList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.vo.EntryCaptionVO;
+	import com.kaltura.edw.vo.EntryCaptionVO;
 	import com.kaltura.types.KalturaCaptionAssetStatus;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.types.KalturaNullableBoolean;

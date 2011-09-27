@@ -7,7 +7,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.vo.ConversionProfileVO;
+	import com.kaltura.edw.vo.ConversionProfileVO;
 	import com.kaltura.types.KalturaConversionProfileOrderBy;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileFilter;

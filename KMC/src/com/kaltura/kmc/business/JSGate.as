@@ -1,5 +1,6 @@
 package com.kaltura.kmc.business
 {
+	import com.kaltura.edw.business.KedJSGate;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	
 	import flash.external.ExternalInterface;
@@ -14,8 +15,9 @@ package com.kaltura.kmc.business
 	public class JSGate {
 		
 		public static function openClipApp(entryId:String, mode:String):void {
-			ExternalInterface.call("kmc.functions.openClipApp", entryId, mode);
-		} 
+			KedJSGate.openClipApp(entryId, mode);
+//			ExternalInterface.call("kmc.functions.openClipApp", entryId, mode);
+		}
 		
 		/**
 		 * ks expired 
@@ -87,9 +89,8 @@ package com.kaltura.kmc.business
 		public static function doPreviewEmbed(functionName:String, entryId:String, entryName:String, entryDescription:String, 
 											  previewOnly:Boolean, is_playlist:Boolean, uiconfId:String, live_bitrates:Array, 
 											  flavors:Array, isHtml5:Boolean):void {
-//			kmc.preview_embed.doPreviewEmbed(id, name, description, previewOnly, is_playlist, uiconf id, live_bitrates);
-			ExternalInterface.call(functionName, entryId, entryName, entryDescription, previewOnly, is_playlist, uiconfId,
-				live_bitrates, flavors, isHtml5);
+			KedJSGate.doPreviewEmbed(functionName, entryId, entryName, entryDescription, 
+				previewOnly, is_playlist, uiconfId, live_bitrates, flavors, isHtml5);
 		}
 		
 		

@@ -4,7 +4,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.entryDistribution.EntryDistributionList;
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+	import com.kaltura.edw.model.EntryDistributionWithProfile;
 	import com.kaltura.types.KalturaEntryDistributionStatus;
 	import com.kaltura.vo.KalturaDistributionProfile;
 	import com.kaltura.vo.KalturaEntryDistribution;

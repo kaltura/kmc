@@ -9,8 +9,8 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.entryDistribution.EntryDistributionSubmitDelete;
 	import com.kaltura.commands.entryDistribution.EntryDistributionUpdate;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
-	import com.kaltura.kmc.modules.content.model.EntryDistributionWithProfile;
+	import com.kaltura.edw.control.events.EntryDistributionEvent;
+	import com.kaltura.edw.model.EntryDistributionWithProfile;
 	import com.kaltura.types.KalturaEntryDistributionStatus;
 	import com.kaltura.vo.KalturaEntryDistribution;
 	import com.kaltura.vo.KalturaEntryDistributionFilter;

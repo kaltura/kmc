@@ -9,7 +9,7 @@ package com.kaltura.edw.business
 	 * know where we need to change stuff when changing method signatures, etc.  
 	 * @author Atar
 	 */
-	public class JSGate {
+	public class KedJSGate {
 		
 		public static function openClipApp(entryId:String, mode:String):void {
 			ExternalInterface.call("kmc.functions.openClipApp", entryId, mode);

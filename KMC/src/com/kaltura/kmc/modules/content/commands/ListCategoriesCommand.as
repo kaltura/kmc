@@ -9,7 +9,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.model.types.APIErrorCode;
-	import com.kaltura.kmc.modules.content.vo.CategoryVO;
+	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaCategory;

@@ -3,9 +3,9 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.media.MediaAdd;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.MediaEvent;
-	import com.kaltura.kmc.modules.content.events.WindowEvent;
-	import com.kaltura.kmc.modules.content.model.states.WindowsStates;
+	import com.kaltura.edw.control.events.MediaEvent;
+	import com.kaltura.edw.control.events.WindowEvent;
+	import com.kaltura.edw.model.types.WindowsStates;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.vo.KalturaMediaEntry;
 	

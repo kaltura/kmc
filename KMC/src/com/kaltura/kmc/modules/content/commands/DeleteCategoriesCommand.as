@@ -2,8 +2,8 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.SearchEvent;
+	import com.kaltura.edw.control.events.CategoryEvent;
+	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryDelete;
 	import com.kaltura.events.KalturaEvent;

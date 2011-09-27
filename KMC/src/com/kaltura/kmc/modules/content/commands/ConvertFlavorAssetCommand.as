@@ -2,7 +2,7 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.EntryEvent;
+	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetConvert;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaBaseEntry;

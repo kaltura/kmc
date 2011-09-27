@@ -6,15 +6,15 @@
 		 xmlns:view="com.kaltura.kmc.modules.content.view.*"
 		 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
 		 creationComplete="onCreationComplete()"
-		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*" >
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*" xmlns:playlist1="com.kaltura.edw.view.window.playlist.*" xmlns:filter1="com.kaltura.edw.view.filter.*" >
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
-			import com.kaltura.kmc.modules.content.events.EntryEvent;
+			import com.kaltura.edw.control.events.EntryEvent;
 			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-			import com.kaltura.kmc.modules.content.model.FilterModel;
-			import com.kaltura.kmc.modules.content.vo.CategoryVO;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
@@ -172,7 +172,7 @@
 	</mx:Metadata>
 	<mx:VBox height="100%" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 		<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formSubTitleLabel"/>
-		<filter:Filter id="filter" width="260" height="100%" 
+		<filter1:Filter id="filter" width="260" height="100%" 
 					   newSearch="{runRule()}" 
 					   categories="{filterData.categories}"
 					   catMap="{filterData.categoriesMap}"
@@ -188,6 +188,6 @@
 					   click="dispatchEvent(new Event(OneRule.SWITCH_TO_ADVANCED))" includeInLayout="{showAdvanceModeBtn}"
 					   visible="{showAdvanceModeBtn}"/>
 	</mx:VBox>
-	<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
+	<playlist1:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
 							  updatedData="{runRule()}" />
 </mx:HBox>

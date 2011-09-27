@@ -1,6 +1,6 @@
 package com.kaltura.kmc.modules.content.view.content
 {
-	import com.kaltura.kmc.business.PermissionManager;
+	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.modules.content.events.ChangeModelEvent;
 	
 	import mx.containers.VBox;

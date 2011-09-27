@@ -1,7 +1,7 @@
 package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.kmc.modules.content.events.EntryDistributionEvent;
+	import com.kaltura.edw.control.events.EntryDistributionEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
 	
 	import flash.net.URLRequest;

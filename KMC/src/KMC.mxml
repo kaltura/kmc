@@ -14,11 +14,12 @@
 			import com.kaltura.commands.user.UserGet;
 			import com.kaltura.commands.userRole.UserRoleGet;
 			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.events.KedErrorEvent;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.KmcModuleLoader;
 			import com.kaltura.kmc.business.KmcPluginManager;
-			import com.kaltura.kmc.business.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcModuleEvent;
@@ -36,7 +37,6 @@
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
-			
 			
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -454,7 +454,7 @@
 					return;
 
 				permissionManager = PermissionManager.getInstance();
-				permissionManager.addEventListener(KmcErrorEvent.ERROR, onError);
+				permissionManager.addEventListener(KedErrorEvent.ERROR, onError);
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
 				// load locale
@@ -817,6 +817,14 @@
 
 			/**
 			 * Show an error with the text on the error event.
+			 * */
+			protected function onPermissionError(e:KedErrorEvent):void {
+				e.stopImmediatePropagation();
+				alert(e.error, ResourceManager.getInstance().getString('kmc', 'error_title'));
+			}
+
+			/**
+			 * Show an error with the text on the error event.
 			 * This text should already be localized by the module
 			 * which dispatched this event.
 			 * */
@@ -853,13 +861,18 @@
 			 * based on the anchor in the event.
 			 * @param e	help request dispatched by anything on the displayList.
 			 * */
-			protected function showHelp(e:KmcHelpEvent):void {
+			protected function showHelp(e:Event):void {
 				e.stopImmediatePropagation();
 				var url:String = _flashvars.protocol;
 				if (!url) {
 					url = "http://";
 				}
-				url += _flashvars.host + _helpBaseUrl + '#' + e.anchor;
+				if (e is KmcHelpEvent) {
+					url += _flashvars.host + _helpBaseUrl + '#' + (e as KmcHelpEvent).anchor;
+				}
+				else {
+					url += _flashvars.host + _helpBaseUrl + '#' + e["data"];
+				}
 				navigateToURL(new URLRequest(url), "_blank");
 			}
 			
