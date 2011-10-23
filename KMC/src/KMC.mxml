@@ -16,6 +16,7 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.events.KedErrorEvent;
+			import com.kaltura.edw.model.types.APIErrorCode;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.KmcModuleLoader;
@@ -25,7 +26,6 @@
 			import com.kaltura.kmc.events.KmcModuleEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.model.KmcModelLocator;
-			import com.kaltura.edw.model.types.APIErrorCode;
 			import com.kaltura.kmc.modules.KmcModule;
 			import com.kaltura.kmc.utils.KSUtil;
 			import com.kaltura.kmc.utils.XMLUtils;
@@ -33,6 +33,7 @@
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaPermissionListResponse;
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUser;
@@ -322,7 +323,9 @@
 				mr.mapMultiRequestParam(3, "roleIds", 4, "userRoleId");
 				// get null, the real role id param is passed from the multirequest
 				var roleGet:UserRoleGet = new UserRoleGet(1);
-				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter);
+				var p:KalturaFilterPager = new KalturaFilterPager();
+				p.pageSize = 500;
+				var perms:PermissionList = new PermissionList(_modelLocator.permissionsListFilter, p);
 
 				mr.addAction(uiconf);
 				mr.addAction(permissions);
