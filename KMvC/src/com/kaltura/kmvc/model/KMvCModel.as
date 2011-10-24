@@ -6,7 +6,7 @@ package com.kaltura.kmvc.model
 		
 		private var _packMap:Object;
 		
-		public function KMvCModel() {
+		public function KMvCModel(enforcer:Enforcer) {
 			_packMap = new Object();
 		}
 		
@@ -50,5 +50,27 @@ package com.kaltura.kmvc.model
 			// retrieve the data pack or holder without the need for another class name production.
 			return className;
 		}
+		
+		/**
+		 * singleton instance
+		 */
+		private static var _instance:KMvCModel;
+		
+		
+		/**
+		 * singleton means of retreiving an instance of the
+		 * <code>EntryDetailsModel</code> class.
+		 */
+		public static function getInstance():KMvCModel {
+			if (_instance == null) {
+				_instance = new KMvCModel(new Enforcer());
+				
+			}
+			return _instance;
+		}
 	}
+}
+
+class Enforcer {
+	
 }
