@@ -1,20 +1,23 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.edw.business.IDataOwner;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	public class LoadEvent extends CairngormEvent {
+	public class LoadEvent extends KMvCEvent {
 		
 		public static const LOAD_FILTER_DATA : String = "content_loadFilterData";
 		public static const LOAD_ENTRY_DATA : String = "content_loadEntryData";
 		
 		private var _caller : IDataOwner;
 		private var _entryId:String;
+		private var _filterModel:FilterModel;
 		
-		public function LoadEvent(type:String, owner:IDataOwner, entryid:String = '', bubbles:Boolean=false, cancelable:Boolean=false)
+		public function LoadEvent(type:String, owner:IDataOwner, filterModel:FilterModel, entryid:String = '', bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
 			_caller = owner;
+			_filterModel = filterModel;
 			_entryId = entryid;
 		}
 		
@@ -32,6 +35,14 @@ package com.kaltura.edw.control.events
 		public function get entryId():String
 		{
 			return _entryId;
+		}
+		
+		/**
+		 * for filter data load, the filtermodel to use 
+		 */		
+		public function get filterModel():FilterModel
+		{
+			return _filterModel;
 		}
 
 	}

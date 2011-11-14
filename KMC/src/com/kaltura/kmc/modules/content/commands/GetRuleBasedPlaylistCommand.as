@@ -2,7 +2,6 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
 	import com.kaltura.commands.playlist.PlaylistExecuteFromFilters;
 	import com.kaltura.events.KalturaEvent;
@@ -10,7 +9,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaPlaylist;
 	
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 
 	public class GetRuleBasedPlaylistCommand extends KalturaCommand implements ICommand, IResponder
 	{
@@ -19,7 +18,7 @@ package com.kaltura.kmc.modules.content.commands
 		override public function execute(event:CairngormEvent):void
 		{	
 			_model.increaseLoadCounter();
- 			var e : EntryEvent = event as EntryEvent;
+ 			var e : KMCEntryEvent = event as KMCEntryEvent;
 			_currentPlaylist = e.entryVo as KalturaPlaylist;
 			if(_currentPlaylist.totalResults == int.MIN_VALUE)
 				_currentPlaylist.totalResults = 50; // Ariel definition - up to 50 per playlist 

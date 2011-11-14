@@ -41,6 +41,25 @@ package com.kaltura.kmvc.control {
 	public class KMvCEvent extends Event {
 		
 		/**
+		 * the object who triggered event dispatching. <br>
+		 * it is the object's responsibility to set this value
+		 * */
+		public var source:*;
+		
+		/**
+		 * function on the <code>source</code> object to 
+		 * trigger after command's successful completion
+		 * */
+		public var onComplete:Function;
+
+		/**
+		 * function on the <code>source</code> object to 
+		 * trigger after command's failed completion
+		 * */
+		public var onFail:Function;
+		
+		
+		/**
 		 * The controller used to dispatch this event.
 		 * The value is updated when a controller dispatches the event
 		 * and is meant for use if a command needs to trigger another command.
@@ -71,7 +90,8 @@ package com.kaltura.kmvc.control {
 //       */
 //      public function dispatch() : Boolean
 //      {
-//         return CairngormEventDispatcher.getInstance().dispatchEvent( this );
+////         return CairngormEventDispatcher.getInstance().dispatchEvent( this );
+//		  return false;
 //      }
 	}
 }

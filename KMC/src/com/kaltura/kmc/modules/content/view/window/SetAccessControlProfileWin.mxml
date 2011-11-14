@@ -14,8 +14,8 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.edw.business.Cloner;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.AccessControlProfileVO;
@@ -60,8 +60,7 @@
 				for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
 					entry.accessControlId = (seletedAccessControl as AccessControlProfileVO).profile.id;
 				}
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES,
-															_clonedSelectedEntries, false);
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
 				cgEvent.dispatch();
 
 				for each (var etr:Object in _clonedSelectedEntries) {

@@ -4,44 +4,116 @@
 	 also used in SetSchedulingWin.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
-		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.edw.business.IDrilldownPanel" 
-		 creationComplete="onCreationComplete()">
-
+		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.edw.business.IDrilldownPanel" >
+	
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.IDrilldownPanel;
-			import com.kaltura.edw.vo.EntryDetailsValidationError;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.vo.KalturaBaseEntry;
+
 			
-			import mx.controls.Alert;
-
+			
 			public static const POP_UP_MODE:String = 'popUpMode';
-
-			private var _selectedEntry:KalturaBaseEntry;
-			private var _timeManager:DateFieldWithTimeStepperLogic;
-
+			
+			
 			[Bindable]
 			/**
 			 * roles and permissions way of disabling
 			 * things that are already bound to app logic
 			 * */
 			public var editable:Boolean = true;
+			
+			
+			private var _timeManager:DateFieldWithTimeStepperLogic;
+
+			
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
+				_selectedEntry = selectedEntry;
+				setSchedulerData();
+			}
+			
+			
 
 			/**
-			 * @inheritDoc
-			 * 
-			 * @internal
-			 * this panel doesn't require any special data, so the implementation is empty
+			 * see all data on the panel is legal and save data
+			 * @return an object with error code
 			 * */
-			public function initData():void {
+			public function validate():void {
+				var success:Boolean = true;	// validation result
+				var errorMessage:String;
+				var errorTitle:String;
 				
+				if (isInit()) {
+					
+					if (spcificRangeRBtn.selected && sepcificStartDate.selectedDate == null) {
+						success = false;
+						errorMessage = resourceManager.getString('drilldown', 'scedualingStartDateError'); 
+						errorTitle = resourceManager.getString('drilldown', 'scedualingErrorTitle');
+					}
+					else if (specificEndCBBtn.selected && specificEndDate.selectedDate == null) {
+						success = false;
+						errorMessage = resourceManager.getString('drilldown', 'scedualingEndDateError'); 
+						errorTitle = resourceManager.getString('drilldown', 'scedualingErrorTitle');
+					}
+				}
+				// if the panel didn't init no data was changed and therefore is legal. hopefully.
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
+				dispatchEvent(e);
 			}
+
+			
+			public function save():void {
+				var startTime:int = getStartTime();
+				var endTime:int = getEndTime();
+				
+				if (_selectedEntry.startDate > 0) {
+					_selectedEntry.startDate = startTime;
+					// this can lead to startDate == -1
+				}
+				else if (_selectedEntry.startDate == int.MIN_VALUE && startTime > 0) {
+					_selectedEntry.startDate = startTime;
+				}
+				else if (_selectedEntry.startDate == -1) {
+					// value was saved (reset) in this KMC session
+					if (startTime > 0) {
+						_selectedEntry.startDate = startTime;
+					}
+				}
+				
+				if (_selectedEntry.endDate > 0) {
+					_selectedEntry.endDate = endTime;
+					// this can lead to startDate == -1
+				}
+				else if (_selectedEntry.endDate == int.MIN_VALUE && endTime > 0) {
+					_selectedEntry.endDate = endTime;
+				}
+				else if (_selectedEntry.endDate == -1) {
+					// value was saved (reset) in this KMC session
+					if (endTime > 0) {
+						_selectedEntry.endDate = endTime;
+					}
+				}
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
 			
 			/**
 			 * @inheritDoc
-			 * 
+			 *
 			 * @internal
 			 * this panel doesn't require any special destructors, so the implementation is empty
 			 * */
@@ -49,10 +121,26 @@
 				
 			}
 
-			private function onCreationComplete():void {
-				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
+			
+			public function clear():void {
 
 			}
+
+			/**
+			 * @inheritDoc
+			 *
+			 * @internal
+			 * this panel doesn't require any special data, so the implementation is empty
+			 * */
+			public function initData():void {
+
+			}
+			
+			
+			public function init():void {
+				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
+			}
+
 
 
 			private function isInit():Boolean {
@@ -60,65 +148,84 @@
 			}
 
 
+			/**
+			 * retrieves the selected start time
+			 * @return start time in seconds, or -1 if no start time was selected
+			 * 
+			 * @internal
+			 * used by SetSchedulingWin
+			 * */
 			public function getStartTime():int {
-				return (anyTimeRBtn.selected || (sepcificStartDate.selectedDate == null)) ? -1 : getTimeInSeconds(sepcificStartDate, sepcificStartHour);
+				var res:int;
+				if (anyTimeRBtn.selected || sepcificStartDate.selectedDate == null) {
+					res = -1;
+				} else {
+					res = getTimeInSeconds(sepcificStartDate, sepcificStartHour);
+				}
+				return res;
 			}
 
-
+			/**
+			 * retrieves the selected end time
+			 * @return end time in seconds, or -1 if no end time was selected
+			 * @internal
+			 * used by SetSchedulingWin
+			 * */
 			public function getEndTime():int {
-				return (anyTimeRBtn.selected || !specificEndCBBtn.selected || (specificEndDate.selectedDate == null)) ? -1 : getTimeInSeconds(specificEndDate, specificEndHour);
+				var res:int;
+				if (anyTimeRBtn.selected || !specificEndCBBtn.selected || specificEndDate.selectedDate == null) {
+					res = -1;
+				}
+				else {
+					res = getTimeInSeconds(specificEndDate, specificEndHour);
+				}
+				return res;
 			}
 
 
 			/**
 			 * return true if dates were changed
 			 * */
-			public function wasChanged():Boolean {
+			public function isChanged():Boolean {
+				var result:Boolean = false;
 				var startTime:int = getStartTime();
 				var endTime:int = getEndTime();
 
-				//start time was reset
-				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
-					return true;
-				//start time was changed
-				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
-					return true;
-				//end time was reset
-				if ((_selectedEntry.endDate != int.MIN_VALUE) && (endTime < 0))
-					return true;
-				//end time was changed
-				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
-					return true;
-
-				return false;
-			}
-
-
-			/**
-			 * see all data on the panel is legal and save data
-			 * @return an object with error code
-			 * */
-			public function save():EntryDetailsValidationError {
-				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-
-				// scheduling section 
-				if (isInit()) {
-					var startTime:int = getStartTime();
-					var endTime:int = getEndTime();
-
-					_selectedEntry.startDate = startTime;
-					_selectedEntry.endDate = endTime;
-
-
-					if (spcificRangeRBtn.selected && sepcificStartDate.selectedDate == null) {
-						result.error = EntryDetailsValidationError.SCHEDULING_START_DATE;
-					}
-					else if (specificEndCBBtn.selected && specificEndDate.selectedDate == null) {
-						result.error = EntryDetailsValidationError.SCHEDULING_END_DATE;
+				
+				if (_selectedEntry.startDate > 0) {
+					if (startTime != _selectedEntry.startDate) {
+						result = true;
 					}
 				}
-				// if the panel didn't init no data was changed and therefore is legal. hopefully.
+				else if (startTime >= 0) {
+					result = true;
+				}
+				
+				if (_selectedEntry.endDate > 0) {
+					if (endTime != _selectedEntry.endDate) {
+						result = true;
+					}
+				}
+				else if (endTime >= 0) {
+					result = true;
+				}
 				return result;
+				
+//				//start time was reset
+//				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
+//					return true;
+//				//start time was changed
+//				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
+//					return true;
+//				//end time was reset
+//				if ((_selectedEntry.endDate >= 0) && (endTime < 0))
+//					return true;
+//				//end time was changed
+//				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
+//					return true;
+//
+//				return false;
+				
 			}
 
 
@@ -156,7 +263,6 @@
 							specificEndDate.selectedDate = null;
 							setTime(specificEndHour, 0, 0);
 						}
-
 					}
 				}
 			}
@@ -214,15 +320,7 @@
 			}
 
 
-			public function get selectedEntry():KalturaBaseEntry {
-				return _selectedEntry;
-			}
-
-
-			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
-				_selectedEntry = selectedEntry;
-				setSchedulerData();
-			}
+			
 
 
 			private function timeGroup_changeHandler(event:Event):void {
@@ -245,8 +343,8 @@
 		<!--<mx:Label text="{resourceManager.getString('drilldown', 'entrySchedulingTitle')}" styleName="drillDownTitleLabel"
 			 id="label1"/>-->
 		<mx:RadioButtonGroup id='timeGroup' change="timeGroup_changeHandler(event)"/>
-		<mx:RadioButton label="{resourceManager.getString('drilldown', 'ANY_TIME')}" groupName="timeGroup" id="anyTimeRBtn"
-						selected="true"/>
+		<mx:RadioButton label="{resourceManager.getString('drilldown', 'ANY_TIME')}" groupName="timeGroup"
+						id="anyTimeRBtn" selected="true"/>
 		<mx:RadioButton label="{resourceManager.getString('drilldown', 'rangeRadioBtn')}" groupName="timeGroup"
 						id="spcificRangeRBtn"/>
 		<mx:VBox width="100%">

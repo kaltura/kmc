@@ -4,6 +4,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.ThumbnailAssetEvent;
+			import com.kaltura.edw.view.EntryThumbnails;
 			import com.kaltura.edw.vo.ThumbnailWithDimensions;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			
@@ -19,6 +20,7 @@
 			private var _isDefault:Boolean;
 			
 			override public function set data(value:Object):void {
+				super.data = value;
 				var thumbsWithDimensions:ThumbnailWithDimensions = value as ThumbnailWithDimensions;
 				if (thumbsWithDimensions.thumbAsset) {
 					_thumbAsset = thumbsWithDimensions;
@@ -43,34 +45,36 @@
 			}
 			
 			
-			protected function setDefaultClickHandler(event:MouseEvent):void
-			{
-				var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, _thumbAsset);
-				setDefaultEvent.dispatch();
-			}
 			
-			protected function deleteClickHandler(event:MouseEvent):void
-			{
-				Alert.show(resourceManager.getString('drilldown','deleteThumbnailMsg'), resourceManager.getString('drilldown','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);	
-			}
 			
-			protected function downloadClickHandler(event:MouseEvent):void
-			{
-				var urlRequest:URLRequest = new URLRequest(_thumbAsset.thumbUrl);
-				navigateToURL(urlRequest , '_self');
-			}
 			
-			private function deleteHandler(event:CloseEvent):void {
-				if (event.detail == Alert.YES) {
-					var deleteThumbEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.DELETE, _thumbAsset);
-					deleteThumbEvent.dispatch();
+			protected function clickHandler(event:MouseEvent):void {
+				var e:Event;
+				switch (event.target) {
+					case btnDefault:
+						e = new Event(EntryThumbnails.SET_DEFAULT, true);
+						break;
+					case btnDnld:
+						e = new Event(EntryThumbnails.DOWNLOAD, true);
+						break;
+					case btnDelete:
+						e = new Event(EntryThumbnails.DELETE, true);
+						break;
 				}
+				dispatchEvent(e);
 			}
+				
+			
 			
 		]]>
 	</mx:Script>
 	
-	<mx:LinkButton label="{resourceManager.getString('drilldown', 'setDefaultThumbnail')}" click="setDefaultClickHandler(event)" enabled="{!_isDefault &amp;&amp; _enableActions}" styleName="setDefaultLinkButton"/>
-	<mx:LinkButton label="{resourceManager.getString('drilldown', 'download')}" click="downloadClickHandler(event)" enabled="{_enableActions}" styleName="downloadThumbLinkButton"/>	
-	<mx:LinkButton label="{resourceManager.getString('drilldown', 'deleteThumbnail')}" click="deleteClickHandler(event)" enabled="{(!_isDefault &amp;&amp; (_enableActions || _enableDelete))}" styleName="deleteThumbLinkButton"/>	
+	<mx:LinkButton id="btnDefault" label="{resourceManager.getString('drilldown', 'setDefaultThumbnail')}" 
+				   click="clickHandler(event)" enabled="{!_isDefault &amp;&amp; _enableActions}" 
+				   styleName="setDefaultLinkButton"/>
+	<mx:LinkButton id="btnDnld" label="{resourceManager.getString('drilldown', 'download')}" 
+				   click="clickHandler(event)" enabled="{_enableActions}" styleName="downloadThumbLinkButton"/>	
+	<mx:LinkButton id="btnDelete" label="{resourceManager.getString('drilldown', 'deleteThumbnail')}" 
+				   click="clickHandler(event)" enabled="{(!_isDefault &amp;&amp; (_enableActions || _enableDelete))}" 
+				   styleName="deleteThumbLinkButton"/>	
 </mx:VBox>

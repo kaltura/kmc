@@ -1,18 +1,17 @@
 package com.kaltura.edw.control.commands.flavor
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import flash.external.ExternalInterface;
 	
-	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
-	public class PreviewFlavorAsset extends KalturaCommand implements ICommand
+	public class PreviewFlavorAsset extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{		
 			// { asset_id : "00_uyjv3dkxot", flavor_name : "Normal - big", format : "flv", codec : "vp6", bitrate : "768", dimensions : { height : 360 , width : 640 }, sizeKB : 1226, status : "OK" } 
 			
@@ -33,7 +32,7 @@ package com.kaltura.edw.control.commands.flavor
 			flavorDetails.sizeKB = obj.flavorAsset.size;
 			flavorDetails.status = ResourceManager.getInstance().getString('cms','readyStatus');
 			
-			ExternalInterface.call("kmc.preview_embed.doFlavorPreview", obj.entryId, _model.entryDetailsModel.selectedEntry.name , flavorDetails);
+			ExternalInterface.call("kmc.preview_embed.doFlavorPreview", obj.entryId, (_model.getDataPack(EntryDataPack)as EntryDataPack).selectedEntry.name , flavorDetails);
 		}
 	}
 }

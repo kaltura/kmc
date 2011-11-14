@@ -6,12 +6,17 @@
 		 xmlns:validators="com.kaltura.validators.*"
 		 implements="com.kaltura.edw.business.IDrilldownPanel"
 		 creationComplete="onCreationComplete(event)"
-		 xmlns:captionsComponents="com.kaltura.edw.view.captions.*">
+		 xmlns:captionsComponents="com.kaltura.edw.view.captions.*" xmlns:control="com.kaltura.edw.control.*">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.CaptionsEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
-			import com.kaltura.edw.view.captions.Caption;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.vo.EntryCaptionVO;
 			import com.kaltura.edw.vo.EntryDetailsValidationError;
 			import com.kaltura.types.KalturaLanguage;
@@ -19,157 +24,54 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaCaptionAsset;
 			
-			import mx.events.ChildExistenceChangedEvent;
 			import mx.events.FlexEvent;
-			import mx.events.ValidationResultEvent;
+			
+			public static const CAPTIONS_URL:String = "captionsUrl";
+			public static const CAPTIONS_LANGUAGE:String = "captionsLanguage";
 
 			public static const LANGUAGES_ARRAY:Array = new Array(
-				KalturaLanguage.AB,
-				KalturaLanguage.AA,
-				KalturaLanguage.AF,
-				KalturaLanguage.SQ,
-				KalturaLanguage.AM,
-				KalturaLanguage.AR,
-				KalturaLanguage.HY,
-				KalturaLanguage.AS_,
-				KalturaLanguage.AY,
-				KalturaLanguage.AZ,
-				KalturaLanguage.BA,
-				KalturaLanguage.EU,
-				KalturaLanguage.BN,
-				KalturaLanguage.DZ,
-				KalturaLanguage.BH,
-				KalturaLanguage.BI,
-				KalturaLanguage.BR,
-				KalturaLanguage.BG,
-				KalturaLanguage.MY,
-				KalturaLanguage.BE,
-				KalturaLanguage.KM,
-				KalturaLanguage.CA,
-				KalturaLanguage.ZH,
-				KalturaLanguage.CO,
-				KalturaLanguage.HR,
-				KalturaLanguage.CS,
-				KalturaLanguage.DA,
-				KalturaLanguage.NL,
-				KalturaLanguage.EN,
-				KalturaLanguage.EO,
-				KalturaLanguage.ET,
-				KalturaLanguage.FO,
-				KalturaLanguage.FA,
-				KalturaLanguage.FJ,
-				KalturaLanguage.FI,
-				KalturaLanguage.FR,
-				KalturaLanguage.FY,
-				KalturaLanguage.GL,
-				KalturaLanguage.GD,
-				KalturaLanguage.GV,
-				KalturaLanguage.KA,
-				KalturaLanguage.DE,
-				KalturaLanguage.EL,
-				KalturaLanguage.KL,
-				KalturaLanguage.GN,
-				KalturaLanguage.GU,
-				KalturaLanguage.HA,
-				KalturaLanguage.HE,
-				KalturaLanguage.HI,
-				KalturaLanguage.HU,
-				KalturaLanguage.IS,
-				KalturaLanguage.ID,
-				KalturaLanguage.IA,
-				KalturaLanguage.IE,
-				KalturaLanguage.IU,
-				KalturaLanguage.IK,
-				KalturaLanguage.GA,
-				KalturaLanguage.IT,
-				KalturaLanguage.JA,
-				KalturaLanguage.JV,
-				KalturaLanguage.KN,
-				KalturaLanguage.KS,
-				KalturaLanguage.KK,
-				KalturaLanguage.RW,
-				KalturaLanguage.KY,
-				KalturaLanguage.RN,
-				KalturaLanguage.KO,
-				KalturaLanguage.KU,
-				KalturaLanguage.LO,
-				KalturaLanguage.LA,
-				KalturaLanguage.LV,
-				KalturaLanguage.LI,
-				KalturaLanguage.LN,
-				KalturaLanguage.LT,
-				KalturaLanguage.MK,
-				KalturaLanguage.MG,
-				KalturaLanguage.MS,
-				KalturaLanguage.ML,
-				KalturaLanguage.MT,
-				KalturaLanguage.MI,
-				KalturaLanguage.MR,
-				KalturaLanguage.MO,
-				KalturaLanguage.MN,
-				KalturaLanguage.NA,
-				KalturaLanguage.NE,
-				KalturaLanguage.NO,
-				KalturaLanguage.OC,
-				KalturaLanguage.OR_,
-				KalturaLanguage.OM,
-				KalturaLanguage.PS,
-				KalturaLanguage.PL,
-				KalturaLanguage.PT,
-				KalturaLanguage.PA,
-				KalturaLanguage.QU,
-				KalturaLanguage.RM,
-				KalturaLanguage.RO,
-				KalturaLanguage.RU,
-				KalturaLanguage.SM,
-				KalturaLanguage.SG,
-				KalturaLanguage.SA,
-				KalturaLanguage.SR,
-				KalturaLanguage.SH,
-				KalturaLanguage.ST,
-				KalturaLanguage.TN,
-				KalturaLanguage.SN,
-				KalturaLanguage.SD,
-				KalturaLanguage.SI,
-				KalturaLanguage.SS,
-				KalturaLanguage.SK,
-				KalturaLanguage.SL,
-				KalturaLanguage.SO,
-				KalturaLanguage.ES,
-				KalturaLanguage.SU,
-				KalturaLanguage.SW,
-				KalturaLanguage.SV,
-				KalturaLanguage.TL,
-				KalturaLanguage.TG,
-				KalturaLanguage.TA,
-				KalturaLanguage.TT,
-				KalturaLanguage.TE,
-				KalturaLanguage.TH,
-				KalturaLanguage.BO,
-				KalturaLanguage.TI,
-				KalturaLanguage.TO,
-				KalturaLanguage.TS,
-				KalturaLanguage.TR,
-				KalturaLanguage.TK,
-				KalturaLanguage.TW,
-				KalturaLanguage.UG,
-				KalturaLanguage.UK,
-				KalturaLanguage.UR,
-				KalturaLanguage.UZ,
-				KalturaLanguage.VI,
-				KalturaLanguage.VO,
-				KalturaLanguage.CY,
-				KalturaLanguage.WO,
-				KalturaLanguage.XH,
-				KalturaLanguage.YI,
-				KalturaLanguage.YO,
-				KalturaLanguage.ZU);
+				KalturaLanguage.AB, KalturaLanguage.AA, KalturaLanguage.AF, KalturaLanguage.SQ, KalturaLanguage.AM,
+				KalturaLanguage.AR, KalturaLanguage.HY, KalturaLanguage.AS_, KalturaLanguage.AY, KalturaLanguage.AZ,
+				KalturaLanguage.BA, KalturaLanguage.EU, KalturaLanguage.BN, KalturaLanguage.DZ, KalturaLanguage.BH,
+				KalturaLanguage.BI, KalturaLanguage.BR, KalturaLanguage.BG, KalturaLanguage.MY, KalturaLanguage.BE,
+				KalturaLanguage.KM, KalturaLanguage.CA, KalturaLanguage.ZH, KalturaLanguage.CO, KalturaLanguage.HR,
+				KalturaLanguage.CS, KalturaLanguage.DA, KalturaLanguage.NL, KalturaLanguage.EN, KalturaLanguage.EO,
+				KalturaLanguage.ET, KalturaLanguage.FO, KalturaLanguage.FA, KalturaLanguage.FJ, KalturaLanguage.FI,
+				KalturaLanguage.FR, KalturaLanguage.FY, KalturaLanguage.GL, KalturaLanguage.GD, KalturaLanguage.GV,
+				KalturaLanguage.KA, KalturaLanguage.DE, KalturaLanguage.EL, KalturaLanguage.KL, KalturaLanguage.GN,
+				KalturaLanguage.GU, KalturaLanguage.HA, KalturaLanguage.HE, KalturaLanguage.HI, KalturaLanguage.HU,
+				KalturaLanguage.IS, KalturaLanguage.ID, KalturaLanguage.IA, KalturaLanguage.IE, KalturaLanguage.IU,
+				KalturaLanguage.IK, KalturaLanguage.GA, KalturaLanguage.IT, KalturaLanguage.JA, KalturaLanguage.JV,
+				KalturaLanguage.KN, KalturaLanguage.KS, KalturaLanguage.KK, KalturaLanguage.RW, KalturaLanguage.KY,
+				KalturaLanguage.RN, KalturaLanguage.KO, KalturaLanguage.KU, KalturaLanguage.LO, KalturaLanguage.LA,
+				KalturaLanguage.LV, KalturaLanguage.LI, KalturaLanguage.LN, KalturaLanguage.LT, KalturaLanguage.MK,
+				KalturaLanguage.MG, KalturaLanguage.MS, KalturaLanguage.ML, KalturaLanguage.MT, KalturaLanguage.MI,
+				KalturaLanguage.MR, KalturaLanguage.MO, KalturaLanguage.MN, KalturaLanguage.NA, KalturaLanguage.NE,
+				KalturaLanguage.NO, KalturaLanguage.OC, KalturaLanguage.OR_, KalturaLanguage.OM, KalturaLanguage.PS,
+				KalturaLanguage.PL, KalturaLanguage.PT, KalturaLanguage.PA, KalturaLanguage.QU, KalturaLanguage.RM,
+				KalturaLanguage.RO, KalturaLanguage.RU, KalturaLanguage.SM, KalturaLanguage.SG, KalturaLanguage.SA,
+				KalturaLanguage.SR, KalturaLanguage.SH, KalturaLanguage.ST, KalturaLanguage.TN, KalturaLanguage.SN,
+				KalturaLanguage.SD, KalturaLanguage.SI, KalturaLanguage.SS, KalturaLanguage.SK, KalturaLanguage.SL,
+				KalturaLanguage.SO, KalturaLanguage.ES, KalturaLanguage.SU, KalturaLanguage.SW, KalturaLanguage.SV,
+				KalturaLanguage.TL, KalturaLanguage.TG, KalturaLanguage.TA, KalturaLanguage.TT, KalturaLanguage.TE,
+				KalturaLanguage.TH, KalturaLanguage.BO, KalturaLanguage.TI, KalturaLanguage.TO, KalturaLanguage.TS,
+				KalturaLanguage.TR, KalturaLanguage.TK, KalturaLanguage.TW, KalturaLanguage.UG, KalturaLanguage.UK,
+				KalturaLanguage.UR, KalturaLanguage.UZ, KalturaLanguage.VI, KalturaLanguage.VO, KalturaLanguage.CY,
+				KalturaLanguage.WO, KalturaLanguage.XH, KalturaLanguage.YI, KalturaLanguage.YO, KalturaLanguage.ZU);
 
 
 			/**
-			 * The current drilled down entry
+			 * @copy #selectedEntry
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
 
 			[Bindable]
 			/**
@@ -190,14 +92,26 @@
 			 * for r&p
 			 * */
 			public var editable:Boolean = true;
-
+			
+			
+			public function destroy():void {
+			}
+			
+			
+			public function clear():void {
+			}
+			
+			
+			public function init():void {
+			}
+			
 
 			/**
 			 * initialize required data
 			 * */
 			public function initData():void {
 				var listCaptionsEvt:CaptionsEvent = new CaptionsEvent(CaptionsEvent.LIST_CAPTIONS);
-				listCaptionsEvt.dispatch();
+				controller.dispatch(listCaptionsEvt);
 			}
 
 
@@ -226,11 +140,6 @@
 			}
 
 
-			public function destroy():void {
-
-			}
-
-
 			/**
 			 * add a new empty Caption to captions VBox
 			 * */
@@ -242,40 +151,57 @@
 				entryCaptionsArr.push(captionVO);
 				captionsTable.invalidateList();
 			}
+			
+			
+			public function validate():void {
+				var success:Boolean = true;	// validation result
+				var errorMessage:String;
+				var errorTitle:String;
+				var captionVo:EntryCaptionVO;
+				for (var i:int = 0; i < entryCaptionsArr.length; i++) {
+					captionVo = entryCaptionsArr[i];
+					if (captionVo.isChanged) {
+						var curCaptionRes:EntryDetailsValidationError = validateCaption(captionVo);
+						if (curCaptionRes.error) {
+							if (curCaptionRes.error == CAPTIONS_URL) {
+								errorMessage = resourceManager.getString('drilldown', 'missingURLError');
+							}
+							else if (curCaptionRes.error == CAPTIONS_LANGUAGE) {
+								errorMessage = resourceManager.getString('drilldown', 'missingLanguageError');
+							}
+							errorTitle = resourceManager.getString('drilldown', 'captionsError');
+							success = false;
+							break;
+						}
+					}
+				}
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
+				dispatchEvent(e);
+			}
 
 
 			/**
-			 * save all changes- added/removed captions
+			 * save all changes - added/removed captions
 			 * */
-			public function save():EntryDetailsValidationError {
-				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+			public function save():void {
 				var captionsToSave:Array = new Array();
 				var captionVo:EntryCaptionVO;
 
 				for (var i:int = 0; i < entryCaptionsArr.length; i++) {
 					captionVo = entryCaptionsArr[i];
 					if (captionVo.isChanged) {
-						var curCaptionRes:EntryDetailsValidationError = validateCaption(captionVo);
-						if (curCaptionRes.error) {
-							result = curCaptionRes;
-						}
-						else {
-							captionsToSave.push(captionVo);
-						}
+						captionsToSave.push(captionVo);
 					}
 				}
 
-				if (!result.error) {
-					var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
-					saveEvent.captionsToSave = captionsToSave;
-					saveEvent.captionsToRemove = _captionsToRemove;
-					if (_defaultCaption)
-						saveEvent.defaultCaption = _defaultCaption;
-					saveEvent.dispatch();
+				var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
+				saveEvent.captionsToSave = captionsToSave;
+				saveEvent.captionsToRemove = _captionsToRemove;
+				if (_defaultCaption)
+					saveEvent.defaultCaption = _defaultCaption;
+				controller.dispatch(saveEvent);
 
-				}
-
-				return result;
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 
 
@@ -287,15 +213,15 @@
 				if (vo.kmcStatus != EntryCaptionVO.UPLOADING && !vo.isNewUploaded) {
 					if (vo.resourceUrl) {
 						// if text never changed, vo.resourceUrl is null but there is no reason to validate the value.
-						var singleResult:ValidationResultEvent = urlValidator.validate(vo.resourceUrl); 
+						var singleResult:mx.events.ValidationResultEvent = urlValidator.validate(vo.resourceUrl); 
 						if (singleResult.results) {
-							error.error = EntryDetailsValidationError.CAPTIONS_URL;
+							error.error = CAPTIONS_URL;
 						}
 					}
 				}
 				
 				if (!vo.caption.language) {
-					error.error = EntryDetailsValidationError.CAPTIONS_LANGUAGE;
+					error.error = CAPTIONS_LANGUAGE;
 				}
 
 				return error;
@@ -306,7 +232,7 @@
 			 * return true if there are changes to save:
 			 * new captions, removed captions, edited captions, set default.
 			 * */
-			public function wasChanged():Boolean {
+			public function isChanged():Boolean {
 				// are there captions to be removed?
 				if (_captionsToRemove && _captionsToRemove.length) {
 					return true;
@@ -331,15 +257,16 @@
 			}
 		]]>
 	</mx:Script>
-
+	<control:CaptionsTabController id="controller" />
 	<validators:URLValidator id="urlValidator" property="text" required="true"
 							 requiredFieldError="{resourceManager.getString('drilldown','emptyUrlError')}"/>
 	<mx:NumberValidator id="comboValidator" property="selectedIndex"
-						maxValue="{EntryCaptions.LANGUAGES_ARRAY.length -1}" minValue="0"
+						maxValue="{EntryCaptions2.LANGUAGES_ARRAY.length -1}" minValue="0"
 						lowerThanMinError="{resourceManager.getString('drilldown','emptyLanguageError')}"/>
 
 	<mx:Text text="{resourceManager.getString('drilldown','captionsInfo')}" styleName="tipText"/>
 	<mx:Button label="{resourceManager.getString('drilldown','addCaptions')}" click="addCaption()" visible="{editable}"/>
 	<captionsComponents:CaptionsTable id="captionsTable" width="100%" height="100%" dataProvider="{entryCaptionsArr}"
-									  captionRemoved="removeCaption(event)" changeDefault="changeDefaultCaption(event)"/>
+									  captionRemoved="removeCaption(event)" changeDefault="changeDefaultCaption(event)"
+									  controller="{controller}"/>
 </mx:VBox>

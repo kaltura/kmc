@@ -1,24 +1,25 @@
 package com.kaltura.edw.control.commands.dist
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.entryDistribution.EntryDistributionRetrySubmit;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.EntryDistributionEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class RetryEntryDistributionCommand extends KalturaCommand
+	public class RetryEntryDistributionCommand extends KedCommand
 	{
 		private var _entryDis:KalturaEntryDistribution;
 		
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			_entryDis = (event as EntryDistributionEvent).entryDistribution;
 			var retry:EntryDistributionRetrySubmit = new EntryDistributionRetrySubmit(_entryDis.id);
 			retry.addEventListener(KalturaEvent.COMPLETE, result);
 			retry.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(retry);
+			_client.post(retry);
 		}
 		
 		override public function result(data:Object):void {
@@ -28,7 +29,9 @@ package com.kaltura.edw.control.commands.dist
 			_entryDis.status = updateResult.status;
 
 			//for data binding
-			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = _model.entryDetailsModel.distributionProfileInfo.entryDistributionArray.concat();
+			
+			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			ddp.distributionProfileInfo.entryDistributionArray = ddp.distributionProfileInfo.entryDistributionArray.concat();
 		}
 	}
 }

@@ -1,11 +1,13 @@
 package com.kaltura.edw.control.commands.captions {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.captionAsset.CaptionAssetGetUrl;
 	import com.kaltura.commands.captionAsset.CaptionAssetList;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.CaptionsDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.EntryCaptionVO;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaCaptionAssetStatus;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
 	import com.kaltura.types.KalturaNullableBoolean;
@@ -13,7 +15,7 @@ package com.kaltura.edw.control.commands.captions {
 	import com.kaltura.vo.KalturaCaptionAsset;
 	import com.kaltura.vo.KalturaCaptionAssetListResponse;
 
-	public class ListCaptionsCommand extends KalturaCommand {
+	public class ListCaptionsCommand extends KedCommand {
 		private var _captionsArray:Array;
 		/**
 		 * array of captions in status ready, request download url only for these captions
@@ -21,15 +23,15 @@ package com.kaltura.edw.control.commands.captions {
 		private var _readyCaptionsArray:Array;
 
 
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var filter:KalturaAssetFilter = new KalturaAssetFilter();
-			filter.entryIdEqual = _model.entryDetailsModel.selectedEntry.id;
+			filter.entryIdEqual = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
 			var listCaptions:CaptionAssetList = new CaptionAssetList(filter);
 			listCaptions.addEventListener(KalturaEvent.COMPLETE, listResult);
 			listCaptions.addEventListener(KalturaEvent.FAILED, fault);
 
-			_model.context.kc.post(listCaptions);
+			_client.post(listCaptions);
 		}
 
 
@@ -43,7 +45,7 @@ package com.kaltura.edw.control.commands.captions {
 					var entryCaption:EntryCaptionVO = new EntryCaptionVO();
 					entryCaption.caption = caption;
 					entryCaption.kmcStatus = getKMCStatus(caption);
-					entryCaption.serveUrl = _model.context.kc.protocol + _model.context.kc.domain + EntryCaptionVO.generalServeURL + "/ks/" + _model.context.kc.ks + "/captionAssetId/" + caption.id;
+					entryCaption.serveUrl = _client.protocol + _client.domain + EntryCaptionVO.generalServeURL + "/ks/" + _client.ks + "/captionAssetId/" + caption.id;
 					if (caption.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
 						entryCaption.isKmcDefault = true;
 					}
@@ -58,7 +60,7 @@ package com.kaltura.edw.control.commands.captions {
 				if (_readyCaptionsArray.length) {
 					mr.addEventListener(KalturaEvent.COMPLETE, handleDownloadUrls);
 					mr.addEventListener(KalturaEvent.FAILED, fault);
-					_model.context.kc.post(mr);
+					_client.post(mr);
 				}
 				else //go strait to result
 					result(data);
@@ -99,7 +101,8 @@ package com.kaltura.edw.control.commands.captions {
 
 		override public function result(data:Object):void {
 			super.result(data);
-			_model.entryDetailsModel.captionsArray = _captionsArray;
+			
+			(_model.getDataPack(CaptionsDataPack) as CaptionsDataPack).captionsArray = _captionsArray;
 			_model.decreaseLoadCounter();
 		}
 

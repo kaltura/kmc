@@ -2,13 +2,20 @@
 <!---
 	 access control tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" initialize="{updateAccessSection()}"
-		 show="{init()}" implements="com.kaltura.edw.business.IDrilldownPanel">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" 
+		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.events.AccessControlProfileEvent;
+			import com.kaltura.edw.control.events.AccessControlEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.view.window.accessControl.AccessControlProfilePopUpWindow;
+			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.types.*;
 			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
@@ -19,10 +26,21 @@
 			import mx.managers.PopUpManager;
 
 			/**
+			 * @copy #selectedEntry
+			 * */
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			/**
 			 * the entry being presented / edited in entry drilldown
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
-
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+			
 			/**
 			 * list of entries to edit in SetAccessControlProfileWin
 			 * */
@@ -32,39 +50,60 @@
 			 * filtering parameters
 			 * */
 			public var filterModel:FilterModel;
+			
 
 			/**
 			 * @copy #accessControlData
 			 * */
 			private var _accessControlData:ArrayCollection;
 
-
-			public function destroy():void {
-
-			}
-
-
 			/**
-			 * loads required data from server
+			 * change flag
 			 * */
-			public function initData():void {
-				//redundant: we already got this info from the filter
-				//	var listAcc:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-				//	listAcc.dispatch();
-			}
-
-
-			private function init():void {
+			private var _isChanged:Boolean;
+			
+			
+			public function init():void {
 				if (!filterModel.oneTimeLoadAccessControlLoadedFlag) {
-					//Only one time we should load this configuration per partner
+					// Only one time we should load this configuration per partner
 					filterModel.oneTimeLoadAccessControlLoadedFlag = true;
-					var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-					getAllProfilesEvent.dispatch();
+					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.LIST_ACCESS_CONTROLS_PROFILES);
+					controller.dispatch(getAllProfilesEvent);
 				} else {
 					updateAccessSection()
 				}
 			}
 
+
+			public function initData():void {
+				updateAccessSection();
+			}
+			
+			public function isChanged():Boolean {
+				return _isChanged;
+			}
+			
+			public function validate():void {
+				// this panel's data cannot be invalid
+				dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true));
+			}
+
+			
+			public function save():void {
+				// only chages value on the entry
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
+			
+			public function clear():void {
+				_isChanged = false;
+			}
+
+			
+			public function destroy():void {
+
+			}
+			
 
 			private function updateAccessSection():void {
 				var acProfiles:ArrayCollection = new ArrayCollection();
@@ -84,8 +123,8 @@
 				}
 
 				for each (var acProfile1:Object in acProfiles) {
-					if (selectedEntry != null) {
-						if ((acProfile1.profile as AccessControlProfileVO).profile.id == selectedEntry.accessControlId) {
+					if (_selectedEntry != null) {
+						if ((acProfile1.profile as AccessControlProfileVO).profile.id == _selectedEntry.accessControlId) {
 							selectedItemIndex = itemsCounter;
 						}
 						itemsCounter++;
@@ -106,26 +145,26 @@
 				PopUpManager.addPopUp(newProfileWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(newProfileWin);
 
-				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveNewProfileFunc, false, 0, true);
-				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveUpdatedProfileFunc, false, 0, true);
-			}
-
-
-
-			private function saveUpdatedProfileFunc(event:Event):void {
-				var saveProfileChangesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.UPDATE_ACCESS_CONTROL_PROFILE);
-				saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
-				saveProfileChangesEvent.dispatch();
+				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveProfile, false, 0, true);
+//				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveProfile, false, 0, true);
 			}
 
 
 			/**
-			 *
-			 */
-			private function saveNewProfileFunc(event:Event):void {
-				var addNewProfileEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
-				addNewProfileEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
-				addNewProfileEvent.dispatch();
+			 * save changes to the profile
+			 * */
+			private function saveProfile(event:Event):void {
+				var saveProfileChangesEvent:AccessControlEvent;
+//				switch (event.type) {
+//					case AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE:
+						saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+//						break;
+//					case AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE:
+//						saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.UPDATE_ACCESS_CONTROL_PROFILE);
+//						break;
+//				}
+				saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
+				controller.dispatch(saveProfileChangesEvent);
 			}
 
 
@@ -143,9 +182,11 @@
 					acAuthoIPsLabel.text = '';
 					acAuthoCountriesLabel.text = '';
 					acAdvancedLabel.text = '';
-					if (selectedEntry != null) {
-						selectedEntry.accessControlId = 0;
-					} else if (selectedEntries != null) {
+					if (_selectedEntry != null) {
+						_selectedEntry.accessControlId = 0;
+						_isChanged = true;
+					} 
+					else if (selectedEntries != null) {
 						for each (var entry:KalturaBaseEntry in selectedEntries) {
 							entry.accessControlId = 0;
 						}
@@ -182,9 +223,13 @@
 						}
 						else if (rstrct is KalturaCountryRestriction) {
 							foundCountriesRestriction = true;
-							acAuthoCountriesLabel.text = (rstrct as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST ? resourceManager.getString('drilldown',
-								'ALLOW_COUNTRIES') + ": " : resourceManager.getString('drilldown', 'RESTRICT_COUNTRIES') + ": ";
-
+							if ((rstrct as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST){
+								acAuthoCountriesLabel.text = resourceManager.getString('drilldown','ALLOW_COUNTRIES') + ": "
+							}
+							else {
+								acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'RESTRICT_COUNTRIES') + ": ";
+							}
+							
 							acAuthoCountriesLabel.text += "\n" + getCountriesList((rstrct as KalturaCountryRestriction).countryList);
 						}
 
@@ -204,12 +249,13 @@
 					acAuthoSitesLabel.text = foundSitesRestriction ? acAuthoSitesLabel.text : resourceManager.getString('drilldown', 'ANY_SITE');
 					acAuthoIPsLabel.text = foundIPsRestriction ? acAuthoIPsLabel.text : resourceManager.getString('drilldown', 'ANY_IP');
 					acAuthoCountriesLabel.text = foundCountriesRestriction ? acAuthoCountriesLabel.text : resourceManager.getString('drilldown', 'ANY_COUNTRY');
-					acAdvancedLabel.text = (acAdvancedLabel.text.length > 0) ? acAdvancedLabel.text.substr(0,
-						acAdvancedLabel.text.length -
-						2) : '';
+					acAdvancedLabel.text = (acAdvancedLabel.text.length > 0) ? acAdvancedLabel.text.substr(0, acAdvancedLabel.text.length - 2) : '';
 
-					if (selectedEntry != null) {
-						selectedEntry.accessControlId = selectedAC.profile.id;
+					if (_selectedEntry != null) {
+						if (_selectedEntry.accessControlId != selectedAC.profile.id){
+							_selectedEntry.accessControlId = selectedAC.profile.id;
+							_isChanged = true;
+						}
 					} 
 					else if (selectedEntries != null) {
 						for each (var entry1:KalturaBaseEntry in selectedEntries) {
@@ -251,9 +297,12 @@
 				_accessControlData = accessControlData;
 				updateAccessSection();
 			}
+			
+			
 		]]>
 	</mx:Script>
 
+	<control:AccessTabController id="controller" />
 	<mx:Grid>
 		<mx:GridRow>
 			<!--<mx:GridItem horizontalAlign="left" verticalAlign="bottom">

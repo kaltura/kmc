@@ -3,10 +3,11 @@ package com.kaltura.kmc.modules.content.commands
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.liveStream.LiveStreamAdd;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
-	import com.kaltura.edw.control.events.WindowEvent;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.control.KedController;
+	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
+	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.vo.StreamVo;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaSourceType;
@@ -15,7 +16,6 @@ package com.kaltura.kmc.modules.content.commands
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class AddStreamCommand extends KalturaCommand implements ICommand, IResponder
 	{
@@ -63,7 +63,7 @@ package com.kaltura.kmc.modules.content.commands
 			cgEvent.dispatch();	
 	        
     		var searchEvent2 : SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo );
-			searchEvent2.dispatch(); 
+			KedController.getInstance().dispatch(searchEvent2); 
 		}
 	}
 }

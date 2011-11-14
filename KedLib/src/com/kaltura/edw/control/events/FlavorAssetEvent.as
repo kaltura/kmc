@@ -1,9 +1,9 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
-	public class FlavorAssetEvent extends CairngormEvent
+	public class FlavorAssetEvent extends KMvCEvent
 	{
 		public static const CREATE_FLAVOR_ASSET : String = "content_createFlavorAsset";
 		public static const DELETE_FLAVOR_ASSET : String = "content_deleteFlavorAsset";

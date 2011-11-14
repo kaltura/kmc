@@ -1,6 +1,5 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.accessControl.AccessControlList;
 	import com.kaltura.commands.baseEntry.BaseEntryCount;
@@ -12,15 +11,22 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.commands.thumbAsset.ThumbAssetGetByEntryId;
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.business.FormBuilder;
 	import com.kaltura.edw.business.IDataOwner;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.LoadEvent;
 	import com.kaltura.edw.model.EntryDistributionWithProfile;
-	import com.kaltura.edw.vo.ThumbnailWithDimensions;
-	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.types.KalturaDistributionProfileStatus;
 	import com.kaltura.types.KalturaEntryDistributionStatus;
@@ -72,7 +78,7 @@ package com.kaltura.edw.control.commands
 	 * </lu> 
 	 * @author Atar
 	 */	
-	public class LoadEntryDrilldownDataCommand extends KalturaCommand {
+	public class LoadEntryDrilldownDataCommand extends KedCommand {
 		//TODO take the fault beahvior from all the commands
 		
 		/**
@@ -80,13 +86,24 @@ package com.kaltura.edw.control.commands
 		 */		
 		private var _caller:IDataOwner;
 		
+		/**
+		 * reference to the filter model of the current filter
+		 * */
+		private var _filterModel:FilterModel;
+		
+		/**
+		 * distribution info 
+		 */		
+		private var _distDP:DistributionDataPack;
 		
 		/**
 		 * @inheritDocs
 		 */
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			_caller = (event as LoadEvent).caller;
+			
+			_filterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 			var entryId:String = (event as LoadEvent).entryId; 
 			
 			var mr:MultiRequest = new MultiRequest();
@@ -113,8 +130,7 @@ package com.kaltura.edw.control.commands
 			mr.addAction(getAssetsAndFlavorsByEntryId);
 			
 //			entry metadata
-			if (_model.filterModel.enableCustomData &&_model.filterModel && _model.filterModel.metadataProfiles 
-				&& entryId) {
+			if (_filterModel.enableCustomData && _filterModel.metadataProfiles && entryId) {
 				var filter1:KalturaMetadataFilter = new KalturaMetadataFilter();
 				filter1.objectIdEqual = entryId;	
 				var pager:KalturaFilterPager = new KalturaFilterPager();
@@ -127,8 +143,7 @@ package com.kaltura.edw.control.commands
 			mr.addAction(listThumbnailAsset);
 			
 //			entry distribution
-			if (_model.filterModel.enableDistribution)
-			{
+			if (_filterModel.enableDistribution) {
 				//				distribution profiles
 				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
 				mr.addAction(listDistributionProfile);
@@ -148,12 +163,13 @@ package com.kaltura.edw.control.commands
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(mr);
+			_client.post(mr);
 		}
 		
 		
 		
 		override public function result(data:Object):void {
+			_distDP = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
 			var multiRequestIndex : int = 3;
 //			categories
 			handleCategoriesList(data.data[1] as KalturaCategoryListResponse, data.data[0] as String);
@@ -196,8 +212,8 @@ package com.kaltura.edw.control.commands
 				if (newProfile.status == KalturaDistributionProfileStatus.ENABLED)
 					profilesArray.push(newProfile);
 			}
-			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
-			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
+			_distDP.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			_distDP.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		/**
@@ -219,10 +235,10 @@ package com.kaltura.edw.control.commands
 		 */		
 		private function handleThumbnailAssets(thumbsResultArray:Array):void {
 			//copy this array so we can delete from it without damage the original profiles array
-			var profilesArray:Array = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray.concat();
+			var profilesArray:Array = _distDP.distributionProfileInfo.kalturaDistributionProfilesArray.concat();
 			//resets old data
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = new Array();
-			buildThumbsWithDimensionsArray(_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray, profilesArray, thumbsResultArray);
+			_distDP.distributionProfileInfo.thumbnailDimensionsArray = new Array();
+			buildThumbsWithDimensionsArray(_distDP.distributionProfileInfo.thumbnailDimensionsArray, profilesArray, thumbsResultArray);
 		}
 		
 		/**
@@ -313,25 +329,27 @@ package com.kaltura.edw.control.commands
 			
 			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
 			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC | Array.DESCENDING);
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
+			_distDP.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
 		}
 		
 		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
-			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
+			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
 		}
 		
 		/**
 		 * copied from ListMetadataCommand
 		 */
 		private function handleMetadata(metadataResponse:KalturaMetadataListResponse):void {
-			_model.entryDetailsModel.metadataInfoArray = new ArrayCollection;
+			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+			
+			cddp.metadataInfoArray = new ArrayCollection;
 			//go over all profiles and match to the metadata data
-			for (var i:int = 0; i<_model.filterModel.metadataProfiles.length; i++) {
+			for (var i:int = 0; i<_filterModel.metadataProfiles.length; i++) {
 				var curMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
-				_model.entryDetailsModel.metadataInfoArray.addItem(curMetadata);
-				var curFormBuilder:FormBuilder = _model.filterModel.formBuilders[i] as FormBuilder;
+				cddp.metadataInfoArray.addItem(curMetadata);
+				var curFormBuilder:FormBuilder = _filterModel.formBuilders[i] as FormBuilder;
 				curFormBuilder.metadataInfo = curMetadata;
-				var curProfile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				var curProfile:KMCMetadataProfileVO = _filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
 				for each (var metadata:KalturaMetadata in metadataResponse.objects) {
 					if ((metadata.metadataProfileId == curProfile.profile.id) &&
 						(metadata.metadataProfileVersion == curProfile.profile.version)) {
@@ -349,14 +367,14 @@ package com.kaltura.edw.control.commands
 		 */
 		private function handleCategoriesList(kclr:KalturaCategoryListResponse, totalEntriesCount:String):void {
 			var categories:Array = kclr.objects;
-			_model.filterModel.categories = buildCategoriesHyrarchy(categories, totalEntriesCount);
+			_filterModel.categories = buildCategoriesHyrarchy(categories, totalEntriesCount);
 		}
 		
 		/**
 		 * copied fom ListFlavorAssetsByEntryIdCommand 
 		 */
 		private function handleFlavorAssetsByEntryId(arrCol:Array):void {
-			var flavorParamsAndAssetsByEntryId:ArrayCollection = _model.entryDetailsModel.flavorParamsAndAssetsByEntryId;
+			var flavorParamsAndAssetsByEntryId:ArrayCollection = _distDP.flavorParamsAndAssetsByEntryId;
 			flavorParamsAndAssetsByEntryId.removeAll();
 			var tempAc:ArrayCollection = new ArrayCollection();
 			var foundIsOriginal:Boolean = false;
@@ -398,11 +416,11 @@ package com.kaltura.edw.control.commands
 				acVo.profile = kac;
 				tempArrCol.addItem(acVo);
 			}
-			_model.filterModel.accessControlProfiles = tempArrCol;
+			_filterModel.accessControlProfiles = tempArrCol;
 		}
 		
 		private function buildCategoriesHyrarchy(array:Array, totalEntryCount:String):CategoryVO {
-			var catMap:HashMap = _model.filterModel.categoriesMap;
+			var catMap:HashMap = _filterModel.categoriesMap;
 			catMap.clear();
 			
 			var root:CategoryVO = new CategoryVO(0,
@@ -427,7 +445,7 @@ package com.kaltura.edw.control.commands
 				categories.addItem(category)
 			}
 			
-			_model.entryDetailsModel.categoriesFullNameList = categoryNames;
+			(_model.getDataPack(EntryDataPack) as EntryDataPack).categoriesFullNameList = categoryNames;
 			
 			for each (var cat:CategoryVO in categories) {
 				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;

@@ -1,26 +1,21 @@
 package com.kaltura.kmc.modules.content.model {
 	import com.adobe.cairngorm.model.IModelLocator;
-	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.PlaylistModel;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.types.WindowsStates;
-	import com.kaltura.edw.vo.CategoryVO;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.edw.vo.ListableVo;
+	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
-	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseSyndicationFeedFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	import mx.collections.ArrayCollection;
 	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
-	import com.kaltura.edw.model.Context;
-	import com.kaltura.edw.model.EntryDetailsModel;
-	import com.kaltura.edw.model.FilterModel;
-	import com.kaltura.edw.model.DropFolderModel;
-	import com.kaltura.edw.model.PlaylistModel;
 
 	[Bindable]
 	public class CmsModelLocator extends EventDispatcher implements IModelLocator {
@@ -33,7 +28,7 @@ package com.kaltura.kmc.modules.content.model {
 		/**
 		 * application context (ks, urls, etc)
 		 * */
-		public var context:Context = null;
+		public var context:ContextDataPack;
 		
 		/**
 		 * data that the filter requires 
@@ -55,10 +50,10 @@ package com.kaltura.kmc.modules.content.model {
 		 * */
 		public var moderationModel:ModerationModel;
 		
-		private var _entryDetailsModel:EntryDetailsModel;
+		private var _entryDetailsModel:KMvCModel;
 		
 		/**
-		 * array of entryDetailsModel
+		 * array of entryDetailsModel (KMvCModel)
 		 * */
 		public var entryDetailsModelsArray:Array;
 		
@@ -88,7 +83,7 @@ package com.kaltura.kmc.modules.content.model {
 		}
 		
 		/**
-		 * if we did some kind of action in entry drilldown that requires to refresh entries
+		 * entries list should be re-loaded after closing drilldown (some entry was updated).
 		 * */
 		public var refreshEntriesRequired:Boolean = false;
 		
@@ -143,6 +138,11 @@ package com.kaltura.kmc.modules.content.model {
 		 * makes it easier to share data across screens 
 		 * */
 		public var listableVo:ListableVo;
+		
+		/**
+		 * the total number of entries returned from the last (entries) list action 
+		 */
+		public var totalEntriesCount:int = 0;
 
 		/**
 		 * reference to application 
@@ -153,12 +153,6 @@ package com.kaltura.kmc.modules.content.model {
 		 * check how many popups are opened.
 		 * */
 		public var has2OpenedPopups:Boolean = false;
-
-		/**
-		 * the selected checkboxed entries 
-		 * (used in add / remove admin tags)
-		 */
-		public var checkedEntries:ArrayCollection = new ArrayCollection();
 
 		/**
 		 * the selected entries of the list 
@@ -185,7 +179,7 @@ package com.kaltura.kmc.modules.content.model {
 		/**
 		 * active entry details data, always the last one in entryDetailsModelsArray 
 		 */
-		public function get entryDetailsModel():EntryDetailsModel
+		public function get entryDetailsModel():KMvCModel
 		{
 			return entryDetailsModelsArray[entryDetailsModelsArray.length-1];
 		}
@@ -193,9 +187,9 @@ package com.kaltura.kmc.modules.content.model {
 		/**
 		 * @private
 		 */
-		public function set entryDetailsModel(value:EntryDetailsModel):void
+		public function set entryDetailsModel(value:KMvCModel):void
 		{
-			entryDetailsModelsArray[entryDetailsModelsArray.length-1] = value;
+			entryDetailsModelsArray.push(value);
 		}
 
 		/**
@@ -204,9 +198,9 @@ package com.kaltura.kmc.modules.content.model {
 		public function increaseLoadCounter():void {
 			++_loadingCounter;
 			if (_loadingCounter == 1) {
-				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
-					edm.loadingFlag = true;
-				}
+//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+//					edm.loadingFlag = true;
+//				}
 				dispatchEvent(new Event(CmsModelLocator.LOADING_FLAG_CHANGED));
 			}
 		}
@@ -218,9 +212,9 @@ package com.kaltura.kmc.modules.content.model {
 		public function decreaseLoadCounter():void {
 			--_loadingCounter;
 			if (_loadingCounter == 0) {
-				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
-					edm.loadingFlag = false;
-				}
+//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+//					edm.loadingFlag = false;
+//				}
 				dispatchEvent(new Event(CmsModelLocator.LOADING_FLAG_CHANGED));
 			}
 		}
@@ -259,12 +253,18 @@ package com.kaltura.kmc.modules.content.model {
 		 * @param enforcer	singleton garantee
 		 */		
 		public function CmsModelLocator(enforcer:Enforcer) {
-			context = new Context();
 			attic = new Object();
 			
-			filterModel = new FilterModel();
-			_entryDetailsModel = new EntryDetailsModel();
+			_entryDetailsModel = KMvCModel.getInstance();
 			entryDetailsModelsArray = new Array(_entryDetailsModel);
+			
+			context = _entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
+			
+			filterModel = new FilterModel();
+			var fdp:FilterDataPack = new FilterDataPack();
+			fdp.filterModel = filterModel;
+			_entryDetailsModel.setDataPack(fdp);
+			
 			popups = new Vector.<TitleWindow>();
 			
 			playlistModel = new PlaylistModel();

@@ -1,11 +1,11 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
 	import flash.net.FileReference;
 	
 
-	public class UploadEntryEvent extends CairngormEvent
+	public class UploadEntryEvent extends KMvCEvent
 	{
 		public static const UPLOAD_THUMBNAIL : String = "content_uploadThumbnail";
 		

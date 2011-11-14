@@ -1,17 +1,19 @@
 package com.kaltura.edw.control.commands.customData
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileGet;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.MetadataProfileEvent;
 	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.control.events.MetadataProfileEvent;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadataProfile;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class GetMetadataProfileCommand extends KalturaCommand
+	public class GetMetadataProfileCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var profileId:int = (event as MetadataProfileEvent).profileId;
 			if (profileId != -1) {
@@ -19,18 +21,19 @@ package com.kaltura.edw.control.commands.customData
 				getMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 				getMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
 				
-				_model.context.kc.post(getMetadataProfile);
+				_client.post(getMetadataProfile);
 			}
 		}
 		
 		override public function result(data:Object):void {
 			var recievedProfile:KalturaMetadataProfile = data.data as KalturaMetadataProfile;
+			var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 			if (recievedProfile) {
-				for (var i:int = 0; i<_model.filterModel.metadataProfiles.length; i++) {
-					var profile:KMCMetadataProfileVO = _model.filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {
+					var profile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
 					if (profile.profile.id == recievedProfile.id) {
 						profile.profile = recievedProfile;
-						(_model.filterModel.formBuilders[i] as FormBuilder).metadataProfile = profile;
+						(filterModel.formBuilders[i] as FormBuilder).metadataProfile = profile;
 						break;
 					}
 				}

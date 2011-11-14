@@ -5,6 +5,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.UploadTokenEvent;
+			import com.kaltura.edw.view.EntryRelated;
 			import com.kaltura.edw.view.window.EditRelatedFileWindow;
 			import com.kaltura.edw.vo.RelatedFileVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
@@ -14,7 +15,6 @@
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			
-			public static const FILE_DELETED:String = "fileDeleted";
 			
 			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
 			
@@ -84,12 +84,16 @@
 			}
 			
 			private function editFile():void {
-				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {				
-					var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
-					editWindow.file = _relatedVo.file;
-					PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
-					PopUpManager.centerPopUp(editWindow);
+				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {		
+					dispatchEvent(new Event(EntryRelated.EDIT_FILE, true));
 				}
+//				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {				
+//					var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
+//					editWindow.file = _relatedVo.file;
+//					editWindow.controller = controller;
+//					PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
+//					PopUpManager.centerPopUp(editWindow);
+//				}
 			}
 			
 			private function downloadFile():void {
@@ -101,7 +105,7 @@
 
 		
 			private function removeFile():void {
-				dispatchEvent(new Event(FILE_DELETED, true));
+				dispatchEvent(new Event(EntryRelated.FILE_DELETED, true));
 			}
 			
 

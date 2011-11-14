@@ -1,6 +1,6 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.commands.uploadToken.UploadTokenAdd;
 	import com.kaltura.commands.uploadToken.UploadTokenUpload;
 	import com.kaltura.events.KalturaEvent;
@@ -9,6 +9,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.vo.KalturaUploadToken;
 	
 	import flash.net.FileReference;
+	import com.kaltura.edw.control.commands.KedCommand;
 
 	/**
 	 * This class will start an upload using uploadToken service. will save the token
@@ -16,12 +17,12 @@ package com.kaltura.edw.control.commands
 	 * @author Michal
 	 * 
 	 */	
-	public class UploadTokenCommand extends KalturaCommand
+	public class UploadTokenCommand extends KedCommand
 	{
 		private var _fr:FileReference;
 		private var _asset:AssetVO;
 		
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			_fr = (event as UploadTokenEvent).fileReference
 			_asset = (event as UploadTokenEvent).assetVo;
@@ -31,7 +32,7 @@ package com.kaltura.edw.control.commands
 			
 			uploadTokenAdd.addEventListener(KalturaEvent.COMPLETE, uploadTokenAddHandler);
 			uploadTokenAdd.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(uploadTokenAdd);
+			_client.post(uploadTokenAdd);
 		}
 		
 		private function uploadTokenAddHandler(event:KalturaEvent):void {
@@ -44,7 +45,7 @@ package com.kaltura.edw.control.commands
 				uploadTokenUpload.useTimeout = false;
 				uploadTokenUpload.addEventListener(KalturaEvent.FAILED, fault);
 				
-				_model.context.kc.post(uploadTokenUpload);
+				_client.post(uploadTokenUpload);
 			}
 			_model.decreaseLoadCounter();
 		}

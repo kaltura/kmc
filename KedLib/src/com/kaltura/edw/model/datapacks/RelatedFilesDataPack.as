@@ -1,0 +1,18 @@
+package com.kaltura.edw.model.datapacks
+{
+	import com.kaltura.kmvc.model.IDataPack;
+	
+	import mx.collections.ArrayCollection;
+	
+	[Bindable]
+	/**
+	 * information about files associated with the current entry
+	 * */
+	public class RelatedFilesDataPack implements IDataPack {
+		
+		/**
+		 * ArrayCollection of RelatedFileVO  
+		 */		
+		public var relatedFilesAC:ArrayCollection;
+	}
+}

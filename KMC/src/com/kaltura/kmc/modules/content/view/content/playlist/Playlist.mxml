@@ -7,7 +7,7 @@
 		 xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
 		 creationComplete="onCreationComplete()"
-		 verticalScrollPolicy="off" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et="com.kaltura.edw.view.et.*" >
+		 verticalScrollPolicy="off" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:et1="com.kaltura.edw.components.et.*" >
 
 	<mx:Script>
 		<![CDATA[
@@ -17,19 +17,27 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.edw.control.events.SearchEvent;
-			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
+			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.model.types.WindowsStates;
-			import com.kaltura.kmc.modules.content.view.content.IContentPanel;
 			import com.kaltura.edw.vo.ListableVo;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
+			import com.kaltura.kmc.modules.content.events.SetListableEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.view.content.IContentPanel;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			
 			import mx.collections.ArrayCollection;
@@ -207,11 +215,11 @@
 				if (_orderBy)
 					_listableVo.filterVo.orderBy = _orderBy;
 				// save the new listable vo
-				var cgEvent:SetCurrentListableEvent = new SetCurrentListableEvent(SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL,
+				var cgEvent:SetListableEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL,
 					_listableVo);
 				cgEvent.dispatch();
 				// start search
-				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _listableVo);
+				var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _listableVo);
 				searchEvent.dispatch();
 			}
 
@@ -272,19 +280,19 @@
 
 
 			private function addManualPlaylist():void {
-				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
+				var kmvce:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY,
 															new KalturaBaseEntry());
-				cgEvent.dispatch();
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+				KedController.getInstance().dispatch(kmvce);
+				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
 				cgEvent.dispatch();
 			}
 
 
 			private function addRuleBasedPlaylist():void {
-				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
+				var kmvce:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY,
 															new KalturaBaseEntry());
-				cgEvent.dispatch();
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+				KedController.getInstance().dispatch(kmvce);
+				var cgEvent:CairngormEvent  = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
 				cgEvent.dispatch();
 			}
 
@@ -462,6 +470,49 @@
 			public function get pager():Pager {
 				return _pager;
 			}
+
+			protected function playlistTable_itemClickHandler(event:EntryTableEvent):void {
+				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, playlistTable.selectedItems);
+				cgEvent.dispatch();
+			}
+
+			protected function entryTable_showDetailsHandler(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+				var cgEvent:CairngormEvent;
+				var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (playlistTable.dataProvider as ArrayCollection).getItemIndex(entry));
+				KedController.getInstance().dispatchEvent(kEvent);
+//				if (entry is KalturaPlaylist) {
+					//switch manual / rule base
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
+						// manual list
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+						cgEvent.dispatch();
+					}
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+						cgEvent.dispatch();
+					}
+//				}
+//				else {
+//					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW);
+//					cgEvent.dispatch();
+//				}
+			}
+			
+			private function preview(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry; 
+				var cgEvent:KMCEntryEvent;
+				if (entry is KalturaPlaylist)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaPlaylist);
+				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaBaseEntry);
+				else {
+					trace("Error: no PlaylistVO nor EntryVO");
+					return;
+				}
+				
+				cgEvent.dispatch();
+			}
 		]]>
 	</mx:Script>
 	<mx:HBox>
@@ -505,11 +556,14 @@
 
 		<mx:VBox width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
 			<mx:HBox width="100%" height="100%" id="entryTableContainer">
-				<et:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
-								 orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
-								 selectedEntry="{selectedEntry}" showEmbed="{showEmbed}"
-								 creationComplete="{removeColums()}" dragEnabled="false" dragMoveEnabled="false"
-								 dropEnabled="false" isPlaylistEntries="true"/>
+				<et1:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
+							   selectionChanged="playlistTable_itemClickHandler(event)"
+							   showDetails="entryTable_showDetailsHandler(event)"
+							   openPreview="preview(event)"
+							   orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
+							   selectedEntry="{selectedEntry}" showEmbed="{showEmbed}"
+							   creationComplete="{removeColums()}" dragEnabled="false" dragMoveEnabled="false"
+							   dropEnabled="false" />
 			</mx:HBox>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"/>

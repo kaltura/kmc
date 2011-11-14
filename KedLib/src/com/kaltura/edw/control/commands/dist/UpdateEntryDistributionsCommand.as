@@ -1,25 +1,25 @@
 package com.kaltura.edw.control.commands.dist
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.entryDistribution.EntryDistributionAdd;
 	import com.kaltura.commands.entryDistribution.EntryDistributionDelete;
 	import com.kaltura.commands.entryDistribution.EntryDistributionList;
 	import com.kaltura.commands.entryDistribution.EntryDistributionSubmitAdd;
 	import com.kaltura.commands.entryDistribution.EntryDistributionSubmitDelete;
-	import com.kaltura.commands.entryDistribution.EntryDistributionUpdate;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.EntryDistributionEvent;
 	import com.kaltura.edw.model.EntryDistributionWithProfile;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaEntryDistributionStatus;
 	import com.kaltura.vo.KalturaEntryDistribution;
 	import com.kaltura.vo.KalturaEntryDistributionFilter;
 	import com.kaltura.vo.KalturaEntryDistributionListResponse;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class UpdateEntryDistributionsCommand extends KalturaCommand
+	public class UpdateEntryDistributionsCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void 
+		override public function execute(event:KMvCEvent):void 
 		{
 			var entryDistributionEvent:EntryDistributionEvent = event as EntryDistributionEvent;
 			var distributionsToAdd:Array = entryDistributionEvent.distributionsWithProfilesToAddArray;
@@ -77,13 +77,14 @@ package com.kaltura.edw.control.commands.dist
 			}
 			//get the new entry distributions list
 			var entryDistributionFilter:KalturaEntryDistributionFilter = new KalturaEntryDistributionFilter();
-			entryDistributionFilter.entryIdEqual = _model.entryDetailsModel.selectedEntry.id;	
+			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+			entryDistributionFilter.entryIdEqual = edp.selectedEntry.id;	
 			var listDistributions:EntryDistributionList = new EntryDistributionList(entryDistributionFilter);
 			mr.addAction(listDistributions);
 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(mr);
+			_client.post(mr);
 		}
 		
 		override public function result(data:Object):void

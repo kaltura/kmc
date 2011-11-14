@@ -1,10 +1,11 @@
 package com.kaltura.kmc.modules.content.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.playlist.PlaylistList;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.edw.vo.ListableVo;
-	import com.kaltura.commands.playlist.PlaylistList;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.types.KalturaPlaylistOrderBy;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
@@ -14,7 +15,6 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.collections.ArrayCollection;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class ListPlaylistCommand extends KalturaCommand implements ICommand, IResponder {
 		// Atar: I have no idea why we need this.
@@ -31,7 +31,7 @@ package com.kaltura.kmc.modules.content.commands {
 		 * */
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			_caller = (event as SearchEvent).listableVo;
+			_caller = (event as KMCSearchEvent).listableVo;
 
 			if (_caller == null) {
 				var pf:KalturaPlaylistFilter = new KalturaPlaylistFilter();

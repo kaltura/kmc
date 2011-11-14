@@ -1,22 +1,24 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.storageProfile.StorageProfileList;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaStorageProfileListResponse;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 
-	public class ListStorageProfilesCommand extends KalturaCommand {
+	public class ListStorageProfilesCommand extends KedCommand {
 		
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var lsp:StorageProfileList = new StorageProfileList();
 			lsp.addEventListener(KalturaEvent.COMPLETE, result);
 			lsp.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(lsp);
+			_client.post(lsp);
 		}
 		
 		
@@ -32,7 +34,7 @@ package com.kaltura.edw.control.commands
 			
 			// result
 			else {
-				_model.entryDetailsModel.storageProfiles = new ArrayCollection((event.data as KalturaStorageProfileListResponse).objects);
+				(_model.getDataPack(FlavorsDataPack) as FlavorsDataPack).storageProfiles = new ArrayCollection((event.data as KalturaStorageProfileListResponse).objects);
 			}	
 			_model.decreaseLoadCounter();
 		}

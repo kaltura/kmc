@@ -14,89 +14,123 @@
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
-			import com.kaltura.edw.model.EntryDetailsModel;
 			import com.kaltura.edw.model.EntryDistributionWithProfile;
-			import com.kaltura.edw.vo.ThumbnailWithDimensions;
-			import com.kaltura.edw.view.EntryDistribution;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
-			import com.kaltura.types.KalturaEntryDistributionStatus;
+			import com.kaltura.edw.vo.ThumbnailWithDimensions;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.utils.pager.Pager;
-			import com.kaltura.vo.KalturaDistributionProfile;
+			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaDistributionThumbDimensions;
 			import com.kaltura.vo.KalturaEntryDistribution;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			import mx.core.UITextField;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
-			import mx.managers.PopUpManager;
-			import mx.validators.ValidationResult;
 
+			public static const GET_SENT_DATA:String = "getSentData";
+			public static const GET_RETURNED_DATA:String = "getReturnedData";
+			public static const UPDATE_DISTRIBUTION:String = "updateDistribution";
+			
 			/**
 			 * will be sent when the window closes
 			 * */
 			public static const WINDOW_CLOSE:String = "windowClose";
+			
 			/**
 			 * maximum length for this window title
 			 * */
 			public static const MAX_TITLE_LENGTH:int = 85;
+			
 			[Bindable]
 			private var _entryDis:EntryDistributionWithProfile;
-			private var _entryDetailsModel:EntryDetailsModel;
+			
+			private var _model:DistributionDataPack;
+			
 			[Bindable]
 			private var _destinationName:String;
+			
 			private var _timeManager:DateFieldWithTimeStepperLogic;
-			//array of arrays containing thumbnails
+
 			[Bindable]
+			/**
+			 * array of arrays containing thumbnails
+			 * */
 			private var _thumbsArray:ArrayCollection = new ArrayCollection();
+			
 			[Bindable]
 			private var _flavorAssets:ArrayCollection = new ArrayCollection();
+			
 			[Bindable]
+			/**
+			 * name of selected entry
+			 * */
 			private var _name:String;
+			
 			[Bindable]
+			/**
+			 * description of selected entry
+			 * */
 			private var _description:String;
+			
 			[Bindable]
+			/**
+			 * tags of selected entry
+			 * */
 			private var _tags:String;
+			
 			private var _isDirty:Boolean = false;
 			private var _oldStartDate:Number;
 			private var _oldEndDate:Number;
 			private var _oldThumbs:String;
+			
 			[Bindable]
 			private var _requestXMLAvailable:Boolean;
+			
 			[Bindable]
 			private var _responseXMLAvailable:Boolean;
-			//for roles and permissions: is where permission exists
+			
 			[Bindable]
+			/**
+			 * for roles and permissions: is where permission exists
+			 * */
 			public var enableChanges:Boolean = true;
-			//for roles and permissions: is where permission exists
+
 			[Bindable]
+			/**
+			 * for roles and permissions: is where permission exists
+			 * */
 			public var enableXMLViews:Boolean = true;
+			
 			public static const MAX_THUMBS:int = 5;
+			
 			public static const MAX_HEIGHT:int = 650;
+			
 			[Bindable]
 			private var _pager:Pager;
 
 
-			public function get entryDetailsModel():EntryDetailsModel {
-				return _entryDetailsModel;
-			}
+//			public function get entryDetailsModel():EntryDetailsModel {
+//				return _entryDetailsModel;
+//			}
 
 
-			public function set entryDetailsModel(value:EntryDetailsModel):void {
-				_entryDetailsModel = value;
-				_name = _entryDetailsModel.selectedEntry.name;
-				_description = _entryDetailsModel.selectedEntry.description;
-				_tags = _entryDetailsModel.selectedEntry.tags;
-				buildTitle();
-
-				BindingUtils.bindSetter(refreshFlavors, _entryDetailsModel, "flavorsLoaded");
-			}
+//			public function set entryDetailsModel(value:EntryDetailsModel):void {
+////				_model = value;
+//				_name = _model.selectedEntry.name;
+//				_description = _model.selectedEntry.description;
+//				_tags = _model.selectedEntry.tags;
+//				buildTitle();
+//
+//				BindingUtils.bindSetter(refreshFlavors, _model, "flavorsLoaded");
+//			}
 
 
 			public function get entryDis():EntryDistributionWithProfile {
@@ -110,7 +144,7 @@
 				_destinationName = _entryDis.kalturaDistributionProfile.name;
 				_requestXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitSentDataLog == KalturaNullableBoolean.TRUE_VALUE);
 				_responseXMLAvailable = (_entryDis.kalturaEntryDistribution.hasSubmitResultsLog == KalturaNullableBoolean.TRUE_VALUE);
-				buildTitle();
+				buildTitle(_name);
 				buildThumbsArray();
 				buildFlavorsAssets();
 			}
@@ -139,14 +173,14 @@
 			 * */
 			private function buildThumbsArray():void {
 				_thumbsArray = new ArrayCollection();
-				var existingThumbs:Array = _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+				var existingThumbs:Array = _model.distributionProfileInfo.thumbnailDimensionsArray;
 				var requiredDim:Array = _entryDis.kalturaDistributionProfile.requiredThumbDimensions;
 				var thumbsIds:String = _entryDis.kalturaEntryDistribution.thumbAssetIds;
 				var thumbsIdsArray:Array;
 				if (thumbsIds)
 					thumbsIdsArray = thumbsIds.split(",");
 
-				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray);
+				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _model.distributionProfileInfo.thumbnailDimensionsArray);
 				//first check all thumbs with  required dimensions
 				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
 					var isArray:Boolean = false;
@@ -266,6 +300,19 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "distributionDetailsWindow");
 				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
 				setSchedulerData();
+				
+				_model = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
+				var selectedEntry:KalturaBaseEntry = (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+				_name = selectedEntry.name;
+//				_name = _model.selectedEntry.name;
+				_description = selectedEntry.description;
+//				_description = _model.selectedEntry.description;
+				_tags = selectedEntry.tags;
+//				_tags = _model.selectedEntry.tags;
+				buildTitle(_name);
+				
+				BindingUtils.bindSetter(refreshFlavors, _model, "flavorsLoaded");
+
 			}
 
 
@@ -282,7 +329,7 @@
 			 * */
 			private function buildFlavorsAssets():void {
 				_flavorAssets = new ArrayCollection();
-				var entryFlavors:ArrayCollection = _entryDetailsModel.flavorParamsAndAssetsByEntryId;
+				var entryFlavors:ArrayCollection = _model.flavorParamsAndAssetsByEntryId;
 				var requiredFlavors:String = _entryDis.kalturaDistributionProfile.requiredFlavorParamsIds;
 				var requiredFlavorsArray:Array;
 				if (requiredFlavors)
@@ -317,10 +364,10 @@
 			/**
 			 * build the string for the window title
 			 * */
-			private function buildTitle():void {
-				if (_destinationName && _entryDetailsModel) {
+			private function buildTitle(entryName:String):void {
+				if (_destinationName && _model) {
 					var title:String = resourceManager.getString('drilldown', 'editEntry') + " - " +
-						_entryDetailsModel.selectedEntry.name + " - " + _destinationName + " " +
+						entryName + " - " + _destinationName + " " +
 						resourceManager.getString('drilldown', 'distributionDetails');
 					if (title.length > MAX_TITLE_LENGTH) {
 						title = title.substr(0, MAX_TITLE_LENGTH) + "...";
@@ -478,8 +525,12 @@
 				if (_isDirty) {
 					entryDis.kalturaEntryDistribution.sunrise = getTimeInSeconds(startDateField, startDateHour);
 					entryDis.kalturaEntryDistribution.sunset = getTimeInSeconds(endDateField, endDateHour);
-					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, entryDis.kalturaEntryDistribution);
-					updateEntryDistribution.dispatch();
+					
+					dispatchEvent(new Event(DistributionDetailsWindow.UPDATE_DISTRIBUTION));
+					
+//					var updateEntryDistribution:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, entryDis.kalturaEntryDistribution);
+//					updateEntryDistribution.dispatch();
+					
 					setOldData(entryDis.kalturaEntryDistribution);
 					_isDirty = false;
 				}
@@ -494,9 +545,11 @@
 			 * otherwise for response XML
 			 * */
 			private function getXML(getSentData:Boolean):void {
-				var type:String = getSentData ? EntryDistributionEvent.GET_SENT_DATA : EntryDistributionEvent.GET_RETURNED_DATA;
-				var requestXML:EntryDistributionEvent = new EntryDistributionEvent(type, null, null, _entryDis.kalturaEntryDistribution);
-				requestXML.dispatch();
+				var etype:String = getSentData ? DistributionDetailsWindow.GET_SENT_DATA : DistributionDetailsWindow.GET_RETURNED_DATA;
+				dispatchEvent(new Event(etype));
+				
+//				var requestXML:EntryDistributionEvent = new EntryDistributionEvent(type, null, null, _entryDis.kalturaEntryDistribution);
+//				requestXML.dispatch();
 			}
 
 
@@ -513,6 +566,12 @@
 			public function get hideColumns():String {
 				return '';
 			}
+
+			protected function flavorsTable_creationCompleteHandler(event:FlexEvent):void {
+				// hide actions column
+				hideColumns = (flavorsTable.columns.length - 1).toString();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:DateValidator id="fromDateValidator" required="false" source="{startDateField}" property="text"/>
@@ -598,8 +657,9 @@
 	<mx:HBox>
 		<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}"
 				  includeInLayout="{_flavorAssets.length==0}"/>
-		<view:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" flavorAssets="{_flavorAssets}"
-								   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"/>
+		<view:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" dataProvider="{_flavorAssets}"
+						   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"
+						   creationComplete="flavorsTable_creationCompleteHandler(event)" />
 	</mx:HBox>
 
 

@@ -1,8 +1,15 @@
 package com.kaltura.kmvc.model
 {
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.utils.getQualifiedClassName;
 
-	public class KMvCModel implements IModelLocator {
+	public class KMvCModel extends EventDispatcher implements IModelLocator {
+		
+		/**
+		 * defines the value of the type property of the loadingFlagChanged event 
+		 */		
+		public static const LOADING_FLAG_CHANGED:String = "loadingFlagChanged";
 		
 		private var _packMap:Object;
 		
@@ -10,6 +17,15 @@ package com.kaltura.kmvc.model
 			_packMap = new Object();
 		}
 		
+		/**
+		 * allows setting the values of entire datapack.
+		 * overrides the values of previously stored datapack. 
+		 * @param dataPack
+		 */		
+		public function setDataPack(dataPack:IDataPack):void {
+			var className:String = getQualifiedClassName(dataPack);
+			_packMap[className] = dataPack;
+		}
 		
 		/**
 		 * Returns the single Data Pack that was created from the specified class.
@@ -67,6 +83,48 @@ package com.kaltura.kmvc.model
 				
 			}
 			return _instance;
+		}
+		
+		
+		/**
+		 * number of items currently loading
+		 * */
+		private var _loadingCounter:int = 0;
+		
+		/**
+		 * increase the counter of loading items 
+		 */		
+		public function increaseLoadCounter():void {
+			++_loadingCounter;
+			if (_loadingCounter == 1) {
+//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+//					edm.loadingFlag = true;
+//				}
+				dispatchEvent(new Event(KMvCModel.LOADING_FLAG_CHANGED));
+			}
+		}
+		
+		
+		/**
+		 * decrease the counter of loading items 
+		 */
+		public function decreaseLoadCounter():void {
+			--_loadingCounter;
+			if (_loadingCounter == 0) {
+//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
+//					edm.loadingFlag = false;
+//				}
+				dispatchEvent(new Event(KMvCModel.LOADING_FLAG_CHANGED));
+			}
+		}
+		
+		
+		[Bindable(event="loadingFlagChanged")]
+		/**
+		 * is anything currently loading
+		 * */
+		public function get loadingFlag():Boolean {
+			return _loadingCounter > 0;
 		}
 	}
 }

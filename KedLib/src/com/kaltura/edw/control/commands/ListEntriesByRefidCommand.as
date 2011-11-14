@@ -1,35 +1,27 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
-	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntryFilter;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
-	import com.kaltura.vo.KalturaDocumentEntry;
-	import com.kaltura.vo.KalturaMediaEntry;
-	import com.kaltura.vo.KalturaMixEntry;
 
-	public class ListEntriesByRefidCommand extends KalturaCommand {
+	public class ListEntriesByRefidCommand extends KedCommand {
 		
 		/**
 		 * @inheritDoc
 		 */		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
-//			var refid:String = (event as EntryEvent).entryVo.referenceId;
-//			if (refid == KalturaClient.NULL_STRING) { 
-//				refid = '';
-//			}
 			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
-			f.referenceIdEqual = (event as EntryEvent).entryVo.referenceId;
+			f.referenceIdEqual = (event as KedEntryEvent).entryVo.referenceId;
 			var getMediaList:BaseEntryList = new BaseEntryList(f);
 			getMediaList.addEventListener(KalturaEvent.COMPLETE, result);
 			getMediaList.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getMediaList);	  
+			_client.post(getMediaList);	  
 		}
 		
 		/**
@@ -38,8 +30,9 @@ package com.kaltura.edw.control.commands
 		override public function result(data:Object):void
 		{
 			super.result(data);
-			var recivedData:KalturaBaseEntryListResponse = KalturaBaseEntryListResponse(data.data);
-			_model.entryDetailsModel.entriesWSameRefidAsSelected = recivedData.objects;
+			var recievedData:KalturaBaseEntryListResponse = KalturaBaseEntryListResponse(data.data);
+			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+			edp.entriesWSameRefidAsSelected = recievedData.objects;
 			_model.decreaseLoadCounter();
 		}
 	}

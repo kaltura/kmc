@@ -1,54 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
 	 entry drill-down screen.
-	 @internal
-	 save process is as follows (calls in curly brackets are optional):
-	 submitChanges(closeAfterSave) => validate() => {entriesListChanged()} =>
-	 saveCuepoints => saveEntryDetails()
 -->
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+<navigation:ChangeableDataViewer xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							height="595" width="930" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
-							xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
-							xmlns:ed="com.kaltura.edw.view.*"
-							xmlns:adobe="http://www.adobe.com/2006/fc" creationComplete="{onWindowCreationComplete()}"
-							xmlns:window="com.kaltura.kmc.modules.content.view.window.*">
-	<!--enabled="{!entryDetailsModel.loadingFlag}"-->
+							xmlns:navigation="com.kaltura.edw.business.*"
+							xmlns:ed="com.kaltura.edw.view.*" xmlns:adobe="http://www.adobe.com/2006/fc"
+							creationComplete="{onWindowCreationComplete()}"
+							xmlns:window="com.kaltura.kmc.modules.content.view.window.*"
+							xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
 		[ResourceBundle("drilldown")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.KalturaClient;
-			import com.kaltura.analytics.GoogleAnalyticsConsts;
-			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.analytics.*;
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.business.KedJSGate;
-			import com.kaltura.edw.business.MetadataDataParser;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
-			import com.kaltura.edw.events.GeneralNonCairngormEvent;
-			import com.kaltura.edw.model.Context;
-			import com.kaltura.edw.model.DropFolderModel;
-			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.events.*;
 			import com.kaltura.edw.model.FilterModel;
-			import com.kaltura.edw.view.customData.SingleCustomData;
-			import com.kaltura.edw.vo.EntryDetailsValidationError;
-			import com.kaltura.edw.vo.EntryMetadataDataVO;
+			import com.kaltura.edw.model.datapacks.*;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
-			import com.kaltura.edw.control.events.SetRefreshRequiredEvent;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.KArrayUtil;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.utils.SoManager;
-			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAsset;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
@@ -62,19 +47,114 @@
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.PropertyChangeEvent;
+			import mx.events.PropertyChangeEventKind;
 			import mx.resources.ResourceManager;
 
+
+			// ===================================================================
+			// Events:
+			// ===================================================================
+
 			/**
-			 * the string to dispatch on help events so KMC can interpret them 
+			 * the string to dispatch on help events so KMC can interpret them
 			 * */
 			public static const HELP_REQUEST:String = 'helpRequest';
 
+
+			// ===================================================================
+			// Change Watchers:
+			// ===================================================================
+
+			/**
+			 * watches when the selected entry on the model changes
+			 * */
 			private var _entryWatcher:ChangeWatcher;
+
+			/**
+			 * watch when the entry index changed
+			 * */
 			private var _entryIndexWatcher:ChangeWatcher;
+
+			/**
+			 * watch when the selected entry's status changed
+			 * (to also changed the undoTo entry status)
+			 * */
 			private var _statusWatcher:ChangeWatcher;
+
+			/**
+			 * watch selected entry's replacement status
+			 * */
 			private var _replacementWatcher:ChangeWatcher;
+
+			/**
+			 * watch replacing entry id
+			 * */
 			private var _replacingEntryWatcher:ChangeWatcher;
+
+			/**
+			 * watch loading flag
+			 * */
 			private var _uiEnabledWatcher:ChangeWatcher;
+
+			/**
+			 * a watcher for binding this.enabled to model.loadingFlag
+			 * once only.
+			 * */
+			private var _enabledWatcher:ChangeWatcher;
+
+			/**
+			 * watcher for binding
+			 * */
+			private var _sameRefidWatcher:ChangeWatcher;
+
+			// ===================================================================
+			// Data:
+			// ===================================================================
+
+			[Bindable]
+			private var _entryDp:EntryDataPack;
+
+			[Bindable]
+			private var _relatedDp:RelatedFilesDataPack = KMvCModel.getInstance().getDataPack(RelatedFilesDataPack) as RelatedFilesDataPack;
+
+			[Bindable]
+			private var _clipsDp:ClipsDataPack = KMvCModel.getInstance().getDataPack(ClipsDataPack) as ClipsDataPack;
+
+			[Bindable]
+			private var _adCuepointsDp:CuePointsDataPack = KMvCModel.getInstance().getDataPack(CuePointsDataPack) as CuePointsDataPack;
+
+			[Bindable]
+			private var _captionsDp:CaptionsDataPack = KMvCModel.getInstance().getDataPack(CaptionsDataPack) as CaptionsDataPack;
+
+			[Bindable]
+			private var _distDp:DistributionDataPack = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
+
+			private var _customDataDp:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
+
+			[Bindable]
+			private var _permissionsDp:PermissionsDataPack = KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack;
+
+			[Bindable]
+			/**
+			 * entry details window data
+			 * */
+			public var entryDetailsModel:KMvCModel;
+
+			[Bindable]
+			/**
+			 * filter data
+			 * */
+			public var filterModel:FilterModel;
+
+			[Bindable]
+			/**
+			 * application context
+			 * */
+			public var context:ContextDataPack;
+
+			// ===================================================================
+			// 
+			// ===================================================================
 
 			[Bindable]
 			/**
@@ -88,48 +168,9 @@
 
 			[Bindable]
 			/**
-			 * indicates the current entry is a livestream entry
-			 * */
-			private var _isLiveStream:Boolean;
-
-			private var _maxNumCategories:int;
-
-			[Bindable]
-			/**
 			 * landingPage of current partner
 			 * */
 			public var landingPage:String;
-
-			/**
-			 * if somthing that we can't track changes happen
-			 * (like mix created) we need to refresh entires table after save.
-			 * */
-			private var _untrackableChangeFlag:Boolean = false;
-
-
-			[Bindable]
-			/**
-			 * entry details window data
-			 * */
-			public var entryDetailsModel:EntryDetailsModel;
-
-			[Bindable]
-			/**
-			 * drop folders data
-			 * */
-			public var dropFolderModel:DropFolderModel;
-
-			[Bindable]
-			/**
-			 * filter data
-			 * */
-			public var filterModel:FilterModel;
-
-			[Bindable]
-			/**
-			 * application context
-			 * */
-			public var context:Context;
 
 			/**
 			 * this js function will be triggered to show preview
@@ -143,21 +184,18 @@
 			 * */
 			public var showEmbedCode:Boolean = true;
 
+			[Bindable]
+			/**
+			 * whether we should load roughcuts
+			 * */
+			public var loadRoughcuts:Boolean = true;
+
+
 			/**
 			 * creation of new entry / edit of existing one
 			 * */
 			public var isNewEntry:Boolean = true;
 
-			/**
-			 * a watcher for binding this.enabled to model.loadingFlag
-			 * once only.
-			 * */
-			private var _enabledWatcher:ChangeWatcher;
-
-			/**
-			 * watcher for binding
-			 * */
-			private var _sameRefidWatcher:ChangeWatcher;
 
 			[Bindable]
 			/**
@@ -166,15 +204,15 @@
 			private var _hadFirstNavigation:Boolean = false;
 
 			/**
-			 * contains list of the tabs that will be visible
+			 * list of tabs which will be visible
 			 * */
 			private var _visibleTabsAC:ArrayCollection;
 
-			[Bindable]
 			/**
-			 * whether we should load roughcuts
+			 * original tabs in initial view stack
 			 * */
-			public var loadRoughcuts:Boolean = true;
+			private var _originalTabs:Array;
+
 
 			/**
 			 * creationComplete handler finished running
@@ -182,136 +220,83 @@
 			private var _isReady:Boolean = false;
 
 			/**
-			 * all data requests had been issued (initData was triggerd on all visible tabs)
-			 * */
-			private var _dataInitialized:Boolean = false;
-
-			[Bindable]
-			/**
-			 * list of entries in current page
-			 * (entries we can navigate between using the "next" and "prev" buttons)
-			 * */
-			public var entriesAC:ArrayCollection;
-
-			private var _entryIndex:int = -1;
-
-			[Bindable]
-			/**
-			 * whether next button is available
-			 * */
-			private var _nextEnabled:Boolean = true;
-			[Bindable]
-			/**
-			 * whether previous button is available
-			 * */
-			private var _prevEnabled:Boolean;
-
-			/**
-			 * original tabs in initial view stack
-			 * */
-			private var _originalTabs:Array;
-
-			/**
 			 * should the window be closed after saving entry data
 			 * */
 			private var _closeAfterSave:Boolean;
-			[Bindable]
+
 			/**
-			 * whether to display the next/previous buttons
+			 * indicates if we should move to the next entry after save is complete. <br>
+			 * -1 means go to prev entry, 1 means go to next entry, 0 means no pending entry. 
 			 * */
-			public var showNextPrevBtns:Boolean = true;
-			/**
-			 * indicates if we should move to the next entry after save is complete
-			 * */
-			private var _nextEntryPending:Boolean = false;
-			
+			private var _nextPendingEntry:int = 0;
+
+
 			[Bindable]
-			private var _uiEnabled:Boolean = true;
-			
-			[Bindable]
-			public function get entryIndex():int {
-				return _entryIndex;
-			}
-			
+			private var _isUiEnabled:Boolean = true;
+
+
 			[Bindable]
 			public var saveEnabled:Boolean = true;
 
 
 			/**
-			 * Index of current entry within the listableVo array
+			 * stores returned events after calls to <code>validate()</code>
+			 * or <code>save()</code>.
+			 *
+			 * @internal
+			 * it is ok to use the same array because
+			 * the processes cannot happen simultanously.
 			 * */
-			public function set entryIndex(value:int):void {
-				_entryIndex = value;
-				if (entriesAC) {
-					_prevEnabled = checkNavigatableEntryExists(false, _entryIndex);
-					_nextEnabled = checkNavigatableEntryExists(true, _entryIndex);
-				}
-				else {
-					_prevEnabled = _nextEnabled = false;
-				}
-			}
-
-
-			private function checkNavigatableEntryExists(goForward:Boolean, entryInd:int):Boolean {
-				return getNavigatableEntryIndex(goForward, entryInd) != -1;
-			}
+			private var _results:Array;
 
 
 			/**
-			 * Gets the next entry index it's possible to navigate to,
-			 * or -1 if no entry in that direction can be navigated to.
-			 * */
-			private function getNavigatableEntryIndex(goForward:Boolean, entryInd:int):int {
-				var nextEntryIndex:int = goForward ? entryInd + 1 : entryInd - 1;
-				if (nextEntryIndex < 0 || nextEntryIndex > entriesAC.length - 1) {
-					return -1;
-				}
-
-				var nextEntry:KalturaMediaEntry = entriesAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
-				if (nextEntry && nextEntry.mediaType == KalturaMediaType.LIVE_STREAM_FLASH && nextEntry.status != KalturaEntryStatus.READY) {
-					return getNavigatableEntryIndex(goForward, nextEntryIndex);
-				}
-				else {
-					return nextEntryIndex;
-				}
-			}
-
-
-			/**
-			 * The entry to refer to in the current window. if not send, will refer to entryDetailsModel.selectedEntry
+			 * The entry to refer to in the current window.
+			 * refers to entryDetailsModel.selectedEntry
 			 * */
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
 
-
-			[Bindable]
-			/**
-			 * @private
-			 */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value && value != _selectedEntry) {
-					//if the given entry is a different entry
+					//if the given entry is a different entry than the current one
 					var isDifferentEntry:Boolean = (_selectedEntry ? value.id != _selectedEntry.id : true);
+					
+					clearPanels();
+					
 					_selectedEntry = value;
 					_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
+					
+					_selectedEntry.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
+					
 					setWindowTitle();
+					
+					if (_statusWatcher) {
+						_statusWatcher.unwatch();
+					}
 					_statusWatcher = BindingUtils.bindSetter(onStatusChange, selectedEntry, "status");
+					
+					if (_replacementWatcher) {
+						_replacementWatcher.unwatch();
+					}
 					_replacementWatcher = BindingUtils.bindSetter(onReplacementStatusChange, selectedEntry, "replacementStatus");
+					
+					if (_replacingEntryWatcher) {
+						_replacingEntryWatcher.unwatch();
+					}
 					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, selectedEntry, "replacingEntryId");
 
-					if (_undoToEntry is KalturaLiveStreamAdminEntry) {
-						_isLiveStream = true;
-					} 
-					else {
-						_isLiveStream = false;
-					}
-
 					if (_isReady) {
-						if (!isDifferentEntry)
-							setTimeout(reinitTabs, 100);
-						else
-							setTabsByEntryType(isDifferentEntry);
+						if (!isDifferentEntry) {
+							// To fix cuepoints synchronization issue: in case we are 
+							// still editing the same entry - re-init tabs data after timeout
+							setTimeout(initTabsData, 100);
+						}
+						else {
+							setTabsByEntryType();
+							initTabsData();
+						}
 					}
 				}
 			}
@@ -321,12 +306,33 @@
 				return _visibleTabsAC;
 			}
 
-
 			public function set visibleTabsAC(value:ArrayCollection):void {
 				_visibleTabsAC = value;
 				if (_isReady) {
 					setVisibleTabs();
 					initTabs();
+				}
+			}
+			
+			/**
+			 * after save, copy new attributes to _undoToEntry
+			 * */
+			private function copyToUndoTo(e:PropertyChangeEvent):void {
+				if (e.kind == PropertyChangeEventKind.UPDATE) {
+					_undoToEntry[e.property] = e.newValue;
+				}
+			}
+			
+			/**
+			 * make panels ready for new entry
+			 * */
+			private function clearPanels():void {
+				var panel:IDrilldownPanel;
+				for (var i:int = 0; i < viewStack.numChildren; i++) {
+					panel = viewStack.getChildAt(i) as IDrilldownPanel;
+					if (panel) {
+						panel.clear();
+					}
 				}
 			}
 
@@ -360,7 +366,7 @@
 						anchor = 'entry_content';
 						break;
 					case liveStream:
-						anchor = 'section11';	// also in liveStreaming panel
+						anchor = 'section11'; // also in liveStreaming panel
 						break;
 					case customData:
 						anchor = 'entry_customdata';
@@ -380,40 +386,11 @@
 					case entryClips:
 						anchor = 'entry_clips';
 						break;
-					
+
 				}
 				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
 				e.data = anchor;
 				dispatchEvent(e);
-			}
-
-
-
-//			/**
-//			 * reorder tabs and show only relevant tabs for normal (not mix) entries
-//			 * */
-//			private function showNormalSetup():void {
-//				// for mix/content tab, show "mixesTab" header
-//				contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
-//			}
-
-//			/**
-//			 * reorder tabs and show only relevant tabs for mix entries
-//			 * */
-//			private function showMixSetup():void {
-//				// for mix/content tab, show "mixesTab" header
-//				contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
-//			}
-
-			/**
-			 * removes given tabs
-			 * */
-			private function removeTab(tabsToRemove:Array):void {
-				for each (var tab:DisplayObject in tabsToRemove) {
-					if (tab.parent is ViewStack) {
-						viewStack.removeChild(tab);
-					}
-				}
 			}
 
 
@@ -442,7 +419,7 @@
 
 				title = resourceManager.getString('drilldown', 'editEntry') + ' - ';
 				if (_undoToEntry.replacedEntryId) {
-					title += entryDetailsModel.replacedEntryName + ' (' + resourceManager.getString('drilldown', 'assetReplacement') + ')';
+					title += _entryDp.replacedEntryName + ' (' + resourceManager.getString('drilldown', 'assetReplacement') + ')';
 
 				}
 				else {
@@ -453,7 +430,7 @@
 
 
 			/**
-			 *status on selected entry has changed
+			 * status on selected entry has changed
 			 * */
 			private function onStatusChange(value:String):void {
 				if (_undoToEntry) {
@@ -475,7 +452,7 @@
 
 
 			/**
-			 *replaceing entry on selected entry has changed
+			 * replaceing entry on selected entry has changed
 			 * */
 			private function onReplacingEntryChange(value:String):void {
 				if (_undoToEntry) {
@@ -485,26 +462,28 @@
 
 
 			private function onWindowCreationComplete():void {
+				_entryDp = entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack;
+				// let commands dispatch events from the current window
+				(entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = this;
+
 				if (!_entryWatcher)
-					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", entryDetailsModel, "selectedEntry");
+					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", _entryDp, "selectedEntry");
 				if (!_entryIndexWatcher)
-					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", entryDetailsModel, "selectedIndex");
-				
-				ads.addEventListener(EntryAds.CUE_POINTS_SAVED, saveEntryDetails);
-				
-				if (! _uiEnabledWatcher){
+					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", _entryDp, "selectedIndex");
+
+				if (!_uiEnabledWatcher) {
 					_uiEnabledWatcher = BindingUtils.bindSetter(setUIEnbaled, entryDetailsModel, "loadingFlag");
 				}
-				// mixes:
-				/* if (!_undoToEntry is KalturaMixEntry) {
-				   partsTable.text = resourceManager.getString('drilldown', 'usageInMixes');
-				 } */
-
+				
+				//
 				_originalTabs = new Array();
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
 					_originalTabs.push(viewStack.getChildAt(i));
 				}
-				setTabsByEntryType(true);
+				setTabsByEntryType();
+				
+				initTabs();
+				initTabsData();
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				if (entryMetaData.parent == viewStack)
@@ -512,19 +491,20 @@
 				_isReady = true;
 
 			}
-			
-			private function setUIEnbaled(value:Boolean):void{
-				_uiEnabled = ! value;
+
+
+			private function setUIEnbaled(value:Boolean):void {
+				_isUiEnabled = !value;
 			}
 
-
+			
 			/**
-			 * To fix cuepoints synchronization issue:
-			 * in case we are still editing the same entry - will re-init tabs after
-			 * timeout passed
+			 * removes given tabs from the given tabs list
 			 * */
-			private function reinitTabs():void {
-				setTabsByEntryType(false);
+			private function removeTabs(tabsToRemove:Array, tabsList:Array):void {
+				for each (var tab:UIComponent in tabsToRemove) {
+					KArrayUtil.removeItemFromArray(tab, tabsList);
+				}
 			}
 
 
@@ -532,85 +512,92 @@
 			 * if entryChanged will reset all tabs according to entry type
 			 * else, will just reload tabs data
 			 * */
-			private function setTabsByEntryType(entryChanged:Boolean):void {
-				_dataInitialized = false;
-
-				if (entryChanged) {
-					//reset viewStack to its starting point
-					for each (var tab:DisplayObject in _originalTabs) {
-						viewStack.addChild(tab);
-					}
-					// show correct panels according to entry type
-					// live entry
-					if (_isLiveStream) {
-						removeTab([entryAssets, contentTab]);
-					}
-					else if (selectedEntry is KalturaMixEntry) {
-						//this is a mix
-						contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
-						removeTab([entryAssets, liveStream, ads]);
-					}
-					else {
-						// this entry is a regular video/image/audio
-						contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
-						removeTab([liveStream]);
-						//remove redundant tabs in image and audio cases
-						if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
-							removeTab([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads, entryRelated]);
-						}
-						else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
-							removeTab([entryDistribution]);
+			private function setTabsByEntryType():void {
+				// get a list to work on
+				var tabs:Array = _originalTabs.concat();
+				var tab:UIComponent;
+				// if tabs list was provided, start by leaving only the required tabs
+				if (_visibleTabsAC) {
+					for (var i:int = tabs.length - 1; i >= 0; i--) {
+						tab = tabs[i] as UIComponent;
+						if (!_visibleTabsAC.contains(tab.id)) {
+							tabs.splice(i, 1);
 						}
 					}
-
-					// if uiconf requires removing content tab
-					if (!entryDetailsModel.showMixesTab && contentTab.parent == viewStack) {
-						removeTab([contentTab]);
+				}
+				// remove tabs which aren't relevant to the different entry types
+				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
+					removeTabs([entryAssets, contentTab, ads, entryCaptions, entryDistribution], tabs);
+				}
+				else if (selectedEntry is KalturaMixEntry) {
+					//this is a mix
+					contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
+					removeTabs([entryAssets, liveStream, ads, entryDistribution], tabs);
+				}
+				else {
+					// this entry is a regular video/image/audio
+					contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
+					removeTabs([liveStream], tabs);
+					//remove redundant tabs in image and audio cases
+					if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
+						removeTabs([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads, entryRelated], tabs);
 					}
-
-					var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
-					for each (var subtabName:String in tabsToHide) {
-						if (viewStack.getChildByName(subtabName)) {
-							viewStack.removeChild(this[subtabName]);
-						}
+					else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
+						removeTabs([entryDistribution], tabs);
 					}
+				}
+				
+				// if uiconf requires removing content tab
+				var cdp:ContentDataPack = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
+				if (!cdp.showMixesTab) {
+					removeTabs([contentTab], tabs);
+				}
 
-					
-					//adds custom data profiles
-					if (customData.parent is ViewStack) {
+				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
+				var noPermissionTabs:Array = new Array();
+				for each (var subtabName:String in tabsToHide) {
+					noPermissionTabs.push(this[subtabName]);
+				}
+				removeTabs(noPermissionTabs, tabs);
+
+				//adds custom data profiles
+				for each (tab in tabs) {
+					if (tab == customData) {
 						if (filterModel.enableCustomData) {
 							if (filterModel.metadataProfiles && filterModel.metadataProfiles.length > 0) {
-								entryDetailsModel.metadataInfoArray = new ArrayCollection();
+								_customDataDp.metadataInfoArray = new ArrayCollection();
 								customData.buildProfiles(filterModel.metadataProfiles, filterModel.formBuilders);
 							}
 						}
 						//if none of the profiles contain fields (the only child is the navigation hbox)
 						if (customData.profilesVBox.numChildren == 0) {
-							removeTab([customData]);
-						}
+							removeTabs([customData], tabs);
+						}	
+						break;
 					}
-					
-					viewStack.selectedIndex = dtn.selectedIndex = 0;
 				}
-
-				
-				if (_visibleTabsAC) {
-					setVisibleTabs();
-				}
-				
-				initTabs();
+				showTabs(tabs);
 			}
-
-
+			
+			
 			/**
-			 * remove tabs according to uiconf configuration
+			 * add the given tabs to the viewstack while removing any other tabs
+			 * @param tabs	array with tab references
 			 * */
-			private function hideTabsFromUiconf():void {
-				if (!entryDetailsModel.showMixesTab && contentTab.parent == viewStack) {
-					viewStack.removeChild(contentTab);
+			private function showTabs(tabs:Array):void {
+				var tabsAC:ArrayCollection = new ArrayCollection(tabs);
+				for each (var tab:UIComponent in _originalTabs) {
+					if (tabsAC.contains(tab)) {
+						// move to top of stack
+						viewStack.addChild(tab);
+					}
+					else if (tab.parent == viewStack) {
+						// not required, remove if exists
+						viewStack.removeChild(tab);
+					}
 				}
+				viewStack.selectedIndex = dtn.selectedIndex = 0;
 			}
-
 
 
 			/**
@@ -620,7 +607,8 @@
 				//TODO eliminate, use the function triggered in Content.mxml
 				if (openPlayerFunc) {
 					var html5Compatible:Boolean = (_undoToEntry is KalturaMediaEntry && (_undoToEntry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO) ? true : false;
-					KedJSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, allFlavorAssets(entryDetailsModel.flavorParamsAndAssetsByEntryId),
+					var ddp:DistributionDataPack = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
+					KedJSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, allFlavorAssets(ddp.flavorParamsAndAssetsByEntryId),
 						html5Compatible);
 				}
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
@@ -654,17 +642,16 @@
 			 * */
 			private function newEntryQuestionHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
-					if (checkDataChanged())
-						validate();
+					submitChanges(true);
 					//a new entry was added so we should refresh
-					var setRefresh:SetRefreshRequiredEvent = new SetRefreshRequiredEvent(SetRefreshRequiredEvent.SET_REFRESH_REQUIRED, true);
-					setRefresh.dispatch();
+					/* (entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher. */
+					dispatchEvent(new KedDataEvent(KedDataEvent.ENTRY_UPDATED));
 				}
 				else {
-					var deleteEntryEvent:EntryEvent = new EntryEvent(EntryEvent.DELETE_ENTRY, _undoToEntry, _undoToEntry.id);
-					deleteEntryEvent.dispatch();
+					// delete the entry we created
+					var deleteEntryEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.DELETE_ENTRY, _undoToEntry, _undoToEntry.id);
+					edwController.dispatch(deleteEntryEvent);
 				}
-
 				removeMe();
 			}
 
@@ -676,15 +663,13 @@
 				if (isNewEntry) {
 					Alert.show(resourceManager.getString('drilldown', 'saveNoMediaEntryQ'), resourceManager.getString('drilldown', 'save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
 				}
+				else if (isDataChanged()) {
+					// discard changes?
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
+				}
 				else {
-					if (checkDataChanged()) {
-						// had change, ask for save
-						Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
-					}
-					else {
-						// remove window
-						removeMe();
-					}
+					// remove window
+					removeMe();
 				}
 			}
 
@@ -692,81 +677,53 @@
 			/**
 			 * checks if any data has changed. returns true if entry was changed, otherwise false
 			 * */
-			private function checkDataChanged():Boolean {
-				var metadataChanged:Boolean = false;
-				if (filterModel.enableCustomData && filterModel.metadataProfiles && entryDetailsModel.metadataInfoArray && entryDetailsModel.metadataInfoArray.length) {
-					for (var i:int = 0; i < filterModel.metadataProfiles.length; i++) {
-						var metadataInfo:EntryMetadataDataVO = entryDetailsModel.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
-						var metadataProfile:KMCMetadataProfileVO = filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
-
-						if (metadataProfile && metadataProfile.profile && metadataInfo) {
-							var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, metadataProfile);
-							if (metadataInfo.metadata) {
-								var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-								if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
-									metadataChanged = true;
-								}
-							}
-							//new metadata was inserted
-							else if (newMetadataXML.children().length() > 0) {
-								metadataChanged = true;
-							}
-						}
+			private function isDataChanged():Boolean {
+				var result:Boolean = false;
+				var panel:IDrilldownPanel;
+				for (var i:int = 0; i < viewStack.numChildren; i++) {
+					if (viewStack.getChildAt(i) is IDrilldownPanel) {
+						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						result ||= panel.isChanged();
+						// if one panel is changed we have a change, no need to keep checking.
+						if (result)
+							break;
 					}
 				}
-
-				var otherChanged:Boolean = false;
-				if (entryCaptions.parent is ViewStack)
-					otherChanged = entryCaptions.wasChanged();
-				if (entryRelated.parent is ViewStack)
-					otherChanged = otherChanged || entryRelated.wasChanged();
-				if (ads.parent is ViewStack)
-					otherChanged = otherChanged || ads.wasChanged();
-
-				return (!ObjectUtil.compareObjects(selectedEntry, _undoToEntry) || metadataChanged || entrySch.wasChanged() || otherChanged)
+//				if (!result) {
+//					// none of the panels declared a change, see if the entry itself has changed
+//					result = !ObjectUtil.compareObjects(selectedEntry, _undoToEntry);
+//				}
+				return result;
 			}
 
-
+			
 			/**
-			 *
+			 * destroy the window and tell the envelope app to remove it
 			 * */
 			private function removeMe(event:CloseEvent = null):void {
-				//if a mix was created or anything that isn't trackable do save so it
-				//will be refreshed
-				if (_untrackableChangeFlag) {
-					//so we won't have infinate loop
-					_untrackableChangeFlag = false;
-					validate();
-					//TODO why save? we just need to refresh the entries list.
-					return;
-				}
-				///////////////////////////////////////////////////////////
-
 				if ((event == null || event.detail == Alert.YES)) {
 					_undoToEntry = null;
-					entryMetaData.clearPlayer();
 					destroyPanels();
 					removeWatchers();
 
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-					cgEvent.dispatch();
+//					var dsp:IEventDispatcher = (KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
+					/* dsp. */dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
 				}
 			}
 
 
 			/**
-			 * to fix performance bug: remove all metadata view watchers
+			 * remove all binding watchers
 			 * */
 			private function removeWatchers():void {
-				ads.removeEventListener(EntryAds.CUE_POINTS_SAVED, saveEntryDetails);
-				if (customData) {
-					//first child is navigation hbox
-					for (var i:int = 1; i < customData.numChildren; i++) {
-						var innerCustomData:SingleCustomData = customData.getChildAt(i) as SingleCustomData;
-						if (innerCustomData && innerCustomData.metadataViewWatcher)
-							innerCustomData.metadataViewWatcher.unwatch();
-					}
-				}
+//				if (customData) {	// done in customData.destroy()
+//					//first child is navigation hbox
+//					for (var i:int = 1; i < customData.numChildren; i++) {
+//						var innerCustomData:SingleCustomData = customData.getChildAt(i) as SingleCustomData;
+//						if (innerCustomData && innerCustomData.metadataViewWatcher)
+//							innerCustomData.metadataViewWatcher.unwatch();
+//					}
+//				}
 
 				if (_enabledWatcher) {
 					_enabledWatcher.unwatch();
@@ -799,9 +756,15 @@
 			 * destroy and clean all viewstack children
 			 * */
 			private function destroyPanels():void {
+				var panel:IDrilldownPanel;
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
-					if (viewStack.getChildAt(i) is IDrilldownPanel)
-						(viewStack.getChildAt(i) as IDrilldownPanel).destroy();
+					if (viewStack.getChildAt(i) is IDrilldownPanel) {
+						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						panel.removeEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
+						panel.removeEventListener(ValidationResultEvent.VALIDATION_COMPLETE, onPanelValidationComplete);
+						panel.clear();
+						panel.destroy();
+					}
 				}
 			}
 
@@ -812,94 +775,70 @@
 			private function handleValidationError(tabToGo:DisplayObject, errorString:String = '', errorTitle:String = ''):void {
 				if (errorString != '')
 					Alert.show(errorString, errorTitle);
-//				saveBtn.enabled = saveAndCloseBtn.enabled = true;
-				_uiEnabled = true;
-				_nextEntryPending = false;
+				_isUiEnabled = true;
+				_nextPendingEntry = 0;
 				viewStack.selectedIndex = viewStack.getChildIndex(tabToGo);
 			}
 
 
 			/**
-			 * validate all panels, if validation is ok proceed to save().
+			 * wait for all panels validation to complete while keeping VREs
 			 * */
-			private function validate():void {
-				// validation:
-				var validationResult:EntryDetailsValidationError = entryMetaData.save();
-				if (validationResult.error == null) {
-					// metadata validation passed.
-					validationResult = entrySch.save();
-					if (validationResult.error == null) {
-						// scheduling validation passed
-						if (entryCaptions.parent is ViewStack) {
-							// captions validation (if exists)
-							validationResult = entryCaptions.save();
-						}
-
-						if (validationResult.error == null && _isLiveStream) {
-							// live validation (if exists)
-							validationResult = liveStream.save();
-						}
-						if (validationResult.error == null && ads.parent is ViewStack) {
-							// advertisements validation (if exists)
-							validationResult = ads.save();
-						}
-						if (validationResult.error == null && entryRelated.parent is ViewStack) {
-							entryRelated.save();
+			private function onPanelValidationComplete(e:ValidationResultEvent):void {
+				_results.push(e);
+				if (_results.length == viewStack.numChildren) {
+					// all panels returned results
+					var success:Boolean = true;
+					for each (var vre:ValidationResultEvent in _results) {
+						if (!vre.success) {
+							handleValidationError(vre.target as UIComponent, vre.errorMessage, vre.errorTitle);
+							success = false;
+							// no need to go over other results
+							break;
 						}
 					}
-				}
-
-				if (validationResult.error == EntryDetailsValidationError.ENTRY_NAME_MISSING) {
-					handleValidationError(entryMetaData, resourceManager.getString('drilldown', 'entryNameIsMandatory'), resourceManager.getString('drilldown', 'metadataError'));
-				}
-				else if (validationResult.error == EntryDetailsValidationError.CATEGORIES_LIMIT) {
-					Alert.show(resourceManager.getString('drilldown', 'categoriesLimitErrorMsg', new Array(maxNumCategories)), resourceManager.getString('drilldown', 'categoriesErrorTitle'));
-					handleValidationError(entryMetaData)
-				}
-				// scheduling validation:
-				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_START_DATE) {
-					handleValidationError(entrySch, resourceManager.getString('drilldown', 'scedualingStartDateError'), resourceManager.getString('drilldown', 'scedualingErrorTitle'));
-				}
-				else if (validationResult.error == EntryDetailsValidationError.SCHEDULING_END_DATE) {
-					handleValidationError(entrySch, resourceManager.getString('drilldown', 'scedualingEndDateError'), resourceManager.getString('drilldown', 'scedualingErrorTitle'));
-				}
-				// livestream validation:
-				else if (validationResult.error == EntryDetailsValidationError.BITRATE) {
-					handleValidationError(liveStream, ResourceManager.getInstance().getString('drilldown', 'bitrateValidation'), resourceManager.getString('drilldown', 'liveStreamError'));
-				}
-				//captions validations
-				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_URL) {
-					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('drilldown', 'missingURLError'), resourceManager.getString('drilldown', 'captionsError'));
-				}
-				else if (validationResult.error == EntryDetailsValidationError.CAPTIONS_LANGUAGE) {
-					handleValidationError(entryCaptions, ResourceManager.getInstance().getString('drilldown', 'missingLanguageError'), resourceManager.getString('drilldown', 'captionsError'));
-				}
-				// advertisements validation:
-				else if (validationResult.error == EntryDetailsValidationError.CUEPOINTS_DATA) {
-					handleValidationError(ads, ResourceManager.getInstance().getString('drilldown', 'ads_error_string'), resourceManager.getString('drilldown', 'ads_error_title'));
-				}
-				else {
-					// if referenceId was changed
-					if (_undoToEntry.referenceId && _undoToEntry.referenceId != KalturaClient.NULL_STRING && _selectedEntry.referenceId != _undoToEntry.referenceId) {
-						// list all entries with the same refid
-						// if any, show message
-						if (!_sameRefidWatcher) {
-							_sameRefidWatcher = BindingUtils.bindSetter(entriesListChanged, entryDetailsModel, "entriesWSameRefidAsSelected");
+					if (success) {
+						// if referenceId was changed
+						if (_undoToEntry.referenceId && _undoToEntry.referenceId != KalturaClient.NULL_STRING && _selectedEntry.referenceId != _undoToEntry.referenceId) {
+							// list all entries with the same refid , if any - show message
+							if (!_sameRefidWatcher) {
+								_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _entryDp, "entriesWSameRefidAsSelected");
+							}
+							var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
+							edwController.dispatch(cg);
 						}
-						var cg:CairngormEvent = new EntryEvent(EntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
-						cg.dispatch();
-					}
-					else {
-						saveCuepoints();
+						else {
+							// just save it
+							save();
+						}
 					}
 				}
 			}
 
 
 			/**
+			 * trigger all panels validation
+			 * */
+			private function validate():void {
+				_results = new Array();
+				var panel:IDrilldownPanel;
+				for (var i:int = 0; i < viewStack.numChildren; i++) {
+					if (viewStack.getChildAt(i) is IDrilldownPanel) {
+						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						if (!panel.hasEventListener(ValidationResultEvent.VALIDATION_COMPLETE)) {
+							panel.addEventListener(ValidationResultEvent.VALIDATION_COMPLETE, onPanelValidationComplete);
+						}
+						panel.validate();
+					}
+				}
+			}
+
+			
+			
+			/**
 			 * confirm saving entry with existing referenceId
 			 * */
-			private function entriesListChanged(value:Object):void {
+			private function confirmSameRefid(value:Object):void {
 				if (!value)
 					return;
 
@@ -910,54 +849,72 @@
 						ar.push(o.id);
 					}
 					Alert.show(resourceManager.getString('drilldown', 'existingRefid', [_undoToEntry.referenceId, ar]),
-						resourceManager.getString('drilldown', 'warning'), Alert.YES | Alert.NO, this, saveCuepoints);
+						resourceManager.getString('drilldown', 'warning'), Alert.YES | Alert.NO, this, save);
 				}
 				else {
-					saveCuepoints();
+					save();
 				}
-				entryDetailsModel.entriesWSameRefidAsSelected = null;
+				_entryDp.entriesWSameRefidAsSelected = null;
 			}
 
 
+			private function onPanelSaveComplete(e:InternalKedEvent):void {
+				_results.push(e);
+				if (_results.length == viewStack.numChildren) {
+					// all panels finished their save/update process
+					saveEntryDetails();
+				}
+			}
+
 
 			/**
-			 * save cuepoints if needed, then proceed to saving the entry.
+			 * trigger all panels save/update process
 			 * @internal
 			 * the close event is there in case the function is triggered from alert
 			 * */
-			private function saveCuepoints(e:CloseEvent = null):void {
+			private function save(e:CloseEvent = null):void {
 				if (e && e.detail == Alert.NO) {
-					_nextEntryPending = false;
+					_nextPendingEntry = 0;
 					return;
 				}
-				// save cuepoints if needed
-				if (!ads.saveCuepoints()) {
-					saveEntryDetails(null);
+				_results = new Array();
+				var panel:IDrilldownPanel;
+				for (var i:int = 0; i < viewStack.numChildren; i++) {
+					if (viewStack.getChildAt(i) is IDrilldownPanel) {
+						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						if (!panel.hasEventListener(InternalKedEvent.SAVED)) {
+							panel.addEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
+						}
+						panel.save();
+					}
 				}
-				// when saving cuepoints, saveEntryDetails will be triggered when save is done. 
 			}
 
 
 			/**
 			 * update selected entry on server
 			 * */
-			private function saveEntryDetails(e:Event):void {
-				//_entriesToSave[entryIndex] = _undoToEntry;
-
-				// if we got here, all panels validation passed ok, the error was null.	
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection([_undoToEntry]), _closeAfterSave, _nextEntryPending);
-				cgEvent.dispatch();
-				if (_nextEntryPending)
-					setNextEntry();
-				if (_closeAfterSave) {
-					destroyPanels();
-					removeWatchers();
+			private function saveEntryDetails():void {
+				var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, _undoToEntry, _undoToEntry.id);
+				cgEvent.data = {entry: _undoToEntry, closeAfterSave: _closeAfterSave, nextEntryPending: _nextPendingEntry};
+				if (_closeAfterSave || _nextPendingEntry) {
+					cgEvent.source = this;
+					cgEvent.onComplete = handleSaveComplete;
 				}
-
+				edwController.dispatch(cgEvent);
+				
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 			}
 
+			private function handleSaveComplete():void {
+				if (_closeAfterSave) {
+					removeMe();
+				}
+				else if (_nextPendingEntry) {
+					setNextEntry();
+				}
+			}
 
 
 			/**
@@ -976,48 +933,6 @@
 				return str;
 			}
 
-
-//			/**
-//			 * Translate the status enum type to matching status string
-//			 */
-//			private function getStatusString(str:String):String {
-//				var result:String;
-//				switch (str) {
-//					case KalturaEntryStatus.MODERATE:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//					case KalturaEntryStatus.BLOCKED:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//					case KalturaEntryStatus.DELETED:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//					case KalturaEntryStatus.ERROR_CONVERTING:
-//						result = resourceManager.getString('drilldown', 'statuserrorconverting');
-//						break;
-//					case KalturaEntryStatus.IMPORT:
-//						result = resourceManager.getString('drilldown', 'import');
-//						break;
-//					case KalturaEntryStatus.PENDING:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//					case KalturaEntryStatus.PRECONVERT:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//					case KalturaEntryStatus.READY:
-//						result = resourceManager.getString('drilldown', 'metadata');
-//						break;
-//				}
-//				return result;
-//			};
-
-
-			/**
-			 * sets the untrackable change flag to true
-			 * */
-			private function setUntrackableChange():void {
-				_untrackableChangeFlag = true;
-			}
 
 
 			private function onChangeView():void {
@@ -1068,17 +983,6 @@
 			}
 
 
-			[Bindable]
-			public function get maxNumCategories():int {
-				return _maxNumCategories;
-			}
-
-
-			public function set maxNumCategories(value:int):void {
-				_maxNumCategories = value;
-			}
-
-
 			/**
 			 * removes all tabs that their ID doesn't appear in the given array collection
 			 * */
@@ -1088,51 +992,66 @@
 					if (!_visibleTabsAC.contains(child.id))
 						viewStack.removeChild(child);
 				}
-				
 			}
 
 
 			/**
-			 * loads the data of the visible tabs only
+			 * initializes the visible tabs
 			 * */
-			private function initTabs():void {
-				//we should load only once
-				if (_dataInitialized)
-					return;
-
-				
+			private function initTabsData():void {
 				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
 					(viewStack.getChildAt(i) as IDrilldownPanel).initData();
 				}
-
-				//distribution panel requires the data flavors and thumbnails tab are loading,
-				//so if they doesn't exist, will still call their initData func
+				// distribution panel requires the data flavors and thumbnails tab are loading,
+				// so if they doesn't exist, will still call their initData func
 				if (entryDistribution.parent == viewStack) {
 					if (entryAssets.parent != viewStack)
 						entryAssets.initData();
 					if (entryThumbnails.parent != viewStack)
 						entryThumbnails.initData();
+				}				
+			}
+
+			/**
+			 * initializes the visible tabs
+			 * */
+			private function initTabs():void {
+				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
+					(viewStack.getChildAt(i) as IDrilldownPanel).init();
 				}
-
-				_dataInitialized = true;
 			}
 
 
+			/**
+			 * see if current entry changed before navigating to the next entry
+			 * @param ascending	if true go to next entry, if false go to prev.
+			 * */
 			private function gotoNextEntry(ascending:Boolean):void {
-				entryIndex = getNavigatableEntryIndex(ascending, entryIndex);
-				_nextEntryPending = true;
-				//save current entry
-				if (checkDataChanged())
-					validate();
-				else
+				_nextPendingEntry = ascending ? 1 : -1;
+				if (isDataChanged()) {
+					// discard changes?
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, setNextEntry);
+				}
+				else {
 					setNextEntry();
+				}
 			}
 
 
-			private function setNextEntry():void {
-				var selectEntry:EntryEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
-				selectEntry.dispatch();
-				_nextEntryPending = false;
+			/**
+			 * load the next entry
+			 * */
+			private function setNextEntry(event:CloseEvent = null):void {
+				if (_nextPendingEntry == 0) {
+					throw new Error("calling setNextEntry() with _nextPendingEntry == 0");
+					return;
+				}
+				if ((event == null || event.detail == Alert.YES)) {
+					entryIndex = getNavigatableEntryIndex(_nextPendingEntry == 1, entryIndex);
+					var selectEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
+					edwController.dispatch(selectEntry);
+				}
+				_nextPendingEntry = 0;
 			}
 
 
@@ -1141,13 +1060,15 @@
 			 * */
 			private function submitChanges(closeAfterSave:Boolean):void {
 				//to handle cases of slow system - disable UI even before sending server calls
-				_uiEnabled = false;
+				_isUiEnabled = false;
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}
-			
 		]]>
 	</mx:Script>
+
+	<control:EDWController id="edwController"/>
+
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
 			   buttonMode="true" tabHeight="25" enabled="{!entryDetailsModel.loadingFlag || _hadFirstNavigation}"/>
 
@@ -1156,78 +1077,77 @@
 		<!-- Metadata Tab -->
 		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
 						  label="{ResourceManager.getInstance().getString('drilldown', 'metadata')}"
-						  selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}" context="{context}"
-						  entryDetailsModel="{entryDetailsModel}" untrackableChange="{setUntrackableChange()}"
-						  openPreview="{openPreview(event)}" showEmbed="{showEmbedCode}"
-						  maxNumCategories="{maxNumCategories}" landingPage="{landingPage}" enabled="{_uiEnabled}"/>
+						  selectedEntry="{_undoToEntry}" context="{context}" distributionData="{_distDp}"
+						  entryData="{_entryDp}" openPreview="{openPreview(event)}" showEmbed="{showEmbedCode}"
+						  landingPage="{landingPage}" enabled="{_isUiEnabled}" />
 		<!-- Thumbnails Tab -->
-		<ed:EntryThumbnails id="entryThumbnails" label="{ResourceManager.getInstance().getString('drilldown', 'thumbnails')}"
-							selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}" context="{context}"
-							enableDistribution="{filterModel.enableDistribution}" enabled="{_uiEnabled}"/>
+		<ed:EntryThumbnails id="entryThumbnails" enableDistribution="{filterModel.enableDistribution}" 
+							label="{ResourceManager.getInstance().getString('drilldown', 'thumbnails')}"
+							selectedEntry="{_undoToEntry}" distributionModel="{_distDp}" context="{context}"
+							enabled="{_isUiEnabled}"/>
 
 		<!-- Access Control Tab -->
 		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
 							   label="{ResourceManager.getInstance().getString('drilldown', 'accessControl')}"
 							   selectedEntry="{_undoToEntry}" filterModel="{filterModel}"
-							   accessControlData="{filterModel.accessControlProfiles}" enabled="{_uiEnabled}"/>
+							   accessControlData="{filterModel.accessControlProfiles}" enabled="{_isUiEnabled}"/>
 
 		<!-- Scheduling Tab -->
 		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('drilldown', 'scheduling')}"
-							selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
+							selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}" />
 
 		<!-- Flavor Assets Tab -->
-		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox"
+		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox" model="{entryDetailsModel}"
 						 label="{ResourceManager.getInstance().getString('drilldown', 'videoFiles')}"
-						 selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
-						 dropFolderModel="{dropFolderModel}" replacementStatus="{_undoToEntry.replacementStatus}"
-						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}" enabled="{_uiEnabled}"/>
+						 selectedEntry="{_undoToEntry}" replacementStatus="{_undoToEntry.replacementStatus}"
+						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}"
+						 enabled="{_isUiEnabled}" />
 
 		<!-- content Tab -->
-		<ed:EntryContent id="contentTab" selectedEntry="{_undoToEntry}" isLiveStream="{_isLiveStream}"
+		<ed:EntryContent id="contentTab" selectedEntry="{_undoToEntry}"
 						 label="{ResourceManager.getInstance().getString('drilldown', 'mixesTab')}"
-						 loadRoughcuts="{loadRoughcuts}" parts="{entryDetailsModel.contentParts}" enabled="{_uiEnabled}"/>
+						 loadRoughcuts="{loadRoughcuts}" enabled="{_isUiEnabled}"/>
 
 		<!-- Live stream -->
 		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
 							   label="{ResourceManager.getInstance().getString('drilldown', 'liveStream')}"
-							   selectedEntry="{_undoToEntry}" enabled="{_uiEnabled}"/>
+							   selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}"/>
 
 		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('drilldown', 'customData')}" enabled="{_uiEnabled}"/>
+		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('drilldown', 'customData')}"
+							enabled="{_isUiEnabled}" model="{entryDetailsModel}"/>
 
 		<!-- Distribution Tab -->
-		<ed:EntryDistribution id="entryDistribution"
+		<ed:EntryDistribution id="entryDistribution" selectedEntry="{_undoToEntry}" model="{_distDp}" 
 							  label="{ResourceManager.getInstance().getString('drilldown', 'distribution')}"
-							  selectedEntry="{_undoToEntry}" entryDetailsModel="{entryDetailsModel}"
-							  viewStack="{viewStack}" enabled="{_uiEnabled}"/>
+							  viewStack="{viewStack}" enabled="{_isUiEnabled}" />
 
 		<!-- captions -->
 		<ed:EntryCaptions2 id="entryCaptions" label="{resourceManager.getString('drilldown','captions')}"
-						  selectedEntry="{_undoToEntry}" entryCaptionsArr="{entryDetailsModel.captionsArray}" 
-						  enabled="{_uiEnabled}"/>
+						   selectedEntry="{_undoToEntry}" entryCaptionsArr="{_captionsDp.captionsArray}"
+						   enabled="{_isUiEnabled}" />
 
 		<!-- advertisments -->
 		<ed:EntryAds id="ads" label="{resourceManager.getString('drilldown','ads')}" selectedEntry="{_undoToEntry}"
-					 context="{context}" entryDetailsModel="{entryDetailsModel}" enabled="{_uiEnabled}"/>
+					 context="{context}" model="{_adCuepointsDp}" enabled="{_isUiEnabled}" />
 
 		<!-- related entries -->
 		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('drilldown','relatedEntries')}"
-						 selectedEntry="{_undoToEntry}" relatedFiles="{entryDetailsModel.relatedFilesAC}" enabled="{_uiEnabled}"/>
-
+						 selectedEntry="{_undoToEntry}" relatedFiles="{_relatedDp.relatedFilesAC}"
+						 enabled="{_isUiEnabled}" />
 
 		<!-- clips -->
-		<ed:EntryClips id="entryClips" label="{resourceManager.getString('drilldown','clips')}" selectedEntry="{_undoToEntry}"
-					   clips="{entryDetailsModel.clips}" enabled="{_uiEnabled}"/>
-
+		<ed:EntryClips id="entryClips" label="{resourceManager.getString('drilldown','clips')}" 
+					   selectedEntry="{_undoToEntry}" clips="{_clipsDp.clips}" enabled="{_isUiEnabled}"/>
 
 	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
-			<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}" click="submitChanges(false)"
-					   buttonMode="true" enabled="{_uiEnabled &amp;&amp; saveEnabled}"/>
+			<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}"
+					   click="submitChanges(false)" buttonMode="true" enabled="{_isUiEnabled &amp;&amp; saveEnabled}"/>
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('drilldown', 'saveAndClose')}"
-					   click="submitChanges(true)" buttonMode="true" enabled="{_uiEnabled &amp;&amp; saveEnabled}"/>
+					   click="submitChanges(true)" buttonMode="true" enabled="{_isUiEnabled &amp;&amp; saveEnabled}"/>
 
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
@@ -1237,8 +1157,6 @@
 			<mx:LinkButton label="{resourceManager.getString('drilldown', 'nextEntry')}" click="gotoNextEntry(true)"
 						   buttonMode="true" enabled="{_nextEnabled}" visible="{showNextPrevBtns}"
 						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
-
 		</mx:HBox>
-
 	</mx:ControlBar>
-</containers:HelpTitleWindow>
+</navigation:ChangeableDataViewer>

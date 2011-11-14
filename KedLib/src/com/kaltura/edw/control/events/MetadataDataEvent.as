@@ -1,13 +1,13 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
 	/**
 	 * This class represents event related to metadata
 	 * @author Michal
 	 * 
 	 */
-	public class MetadataDataEvent extends CairngormEvent
+	public class MetadataDataEvent extends KMvCEvent
 	{
 		public static const ADD : String = "content_add";
 		public static const LIST : String = "content_list";

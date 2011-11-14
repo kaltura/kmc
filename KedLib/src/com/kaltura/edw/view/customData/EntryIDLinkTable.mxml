@@ -1,30 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
-	
 	<mx:DataGrid id="dataGrid" width="100%" headerHeight="25" rowHeight="45"
 				 height="{(_entriesArray.length*dataGrid.rowHeight) + dataGrid.headerHeight}"
 				 dataProvider="{_entriesArray}" verticalScrollPolicy="off" visible="{_entriesArray.length > 0}"
 				 includeInLayout="{_entriesArray.length > 0}" selectable="false" sortableColumns="false">
 		<mx:Script>
 			<![CDATA[
-				import com.adobe.cairngorm.control.CairngormEvent;
 				import com.kaltura.commands.MultiRequest;
 				import com.kaltura.commands.baseEntry.BaseEntryGet;
-				import com.kaltura.events.KalturaEvent;
-				import com.kaltura.edw.control.events.EntryEvent;
-				import com.kaltura.edw.control.events.WindowEvent;
+				import com.kaltura.edw.business.IDataOwner;
+				import com.kaltura.edw.components.playlist.ManualPlaylistWindow;
+				import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
+				import com.kaltura.edw.components.playlist.types.ManualPlaylistWindowMode;
+				import com.kaltura.edw.control.CustomDataTabController;
+				import com.kaltura.edw.control.events.LoadEvent;
+				import com.kaltura.edw.control.events.SearchEvent;
 				import com.kaltura.edw.model.DummyModelLocator;
-				import com.kaltura.edw.model.Context;
 				import com.kaltura.edw.model.FilterModel;
 				import com.kaltura.edw.model.MetadataDataObject;
-				import com.kaltura.edw.model.types.WindowsStates;
-				import com.kaltura.edw.view.window.playlist.ManualPlaylistWindow;
+				import com.kaltura.edw.model.datapacks.ContextDataPack;
+				import com.kaltura.edw.model.datapacks.EntryDataPack;
+				import com.kaltura.edw.vo.ListableVo;
+				import com.kaltura.events.KalturaEvent;
+				import com.kaltura.kmvc.model.KMvCModel;
 				import com.kaltura.vo.KalturaBaseEntry;
 				
 				import mx.collections.ArrayCollection;
 				import mx.controls.Alert;
 				import mx.managers.PopUpManager;
-				import mx.messaging.messages.ErrorMessage;
 				
 				public static const OPEN_ENTRY:String = "openEntry";
 				
@@ -32,7 +35,7 @@
 				/**
 				 * application context
 				 * */
-				public var context:Context;
+				public var context:ContextDataPack;
 				
 				/**
 				 * data required by filter in manual playlist window
@@ -119,27 +122,7 @@
 				
 				
 				private function listEntriesFault(event:Event):void {
-					trace("Somehting went terribly wrong.");
-				}
-				
-				
-				/**
-				 * opens a drill down of the selected entry
-				 * */
-				public function openEditEntry(entry:Object):void {
-					if (entry) {
-						// set selevted entry
-						var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY,
-							entry as KalturaBaseEntry);
-						cgEvent.dispatch();
-						// open window
-						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
-						cgEvent.dispatch();
-					}
-					else {
-						Alert.show(resourceManager.getString('drilldown', 'pleaseSelectEntriesFirst'));
-					}
-					dispatchEvent(new Event(OPEN_ENTRY));
+					trace("Something went terribly wrong.");
 				}
 				
 				
@@ -149,31 +132,42 @@
 				private function editExistingList():void {
 					var manualPlaylist:ManualPlaylistWindow = new ManualPlaylistWindow();
 					var model:DummyModelLocator = DummyModelLocator.getInstance();
-					manualPlaylist.selectedEntry = model.entryDetailsModel.selectedEntry;
-					manualPlaylist.playlistModel = model.playlistModel;
+					manualPlaylist.selectedEntry = (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+//					manualPlaylist.playlistModel = model.playlistModel;
 					manualPlaylist.rootUrl = context.rootUrl;
 					manualPlaylist.filterData = filterModel;
 					manualPlaylist.showLinks = false;
-					manualPlaylist.setEntriesListTitle(resourceManager.getString('drilldown',
-						'linkedEntriesSelectedEntries'));
+					manualPlaylist.setEntriesListTitle(resourceManager.getString('drilldown', 'linkedEntriesSelectedEntries'));
 					manualPlaylist.title = resourceManager.getString('drilldown', 'editEntry') + " - " +
 						selectedEntry.name + " > " +
 						resourceManager.getString('drilldown', 'linkedEntriedAddRemove');
-					manualPlaylist.context = ManualPlaylistWindow.EDIT_LINKED_ENTRIES_MODE;
 					manualPlaylist.distributionProfilesArray = distributionProfilesArr;
 					if (!_entriesArray) {
 						_entriesArray = new ArrayCollection();
-						manualPlaylist.context = ManualPlaylistWindow.NEW_LINKED_ENTRIES;
+						manualPlaylist.context = ManualPlaylistWindowMode.NEW_LINKED_ENTRIES;
+					}
+					else {
+						manualPlaylist.context = ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE;
 					}
 					manualPlaylist.editLinkedArrayCollection = _entriesArray;
 					manualPlaylist.maxAllowedValues = _maxAllowedValues;
-					manualPlaylist.addEventListener(ManualPlaylistWindow.REFRESH_ENTRIES_LIST,
-						saveNewData)
+					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.REFRESH_ENTRIES_LIST, saveNewData);
+					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.LOAD_FILTER_DATA, loadFilterData, false, 0, true);
+					manualPlaylist.addEventListener(ManualPlaylistWindowEvent.SEARCH_ENTRIES, searchEntries, false, 0, true);
 					
 					PopUpManager.addPopUp(manualPlaylist, this.root, true);
 					PopUpManager.centerPopUp(manualPlaylist);
 				}
 				
+				private function searchEntries(event:ManualPlaylistWindowEvent):void {
+					var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, event.data as ListableVo);
+					CustomDataTabController.getInstance().dispatch(searchEvent);
+				}
+				
+				private function loadFilterData(event:ManualPlaylistWindowEvent):void {
+					var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, (event.target as IDataOwner), filterModel);
+					CustomDataTabController.getInstance().dispatch(fe);
+				}
 				
 				/**
 				 * This function will be called with every change in the data provider of this grid.
@@ -232,9 +226,6 @@
 									}
 								]]>
 							</mx:Script>
-							<!--mx:LinkButton label="{data.name}"
-							enabled="{getDrillDownEnabled(data.mediaType)}"
-							click="{event.stopImmediatePropagation(); outerDocument.openEditEntry(data)}" toolTip="{data.name}" /-->
 							<mx:Label text="{data.name}" toolTip="{data.name}"/>
 						</mx:HBox>
 					</mx:Component>

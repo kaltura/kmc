@@ -1,42 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel"
-		 width="100%" height="100%" creationComplete="onCreationComplete()">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel" width="100%"
+		 height="100%" creationComplete="onCreationComplete()" xmlns:control="com.kaltura.edw.control.*">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.RelatedFileEvent;
 			import com.kaltura.edw.control.events.UploadTokenEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.view.ir.relatedFiles.RelatedFileActionRenderer;
+			import com.kaltura.edw.view.window.EditRelatedFileWindow;
 			import com.kaltura.edw.vo.RelatedFileVO;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.vo.KalturaAttachmentAsset;
 			import com.kaltura.vo.KalturaBaseEntry;
-
+			
 			import mx.collections.ArrayCollection;
+			import mx.core.Application;
+			import mx.managers.PopUpManager;
 
+			// ===============================================================
+			// consts
+			// ===============================================================
+	
 			public static const FILE_CHANGED:String = "fileChanged";
+			public static const FILE_DELETED:String = "fileDeleted";
+			public static const EDIT_FILE:String = "editFile";
+			
 			public static const ALLOWED_EXT:String = "*.*";
 
-			[Bindable]
 			/**
-			 * r&p
-			 * */
-			public var editable:Boolean = true;
-			/**
-			 * will be used to convert size to KB
+			 * used to convert size to KB
 			 * */
 			private const KB_MULTIPLIER:int = 1024;
+			
 			/**
 			 * in files size: number of digits to show after the decimal point
 			 * */
 			private const DIGITS_AFTER_DEC_POINT:int = 2;
-
+			
+			
+			// ===============================================================
+			// 
+			// ===============================================================
+			
+			/**
+			 * current selected entry
+			 * */
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+			
 			/**
 			 * entire list of related files
 			 * */
 			private var _relatedFiles:ArrayCollection;
-			/**
-			 * current selecred entry
-			 * */
-			public var selectedEntry:KalturaBaseEntry;
+		
 			/**
 			 * will be used to upload new files
 			 * */
@@ -58,6 +85,16 @@
 			 * */
 			private var _wasChanged:Boolean;
 
+			
+			// ===============================================================
+			// Roles and Permissions stuff
+			// ===============================================================
+			
+			[Bindable]
+			/**
+			 * r&p
+			 * */
+			public var editable:Boolean = true;
 
 			/**
 			 * R&P
@@ -82,9 +119,14 @@
 			}
 
 
+			// ===============================================================
+			// Methods
+			// ===============================================================
+			
 			private function onCreationComplete():void {
-				dataGrid.addEventListener(FILE_CHANGED, onFileChanged);
-				dataGrid.addEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted);
+				dataGrid.addEventListener(EntryRelated.FILE_CHANGED, onFileChanged);
+				dataGrid.addEventListener(EntryRelated.FILE_DELETED, onFileDeleted);
+				dataGrid.addEventListener(EntryRelated.EDIT_FILE, editFile);
 			}
 
 
@@ -94,6 +136,14 @@
 				//add to the updated array only if doesn't exist there yet, or doesn't belong to the added ones
 				if (_changedFile.file.id && (_filesToUpdate.getItemIndex(_changedFile) == -1))
 					_filesToUpdate.addItem(_changedFile);
+			}
+			
+			private function editFile(e:Event):void {
+				var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
+				editWindow.file = e.target.data.file;
+				editWindow.controller = controller;
+				PopUpManager.addPopUp(editWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(editWindow);
 			}
 
 
@@ -127,20 +177,30 @@
 				_filesToUpdate = new ArrayCollection();
 			}
 
+			public function validate():void {
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
+				dispatchEvent(e);
+			}
+			
+			
+			public function clear():void {
+			}
+			
+			public function init():void {
+			}
 
-			/**
-			 * get relevant data from server
-			 * */
+			
 			public function initData():void {
 				_wasChanged = false;
 				var list:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.LIST_RELATED_FILES);
-				list.dispatch();
+				controller.dispatch(list);
 			}
 
 
 			public function destroy():void {
-				dataGrid.removeEventListener(FILE_CHANGED, onFileChanged);
-				dataGrid.removeEventListener(RelatedFileActionRenderer.FILE_DELETED, onFileDeleted);
+				dataGrid.removeEventListener(EntryRelated.FILE_CHANGED, onFileChanged);
+				dataGrid.removeEventListener(EntryRelated.FILE_DELETED, onFileDeleted);
+				dataGrid.removeEventListener(EntryRelated.EDIT_FILE, editFile);
 			}
 
 
@@ -166,7 +226,7 @@
 				newRelated.fileReference.addEventListener(Event.COMPLETE, onFileUploaded);
 				newRelated.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onFileFailed);
 				newRelated.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onFileFailed);
-				uploadEvent.dispatch();
+				controller.dispatch(uploadEvent);
 
 				_relatedFiles.addItem(newRelated);
 				_filesToAdd.addItem(newRelated);
@@ -220,26 +280,29 @@
 			}
 
 
-			/**
-			 * save all changes on related files
-			 * */
 			public function save():void {
 				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
 				saveEvent.relatedToAdd = _filesToAdd.source;
 				saveEvent.relatedToUpdate = _filesToUpdate.source;
 				saveEvent.relatedToDelete = _filesToDelete.source;
-				saveEvent.dispatch();
+				controller.dispatch(saveEvent);
+				
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 
 
-			public function wasChanged():Boolean {
+			public function isChanged():Boolean {
 				return _wasChanged;
 			}
 		]]>
 	</mx:Script>
+	<control:RelatedTabController id="controller" />
+	
 	<mx:Text text="{resourceManager.getString('drilldown','relatedInfo')}" styleName="tipText"/>
+	
 	<mx:Button label="{resourceManager.getString('drilldown','addFiles')}" click="addFile(event)" visible="{editable}"
 			   includeInLayout="{editable}"/>
+	
 	<mx:DataGrid id="dataGrid" dataProvider="{relatedFiles}" width="100%" height="100%" rowHeight="30">
 		<mx:columns>
 			<mx:DataGridColumn headerText="{resourceManager.getString('drilldown','fileName')}" sortable="false"
@@ -264,9 +327,8 @@
 					</mx:Component>
 				</mx:itemRenderer>
 			</mx:DataGridColumn>
-			<mx:DataGridColumn headerText="{resourceManager.getString('drilldown','actions')}" 
-							   sortable="false" width="200"
-							   itemRenderer="com.kaltura.edw.view.ir.relatedFiles.RelatedFileActionRenderer"/>
+			<mx:DataGridColumn headerText="{resourceManager.getString('drilldown','actions')}" sortable="false"
+							   width="200" itemRenderer="com.kaltura.edw.view.ir.relatedFiles.RelatedFileActionRenderer"/>
 		</mx:columns>
 	</mx:DataGrid>
 </mx:VBox>

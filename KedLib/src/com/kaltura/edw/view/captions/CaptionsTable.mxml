@@ -7,14 +7,15 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.CaptionsEvent;
-			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.control.events.UploadTokenEvent;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.view.ir.captions.ActionsRenderer;
 			import com.kaltura.edw.view.ir.captions.FileTypeRenderer;
 			import com.kaltura.edw.view.ir.captions.LabelRenderer;
 			import com.kaltura.edw.view.ir.captions.LanguageRenderer;
 			import com.kaltura.edw.view.ir.captions.LocationRenderer;
 			import com.kaltura.edw.vo.EntryCaptionVO;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaCaptionType;
 			
 			import mx.collections.ArrayCollection;
@@ -48,7 +49,7 @@
 			public static const XML_EXT:String = "*.xml";
 			public static const SRT_EXT:String = "*.srt";
 
-
+			public var controller:KMvCController;
 
 			/**
 			 * file reference object used to upload new files
@@ -222,7 +223,7 @@
 				uploadFile.fileReference.addEventListener(Event.COMPLETE, onUploadComplete);
 				uploadFile.fileReference.addEventListener(IOErrorEvent.IO_ERROR, onUploadError);
 				uploadFile.fileReference.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onUploadError);
-				uploadFile.dispatch();
+				controller.dispatch(uploadFile);
 				
 				// update kmc status
 				_activeCaption.kmcStatus = EntryCaptionVO.UPLOADING;
@@ -242,7 +243,7 @@
 					// get updated object from the server
 					var update:CaptionsEvent = new CaptionsEvent(CaptionsEvent.UPDATE_CAPTION);
 					update.captionVo = _activeCaption;
-					update.dispatch();
+					controller.dispatch(update);
 					
 					// update kmc status
 					_activeCaption.kmcStatus = EntryCaptionVO.PROCESSING;

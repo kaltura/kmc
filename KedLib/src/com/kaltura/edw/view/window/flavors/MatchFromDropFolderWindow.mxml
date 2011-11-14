@@ -5,17 +5,19 @@
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.edw.control.events.MediaEvent;
-			import com.kaltura.edw.events.GeneralNonCairngormEvent;
-			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.control.events.DropFolderEvent;
 			import com.kaltura.edw.control.events.DropFolderFileEvent;
-			import com.kaltura.edw.model.DummyModelLocator;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.events.MediaEvent;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
+			import com.kaltura.kmvc.control.KMvCController;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
@@ -27,16 +29,12 @@
 			import com.kaltura.vo.KalturaDropFolderFileResource;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
-			import flash.utils.setTimeout;
-			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.collections.HierarchicalData;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
-			import mx.managers.PopUpManager;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
@@ -57,6 +55,11 @@
 			 * */
 			private static const MULTI_FLAVOUR:String = "multi_flavour";
 
+			/**
+			 * application controller
+			 * */
+			public var controller:KMvCController;
+			
 			/**
 			 * conversion profiles with matching asset params (cpaps)
 			 * */
@@ -223,9 +226,10 @@
 				 * in the main drilldown window, and ended up with a "wrong" value for this
 				 * field on the object in the entries list because it was not refreshed.
 				 */
-				DummyModelLocator.getInstance().entryDetailsModel.selectedEntry.referenceId = _selectedSlug.parsedSlug;
-				var ee:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SINGLE_ENTRY, _entry, _entry.id);
-				ee.dispatch();
+				var modelSelectedEntry:KalturaBaseEntry = (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+				modelSelectedEntry.referenceId = _selectedSlug.parsedSlug;
+				var ee:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, _entry);
+				controller.dispatch(ee);
 				Alert.show(ResourceManager.getInstance().getString('cms', 'setRefidNotification'));
 				closeHandler(null);
 			}
@@ -277,7 +281,7 @@
 				resource.dropFolderFileId = _selectedSlug.id;
 				var dffe:MediaEvent = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 				dffe.data = {flavorAssetId: flavorAssetId, resource: resource};
-				dffe.dispatch();
+				controller.dispatch(dffe);
 			}
 
 
@@ -289,7 +293,7 @@
 				resource.dropFolderFileId = _selectedSlug.id;
 				var dffe:MediaEvent = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 				dffe.data = {flavorParamsId: flavorParamsId, resource: resource};
-				dffe.dispatch();
+				controller.dispatch(dffe);
 			}
 
 
@@ -355,7 +359,7 @@
 					// dispatch the event with required data
 					var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
 					ce.data = {conversionProfileId: _selectedFolder.conversionProfileId, resource: mediaResource};
-					ce.dispatch();
+					controller.dispatch(ce);
 				}
 			}
 
@@ -370,11 +374,11 @@
 					event.stopImmediatePropagation();
 				}
 				// reset the selected folder
-				var cg:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null);
-				cg.dispatch();
+				var cg:KMvCEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, null);
+				controller.dispatch(cg);
 				// reset files list
 				cg = new DropFolderFileEvent(DropFolderFileEvent.RESET_DROP_FOLDERS_AND_FILES);
-				cg.dispatch();
+				controller.dispatch(cg);
 				// remove popup 
 				dispatchEvent(new Event(CLOSE_WINDOW));
 			}
@@ -396,14 +400,14 @@
 			protected function listFolderContents(event:MouseEvent = null):void {
 				var txt:String = searchText.text;
 				// search with or without slug
-				var ce:CairngormEvent;
+				var ce:KMvCEvent;
 				if (_windowState == SINGLE_FLAVOUR) {
 					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_FLAT, _entry, txt ? txt : null);
 				}
 				else {
 					ce = new DropFolderFileEvent(DropFolderFileEvent.LIST_BY_SELECTED_FOLDER_HIERCH, _entry, txt ? txt : null);
 				}
-				ce.dispatch();
+				controller.dispatch(ce);
 			}
 
 
@@ -413,8 +417,8 @@
 			protected function folderChangeHandler(event:ListEvent):void {
 				// select the folder
 				_selectedFolder = event.target.selectedItem as KalturaDropFolder;
-				var ce:CairngormEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, _selectedFolder);
-				ce.dispatch();
+				var ce:KMvCEvent = new DropFolderEvent(DropFolderEvent.SET_SELECTED_FOLDER, _selectedFolder);
+				controller.dispatch(ce);
 
 				// list new folder contents
 				listFolderContents();

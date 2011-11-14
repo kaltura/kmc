@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Tree xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 creationComplete="onCreationComplete(event)" doubleClickEnabled="true"
+		 itemDoubleClick="onCategoryDoubleClick(event)" editable="true" labelField="name" 
+		 focusEnabled="false"
+		 itemEditor="com.kaltura.edw.components.filter.cat.CategoriesTreeEditorRenderer"
+		 itemRenderer="com.kaltura.edw.components.filter.cat.CategoriesTreeItemRenderer"
+		 itemEditBegin="disableEditing(event)" itemEditBeginning="disableEditing(event)"
+		 itemEditEnd="onItemEndEdit(event)" allowMultipleSelection="true" dropEnabled="false" 
+		 allowDragSelection="false"
+		 dragMoveEnabled="false" dragEnabled="false" borderThickness="3" 
+		 borderColor="#FFFFFF" borderStyle="solid"
+		 rowHeight="30" backgroundColor="#FFFFFF" backgroundAlpha="0.1">
+	<mx:Metadata>
+		  [Event(name="newSearch", type="com.kaltura.edw.components.filter.events.FilterEvent")] 
+		  [Event(name="updateEntries", type="com.kaltura.edw.components.filter.events.FilterEvent")] 
+		  [Event(name="updateCategory", type="com.kaltura.edw.components.filter.events.FilterEvent")] 
+		  [Event(name="addCategory", type="com.kaltura.edw.components.filter.events.FilterEvent")] 
+		  [Event(name="deleteCategory", type="com.kaltura.edw.components.filter.events.FilterEvent")] 
+	 </mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.et.EntryTable;
+			import com.kaltura.edw.components.filter.cat.CategoriesTreeItemRenderer;
+			import com.kaltura.edw.components.filter.events.FilterEvent;
+			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.view.window.AddNewCategoryWin;
+			import com.kaltura.edw.view.window.DeleteCategoryWin;
+			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.vo.KalturaBaseEntry;
+			
+			import mx.collections.ArrayCollection;
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import mx.controls.TextInput;
+			import mx.controls.listClasses.IListItemRenderer;
+			import mx.controls.treeClasses.TreeItemRenderer;
+			import mx.core.Application;
+			import mx.core.Container;
+			import mx.core.DragSource;
+			import mx.core.ScrollPolicy;
+			import mx.core.UIComponent;
+			import mx.events.DragEvent;
+			import mx.events.ListEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+
+
+			/**
+			 * events dispatched by CategoriesTreeItemRenderer
+			 * */
+			public static const OPEN_ADD_CATEGORY:String = "openAddCategory";
+			
+			public static const OPEN_DELETE_CATEGORY:String = "openDeleteCategory";
+			
+			/**
+			 * categories hash map
+			 * */
+			public var catMap:HashMap;
+			
+			/**
+			 * Store last folder that the user was over.
+			 * */
+			private var _lastNodeOver:TreeItemRenderer;
+			
+			/**
+			 * user is currently in editing categorys mode
+			 * */
+			private var _isInEditMode:Boolean = false;
+			
+			
+			private var _selectedFilterCategories:String = null;
+			
+			/**
+			 * Update: Show a reject drop cursor or clear it. Depending on the
+			 * situation one might want to walk up to the parent node to
+			 * get it&apos;s status in order to show a reject for all child nodes
+			 * of a node that has the rejection.
+			 **/
+			private var _rejectCursorID:int;
+			
+			/**
+			 * indicates no specific category is selected 
+			 * */
+			private var _isRootSelected:Boolean = true;
+			
+			private var _catSelectedNames:HashMap;
+			
+			[ArrayElementType("com.kaltura.edw.vo.CategoryVO")]
+			private var _selectedCatsArr:Array;
+			
+			private var _isInRenameMode:Boolean = false;
+
+			
+			public function get selectedFilterCategories():String {
+				var catNameArr:Array = new Array();
+				var categories:Array = this.selectedItems;
+				var rootFound:Boolean = false;
+				for each (var category:CategoryVO in categories) {
+					if (category.id == 0) {
+						rootFound = true;
+						break;
+					}
+					else {
+//						catNameArr.push(category.category.fullName);
+						catNameArr.push(getCategoryChain(category));
+					}
+				}
+
+				return rootFound ? null : catNameArr.join(',');
+			}
+			
+			
+			/**
+			 * retrieve a list of ids of nested categories.
+			 * */
+			private function getCategoryChain(cat:CategoryVO):String {
+				var res:String = '';
+				var children:ArrayCollection = cat.children;
+				for (var i:int = 0; i<children.length; i++) {
+					// first generation child:
+//					res += (children[i] as CategoryVO).category.id + ",";
+					res += getCategoryChain(children[i] as CategoryVO);
+					
+				}
+				res += cat.category.id + ",";
+				return res;
+			}
+
+			
+			/** 
+			 * we need to override maxHorizontalScrollPosition because setting
+			 * Tree's maxHorizontalScrollPosition adds an indent value to it,
+			 * which we don't need as measureWidthOfItems seems to return exactly
+			 * what we need.  Not only that, but getIndent() seems to be broken
+			 * anyways (SDK-12578).
+			 * I hate using mx_internal stuff, but we can't do
+			 * super.super.maxHorizontalScrollPosition in AS 3, so we have to
+			 * emulate it.
+			 * */
+			override public function get maxHorizontalScrollPosition():Number {
+				if (isNaN(mx_internal::_maxHorizontalScrollPosition))
+					return 0;
+
+				return mx_internal::_maxHorizontalScrollPosition;
+			}
+
+
+			override public function set maxHorizontalScrollPosition(value:Number):void {
+				mx_internal::_maxHorizontalScrollPosition = value;
+				dispatchEvent(new Event("maxHorizontalScrollPositionChanged"));
+
+				scrollAreaChanged = true;
+				invalidateDisplayList();
+			}
+
+
+			/**
+			 * @inheritDocs
+			 * */
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
+				// we call measureWidthOfItems to get the max width of the item renderers.
+				// then we see how much space we need to scroll, setting maxHorizontalScrollPosition appropriately
+				var diffWidth:Number = measureWidthOfItems(0, 0) -
+					(unscaledWidth - viewMetrics.left - viewMetrics.right) + 60;
+
+				if (diffWidth <= 0)
+					maxHorizontalScrollPosition = NaN;
+				else
+					maxHorizontalScrollPosition = diffWidth;
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+			}
+
+
+			
+
+
+			private function expendAndMarkTree():void {
+				expendAllTree();
+				markSelectedCategories();
+			}
+
+
+			private function expendAllTree():void {
+				this.openItems = catMap.values;
+				validateNow();
+			}
+
+
+
+			private function onCreationComplete(event:Event):void {
+				horizontalScrollPolicy = ScrollPolicy.AUTO;
+				setEventListeners();
+			}
+
+			
+
+
+			private function markSelectedCategories():void {
+				if (_isRootSelected) {
+					this.selectedItems = [this.dataProvider[0]];
+				}
+				else {
+					var catIds:Array = _selectedFilterCategories.split(',');
+					var catFullNames:Array = new Array;
+					//finds the names of the categories
+					for each (var catId:String in catIds) {
+						if (catId!='') {
+							var catFullName:String = findCategoryFullName(parseInt(catId), dataProvider as ArrayCollection);
+							if (catFullName)
+								catFullNames.push(catFullName);	
+						}
+					}
+				//	var catFullNames:Array = _selectedFilterCategories.split(',');
+					_catSelectedNames = new HashMap();
+					for each (var name:String in catFullNames) {
+						_catSelectedNames.put(name, name);
+					}
+
+					if (selectedFilterCategories != null) {
+						var catParent:CategoryVO = this.dataProvider[0] as CategoryVO;
+						_selectedCatsArr = new Array();
+						explorChildren(catParent);
+						this.validateNow();
+						this.selectedItems = _selectedCatsArr;
+					}
+				}
+
+			}
+			
+			/**
+			 * retrun the full name of the given category id
+			 * */
+			private function findCategoryFullName(catId:int, catArray:ArrayCollection) : String {	
+				for each (var cat:CategoryVO in catArray) {
+					if (catId==cat.category.id) {
+						return cat.category.fullName;
+					}		
+					if (cat.children) {
+						var catName:String = findCategoryFullName(catId, cat.children);
+						if (catName)
+							return catName;
+					}
+				}
+				
+				return null;
+			}
+
+			private function explorChildren(childParent:CategoryVO):Boolean {
+				var foundName:Boolean;
+				var foundChildName:Boolean;
+				for each (var childCat:CategoryVO in childParent.children) {
+					var catFullName:String = childCat.category.fullName;
+					if (_catSelectedNames.containsKey(catFullName)) {
+						_selectedCatsArr.push(childCat);
+						foundName = true;
+					}
+					foundChildName = explorChildren(childCat);
+				}
+
+				this.expandItem(childParent, true);
+				return foundName || foundChildName;
+			}
+
+
+			private function setEventListeners():void {
+				addEventListener(DragEvent.DRAG_COMPLETE, handleDragComplete);
+				addEventListener(DragEvent.DRAG_OVER, handleDragOver);
+				addEventListener(DragEvent.DRAG_EXIT, handleDragExit);
+				addEventListener(DragEvent.DRAG_START, handleDragStart);
+				addEventListener(DragEvent.DRAG_DROP, handleDragDrop);
+				addEventListener(DragEvent.DRAG_ENTER, handleDragEnter);
+
+				addEventListener(ListEvent.ITEM_CLICK, onItemClick);
+				addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown);
+				
+				addEventListener(CategoriesTree.OPEN_ADD_CATEGORY, onCategoryEvent);
+				addEventListener(CategoriesTree.OPEN_DELETE_CATEGORY, onCategoryEvent);
+			}
+
+			
+			/**
+			 * delete a category according to the received data
+			 * */
+			private function deleteCategory(e:KedDataEvent):void {
+				var event:FilterEvent = new FilterEvent(FilterEvent.DELETE_CATEGORY);
+				event.data = e.data;
+				dispatchEvent(event);
+				
+//				var deleteCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORY);
+//				deleteCategoriesEvent.data = [e.data];
+//				deleteCategoriesEvent.dispatch();
+			}
+			
+			
+			/**
+			 * add a new category with the details received from the window
+			 * */
+			private function addCategory(e:KedDataEvent):void {
+				var event:FilterEvent = new FilterEvent(FilterEvent.ADD_CATEGORY);
+				event.data = e.data;
+				dispatchEvent(event);
+				
+//				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+//				addNewCategoryEvent.data = e.data;
+//				addNewCategoryEvent.dispatch();
+			}
+			
+			/**
+			 * open the add/ remove category windows
+			 * in response to CategoriesTreeItemRenderer buttons
+			 * */
+			private function onCategoryEvent(event:Event):void {
+				event.stopPropagation();
+				var win:TitleWindow;
+				switch (event.type) {
+					case CategoriesTree.OPEN_ADD_CATEGORY:
+						win = new AddNewCategoryWin();
+						(win as AddNewCategoryWin).parentCategory = event.target.data as CategoryVO;
+						win.addEventListener(CategoriesTree.OPEN_ADD_CATEGORY, addCategory, false, 0, true);
+						break;
+					case CategoriesTree.OPEN_DELETE_CATEGORY:
+						win = new DeleteCategoryWin();
+						(win as DeleteCategoryWin).selectedCategory = event.target.data as CategoryVO;			
+						win.addEventListener(CategoriesTree.OPEN_DELETE_CATEGORY, deleteCategory, false, 0, true);
+						break;
+				}
+				PopUpManager.addPopUp(win, (Application.application as Container), true);
+				PopUpManager.centerPopUp(win);
+			}
+			
+			
+
+			private function onMouseDown(event:MouseEvent):void {
+				if (!isInEditMode) {
+					var arr:Array = new Array();
+					for each (var cat:CategoryVO in this.selectedItems) {
+						if (cat.id != 0) {
+							arr.push(cat);
+						}
+						else {
+							// only root is marked
+							arr = [];
+							arr.push(cat);
+							break;
+						}
+					}
+					this.selectedItems = arr;
+				}
+			}
+
+
+			private function onItemClick(event:ListEvent):void {
+				if (!isInEditMode) {
+					dispatchEvent(new FilterEvent(FilterEvent.NEW_SEARCH));
+				}
+			}
+
+
+			private function handleDragEnter(event:DragEvent):void {
+				event.target;
+				DragManager.acceptDragDrop(UIComponent(this));
+				if (event.dragInitiator is DataGrid) {
+					var ds:DragSource = event.dragSource;
+					if (!ds.hasFormat("items"))
+						return; // no useful data
+
+					var items:Array = ds.dataForFormat("items") as Array;
+					for (var i:Number = 0; i < items.length; i++) {
+
+						var item:XML = XML(items[i]);
+							//if( item.@type != "restaurant" ) return; // not what we want
+
+					}
+				}
+			}
+
+
+			/**
+			 * Handle the drag over trying to make sure we don&apos;t do unnecessary calls.
+			 * Store the node that the user is currently over for proper close testing.
+			 * Dispatch the delayed open call if over a new node.
+			 *
+			 * Note: Updated to stop from dragging into self and test for a drop rejection
+			 **/
+			private function handleDragOver(event:DragEvent):void {
+				showDropFeedback(event);
+				//Update: make sure the node is not being dragged over/into itself
+				var dragSource:Object = event.dragInitiator;
+				var index:int = calculateDropIndex(event);
+				var currNodeOver:TreeItemRenderer = TreeItemRenderer(indexToItemRenderer(index));
+				var overVo:CategoryVO;
+				if (dragSource is EntryTable) {
+					if (currNodeOver != null) {
+						overVo = currNodeOver.data as CategoryVO;
+						if (overVo.id != 0) {
+							showRejectDropCursor(false);
+							DragManager.showFeedback(DragManager.LINK);
+							_lastNodeOver = currNodeOver;
+						}
+						else {
+							event.preventDefault();
+							showRejectDropCursor(true);
+							_lastNodeOver = null;
+						}
+					}
+				}
+				else {
+					if (draggingOverSelf(event)) {
+						showRejectDropCursor(true);
+						return;
+					}
+					else {
+						showRejectDropCursor(false);
+					}
+
+					//Get the node currently dragging over.
+					if (currNodeOver != null) {
+						overVo = currNodeOver.data as CategoryVO;
+						var dragedVo:CategoryVO = this.selectedItem as CategoryVO;
+						var isChild:Boolean = isChildOfNode(overVo, dragedVo);
+						var isHasName:Boolean = isHasNameInChildren(overVo, dragedVo);
+						if ((dragedVo.category.parentId != overVo.id) && (!isChild) && (!isHasName)) {
+							//Set the local new folder over.
+							showRejectDropCursor(false);
+							_lastNodeOver = currNodeOver;
+						}
+						else {
+							event.preventDefault();
+							showRejectDropCursor(true);
+							_lastNodeOver = null;
+						}
+					}
+					else {
+						event.currentTarget.hideDropFeedback(event);
+						event.preventDefault();
+						_lastNodeOver = null;
+					}
+				}
+			}
+
+
+			private function isHasNameInChildren(parentVo:CategoryVO, dragedVo:CategoryVO):Boolean {
+				var hasName:Boolean = false;
+				for each (var child:CategoryVO in parentVo.children) {
+					if (child.name == dragedVo.name) {
+						hasName = true;
+						break;
+					}
+				}
+				return hasName;
+			}
+
+
+			private function isChildOfNode(parentVo:CategoryVO, dragedVo:CategoryVO):Boolean {
+				return parentVo.category.fullName.indexOf(dragedVo.category.fullName) != -1;
+			}
+
+
+			/**
+			 * Init the start of the drag and grab a open folder stack so we can
+			 * compare later when closing, opening, exiting etc..
+			 **/
+			private function handleDragStart(event:DragEvent):void {
+				var vo:CategoryVO = this.selectedItem as CategoryVO;
+				if ((vo == null) || (vo.id == 0)) {
+					event.currentTarget.hideDropFeedback(event);
+					event.preventDefault();
+					return;
+				}
+			}
+
+
+			/**
+			 * Cleanup the drag operation and call restore to set the nodes as
+			 * before the drag operation started.
+			 **/
+			private function handleDragComplete(event:DragEvent):void {
+				showRejectDropCursor(false);
+				hideDropFeedback(event);
+			}
+
+
+
+			/**
+			 * Same as above in a different handler due to it being an optional process.
+			 **/
+			private function handleDragExit(event:DragEvent):void {
+				//      	trace("out");
+				//Set the local new folder over.
+				showRejectDropCursor(false);
+				hideDropFeedback(event);
+			}
+
+
+			/**
+			 * Control the drop process
+			 **/
+			private function handleDragDrop(event:DragEvent):void {
+				if (_lastNodeOver != null) {
+					var fe:FilterEvent;
+					var dragSource:Object = event.dragInitiator;
+					var overVo:CategoryVO = _lastNodeOver.data as CategoryVO;
+					event.currentTarget.hideDropFeedback(event);
+					showRejectDropCursor(false);
+					// if dragging an entry to a category
+					if (dragSource is EntryTable) {
+						var clonedEntriesArr:ArrayCollection = new ArrayCollection();
+						var entries:Array = (dragSource as EntryTable).selectedItems;
+						var alreadyHasCatArr:ArrayCollection = new ArrayCollection();
+						var has8CatArr:ArrayCollection = new ArrayCollection();
+						for each (var entry:KalturaBaseEntry in entries) {
+							var clonedEntry:KalturaBaseEntry = new KalturaBaseEntry();
+							if ((entry.categories != null) && (entry.categories != '')) {
+								entry.categories += ',';
+							}
+							else {
+								entry.categories = '';
+							}
+
+							clonedEntry.name = entry.name;
+							clonedEntry.id = entry.id;
+							clonedEntry.categories = entry.categories + overVo.category.fullName;
+
+							var catsEntry:Array = entry.categories.split(',');
+
+							var has8Cats:Boolean = false;
+							if (catsEntry.length >= 8) {
+								has8CatArr.addItem(clonedEntry);
+								has8Cats = true;
+							}
+
+							var catFound:Boolean = false;
+							for each (var catsStr:String in catsEntry) {
+								if (catsStr == overVo.category.fullName) {
+									catFound = true;
+									break;
+								}
+							}
+
+							if (catFound) {
+								alreadyHasCatArr.addItem(clonedEntry);
+							}
+							else if (!has8Cats) {
+								clonedEntriesArr.addItem(clonedEntry);
+							}
+
+						}
+						var ms:String;
+						if (alreadyHasCatArr.length > 0) {
+							ms = '';
+							for each (var ent:KalturaBaseEntry in alreadyHasCatArr) {
+								ms += ent.name + '\n';
+							}
+							Alert.show(resourceManager.getString('cms', 'alreadyHasEntryMsg') + "\n" + ms,
+											 resourceManager.getString('cms', 'alreadyHasEntryTitle'));
+						}
+
+						if (has8CatArr.length > 0) {
+							ms = '';
+							for each (var ent1:KalturaBaseEntry in has8CatArr) {
+								ms += ent1.name + '\n';
+							}
+							Alert.show(resourceManager.getString('cms', 'alreadyHas8EntryMsg') + "\n" + ms,
+											 resourceManager.getString('cms', 'alreadyHasEntryTitle'));
+						}
+
+						if (clonedEntriesArr.length > 0) {
+							fe = new FilterEvent(FilterEvent.UPDATE_ENTRIES);
+							fe.data = clonedEntriesArr;
+							dispatchEvent(fe);
+//							var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, clonedEntriesArr, false);
+//							cgEvent.dispatch();
+						}
+					}
+					// else dragging a category onto another category
+					else {
+						if (overVo.id == 0) {
+							event.preventDefault();
+						}
+						var dragedVo:CategoryVO = this.selectedItem as CategoryVO;
+						dragedVo.category.parentId = overVo.id;
+						
+						fe = new FilterEvent(FilterEvent.UPDATE_CATEGORY);
+						fe.data = dragedVo;
+						dispatchEvent(fe);
+						
+//						var updateEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+//						updateEvent.data = dragedVo;
+//						updateEvent.dispatch();
+					}
+				}
+				else {
+					// no relevant drop target
+					showRejectDropCursor(false);
+					event.currentTarget.hideDropFeedback(event);
+					event.preventDefault();
+				}
+			}
+
+
+			/**
+			 * Update: Test to see if the node being dragged is dragging over/into
+			 * itself.
+			 **/
+			private function draggingOverSelf(event:DragEvent):Boolean {
+				//Get the node currently dragging over.
+				var currNodeOver:TreeItemRenderer = TreeItemRenderer(indexToItemRenderer(calculateDropIndex(event)));
+				if (currNodeOver == null) {
+					return false;
+				}
+
+				//get the node we are currently dragging
+				var draggingNode:TreeItemRenderer = TreeItemRenderer(itemToItemRenderer(event.dragSource.dataForFormat("treeItems")[0]));
+				if (currNodeOver != draggingNode) {
+					return false;
+				}
+				return true;
+			}
+
+			
+
+
+			private function showRejectDropCursor(value:Boolean):void {
+
+				if (value == true && CursorManager.currentCursorID != _rejectCursorID) {
+					var newCursorClass:Class;
+
+					//grab the reject cursor from the dragmanager style declaration
+					var styleSheet:CSSStyleDeclaration = StyleManager.getStyleDeclaration("DragManager");
+					newCursorClass = styleSheet.getStyle("rejectCursor");
+
+					//assign it as top level
+					_rejectCursorID = CursorManager.setCursor(newCursorClass, 0);
+
+				}
+				else if (value == false) {
+					//remove our rejectCursorID from the list    
+					CursorManager.removeCursor(_rejectCursorID);
+					_rejectCursorID = -1;
+				}
+
+			}
+
+
+			private function disableEditing(event:ListEvent):void {
+				if (!_isInRenameMode) {
+					event.preventDefault();
+				}
+			}
+
+
+			override protected function mouseDoubleClickHandler(event:MouseEvent):void {
+				var ir:IListItemRenderer = mouseEventToItemRenderer(event);
+
+				if (ir == null) {
+					return;
+				}
+
+				var vo:CategoryVO = ir.data as CategoryVO;
+				var index:int = itemRendererToIndex(ir);
+
+				if ((vo.id == 0) || !isInEditMode) {
+					event.preventDefault();
+					return;
+				}
+
+				_isInRenameMode = true;
+				editable = true;
+				editedItemPosition = {columnIndex: 0, rowIndex: index};
+				super.mouseDoubleClickHandler(event);
+			}
+
+
+
+			private function onCategoryDoubleClick(event:ListEvent):void {
+				var selectedItem:CategoryVO = this.selectedItem as CategoryVO;
+				if (selectedItem != null) {
+					editorHeightOffset = 1;
+					editorWidthOffset = 0;
+					editorXOffset = 22;
+					editorYOffset = 0;
+				}
+			}
+
+
+			private function onItemEndEdit(event:ListEvent):void {
+				if (_isInRenameMode) {
+					_isInRenameMode = false;
+				}
+				else {
+					return; // the event is thrown twice .....this drops the second one
+				}
+
+				if (!(this.itemEditorInstance is TextInput)) {
+					event.preventDefault();
+					return;
+				}
+
+
+				var it:TreeItemRenderer = event.itemRenderer as TreeItemRenderer;
+				var editedCategory:CategoryVO = it.data as CategoryVO;
+
+				var newName:String = TextInput(this.itemEditorInstance).text;
+				newName = StringUtil.trim(newName);
+
+				if (newName == editedCategory.name) {
+					// same name, no change in the name, do nothing
+					return;
+				}
+				else if (newName == '') {
+					// if new name is empty
+					TextInput(this.itemEditorInstance).text = editedCategory.name;
+					Alert.show(resourceManager.getString('cms', 'emptyCategoryNameError'),
+														 resourceManager.getString('cms', 'renameCategoryErrorTitle'));
+					event.preventDefault();
+				}
+				else {
+					var catId:String = editedCategory.category.parentId + '';
+					var parentCat:CategoryVO = catMap.getValue(catId) as CategoryVO;;
+					if (parentCat != null) {
+						var nameFound:Boolean = false;
+						for each (var child:CategoryVO in parentCat.children) {
+							if (newName.toLowerCase() == child.name.toLowerCase()) {
+								nameFound = true;
+								TextInput(this.itemEditorInstance).text = editedCategory.name;
+								Alert.show(resourceManager.getString('cms', 'categoryNameInUseError'),
+																	 resourceManager.getString('cms', 'renameCategoryErrorTitle'));
+								event.preventDefault();
+								return;
+							}
+						}
+
+						if (!nameFound) {
+							editedCategory.category.name = newName;
+							
+							var fe:FilterEvent = new FilterEvent(FilterEvent.UPDATE_CATEGORY);
+							fe.data = editedCategory;
+							dispatchEvent(fe);
+							
+//							var updateCatrgoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+//							updateCatrgoryEvent.data = editedCategory;
+//							updateCatrgoryEvent.dispatch();
+						}
+					}
+
+				}
+			}
+			
+			public function set selectedFilterCategories(selectedFilterCategories:String):void {
+				_selectedFilterCategories = (selectedFilterCategories == null) ? resourceManager.getString('cms',
+					'rootCategoryName') : selectedFilterCategories;
+				_isRootSelected = (selectedFilterCategories == null);
+				if (this.dataProvider && this.dataProvider.length > 0) {
+					expendAndMarkTree();
+					// if there's no dataprovider at this time, this function will be called when we set one.
+				}
+			}
+			
+			
+			public function get isInEditMode():Boolean {
+				return _isInEditMode;
+			}
+			
+			
+			public function set isInEditMode(isInEditMode:Boolean):void {
+				_isInEditMode = isInEditMode;
+				this.allowMultipleSelection = !isInEditMode;
+				this.allowDragSelection = isInEditMode;
+				this.dragMoveEnabled = isInEditMode;
+				this.dragEnabled = isInEditMode;
+				
+				this.setStyle('borderColor', isInEditMode ? '#44b5da' : '#FFFFFF');
+				this.setStyle('backgroundColor', isInEditMode ? '#ecfcff' : '#FFFFFF');
+			}
+			
+			
+			override public function set dataProvider(value:Object):void {
+				super.dataProvider = value;
+				expendAndMarkTree();
+			}
+		]]>
+	</mx:Script>
+</mx:Tree>

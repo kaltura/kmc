@@ -11,13 +11,22 @@
 		<![CDATA[
 			import com.kaltura.edw.control.events.RelatedFileEvent;
 			import com.kaltura.edw.view.EntryRelated;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.vo.KalturaAttachmentAsset;
-
+			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
+			
+			
 			[Bindable]
 			public var file:KalturaAttachmentAsset;
+			
+			/**
+			 * application controller
+			 * */
+			public var controller:KMvCController;
+			
 			private var _changed:Boolean = false;
 
 
@@ -51,7 +60,7 @@
 
 				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.UPDATE_RELATED_FILE);
 				saveEvent.attachmentAsset = file;
-				saveEvent.dispatch();
+				controller.dispatch(saveEvent);
 
 				removeMe();
 			}

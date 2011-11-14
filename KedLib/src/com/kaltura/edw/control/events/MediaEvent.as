@@ -1,11 +1,10 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaMediaEntry;
 
-	public class MediaEvent extends CairngormEvent
+	public class MediaEvent extends KMvCEvent
 	{
-		public static const ADD_ENTRY:String = "addEntry";
 		public static const APPROVE_REPLACEMENT:String = "approveReplacement";
 		public static const CANCEL_REPLACEMENT:String = "cancelReplacement";
 		

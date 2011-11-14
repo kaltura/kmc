@@ -1,9 +1,12 @@
 package com.kaltura.edw.control.commands.thumb
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.thumbAsset.ThumbAssetGetByEntryId;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaDistributionProfile;
 	import com.kaltura.vo.KalturaDistributionThumbDimensions;
 	import com.kaltura.vo.KalturaThumbAsset;
@@ -11,34 +14,33 @@ package com.kaltura.edw.control.commands.thumb
 	import flash.events.Event;
 	
 	import mx.collections.ArrayCollection;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
-	public class ListThumbnailAssetCommand extends KalturaCommand
+	public class ListThumbnailAssetCommand extends KedCommand
 	{
 		
-		override public function execute(event:CairngormEvent):void
+		private var _ddp:DistributionDataPack;
+		
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
-			var listThumbnailAsset:ThumbAssetGetByEntryId = new ThumbAssetGetByEntryId(_model.entryDetailsModel.selectedEntry.id);
+			_ddp = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			var listThumbnailAsset:ThumbAssetGetByEntryId = new ThumbAssetGetByEntryId((_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id);
 			listThumbnailAsset.addEventListener(KalturaEvent.COMPLETE, result);
 			listThumbnailAsset.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(listThumbnailAsset);
+			_client.post(listThumbnailAsset);
 		}
 		
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
-			var resultArray:Array =  data.data as Array;
-			handleThumbAssetResult(resultArray);		
+			var thumbsResultArray:Array = data.data as Array;
+			//copy this array so we can delete from it without damage the original profiles array
+			var profilesArray:Array = _ddp.distributionProfileInfo.kalturaDistributionProfilesArray.concat();
+			//resets old data
+			_ddp.distributionProfileInfo.thumbnailDimensionsArray = new Array();
+			buildThumbsWithDimensionsArray(_ddp.distributionProfileInfo.thumbnailDimensionsArray, profilesArray, thumbsResultArray);
 		}
 		
-		private function handleThumbAssetResult(thumbsResultArray:Array):void {
-			//copy this array so we can delete from it without damage the original profiles array
-			var profilesArray:Array = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray.concat();
-			//resets old data
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = new Array();
-			buildThumbsWithDimensionsArray(_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray, profilesArray, thumbsResultArray);
-		}
 		
 		/**
 		 * this function will aggregate profiles that use the same dimensions with an entry of the same dimensions
@@ -128,11 +130,11 @@ package com.kaltura.edw.control.commands.thumb
 			
 			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
 			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC | Array.DESCENDING);
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
+			_ddp.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
 		}
 		
 		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
-			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
+			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
 		}
 		
 	}

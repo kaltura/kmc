@@ -1,13 +1,14 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.edw.vo.ListableVo;
+	import com.kaltura.kmvc.control.KMvCEvent;
 
-	public class SearchEvent extends CairngormEvent
+	public class SearchEvent extends KMvCEvent
 	{
+		
+		
 		public static const SEARCH_ENTRIES : String = "content_searchEntries";
-		public static const SEARCH_PLAYLIST : String = "content_searchPlaylists";
-		public static const SEARCH_BULK_LOG : String = "content_searchBulkLog";
+		
 		
 		private var _listableVo : ListableVo;
 		

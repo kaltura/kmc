@@ -253,7 +253,7 @@
 				private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
 					var id:int = parseInt(error.flavorParamsId);
 					var flavorName:String;
-					var flavors:ArrayCollection = parentDocument.entryDetailsModel.flavorParamsAndAssetsByEntryId;
+					var flavors:ArrayCollection = parentDocument/*EntryDistribution*/.model.flavorParamsAndAssetsByEntryId;
 					for each (var flavorWithParams:FlavorAssetWithParamsVO in flavors) {
 						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == id) {
 							flavorName = flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.name;
@@ -325,35 +325,6 @@
 					return errorString;
 				}
 
-				//for testing: until Tantan will create a use case that can demo these errors
-				/* 		private function buildMockUpErrors():void {
-				   _metadataErrorsArray = new Array();
-				   var err1:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-				   err1.fieldName = "description";
-				   err1.validationErrorType = KalturaDistributionValidationErrorType.STRING_EMPTY;
-				   _metadataErrorsArray.push(err1);
-				   var err2:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-				   err2.fieldName = "Name";
-				   err2.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_LONG;
-				   err2.validationErrorParam = "100";
-				   _metadataErrorsArray.push(err2);
-				   var err3:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-				   err3.fieldName = "Tags";
-				   err3.validationErrorType = KalturaDistributionValidationErrorType.STRING_TOO_SHORT;
-				   err3.validationErrorParam = "50";
-				   _metadataErrorsArray.push(err3);
-				   var err4:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-				   err4.fieldName = "ttt";
-				   err4.validationErrorType = KalturaDistributionValidationErrorType.INVALID_FORMAT;
-				   err4.validationErrorParam = "flv";
-				   _metadataErrorsArray.push(err4);
-				   var err5:KalturaDistributionValidationErrorInvalidData = new KalturaDistributionValidationErrorInvalidData();
-				   err5.fieldName = "babbba";
-				   err5.validationErrorType = KalturaDistributionValidationErrorType.CUSTOM_ERROR;
-				   err5.validationErrorParam = "NOT good not good";
-				   _metadataErrorsArray.push(err5);
-
-				 } */
 			]]>
 		</mx:Script>
 

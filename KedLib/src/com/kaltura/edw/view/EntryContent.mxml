@@ -2,31 +2,37 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="contentVbox"
 		 implements="com.kaltura.edw.business.IDrilldownPanel"
 		 xmlns:controls="com.kaltura.controls.*" 
-		 xmlns:view="com.kaltura.edw.view.*" xmlns:et="com.kaltura.edw.view.et.*" >
+		 xmlns:view="com.kaltura.edw.view.*" xmlns:et="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*" >
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.ContentDataPack;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 		
 			[Bindable]
-			public var selectedEntry:KalturaBaseEntry;
-			
-			[Bindable]
-			public var parts:Array;
-			
 			/**
-			 * indicates the current entry is a livestream entry
+			 * @copy #selectedEntry
 			 * */
-			public var isLiveStream:Boolean;
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			private var _model:ContentDataPack;
 			
 			/**
 			 * to watch when <code>selectedEntry.parts</code> change
@@ -38,19 +44,54 @@
 			 * */
 			public var loadRoughcuts:Boolean = true;
 			
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+			
+			
+			public function validate():void {
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
+				dispatchEvent(e);
+			}
+			
+			
+			public function save():void {
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
+			
+			public function clear():void {
+			}
+			
+			
+			public function isChanged():Boolean {
+				return false;
+			}
+			
+			
 			public function initData():void {
-				// monitor data change if needed
-				if (!_cw) {
-					_cw = BindingUtils.bindSetter(removeTab, this, "parts");
-				}
-//				selectedEntry.addEventListener("partsChanged", removeTab, false, 0, true);
 				// get data
 				loadEntries();
+			}
+			
+			
+			public function init():void {
+				// monitor data change if needed
+				if (!_cw) {
+					_model = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
+					_cw = BindingUtils.bindSetter(removeTab, _model, "contentParts");
+				}
+				
 			}
 
 			public function destroy():void {
 				_cw.unwatch();
-//				selectedEntry.removeEventListener("partsChanged", removeTab, false);
 			}
 			
 			private function onPaging():void {
@@ -63,14 +104,15 @@
 			 * load all mix entries or load mixes that uses this entry if it is not a mix
 			 */
 			private function loadEntries():void {
-				if (selectedEntry is KalturaMixEntry) {
+				if (_selectedEntry is KalturaMixEntry) {
 					//get all mix entries
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ALL_ENTRIES, selectedEntry);
-					cgEvent.dispatch();
-				} else if (loadRoughcuts && !isLiveStream) {
+					var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ALL_ENTRIES, _selectedEntry);
+					controller.dispatch(cgEvent);
+				} 
+				else if (loadRoughcuts && !(_selectedEntry is KalturaLiveStreamAdminEntry)) {
 					//get all entries that uses this mix 
-					var getRoughcuts:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_ROUGHCUTS, selectedEntry);
-					getRoughcuts.dispatch();
+					var getRoughcuts:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_ROUGHCUTS, _selectedEntry);
+					controller.dispatch(getRoughcuts);
 				}
 				
 			}
@@ -92,17 +134,16 @@
 				event.target.removeColumn(resourceManager.getString('drilldown', 'intime'));
 			}
 			
-//			private function removeTab(e:Event):void {
 			private function removeTab(value:Array):void {
-//				var value:Array = selectedEntry.parts;
 				if (value && value.length == 0 && this.parent) {
 					this.parent.removeChild(this);
 				}
 			}
 		]]>
-	</mx:Script> 
-	<et:EntryTable width="100%" height="100%" dataProvider="{selectedEntry.parts}"
-					 creationComplete="{removeColums(event)}" sortableColumns="false"/>
-	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" getPageNum="onPaging()"
-					 showRowsInPage="false"/>
+	</mx:Script>
+	<control:ContentTabController id="controller" />
+	<et:EntryTable width="100%" height="100%" dataProvider="{_selectedEntry.parts}"
+				   creationComplete="{removeColums(event)}" sortableColumns="false" showLinks="false"/>
+	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" 
+					 getPageNum="onPaging()" showRowsInPage="false"/>
 </mx:VBox>

@@ -3,71 +3,113 @@
 	 Distribution tab of EntryDetailsWin
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*"
-		 show="onTabShow()" implements="com.kaltura.edw.business.IDrilldownPanel">
+		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*"
+		 creationComplete="vbox1_creationCompleteHandler(event)">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.control.events.DistributionProfileEvent;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
-			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.EntryDistributionWithProfile;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.view.window.DistributionDetailsWindow;
 			import com.kaltura.edw.view.window.SelectDistributorsWindow;
-			import com.kaltura.types.KalturaEntryDistributionFlag;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaDistributionProfile;
-			import com.kaltura.vo.KalturaDistributionValidationErrorInvalidMetadata;
-			import com.kaltura.vo.KalturaDistributionValidationErrorMissingFlavor;
-			import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
 			import com.kaltura.vo.KalturaEntryDistribution;
-
+			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.containers.ViewStack;
 			import mx.core.Application;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+
+
+			public static const SUBMIT:String = "submit";
+			public static const RETRY:String = "retry";
+			public static const SUBMIT_UPDATE:String = "submitUpdate";
+			public static const SHOW_DETAILS:String = "showDetails";
+			
 			private var _selectedEntry:KalturaBaseEntry;
-			private var _entryDetailsModel:EntryDetailsModel;
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (!value)
+					return;
+				_cw = BindingUtils.bindSetter(setEntryDistributions, _model.distributionProfileInfo, "entryDistributionArray");
+				_selectedEntry = value;
+			}
+			
+			private var _distributionDetailsWindow:DistributionDetailsWindow;
+
+			private var _model:DistributionDataPack;
+
 			[Bindable]
 			private var _entryDistributions:Array;
+			
 			[Bindable]
 			private var _notDeletedEntries:Array;
+			
 			[Bindable]
 			private var _selectDistributorsEnabled:Boolean = true;
+			
+			private var _cw:ChangeWatcher;
+			
 			/**
-			 * view stack of current entry details window
+			 * view stack of current entry details window.
+			 * read by SubmissionStatusRenderer via parentDocument
 			 * */
-			private var _viewStack:ViewStack;
+			public var viewStack:ViewStack;
 
 
+			public function clear():void {
+				if (_cw) {
+					_cw.unwatch();
+				}
+			}
+			
+			public function isChanged():Boolean {
+				return false;
+			}
+			
+			public function init():void {
+
+			}
+			
 			public function destroy():void {
-
+				// actions:
+				dataGrid.removeEventListener(EntryDistribution.RETRY, actionHandler);
+				dataGrid.removeEventListener(EntryDistribution.SUBMIT, actionHandler);
+				dataGrid.removeEventListener(EntryDistribution.SUBMIT_UPDATE, actionHandler);
+				// distributor
+				dataGrid.removeEventListener(EntryDistribution.SHOW_DETAILS, showDistributionDetails);
 			}
 
-
-			public function get viewStack():ViewStack {
-				return _viewStack;
+			public function validate():void {
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
+				dispatchEvent(e);
 			}
-
-
-			public function set viewStack(value:ViewStack):void {
-				_viewStack = value;
+			
+			
+			public function save():void {
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-
 
 			/**
 			 * loads required data from server
 			 * */
 			public function initData():void {
-				onTabShow();
-			}
-
-
-			/**
-			 * will refresh the entry distribution list on every navigation to distribution tab
-			 * */
-			private function onTabShow():void {
 				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
-				updateEntryDistributions.dispatch();
+				controller.dispatch(updateEntryDistributions);
 			}
 
 
@@ -91,33 +133,19 @@
 			}
 
 
-			public function get entryDetailsModel():EntryDetailsModel {
-				return _entryDetailsModel;
+			public function get model():DistributionDataPack {
+				return _model;
 			}
 
 
-			public function set entryDetailsModel(value:EntryDetailsModel):void {
+			public function set model(value:DistributionDataPack):void {
 				if (!value)
 					return;
 
-				_entryDetailsModel = value;
-				if (entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
+				_model = value;
+				if (value.distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
 					_selectDistributorsEnabled = false;
 			}
-
-
-			public function get selectedEntry():KalturaBaseEntry {
-				return _selectedEntry;
-			}
-
-
-			public function set selectedEntry(value:KalturaBaseEntry):void {
-				if (!value)
-					return;
-				BindingUtils.bindSetter(setEntryDistributions, _entryDetailsModel.distributionProfileInfo, "entryDistributionArray");
-				_selectedEntry = value;
-			}
-
 
 			public function setEntryDistributions(value:Array):void {
 				_entryDistributions = value;
@@ -134,13 +162,18 @@
 			private function selectDistributorsClick():void {
 				var selectDistributorWin:SelectDistributorsWindow = new SelectDistributorsWindow();
 				selectDistributorWin.selectedEntry = selectedEntry;
-				selectDistributorWin.entryFlavors = _entryDetailsModel.flavorParamsAndAssetsByEntryId;
-				selectDistributorWin.entryThumbs = _entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
-				selectDistributorWin.buildDistributorsWindow(entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray, entryDetailsModel.distributionProfileInfo.entryDistributionArray);
+				selectDistributorWin.entryFlavors = _model.flavorParamsAndAssetsByEntryId;
+				selectDistributorWin.entryThumbs = _model.distributionProfileInfo.thumbnailDimensionsArray;
+				selectDistributorWin.buildDistributorsWindow(_model.distributionProfileInfo.kalturaDistributionProfilesArray, _model.distributionProfileInfo.entryDistributionArray);
+				selectDistributorWin.addEventListener(SelectDistributorsWindow.UPDATE_LISTS, updateLists, false, 0, true);
 				PopUpManager.addPopUp(selectDistributorWin, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(selectDistributorWin);
 			}
 
+			private function updateLists(e:KedDataEvent):void {
+				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE_LIST, e.data.addDistributors, e.data.removeDistributors);
+				controller.dispatch(updateEntryDistributions);
+			}
 
 			private function compareSunrise(distribution1:EntryDistributionWithProfile, distribution2:EntryDistributionWithProfile):int {
 				return compareDates(distribution1.kalturaEntryDistribution.sunrise, distribution2.kalturaEntryDistribution.sunrise);
@@ -159,32 +192,111 @@
 					return 0;
 				return 1;
 			}
+
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// actions:
+				dataGrid.addEventListener(EntryDistribution.RETRY, actionHandler);
+				dataGrid.addEventListener(EntryDistribution.SUBMIT, actionHandler);
+				dataGrid.addEventListener(EntryDistribution.SUBMIT_UPDATE, actionHandler);
+				// distributor
+				dataGrid.addEventListener(EntryDistribution.SHOW_DETAILS, showDistributionDetails);
+				
+			}
+			
+			private function showDistributionDetails(event:Event):void {
+				var distribution:EntryDistributionWithProfile = event.target.data as EntryDistributionWithProfile;
+				_distributionDetailsWindow = new DistributionDetailsWindow();
+				_distributionDetailsWindow.entryDis = distribution;
+				//don't allow editing if we are in the middle of some process
+				if ((distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.DELETING) ||
+					(distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.SUBMITTING) ||
+					(distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.UPDATING)) {
+					_distributionDetailsWindow.enableChanges = false;
+				}
+				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.UPDATE_DISTRIBUTION, updateDistribution);
+				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.GET_RETURNED_DATA, getXml);
+				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.GET_SENT_DATA, getXml);
+				PopUpManager.addPopUp(_distributionDetailsWindow, (Application.application as DisplayObject), true);
+				PopUpManager.centerPopUp(_distributionDetailsWindow);  
+			}
+			
+			
+				
+			private function getXml(event:Event):void {
+				var etype:String;
+				if (event.type == DistributionDetailsWindow.GET_RETURNED_DATA) {
+					etype = EntryDistributionEvent.GET_RETURNED_DATA;
+				}
+				else if (event.type == DistributionDetailsWindow.GET_SENT_DATA) {
+					etype = EntryDistributionEvent.GET_SENT_DATA;
+				}
+				var requestXML:EntryDistributionEvent = new EntryDistributionEvent(etype, null, null, _distributionDetailsWindow.entryDis.kalturaEntryDistribution);
+				controller.dispatch(requestXML);
+			}
+			
+			private function updateDistribution(event:Event):void {
+				var ud:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE, null, null, _distributionDetailsWindow.entryDis.kalturaEntryDistribution);
+				controller.dispatch(ud);
+			}
+			
+			private function closeDistributionDetailsWindow(event:Event):void {
+				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.UPDATE_DISTRIBUTION, updateDistribution);
+				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.GET_RETURNED_DATA, getXml);
+				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.GET_SENT_DATA, getXml);
+				PopUpManager.removePopUp(_distributionDetailsWindow);
+				_distributionDetailsWindow = null;
+			}
+			
+			
+			protected function actionHandler(event:Event):void
+			{
+				event.stopPropagation();
+				var actionEvent:EntryDistributionEvent;
+				var edata:KalturaEntryDistribution = event.target.data as KalturaEntryDistribution;
+				if (event.type == EntryDistribution.SUBMIT) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT, null, null, edata);
+				}
+				else if (event.type == EntryDistribution.RETRY) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.RETRY, null,null, edata);
+				}
+				else if (event.type == EntryDistribution.SUBMIT_UPDATE) {
+					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT_UPDATE, null,null, edata);
+				}
+				//TODO show details
+				controller.dispatch(actionEvent);
+			}
+
 		]]>
 	</mx:Script>
-	<mx:HBox width="100%" horizontalAlign="right">
-		<!--<mx:Label text="{resourceManager.getString('drilldown','editDistributors')}" styleName="drillDownTitleLabel"/>
-			 <mx:Spacer width="100%"/>-->
+	<control:DistributionTabController id="controller" />
+	<mx:HBox width="100%" horizontalAlign="left">
+		<!--<mx:Label text="{resourceManager.getString('drilldown','editDistributors')}" styleName="drillDownTitleLabel"/>-->
 		<mx:LinkButton id="selectDistributors" enabled="{_selectDistributorsEnabled}"
 					   label="{resourceManager.getString('drilldown','selectDistributors')}"
 					   click="selectDistributorsClick()"/>
+		<mx:Spacer width="100%"/>
+		<mx:LinkButton click="initData()" label="{resourceManager.getString('drilldown','refresh')}"
+					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_notDeletedEntries}" draggableColumns="false"
 				 sortableColumns="true" selectable="false" rowHeight="60">
 		<mx:columns>
-			<mx:DataGridColumn id="distributorCol"
+			<mx:DataGridColumn id="distributorCol" width="110" sortable="false"
 							   headerText="{resourceManager.getString('drilldown','distributorCol')}"
-							   itemRenderer="com.kaltura.edw.view.ir.distribution.DistributorRenderer"
-							   width="110" sortable="false"/>
+							   itemRenderer="com.kaltura.edw.view.ir.distribution.DistributorRenderer" />
 			<mx:DataGridColumn id="startDateCol" headerText="{resourceManager.getString('drilldown','startDateCol')}"
-							   itemRenderer="com.kaltura.edw.view.ir.distribution.SunriseRenderer"
-							   sortable="true" width="85" sortCompareFunction="compareSunrise"/>
+							   itemRenderer="com.kaltura.edw.view.ir.distribution.SunriseRenderer" sortable="true"
+							   width="85" sortCompareFunction="compareSunrise"/>
 			<mx:DataGridColumn id="endDateCol" headerText="{resourceManager.getString('drilldown','endDateCol')}"
-							   itemRenderer="com.kaltura.edw.view.ir.distribution.SunsetRenderer"
-							   sortable="true" width="85" sortCompareFunction="compareSunset"/>
+							   itemRenderer="com.kaltura.edw.view.ir.distribution.SunsetRenderer" sortable="true"
+							   width="85" sortCompareFunction="compareSunset"/>
 			<mx:DataGridColumn id="submissionsStatusCol"
 							   headerText="{resourceManager.getString('drilldown','submissionsStatusCol')}"
-							   itemRenderer="com.kaltura.edw.view.ir.distribution.SubmissionStatusRenderer"
-							   width="300" sortable="false"/>
+							   itemRenderer="com.kaltura.edw.view.ir.distribution.SubmissionStatusRenderer" width="300"
+							   sortable="false"/>
 			<mx:DataGridColumn id="actionCol" headerText="{resourceManager.getString('drilldown','actionAvailableCol')}"
 							   itemRenderer="com.kaltura.edw.view.ir.distribution.DistributionActionRenderer"
 							   minWidth="122" sortable="false"/>

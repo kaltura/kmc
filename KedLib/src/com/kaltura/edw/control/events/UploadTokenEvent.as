@@ -1,11 +1,11 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.edw.vo.AssetVO;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
 	import flash.net.FileReference;
 	
-	public class UploadTokenEvent extends CairngormEvent
+	public class UploadTokenEvent extends KMvCEvent
 	{
 		public static const UPLOAD_TOKEN:String = "uploadToken";
 		

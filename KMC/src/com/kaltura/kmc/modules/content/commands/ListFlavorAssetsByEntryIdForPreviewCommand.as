@@ -2,11 +2,11 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
+	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
-	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAsset;
@@ -16,7 +16,6 @@ package com.kaltura.kmc.modules.content.commands
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	/**
 	 * list flavor params for required entry, then open preview&embed with relevant data 
@@ -28,8 +27,8 @@ package com.kaltura.kmc.modules.content.commands
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			_entry = (event as EntryEvent).entryVo;
-			var entryId:String = (event as EntryEvent).entryVo.id;
+			_entry = (event as KMCEntryEvent).entryVo;
+			var entryId:String = (event as KMCEntryEvent).entryVo.id;
 			var getAssetsAndFlavorsByEntryId:FlavorAssetGetFlavorAssetsWithParams = new FlavorAssetGetFlavorAssetsWithParams(entryId);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.COMPLETE, result);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.FAILED, fault);

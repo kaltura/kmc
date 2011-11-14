@@ -1,7 +1,9 @@
 package com.kaltura.edw.control.commands {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.accessControl.AccessControlList;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.vo.AccessControlProfileVO;
 	import com.kaltura.vo.KalturaAccessControl;
@@ -14,18 +16,18 @@ package com.kaltura.edw.control.commands {
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 
-	public class ListAccessControlsCommand extends KalturaCommand {
+	public class ListAccessControlsCommand extends KedCommand {
 
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var filter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
 			filter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageSize = 1000;
-			var getListAccessControlProfiles:AccessControlList = new AccessControlList(filter, pager);
-			getListAccessControlProfiles.addEventListener(KalturaEvent.COMPLETE, result);
-			getListAccessControlProfiles.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getListAccessControlProfiles);
+			var listAcp:AccessControlList = new AccessControlList(filter, pager);
+			listAcp.addEventListener(KalturaEvent.COMPLETE, result);
+			listAcp.addEventListener(KalturaEvent.FAILED, fault);
+			_client.post(listAcp);
 		}
 
 
@@ -47,7 +49,7 @@ package com.kaltura.edw.control.commands {
 					}
 					tempArrCol.addItem(acVo);
 				}
-				_model.filterModel.accessControlProfiles = tempArrCol;
+				(_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel.accessControlProfiles = tempArrCol;
 			}
 			else {
 				Alert.show(data.error, ResourceManager.getInstance().getString('cms', 'error'));

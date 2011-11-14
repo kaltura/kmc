@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--- 
+ Moderation status tab of the Filter.
+ This class handles operations and maintenance of scheduling related ui.
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 implements="com.kaltura.edw.components.filter.IFilterTab">
+	<mx:Metadata>
+		[Event(name="filterChanged", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+
+			[Bindable]
+			/**
+			 * @copy Filter#showPendingModerationOption
+			 * */
+			public var showPendingModerationOption:Boolean;
+			
+			[Bindable]
+			/**
+			 * @copy Filter#showRejectedOption
+			 * */
+			public var showRejectedOption:Boolean;
+			
+			[Bindable]
+			/**
+			 * @copy Filter#showApprovedOption
+			 * */
+			public var showApprovedOption:Boolean;
+			
+			
+			/**
+			 * check if all moderation buttons are selected - if non is selected return true
+			 * if one of them is selected - return false
+			 */
+			private function validateModeration():Boolean {
+				var result:Boolean = false;
+				if (!approved.selected && !rejected.selected && !pending.selected &&
+					!autoApprovedBtn.selected && !pendingModeration.selected) {
+					result = true;
+				}
+				return result;
+			}
+
+
+			/**
+			 * user select to choose all moderation
+			 */
+			private function onAllModerationClicked(evt:Event):void {
+				var isSelected:Boolean = evt.target.selected;
+				if (!isSelected) {
+					(evt.target as Button).selected = true;
+					approved.selected = false;
+					pending.selected = false;
+					rejected.selected = false;
+					autoApprovedBtn.selected = false;
+					pendingModeration.selected = false;
+					dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
+				}
+			}
+
+
+			/**
+			 * one of the moderation status buttons was clicked
+			 */
+			private function changeModerationStatusFilter(evt:Event):void {
+				//if a moderation button was selected deselect the all moderation status 
+				if ((evt.target as Button).selected) {
+					allModerationStatus.selected = false;
+				}
+				//if non is selected - highlight the 'allModeration' button
+				if (validateModeration()) {
+					allModerationStatus.selected = true;
+				}
+
+				dispatchEvent(new Event(BaseFilter.FILTER_CHANGED));
+			}
+
+
+			/**
+			 * creates a string representing the required
+			 * moderation string, based on selected buttons.
+			 * @return moderation string
+			 * */
+			public function getFilterString():String {
+				var moderationString:String = '';
+				if (approved.selected)
+					moderationString += KalturaEntryModerationStatus.APPROVED + ",";
+				if (rejected.selected)
+					moderationString += KalturaEntryModerationStatus.REJECTED + ",";
+				if (pending.selected)
+					moderationString += KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW + ",";
+				if (autoApprovedBtn.selected)
+					moderationString += KalturaEntryModerationStatus.AUTO_APPROVED + ",";
+				if (pendingModeration.selected)
+					moderationString += KalturaEntryModerationStatus.PENDING_MODERATION + ",";
+				//remove last ","
+				moderationString = moderationString.slice(0, moderationString.length - 1);
+				return moderationString;
+			}
+
+
+			/**
+			 * selects buttons according to given filter data.
+			 * @param filterVo	filter data.
+			 * */
+			public function setFilter(filterVo:KalturaMediaEntryFilter):void {
+				if (!filterVo.moderationStatusIn) {
+					//no moderation 
+					allModerationStatus.selected = true;
+					approved.selected = false;
+					rejected.selected = false;
+					pending.selected = false;
+
+					autoApprovedBtn.selected = false;
+					pendingModeration.selected = false;
+				}
+				else {
+					// one or more moderation types selected
+					allModerationStatus.selected = false;
+					if (filterVo.moderationStatusIn.indexOf(KalturaEntryModerationStatus.APPROVED.toString()) >
+						-1)
+						approved.selected = true;
+					if (filterVo.moderationStatusIn.indexOf(KalturaEntryModerationStatus.REJECTED.toString()) >
+						-1)
+						rejected.selected = true;
+					if (filterVo.moderationStatusIn.indexOf(KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW.toString()) >
+						-1)
+						pending.selected = true;
+					if (filterVo.moderationStatusIn.indexOf(KalturaEntryModerationStatus.AUTO_APPROVED.toString()) >
+						-1)
+						autoApprovedBtn.selected = true;
+					if (filterVo.moderationStatusIn.indexOf(KalturaEntryModerationStatus.PENDING_MODERATION.toString()) >
+						-1)
+						pendingModeration.selected = true;
+				}
+			}
+			
+
+			public function get buttons():Array {
+				return [allModerationStatus, approved, pending, rejected, autoApprovedBtn, pendingModeration];
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox id="moderationStatusContainer" >
+		<mx:Button id="allModerationStatus" width="100%" selected="true"
+				   label="{resourceManager.getString('cms', 'allModerationStatus')}" buttonMode="true"
+				   click="{onAllModerationClicked(event)}" styleName="mainFilterGroupButton" />
+		<mx:Button id="approved" width="100%" selected="false" label="{resourceManager.getString('cms', 'approved')}"
+				   buttonMode="true" toggle="true" styleName="innerFilterGroupButton" 
+				   click="{changeModerationStatusFilter(event)}"
+				   visible="{showApprovedOption}" includeInLayout="{showApprovedOption}"/>
+		<mx:Button id="pending" width="100%" selected="false" label="{resourceManager.getString('cms', 'pending')}"
+				   buttonMode="true" toggle="true" styleName="innerFilterGroupButton" 
+				   click="{changeModerationStatusFilter(event)}"/>
+		<mx:Button id="rejected" width="100%" selected="false" label="{resourceManager.getString('cms', 'rejected')}"
+				   buttonMode="true" toggle="true" styleName="innerFilterGroupButton" 
+				   click="{changeModerationStatusFilter(event)}" 
+				   visible="{showRejectedOption}" includeInLayout="{showRejectedOption}"/>
+		<mx:Button id="autoApprovedBtn" width="100%" selected="false"
+				   label="{resourceManager.getString('cms', 'autoApproved')}" buttonMode="true" toggle="true"
+				   styleName="innerFilterGroupButton" 
+				   click="{changeModerationStatusFilter(event)}"/>
+		<mx:Button id="pendingModeration" width="100%" selected="false"
+				   label="{resourceManager.getString('cms', 'pendingModeration')}" buttonMode="true" toggle="true"
+				   styleName="innerFilterGroupButton" 
+				   click="{changeModerationStatusFilter(event)}"
+				   visible="{showPendingModerationOption}" includeInLayout="{showPendingModerationOption}"/>
+	</mx:VBox>
+</mx:VBox>

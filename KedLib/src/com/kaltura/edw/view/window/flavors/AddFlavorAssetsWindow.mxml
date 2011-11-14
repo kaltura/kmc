@@ -14,12 +14,13 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.control.events.MediaEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.view.EntryDetailsWin;
-			import com.kaltura.edw.control.events.MediaEvent;
 			import com.kaltura.edw.view.EntryFlavors;
 			import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
 			import com.kaltura.edw.vo.UploadFileVo;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaAssetParamsOrigin;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -75,7 +76,10 @@
 //				"((\\/?)|" + // a slash isn't required if there is no file name
 //				"(\\/[0-9a-zA-Z_!~*'().;?:@&=+$,%#-]+)+)$";
 			
-			
+			/**
+			 * application controller;
+			 * */
+			public var controller:KMvCController
 			
 			[Bindable]
 			/**
@@ -360,7 +364,7 @@
 				// dispatch the event with required data
 				var ce:MediaEvent = new MediaEvent(MediaEvent.UPDATE_MEDIA, _entry as KalturaMediaEntry);
 				ce.data = {conversionProfileId:cnvrtProfId, resource:mediaResource};
-				ce.dispatch();
+				controller.dispatch(ce);
 			}
 			
 			
@@ -384,13 +388,13 @@
 				if (ufv.flavorAssetId != null) {
 					dffe = new MediaEvent(MediaEvent.UPDATE_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 					dffe.data = {flavorAssetId: ufv.flavorAssetId, resource:resource};
-					dffe.dispatch();
+					controller.dispatch(dffe);
 				}
 				else {
 					// if no flavorAssetId this is new flavour
 					dffe = new MediaEvent(MediaEvent.ADD_SINGLE_FLAVOR, _entry as KalturaMediaEntry);
 					dffe.data = {flavorParamsId: ufv.flavorParamId, resource:resource};
-					dffe.dispatch();
+					controller.dispatch(dffe);
 				}
 			}
 			

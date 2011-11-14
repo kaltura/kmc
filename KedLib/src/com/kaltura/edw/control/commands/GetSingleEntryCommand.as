@@ -1,36 +1,31 @@
 package com.kaltura.edw.control.commands {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.baseEntry.BaseEntryGet;
-	import com.kaltura.edw.business.Cloner;
 	import com.kaltura.edw.business.EntryUtil;
-	import com.kaltura.edw.control.commands.KalturaCommand;
-	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.events.KedDataEvent;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.types.KalturaEntryReplacementStatus;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaClipAttributes;
 	
-//	import modules.Content;
+	import flash.events.IEventDispatcher;
 	
-	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
 	import mx.events.PropertyChangeEvent;
-	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 
-	public class GetSingleEntryCommand extends KalturaCommand implements ICommand, IResponder {
+	public class GetSingleEntryCommand extends KedCommand {
 
 		private var _eventType:String;
 		
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var e:EntryEvent = event as EntryEvent;
+			var e:KedEntryEvent = event as KedEntryEvent;
 			_eventType = e.type;
-			if (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
-				_model.entryDetailsModel.selectedEntryReloaded = false;
+			if (_eventType == KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
+				(_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
 			}
 			
 			var getEntry:BaseEntryGet = new BaseEntryGet(e.entryId);
@@ -38,7 +33,7 @@ package com.kaltura.edw.control.commands {
 			getEntry.addEventListener(KalturaEvent.COMPLETE, result);
 			getEntry.addEventListener(KalturaEvent.FAILED, fault);
 
-			_model.context.kc.post(getEntry);
+			_client.post(getEntry);
 		}
 
 
@@ -48,20 +43,27 @@ package com.kaltura.edw.control.commands {
 			
 			if (data.data && data.data is KalturaBaseEntry) {
 				var resultEntry:KalturaBaseEntry = data.data as KalturaBaseEntry;
-				if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY) {
-					_model.entryDetailsModel.selectedReplacementEntry = resultEntry;
+				var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+				if (_eventType == KedEntryEvent.GET_REPLACEMENT_ENTRY) {
+					edp.selectedReplacementEntry = resultEntry;
 				}
-				else if (_eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
-					var selectedEntry:KalturaBaseEntry = _model.entryDetailsModel.selectedEntry;
+				else if (_eventType == KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
+					var selectedEntry:KalturaBaseEntry = edp.selectedEntry;
 					EntryUtil.updateChangebleFieldsOnly(resultEntry, selectedEntry);
 					selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(selectedEntry, 
 						'replacementStatus', selectedEntry.replacementStatus, selectedEntry.replacementStatus));
 					//if in the entries list there's an entry with the same id, replace it.
-					EntryUtil.updateSelectedEntryInList(selectedEntry, _model.listableVo.arrayCollection);
-					_model.entryDetailsModel.selectedEntryReloaded = true;
+//					EntryUtil.updateSelectedEntryInList(selectedEntry, _model.listableVo.arrayCollection);
+					var dsp:IEventDispatcher = (_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
+					var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_RELOADED);
+					e.data = selectedEntry; 
+					dsp.dispatchEvent(e);
+					
+					edp.selectedEntryReloaded = true;
 				}
 				else {
-					/*(*/_model.app/* as Content)*/.requestEntryDrilldown(resultEntry);
+					//TODO open drilldown. the request shouldn't come from here, it should come from the env.app
+//					/*(*/_model.app/* as Content)*/.requestEntryDrilldown(resultEntry);
 				}
 			}
 			else {
@@ -73,7 +75,7 @@ package com.kaltura.edw.control.commands {
 		
 		override public function fault(info:Object):void {
 			//if entry replacement doesn't exist it means that the replacement is ready
-			if (_eventType == EntryEvent.GET_REPLACEMENT_ENTRY || _eventType == EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
+			if (_eventType == KedEntryEvent.GET_REPLACEMENT_ENTRY || _eventType == KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					trace("GetSingleEntryCommand 703");

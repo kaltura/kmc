@@ -17,17 +17,18 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.edw.business.IDataOwner;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.control.events.LoadEvent;
-			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
-			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.PlaylistModel;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
+			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
@@ -111,8 +112,8 @@
 			
 			private function creationCompleteHandler():void {
 				// load the data required by filter 
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
-				fe.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
+				KedController.getInstance().dispatch(fe);
 			}
 			
 			
@@ -360,7 +361,7 @@
 				newPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				newPlaylist.description = playlistDescription.text;
 				newPlaylist.filters = filtersArray;
-				var addEntryEvent:EntryEvent = new EntryEvent(EntryEvent.ADD_PLAYLIST, newPlaylist);
+				var addEntryEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.ADD_PLAYLIST, newPlaylist);
 				addEntryEvent.dispatch();
 			}
 			
@@ -407,7 +408,7 @@
 				playlist.totalResults = 50;
 				playlist.filters = getRulesArray();
 
-				cgEvent = new EntryEvent(EntryEvent.GET_RULE_BASED_PLAYLIST, playlist);
+				cgEvent = new KMCEntryEvent(KMCEntryEvent.GET_RULE_BASED_PLAYLIST, playlist);
 				cgEvent.dispatch();
 			}
 
@@ -448,7 +449,7 @@
 			 * reset the _model duration & total items in playlist preview
 			 * */
 			private function onClose():void {
-				var cgEvent:CairngormEvent = new EntryEvent(EntryEvent.RESET_RULE_BASED_DATA, null);
+				var cgEvent:CairngormEvent = new KMCEntryEvent(KMCEntryEvent.RESET_RULE_BASED_DATA, null);
 				cgEvent.dispatch();
 				
 				cgEvent = new WindowEvent(WindowEvent.CLOSE);

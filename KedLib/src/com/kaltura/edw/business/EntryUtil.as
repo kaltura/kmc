@@ -4,6 +4,7 @@ package com.kaltura.edw.business
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import mx.collections.ArrayCollection;
+	import mx.events.PropertyChangeEvent;
 
 	/**
 	 * This class will hold functions related to kaltura entries 
@@ -12,19 +13,24 @@ package com.kaltura.edw.business
 	 */	
 	public class EntryUtil
 	{
-//		private static var _model:CmsModelLocator = CmsModelLocator.getInstance();
 		
 		/**
 		 * Update the given entry on the listableVO list, if it contains an entry with the same id 
 		 * 
 		 */		
 		public static function updateSelectedEntryInList(entryToUpdate:KalturaBaseEntry, entries:ArrayCollection):void {
-//			var entries:ArrayCollection = _model.listableVo.arrayCollection;
 			for each (var entry:KalturaBaseEntry in entries) {
 				if (entry.id==entryToUpdate.id) {
 					var atts:Array = ObjectUtil.getObjectAllKeys(entryToUpdate);
+					var oldVal:*;
+					var att:String;
 					for (var i:int = 0; i<atts.length; i++) {
-						entry[atts[i]] = entryToUpdate[atts[i]];
+						att = atts[i];
+						if (entry[att] != entryToUpdate[att]){
+							oldVal = entry[att]; 
+							entry[att] = entryToUpdate[att];
+//							entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, att, oldVal, entryToUpdate[att]));
+						}
 					}
 					break;
 				}

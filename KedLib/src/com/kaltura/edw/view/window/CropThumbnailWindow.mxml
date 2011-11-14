@@ -11,19 +11,19 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.GenerateThumbAssetEvent;
-			import com.kaltura.edw.control.events.ThumbnailAssetEvent;
-			import com.kaltura.edw.model.EntryDetailsModel;
 			import com.kaltura.edw.vo.ThumbnailWithDimensions;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			import com.kaltura.utils.imageCropper.CropBox;
 			import com.kaltura.utils.imageCropper.ImageCrop;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaThumbAsset;
 			import com.kaltura.vo.KalturaThumbParams;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			
+			
 			/**
 			 * will be sent when the window closes
 			 * */
@@ -58,10 +58,15 @@
 			public static const REFRESH_PREVIEW_IMG_INTERVAL:int = 100;
 
 			private static var enterClicked:Boolean = false;
+			
+			/**
+			 * application controller
+			 * */
+			public var controller:KMvCController;
+			
 			[Bindable]
 			private var _maxImageHeight:int;
 			private var _maxImageWidth:int;
-			private var _entryDetailsModel:EntryDetailsModel;
 			private var _selectedEntry:KalturaBaseEntry;
 			[Bindable]
 			private var _presetSizeList:Array;
@@ -109,14 +114,14 @@
 			}
 
 
-			public function get entryDetailsModel():EntryDetailsModel {
-				return _entryDetailsModel;
-			}
-
-
-			public function set entryDetailsModel(value:EntryDetailsModel):void {
-				_entryDetailsModel = value;
-			}
+//			public function get entryDetailsModel():EntryDetailsModel {
+//				return _entryDetailsModel;
+//			}
+//
+//
+//			public function set entryDetailsModel(value:EntryDetailsModel):void {
+//				_entryDetailsModel = value;
+//			}
 
 
 			/**
@@ -370,15 +375,7 @@
 			 * */
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
-				buildTitle();
-			}
-
-
-			/**
-			 * build the string for the window title
-			 * */
-			private function buildTitle():void {
-				this.title = resourceManager.getString('drilldown', 'editEntry') + " - " + _selectedEntry.name + " - " + resourceManager.getString('drilldown', 'createThumb');
+				this.title = resourceManager.getString('drilldown', 'editEntry') + " - " + value.name + " - " + resourceManager.getString('drilldown', 'createThumb');
 			}
 
 
@@ -410,7 +407,7 @@
 					thumbParams.scaleHeight = selectedDimensions.height / thumbParams.cropHeight;
 				}
 				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
-				generateThumbEvent.dispatch();
+				controller.dispatch(generateThumbEvent);
 
 				_isDirty = false;
 			}

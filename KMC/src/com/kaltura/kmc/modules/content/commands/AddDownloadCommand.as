@@ -11,7 +11,6 @@ package com.kaltura.kmc.modules.content.commands
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class AddDownloadCommand extends KalturaCommand
 	{

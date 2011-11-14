@@ -1,9 +1,8 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.vo.ConversionProfileVO;
+	import com.kaltura.kmvc.control.KMvCEvent;
 
-	public class ProfileEvent extends CairngormEvent
+	public class ProfileEvent extends KMvCEvent
 	{
 		/**
 		 * create new conversion profile

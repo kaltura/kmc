@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.edw.business.*"
-		 creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel">
+		 creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
-		[Event(name="untrackableChange", type="flash.events.Event")] 
 		[Event(name="openPreview", type="flash.events.Event")] 
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
 	</mx:Metadata>
 
 
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.edw.business.KedJSGate;
-			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.ModelEvent;
-			import com.kaltura.edw.control.events.UploadEntryEvent;
-			import com.kaltura.edw.model.Context;
-			import com.kaltura.edw.model.EntryDetailsModel;
-			import com.kaltura.edw.vo.EntryDetailsValidationError;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEditorType;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
@@ -31,40 +35,35 @@
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KTimeUtil;
+			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAsset;
-			import com.kaltura.vo.KalturaFlavorAssetWithParams;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
-			import flash.utils.getQualifiedClassName;
-			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
-			import mx.containers.ViewStack;
 			import mx.controls.Image;
-			import mx.core.Container;
 			import mx.events.ResizeEvent;
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
 
-			public static const UNTRACKABLE_CHANGE:String = "untrackableChange";
+			// =================================================================
+			// Events
+			// =================================================================
 			public static const OPEN_PREVIEW:String = "openPreview";
 
-			private const ENTRY_PLACEHOLDER:String = '{entryId}';
-
+			// =================================================================
+			// Constants
+			// =================================================================
+			
 			/**
-			 * landing page according to partner's data
-			 * */
-			public var landingPage:String;
-
-			/**
-			 * default image to display when entry contains no content
+			 * image to display when entry doesn't have content
 			 * */
 			private static const noMediaImage:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("noContentImg");
 
+			
 			/**
 			 * reference to kdp3Loader.
 			 * due to performance issue that we fixed, this is static.
@@ -72,32 +71,77 @@
 			private static var kdp3StaticSwfLoader:SWFLoader;
 
 
+			/**
+			 * landing page replace string
+			 * @internal 
+			 * the landing page is a page on the partner's website where they can view the entry directly.
+			 * this is the token that tells KMC where the entry id should appear in the url. 
+			 * */
+			private const ENTRY_PLACEHOLDER:String = '{entryId}';
+
+			
+			/**
+			 * page layout: labels width
+			 * */
 			private const LABEL_WIDTH:Number = 105;
+			
+			
+			/**
+			 * page layout: texts width
+			 * */
 			private const TEXT_WIDTH:Number = 320;
 
-			[Bindable]
-			public var selectedEntry:KalturaBaseEntry;
 
-			[Bindable]
+			// =================================================================
+			// Other Stuff
+			// =================================================================
+			
 			/**
-			 * indicates the current entry is a livestream entry
+			 * landing page according to partner's data
 			 * */
-			public var isLiveStream:Boolean;
-
-			[Bindable]
-			public var context:Context;
-
-			[Bindable]
-			public var entryDetailsModel:EntryDetailsModel;
-
-			private var _maxNumCategories:int;
-
-			private var _fr:FileReference;
-
-			private var _changedThumbnail:Boolean;
+			public var landingPage:String;
+			
+			// =================================================================
+			// Data Model
+			// =================================================================
 
 			/**
-			 * entry thumbnail for image entries
+			 * @copy #selectedEntry
+			 * */
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			[Bindable]
+			/**
+			 * the entry to which we apply changes
+			 * */
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (value is KalturaLiveStreamAdminEntry) {
+					offlineHolder.visible = true;
+					offlineHolder.includeInLayout = true;
+				} 
+				else {
+					offlineHolder.visible = false;
+					offlineHolder.includeInLayout = false;
+				}
+				
+				_selectedEntry = value;	
+			}
+			
+			
+			[Bindable]
+			public var context:ContextDataPack;
+			
+			[Bindable]
+			public var distributionData:DistributionDataPack;
+
+			[Bindable]
+			public var entryData:EntryDataPack;
+
+			/**
+			 * thumbnail for image entries
 			 * */
 			private var _entryImg:Image;
 
@@ -105,22 +149,79 @@
 			[Bindable]
 			private var _entryHasContent:Boolean;
 			
-			private var _selectedEntryId:String;
-
+			/**
+			 * entry's reference id before the user had a chance to change it
+			 * */
 			private var _originalRefid:String;
 			
-			[Bindable]
-			/**
-			 * RnP: enable trimming button
-			 * */
-			public var allowTrimming:Boolean = true;
 			
-			[Bindable]
-			/**
-			 * RnP: enable clipping button
-			 * */
-			public var allowClipping:Boolean = true;
+			// =================================================================
+			// Methods
+			// =================================================================
 			
+			/**
+			 * retrieves the list of categories this entry should be asisgned to
+			 * @return array of category names
+			 * */
+			private function getEntryCategories():Array {
+				var catArr:Array = categoriesTextInput.text.split(',');
+				var tempArr:Array = [];
+				for each (var cat:String in catArr) {
+					var sCat:String = StringUtil.trim(cat);
+					if (sCat != '') {
+						tempArr.push(sCat);
+					}
+				}
+				return tempArr;
+			}
+			
+			public function isChanged():Boolean {
+				var res:Boolean = false;
+				var orig:KalturaBaseEntry = entryData.selectedEntry;
+				res ||= selectedEntry.name != orig.name;
+				res ||= selectedEntry.description != orig.description;
+				res ||= selectedEntry.tags != orig.tags;
+				res ||= selectedEntry.categories != orig.categories;
+				res ||= selectedEntry.referenceId != orig.referenceId;
+				return res;
+			}
+			
+			public function save():void	{
+				// set the categories on the entry
+				selectedEntry.categories = getEntryCategories().join(','); 
+				
+				if (selectedEntry is KalturaLiveStreamAdminEntry) {
+					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
+				}
+				
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
+			
+			public function validate():void {
+				var success:Boolean = true;	// validation result
+				var errorMessage:String;
+				var errorTitle:String;
+				
+				// entry name
+				if (name_input.text == "") {
+					errorMessage = resourceManager.getString('drilldown', 'entryNameIsMandatory');
+					errorTitle = resourceManager.getString('drilldown', 'metadataError');
+					success = false;
+				}
+				if (!errorMessage) {
+					// categories section
+					// auto-complete event isn't full so we need to add this here
+					if (getEntryCategories().length > entryData.maxNumCategories) {
+						errorMessage = resourceManager.getString('drilldown', 'categoriesLimitErrorMsg', [entryData.maxNumCategories]);
+						errorTitle = resourceManager.getString('drilldown', 'categoriesErrorTitle');
+						success = false;
+					}
+				}
+
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
+				dispatchEvent(e);
+			}
 			
 			/**
 			 * for trim / clip buttons, decide if the button should be
@@ -143,13 +244,12 @@
 			
 
 			public function initData():void {
-				//reset values to starting point
-				_entryHasContent = true;
 				_originalRefid = selectedEntry.referenceId;
-				if (kdpContainer.getChildAt(0) is Image)
-					kdpContainer.removeChildAt(0);
 				
-				loaderContainer.includeInLayout = loaderContainer.visible = true;
+				if (kdpContainer.getChildAt(0) is Image) {
+					// remove previous image
+					kdpContainer.removeChildAt(0);
+				}
 				
 				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					addImageThumb(noMediaImage);
@@ -157,15 +257,24 @@
 				}
 				else if ((selectedEntry is KalturaMediaEntry) && 
 					(selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
+					_entryHasContent = true;
 					addImageThumb();
 				}
 				else {
+					loaderContainer.includeInLayout = loaderContainer.visible = true;
+					_entryHasContent = true;
 					//mix or video
 					loadKDP();
-				}	
-				//redundant: we already got this info from the filter
-				//var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				//listCategories.dispatch();
+				}
+				
+				// set landing page string:
+				if (landingPage) {
+					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
+					if (replaceIndex > -1)
+						landingPageLabel.text = landingPage.replace(ENTRY_PLACEHOLDER, selectedEntry.id);
+					else
+						landingPageLabel.text = landingPage + selectedEntry.id;
+				}
 			}
 
 
@@ -187,51 +296,48 @@
 			/**
 			 * remove any playing entry from the preview player
 			 * */
-			public function clearPlayer():void {
+			public function clear():void {
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
+				
 			}
 
 
-			/**
-			 * see all data on the panel is legal and save data
-			 * @return an object with error code
-			 * */
-			public function save():EntryDetailsValidationError {
-				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-				// entry name
-				if (name_input.text == "") {
-					result.error = EntryDetailsValidationError.ENTRY_NAME_MISSING;
-				}
-				if (result.error == null) {
-					// categories section
-					// auto-complete event isn't full so we need to add this here
-					var catArr:Array = categoriesTextInput.text.split(',');
-					var tempArr:Array = [];
-					for each (var cat:String in catArr) {
-						var sCat:String = StringUtil.trim(cat);
-						if (sCat != '') {
-							tempArr.push(sCat);
-						}
-					}
-					if (tempArr.length > maxNumCategories) {
-						result.error = EntryDetailsValidationError.CATEGORIES_LIMIT;
-					}
-					else {
-						// set the categories on the entry
-						selectedEntry.categories = tempArr.join(',');
-					}
-				}
-//				if (!selectedEntry.referenceId) {
-//					// so we'll delete older values
-//					selectedEntry.referenceId = KalturaClient.NULL_STRING;
+//			/**
+//			 * see all data on the panel is legal and save data
+//			 * @return an object with error code
+//			 * */
+//			public function old_save():EntryDetailsValidationError {
+//				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+//				// entry name
+//				if (name_input.text == "") {
+//					result.error = EntryDetailsValidationError.ENTRY_NAME_MISSING;
 //				}
-				if (isLiveStream)
-					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
-				return result;
-			}
+//				if (result.error == null) {
+//					// categories section
+//					// auto-complete event isn't full so we need to add this here
+//					var catArr:Array = categoriesTextInput.text.split(',');
+//					var tempArr:Array = [];
+//					for each (var cat:String in catArr) {
+//						var sCat:String = StringUtil.trim(cat);
+//						if (sCat != '') {
+//							tempArr.push(sCat);
+//						}
+//					}
+//					if (tempArr.length > entryData.maxNumCategories) {
+//						result.error = EntryDetailsValidationError.CATEGORIES_LIMIT;
+//					}
+//					else {
+//						// set the categories on the entry
+//						selectedEntry.categories = tempArr.join(',');
+//					}
+//				}
+//				if (_isLiveStream)
+//					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
+//				return result;
+//			}
 
 
 
@@ -247,47 +353,14 @@
 			};
 
 
-			/*	private function displayThumbnailOption(value:Boolean):void {
-			   thumbnailOptionBox.visible = thumbnailOptionBox.includeInLayout = value;
-			 }*/
-
-			/**
-			 * this can't be done on creationComplete because selectedEntry is
-			 * only set at the parent's creationComplete, which comes later. so
-			 * the parent has to manualy initialize this panel.
-			 * */
 			public function init():void {
 				// bind to the REAL entry, not the copy, so the thumbnail  
-				// image will be updated when a new thumbnail is uploaded
-				BindingUtils.bindSetter(updateUndoEntryThumbnail, entryDetailsModel.selectedEntry, "thumbnailUrl");
-
-				// ===========================================================
-
-				/*var showThumbnailUi:Boolean = false;
-				   if (selectedEntry is KalturaMediaEntry &&
-				   ((selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE)) {
-				   showThumbnailUi = true;
-				   }
-				   else {
-				   showThumbnailUi = false;
-				   }
-				   if (selectedEntry is KalturaMixEntry) {
-				   showThumbnailUi = true;
-				   }
-
-				 displayThumbnailOption(showThumbnailUi);		*/
-
-				// ===========================================================
-
-			
-
-				if (landingPage && landingPage != '') {
-					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
-					if (replaceIndex > -1)
-						landingPageLabel.text = landingPage.replace(ENTRY_PLACEHOLDER, selectedEntry.id);
-					else
-						landingPageLabel.text = landingPage + selectedEntry.id;
-				}
+				// image will be updated when a new thumbnail is uploaded.
+				// this can't be done on creationComplete because selectedEntry is
+				// only set at the parent's creationComplete, which comes later. so
+				// the parent has to manualy initialize this panel.
+//				BindingUtils.bindSetter(updateUndoEntryThumbnail, entryData.selectedEntry, "thumbnailUrl");
+				
 			}
 
 
@@ -316,7 +389,7 @@
 					// because this is static KDP (due to performance issue)
 					kdp3StaticSwfLoader.visible = false;
 					kdp3StaticSwfLoader.content.addEventListener(KdpEventTypes.ENTRY_READY, showKDP);
-					kdp3StaticSwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entryDetailsModel.selectedEntry.id});
+					kdp3StaticSwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entryData.selectedEntry.id});
 				}
 				else {
 					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
@@ -337,32 +410,17 @@
 			private function showKDP(event:Event = null):void {
 				kdp3StaticSwfLoader.visible = true;
 				kdpContainer.validateNow();
-//				kdp3StaticSwfLoader.content["focusManager"].deactivate();
 			}
 
-//
-//			private function onStandardClick():void {
-//				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.SIMPLE);
-//				deleayEditors();
-//				pausePreview();
+
+//			/**
+//			 * save and load new image
+//			 * */
+//			private function updateUndoEntryThumbnail(thumbnailUrl:String):void {
+//				if (selectedEntry) {
+//					selectedEntry.thumbnailUrl = thumbnailUrl;
+//				}
 //			}
-
-
-//			private function onAdvancedEditor():void {
-//				mix(selectedEntry.mediaType, selectedEntry.type, KalturaEditorType.ADVANCED);
-//				deleayEditors();
-//				pausePreview();
-//			}
-
-
-			/**
-			 * save and load new image
-			 * */
-			private function updateUndoEntryThumbnail(thumbnailUrl:String):void {
-				if (selectedEntry) {
-					selectedEntry.thumbnailUrl = thumbnailUrl;
-				}
-			}
 
 
 			/**
@@ -373,17 +431,6 @@
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
 				}
 			}
-
-
-//			private function setFile(event:Event):void {
-//				_changedThumbnail = true;
-//				var cgEvent:UploadEntryEvent = new UploadEntryEvent(UploadEntryEvent.UPLOAD_THUMBNAIL, selectedEntry.id, _fr);
-//				cgEvent.dispatch();
-//
-//				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "contentChangeThumbnail", selectedEntry.id);
-//				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
-//			}
-
 
 
 			private function addImageThumb(imgSource:Object = null):void {
@@ -398,7 +445,7 @@
 					_entryImg.source = imgSource;
 				}
 				else {
-					if (entryDetailsModel.enableThumbResize) {
+					if ((KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbResize) {
 						_entryImg.source = selectedEntry.thumbnailUrl + "/width/240/height/180/bgcolor/F7F7F7/type/2";
 					}
 					else {
@@ -430,32 +477,6 @@
 					return false;
 				return true;
 			}
-
-
-//			/**
-//			 * Mix action - create a mix from this entry or open editor
-//			 */
-//			private function mix(mediaType:String, type:String, editorType:int):void {
-//				dispatchEvent(new Event(EntryMetadata.UNTRACKABLE_CHANGE));
-//				if (type == KalturaEntryType.MIX) {
-//					//this is a mix
-//					var mixEditorType:String = (selectedEntry as KalturaMixEntry).editorType.toString();
-//					// arguments: entryId, name , editorType , isNewMix (true: create a mix and then
-//					// open an editor, false - edit this mix with the matching editor type)
-//					JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, false);
-//				}
-//				switch (mediaType) {
-//					//this is an entry (video image or audio)
-//					case "1":
-//					case "2":
-//					case "5":
-//						// arguments: entryId, name , editorType , isNewMix (true: create a mix and then open an editor, 
-//						//false - edit this mix with the matching editor type)
-//						JSGate.startEditor(selectedEntry.id, selectedEntry.name, editorType, true);
-//						break;
-//				}
-//
-//			}
 
 
 			private function openPreview():void {
@@ -494,7 +515,7 @@
 				params.loop = "false";
 				params.autoRewind = "false";
 				params.sourceType = "entryId";
-				params.entryId = entryDetailsModel.selectedEntry.id;
+				params.entryId = entryData.selectedEntry.id;
 //				if (context.rootUrl)
 //					params.host = context.rootUrl;
 				if (context.drilldownUiconf)
@@ -511,25 +532,6 @@
 				kdp3StaticSwfLoader.content["init"]();
 				kdp3StaticSwfLoader.addEventListener(KdpEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
 			}
-
-
-//			/**
-//			 * return a matching value - to edit current mix or create a new mix from this entry
-//			 */
-//			private function labelMix(mediaType:String, type:String):String {
-//				if (type == KalturaEntryType.MIX) {
-//					return resourceManager.getString('drilldown', 'editmix');
-//				}
-//				switch (mediaType) {
-//					case "1":
-//					case "2":
-//					case "5":
-//						return resourceManager.getString('drilldown', 'createmixfromentry');
-//						break;
-//				}
-//
-//				return "";
-//			}
 
 
 			private function getModeration(moderationCode:int):String {
@@ -591,141 +593,6 @@
 			}
 
 
-
-			[Bindable]
-			private var _simpleEditorTimer:Boolean = true;
-			[Bindable]
-			private var _advancedEditorTimer:Boolean = true;
-
-			[Bindable]
-			private var _showEditorLinks:Boolean = true;
-			[Bindable]
-			private var _simpleEditorEnable:Boolean = true;
-			[Bindable]
-			private var _advancedEditorEnable:Boolean = true;
-			[Bindable]
-			private var _previewEnable:Boolean = true;
-			[Bindable]
-			/**
-			 * @copy #previewOnly
-			 * */
-			private var _showEmbed:Boolean = false;
-
-
-			/**
-			 * workaround for boolean and in mxml binding expressions
-			 * @param val1 boolean expression
-			 * @param val2 boolean expression
-			 * @return boolean value of val1 && val2
-			 * */
-			protected function booleanAnd(val1:Boolean, val2:Boolean):Boolean {
-				return val1 && val2;
-			}
-
-
-			public function get simpleEditorEnabled():Boolean {
-				return _simpleEditorEnable;
-			}
-
-
-			public function set simpleEditorEnabled(value:Boolean):void {
-				_simpleEditorEnable = value;
-			}
-
-
-			public function get advancedEditorEnabled():Boolean {
-				return _advancedEditorEnable;
-			}
-
-
-			public function set advancedEditorEnabled(value:Boolean):void {
-				_advancedEditorEnable = value;
-			}
-
-
-			public function get previewEnable():Boolean {
-				return _previewEnable;
-			}
-
-
-			public function set previewEnable(value:Boolean):void {
-				_previewEnable = value;
-			}
-			[Bindable]
-			public var previewLabel:String = ResourceManager.getInstance().getString('drilldown', 'previewAndEmbed');
-
-
-			/**
-			 * show only "preview" and not "preview & embed"
-			 */
-			public function set showEmbed(value:Boolean):void {
-				if (value)
-					previewLabel = resourceManager.getString('drilldown', 'previewAndEmbed');
-				else {
-					previewLabel = resourceManager.getString('drilldown', 'previewOnly');
-				}
-				_showEmbed = value;
-			}
-
-
-			public function get showEmbed():Boolean {
-				return _showEmbed;
-			}
-
-
-			/**
-			 * This function prevents the user from re-click the editors for 5 sec because it takse time to open
-			 * the HTML editors and users re-click the editors.
-			 */
-			protected function deleayEditors():void {
-				var t:Timer = new Timer(5000, 1);
-				t.addEventListener(TimerEvent.TIMER_COMPLETE, onDelayDone);
-				_simpleEditorTimer = false;
-				_advancedEditorTimer = false;
-				t.start();
-			}
-
-
-			/**
-			 * 5 sec over - return the ability to the editor buttons
-			 */
-			protected function onDelayDone(event:TimerEvent):void {
-				event.target.removeEventListener(TimerEvent.TIMER_COMPLETE, onDelayDone);
-				_simpleEditorTimer = true;
-				_advancedEditorTimer = true;
-			}
-
-
-//			/**
-//			 * will redirect the user to "thumbnails" tab
-//			 * */
-//			private function onChangeThumbnailClick(event:MouseEvent):void {
-//				_viewStack.selectedChild = _viewStack.getChildByName("entryThumbnails") as Container;
-//			}
-
-
-			/**
-			 * show the editor links box
-			 * */
-			public function get showEditorLinks():Boolean {
-				return _showEditorLinks;
-			}
-
-
-			public function set showEditorLinks(value:Boolean):void {
-				_showEditorLinks = value;
-			}
-
-
-			public function get maxNumCategories():int {
-				return _maxNumCategories;
-			}
-
-
-			public function set maxNumCategories(value:int):void {
-				_maxNumCategories = value;
-			}
-
 			/**
 			 * open drilldown window wit the parent entry
 			 * (the entry this clip was made from)
@@ -733,10 +600,10 @@
 			protected function showParentEntry(event:MouseEvent):void
 			{
 				// create the new model 
-				var cg:CairngormEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
-				cg.dispatch();
-				cg = new EntryEvent(EntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
-				cg.dispatch();
+				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
+				controller.dispatch(cg);
+				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
+				controller.dispatch(cg);
 			}
 			
 			/**
@@ -765,7 +632,6 @@
 
 			protected function referenceId_changeHandler(event:Event):void
 			{
-//				selectedEntry.referenceId = event.target.text;
 				if(event.target.text == '') {
 					if (_originalRefid == null){
 						// no change from original empty value
@@ -780,9 +646,52 @@
 					selectedEntry.referenceId = event.target.text;
 				}
 			}
+			
+			// =================================================================
+			// Preview and Embed Stuff
+			// =================================================================
+			
+			[Bindable]
+			/**
+			 * @copy #previewOnly
+			 * */
+			private var _showEmbed:Boolean = false;
+			
+			[Bindable]
+			private var _previewEnable:Boolean = true;
+			
+			public function get previewEnable():Boolean {
+				return _previewEnable;
+			}
+			public function set previewEnable(value:Boolean):void {
+				_previewEnable = value;
+			}
+			
+			[Bindable]
+			public var previewLabel:String = ResourceManager.getInstance().getString('drilldown', 'previewAndEmbed');
+			
+			
+			/**
+			 * show only "preview" and not "preview & embed"
+			 */
+			public function set showEmbed(value:Boolean):void {
+				if (value)
+					previewLabel = resourceManager.getString('drilldown', 'previewAndEmbed');
+				else {
+					previewLabel = resourceManager.getString('drilldown', 'previewOnly');
+				}
+				_showEmbed = value;
+			}
+			
+			
+			public function get showEmbed():Boolean {
+				return _showEmbed;
+			}
+			// =================================================================
 
 		]]>
 	</mx:Script>
+	<control:MetadataTabController id="controller" />
 	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
 						required="true" requiredFieldError="{resourceManager.getString('drilldown', 'entryNameIsMandatory')}"/>
 	<mx:VBox width="100%" verticalGap="3">
@@ -808,10 +717,10 @@
 					  styleName="drillDownLabel"/>
 			<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" height="{tagsTi.height}" 
 								text="{selectedEntry.categories}" styleName="autoComplete"
-								dataProvider="{entryDetailsModel.categoriesFullNameList}" />
+								dataProvider="{entryData.categoriesFullNameList}" />
 		</mx:HBox>
 		<!--<mx:VBox styleName="lineGap">-->
-			<mx:HBox width="100%" visible="{isLiveStream}" includeInLayout="{isLiveStream}">
+			<mx:HBox id="offlineHolder" width="100%" >
 				<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"
 						  styleName="drillDownLabel"/>
 				<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}"
@@ -881,13 +790,13 @@
 				<mx:VBox visible="{_entryHasContent}" includeInLayout="{_entryHasContent}" horizontalAlign="center">
 					<mx:Button id="previewAndEmbed" label="{previewLabel}" buttonMode="{previewAndEmbed.enabled}"
 							   click="{openPreview()}" width="135" styleName="dataGridBtn"
-							   enabled="{booleanAnd(selectedEntry.status == KalturaEntryStatus.READY,_previewEnable)}"/>
+							   enabled="{(selectedEntry.status == KalturaEntryStatus.READY) &amp;&amp; _previewEnable}"/>
 
 					<mx:HBox width="100%" id="editorsBox" horizontalAlign="center" includeInLayout="{editorsBox.visible}" 
 							 visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}" >
-						<mx:LinkButton id="btnClipping" click="openClipping(event)" enabled="{entryHasSource(entryDetailsModel.flavorParamsAndAssetsByEntryId)}"
+						<mx:LinkButton id="btnClipping" click="openClipping(event)" enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
 									   label="{resourceManager.getString('drilldown','openClipping')}" />
-						<mx:LinkButton id="btnTrimming" click="openTrimming(event)" enabled="{entryHasSource(entryDetailsModel.flavorParamsAndAssetsByEntryId)}"
+						<mx:LinkButton id="btnTrimming" click="openTrimming(event)" enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
 									   label="{resourceManager.getString('drilldown','openTrimming')}" />
 					</mx:HBox>
 					<mx:HBox width="100%">

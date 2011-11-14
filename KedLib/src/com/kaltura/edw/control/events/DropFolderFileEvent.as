@@ -1,20 +1,20 @@
 package com.kaltura.edw.control.events {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaResource;
 
-	public class DropFolderFileEvent extends CairngormEvent {
+	public class DropFolderFileEvent extends KMvCEvent {
 
 		/**
 		 * reset the drop folder files list on the model
 		 */		
 		public static const RESET_DROP_FOLDERS_AND_FILES:String = "df_reset_files_list";
 		
-		/**
-		 * list all files from all drop folders
-		 * */
-		public static const LIST_ALL:String = "list_all";
+//		/**
+//		 * list all files from all drop folders
+//		 * */
+//		public static const LIST_ALL:String = "list_all";
 		
 		/**
 		 * list files in selected folder and create the array hierarchical
@@ -26,10 +26,10 @@ package com.kaltura.edw.control.events {
 		 */		
 		public static const LIST_BY_SELECTED_FOLDER_FLAT:String = "df_list_by_selected_folder_flat";
 		
-		/**
-		 * delete files from drop folder?
-		 * */
-		public static const DELETE_FILES:String = "delete_files";
+//		/**
+//		 * delete files from drop folder?
+//		 * */
+//		public static const DELETE_FILES:String = "delete_files";
 
 		private var _entry:KalturaBaseEntry;
 		private var _slug:String;

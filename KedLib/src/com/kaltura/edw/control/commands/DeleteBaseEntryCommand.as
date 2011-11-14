@@ -1,21 +1,19 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.baseEntry.BaseEntryDelete;
+	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.EntriesEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
-	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.kmvc.control.KMvCEvent;
 
-	public class DeleteBaseEntryCommand extends KalturaCommand
+	public class DeleteBaseEntryCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var deleteEntry:BaseEntryDelete = new BaseEntryDelete((event as EntryEvent).entryId);
+			var deleteEntry:BaseEntryDelete = new BaseEntryDelete((event as KedEntryEvent).entryId);
 			deleteEntry.addEventListener(KalturaEvent.COMPLETE, result);
 			deleteEntry.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(deleteEntry);
+			_client.post(deleteEntry);
 		}
 		
 		override public function result(data:Object):void {

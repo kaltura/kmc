@@ -1,29 +1,16 @@
 package com.kaltura.edw.model {
-	import com.adobe.cairngorm.model.IModelLocator;
-	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.edw.model.types.WindowsStates;
-	import com.kaltura.edw.vo.CategoryVO;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.edw.vo.ListableVo;
-	import com.kaltura.types.KalturaTubeMogulSyndicationFeedOrderBy;
-	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaBaseSyndicationFeedFilter;
-	import com.kaltura.vo.KalturaFilterPager;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	import mx.collections.ArrayCollection;
 	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
-	import com.kaltura.edw.model.Context;
-	import com.kaltura.edw.model.EntryDetailsModel;
-	import com.kaltura.edw.model.FilterModel;
-	import com.kaltura.edw.model.DropFolderModel;
-	import com.kaltura.edw.model.PlaylistModel;
 
 	[Bindable]
-	public class DummyModelLocator extends EventDispatcher implements IModelLocator {
+	public class DummyModelLocator extends EventDispatcher {
 		
 		/**
 		 * defines the value of the type property of the loadingFlagChanged event 
@@ -33,7 +20,7 @@ package com.kaltura.edw.model {
 		/**
 		 * application context (ks, urls, etc)
 		 * */
-		public var context:Context = null;
+		public var context:ContextDataPack = null;
 		
 		/**
 		 * data that the filter requires 
@@ -82,10 +69,10 @@ package com.kaltura.edw.model {
 		 */		
 		public var playlistModel:PlaylistModel;
 		
-		/**
-		 * data that is used by the playlist windows  
-		 */		
-		public var dropFolderModel:DropFolderModel;
+//		/**
+//		 * data that is used by the playlist windows  
+//		 */		
+//		public var dropFolderModel:DropFolderModel;
 		
 		/**
 		 * placeholder for data received via showSubtab().
@@ -138,12 +125,6 @@ package com.kaltura.edw.model {
 		 * check how many popups are opened.
 		 * */
 		public var has2OpenedPopups:Boolean = false;
-
-		/**
-		 * the selected checkboxed entries 
-		 * (used in add / remove admin tags)
-		 */
-		public var checkedEntries:ArrayCollection = new ArrayCollection();
 
 		/**
 		 * the selected entries of the list 
@@ -244,7 +225,7 @@ package com.kaltura.edw.model {
 		 * @param enforcer	singleton garantee
 		 */		
 		public function DummyModelLocator(enforcer:Enforcer) {
-			context = new Context();
+			context = new ContextDataPack();
 			attic = new Object();
 			
 			filterModel = new FilterModel();
@@ -253,7 +234,6 @@ package com.kaltura.edw.model {
 			popups = new Vector.<TitleWindow>();
 			
 			playlistModel = new PlaylistModel();
-			dropFolderModel = new DropFolderModel();
 			
 		}
 

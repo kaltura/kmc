@@ -1,27 +1,24 @@
 package com.kaltura.edw.control.commands.flavor
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetDownloadUrl;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
 	
-	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
-	
-	public class DownloadFlavorAsset extends KalturaCommand implements ICommand, IResponder
+	public class DownloadFlavorAsset extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{		
 		 	_model.increaseLoadCounter();
 		 	var obj:KalturaFlavorAssetWithParams = event.data as KalturaFlavorAssetWithParams;
 			var downloadCommand:FlavorAssetGetDownloadUrl = new FlavorAssetGetDownloadUrl(obj.flavorAsset.id);
             downloadCommand.addEventListener(KalturaEvent.COMPLETE, result);
 	        downloadCommand.addEventListener(KalturaEvent.FAILED, fault);
-    	    _model.context.kc.post(downloadCommand);  
+    	    _client.post(downloadCommand);  
 		}
 		
 		override public function result(event:Object):void

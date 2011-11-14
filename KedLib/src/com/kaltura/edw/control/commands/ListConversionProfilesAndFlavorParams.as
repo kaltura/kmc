@@ -1,16 +1,15 @@
 package com.kaltura.edw.control.commands {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.conversionProfile.ConversionProfileList;
 	import com.kaltura.commands.conversionProfileAssetParams.ConversionProfileAssetParamsList;
 	import com.kaltura.commands.flavorParams.FlavorParamsList;
+	import com.kaltura.edw.model.datapacks.FlavorsDataPack;
+	import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.vo.ConversionProfileWithFlavorParamsVo;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaAssetParamsOrigin;
 	import com.kaltura.types.KalturaConversionProfileOrderBy;
-	import com.kaltura.vo.KalturaAssetParams;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParams;
 	import com.kaltura.vo.KalturaConversionProfileAssetParamsFilter;
@@ -21,21 +20,20 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
 	
-	import flash.profiler.profile;
-	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.rpc.IResponder;
 
-	public class ListConversionProfilesAndFlavorParams extends KalturaCommand implements ICommand, IResponder {
+	public class ListConversionProfilesAndFlavorParams extends KedCommand {
 
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var p:KalturaFilterPager = new KalturaFilterPager();
 			p.pageSize = 1000;	// this is a very large number that should be enough to get all items
 
+			var fdp:FlavorsDataPack = _model.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+			
 			var mr:MultiRequest = new MultiRequest();
-			if (!_model.entryDetailsModel.conversionProfileLoaded) {
+			if (!fdp.conversionProfileLoaded) {
 				var cpFilter:KalturaConversionProfileFilter = new KalturaConversionProfileFilter();
 				cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
 				var listConversionProfiles:ConversionProfileList = new ConversionProfileList(cpFilter, p);
@@ -53,7 +51,7 @@ package com.kaltura.edw.control.commands {
 
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(mr);
+			_client.post(mr);
 		}
 
 
@@ -81,15 +79,16 @@ package com.kaltura.edw.control.commands {
 			if (!er) {
 				var startIndex:int; 
 				var profs:Array;
-				if (_model.entryDetailsModel.conversionProfileLoaded) {
+				var fdp:FlavorsDataPack = _model.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+				if (fdp.conversionProfileLoaded) {
 					startIndex = 0;
-					profs = _model.entryDetailsModel.conversionProfiles;
+					profs = fdp.conversionProfiles;
 				}
 				else {
 					startIndex = 1;
 					profs = (event.data[0] as KalturaConversionProfileListResponse).objects;
-					_model.entryDetailsModel.conversionProfiles = profs;
-					_model.entryDetailsModel.conversionProfileLoaded = true;
+					fdp.conversionProfiles = profs;
+					fdp.conversionProfileLoaded = true;
 				}
 				// conversion profiles
 				// flavor params
@@ -107,7 +106,7 @@ package com.kaltura.edw.control.commands {
 						tempArrCol.addItem(cp);
 					}
 				}
-				_model.entryDetailsModel.conversionProfsWFlavorParams = tempArrCol;
+				fdp.conversionProfsWFlavorParams = tempArrCol;
 			}	
 			_model.decreaseLoadCounter();
 		}

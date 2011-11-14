@@ -1,8 +1,8 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	public class CuePointEvent extends CairngormEvent {
+	public class CuePointEvent extends KMvCEvent {
 		
 		/**
 		 * reset cuepoints count on model.

@@ -12,9 +12,10 @@
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.control.events.DistributionProfileEvent;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
+			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.EntryDistributionWithProfile;
-			import com.kaltura.edw.vo.ThumbnailWithDimensions;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.edw.vo.ThumbnailWithDimensions;
 			import com.kaltura.types.KalturaDistributionProfileActionStatus;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -26,16 +27,34 @@
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			
+			/**
+			 * value of the "type" property for the updateLists event 
+			 * event data is {addDistributors:Array, removeDistributors:Array}
+			 * */
+			public static const UPDATE_LISTS:String = "updateLists";
+			
 			public var selectedEntry:KalturaBaseEntry;
+			
 			[Bindable]
 			private var _distributionDataProvider:Array;
+			
 			public var entryFlavors:ArrayCollection;
+			
 			public var entryThumbs:Array;
-			//permission to add distributions
+			
+			/**
+			 * permission to add distributions
+			 * */
 			public var enableAddDistribution:Boolean = true;
-			//permission to distribute
+			
+			/**
+			 * permission to distribute
+			 * */
 			public var enableDistribution:Boolean = true;
-			//permission to remove distributions
+			
+			/**
+			 * permission to remove distributions
+			 * */
 			public var enableRemoveDistribution:Boolean = true;
 			
 			
@@ -117,8 +136,9 @@
 					}
 				}
 				
-				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE_LIST, addDistributors, removeDistributors);
-				updateEntryDistributions.dispatch();
+				var e:KedDataEvent = new KedDataEvent(SelectDistributorsWindow.UPDATE_LISTS);
+				e.data = {addDistributors:addDistributors, removeDistributors:removeDistributors};
+				dispatchEvent(e);
 				
 				PopUpManager.removePopUp(this);
 			}

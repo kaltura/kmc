@@ -2,7 +2,9 @@
 <mx:LinkButton xmlns:mx="http://www.adobe.com/2006/mxml" click="buttonClickHandler(event)" textAlign="left" paddingLeft="6">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.EntryDistributionWithProfile;
+			import com.kaltura.edw.view.EntryDistribution;
 			import com.kaltura.edw.view.window.DistributionDetailsWindow;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaDistributionProfile;
@@ -10,36 +12,31 @@
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
 			
-			private var _distributionProfile:KalturaDistributionProfile;
-			private var _distribution:EntryDistributionWithProfile;
-			private var _distributionDetailsWindow:DistributionDetailsWindow;
-			
 			override public function set data(value:Object):void {
-				_distribution = value as EntryDistributionWithProfile;
-				_distributionProfile = _distribution.kalturaDistributionProfile;
-				this.label = _distributionProfile.name;
+				this.label = value.kalturaDistributionProfile.name;
 			}
 
 			private function buttonClickHandler(event:MouseEvent):void
 			{
-				_distributionDetailsWindow = new DistributionDetailsWindow();
-				_distributionDetailsWindow.entryDetailsModel = parentDocument.entryDetailsModel;
-				_distributionDetailsWindow.entryDis = _distribution;
-				//don't allow editing if we are in the middle of some process
-				if ((_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.DELETING) ||
-					(_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.SUBMITTING) ||
-					(_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.UPDATING))
-					_distributionDetailsWindow.enableChanges = false;
-				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
-				PopUpManager.addPopUp(_distributionDetailsWindow, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(_distributionDetailsWindow);  
+				dispatchEvent(new Event(EntryDistribution.SHOW_DETAILS, true));
+				
+//				_distributionDetailsWindow = new DistributionDetailsWindow();
+//				_distributionDetailsWindow.entryDis = _distribution;
+//				//don't allow editing if we are in the middle of some process
+//				if ((_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.DELETING) ||
+//					(_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.SUBMITTING) ||
+//					(_distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.UPDATING))
+//					_distributionDetailsWindow.enableChanges = false;
+//				_distributionDetailsWindow.addEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+//				PopUpManager.addPopUp(_distributionDetailsWindow, (Application.application as DisplayObject), true);
+//				PopUpManager.centerPopUp(_distributionDetailsWindow);  
 			}
 			
-			private function closeDistributionDetailsWindow(event:Event):void {
-				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
-				PopUpManager.removePopUp(_distributionDetailsWindow);
-				_distributionDetailsWindow = null;
-			}
+//			private function closeDistributionDetailsWindow(event:Event):void {
+//				_distributionDetailsWindow.removeEventListener(DistributionDetailsWindow.WINDOW_CLOSE, closeDistributionDetailsWindow);
+//				PopUpManager.removePopUp(_distributionDetailsWindow);
+//				_distributionDetailsWindow = null;
+//			}
 
 		]]>
 	</mx:Script>

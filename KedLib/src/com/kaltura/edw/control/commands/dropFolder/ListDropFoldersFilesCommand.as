@@ -1,10 +1,11 @@
 package com.kaltura.edw.control.commands.dropFolder {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.dropFolderFile.DropFolderFileList;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.control.events.DropFolderFileEvent;
+	import com.kaltura.edw.model.datapacks.DropFolderDataPack;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
-	import com.kaltura.edw.control.events.DropFolderFileEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaDropFolderFileOrderBy;
 	import com.kaltura.types.KalturaDropFolderFileStatus;
 	import com.kaltura.vo.KalturaBaseEntry;
@@ -16,30 +17,32 @@ package com.kaltura.edw.control.commands.dropFolder {
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 
-	public class ListDropFoldersFilesCommand extends KalturaCommand {
+	public class ListDropFoldersFilesCommand extends KedCommand {
 		// list_all / df_list_by_selected_folder_hierch / df_list_by_selected_folder_flat
 		protected var _eventType:String;
 
 		protected var _entry:KalturaBaseEntry;
 
-
-		override public function execute(event:CairngormEvent):void {
+		protected var _dropFolderData:DropFolderDataPack;
+		
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
+			_dropFolderData = _model.getDataPack(DropFolderDataPack) as DropFolderDataPack;
 			var listEvent:DropFolderFileEvent = event as DropFolderFileEvent;
 			_eventType = listEvent.type;
 			_entry = listEvent.entry;
 			var listFiles:DropFolderFileList;
 			
-			// drop folders panel
-			if (_eventType == DropFolderFileEvent.LIST_ALL) {
-				listFiles = new DropFolderFileList(_model.dropFolderModel.filter, _model.dropFolderModel.pager);
-			}
+//			// drop folders panel
+//			if (_eventType == DropFolderFileEvent.LIST_ALL) {
+//				listFiles = new DropFolderFileList(_model.dropFolderModel.filter, _model.dropFolderModel.pager);
+//			}
 			// match from drop folder popup
-			else {
+//			else {
 				var filter:KalturaDropFolderFileFilter = new KalturaDropFolderFileFilter();
 				filter.orderBy = KalturaDropFolderFileOrderBy.CREATED_AT_DESC;
 				// use selected folder
-				filter.dropFolderIdEqual = _model.dropFolderModel.selectedDropFolder.id;
+				filter.dropFolderIdEqual = _dropFolderData.selectedDropFolder.id;
 				// if searching for slug
 				if (listEvent.slug) {
 					filter.parsedSlugLike = listEvent.slug;
@@ -47,12 +50,12 @@ package com.kaltura.edw.control.commands.dropFolder {
 				// file status
 				filter.statusIn = KalturaDropFolderFileStatus.NO_MATCH + "," + KalturaDropFolderFileStatus.WAITING + "," + KalturaDropFolderFileStatus.ERROR_HANDLING;
 				listFiles = new DropFolderFileList(filter);
-			}
+//			}
 
 			listFiles.addEventListener(KalturaEvent.COMPLETE, result);
 			listFiles.addEventListener(KalturaEvent.FAILED, fault);
 
-			_model.context.kc.post(listFiles);
+			_client.post(listFiles);
 		}
 
 
@@ -65,13 +68,13 @@ package com.kaltura.edw.control.commands.dropFolder {
 			}
 			else {
 				var ar:Array = handleDropFolderFileList(data.data as KalturaDropFolderFileListResponse);
-				if (_eventType == DropFolderFileEvent.LIST_ALL) {
-					_model.dropFolderModel.files = new ArrayCollection(ar);
-					_model.dropFolderModel.filesTotalCount = data.data.totalCount;
-				}
-				else {
-					_model.dropFolderModel.dropFolderFiles = new ArrayCollection(ar);
-				}
+//				if (_eventType == DropFolderFileEvent.LIST_ALL) {
+//					_model.dropFolderModel.files = new ArrayCollection(ar);
+//					_model.dropFolderModel.filesTotalCount = data.data.totalCount;
+//				}
+//				else {
+					_dropFolderData.dropFolderFiles = new ArrayCollection(ar);
+//				}
 			}
 			_model.decreaseLoadCounter();
 		}

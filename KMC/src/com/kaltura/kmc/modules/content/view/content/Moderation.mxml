@@ -8,32 +8,46 @@
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
 		 creationComplete="init()" 
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*">
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*">
 
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntryEvent;
+			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
-			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
-			import com.kaltura.edw.control.events.SearchEvent;
-			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
-			import com.kaltura.kmc.modules.content.events.UserEvent;
-			import com.kaltura.edw.model.Context;
 			import com.kaltura.edw.model.FilterModel;
-			import com.kaltura.kmc.modules.content.model.ModerationModel;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
+			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.ListableVo;
+			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
+			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
+			import com.kaltura.kmc.modules.content.events.UserEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.model.ModerationModel;
 			import com.kaltura.kmc.modules.content.vo.UserVO;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
+			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaPlaylist;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -45,6 +59,20 @@
 			// ===============================================
 			// fields
 			// ===============================================
+			
+			private var _entryDetailsModel:KMvCModel;
+			
+			
+			[Bindable]
+			public function set entryDetailsModel(value:KMvCModel):void {
+				_entryDetailsModel = value;
+				showThumbnails = (entryDetailsModel.getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbsList;
+				distributionProfilesArray = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+			}
+			
+			public function get entryDetailsModel():KMvCModel {
+				return _entryDetailsModel;
+			}
 
 			/**
 			 * saves the loaded KDP across window opening
@@ -68,7 +96,7 @@
 			/**
 			 * application context
 			 * */
-			public var context:Context;
+			public var context:ContextDataPack;
 
 
 			[Bindable]
@@ -200,8 +228,8 @@
 //				//categories
 //				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 //				getCategoriesList.dispatch();
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
-				fe.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
+				KedController.getInstance().dispatch(fe);
 			}
 
 
@@ -240,10 +268,9 @@
 				if (_orderBy) {
 					_listableVo.filterVo.orderBy = _orderBy;
 				}
-				var cgEvent:SetCurrentListableEvent = new SetCurrentListableEvent(SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL, _listableVo);
+				
+				var cgEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _listableVo);
 				cgEvent.dispatch();
-				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _listableVo);
-				searchEvent.dispatch();
 				updateExpenderLabel();
 			}
 
@@ -319,7 +346,7 @@
 				var entry:KalturaBaseEntry = (event.itemRenderer.data as KalturaBaseEntry);
 				if (entry.moderationCount > 0) {
 					entry.moderations = new ArrayCollection();
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.LIST_ENTRY_MODERATION, entry);
+					var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.LIST_ENTRY_MODERATION, entry);
 					cgEvent.dispatch();
 				}
 				if (kdp3Loader && _kdp3SwfLoader.content) {
@@ -506,6 +533,53 @@
 				paging.pageSize = 25;
 			}
 
+
+			protected function entryTable_itemClickHandler(event:EntryTableEvent):void {
+				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, entryTable.selectedItems);
+				cgEvent.dispatch();
+			}
+
+
+
+			protected function entryTable_showDetailsHandler(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+				
+				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (entryTable.dataProvider as ArrayCollection).getItemIndex(entry));
+				KedController.getInstance().dispatch(kEvent);
+				var cgEvent:CairngormEvent;
+				if (entry is KalturaPlaylist) {
+					//switch manual / rule base
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
+						// manual list
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+						cgEvent.dispatch();
+					}
+					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+						cgEvent.dispatch();
+					}
+				}
+				else {
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+					cgEvent.dispatch();
+				}
+			}
+			
+			private function preview(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry; 
+				var cgEvent:KMCEntryEvent;
+				if (entry is KalturaPlaylist)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaPlaylist);
+				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaBaseEntry);
+				else {
+					trace("Error: no PlaylistVO nor EntryVO");
+					return;
+				}
+				
+				cgEvent.dispatch();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:WipeLeft id="wipeLeft" duration="400"/>
@@ -520,7 +594,7 @@
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer">
 		<mx:VBox id='filterContainer'>
-			<filter:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
+			<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
 						   enableCustomData="{filterModel.enableCustomData}" metadataProfilesArray="{filterModel.metadataProfiles}"
 						   flavorParams="{filterModel.flavorParams}"
 						   catMap="{filterModel.categoriesMap}"
@@ -531,12 +605,16 @@
 		</mx:VBox>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
-				<et:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
-								 sortDirection="{EntryTable.ASCENDING}" dataProvider="{_listableVo.arrayCollection}"
-								 selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
-								 creationComplete="removeColums( event )" change="getModeration( event )"
-								 dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"
-								 usedForModeration="true"/>
+				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
+							   selectionChanged="entryTable_itemClickHandler(event)" 
+							   showDetails="entryTable_showDetailsHandler(event)"
+							   openPreview="preview(event)"
+							   sortDirection="{EntryTable.ASCENDING}" 
+							   dataProvider="{_listableVo.arrayCollection}"
+							   selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
+							   creationComplete="removeColums( event )" change="getModeration( event )"
+							   dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"
+							   usedForModeration="true"/>
 				<mx:Panel id="kdpContainer" height="100%" minWidth="290"
 						  styleName="modPrev" toolTip="{entryTable.selectedItem.name}" layout="vertical" 
 						  title="{resourceManager.getString('cms', 'preview')} - {entryTable.selectedItem.name}">

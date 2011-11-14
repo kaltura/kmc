@@ -1,16 +1,18 @@
 package com.kaltura.edw.control.commands.clips
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.ClipsDataPack;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntryFilter;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
-	import com.kaltura.vo.KalturaFilterPager;
 	
-	public class GetEntryClipsCommand extends KalturaCommand {
+	public class GetEntryClipsCommand extends KedCommand {
 		
-		override public function execute(event:CairngormEvent):void {
+		
+		
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var f:KalturaBaseEntryFilter = new KalturaBaseEntryFilter();
 			f.rootEntryIdEqual = event.data.id;
@@ -18,12 +20,12 @@ package com.kaltura.edw.control.commands.clips
 			var list:BaseEntryList = new BaseEntryList(f, event.data.pager);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
 			list.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(list);
+			_client.post(list);
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			_model.entryDetailsModel.clips = (data.data as KalturaBaseEntryListResponse).objects;
+			(_model.getDataPack(ClipsDataPack) as ClipsDataPack).clips = (data.data as KalturaBaseEntryListResponse).objects;
 			_model.decreaseLoadCounter();
 		}
 	}

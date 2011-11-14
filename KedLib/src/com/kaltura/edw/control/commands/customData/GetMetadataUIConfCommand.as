@@ -1,9 +1,10 @@
 package com.kaltura.edw.control.commands.customData
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.uiConf.UiConfGet;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaUiConf;
 	
 	/**
@@ -11,22 +12,26 @@ package com.kaltura.edw.control.commands.customData
 	 * @author Michal
 	 * 
 	 */
-	public class GetMetadataUIConfCommand extends KalturaCommand
+	public class GetMetadataUIConfCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		private var _cddp:CustomDataDataPack;
+		
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var uiconfRequest:UiConfGet = new UiConfGet(_model.entryDetailsModel.metadataDefaultUiconf);
+			_cddp = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack
+
+			var uiconfRequest:UiConfGet = new UiConfGet(_cddp.metadataDefaultUiconf);
 			uiconfRequest.addEventListener(KalturaEvent.COMPLETE, result);
 			uiconfRequest.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(uiconfRequest);
+			_client.post(uiconfRequest);
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
 			var result:KalturaUiConf = data.data as KalturaUiConf;
 			if (result)
-				_model.entryDetailsModel.metadataDefaultUiconfXML = new XML(result.confFile);
+				_cddp.metadataDefaultUiconfXML = new XML(result.confFile);
 			
 			_model.decreaseLoadCounter();
 			

@@ -1,37 +1,33 @@
 package com.kaltura.edw.control.commands.dist
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.distributionProfile.DistributionProfileList;
 	import com.kaltura.core.KClassFactory;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.model.types.APIErrorCode;
-	import com.kaltura.edw.vo.DistributionProfileInfo;
-	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaDistributionProfile;
-	import com.kaltura.vo.KalturaDistributionProfileFilter;
 	import com.kaltura.vo.KalturaDistributionProfileListResponse;
 	
 	import flash.xml.XMLDocument;
 	import flash.xml.XMLNode;
 	
-	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
-	import mx.resources.ResourceManager;
 	import mx.rpc.xml.SimpleXMLEncoder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class ListDistributionProfilesCommand extends KalturaCommand
+	public class ListDistributionProfilesCommand extends KedCommand
 	{
 		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
 			var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
 			listDistributionProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listDistributionProfile.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(listDistributionProfile);
+			_client.post(listDistributionProfile);
 		}
 		
 		override public function result(data:Object):void {
@@ -61,8 +57,9 @@ package com.kaltura.edw.control.commands.dist
 				
 				profilesArray.push(newProfile);
 			}
-			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
-			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
+			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			ddp.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			ddp.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		/**

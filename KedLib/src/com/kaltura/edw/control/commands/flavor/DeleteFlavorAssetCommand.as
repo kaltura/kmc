@@ -1,24 +1,23 @@
 package com.kaltura.edw.control.commands.flavor
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetDelete;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
-	public class DeleteFlavorAssetCommand extends KalturaCommand implements ICommand, IResponder
+	public class DeleteFlavorAssetCommand extends KedCommand
 	{
 		private var fap:KalturaFlavorAssetWithParams;
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{		
+			_dispatcher = event.dispatcher;
 			fap = event.data as KalturaFlavorAssetWithParams;
 			Alert.show(ResourceManager.getInstance().getString('cms', 'deleteAssetMsg') + fap.flavorAsset.id + " ?", 
 					   ResourceManager.getInstance().getString('cms', 'deleteAssetTitle'), Alert.YES | Alert.NO, null, handleUserResponse);
@@ -33,7 +32,7 @@ package com.kaltura.edw.control.commands.flavor
 				var deleteCommand:FlavorAssetDelete = new FlavorAssetDelete(fap.flavorAsset.id);
 	            deleteCommand.addEventListener(KalturaEvent.COMPLETE, result);
 		        deleteCommand.addEventListener(KalturaEvent.FAILED, fault);
-	    	    _model.context.kc.post(deleteCommand); 
+	    	    _client.post(deleteCommand); 
 			}
 		}
 		
@@ -44,8 +43,8 @@ package com.kaltura.edw.control.commands.flavor
  			Alert.show(ResourceManager.getInstance().getString('cms', 'assetDeletedMsg'), '', Alert.OK);
  			var entry:KalturaBaseEntry = new KalturaBaseEntry();
  			entry.id = fap.entryId;
- 			var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, entry);
-			cgEvent.dispatch();
+ 			var cgEvent : KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_FLAVOR_ASSETS, entry);
+			_dispatcher.dispatch(cgEvent);
 		}
 	}
 }

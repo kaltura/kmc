@@ -1,9 +1,9 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.kmvc.control.KMvCEvent;
 
-	public class ThumbnailAssetEvent extends CairngormEvent
+	public class ThumbnailAssetEvent extends KMvCEvent
 	{
 		public static const LIST:String = "content_listThumbnailAsset";
 		public static const SET_AS_DEFAULT:String = "content_setAsDefaultThumbAsset";

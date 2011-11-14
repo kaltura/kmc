@@ -16,13 +16,14 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.edw.business.IDataOwner;
+			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.control.events.LoadEvent;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			
 
@@ -65,8 +66,8 @@
 			}
 			
 			private function loadFilterData():void {
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
-				fe.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
+				KedController.getInstance().dispatch(fe);
 			}
 			
 			private function initWindow():void {

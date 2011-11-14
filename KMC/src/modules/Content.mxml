@@ -23,21 +23,31 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.edw.business.IDataOwner;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.edw.control.events.GeneralUiconfEvent;
-			import com.kaltura.edw.control.events.MediaEvent;
+			import com.kaltura.edw.components.playlist.ManualPlaylistWindow;
+			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
+			import com.kaltura.edw.components.playlist.types.ManualPlaylistWindowMode;
+			import com.kaltura.edw.control.CustomDataTabController;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.control.events.MetadataProfileEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
-			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.edw.control.events.SearchEvent;
+			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.model.datapacks.ContentDataPack;
+			import com.kaltura.edw.model.datapacks.CuePointsDataPack;
+			import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.view.EntryDetailsWin;
-			import com.kaltura.edw.view.window.playlist.ManualPlaylistWindow;
+			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
 			import com.kaltura.kmc.modules.content.events.*;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.types.EntryDetailsWindowState;
@@ -50,6 +60,8 @@
 			import com.kaltura.kmc.modules.content.view.window.RulePlaylistWindow;
 			import com.kaltura.kmc.modules.content.view.window.SetAccessControlProfileWin;
 			import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaPlaylistType;
@@ -103,6 +115,17 @@
 			 * */
 			private var _model:CmsModelLocator = CmsModelLocator.getInstance();
 
+			[Bindable]
+			/**
+			 * entry data
+			 * */
+			private var _entryData:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
+			
+			/**
+			 * custom data information
+			 * */
+			private var _customDataData:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
+			
 			[Bindable]
 			/**
 			 * reference to the current files in the upload file list
@@ -160,7 +183,7 @@
 				if (_ready) {
 					handleEntryId();
 					_model.filterModel.loadingRequired = true;
-					_model.entryDetailsModel.conversionProfileLoaded = false;
+					(_model.entryDetailsModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).conversionProfileLoaded = false;
 					switchToTab(subtab);
 					//loads data that might have changed from a different tab
 					loadChangableData();
@@ -220,7 +243,8 @@
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
 				entry.name = resourceManager.getString('cms','defaultEntryName');
 				entry.mediaType = KalturaMediaType.AUDIO;
-				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_ENTRY, entry, true);
+				var addMedia:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_ENTRY);
+				addMedia.data = entry;
 				addMedia.dispatch();
 			}
 			
@@ -231,7 +255,8 @@
 				var entry:KalturaMediaEntry = new KalturaMediaEntry();
 				entry.name = resourceManager.getString('cms','defaultEntryName');
 				entry.mediaType = KalturaMediaType.VIDEO;
-				var addMedia:MediaEvent = new MediaEvent(MediaEvent.ADD_ENTRY, entry, true);
+				var addMedia:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_ENTRY);
+				addMedia.data = entry;
 				addMedia.dispatch();
 			}
 			
@@ -272,18 +297,18 @@
 			protected function handleEntryId():void {
 				//get default metadata view if needed
 				if (_model.filterModel.enableCustomData) {
-					if (!_model.entryDetailsModel.metadataDefaultUiconfXML) {
-						var getMetadataUiconf:GeneralUiconfEvent = new GeneralUiconfEvent(GeneralUiconfEvent.GET_METADATA_UICONF);
-						getMetadataUiconf.dispatch();
+					if (!_customDataData.metadataDefaultUiconfXML) {
+						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
+						CustomDataTabController.getInstance().dispatch(getMetadataUiconf);
 					}
-					var listMetadataProfiles:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-					listMetadataProfiles.dispatch();
+//					var listMetadataProfiles:CustomDataEvent = new CustomDataEvent(CustomDataEvent.LIST_PROFILES);
+//					listMetadataProfiles.dispatch();
 				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
 					// get the entry
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _model.attic.entryid);
-					cgEvent.dispatch();
+					var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _model.attic.entryid);
+					KedController.getInstance().dispatch(cgEvent);
 					_model.attic.entryid = null;
 				}
 			}
@@ -353,8 +378,8 @@
 			 * */
 			public function requestEntryDrilldown(entry:KalturaBaseEntry):void {
 				var cgEvent:CairngormEvent;
-				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry);
-				cgEvent.dispatch();
+				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry);
+				KedController.getInstance().dispatch(kEvent);
 				if (entry is KalturaPlaylist) {
 					//switch manual / rule base
 					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
@@ -487,10 +512,10 @@
 				_model.context.kClipAdsUiconf = confFile.uiconf.kclip.ads.text().toString();
 
 				// model:
-				_model.entryDetailsModel.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
-				_model.entryDetailsModel.cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
+				_customDataData.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
+				(_model.entryDetailsModel.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
 				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString() != '') {
-					_model.entryDetailsModel.showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
+					(_model.entryDetailsModel.getDataPack(ContentDataPack) as ContentDataPack).showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
 				}
 
 			}
@@ -522,6 +547,8 @@
 				if (objParam.openplayer) {
 					_model.openPlayer = objParam.openplayer;
 				}
+				
+				_entryData.maxNumCategories = objParam.maxnumcategories;
 			}
 
 
@@ -639,18 +666,18 @@
 				}
 			}
 
-			private function setReplacementDrilldown(edw:com.kaltura.edw.view.EntryDetailsWin):void {
-				var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
-				newEntryDetailsModel.selectedEntry = _model.entryDetailsModel.selectedReplacementEntry;
-				newEntryDetailsModel.replacedEntryName = _model.entryDetailsModel.selectedEntry.name;
-				// copy permissions and general info stuff
-				newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
-				newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
-				newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
-				newEntryDetailsModel.enableThumbResize = _model.entryDetailsModel.enableThumbResize;
-				newEntryDetailsModel.enableThumbsList = _model.entryDetailsModel.enableThumbsList;
+			private function setReplacementDrilldown(edw:EntryDetailsWin):void {
+//TODO				var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
+//				newEntryDetailsModel.selectedEntry = _entryData.selectedReplacementEntry;
+//				newEntryDetailsModel.replacedEntryName = _entryData.selectedEntry.name;
+//				// copy permissions and general info stuff
+//				newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
+//				newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
+//				newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
+//				newEntryDetailsModel.enableThumbResize = _model.entryDetailsModel.enableThumbResize;
+//				newEntryDetailsModel.enableThumbsList = _model.entryDetailsModel.enableThumbsList;
 				// we open another drilldown, should add another model
-				_model.entryDetailsModelsArray.push(newEntryDetailsModel);
+//				_model.entryDetailsModelsArray.push(newEntryDetailsModel);
 				edw.loadRoughcuts = false;
 				edw.showNextPrevBtns = false;
 				edw.visibleTabsAC = new ArrayCollection(["entryAssets"]);
@@ -660,7 +687,47 @@
 			
 			
 			
-			
+			/**
+			 * handle events dispatched by the drilldown
+			 * */
+			private function handleKedEvents(e:KedDataEvent):void {
+				switch (e.type) {
+					
+					case KedDataEvent.ENTRY_UPDATED:
+						// set refresh list required
+						_model.refreshEntriesRequired = true;
+						// break;
+					case KedDataEvent.ENTRY_RELOADED:
+						// dispatch a Cairngorm event which will update the new entry in the entries list
+						var uev:UpdateEntryEvent = new UpdateEntryEvent(UpdateEntryEvent.UPDATE_ENTRY_IN_LIST);
+						uev.data = e.data;
+						uev.dispatch();
+						break;
+					
+					case KedDataEvent.CLOSE_WINDOW:
+						// close the drilldown
+						var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						
+						// make sure list is refreshed when drilldown window is closed
+						if (_model.refreshEntriesRequired) {
+							cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _model.listableVo);
+							cgEvent.dispatch();
+						}
+						break;
+					
+					case KedDataEvent.CATEGORY_CHANGED:
+						// list entries
+						var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES , _model.listableVo  );
+						searchEvent.dispatch();
+						break;
+					
+					case KedDataEvent.OPEN_REPLACEMENT:
+						var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
+						openWindow.dispatch();
+						break;
+				}
+			}
 			
 
 			/**
@@ -670,6 +737,11 @@
 			private function openEntryDetails(state:String):EntryDetailsWin {
 				var edw:EntryDetailsWin = new EntryDetailsWin();
 				edw.styleName = "WinTitleStyle";
+				edw.addEventListener(KedDataEvent.ENTRY_RELOADED, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.CLOSE_WINDOW, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.CATEGORY_CHANGED, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.ENTRY_UPDATED, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.OPEN_REPLACEMENT, handleKedEvents, false, 0, true);
 				edw.isNewEntry = state == EntryDetailsWindowState.NEW_ENTRY;
 				if (state == EntryDetailsWindowState.REPLACEMENT_ENTRY) {
 					// opens drill down to reference entry, with partial tabs list
@@ -678,18 +750,19 @@
 				
 				//get the selected entry from the server
 				if (state != EntryDetailsWindowState.NEW_ENTRY) {
-					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,
-						_model.entryDetailsModel.selectedEntry.id);
-					getSelectedEntry.dispatch();
+					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,
+						_entryData.selectedEntry.id);
+					KedController.getInstance().dispatch(getSelectedEntry);
 				}
+				//TODO add commands to set the filtermodel etc to the kmvc model
 				edw.entryDetailsModel = _model.entryDetailsModel;
-				edw.dropFolderModel = _model.dropFolderModel;
+//				edw.dropFolderModel = _model.dropFolderModel;
 				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
 				edw.filterModel = _model.filterModel;
 				edw.landingPage = _model.extSynModel.partnerData.landingPage;
 				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
-				edw.maxNumCategories = this._flashvars.maxnumcategories;
+//				edw.maxNumCategories = _flashvars.maxnumcategories;
 				if (state != EntryDetailsWindowState.NORMAL_ENTRY)
 					edw.showNextPrevBtns = false;
 				if (_model.listableVo)
@@ -737,12 +810,85 @@
 				var mpw:ManualPlaylistWindow = new ManualPlaylistWindow();
 				mpw.rootUrl = _model.context.rootUrl;
 				mpw.filterData = _model.filterModel;
-				mpw.playlistModel = _model.playlistModel;
-				mpw.distributionProfilesArray = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
-				mpw.selectedEntry = _model.entryDetailsModel.selectedEntry;
+//				mpw.playlistModel = _model.playlistModel;
+				
+				if (_model.playlistModel.onTheFlyPlaylistType == SetPlaylistTypeEvent.MANUAL_PLAYLIST) {
+					// this is not an empty or edit existing playlist - this is a
+					// new playlist created on the fly from entries screen 
+					mpw.onTheFlyEntries = _model.playlistModel.onTheFlyPlaylistEntries;
+				}	
+				
+				mpw.distributionProfilesArray = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+				mpw.selectedEntry = _entryData.selectedEntry;
+				if (_entryData.selectedEntry && _entryData.selectedEntry.id){
+					mpw.context = ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE;
+				}
+				
+				mpw.addEventListener(ManualPlaylistWindowEvent.CLOSE, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.SAVE_NEW_PLAYLIST, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.SAVE_EXISTING_PLAYLIST, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.GET_PLAYLIST, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.LOAD_FILTER_DATA, handleManPlEvents);
+				mpw.addEventListener(ManualPlaylistWindowEvent.SEARCH_ENTRIES, handleManPlEvents);
 				return mpw;
 			}
-
+			
+			private function handleManPlEvents(e:ManualPlaylistWindowEvent) :void {
+				var cgEvent:CairngormEvent;
+				switch (e.type) {
+					case ManualPlaylistWindowEvent.CLOSE:
+						var mpw:ManualPlaylistWindow = e.target as ManualPlaylistWindow;
+						mpw.removeEventListener(ManualPlaylistWindowEvent.CLOSE, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.SAVE_NEW_PLAYLIST, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.SAVE_EXISTING_PLAYLIST, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.GET_PLAYLIST, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.LOAD_FILTER_DATA, handleManPlEvents);
+						mpw.removeEventListener(ManualPlaylistWindowEvent.SEARCH_ENTRIES, handleManPlEvents);
+						// reset on-the-fly flag 
+						cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.NONE_PLAYLIST);
+						cgEvent.dispatch();
+						cgEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						break;
+					
+					case ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS:
+						// open entry details window with the selected entry from the playlist
+						var entry:KalturaBaseEntry = e.data as KalturaBaseEntry;
+						var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry, entry.id);
+						KedController.getInstance().dispatch(kEvent);
+						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW);
+						cgEvent.dispatch();
+						break;
+					
+					case ManualPlaylistWindowEvent.SAVE_NEW_PLAYLIST:
+						var addEntryEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.ADD_PLAYLIST, e.data as KalturaPlaylist);
+						addEntryEvent.dispatch();
+						break;
+					
+					case ManualPlaylistWindowEvent.SAVE_EXISTING_PLAYLIST:
+						var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS,
+							new ArrayCollection([e.data as KalturaPlaylist]));
+						entriesEvent.dispatch();
+						break;
+					
+					case ManualPlaylistWindowEvent.GET_PLAYLIST:
+						cgEvent = new KMCEntryEvent(KMCEntryEvent.GET_PLAYLIST, e.data as KalturaPlaylist);
+						cgEvent.dispatch();
+						break;
+					
+					case ManualPlaylistWindowEvent.LOAD_FILTER_DATA:
+						var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, e.target as IDataOwner, _model.filterModel);
+						KedController.getInstance().dispatch(fe);
+						break;
+					
+					case ManualPlaylistWindowEvent.SEARCH_ENTRIES:
+						var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, e.data as ListableVo);
+						KedController.getInstance().dispatch(searchEvent);
+						break;
+				}
+			}
 
 			/**
 			 * opens a popup window with rule based playlist
@@ -751,12 +897,12 @@
 				var rpw:RulePlaylistWindow = new RulePlaylistWindow();
 				rpw.rulePlaylistData = _model.playlistModel;
 				rpw.rootUrl = _model.context.rootUrl;
-				if (_model.entryDetailsModel.selectedEntry && (_model.entryDetailsModel.selectedEntry is KalturaPlaylist)) {
-					rpw.editPlaylist = _model.entryDetailsModel.selectedEntry as KalturaPlaylist;
+				if (_entryData.selectedEntry && (_entryData.selectedEntry is KalturaPlaylist)) {
+					rpw.editPlaylist = _entryData.selectedEntry as KalturaPlaylist;
 				}
 				rpw.filterData = _model.filterModel;
 
-				rpw.distributionProfilesArr = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
+				rpw.distributionProfilesArr = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
 				// assign the current fiter to the new window 
 				rpw.onTheFlyFilter = _model.playlistModel.onTheFlyFilter;
 				_model.playlistModel.onTheFlyFilter = null;
@@ -806,21 +952,9 @@
 						case WindowsStates.ADD_LIVE_STREAM:
 							currentPopUp = new AddStream();
 							break;
-						case WindowsStates.ADD_ADMIN_TAGS_WINDOW:
-							var aatw:AddTagsWin = new AddTagsWin();
-							aatw.isAdminTag = true;
-							aatw.selectedEntries = _model.checkedEntries;
-							currentPopUp = aatw;
-							break;
 						case WindowsStates.REMOVE_TAGS_WINDOW:
 							currentPopUp = new RemoveTagsWin();
 							(currentPopUp as RemoveTagsWin).selectedEntries = new ArrayCollection(_model.selectedEntries);
-							break;
-						case WindowsStates.REMOVE_ADMIN_TAGS_WINDOW:
-							var rtw:RemoveTagsWin = new RemoveTagsWin();
-							rtw.isAdminTag = true;
-							rtw.selectedEntries = _model.checkedEntries;
-							currentPopUp = rtw;
 							break;
 						case WindowsStates.PLAYLIST_MANUAL_WINDOW:
 							currentPopUp = openManualPlaylist();
@@ -924,7 +1058,7 @@
 			private function openEntryPreview(entry:KalturaBaseEntry):void {
 				// open regular entry preview
 				if (_model.openPlayer) {
-					var cgEvent:EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
+					var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.GET_FLAVOR_ASSETS_FOR_PREVIEW, entry);
 					cgEvent.dispatch();
 				}
 				//First time funnel
@@ -942,7 +1076,7 @@
 				if (!initialized)
 					return;
 
-				var entry:KalturaBaseEntry = _model.entryDetailsModel.selectedEntry;
+				var entry:KalturaBaseEntry = _entryData.selectedEntry;
 
 				if (entry is KalturaLiveStreamAdminEntry) {
 					openLivestreamPreview(entry);
@@ -1175,18 +1309,16 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" 
 					  change="initSelectedTab(event)" >
 			<content:Entries id="manage" height="100%" styleName="pageStyle"
-							 entryDetailsModel="{_model.entryDetailsModel}" showThumbnails="{_model.entryDetailsModel.enableThumbsList}"
+							 entryDetailsModel="{_model.entryDetailsModel}" 
 							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 							 windowState="{_model.windowState}"/>
-			<content:Moderation id="moderation" styleName="pageStyle" height="100%" 
-								showThumbnails="{_model.entryDetailsModel.enableThumbsList}"
-								context="{_model.context}" selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+			<content:Moderation id="moderation" styleName="pageStyle" height="100%" entryDetailsModel="{_model.entryDetailsModel}"
+								context="{_model.context}" selectedEntry="{_entryData.selectedEntry}"
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
-								label="{ResourceManager.getInstance().getString('cms','moderation')}"
-								distributionProfilesArray="{_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"/>
+								label="{ResourceManager.getInstance().getString('cms','moderation')}" />
 			<playlist:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
-							   selectedEntry="{_model.entryDetailsModel.selectedEntry}"
+							   selectedEntry="{_entryData.selectedEntry}"
 							   showEmbed="{_model.showPlaylistEmbedCode}"
 							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
 			<content:ExternalSyndication id="syndication" styleName="pageStyle" 

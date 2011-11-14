@@ -1,6 +1,5 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.accessControl.AccessControlList;
 	import com.kaltura.commands.baseEntry.BaseEntryCount;
@@ -10,9 +9,15 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.business.IDataOwner;
+	import com.kaltura.edw.control.CustomDataTabController;
 	import com.kaltura.edw.control.events.LoadEvent;
+	import com.kaltura.edw.control.events.MetadataProfileEvent;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.types.KalturaDistributionProfileStatus;
 	import com.kaltura.types.KalturaEntryStatus;
@@ -53,29 +58,39 @@ package com.kaltura.edw.control.commands
 	 * @author Atar
 	 * 
 	 */	
-	public class LoadFilterDataCommand extends KalturaCommand {
-		//TODO take the fault beahvior from all the commands (used to show different errors)
+	public class LoadFilterDataCommand extends KedCommand {
 		
 		public static const DEFAULT_PAGE_SIZE:int = 500;
+		
+		/**
+		 * reference to the filter model in use
+		 * */
+		private var _filterModel:FilterModel;
 		
 		/**
 		 * the element that triggered the data load.
 		 */		
 		private var _caller:IDataOwner;
 		
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_caller = (event as LoadEvent).caller;
-			if (!_model.filterModel.loadingRequired) {
+			_filterModel = (event as LoadEvent).filterModel;
+			
+			if (!_filterModel.loadingRequired) {
 				_caller.onRequestedDataLoaded();				
 				return;
 			}
 			
 			_model.increaseLoadCounter();
 			
+			// custom data hack
+			var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+			CustomDataTabController.getInstance().dispatch(lmdp);
+			
 			var multiRequest:MultiRequest = new MultiRequest();
 			
 			// distribution
-			if (_model.filterModel.enableDistribution) {
+			if (_filterModel.enableDistribution) {
 				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
 				multiRequest.addAction(listDistributionProfile);
 			}
@@ -84,14 +99,6 @@ package com.kaltura.edw.control.commands
 			flavorsPager.pageSize = DEFAULT_PAGE_SIZE;
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, flavorsPager);
 			multiRequest.addAction(listFlavorParams);
-			// metadata profile
-		/*	if (_model.filterModel.enableCustomData) {
-				var mpfilter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
-				mpfilter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
-				var pager:KalturaFilterPager = new KalturaFilterPager();
-				var listMetadataProfile:MetadataProfileList = new MetadataProfileList(mpfilter, pager);
-				multiRequest.addAction(listMetadataProfile);
-			}*/
 			// access control
 			var acfilter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
 			acfilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
@@ -123,13 +130,13 @@ package com.kaltura.edw.control.commands
 			multiRequest.addEventListener(KalturaEvent.COMPLETE, result);
 			multiRequest.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(multiRequest);
+			_client.post(multiRequest);
 		}
 	
 		override public function result(data:Object):void {
 			var responseCount:int = 0;
 			
-			if (_model.filterModel.enableDistribution) {
+			if (_filterModel.enableDistribution) {
 				// distribution
 				handleListDistributionProfileResult(data.data[responseCount] as KalturaDistributionProfileListResponse);
 				responseCount ++;
@@ -139,13 +146,6 @@ package com.kaltura.edw.control.commands
 			handleFlavorsData(data.data[responseCount] as KalturaFlavorParamsListResponse);
 			responseCount ++;
 			
-		/*	if (_model.filterModel.enableCustomData) {
-				// metadata profile
-				handleMetadataProfile(data.data[responseCount] as KalturaMetadataProfileListResponse);
-				responseCount ++;
-			}*/
-				
-			
 			// access control
 			handleAccessControls(data.data[responseCount] as KalturaAccessControlListResponse);
 			responseCount ++;
@@ -153,7 +153,7 @@ package com.kaltura.edw.control.commands
 			// categories
 			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
 			
-			_model.filterModel.loadingRequired = false;
+			_filterModel.loadingRequired = false;
 			_caller.onRequestedDataLoaded();
 			_model.decreaseLoadCounter();
 
@@ -174,8 +174,9 @@ package com.kaltura.edw.control.commands
 				if (newProfile.status == KalturaDistributionProfileStatus.ENABLED)
 					profilesArray.push(newProfile);
 			}
-			_model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
-			_model.entryDetailsModel.distributionProfileInfo.entryDistributionArray = new Array();
+			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			ddp.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
+			ddp.distributionProfileInfo.entryDistributionArray = new Array();
 		}
 		
 		
@@ -191,72 +192,9 @@ package com.kaltura.edw.control.commands
 					tempFlavorParamsArr.addItem(kFlavor);
 				}
 			}
-			_model.filterModel.flavorParams = tempFlavorParamsArr;
+			_filterModel.flavorParams = tempFlavorParamsArr;
 		}
 		
-		
-		/**
-		 * coppied from ListMetadataProfileCommand 
-		 */		
-		/*private function handleMetadataProfile(response:KalturaMetadataProfileListResponse):void {
-			_model.filterModel.metadataProfiles = new ArrayCollection();
-			_model.filterModel.formBuilders = new ArrayCollection();
-			for (var i:int = 0; i<response.objects.length; i++) 
-			{
-				var recievedProfile:KalturaMetadataProfile = response.objects[i];
-				if (recievedProfile) {
-					var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
-					metadataProfile.profile = recievedProfile;
-					metadataProfile.xsd = new XML(recievedProfile.xsd);
-					metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
-					
-					//set the displayed label of each label
-					for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
-						var label:String = ResourceManager.getInstance().getString('customFields',field.defaultLabel);
-						if (label) 
-						{
-							field.displayedLabel = label;
-						}
-						else 
-						{
-							field.displayedLabel = field.defaultLabel;
-						}
-					}
-					
-					//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
-					_model.filterModel.metadataProfiles.addItem(metadataProfile);
-					var fb:FormBuilder = new FormBuilder(metadataProfile);
-					_model.filterModel.formBuilders.addItem(fb);
-					
-					var isViewExist:Boolean = false;
-					
-					if (recievedProfile.views) {
-						try {
-							var recievedView:XML = new XML(recievedProfile.views);
-						}
-						catch (e:Error) {
-							//invalid view xmls
-							continue;
-						}
-						for each (var layout:XML in recievedView.children()) {
-							if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
-								metadataProfile.viewXML = layout;
-								isViewExist = true;
-								continue;
-							}
-						}
-					}
-					if (!isViewExist) {
-						//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-						if (_model.entryDetailsModel.metadataDefaultUiconfXML)
-							metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
-						fb.buildInitialMxml();
-					}
-				} 	
-			}
-			
-			
-		}*/
 		
 		/**
 		 * coppied from ListAccessControlsCommand 
@@ -277,7 +215,7 @@ package com.kaltura.edw.control.commands
 				}
 				tempArrCol.addItem(acVo);
 			}
-			_model.filterModel.accessControlProfiles = tempArrCol;
+			_filterModel.accessControlProfiles = tempArrCol;
 		}
 		
 		/**
@@ -285,7 +223,7 @@ package com.kaltura.edw.control.commands
 		 */
 		private function handleCategoriesList(kclr:KalturaCategoryListResponse, totalEntriesCount:String):void {
 			var categories:Array = kclr.objects;
-			_model.filterModel.categories = buildCategoriesHyrarchy(categories, totalEntriesCount);
+			_filterModel.categories = buildCategoriesHyrarchy(categories, totalEntriesCount);
 		}
 		
 		/**
@@ -303,11 +241,11 @@ package com.kaltura.edw.control.commands
 		}
 		
 		private function clearOldFlavorData():void {
-			_model.filterModel.flavorParams.removeAll();
+			_filterModel.flavorParams.removeAll();
 		}
 		
 		private function buildCategoriesHyrarchy(array:Array, totalEntryCount:String):CategoryVO {
-			var catMap:HashMap = _model.filterModel.categoriesMap;
+			var catMap:HashMap = _filterModel.categoriesMap;
 			catMap.clear();
 			
 			var root:CategoryVO = new CategoryVO(0,
@@ -333,7 +271,7 @@ package com.kaltura.edw.control.commands
 				categories.addItem(category)
 			}
 			
-			_model.entryDetailsModel.categoriesFullNameList = categoryNames;
+			(_model.getDataPack(EntryDataPack) as EntryDataPack).categoriesFullNameList = categoryNames;
 			
 			for each (var cat:CategoryVO in categories) {
 				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;

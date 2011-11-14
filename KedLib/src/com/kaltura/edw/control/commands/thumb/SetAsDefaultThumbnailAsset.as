@@ -1,33 +1,35 @@
 package com.kaltura.edw.control.commands.thumb
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.thumbAsset.ThumbAssetGetByEntryId;
 	import com.kaltura.commands.thumbAsset.ThumbAssetSetAsDefault;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.ThumbnailAssetEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaThumbAsset;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class SetAsDefaultThumbnailAsset extends KalturaCommand
+	public class SetAsDefaultThumbnailAsset extends KedCommand
 	{
 		private var _defaultThumb:ThumbnailWithDimensions;
 		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
 			_defaultThumb = (event as ThumbnailAssetEvent).thumbnailAsset;
 			var multiRequest:MultiRequest = new MultiRequest();
 			var setDefault:ThumbAssetSetAsDefault = new ThumbAssetSetAsDefault(_defaultThumb.thumbAsset.id);
 			multiRequest.addAction(setDefault);
-			var listThumbs:ThumbAssetGetByEntryId = new ThumbAssetGetByEntryId(_model.entryDetailsModel.selectedEntry.id);
+			var listThumbs:ThumbAssetGetByEntryId = new ThumbAssetGetByEntryId((_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id);
 			multiRequest.addAction(listThumbs);
 			
 			multiRequest.addEventListener(KalturaEvent.COMPLETE, result);
 			multiRequest.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(multiRequest);
+			_client.post(multiRequest);
 		}
 		
 		override public function result(data:Object):void {
@@ -42,7 +44,8 @@ package com.kaltura.edw.control.commands.thumb
 		 * 
 		 */		
 		private function updateThumbnailsState(thumbsArray:Array):void {
-			var currentThumbsArray:Array = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			var currentThumbsArray:Array = ddp.distributionProfileInfo.thumbnailDimensionsArray;
 			for (var i:int=0; i<thumbsArray.length; i++) {
 				var thumbAsset:KalturaThumbAsset = thumbsArray[i] as KalturaThumbAsset;
 				for (var j:int=0; j<currentThumbsArray.length; j++) {
@@ -55,7 +58,7 @@ package com.kaltura.edw.control.commands.thumb
 			}
 			
 			//for data binding
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = currentThumbsArray.concat();
+			ddp.distributionProfileInfo.thumbnailDimensionsArray = currentThumbsArray.concat();
 		}
 	}
 }

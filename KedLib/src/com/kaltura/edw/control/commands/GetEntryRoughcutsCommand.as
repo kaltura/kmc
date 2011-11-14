@@ -1,27 +1,23 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.mixing.MixingGetMixesByMediaId;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.model.datapacks.ContentDataPack;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
-	
-	import flash.events.Event;
-	
-	import mx.rpc.IResponder;
+	import com.kaltura.kmvc.control.KMvCEvent;
 
-	public class GetEntryRoughcutsCommand extends KalturaCommand implements ICommand, IResponder
+	public class GetEntryRoughcutsCommand extends KedCommand 
 	{
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();		
-			var e : EntryEvent = event as EntryEvent;
+			var e : KedEntryEvent = event as KedEntryEvent;
 			var getMixUsingEntry:MixingGetMixesByMediaId = new MixingGetMixesByMediaId(e.entryVo.id);
 			
 			getMixUsingEntry.addEventListener(KalturaEvent.COMPLETE, result);
 			getMixUsingEntry.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(getMixUsingEntry);
+			_client.post(getMixUsingEntry);
 		}
 		
 		override public function result(data:Object):void
@@ -30,7 +26,8 @@ package com.kaltura.edw.control.commands
 			_model.decreaseLoadCounter();
 			
 			if(data.data && data.data is Array) {
-				_model.entryDetailsModel.contentParts = data.data;
+				var cdp:ContentDataPack = _model.getDataPack(ContentDataPack) as ContentDataPack;
+				cdp.contentParts = data.data;
 //				_model.entryDetailsModel.selectedEntry.dispatchEvent(new Event("partsChanged"));
 			}
 			else

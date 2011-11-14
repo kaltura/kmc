@@ -1,19 +1,19 @@
 package com.kaltura.edw.control.commands.dist
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.EntryDistributionEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
 	
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
-	public class GetSentDataEntryDistributionCommand extends KalturaCommand
+	public class GetSentDataEntryDistributionCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			var entryDis:KalturaEntryDistribution = (event as EntryDistributionEvent).entryDistribution;
-			var stringURL:String = _model.context.kc.protocol + _model.context.kc.domain + '/api_v3/index.php/service/contentDistribution_entryDistribution/action/serveSentData/actionType/1/id/' +
-				entryDis.id + '/ks/' + _model.context.kc.ks;
+			var stringURL:String = _client.protocol + _client.domain + '/api_v3/index.php/service/contentDistribution_entryDistribution/action/serveSentData/actionType/1/id/' +
+				entryDis.id + '/ks/' + _client.ks;
 			var urlRequest:URLRequest = new URLRequest(stringURL);
 			navigateToURL(urlRequest , '_self');
 		}

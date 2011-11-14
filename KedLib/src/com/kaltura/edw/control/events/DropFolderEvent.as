@@ -1,10 +1,10 @@
 package com.kaltura.edw.control.events {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaDropFolder;
 	
 	import mx.controls.Alert;
 
-	public class DropFolderEvent extends CairngormEvent {
+	public class DropFolderEvent extends KMvCEvent {
 
 
 		/**
@@ -18,10 +18,10 @@ package com.kaltura.edw.control.events {
 		public static const LIST_FOLDERS:String = "df_list_folders";
 		
 		
-		/**
-		 * list all enabled drop folders, then list files for the folders in the list 
-		 */
-		public static const LIST_FOLDERS_AND_FILES:String = "df_list_folders_and_files";
+//		/**
+//		 * list all enabled drop folders, then list files for the folders in the list 
+//		 */
+//		public static const LIST_FOLDERS_AND_FILES:String = "df_list_folders_and_files";
 		
 		
 		
@@ -29,40 +29,6 @@ package com.kaltura.edw.control.events {
 		 * set selected drop folder to the supplied drop folder 
 		 */
 		public static const SET_SELECTED_FOLDER:String = "df_set_selected_folder";
-		
-		
-		/**
-		 *  Value that enables listing drop folder with this config when passed
-		 *  as the <code>folderFlags</code> parameter of the constructor.
-		 *  You can use the | operator to combine this bitflag
-		 *  with the <code>MATCH_OR_LEAVE</code>, <code>ADD_NEW</code>, <code>XML_FOLDER</code> flags.
-		 */
-		public static const MATCH_OR_NEW:uint = 0x0001;
-		
-		/**
-		 *  Value that enables listing drop folder with this config when passed
-		 *  as the <code>folderFlags</code> parameter of the constructor.
-		 *  You can use the | operator to combine this bitflag
-		 *  with the <code>MATCH_OR_NEW</code>, <code>ADD_NEW</code>, <code>XML_FOLDER</code> flags.
-		 */
-		public static const MATCH_OR_KEEP:uint = 0x0002;
-		
-		/**
-		 *  Value that enables listing drop folder with this config when passed
-		 *  as the <code>folderFlags</code> parameter of the constructor.
-		 *  You can use the | operator to combine this bitflag
-		 *  with the <code>MATCH_OR_NEW</code>, <code>MATCH_OR_LEAVE</code>, <code>XML_FOLDER</code> flags.
-		 */
-		public static const ADD_NEW:uint = 0x0004;
-		
-		/**
-		 *  Value that enables listing drop folder with this config when passed
-		 *  as the <code>folderFlags</code> parameter of the constructor.
-		 *  You can use the | operator to combine this bitflag with the 
-		 *  <code>MATCH_OR_NEW</code>, <code>MATCH_OR_LEAVE</code>, <code>ADD_NEW</code> flags.
-		 */
-		public static const XML_FOLDER:uint = 0x0008;
-
 		
 		
 		private var _folder:KalturaDropFolder;

@@ -1,38 +1,98 @@
-package com.kaltura.edw.control.commands
-{
-	import com.adobe.cairngorm.control.CairngormEvent;
+package com.kaltura.edw.control.commands {
+	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
+	import com.kaltura.commands.metadata.MetadataAdd;
+	import com.kaltura.commands.metadata.MetadataUpdate;
+	import com.kaltura.edw.business.MetadataDataParser;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.events.KedDataEvent;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
+	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
+	import com.kaltura.edw.model.datapacks.PermissionsDataPack;
+	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaEntryStatus;
+	import com.kaltura.types.KalturaMetadataObjectType;
+	import com.kaltura.vo.KMCMetadataProfileVO;
+	import com.kaltura.vo.KalturaBaseEntry;
 	
-	public class UpdateSingleEntry extends KalturaCommand {
+	import mx.collections.ArrayCollection;
+
+	public class UpdateSingleEntry extends KedCommand {
 		
-		override public function execute(event:CairngormEvent):void
-		{
+		private var _event:KedEntryEvent;
+
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var e:EntryEvent = event as EntryEvent;
 			
-			e.entryVo.setUpdatedFieldsOnly(true);
-			if (e.entryVo.status != KalturaEntryStatus.NO_CONTENT) {
-				e.entryVo.conversionProfileId = int.MIN_VALUE;
+			_event = event as KedEntryEvent;
+			var entry:KalturaBaseEntry = _event.entryVo;
+
+			entry.setUpdatedFieldsOnly(true);
+			if (entry.status != KalturaEntryStatus.NO_CONTENT) {
+				entry.conversionProfileId = int.MIN_VALUE;
 			}
-			
-			var mu:BaseEntryUpdate = new BaseEntryUpdate(e.entryId, e.entryVo);
+			// custom data info
+			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+			// use mr to update metadata
+			var mr:MultiRequest = new MultiRequest();
+
+			var keepId:String = entry.id;
+
+			if ((_model.getDataPack(PermissionsDataPack) as PermissionsDataPack).enableUpdateMetadata && cddp.metadataInfoArray) {
+				var metadataProfiles:ArrayCollection = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel.metadataProfiles;
+				for (var j:int = 0; j < cddp.metadataInfoArray.length; j++) {
+					var metadataInfo:EntryMetadataDataVO = cddp.metadataInfoArray[j] as EntryMetadataDataVO;
+					var profile:KMCMetadataProfileVO = metadataProfiles[j] as KMCMetadataProfileVO;
+					if (metadataInfo && profile && profile.profile) {
+						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, profile);
+						//metadata exists--> update request
+						if (metadataInfo.metadata) {
+							var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+							if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+								var metadataUpdate:MetadataUpdate = new MetadataUpdate(metadataInfo.metadata.id,
+									newMetadataXML.toXMLString());
+								mr.addAction(metadataUpdate);
+							}
+						}
+						else if (newMetadataXML.children().length() > 0) {
+							var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
+								KalturaMetadataObjectType.ENTRY,
+								keepId,
+								newMetadataXML.toXMLString());
+							mr.addAction(metadataAdd);
+						}
+					}
+				}
+
+			}
+
+			var mu:BaseEntryUpdate = new BaseEntryUpdate(entry.id, entry);
+			mr.addAction(mu);
 			// add listeners and post call
-			mu.addEventListener(KalturaEvent.COMPLETE, result);
-			mu.addEventListener(KalturaEvent.FAILED, fault);
-			
-			_model.context.kc.post(mu);
-		
-			
+			mr.addEventListener(KalturaEvent.COMPLETE, result);
+			mr.addEventListener(KalturaEvent.FAILED, fault);
+
+			_client.post(mr);
+
+
 		}
-		
-		override public function result(data:Object):void
-		{
+
+
+		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
-			//TODO do we need to do anything?
+			
+			var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_UPDATED);
+			e.data = data.data[data.data.length-1]; // send the updated entry as event data
+			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(e);
+
+			// this will handle window closing or entry switching after successful save
+			if (_event.onComplete != null) {
+				_event.onComplete.call(_event.source);
+			}
 			
 		}
 	}

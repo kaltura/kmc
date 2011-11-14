@@ -1,15 +1,16 @@
 package com.kaltura.edw.control.commands.cuepoints
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.cuePoint.CuePointCount;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.CuePointEvent;
+	import com.kaltura.edw.model.datapacks.CuePointsDataPack;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaCuePointFilter;
 	
-	public class CountCuePoints extends KalturaCommand {
+	public class CountCuePoints extends KedCommand {
 		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();		
 			var e : CuePointEvent = event as CuePointEvent;
@@ -20,7 +21,7 @@ package com.kaltura.edw.control.commands.cuepoints
 			cnt.addEventListener(KalturaEvent.COMPLETE, result);
 			cnt.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(cnt);	 
+			_client.post(cnt);	 
 		}
 		
 		override public function result(data:Object):void
@@ -28,7 +29,7 @@ package com.kaltura.edw.control.commands.cuepoints
 			super.result(data);
 			_model.decreaseLoadCounter();
 			
-			_model.entryDetailsModel.cuepointsCount = parseInt(data.data);
+			(_model.getDataPack(CuePointsDataPack) as CuePointsDataPack).cuepointsCount = parseInt(data.data);
 			 
 		}
 	}

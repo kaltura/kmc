@@ -1,21 +1,22 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.DropFolderFileEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
+	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.edw.control.events.MediaEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaFlavorAsset;
 	
-	public class AddFlavorCommand extends KalturaCommand {
+	public class AddFlavorCommand extends KedCommand {
 		
 		private var _resource:KalturaContentResource;
 		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
+			_dispatcher = event.dispatcher;
 			_model.increaseLoadCounter();
 			var e:MediaEvent = event as MediaEvent;
 			_resource = e.data.resource as KalturaContentResource;
@@ -26,7 +27,7 @@ package com.kaltura.edw.control.commands
 			var fau:FlavorAssetAdd = new FlavorAssetAdd(e.entry.id, flavorAsset);
 			fau.addEventListener(KalturaEvent.COMPLETE, setResourceContent);
 			fau.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(fau);
+			_client.post(fau);
 		}
 		
 		protected function setResourceContent(e:KalturaEvent):void {
@@ -34,16 +35,17 @@ package com.kaltura.edw.control.commands
 			var fasc:FlavorAssetSetContent = new FlavorAssetSetContent(e.data.id, _resource);
 			fasc.addEventListener(KalturaEvent.COMPLETE, result);
 			fasc.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(fasc);
+			_client.post(fasc);
 		} 
 		
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
 			// to update the flavors tab, we re-load flavors data
-			if(_model.entryDetailsModel.selectedEntry != null) {
-				var cgEvent : EntryEvent = new EntryEvent(EntryEvent.GET_FLAVOR_ASSETS, _model.entryDetailsModel.selectedEntry);
-				cgEvent.dispatch();
+			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+			if(edp.selectedEntry != null) {
+				var cgEvent : KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_FLAVOR_ASSETS, edp.selectedEntry);
+				_dispatcher.dispatch(cgEvent);
 			}
 		}
 		

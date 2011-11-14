@@ -1,10 +1,9 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.vo.RelatedFileVO;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaAttachmentAsset;
 	
-	public class RelatedFileEvent extends CairngormEvent
+	public class RelatedFileEvent extends KMvCEvent
 	{
 		public static const LIST_RELATED_FILES:String = "listRelatedFiles";
 		public static const SAVE_ALL_RELATED:String = "saveAllRelated";

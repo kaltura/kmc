@@ -2,15 +2,15 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.media.MediaAdd;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.edw.control.events.MediaEvent;
-	import com.kaltura.edw.control.events.WindowEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.types.WindowsStates;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.vo.KalturaMediaEntry;
 	
 	import mx.resources.ResourceManager;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class AddMediaEntryCommand extends KalturaCommand {
 		//whether to open drilldown after media is created
@@ -32,7 +32,7 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 			
 			if (data.data && (data.data is KalturaMediaEntry)) {
-				_model.entryDetailsModel.selectedEntry = data.data as KalturaMediaEntry;
+				(_model.entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry = data.data as KalturaMediaEntry;
 				if (_openDrilldown) {	
 					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY);
 					cgEvent.dispatch();

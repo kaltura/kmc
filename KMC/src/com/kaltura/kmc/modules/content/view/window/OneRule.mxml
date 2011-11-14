@@ -3,20 +3,23 @@
  OneRule encapsulates a filter with entries list.
 -->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
-		 xmlns:view="com.kaltura.kmc.modules.content.view.*"
-		 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
 		 creationComplete="onCreationComplete()"
-		 xmlns:filter="com.kaltura.kmc.modules.content.view.filter.*" xmlns:playlist1="com.kaltura.edw.view.window.playlist.*" xmlns:filter1="com.kaltura.edw.view.filter.*" >
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:playlist="com.kaltura.edw.components.playlist.*" xmlns:filter1="com.kaltura.edw.components.filter.*" 
+		 >
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
-			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
-			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
+			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.types.KalturaPlaylistType;
-			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaPlaylist;
@@ -131,7 +134,7 @@
 				var cgEvent:CairngormEvent = new RuleBasedTypeEvent(RuleBasedTypeEvent.ONE_RULE);
 				cgEvent.dispatch();
 
-				cgEvent = new EntryEvent(EntryEvent.GET_RULE_BASED_PLAYLIST, playlist);
+				cgEvent = new KMCEntryEvent(KMCEntryEvent.GET_RULE_BASED_PLAYLIST, playlist);
 				cgEvent.dispatch();
 
 				if (!_isFirstRun)
@@ -164,6 +167,16 @@
 				advancedBtn.buttonMode = value;
 				entries.editable = value;
 			}
+
+			protected function entries_showEntryDetailsHandler(event:KedDataEvent):void
+			{
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry, entry.id);
+				KedController.getInstance().dispatch(kEvent);					
+				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW);
+				cgEvent.dispatch();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Metadata>
@@ -188,6 +201,6 @@
 					   click="dispatchEvent(new Event(OneRule.SWITCH_TO_ADVANCED))" includeInLayout="{showAdvanceModeBtn}"
 					   visible="{showAdvanceModeBtn}"/>
 	</mx:VBox>
-	<playlist1:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
-							  updatedData="{runRule()}" />
+	<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
+							  updatedData="{runRule()}" showEntryDetails="entries_showEntryDetailsHandler(event)"/>
 </mx:HBox>

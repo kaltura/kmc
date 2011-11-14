@@ -20,7 +20,6 @@ package com.kaltura.kmc.modules.content.commands
 	import mx.managers.PopUpManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
 	public class AddNewExternalSyndicationCommand extends KalturaCommand implements ICommand, IResponder
 	{

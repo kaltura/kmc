@@ -1,25 +1,28 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.accessControl.AccessControlAdd;
+	import com.kaltura.edw.control.events.AccessControlEvent;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.AccessControlProfileVO;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 	
-	public class AddNewAccessControlProfileCommand extends KalturaCommand implements ICommand, IResponder
+	public class AddNewAccessControlProfileCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
+			_dispatcher = event.dispatcher;
 			var accessControl:AccessControlProfileVO = event.data;
 			var addNewAccessControl:AccessControlAdd = new AccessControlAdd(accessControl.profile);
 		 	addNewAccessControl.addEventListener(KalturaEvent.COMPLETE, result);
 			addNewAccessControl.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(addNewAccessControl);
+			var context:ContextDataPack = _model.getDataPack(ContextDataPack) as ContextDataPack;
+			context.kc.post(addNewAccessControl);
 		}
 		
 		override public function result(data:Object):void
@@ -28,8 +31,8 @@ package com.kaltura.edw.control.commands
 			if(data.success)
 			{
 				Alert.show(ResourceManager.getInstance().getString('cms', 'addNewAccessControlDoneMsg'));
-				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-				getAllProfilesEvent.dispatch();
+				var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.LIST_ACCESS_CONTROLS_PROFILES);
+				_dispatcher.dispatch(getAllProfilesEvent);
 			}
 			else
 			{

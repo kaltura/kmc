@@ -1,10 +1,14 @@
 package com.kaltura.edw.control.commands.customData {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
+	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.model.types.APIErrorCode;
-	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
@@ -18,14 +22,13 @@ package com.kaltura.edw.control.commands.customData {
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	/**
 	 * This command is being executed when the event MetadataProfileEvent.LIST is dispatched.
 	 * @author Michal
 	 *
 	 */
-	public class ListMetadataProfileCommand extends KalturaCommand {
+	public class ListMetadataProfileCommand extends KedCommand {
 
 		/**
 		 * only if a metadata profile view contains layout with this name it will be used
@@ -38,7 +41,7 @@ package com.kaltura.edw.control.commands.customData {
 		 * @param event the event that triggered this command
 		 *
 		 */
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
@@ -48,7 +51,7 @@ package com.kaltura.edw.control.commands.customData {
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
 
-			_model.context.kc.post(listMetadataProfile);
+			_client.post(listMetadataProfile);
 		}
 
 
@@ -116,16 +119,19 @@ package com.kaltura.edw.control.commands.customData {
 							}
 						}
 						if (!isViewExist) {
+							var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 							//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-							if (_model.entryDetailsModel.metadataDefaultUiconfXML){
-								metadataProfile.viewXML = _model.entryDetailsModel.metadataDefaultUiconfXML.copy();
+							if (cddp.metadataDefaultUiconfXML){
+								metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
 							}
 							fb.buildInitialMxml();
 						}
 					}
 				}
-				_model.filterModel.metadataProfiles = new ArrayCollection(metadataProfiles);
-				_model.filterModel.formBuilders = new ArrayCollection(formBuilders);
+				var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+//				var filterModel:FilterModel = _model.filterModel;
+				filterModel.metadataProfiles = new ArrayCollection(metadataProfiles);
+				filterModel.formBuilders = new ArrayCollection(formBuilders);
 			}
 
 		}

@@ -1,32 +1,34 @@
 package com.kaltura.edw.control.commands.thumb
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.thumbAsset.ThumbAssetDelete;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.ThumbnailAssetEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
 	import mx.collections.ArrayCollection;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class DeleteThumbnailAssetCommand extends KalturaCommand
+	public class DeleteThumbnailAssetCommand extends KedCommand
 	{
 		private var _thumbToRemove:ThumbnailWithDimensions;
 		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
 			_thumbToRemove = (event as ThumbnailAssetEvent).thumbnailAsset;
 			var deleteThumb:ThumbAssetDelete = new ThumbAssetDelete(_thumbToRemove.thumbAsset.id);
 			deleteThumb.addEventListener(KalturaEvent.COMPLETE, result);
 			deleteThumb.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(deleteThumb);
+			_client.post(deleteThumb);
 		}
 		
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
-			var thumbsArray:Array =_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			var thumbsArray:Array = ddp.distributionProfileInfo.thumbnailDimensionsArray;
 			for (var i:int = 0; i<thumbsArray.length; i++) {
 				var currentThumb:ThumbnailWithDimensions = thumbsArray[i] as ThumbnailWithDimensions;
 				if (currentThumb==_thumbToRemove) {
@@ -37,7 +39,7 @@ package com.kaltura.edw.control.commands.thumb
 					else 
 						thumbsArray.splice(i, 1);
 					
-					_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
+					ddp.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
 					return;
 				}
 			}			

@@ -9,22 +9,22 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.baseEntry.BaseEntryDelete;
 	import com.kaltura.commands.mixing.MixingDelete;
 	import com.kaltura.commands.playlist.PlaylistDelete;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 	import com.kaltura.vo.KalturaMixEntry;
 	import com.kaltura.vo.KalturaPlaylist;
-
+	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
 	public class DeleteEntriesCommand extends KalturaCommand implements ICommand, IResponder {
 		private var _isPlaylist:Boolean = false;
@@ -141,17 +141,17 @@ package com.kaltura.kmc.modules.content.commands {
 		 * after server result - refresh the current list
 		 */
 		private function refresh(event:CloseEvent):void {
-			var searchEvent:SearchEvent;
+			var searchEvent:KMCSearchEvent;
 			if (_model.listableVo.filterVo is KalturaMediaEntryFilterForPlaylist) {
-				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
+				searchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();
 			} else if (_model.selectedEntries[0] && _model.selectedEntries[0] is KalturaPlaylist) {
 				//refresh the playlist 
-				searchEvent = new SearchEvent(SearchEvent.SEARCH_PLAYLIST, _model.listableVo);
+				searchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
 				return;
 			} else {
-				searchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _model.listableVo);
+				searchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();
 			}
 

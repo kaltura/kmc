@@ -1,14 +1,15 @@
 package com.kaltura.edw.control.commands.dropFolder
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
-	import com.kaltura.edw.control.events.DropFolderEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.edw.model.datapacks.DropFolderDataPack;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	public class ResetDropFoldersAndFiles extends KalturaCommand {
+	public class ResetDropFoldersAndFiles extends KedCommand {
 		
-		override public function execute(event:CairngormEvent):void {
-			_model.dropFolderModel.dropFolderFiles = null;
-			_model.dropFolderModel.dropFolders = null;
+		override public function execute(event:KMvCEvent):void {
+			var dropFolderData:DropFolderDataPack = _model.getDataPack(DropFolderDataPack) as DropFolderDataPack;
+			dropFolderData.dropFolderFiles = null;
+			dropFolderData.dropFolders = null;
 		}
 	}
 }

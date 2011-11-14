@@ -1,16 +1,17 @@
 package com.kaltura.edw.control.commands.thumb
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.thumbAsset.ThumbAssetAddFromImage;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.UploadFromImageThumbAssetEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaThumbAsset;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class AddFromImageThumbnailAssetCommand extends KalturaCommand
+	public class AddFromImageThumbnailAssetCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
 			var uploadEvent:UploadFromImageThumbAssetEvent = event as UploadFromImageThumbAssetEvent;
@@ -18,7 +19,7 @@ package com.kaltura.edw.control.commands.thumb
 			uploadFromImage.addEventListener(KalturaEvent.COMPLETE, result);
 			uploadFromImage.addEventListener(KalturaEvent.FAILED, fault);
 			uploadFromImage.queued = false;
-			_model.context.kc.post(uploadFromImage);
+			_client.post(uploadFromImage);
 		}
 		
 		override public function result(data:Object):void {
@@ -28,11 +29,12 @@ package com.kaltura.edw.control.commands.thumb
 		}
 		
 		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
-			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
+			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
 		}
 		
 		private function insertToThumbsArray(thumbAsset:KalturaThumbAsset):void {
-			var thumbsArray:Array = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			var distDp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+			var thumbsArray:Array = distDp.distributionProfileInfo.thumbnailDimensionsArray;
 			var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumbAsset.width, thumbAsset.height, thumbAsset);
 			newThumb.thumbUrl = buildThumbUrl(newThumb);
 			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
@@ -54,7 +56,7 @@ package com.kaltura.edw.control.commands.thumb
 			//add last
 			thumbsArray.splice(thumbsArray.length, 0, newThumb); 
 			//for data binding
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();	
+			distDp.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();	
 		}
 		
 	}

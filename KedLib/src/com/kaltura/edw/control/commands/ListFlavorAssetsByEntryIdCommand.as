@@ -1,36 +1,40 @@
 package com.kaltura.edw.control.commands {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.flavorAsset.FlavorAssetGetFlavorAssetsWithParams;
+	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.edw.model.types.APIErrorCode;
+	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.model.types.APIErrorCode;
-	import com.kaltura.edw.control.events.EntryEvent;
-	import com.kaltura.edw.model.types.WindowsStates;
-	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaFlavorAssetStatus;
+	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
-	import mx.rpc.IResponder;
 
-	public class ListFlavorAssetsByEntryIdCommand extends KalturaCommand implements ICommand, IResponder {
-		override public function execute(event:CairngormEvent):void {
+	public class ListFlavorAssetsByEntryIdCommand extends KedCommand {
+		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			_model.entryDetailsModel.flavorsLoaded = false;
-			var entryId:String = (event as EntryEvent).entryVo.id;
+			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorsLoaded = false;
+//			_model.entryDetailsModel.flavorsLoaded = false;
+			var entryId:String = (event as KedEntryEvent).entryVo.id;
 			var getAssetsAndFlavorsByEntryId:FlavorAssetGetFlavorAssetsWithParams = new FlavorAssetGetFlavorAssetsWithParams(entryId);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.COMPLETE, result);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getAssetsAndFlavorsByEntryId);
+			_client.post(getAssetsAndFlavorsByEntryId);
 		}
 
 
 		override public function fault(info:Object):void {
 			_model.decreaseLoadCounter();
-			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
+			var entry:KalturaBaseEntry = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+			// if this is a replacement entry
+//			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
+			if (entry.replacedEntryId) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
 					Alert.show(ResourceManager.getInstance().getString('cms','replacementNotExistMsg'),ResourceManager.getInstance().getString('cms','replacementNotExistTitle'));
@@ -48,7 +52,7 @@ package com.kaltura.edw.control.commands {
 		override public function result(event:Object):void {
 			super.result(event);
 			setDataInModel((event as KalturaEvent).data as Array);
-			_model.entryDetailsModel.flavorsLoaded = true;
+			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorsLoaded = true;
 			_model.decreaseLoadCounter();
 		}
 
@@ -89,7 +93,7 @@ package com.kaltura.edw.control.commands {
 					afwps.hasOriginal = true;
 				}
 			}
-			_model.entryDetailsModel.flavorParamsAndAssetsByEntryId = flavorParamsAndAssetsByEntryId;
+			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId = flavorParamsAndAssetsByEntryId;
 		
 		}
 	}

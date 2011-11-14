@@ -1,24 +1,25 @@
 package com.kaltura.edw.control.commands.captions
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.captionAsset.CaptionAssetAdd;
 	import com.kaltura.commands.captionAsset.CaptionAssetDelete;
 	import com.kaltura.commands.captionAsset.CaptionAssetSetAsDefault;
 	import com.kaltura.commands.captionAsset.CaptionAssetSetContent;
 	import com.kaltura.commands.captionAsset.CaptionAssetUpdate;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.CaptionsEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.EntryCaptionVO;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
 	import com.kaltura.vo.KalturaUrlResource;
 	
-	public class SaveCaptionsCommand extends KalturaCommand
+	public class SaveCaptionsCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			var evt:CaptionsEvent = event as CaptionsEvent;	
 			var mr:MultiRequest = new MultiRequest();
 			var requestIndex:int = 1;
@@ -42,7 +43,7 @@ package com.kaltura.edw.control.commands.captions
 					}
 					//new caption
 					if (!caption.caption.id) {		
-						var addCaption:CaptionAssetAdd = new CaptionAssetAdd(_model.entryDetailsModel.selectedEntry.id, caption.caption);
+						var addCaption:CaptionAssetAdd = new CaptionAssetAdd((_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id, caption.caption);
 						mr.addAction(addCaption);
 						requestIndex++;
 						if (resource) {
@@ -81,7 +82,7 @@ package com.kaltura.edw.control.commands.captions
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				
-				_model.context.kc.post(mr);
+				_client.post(mr);
 			}
 		}
 		

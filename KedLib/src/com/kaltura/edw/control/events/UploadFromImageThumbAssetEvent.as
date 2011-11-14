@@ -1,10 +1,10 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
 	import flash.net.FileReference;
 
-	public class UploadFromImageThumbAssetEvent extends CairngormEvent
+	public class UploadFromImageThumbAssetEvent extends KMvCEvent
 	{
 		public static const ADD_FROM_IMAGE:String = "content_addFromImage";
 		public var entryId:String;

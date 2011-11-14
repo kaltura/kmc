@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel"
-		 width="100%" height="100%" xmlns:view="com.kaltura.edw.view.*" xmlns:controls="com.kaltura.controls.*" xmlns:et="com.kaltura.edw.view.et.*" >
+		 width="100%" height="100%" xmlns:view="com.kaltura.edw.view.*" xmlns:controls="com.kaltura.controls.*"
+		 xmlns:et="com.kaltura.edw.view.et.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*" >
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.control.events.ClipEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -11,10 +19,17 @@
 			import mx.events.FlexEvent;
 
 			/**
-			 * current selecred entry
+			 * current selected entry
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
+			private var _selectedEntry:KalturaBaseEntry;
 
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+			
 			[Bindable]
 			/**
 			 * vos for the clips to show in the table
@@ -26,11 +41,34 @@
 			 * */
 			private var _cw:ChangeWatcher;
 			
+			
+			public function validate():void {
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
+				dispatchEvent(e);
+			}
+			
+			
+			public function save():void {
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
+			
+			public function clear():void {
+			}
+			
+			
+			public function init():void {
+			}
+			
+			
+			public function isChanged():Boolean {
+				return false;
+			}
 
 			public function initData():void {
 				// reset previous data
 				var ce:ClipEvent = new ClipEvent(ClipEvent.RESET_MODEL_ENTRY_CLIPS);
-				ce.dispatch();
+				controller.dispatch(ce);
 				// monitor data change if needed
 				if (!_cw) {
 					_cw = BindingUtils.bindSetter(removeTab, this, "clips");
@@ -45,7 +83,7 @@
 				if (paging) {
 					gc.data.pager = paging.kalturaFilterPager;
 				}
-				gc.dispatch();
+				controller.dispatch(gc);
 			}
 
 			public function destroy():void {
@@ -87,9 +125,10 @@
 
 		]]>
 	</mx:Script>
+	<control:ClipsTabController id="controller" />
 	<mx:VBox styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%" >
-		<et:EntryTable id="entryTable" width="100%" height="100%" kalturaSorting="false" showLinks="false" 
-						 dataProvider="{clips}" creationComplete="removeColumns(event)"/>
+		<et1:EntryTable id="entryTable" width="100%" height="100%" kalturaSorting="false" 
+					   showLinks="false" dataProvider="{clips}" creationComplete="removeColumns(event)"/>
 		
 		<controls:Paging id="paging" width="100%" styleName="paging"
 						 rowsInPageChange="getNext()" nextPage="getNext()" prvPage="getNext()"

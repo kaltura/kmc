@@ -1,97 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-"Manage" part of the content viewstack.
-lists all entries, allows filtering, preview and drill-down to entry details.
+	 "Manage" part of the content viewstack.
+	 lists all entries, allows filtering, preview and drill-down to entry details.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"  
-		 xmlns:controls="com.kaltura.controls.*" 
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner" 
-		 creationComplete="creationCompleteHandler(event)" 
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" >
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.kaltura.controls.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
+		 creationComplete="creationCompleteHandler(event)" xmlns:view="com.kaltura.kmc.modules.content.view.*"
+		 xmlns:et="com.kaltura.edw.components.et.*" xmlns:filter="com.kaltura.edw.components.filter.*">
 	<mx:states>
 		<mx:State name="noFilterState">
 			<mx:SetProperty target="{filterContainer}" name="visible" value="false"/>
 			<mx:SetProperty target="{filterContainer}" name="includeInLayout" value="false"/>
 			<mx:RemoveChild target="{filterLabel}"/>
-			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left"/>
+			<mx:SetProperty target="{foldBtn}" name="labelPlacement" value="left">
+				<mx:Script>
+					<![CDATA[
+						import com.kaltura.edw.components.filter.events.FilterEvent;
+					]]>
+				</mx:Script>
+			</mx:SetProperty>
+
 			<mx:SetProperty target="{filterContainer}" name="height" value="20"/>
 		</mx:State>
 	</mx:states>
-	
+
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
+			import mx.binding.utils.BindingUtils;
+			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.control.events.EntriesEvent;
-			import com.kaltura.edw.control.events.EntryEvent;
-			import com.kaltura.kmc.modules.content.events.FilterEvent;
-			import com.kaltura.edw.control.events.GeneralUiconfEvent;
+			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
-			import com.kaltura.kmc.modules.content.events.PartnerEvent;
-			import com.kaltura.edw.control.events.SearchEvent;
-			import com.kaltura.kmc.modules.content.events.SetCurrentListableEvent;
-			import com.kaltura.edw.control.events.SetPlaylistTypeEvent;
-			import com.kaltura.edw.control.events.SetRefreshRequiredEvent;
-			import com.kaltura.edw.control.events.WindowEvent;
-			import com.kaltura.edw.model.EntryDetailsModel;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.ListableVo;
+			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
+			import com.kaltura.kmc.modules.content.events.KMCFilterEvent;
+			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
+			import com.kaltura.kmc.modules.content.events.PartnerEvent;
+			import com.kaltura.kmc.modules.content.events.SetListableEvent;
+			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmvc.control.KMvCEvent;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaPlayableEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
-			
+			import com.kaltura.vo.KalturaMixEntry;
+			import com.kaltura.vo.KalturaPlaylist;
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
-			
+
 			public static const DEFAULT_PAGE_SIZE:int = 50;
 			[Bindable]
 			/**
 			 * show embed option in "publish" column
 			 * */
 			public var showEmbed:Boolean = true;
-			
-			
+
+
 			[Bindable]
 			private var _listableVo:ListableVo;
-			
+
 			/**
 			 * data ordering
 			 * */
 			private var _orderBy:String = KalturaMediaEntryOrderBy.CREATED_AT_DESC;
-			
+
 			[Bindable]
 			/**
 			 * filtering data
 			 * */
 			public var filterModel:FilterModel;
-			
+
 			[Bindable]
 			/**
 			 * entries-related data
 			 * */
-			public var entryDetailsModel:EntryDetailsModel;
-			
+			public var entryDetailsModel:KMvCModel;
+
 			/**
 			 * current window state
 			 * */
 			public var windowState:String;
-			
+
+
 			public function onRequestedDataLoaded():void {
 				filter.init();
 				loadEntries();
 			}
-			
+
+
 			/**
 			 * initialize the panel.
 			 * @param initFilter	filter for initial entry loading.
@@ -105,30 +125,31 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 					updateExpenderLabel();
 				}
 				loadFilterData();
-				
+
 				// get partner info
 				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 				getPartnerInfoEvent.dispatch();
-				
+
 			}
-			
+
+
 			/**
 			 * load all the data the filter needs
 			 * */
 			private function loadFilterData():void {
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
-				fe.dispatch();
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
+				KedController.getInstance().dispatch(fe);
 			}
-			
-			
-			
-			
+
+
+
+
 			private function setEntriesToolbar():void {
 				toolBar.removeController(toolBar.approveSelected);
 				toolBar.removeController(toolBar.rejectSelected);
 			}
-			
-			
+
+
 			public function loadEntries():void {
 				if (paging.pageSize == 10) {
 					entryTable.rowCount = 10;
@@ -138,25 +159,25 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 					topContainer.percentHeight = 100;
 					entryTable.rowCount = -1;
 				}
-				
+
 				_listableVo = new ListableVo(filter.ps3filter, paging, null);
 				// set the order-by to the filter
-				if (_orderBy)
+				if (_orderBy) {
 					_listableVo.filterVo.orderBy = _orderBy;
-				var cgEvent:SetCurrentListableEvent = new SetCurrentListableEvent(SetCurrentListableEvent.SET_NEW_LIST_TO_MODEL,
-					_listableVo);
+				}
+				var cgEvent:CairngormEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL, _listableVo);
 				cgEvent.dispatch();
-				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _listableVo);
-				searchEvent.dispatch();
+				cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _listableVo);
+				cgEvent.dispatch();
 			}
-			
-			
+
+
 			//paging
 			private function gotoPage():void {
 				loadEntries();
 			}
-			
-			
+
+
 			/**
 			 * controller has selected all entries
 			 */
@@ -166,16 +187,16 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
 			}
-			
-			
+
+
 			private function onDeselectAllEntries(evt:Event):void {
 				entryTable.deselectAll();
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
 					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
 			}
-			
-			
+
+
 			/**
 			 * should thumbnails be shown in entries table
 			 * */
@@ -184,8 +205,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 					entryTable.returnThumbnailsColumn();
 				}
 			}
-			
-			
+
+
 			private function removeColums(event:Event):void {
 				entryTable.removeColumn(resourceManager.getString('cms', 'thumbnail')); // we always remove the thumbnail column
 //				entryTable.removeColumn(resourceManager.getString('cms', 'idHeader'));
@@ -197,7 +218,7 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 //				entryTable.removeColumn(resourceManager.getString('cms', 'duration'));
 				entryTable.removeColumn(resourceManager.getString('cms', 'playlistType'));
 //				entryTable.removeColumn(resourceManager.getString('cms', 'preview'));
-				
+
 				entryTable.updateDefaultSortColumn();
 				percentWidth = 100;
 				topContainer.percentWidth = 100;
@@ -209,8 +230,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				filter.percentWidth = 100;
 				validateNow();
 			}
-			
-			
+
+
 			/**
 			 * This is a new search called by an action on the filter vo
 			 */
@@ -220,8 +241,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				loadEntries();
 				updateExpenderLabel();
 			}
-			
-			
+
+
 			private function updateExpenderLabel():void {
 				if (!filter.isFilterOn) {
 					filteredLabel.visible = false;
@@ -230,45 +251,44 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 					filteredLabel.visible = true;
 				}
 			}
-			
-			
+
+
 			/**
 			 * Create a new manual based playlist based on current selection
 			 */
 			private function onNewManualPlaylist():void {
-				
+
 				if (entryTable.selectedItems.length == 0) {
 					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
 					return;
 				}
-				var cgEvent:CairngormEvent;
-				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, null);
-				cgEvent.dispatch();
-				
+				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, null);
+				KedController.getInstance().dispatch(kEvent);
+
 				// add the selected items to the model 
-				cgEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+				var cgEvent:CairngormEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
 					new ArrayCollection(entryTable.selectedItems));
 				cgEvent.dispatch();
-				
+
 				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
-				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.MANUAL_PLAYLIST);
-				cgEvent.dispatch();
-				
+				var cgEvent2:CairngormEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.MANUAL_PLAYLIST);
+				cgEvent2.dispatch();
+
 				//open a new manual playlist window to edit this 
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
-				cgEvent.dispatch();
-				
+				cgEvent2 = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+				cgEvent2.dispatch();
+
 			}
-			
-			
+
+
 			/**
 			 * Create a new ruled based playlist based on current filter
 			 */
 			private function onNewRulePlaylist():void {
-				var filterVo:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter; 
+				var filterVo:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter;
 				filterVo.orderBy = KalturaPlayableEntryOrderBy.PLAYS_DESC;
 				// add the selected filter to the model
-				var cgEvent:CairngormEvent = new FilterEvent(FilterEvent.SET_FILTER_TO_MODEL, filterVo);
+				var cgEvent:CairngormEvent = new KMCFilterEvent(KMCFilterEvent.SET_FILTER_TO_MODEL, filterVo);
 				cgEvent.dispatch();
 				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
 				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.RULE_BASED_PLAYLIST);
@@ -276,8 +296,8 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
 				cgEvent.dispatch();
 			}
-			 
-			
+
+
 			/**
 			 * create a new livestream entry
 			 * */
@@ -285,15 +305,16 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
 				cgEvent.dispatch();
 			}
-			
+
+
 			/**
 			 * fold / unfold filter
 			 */
 			private function foldFilter():void {
 				currentState = (currentState == null) ? 'noFilterState' : null;
 			}
-			
-			
+
+
 			/**
 			 * Entry table dispatched an order-by changing
 			 */
@@ -301,115 +322,190 @@ lists all entries, allows filtering, preview and drill-down to entry details.
 				_orderBy = entryTable.orderBy;
 				loadEntries();
 			}
-			
-			
+
+
 			private function changeRows():void {
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE ,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>Show Rows");
 				gotoPage()
 			}
-			
-			
+
+
 			private function nxtPage():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_NEXT_PAGE +
-					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+					paging.selectedPage, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>NextPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-			
-			
+
+
 			private function prvPage():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_PREV_PAGE +
-					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+					paging.selectedPage, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>PrevPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-			
-			
+
+
 			private function gotoPageNum():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_GO_TO_PAGE_NUM +
-					paging.selectedPage,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
+					paging.selectedPage, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>GoToPage/Page" + paging.selectedPage);
 				gotoPage()
 			}
-			
-			protected function creationCompleteHandler(event:FlexEvent):void
-			{
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
 				setEntriesToolbar();
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				BindingUtils.bindProperty(this, "showThumbnails", entryDetailsModel.getDataPack(PermissionsDataPack), "enableThumbsList");
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_STARTED, onGroupUploadStarted);
 			}
-			
-			
+
+
 			/**
 			 * if a replacement process begun, refresh the entries to be updated
 			 * */
 			private function onGroupUploadStarted(event:Event):void {
 				//refresh only when entryDetailsWin is closed, to avoid null selected entry
-				if ((windowState ==WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW)
-					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY)
-					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE) 
-					|| (windowState ==WindowsStates.ENTRY_DETAILS_WINDOW)) 
-				{
+				if ((windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) || (windowState == WindowsStates.ENTRY_DETAILS_WINDOW_NEW_ENTRY) || (windowState == WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE) || (windowState == WindowsStates.ENTRY_DETAILS_WINDOW)) {
 					//refresh the open entry
-					var getSelectedEntry:EntryEvent = new EntryEvent(EntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryDetailsModel.selectedEntry.id);
-					getSelectedEntry.dispatch();
+					var edp:EntryDataPack = entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack;
+					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, edp.selectedEntry.id);
+					KedController.getInstance().dispatch(getSelectedEntry);
 				}
 				else
 					loadEntries();
 			}
-			
 
 
+
+
+			protected function entryTable_itemClickHandler(event:EntryTableEvent):void {
+				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, entryTable.selectedItems);
+				cgEvent.dispatch();
+			}
+
+
+			protected function entryTable_showDetailsHandler(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+
+				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (entryTable.dataProvider as ArrayCollection).getItemIndex(entry));
+				KedController.getInstance().dispatch(kEvent);
+//				if (entry is KalturaPlaylist) {
+//					//switch manual / rule base
+//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
+//						// manual list
+//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+//						cgEvent.dispatch();
+//					}
+//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
+//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
+//						cgEvent.dispatch();
+//					}
+//				}
+//				else {
+				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+				cgEvent.dispatch();
+//				}
+			}
+
+
+			private function preview(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+				var cgEvent:KMCEntryEvent;
+				if (entry is KalturaPlaylist)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaPlaylist);
+				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
+					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaBaseEntry);
+				else {
+					trace("Error: no PlaylistVO nor EntryVO");
+					return;
+				}
+
+				cgEvent.dispatch();
+			}
+
+
+			protected function filter_updateCategoryHandler(event:FilterEvent):void {
+				var updateEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+				updateEvent.data = event.data;
+				updateEvent.dispatch();
+			}
+
+
+			protected function filter_deleteCategoryHandler(event:FilterEvent):void {
+				var deleteCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORY);
+				deleteCategoriesEvent.data = [event.data];
+				deleteCategoriesEvent.dispatch();
+			}
+
+
+			protected function filter_addCategoryHandler(event:FilterEvent):void {
+				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+				addNewCategoryEvent.data = event.data;
+				addNewCategoryEvent.dispatch();
+			}
 		]]>
 	</mx:Script>
 	<mx:HBox styleName="filtersHeadTitleHBox" width="100%">
 		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
 				  styleName="filterTitleHeader"/>
 		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'entriesTable')}" click="{foldFilter()}"
-					   toggle="true" styleName="expendableButtonWithCloseIcon" />
+					   toggle="true" styleName="expendableButtonWithCloseIcon"/>
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
-		<mx:Spacer width="100%" />
-		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
+		<mx:Spacer width="100%">
+			<mx:Script>
+				<![CDATA[
+					protected function filter_updateEntriesHandler(event:FilterEvent):void {
+						var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, (event.data as ArrayCollection), false);
+						cgEvent.dispatch();
+					}
+				]]>
+			</mx:Script>
+		</mx:Spacer>
+
+		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
+					   styleName="recycleIcon"/>
 	</mx:HBox>
-	<mx:HDividedBox id="topContainer" width="100%" height="100%" >
+	<mx:HDividedBox id="topContainer" width="100%" height="100%">
 		<mx:VBox id="filterContainer" height="100%">
-			<filter:Filter id="filter" height="100%" width="245"
-						   enableCustomData="{filterModel.enableCustomData}"
+			<filter:Filter id="filter" height="100%" width="245" enableCustomData="{filterModel.enableCustomData}"
 						   enableDistribution="{filterModel.enableDistribution}"
-						   distributionProfileArr="{entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray}"
-						   metadataProfilesArray="{filterModel.metadataProfiles}" 
-						   categories="{filterModel.categories}" 
-						   catMap="{filterModel.categoriesMap}" 
+						   distributionProfileArr="{(entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray}"
+						   metadataProfilesArray="{filterModel.metadataProfiles}" categories="{filterModel.categories}"
+						   catMap="{filterModel.categoriesMap}" flavorParams="{filterModel.flavorParams}"
 						   accessControlProfiles="{filterModel.accessControlProfiles}"
-						   flavorParams="{filterModel.flavorParams}"
-						   newSearch="newSearchhFromFilter()"
-						   showAccordionHeaderButtons="true" />
+						   updateEntries="filter_updateEntriesHandler(event)"
+						   updateCategory="filter_updateCategoryHandler(event)" newSearch="newSearchhFromFilter()"
+						   deleteCategory="filter_deleteCategoryHandler(event)"
+						   addCategory="filter_addCategoryHandler(event)" showAccordionHeaderButtons="true"/>
 		</mx:VBox>
-		
-			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
-				<et:EntryTable id="entryTable" rowCount="10" width="100%" height="100%" 
-								 dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
-								 selectedEntry="{entryDetailsModel.selectedEntry}" showEmbed="{showEmbed}"
-								 orderByChanged="{onOrderByChanged()}" />
-			
-				<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
-								 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
-								 getPageNum="gotoPageNum()" totalCount="{entryDetailsModel.totalEntriesCount}"
-								 showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}" />
-				
-				<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}" 
-									 selectAllEntries="onSelectAllEntries(event)"
-									 deselectAllEntries="onDeselectAllEntries(event)"
-									 createNewManualPlaylist="onNewManualPlaylist()"
-									 createNewRulePlaylist="onNewRulePlaylist()"
-									 createNewLivestream="createNewLivestreamHandler(event)"/>
-			</mx:VBox>
+
+		<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
+			<et:EntryTable id="entryTable" rowCount="10" width="100%" height="100%"
+						   selectionChanged="entryTable_itemClickHandler(event)"
+						   showDetails="entryTable_showDetailsHandler(event)" openPreview="preview(event)"
+						   dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
+						   selectedEntry="{(entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry}"
+						   showEmbed="{showEmbed}" orderByChanged="{onOrderByChanged()}"/>
+
+			<controls:Paging id="paging" width="{entryTableContainer.width}" styleName="paging"
+							 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
+							 getPageNum="gotoPageNum()" showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}"/>
+
+			<view:ControlToolBar id="toolBar" width="{entryTableContainer.width}"
+								 selectAllEntries="onSelectAllEntries(event)"
+								 deselectAllEntries="onDeselectAllEntries(event)"
+								 createNewManualPlaylist="onNewManualPlaylist()"
+								 createNewRulePlaylist="onNewRulePlaylist()"
+								 createNewLivestream="createNewLivestreamHandler(event)"/>
+		</mx:VBox>
 	</mx:HDividedBox>
-	
+
 </mx:VBox>

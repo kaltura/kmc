@@ -1,8 +1,8 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	public class ClipEvent extends CairngormEvent {
+	public class ClipEvent extends KMvCEvent {
 		
 		/**
 		 * get a list of clips derived from the given entry.

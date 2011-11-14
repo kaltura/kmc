@@ -1,20 +1,21 @@
 package com.kaltura.edw.control.commands.relatedFiles
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetAdd;
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetDelete;
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetSetContent;
 	import com.kaltura.commands.attachmentAsset.AttachmentAssetUpdate;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.RelatedFileEvent;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.RelatedFileVO;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
 	
-	public class SaveRelatedFilesCommand extends KalturaCommand
+	public class SaveRelatedFilesCommand extends KedCommand
 	{
-		override public function execute(event:CairngormEvent):void {
+		override public function execute(event:KMvCEvent):void {
 			var evt:RelatedFileEvent = event as RelatedFileEvent;
 
 			var mr:MultiRequest = new MultiRequest();
@@ -23,7 +24,7 @@ package com.kaltura.edw.control.commands.relatedFiles
 			if (evt.relatedToAdd) {
 				for each (var relatedFile:RelatedFileVO in evt.relatedToAdd) {
 					//add asset
-					var addFile:AttachmentAssetAdd = new AttachmentAssetAdd(_model.entryDetailsModel.selectedEntry.id, relatedFile.file);
+					var addFile:AttachmentAssetAdd = new AttachmentAssetAdd((_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id, relatedFile.file);
 					mr.addAction(addFile);
 					requestIndex++;
 					//set its content
@@ -57,7 +58,7 @@ package com.kaltura.edw.control.commands.relatedFiles
 				mr.addEventListener(KalturaEvent.COMPLETE, result);
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				
-				_model.context.kc.post(mr);
+				_client.post(mr);
 			}
 		}
 		

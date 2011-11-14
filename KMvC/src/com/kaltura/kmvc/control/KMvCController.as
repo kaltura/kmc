@@ -38,6 +38,7 @@ package com.kaltura.kmvc.control
    
    import flash.events.EventDispatcher;
    import flash.utils.Dictionary;
+   import flash.utils.getQualifiedClassName;
    
    /**
     * A base class for an application specific front controller.
@@ -77,6 +78,7 @@ package com.kaltura.kmvc.control
          
          commands[ commandName ] = commandRef;
          addEventListener( commandName, executeCommand, false, 0, useWeakReference );
+//		 trace("registered command: " + commandName + " to controller " + getQualifiedClassName(this));
       }
       
      /**

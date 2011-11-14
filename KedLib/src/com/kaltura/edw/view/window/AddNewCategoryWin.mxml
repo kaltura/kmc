@@ -13,7 +13,8 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.edw.control.events.CategoryEvent;
+			import com.kaltura.edw.components.filter.CategoriesTree;
+			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaCategory;
@@ -41,10 +42,11 @@
 				newCategory.name = name;
 				newCategory.parentId = parentCategory.id;
 
-				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-				addNewCategoryEvent.data = newCategory;
-				addNewCategoryEvent.dispatch();
-
+				
+				var e:KedDataEvent = new KedDataEvent(CategoriesTree.OPEN_ADD_CATEGORY);
+				e.data = newCategory;
+				dispatchEvent(e);
+				
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADD_ADMIN_TAGS,
 														  "CategoriesTree>AddNewCategory");
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_ADMIN_TAGS, GoogleAnalyticsConsts.CONTENT);

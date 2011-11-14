@@ -1,39 +1,44 @@
 package com.kaltura.edw.control.commands.thumb
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.thumbAsset.ThumbAssetGenerate;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.GenerateThumbAssetEvent;
 	import com.kaltura.edw.control.events.ThumbnailAssetEvent;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.ThumbnailWithDimensions;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaThumbAsset;
 	import com.kaltura.vo.KalturaThumbParams;
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
 	import mx.resources.ResourceManager;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 	
-	public class GenerateThumbAssetCommand extends KalturaCommand
+	public class GenerateThumbAssetCommand extends KedCommand
 	{
 		private var _thumbsArray:Array;
 		
-		override public function execute(event:CairngormEvent):void
+		private var _ddp:DistributionDataPack;
+		
+		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();
 			var generateThumbEvent:GenerateThumbAssetEvent = event as GenerateThumbAssetEvent;
-			var generateThumbAsset:ThumbAssetGenerate = new ThumbAssetGenerate(_model.entryDetailsModel.selectedEntry.id, generateThumbEvent.thumbParams, generateThumbEvent.thumbSourceId);
+			var generateThumbAsset:ThumbAssetGenerate = new ThumbAssetGenerate((_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id, generateThumbEvent.thumbParams, generateThumbEvent.thumbSourceId);
 			generateThumbAsset.addEventListener(KalturaEvent.COMPLETE, result);
 			generateThumbAsset.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_model.context.kc.post(generateThumbAsset);
+			_client.post(generateThumbAsset);
 		}
 		
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			_ddp = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
 			var newThumb:KalturaThumbAsset =  data.data as KalturaThumbAsset;
-			_thumbsArray = _model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray;
+			_thumbsArray = _ddp.distributionProfileInfo.thumbnailDimensionsArray;
 			var curUsedProfiles:Array = new Array();
 			var thumbExist:Boolean = false;
 			for each (var thumb:ThumbnailWithDimensions in _thumbsArray) {
@@ -63,11 +68,11 @@ package com.kaltura.edw.control.commands.thumb
 		 * only after user approval for the new thumbnail alert, the model will reload the thumbs
 		 * */
 		private function onUserOK(event:CloseEvent):void {
-			_model.entryDetailsModel.distributionProfileInfo.thumbnailDimensionsArray = _thumbsArray.concat();
+			_ddp.distributionProfileInfo.thumbnailDimensionsArray = _thumbsArray.concat();
 		}
 		
 		private function buildThumbUrl(thumb:KalturaThumbAsset):String {
-			return _model.context.kc.protocol + _model.context.kc.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _model.context.kc.ks + "/thumbAssetId/" + thumb.id;
+			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.id;
 		}
 	}
 }

@@ -1,8 +1,8 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	public class ModelEvent extends CairngormEvent {
+	public class ModelEvent extends KMvCEvent {
 		
 		/**
 		 * create a new entryDetailsModel, copy general attributes

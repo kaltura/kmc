@@ -1,39 +1,33 @@
 package com.kaltura.edw.control.commands
 {
-	import com.adobe.cairngorm.commands.ICommand;
-	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.baseEntry.BaseEntryList;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
-	import com.kaltura.edw.view.window.playlist.ManualPlaylistWindow;
 	import com.kaltura.edw.vo.ListableVo;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
-	import com.kaltura.vo.KalturaDocumentEntry;
 	import com.kaltura.vo.KalturaMediaEntry;
 	import com.kaltura.vo.KalturaMediaEntryFilter;
 	import com.kaltura.vo.KalturaMixEntry;
 	
 	import mx.collections.ArrayCollection;
-	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
 
-	public class ListEntriesCommand extends KalturaCommand implements ICommand,IResponder
+	public class ListEntriesCommand extends KedCommand
 	{
 		private var _caller:ListableVo;
 		
 		/**
 		 * @inheritDoc
 		 */		
-		override public function execute(event:CairngormEvent):void
+		override public function execute(event:KMvCEvent):void
 		{
-			 _model.increaseLoadCounter();
-			 
+			_model.increaseLoadCounter();
 			_caller = (event as SearchEvent).listableVo;
 			var getMediaList:BaseEntryList = new BaseEntryList(_caller.filterVo as KalturaMediaEntryFilter ,_caller.pagingComponent.kalturaFilterPager );
 		 	getMediaList.addEventListener(KalturaEvent.COMPLETE, result);
 			getMediaList.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getMediaList);	  
+			_client.post(getMediaList);	  
 		}
 
 		/**
@@ -48,10 +42,10 @@ package com.kaltura.edw.control.commands
 			var kbe:KalturaBaseEntry;
 			var mix:KalturaMixEntry;
 			var recivedData:KalturaBaseEntryListResponse = KalturaBaseEntryListResponse(data.data);
-			if (!(_caller.parentCaller is ManualPlaylistWindow))
-			{
-				_model.selectedEntries = new Array();
-			}
+//			if (!(_caller.parentCaller is ManualPlaylistWindow))
+//			{
+//				_model.selectedEntries = new Array();
+//			}
 			// only use object we can handle
 			var tempAr:Array = [];
 			for each (var o:Object in recivedData.objects) {
@@ -60,9 +54,9 @@ package com.kaltura.edw.control.commands
 				}
 			}
 			_caller.arrayCollection = new ArrayCollection (tempAr);
-			_model.entryDetailsModel.totalEntriesCount = recivedData.totalCount;
+//			_model.entryDetailsModel.totalEntriesCount = recivedData.totalCount;
 			_caller.pagingComponent.totalCount = recivedData.totalCount;
-			_model.refreshEntriesRequired = false;
+//			_model.refreshEntriesRequired = false;
 			_model.decreaseLoadCounter();
 		}
 		

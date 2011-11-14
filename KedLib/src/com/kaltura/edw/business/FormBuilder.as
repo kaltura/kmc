@@ -3,15 +3,22 @@ package com.kaltura.edw.business {
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.commands.uiConf.UiConfGet;
 	import com.kaltura.dataStructures.HashMap;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.edw.business.KedJSGate;
+	import com.kaltura.edw.business.MetadataDataParser;
 	import com.kaltura.edw.model.DummyModelLocator;
 	import com.kaltura.edw.model.MetadataDataObject;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
+	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;
 	import com.kaltura.edw.view.customData.DateFieldWithTime;
 	import com.kaltura.edw.view.customData.EntryIDLinkTable;
 	import com.kaltura.edw.view.customData.MultiComponent;
 	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaUiConf;
 	import com.kaltura.vo.MetadataFieldVO;
@@ -28,10 +35,10 @@ package com.kaltura.edw.business {
 	import mx.controls.Spacer;
 	import mx.core.Container;
 	import mx.core.UIComponent;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.utils.UIDUtil;
 	import mx.utils.object_proxy;
-	import com.kaltura.edw.business.MetadataDataParser;
 
 	/**
 	 * This class is used for building UI components according to a given
@@ -43,7 +50,9 @@ package com.kaltura.edw.business {
 		private static const FIELDS_GAP:int = 4;
 		//padding left for each hierarich level
 		private static const FIELD_INDENT:int = 12;
-		private var _model:DummyModelLocator = DummyModelLocator.getInstance();
+		
+		private var _model:KMvCModel = KMvCModel.getInstance();
+		
 		private var _isInvalidView:Boolean = false;
 
 		private var _metadataProfile:KMCMetadataProfileVO;
@@ -113,7 +122,8 @@ package com.kaltura.edw.business {
 			if (!_metadataInfo)
 				return;
 			if (!_metadataProfile.viewXML) {
-				Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidView', new Array(_metadataProfile.profile.name)), ResourceManager.getInstance().getString('drilldown', 'error'));
+				Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidView', [_metadataProfile.profile.name]), 
+					ResourceManager.getInstance().getString('drilldown', 'error'));
 				return;
 			}
 			if (!_metadataInfo.metadata) {
@@ -296,7 +306,8 @@ package com.kaltura.edw.business {
 			var compInstance:UIComponent = new ClassReference();
 			//!setting the context param should be here, we will need it to set the dataArray property
 			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
-				compInstance["context"] = _model.context;
+				//TODO make sure the type of the context attribute was changed to match datapack
+				compInstance["context"] = _model.getDataPack(ContextDataPack);
 				compInstance["profileName"] = metadataProfile.profile.name;
 			}
 
@@ -362,9 +373,11 @@ package com.kaltura.edw.business {
 				compInstance.id = component.@name;
 				compInstance["metadataObject"] = boundModel;
 				// pass relevant model parts:
-				compInstance["filterModel"] = _model.filterModel;
-				compInstance["distributionProfilesArr"] = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
-				compInstance["selectedEntry"] = _model.entryDetailsModel.selectedEntry;
+				compInstance["filterModel"] = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+//				compInstance["distributionProfilesArr"] = _model.entryDetailsModel.distributionProfileInfo.kalturaDistributionProfilesArray;
+				compInstance["distributionProfilesArr"] = (_model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+				compInstance["selectedEntry"] = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+//				compInstance["selectedEntry"] = _model.entryDetailsModel.selectedEntry;
 
 			}
 			else {
@@ -466,8 +479,9 @@ package com.kaltura.edw.business {
 			}
 			catch (e:Error) {
 				if (!_isInvalidView) {
-					Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidViewComponents', new Array(_metadataProfile.profile.name)), ResourceManager.getInstance().getString('drilldown',
-						'error'));
+					var rm:IResourceManager = ResourceManager.getInstance(); 
+					Alert.show(rm.getString('drilldown', 'metadataInvalidViewComponents', [_metadataProfile.profile.name]), 
+						rm.getString('drilldown', 'error'));
 					_isInvalidView = true;
 				}
 				return null;

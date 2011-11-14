@@ -9,17 +9,17 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryApprove;
 	import com.kaltura.commands.baseEntry.BaseEntryReject;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.edw.control.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.ModerationsEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.control.KedController;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.ModerationsEvent;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
     
    
     
@@ -79,7 +79,7 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 			_model.decreaseLoadCounter();
 			var searchEvent : SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
-			searchEvent.dispatch();
+			KedController.getInstance().dispatch(searchEvent);
 			
 			var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			categoriesEvent.dispatch();

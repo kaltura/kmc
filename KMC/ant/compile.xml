@@ -8,7 +8,7 @@
 	<!-- directory for the compiled swf -->
     <property name="DEPLOY_DIR" value="${basedir}/bin-release"/>
 	
-	<property name="KMC_VERSION" value="v4.2.14.6"/>
+	<property name="KMC_VERSION" value="v5.0"/>
 	<property name="KDP_VERSION" value="v3.5.31"/>
 	<property name="KCLIP_VERSION" value="v1.1.1"/>
 	
@@ -34,7 +34,12 @@
 	
 	
 	<target name="create_keys_locale" description="set 'keys' locale files" >
-		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" /> 
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" >
+			<property name="basedir" value="${basedir}"/>
+		</ant> 
+		<ant antfile="ant/generateKeysLocaleSources.xml" target="build" > 
+			<property name="basedir" value="${basedir}/../KedLib"/>
+		</ant> 
 	</target>
 		
 	<target name="compile_locales" description="compile locale files" depends="create_keys_locale">

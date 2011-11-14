@@ -1,12 +1,9 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.view.captions.Caption;
 	import com.kaltura.edw.vo.EntryCaptionVO;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	
-	import flash.net.FileReference;
-	
-	public class CaptionsEvent extends CairngormEvent
+	public class CaptionsEvent extends KMvCEvent
 	{
 		public static const LIST_CAPTIONS:String = "listCaptions";
 		public static const SAVE_ALL:String = "saveAllCaptions";

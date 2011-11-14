@@ -1,9 +1,9 @@
 package com.kaltura.edw.control.events
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaEntryDistribution;
 	
-	public class EntryDistributionEvent extends CairngormEvent
+	public class EntryDistributionEvent extends KMvCEvent
 	{
 		public static const LIST:String = "content_listEntryDistribution";
 		public static const UPDATE_LIST:String = "content_updateEntryDistributionList";

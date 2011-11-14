@@ -2,7 +2,6 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.control.events.EntryEvent;
 	import com.kaltura.commands.media.MediaListFlags;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
@@ -11,14 +10,14 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaModerationFlagListResponse;
 	
 	import mx.rpc.IResponder;
-	import com.kaltura.edw.control.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 
 	public class ListModerationCommand extends KalturaCommand implements ICommand, IResponder
 	{
 		private var _currentEntry : KalturaBaseEntry;
 		override public function execute(event:CairngormEvent):void
 		{
-			var e : EntryEvent = event as EntryEvent;
+			var e : KMCEntryEvent = event as KMCEntryEvent;
 			_currentEntry = e.entryVo;
 			var pg:KalturaFilterPager = new KalturaFilterPager();
 			pg.pageSize = 500;
