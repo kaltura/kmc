@@ -9,6 +9,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class ContentDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * whether to display "mixes" tab in entrydrilldown
 		 * (in KMC value is taken from content uiconf) 

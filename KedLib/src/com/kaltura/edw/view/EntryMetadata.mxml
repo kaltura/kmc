@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.edw.business.*"
-		 creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
+		 creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
+		 xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
 		[Event(name="openPreview", type="flash.events.Event")] 
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
@@ -41,7 +42,7 @@
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Image;
 			import mx.events.ResizeEvent;
@@ -57,13 +58,13 @@
 			// =================================================================
 			// Constants
 			// =================================================================
-			
+
 			/**
 			 * image to display when entry doesn't have content
 			 * */
 			private static const noMediaImage:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("noContentImg");
 
-			
+
 			/**
 			 * reference to kdp3Loader.
 			 * due to performance issue that we fixed, this is static.
@@ -73,19 +74,19 @@
 
 			/**
 			 * landing page replace string
-			 * @internal 
+			 * @internal
 			 * the landing page is a page on the partner's website where they can view the entry directly.
-			 * this is the token that tells KMC where the entry id should appear in the url. 
+			 * this is the token that tells KMC where the entry id should appear in the url.
 			 * */
 			private const ENTRY_PLACEHOLDER:String = '{entryId}';
 
-			
+
 			/**
 			 * page layout: labels width
 			 * */
 			private const LABEL_WIDTH:Number = 105;
-			
-			
+
+
 			/**
 			 * page layout: texts width
 			 * */
@@ -95,12 +96,12 @@
 			// =================================================================
 			// Other Stuff
 			// =================================================================
-			
+
 			/**
 			 * landing page according to partner's data
 			 * */
 			public var landingPage:String;
-			
+
 			// =================================================================
 			// Data Model
 			// =================================================================
@@ -109,7 +110,8 @@
 			 * @copy #selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
-			
+
+
 			[Bindable]
 			/**
 			 * the entry to which we apply changes
@@ -117,23 +119,25 @@
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
+
+
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (value is KalturaLiveStreamAdminEntry) {
 					offlineHolder.visible = true;
 					offlineHolder.includeInLayout = true;
-				} 
+				}
 				else {
 					offlineHolder.visible = false;
 					offlineHolder.includeInLayout = false;
 				}
-				
-				_selectedEntry = value;	
+
+				_selectedEntry = value;
 			}
-			
-			
+
+
 			[Bindable]
 			public var context:ContextDataPack;
-			
+
 			[Bindable]
 			public var distributionData:DistributionDataPack;
 
@@ -148,17 +152,17 @@
 
 			[Bindable]
 			private var _entryHasContent:Boolean;
-			
+
 			/**
 			 * entry's reference id before the user had a chance to change it
 			 * */
 			private var _originalRefid:String;
-			
-			
+
+
 			// =================================================================
 			// Methods
 			// =================================================================
-			
+
 			/**
 			 * retrieves the list of categories this entry should be asisgned to
 			 * @return array of category names
@@ -174,7 +178,8 @@
 				}
 				return tempArr;
 			}
-			
+
+
 			public function isChanged():Boolean {
 				var res:Boolean = false;
 				var orig:KalturaBaseEntry = entryData.selectedEntry;
@@ -185,24 +190,25 @@
 				res ||= selectedEntry.referenceId != orig.referenceId;
 				return res;
 			}
-			
-			public function save():void	{
+
+
+			public function save():void {
 				// set the categories on the entry
-				selectedEntry.categories = getEntryCategories().join(','); 
-				
+				selectedEntry.categories = getEntryCategories().join(',');
+
 				if (selectedEntry is KalturaLiveStreamAdminEntry) {
 					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 				}
-				
+
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-			
-			
+
+
 			public function validate():void {
-				var success:Boolean = true;	// validation result
+				var success:Boolean = true; // validation result
 				var errorMessage:String;
 				var errorTitle:String;
-				
+
 				// entry name
 				if (name_input.text == "") {
 					errorMessage = resourceManager.getString('drilldown', 'entryNameIsMandatory');
@@ -222,7 +228,8 @@
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
 			}
-			
+
+
 			/**
 			 * for trim / clip buttons, decide if the button should be
 			 * enabled according to whether entry has source flavor.
@@ -233,7 +240,7 @@
 				var hasSource:Boolean = false;
 				var asset:KalturaFlavorAsset;
 				for each (var vo:FlavorAssetWithParamsVO in flavors) {
-					asset = vo.kalturaFlavorAssetWithParams.flavorAsset; 
+					asset = vo.kalturaFlavorAssetWithParams.flavorAsset;
 					if (asset && asset.isOriginal) {
 						hasSource = true;
 						break;
@@ -241,22 +248,21 @@
 				}
 				return hasSource;
 			}
-			
+
 
 			public function initData():void {
 				_originalRefid = selectedEntry.referenceId;
-				
+
 				if (kdpContainer.getChildAt(0) is Image) {
 					// remove previous image
 					kdpContainer.removeChildAt(0);
 				}
-				
+
 				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					addImageThumb(noMediaImage);
 					_entryHasContent = false;
 				}
-				else if ((selectedEntry is KalturaMediaEntry) && 
-					(selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
+				else if ((selectedEntry is KalturaMediaEntry) && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
 					_entryHasContent = true;
 					addImageThumb();
 				}
@@ -266,7 +272,7 @@
 					//mix or video
 					loadKDP();
 				}
-				
+
 				// set landing page string:
 				if (landingPage) {
 					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
@@ -301,7 +307,7 @@
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
-				
+
 			}
 
 
@@ -360,7 +366,7 @@
 				// only set at the parent's creationComplete, which comes later. so
 				// the parent has to manualy initialize this panel.
 //				BindingUtils.bindSetter(updateUndoEntryThumbnail, entryData.selectedEntry, "thumbnailUrl");
-				
+
 			}
 
 
@@ -399,13 +405,15 @@
 				}
 			}
 
+
 			private function stopEvent(e:Event):void {
 				var cl:String = getQualifiedClassName(e);
-				if (e.type == "resize" &&  cl == "fl.events::ComponentEvent") {
+				if (e.type == "resize" && cl == "fl.events::ComponentEvent") {
 					e.stopImmediatePropagation();
 					e.preventDefault();
 				}
 			}
+
 
 			private function showKDP(event:Event = null):void {
 				kdp3StaticSwfLoader.visible = true;
@@ -472,8 +480,7 @@
 			 */
 			private function checkIfNotAdvanced(undoToEntry:*):Boolean {
 				// editorType.toString();
-				if (((undoToEntry is KalturaMixEntry) && (undoToEntry as KalturaMixEntry).editorType == KalturaEditorType.ADVANCED) 
-					|| selectedEntry.status != KalturaEntryStatus.READY)
+				if (((undoToEntry is KalturaMixEntry) && (undoToEntry as KalturaMixEntry).editorType == KalturaEditorType.ADVANCED) || selectedEntry.status != KalturaEntryStatus.READY)
 					return false;
 				return true;
 			}
@@ -597,15 +604,15 @@
 			 * open drilldown window wit the parent entry
 			 * (the entry this clip was made from)
 			 * */
-			protected function showParentEntry(event:MouseEvent):void
-			{
+			protected function showParentEntry(event:MouseEvent):void {
 				// create the new model 
 				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
 				controller.dispatch(cg);
 				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
 				controller.dispatch(cg);
 			}
-			
+
+
 			/**
 			 * request JS to open the clipApp in clipping mode
 			 * */
@@ -613,7 +620,8 @@
 				pausePreview();
 				KedJSGate.openClipApp(selectedEntry.id, "clip");
 			}
-			
+
+
 			/**
 			 * request JS to open the clipApp in trimming mode
 			 * */
@@ -621,19 +629,20 @@
 				pausePreview();
 				KedJSGate.openClipApp(selectedEntry.id, "trim");
 			}
-			
+
+
 			private function getRefid(refid:String):String {
 				if (refid == KalturaClient.NULL_STRING) {
 					return '';
 				}
-				else return refid;
+				else
+					return refid;
 			}
 
 
-			protected function referenceId_changeHandler(event:Event):void
-			{
-				if(event.target.text == '') {
-					if (_originalRefid == null){
+			protected function referenceId_changeHandler(event:Event):void {
+				if (event.target.text == '') {
+					if (_originalRefid == null) {
 						// no change from original empty value
 						selectedEntry.referenceId = null;
 					}
@@ -646,31 +655,34 @@
 					selectedEntry.referenceId = event.target.text;
 				}
 			}
-			
+
 			// =================================================================
 			// Preview and Embed Stuff
 			// =================================================================
-			
+
 			[Bindable]
 			/**
 			 * @copy #previewOnly
 			 * */
 			private var _showEmbed:Boolean = false;
-			
+
 			[Bindable]
 			private var _previewEnable:Boolean = true;
-			
+
+
 			public function get previewEnable():Boolean {
 				return _previewEnable;
 			}
+
+
 			public function set previewEnable(value:Boolean):void {
 				_previewEnable = value;
 			}
-			
+
 			[Bindable]
 			public var previewLabel:String = ResourceManager.getInstance().getString('drilldown', 'previewAndEmbed');
-			
-			
+
+
 			/**
 			 * show only "preview" and not "preview & embed"
 			 */
@@ -682,109 +694,111 @@
 				}
 				_showEmbed = value;
 			}
-			
-			
+
+
 			public function get showEmbed():Boolean {
 				return _showEmbed;
 			}
 			// =================================================================
-
 		]]>
 	</mx:Script>
-	<control:MetadataTabController id="controller" />
+	<control:MetadataTabController id="controller"/>
 	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
-						required="true" requiredFieldError="{resourceManager.getString('drilldown', 'entryNameIsMandatory')}"/>
+						required="true"
+						requiredFieldError="{resourceManager.getString('drilldown', 'entryNameIsMandatory')}"/>
 	<mx:VBox width="100%" verticalGap="3">
 		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown','name')}:" width="{LABEL_WIDTH}" styleName="drillDownLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','name')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
 			<mx:TextInput id="name_input" width="{TEXT_WIDTH}" text="{selectedEntry.name}"
 						  change="{selectedEntry.name = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown','description')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}" 
+			<mx:TextArea id="descriptionTi" width="{TEXT_WIDTH}" text="{selectedEntry.description}"
 						 change="{selectedEntry.description = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/> 
-			<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}" 
+					  styleName="drillDownLabel"/>
+			<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
 						  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown','drillDownCategories')}:" width="{LABEL_WIDTH}"
 					  styleName="drillDownLabel"/>
-			<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" height="{tagsTi.height}" 
+			<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" height="{tagsTi.height}"
 								text="{selectedEntry.categories}" styleName="autoComplete"
-								dataProvider="{entryData.categoriesFullNameList}" />
+								dataProvider="{entryData.categoriesFullNameList}"/>
 		</mx:HBox>
 		<!--<mx:VBox styleName="lineGap">-->
-			<mx:HBox id="offlineHolder" width="100%" >
-				<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}"
-							 styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label htmlText="{resourceManager.getString('drilldown','referenceId')}" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{getRefid(selectedEntry.referenceId)}"
-							  change="referenceId_changeHandler(event)" styleName="drillDownSubLabel"/>
-			</mx:HBox>
+		<mx:HBox id="offlineHolder" width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:TextArea id="offlineMessage" width="{TEXT_WIDTH}" text="{selectedEntry.offlineMessage}"
+						 styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label htmlText="{resourceManager.getString('drilldown','referenceId')}" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:TextInput id="referenceId" width="{TEXT_WIDTH}" text="{getRefid(selectedEntry.referenceId)}"
+						  change="referenceId_changeHandler(event)" styleName="drillDownSubLabel"/>
+		</mx:HBox>
 
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','entryId')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{selectedEntry.id}" selectable="true" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label id="landingPageLabel" selectable="true" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
-						  styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','moderation')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{getModeration(selectedEntry.moderationStatus)}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{selectedEntry.flags}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{formatDate(selectedEntry.createdAt)}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:Label text="{selectedEntry.userId}" styleName="drillDownSubLabel"/>
-			</mx:HBox>
-			<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}" includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
-				<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{LABEL_WIDTH}"
-						  styleName="drillDownLabel"/>
-				<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"/>
-			</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','entryId')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{selectedEntry.id}" selectable="true" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="landingPageLabel" selectable="true" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
+					  styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','moderation')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{getModeration(selectedEntry.moderationStatus)}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{selectedEntry.flags}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{formatDate(selectedEntry.createdAt)}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{selectedEntry.userId}" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
+				 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
+			<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"/>
+		</mx:HBox>
 		<!--</mx:VBox>-->
 	</mx:VBox>
 	<mx:VBox id="kdpContainer" width="100%" height="100%" styleName="lineGap" horizontalAlign="center">
 		<mx:HBox width="100%" paddingTop="5">
 			<mx:VBox width="100%" horizontalAlign="center">
-				<mx:HBox id="loaderContainer" width="100%" paddingLeft="0" >
+				<mx:HBox id="loaderContainer" width="100%" paddingLeft="0">
 					<mx:SWFLoader id="kdp3Loader" width="300" height="255" complete="{onKDP3Loaded(event)}"/>
 				</mx:HBox>
 				<mx:VBox visible="{_entryHasContent}" includeInLayout="{_entryHasContent}" horizontalAlign="center">
@@ -792,20 +806,24 @@
 							   click="{openPreview()}" width="135" styleName="dataGridBtn"
 							   enabled="{(selectedEntry.status == KalturaEntryStatus.READY) &amp;&amp; _previewEnable}"/>
 
-					<mx:HBox width="100%" id="editorsBox" horizontalAlign="center" includeInLayout="{editorsBox.visible}" 
-							 visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}" >
-						<mx:LinkButton id="btnClipping" click="openClipping(event)" enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
-									   label="{resourceManager.getString('drilldown','openClipping')}" />
-						<mx:LinkButton id="btnTrimming" click="openTrimming(event)" enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
-									   label="{resourceManager.getString('drilldown','openTrimming')}" />
+					<mx:HBox width="100%" id="editorsBox" horizontalAlign="center"
+							 includeInLayout="{editorsBox.visible}"
+							 visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}">
+						<mx:LinkButton id="btnClipping" click="openClipping(event)"
+									   enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
+									   label="{resourceManager.getString('drilldown','openClipping')}"/>
+						<mx:LinkButton id="btnTrimming" click="openTrimming(event)"
+									   enabled="{entryHasSource(distributionData.flavorParamsAndAssetsByEntryId)}"
+									   label="{resourceManager.getString('drilldown','openTrimming')}"/>
 					</mx:HBox>
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('drilldown','rating')}:" styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.rank}" styleName="drillDownSubLabel"/>
 
-						<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:" styleName="drillDownLabel"/>
+						<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:"
+								  styleName="drillDownLabel"/>
 						<mx:Label text="{selectedEntry.votes}" styleName="drillDownSubLabel"/>
-						
+
 					</mx:HBox>
 					<mx:HBox width="100%">
 						<mx:Label text="{resourceManager.getString('drilldown','plays')}:" styleName="drillDownLabel"/>

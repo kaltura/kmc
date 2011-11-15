@@ -11,6 +11,8 @@ package com.kaltura.kmvc.model
 		 */		
 		public static const LOADING_FLAG_CHANGED:String = "loadingFlagChanged";
 		
+		private static var __models:Array;
+		
 		private var _packMap:Object;
 		
 		public function KMvCModel(enforcer:Enforcer) {
@@ -67,22 +69,50 @@ package com.kaltura.kmvc.model
 			return className;
 		}
 		
-		/**
-		 * singleton instance
-		 */
-		private static var _instance:KMvCModel;
-		
 		
 		/**
 		 * singleton means of retreiving an instance of the
 		 * <code>EntryDetailsModel</code> class.
 		 */
 		public static function getInstance():KMvCModel {
-			if (_instance == null) {
-				_instance = new KMvCModel(new Enforcer());
+			// create models list if doesn't exist
+			if (__models == null) {
+				__models = new Array();
+			}
+			// create a model if none exists
+			if (__models.length == 0) {
+				__models.push(new KMvCModel(new Enforcer()));
 				
 			}
-			return _instance;
+			// return the top model
+			return __models[__models.length-1];
+		}
+		
+		/**
+		 * create a new model and add it to the stack 
+		 * @return the new model
+		 * */
+		public static function addModel():KMvCModel {
+			var newmodel:KMvCModel = new KMvCModel(new Enforcer());
+			if (__models.length) {
+				// copy attributes from the last existing model
+				var oldmodel:KMvCModel = getInstance();
+				for each (var idp:IDataPack in oldmodel._packMap) {
+					if (idp.shared) {
+						newmodel.setDataPack(idp);
+					}
+				}
+			}
+			__models.push(newmodel);
+			return newmodel;
+		}
+		
+		/**
+		 * remove the model at the top of the stack 
+		 * @return the removed model
+		 */		
+		public static function removeModel():KMvCModel {
+			return __models.pop() as KMvCModel;
 		}
 		
 		

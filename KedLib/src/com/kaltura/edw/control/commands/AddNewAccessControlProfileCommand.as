@@ -3,10 +3,8 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.commands.accessControl.AccessControlAdd;
 	import com.kaltura.edw.control.events.AccessControlEvent;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
-	import com.kaltura.events.AccessControlProfileEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
-	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.AccessControlProfileVO;
 	
 	import mx.controls.Alert;

@@ -44,17 +44,17 @@ package com.kaltura.edw.control.commands {
 			if (data.data && data.data is KalturaBaseEntry) {
 				var resultEntry:KalturaBaseEntry = data.data as KalturaBaseEntry;
 				var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+				var dsp:IEventDispatcher = (_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
 				if (_eventType == KedEntryEvent.GET_REPLACEMENT_ENTRY) {
 					edp.selectedReplacementEntry = resultEntry;
 				}
 				else if (_eventType == KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 					var selectedEntry:KalturaBaseEntry = edp.selectedEntry;
 					EntryUtil.updateChangebleFieldsOnly(resultEntry, selectedEntry);
-					selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(selectedEntry, 
-						'replacementStatus', selectedEntry.replacementStatus, selectedEntry.replacementStatus));
+//					selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(selectedEntry, 
+//						'replacementStatus', selectedEntry.replacementStatus, selectedEntry.replacementStatus));
 					//if in the entries list there's an entry with the same id, replace it.
 //					EntryUtil.updateSelectedEntryInList(selectedEntry, _model.listableVo.arrayCollection);
-					var dsp:IEventDispatcher = (_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
 					var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_RELOADED);
 					e.data = selectedEntry; 
 					dsp.dispatchEvent(e);
@@ -62,8 +62,12 @@ package com.kaltura.edw.control.commands {
 					edp.selectedEntryReloaded = true;
 				}
 				else {
-					//TODO open drilldown. the request shouldn't come from here, it should come from the env.app
+					// open drilldown. the request shouldn't come from here, it should come from the env.app
 //					/*(*/_model.app/* as Content)*/.requestEntryDrilldown(resultEntry);
+					var ee:KedDataEvent = new KedDataEvent(KedDataEvent.OPEN_ENTRY);
+					ee.data = resultEntry; 
+					dsp.dispatchEvent(ee);
+					//TODO when starting KMC with an entry id the dispatcher is still null
 				}
 			}
 			else {

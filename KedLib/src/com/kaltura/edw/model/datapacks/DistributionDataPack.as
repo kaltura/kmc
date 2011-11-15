@@ -11,6 +11,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class DistributionDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 
 		 */		

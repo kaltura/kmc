@@ -13,6 +13,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class ContextDataPack implements IDataPack
 	{
+		public var shared:Boolean = true;
+		
 		public static const DEFAULT_UI_CONFIG_ID:String = "10000";
 	
  		public var userId:String;

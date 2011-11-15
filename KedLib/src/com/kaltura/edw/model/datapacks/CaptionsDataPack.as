@@ -8,6 +8,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class CaptionsDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * Array of captionEntryVO
 		 * */

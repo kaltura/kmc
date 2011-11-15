@@ -1,14 +1,17 @@
 package com.kaltura.edw.control.commands
 {
-	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.model.EntryDetailsModel;
-	import com.kaltura.edw.control.commands.KedCommand;
-	import com.kaltura.edw.control.commands.KedCommand;
+	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.kmvc.model.KMvCModel;
 
 	public class DuplicateEntryDetailsModelCommand extends KedCommand {
 		
 		override public function execute(event:KMvCEvent):void
 		{
+			
+			KMvCModel.addModel();
+			
 //			var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
 //			// copy permissions and general info stuff
 //			newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;

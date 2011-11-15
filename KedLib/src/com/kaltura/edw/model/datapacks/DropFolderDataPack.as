@@ -5,7 +5,10 @@ package com.kaltura.edw.model.datapacks
 	
 	import mx.collections.ArrayCollection;
 	
+	[Bindable]
 	public class DropFolderDataPack implements IDataPack {
+		
+		public var shared:Boolean = false;
 		
 		/**
 		 * currently selected drop folder 

@@ -1,17 +1,13 @@
 package com.kaltura.edw.control.commands
 {
 	import com.kaltura.commands.media.MediaApproveReplace;
-	import com.kaltura.controls.tabbar.OverlappingTabBar;
-	import com.kaltura.edw.business.Cloner;
 	import com.kaltura.edw.business.EntryUtil;
-	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.MediaEvent;
 	import com.kaltura.edw.events.KedDataEvent;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
-	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaMediaEntry;
 	

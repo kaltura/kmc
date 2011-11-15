@@ -1,6 +1,5 @@
 package com.kaltura.edw.business
 {
-	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import flash.events.IEventDispatcher;

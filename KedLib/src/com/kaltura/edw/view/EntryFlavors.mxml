@@ -720,12 +720,12 @@
 			/**
 			 * opens another entry drill down window, for the replacement entry
 			 * */
-			private function onReplacementStautsBtnClick():void {
+			private function onReplacementStatusBtnClick():void {
 				//replacement entry is processing - check for updates
 				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
-					(KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
+					(model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
 					_drillDownClicked = true;
-					var entryid:String = (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
+					var entryid:String = (model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
 					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryid);
 					controller.dispatch(getSelectedEntry);
 				}
@@ -874,7 +874,7 @@
 			<mx:Label id="replacementEntryId" styleName="drillDownSubLabel" selectable="true"/>
 			<mx:Label text="|" width="15" enabled="false"/>
 			<mx:Label text="{resourceManager.getString('drilldown','status') + ':'}" styleName="drillDownLabel"/>
-			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStautsBtnClick()}"/>
+			<mx:LinkButton id="replacementStatusBtn" paddingLeft="0" click="{onReplacementStatusBtnClick()}"/>
 			<mx:HBox id="replacementActionsHBox" horizontalGap="0" paddingLeft="0">
 				<mx:Label text="|" width="15" enabled="false"/>
 				<mx:LinkButton label="{resourceManager.getString('drilldown','cancelReplacement')}"

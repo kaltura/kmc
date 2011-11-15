@@ -50,12 +50,12 @@ package com.kaltura.kmc.modules.content.model {
 		 * */
 		public var moderationModel:ModerationModel;
 		
-		private var _entryDetailsModel:KMvCModel;
 		
 		/**
-		 * array of entryDetailsModel (KMvCModel)
+		 * entry details model
 		 * */
-		public var entryDetailsModelsArray:Array;
+		public var entryDetailsModel:KMvCModel;
+		
 		
 		/**
 		 * list of opened popups 
@@ -177,22 +177,6 @@ package com.kaltura.kmc.modules.content.model {
 		
 		
 		/**
-		 * active entry details data, always the last one in entryDetailsModelsArray 
-		 */
-		public function get entryDetailsModel():KMvCModel
-		{
-			return entryDetailsModelsArray[entryDetailsModelsArray.length-1];
-		}
-
-		/**
-		 * @private
-		 */
-		public function set entryDetailsModel(value:KMvCModel):void
-		{
-			entryDetailsModelsArray.push(value);
-		}
-
-		/**
 		 * increase the counter of loading items 
 		 */		
 		public function increaseLoadCounter():void {
@@ -255,15 +239,14 @@ package com.kaltura.kmc.modules.content.model {
 		public function CmsModelLocator(enforcer:Enforcer) {
 			attic = new Object();
 			
-			_entryDetailsModel = KMvCModel.getInstance();
-			entryDetailsModelsArray = new Array(_entryDetailsModel);
+			entryDetailsModel = KMvCModel.getInstance();
 			
-			context = _entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
+			context = entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
 			
 			filterModel = new FilterModel();
 			var fdp:FilterDataPack = new FilterDataPack();
 			fdp.filterModel = filterModel;
-			_entryDetailsModel.setDataPack(fdp);
+			entryDetailsModel.setDataPack(fdp);
 			
 			popups = new Vector.<TitleWindow>();
 			

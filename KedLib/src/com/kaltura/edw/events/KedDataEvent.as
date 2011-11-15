@@ -31,7 +31,13 @@ package com.kaltura.edw.events
 		/**
 		 * this event tells the envelope app that the replacement entry should be opened
 		 * */
-		public static const OPEN_REPLACEMENT:String = "kedOpenReplacement"; 
+		public static const OPEN_REPLACEMENT:String = "kedOpenReplacement";
+		
+		/**
+		 * this event tells the envelope app that the given entry should be opened
+		 * event.data is the entry to open
+		 */
+		public static const OPEN_ENTRY:String = "kedOpenEntry"; 
 		
 		
 		

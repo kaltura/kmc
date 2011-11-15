@@ -9,6 +9,8 @@ package com.kaltura.edw.model.datapacks
 	 */	
 	public class PermissionsDataPack implements IDataPack {
 		
+		public var shared:Boolean = true;
+		
 		/**
 		 * R&P: whether to enable custom data update
 		 */		

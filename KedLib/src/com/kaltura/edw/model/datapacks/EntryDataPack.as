@@ -11,6 +11,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class EntryDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * the max number of categories to which an entry may be assigned 
 		 */		

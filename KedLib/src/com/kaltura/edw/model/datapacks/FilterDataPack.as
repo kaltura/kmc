@@ -9,6 +9,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class FilterDataPack implements IDataPack {
 		
+		public var shared:Boolean = true;
+		
 		public var filterModel:FilterModel;
 	}
 }

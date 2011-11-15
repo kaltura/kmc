@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.edw.model.types.WindowsStates;
+	import com.kaltura.kmvc.model.KMvCModel;
 
 	public class CloseWindowCommand extends KalturaCommand
 	{
@@ -10,7 +11,7 @@ package com.kaltura.kmc.modules.content.commands
 		{
 			//in this case we still have another drilldown open
 			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
-				_model.entryDetailsModelsArray.pop();
+				KMvCModel.removeModel();
 				_model.windowState = WindowsStates.ENTRY_DETAILS_WINDOW_CLOSED_ONE;
 			}
 			else {

@@ -11,6 +11,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class FlavorsDataPack implements IDataPack {
 		
+		public var shared:Boolean = true;
+		
 		/**
 		 * a list of <code>ConversionProfileWithFlavorParamsVo</code> objects
 		 * for each conversion profile, lists the flavorparams matching objects. 

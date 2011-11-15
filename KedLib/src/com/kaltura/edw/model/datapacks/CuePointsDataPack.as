@@ -8,6 +8,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class CuePointsDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * Will be used to make the KClip reload cue points upon bulk upload
 		 * */

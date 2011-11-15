@@ -301,8 +301,6 @@
 						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
 						CustomDataTabController.getInstance().dispatch(getMetadataUiconf);
 					}
-//					var listMetadataProfiles:CustomDataEvent = new CustomDataEvent(CustomDataEvent.LIST_PROFILES);
-//					listMetadataProfiles.dispatch();
 				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
@@ -376,7 +374,7 @@
 			 * window for the given entry.
 			 * @param entry		the entry to drill into.
 			 * */
-			public function requestEntryDrilldown(entry:KalturaBaseEntry):void {
+			private function requestEntryDrilldown(entry:KalturaBaseEntry):void {
 				var cgEvent:CairngormEvent;
 				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry);
 				KedController.getInstance().dispatch(kEvent);
@@ -666,22 +664,19 @@
 				}
 			}
 
+			/**
+			 * open drill down to replacement entry, with partial tabs list
+			 * */
 			private function setReplacementDrilldown(edw:EntryDetailsWin):void {
-//TODO				var newEntryDetailsModel:EntryDetailsModel = new EntryDetailsModel();
-//				newEntryDetailsModel.selectedEntry = _entryData.selectedReplacementEntry;
-//				newEntryDetailsModel.replacedEntryName = _entryData.selectedEntry.name;
-//				// copy permissions and general info stuff
-//				newEntryDetailsModel.remoteStorageEnabled = _model.entryDetailsModel.remoteStorageEnabled;
-//				newEntryDetailsModel.conversionProfileLoaded = _model.entryDetailsModel.conversionProfileLoaded;
-//				newEntryDetailsModel.conversionProfiles = _model.entryDetailsModel.conversionProfiles;
-//				newEntryDetailsModel.enableThumbResize = _model.entryDetailsModel.enableThumbResize;
-//				newEntryDetailsModel.enableThumbsList = _model.entryDetailsModel.enableThumbsList;
-				// we open another drilldown, should add another model
-//				_model.entryDetailsModelsArray.push(newEntryDetailsModel);
+				KMvCModel.addModel();
+				var edp:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
+				edp.selectedEntry = _entryData.selectedReplacementEntry;
+				edp.replacedEntryName = _entryData.selectedEntry.name;
+				//
 				edw.loadRoughcuts = false;
 				edw.showNextPrevBtns = false;
 				edw.visibleTabsAC = new ArrayCollection(["entryAssets"]);
-				edw.styleName = "WinTitleStyle2";
+//				edw.styleName = "WinTitleStyle2";
 				edw.setStyle("modalTransparency", 0);
 			}
 			
@@ -696,7 +691,7 @@
 					case KedDataEvent.ENTRY_UPDATED:
 						// set refresh list required
 						_model.refreshEntriesRequired = true;
-						// break;
+						// break; // case falldown
 					case KedDataEvent.ENTRY_RELOADED:
 						// dispatch a Cairngorm event which will update the new entry in the entries list
 						var uev:UpdateEntryEvent = new UpdateEntryEvent(UpdateEntryEvent.UPDATE_ENTRY_IN_LIST);
@@ -726,6 +721,10 @@
 						var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
 						openWindow.dispatch();
 						break;
+					
+					case KedDataEvent.OPEN_ENTRY:
+						requestEntryDrilldown(e.data);
+						break;
 				}
 			}
 			
@@ -742,32 +741,26 @@
 				edw.addEventListener(KedDataEvent.CATEGORY_CHANGED, handleKedEvents, false, 0, true);
 				edw.addEventListener(KedDataEvent.ENTRY_UPDATED, handleKedEvents, false, 0, true);
 				edw.addEventListener(KedDataEvent.OPEN_REPLACEMENT, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.OPEN_ENTRY, handleKedEvents, false, 0, true);
 				edw.isNewEntry = state == EntryDetailsWindowState.NEW_ENTRY;
-				if (state == EntryDetailsWindowState.REPLACEMENT_ENTRY) {
-					// opens drill down to reference entry, with partial tabs list
-					setReplacementDrilldown(edw);
-				}
-				
 				//get the selected entry from the server
 				if (state != EntryDetailsWindowState.NEW_ENTRY) {
 					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,
 						_entryData.selectedEntry.id);
 					KedController.getInstance().dispatch(getSelectedEntry);
 				}
-				//TODO add commands to set the filtermodel etc to the kmvc model
-				edw.entryDetailsModel = _model.entryDetailsModel;
-//				edw.dropFolderModel = _model.dropFolderModel;
+				if (state == EntryDetailsWindowState.REPLACEMENT_ENTRY) {
+					setReplacementDrilldown(edw);
+				}
+				
+				edw.entryDetailsModel = KMvCModel.getInstance();
 				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
-				edw.filterModel = _model.filterModel;
 				edw.landingPage = _model.extSynModel.partnerData.landingPage;
-				edw.context = _model.context;
 				edw.openPlayerFunc = _model.openPlayer;
-//				edw.maxNumCategories = _flashvars.maxnumcategories;
 				if (state != EntryDetailsWindowState.NORMAL_ENTRY)
 					edw.showNextPrevBtns = false;
 				if (_model.listableVo)
 					edw.entriesAC = _model.listableVo.arrayCollection;
-//				edw.visibleTabsAC = new ArrayCollection(["entryAssets", "ads"]);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ENTRY_DRILLDOWN, GoogleAnalyticsConsts.CONTENT)
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ENTRY_DRILLDOWN, "content>Entry DrillDown");
 
@@ -926,9 +919,6 @@
 					this.enabled = false;
 					var currentPopUp:TitleWindow;
 					switch (newState) {
-//						case WindowsStates.ROOT_ENTRY_DETAILS_WINDOW:
-//							currentPopUp = openEntryDetails(EntryDetailsWindowState.ROOT_ENTRY);
-//							break;
 						case WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW:
 							currentPopUp = openEntryDetails(EntryDetailsWindowState.REPLACEMENT_ENTRY);
 							break;

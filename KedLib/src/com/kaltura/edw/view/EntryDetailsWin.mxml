@@ -32,7 +32,6 @@
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KArrayUtil;
-			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.utils.SoManager;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAsset;
@@ -115,42 +114,76 @@
 			private var _entryDp:EntryDataPack;
 
 			[Bindable]
-			private var _relatedDp:RelatedFilesDataPack = KMvCModel.getInstance().getDataPack(RelatedFilesDataPack) as RelatedFilesDataPack;
+			private var _relatedDp:RelatedFilesDataPack;
 
 			[Bindable]
-			private var _clipsDp:ClipsDataPack = KMvCModel.getInstance().getDataPack(ClipsDataPack) as ClipsDataPack;
+			private var _clipsDp:ClipsDataPack;
 
 			[Bindable]
-			private var _adCuepointsDp:CuePointsDataPack = KMvCModel.getInstance().getDataPack(CuePointsDataPack) as CuePointsDataPack;
+			private var _adCuepointsDp:CuePointsDataPack;
 
 			[Bindable]
-			private var _captionsDp:CaptionsDataPack = KMvCModel.getInstance().getDataPack(CaptionsDataPack) as CaptionsDataPack;
+			private var _captionsDp:CaptionsDataPack;
 
 			[Bindable]
-			private var _distDp:DistributionDataPack = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
+			private var _distDp:DistributionDataPack;
 
-			private var _customDataDp:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
+			private var _customDataDp:CustomDataDataPack;
 
 			[Bindable]
-			private var _permissionsDp:PermissionsDataPack = KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack;
+			private var _permissionsDp:PermissionsDataPack;
 
 			[Bindable]
 			/**
 			 * entry details window data
 			 * */
-			public var entryDetailsModel:KMvCModel;
+			private var _entryDetailsModel:KMvCModel;
 
 			[Bindable]
 			/**
 			 * filter data
 			 * */
-			public var filterModel:FilterModel;
+			private var _filterModel:FilterModel;
 
 			[Bindable]
 			/**
 			 * application context
 			 * */
-			public var context:ContextDataPack;
+			private var _context:ContextDataPack;
+			
+			public function set entryDetailsModel(value:KMvCModel):void {
+				_entryDetailsModel = value;
+				if (value) {
+					// let commands dispatch events from the current window
+					(value.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = this;
+					
+					_entryDp = value.getDataPack(EntryDataPack) as EntryDataPack;
+					_filterModel = (value.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+					_context = value.getDataPack(ContextDataPack) as ContextDataPack;
+					_relatedDp = value.getDataPack(RelatedFilesDataPack) as RelatedFilesDataPack;
+					_clipsDp = value.getDataPack(ClipsDataPack) as ClipsDataPack;
+					_adCuepointsDp = value.getDataPack(CuePointsDataPack) as CuePointsDataPack;
+					_captionsDp = value.getDataPack(CaptionsDataPack) as CaptionsDataPack;
+					_distDp = value.getDataPack(DistributionDataPack) as DistributionDataPack;
+					_customDataDp = value.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+					_permissionsDp = value.getDataPack(PermissionsDataPack) as PermissionsDataPack;
+					
+					if (!_entryWatcher)
+						_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", _entryDp, "selectedEntry");
+					if (!_entryIndexWatcher)
+						_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", _entryDp, "selectedIndex");
+					
+					if (!_uiEnabledWatcher) {
+						_uiEnabledWatcher = BindingUtils.bindSetter(setUIEnbaled, _entryDetailsModel, "loadingFlag");
+					}
+					trace("set model - initWindow");
+					initWindow();
+				}
+			}
+			
+			public function get entryDetailsModel():KMvCModel {
+				return _entryDetailsModel;
+			}
 
 			// ===================================================================
 			// 
@@ -217,7 +250,7 @@
 			/**
 			 * creationComplete handler finished running
 			 * */
-			private var _isReady:Boolean = false;
+			private var _isCreationComplete:Boolean = false;
 
 			/**
 			 * should the window be closed after saving entry data
@@ -259,6 +292,10 @@
 			}
 
 			public function set selectedEntry(value:KalturaBaseEntry):void {
+				var shouldInit:Boolean;
+				if (_selectedEntry == null && value) {
+					shouldInit = true;
+				}
 				if (value && value != _selectedEntry) {
 					//if the given entry is a different entry than the current one
 					var isDifferentEntry:Boolean = (_selectedEntry ? value.id != _selectedEntry.id : true);
@@ -287,17 +324,27 @@
 					}
 					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, selectedEntry, "replacingEntryId");
 
-					if (_isReady) {
+					if (_isCreationComplete) {
 						if (!isDifferentEntry) {
 							// To fix cuepoints synchronization issue: in case we are 
 							// still editing the same entry - re-init tabs data after timeout
 							setTimeout(initTabsData, 100);
 						}
 						else {
-							setTabsByEntryType();
-							initTabsData();
+							if (shouldInit) {
+								trace("set entry - initWindow");
+								initWindow();
+							}
+							else {
+								trace("setEntry - no init");
+								setTabsByEntryType();
+								initTabsData();
+							}
 						}
 					}
+				}
+				else if (shouldInit) {
+					trace("this is it");
 				}
 			}
 
@@ -308,7 +355,7 @@
 
 			public function set visibleTabsAC(value:ArrayCollection):void {
 				_visibleTabsAC = value;
-				if (_isReady) {
+				if (_isCreationComplete) {
 					setVisibleTabs();
 					initTabs();
 				}
@@ -327,16 +374,30 @@
 			 * make panels ready for new entry
 			 * */
 			private function clearPanels():void {
-				var panel:IDrilldownPanel;
-				for (var i:int = 0; i < viewStack.numChildren; i++) {
-					panel = viewStack.getChildAt(i) as IDrilldownPanel;
-					if (panel) {
-						panel.clear();
+				if (viewStack) {
+					var panel:IDrilldownPanel;
+					for (var i:int = 0; i < viewStack.numChildren; i++) {
+						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						if (panel) {
+							panel.clear();
+						}
 					}
 				}
 			}
 
 
+			/**
+			 * select panels and load data
+			 * */
+			private function initWindow():void {
+				if (_isCreationComplete && _entryDetailsModel && _selectedEntry) {
+//					trace("initWindow");
+					setTabsByEntryType();
+					initTabs();
+					initTabsData();
+				}
+			}
+			
 			private function onHelp():void {
 				var anchor:String;
 				switch (viewStack.selectedChild) {
@@ -430,7 +491,7 @@
 
 
 			/**
-			 * status on selected entry has changed
+			 * copy new status to _undoTo entry
 			 * */
 			private function onStatusChange(value:String):void {
 				if (_undoToEntry) {
@@ -440,19 +501,19 @@
 
 
 			/**
-			 *replacement status on selected entry has changed
+			 * copy new replacement status to _undoTo entry
 			 * */
 			private function onReplacementStatusChange(value:String):void {
 				if (_undoToEntry) {
 					_undoToEntry.replacementStatus = value;
-					_undoToEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_undoToEntry, 'replacementStatus',
-						_undoToEntry.replacementStatus, _undoToEntry.replacementStatus));
+//					_undoToEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_undoToEntry, 'replacementStatus',
+//						_undoToEntry.replacementStatus, _undoToEntry.replacementStatus));
 				}
 			}
 
 
 			/**
-			 * replaceing entry on selected entry has changed
+			 * copy new replacing entry id to _undoTo entry
 			 * */
 			private function onReplacingEntryChange(value:String):void {
 				if (_undoToEntry) {
@@ -462,36 +523,18 @@
 
 
 			private function onWindowCreationComplete():void {
-				_entryDp = entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack;
-				// let commands dispatch events from the current window
-				(entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = this;
-
-				if (!_entryWatcher)
-					_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", _entryDp, "selectedEntry");
-				if (!_entryIndexWatcher)
-					_entryIndexWatcher = BindingUtils.bindProperty(this, "entryIndex", _entryDp, "selectedIndex");
-
-				if (!_uiEnabledWatcher) {
-					_uiEnabledWatcher = BindingUtils.bindSetter(setUIEnbaled, entryDetailsModel, "loadingFlag");
-				}
-				
-				//
+				// save original tabs
 				_originalTabs = new Array();
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
 					_originalTabs.push(viewStack.getChildAt(i));
 				}
-				setTabsByEntryType();
-				
-				initTabs();
-				initTabsData();
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
-				if (entryMetaData.parent == viewStack)
-					entryMetaData.init();
-				_isReady = true;
-
+				_isCreationComplete = true;
+				trace("creationComplete - initWindow");
+				initWindow();
 			}
-
+ 
 
 			private function setUIEnbaled(value:Boolean):void {
 				_isUiEnabled = !value;
@@ -563,10 +606,10 @@
 				//adds custom data profiles
 				for each (tab in tabs) {
 					if (tab == customData) {
-						if (filterModel.enableCustomData) {
-							if (filterModel.metadataProfiles && filterModel.metadataProfiles.length > 0) {
+						if (_filterModel.enableCustomData) {
+							if (_filterModel.metadataProfiles && _filterModel.metadataProfiles.length > 0) {
 								_customDataDp.metadataInfoArray = new ArrayCollection();
-								customData.buildProfiles(filterModel.metadataProfiles, filterModel.formBuilders);
+								customData.buildProfiles(_filterModel.metadataProfiles, _filterModel.formBuilders);
 							}
 						}
 						//if none of the profiles contain fields (the only child is the navigation hbox)
@@ -942,10 +985,10 @@
 				// other panels need data that is loaded when the panel opens, so 
 				// we disable them until data is loaded.
 				if (viewStack.selectedChild != entryMetaData) {
-					if (entryDetailsModel.loadingFlag) {
+					if (_entryDetailsModel.loadingFlag) {
 						this.enabled = false;
 						if (!_enabledWatcher) {
-							_enabledWatcher = BindingUtils.bindSetter(setEnabledByLoadingFlag, entryDetailsModel, "loadingFlag");
+							_enabledWatcher = BindingUtils.bindSetter(setEnabledByLoadingFlag, _entryDetailsModel, "loadingFlag");
 						}
 					}
 				}
@@ -1070,34 +1113,34 @@
 	<control:EDWController id="edwController"/>
 
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
-			   buttonMode="true" tabHeight="25" enabled="{!entryDetailsModel.loadingFlag || _hadFirstNavigation}"/>
+			   buttonMode="true" tabHeight="25" enabled="{!_entryDetailsModel.loadingFlag || _hadFirstNavigation}"/>
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{onChangeView()}" creationPolicy="all"
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack">
 		<!-- Metadata Tab -->
 		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
 						  label="{ResourceManager.getInstance().getString('drilldown', 'metadata')}"
-						  selectedEntry="{_undoToEntry}" context="{context}" distributionData="{_distDp}"
+						  selectedEntry="{_undoToEntry}" context="{_context}" distributionData="{_distDp}"
 						  entryData="{_entryDp}" openPreview="{openPreview(event)}" showEmbed="{showEmbedCode}"
 						  landingPage="{landingPage}" enabled="{_isUiEnabled}" />
 		<!-- Thumbnails Tab -->
-		<ed:EntryThumbnails id="entryThumbnails" enableDistribution="{filterModel.enableDistribution}" 
+		<ed:EntryThumbnails id="entryThumbnails" enableDistribution="{_filterModel.enableDistribution}" 
 							label="{ResourceManager.getInstance().getString('drilldown', 'thumbnails')}"
-							selectedEntry="{_undoToEntry}" distributionModel="{_distDp}" context="{context}"
+							selectedEntry="{_undoToEntry}" distributionModel="{_distDp}" context="{_context}"
 							enabled="{_isUiEnabled}"/>
 
 		<!-- Access Control Tab -->
 		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
 							   label="{ResourceManager.getInstance().getString('drilldown', 'accessControl')}"
-							   selectedEntry="{_undoToEntry}" filterModel="{filterModel}"
-							   accessControlData="{filterModel.accessControlProfiles}" enabled="{_isUiEnabled}"/>
+							   selectedEntry="{_undoToEntry}" filterModel="{_filterModel}"
+							   accessControlData="{_filterModel.accessControlProfiles}" enabled="{_isUiEnabled}"/>
 
 		<!-- Scheduling Tab -->
 		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('drilldown', 'scheduling')}"
 							selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}" />
 
 		<!-- Flavor Assets Tab -->
-		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox" model="{entryDetailsModel}"
+		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox" model="{_entryDetailsModel}"
 						 label="{ResourceManager.getInstance().getString('drilldown', 'videoFiles')}"
 						 selectedEntry="{_undoToEntry}" replacementStatus="{_undoToEntry.replacementStatus}"
 						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}"
@@ -1109,13 +1152,13 @@
 						 loadRoughcuts="{loadRoughcuts}" enabled="{_isUiEnabled}"/>
 
 		<!-- Live stream -->
-		<ed:EntryLiveStreaming id="liveStream" rootUrl="{context.rootUrl}"
+		<ed:EntryLiveStreaming id="liveStream" rootUrl="{_context.rootUrl}"
 							   label="{ResourceManager.getInstance().getString('drilldown', 'liveStream')}"
 							   selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}"/>
 
 		<!-- Custom Data -->
 		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('drilldown', 'customData')}"
-							enabled="{_isUiEnabled}" model="{entryDetailsModel}"/>
+							enabled="{_isUiEnabled}" model="{_entryDetailsModel}"/>
 
 		<!-- Distribution Tab -->
 		<ed:EntryDistribution id="entryDistribution" selectedEntry="{_undoToEntry}" model="{_distDp}" 
@@ -1129,7 +1172,7 @@
 
 		<!-- advertisments -->
 		<ed:EntryAds id="ads" label="{resourceManager.getString('drilldown','ads')}" selectedEntry="{_undoToEntry}"
-					 context="{context}" model="{_adCuepointsDp}" enabled="{_isUiEnabled}" />
+					 context="{_context}" model="{_adCuepointsDp}" enabled="{_isUiEnabled}" />
 
 		<!-- related entries -->
 		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('drilldown','relatedEntries')}"

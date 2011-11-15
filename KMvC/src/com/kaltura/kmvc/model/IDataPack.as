@@ -5,5 +5,11 @@ package com.kaltura.kmvc.model
 	 */
 	public interface IDataPack {
 		
+		/**
+		 * is this data pack shared across models
+		 */		
+		function get shared():Boolean;
+		function set shared(value:Boolean):void;
+		
 	}
 }

@@ -10,6 +10,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class RelatedFilesDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * ArrayCollection of RelatedFileVO  
 		 */		

@@ -8,6 +8,8 @@ package com.kaltura.edw.model.datapacks
 	 * */
 	public class ClipsDataPack implements IDataPack {
 		
+		public var shared:Boolean = false;
+		
 		/**
 		 * clips derived from the current entry, 
 		 * <code>KalturaBaseEntry</code> objects
