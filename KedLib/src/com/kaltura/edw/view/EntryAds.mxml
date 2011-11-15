@@ -544,14 +544,17 @@
 			 * */
 			private function handleKClipEvents(e:Event):void {
 				e.stopImmediatePropagation();
-//				trace("EntryAds.handleKClipEvents:", e.type, e["data"]);
+				if (context.debugMode) {
+					trace("EntryAds.handleKClipEvents:", e.type, e["data"]);
+				}
 				switch (e.type) {
 					case KClipEventTypes.PLAYHEAD_DRAG_START:
 						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						break;
 					case KClipEventTypes.PLAYHEAD_DRAG_DROP:
+						_playheadPosition = parseFloat(e["data"]);
 						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
-						updateKdpPlayhead(parseFloat(e["data"]) / 1000);
+						updateKdpPlayhead(_playheadPosition / 1000);
 						break;
 
 					case KClipEventTypes.CLIPPER_READY:
