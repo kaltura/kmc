@@ -181,26 +181,28 @@
 
 
 			/**
-			 * save all changes - added/removed captions
+			 * save all changes - added/removed captions. <br>
+			 * if no changes were made skips the actual save.
 			 * */
 			public function save():void {
-				var captionsToSave:Array = new Array();
-				var captionVo:EntryCaptionVO;
-
-				for (var i:int = 0; i < entryCaptionsArr.length; i++) {
-					captionVo = entryCaptionsArr[i];
-					if (captionVo.isChanged) {
-						captionsToSave.push(captionVo);
+				if (isChanged()) {
+					var captionsToSave:Array = new Array();
+					var captionVo:EntryCaptionVO;
+	
+					for (var i:int = 0; i < entryCaptionsArr.length; i++) {
+						captionVo = entryCaptionsArr[i];
+						if (captionVo.isChanged) {
+							captionsToSave.push(captionVo);
+						}
 					}
+	
+					var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
+					saveEvent.captionsToSave = captionsToSave;
+					saveEvent.captionsToRemove = _captionsToRemove;
+					if (_defaultCaption)
+						saveEvent.defaultCaption = _defaultCaption;
+					controller.dispatch(saveEvent);
 				}
-
-				var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
-				saveEvent.captionsToSave = captionsToSave;
-				saveEvent.captionsToRemove = _captionsToRemove;
-				if (_defaultCaption)
-					saveEvent.defaultCaption = _defaultCaption;
-				controller.dispatch(saveEvent);
-
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 

@@ -281,12 +281,13 @@
 
 
 			public function save():void {
-				var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
-				saveEvent.relatedToAdd = _filesToAdd.source;
-				saveEvent.relatedToUpdate = _filesToUpdate.source;
-				saveEvent.relatedToDelete = _filesToDelete.source;
-				controller.dispatch(saveEvent);
-				
+				if (isChanged()) {
+					var saveEvent:RelatedFileEvent = new RelatedFileEvent(RelatedFileEvent.SAVE_ALL_RELATED);
+					saveEvent.relatedToAdd = _filesToAdd.source;
+					saveEvent.relatedToUpdate = _filesToUpdate.source;
+					saveEvent.relatedToDelete = _filesToDelete.source;
+					controller.dispatch(saveEvent);
+				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 
