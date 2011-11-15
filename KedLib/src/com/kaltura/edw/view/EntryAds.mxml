@@ -670,7 +670,9 @@
 
 
 			private function handleKdpEvents(e:Event):void {
-//				trace("EntryAds.handleKdpEvents, ", e.type);
+				if (context.debugMode) {
+					trace("EntryAds.handleKdpEvents, ", e.type, e["data"]);
+				}
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
 						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false);
@@ -686,8 +688,9 @@
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
-						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false, 0, true);
+						kClip["scrollToPoint"](_playheadPosition, true);
 						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false, 0, true);
 						break;
 					case KdpEventTypes.DO_SEEK:
 						if (_kClipReady) {
@@ -707,7 +710,8 @@
 							if (!isNaN(parseFloat(e["data"]))) {
 								// we only listen to playhead update while in "play" mode, 
 								// and in this case we don't want kClip to load images.
-								_kClip["scrollToPoint"](parseFloat(e["data"]) * 1000, false);
+								_playheadPosition = parseFloat(e["data"]) * 1000;
+								_kClip["scrollToPoint"](_playheadPosition, false);
 							}
 						}
 						break;
