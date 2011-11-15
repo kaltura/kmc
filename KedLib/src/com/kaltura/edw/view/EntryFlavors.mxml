@@ -383,13 +383,6 @@
 					var ddp:DistributionDataPack = model.getDataPack(DistributionDataPack) as DistributionDataPack;
 					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", ddp, "flavorParamsAndAssetsByEntryId");
 				}
-			}
-			
-			
-			/**
-			 * loads required data from server
-			 * */
-			public function initData():void {
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				controller.dispatch(profileEvent);
@@ -398,6 +391,13 @@
 					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
 					controller.dispatch(profileEvent);
 				}
+			}
+			
+			
+			/**
+			 * loads required data from server
+			 * */
+			public function initData():void {
 				//to listen only once
 				if (!_listenToUpload) {
 					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
