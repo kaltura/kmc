@@ -59,8 +59,7 @@ package com.kaltura.kmvc.model
 				// Creating a Data Pack by using the class reference.
 				var dataPack:IDataPack = new dataPackClass();
 				
-				// Storing the data pack and the data holder in their corresponding maps, according 
-				// to specific data pack's class name.
+				// Storing the data pack in its maps, according to specific data pack's class name.
 				_packMap[className] = dataPack;
 			} 
 			
