@@ -30,7 +30,7 @@ package com.kaltura.kmc.modules.analytics.commands
 					headers += ResourceManager.getInstance().getString('analytics',_model.selectedReportData.totalHeaders[j]) + ",";
 					
 			headers = headers.substr(0,headers.length-1);
-			headers += ";Object Id,";
+			headers += ";";	//";Object Id,"; (see mantis ticket 13090 requesting to remove this header)
 			
 			if(_model.selectedReportData.tableHeaders)
 			{
