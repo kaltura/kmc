@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.content.commands
 
 			liveStremEntry.mediaType = KalturaMediaType.LIVE_STREAM_FLASH;
 												
-			var addNewLiveStream:LiveStreamAdd = new LiveStreamAdd(liveStremEntry,KalturaSourceType.AKAMAI_LIVE);
+			var addNewLiveStream:LiveStreamAdd = new LiveStreamAdd(liveStremEntry/*,KalturaSourceType.AKAMAI_LIVE*/);
             addNewLiveStream.addEventListener(KalturaEvent.COMPLETE,result);
 	        addNewLiveStream.addEventListener(KalturaEvent.FAILED,fault);
 	        _model.increaseLoadCounter();
