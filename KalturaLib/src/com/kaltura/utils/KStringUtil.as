@@ -92,5 +92,12 @@ package com.kaltura.utils
     	{
    			return str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
     	}
+		
+		public static function traceObject(o:*):void {
+			for each (var s:String in o) {
+				trace(s, ":", o[s]);
+			}
+			trace("---");
+		}
 	}
 }

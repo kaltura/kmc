@@ -19,13 +19,13 @@ package com.kaltura.managers {
 	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.vo.KalturaUploadToken;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
-
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
 
