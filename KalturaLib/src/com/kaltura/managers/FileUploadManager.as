@@ -11,6 +11,7 @@ package com.kaltura.managers {
 	import com.kaltura.events.FileUploadEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.types.KalturaMediaType;
+	import com.kaltura.utils.KStringUtil;
 	import com.kaltura.vo.FileUploadVO;
 	import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 	import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
@@ -18,13 +19,13 @@ package com.kaltura.managers {
 	import com.kaltura.vo.KalturaResource;
 	import com.kaltura.vo.KalturaUploadToken;
 	import com.kaltura.vo.KalturaUploadedFileTokenResource;
-	
+
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.FileReference;
-	
+
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
 
@@ -45,6 +46,11 @@ package com.kaltura.managers {
 	public class FileUploadManager extends EventDispatcher {
 
 		
+		/**
+		 * if debugMode is on, failure traces are presented.
+		 * */
+		public var debugMode:Boolean = false;
+
 		/**
 		 * Singleton instance
 		 */
@@ -73,9 +79,10 @@ package com.kaltura.managers {
 		 * list of files schedueled for upload
 		 * <code>FileUploadVO</code> elements
 		 */
-		private var _files : Array;//Vector.<FileUploadVO>;
-		
-		[Bindable] public var filesCollection : ArrayCollection;
+		private var _files:Array; //Vector.<FileUploadVO>;
+
+		[Bindable]
+		public var filesCollection:ArrayCollection;
 
 		/**
 		 * @copy #kc 
@@ -117,9 +124,7 @@ package com.kaltura.managers {
 		 * @return 
 		 * 
 		 */
-		public function createFuv(entryid:String, entrytype:int, file:FileReference, 
-	  							flavorparamsid:String = null, flavorassetid:String = null, 
-	  							convprofid:String = null):FileUploadVO {
+		public function createFuv(entryid:String, entrytype:int, file:FileReference, flavorparamsid:String = null, flavorassetid:String = null, convprofid:String = null):FileUploadVO {
 			// create the VO
 			var vo:FileUploadVO = new FileUploadVO();
 			vo.file = file;
@@ -251,6 +256,11 @@ package com.kaltura.managers {
 						// dispatch error event with relevant data
 						er = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
 						er.error = "Error #209: " + (o as KalturaError).errorMsg;
+						if (debugMode) {
+							trace("UploadTokenAdd failed: ");
+							KStringUtil.traceObject(e.target);
+							KStringUtil.traceObject(e.error.requestArgs);
+						}
 						dispatchEvent(er);
 						return;
 					}
@@ -301,6 +311,11 @@ package com.kaltura.managers {
 			else {
 				// dispatch error event with relevant data
 				er = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
+				if (debugMode) {
+					trace("UploadTokenAdd failed: ");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				er.error = "Error #201: " + e.error.errorMsg;
 				dispatchEvent(er);
 			}
@@ -316,10 +331,10 @@ package com.kaltura.managers {
 			e.target.removeEventListener(KalturaEvent.FAILED, startUploadMulti);
 			if (e.type == KalturaEvent.COMPLETE) {
 				// pass files to files list
-				var entryid:String = e.data.id;
+				var entryid:String = e.data.id; // e.data is the updated entry
 				var fuv:FileUploadVO;
 				var updated:int = 0;
-				for (var i:int =_preprocessedFiles.length-1; i>=0; i--) {
+				for (var i:int = _preprocessedFiles.length - 1; i >= 0; i--) { // scan from last to first because of splice
 					if ((_preprocessedFiles[i] as FileUploadVO).entryId == entryid) {
 						updated ++;
 						(_preprocessedFiles[i] as FileUploadVO).status = FileUploadVO.STATUS_QUEUED;
@@ -341,6 +356,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, 'multi_uploads');
 				er.error = 'Error 202: ' + e.error.errorMsg;
+				if (debugMode) {
+					trace("MediaUpdateContent failed, multi_uploads");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
@@ -365,7 +385,7 @@ package com.kaltura.managers {
 					}
 				}
 				// start uploading files
-				if (_files.length < _concurrentUploads) {
+				if (_ongoingUploads /*_files.length */ < _concurrentUploads) {
 					uploadNextFile();
 				}
 			}
@@ -373,6 +393,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
 				er.error = 'Error #203: ' + e.error.errorMsg;
+				if (debugMode) {
+					trace("FlavorAssetSetContent failedy:");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
@@ -444,8 +469,9 @@ package com.kaltura.managers {
 		protected function wrapUpUpload(e:KalturaEvent):void {
 			e.target.removeEventListener(KalturaEvent.COMPLETE, wrapUpUpload);
 			e.target.removeEventListener(KalturaEvent.FAILED, wrapUpUpload);
-			var file:FileUploadVO = getUploadByUploadToken(e.data.id);
+			var file:FileUploadVO;
 			if (e.type == KalturaEvent.COMPLETE) {
+				file = getUploadByUploadToken(e.data.id);
 				file.status = FileUploadVO.STATUS_COMPLETE;
 				// dispatch "fileUploadComplete" event with relevant unique identifier
 				dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_COMPLETE, file.id));
@@ -455,10 +481,16 @@ package com.kaltura.managers {
 				filesCollection.refresh();
 			}
 			else {
+				file = getUploadByUploadToken(e.error.requestArgs.uploadTokenId);
 				file.status = FileUploadVO.STATUS_FAILED;
 				// dispatch error event with relevant data
-				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.entryId);
+				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, file.entryId);
 				er.error = "Error #204: " + e.error.errorMsg;
+				if (debugMode) {
+					trace("UploadTokenUpload failed:");
+					KStringUtil.traceObject(file);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 			_ongoingUploads--;
@@ -499,6 +531,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, '');
 				er.error = 'Error #205: ' + e.error.errorMsg;
+				if (debugMode) {
+					trace("UploadTokenAdd failed:");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
@@ -537,6 +574,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, '');
 				er.error = 'Error #206: ' + e.error.errorMsg;
+				if (debugMode) {
+					trace("UploadTokenAdd failed:");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
@@ -557,6 +599,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
 				er.error = 'Error #207: ' + e.error.errorMsg;
+				if (debugMode) {
+					trace("FlavorAssetAdd failed:");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
@@ -575,9 +622,14 @@ package com.kaltura.managers {
 				fuv.status = FileUploadVO.STATUS_FAILED;
 			}
 			_ongoingUploads--;
+			uploadNextFile();
 			// alert user 
 			var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, "0");
 			er.error = ResourceManager.getInstance().getString('cms', 'uploadFailedMessage') + ", " + file.name;
+			if (debugMode) {
+				trace("actual upload failed: ", e.type);
+				KStringUtil.traceObject(e);
+			}
 			dispatchEvent(er);
 		}
 
@@ -624,6 +676,11 @@ package com.kaltura.managers {
 				// dispatch error event with relevant data
 				var er:FileUploadEvent = new FileUploadEvent(FileUploadEvent.UPLOAD_ERROR, e.target.id);
 				er.error = "Error #208: " + e.error.errorMsg;
+				if (debugMode) {
+					trace("UploadTokenDelete failed:");
+					KStringUtil.traceObject(e.target);
+					KStringUtil.traceObject(e.error.requestArgs);
+				}
 				dispatchEvent(er);
 			}
 		}
