@@ -1,6 +1,8 @@
 package com.kaltura.edw.business
 {
 	import com.kaltura.containers.HelpTitleWindow;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
+	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaMediaEntry;
@@ -14,12 +16,23 @@ package com.kaltura.edw.business
 	 */	
 	public class ChangeableDataViewer extends HelpTitleWindow {
 		
-		[Bindable]
+		
+		protected var _entriesAC:ArrayCollection;
+		
 		/**
 		 * list of entries in current page
 		 * (entries we can navigate between using the "next" and "prev" buttons)
 		 * */
-		public var entriesAC:ArrayCollection;
+		public function get entriesAC():ArrayCollection {
+			return _entriesAC;
+		}
+		
+		public function set entriesAC(value:ArrayCollection):void {
+			_entriesAC = value;
+			// retrigger setter to show buttons correctly
+//			entryIndex = _entryIndex;
+			setButtonsState();
+		}
 		
 		[Bindable]
 		/**
@@ -30,17 +43,21 @@ package com.kaltura.edw.business
 		
 		protected var _entryIndex:int = -1;
 		
-		[Bindable]
-		/**
-		 * whether next button is available
-		 * */
-		protected var _nextEnabled:Boolean = true;
 		
 		[Bindable]
 		/**
 		 * whether previous button is available
 		 * */
 		protected var _prevEnabled:Boolean;
+		
+		
+		[Bindable]
+		/**
+		 * whether next button is available
+		 * */
+		protected var _nextEnabled:Boolean = true;
+		
+	
 		
 		[Bindable]
 		/**
@@ -49,11 +66,20 @@ package com.kaltura.edw.business
 		 * */
 		public function get entryIndex():int {
 			return _entryIndex;
-		}
+		} 
 		
 		public function set entryIndex(value:int):void {
 			_entryIndex = value;
-			if (entriesAC) {
+			setButtonsState();
+		}
+		
+		
+		/**
+		 * give _prevEnabled, _nextEnabled correct values 
+		 * according to entries list and entry index 
+		 * */
+		protected function setButtonsState():void {
+			if (_entriesAC) {
 				_prevEnabled = checkNavigatableEntryExists(false, _entryIndex);
 				_nextEnabled = checkNavigatableEntryExists(true, _entryIndex);
 			}
@@ -74,11 +100,11 @@ package com.kaltura.edw.business
 		 * */
 		protected function getNavigatableEntryIndex(goForward:Boolean, entryInd:int):int {
 			var nextEntryIndex:int = goForward ? entryInd + 1 : entryInd - 1;
-			if (nextEntryIndex < 0 || nextEntryIndex > entriesAC.length - 1) {
+			if (nextEntryIndex < 0 || nextEntryIndex > _entriesAC.length - 1) {
 				return -1;
 			}
 			
-			var nextEntry:KalturaMediaEntry = entriesAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
+			var nextEntry:KalturaMediaEntry = _entriesAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
 			if (nextEntry && nextEntry.mediaType == KalturaMediaType.LIVE_STREAM_FLASH && nextEntry.status != KalturaEntryStatus.READY) {
 				return getNavigatableEntryIndex(goForward, nextEntryIndex);
 			}
