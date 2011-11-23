@@ -11,6 +11,9 @@ package com.kaltura.edw.control.commands
 		override public function execute(event:KMvCEvent):void
 		{
 			_model.increaseLoadCounter();		
+			var cdp:ContentDataPack = _model.getDataPack(ContentDataPack) as ContentDataPack;
+			cdp.contentParts = null;
+			
 			var e : KedEntryEvent = event as KedEntryEvent;
 			var getMixUsingEntry:MixingGetMixesByMediaId = new MixingGetMixesByMediaId(e.entryVo.id);
 			

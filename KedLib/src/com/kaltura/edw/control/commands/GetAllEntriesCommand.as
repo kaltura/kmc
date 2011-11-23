@@ -1,6 +1,7 @@
 package com.kaltura.edw.control.commands {
 	import com.kaltura.commands.mixing.MixingGetReadyMediaEntries;
 	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.model.datapacks.ContentDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
@@ -11,6 +12,9 @@ package com.kaltura.edw.control.commands {
 	public class GetAllEntriesCommand extends KedCommand {
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
+			var cdp:ContentDataPack = _model.getDataPack(ContentDataPack) as ContentDataPack;
+			cdp.contentParts = null;
+			
 			var e:KedEntryEvent = event as KedEntryEvent;
 			var getMediaReadyMix:MixingGetReadyMediaEntries = new MixingGetReadyMediaEntries(e.entryVo.id);
 
@@ -25,8 +29,8 @@ package com.kaltura.edw.control.commands {
 			super.result(data);
 			_model.decreaseLoadCounter();
 			if (data.data && data.data is Array) {
-				var entry:KalturaBaseEntry = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
-				entry.parts = new ArrayCollection(data.data);
+				var cdp:ContentDataPack = _model.getDataPack(ContentDataPack) as ContentDataPack;
+				cdp.contentParts = data.data;
 			}
 			else
 				trace("Error getting the list of roughcut entries");
