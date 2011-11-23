@@ -29,8 +29,6 @@ package com.kaltura.edw.business
 		
 		public function set entriesAC(value:ArrayCollection):void {
 			_entriesAC = value;
-			// retrigger setter to show buttons correctly
-//			entryIndex = _entryIndex;
 			setButtonsState();
 		}
 		
@@ -68,6 +66,9 @@ package com.kaltura.edw.business
 			return _entryIndex;
 		} 
 		
+		/**
+		 * @private
+		 * */
 		public function set entryIndex(value:int):void {
 			_entryIndex = value;
 			setButtonsState();
