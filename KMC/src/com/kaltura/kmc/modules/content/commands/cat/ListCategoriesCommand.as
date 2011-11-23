@@ -37,9 +37,9 @@ package com.kaltura.kmc.modules.content.commands.cat {
 			var mr:MultiRequest = new MultiRequest();
 			var filter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
 
-			filter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
-				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
-				KalturaEntryStatus.READY;
+			filter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + 
+				"," + KalturaEntryStatus.ERROR_IMPORTING + "," + KalturaEntryStatus.IMPORT + 
+				"," + KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY +"," + KalturaEntryStatus.PENDING;
 			filter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
 				KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
 
