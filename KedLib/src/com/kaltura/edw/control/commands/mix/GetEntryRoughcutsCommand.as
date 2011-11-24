@@ -1,10 +1,11 @@
-package com.kaltura.edw.control.commands
+package com.kaltura.edw.control.commands.mix
 {
 	import com.kaltura.commands.mixing.MixingGetMixesByMediaId;
 	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.edw.model.datapacks.ContentDataPack;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.edw.control.commands.KedCommand;
 
 	public class GetEntryRoughcutsCommand extends KedCommand 
 	{

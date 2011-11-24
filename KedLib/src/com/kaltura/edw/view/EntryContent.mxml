@@ -67,6 +67,8 @@
 			
 			
 			public function clear():void {
+				var e:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_PARTS, null);
+				controller.dispatch(e);
 			}
 			
 			
@@ -84,6 +86,8 @@
 			public function init():void {
 				// monitor data change if needed
 				if (!_cw) {
+					var e:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_PARTS, null);
+					controller.dispatch(e);
 					_model = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
 					_cw = BindingUtils.bindSetter(removeTab, _model, "contentParts");
 				}

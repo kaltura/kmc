@@ -1,4 +1,4 @@
-package com.kaltura.edw.control.commands {
+package com.kaltura.edw.control.commands.mix {
 	import com.kaltura.commands.mixing.MixingGetReadyMediaEntries;
 	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.edw.model.datapacks.ContentDataPack;
@@ -8,6 +8,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import mx.collections.ArrayCollection;
+	import com.kaltura.edw.control.commands.KedCommand;
 
 	public class GetAllEntriesCommand extends KedCommand {
 		override public function execute(event:KMvCEvent):void {

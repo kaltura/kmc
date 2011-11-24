@@ -52,6 +52,11 @@ package com.kaltura.edw.control.events
 		 * get entries that participate in the current mix 
 		 */
 		public static const GET_ENTRY_ROUGHCUTS : String = "content_getEntryRoughcuts";
+
+		/**
+		 * reset entry parts list on the model
+		 */
+		public static const RESET_PARTS : String = "content_resetParts";
 		
 		// ======================================================
 		// Private Members
