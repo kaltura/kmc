@@ -11,6 +11,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.commands.data.DataDelete;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.KedDataEvent;
@@ -19,9 +20,12 @@
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
 			import com.kaltura.edw.view.window.DistributionDetailsWindow;
 			import com.kaltura.edw.view.window.SelectDistributorsWindow;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaEntryDistribution;
+			
+			import flash.utils.getDefinitionByName;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -45,13 +49,12 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
-				_cw = BindingUtils.bindSetter(setEntryDistributions, _model.distributionProfileInfo, "entryDistributionArray");
 				_selectedEntry = value;
 			}
 			
 			private var _distributionDetailsWindow:DistributionDetailsWindow;
 
-			private var _model:DistributionDataPack;
+			private var _model:KMvCModel;
 
 			[Bindable]
 			private var _entryDistributions:Array;
@@ -82,7 +85,10 @@
 			}
 			
 			public function init():void {
-
+				if (!_cw) {
+					var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+					_cw = BindingUtils.bindSetter(setEntryDistributions, ddp.distributionProfileInfo, "entryDistributionArray");
+				}
 			}
 			
 			public function destroy():void {
@@ -133,17 +139,18 @@
 			}
 
 
-			public function get model():DistributionDataPack {
+			public function get model():KMvCModel {
 				return _model;
 			}
 
 
-			public function set model(value:DistributionDataPack):void {
+			public function set model(value:KMvCModel):void {
 				if (!value)
 					return;
 
 				_model = value;
-				if (value.distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
+				
+				if ((value.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
 					_selectDistributorsEnabled = false;
 			}
 
@@ -161,10 +168,11 @@
 
 			private function selectDistributorsClick():void {
 				var selectDistributorWin:SelectDistributorsWindow = new SelectDistributorsWindow();
-				selectDistributorWin.selectedEntry = selectedEntry;
-				selectDistributorWin.entryFlavors = _model.flavorParamsAndAssetsByEntryId;
-				selectDistributorWin.entryThumbs = _model.distributionProfileInfo.thumbnailDimensionsArray;
-				selectDistributorWin.buildDistributorsWindow(_model.distributionProfileInfo.kalturaDistributionProfilesArray, _model.distributionProfileInfo.entryDistributionArray);
+				selectDistributorWin.selectedEntry = _selectedEntry;
+				var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+				selectDistributorWin.entryFlavors = ddp.flavorParamsAndAssetsByEntryId;
+				selectDistributorWin.entryThumbs = ddp.distributionProfileInfo.thumbnailDimensionsArray;
+				selectDistributorWin.buildDistributorsWindow(ddp.distributionProfileInfo.kalturaDistributionProfilesArray, ddp.distributionProfileInfo.entryDistributionArray);
 				selectDistributorWin.addEventListener(SelectDistributorsWindow.UPDATE_LISTS, updateLists, false, 0, true);
 				PopUpManager.addPopUp(selectDistributorWin, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(selectDistributorWin);
@@ -208,6 +216,7 @@
 				var distribution:EntryDistributionWithProfile = event.target.data as EntryDistributionWithProfile;
 				_distributionDetailsWindow = new DistributionDetailsWindow();
 				_distributionDetailsWindow.entryDis = distribution;
+				_distributionDetailsWindow.model = _model;
 				//don't allow editing if we are in the middle of some process
 				if ((distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.DELETING) ||
 					(distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.SUBMITTING) ||
@@ -265,7 +274,7 @@
 				else if (event.type == EntryDistribution.SUBMIT_UPDATE) {
 					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT_UPDATE, null,null, edata);
 				}
-				//TODO show details
+				// show details
 				controller.dispatch(actionEvent);
 			}
 

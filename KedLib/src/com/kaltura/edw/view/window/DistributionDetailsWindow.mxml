@@ -52,7 +52,7 @@
 			[Bindable]
 			private var _entryDis:EntryDistributionWithProfile;
 			
-			private var _model:DistributionDataPack;
+			public var model:KMvCModel;
 			
 			[Bindable]
 			private var _destinationName:String;
@@ -173,14 +173,14 @@
 			 * */
 			private function buildThumbsArray():void {
 				_thumbsArray = new ArrayCollection();
-				var existingThumbs:Array = _model.distributionProfileInfo.thumbnailDimensionsArray;
+				var existingThumbs:Array = (model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.thumbnailDimensionsArray;
 				var requiredDim:Array = _entryDis.kalturaDistributionProfile.requiredThumbDimensions;
 				var thumbsIds:String = _entryDis.kalturaEntryDistribution.thumbAssetIds;
 				var thumbsIdsArray:Array;
 				if (thumbsIds)
 					thumbsIdsArray = thumbsIds.split(",");
 
-				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, _model.distributionProfileInfo.thumbnailDimensionsArray);
+				var thumbsMap:HashMap = buildThumbsMap(thumbsIdsArray, existingThumbs);
 				//first check all thumbs with  required dimensions
 				for each (var dim:KalturaDistributionThumbDimensions in requiredDim) {
 					var isArray:Boolean = false;
@@ -301,7 +301,7 @@
 				_timeManager = new DateFieldWithTimeStepperLogic(startDateField, endDateField, startDateHour, endDateHour);
 				setSchedulerData();
 				
-				_model = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
+//				_model = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
 				var selectedEntry:KalturaBaseEntry = (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
 				_name = selectedEntry.name;
 //				_name = _model.selectedEntry.name;
@@ -311,7 +311,8 @@
 //				_tags = _model.selectedEntry.tags;
 				buildTitle(_name);
 				
-				BindingUtils.bindSetter(refreshFlavors, _model, "flavorsLoaded");
+				var ddp:DistributionDataPack = model.getDataPack(DistributionDataPack) as DistributionDataPack;
+				BindingUtils.bindSetter(refreshFlavors, ddp, "flavorsLoaded");
 
 			}
 
@@ -329,7 +330,7 @@
 			 * */
 			private function buildFlavorsAssets():void {
 				_flavorAssets = new ArrayCollection();
-				var entryFlavors:ArrayCollection = _model.flavorParamsAndAssetsByEntryId;
+				var entryFlavors:ArrayCollection = (model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId;
 				var requiredFlavors:String = _entryDis.kalturaDistributionProfile.requiredFlavorParamsIds;
 				var requiredFlavorsArray:Array;
 				if (requiredFlavors)
@@ -365,7 +366,7 @@
 			 * build the string for the window title
 			 * */
 			private function buildTitle(entryName:String):void {
-				if (_destinationName && _model) {
+				if (_destinationName && model) {
 					var title:String = resourceManager.getString('drilldown', 'editEntry') + " - " +
 						entryName + " - " + _destinationName + " " +
 						resourceManager.getString('drilldown', 'distributionDetails');
