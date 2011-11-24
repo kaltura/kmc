@@ -23,6 +23,7 @@
 			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
+			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
 			import mx.utils.UIDUtil;
@@ -355,6 +356,11 @@
 				fieldTypeList.enabled = value;	// binding to currentState!=EDIT_MODE_STATE, not supposed to be a problem
 				fieldNameInput.editable = value;
 			}
+			
+			private function fieldTypeList_changeHandler(event:ListEvent):void
+			{
+				appearInSearchList.selectedItem = fieldTypeList.selectedLabel != _dateType ? _appearYes : _appearNo;
+			}
 		]]>
 	</mx:Script>
 
@@ -365,7 +371,7 @@
 		<mx:Spacer height="{_spacerHeight}"/>
 		<mx:FormItem label="{resourceManager.getString('account','addFieldType')}" labelStyleName="metadataFormLabel">
 			<mx:ComboBox id="fieldTypeList" dataProvider="{_typeList}" width="180" paddingLeft="5" editable="false"
-						 enabled="{currentState!=EDIT_MODE_STATE}"/>
+						 enabled="{currentState!=EDIT_MODE_STATE}" change="fieldTypeList_changeHandler(event)"/>
 		</mx:FormItem>
 		<mx:Spacer height="{_spacerHeight}"/>
 		<mx:HBox visible="{fieldTypeList.selectedItem == resourceManager.getString('account','fieldListType')}"
