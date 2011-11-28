@@ -148,8 +148,7 @@
 
 
 				if (_editPlaylist) {
-					_editPlaylist.name = playlistName.text;
-					_editPlaylist.description = playlistDescription.text;
+					setPlaylistInfoFromScreen(_editPlaylist);
 				}
 				//if this is an edit playlist and no change were made - just close the popup
 				if (context == ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE && ObjectUtil.compareObjects(_editPlaylist, _originalPlaylist)) {
@@ -408,7 +407,22 @@
 				}
 				dispatchRefreshEntriesList();
 			}
-
+			
+			
+			/**
+			 * set the values shown in the popup tot he given playlist object
+			 * @param kpl 	the playlist to update
+			 * */
+			private function setPlaylistInfoFromScreen(kpl:KalturaPlaylist):void {
+				kpl.name = playlistName.text;
+				kpl.description = playlistDescription.text;
+				var entriesIds:Array = new Array();
+				for (var i:int = 0; i < _playlistArrayCollection.length; i++) {
+					entriesIds.push(_playlistArrayCollection[i]["id"]);
+				}
+				kpl.playlistContent = entriesIds.join();
+			}
+			
 
 			/**
 			 * Save playlist. If this was an edit - use updatePlaylist Command,
@@ -419,22 +433,12 @@
 					onClose();
 					return;
 				}
-
-//				playlistModel.onTheFlyPlaylistType = '';
-
-				var entriesIds:Array;
-				var i:uint;
+				
 				if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
 					// new playlist
 					if (validatePlaylist()) {
 						var kalturaPlaylist:KalturaPlaylist = new KalturaPlaylist();
-						kalturaPlaylist.name = playlistName.text;
-						kalturaPlaylist.description = playlistDescription.text;
-						entriesIds = new Array();
-						for (i = 0; i < _playlistArrayCollection.length; i++) {
-							entriesIds.push(_playlistArrayCollection[i]["id"]);
-						}
-						kalturaPlaylist.playlistContent = entriesIds.join();
+						setPlaylistInfoFromScreen(kalturaPlaylist);
 						kalturaPlaylist.playlistType = KalturaPlaylistType.STATIC_LIST;
 						
 						var ap:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SAVE_NEW_PLAYLIST);
@@ -446,13 +450,7 @@
 				}
 				else if (validatePlaylist()) {
 					// edit playlist
-					_editPlaylist.name = playlistName.text;
-					_editPlaylist.description = playlistDescription.text;
-					entriesIds = new Array();
-					for (i = 0; i < _playlistArrayCollection.length; i++) {
-						entriesIds.push(_playlistArrayCollection[i]["id"]);
-					}
-					_editPlaylist.playlistContent = entriesIds.join();
+					setPlaylistInfoFromScreen(_editPlaylist);
 					//clear the parts (it is used just for passing the initial list)
 					_editPlaylist.parts = null;
 					_editPlaylist.setUpdatedFieldsOnly(true);

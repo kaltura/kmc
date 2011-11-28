@@ -200,6 +200,8 @@ package com.kaltura.kmc.modules.content.commands {
 			if (_isPlaylist) {
 				var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+				cgEvent.dispatch();
 //				_model.decreaseLoadCounter();
 //				return;
 			}
