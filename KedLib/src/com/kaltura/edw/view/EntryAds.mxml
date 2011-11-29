@@ -409,6 +409,15 @@
 					validateCuePoint(_selectedCuePoint, true);
 				}
 			}
+			
+			
+			/**
+			 * was the given cuepoint already saved to DB
+			 * @param cp 	cuepoint to check
+			 * */
+			private function isNewCuepoint(cp:KalturaAdCuePoint):Boolean {
+				return cp.createdAt == int.MIN_VALUE;
+			}
 
 
 			/**
@@ -1075,7 +1084,7 @@
 					<mx:Label text="{resourceManager.getString('drilldown', 'ads_provider')}" styleName="formLabel"
 							  width="{LABEL_WIDTH}"/>
 					<mx:VBox width="100%" styleName="noPadding">
-						<mx:ComboBox id="cbProvider" enabled="{_formEnabled}" dataProvider="{PROVIDERS}"
+						<mx:ComboBox id="cbProvider" enabled="{_formEnabled &amp;&amp; isNewCuepoint(_selectedCuePoint)}" dataProvider="{PROVIDERS}"
 									 change="updateCuePointData(event)"/>
 						<controls:DefaultLabelTextArea id="tiProvider" width="100%" height="{tiUrl.height}"
 													   defaultLabel="{resourceManager.getString('drilldown', 'ads_default_provider')}"
