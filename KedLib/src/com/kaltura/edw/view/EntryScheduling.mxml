@@ -43,7 +43,9 @@
 			}
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
 				_selectedEntry = selectedEntry;
-				setSchedulerData();
+//				if (_timeManager){
+//					setSchedulerData();
+//				}
 			}
 			
 			
@@ -129,16 +131,15 @@
 			/**
 			 * @inheritDoc
 			 *
-			 * @internal
-			 * this panel doesn't require any special data, so the implementation is empty
 			 * */
 			public function initData():void {
-
+				setSchedulerData();
 			}
 			
 			
 			public function init():void {
 				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
+				
 			}
 
 
@@ -282,7 +283,7 @@
 				var today:Date = new Date();
 				sepcificStartDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
 				specificEndDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
-				setSchedulerData();
+//				setSchedulerData();
 			}
 
 			private var oldStartDate:Date = null;
