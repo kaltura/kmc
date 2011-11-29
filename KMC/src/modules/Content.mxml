@@ -35,6 +35,7 @@
 			import com.kaltura.edw.control.events.SearchEvent;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.datapacks.ContentDataPack;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.CuePointsDataPack;
 			import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
@@ -304,13 +305,24 @@
 				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
+					//TODO need to set a dummy dispatcher, so we'll know when the entry is loaded.
+					_entryIdDispatcher = new EventDispatcher();
+					_entryIdDispatcher.addEventListener(KedDataEvent.OPEN_ENTRY, handleKedEvents, false, 0, true);
+					(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = _entryIdDispatcher;
 					// get the entry
-					var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _model.attic.entryid);
-					KedController.getInstance().dispatch(cgEvent);
+					var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _model.attic.entryid);
+					KedController.getInstance().dispatch(kEvent);
 					_model.attic.entryid = null;
 				}
 			}
-
+			
+			
+			/**
+			 * when opening KMC with a drilldown, need to supply ked with 
+			 * a dummy dispatcher because the the drilldown only updates 
+			 * this value after it is created. use this.
+			 * */
+			private var _entryIdDispatcher:IEventDispatcher;
 
 			/**
 			 * put things on the attic object.

@@ -62,12 +62,10 @@ package com.kaltura.edw.control.commands {
 					edp.selectedEntryReloaded = true;
 				}
 				else {
-					// open drilldown. the request shouldn't come from here, it should come from the env.app
-//					/*(*/_model.app/* as Content)*/.requestEntryDrilldown(resultEntry);
+					// let the env.app know the entry is loaded so it can open another drilldown window
 					var ee:KedDataEvent = new KedDataEvent(KedDataEvent.OPEN_ENTRY);
 					ee.data = resultEntry; 
 					dsp.dispatchEvent(ee);
-					//TODO when starting KMC with an entry id the dispatcher is still null
 				}
 			}
 			else {

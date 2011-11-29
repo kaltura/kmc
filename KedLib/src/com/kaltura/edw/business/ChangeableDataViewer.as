@@ -53,7 +53,7 @@ package com.kaltura.edw.business
 		/**
 		 * whether next button is available
 		 * */
-		protected var _nextEnabled:Boolean = true;
+		protected var _nextEnabled:Boolean;
 		
 	
 		
