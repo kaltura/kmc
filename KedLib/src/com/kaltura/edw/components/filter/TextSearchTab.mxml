@@ -76,7 +76,7 @@
 				}
 				else {
 					// if text to search is not valid, do nothing..
-					if (validateSearchText()) {
+					if (validateSearchText(false)) {
 						// change icon according to data
 						setClearSearchIcon();
 						// announce change
@@ -108,11 +108,12 @@
 			
 			/**
 			 * checks if text contains only valid characters and at least MIN_SEARCH_CHARS characters
+			 * @param allowEmpty	is an emptry string acceptable value
 			 * */
-			private function validateSearchText():Boolean {
+			public function validateSearchText(allowEmpty:Boolean):Boolean {
 				var result:Boolean = true;
 				if (searchFilter.text == resourceManager.getString('cms', 'searchEntries')) {
-					result = false;
+					result = allowEmpty;
 				}
 				if (_invalidCharsRegexp.test(searchFilter.text)) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'), ResourceManager.getInstance().getString('cms', 'invalidInputTitle'));

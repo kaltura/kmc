@@ -749,6 +749,11 @@
 				updateImageButton(scheduling.buttons);
 			}
 			
+			override public function preformNewSearch():void {
+				if (searchBox.validateSearchText(true)) {
+					super.preformNewSearch();
+				}
+			}
 			
 			
 			/**
@@ -971,15 +976,6 @@
 			[Bindable]
 			public function get flavorParams():ArrayCollection {
 				return _flavorParams;
-			}
-			
-			
-			public function get listPlaylistFilter():KalturaPlaylistFilter {
-				var playlistFilter:KalturaPlaylistFilter = new KalturaPlaylistFilter();
-				playlistFilter.advancedSearch = new KalturaSearchOperator();
-				(playlistFilter.advancedSearch as KalturaSearchOperator).type = KalturaSearchOperatorType.SEARCH_AND;
-				renderFilterVo(playlistFilter);
-				return playlistFilter;
 			}
 			
 			
