@@ -688,7 +688,9 @@
 				}
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
-						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false);
+						if (_kClip) {
+							_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false);
+						}
 						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 						if (!_kdpFirstPlayed) {
 							_kdpFirstPlayed = true;
@@ -701,9 +703,11 @@
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
-						_kClip["scrollToPoint"](_playheadPosition, true);
-						_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
-						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false, 0, true);
+						if (_kClip) {
+							_kClip["scrollToPoint"](_playheadPosition, true);
+							_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+							_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false, 0, true);
+						}
 						break;
 					case KdpEventTypes.DO_SEEK:
 						if (_kClipReady) {
@@ -1036,7 +1040,7 @@
 			 * stop KDP whenever the user interacts with kclip
 			 * */
 			protected function kClipHolder_mouseDownHandler(event:MouseEvent):void {
-				if (_kdp.hasEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD)) {
+				if (_kdp && _kdp.hasEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD)) {
 					_kdp["sendNotification"](KdpEventTypes.DO_PAUSE);
 				}
 			}
