@@ -28,20 +28,17 @@ package com.kaltura.edw.control.commands.thumb
 			insertToThumbsArray(data.data as KalturaThumbAsset);
 		}
 		
-		private function buildThumbUrl(thumb:ThumbnailWithDimensions):String {
-			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.thumbAsset.id;
-		}
 		
 		private function insertToThumbsArray(thumbAsset:KalturaThumbAsset):void {
 			var distDp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
 			var thumbsArray:Array = distDp.distributionProfileInfo.thumbnailDimensionsArray;
 			var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumbAsset.width, thumbAsset.height, thumbAsset);
-			newThumb.thumbUrl = buildThumbUrl(newThumb);
+			newThumb.thumbUrl = newThumb.buildThumbUrl(_client);
 			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
 				if ((thumb.width==thumbAsset.width) && (thumb.height==thumbAsset.height)) {
 					if (!thumb.thumbAsset) {
 						thumb.thumbAsset = thumbAsset;
-						thumb.thumbUrl = buildThumbUrl(thumb)
+						thumb.thumbUrl = thumb.buildThumbUrl(_client)
 						//no need to add a new thumbnailWithDimensions object in this case
 						return;
 					}

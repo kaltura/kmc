@@ -45,7 +45,7 @@ package com.kaltura.edw.control.commands.thumb
 				if ((newThumb.width == thumb.width) && (newThumb.height == thumb.height)) {
 					if (!thumb.thumbAsset) {
 						thumb.thumbAsset = newThumb;
-						thumb.thumbUrl = buildThumbUrl(newThumb);
+						thumb.thumbUrl = thumb.buildThumbUrl(_client);
 						thumbExist = true;
 						break;
 					}
@@ -54,7 +54,7 @@ package com.kaltura.edw.control.commands.thumb
 			}
 			if (!thumbExist) {
 				var thumbToAdd:ThumbnailWithDimensions = new ThumbnailWithDimensions(newThumb.width, newThumb.height, newThumb);
-				thumbToAdd.thumbUrl = buildThumbUrl(newThumb);
+				thumbToAdd.thumbUrl = thumbToAdd.buildThumbUrl(_client);
 				thumbToAdd.usedDistributionProfilesArray = curUsedProfiles;
 				//add last
 				_thumbsArray.splice(_thumbsArray.length,0,thumbToAdd);
@@ -71,8 +71,5 @@ package com.kaltura.edw.control.commands.thumb
 			_ddp.distributionProfileInfo.thumbnailDimensionsArray = _thumbsArray.concat();
 		}
 		
-		private function buildThumbUrl(thumb:KalturaThumbAsset):String {
-			return _client.protocol + _client.domain + ThumbnailWithDimensions.serveURL + "/ks/" + _client.ks + "/thumbAssetId/" + thumb.id;
-		}
 	}
 }
