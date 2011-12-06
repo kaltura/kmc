@@ -18,6 +18,7 @@ package com.kaltura.edw.business {
 	import com.kaltura.edw.view.customData.MultiComponent;
 	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.ConsistentDateField;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaUiConf;
@@ -301,9 +302,16 @@ package com.kaltura.edw.business {
 		 * @return the built component
 		 */
 		public function buildComponent(component:XML, boundModel:MetadataDataObject, nestedFieldsArray:ArrayCollection):UIComponent {
-			var componentName:String = component.@compPackage + component.localName();
-			var ClassReference:Class = getDefinitionByName(componentName) as Class;
-			var compInstance:UIComponent = new ClassReference();
+			var compInstance:UIComponent;
+			
+			// Specific handling for date- prevents issues with the DateField's auto correction (Mantis 11155)
+			if (component.localName() == "DateField"){
+				compInstance = new ConsistentDateField();
+			} else {
+				var componentName:String = component.@compPackage + component.localName();
+				var ClassReference:Class = getDefinitionByName(componentName) as Class;
+				compInstance = new ClassReference();
+			}
 			//!setting the context param should be here, we will need it to set the dataArray property
 			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
 				//TODO make sure the type of the context attribute was changed to match datapack
