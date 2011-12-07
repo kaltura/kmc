@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents
+package com.kaltura.edw.view.customData
 {
 	import flash.events.Event;
 	

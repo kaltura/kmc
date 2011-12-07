@@ -13,12 +13,12 @@ package com.kaltura.edw.business {
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;
+	import com.kaltura.edw.view.customData.ConsistentDateField;
 	import com.kaltura.edw.view.customData.DateFieldWithTime;
 	import com.kaltura.edw.view.customData.EntryIDLinkTable;
 	import com.kaltura.edw.view.customData.MultiComponent;
 	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.view.window.entrydetails.customDataComponents.ConsistentDateField;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaUiConf;
