@@ -20,6 +20,7 @@
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaDropFolderFileStatus;
 			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaAssetParamsResourceContainer;
 			import com.kaltura.vo.KalturaAssetsParamsResourceContainers;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -503,11 +504,17 @@
 			 * */
 			public function set entry(value:KalturaBaseEntry):void {
 				_entry = value;
+				var mediaType:String = '';
+				if ((value as KalturaMediaEntry).mediaType == KalturaMediaType.AUDIO) {
+					mediaType = ResourceManager.getInstance().getString('cms', 'audio');
+				} else if ((value as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO){
+					mediaType = ResourceManager.getInstance().getString('cms', 'video');
+				}
 				if (value.status == KalturaEntryStatus.NO_CONTENT) {
-					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd');
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd', [mediaType]);
 				}
 				else {
-					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate', [mediaType]);
 				}
 			}
 

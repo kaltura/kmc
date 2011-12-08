@@ -10,7 +10,8 @@
 		width="550" styleName="TitleWindowType2" visible="false"
 		showCloseButton="true" close="closeHandler(event)"
 		showHelpButton="true" help="helpHandler(event)"
-		creationComplete="titlewindow1_creationCompleteHandler(event)" xmlns:flavors1="com.kaltura.edw.view.window.flavors.*" >
+		creationComplete="titlewindow1_creationCompleteHandler(event)" 
+		xmlns:flavors1="com.kaltura.edw.view.window.flavors.*" >
 
 	<mx:Script>
 		<![CDATA[
@@ -616,11 +617,17 @@
 			 */
 			public function set entry(value:KalturaBaseEntry):void {
 				_entry = value;
+				var mediaType:String = '';
+				if ((value as KalturaMediaEntry).mediaType == KalturaMediaType.AUDIO) {
+					mediaType = ResourceManager.getInstance().getString('cms', 'audio');
+				} else if ((value as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO){
+					mediaType = ResourceManager.getInstance().getString('cms', 'video');
+				}
 				if (value.status == KalturaEntryStatus.NO_CONTENT) {
-					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd');
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleAdd', [mediaType]);
 				}
 				else {
-					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate');
+					title = ResourceManager.getInstance().getString('cms', 'windowTitleUpdate', [mediaType]);
 				}
 				// when updating single flavour, say which one
 				if (windowState == AddFlavorAssetsWindow.SINGLE_FILE_STATE) {
