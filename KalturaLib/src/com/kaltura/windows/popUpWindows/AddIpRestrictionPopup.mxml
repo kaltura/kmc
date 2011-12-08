@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
 				 title="{resourceManager.getString('windows', 'addNewIPTitle')}" layout="vertical"
-				 close="closeWindow(event)" showHelpButton="false">
+				 close="closeWindow(event)" showHelpButton="false" defaultButton="{saveBtn}"
+				 creationComplete="helptitlewindow1_creationCompleteHandler(event)">
 	<mx:Metadata>
 		[ResourceBundle("windows")]
 	</mx:Metadata>
@@ -9,6 +10,7 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.resources.IResourceBundle;
@@ -63,6 +65,12 @@
 				ipsListData.addItem(newIP);
 				PopUpManager.removePopUp(this);
 			}
+
+			protected function helptitlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				tiIP.setFocus();
+			}
+
 		]]>
 	</mx:Script>
 	<!--mx:RegExpValidator id="regExpV" 

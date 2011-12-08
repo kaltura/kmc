@@ -1,87 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	This popup window is used to add a new domain name to the Sites Restriction list
+	 This popup window is used to add a new domain name to the Sites Restriction list
 -->
-<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" 
-	title="{rm.getString('windows', 'addNewDomainTitle')}" layout="vertical" close="closeWindow(event)" showHelpButton="false">
+<HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true"
+				 title="{rm.getString('windows', 'addNewDomainTitle')}" layout="vertical" close="closeWindow(event)"
+				 showHelpButton="false" defaultButton="{saveBtn}" creationComplete="helptitlewindow1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
-			import mx.utils.StringUtil;
-			import mx.resources.ResourceManager;
-			import mx.resources.ResourceBundle;
-			import mx.resources.IResourceManager;
-			import mx.controls.Alert;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceBundle;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+
 			[ResourceBundle("windows")]
 			private static var rb:ResourceBundle;
-			
+
 			[Bindable]
 			private var rm:IResourceManager = ResourceManager.getInstance();
-			
-			
+
+
 			/**
-			 * 
+			 *
 			 */
-			[Bindable]private var _domainsListData:ArrayCollection;
-			
+			[Bindable]
+			private var _domainsListData:ArrayCollection;
+
+
 			/**
-			 * 
+			 *
 			 */
-			[Bindable]public function get domainsListData():ArrayCollection
-			{
+			[Bindable]
+			public function get domainsListData():ArrayCollection {
 				return _domainsListData;
 			}
-			
+
+
 			/**
-			 * 
+			 *
 			 */
-			public function set domainsListData(domainsListData:ArrayCollection):void
-			{
+			public function set domainsListData(domainsListData:ArrayCollection):void {
 				_domainsListData = domainsListData;
 			}
-			
+
+
 			/**
 			 * close window event - when pressing the X button, cancel button or after saving the data
 			 */
-			private function closeWindow(event:Event):void
-			{
+			private function closeWindow(event:Event):void {
 				PopUpManager.removePopUp(this);
 			}
-			
+
+
 			/**
-			 * 
+			 *
 			 */
-			private function saveData(event:Event):void
-			{
+			private function saveData(event:Event):void {
 				var newDomain:String = domainTextInput.text
-				
-				if(StringUtil.trim(newDomain) == '')
-				{
+
+				if (StringUtil.trim(newDomain) == '') {
 					Alert.show(rm.getString('windows', 'emptyDomainMsg'), rm.getString('windows', 'error'));
 					return;
 				}
-				else if((newDomain.lastIndexOf('.') == -1) || (newDomain.lastIndexOf('..') != -1) ||
-						(newDomain.charAt(0) == '.') || (newDomain.charAt(newDomain.length-1) == '.'))
-				{
+				else if ((newDomain.lastIndexOf('.') == -1) || (newDomain.lastIndexOf('..') != -1) || (newDomain.charAt(0) == '.') || (newDomain.charAt(newDomain.length - 1) == '.')) {
 					Alert.show(rm.getString('windows', 'invalidDomainNameMsg'), rm.getString('windows', 'error'));
 					return;
 				}
-								
-				for each(var domain:String in domainsListData)
-				{
-					if(domain == newDomain)
-					{
+
+				for each (var domain:String in domainsListData) {
+					if (domain == newDomain) {
 						Alert.show(rm.getString('windows', 'sameDomainMsg'), rm.getString('windows', 'error'));
 						return;
 					}
-				} 
+				}
 				domainsListData.addItem(domainTextInput.text);
 				PopUpManager.removePopUp(this);
 			}
-			
-			
+
+			protected function helptitlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				domainTextInput.setFocus();
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Form defaultButton='{saveBtn}'>
@@ -91,7 +94,8 @@
 			<mx:TextInput id='domainTextInput' width="100%" restrict="0-9\-\A-Z\a-z\." maxChars="64"/>
 		</mx:HBox>
 		<mx:ControlBar width="100%" horizontalAlign="center">
-			<mx:Button id='saveBtn' label="{rm.getString('windows', 'saveBtn')}" useHandCursor="true" buttonMode="true" click="saveData(event)"/>
+			<mx:Button id='saveBtn' label="{rm.getString('windows', 'saveBtn')}" useHandCursor="true" buttonMode="true"
+					   click="saveData(event)"/>
 		</mx:ControlBar>
 	</mx:Form>
 </HelpTitleWindow>
