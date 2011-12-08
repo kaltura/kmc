@@ -357,7 +357,7 @@
 				if ((context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) 
 					&& maxAllowedValues != 0 && maxAllowedValues == _playlistArrayCollection.length) {
 					Alert.show(resourceManager.getString('cms', 'metadataMaxAllowedEntriesError'),
-						resourceManager.getString('cms', 'error'));
+						resourceManager.getString('cms', 'metadataMaxAllowedErrorTitle'));
 				}
 				else {
 					for (var i:uint = 0; i < allEntries.selectedItems.length; i++) {
@@ -368,11 +368,12 @@
 						if (allEntries.selectedItems[i] is KalturaMediaEntry) {
 							o = Cloner.cloneKalturaMediaEntry(allEntries.selectedItems[i] as KalturaMediaEntry);
 						}
-						_playlistArrayCollection.addItemAt(o, 0);
+						_playlistArrayCollection.addItem(o);
 					}
 					dispatchRefreshEntriesList();
 				}
 			}
+			
 
 
 			/**
@@ -492,28 +493,7 @@
 			}
 
 
-			/**
-			 * double click on an item - move to playlist list
-			 */
-			private function onDoubleClick(evt:Event):void {
-
-				if ((context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) && maxAllowedValues != 0 && maxAllowedValues == _playlistArrayCollection.length) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'metadataMaxAllowedEntriesError'),
-						ResourceManager.getInstance().getString('cms', 'metadataMaxAllowedErrorTitle'));
-					return;
-				}
-
-
-				var o:Object;
-				if (allEntries.selectedItem is KalturaMixEntry) {
-					o = Cloner.cloneKalturaMixEntry(allEntries.selectedItem as KalturaMixEntry);
-				}
-				if (allEntries.selectedItem is KalturaMediaEntry) {
-					o = Cloner.cloneKalturaMediaEntry(allEntries.selectedItem as KalturaMediaEntry);
-				}
-				_playlistArrayCollection.addItem(o);
-				dispatchRefreshEntriesList();
-			}
+			
 
 
 
@@ -648,7 +628,7 @@
 		<mx:VBox id="availableEntriesContainer" width="100%" height="400" verticalGap="0" horizontalScrollPolicy="off"
 				 verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'entriesTable')}" styleName="formSubTitleLabel"/>
-			<et1:EntryTable id="allEntries" doubleClickEnabled="true" itemDoubleClick="{onDoubleClick(event)}"
+			<et1:EntryTable id="allEntries" doubleClickEnabled="true" itemDoubleClick="{addToPlaylist()}"
 						   width="100%" orderByChanged="{onOrderByChanged()}" showLinks="{showLinks}"
 						   showDetails="entryTable_showDetailsHandler(event)"
 						   creationComplete="onEntriesTableReady()" dataProvider="{_listableVo.arrayCollection}"
