@@ -5,6 +5,7 @@
 		 creationComplete="onCreationComplete()">
 	
 	<mx:Metadata>
+		[Event(name="errorLoading", type="flash.events.Event")] 
 		[Event(name="finishLoading", type="flash.events.Event")] 
 		[Event(name="autoPreviewChanged", type="flash.events.Event")] 
 		[Event(name="firstTimeLoad", type="flash.events.Event")] 
@@ -29,6 +30,7 @@
 			public static const PREVIEW_PLAYER_READY:String = "previewPlayerReady";
 			public static const FIRST_TIME_LOAD:String = "firstTimeLoad";
 			public static const FINISH_LOADING:String = "finishLoading";
+			public static const ERROR_LOADING:String = "errorLoading";
 			public static const AUTO_PREVIEW_CHANGED:String = "autoPreviewChanged";
 			public static const CLOSE_PREVIEW:String = "closePreview";
 			public static const OPEN_PREVIEW:String = "openPreview";
@@ -260,20 +262,19 @@
 			}
 			
 			/**
-			 * handles KDP errors - tells user to fix additional parameters
-			 * because in appstudio, errors probably origin there.
+			 * handles KDP errors 
 			 * */
 			private function handleKDPError(e:Event):void {
-				var s:String = ResourceManager.getInstance().getString('aps', 'kdpLayoutError');
-				dispatchEvent(new ErrorEvent(ApsWizard.ALERT_USER, false, false, s));
 				// enable the appstudio
-				dispatchEvent(new Event(FINISH_LOADING));
+				dispatchEvent(new Event(ERROR_LOADING));
+				// we have no KDP, so we don't autopreview.
+				autoPreview.selected = false;
+				autoPreview.enabled = false;
 			}
 			
 
 			private function onKDPMediaReady(event:Event):void {
 				kdp3Loader.visible = true;
-				
 			}
 			
 			private function onKDPReady(event:Event):void {

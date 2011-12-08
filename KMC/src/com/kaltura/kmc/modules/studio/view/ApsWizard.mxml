@@ -15,8 +15,8 @@ The main window for new player wizard.
 			import com.kaltura.commands.uiConf.UiConfAdd;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.uiConf.UiConfUpdate;
-			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.studio.business.wizard.ApsWizardXmlController;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
@@ -782,7 +782,7 @@ The main window for new player wizard.
 			
 			
 			private function fault(evt:KalturaEvent):void {
-				Alert.show("httpFault \n" + evt.error);
+				Alert.show("httpFault \n" + evt.error.errorMsg);
 			}
 			
 			
@@ -914,10 +914,24 @@ The main window for new player wizard.
 			 * enable the wizard once KDP loading is done.
 			 * */
 			private function onFinishLoading(evt:Event = null):void {
-//				enabled = true;
 				previewPlayerPage.enabled = true;
 				stylePage.enabled = true;
 				featurePage.enabled = true;
+			}
+			
+			
+			
+			/**
+			 * tells user to fix additional parameters because 
+			 * in appstudio, errors probably origin there.
+			 * */
+			protected function onErrorLoading(event:Event):void {
+				var s:String = ResourceManager.getInstance().getString('aps', 'kdpLayoutError');
+				alertUser(new ErrorEvent(ApsWizard.ALERT_USER, false, false, s));
+				previewPlayerPage.enabled = true;
+				stylePage.enabled = true;
+				featurePage.enabled = true;
+				
 			}
 			
 			
@@ -1032,6 +1046,8 @@ The main window for new player wizard.
 				return '';
 			}
 			
+
+
 		]]>
 	</mx:Script>
 	<mx:TabBar id="linkDtn" width="140" dataProvider="{wizardViewStack}" direction="vertical" styleName="dtn"
@@ -1066,6 +1082,7 @@ The main window for new player wizard.
 			</mx:ViewStack>
 			<wv:ApsWizPreviewPlayer id="previewPlayerPage" autoPreviewChanged="onAutoPreviewChanged()"
 									firstTimeLoad="onFirstTimeLoaded()" finishLoading="onFinishLoading()"
+									errorLoading="onErrorLoading(event)"
 									alertUser="{alertUser(event)}" visible="false" includeInLayout="false" height="100%"
 									width="100%" context="{_context}" content="{media}"
 									playerUiConfVo="{_playerUiConfVO}" openPreview="openPreview()"
