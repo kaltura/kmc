@@ -2,8 +2,8 @@
 <!---
 	 access control tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="450" height="300" 
-		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel"
+		 xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -19,28 +19,32 @@
 			import com.kaltura.types.*;
 			import com.kaltura.utils.KCountriesUtil;
 			import com.kaltura.vo.*;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 
+			private const ITEM_WIDTH:int = 140;
+
 			/**
 			 * @copy #selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
-			
+
+
 			/**
 			 * the entry being presented / edited in entry drilldown
 			 * */
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-			
+
+
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
 			}
-			
+
 			/**
 			 * list of entries to edit in SetAccessControlProfileWin
 			 * */
@@ -50,7 +54,7 @@
 			 * filtering parameters
 			 * */
 			public var filterModel:FilterModel;
-			
+
 
 			/**
 			 * @copy #accessControlData
@@ -61,15 +65,15 @@
 			 * change flag
 			 * */
 			private var _isChanged:Boolean;
-			
-			
+
+
 			public function init():void {
 				if (!filterModel.oneTimeLoadAccessControlLoadedFlag) {
 					// Only one time we should load this configuration per partner
 					filterModel.oneTimeLoadAccessControlLoadedFlag = true;
 					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.LIST_ACCESS_CONTROLS_PROFILES);
 					controller.dispatch(getAllProfilesEvent);
-				} 
+				}
 //					else {
 //					updateAccessSection()
 //				}
@@ -79,32 +83,34 @@
 			public function initData():void {
 				updateAccessSection();
 			}
-			
+
+
 			public function isChanged():Boolean {
 				return _isChanged;
 			}
-			
+
+
 			public function validate():void {
 				// this panel's data cannot be invalid
 				dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true));
 			}
 
-			
+
 			public function save():void {
 				// only chages value on the entry
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-			
-			
+
+
 			public function clear():void {
 				_isChanged = false;
 			}
 
-			
+
 			public function destroy():void {
 
 			}
-			
+
 
 			private function updateAccessSection():void {
 				var acProfiles:ArrayCollection = new ArrayCollection();
@@ -114,7 +120,8 @@
 				for each (var acProfile:AccessControlProfileVO in _accessControlData) {
 					if (acProfile.profile.isDefault == KalturaNullableBoolean.TRUE_VALUE) {
 						defualtProfile = acProfile;
-					} else {
+					}
+					else {
 						acProfiles.addItem({label: acProfile.profile.name, profile: acProfile});
 					}
 				}
@@ -158,7 +165,7 @@
 				var saveProfileChangesEvent:AccessControlEvent;
 //				switch (event.type) {
 //					case AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE:
-						saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
+				saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
 //						break;
 //					case AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE:
 //						saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.UPDATE_ACCESS_CONTROL_PROFILE);
@@ -186,13 +193,14 @@
 					if (_selectedEntry != null) {
 						_selectedEntry.accessControlId = 0;
 						_isChanged = true;
-					} 
+					}
 					else if (selectedEntries != null) {
 						for each (var entry:KalturaBaseEntry in selectedEntries) {
 							entry.accessControlId = 0;
 						}
 					}
-				} else {
+				}
+				else {
 					acNameLabel.text = selectedAC.profile.name;
 					acDescriptionLabel.text = selectedAC.profile.description;
 					acAdvancedLabel.text = "";
@@ -205,32 +213,32 @@
 							foundSitesRestriction = true;
 							if ((rstrct as KalturaSiteRestriction).siteRestrictionType == KalturaSiteRestrictionType.ALLOW_SITE_LIST) {
 								acAuthoSitesLabel.text = resourceManager.getString('drilldown', 'ALLOW_SITES') + ":  ";
-							} 
+							}
 							else {
 								acAuthoSitesLabel.text = resourceManager.getString('drilldown', 'RESTRICT_SITES') + ":  ";
 							}
 
 							acAuthoSitesLabel.text += (rstrct as KalturaSiteRestriction).siteList;
-						} 
+						}
 						else if (rstrct is KalturaIpAddressRestriction) {
 							foundIPsRestriction = true;
 							if ((rstrct as KalturaIpAddressRestriction).ipAddressRestrictionType == KalturaIpAddressRestrictionType.ALLOW_LIST) {
 								acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'ALLOW_IPS') + ":  ";
-							} 
+							}
 							else {
-								acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'RESTRICT_IPS') + ":  "; 
+								acAuthoIPsLabel.text = resourceManager.getString('drilldown', 'RESTRICT_IPS') + ":  ";
 							}
 							acAuthoIPsLabel.text += (rstrct as KalturaIpAddressRestriction).ipAddressList;
 						}
 						else if (rstrct is KalturaCountryRestriction) {
 							foundCountriesRestriction = true;
-							if ((rstrct as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST){
-								acAuthoCountriesLabel.text = resourceManager.getString('drilldown','ALLOW_COUNTRIES') + ": "
+							if ((rstrct as KalturaCountryRestriction).countryRestrictionType == KalturaCountryRestrictionType.ALLOW_COUNTRY_LIST) {
+								acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'ALLOW_COUNTRIES') + ": "
 							}
 							else {
 								acAuthoCountriesLabel.text = resourceManager.getString('drilldown', 'RESTRICT_COUNTRIES') + ": ";
 							}
-							
+
 							acAuthoCountriesLabel.text += "\n" + getCountriesList((rstrct as KalturaCountryRestriction).countryList);
 						}
 
@@ -253,11 +261,11 @@
 					acAdvancedLabel.text = (acAdvancedLabel.text.length > 0) ? acAdvancedLabel.text.substr(0, acAdvancedLabel.text.length - 2) : '';
 
 					if (_selectedEntry != null) {
-						if (_selectedEntry.accessControlId != selectedAC.profile.id){
+						if (_selectedEntry.accessControlId != selectedAC.profile.id) {
 							_selectedEntry.accessControlId = selectedAC.profile.id;
 							_isChanged = true;
 						}
-					} 
+					}
 					else if (selectedEntries != null) {
 						for each (var entry1:KalturaBaseEntry in selectedEntries) {
 							entry1.accessControlId = selectedAC.profile.id;
@@ -298,88 +306,69 @@
 				_accessControlData = accessControlData;
 				updateAccessSection();
 			}
-			
-			
 		]]>
 	</mx:Script>
 
-	<control:AccessTabController id="controller" />
-	<mx:Grid>
-		<mx:GridRow>
-			<!--<mx:GridItem horizontalAlign="left" verticalAlign="bottom">
-				 <mx:Label text="{resourceManager.getString('drilldown', 'profileDetailsLabel')}"
-				 styleName="drillDownTitleLabel"/>
-				 </mx:GridItem>-->
-			<mx:GridItem width="100%" height="100%">
-			</mx:GridItem>
-		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="right" verticalAlign="middle">
-				<mx:Label text="{resourceManager.getString('drilldown', 'acpSectionTitle')}" styleName="drillDownLabel"/>
-			</mx:GridItem>
-			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:ComboBox id='acProfsCB' change="onAccessControlChange(event)" width="200"/>
-				<mx:LinkButton id="addBtn" label="{resourceManager.getString('drilldown', 'addProfileBtn')}"
-							   click="openNewAccessControlPopUpWindow(event)"/>
-			</mx:GridItem>
-		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+	<control:AccessTabController id="controller"/>
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('drilldown', 'acpSectionTitle')}" styleName="drillDownLabel"/>
+		<mx:ComboBox id='acProfsCB' change="onAccessControlChange(event)" width="200"/>
+		<mx:LinkButton id="addBtn" label="{resourceManager.getString('drilldown', 'addProfileBtn')}"
+					   click="openNewAccessControlPopUpWindow(event)"/>
+	</mx:HBox>
+	<mx:Grid width="100%" height="100%">
+		<mx:GridRow width="100%" >
+			<mx:GridItem horizontalAlign="left" verticalAlign="middle" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'nameLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
-			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
 				<mx:Label width="280" id="acNameLabel" toolTip="{acNameLabel.text}" color="black"
 						  styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 		<mx:GridRow width="100%">
-			<mx:GridItem horizontalAlign="left" verticalAlign="top">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'descriptionLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:TextArea id="acDescriptionLabel" height="100%" selectable="false" editable="false" width="100%"
-							 wordWrap="true" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-							 toolTip="{acDescriptionLabel.text}" color="black" backgroundAlpha="0"
-							 styleName="drillDownSubLabel"/>
+				<mx:Text id="acDescriptionLabel" width="100%" toolTip="{acDescriptionLabel.text}"
+						 color="black" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+		<mx:GridRow width="100%">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'authoSitesLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
-			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:Label width="100%" id="acAuthoSitesLabel" color="black" toolTip="{acAuthoSitesLabel.text}"
-						  styleName="drillDownSubLabel"/>
+			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
+				<mx:Text id="acAuthoSitesLabel" width="100%" color="black"
+						 toolTip="{acAuthoSitesLabel.text}" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="left" verticalAlign="top">
+		<mx:GridRow width="100%">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'authoCountries')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:TextArea width="100%" id="acAuthoCountriesLabel" height="100%" selectable="false" editable="false"
-							 wordWrap="true" borderStyle="none" color="black" backgroundAlpha="0"
-							 toolTip="{acAuthoCountriesLabel.text}" styleName="drillDownSubLabel"/>
+				<mx:Text id="acAuthoCountriesLabel" width="100%" height="100%" color="black"
+						 toolTip="{acAuthoCountriesLabel.text}" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="left" verticalAlign="top">
+		<mx:GridRow width="100%">
+			<mx:GridItem horizontalAlign="left" verticalAlign="top" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'authoIPs')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" horizontalAlign="left" verticalAlign="middle">
-				<mx:TextArea width="100%" id="acAuthoIPsLabel" height="100%" selectable="false" editable="false"
-							 wordWrap="true" borderStyle="none" color="black" backgroundAlpha="0"
-							 toolTip="{acAuthoIPsLabel.text}" styleName="drillDownSubLabel"/>
+				<mx:Text id="acAuthoIPsLabel" width="100%" height="100%" color="black" toolTip="{acAuthoIPsLabel.text}"
+						 styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
-		<mx:GridRow>
-			<mx:GridItem horizontalAlign="left" verticalAlign="middle">
+		<mx:GridRow width="100%">
+			<mx:GridItem horizontalAlign="left" verticalAlign="middle" width="{ITEM_WIDTH}">
 				<mx:Label text="{resourceManager.getString('drilldown', 'advancedLabel')}" styleName="drillDownLabel"/>
 			</mx:GridItem>
-			<mx:GridItem width="100%" height="100%" horizontalAlign="left" verticalAlign="middle">
+			<mx:GridItem width="100%"  horizontalAlign="left" verticalAlign="middle">
 				<mx:Label width="100%" id="acAdvancedLabel" color="black" styleName="drillDownSubLabel"/>
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>
-
 </mx:VBox>
