@@ -37,6 +37,8 @@ Use the 'newProfileState' state for the 'Add New..' action
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -61,6 +63,8 @@ Use the 'newProfileState' state for the 'Add New..' action
 			private var _metadataProfile:KMCMetadataProfileVO;
 			private var _originalProfile:KMCMetadataProfileVO;
 			
+			private var _editWatcher:ChangeWatcher;
+			
 			/**
 			 * get the accessControlProfile(acp)
 			 */
@@ -75,6 +79,8 @@ Use the 'newProfileState' state for the 'Add New..' action
 			 */
 			public function set metadataProfile(metadataProfile:KMCMetadataProfileVO):void {
 				_metadataProfile = metadataProfile;
+				_editWatcher = BindingUtils.bindSetter(onEditingFinished, _metadataProfile, "isCurrentlyEdited");
+				
 				//saves original metadata
 				_originalProfile = new KMCMetadataProfileVO();
 				if (_metadataProfile.xsd && _metadataProfile.metadataFieldVOArray.length) {
@@ -104,7 +110,11 @@ Use the 'newProfileState' state for the 'Add New..' action
 			/**
 			 * close window event - when pressing the X button, or after saving the data
 			 */
-			private function closeWindow():void {	
+			private function closeWindow():void {
+				if (_editWatcher != null){
+					_editWatcher.unwatch();
+				}
+				
 				PopUpManager.removePopUp(this);
 			}
 			
@@ -137,18 +147,25 @@ Use the 'newProfileState' state for the 'Add New..' action
 					return;
 				}
 				
-				if (currentState == null) {
-					var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
-					updateMetadataProfile.dispatch();
+				if (! metadataProfile.isNewProfile) {
+					if (metadataProfile.metadataProfileReordered){
+						Alert.show(resourceManager.getString('account', 'metadataReorderWarning'), resourceManager.getString('account', 'metadataReorderWarningTitle'),  Alert.YES | Alert.NO, null, updateSchemaAfterApproval);
+					} else {
+						updateSchemaAfterApproval();
+					}
 				}
 				else {
 					var addMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.ADD);
 					addMetadataProfile.dispatch();
 				}
-				
-				closeWindow();
 			}
 			
+			private function updateSchemaAfterApproval(evt:CloseEvent = null):void{
+				if (evt == null || evt.detail == Alert.YES){
+					var updateMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.UPDATE);
+					updateMetadataProfile.dispatch();
+				}
+			}
 			
 			private function undoChanges():void {
 				if (_originalProfile.xsd && _originalProfile.metadataFieldVOArray.length) {
@@ -212,9 +229,12 @@ Use the 'newProfileState' state for the 'Add New..' action
 				navigateToURL(urlRequest , '_self');
 			}
 			
-			
-			
-			
+			private function onEditingFinished(isEditing:Boolean):void
+			{
+				if (! isEditing){
+					closeWindow();
+				}
+			}
 		]]>
 	</mx:Script>
 	

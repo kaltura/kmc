@@ -39,6 +39,11 @@ package com.kaltura.vo
 		public var profile:KalturaMetadataProfile = new KalturaMetadataProfile();
 		public var metadataFieldVOArray:ArrayCollection = new ArrayCollection();
 		public var metadataProfileChanged:Boolean = false;
+		
+		public var metadataProfileReordered:Boolean = false;
+		public var isNewProfile:Boolean = false;
+		public var isCurrentlyEdited:Boolean = false;
+		
 		//represents the xsd from the profile, in an XML representation
 		public var xsd:XML;
 		public var viewXML:XML;

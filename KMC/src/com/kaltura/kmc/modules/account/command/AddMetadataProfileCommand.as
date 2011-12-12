@@ -69,6 +69,11 @@ package com.kaltura.kmc.modules.account.command
 		{
 			_model.loadingFlag = false;
 			var responseArray:Array = data.data as Array;
+			if (responseArray[0].error != null){
+				Alert.show(responseArray[0].error.message, ResourceManager.getInstance().getString('account', 'error'));
+			} else {
+				_model.selectedMetadataProfile.isCurrentlyEdited = false;
+			}
 			//last request is always the list request
 			var listResult:KalturaMetadataProfileListResponse  = responseArray[1]as KalturaMetadataProfileListResponse;
 			_model.metadataProfilesTotalCount = listResult.totalCount;

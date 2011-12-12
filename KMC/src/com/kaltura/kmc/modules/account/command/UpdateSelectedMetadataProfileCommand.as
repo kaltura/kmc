@@ -12,6 +12,7 @@ package com.kaltura.kmc.modules.account.command
 		
 		public function execute(event:CairngormEvent):void {
 			_model.selectedMetadataProfile = (event as MetadataProfileEvent).profile;
+			_model.selectedMetadataProfile.isCurrentlyEdited = true;
 		}
 		
 	}

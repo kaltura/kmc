@@ -49,6 +49,7 @@ package com.kaltura.kmc.modules.account.command
 		{
 			_model.loadingFlag = false;
 			var recievedProfile:KalturaMetadataProfile = KalturaMetadataProfile(data.data);
+			_model.selectedMetadataProfile.isCurrentlyEdited = false;
 			if (recievedProfile) {
 				_model.selectedMetadataProfile.profile = recievedProfile;
 				_model.selectedMetadataProfile.xsd = new XML(recievedProfile.xsd);
