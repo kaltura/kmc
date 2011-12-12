@@ -1,7 +1,9 @@
-package com.kaltura.edw.control.commands
+package com.kaltura.edw.control.commands.flavor
 {
-	import com.kaltura.commands.media.MediaApproveReplace;
+	import com.kaltura.commands.media.MediaCancelReplace;
+	import com.kaltura.edw.business.Cloner;
 	import com.kaltura.edw.business.EntryUtil;
+	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.MediaEvent;
 	import com.kaltura.edw.events.KedDataEvent;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
@@ -13,15 +15,16 @@ package com.kaltura.edw.control.commands
 	
 	import flash.events.IEventDispatcher;
 
-	public class ApproveMediaEntryReplacementCommand extends KedCommand
+
+	public class CancelMediaEntryReplacementCommand extends KedCommand
 	{
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-			var approveReplacement:MediaApproveReplace = new MediaApproveReplace((event as MediaEvent).entry.id);
-			approveReplacement.addEventListener(KalturaEvent.COMPLETE, result);
-			approveReplacement.addEventListener(KalturaEvent.FAILED, fault);
+			var cancelReplacement:MediaCancelReplace = new MediaCancelReplace((event as MediaEvent).entry.id);
+			cancelReplacement.addEventListener(KalturaEvent.COMPLETE, result);
+			cancelReplacement.addEventListener(KalturaEvent.FAILED, fault);
 			
-			_client.post(approveReplacement);
+			_client.post(cancelReplacement);
 		}
 		
 		override public function result(data:Object):void {
@@ -38,7 +41,7 @@ package com.kaltura.edw.control.commands
 //				EntryUtil.updateSelectedEntryInList(entry, _model.listableVo.arrayCollection);
 			}
 			else {
-				trace ("error in approve replacement");
+				trace ("error in cancel replacement");
 			}
 			
 			_model.decreaseLoadCounter();
