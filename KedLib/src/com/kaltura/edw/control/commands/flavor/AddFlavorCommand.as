@@ -1,4 +1,4 @@
-package com.kaltura.edw.control.commands
+package com.kaltura.edw.control.commands.flavor
 {
 	import com.kaltura.commands.flavorAsset.FlavorAssetAdd;
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
@@ -9,6 +9,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaContentResource;
 	import com.kaltura.vo.KalturaFlavorAsset;
+	import com.kaltura.edw.control.commands.KedCommand;
 	
 	public class AddFlavorCommand extends KedCommand {
 		

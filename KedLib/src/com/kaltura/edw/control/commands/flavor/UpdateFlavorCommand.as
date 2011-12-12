@@ -1,4 +1,4 @@
-package com.kaltura.edw.control.commands
+package com.kaltura.edw.control.commands.flavor
 {
 	import com.kaltura.commands.flavorAsset.FlavorAssetSetContent;
 	import com.kaltura.edw.control.events.KedEntryEvent;
@@ -7,6 +7,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaContentResource;
+	import com.kaltura.edw.control.commands.KedCommand;
 	
 	public class UpdateFlavorCommand extends KedCommand {
 		
