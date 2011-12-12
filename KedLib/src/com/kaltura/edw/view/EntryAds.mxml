@@ -117,6 +117,11 @@
 			 * */
 			private var _counter:int = 0;
 
+			/**
+			 * change watcher to update kclip when entry duration changes
+			 * */
+			private var _durationWatcher:ChangeWatcher;
+			
 			[Bindable]
 			/**
 			 * @copy #selectedEntry
@@ -130,7 +135,12 @@
 				return _selectedEntry;
 			}
 			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (_durationWatcher) {
+					// unbind
+					_durationWatcher.unwatch();
+				}
 				_selectedEntry = value;
+				_durationWatcher = BindingUtils.bindSetter(myFunc, _selectedEntry, "duration");
 			}
 
 			[Bindable]
@@ -219,6 +229,12 @@
 				}
 			}
 			
+			/**
+			 * reset kclip to accept new duration
+			 * */
+			private function myFunc(newDuration:Number):void {
+				_kClip["setEntryId"](_selectedEntry.id);
+			}
 			
 			/**
 			 * trace the error instead of crashing the browser
@@ -258,6 +274,9 @@
 				}
 				if (_watchCPReload) {
 					_watchCPReload.unwatch();
+				}
+				if (_durationWatcher) {
+					_durationWatcher.unwatch();
 				}
 			}
 

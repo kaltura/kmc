@@ -2,6 +2,7 @@ package com.kaltura.edw.business
 {
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaMediaEntry;
 	
 	import mx.collections.ArrayCollection;
 	import mx.events.PropertyChangeEvent;
@@ -29,7 +30,6 @@ package com.kaltura.edw.business
 						if (entry[att] != entryToUpdate[att]){
 							oldVal = entry[att]; 
 							entry[att] = entryToUpdate[att];
-//							entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, att, oldVal, entryToUpdate[att]));
 						}
 					}
 					break;
@@ -46,6 +46,7 @@ package com.kaltura.edw.business
 			oldEntry.replacedEntryId = newEntry.replacedEntryId;
 			oldEntry.replacingEntryId = newEntry.replacingEntryId;
 			oldEntry.replacementStatus = newEntry.replacementStatus;
+			(oldEntry as KalturaMediaEntry).duration = (newEntry as KalturaMediaEntry).duration;
 		}
 	}
 }

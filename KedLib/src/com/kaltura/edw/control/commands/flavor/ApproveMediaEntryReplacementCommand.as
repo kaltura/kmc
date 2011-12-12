@@ -36,7 +36,6 @@ package com.kaltura.edw.control.commands.flavor
 				var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_RELOADED);
 				e.data = entry; 
 				dsp.dispatchEvent(e);
-//				EntryUtil.updateSelectedEntryInList(entry, _model.listableVo.arrayCollection);
 			}
 			else {
 				trace ("error in approve replacement");

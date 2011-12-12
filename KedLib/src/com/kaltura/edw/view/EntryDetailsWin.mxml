@@ -299,7 +299,11 @@
 					//if the given entry is a different entry than the current one
 					var isDifferentEntry:Boolean = (_selectedEntry ? value.id != _selectedEntry.id : true);
 					
+					if (_selectedEntry) {
+						_selectedEntry.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo);
+					}
 					clearPanels();
+					
 					
 					_selectedEntry = value;
 					_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
