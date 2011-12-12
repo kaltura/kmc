@@ -18,6 +18,8 @@ package com.kaltura.kmc.modules.create
 	import mx.resources.ResourceBundle;
 	import mx.resources.ResourceManager;
 	import mx.validators.EmailValidator;
+	
+	import mx.core.mx_internal;
 
 	public class BulkUploader extends EventDispatcher {
 		
@@ -79,7 +81,10 @@ package com.kaltura.kmc.modules.create
 		protected function bulkUploadCompleteHandler(e:KalturaEvent):void {
 			var er:KalturaError = e.error;
 			if (!er)  {
-				Alert.show(ResourceManager.getInstance().getString('create', 'bulk_submitted'));
+				var string:String = ResourceManager.getInstance().getString('create', 'bulk_submitted');
+				var alert:Alert = Alert.show(string);
+				alert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
+
 				// dispatch complete event
 				dispatchEvent(new Event(Event.COMPLETE));
 				return;
@@ -93,7 +98,7 @@ package com.kaltura.kmc.modules.create
 					ResourceManager.getInstance().getString('create', 'forbiden_error_title'), Alert.OK, null, logout);
 			}
 			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('common', 'error'));
+				Alert.show(er.errorMsg, ResourceManager.getInstance().getString('common', 'error'));
 			}
 		}
 		
