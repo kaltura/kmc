@@ -34,10 +34,6 @@
 			 * */
 			private var _cProfile:ConversionProfileVO;
 
-			/**
-			 * thumbs params associated with the conversion profile
-			 * */
-			private var _thumbParamsData:ArrayCollection;
 
 			/**
 			 * @copy #dataEditable
@@ -45,14 +41,12 @@
 			private var _dataEditable:Boolean = true;
 
 
-
-
 			/**
 			 * make sure only "real" flavours are listed on the profile. <br>
 			 * since thumbs params are part of a conversionProfile, we scan them too.
 			 * */
 			private function validateProfileFlavors():void {
-				if (!_cProfile || !dataProvider || !_thumbParamsData)
+				if (!_cProfile || !dataProvider )
 					return;
 
 				var idsArr:Array = _cProfile.profile.flavorParamsIds.split(',');
@@ -69,17 +63,13 @@
 							break;
 						}
 					}
-					// if the id wasn't of a media flavour, maybe it's a thumbnail ?
 					if (!isFlavor) {
-						for each (var thumbParam:KalturaThumbParams in _thumbParamsData) {
-							if (int(id) == thumbParam.id) {
-								currentFlavors.push(id);
-								break;
-							}
-						}
+						// if it's not a media flavor we keep it, so we don't override 
+						// thumbparams, captionsparams, or anything else.
+						currentFlavors.push(id);
 					}
 				}
-
+				
 				var ids:String = currentFlavors.length == 0 ? null : currentFlavors.join(',');
 				_cProfile.profile.flavorParamsIds = ids;
 			}
@@ -226,17 +216,6 @@
 
 			public function set allSelected(allSelected:Boolean):void {
 				_allSelected = allSelected;
-			}
-
-
-			public function get thumbParamsData():ArrayCollection {
-				return _thumbParamsData;
-			}
-
-
-			public function set thumbParamsData(value:ArrayCollection):void {
-				_thumbParamsData = value;
-				validateProfileFlavors();
 			}
 
 

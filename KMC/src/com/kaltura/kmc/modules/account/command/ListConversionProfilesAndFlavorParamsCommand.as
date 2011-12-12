@@ -38,9 +38,6 @@ package com.kaltura.kmc.modules.account.command {
 
 			_model.loadingFlag = true;
 
-			var listThumbParams:ThumbParamsList = new ThumbParamsList();
-			mr.addAction(listThumbParams);
-
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageSize = ListFlavorsParamsCommand.DEFAULT_PAGE_SIZE;
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
@@ -83,13 +80,10 @@ package com.kaltura.kmc.modules.account.command {
 					}
 				}
 			}
-			// thumbs
-			var thumbResponse:KalturaThumbParamsListResponse = (kEvent.data as Array)[0] as KalturaThumbParamsListResponse;
-			_model.thumbsData = new ArrayCollection(thumbResponse.objects);
 
 			// flavors
 			var flvorsTmpArrCol:ArrayCollection = new ArrayCollection();
-			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[1] as KalturaFlavorParamsListResponse;
+			var flavorsRespones:KalturaFlavorParamsListResponse = (kEvent.data as Array)[0] as KalturaFlavorParamsListResponse;
 			for each (var kFlavor:Object in flavorsRespones.objects) {
 				if (kFlavor is KalturaFlavorParams) {
 					var flavor:FlavorVO = new FlavorVO();
@@ -100,7 +94,7 @@ package com.kaltura.kmc.modules.account.command {
 			
 			// conversion profs
 			var convProfilesTmpArrCol:ArrayCollection = new ArrayCollection();
-			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[2] as KalturaConversionProfileListResponse;
+			var convsProfilesRespones:KalturaConversionProfileListResponse = (kEvent.data as Array)[1] as KalturaConversionProfileListResponse;
 			for each (var cProfile:KalturaConversionProfile in convsProfilesRespones.objects) {
 				var cp:ConversionProfileVO = new ConversionProfileVO();
 				cp.profile = cProfile;
@@ -111,11 +105,10 @@ package com.kaltura.kmc.modules.account.command {
 				else {
 					convProfilesTmpArrCol.addItem(cp);
 				}
-
 			}
 			
 			// converionProfileAssetParams
-			var cpaps:Array = (event.data[3] as KalturaConversionProfileAssetParamsListResponse).objects;
+			var cpaps:Array = (kEvent.data[2] as KalturaConversionProfileAssetParamsListResponse).objects;
 			ListConversionProfilesUtil.addAssetParams(convProfilesTmpArrCol, cpaps);
 			
 			// mark flavors of first profile
