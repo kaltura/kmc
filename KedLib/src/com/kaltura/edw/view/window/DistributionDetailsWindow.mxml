@@ -31,9 +31,13 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ValidationResultEvent;
+			import mx.resources.ResourceManager;
+
 
 			public static const GET_SENT_DATA:String = "getSentData";
 			public static const GET_RETURNED_DATA:String = "getReturnedData";
@@ -568,9 +572,30 @@
 				return '';
 			}
 
+			
+			/**
+			 * remove a datagrid column by its header text
+			 * @param the headertext of the column to remove
+			 * @return array of datagrid columns after removal.
+			 * */
+			protected function removeColumnByHeader(headerTxt:String, dg:DataGrid):Array {
+				var cols:Array = dg.columns;
+				for (var i:int = cols.length - 1; i > 0; i--) {
+					if ((cols[i] as DataGridColumn).headerText == headerTxt) {
+						cols = cols.splice(i, 1);
+						break;
+					}
+				}
+				return cols;
+			}
+			
 			protected function flavorsTable_creationCompleteHandler(event:FlexEvent):void {
 				// hide actions column
-				hideColumns = (flavorsTable.columns.length - 1).toString();
+//				hideColumns = (flavorsTable.columns.length - 1).toString();
+				var ar:Array = removeColumnByHeader(resourceManager.getString('drilldown', 'actionCol'), flavorsTable);
+				// hide tags column
+//TODO				ar = removeColumnByHeader(resourceManager.getString('drilldown', ''), flavorsTable);
+				flavorsTable.columns = ar;
 			}
 
 		]]>
