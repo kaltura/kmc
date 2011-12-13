@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FlavorAssetRendererBase xmlns="com.kaltura.edw.view.ir.*" 
+								   xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" creationComplete="{onCreatoinComplete()}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.vo.KalturaFlavorAsset;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				var kfa:KalturaFlavorAsset = (value as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams.flavorAsset;
+				if (kfa != null){
+					tagsLabel.text = kfa.tags;
+					tagsLabel.toolTip = kfa.tags;
+				} else {
+					tagsLabel.text = "-";
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Label id="tagsLabel" width="100%" textAlign="center"/>
+</FlavorAssetRendererBase>
