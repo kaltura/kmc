@@ -8,9 +8,11 @@
 		<mx:Script>
 			<![CDATA[
 				import com.kaltura.edw.model.EntryDistributionWithProfile;
+				import com.kaltura.edw.model.datapacks.DistributionDataPack;
 				import com.kaltura.edw.view.window.DistributionDetailsWindow;
 				import com.kaltura.edw.view.window.ErrorDetailsWindow;
 				import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+				import com.kaltura.kmvc.model.KMvCModel;
 				import com.kaltura.types.KalturaBatchJobErrorTypes;
 				import com.kaltura.types.KalturaDistributionValidationErrorType;
 				import com.kaltura.types.KalturaEntryDistributionFlag;
@@ -23,7 +25,7 @@
 				import com.kaltura.vo.KalturaDistributionValidationErrorMissingMetadata;
 				import com.kaltura.vo.KalturaDistributionValidationErrorMissingThumbnail;
 				import com.kaltura.vo.KalturaEntryDistribution;
-
+				
 				import mx.collections.ArrayCollection;
 				import mx.controls.Button;
 				import mx.core.Application;
@@ -253,7 +255,7 @@
 				private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
 					var id:int = parseInt(error.flavorParamsId);
 					var flavorName:String;
-					var flavors:ArrayCollection = parentDocument/*EntryDistribution*/.model.flavorParamsAndAssetsByEntryId;
+					var flavors:ArrayCollection = ((parentDocument/*EntryDistribution*/.model as KMvCModel).getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId;
 					for each (var flavorWithParams:FlavorAssetWithParamsVO in flavors) {
 						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == id) {
 							flavorName = flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.name;

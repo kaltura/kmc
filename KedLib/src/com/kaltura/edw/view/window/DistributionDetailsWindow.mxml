@@ -6,9 +6,14 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 				xmlns:entryDetails="com.kaltura.kmc.modules.content.view.window.entrydetails.*"
 				xmlns:renderers="com.kaltura.kmc.modules.content.view.window.entrydetails.renderers.distributionRenderers.*"
-				width="710" height="545" layout="vertical" styleName="TitleWindowType2" backgroundColor="#f7f7f7"
-				showCloseButton="true" close="{closeWindow()}" xmlns:controls="com.kaltura.controls.*"
-				creationComplete="{onCreationComplete()}" show="setSchedulerData()" paddingLeft="15" xmlns:edw="com.kaltura.edw.*" xmlns:distribution="com.kaltura.edw.view.ir.distribution.*" xmlns:view="com.kaltura.edw.view.*">
+				width="710" height="565" layout="vertical" 
+				styleName="TitleWindowType2" backgroundColor="#f7f7f7"
+				showCloseButton="true" close="{closeWindow()}" 
+				xmlns:controls="com.kaltura.controls.*"
+				creationComplete="{onCreationComplete()}" show="setSchedulerData()" paddingLeft="15" 
+				xmlns:edw="com.kaltura.edw.*" 
+				xmlns:distribution="com.kaltura.edw.view.ir.distribution.*" 
+				xmlns:view="com.kaltura.edw.view.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -578,11 +583,10 @@
 			 * @param the headertext of the column to remove
 			 * @return array of datagrid columns after removal.
 			 * */
-			protected function removeColumnByHeader(headerTxt:String, dg:DataGrid):Array {
-				var cols:Array = dg.columns;
+			protected function removeColumnByHeader(headerTxt:String, cols:Array):Array {
 				for (var i:int = cols.length - 1; i > 0; i--) {
 					if ((cols[i] as DataGridColumn).headerText == headerTxt) {
-						cols = cols.splice(i, 1);
+						/* cols =  */cols.splice(i, 1);
 						break;
 					}
 				}
@@ -592,9 +596,9 @@
 			protected function flavorsTable_creationCompleteHandler(event:FlexEvent):void {
 				// hide actions column
 //				hideColumns = (flavorsTable.columns.length - 1).toString();
-				var ar:Array = removeColumnByHeader(resourceManager.getString('drilldown', 'actionCol'), flavorsTable);
+				var ar:Array = removeColumnByHeader(resourceManager.getString('drilldown', 'actionCol'), flavorsTable.columns);
 				// hide tags column
-//TODO				ar = removeColumnByHeader(resourceManager.getString('drilldown', ''), flavorsTable);
+				ar = removeColumnByHeader(resourceManager.getString('drilldown', 'tagsCol'), ar);
 				flavorsTable.columns = ar;
 			}
 
@@ -602,93 +606,92 @@
 	</mx:Script>
 	<mx:DateValidator id="fromDateValidator" required="false" source="{startDateField}" property="text"/>
 	<mx:DateValidator id="toDateValidator" required="false" source="{endDateField}" property="text"/>
-	<mx:Label text="{_destinationName + ' ' + resourceManager.getString('drilldown','distributionDetails')}"
-			  styleName="drillDownTitleLabel"/>
 
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('drilldown','statusLabel')}" width="75" styleName="drillDownLabel"/>
-		<distribution:SubmissionStatusRenderer data="{_entryDis}"/>
-	</mx:HBox>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('drilldown','remoteId')}" width="75" styleName="drillDownLabel"/>
-		<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}" styleName="drillDownSubLabel" selectable="true"/>
-	</mx:HBox>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('drilldown','logs')}" width="75"
-				  visible="{_requestXMLAvailable || _responseXMLAvailable}"
-				  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>
-		<mx:LinkButton label="{resourceManager.getString('drilldown','requestXML')}" click="{getXML(true)}"
-					   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"
-					   enabled="{enableXMLViews}"/>
-		<mx:LinkButton label="{resourceManager.getString('drilldown','responseXML')}" click="{getXML(false)}"
-					   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
-					   enabled="{enableXMLViews}"/>
-	</mx:HBox>
-
-
-	<mx:HBox>
-		<mx:VBox>
-			<mx:Label text="{resourceManager.getString('drilldown','startDateLabel')}" width="75" styleName="drillDownLabel"/>
-			<mx:Label text="{resourceManager.getString('drilldown','endDateLabel')}" width="75" styleName="drillDownLabel"/>
-		</mx:VBox>
-		<mx:VBox>
-			<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
-						  editable="true"/>
-			<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
-						  editable="true"/>
-		</mx:VBox>
-		<mx:VBox>
-			<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
-								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
-
-			<controls:SM_TimeEntry id="endDateHour" height="25" showAMPMLabel="true" showHours="true"
-								   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
-		</mx:VBox>
-	</mx:HBox>
-	<mx:Label text="{resourceManager.getString('drilldown','metadataDetails')}" styleName="drillDownTitleLabel"/>
-
-	<mx:VBox>
+		<mx:Label text="{_destinationName + ' ' + resourceManager.getString('drilldown','distributionDetails')}"
+				  styleName="drillDownTitleLabel"/>
+	
 		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('drilldown','name') + ':'}" width="75" styleName="drillDownLabel"/>
-			<mx:Text text="{_name}" width="500" styleName="drillDownSubLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','statusLabel')}" width="75" styleName="drillDownLabel"/>
+			<distribution:SubmissionStatusRenderer data="{_entryDis}"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('drilldown','description') +':'}" width="75" styleName="drillDownLabel"/>
-			<mx:Text text="{_description}" width="500" styleName="drillDownSubLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','remoteId')}" width="75" styleName="drillDownLabel"/>
+			<mx:Label text="{_entryDis.kalturaEntryDistribution.remoteId}" styleName="drillDownSubLabel" selectable="true"/>
 		</mx:HBox>
 		<mx:HBox>
-			<mx:Label text="{resourceManager.getString('drilldown','tags') + ':'}" width="75" styleName="drillDownLabel"/>
-			<mx:Text text="{_tags}" width="500" styleName="drillDownSubLabel"/>
+			<mx:Label text="{resourceManager.getString('drilldown','logs')}" width="75"
+					  visible="{_requestXMLAvailable || _responseXMLAvailable}"
+					  includeInLayout="{_requestXMLAvailable || _responseXMLAvailable}" styleName="drillDownLabel"/>
+			<mx:LinkButton label="{resourceManager.getString('drilldown','requestXML')}" click="{getXML(true)}"
+						   visible="{_requestXMLAvailable}" includeInLayout="{_requestXMLAvailable}"
+						   enabled="{enableXMLViews}"/>
+			<mx:LinkButton label="{resourceManager.getString('drilldown','responseXML')}" click="{getXML(false)}"
+						   visible="{_responseXMLAvailable}" includeInLayout="{_responseXMLAvailable}"
+						   enabled="{enableXMLViews}"/>
 		</mx:HBox>
-	</mx:VBox>
-
-	<mx:Label text="{resourceManager.getString('drilldown','thumbnails')}" styleName="drillDownTitleLabel"/>
-	<mx:HBox>
-		<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}"
-				  includeInLayout="{_thumbsArray.length==0}"/>
-		<mx:HBox height="100%" verticalAlign="middle" visible="{(_thumbsArray.length > 0)}"
-				 includeInLayout="{(_thumbsArray.length>0)}">
-			<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" includeInLayout="{!_pager.isFirstPage}"
-						   click="{onPrevClick()}" styleName="moveLeftButton"/>
-			<mx:HorizontalList width="100%" columnCount="{_pager.visiblePageData.length}" rowCount="1"
-							   dataProvider="{_pager.visiblePageData}" borderStyle="solid" paddingRight="0"
-							   itemRenderer="com.kaltura.edw.view.ir.distribution.ThumbDetailsRenderer"
-							   height="175" borderSides="top,left,bottom"/>
-			<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}"
-						   click="{onNextClick()}" styleName="moveRightButton"/>
+	
+	
+		<mx:HBox>
+			<mx:VBox>
+				<mx:Label text="{resourceManager.getString('drilldown','startDateLabel')}" width="75" styleName="drillDownLabel"/>
+				<mx:Label text="{resourceManager.getString('drilldown','endDateLabel')}" width="75" styleName="drillDownLabel"/>
+			</mx:VBox>
+			<mx:VBox>
+				<mx:DateField id="startDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
+							  editable="true"/>
+				<mx:DateField id="endDateField" height="25" change="validateTimes()" enabled="{enableChanges}"
+							  editable="true"/>
+			</mx:VBox>
+			<mx:VBox>
+				<controls:SM_TimeEntry id="startDateHour" height="25" showAMPMLabel="true" showHours="true"
+									   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
+	
+				<controls:SM_TimeEntry id="endDateHour" height="25" showAMPMLabel="true" showHours="true"
+									   styleName="timeEntry" click="validateTimes()" enabled="{enableChanges}"/>
+			</mx:VBox>
 		</mx:HBox>
-	</mx:HBox>
-
-	<mx:Label text="{resourceManager.getString('drilldown','videoFlavors')}" styleName="drillDownTitleLabel"/>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}"
-				  includeInLayout="{_flavorAssets.length==0}"/>
-		<view:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" dataProvider="{_flavorAssets}"
-						   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"
-						   creationComplete="flavorsTable_creationCompleteHandler(event)" width="100%"/>
-	</mx:HBox>
-
-
+		<mx:Label text="{resourceManager.getString('drilldown','metadataDetails')}" styleName="drillDownTitleLabel"/>
+	
+		<mx:VBox>
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('drilldown','name') + ':'}" width="75" styleName="drillDownLabel"/>
+				<mx:Text text="{_name}" width="500" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('drilldown','description') +':'}" width="75" styleName="drillDownLabel"/>
+				<mx:Text text="{_description}" width="500" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="{resourceManager.getString('drilldown','tags') + ':'}" width="75" styleName="drillDownLabel"/>
+				<mx:Text text="{_tags}" width="500" styleName="drillDownSubLabel"/>
+			</mx:HBox>
+		</mx:VBox>
+	
+		<mx:Label text="{resourceManager.getString('drilldown','thumbnails')}" styleName="drillDownTitleLabel"/>
+		<mx:HBox>
+			<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_thumbsArray.length==0}"
+					  includeInLayout="{_thumbsArray.length==0}"/>
+			<mx:HBox height="100%" verticalAlign="middle" visible="{(_thumbsArray.length > 0)}"
+					 includeInLayout="{(_thumbsArray.length>0)}">
+				<mx:LinkButton id="prevBtn" visible="{!_pager.isFirstPage}" includeInLayout="{!_pager.isFirstPage}"
+							   click="{onPrevClick()}" styleName="moveLeftButton"/>
+				<mx:HorizontalList width="100%" columnCount="{_pager.visiblePageData.length}" rowCount="1"
+								   dataProvider="{_pager.visiblePageData}" borderStyle="solid" paddingRight="0"
+								   itemRenderer="com.kaltura.edw.view.ir.distribution.ThumbDetailsRenderer"
+								   height="175" borderSides="top,left,bottom"/>
+				<mx:LinkButton id="nextBtn" visible="{!(_pager.isLastPage)}" includeInLayout="{!(_pager.isLastPage)}"
+							   click="{onNextClick()}" styleName="moveRightButton"/>
+			</mx:HBox>
+		</mx:HBox>
+	
+		<mx:Label text="{resourceManager.getString('drilldown','videoFlavors')}" styleName="drillDownTitleLabel"/>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','thumbanilNotRequired')}" visible="{_flavorAssets.length==0}"
+					  includeInLayout="{_flavorAssets.length==0}"/>
+			<view:FlavorsTable id="flavorsTable" rowCount="{_flavorAssets.length}" dataProvider="{_flavorAssets}"
+							   visible="{_flavorAssets.length>0}" includeInLayout="{_flavorAssets.length>0}"
+							   creationComplete="flavorsTable_creationCompleteHandler(event)" width="100%"/>
+		</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}" click="save()" buttonMode="true"
 				   enabled="{enableChanges}"/>
