@@ -29,6 +29,7 @@ package com.kaltura.kmvc.model
 			_packMap[className] = dataPack;
 		}
 		
+		[Bindable("propertyChange")]
 		/**
 		 * Returns the single Data Pack that was created from the specified class.
 		 * Any DataPackBase extending class can be sent to this method, even if no 
