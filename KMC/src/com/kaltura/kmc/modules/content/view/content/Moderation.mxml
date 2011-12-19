@@ -26,10 +26,11 @@
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
 			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.KdpEventTypes;
-			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
 			import com.kaltura.kmc.modules.content.events.SelectionEvent;
@@ -49,6 +50,8 @@
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -67,7 +70,12 @@
 			public function set entryDetailsModel(value:KMvCModel):void {
 				_entryDetailsModel = value;
 				showThumbnails = (entryDetailsModel.getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbsList;
-				distributionProfilesArray = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+				if (_disProfWatcher) {
+					_disProfWatcher.unwatch();
+				}
+				var dpi:DistributionProfileInfo = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo; 
+				_disProfWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", dpi, "kalturaDistributionProfilesArray"); 
+//				_distributionProfilesArray = dpi.kalturaDistributionProfilesArray;
 			}
 			
 			public function get entryDetailsModel():KMvCModel {
@@ -124,6 +132,8 @@
 			 * */
 			private var _ready:Boolean = false;
 			
+			
+			private var _disProfWatcher:ChangeWatcher;
 			
 			[Bindable]
 			/**

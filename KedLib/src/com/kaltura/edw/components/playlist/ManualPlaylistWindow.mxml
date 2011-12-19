@@ -25,6 +25,7 @@
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.view.EntryDetailsWin;
+			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.types.KalturaBaseEntryOrderBy;
 			import com.kaltura.types.KalturaPlaylistType;
@@ -35,6 +36,8 @@
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -46,11 +49,18 @@
 
 
 
-//			/**
-//			 * playlist related model pieces
-//			 * */
-//			public var playlistModel:PlaylistModel;
-
+			private var _distProsWatcher:ChangeWatcher;
+			
+			/**
+			 * set distribution profiles via binding
+			 * */
+			public function setDistibutionProfileInfo(value:DistributionProfileInfo):void {
+				if (_distProsWatcher) {
+					_distProsWatcher.unwatch();
+				}
+				_distProsWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", value, "kalturaDistributionProfilesArray" );
+			}
+			
 			[Bindable]
 			/**
 			 * Distribution profiles
