@@ -937,10 +937,10 @@
 			private function saveEntryDetails():void {
 				var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, _undoToEntry, _undoToEntry.id);
 				cgEvent.data = {entry: _undoToEntry, closeAfterSave: _closeAfterSave, nextEntryPending: _nextPendingEntry};
-				if (_closeAfterSave || _nextPendingEntry) {
+//				if (_closeAfterSave || _nextPendingEntry) {
 					cgEvent.source = this;
 					cgEvent.onComplete = handleSaveComplete;
-				}
+//				}
 				edwController.dispatch(cgEvent);
 				
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
@@ -953,6 +953,9 @@
 				}
 				else if (_nextPendingEntry) {
 					setNextEntry();
+				}
+				else {
+					initTabsData();
 				}
 			}
 
