@@ -3,8 +3,8 @@
 		 creationComplete="onCreationComplete()" verticalGap="0" xmlns:et1="com.kaltura.edw.components.et.*">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.types.KalturaPlayableEntryOrderBy;
 			import com.kaltura.utils.KTimeUtil;
@@ -14,10 +14,15 @@
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CollectionEvent;
-			[Bindable]
-			private var _dataProvider:ArrayCollection;
+			
+			public static const MAX_ENTRIES_IN_PL:int = 200;
+			
 			[Bindable]
 			public var limit:uint = 20;
+			
+			[Bindable]
+			private var _dataProvider:ArrayCollection;
+			
 			[Bindable]
 			public var showLinks:Boolean = true;
 			[Bindable]
@@ -87,6 +92,10 @@
 					if (ORDER_BY_ARR[i] == orderBy)
 						ruleBasedPlaylistOrderBy.selectedIndex = i;
 				}
+			}
+			
+			public function getPlaylistLimit():int {
+				return maxEntriesInPlaylist.value;
 			}
 
 
@@ -213,7 +222,7 @@
 			</mx:dataProvider>
 		</mx:ComboBox>
 		<mx:Label text="{resourceManager.getString('cms', 'maxDynPlst')}"/>
-		<mx:NumericStepper id="maxEntriesInPlaylist" minimum="1" maximum="50" width="52" value="{limit}"
+		<mx:NumericStepper id="maxEntriesInPlaylist" minimum="1" maximum="{MAX_ENTRIES_IN_PL}" width="52" value="{limit}"
 						   change="{onNumericChange()}"/>
 	</mx:HBox>
 </mx:VBox>

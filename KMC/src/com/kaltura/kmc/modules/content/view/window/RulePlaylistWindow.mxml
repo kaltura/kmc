@@ -19,13 +19,14 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.IDataOwner;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.components.playlist.PlaylistEntries;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.PlaylistModel;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.control.KedController;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -354,9 +355,9 @@
 			 * @param filtersArray	a list of KalturaMediaEntryFilterForPlaylist defining the playlist
 			 * */
 			private function saveNewPlaylist(filtersArray:Array):void {
-				//new playlist - add service
 				var newPlaylist:KalturaPlaylist = new KalturaPlaylist();
-				newPlaylist.totalResults = 50; // Aried - 50 is a hard coded max what so ever 
+				// always pass the max limit, this way the sum of filters limits will apply. 
+				newPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL; 
 				newPlaylist.name = playlistName.text;
 				newPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				newPlaylist.description = playlistDescription.text;
@@ -367,7 +368,8 @@
 			
 			private function saveUpdatedPlaylist(filtersArray:Array):void {
 				editPlaylist.name = playlistName.text;
-				editPlaylist.totalResults = 50;
+				// always pass the max limit, this way the sum of filters limits will apply.
+				editPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL;
 				editPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				editPlaylist.filters = filtersArray;
 				editPlaylist.description = playlistDescription.text;
@@ -405,7 +407,7 @@
 				cgEvent.dispatch();
 
 				var playlist:KalturaPlaylist = new KalturaPlaylist();
-				playlist.totalResults = 50;
+				playlist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL;
 				playlist.filters = getRulesArray();
 
 				cgEvent = new KMCEntryEvent(KMCEntryEvent.GET_RULE_BASED_PLAYLIST, playlist);

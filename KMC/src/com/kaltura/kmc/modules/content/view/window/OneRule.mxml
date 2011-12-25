@@ -13,8 +13,8 @@
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
-			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.control.KedController;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmvc.control.KMvCEvent;
@@ -113,12 +113,11 @@
 			}
 
 			/**
-			 * take current rule and execute it to estimate the outputlse;
-			 * filter.moderationStatusContainer.includeInLayout
+			 * take current rule and execute it to estimate the output;
 			 */
 			public function runRule():void {
 				var playlist:KalturaPlaylist = new KalturaPlaylist();
-				playlist.totalResults = entries.maxEntriesInPlaylist.value;
+				playlist.totalResults = entries.getPlaylistLimit();
 				playlist.playlistType = KalturaPlaylistType.DYNAMIC;
 
 				var orderByStr:String = entries.getSelectedOrderBy();
@@ -152,7 +151,8 @@
 			public function get ruleFilter():KalturaMediaEntryFilterForPlaylist {
 				var plf:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter;
 				plf.statusIn = "2,1"; // only ready items 
-				plf.limit = entries.maxEntriesInPlaylist.value;
+				plf.limit = PlaylistEntries.MAX_ENTRIES_IN_PL;
+//				plf.limit = entries.getPlaylistLimit();
 				plf.orderBy = entries.getSelectedOrderBy();
 				return plf;
 			}
