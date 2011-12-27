@@ -2,15 +2,19 @@ package com.kaltura.kmc.business.module
 {
 	import com.kaltura.kmc.business.KmcModuleLoader;
 	import com.kaltura.kmc.events.KmcModuleEvent;
+	import com.kaltura.kmc.modules.KmcModule;KmcModule;
+	
 	
 	import mx.modules.ModuleLoader;
 	
 	import org.flexunit.Assert;
 	import org.flexunit.async.Async;
 	import org.fluint.uiImpersonation.UIImpersonator;
+	import mx.controls.ComboBox;ComboBox;
 
 	public class TestModuleLoaded
 	{		
+		
 		private var _kmcModuleLoader:KmcModuleLoader;
 		private var _ml:ModuleLoader;
 		
@@ -18,7 +22,7 @@ package com.kaltura.kmc.business.module
 		public function setUp():void
 		{
 			_kmcModuleLoader = new KmcModuleLoader();
-			_ml = _kmcModuleLoader.loadKmcModule("modules/Dashboard.swf", "dashboard");
+			_ml = _kmcModuleLoader.loadKmcModule("bin-debug/modules/Dashboard.swf", "dashboard");
 			Async.proceedOnEvent( this, _kmcModuleLoader, KmcModuleEvent.MODULE_LOADED, 2000 );
 			UIImpersonator.addChild( _ml );
 		}

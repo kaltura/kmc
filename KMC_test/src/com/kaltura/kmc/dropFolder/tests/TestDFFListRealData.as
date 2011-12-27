@@ -1,7 +1,7 @@
 package com.kaltura.kmc.dropFolder.tests
 {
-	import com.kaltura.kmc.modules.content.commands.dropFolder.ListDropFoldersFilesCommand;
-	import com.kaltura.kmc.modules.content.events.DropFolderFileEvent;
+	import com.kaltura.edw.control.events.DropFolderFileEvent;
+	import com.kaltura.edw.control.commands.dropFolder.ListDropFoldersFilesCommand;
 	import com.kaltura.vo.KalturaDropFolderFile;
 	import com.kaltura.vo.KalturaDropFolderFileListResponse;
 	import com.kaltura.vo.KalturaMediaEntry;

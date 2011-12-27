@@ -1,10 +1,8 @@
 package com.kaltura.kmc.flavourAssetUpload.tests
 {
+	import com.kaltura.edw.view.window.flavors.AddFlavorAssetsWindow;
+	import com.kaltura.edw.vo.UploadFileVo;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.view.window.flavors.AddFlavorAssetsWindow;
-	import com.kaltura.kmc.modules.content.vo.UploadFileVo;
-	
-	import flash.net.FileReference;
 	
 	import flexunit.framework.Assert;
 	

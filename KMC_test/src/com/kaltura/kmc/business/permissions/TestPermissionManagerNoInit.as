@@ -1,8 +1,6 @@
 package com.kaltura.kmc.business.permissions {
+	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.vo.KalturaPermissionListResponse;
-	
-	import flexunit.framework.Assert;
-	import com.kaltura.kmc.business.PermissionManager;
 
 	public class TestPermissionManagerNoInit {
 

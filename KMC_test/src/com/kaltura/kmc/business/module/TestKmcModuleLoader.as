@@ -34,7 +34,7 @@ package com.kaltura.kmc.business.module {
 			KmcModule;HBox;ComboBox;
 			var asyncHandler:Function = Async.asyncHandler(this, handleSuccess, 5000, null, handleTimeout);
 			_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOADED, asyncHandler, false, 0, true);
-			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("modules/Dashboard.swf", "dashboard");
+			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("bin-debug/modules/Dashboard.swf", "dashboard");
 			ml.loadModule();
 		}
 
@@ -44,7 +44,7 @@ package com.kaltura.kmc.business.module {
 			KmcModule; 
 			var asyncHandler:Function = Async.asyncHandler(this, handleSuccess, 10000, null, handleTimeout);
 			_kmcModuleLoader.addEventListener(KmcModuleEvent.MODULE_LOAD_ERROR, asyncHandler, false, 0, true);
-			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("modules/Dashboard1.swf", "dashboard");
+			var ml:ModuleLoader = _kmcModuleLoader.loadKmcModule("bin-debug/modules/Dashboard1.swf", "dashboard");
 			ml.loadModule();
 		}
 

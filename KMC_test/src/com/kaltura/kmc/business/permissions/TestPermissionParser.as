@@ -1,10 +1,8 @@
 package com.kaltura.kmc.business.permissions {
-	import com.kaltura.kmc.business.PermissionsParser;
-	import com.kaltura.kmc.vo.PermissionVo;
-
+	import com.kaltura.edw.business.permissions.PermissionsParser;
+	import com.kaltura.edw.vo.PermissionVo;
+	
 	import flexunit.framework.Assert;
-
-	import org.flexunit.asserts.assertEquals;
 
 	public class TestPermissionParser extends PermissionsParser {
 
