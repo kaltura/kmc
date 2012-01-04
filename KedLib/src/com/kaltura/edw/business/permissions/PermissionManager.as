@@ -476,7 +476,7 @@ package com.kaltura.edw.business.permissions {
 		 */
 		private static var _instance:PermissionManager;
 
-//		CONFIG::realBuild {
+		CONFIG::realBuild {
 			/**
 			 * @param enforcer	singleton garantee
 			 */
@@ -495,28 +495,28 @@ package com.kaltura.edw.business.permissions {
 				}
 				return _instance;
 			}
-//		}
+		}
 
-//		CONFIG::unitTestingBuild {
-//			/**
-//			 * @param enforcer	singleton garantee
-//			 */
-//			public function PermissionManager() {
-//
-//			}
-//
-//
-//			/**
-//			 * Singleton means of retreiving an instance of the
-//			 * <code>PermissionManager</code> class.
-//			 */
-//			public static function getInstance():PermissionManager {
-//				if (_instance == null) {
-//					_instance = new PermissionManager();
-//				}
-//				return _instance;
-//			}
-//		}
+		CONFIG::unitTestingBuild {
+			/**
+			 * Constructor
+			 */
+			public function PermissionManager() {
+
+			}
+
+
+			/**
+			 * Singleton means of retreiving an instance of the
+			 * <code>PermissionManager</code> class.
+			 */
+			public static function getInstance():PermissionManager {
+				if (_instance == null) {
+					_instance = new PermissionManager();
+				}
+				return _instance;
+			}
+		}
 
 	}
 }
