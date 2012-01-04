@@ -75,22 +75,6 @@
 			private var _entryIndexWatcher:ChangeWatcher;
 
 			/**
-			 * watch when the selected entry's status changed
-			 * (to also changed the undoTo entry status)
-			 * */
-			private var _statusWatcher:ChangeWatcher;
-
-			/**
-			 * watch selected entry's replacement status
-			 * */
-			private var _replacementWatcher:ChangeWatcher;
-
-			/**
-			 * watch replacing entry id
-			 * */
-			private var _replacingEntryWatcher:ChangeWatcher;
-
-			/**
 			 * watch loading flag
 			 * */
 			private var _uiEnabledWatcher:ChangeWatcher;
@@ -311,21 +295,6 @@
 					_selectedEntry.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
 					
 					setWindowTitle();
-					
-					if (_statusWatcher) {
-						_statusWatcher.unwatch();
-					}
-					_statusWatcher = BindingUtils.bindSetter(onStatusChange, selectedEntry, "status");
-					
-					if (_replacementWatcher) {
-						_replacementWatcher.unwatch();
-					}
-					_replacementWatcher = BindingUtils.bindSetter(onReplacementStatusChange, selectedEntry, "replacementStatus");
-					
-					if (_replacingEntryWatcher) {
-						_replacingEntryWatcher.unwatch();
-					}
-					_replacingEntryWatcher = BindingUtils.bindSetter(onReplacingEntryChange, selectedEntry, "replacingEntryId");
 
 					if (_isCreationComplete) {
 						if (!isDifferentEntry) {
@@ -360,10 +329,10 @@
 			}
 			
 			/**
-			 * after save, copy new attributes to _undoToEntry
+			 * after save/update, copy new attributes to _undoToEntry
 			 * */
 			private function copyToUndoTo(e:PropertyChangeEvent):void {
-				if (e.kind == PropertyChangeEventKind.UPDATE) {
+				if (_undoToEntry && e.kind == PropertyChangeEventKind.UPDATE) {
 					_undoToEntry[e.property] = e.newValue;
 				}
 			}
@@ -484,38 +453,6 @@
 				else {
 					title += _undoToEntry.name;
 
-				}
-			}
-
-
-			/**
-			 * copy new status to _undoTo entry
-			 * */
-			private function onStatusChange(value:String):void {
-				if (_undoToEntry) {
-					_undoToEntry.status = value;
-				}
-			}
-
-
-			/**
-			 * copy new replacement status to _undoTo entry
-			 * */
-			private function onReplacementStatusChange(value:String):void {
-				if (_undoToEntry) {
-					_undoToEntry.replacementStatus = value;
-//					_undoToEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_undoToEntry, 'replacementStatus',
-//						_undoToEntry.replacementStatus, _undoToEntry.replacementStatus));
-				}
-			}
-
-
-			/**
-			 * copy new replacing entry id to _undoTo entry
-			 * */
-			private function onReplacingEntryChange(value:String):void {
-				if (_undoToEntry) {
-					_undoToEntry.replacingEntryId = value;
 				}
 			}
 
@@ -774,15 +711,15 @@
 				if (_entryIndexWatcher) {
 					_entryIndexWatcher.unwatch();
 				}
-				if (_statusWatcher) {
-					_statusWatcher.unwatch();
-				}
-				if (_replacementWatcher) {
-					_replacementWatcher.unwatch();
-				}
-				if (_replacingEntryWatcher) {
-					_replacingEntryWatcher.unwatch();
-				}
+//				if (_statusWatcher) {
+//					_statusWatcher.unwatch();
+//				}
+//				if (_replacementWatcher) {
+//					_replacementWatcher.unwatch();
+//				}
+//				if (_replacingEntryWatcher) {
+//					_replacingEntryWatcher.unwatch();
+//				}
 				if (_sameRefidWatcher) {
 					_sameRefidWatcher.unwatch();
 				}
