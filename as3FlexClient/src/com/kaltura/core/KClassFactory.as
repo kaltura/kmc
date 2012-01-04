@@ -1,8 +1,9 @@
 package com.kaltura.core
 {
-	import flash.utils.getDefinitionByName;
 	import com.kaltura.utils.ObjectUtil;
+	
 	import flash.utils.describeType;
+	import flash.utils.getDefinitionByName;
 
 	
 	public class KClassFactory 
@@ -50,15 +51,15 @@ package com.kaltura.core
 	        		}
 	        		else //if complex object and not an array
 	        		{
-						try{
+						try {
 							var newComplexObject : * = setObject( instance , prop.name() , prop.objectType , prop );
 							instance[prop.name()] = newComplexObject;
-						}catch(e:Error){
-							//if the object can't be cast don't throgh an error and try to populate it
+						} catch(e:Error) {
+							//if the object can't be cast don't throw an error and try to populate it
 							var description:XML = describeType( instance );
 							var xmlItem : XML;
 						
-							//I am searching for the item to take his exec type and create a new instance from it
+							//I am searching for the item to take his exact type and create a new instance from it
 							for each (xmlItem in description.children()) {
 								if(prop.name() == xmlItem.@name.toString()){
 									var testType : String =  String(xmlItem.@type.toString()).replace("::","." );
@@ -82,7 +83,10 @@ package com.kaltura.core
 	        	}
 	        	else
 	        	{
-	        		if( prop.name() && !(instance[prop.name()] is Array) )
+					//TODO instead of using "is Array" use the class definition 
+					
+					
+	        		if( prop.name() && !propIsArray(instance, prop) )
 	        		{
 	        			if(instance[prop.name()] is Boolean)
 	        			{
@@ -100,6 +104,25 @@ package com.kaltura.core
 	       	}
 	
 	       	return instance;
+		}
+		
+		/**
+		 * checks whether an attribute is of type Array 
+		 * @param instance	instance of the class whose attribute is being investigated
+		 * @param prop	nameof the attribute being investigated
+		 * @return true if instance.prop is typed as Array
+		 */		
+		private function propIsArray(instance:Object, prop:XML):Boolean {
+			var description:XML = describeType( instance );
+			for each (var xmlItem:XML in description.children()) {
+				if(prop.name() == xmlItem.@name.toString()){
+					var testType:String =  String(xmlItem.@type.toString()).replace("::","." );
+					if (testType == "Array") {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 		
 		private function setObject( instance : Object , propName : String , objectType : String , xmlInfo : XML ) : Object

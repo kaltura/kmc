@@ -77,6 +77,7 @@ package com.kaltura.vo
 			newAcp.profile.createdAt = this.profile.createdAt;
 			newAcp.profile.id = this.profile.id;
 			newAcp.profile.isDefault = this.profile.isDefault;
+			newAcp.profile.restrictions = new Array();
 			
 			for each(var restriction:KalturaBaseRestriction in this.profile.restrictions)
 			{

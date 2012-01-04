@@ -205,12 +205,14 @@ package com.kaltura.edw.control.commands
 			{
 				var acVo:AccessControlProfileVO = new AccessControlProfileVO();
 				acVo.profile = kac;
-				// remove unknown objects
-				// if any restriction is unknown, we remove it from the list.
-				// this means it is not supported in KMC at the moment
-				for (var i:int = 0; i<kac.restrictions.length; i++) {
-					if (! (kac.restrictions[i] is KalturaBaseRestriction)) {
-						kac.restrictions.splice(i, 1);
+				if (kac.restrictions) {
+					// remove unknown objects
+					// if any restriction is unknown, we remove it from the list.
+					// this means it is not supported in KMC at the moment
+					for (var i:int = 0; i<kac.restrictions.length; i++) {
+						if (! (kac.restrictions[i] is KalturaBaseRestriction)) {
+							kac.restrictions.splice(i, 1);
+						}
 					}
 				}
 				tempArrCol.addItem(acVo);

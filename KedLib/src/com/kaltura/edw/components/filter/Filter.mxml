@@ -238,10 +238,10 @@
 			private function isAdvancedSearchFilterOn(currentFilter:KalturaBaseEntryFilter):Boolean {
 				var result:Boolean = false;
 				var profiles:Array = (currentFilter.advancedSearch as KalturaSearchOperator).items; // either metadata of distribution profiles 
-				if (profiles.length > 0){
+				if (profiles && profiles.length > 0){
 					// for each item (profile), see if it has items (actual search stuff)
 					for (var i:int = 0; i<profiles.length; i++) {
-						if ((profiles[i] as KalturaSearchOperator).items.length > 0) {
+						if ((profiles[i] as KalturaSearchOperator).items && (profiles[i] as KalturaSearchOperator).items.length > 0) {
 							result = true;
 							break;
 						}
@@ -534,6 +534,7 @@
 							//if the title selected we don't need to pass the metadata filter 
 							//but if it's not we will dive to check what values selected
 							if (!btnArr[0].selected) {
+								fieldKalturaMetadataSearchItem.items = new Array();
 								for (var j:int = 1; j < btnArr.length; j++) {
 									var fieldValueSearchCondition:KalturaSearchCondition = new KalturaSearchCondition();
 									if (btnArr[j].selected) {
@@ -548,13 +549,20 @@
 						btnArr = null;
 						
 						//if we have items in the array add them to main filter
-						if (fieldKalturaMetadataSearchItem.items.length > 0) {
+						if (fieldKalturaMetadataSearchItem.items && fieldKalturaMetadataSearchItem.items.length > 0) {
+							if (!mainKalturaMetadataSearchItem.items) {
+								mainKalturaMetadataSearchItem.items = new Array();
+							}
 							mainKalturaMetadataSearchItem.items.push(fieldKalturaMetadataSearchItem);
 						}
 					}
 					
 					if (currentFilter is KalturaMediaEntryFilter && currentFilter.advancedSearch) {
-						(currentFilter.advancedSearch as KalturaSearchOperator).items.push(mainKalturaMetadataSearchItem);
+						var kso:KalturaSearchOperator = currentFilter.advancedSearch as KalturaSearchOperator; 
+						if (!kso.items) {
+							kso.items = new Array();
+						}
+						kso.items.push(mainKalturaMetadataSearchItem);
 					}
 				}
 				
@@ -570,6 +578,7 @@
 				var btnArr:Array = _metadataFilters[DESTINATIONS_FILTER];
 				
 				if (btnArr) {
+					distributionSearchItem.items = new Array();
 					for (var i:int = 1; i < btnArr.length; i++) {
 						if (btnArr[i].selected) {
 							for (var j:int = 0; j < distributionProfileArr.length; j++) {
@@ -582,9 +591,8 @@
 						}
 					}
 									
-					if (currentFilter is KalturaMediaEntryFilter && distributionSearchItem.items.length) {
+					if (currentFilter is KalturaMediaEntryFilter && distributionSearchItem.items && distributionSearchItem.items.length) {
 						((currentFilter as KalturaMediaEntryFilter).advancedSearch as KalturaSearchOperator).items.push(distributionSearchItem);
-						
 					}
 				}
 				

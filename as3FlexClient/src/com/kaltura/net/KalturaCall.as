@@ -1,3 +1,30 @@
+// ===================================================================================================
+//                           _  __     _ _
+//                          | |/ /__ _| | |_ _  _ _ _ __ _
+//                          | ' </ _` | |  _| || | '_/ _` |
+//                          |_|\_\__,_|_|\__|\_,_|_| \__,_|
+//
+// This file is part of the Kaltura Collaborative Media Suite which allows users
+// to do with audio, video, and animation what Wiki platfroms allow them to do with
+// text.
+//
+// Copyright (C) 2006-2011  Kaltura Inc.
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// @ignore
+// ===================================================================================================
 package com.kaltura.net {
 	
 	import com.kaltura.KalturaClient;
@@ -21,7 +48,8 @@ package com.kaltura.net {
 		public var success:Boolean = false;
 		public var action : String;
 		public var service : String;
-		public var method : String = URLRequestMethod.POST;
+		public static var defaultMethod : String = URLRequestMethod.POST;
+		public var method : String = defaultMethod;
 		
 		public var useTimeout:Boolean = true;
 		
@@ -44,7 +72,7 @@ package com.kaltura.net {
 		 * OVERRIDE this function to make init the right delegate action
 		 * */
 		public function execute():void {}
-		 
+		
 		public function setRequestArgument(name:String, value:*):void {
 			if (value is Number)
 			{
@@ -58,7 +86,7 @@ package com.kaltura.net {
 			}
 			if (value === null) {	return;	 }
 			if (value === KalturaClient.NULL_STRING) {	this.args[name + '__null'] = '';  return;	 }
-				
+			
 			if (name) { //&& String(value).length > 0
 				this.args[name] = value; 
 			}
@@ -112,7 +140,7 @@ package com.kaltura.net {
 			}
 			else
 				objKeys = ObjectUtil.getObjectAllKeys( obj );
-	
+			
 			var j:int=0;
 			for (var i:int=0; i<objKeys.length; i++)
 			{
@@ -190,13 +218,13 @@ package com.kaltura.net {
 					//var objArr : Array = getQualifiedClassName(arr[i]).split("::");
 					//var tempPrefix : String = objArr[objArr.length-1];
 					tempArr  = kalturaObject2Arrays( arr[i] , newPrefix ); //  + ":" +tempPrefix
-
+					
 					keyArray = keyArray.concat( tempArr[0] );
 					valArray = valArray.concat( tempArr[1] );
 					j = valArray.length;
 				}
 			}
-
+			
 			if (arr.length == 0)
 			{
 				keyArray[j] = prefix + ":-";
@@ -207,7 +235,7 @@ package com.kaltura.net {
 			keyValArr = [ keyArray , valArray];
 			return keyValArr;
 		}
-
+		
 		
 		protected function applySchema(p_shema:Array,p_args:Array):void 
 		{	
