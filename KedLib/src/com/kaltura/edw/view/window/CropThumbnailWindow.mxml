@@ -68,8 +68,13 @@
 			private var _maxImageHeight:int;
 			private var _maxImageWidth:int;
 			private var _selectedEntry:KalturaBaseEntry;
+			
 			[Bindable]
+			/**
+			 * holds one thumbnail of each size, with relevant label
+			 * */
 			private var _presetSizeList:Array;
+			
 			[Bindable]
 			private var _isPreSize:Boolean = false;
 			[Bindable]
@@ -321,13 +326,16 @@
 			 * set the thumbnails list according to the given array. will save only thumbnails that contain thumbAsset
 			 * */
 			public function set thumbnailsList(value:Array):void {
-				//saves only thumbnails with assets
 				_thumbnailsList = new Array();
 				_presetSizeList = new Array();
 				for (var i:int = 0; i < value.length; i++) {
 					var currentThumb:ThumbnailWithDimensions = value[i] as ThumbnailWithDimensions;
+					
+					// save only thumbnails with assets
 					if (currentThumb.thumbAsset && currentThumb.thumbAsset.status == KalturaFlavorAssetStatus.READY)
 						_thumbnailsList.push(currentThumb);
+					
+					// if any distribution profiles use these dimensions 
 					if (currentThumb.usedDistributionProfilesArray.length > 0) {
 						var presetAlreadyExist:Boolean = false;
 						for (var j:int = 0; j < _presetSizeList.length; j++) {
@@ -337,6 +345,7 @@
 								break;
 							}
 						}
+						// if there is no other thumb with the same size, remember this thumb
 						if (!presetAlreadyExist)
 							_presetSizeList.push({label: currentThumb.width + ' X ' + currentThumb.height, data: currentThumb});
 					}
@@ -584,10 +593,12 @@
 		<mx:VBox id="controlVBox" paddingLeft="0" width="216" height="{imageBox.height}" verticalGap="0"
 				 verticalScrollPolicy="off" horizontalScrollPolicy="off">
 			<mx:VBox id="listBox" styleName="cropperControlsVBox" width="100%">
+				<!-- images list -->
 				<mx:HBox paddingLeft="12">
 					<mx:Label text="{resourceManager.getString('drilldown','chooseThumbnail')}" styleName="cropperLabel"
 							  width="100%"/>
 				</mx:HBox>
+				
 				<mx:VBox paddingLeft="0" width="100%" height="100%" horizontalAlign="center" paddingTop="0"
 						 verticalCenter="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 					<mx:HRule width="100%"/>
@@ -608,13 +619,15 @@
 					</mx:List>
 				</mx:VBox>
 			</mx:VBox>
-
+			
+			<!-- toolbox -->
 			<mx:VBox id="labelVbox" width="100%" height="32" styleName="cropperLabelVBox">
 				<mx:HBox paddingLeft="12">
 					<mx:Label text="{resourceManager.getString('drilldown','positionAndSize')}" styleName="cropperLabel"
 							  width="100%"/>
 				</mx:HBox>
 			</mx:VBox>
+			
 			<mx:VBox borderStyle="solid" width="100%" height="{controlVBox.height - listBox.height - labelVbox.height}"
 					 paddingLeft="12" verticalScrollPolicy="on" horizontalScrollPolicy="off">
 				<mx:VBox verticalGap="0">
