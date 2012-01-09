@@ -451,35 +451,58 @@ The main window for new player wizard.
 					contentPage.listPlaylist();
 			}
 			
+			
+			/**
+			 * calculate the correct skin pathes for "dark" and "light". 
+			 * the assumption is that both skins are kept in the same folder, and that the 
+			 * light skin has the same name as the dark one with the addition of "_light".
+			 * @param the path from which to extract the values, can be either dark or light
+			 * @return object with both values {dark, light} 
+			 * */
+			protected function extractSkinPathes(oldSkinPath:String):Object {
+				var dark:String, light:String;
+				var ind:int = oldSkinPath.indexOf("_light");
+				if (ind > -1) {
+					light = oldSkinPath;
+					// for the dark, remove "_light" from the path
+					dark = oldSkinPath.replace("_light", "");
+				}
+				else {
+					dark = oldSkinPath;
+					// for the light, remove ".swf" then add "_light.swf"
+					ind = oldSkinPath.indexOf(".swf?"); 
+					if (ind > -1) {
+						// in some cases, the skinPath has a "dirty" path (ends with &a=2)
+						light = oldSkinPath.substr(0, ind) + "_light.swf"; 
+					}
+					else {
+						light = oldSkinPath.substr(0, oldSkinPath.length - 4) + "_light.swf";
+					}
+				}
+				return {dark:dark, light:light};
+			}
+			
+			
 			/**
 			 * set the saved values into the matching template theme.
 			 * also, to support old templates, add the skinpath and theme name if missing
 			 * */
 			private function setStyleValuesInTemplate(selectedTheme:XML, templateThemes:XMLList, oldSkinPath:String):void {
-				// extract skin pathes from oldSkinPath
-				var dark:String, light:String;
-				var ind:int = oldSkinPath.indexOf("_light");
-				if (ind > -1) {
-					light = oldSkinPath;
-					dark = oldSkinPath.substr(ind, 6);
-				}
-				else {
-					dark = oldSkinPath;
-					light = oldSkinPath.substr(0, oldSkinPath.length - 4) + "_light.swf";
-				}
+				// extract skin paths from oldSkinPath
+				var paths:Object = extractSkinPathes(oldSkinPath); 
 				
 				// find the selected theme in the template's themes list
 				for (var i:int = 0; i<templateThemes.length(); i++) {
 					// for backwards compat., add skin pathes if missing 
 					if (templateThemes[i].@id == "dark") {
 						if (templateThemes[i].themeSkinPath.toString().length == 0) {
-							templateThemes[i].themeSkinPath = dark;
+							templateThemes[i].themeSkinPath = paths.dark;
 							templateThemes[i].@name = "Dark";
 						}
 					}
 					else if (templateThemes[i].@id == "light") {
 						if (templateThemes[i].themeSkinPath.toString().length == 0) {
-							templateThemes[i].themeSkinPath = light;
+							templateThemes[i].themeSkinPath = paths.light;
 							templateThemes[i].@name = "Light";
 						}
 					}
@@ -496,6 +519,8 @@ The main window for new player wizard.
 						
 						// mark the selected theme so we can select it later
 						templateThemes[i].@selected = "true";
+						
+						// don't break after finding selected, so missing values will be added to all templates
 					}
 					
 				}
