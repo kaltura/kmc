@@ -12,10 +12,6 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
-			import com.kaltura.analytics.GoogleAnalyticsConsts;
-			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.ModelEvent;
@@ -34,15 +30,13 @@
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
-			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KTimeUtil;
-			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAsset;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Image;
 			import mx.events.ResizeEvent;
@@ -466,15 +460,6 @@
 
 
 			/**
-			 * track thumbnail change
-			 * */
-			private function onThumbnailSaved():void {
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "KDP3>DrillDown>Change Thumbnail");
-			}
-
-
-			/**
 			 * Check if this entry is a mix and if it was made in advanced editor
 			 * if it is
 			 */
@@ -537,7 +522,6 @@
 				kdp3StaticSwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				kdp3StaticSwfLoader.content["init"]();
-				kdp3StaticSwfLoader.addEventListener(KdpEventTypes.THUMBNAIL_SAVED, onThumbnailSaved)
 			}
 
 
