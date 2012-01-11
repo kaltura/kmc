@@ -8,6 +8,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.permission.PermissionList;
 			import com.kaltura.commands.uiConf.UiConfGet;
@@ -288,6 +289,11 @@
 					ExternalInterface.addCallback("gotoPage", gotoPage);
 					ExternalInterface.addCallback("alert", alert);
 					ExternalInterface.addCallback("hasOngoingProcess", hasOngoingProcess);
+				}
+				
+				// handle stats:
+				if (objParam.suppressAnalytics) {
+					GoogleAnalyticsTracker.getInstance().enabled = false;
 				}
 
 				// create KalturaClient:
