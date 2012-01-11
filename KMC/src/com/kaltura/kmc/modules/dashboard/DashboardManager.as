@@ -70,11 +70,6 @@ package com.kaltura.kmc.modules.dashboard {
 		 * */
 		public var publisherName:String;
 
-		/**
-		 * call this js function to show contibution wizard
-		 * */
-		public var openKcwFunction:String;
-
 
 		public function get kc():KalturaClient {
 			return _kc;
@@ -271,23 +266,6 @@ package com.kaltura.kmc.modules.dashboard {
 			JSGate.expired();
 		}
 
-		/**
-		 * open the contribution wizard
-		 * */
-		public function openKcw():void {
-			if (openKcwFunction) {
-				ExternalInterface.call(openKcwFunction, _kc.ks);
-			}
-			else {
-				try {
-//					JSGate.openKcw(_kc.ks);
-//					ExternalInterface.call("cwFunction", _kc.ks);
-				}
-				catch (e:Error) {
-					trace('the openCw is missing, or the JS function does not exist');
-				}
-			}
-		}
 
 		/**
 		 * launch the links by clicking on the linkbuttons in the dashboard application
