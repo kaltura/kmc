@@ -18,7 +18,6 @@ package com.kaltura.kmc.modules.analytics.commands
 		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 		private var fm : FileManager = new FileManager();
 		private var _fileUrl : String = "";
-		private var _executeReportHelper : ExecuteReportHelper = new ExecuteReportHelper();
 		
 		public function execute(event:CairngormEvent):void
 		{
@@ -45,7 +44,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			headers = headers.substr(0,headers.length-1);
 			
-			var krif : KalturaReportInputFilter = _executeReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 			
 			//NEVER SHOULD HAPPEN BUT IF DOES THEN IT'S BETTER THEN FAIL SENDING MASSAGE
 			if( _model.selectedReportData.message == "" ) _model.selectedReportData.message="no message"; 

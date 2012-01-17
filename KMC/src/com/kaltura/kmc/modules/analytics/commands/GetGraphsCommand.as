@@ -22,7 +22,6 @@ package com.kaltura.kmc.modules.analytics.commands
 	public class GetGraphsCommand implements ICommand,IResponder
 	{
 		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-		private var _executeReportHelper : ExecuteReportHelper = new ExecuteReportHelper();
 		
 		/**
 		 * will execute the request to get all the graph results accourding to the current filter
@@ -34,9 +33,9 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingFlag = true;
 			_model.loadingChartFlag = true;
 			
-			_executeReportHelper.reportSetupBeforeExecution();
+			ExecuteReportHelper.reportSetupBeforeExecution();
 			
-			var krif : KalturaReportInputFilter = _executeReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 			
 			var objectIds : String = '';
 			if( _model.selectedEntry &&  

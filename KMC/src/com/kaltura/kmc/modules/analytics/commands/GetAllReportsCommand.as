@@ -19,7 +19,6 @@ package com.kaltura.kmc.modules.analytics.commands
 	public class GetAllReportsCommand implements ICommand, IResponder
 	{
 		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-		private var _executeReportHelper : ExecuteReportHelper = new ExecuteReportHelper();
 		
 		private var _callGetGraph : Boolean = false;
 		private var _callGetTotal : Boolean = false;
@@ -29,9 +28,9 @@ package com.kaltura.kmc.modules.analytics.commands
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;
-			_executeReportHelper.reportSetupBeforeExecution();
+			ExecuteReportHelper.reportSetupBeforeExecution();
 			
-			var krif : KalturaReportInputFilter = _executeReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 			
 			if(!_model.selectedReportData.pager)
 			{

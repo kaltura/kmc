@@ -19,16 +19,15 @@ package com.kaltura.kmc.modules.analytics.commands
 	public class GetTotalCommand implements ICommand, IResponder
 	{
 		private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-		private var _executeReportHelper : ExecuteReportHelper = new ExecuteReportHelper();
 		
 		public function execute(event:CairngormEvent):void
 		{
 			_model.loadingFlag = true;	
 			_model.loadingTotalFlag = true;
 			
-			_executeReportHelper.reportSetupBeforeExecution();
+			ExecuteReportHelper.reportSetupBeforeExecution();
 			
-			var krif : KalturaReportInputFilter = _executeReportHelper.createFilterFromCurrentReport();
+			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 			
 			var objectIds : String = '';
 			if(_model.selectedEntry &&  

@@ -16,16 +16,15 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 	public class GetTableCommand implements ICommand, IResponder {
 		private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-		private var _executeReportHelper:ExecuteReportHelper = new ExecuteReportHelper();
 
 
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			_model.loadingTableFlag = true;
 
-			_executeReportHelper.reportSetupBeforeExecution();
+			ExecuteReportHelper.reportSetupBeforeExecution();
 
-			var krif:KalturaReportInputFilter = _executeReportHelper.createFilterFromCurrentReport();
+			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();

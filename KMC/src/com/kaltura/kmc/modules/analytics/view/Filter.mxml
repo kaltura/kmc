@@ -19,10 +19,14 @@
 			import mx.resources.ResourceManager;
 
 			public static const APPLY:String = "apply";
+			
 			public static const ONE_DAY:Number = 1000 * 60 * 60 * 24;
+			
 			public var objectIds:String = '';
+			
 			[Bindable]
 			private var selectedCategoriesArr:ArrayCollection = new ArrayCollection();
+			
 			[Bindable]
 			private var _filterVo:FilterVo;
 
@@ -97,7 +101,7 @@
 				}
 
 				// save the new date
-				_filterVo.fromDate = new Date(Number(event.newDate.time - event.newDate.timezoneOffset * 60000));
+				_filterVo.fromDate = new Date(event.newDate.time);
 				_oldFromDate = _filterVo.fromDate;
 				changeRangeByDate();
 			}
@@ -117,7 +121,7 @@
 					return;
 				}
 				// save the new date
-				_filterVo.toDate = new Date(Number(event.newDate.time - event.newDate.timezoneOffset * 60000 + ONE_DAY - 1000));
+				_filterVo.toDate = new Date(event.newDate.time + ONE_DAY - 1000);
 				_oldToDate = _filterVo.toDate;
 				changeRangeByDate();
 			}
@@ -343,9 +347,9 @@
 					  change="fromDateChanged( event )" enabled="{!isLoading}"/>
 		<mx:DateField id="toDate" width="100" buttonMode="true" selectedDate="{_filterVo.toDate}"
 					  change="toDateChanged( event )" enabled="{!isLoading}"/>
-		<mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
+		<!--mx:Button label="{resourceManager.getString('analytics','apply')}" visible="false" includeInLayout="false"
 				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"
-				   enabled="{!isLoading}"/>
+				   enabled="{!isLoading}"/-->
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
 		<mx:Label text="{resourceManager.getString('analytics','categoriesTitle')}"/>
