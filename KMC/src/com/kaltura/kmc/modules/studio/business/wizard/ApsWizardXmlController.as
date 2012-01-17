@@ -42,12 +42,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * */
 		private var _fullPlayer:XML;
 
-		/**
-		 * player's visual theme
-		 */
-		private var _currentThemeId:String = "";
-
-
+		
 		/**
 		 * get XMLList of all nodes that the string appears in their id
 		 */
@@ -75,7 +70,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		/**
 		 * Clear the icon/s or the label from the Uiconf
 		 */
-		private function clearIconsOrLabels(buttonXml:XML, buttonType:String, colorObject:StyleVo, font:String):XML {
+		private function clearIconsOrLabels(buttonXml:XML, buttonType:String, colorObject:StyleVo):XML {
 			if (buttonType == "buttonControllerArea") {
 				delete buttonXml.@Icon;
 				delete buttonXml.@icon;
@@ -102,8 +97,8 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			buttonXml.@color3 = colorObject.color3;
 			buttonXml.@color4 = colorObject.color4;
 			buttonXml.@color5 = colorObject.color5;
-			if (font)
-				buttonXml.@font = font;
+			if (colorObject.fontName)
+				buttonXml.@font = colorObject.fontName;
 			return buttonXml;
 		}
 
@@ -312,14 +307,12 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						element.attribute(attributeToWrite)[0] = attributeValue;
 					}
 				}
-
 			}
 
 			// Handling the buttons. remove the icons / label in button that 
 			// should not have them (Remove attributes from XML), add colors tags
 			// and add the button type
 			var contButton:XML;
-			var selectedFont:String = style.fontName;
 
 			for each (featureXml in activeFeatures) {
 				activeFeatureName = featureXml.attribute("id")[0].toString();
@@ -329,7 +322,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					var featureNameToLookFor:String = featureXml.@id.toString() + "ControllerScreen"
 					contButton = (fullPlayerCopy.descendants().(attribute("id") == featureNameToLookFor)[0]);
 					if (contButton)
-						clearIconsOrLabels(contButton, controllerButtons.@k_value, style, selectedFont);
+						clearIconsOrLabels(contButton, controllerButtons.@k_value, style);
 				}
 				//screen buttons
 				var onScreenButtonsList:XMLList = featureXml.descendants().((attribute("id") == "StartScreen") || (attribute("id") == "EndScreen") || (attribute("id") == "PauseScreen") || (attribute("id") == "PlayScreen"));
@@ -337,63 +330,15 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					if (onscreenXML.@k_value.toString() == "true") {
 						contButton = (fullPlayerCopy.descendants().(attribute("id") == (featureXml.@id.toString() + onscreenXML.@id.toString()))[0]);
 						if (contButton)
-							clearIconsOrLabels(contButton, "buttonVideoArea", style, selectedFont);
+							clearIconsOrLabels(contButton, "buttonVideoArea", style);
 					}
 				}
 			}
 
-			// handle the volume bar
-			var volbumeButtonXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'volumeBar')[0];
-			if (volbumeButtonXml) {
-				clearIconsOrLabels(volbumeButtonXml, controllerButtons.@k_value, style, selectedFont);
-			}
+			fullPlayerCopy = colorSpecificUiElements(fullPlayerCopy, style);
 
-
-
-			// handle the movie title
-			var movieNameXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'movieName')[0];
-			if (movieNameXml) {
-				movieNameXml.@dynamicColor = "true";
-				movieNameXml.@color1 = style.color1;
-				movieNameXml.@font = selectedFont;
-			}
-
-			// handle the tab bar if available 
-			var tabBarXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'tabBar')[0];
-			if (tabBarXml) {
-				tabBarXml.@color1 = style.color1;
-				tabBarXml.@color2 = style.color2;
-				tabBarXml.@color3 = style.color3;
-				tabBarXml.@color4 = style.color4;
-				tabBarXml.@color5 = style.color5;
-				tabBarXml.@dynamicColor = "true";
-				tabBarXml.@font = selectedFont;
-			}
-
-			// handle scrubber colors
-			var scrubberXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'scrubber')[0];
-			if (scrubberXml) {
-				scrubberXml.@color1 = style.color1;
-				scrubberXml.@color2 = style.color1;
-			}
-
-			// handle timer1 colors
-			var timerXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen1')[0];
-			if (timerXML) {
-				timerXML.@color1 = style.color1;
-			}
-
-			// handle timer2 colors
-			timerXML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen2')[0];
-			if (timerXML) {
-				timerXML.@color1 = style.color1;
-			}
-
-			// handle flavorComboControllerScreen colors
-			var flavorComboXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'flavorComboControllerScreen')[0];
-			if (flavorComboXML) {
-				flavorComboXML.@color1 = style.color1;
-			}
+			// ADVERTISING
+			fullPlayerCopy = setAdvertisingData(fullPlayerCopy, advo, style);
 
 			//handle the gigya uiConf: take the uiconf from the feature to the gigya layer
 			var gigyaFeature:XML = activeFeatures.(@id.toString() == "shareBtn")[0];
@@ -404,48 +349,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					gigyaLayer.@uiconfId = gigyaFeature.descendants().(attribute("id").toString() == 'uiconfId')[0].@k_value.toString();
 			}
 
-			// ADVERTISING
+			// GIGYA THEME 
+			fullPlayerCopy = selectGigyaTheme(fullPlayerCopy, style.themeId);
 
-			fullPlayerCopy = setAdvertisingData(fullPlayerCopy, advo, style);
-
-
-			// THEME 
-			// remove all pre-given themes
-			var themesToDelete:XMLList = fullPlayerCopy.descendants("theme").(attribute("id").toString() != "currentTheme");
-			_currentThemeId = style.themeId;
-			var defaultThemeXml:XML = new XML(fullPlayerCopy.descendants().(attribute("id") == _currentThemeId)[0] as XML);
-			for each (var themeXML:XML in themesToDelete) {
-				var themeId:String = themeXML.@id;
-				delete(fullPlayerCopy.descendants().(attribute("id") == themeId)[0]);
-			}
-
-			var availabelsGigyasTheme:XMLList = fullPlayerCopy..extraData.GigyaUI;
-			var gigyaXml:XML;
-			//get the current style from stylePage and get the matching data of gigya :
-			defaultThemeXml.@id = _currentThemeId;
-
-			for (var i:uint = 0; i < availabelsGigyasTheme.length(); i++) {
-				if (XML(availabelsGigyasTheme[i]).@theme.toString() == _currentThemeId) {
-					//found a matching gigya section 
-					gigyaXml = new XML(availabelsGigyasTheme[i]);
-				}
-			}
-			if (gigyaXml) {
-				// delete existing themes
-				var gigyaThemesNumber:uint = availabelsGigyasTheme.length();
-				var allGigyasTheme:XMLList = fullPlayerCopy..extraData..GigyaUI;
-				for (var j:uint = 0; j < gigyaThemesNumber; j++) {
-					delete(allGigyasTheme[0]);
-				}
-				// add selected theme
-				fullPlayerCopy..extraData[0].appendChild(gigyaXml);
-			}
-			else {
-				gigyaXml = fullPlayerCopy.extraData.GigyaUI[0] as XML;
-				delete(fullPlayerCopy.extraData..GigyaUI);
-				fullPlayerCopy.extraData[0].appendChild(gigyaXml);
-			}
-
+			// skin path:
 			fullPlayerCopy.@skinPath = style.skinPath;
 
 
@@ -455,6 +362,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			//switching the theme to the current theme
 			delete fullPlayerCopy..theme[0];
 
+			// PLAYLIST RENDERER
 			//set the vbox height calculated. if more than 4 items add 19 pixels for each one
 			//this is bad but no time
 			if (fullPlayerCopy.renderers && fullPlayerCopy.renderers.renderer) {
@@ -489,13 +397,13 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					//set the font to the itemRenderer labels
 					var allLabels:XMLList = renderer..Label;
 					for each (var lab:XML in allLabels) {
-						lab.@font = selectedFont;
+						lab.@font = style.fontName;
 					}
 				}
 			}
 
 			// color all the marked plugins
-			colorMarkedPlugins(activeFeatures, fullPlayerCopy, style);
+			fullPlayerCopy = colorMarkedPlugins(activeFeatures, fullPlayerCopy, style);
 
 
 			// UIVARS:
@@ -519,15 +427,128 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			return fullPlayerCopy;
 		}
 
+		
+		/**
+		 * handle the coloring of ui components that require specific treatment
+		 * @param fullPlayerCopy	the player being edited
+		 * @param style				color definitions
+		 * @return 					adapted player
+		 * 
+		 */
+		protected function colorSpecificUiElements(fullPlayerCopy:XML, style:StyleVo):XML {
+			// handle the volume bar
+			var volbumeButtonXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'volumeBar')[0];
+			if (volbumeButtonXml) {
+				volbumeButtonXml.@color1 = style.color1;
+				volbumeButtonXml.@color2 = style.color2;
+				volbumeButtonXml.@color3 = style.color3;
+				volbumeButtonXml.@color4 = style.color4;
+				volbumeButtonXml.@color5 = style.color5;
+				volbumeButtonXml.@font = style.fontName;
+			}
+			
+			// handle the movie title
+			var movieNameXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'movieName')[0];
+			if (movieNameXml) {
+				movieNameXml.@dynamicColor = "true";
+				movieNameXml.@color1 = style.color1;
+				movieNameXml.@font = style.fontName;
+			}
+			
+			// handle the tab bar if available 
+			var tabBarXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'tabBar')[0];
+			if (tabBarXml) {
+				tabBarXml.@color1 = style.color1;
+				tabBarXml.@color2 = style.color2;
+				tabBarXml.@color3 = style.color3;
+				tabBarXml.@color4 = style.color4;
+				tabBarXml.@color5 = style.color5;
+				tabBarXml.@dynamicColor = "true";
+				tabBarXml.@font = style.fontName;
+			}
+			
+			// handle scrubber colors
+			var scrubberXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'scrubber')[0];
+			if (scrubberXml) {
+				scrubberXml.@color1 = style.color1;
+				scrubberXml.@color2 = style.color1;
+			}
+			
+			// handle timer1 colors
+			var timerXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen1')[0];
+			if (timerXML) {
+				timerXML.@color1 = style.color1;
+			}
+			
+			// handle timer2 colors
+			timerXML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen2')[0];
+			if (timerXML) {
+				timerXML.@color1 = style.color1;
+			}
+			
+			// handle flavorComboControllerScreen colors
+			var flavorComboXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'flavorComboControllerScreen')[0];
+			if (flavorComboXML) {
+				flavorComboXML.@color1 = style.color1;
+			}
+			
+			return fullPlayerCopy;
+		}
+		
+		
+		/**
+		 * delete irrelevant gigya themes and leave only the selected one. 
+		 * @param fullPlayerCopy	the created player after removing nodes of unused features
+		 * @param currentThemeId	id of required theme
+		 * @return adapted player
+		 */
+		protected function selectGigyaTheme(fullPlayerCopy:XML, currentThemeId:String):XML {
+			// remove all pre-given themes
+			var themesToDelete:XMLList = fullPlayerCopy.descendants("theme").(attribute("id").toString() != "currentTheme");
+			var defaultThemeXml:XML = new XML(fullPlayerCopy.descendants().(attribute("id") == currentThemeId)[0] as XML);
+			for each (var themeXML:XML in themesToDelete) {
+				var themeId:String = themeXML.@id;
+				delete(fullPlayerCopy.descendants().(attribute("id") == themeId)[0]);
+			}
+			
+			var availabelsGigyasTheme:XMLList = fullPlayerCopy..extraData.GigyaUI;
+			var gigyaXml:XML;
+			//get the current style from stylePage and get the matching data of gigya :
+			defaultThemeXml.@id = currentThemeId;
+			
+			for (var i:uint = 0; i < availabelsGigyasTheme.length(); i++) {
+				if (XML(availabelsGigyasTheme[i]).@theme.toString() == currentThemeId) {
+					//found a matching gigya section 
+					gigyaXml = new XML(availabelsGigyasTheme[i]);
+				}
+			}
+			if (gigyaXml) {
+				// delete existing themes
+				var gigyaThemesNumber:uint = availabelsGigyasTheme.length();
+				var allGigyasTheme:XMLList = fullPlayerCopy..extraData..GigyaUI;
+				for (var j:uint = 0; j < gigyaThemesNumber; j++) {
+					delete(allGigyasTheme[0]);
+				}
+			}
+			else {
+				gigyaXml = fullPlayerCopy.extraData.GigyaUI[0] as XML;
+				delete(fullPlayerCopy.extraData..GigyaUI);
+			}
+			// add selected theme
+			fullPlayerCopy.extraData[0].appendChild(gigyaXml);
+			return fullPlayerCopy;
+		}
 
 		/**
-		 * color plugins that are marked for coloring on the player uiconf
+		 * color plugins that are marked for coloring on the player uiconf or in the features file.
 		 * @param activeFeatures	the set of features which are active on the created player (in features.xml)
 		 * @param fullPlayerCopy	the created player after removing nodes of unused features
 		 * @param colorObj			color definitions for teh created player
+		 * @return adapted player
 		 * 
+		 * @internal this function was added for a specific usecase which is not part of SaaS templates. 
 		 */
-		protected function colorMarkedPlugins(activeFeatures:XMLList, fullPlayerCopy:XML, colorObj:StyleVo):void {
+		protected function colorMarkedPlugins(activeFeatures:XMLList, fullPlayerCopy:XML, colorObj:StyleVo):XML {
 			var pluginId:String;
 			var targetPlugin:XML;
 			// get the list of plugins that are marked as setColors="true" (need to be colored)
@@ -555,6 +576,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						addColorsToPlugin(targetPlugin, colorObj);
 				}
 			}
+			return fullPlayerCopy;
 		} 
 
 		/**
