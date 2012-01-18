@@ -23,36 +23,32 @@
 				horizontalDateTimeAxis.minimum = null;
 				horizontalDateTimeAxis.maximum = null;
 					
-				var newArrCol : ArrayCollection = new ArrayCollection();
+				var provider : ArrayCollection = new ArrayCollection(); // actual data provider
 				
-				//fill the 0 points from min to max and not using the build in interpolation
-				if(_maxHAxisDate && _minHAxisDate)
-				{
+				// fill the 0 points from min to max and not using the build in interpolation
+				// first we create all points with correct x and y=0
+				if(_maxHAxisDate && _minHAxisDate) {
 					var minMaxDays : int = (_maxHAxisDate.time - _minHAxisDate.time)/day;
-					for(var j:int=0; j<=minMaxDays; j++)
-					{
+					for(var j:int=0; j<=minMaxDays; j++) {
 						var obj : Object = new Object();
 						obj.x = _minHAxisDate.time + (j * day);
 						obj.y = 0;
-						newArrCol.addItem( obj );
+						provider.addItem( obj );
 					}
 				}
-				
-					
-				if( value && value is ArrayCollection )
-				{
-					newArrCol = fixTimeOffsets(newArrCol, value as ArrayCollection);
+				// if in the value received there is a point matching a point on the graph, 
+				// use its value instead of the initial 0.
+				if( value && value is ArrayCollection ){
+					provider = fixTimeOffsets(provider, value as ArrayCollection);
 					var arrCol : ArrayCollection = value as ArrayCollection;
-					for(var i:int=0; i<arrCol.length; i++)
-					{
-						for(var k:int=0; k<newArrCol.length; k++)
-						{
-							var firstDate : Date = new Date( newArrCol[k].x );
+					for(var i:int=0; i<arrCol.length; i++) {
+						for(var k:int=0; k<provider.length; k++) {
+							var firstDate : Date = new Date( provider[k].x );
 							var secondDate : Date = new Date( arrCol[i].x );
 							if( firstDate.date == secondDate.date && firstDate.fullYear == secondDate.fullYear && firstDate.month == secondDate.month)
-								newArrCol[k] = arrCol[i];
+								provider[k] = arrCol[i];
 						}
-
+						// make y values Number, fixed to 2 digits after dec point.
 						if(String(arrCol[i].y).indexOf('.') != -1)
 							arrCol[i].y = Number(arrCol[i].y).toFixed(2);
 						else
@@ -60,19 +56,17 @@
 					}
 					
 					//if there is only one dot, show the data tip of that dot
-					if(newArrCol.length == 1)
-					{
+					if(provider.length == 1) {
 						this.showAllDataTips = true;
 						this.showDataTips = false;
 					}
-					else
-					{
+					else {
 						this.showAllDataTips = false;
 						this.showDataTips = true;
 					}
 				}
 				
-				super.dataProvider = newArrCol;
+				super.dataProvider = provider;
 			}
 			
 			/**
