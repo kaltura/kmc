@@ -47,30 +47,20 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * get XMLList of all nodes that the string appears in their id
 		 */
 		private function getElementsWithSubStringInId(xml:XML, idSubstring:String):XMLList {
-			return XML(xml)..descendants().(attribute("id").toString().indexOf(idSubstring) > -1);
+			return xml..descendants().(attribute("id").toString().indexOf(idSubstring) > -1);
 		}
 
 
-		/**
-		 * Add all colors from the color Object to the given plugin
-		 * @param plugin
-		 * @param colorObject
-		 * @return
-		 *
-		 */
-		private function addColorsToPlugin(plugin:XML, colorObject:StyleVo):void {
-			plugin.@color1 = colorObject.color1;
-			plugin.@color2 = colorObject.color2;
-			plugin.@color3 = colorObject.color3;
-			plugin.@color4 = colorObject.color4;
-			plugin.@color5 = colorObject.color5;
-		}
 
 
 		/**
-		 * Clear the icon/s or the label from the Uiconf
+		 * Clear the icon/s or the label from the button node in Uiconf
+		 * @param buttonXml		button node to process
+		 * @param buttonType	the type of the button
+		 * @param colorObject	color defintions to apply
+		 * @return processed button node
 		 */
-		private function clearIconsOrLabels(buttonXml:XML, buttonType:String, colorObject:StyleVo):XML {
+		protected function clearIconsOrLabels(buttonXml:XML, buttonType:String, colorObject:StyleVo):XML {
 			if (buttonType == "buttonControllerArea") {
 				delete buttonXml.@Icon;
 				delete buttonXml.@icon;
@@ -252,7 +242,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * @return uiconf.xml
 		 */
 		public function getPlayerUIConf(playerName:String, templateType:String, advo:AdvertizingVo,
-			style:StyleVo, template:TemplateVo, genFeatures:XML, content:ApsWizardContent):XML {
+						style:StyleVo, template:TemplateVo, genFeatures:XML, content:ApsWizardContent):XML {
 			
 			var fullPlayerCopy:XML = _fullPlayer.copy();
 			fullPlayerCopy.@name = playerName;
@@ -437,59 +427,60 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 */
 		protected function colorSpecificUiElements(fullPlayerCopy:XML, style:StyleVo):XML {
 			// handle the volume bar
-			var volbumeButtonXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'volumeBar')[0];
-			if (volbumeButtonXml) {
-				volbumeButtonXml.@color1 = style.color1;
-				volbumeButtonXml.@color2 = style.color2;
-				volbumeButtonXml.@color3 = style.color3;
-				volbumeButtonXml.@color4 = style.color4;
-				volbumeButtonXml.@color5 = style.color5;
-				volbumeButtonXml.@font = style.fontName;
+			var uiElementXml:XML;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'volumeBar')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
+				uiElementXml.@color2 = style.color2;
+				uiElementXml.@color3 = style.color3;
+				uiElementXml.@color4 = style.color4;
+				uiElementXml.@color5 = style.color5;
+				uiElementXml.@font = style.fontName;
 			}
 			
 			// handle the movie title
-			var movieNameXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'movieName')[0];
-			if (movieNameXml) {
-				movieNameXml.@dynamicColor = "true";
-				movieNameXml.@color1 = style.color1;
-				movieNameXml.@font = style.fontName;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'movieName')[0];
+			if (uiElementXml) {
+				uiElementXml.@dynamicColor = "true";
+				uiElementXml.@color1 = style.color1;
+				uiElementXml.@font = style.fontName;
 			}
 			
 			// handle the tab bar if available 
-			var tabBarXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'tabBar')[0];
-			if (tabBarXml) {
-				tabBarXml.@color1 = style.color1;
-				tabBarXml.@color2 = style.color2;
-				tabBarXml.@color3 = style.color3;
-				tabBarXml.@color4 = style.color4;
-				tabBarXml.@color5 = style.color5;
-				tabBarXml.@dynamicColor = "true";
-				tabBarXml.@font = style.fontName;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'tabBar')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
+				uiElementXml.@color2 = style.color2;
+				uiElementXml.@color3 = style.color3;
+				uiElementXml.@color4 = style.color4;
+				uiElementXml.@color5 = style.color5;
+				uiElementXml.@dynamicColor = "true";
+				uiElementXml.@font = style.fontName;
 			}
 			
 			// handle scrubber colors
-			var scrubberXml:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'scrubber')[0];
-			if (scrubberXml) {
-				scrubberXml.@color1 = style.color1;
-				scrubberXml.@color2 = style.color1;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'scrubber')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
+				uiElementXml.@color2 = style.color1;
 			}
 			
 			// handle timer1 colors
-			var timerXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen1')[0];
-			if (timerXML) {
-				timerXML.@color1 = style.color1;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen1')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
 			}
 			
 			// handle timer2 colors
-			timerXML = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen2')[0];
-			if (timerXML) {
-				timerXML.@color1 = style.color1;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen2')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
 			}
 			
 			// handle flavorComboControllerScreen colors
-			var flavorComboXML:XML = fullPlayerCopy.descendants().(attribute("id").toString() == 'flavorComboControllerScreen')[0];
-			if (flavorComboXML) {
-				flavorComboXML.@color1 = style.color1;
+			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'flavorComboControllerScreen')[0];
+			if (uiElementXml) {
+				uiElementXml.@color1 = style.color1;
 			}
 			
 			return fullPlayerCopy;
@@ -578,13 +569,30 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			}
 			return fullPlayerCopy;
 		} 
+		
+		
+		
+		/**
+		 * Add all colors from the color Object to the given plugin xml
+		 * @param plugin	xml node describing the plugin to be colored
+		 * @param colorObject	color definitions to apply
+		 * @return
+		 *
+		 */
+		protected function addColorsToPlugin(plugin:XML, colorObject:StyleVo):void {
+			plugin.@color1 = colorObject.color1;
+			plugin.@color2 = colorObject.color2;
+			plugin.@color3 = colorObject.color3;
+			plugin.@color4 = colorObject.color4;
+			plugin.@color5 = colorObject.color5;
+		}
 
 		/**
 		 * sets the advertising related pieces of the given player
 		 * @param player	(uiconf.xml)
 		 * @return
 		 */
-		private function setAdvertisingData(player:XML, advo:AdvertizingVo, style:StyleVo):XML {
+		protected function setAdvertisingData(player:XML, advo:AdvertizingVo, style:StyleVo):XML {
 			var i:int, l:int;
 			if (advo.adsEnabled) {
 				// BUMPER
