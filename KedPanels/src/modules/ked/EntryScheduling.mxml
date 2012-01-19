@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 scheduling tab of EntryDetailsWin.
-	 also used in SetSchedulingWin.
+scheduling tab of EntryDetailsWin.
+also used in SetSchedulingWin.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
-		 xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.edw.business.IDrilldownPanel" >
-	
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="schedulingVbox"
+		   xmlns:controls="com.kaltura.controls.*" implements="com.kaltura.edw.business.IDrilldownPanel"
+		   label="{resourceManager.getString('drilldown', 'scheduling')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -16,10 +16,11 @@
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.utils.DateFieldWithTimeStepperLogic;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.vo.KalturaBaseEntry;
-
+			
 			
 			
 			public static const POP_UP_MODE:String = 'popUpMode';
@@ -34,22 +35,32 @@
 			
 			
 			private var _timeManager:DateFieldWithTimeStepperLogic;
-
+			
 			
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _dpModel:IDataPackRepository;
 			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
 			public function set selectedEntry(selectedEntry:KalturaBaseEntry):void {
 				_selectedEntry = selectedEntry;
-//				if (_timeManager){
-//					setSchedulerData();
-//				}
+				//				if (_timeManager){
+				//					setSchedulerData();
+				//				}
 			}
 			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+			}
 			
-
+			public function get helpAnchor():String{
+				return "entry_scheduling";
+			}
+			
 			/**
 			 * see all data on the panel is legal and save data
 			 * @return an object with error code
@@ -76,7 +87,7 @@
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
 			}
-
+			
 			
 			public function save():void {
 				var startTime:int = getStartTime();
@@ -122,12 +133,12 @@
 			public function destroy():void {
 				
 			}
-
+			
 			
 			public function clear():void {
-
+				
 			}
-
+			
 			/**
 			 * @inheritDoc
 			 *
@@ -141,14 +152,14 @@
 				_timeManager = new DateFieldWithTimeStepperLogic(sepcificStartDate, specificEndDate, sepcificStartHour, specificEndHour);
 				
 			}
-
-
-
+			
+			
+			
 			private function isInit():Boolean {
 				return (spcificRangeRBtn != null);
 			}
-
-
+			
+			
 			/**
 			 * retrieves the selected start time
 			 * @return start time in seconds, or -1 if no start time was selected
@@ -165,7 +176,7 @@
 				}
 				return res;
 			}
-
+			
 			/**
 			 * retrieves the selected end time
 			 * @return end time in seconds, or -1 if no end time was selected
@@ -182,8 +193,8 @@
 				}
 				return res;
 			}
-
-
+			
+			
 			/**
 			 * return true if dates were changed
 			 * */
@@ -191,7 +202,7 @@
 				var result:Boolean = false;
 				var startTime:int = getStartTime();
 				var endTime:int = getEndTime();
-
+				
 				
 				if (_selectedEntry.startDate > 0) {
 					if (startTime != _selectedEntry.startDate) {
@@ -212,29 +223,29 @@
 				}
 				return result;
 				
-//				//start time was reset
-//				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
-//					return true;
-//				//start time was changed
-//				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
-//					return true;
-//				//end time was reset
-//				if ((_selectedEntry.endDate >= 0) && (endTime < 0))
-//					return true;
-//				//end time was changed
-//				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
-//					return true;
-//
-//				return false;
+				//				//start time was reset
+				//				if ((_selectedEntry.startDate != int.MIN_VALUE) && (startTime < 0))
+				//					return true;
+				//				//start time was changed
+				//				if ((startTime >= 0) && (startTime != _selectedEntry.startDate))
+				//					return true;
+				//				//end time was reset
+				//				if ((_selectedEntry.endDate >= 0) && (endTime < 0))
+				//					return true;
+				//				//end time was changed
+				//				if ((endTime >= 0) && (endTime != _selectedEntry.endDate))
+				//					return true;
+				//
+				//				return false;
 				
 			}
-
-
+			
+			
 			private function setSchedulerData():void {
 				if (_selectedEntry != null) {
 					var startTime:int = _selectedEntry.startDate;
 					var endTime:int = _selectedEntry.endDate;
-
+					
 					if (((startTime == -1) || (startTime == int.MIN_VALUE)) && ((endTime == -1) || (endTime == int.MIN_VALUE))) {
 						anyTimeRBtn.selected = true;
 						clearDates();
@@ -242,7 +253,7 @@
 					else {
 						spcificRangeRBtn.selected = true;
 						specificEndCBBtn.selected = (endTime != int.MIN_VALUE) && (endTime != -1);
-
+						
 						if ((startTime != int.MIN_VALUE) && (startTime != -1)) {
 							var startDate:Date = new Date(startTime * 1000);
 							sepcificStartDate.selectedDate = startDate;
@@ -253,7 +264,7 @@
 							sepcificStartDate.selectedDate = null;
 							setTime(sepcificStartHour, 0, 0);
 						}
-
+						
 						if ((endTime != int.MIN_VALUE) && (endTime != -1)) {
 							var endDate:Date = new Date(endTime * 1000);
 							specificEndDate.selectedDate = endDate;
@@ -267,8 +278,8 @@
 					}
 				}
 			}
-
-
+			
+			
 			private function setTime(timeEntry:SM_TimeEntry, hours:int, minutes:int):void {
 				timeEntry.minute = minutes;
 				timeEntry.am_pm = hours >= 12 ? 'pm' : 'am'
@@ -277,52 +288,52 @@
 					timeEntry.hour = 12;
 				}
 			}
-
-
+			
+			
 //			private function onGridCreationComplete(event:Event):void {
 //				var today:Date = new Date();
 //				sepcificStartDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
 //				specificEndDate.disabledRanges = [{rangeEnd: new Date(today.fullYear, today.month, today.date - 1)}];
 //			}
-
+			
 			private var oldStartDate:Date = null;
 			private var oldEndDate:Date = null;
-
-
+			
+			
 			private function validateTimes():void {
 				_timeManager.validateTimes();
 			}
-
-
+			
+			
 			private function getTimeInSeconds(dateField:DateField, timeEntry:SM_TimeEntry):int {
 				var seconds:int = 0;
 				seconds += dateField.selectedDate.time / 1000;
 				seconds += _timeManager.calculateTime(timeEntry.timeValue, timeEntry.am_pm);
 				return seconds;
 			}
-
-
-
-
+			
+			
+			
+			
 			private function clearDates():void {
 				sepcificStartDate.selectedDate = null;
 				setTime(sepcificStartHour, 0, 0);
 				specificEndDate.selectedDate = null;
 				setTime(specificEndHour, 0, 0);
 			}
-
-
+			
+			
 			private function setTimeZoneLabel():void {
 				var now:Date = new Date();
 				var zoneTimeOffset:int = (now.getTimezoneOffset() / 60) * (-1);
 				var ztStr:String = (zoneTimeOffset == 0) ? '' : (zoneTimeOffset > 0) ? ('+' + zoneTimeOffset) : zoneTimeOffset + '';
 				timeZoneLabel.text = resourceManager.getString('drilldown', 'timeOffsetLabel').replace("(NUM)", ztStr);
 			}
-
-
 			
-
-
+			
+			
+			
+			
 			private function timeGroup_changeHandler(event:Event):void {
 				if (anyTimeRBtn.selected) {
 					specificEndCBBtn.selected = false;
@@ -339,9 +350,9 @@
 		</mx:State>
 	</mx:states>
 	<mx:VBox id="topContainer" width="100%" height="100%">
-
+		
 		<!--<mx:Label text="{resourceManager.getString('drilldown', 'entrySchedulingTitle')}" styleName="drillDownTitleLabel"
-			 id="label1"/>-->
+		id="label1"/>-->
 		<mx:RadioButtonGroup id='timeGroup' change="timeGroup_changeHandler(event)"/>
 		<mx:RadioButton label="{resourceManager.getString('drilldown', 'ANY_TIME')}" groupName="timeGroup"
 						id="anyTimeRBtn" selected="true"/>
@@ -385,8 +396,8 @@
 					</mx:GridItem>
 					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
 						<mx:DateField 
-									  enabled="{KUtils.logicalAnd(editable, KUtils.logicalAnd(specificEndCBBtn.selected, spcificRangeRBtn.selected))}"
-									  id='specificEndDate' width="120" change="validateTimes()"/>
+							enabled="{KUtils.logicalAnd(editable, KUtils.logicalAnd(specificEndCBBtn.selected, spcificRangeRBtn.selected))}"
+							id='specificEndDate' width="120" change="validateTimes()"/>
 					</mx:GridItem>
 					<mx:GridItem width="100%" height="100%" horizontalAlign="center" verticalAlign="middle">
 						<controls:SM_TimeEntry height="25" showAMPMLabel="true" showHours="true"
@@ -400,4 +411,4 @@
 						   styleName="clearDateButton"/>
 		</mx:VBox>
 	</mx:VBox>
-</mx:VBox>
+</mx:Module>

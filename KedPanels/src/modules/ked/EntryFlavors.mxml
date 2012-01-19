@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 Flavours tab of EntryDetailsWin
+Flavours tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.edw.view.*" width="100%"
-		 height="100%" creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
-		 xmlns:edw="com.kaltura.edw.*" xmlns:view="com.kaltura.edw.view.*" xmlns:control="com.kaltura.edw.control.*">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:entryDetails="com.kaltura.edw.view.*" width="100%"
+		   height="100%" creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
+		   xmlns:edw="com.kaltura.edw.*" xmlns:view="com.kaltura.edw.view.*" xmlns:control="com.kaltura.edw.control.*"
+		   label="{resourceManager.getString('drilldown', 'videoFiles')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -33,6 +34,7 @@
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.edw.vo.UploadFileVo;
 			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryReplacementStatus;
@@ -51,21 +53,21 @@
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
-
+			
 			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
 			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
-
-
+			
+			
 			// =====================================================================
 			// Data
 			// =====================================================================
-
-			public var model:KMvCModel;
-
+			
+//			public var model:KMvCModel;
+			
 			private var _selectedEntry:KalturaBaseEntry;
-
-
-
+			
+			
+			
 			// =====================================================================
 			// Permissions
 			// =====================================================================
@@ -75,43 +77,43 @@
 			 * (for r&p)
 			 * */
 			public var allowAddMedia:Boolean = true;
-
+			
 			[Bindable]
 			/**
 			 * show action buttons for ready entry
 			 * (for r&p)
 			 * */
 			public var allowReplaceMedia:Boolean = true;
-
+			
 			[Bindable]
 			/**
 			 * allow upload option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowUpload:Boolean = true;
-
+			
 			[Bindable]
 			/**
 			 * allow match option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowMatchFromDrop:Boolean = true;
-
+			
 			[Bindable]
 			/**
 			 * allow link option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowLink:Boolean = true;
-
+			
 			[Bindable]
 			/**
 			 * allow import option, will be used in flavorAssetAction item renderer
 			 * (for r&p)
 			 * */
 			public var allowImport:Boolean = true;
-
-
+			
+			
 			// =====================================================================
 			// More Stuff
 			// =====================================================================
@@ -121,19 +123,19 @@
 			 * show action buttons based on business logic
 			 * */
 			private var _showActions:Boolean;
-
+			
 			[Bindable]
 			private var _approveEnabled:Boolean;
-
-
+			
+			
 			[Bindable]
 			private var _showReplacenentInfo:Boolean;
-
-
-
+			
+			
+			
 			[Bindable]
 			public var flavorAssets:ArrayCollection;
-
+			
 			/**
 			 * for uploading multiple files as new flavours
 			 * */
@@ -148,28 +150,28 @@
 			 * the flavour selected for "edit"
 			 * */
 			private var _selectedFlavorWithParams:KalturaFlavorAssetWithParams;
-
+			
 			
 			// =====================================================================
 			// Change Watchers
 			// =====================================================================
 			
 			private var _flavorsWatcher:ChangeWatcher;
-
+			
 			/*
-			 * watchers for binding to matchFromDropFolderWindow
-			 * */
+			* watchers for binding to matchFromDropFolderWindow
+			* */
 			private var _dfw1:ChangeWatcher;
 			private var _dfw2:ChangeWatcher;
 			private var _dfw3:ChangeWatcher;
-
-
+			
+			
 			/*
-			 * watchers for binding to addFlavorAssetsWindow
-			 * */
+			* watchers for binding to addFlavorAssetsWindow
+			* */
 			private var _convProfilesWatcher:ChangeWatcher;
 			private var _storageProfsWatcher:ChangeWatcher;
-
+			
 			
 			// =====================================================================
 			// More Stuff
@@ -178,16 +180,16 @@
 			 * if there is a pending request to open drilldown
 			 * */
 			private var _drillDownClicked:Boolean = false;
-
+			
 			private var _multiFlavorsIngestionAllowed:Boolean = true;
 			private var _replacementStatus:String;
 			private var _replacingEntryId:String;
-
+			
 			/**
 			 * indicates if event listener to uploadManager.uploadStarted was already added
 			 * */
-			private var _listenToUpload:Boolean = false;
-
+//			private var _listenToUpload:Boolean = false;
+			
 			/**
 			 * entry status
 			 * */
@@ -196,9 +198,11 @@
 			/**
 			 * should flavor data be listed
 			 * */
-			private var _refreshOnce:Boolean;
-
-
+//			private var _refreshOnce:Boolean;
+			
+			private var _dpModel:IDataPackRepository;
+			private var _distributionData:DistributionDataPack;
+			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
@@ -210,6 +214,14 @@
 				
 				_selectedEntry = value;
 				
+				refreshEntry();
+				
+				BindingUtils.bindProperty(this, "replacementStatus", _selectedEntry, "replacementStatus");
+				BindingUtils.bindProperty(this, "replacingEntryId", _selectedEntry, "replacingEntryId");
+				BindingUtils.bindProperty(this, "status", _selectedEntry, "status");
+			}
+			
+			private function refreshEntry():void{
 				if (_selectedEntry.replacingEntryId) {
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
@@ -262,31 +274,54 @@
 					}
 				}
 			}
-
 			
 			
-
-
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
+			}
+			
+			public function get helpAnchor():String{
+				var anchor:String;
+				if (_selectedEntry.replacedEntryId) {
+					
+					// this is a replacement entry
+					anchor = 'entry_replacement';
+				} else {
+					// this is a normal entry
+					anchor = 'entry_flavors';
+				}
+				return anchor;
+			}
+			
+			
+			
+			
 			public function get status():String {
 				return _status;
 			}
-
-
+			
+			
 			public function set status(value:String):void {
 				if (value && (!_status || (_status != value))) {
-					_refreshOnce = true;
-					setTimeout(refreshOnce, 5);
+//					_refreshOnce = true;
+//					setTimeout(refreshOnce, 5);
+					_distributionData.refreshFlavors();
 				}
 				_status = value;
-				selectedEntry = _selectedEntry;
+//				selectedEntry = _selectedEntry;
+				refreshEntry();
 			}
 			
 			public function clear():void {
-				if (_listenToUpload && 
-					(_selectedEntry is KalturaMixEntry || 
-						(_selectedEntry is KalturaMediaEntry && (_selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE))) {
-					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-					_listenToUpload = false;
+				if ((_selectedEntry is KalturaMixEntry || 
+					(_selectedEntry is KalturaMediaEntry && (_selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE))) {
+					_distributionData.clearFlavorUpdates();
+//					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+//					_listenToUpload = false;
 				}
 			}
 			
@@ -294,7 +329,7 @@
 				// save action cannot be required because of this panel
 				return false;
 			}
-
+			
 			
 			public function save():void {
 				// this panel's data is saved as it changes, so save here isn't required
@@ -305,71 +340,74 @@
 				// this panel's info cannot be invalid
 				dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true));
 			}
-
+			
 			/**
 			 * since refreshData is triggered by both set status and set replacement status,
 			 * we get a redundant call if both change. this function removes one call.
 			 * */
-			private function refreshOnce():void {
-				if (_refreshOnce) {
-					refreshData(false);
-					_refreshOnce = false;
-				}
-			}
-
-
+//			private function refreshOnce():void {
+//				if (_refreshOnce) {
+//					refreshData(false);
+//					_refreshOnce = false;
+//				}
+//			}
+			
+			
 			public function get replacementStatus():String {
 				return _replacementStatus;
 			}
-
-
+			
+			
 			public function set replacementStatus(value:String):void {
 				if (_drillDownClicked) {
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
 						openReplacementDrilldown();
 					}
-					//if replacement entry doesn't exist anymore
+						//if replacement entry doesn't exist anymore
 					else {
 						Alert.show(resourceManager.getString('drilldown', 'replacementNotExistMsg'), resourceManager.getString('drilldown', 'replacementNotExistTitle'));
 					}
 					_drillDownClicked = false;
 				}
-
+				
 				if (value && (!_replacementStatus || (_replacementStatus != value))) {
-					_refreshOnce = true;
-					setTimeout(refreshOnce, 5);
+//					_refreshOnce = true;
+//					setTimeout(refreshOnce, 5);
+					_distributionData.refreshFlavors();
 				}
 				_replacementStatus = value;
-				selectedEntry = _selectedEntry;
+//				selectedEntry = _selectedEntry;
+				refreshEntry();
 			}
-
-
+			
+			
 			public function get replacingEntryId():String {
 				return _replacingEntryId;
 			}
-
-
+			
+			
 			public function set replacingEntryId(value:String):void {
 				//if we have a replacement entry that we didn't have before, request the entry from server
 				if (value && (!_replacingEntryId || (_replacingEntryId != value))) {
 					var getReferenceEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_REPLACEMENT_ENTRY, null, _selectedEntry.replacingEntryId);
 					controller.dispatch(getReferenceEntry);
 				}
-
+				
 				_replacingEntryId = value;
-				selectedEntry = _selectedEntry;
+//				selectedEntry = _selectedEntry;
+				refreshEntry();
 			}
-
-
-
+			
+			
+			
 			/**
 			 * allow multiple flavours to be ingested simultaneously
 			 * */
 			public function get multiFlavorsIngestionAllowed():Boolean {
 				return _multiFlavorsIngestionAllowed;
 			}
-
-
+			
+			
 			[Bindable]
 			/**
 			 * @private
@@ -377,17 +415,17 @@
 			public function set multiFlavorsIngestionAllowed(value:Boolean):void {
 				_multiFlavorsIngestionAllowed = value;
 			}
-
+			
 			public function init():void {
 				if (!_flavorsWatcher) {
-					var ddp:DistributionDataPack = model.getDataPack(DistributionDataPack) as DistributionDataPack;
+					var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", ddp, "flavorParamsAndAssetsByEntryId");
 				}
 				//the following data is required for the actions buttons
 				var profileEvent:ProfileEvent = new ProfileEvent(ProfileEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
 				controller.dispatch(profileEvent);
 				// if partner has remote storage feature, list profiles. 
-				if ((model.getDataPack(PermissionsDataPack) as PermissionsDataPack).remoteStorageEnabled) {
+				if ((_dpModel.getDataPack(PermissionsDataPack) as PermissionsDataPack).remoteStorageEnabled) {
 					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
 					controller.dispatch(profileEvent);
 				}
@@ -399,16 +437,17 @@
 			 * */
 			public function initData():void {
 				//to listen only once
-				if (!_listenToUpload) {
-					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-					_listenToUpload = true;
-				}
-
-				_refreshOnce = true;
-				setTimeout(refreshOnce, 5);
+//				if (!_listenToUpload) {
+//					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+//					_listenToUpload = true;
+//				}
+//				
+//				_refreshOnce = true;
+//				setTimeout(refreshOnce, 5);
+				_distributionData.loadFlavors(controller, _selectedEntry)
 			}
-
-
+			
+			
 			public function destroy():void {
 				dg.removeEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.removeEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
@@ -418,15 +457,16 @@
 				dg.removeEventListener(FlavorsTable.DELETE_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.DOWNLOAD_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.PREVIEW_FLAVOR, actionHandler);
-				if (_listenToUpload) {
-					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-					_listenToUpload = false;
-				}
+//				if (_listenToUpload) {
+//					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
+//					_listenToUpload = false;
+//				}
+				_distributionData.clearFlavorUpdates();
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
 			}
-
-
+			
+			
 			/**
 			 * load flavors
 			 * */
@@ -438,13 +478,13 @@
 						cgEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, _selectedEntry.id);
 						controller.dispatch(cgEvent);
 					}
-
+					
 				}
 			}
-
-
+			
+			
 			private function onCreationComplete():void {
-
+				
 				dg.addEventListener(FlavorsTable.UPLOAD_FLAVOR, onFlavorUploadSelected);
 				dg.addEventListener(FlavorsTable.MATCH_FLAVOR, onFlavorMatchSelected);
 				dg.addEventListener(FlavorsTable.LINK_FLAVOR, onFlavorLinkSelected);
@@ -454,8 +494,8 @@
 				dg.addEventListener(FlavorsTable.DOWNLOAD_FLAVOR, actionHandler);
 				dg.addEventListener(FlavorsTable.PREVIEW_FLAVOR, actionHandler);
 			}
-
-
+			
+			
 			private function actionHandler(event:Event):void {
 				var _flavorWithParams:FlavorAssetWithParamsVO = event.target.data as FlavorAssetWithParamsVO;
 				switch (event.type) {
@@ -498,8 +538,8 @@
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-
-
+			
+			
 			/**
 			 * open the AFAW with a single vo, representing relevant flavorAsset / assetParams.
 			 * @internal
@@ -519,13 +559,13 @@
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-
-
+			
+			
 			private function onFlavorsChanged(event:Event):void {
 				refreshData(true);
 			}
-
-
+			
+			
 			/**
 			 * will be called when selecting to upload a specific flavor
 			 * */
@@ -533,16 +573,16 @@
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
 				uploadSingleFlavor();
 			}
-
-
+			
+			
 			private function onUploadBtnClick():void {
 				if (multiFlavorsIngestionAllowed)
 					uploadMultiFlavors();
 				else
 					uploadSingleFlavor();
 			}
-
-
+			
+			
 			/**
 			 * will open a browse window and allow a single selection
 			 * */
@@ -554,8 +594,8 @@
 					_fileReference.browse(new Array(fileFilter));
 				}
 			}
-
-
+			
+			
 			/**
 			 * will open a browse window and allow multiple selection
 			 * */
@@ -567,8 +607,8 @@
 					_fileReferenceList.browse(new Array(fileFilter));
 				}
 			}
-
-
+			
+			
 			/**
 			 * user selects to match from a drop folder a selected flavor
 			 * */
@@ -576,14 +616,14 @@
 				_selectedFlavorWithParams = (event.target.data as FlavorAssetWithParamsVO).kalturaFlavorAssetWithParams;
 				openMatchFromDropFolderWindow();
 			}
-
-
+			
+			
 			/**
 			 * handles user selection for a single flavor
 			 * */
 			private function onFlavorSelected(event:Event):void {
 				_fileReference.removeEventListener(Event.SELECT, onFlavorSelected);
-
+				
 				var uploadFile:UploadFileVo = new UploadFileVo();
 				uploadFile.fileName = _fileReference.name;
 				uploadFile.fileData = _fileReference;
@@ -593,13 +633,13 @@
 					else if (_selectedFlavorWithParams.flavorParams)
 						uploadFile.flavorParamId = _selectedFlavorWithParams.flavorParams.id.toString();
 				}
-
+				
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, new ArrayCollection(new Array(uploadFile)), false);
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-
-
+			
+			
 			/**
 			 * set actions box according to media type
 			 * @param mediaType	current entry's media type
@@ -623,8 +663,8 @@
 					}
 				}
 			}
-
-
+			
+			
 			public function set hideColumns(value:String):void {
 				var cols:Array = value.split(',');
 				for (var col:String in cols) {
@@ -641,13 +681,13 @@
 					col2.width = col2.width;
 				}
 			}
-
-
+			
+			
 			public function get hideColumns():String {
 				return '';
 			}
-
-
+			
+			
 			/**
 			 * returns the suitable fileFilter according to given mediaType
 			 * */
@@ -657,11 +697,11 @@
 					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
 				else if (mediaType == KalturaMediaType.AUDIO)
 					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
-
+				
 				return fileFilter;
 			}
-
-
+			
+			
 			/**
 			 * opens AddFlavorsAssetsWindow according to given params
 			 * @param action		the action to apply upon submit
@@ -672,7 +712,7 @@
 				var addFlavorsAssetsWindow:AddFlavorAssetsWindow = new AddFlavorAssetsWindow();
 				addFlavorsAssetsWindow.controller = controller;
 				addFlavorsAssetsWindow.windowState = _selectedFlavorWithParams ? AddFlavorAssetsWindow.SINGLE_FILE_STATE : AddFlavorAssetsWindow.MULTI_FILES_STATE;
-				var fdp:FlavorsDataPack = model.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+				var fdp:FlavorsDataPack = _dpModel.getDataPack(FlavorsDataPack) as FlavorsDataPack;
 				_convProfilesWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "conversionProfiles", fdp, "conversionProfsWFlavorParams");
 				_storageProfsWatcher = BindingUtils.bindProperty(addFlavorsAssetsWindow, "storageProfiles", fdp, "storageProfiles");
 				addFlavorsAssetsWindow.filesList = filesList;
@@ -684,8 +724,8 @@
 				PopUpManager.addPopUp(addFlavorsAssetsWindow, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(addFlavorsAssetsWindow);
 			}
-
-
+			
+			
 			/**
 			 * remove binding and close addFlavorAssetWindow
 			 * */
@@ -694,17 +734,17 @@
 					_convProfilesWatcher.unwatch();
 				if (_storageProfsWatcher)
 					_storageProfsWatcher.unwatch();
-
+				
 				PopUpManager.removePopUp(event.target as AddFlavorAssetsWindow);
 			}
-
-
+			
+			
 			/**
 			 * handle user files selection to upload
 			 * */
 			private function onFlavorsSelected(event:Event):void {
 				_fileReferenceList.removeEventListener(Event.SELECT, onFlavorsSelected);
-
+				
 				var filesList:ArrayCollection = new ArrayCollection();
 				for each (var fileReference:FileReference in _fileReferenceList.fileList) {
 					var uploadFile:UploadFileVo = new UploadFileVo();
@@ -712,20 +752,20 @@
 					uploadFile.fileData = fileReference;
 					filesList.addItem(uploadFile);
 				}
-
+				
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_UPLOAD, filesList, true);
 			}
-
-
+			
+			
 			/**
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function onReplacementStatusBtnClick():void {
 				//replacement entry is processing - check for updates
 				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
-					(model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
+					(_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
 					_drillDownClicked = true;
-					var entryid:String = (model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
+					var entryid:String = (_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
 					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryid);
 					controller.dispatch(getSelectedEntry);
 				}
@@ -733,19 +773,19 @@
 					openReplacementDrilldown();
 				}
 			}
-
-
+			
+			
 			/**
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function openReplacementDrilldown():void {
-				var dispatcher:IEventDispatcher = (model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
+				var dispatcher:IEventDispatcher = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
 				dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.OPEN_REPLACEMENT));
-//				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
-//				openWindow.dispatch();
+				//				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
+				//				openWindow.dispatch();
 			}
-
-
+			
+			
 			/**
 			 * cancel entry replacement
 			 * */
@@ -753,8 +793,8 @@
 				var cancelReplacement:MediaEvent = new MediaEvent(MediaEvent.CANCEL_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				controller.dispatch(cancelReplacement);
 			}
-
-
+			
+			
 			/**
 			 * approve replacement
 			 * */
@@ -762,8 +802,8 @@
 				var approveReplacement:MediaEvent = new MediaEvent(MediaEvent.APPROVE_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				controller.dispatch(approveReplacement);
 			}
-
-
+			
+			
 			private function openMatchFromDropFolderWindow():void {
 				var matchFromDropFodlerWin:MatchFromDropFolderWindow = new MatchFromDropFolderWindow();
 				matchFromDropFodlerWin.controller = controller;
@@ -783,8 +823,8 @@
 					controller.dispatch(listFolders);
 				}
 				matchFromDropFodlerWin.entry = _selectedEntry;
-				var dfdp:DropFolderDataPack = model.getDataPack(DropFolderDataPack) as DropFolderDataPack;
-				var fdp:FlavorsDataPack = model.getDataPack(FlavorsDataPack) as FlavorsDataPack;
+				var dfdp:DropFolderDataPack = _dpModel.getDataPack(DropFolderDataPack) as DropFolderDataPack;
+				var fdp:FlavorsDataPack = _dpModel.getDataPack(FlavorsDataPack) as FlavorsDataPack;
 				_dfw1 = BindingUtils.bindProperty(matchFromDropFodlerWin, "files", dfdp, "dropFolderFiles");
 				_dfw2 = BindingUtils.bindProperty(matchFromDropFodlerWin, "folders", dfdp, "dropFolders");
 				_dfw3 = BindingUtils.bindProperty(matchFromDropFodlerWin, "conversionProfiles", fdp, "conversionProfsWFlavorParams");
@@ -794,8 +834,8 @@
 				//resets data
 				_selectedFlavorWithParams = null;
 			}
-
-
+			
+			
 			private function onDropFolderWindowClose(e:Event):void {
 				_dfw1.unwatch();
 				_dfw2.unwatch();
@@ -805,8 +845,8 @@
 					refreshData(true);
 				}
 			}
-
-
+			
+			
 			/**
 			 * @param entryState	show the actions button according to entry state
 			 * @param allowAdd		allow adding media to a no_content entry
@@ -822,19 +862,19 @@
 				}
 				return result;
 			}
-
-
+			
+			
 			protected function onImportBtnClick(event:MouseEvent):void {
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
 			}
-
-
+			
+			
 			protected function onLinkBtnClick(event:MouseEvent):void {
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
 			}
 		]]>
 	</mx:Script>
-
+	
 	<control:FlavorsTabController id="controller" />
 	
 	<!-- Current entry state description -->
@@ -894,5 +934,4 @@
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<view:FlavorsTable id="dg" dataProvider="{flavorAssets}"/>
-
-</mx:VBox>
+</mx:Module>

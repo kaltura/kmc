@@ -1,5 +1,6 @@
 package com.kaltura.edw.business
 {
+	import com.kaltura.kmvc.model.IDataPackRepository;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import flash.events.IEventDispatcher;
@@ -19,6 +20,14 @@ package com.kaltura.edw.business
 		function get selectedEntry():KalturaBaseEntry;		
 		function set selectedEntry(value:KalturaBaseEntry):void;
 		
+		function get styleName():Object;
+		function set styleName(value:Object):void;
+		
+		/**
+		 * 	Reference to the model. Allows access for data packs.
+		 */		
+		function get dataPackModel():IDataPackRepository;
+		function set dataPackModel(value:IDataPackRepository):void;
 		
 		/**
 		 * the panel will see if the info it holds is valid for saving. When 
@@ -26,7 +35,6 @@ package com.kaltura.edw.business
 		 * event with the result.
 		 */
 		function validate():void;
-		
 		
 		/**
 		 * the panel will save its data. When save is complete, panel informs the 
@@ -36,10 +44,9 @@ package com.kaltura.edw.business
 		 */
 		function save():void;
 		
-		
 		/**
 		 * will be triggered when the panel is no longer needed (window is 
-		 * destroyed). the panel will kill all listeners and bindings. 
+		 * destroyed). The panel will kill all listeners and bindings. 
 		 */
 		function destroy():void;
 		
@@ -51,7 +58,6 @@ package com.kaltura.edw.business
 		 */
 		function clear():void;
 		
-		
 		/**
 		 * the panel will load any data it requires from the server. 
 		 * Panel that does not require extra data (other than selectedEntry) 
@@ -62,7 +68,6 @@ package com.kaltura.edw.business
 		 */		
 		function initData():void;
 		
-		
 		/**
 		 * one time initialization actions (the opposite of destoy()). 
 		 * In this method the panel will create the attributes it requires on 
@@ -70,13 +75,22 @@ package com.kaltura.edw.business
 		 */		
 		function init():void;
 		
-		
 		/**
 		 * whether save action is required 
 		 * @return 
 		 */
 		function isChanged():Boolean;
 
+		/**
+		 * Used to access the enabled poperty of UIComponent.
+		 */		
+		function set enabled(value:Boolean):void;
+		function get enabled():Boolean;
+		
+		/**
+		 * Gets the help ancohr string that this panel relates to.
+		 */
+		function get helpAnchor():String;
 	}
 	
 }

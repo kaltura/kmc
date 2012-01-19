@@ -55,5 +55,7 @@ package com.kaltura.edw.model.datapacks
 		 * referenceId as the entry being saved. this is the list.
 		 */
 		public var entriesWSameRefidAsSelected:Array;
+		
+		public var loadRoughcuts:Boolean = true;
 	}
 }

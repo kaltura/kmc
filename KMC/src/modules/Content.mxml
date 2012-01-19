@@ -43,7 +43,6 @@
 			import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.view.EntryDetailsWin;
-			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.events.FileUploadEvent;
@@ -525,9 +524,14 @@
 				// model:
 				_customDataData.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
 				(_model.entryDetailsModel.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
+				
+				// Remove this later? - Biton.
 				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString() != '') {
 					(_model.entryDetailsModel.getDataPack(ContentDataPack) as ContentDataPack).showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
 				}
+				
+				var contextDp:ContextDataPack = _model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
+				contextDp.uiConfData = confFile;
 
 			}
 			
@@ -687,9 +691,9 @@
 				edp.selectedEntry = _entryData.selectedReplacementEntry;
 				edp.replacedEntryName = _entryData.selectedEntry.name;
 				//
-				edw.loadRoughcuts = false;
+				edp.loadRoughcuts = false;
 //				edw.showNextPrevBtns = false;
-				edw.visibleTabsAC = new ArrayCollection(["entryAssets"]);
+				edw.visibleTabs = Vector.<String>(["entryAssets"]);
 				edw.styleName = "WinTitleStyle2";
 				edw.setStyle("modalTransparency", 0);
 			}
@@ -767,10 +771,12 @@
 					setReplacementDrilldown(edw);
 				}
 				
-				edw.entryDetailsModel = KMvCModel.getInstance();
-				edw.showEmbedCode = _model.showSingleEntryEmbedCode;
-				edw.landingPage = _model.extSynModel.partnerData.landingPage;
-				edw.openPlayerFunc = _model.openPlayer;
+				var entryDetailsModel:KMvCModel = KMvCModel.getInstance();
+				edw.entryDetailsModel = entryDetailsModel;
+				var contextData:ContextDataPack = entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
+				contextData.showEmbedCode = _model.showSingleEntryEmbedCode;
+				contextData.landingPage = _model.extSynModel.partnerData.landingPage;
+				contextData.openPlayerFunc = _model.openPlayer;
 				if (state != EntryDetailsWindowState.NORMAL_ENTRY)
 					edw.showNextPrevBtns = false;
 				else if (_model.listableVo)	// only for normal entries
@@ -825,9 +831,7 @@
 					mpw.onTheFlyEntries = _model.playlistModel.onTheFlyPlaylistEntries;
 				}	
 				
-				var dpi:DistributionProfileInfo = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo;
-				mpw.setDistibutionProfileInfo(dpi);
-//				mpw.distributionProfilesArray = dpi.kalturaDistributionProfilesArray;
+				mpw.distributionProfilesArray = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
 				mpw.selectedEntry = _entryData.selectedEntry;
 				if (_entryData.selectedEntry && _entryData.selectedEntry.id){
 					mpw.context = ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE;

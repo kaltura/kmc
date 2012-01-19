@@ -17,6 +17,7 @@
 			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.events.KedErrorEvent;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.types.APIErrorCode;
 			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.business.JSGate;
@@ -31,6 +32,7 @@
 			import com.kaltura.kmc.utils.KSUtil;
 			import com.kaltura.kmc.utils.XMLUtils;
 			import com.kaltura.kmc.vo.UserVO;
+			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.utils.KUtils;
 			import com.kaltura.utils.ObjectHelpers;
@@ -310,7 +312,9 @@
 				_modelLocator.kalturaClient.queueing = true;
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.CALL_QUEUED, setTimer);
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.QUEUE_FLUSHED, setTimer);
-
+				
+				var contextData:ContextDataPack = KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack;
+				contextData.sourceUrl = systemManager.loaderInfo.url.substr(0, systemManager.loaderInfo.url.lastIndexOf("/"));
 
 				// create a module loader:
 				_kmcModuleLoader = new KmcModuleLoader();

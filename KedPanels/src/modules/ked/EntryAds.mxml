@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:controls="com.kaltura.controls.*"
-		 hide="hideHandler(event)" xmlns:control="com.kaltura.edw.control.*">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:controls="com.kaltura.controls.*"
+		   hide="hideHandler(event)" xmlns:control="com.kaltura.edw.control.*"
+		   label="{resourceManager.getString('drilldown','ads')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -17,6 +18,7 @@
 			import com.kaltura.events.KClipErrorCodes;
 			import com.kaltura.events.KClipEventTypes;
 			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.KalturaAdProtocolType;
 			import com.kaltura.types.KalturaAdType;
 			import com.kaltura.types.KalturaCuePointType;
@@ -35,88 +37,88 @@
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.resources.ResourceManager;
-
-
+			
+			
 			private static const BULK_ACTIONS:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_upload'), value: 'ads_bulk_upload'},
 				{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_download'), value: 'ads_bulk_download'},
 				{label: ResourceManager.getInstance().getString('drilldown', 'ads_bulk_sample'), value: 'ads_bulk_sample'}];
-
+			
 			private static const AD_TYPES:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'type_midroll'), value: KalturaAdType.VIDEO},
 				{label: ResourceManager.getInstance().getString('drilldown', 'type_overlay'), value: KalturaAdType.OVERLAY}];
-
+			
 			private static const PROVIDERS:Array = [{label: ResourceManager.getInstance().getString('drilldown', 'provider_vast'), value: 'vast'},
 				{label: ResourceManager.getInstance().getString('drilldown', 'provider_other'), value: 'other'}];
-
+			
 			private const LABEL_WIDTH:int = 80;
-
+			
 			public static const XML_EXL:String = "*.xml";
-
+			
 			/**
 			 * clipper ruler is kept between different
 			 * instances of the window as optimisation
 			 * */
 			private var _kClip:DisplayObject;
 			private static var kClipLoader:SWFLoader;
-
+			
 			/**
 			 * a flag used to determine we can talk with the kClip
 			 * */
 			private var _kClipReady:Boolean = false;
-
+			
 			/**
 			 * player is kept between different
 			 * instances of the window as optimisation
 			 * */
 			private var _kdp:DisplayObject;
 			private static var kdpLoader:SWFLoader;
-
+			
 			/**
 			 * remember if the kdp already got its first "doPlay" call.
 			 * when we get updatePlayhead from kclip, if kdpFirstPlayed
 			 * we do doSeek, otherwise we do mediaPlayFrom and doPlay+doPause
 			 * */
 			private var _kdpFirstPlayed:Boolean = false;
-
-
+			
+			
 			/**
 			 * when the KDP plays for the first time, if kClip initiated the play
 			 * we need to pause the KDP. otherwise, keep playing.
 			 * */
 			private var _kClipInitiatedPlay:Boolean = false;
-
+			
 			/**
 			 * to stop loop between updating playhead in kclip/kdp
 			 * */
 			private var _kdpInitiatedUpdate:Boolean = false;
-
+			
 			/**
 			 * so that we won't add listeners to kclip and KDP every time
 			 * initData is called (when paging between entries)
 			 * */
 			private var _listenersAddedKDP:Boolean = false;
 			private var _listenersAddedKClip:Boolean = false;
-
+			
 			[Bindable]
 			/**
 			 * should components in the tab be editable
 			 * */
 			public var editable:Boolean = true;
-
+			
 			public var context:ContextDataPack;
-
-
-//			public var entryDetailsModel:EntryDetailsModel;
+			
+			
+			//			public var entryDetailsModel:EntryDetailsModel;
 			/**
 			 * data for this panel
 			 * */
 			public var model:CuePointsDataPack;
-
+			
 			[Bindable]
 			/**
 			 * number of currently present cuepoints on kClip
 			 * */
 			private var _counter:int = 0;
-
+			
 			/**
 			 * change watcher to update kclip when entry duration changes
 			 * */
@@ -128,6 +130,7 @@
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
 			
+			private var _dpModel:IDataPackRepository;
 			/**
 			 * the entry being edited
 			 * */
@@ -140,21 +143,36 @@
 					_durationWatcher.unwatch();
 				}
 				_selectedEntry = value;
-				_durationWatcher = BindingUtils.bindSetter(myFunc, _selectedEntry, "duration");
+				if (_kClip != null && _selectedEntry != null){
+					_durationWatcher = BindingUtils.bindSetter(myFunc, _selectedEntry, "duration");
+				}
 			}
-
+			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				context = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
+				model = _dpModel.getDataPack(CuePointsDataPack) as CuePointsDataPack;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_ads";
+			}
+			
 			[Bindable]
 			/**
 			 * is the cuepoints details form enabled
 			 * */
 			private var _formEnabled:Boolean = false;
-
+			
 			[Bindable]
 			/**
 			 * the cuepoint currently being edited
 			 * */
 			private var _selectedCuePoint:KalturaAdCuePoint /*  = new KalturaAdCuePoint() */;
-
+			
 			/**
 			 * change watcher for reacting to cueopints count being set on model
 			 * */
@@ -163,22 +181,22 @@
 			 * change watcher for reacting to reloadCuePoints being set on model
 			 * */
 			private var _watchCPReload:ChangeWatcher;
-
+			
 			/**
 			 * image for KDP when entry is in no_content status
 			 * */
 			private var _img:Image;
-
+			
 			/**
 			 * file reference object used for bulk upload
 			 * */
 			private var _bulkUpldFileRef:FileReference;
-
+			
 			/**
 			 * current playhead position, in ms.
 			 * */
 			private var _playheadPosition:Number;
-
+			
 			private var _doValidation:Boolean = false;
 			
 			
@@ -210,7 +228,7 @@
 				}
 				// otherwise, the component wasn't ready so no data 
 				// could have changed to invalid data
-
+				
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
 			}
@@ -244,9 +262,9 @@
 				trace("uncaughtErrorHandler: ");
 				trace(event, event["error"]);
 			}
-
-
-
+			
+			
+			
 			/**
 			 * stop KDP if it happens to be playing
 			 * */
@@ -255,11 +273,11 @@
 					_kdp["sendNotification"](KdpEventTypes.DO_STOP);
 				}
 			}
-
-
+			
+			
 			public function destroy():void {
 				if (_kdp) {
-//					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
+					//					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
@@ -279,8 +297,8 @@
 					_durationWatcher.unwatch();
 				}
 			}
-
-
+			
+			
 			public function initData():void {
 				_doValidation = false;
 				_selectedCuePoint = null;
@@ -288,36 +306,36 @@
 				// reset number of cuepoints
 				var cg:CuePointEvent = new CuePointEvent(CuePointEvent.RESET_CUEPOINTS_COUNT);
 				controller.dispatch(cg);
-//				if (!_watchCPCount) {
-//					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, model, "cuepointsCount");
-//				}
-//				if (!_watchCPReload) {
-//					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, model, "reloadCuePoints");
-//				}
+				//				if (!_watchCPCount) {
+				//					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, model, "cuepointsCount");
+				//				}
+				//				if (!_watchCPReload) {
+				//					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, model, "reloadCuePoints");
+				//				}
 				loadWidgets();
 				// get number of entry cuepoints
 				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
 				cg.data = _selectedEntry.id;
 				controller.dispatch(cg);
 			}
-
-
-//			/**
-//			 * triggers save action for cuepoints if needed.
-//			 * @return true if save process required (and began), false otherwise
-//			 * */
-//			public function saveCuepoints():Boolean {
-//				var res:Boolean = false;
-//				if (_kClipReady && _kClip["isSaveRequired"]()) {
-//					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
-//					_kClip["save"]();
-//					res = true;
-//				}
-				// if the component wasn't ready data couldn't change, therefore save isn't required.
-//				return res;
-//			}
-
-
+			
+			
+			//			/**
+			//			 * triggers save action for cuepoints if needed.
+			//			 * @return true if save process required (and began), false otherwise
+			//			 * */
+			//			public function saveCuepoints():Boolean {
+			//				var res:Boolean = false;
+			//				if (_kClipReady && _kClip["isSaveRequired"]()) {
+			//					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
+			//					_kClip["save"]();
+			//					res = true;
+			//				}
+			// if the component wasn't ready data couldn't change, therefore save isn't required.
+			//				return res;
+			//			}
+			
+			
 			/**
 			 * reload cue points if true
 			 * @internal
@@ -329,9 +347,9 @@
 					_kClip["loadCuePoints"]();
 				}
 			}
-
-
-
+			
+			
+			
 			private function updateKClipStatus(setEntryId:Boolean = true):void {
 				var sm:KalturaMediaEntry = _selectedEntry as KalturaMediaEntry;
 				if (sm.status != KalturaEntryStatus.READY || (sm.mediaType != KalturaMediaType.AUDIO && sm.mediaType != KalturaMediaType.VIDEO)) {
@@ -345,9 +363,13 @@
 						_kClip["setEntryId"](_selectedEntry.id);
 					}
 				}
+				
+				if (_durationWatcher == null && sm != null){
+					_durationWatcher = BindingUtils.bindSetter(myFunc, _selectedEntry, "duration");
+				}
 			}
-
-
+			
+			
 			private function updateKdpStatus(setEntryId:Boolean = true):void {
 				if (_selectedEntry.status != KalturaEntryStatus.READY) {
 					// entry not ready, show image and hide KDP
@@ -378,9 +400,9 @@
 					}
 				}
 			}
-
-
-
+			
+			
+			
 			
 			public function save():void {
 				if (isChanged()) {
@@ -390,15 +412,15 @@
 				else {
 					dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 				}
-//				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-//				if (!validate()) {
-//					//failed validation
-//					result.error = EntryDetailsValidationError.CUEPOINTS_DATA;
-//				}
-//				return result;
+				//				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
+				//				if (!validate()) {
+				//					//failed validation
+				//					result.error = EntryDetailsValidationError.CUEPOINTS_DATA;
+				//				}
+				//				return result;
 			}
-
-
+			
+			
 			/**
 			 * has the data in the panel changed since last save?
 			 * */
@@ -408,9 +430,9 @@
 				}
 				return false;
 			}
-
-
-
+			
+			
+			
 			/**
 			 * set the given CP's values in the details form.
 			 * */
@@ -437,8 +459,8 @@
 			private function isNewCuepoint(cp:KalturaAdCuePoint):Boolean {
 				return cp.createdAt == int.MIN_VALUE;
 			}
-
-
+			
+			
 			/**
 			 * load KDP and KClip or add them to stage, as needed.
 			 * */
@@ -464,12 +486,12 @@
 					kClipLoader.loaderContext = new LoaderContext(false, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kClipLoader.load(url);
 				}
-
+				
 				if (EntryAds.kdpLoader) {
 					kdpHolder.addChild(kdpLoader);
 					_kdp = kdpLoader.content;
 					if (!_listenersAddedKDP) {
-
+						
 						addKDPListeners();
 						_listenersAddedKDP = true;
 					}
@@ -478,6 +500,7 @@
 					}
 				}
 				else {
+					
 					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
 					EntryAds.kdpLoader = new SWFLoader();
 					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
@@ -486,15 +509,15 @@
 					kdpLoader.load(newUrl);
 				}
 			}
-
+			
 			private function addKDPListeners():void {
-//				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
+				//				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.DO_SEEK, handleKdpEvents, false, 0, true);
 			}
-
+			
 			/**
 			 * wait for kClip application to be ready
 			 * */
@@ -503,19 +526,19 @@
 				kClipLoader.width = kClipHolder.width;
 				kClipLoader.height = kClipHolder.height;
 				kClipLoader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
-//				if (kClipLoader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
-//					IEventDispatcher(kClipLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
+				//				if (kClipLoader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
+				//					IEventDispatcher(kClipLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 			}
-
-
+			
+			
 			private function onKClipApplicationReady(e:Event):void {
 				// e.target is the systemManager for KClip
 				e.target.removeEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
 				_kClip = e.target.application as DisplayObject;
 				initKClip();
 			}
-
-
+			
+			
 			/**
 			 * initialize kClip
 			 * */
@@ -532,8 +555,8 @@
 				_kClip["init"](params);
 				_kClip.width = kClipHolder.width;
 			}
-
-
+			
+			
 			private function addKClipListeners():void {
 				if (!_listenersAddedKClip) {
 					_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
@@ -551,8 +574,8 @@
 					_listenersAddedKClip = true;
 				}
 			}
-
-
+			
+			
 			private function removeKClipListeners():void {
 				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.SELECTED_ASSET_REMOVED, handleKClipEvents);
@@ -567,8 +590,8 @@
 				_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_DRAG_START, handleKClipEvents);
 				_kClip.removeEventListener(KClipEventTypes.ZOOM_CHANGED, handleKClipEvents);
 			}
-
-
+			
+			
 			/**
 			 * handle all kClip events
 			 * */
@@ -586,7 +609,7 @@
 						_kClip.addEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
 						updateKdpPlayhead(_playheadPosition / 1000);
 						break;
-
+					
 					case KClipEventTypes.CLIPPER_READY:
 						updateKClipStatus(true);
 						break;
@@ -636,8 +659,8 @@
 						break;
 				}
 			}
-
-
+			
+			
 			/**
 			 * show user the error.
 			 * @internal
@@ -651,9 +674,9 @@
 					Alert.show(errorVo.messageText);
 				}
 			}
-
-
-
+			
+			
+			
 			private function onKdpLoaded(e:Event):void {
 				var loader:SWFLoader = e.target as SWFLoader;
 				loader.width = kdpHolder.width;
@@ -670,8 +693,8 @@
 					IEventDispatcher(kdpLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 				initKdp();
 			}
-
-
+			
+			
 			/**
 			 * initialize KDP
 			 */
@@ -691,16 +714,16 @@
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
-
+				
 				params.debugMode = context.debugMode; //"true";//
-
+				
 				_kdp["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
 				_kdp["init"]();
 				addKDPListeners();
 			}
-
-
+			
+			
 			private function handleKdpEvents(e:Event):void {
 				if (context.debugMode) {
 					trace("EntryAds.handleKdpEvents, ", e.type, e["data"]);
@@ -753,8 +776,8 @@
 						break;
 				}
 			}
-
-
+			
+			
 			/**
 			 * update kdp with new time
 			 * @param n new time in seconds
@@ -774,8 +797,8 @@
 					}
 				}
 			}
-
-
+			
+			
 			private function updateCuePointData(e:Event):void {
 				// timing
 				_selectedCuePoint.startTime = teTiming.getTimeAsSeconds() * 1000;
@@ -806,11 +829,11 @@
 				// update
 				_kClip["updateCuePoint"](_selectedCuePoint);
 			}
-
-
 			
-
-
+			
+			
+			
+			
 			/**
 			 * validate required fields of the given cuepoint
 			 * @param cp	cuepoint to test
@@ -820,7 +843,7 @@
 				var result:Boolean = true;
 				// ad type - must have value
 				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
-//					trace("cpid:", cp.id, "no adType selected");
+					//					trace("cpid:", cp.id, "no adType selected");
 					if (showUI) {
 						cbType.errorString = "no adType selected";
 					}
@@ -832,14 +855,14 @@
 				// duration
 				if (cp.adType == KalturaAdType.OVERLAY) {
 					if (cp.endTime < cp.startTime) {
-//						trace("cpid:", cp.id, "endTime before startTime");
+						//						trace("cpid:", cp.id, "endTime before startTime");
 						if (showUI) {
 							teDuration.errorString = "endTime before startTime";
 						}
 						result &&= false;
 					}
 					else if (cp.endTime > (_selectedEntry as KalturaMediaEntry).duration * 1000) {
-//						trace("cpid:", cp.id, "endTime after entry.duration");
+						//						trace("cpid:", cp.id, "endTime after entry.duration");
 						if (showUI) {
 							teDuration.errorString = "endTime after entry.duration";
 						}
@@ -854,7 +877,7 @@
 				}
 				// for vast - url is mandatory
 				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
-//					trace("cpid:", cp.id, "vast, no sourceUrl");
+					//					trace("cpid:", cp.id, "vast, no sourceUrl");
 					if (showUI) {
 						tiUrl.errorString = "vast, no sourceUrl";
 					}
@@ -865,8 +888,8 @@
 				}
 				return result;
 			}
-
-
+			
+			
 			/**
 			 * retreive a list of cuepoints from kClip.
 			 * @return all cuepoints currently displayed on kClip.
@@ -886,9 +909,9 @@
 				}
 				return cps;
 			}
-
-
-
+			
+			
+			
 			/**
 			 * calculate cuepoint duration
 			 * */
@@ -903,8 +926,8 @@
 					return teDuration.getTimeAsObject(4);
 				}
 			}
-
-
+			
+			
 			/**
 			 * return the correct string to show in the ad provider text field,
 			 * i.e. nothing for vast, or the tags string for "other".
@@ -923,8 +946,8 @@
 				}
 				return resourceManager.getString('drilldown', 'ads_default_provider');
 			}
-
-
+			
+			
 			/**
 			 * get the object in PROVIDERS that represents the tags of the given CP
 			 * @param cp
@@ -937,7 +960,7 @@
 				else if (cp.protocolType == KalturaAdProtocolType.CUSTOM) {
 					value = "other";
 				}
-
+				
 				for (var i:int = 0; i < PROVIDERS.length; i++) {
 					if (PROVIDERS[i].value == value) {
 						return PROVIDERS[i];
@@ -946,8 +969,8 @@
 				// the last object is the "Other"
 				return PROVIDERS[PROVIDERS.length - 1];
 			}
-
-
+			
+			
 			/**
 			 * get the object in AD_TYPES that represents the adType of the given CP
 			 * @param cp
@@ -960,31 +983,31 @@
 				}
 				return -1;
 			}
-
-
+			
+			
 			/* 	private function updateKClipWidth(event:FlexEvent):void {
-			   if (kClipLoader) {
-			   kClipLoader.width = kClipHolder.width ;
-			   if (_kClip) {
-			   _kClip.width = kClipLoader.width;
-			   }
-			   }
-			 } */
-
-
+			if (kClipLoader) {
+			kClipLoader.width = kClipHolder.width ;
+			if (_kClip) {
+			_kClip.width = kClipLoader.width;
+			}
+			}
+			} */
+			
+			
 			private function removeAllCuePoints(event:MouseEvent):void {
 				if (_kClipReady) {
 					_kClip["removeAll"]();
 				}
 			}
-
-
-
-
+			
+			
+			
+			
 			// =====================================================================
 			// BULK RELATED STUFF
 			// =====================================================================
-
+			
 			/**
 			 * adjust the dataprovider for file actions dropdown
 			 * @param cuepoints count
@@ -992,7 +1015,7 @@
 			private function adjustBulkActions(value:Object):void {
 				// copy the array for the new entry
 				var ar:Array = BULK_ACTIONS.concat();
-
+				
 				if (value != null && value == 0) {
 					// remove the download option
 					ar.splice(1, 1);
@@ -1006,8 +1029,8 @@
 				cbActions.selectedIndex = -1;
 				cbActions.enabled = true;
 			}
-
-
+			
+			
 			private function handleBulkActions(event:ListEvent):void {
 				var action:String = (event.target as ComboBox).selectedItem.value;
 				switch (action) {
@@ -1030,8 +1053,8 @@
 				}
 				cbActions.selectedIndex = -1;
 			}
-
-
+			
+			
 			/**
 			 * on buld file selected
 			 * */
@@ -1041,8 +1064,8 @@
 				cg.data = _bulkUpldFileRef;
 				controller.dispatch(cg);
 			}
-
-
+			
+			
 			/**
 			 * after changing the CB dataprovider, fix dropdown size
 			 * (Flex 3.5 bug)
@@ -1052,7 +1075,7 @@
 					cbActions.dropdown.width = cbActions.width;
 				}
 			}
-
+			
 			// =====================================================================
 			
 			/**
@@ -1139,4 +1162,5 @@
 					   visible="{_counter > 0 &amp;&amp; editable}"
 					   includeInLayout="{_counter > 0  &amp;&amp; editable}"/>
 	</mx:HBox>
-</mx:VBox>
+
+</mx:Module>

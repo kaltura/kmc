@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 Thumbnails tab of EntryDetailsWin
+Thumbnails tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   label="{resourceManager.getString('drilldown', 'thumbnails')}"
+		   implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -16,10 +17,12 @@
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
+			import com.kaltura.edw.model.datapacks.FilterDataPack;
 			import com.kaltura.edw.view.ir.ThumbAssetDistributionProfilesRenderer;
 			import com.kaltura.edw.view.window.CropThumbnailWindow;
 			import com.kaltura.edw.view.window.GrabFromVideoWindow;
 			import com.kaltura.edw.vo.ThumbnailWithDimensions;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -32,7 +35,7 @@
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.managers.PopUpManager;
-
+			
 			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
 			
 			public static const SET_DEFAULT:String = "setDefault";
@@ -45,7 +48,7 @@
 			 * upload new thumbnail FR
 			 * */
 			private var _fileReference:FileReference;
-
+			
 			/**
 			 * @copy #selectedEntry
 			 * */
@@ -71,11 +74,31 @@
 			private var _uploadThumbnailActionsDP:Array;
 			
 			private var _cropperWindow:CropThumbnailWindow;
-
+			private var _dpModel:IDataPackRepository;
+			
 			/**
 			 * when user requests to delete an asset, the asset to delete.
 			 * */
 			private var _thumbAsset:ThumbnailWithDimensions;
+			private var _distibutionEnabled:Boolean = false;
+			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
+				enableDistribution = filterData.filterModel.enableDistribution;
+				context = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
+				distributionModel = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
+				
+				var filterDP:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
+				enableDistribution = filterDP.filterModel.enableDistribution;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_tumbnails";
+			}
 			
 			public function validate():void {
 				// this panel's data cannot be invalid
@@ -86,18 +109,19 @@
 				// this panel's data is saved as it changes, so save here isn't required
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-
+			
 			public function isChanged():Boolean {
 				// save action cannot be required because of this panel
 				return false;
 			}
 			
 			public function initData():void {
-				var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
-				controller.dispatch(listThumbs);
+//				var listThumbs:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.LIST);
+//				controller.dispatch(listThumbs);
+				_distributionModel.loadThumbs(controller, _selectedEntry);
 			}
-
-
+			
+			
 			public function destroy():void {
 				_tumbDimCW.unwatch();
 				dataGrid.addEventListener(EntryThumbnails.SET_DEFAULT, thumbActionHandler);
@@ -105,9 +129,9 @@
 				dataGrid.addEventListener(EntryThumbnails.DELETE, thumbActionHandler);
 			}
 			
-
+			
 			public function clear():void {
-
+				
 			}
 			
 			public function init():void {
@@ -115,22 +139,22 @@
 				dataGrid.addEventListener(EntryThumbnails.DOWNLOAD, thumbActionHandler);
 				dataGrid.addEventListener(EntryThumbnails.DELETE, thumbActionHandler);
 			}
-
-
+			
+			
 			public function get context():ContextDataPack {
 				return _context;
 			}
-
-
+			
+			
 			public function set context(value:ContextDataPack):void {
 				_context = value;
 			}
-
-
+			
+			
 			public function get distributionModel():DistributionDataPack {
 				return _distributionModel;
 			}
-
+			
 			
 			public function set distributionModel(value:DistributionDataPack):void {
 				_distributionModel = value;
@@ -141,22 +165,24 @@
 				if (_distributionModel) {
 					_tumbDimCW = BindingUtils.bindSetter(setDimensionsArray, _distributionModel.distributionProfileInfo, "thumbnailDimensionsArray");
 				}
-
+				
 			}
-
-
+			
+			
 			/**
 			 * will add the "profiles" column if we have distribution
 			 * */
 			public function set enableDistribution(value:Boolean):void {
-				if (value) {
+				if (value && !_distibutionEnabled) {
 					var columnsArray:Array = dataGrid.columns;
 					columnsArray.splice(3, 0, partnersCol);
 					dataGrid.columns = columnsArray;
 				}
+				
+				_distibutionEnabled = value;
 			}
-
-
+			
+			
 			public function set editable(value:Boolean):void {
 				if (!value) {
 					actionCB.visible = false;
@@ -171,30 +197,30 @@
 					dataGrid.columns = arrCol.source;
 				}
 			}
-
-
+			
+			
 			public function get editable():Boolean {
 				return true;
 			}
-
-
+			
+			
 			private function setDimensionsArray(array:Array):void {
 				_dimensionsArray = array;
 				if (_cropperWindow)
 					_cropperWindow.thumbnailsList = array;
 			}
-
-
+			
+			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-
-
+			
+			
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				if (!value)
 					return;
 				_selectedEntry = value;
-
+				
 				//set the available operations for current entry
 				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
 				if ((_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) && ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
@@ -203,8 +229,8 @@
 						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
 				}
 			}
-
-
+			
+			
 			private function addThumb(event:Event):void {
 				switch (actionCB.selectedItem) {
 					case resourceManager.getString('drilldown', 'upload'):
@@ -220,26 +246,26 @@
 				//to set the prompt back
 				actionCB.selectedIndex = -1;
 			}
-
-
+			
+			
 			private function uploadNewThumbnail():void {
 				_fileReference = new FileReference();
 				_fileReference.addEventListener(Event.SELECT, onThumbnailSelected);
 				_fileReference.browse(new Array(getImageTypeFilter()));
 			}
-
-
+			
+			
 			private function getImageTypeFilter():FileFilter {
 				return new FileFilter("Images (" + IMAGE_TYPES + ")", IMAGE_TYPES);
 			}
-
-
+			
+			
 			private function onThumbnailSelected(event:Event):void {
 				var uploadThumbnailEvent:UploadFromImageThumbAssetEvent = new UploadFromImageThumbAssetEvent(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE, selectedEntry.id, _fileReference);
 				controller.dispatch(uploadThumbnailEvent);
 			}
-
-
+			
+			
 			private function openGrabFromVideoPopup():void {
 				var grabWindow:GrabFromVideoWindow = new GrabFromVideoWindow();
 				grabWindow.selectedEntry = _selectedEntry;
@@ -248,28 +274,28 @@
 				PopUpManager.addPopUp(grabWindow, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(grabWindow);
 			}
-
-
+			
+			
 			private function openCropThumbPopup():void {
 				_cropperWindow = new CropThumbnailWindow();
 				_cropperWindow.width = this.stage.stageWidth;
 				_cropperWindow.height = this.stage.stageHeight;
 				_cropperWindow.thumbnailsList = _distributionModel.distributionProfileInfo.thumbnailDimensionsArray;
-//				_cropperWindow.entryDetailsModel = _entryDetailsModel;  //Atar: not used?
+				//				_cropperWindow.entryDetailsModel = _entryDetailsModel;  //Atar: not used?
 				_cropperWindow.selectedEntry = selectedEntry;
 				_cropperWindow.controller = controller;
 				_cropperWindow.addEventListener(CropThumbnailWindow.WINDOW_CLOSE, onCropperClosed);
 				PopUpManager.addPopUp(_cropperWindow, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(_cropperWindow);
 			}
-
-
+			
+			
 			private function onCropperClosed(event:Event):void {
 				PopUpManager.removePopUp(_cropperWindow);
 				_cropperWindow = null;
 			}
-
-
+			
+			
 			private function compareDimensions(obj1:ThumbnailWithDimensions, obj2:ThumbnailWithDimensions):int {
 				if (obj1.width < obj2.width)
 					return -1;
@@ -309,7 +335,7 @@
 					
 				}
 			}
-				
+			
 			
 			/**
 			 * delete a thumb asset (after user confirmation)
@@ -330,7 +356,7 @@
 	<mx:ComboBox id="actionCB" prompt="{resourceManager.getString('drilldown','addThumbnail')}"
 				 dataProvider="{_uploadThumbnailActionsDP}" change="{addThumb(event)}" selectedIndex="-1"
 				 tabIndex="0"/>
-
+	
 	<mx:DataGrid id="dataGrid" width="100%" height="100%" dataProvider="{_dimensionsArray}" draggableColumns="false"
 				 selectable="false" rowHeight="100" editable="false">
 		<mx:columns>
@@ -354,5 +380,4 @@
 							   itemRenderer="com.kaltura.edw.view.ir.ThumbAssetActionRenderer" />
 		</mx:columns>
 	</mx:DataGrid>
-
-</mx:VBox>
+</mx:Module>

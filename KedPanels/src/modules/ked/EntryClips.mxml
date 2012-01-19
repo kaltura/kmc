@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel"
-		 width="100%" height="100%" xmlns:view="com.kaltura.edw.view.*" xmlns:controls="com.kaltura.controls.*"
-		 xmlns:et="com.kaltura.edw.view.et.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*" >
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel"
+		   width="100%" height="100%" xmlns:view="com.kaltura.edw.view.*" xmlns:controls="com.kaltura.controls.*"
+		   xmlns:et="com.kaltura.edw.view.et.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*"
+		   label="{resourceManager.getString('drilldown','clips')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -11,23 +12,39 @@
 			import com.kaltura.edw.control.events.ClipEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.ClipsDataPack;
 			import com.kaltura.kmvc.control.KMvCController;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.events.FlexEvent;
-
+			
 			/**
 			 * current selected entry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
-
+			private var _dpModel:IDataPackRepository;
+			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
+			}
+			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				var clipsData:ClipsDataPack = _dpModel.getDataPack(ClipsDataPack) as ClipsDataPack;
+				clips = clipsData.clips;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_clips";
 			}
 			
 			[Bindable]
@@ -64,7 +81,7 @@
 			public function isChanged():Boolean {
 				return false;
 			}
-
+			
 			public function initData():void {
 				// reset previous data
 				var ce:ClipEvent = new ClipEvent(ClipEvent.RESET_MODEL_ENTRY_CLIPS);
@@ -76,7 +93,7 @@
 				// get data
 				getNext();
 			}
-
+			
 			private function getNext():void {
 				var gc:ClipEvent = new ClipEvent(ClipEvent.GET_ENTRY_CLIPS);
 				gc.data = {id: selectedEntry.id};
@@ -85,30 +102,30 @@
 				}
 				controller.dispatch(gc);
 			}
-
+			
 			public function destroy():void {
 				_cw.unwatch();
 			}
-
-
+			
+			
 			private function removeColumns(event:FlexEvent):void {
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'thumbnail'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'idHeader'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'name'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'idHeader'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'name'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'playlistType'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'type'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'playerLoads'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'plays'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'plays'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'rating'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'creator'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'createAt'));
-//				entryTable.removeColumn(resourceManager.getString('drilldown', 'duration'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'creator'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'createAt'));
+				//				entryTable.removeColumn(resourceManager.getString('drilldown', 'duration'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'flags'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'moderationStatus'));
 				entryTable.removeColumn(resourceManager.getString('drilldown', 'preview'));
-
+				
 			}
-
+			
 			/**
 			 * if entry has no clips, remove the tab.
 			 * @internal
@@ -122,17 +139,17 @@
 					this.parent.removeChild(this);
 				}
 			}
-
+			
 		]]>
 	</mx:Script>
 	<control:ClipsTabController id="controller" />
 	<mx:VBox styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%" >
 		<et1:EntryTable id="entryTable" width="100%" height="100%" kalturaSorting="false" 
-					   showLinks="false" dataProvider="{clips}" creationComplete="removeColumns(event)"/>
+						showLinks="false" dataProvider="{clips}" creationComplete="removeColumns(event)"/>
 		
 		<controls:Paging id="paging" width="100%" styleName="paging"
 						 rowsInPageChange="getNext()" nextPage="getNext()" prvPage="getNext()"
 						 getPageNum="getNext()" totalCount="{clips.length}"
 						 showRowsInPage="true" defaultPageSize="10" />
 	</mx:VBox>
-</mx:VBox>
+</mx:Module>

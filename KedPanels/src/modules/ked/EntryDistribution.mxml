@@ -1,28 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 Distribution tab of EntryDetailsWin
+Distribution tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*"
-		 implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*"
-		 creationComplete="vbox1_creationCompleteHandler(event)">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:controls="flexlib.controls.*"
+		   implements="com.kaltura.edw.business.IDrilldownPanel" xmlns:control="com.kaltura.edw.control.*"
+		   creationComplete="vbox1_creationCompleteHandler(event)"
+		   label="{resourceManager.getString('drilldown', 'distribution')}">
+
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.commands.data.DataDelete;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.EntryDistributionWithProfile;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
 			import com.kaltura.edw.view.window.DistributionDetailsWindow;
 			import com.kaltura.edw.view.window.SelectDistributorsWindow;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaEntryDistribution;
+			
+			import flash.utils.getDefinitionByName;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -31,14 +38,16 @@
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-
-
+			
+			
 			public static const SUBMIT:String = "submit";
 			public static const RETRY:String = "retry";
 			public static const SUBMIT_UPDATE:String = "submitUpdate";
 			public static const SHOW_DETAILS:String = "showDetails";
 			
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _dpModel:IDataPackRepository;
+			private var _distributionData:DistributionDataPack;
 			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
@@ -49,10 +58,27 @@
 				_selectedEntry = value;
 			}
 			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
+				var contextData:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
+				viewStack = contextData.edwViewStack;
+				
+				if ((_dpModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
+					_selectDistributorsEnabled = false;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_distribution";
+			}
+			
 			private var _distributionDetailsWindow:DistributionDetailsWindow;
-
-			private var _model:KMvCModel;
-
+			
+//			private var _model:KMvCModel;
+			
 			[Bindable]
 			private var _entryDistributions:Array;
 			
@@ -69,8 +95,8 @@
 			 * read by SubmissionStatusRenderer via parentDocument
 			 * */
 			public var viewStack:ViewStack;
-
-
+			
+			
 			public function clear():void {
 				if (_cw) {
 					_cw.unwatch();
@@ -83,7 +109,7 @@
 			
 			public function init():void {
 				if (!_cw) {
-					var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+					var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 					_cw = BindingUtils.bindSetter(setEntryDistributions, ddp.distributionProfileInfo, "entryDistributionArray");
 				}
 			}
@@ -96,7 +122,7 @@
 				// distributor
 				dataGrid.removeEventListener(EntryDistribution.SHOW_DETAILS, showDistributionDetails);
 			}
-
+			
 			public function validate():void {
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
 				dispatchEvent(e);
@@ -106,16 +132,19 @@
 			public function save():void {
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-
+			
 			/**
 			 * loads required data from server
 			 * */
 			public function initData():void {
 				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
 				controller.dispatch(updateEntryDistributions);
+				
+				_distributionData.loadFlavors(controller, _selectedEntry);
+				_distributionData.loadThumbs(controller, _selectedEntry);
 			}
-
-
+			
+			
 			public function set showActions(value:Boolean):void {
 				if (!value) {
 					//remove action column from datagrid
@@ -129,28 +158,28 @@
 					dataGrid.columns = arrCol.source;
 				}
 			}
-
-
+			
+			
 			public function get showActions():Boolean {
 				return true;
 			}
-
-
-			public function get model():KMvCModel {
-				return _model;
-			}
-
-
-			public function set model(value:KMvCModel):void {
-				if (!value)
-					return;
-
-				_model = value;
+			
+			
+//			public function get model():KMvCModel {
+//				return _model;
+//			}
+			
+			
+//			public function set model(value:KMvCModel):void {
+//				if (!value)
+//					return;
+//				
+//				_model = value;
 				
-				if ((value.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
-					_selectDistributorsEnabled = false;
-			}
-
+//				if ((value.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
+//					_selectDistributorsEnabled = false;
+//			}
+			
 			public function setEntryDistributions(value:Array):void {
 				_entryDistributions = value;
 				_notDeletedEntries = new Array();
@@ -161,12 +190,12 @@
 					}
 				}
 			}
-
-
+			
+			
 			private function selectDistributorsClick():void {
 				var selectDistributorWin:SelectDistributorsWindow = new SelectDistributorsWindow();
 				selectDistributorWin.selectedEntry = _selectedEntry;
-				var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
+				var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				selectDistributorWin.entryFlavors = ddp.flavorParamsAndAssetsByEntryId;
 				selectDistributorWin.entryThumbs = ddp.distributionProfileInfo.thumbnailDimensionsArray;
 				selectDistributorWin.buildDistributorsWindow(ddp.distributionProfileInfo.kalturaDistributionProfilesArray, ddp.distributionProfileInfo.entryDistributionArray);
@@ -174,22 +203,22 @@
 				PopUpManager.addPopUp(selectDistributorWin, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(selectDistributorWin);
 			}
-
+			
 			private function updateLists(e:KedDataEvent):void {
 				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.UPDATE_LIST, e.data.addDistributors, e.data.removeDistributors);
 				controller.dispatch(updateEntryDistributions);
 			}
-
+			
 			private function compareSunrise(distribution1:EntryDistributionWithProfile, distribution2:EntryDistributionWithProfile):int {
 				return compareDates(distribution1.kalturaEntryDistribution.sunrise, distribution2.kalturaEntryDistribution.sunrise);
 			}
-
-
+			
+			
 			private function compareSunset(distribution1:EntryDistributionWithProfile, distribution2:EntryDistributionWithProfile):int {
 				return compareDates(distribution1.kalturaEntryDistribution.sunset, distribution2.kalturaEntryDistribution.sunset);
 			}
-
-
+			
+			
 			private function compareDates(date1:int, date2:int):int {
 				if (date1 < date2)
 					return -1;
@@ -197,7 +226,7 @@
 					return 0;
 				return 1;
 			}
-
+			
 			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
 			{
 				// actions:
@@ -212,7 +241,7 @@
 			private function showDistributionDetails(event:Event):void {
 				var distribution:EntryDistributionWithProfile = event.target.data as EntryDistributionWithProfile;
 				_distributionDetailsWindow = new DistributionDetailsWindow();
-				_distributionDetailsWindow.model = _model;
+				_distributionDetailsWindow.model = _dpModel;
 				_distributionDetailsWindow.entryDis = distribution;
 				//don't allow editing if we are in the middle of some process
 				if ((distribution.kalturaEntryDistribution.status==KalturaEntryDistributionStatus.DELETING) ||
@@ -229,7 +258,7 @@
 			}
 			
 			
-				
+			
 			private function getXml(event:Event):void {
 				var etype:String;
 				if (event.type == DistributionDetailsWindow.GET_RETURNED_DATA) {
@@ -274,7 +303,7 @@
 				// show details
 				controller.dispatch(actionEvent);
 			}
-
+			
 		]]>
 	</mx:Script>
 	<control:DistributionTabController id="controller" />
@@ -308,5 +337,4 @@
 							   minWidth="122" sortable="false"/>
 		</mx:columns>
 	</mx:DataGrid>
-
-</mx:VBox>
+</mx:Module>

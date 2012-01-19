@@ -4,7 +4,7 @@ package com.kaltura.kmvc.model
 	import flash.events.EventDispatcher;
 	import flash.utils.getQualifiedClassName;
 
-	public class KMvCModel extends EventDispatcher implements IModelLocator {
+	public class KMvCModel extends EventDispatcher implements IModelLocator, IDataPackRepository {
 		
 		/**
 		 * defines the value of the type property of the loadingFlagChanged event 

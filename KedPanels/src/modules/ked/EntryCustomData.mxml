@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel" show="onShow()"
-		 verticalGap="{customDataVerticalGap}">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel" show="onShow()"
+		   verticalGap="{customDataVerticalGap}"
+		   label="{resourceManager.getString('drilldown', 'customData')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -15,21 +16,23 @@
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+			import com.kaltura.edw.model.datapacks.FilterDataPack;
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.vo.EntryMetadataDataVO;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
-
+			
 			
 			
 			private static const customDataVerticalGap:int = 5;
-
+			
 			private var controller:CustomDataTabController = CustomDataTabController.getInstance();
 			
-			public var model:KMvCModel;
+//			public var model:KMvCModel;
 			
 			public var selectedProfileIndex:int;
 			
@@ -41,6 +44,7 @@
 			 * */
 			private var _profilesAC:ArrayCollection;
 			
+			private var _dpModel:IDataPackRepository;
 			
 			/**
 			 * @private
@@ -52,18 +56,32 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 			}
 			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_customdata";
+			}
+			
 			public function init():void {
 				//TODO all these should be loaded here, not when content first loads!!
 				
 				//get default metadata view if needed
-//				var customDataDataPack:CustomDataDataPack = model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-//				if (!customDataDataPack.metadataDefaultUiconfXML) {
-//					var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
-//					controller.dispatch(getMetadataUiconf);
-//				}
+				//				var customDataDataPack:CustomDataDataPack = model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+				//				if (!customDataDataPack.metadataDefaultUiconfXML) {
+				//					var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
+				//					controller.dispatch(getMetadataUiconf);
+				//				}
 				// loaded with filter data
-//				var listMetadataProfiles:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-//				controller.dispatch(listMetadataProfiles);
+				//				var listMetadataProfiles:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				//				controller.dispatch(listMetadataProfiles);
+				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
+				
+				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
 			}
 			
 			/**
@@ -76,7 +94,7 @@
 			
 			public function isChanged():Boolean {
 				var metadataChanged:Boolean = false;
-				var customDataDataPack:CustomDataDataPack = model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+				var customDataDataPack:CustomDataDataPack = _dpModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 				if (_profilesAC.length && customDataDataPack.metadataInfoArray && customDataDataPack.metadataInfoArray.length) {
 					for (var i:int = 0; i < _profilesAC.length; i++) {
 						var metadataInfo:EntryMetadataDataVO = customDataDataPack.metadataInfoArray.getItemAt(i) as EntryMetadataDataVO;
@@ -89,7 +107,7 @@
 									metadataChanged = true;
 								}
 							}
-							//new metadata was inserted
+								//new metadata was inserted
 							else if (newMetadataXML.children().length() > 0) {
 								metadataChanged = true;
 							}
@@ -108,56 +126,56 @@
 				//TODO think if we really want to move the save here
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-
+			
 			public function clear():void {
 			}
-
-
+			
+			
 			public function destroy():void {
 				for (var i:int = 0; i < profilesVBox.numChildren; i++) {
 					(profilesVBox.getChildAt(i) as SingleCustomData).destroy();
 				}
 			}
 			
-			public function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
+			private function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
 				_profilesAC = new ArrayCollection();
 				//remove old data and old binding
 				destroy();
 				profilesVBox.removeAllChildren();
-
+				
 				for (var i:int = 0; i < profilesAC.length; i++) {
 					var curProfile:KMCMetadataProfileVO = profilesAC.getItemAt(i) as KMCMetadataProfileVO;
-
+					
 					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
 						var curCustomData:SingleCustomData = new SingleCustomData();
 						var curFormBuilder:FormBuilder = formBuildersAC.getItemAt(i) as FormBuilder;
 						curCustomData.formBuilder = curFormBuilder;
 						curCustomData.controller = controller;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
-
+						
 						_profilesAC.addItem(curProfile);
 						profilesVBox.addChild(curCustomData);
 					}
 				}
-
+				
 				profilesVBox.verticalScrollPosition = 0;
 			}
-
-
+			
+			
 			private function scrollToTop(event:Event):void {
 				profilesVBox.verticalScrollPosition = 0;
 			}
-
-
-
+			
+			
+			
 			private function onShow():void {
 				for (var i:int = 0; i < profilesVBox.numChildren; i++) {
 					if (profilesVBox.getChildAt(i) is SingleCustomData)
 						(profilesVBox.getChildAt(i) as SingleCustomData).onShow();
 				}
 			}
-
-
+			
+			
 			protected function jumpToProfile():void {
 				var scrollPos:int = 0;
 				var childIndex:int = profilesCB.selectedIndex;
@@ -185,4 +203,4 @@
 	<mx:VBox id="profilesVBox" verticalGap="{customDataVerticalGap}"
 			 height="{this.height - navigationHbox.height - customDataVerticalGap}" styleName="profilesVBox"
 			 width="100%"/>
-</mx:VBox>
+</mx:Module>

@@ -33,6 +33,7 @@ package com.kaltura.edw.control.commands.thumb
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
+			
 			var thumbsResultArray:Array = data.data as Array;
 			//copy this array so we can delete from it without damage the original profiles array
 			var profilesArray:Array = _ddp.distributionProfileInfo.kalturaDistributionProfilesArray.concat();

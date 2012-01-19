@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!---
-	 Captions tab of EntryDetailsWin
+Captions tab of EntryDetailsWin
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
-		 xmlns:validators="com.kaltura.validators.*"
-		 implements="com.kaltura.edw.business.IDrilldownPanel"
-		 creationComplete="onCreationComplete(event)"
-		 xmlns:captionsComponents="com.kaltura.edw.view.captions.*" xmlns:control="com.kaltura.edw.control.*">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		   xmlns:validators="com.kaltura.validators.*"
+		   implements="com.kaltura.edw.business.IDrilldownPanel"
+		   creationComplete="onCreationComplete(event)"
+		   xmlns:captionsComponents="com.kaltura.edw.view.captions.*" xmlns:control="com.kaltura.edw.control.*"
+		   label="{resourceManager.getString('drilldown','captions')}">
+	
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -17,18 +19,21 @@
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.CaptionsDataPack;
 			import com.kaltura.edw.vo.EntryCaptionVO;
 			import com.kaltura.edw.vo.EntryDetailsValidationError;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.KalturaLanguage;
 			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaCaptionAsset;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 			
 			public static const CAPTIONS_URL:String = "captionsUrl";
 			public static const CAPTIONS_LANGUAGE:String = "captionsLanguage";
-
+			
 			public static const LANGUAGES_ARRAY:Array = new Array(
 				KalturaLanguage.AB, KalturaLanguage.AA, KalturaLanguage.AF, KalturaLanguage.SQ, KalturaLanguage.AM,
 				KalturaLanguage.AR, KalturaLanguage.HY, KalturaLanguage.AS_, KalturaLanguage.AY, KalturaLanguage.AZ,
@@ -58,12 +63,13 @@
 				KalturaLanguage.TR, KalturaLanguage.TK, KalturaLanguage.TW, KalturaLanguage.UG, KalturaLanguage.UK,
 				KalturaLanguage.UR, KalturaLanguage.UZ, KalturaLanguage.VI, KalturaLanguage.VO, KalturaLanguage.CY,
 				KalturaLanguage.WO, KalturaLanguage.XH, KalturaLanguage.YI, KalturaLanguage.YO, KalturaLanguage.ZU);
-
-
+			
+			
 			/**
 			 * @copy #selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
+			private var _dpModel:IDataPackRepository;
 			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
@@ -72,21 +78,34 @@
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
 			}
-
+			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				var captionsData:CaptionsDataPack = _dpModel.getDataPack(CaptionsDataPack) as CaptionsDataPack;
+				BindingUtils.bindProperty(this, "entryCaptionsArr", captionsData, "captionsArray");
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_captions";
+			}
+			
 			[Bindable]
 			/**
 			 * The current entry available captions.
 			 * captionEntryVO elements
 			 * */
 			public var entryCaptionsArr:Array;
-
+			
 			private var _captionsToRemove:Array;
-
+			
 			/**
 			 * the EntryCaptionVO that is set as default
 			 * */
 			private var _defaultCaption:EntryCaptionVO;
-
+			
 			[Bindable]
 			/**
 			 * for r&p
@@ -105,7 +124,7 @@
 			public function init():void {
 			}
 			
-
+			
 			/**
 			 * initialize required data
 			 * */
@@ -113,8 +132,8 @@
 				var listCaptionsEvt:CaptionsEvent = new CaptionsEvent(CaptionsEvent.LIST_CAPTIONS);
 				controller.dispatch(listCaptionsEvt);
 			}
-
-
+			
+			
 			/**
 			 * only changes the UI, data is only saved on "save".
 			 * */
@@ -122,8 +141,8 @@
 				var caption:EntryCaptionVO = event.data as EntryCaptionVO;
 				_defaultCaption = caption;
 			}
-
-
+			
+			
 			/**
 			 * remember the removed caption for save
 			 * */
@@ -132,14 +151,14 @@
 					_captionsToRemove.push(event.data);
 				}
 			}
-
-
-
+			
+			
+			
 			private function onCreationComplete(event:FlexEvent):void {
 				_captionsToRemove = new Array();
 			}
-
-
+			
+			
 			/**
 			 * add a new empty Caption to captions VBox
 			 * */
@@ -178,8 +197,8 @@
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, success, errorMessage, errorTitle);
 				dispatchEvent(e);
 			}
-
-
+			
+			
 			/**
 			 * save all changes - added/removed captions. <br>
 			 * if no changes were made skips the actual save.
@@ -188,14 +207,14 @@
 				if (isChanged()) {
 					var captionsToSave:Array = new Array();
 					var captionVo:EntryCaptionVO;
-	
+					
 					for (var i:int = 0; i < entryCaptionsArr.length; i++) {
 						captionVo = entryCaptionsArr[i];
 						if (captionVo.isChanged) {
 							captionsToSave.push(captionVo);
 						}
 					}
-	
+					
 					var saveEvent:CaptionsEvent = new CaptionsEvent(CaptionsEvent.SAVE_ALL);
 					saveEvent.captionsToSave = captionsToSave;
 					saveEvent.captionsToRemove = _captionsToRemove;
@@ -205,8 +224,8 @@
 				}
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-
-
+			
+			
 			/**
 			 * validate data on the caption: legal url, valid language
 			 * */
@@ -225,11 +244,11 @@
 				if (!vo.caption.language) {
 					error.error = CAPTIONS_LANGUAGE;
 				}
-
+				
 				return error;
 			}
-
-
+			
+			
 			/**
 			 * return true if there are changes to save:
 			 * new captions, removed captions, edited captions, set default.
@@ -239,12 +258,12 @@
 				if (_captionsToRemove && _captionsToRemove.length) {
 					return true;
 				}
-
+				
 				// did the default caption change?
 				if (_defaultCaption && _defaultCaption.caption.isDefault != KalturaNullableBoolean.TRUE_VALUE) {
 					return true;
 				}
-
+				
 				// are there new / edited captions?
 				var caption:EntryCaptionVO;
 				if (entryCaptionsArr) { // during initialisation there's no entryCaptionsArr yet
@@ -255,9 +274,9 @@
 						}
 					}
 				}
-
+				
 				return false;
-
+				
 			}
 		]]>
 	</mx:Script>
@@ -267,10 +286,11 @@
 	<mx:NumberValidator id="comboValidator" property="selectedIndex"
 						maxValue="{EntryCaptions2.LANGUAGES_ARRAY.length -1}" minValue="0"
 						lowerThanMinError="{resourceManager.getString('drilldown','emptyLanguageError')}"/>
-
+	
 	<mx:Text text="{resourceManager.getString('drilldown','captionsInfo')}" styleName="tipText"/>
 	<mx:Button label="{resourceManager.getString('drilldown','addCaptions')}" click="addCaption()" visible="{editable}"/>
 	<captionsComponents:CaptionsTable id="captionsTable" width="100%" height="100%" dataProvider="{entryCaptionsArr}"
 									  captionRemoved="removeCaption(event)" changeDefault="changeDefaultCaption(event)"
 									  controller="{controller}" rowHeight="90"/>
-</mx:VBox>
+	
+</mx:Module>

@@ -19,24 +19,23 @@
 			import com.kaltura.analytics.*;
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
-			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.events.*;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.datapacks.*;
-			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
+			import com.kaltura.edw.view.panels.PanelLoader;
+			import com.kaltura.edw.view.panels.PanelMetadataParser;
+			import com.kaltura.edw.view.panels.PanelMetadataVO;
 			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KArrayUtil;
-			import com.kaltura.utils.SoManager;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaFlavorAsset;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
-			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -45,9 +44,9 @@
 			import mx.controls.Alert;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
 			import mx.events.PropertyChangeEvent;
 			import mx.events.PropertyChangeEventKind;
-			import mx.resources.ResourceManager;
 
 
 			// ===================================================================
@@ -57,8 +56,23 @@
 			/**
 			 * the string to dispatch on help events so KMC can interpret them
 			 * */
-			public static const HELP_REQUEST:String = 'helpRequest';
 
+			public static const HELP_REQUEST:String = 'helpRequest';
+			
+			// Panel id constants:
+			private static const ASSETS_PANEL:String = "entryAssets"; // "EntryFlavors"
+			private static const CONTENT_PANEL:String = "contentTab"; // "EntryContent"
+			private static const ADS_PANEL:String = "ads" // "EntryAds"
+			private static const CAPTIONS_PANEL:String = "entryCaptions" // "EntryCaptions2"
+			private static const DISTRIBUTION_PANEL:String = "entryDistribution"; //"EntryDistribution" 
+			private static const LIVE_STREAM_PANEL:String = "liveStream";
+			private static const THUMBNAILS_PANEL:String = "entryThumbnails";
+			private static const RELATED_PANEL:String = "entryRelated";
+			private static const CUSTOM_DATA_PANEL:String = "customData";
+			private static const METADATA_PANEL:String = "entryMetaData";
+			private static const ACCESS_POINT_PANEL:String = "entryAcp";
+			private static const SCHEDULING_PANEL:String = "entrySch";
+			private static const CLIPS_PANEL:String = "entryClips";
 
 			// ===================================================================
 			// Change Watchers:
@@ -97,25 +111,7 @@
 			[Bindable]
 			private var _entryDp:EntryDataPack;
 
-			[Bindable]
-			private var _relatedDp:RelatedFilesDataPack;
-
-			[Bindable]
-			private var _clipsDp:ClipsDataPack;
-
-			[Bindable]
-			private var _adCuepointsDp:CuePointsDataPack;
-
-			[Bindable]
-			private var _captionsDp:CaptionsDataPack;
-
-			[Bindable]
-			private var _distDp:DistributionDataPack;
-
 			private var _customDataDp:CustomDataDataPack;
-
-			[Bindable]
-			private var _permissionsDp:PermissionsDataPack;
 
 			[Bindable]
 			/**
@@ -128,12 +124,9 @@
 			 * filter data
 			 * */
 			private var _filterModel:FilterModel;
-
-			[Bindable]
-			/**
-			 * application context
-			 * */
-			private var _context:ContextDataPack;
+			
+			// For use by the permission references.
+			public var panels:Object = new Object();
 			
 			public function set entryDetailsModel(value:KMvCModel):void {
 				_entryDetailsModel = value;
@@ -143,14 +136,7 @@
 					
 					_entryDp = value.getDataPack(EntryDataPack) as EntryDataPack;
 					_filterModel = (value.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-					_context = value.getDataPack(ContextDataPack) as ContextDataPack;
-					_relatedDp = value.getDataPack(RelatedFilesDataPack) as RelatedFilesDataPack;
-					_clipsDp = value.getDataPack(ClipsDataPack) as ClipsDataPack;
-					_adCuepointsDp = value.getDataPack(CuePointsDataPack) as CuePointsDataPack;
-					_captionsDp = value.getDataPack(CaptionsDataPack) as CaptionsDataPack;
-					_distDp = value.getDataPack(DistributionDataPack) as DistributionDataPack;
 					_customDataDp = value.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-					_permissionsDp = value.getDataPack(PermissionsDataPack) as PermissionsDataPack;
 					
 					if (!_entryWatcher)
 						_entryWatcher = BindingUtils.bindProperty(this, "selectedEntry", _entryDp, "selectedEntry");
@@ -160,6 +146,16 @@
 					if (!_uiEnabledWatcher) {
 						_uiEnabledWatcher = BindingUtils.bindSetter(setUIEnbaled, _entryDetailsModel, "loadingFlag");
 					}
+					
+					// Init the Panel Loader on the first time
+					try{
+						PanelLoader.instance;
+					} catch (e:IllegalOperationError) {
+						var contextDp:ContextDataPack = value.getDataPack(ContextDataPack) as ContextDataPack;
+						var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(contextDp.uiConfData.uiconf[0].entryDrilldown[0].panels[0]);
+						PanelLoader.initialize(panelDataVO, contextDp.sourceUrl);
+					}
+					
 					initWindow();
 				}
 			}
@@ -178,7 +174,7 @@
 			 * we work on this instead of the actual selected entry
 			 * (model.selectedEntry) so we can easily revert if needed.
 			 * */
-			private var _undoToEntry:KalturaBaseEntry;
+			public var undoToEntry:KalturaBaseEntry;
 
 			private var _selectedEntry:KalturaBaseEntry;
 
@@ -192,7 +188,6 @@
 			 * this js function will be triggered to show preview
 			 * */
 			public var openPlayerFunc:String;
-
 
 			[Bindable]
 			/**
@@ -222,12 +217,12 @@
 			/**
 			 * list of tabs which will be visible
 			 * */
-			private var _visibleTabsAC:ArrayCollection;
+			private var _visibleTabs:Vector.<String>;
 
 			/**
 			 * original tabs in initial view stack
 			 * */
-			private var _originalTabs:Array;
+//			private var _originalTabs:Array;
 
 
 			/**
@@ -246,14 +241,11 @@
 			 * */
 			private var _nextPendingEntry:int = 0;
 
-
 			[Bindable]
-			private var _isUiEnabled:Boolean = true;
-
+			public var isUiEnabled:Boolean = true;
 
 			[Bindable]
 			public var saveEnabled:Boolean = true;
-
 
 			/**
 			 * stores returned events after calls to <code>validate()</code>
@@ -264,6 +256,42 @@
 			 * the processes cannot happen simultanously.
 			 * */
 			private var _results:Array;
+			
+			/**
+			 * Panels pending for creation process to be completed by the PanelLoader
+			 * @private 
+			 */
+			private var _panelsToCreate:Vector.<String>;
+			
+			/**
+			 * The currently available panels mapping from panel instance to panel ID.
+			 * @private 
+			 */
+			private var _currentPanelsMapping:Dictionary = new Dictionary();
+			
+			/**
+			 * A list of panel ids. This is the same as values of the _currentPanelsMapping dictionary, but used for easier access.
+			 * @private 
+			 */
+			private var _lastCreatedPanels:Vector.<String>;
+			
+			/**
+			 * A mapping between panel instances and ChangeWatcher that are related to them, that were created from binding to selectedEntry.
+			 * @private 
+			 */
+			private var _selectedEntryWatchers:Dictionary;
+			
+			/**
+			 * A mapping between panel instances and ChangeWatcher that are related to them, that were created from binding to isUiEnabled.
+			 * @private 
+			 */
+			private var _panelEnabledWatchers:Dictionary;
+			
+			/**
+			 * A list of panels instances that were created in the last initiliaztion iteration.
+			 * @private 
+			 */
+			private var _newPanels:Vector.<IDrilldownPanel> = new Vector.<IDrilldownPanel>;
 
 
 			/**
@@ -290,12 +318,12 @@
 					
 					
 					_selectedEntry = value;
-					_undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
+					undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
 					
 					_selectedEntry.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
 					
 					setWindowTitle();
-
+					
 					if (_isCreationComplete) {
 						if (!isDifferentEntry) {
 							// To fix cuepoints synchronization issue: in case we are 
@@ -308,7 +336,6 @@
 							}
 							else {
 								setTabsByEntryType();
-								initTabsData();
 							}
 						}
 					}
@@ -316,15 +343,17 @@
 			}
 
 
-			public function get visibleTabsAC():ArrayCollection {
-				return _visibleTabsAC;
+			public function get visibleTabs():Vector.<String> {
+				return _visibleTabs;
 			}
 
-			public function set visibleTabsAC(value:ArrayCollection):void {
-				_visibleTabsAC = value;
+			public function set visibleTabs(value:Vector.<String>):void {
+				_visibleTabs = value;
 				if (_isCreationComplete) {
 					setVisibleTabs();
-					initTabs();
+					for each (var panel:IDrilldownPanel in _newPanels){
+						panel.init();
+					}
 				}
 			}
 			
@@ -333,7 +362,7 @@
 			 * */
 			private function copyToUndoTo(e:PropertyChangeEvent):void {
 				if (_undoToEntry && e.kind == PropertyChangeEventKind.UPDATE) {
-					_undoToEntry[e.property] = e.newValue;
+					undoToEntry[e.property] = e.newValue;
 				}
 			}
 			
@@ -348,6 +377,26 @@
 						if (panel) {
 							panel.clear();
 						}
+						removeBindings(panel);
+					}
+				}
+				
+			}
+			
+			private function removeBindings(panel:IDrilldownPanel):void{
+				if (_panelEnabledWatchers){
+					var uiWatcher:ChangeWatcher = _panelEnabledWatchers[panel] as ChangeWatcher;
+					if (uiWatcher){
+						uiWatcher.unwatch();
+						_panelEnabledWatchers[panel] = null;
+					}
+				}
+				
+				if (_selectedEntryWatchers){
+					var entryWatcher:ChangeWatcher = _selectedEntryWatchers[panel] as ChangeWatcher;
+					if (entryWatcher){
+						entryWatcher.unwatch();
+						_selectedEntryWatchers[panel] = null;
 					}
 				}
 			}
@@ -358,66 +407,14 @@
 			 * */
 			private function initWindow():void {
 				if (_isCreationComplete && _entryDetailsModel && _selectedEntry) {
-//					trace("initWindow");
 					setTabsByEntryType();
-					initTabs();
-					initTabsData();
 				}
 			}
 			
 			private function onHelp():void {
-				var anchor:String;
-				switch (viewStack.selectedChild) {
-					case entryMetaData:
-						anchor = 'entry_metadata';
-						break;
-					case entryThumbnails:
-						anchor = 'entry_tumbnails';
-						break;
-					case entryAcp:
-						anchor = 'entry_accesscontrol';
-						break;
-					case entrySch:
-						anchor = 'entry_scheduling';
-						break;
-					case entryAssets:
-						if (_selectedEntry.replacedEntryId) {
-							// this is a replacement entry
-							anchor = 'entry_replacement';
-						}
-						else {
-							// this is a normal entry
-							anchor = 'entry_flavors';
-						}
-						break;
-					case contentTab:
-						anchor = 'entry_content';
-						break;
-					case liveStream:
-						anchor = 'section11'; // also in liveStreaming panel
-						break;
-					case customData:
-						anchor = 'entry_customdata';
-						break;
-					case entryDistribution:
-						anchor = 'entry_distribution';
-						break;
-					case entryCaptions:
-						anchor = 'entry_captions';
-						break;
-					case ads:
-						anchor = 'entry_ads';
-						break;
-					case entryRelated:
-						anchor = 'entry_related';
-						break;
-					case entryClips:
-						anchor = 'entry_clips';
-						break;
-
-				}
+				var currPanel:IDrilldownPanel = viewStack.selectedChild as IDrilldownPanel;
 				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
-				e.data = anchor;
+				e.data = currPanel.helpAnchor;
 				dispatchEvent(e);
 			}
 
@@ -427,9 +424,9 @@
 			 * will set the title according to its type
 			 * */
 			private function setWindowTitle():void {
-				if (_undoToEntry.status == KalturaEntryStatus.NO_CONTENT) {
+				if (undoToEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					if (isNewEntry) {
-						var mediaType:int = parseInt(_undoToEntry.mediaType);
+						var mediaType:int = parseInt(undoToEntry.mediaType);
 						switch (mediaType) {
 							case KalturaMediaType.IMAGE:
 								title = resourceManager.getString('drilldown', 'newImageEntry');
@@ -446,23 +443,17 @@
 				}
 
 				title = resourceManager.getString('drilldown', 'editEntry') + ' - ';
-				if (_undoToEntry.replacedEntryId) {
+				if (undoToEntry.replacedEntryId) {
 					title += _entryDp.replacedEntryName + ' (' + resourceManager.getString('drilldown', 'assetReplacement') + ')';
 
 				}
 				else {
-					title += _undoToEntry.name;
+					title += undoToEntry.name;
 
 				}
 			}
-
-
+		
 			private function onWindowCreationComplete():void {
-				// save original tabs
-				_originalTabs = new Array();
-				for (var i:int = 0; i < viewStack.numChildren; i++) {
-					_originalTabs.push(viewStack.getChildAt(i));
-				}
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				_isCreationComplete = true;
@@ -471,7 +462,7 @@
  
 
 			private function setUIEnbaled(value:Boolean):void {
-				_isUiEnabled = !value;
+				isUiEnabled = !value;
 			}
 
 			
@@ -490,70 +481,75 @@
 			 * else, will just reload tabs data
 			 * */
 			private function setTabsByEntryType():void {
+				
 				// get a list to work on
-				var tabs:Array = _originalTabs.concat();
+//				var tabs:Array = _originalTabs.concat();
+				var allTabs:Vector.<String> = new Vector.<String>;
+				for (var id:String in PanelLoader.instance.panelData.urlMapping){
+					allTabs.push(id);
+				}
 				var tab:UIComponent;
-				// if tabs list was provided, start by leaving only the required tabs
-				if (_visibleTabsAC) {
-					for (var i:int = tabs.length - 1; i >= 0; i--) {
-						tab = tabs[i] as UIComponent;
-						if (!_visibleTabsAC.contains(tab.id)) {
-							tabs.splice(i, 1);
-						}
-					}
+				if (_visibleTabs) {
+					allTabs = filterVector(allTabs, _visibleTabs);
 				}
 				// remove tabs which aren't relevant to the different entry types
-				if (_undoToEntry is KalturaLiveStreamAdminEntry) {
-					removeTabs([entryAssets, contentTab, ads, entryCaptions, entryDistribution], tabs);
+				if (undoToEntry is KalturaLiveStreamAdminEntry) {
+					allTabs = filterVector(allTabs, Vector.<String>([ASSETS_PANEL, CONTENT_PANEL, ADS_PANEL, CAPTIONS_PANEL, DISTRIBUTION_PANEL]));
 				}
 				else if (selectedEntry is KalturaMixEntry) {
 					//this is a mix
-					contentTab.label = ResourceManager.getInstance().getString('drilldown', 'content');
-					removeTabs([entryAssets, liveStream, ads, entryDistribution], tabs);
+					
+					allTabs = filterVector(allTabs, Vector.<String>([ASSETS_PANEL, LIVE_STREAM_PANEL, ADS_PANEL, DISTRIBUTION_PANEL]));
 				}
 				else {
+					
 					// this entry is a regular video/image/audio
-					contentTab.label = ResourceManager.getInstance().getString('drilldown', 'mixesTab');
-					removeTabs([liveStream], tabs);
+					allTabs = filterVector(allTabs, Vector.<String>([LIVE_STREAM_PANEL]));
+					
 					//remove redundant tabs in image and audio cases
 					if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
-						removeTabs([entryThumbnails, entryAssets, entryDistribution, entryCaptions, ads, entryRelated], tabs);
+						allTabs = filterVector(allTabs, Vector.<String>([THUMBNAILS_PANEL, ASSETS_PANEL, DISTRIBUTION_PANEL, CAPTIONS_PANEL, ADS_PANEL, RELATED_PANEL]));
 					}
 					else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
-						removeTabs([entryDistribution], tabs);
+						allTabs = filterVector(allTabs, Vector.<String>([DISTRIBUTION_PANEL]));
 					}
 				}
 				
 				// if uiconf requires removing content tab
 				var cdp:ContentDataPack = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
 				if (!cdp.showMixesTab) {
-					removeTabs([contentTab], tabs);
+					allTabs = filterVector(allTabs, Vector.<String>([CONTENT_PANEL]));
 				}
 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
-				var noPermissionTabs:Array = new Array();
-				for each (var subtabName:String in tabsToHide) {
-					noPermissionTabs.push(this[subtabName]);
-				}
-				removeTabs(noPermissionTabs, tabs);
+				allTabs = filterVector(allTabs, Vector.<String>(tabsToHide));
 
-				//adds custom data profiles
-				for each (tab in tabs) {
-					if (tab == customData) {
-						if (_filterModel.enableCustomData) {
-							if (_filterModel.metadataProfiles && _filterModel.metadataProfiles.length > 0) {
-								_customDataDp.metadataInfoArray = new ArrayCollection();
-								customData.buildProfiles(_filterModel.metadataProfiles, _filterModel.formBuilders);
+				if (allTabs.indexOf(CUSTOM_DATA_PANEL) != -1){
+					if (_filterModel.enableCustomData) {
+						if (_filterModel.metadataProfiles && _filterModel.metadataProfiles.length > 0) {
+							_customDataDp.metadataInfoArray = new ArrayCollection();
+							
+							// Determining if custom data tab is necessary.
+							var isCustomDataIn:Boolean = false;
+							for (var i:int = 0; i < _filterModel.metadataProfiles.length; i++) {
+								var curProfile:KMCMetadataProfileVO = _filterModel.metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
+								
+								if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
+									isCustomDataIn = true;
+									break;
+								}
 							}
 						}
-						//if none of the profiles contain fields (the only child is the navigation hbox)
-						if (customData.profilesVBox.numChildren == 0) {
-							removeTabs([customData], tabs);
-						}	
-						break;
 					}
+					//if none of the profiles contain fields (the only child is the navigation hbox)
+					if (! isCustomDataIn) {
+//						removeTabs([customData], tabs);
+						allTabs = filterVector(allTabs, Vector.<String>([CUSTOM_DATA_PANEL])); 
+					}	
 				}
-				showTabs(tabs);
+				
+				isUiEnabled = false;
+				createPanels(allTabs);
 			}
 			
 			
@@ -561,56 +557,20 @@
 			 * add the given tabs to the viewstack while removing any other tabs
 			 * @param tabs	array with tab references
 			 * */
-			private function showTabs(tabs:Array):void {
-				var tabsAC:ArrayCollection = new ArrayCollection(tabs);
-				for each (var tab:UIComponent in _originalTabs) {
-					if (tabsAC.contains(tab)) {
-						// move to top of stack
-						viewStack.addChild(tab);
-					}
-					else if (tab.parent == viewStack) {
-						// not required, remove if exists
-						viewStack.removeChild(tab);
-					}
+			private function showTabs(tabs:Vector.<IDrilldownPanel>):void {
+				_selectedEntryWatchers = new Dictionary(true);
+				_panelEnabledWatchers = new Dictionary(true);
+				for (var ind:int = 0; ind < tabs.length; ind++){
+					var panelVO:PanelMetadataVO = PanelLoader.instance.panelData;
+					viewStack.addChild(tabs[ind] as DisplayObject);
+					tabs[ind].dataPackModel = _entryDetailsModel;
+					_selectedEntryWatchers[tabs[ind]] = BindingUtils.bindProperty(tabs[ind], "selectedEntry", this, "undoToEntry");
+					_panelEnabledWatchers[tabs[ind]] = BindingUtils.bindProperty(tabs[ind], "enabled", this, "isUiEnabled");
 				}
+				
 				viewStack.selectedIndex = dtn.selectedIndex = 0;
-			}
-
-
-			/**
-			 * ask JS to open the preview player, log the action to analytics
-			 * */
-			private function openPreview(e:Event):void {
-				//TODO eliminate, use the function triggered in Content.mxml
-				if (openPlayerFunc) {
-					var html5Compatible:Boolean = (_undoToEntry is KalturaMediaEntry && (_undoToEntry as KalturaMediaEntry).mediaType == KalturaMediaType.VIDEO) ? true : false;
-					var ddp:DistributionDataPack = KMvCModel.getInstance().getDataPack(DistributionDataPack) as DistributionDataPack;
-					KedJSGate.doPreviewEmbed(openPlayerFunc, _undoToEntry.id, _undoToEntry.name, cutTo512Chars(_undoToEntry.description), !showEmbedCode, false, null, null, allFlavorAssets(ddp.flavorParamsAndAssetsByEntryId),
-						html5Compatible);
-				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_OPEN_PREVIEW_AND_EMBED, GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_OPEN_PREVIEW_AND_EMBED, "content>Open Preview and Embed");
-
-				//First time funnel
-				if (!SoManager.getInstance().checkOrFlush(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED))
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_FIRST_TIME_PLAYER_EMBED, GoogleAnalyticsConsts.CONTENT);
-			}
-
-
-			/**
-			 * extract flavor assets from the given list
-			 * @param flavorParamsAndAssetsByEntryId
-			 * */
-			private function allFlavorAssets(flavorParamsAndAssetsByEntryId:ArrayCollection):Array {
-				var fa:KalturaFlavorAsset;
-				var result:Array = new Array();
-				for each (var kawp:FlavorAssetWithParamsVO in flavorParamsAndAssetsByEntryId) {
-					fa = kawp.kalturaFlavorAssetWithParams.flavorAsset;
-					if (fa) {
-						result.push(fa);
-					}
-				}
-				return result;
+				viewStack.addEventListener(FlexEvent.UPDATE_COMPLETE, onViewStackUpdated);
+				viewStack.invalidateDisplayList();
 			}
 
 
@@ -626,7 +586,7 @@
 				}
 				else {
 					// delete the entry we created
-					var deleteEntryEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.DELETE_ENTRY, _undoToEntry, _undoToEntry.id);
+					var deleteEntryEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.DELETE_ENTRY, undoToEntry, undoToEntry.id);
 					edwController.dispatch(deleteEntryEvent);
 				}
 				removeMe();
@@ -679,7 +639,7 @@
 			 * */
 			private function removeMe(event:CloseEvent = null):void {
 				if ((event == null || event.detail == Alert.YES)) {
-					_undoToEntry = null;
+					undoToEntry = null;
 					destroyPanels();
 					removeWatchers();
 
@@ -693,15 +653,6 @@
 			 * remove all binding watchers
 			 * */
 			private function removeWatchers():void {
-//				if (customData) {	// done in customData.destroy()
-//					//first child is navigation hbox
-//					for (var i:int = 1; i < customData.numChildren; i++) {
-//						var innerCustomData:SingleCustomData = customData.getChildAt(i) as SingleCustomData;
-//						if (innerCustomData && innerCustomData.metadataViewWatcher)
-//							innerCustomData.metadataViewWatcher.unwatch();
-//					}
-//				}
-
 				if (_enabledWatcher) {
 					_enabledWatcher.unwatch();
 				}
@@ -711,15 +662,6 @@
 				if (_entryIndexWatcher) {
 					_entryIndexWatcher.unwatch();
 				}
-//				if (_statusWatcher) {
-//					_statusWatcher.unwatch();
-//				}
-//				if (_replacementWatcher) {
-//					_replacementWatcher.unwatch();
-//				}
-//				if (_replacingEntryWatcher) {
-//					_replacingEntryWatcher.unwatch();
-//				}
 				if (_sameRefidWatcher) {
 					_sameRefidWatcher.unwatch();
 				}
@@ -733,12 +675,12 @@
 			 * destroy and clean all viewstack children
 			 * */
 			private function destroyPanels():void {
-				var panel:IDrilldownPanel;
 				for (var i:int = 0; i < viewStack.numChildren; i++) {
 					if (viewStack.getChildAt(i) is IDrilldownPanel) {
-						panel = viewStack.getChildAt(i) as IDrilldownPanel;
+						var panel:IDrilldownPanel = viewStack.getChildAt(i) as IDrilldownPanel;
 						panel.removeEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
 						panel.removeEventListener(ValidationResultEvent.VALIDATION_COMPLETE, onPanelValidationComplete);
+						removeBindings(panel);
 						panel.clear();
 						panel.destroy();
 					}
@@ -752,7 +694,7 @@
 			private function handleValidationError(tabToGo:DisplayObject, errorString:String = '', errorTitle:String = ''):void {
 				if (errorString != '')
 					Alert.show(errorString, errorTitle);
-				_isUiEnabled = true;
+				isUiEnabled = true;
 				_nextPendingEntry = 0;
 				viewStack.selectedIndex = viewStack.getChildIndex(tabToGo);
 			}
@@ -776,12 +718,12 @@
 					}
 					if (success) {
 						// if referenceId was changed
-						if (_undoToEntry.referenceId && _undoToEntry.referenceId != KalturaClient.NULL_STRING && _selectedEntry.referenceId != _undoToEntry.referenceId) {
+						if (undoToEntry.referenceId && undoToEntry.referenceId != KalturaClient.NULL_STRING && _selectedEntry.referenceId != undoToEntry.referenceId) {
 							// list all entries with the same refid , if any - show message
 							if (!_sameRefidWatcher) {
 								_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _entryDp, "entriesWSameRefidAsSelected");
 							}
-							var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, _undoToEntry);
+							var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, undoToEntry);
 							edwController.dispatch(cg);
 						}
 						else {
@@ -825,7 +767,7 @@
 					for each (var o:KalturaBaseEntry in value) {
 						ar.push(o.id);
 					}
-					Alert.show(resourceManager.getString('drilldown', 'existingRefid', [_undoToEntry.referenceId, ar]),
+					Alert.show(resourceManager.getString('drilldown', 'existingRefid', [undoToEntry.referenceId, ar]),
 						resourceManager.getString('drilldown', 'warning'), Alert.YES | Alert.NO, this, save);
 				}
 				else {
@@ -872,16 +814,16 @@
 			 * update selected entry on server
 			 * */
 			private function saveEntryDetails():void {
-				var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, _undoToEntry, _undoToEntry.id);
-				cgEvent.data = {entry: _undoToEntry, closeAfterSave: _closeAfterSave, nextEntryPending: _nextPendingEntry};
+				var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SINGLE_ENTRY, undoToEntry, undoToEntry.id);
+				cgEvent.data = {entry: undoToEntry, closeAfterSave: _closeAfterSave, nextEntryPending: _nextPendingEntry};
 //				if (_closeAfterSave || _nextPendingEntry) {
 					cgEvent.source = this;
 					cgEvent.onComplete = handleSaveComplete;
 //				}
 				edwController.dispatch(cgEvent);
 				
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", _undoToEntry.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + _undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", undoToEntry.id);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
 			}
 
 			private function handleSaveComplete():void {
@@ -896,32 +838,13 @@
 				}
 			}
 
-
-			/**
-			 * Check if a string is longer than 512. if it is it will cut it and add ...
-			 */
-			private function cutTo512Chars(str:String):String {
-				if (!str)
-					return "";
-				if (str.length >= 509) {
-					var tmp:String = str.substr(0, 509);
-					var words:Array = tmp.split(" ");
-					words.pop();
-					tmp = words.join(" ");
-					return tmp + "...";
-				}
-				return str;
-			}
-
-
-
 			private function onChangeView():void {
-				entryMetaData.pausePreview();
+				panels[METADATA_PANEL].pausePreview();
 				_hadFirstNavigation = true;
 				// all data for entry metadata is loaded before the window opens.
 				// other panels need data that is loaded when the panel opens, so 
 				// we disable them until data is loaded.
-				if (viewStack.selectedChild != entryMetaData) {
+				if (viewStack.selectedChild != panels[METADATA_PANEL]) {
 					if (_entryDetailsModel.loadingFlag) {
 						this.enabled = false;
 						if (!_enabledWatcher) {
@@ -931,11 +854,9 @@
 				}
 			}
 
-
 			private function setEnabledByLoadingFlag(val:Boolean):void {
 				this.enabled = !val;
 			}
-
 
 			/**
 			 * list of tabs to remove from the drilldown window, separated by ",".
@@ -952,7 +873,6 @@
 				}
 			}
 
-
 			/**
 			 * @private
 			 * need the getter because applyPermission reads
@@ -962,18 +882,16 @@
 				return '';
 			}
 
-
 			/**
 			 * removes all tabs that their ID doesn't appear in the given array collection
 			 * */
 			private function setVisibleTabs():void {
 				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
 					var child:UIComponent = viewStack.getChildAt(i) as UIComponent;
-					if (!_visibleTabsAC.contains(child.id))
+					if (_visibleTabs.indexOf(child.id) == -1)
 						viewStack.removeChild(child);
 				}
 			}
-
 
 			/**
 			 * initializes the visible tabs
@@ -982,25 +900,7 @@
 				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
 					(viewStack.getChildAt(i) as IDrilldownPanel).initData();
 				}
-				// distribution panel requires the data flavors and thumbnails tab are loading,
-				// so if they doesn't exist, will still call their initData func
-				if (entryDistribution.parent == viewStack) {
-					if (entryAssets.parent != viewStack)
-						entryAssets.initData();
-					if (entryThumbnails.parent != viewStack)
-						entryThumbnails.initData();
-				}				
 			}
-
-			/**
-			 * initializes the visible tabs
-			 * */
-			private function initTabs():void {
-				for (var i:int = viewStack.numChildren - 1; i >= 0; i--) {
-					(viewStack.getChildAt(i) as IDrilldownPanel).init();
-				}
-			}
-
 
 			/**
 			 * see if current entry changed before navigating to the next entry
@@ -1016,7 +916,6 @@
 					setNextEntry();
 				}
 			}
-
 
 			/**
 			 * load the next entry
@@ -1034,16 +933,100 @@
 				_nextPendingEntry = 0;
 			}
 
-
 			/**
 			 * initializes save process
 			 * */
 			private function submitChanges(closeAfterSave:Boolean):void {
 				//to handle cases of slow system - disable UI even before sending server calls
-				_isUiEnabled = false;
+				isUiEnabled = false;
 				_closeAfterSave = closeAfterSave;
 				validate();
 			}
+			
+			private function filterVector(vector:Vector.<String>, filteredOut:Vector.<String>):Vector.<String>{
+				var resultVector:Vector.<String> = vector.filter(
+					function (item:String, index:int, vect:Vector.<String>):Boolean{
+						return filteredOut.indexOf(item) == -1;	
+					});
+				
+				return resultVector;
+			}
+			
+			private function createPanels(panelIds:Vector.<String>):void{
+				_currentPanelsMapping = new Dictionary();
+				
+				// First, filtering out panels that already exist
+				var alreadyCreated:Vector.<String> = new Vector.<String>;
+				for each (var createdId:String in _lastCreatedPanels){
+					var panel:IDrilldownPanel = panels[createdId];
+					if (panelIds.indexOf(createdId) != -1){
+						panelIds.splice(panelIds.indexOf(createdId), 1);
+						_currentPanelsMapping[panel] = createdId;
+						alreadyCreated.push(createdId);
+					} else {
+						viewStack.removeChild(panel as DisplayObject);
+						removeBindings(panel); 
+						panel.clear();
+						panel.destroy();
+					}
+				}
+				
+				_lastCreatedPanels = panelIds.slice().concat(alreadyCreated);
+				_panelsToCreate = panelIds.slice();
+				if (panelIds.length > 0){
+					for each (var pId:String in panelIds){
+						PanelLoader.instance.createPanel(pId, onPanelCreated, pId);
+					}
+				} else {
+					onPanelCreationComplete();
+				}
+			}
+			
+			private function onPanelCreated(panel:IDrilldownPanel, panelId:String):void	{
+				_currentPanelsMapping[panel] = panelId;
+				_newPanels.push(panel);
+				
+				_panelsToCreate.splice(_panelsToCreate.indexOf(panelId), 1);
+				if (_panelsToCreate.length == 0){
+					onPanelCreationComplete();
+				}
+			}
+			
+			private function onPanelCreationComplete():void	{
+				
+				var sortedPanels:Vector.<IDrilldownPanel> = new Vector.<IDrilldownPanel>;
+				
+				// Populating vector before sort
+				for (var panelObj:Object in _currentPanelsMapping){
+					sortedPanels.push(panelObj as IDrilldownPanel);
+					panels[_currentPanelsMapping[panelObj] as String] = panelObj;
+				}
+				
+				// Sorting panels by typical order
+				sortedPanels = sortedPanels.sort(
+					function (panelA:IDrilldownPanel, panelB:IDrilldownPanel):int{
+						var idA:String = _currentPanelsMapping[panelA] as String;
+						var idB:String = _currentPanelsMapping[panelB] as String;
+						var indexA:uint = PanelLoader.instance.panelData.orderMapping[idA] as uint;
+						var indexB:uint = PanelLoader.instance.panelData.orderMapping[idB] as uint;
+						return indexA - indexB;
+					});
+				
+				showTabs(sortedPanels);
+			}
+			
+			private function onViewStackUpdated(event:FlexEvent):void
+			{
+				viewStack.removeEventListener(FlexEvent.UPDATE_COMPLETE, onViewStackUpdated);
+				for each (var panel:IDrilldownPanel in _newPanels){
+					panel.init();
+				}
+				
+				_newPanels = new Vector.<IDrilldownPanel>;
+				initTabsData();
+				isUiEnabled = true;
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -1053,81 +1036,15 @@
 			   buttonMode="true" tabHeight="25" enabled="{!_entryDetailsModel.loadingFlag || _hadFirstNavigation}"/>
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{onChangeView()}" creationPolicy="all"
-				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack">
-		<!-- Metadata Tab -->
-		<ed:EntryMetadata id="entryMetaData" width="100%" height="100%" styleName="metaDataHbox"
-						  label="{ResourceManager.getInstance().getString('drilldown', 'metadata')}"
-						  selectedEntry="{_undoToEntry}" context="{_context}" distributionData="{_distDp}"
-						  entryData="{_entryDp}" openPreview="{openPreview(event)}" showEmbed="{showEmbedCode}"
-						  landingPage="{landingPage}" />
-		<!-- Thumbnails Tab -->
-		<ed:EntryThumbnails id="entryThumbnails" enableDistribution="{_filterModel.enableDistribution}" 
-							label="{ResourceManager.getInstance().getString('drilldown', 'thumbnails')}"
-							selectedEntry="{_undoToEntry}" distributionModel="{_distDp}" context="{_context}"
-							enabled="{_isUiEnabled}"/>
+				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack" />
 
-		<!-- Access Control Tab -->
-		<ed:EntryAccessControl id='entryAcp' styleName="accessControlVbox"
-							   label="{ResourceManager.getInstance().getString('drilldown', 'accessControl')}"
-							   selectedEntry="{_undoToEntry}" filterModel="{_filterModel}"
-							   accessControlData="{_filterModel.accessControlProfiles}" enabled="{_isUiEnabled}"/>
-
-		<!-- Scheduling Tab -->
-		<ed:EntryScheduling id='entrySch' label="{ResourceManager.getInstance().getString('drilldown', 'scheduling')}"
-							selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}" />
-
-		<!-- Flavor Assets Tab -->
-		<ed:EntryFlavors id="entryAssets" styleName="flavorsVbox" model="{_entryDetailsModel}"
-						 label="{ResourceManager.getInstance().getString('drilldown', 'videoFiles')}"
-						 selectedEntry="{_undoToEntry}" replacementStatus="{_undoToEntry.replacementStatus}"
-						 replacingEntryId="{_undoToEntry.replacingEntryId}" status="{_undoToEntry.status}"
-						 enabled="{_isUiEnabled}" />
-
-		<!-- content Tab -->
-		<ed:EntryContent id="contentTab" selectedEntry="{_undoToEntry}"
-						 label="{ResourceManager.getInstance().getString('drilldown', 'mixesTab')}"
-						 loadRoughcuts="{loadRoughcuts}" enabled="{_isUiEnabled}"/>
-
-		<!-- Live stream -->
-		<ed:EntryLiveStreaming id="liveStream" rootUrl="{_context.rootUrl}"
-							   label="{ResourceManager.getInstance().getString('drilldown', 'liveStream')}"
-							   selectedEntry="{_undoToEntry}" enabled="{_isUiEnabled}"/>
-
-		<!-- Custom Data -->
-		<ed:EntryCustomData id="customData" label="{ResourceManager.getInstance().getString('drilldown', 'customData')}"
-							enabled="{_isUiEnabled}" model="{_entryDetailsModel}"/>
-
-		<!-- Distribution Tab -->
-		<ed:EntryDistribution id="entryDistribution" selectedEntry="{_undoToEntry}" model="{_entryDetailsModel}" 
-							  label="{ResourceManager.getInstance().getString('drilldown', 'distribution')}"
-							  viewStack="{viewStack}" enabled="{_isUiEnabled}" />
-
-		<!-- captions -->
-		<ed:EntryCaptions2 id="entryCaptions" label="{resourceManager.getString('drilldown','captions')}"
-						   selectedEntry="{_undoToEntry}" entryCaptionsArr="{_captionsDp.captionsArray}"
-						   enabled="{_isUiEnabled}" />
-
-		<!-- advertisments -->
-		<ed:EntryAds id="ads" label="{resourceManager.getString('drilldown','ads')}" selectedEntry="{_undoToEntry}"
-					 context="{_context}" model="{_adCuepointsDp}" enabled="{_isUiEnabled}" />
-
-		<!-- related entries -->
-		<ed:EntryRelated id="entryRelated" label="{resourceManager.getString('drilldown','relatedEntries')}"
-						 selectedEntry="{_undoToEntry}" relatedFiles="{_relatedDp.relatedFilesAC}"
-						 enabled="{_isUiEnabled}" />
-
-		<!-- clips -->
-		<ed:EntryClips id="entryClips" label="{resourceManager.getString('drilldown','clips')}" 
-					   selectedEntry="{_undoToEntry}" clips="{_clipsDp.clips}" enabled="{_isUiEnabled}"/>
-
-	</mx:ViewStack>
 	<mx:ControlBar horizontalGap="5">
 		<mx:HBox width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}"
-					   click="submitChanges(false)" buttonMode="true" enabled="{_isUiEnabled &amp;&amp; saveEnabled}"/>
+					   click="submitChanges(false)" buttonMode="true" enabled="{isUiEnabled &amp;&amp; saveEnabled}"/>
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('drilldown', 'saveAndClose')}"
-					   click="submitChanges(true)" buttonMode="true" enabled="{_isUiEnabled &amp;&amp; saveEnabled}"/>
+					   click="submitChanges(true)" buttonMode="true" enabled="{isUiEnabled &amp;&amp; saveEnabled}"/>
 
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">

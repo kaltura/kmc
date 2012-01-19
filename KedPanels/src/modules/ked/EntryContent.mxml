@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="contentVbox"
-		 implements="com.kaltura.edw.business.IDrilldownPanel"
-		 xmlns:controls="com.kaltura.controls.*" 
-		 xmlns:view="com.kaltura.edw.view.*" xmlns:et="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*" >
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="contentVbox"
+		   implements="com.kaltura.edw.business.IDrilldownPanel"
+		   xmlns:controls="com.kaltura.controls.*" 
+		   xmlns:view="com.kaltura.edw.view.*" xmlns:et="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*"
+		   label="{resourceManager.getString('drilldown', 'mixesTab')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -17,6 +18,8 @@
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.datapacks.ContentDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -25,7 +28,7 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
-		
+			
 			[Bindable]
 			/**
 			 * @copy #selectedEntry
@@ -44,6 +47,7 @@
 			 * */
 			public var loadRoughcuts:Boolean = true;
 			
+			private var _dpModel:IDataPackRepository;
 			
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
@@ -52,6 +56,22 @@
 			
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
+				
+				var resourceName:String = (_selectedEntry is KalturaMixEntry) ? 'content' : 'mixesTab';
+				label = resourceManager.getString('drilldown', resourceName);
+			}
+			
+			public function get dataPackModel():IDataPackRepository{
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void{
+				_dpModel = value;
+				var edp:EntryDataPack = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
+				loadRoughcuts = edp.loadRoughcuts;
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_content";
 			}
 			
 			
@@ -93,7 +113,7 @@
 				}
 				
 			}
-
+			
 			public function destroy():void {
 				_cw.unwatch();
 			}
@@ -154,4 +174,4 @@
 				   sortableColumns="false" showLinks="false"/>
 	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" 
 					 getPageNum="onPaging()" showRowsInPage="false"/>
-</mx:VBox>
+</mx:Module>
