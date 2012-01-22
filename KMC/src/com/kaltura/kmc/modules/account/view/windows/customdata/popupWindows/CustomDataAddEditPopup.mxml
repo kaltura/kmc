@@ -15,6 +15,7 @@
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.business.CustomDataStringUtil;
 			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
@@ -307,8 +308,11 @@
 						metadataField.optionalValues = new Array();
 						for each (var val:String in values) {
 							//to avoid inserting of empty lines
-							if (val != "")
-								metadataField.optionalValues.push(StringUtil.trim(val));
+							if (val != "") {
+								val = StringUtil.trim(val);
+								val = CustomDataStringUtil.escapeAmps(val);
+								metadataField.optionalValues.push(val);
+							}
 						}
 					}
 				}
