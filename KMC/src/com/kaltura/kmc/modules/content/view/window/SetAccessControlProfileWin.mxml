@@ -12,11 +12,15 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.edw.business.Cloner;
+			import com.kaltura.edw.business.IDrilldownPanel;
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.view.panels.PanelLoader;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
-			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.AccessControlProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -33,6 +37,10 @@
 			[Bindable]
 			public var filterModel:FilterModel;
 			
+			public var entryDetailsModel:IDataPackRepository;
+			
+			private var _entryACP:IDrilldownPanel;
+			
 			
 			public function set selectedEntries(arr:ArrayCollection):void {
 				_selectedEntries = arr;
@@ -43,6 +51,12 @@
 
 				_clonedSelectedEntries = tempArrCol;
 			}
+			
+//			override public function initialize():void{
+//				super.initialize();
+//				
+//				PanelLoader.instance.createPanel(PanelConsts.ACCESS_POINT_PANEL, onPanelCreated);
+//			}
 
 
 			private function closeWindow(event:Event = null):void {
@@ -52,23 +66,25 @@
 
 
 			private function saveData(event:Event):void {
-				var seletedAccessControl:Object = entryACP.getSelectedAccessControlProfile();
-				if (seletedAccessControl == null) {
-					Alert.show(resourceManager.getString('cms', 'applyAccessControlAlert'));
-					return;
+				if (_entryACP != null){
+					var seletedAccessControl:Object = Object(_entryACP).getSelectedAccessControlProfile();
+					if (seletedAccessControl == null) {
+						Alert.show(resourceManager.getString('cms', 'applyAccessControlAlert'));
+						return;
+					}
+					for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
+						entry.accessControlId = (seletedAccessControl as AccessControlProfileVO).profile.id;
+					}
+					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
+					cgEvent.dispatch();
+	
+					for each (var etr:Object in _clonedSelectedEntries) {
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
+																  "setAccessControlProfileIdForEntries", etr.id);
+	
+					}
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ACCESS_CONTROL,GoogleAnalyticsConsts.CONTENT);
 				}
-				for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
-					entry.accessControlId = (seletedAccessControl as AccessControlProfileVO).profile.id;
-				}
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
-				cgEvent.dispatch();
-
-				for each (var etr:Object in _clonedSelectedEntries) {
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY,
-															  "setAccessControlProfileIdForEntries", etr.id);
-
-				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ACCESS_CONTROL,GoogleAnalyticsConsts.CONTENT);
 				closeWindow();
 			}
 
@@ -76,11 +92,15 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section23'));
 			}
 
+			private function onPanelCreated(panel:IDrilldownPanel):void{
+				_entryACP = panel;
+				_entryACP.dataPackModel = entryDetailsModel;
+				addChildAt(_entryACP as DisplayObject, 1);
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'accessControlOverrideMsg')}"/>
-	<view:EntryAccessControl id="entryACP" selectedEntries="{_clonedSelectedEntries}"
-				  filterModel="{filterModel}" accessControlData="{filterModel.accessControlProfiles}"/>
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
 				   paddingTop="2">
 		<mx:Button label="{resourceManager.getString('cms', 'applyAccessControlBtn')}" useHandCursor="true"

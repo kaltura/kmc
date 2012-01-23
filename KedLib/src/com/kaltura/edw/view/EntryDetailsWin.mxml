@@ -20,6 +20,7 @@
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.events.*;
 			import com.kaltura.edw.model.FilterModel;
@@ -59,20 +60,7 @@
 
 			public static const HELP_REQUEST:String = 'helpRequest';
 			
-			// Panel id constants:
-			private static const ASSETS_PANEL:String = "entryAssets"; // "EntryFlavors"
-			private static const CONTENT_PANEL:String = "contentTab"; // "EntryContent"
-			private static const ADS_PANEL:String = "ads" // "EntryAds"
-			private static const CAPTIONS_PANEL:String = "entryCaptions" // "EntryCaptions2"
-			private static const DISTRIBUTION_PANEL:String = "entryDistribution"; //"EntryDistribution" 
-			private static const LIVE_STREAM_PANEL:String = "liveStream";
-			private static const THUMBNAILS_PANEL:String = "entryThumbnails";
-			private static const RELATED_PANEL:String = "entryRelated";
-			private static const CUSTOM_DATA_PANEL:String = "customData";
-			private static const METADATA_PANEL:String = "entryMetaData";
-			private static const ACCESS_POINT_PANEL:String = "entryAcp";
-			private static const SCHEDULING_PANEL:String = "entrySch";
-			private static const CLIPS_PANEL:String = "entryClips";
+			
 
 			// ===================================================================
 			// Change Watchers:
@@ -361,7 +349,7 @@
 			 * after save/update, copy new attributes to _undoToEntry
 			 * */
 			private function copyToUndoTo(e:PropertyChangeEvent):void {
-				if (_undoToEntry && e.kind == PropertyChangeEventKind.UPDATE) {
+				if (undoToEntry && e.kind == PropertyChangeEventKind.UPDATE) {
 					undoToEntry[e.property] = e.newValue;
 				}
 			}
@@ -494,37 +482,37 @@
 				}
 				// remove tabs which aren't relevant to the different entry types
 				if (undoToEntry is KalturaLiveStreamAdminEntry) {
-					allTabs = filterVector(allTabs, Vector.<String>([ASSETS_PANEL, CONTENT_PANEL, ADS_PANEL, CAPTIONS_PANEL, DISTRIBUTION_PANEL]));
+					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.ASSETS_PANEL, PanelConsts.CONTENT_PANEL, PanelConsts.ADS_PANEL, PanelConsts.CAPTIONS_PANEL, PanelConsts.DISTRIBUTION_PANEL]));
 				}
 				else if (selectedEntry is KalturaMixEntry) {
 					//this is a mix
 					
-					allTabs = filterVector(allTabs, Vector.<String>([ASSETS_PANEL, LIVE_STREAM_PANEL, ADS_PANEL, DISTRIBUTION_PANEL]));
+					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.ASSETS_PANEL, PanelConsts.LIVE_STREAM_PANEL, PanelConsts.ADS_PANEL, PanelConsts.DISTRIBUTION_PANEL]));
 				}
 				else {
 					
 					// this entry is a regular video/image/audio
-					allTabs = filterVector(allTabs, Vector.<String>([LIVE_STREAM_PANEL]));
+					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.LIVE_STREAM_PANEL]));
 					
 					//remove redundant tabs in image and audio cases
 					if (selectedEntry.mediaType == KalturaMediaType.IMAGE) {
-						allTabs = filterVector(allTabs, Vector.<String>([THUMBNAILS_PANEL, ASSETS_PANEL, DISTRIBUTION_PANEL, CAPTIONS_PANEL, ADS_PANEL, RELATED_PANEL]));
+						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.THUMBNAILS_PANEL, PanelConsts.ASSETS_PANEL, PanelConsts.DISTRIBUTION_PANEL, PanelConsts.CAPTIONS_PANEL, PanelConsts.ADS_PANEL, PanelConsts.RELATED_PANEL]));
 					}
 					else if (selectedEntry.mediaType == KalturaMediaType.AUDIO) {
-						allTabs = filterVector(allTabs, Vector.<String>([DISTRIBUTION_PANEL]));
+						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.DISTRIBUTION_PANEL]));
 					}
 				}
 				
 				// if uiconf requires removing content tab
 				var cdp:ContentDataPack = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
 				if (!cdp.showMixesTab) {
-					allTabs = filterVector(allTabs, Vector.<String>([CONTENT_PANEL]));
+					allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.CONTENT_PANEL]));
 				}
 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide("entryDrilldown");
 				allTabs = filterVector(allTabs, Vector.<String>(tabsToHide));
 
-				if (allTabs.indexOf(CUSTOM_DATA_PANEL) != -1){
+				if (allTabs.indexOf(PanelConsts.CUSTOM_DATA_PANEL) != -1){
 					if (_filterModel.enableCustomData) {
 						if (_filterModel.metadataProfiles && _filterModel.metadataProfiles.length > 0) {
 							_customDataDp.metadataInfoArray = new ArrayCollection();
@@ -544,7 +532,7 @@
 					//if none of the profiles contain fields (the only child is the navigation hbox)
 					if (! isCustomDataIn) {
 //						removeTabs([customData], tabs);
-						allTabs = filterVector(allTabs, Vector.<String>([CUSTOM_DATA_PANEL])); 
+						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.CUSTOM_DATA_PANEL])); 
 					}	
 				}
 				
@@ -839,12 +827,12 @@
 			}
 
 			private function onChangeView():void {
-				panels[METADATA_PANEL].pausePreview();
+				panels[PanelConsts.METADATA_PANEL].pausePreview();
 				_hadFirstNavigation = true;
 				// all data for entry metadata is loaded before the window opens.
 				// other panels need data that is loaded when the panel opens, so 
 				// we disable them until data is loaded.
-				if (viewStack.selectedChild != panels[METADATA_PANEL]) {
+				if (viewStack.selectedChild != panels[PanelConsts.METADATA_PANEL]) {
 					if (_entryDetailsModel.loadingFlag) {
 						this.enabled = false;
 						if (!_enabledWatcher) {

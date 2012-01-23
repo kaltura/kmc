@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" horizontalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.view.EntryCaptions2;
+			import com.kaltura.edw.constants.KLangList;
 			import com.kaltura.edw.view.captions.CaptionsTable;
 			import com.kaltura.edw.vo.EntryCaptionVO;
 			
@@ -14,8 +14,8 @@
 				super.data = value;
 				var vo:EntryCaptionVO = value as EntryCaptionVO;
 				if (vo.caption.language) {
-					for (var i:int = 0; i < EntryCaptions2.LANGUAGES_ARRAY.length; i++) {
-						if (String(EntryCaptions2.LANGUAGES_ARRAY[i]) == vo.caption.language) {
+					for (var i:int = 0; i < KLangList.LANGUAGES_ARRAY.length; i++) {
+						if (String(KLangList.LANGUAGES_ARRAY[i]) == vo.caption.language) {
 							languageCB.selectedIndex = i;
 							break;
 						}
@@ -44,6 +44,6 @@
 		]]>
 	</mx:Script>
 	<mx:ComboBox id="languageCB" enabled="{EntryCaptionVO.editable}" width="160" 
-				 dataProvider="{EntryCaptions2.LANGUAGES_ARRAY}" change="languageCB_changeHandler(event)" 
+				 dataProvider="{KLangList.LANGUAGES_ARRAY}" change="languageCB_changeHandler(event)" 
 				 prompt="{resourceManager.getString('drilldown','languagePrompt')}"/>
 </mx:VBox>

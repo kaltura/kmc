@@ -4,16 +4,11 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.control.events.UploadTokenEvent;
-			import com.kaltura.edw.view.EntryRelated;
-			import com.kaltura.edw.view.window.EditRelatedFileWindow;
+			import com.kaltura.edw.constants.RelatedFileActionType;
 			import com.kaltura.edw.vo.RelatedFileVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
 			
-			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
-			import mx.core.Application;
-			import mx.managers.PopUpManager;
 			
 			
 			private const SpinnerImg:* = StyleManager.getStyleDeclaration(".imageBank").getStyle("SpinnerImg");
@@ -85,7 +80,7 @@
 			
 			private function editFile():void {
 				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {		
-					dispatchEvent(new Event(EntryRelated.EDIT_FILE, true));
+					dispatchEvent(new Event(RelatedFileActionType.EDIT_FILE, true));
 				}
 //				if (!isNotSaved(resourceManager.getString('drilldown','unsavedEditAlert'))) {				
 //					var editWindow:EditRelatedFileWindow = new EditRelatedFileWindow();
@@ -105,7 +100,7 @@
 
 		
 			private function removeFile():void {
-				dispatchEvent(new Event(EntryRelated.FILE_DELETED, true));
+				dispatchEvent(new Event(RelatedFileActionType.FILE_DELETED, true));
 			}
 			
 

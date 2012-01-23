@@ -7,7 +7,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.view.EntryFlavors;
 			import com.kaltura.edw.view.FlavorsTable;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
@@ -22,6 +21,13 @@
 			 * */
 			private var _actionArr:Array = [];
 
+			
+			static public var allowUpload:Boolean = true;
+			static public var allowMatch:Boolean = true;
+			static public var allowLink:Boolean = true;
+			static public var allowImport:Boolean = true;
+			
+			
 //			[Bindable]
 //			/**
 //			 * is the parent docuemnt is entryFlavors allow all actions
@@ -31,22 +37,22 @@
 			/**
 			 * add the "upload" action to the actions list
 			 * */
-			private var _allowUpload:Boolean = true;
+			private var _allowUpload:Boolean = allowUpload;
 
 			/**
 			 * add the "drop folder" action to the actions list
 			 * */
-			private var _allowMatch:Boolean = true;
+			private var _allowMatch:Boolean = allowMatch;
 
 			/**
 			 * add the "link" action to the actions list
 			 * */
-			private var _allowLink:Boolean = true;
+			private var _allowLink:Boolean = allowLink;
 
 			/**
 			 * add the "import" action to the actions list
 			 * */
-			private var _allowImport:Boolean = true;
+			private var _allowImport:Boolean = allowImport;
 
 
 			[Bindable]
@@ -68,14 +74,14 @@
 //					_isFlavorsView = false;
 //				}
 //				else 
-				if (parentDocument is EntryFlavors) {
-//					_isFlavorsView = true;
-					//sets actions according to r&p
-					_allowUpload = parentDocument.allowUpload && parentDocument.multiFlavorsIngestionAllowed;
-					_allowMatch = parentDocument.allowMatchFromDrop && parentDocument.multiFlavorsIngestionAllowed;
-					_allowLink = parentDocument.allowLink && parentDocument.multiFlavorsIngestionAllowed;
-					_allowImport = parentDocument.allowImport && parentDocument.multiFlavorsIngestionAllowed;
-				}
+//				if (parentDocument is EntryFlavors) {
+////					_isFlavorsView = true;
+//					//sets actions according to r&p
+//					_allowUpload = parentDocument.allowUpload && parentDocument.multiFlavorsIngestionAllowed;
+//					_allowMatch = parentDocument.allowMatchFromDrop && parentDocument.multiFlavorsIngestionAllowed;
+//					_allowLink = parentDocument.allowLink && parentDocument.multiFlavorsIngestionAllowed;
+//					_allowImport = parentDocument.allowImport && parentDocument.multiFlavorsIngestionAllowed;
+//				}
 
 				setActions();
 			}
