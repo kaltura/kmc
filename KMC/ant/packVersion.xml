@@ -2,7 +2,7 @@
 <project name="pack compiled files into the version folder" basedir="../" default="build">
 	
 	<property name="KMC_VERSION" value="v5.0"/>
-	<property name="KDP_VERSION" value="v3.5.43"/>
+	<property name="KDP_VERSION" value="v3.5.47"/>
 	<property name="KCLIP_VERSION" value="v1.1.2"/>
 	
 	<property name="PACK_DEPLOY_DIR" value="${basedir}/../${KMC_VERSION}"/>
@@ -57,9 +57,12 @@
 		<copy todir="${PACK_DEPLOY_DIR}/modules">
 			<fileset dir="${PACK_SOURCE_DIR}/modules" includes="**/*"/>
 		</copy>
+		<copy todir="${PACK_DEPLOY_DIR}/modules/ked">
+			<fileset dir="${PACK_SOURCE_DIR}/modules/ked" includes="**/*"/>
+		</copy>
     </target>
 	
-	<target name="copy_xml" description="copy compiled modules to the version modules directory">
+	<target name="copy_xml" description="copy xml files for deployment to config directory">
 		<copy todir="${PACK_DEPLOY_DIR}/xml">
 			<fileset dir="${PACK_SOURCE_DIR}/../config" includes="**/*.xml"/>
 		</copy>
@@ -77,6 +80,7 @@
 		<mkdir dir="${PACK_DEPLOY_DIR}/assets" description="Make sure there is assets directory"/>
 		<mkdir dir="${PACK_DEPLOY_DIR}/locale" description="Make sure there is locale directory"/>
 		<mkdir dir="${PACK_DEPLOY_DIR}/modules" description="Make sure there is modules directory"/>
+		<mkdir dir="${PACK_DEPLOY_DIR}/modules/ked" description="Make sure there is directory for ked modules"/>
 		<mkdir dir="${PACK_DEPLOY_DIR}/xml" description="Make sure there is xml directory"/>
 	</target>
 </project>
