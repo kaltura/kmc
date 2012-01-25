@@ -10,6 +10,8 @@
 		<![CDATA[
 			import com.kaltura.edw.business.FormBuilder;
 			import com.kaltura.edw.business.MetadataDataParser;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.CustomDataTabController;
 			import com.kaltura.edw.control.events.MetadataDataEvent;
 			import com.kaltura.edw.control.events.MetadataProfileEvent;
@@ -82,6 +84,8 @@
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 				
 				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.CUSTOM_DATA_PANEL);
 			}
 			
 			/**

@@ -11,6 +11,8 @@ access control tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.AccessControlEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
@@ -68,7 +70,7 @@ access control tab of EntryDetailsWin
 			/**
 			 * list of entries to edit in SetAccessControlProfileWin
 			 * */
-			public var selectedEntries:ArrayCollection;
+//			public var selectedEntries:ArrayCollection;
 			
 			/**
 			 * filtering parameters
@@ -97,6 +99,8 @@ access control tab of EntryDetailsWin
 				//					else {
 				//					updateAccessSection()
 				//				}
+				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ACCESS_POINT_PANEL);
 			}
 			
 			
@@ -214,11 +218,6 @@ access control tab of EntryDetailsWin
 						_selectedEntry.accessControlId = 0;
 						_isChanged = true;
 					}
-					else if (selectedEntries != null) {
-						for each (var entry:KalturaBaseEntry in selectedEntries) {
-							entry.accessControlId = 0;
-						}
-					}
 				}
 				else {
 					acNameLabel.text = selectedAC.profile.name;
@@ -284,11 +283,6 @@ access control tab of EntryDetailsWin
 						if (_selectedEntry.accessControlId != selectedAC.profile.id) {
 							_selectedEntry.accessControlId = selectedAC.profile.id;
 							_isChanged = true;
-						}
-					}
-					else if (selectedEntries != null) {
-						for each (var entry1:KalturaBaseEntry in selectedEntries) {
-							entry1.accessControlId = selectedAC.profile.id;
 						}
 					}
 				}

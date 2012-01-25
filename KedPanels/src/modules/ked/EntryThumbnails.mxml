@@ -11,6 +11,9 @@ Thumbnails tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.constants.ThumbnailsActionType;
 			import com.kaltura.edw.control.events.ThumbnailAssetEvent;
 			import com.kaltura.edw.control.events.UploadFromImageThumbAssetEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
@@ -38,18 +41,13 @@ Thumbnails tab of EntryDetailsWin
 			
 			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
 			
-			public static const SET_DEFAULT:String = "setDefault";
-			public static const DOWNLOAD:String = "download";
-			public static const DELETE:String = "delete";
-			
-//			/**
+			//			/**
 //TODO			 * track thumbnail change
 //			 * */
 //			private function trackThumbnailSaved():void {
 //				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
 //				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "KDP3>DrillDown>Change Thumbnail");
 //			}
-			
 			/**
 			 * upload new thumbnail FR
 			 * */
@@ -130,9 +128,9 @@ Thumbnails tab of EntryDetailsWin
 			
 			public function destroy():void {
 				_tumbDimCW.unwatch();
-				dataGrid.addEventListener(EntryThumbnails.SET_DEFAULT, thumbActionHandler);
-				dataGrid.addEventListener(EntryThumbnails.DOWNLOAD, thumbActionHandler);
-				dataGrid.addEventListener(EntryThumbnails.DELETE, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.SET_DEFAULT, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.DOWNLOAD, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.DELETE, thumbActionHandler);
 			}
 			
 			
@@ -141,9 +139,11 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			public function init():void {
-				dataGrid.addEventListener(EntryThumbnails.SET_DEFAULT, thumbActionHandler);
-				dataGrid.addEventListener(EntryThumbnails.DOWNLOAD, thumbActionHandler);
-				dataGrid.addEventListener(EntryThumbnails.DELETE, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.SET_DEFAULT, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.DOWNLOAD, thumbActionHandler);
+				dataGrid.addEventListener(ThumbnailsActionType.DELETE, thumbActionHandler);
+				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.THUMBNAILS_PANEL);
 			}
 			
 			
@@ -323,17 +323,17 @@ Thumbnails tab of EntryDetailsWin
 			private function thumbActionHandler(event:Event):void {
 				var thAs:ThumbnailWithDimensions = event.target.data as ThumbnailWithDimensions;
 				switch (event.type){
-					case EntryThumbnails.SET_DEFAULT:
+					case ThumbnailsActionType.SET_DEFAULT:
 						var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, thAs);
 						controller.dispatch(setDefaultEvent);
 						break;
 					
-					case EntryThumbnails.DOWNLOAD:
+					case ThumbnailsActionType.DOWNLOAD:
 						var urlRequest:URLRequest = new URLRequest(thAs.thumbUrl);
 						navigateToURL(urlRequest , '_self');
 						break;
 					
-					case EntryThumbnails.DELETE:
+					case ThumbnailsActionType.DELETE:
 						_thumbAsset = thAs;
 						Alert.show(resourceManager.getString('drilldown','deleteThumbnailMsg'), 
 							resourceManager.getString('drilldown','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);		

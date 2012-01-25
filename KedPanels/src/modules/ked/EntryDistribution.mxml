@@ -14,6 +14,9 @@ Distribution tab of EntryDetailsWin
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.commands.data.DataDelete;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.DistributionActionType;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.EntryDistributionEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.KedDataEvent;
@@ -39,11 +42,6 @@ Distribution tab of EntryDetailsWin
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
-			
-			public static const SUBMIT:String = "submit";
-			public static const RETRY:String = "retry";
-			public static const SUBMIT_UPDATE:String = "submitUpdate";
-			public static const SHOW_DETAILS:String = "showDetails";
 			
 			private var _selectedEntry:KalturaBaseEntry;
 			private var _dpModel:IDataPackRepository;
@@ -113,15 +111,16 @@ Distribution tab of EntryDetailsWin
 					_cw = BindingUtils.bindSetter(setEntryDistributions, ddp.distributionProfileInfo, "entryDistributionArray");
 				}
 				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.DISTRIBUTION_PANEL);
 			}
 			
 			public function destroy():void {
 				// actions:
-				dataGrid.removeEventListener(EntryDistribution.RETRY, actionHandler);
-				dataGrid.removeEventListener(EntryDistribution.SUBMIT, actionHandler);
-				dataGrid.removeEventListener(EntryDistribution.SUBMIT_UPDATE, actionHandler);
+				dataGrid.removeEventListener(DistributionActionType.RETRY, actionHandler);
+				dataGrid.removeEventListener(DistributionActionType.SUBMIT, actionHandler);
+				dataGrid.removeEventListener(DistributionActionType.SUBMIT_UPDATE, actionHandler);
 				// distributor
-				dataGrid.removeEventListener(EntryDistribution.SHOW_DETAILS, showDistributionDetails);
+				dataGrid.removeEventListener(DistributionActionType.SHOW_DETAILS, showDistributionDetails);
 			}
 			
 			public function validate():void {
@@ -233,11 +232,11 @@ Distribution tab of EntryDetailsWin
 			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
 			{
 				// actions:
-				dataGrid.addEventListener(EntryDistribution.RETRY, actionHandler);
-				dataGrid.addEventListener(EntryDistribution.SUBMIT, actionHandler);
-				dataGrid.addEventListener(EntryDistribution.SUBMIT_UPDATE, actionHandler);
+				dataGrid.addEventListener(DistributionActionType.RETRY, actionHandler);
+				dataGrid.addEventListener(DistributionActionType.SUBMIT, actionHandler);
+				dataGrid.addEventListener(DistributionActionType.SUBMIT_UPDATE, actionHandler);
 				// distributor
-				dataGrid.addEventListener(EntryDistribution.SHOW_DETAILS, showDistributionDetails);
+				dataGrid.addEventListener(DistributionActionType.SHOW_DETAILS, showDistributionDetails);
 				
 			}
 			
@@ -294,13 +293,13 @@ Distribution tab of EntryDetailsWin
 				event.stopPropagation();
 				var actionEvent:EntryDistributionEvent;
 				var edata:KalturaEntryDistribution = event.target.data as KalturaEntryDistribution;
-				if (event.type == EntryDistribution.SUBMIT) {
+				if (event.type == DistributionActionType.SUBMIT) {
 					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT, null, null, edata);
 				}
-				else if (event.type == EntryDistribution.RETRY) {
+				else if (event.type == DistributionActionType.RETRY) {
 					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.RETRY, null,null, edata);
 				}
-				else if (event.type == EntryDistribution.SUBMIT_UPDATE) {
+				else if (event.type == DistributionActionType.SUBMIT_UPDATE) {
 					actionEvent = new EntryDistributionEvent(EntryDistributionEvent.SUBMIT_UPDATE, null,null, edata);
 				}
 				// show details

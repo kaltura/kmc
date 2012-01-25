@@ -14,7 +14,10 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.util.CompositeKBaseEntry;
+			import com.kaltura.edw.view.panels.PanelLoader;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -25,6 +28,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.events.FlexEvent;
 
 
 			private var _selectedEntries:ArrayCollection;
@@ -50,11 +54,11 @@
 				_clonedSelectedEntries = tempArrCol;
 			}
 			
-//			override public function initialize():void{
-//				super.initialize();
-//				
-//				PanelLoader.instance.createPanel(PanelConsts.ACCESS_POINT_PANEL, onPanelCreated);
-//			}
+			override protected function createChildren():void{
+				super.createChildren();
+				
+				PanelLoader.instance.createPanel(PanelConsts.ACCESS_CONTROL_PANEL, onPanelCreated);
+			}
 
 
 			private function closeWindow(event:Event = null):void {
@@ -65,14 +69,6 @@
 
 			private function saveData(event:Event):void {
 				if (_entryACP != null){
-					var seletedAccessControl:Object = Object(_entryACP).getSelectedAccessControlProfile();
-					if (seletedAccessControl == null) {
-						Alert.show(resourceManager.getString('cms', 'applyAccessControlAlert'));
-						return;
-					}
-					for each (var entry:KalturaBaseEntry in _clonedSelectedEntries) {
-						entry.accessControlId = (seletedAccessControl as AccessControlProfileVO).profile.id;
-					}
 					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
 					cgEvent.dispatch();
 	
@@ -92,8 +88,18 @@
 
 			private function onPanelCreated(panel:IDrilldownPanel):void{
 				_entryACP = panel;
-				_entryACP.dataPackModel = entryDetailsModel;
 				addChildAt(_entryACP as DisplayObject, 1);
+				
+				addEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+			}
+			
+			private function onUpdateComplete(event:FlexEvent):void
+			{
+				removeEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+				_entryACP.dataPackModel = entryDetailsModel;
+				var entryVect:Vector.<KalturaBaseEntry> = Vector.<KalturaBaseEntry>(_clonedSelectedEntries.source);
+				var composite:CompositeKBaseEntry = new CompositeKBaseEntry(entryVect);
+				_entryACP.selectedEntry = composite;
 			}
 			
 		]]>

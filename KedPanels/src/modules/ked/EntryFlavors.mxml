@@ -14,6 +14,9 @@ Flavours tab of EntryDetailsWin
 		<![CDATA[
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.FlavorTypes;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.DropFolderEvent;
 			import com.kaltura.edw.control.events.FlavorAssetEvent;
 			import com.kaltura.edw.control.events.KedEntryEvent;
@@ -53,9 +56,6 @@ Flavours tab of EntryDetailsWin
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
-			
-			public static const VIDEO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp4;*.3gp;*.f4v;*.m4v";
-			public static const AUDIO_TYPES:String = "*.flv;*.asf;*.qt;*.mov;*.mpg;*.avi;*.wmv;*.mp3;*.wav";
 			
 			
 			// =====================================================================
@@ -429,6 +429,8 @@ Flavours tab of EntryDetailsWin
 					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
 					controller.dispatch(profileEvent);
 				}
+				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ASSETS_PANEL);
 			}
 			
 			
@@ -694,9 +696,9 @@ Flavours tab of EntryDetailsWin
 			private function getTypeFilter(mediaType:int):FileFilter {
 				var fileFilter:FileFilter;
 				if (mediaType == KalturaMediaType.VIDEO)
-					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + VIDEO_TYPES + ")", VIDEO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + FlavorTypes.VIDEO_TYPES + ")", FlavorTypes.VIDEO_TYPES);
 				else if (mediaType == KalturaMediaType.AUDIO)
-					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + AUDIO_TYPES + ")", AUDIO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + FlavorTypes.AUDIO_TYPES + ")", FlavorTypes.AUDIO_TYPES);
 				
 				return fileFilter;
 			}
@@ -933,5 +935,6 @@ Flavours tab of EntryDetailsWin
 		<mx:LinkButton click="refreshData(true)" label="{resourceManager.getString('drilldown','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
-	<view:FlavorsTable id="dg" dataProvider="{flavorAssets}"/>
+	<view:FlavorsTable id="dg" dataProvider="{flavorAssets}" allowImport="{allowImport}" allowLink="{allowLink}"
+					   allowMatch="{allowMatchFromDrop}" allowUpload="{allowUpload}"/>
 </mx:Module>

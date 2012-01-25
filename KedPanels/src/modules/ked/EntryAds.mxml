@@ -9,6 +9,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.CuePointEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
@@ -245,6 +247,8 @@
 				if (!_watchCPReload) {
 					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, model, "reloadCuePoints");
 				}
+				
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ADS_PANEL);
 			}
 			
 			/**
@@ -501,12 +505,12 @@
 				}
 				else {
 					
-					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
-					EntryAds.kdpLoader = new SWFLoader();
-					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
-					kdpLoader.scaleContent = false;
-					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
-					kdpLoader.load(newUrl);
+//					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
+//					EntryAds.kdpLoader = new SWFLoader();
+//					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
+//					kdpLoader.scaleContent = false;
+//					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+//					kdpLoader.load(newUrl);
 				}
 			}
 			

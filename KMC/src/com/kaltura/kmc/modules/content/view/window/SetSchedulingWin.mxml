@@ -11,6 +11,10 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.Cloner;
+			import com.kaltura.edw.business.IDrilldownPanel;
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.model.util.CompositeKBaseEntry;
+			import com.kaltura.edw.view.panels.PanelLoader;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -18,6 +22,7 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
 
 			/**
 			 * @copy #selectedEntries
@@ -25,7 +30,8 @@
 			private var _selectedEntries:ArrayCollection;
 
 			
-			private var entryShec:Object;
+			private var _entryShec:IDrilldownPanel;
+			private var _clonedSelectedEntries:ArrayCollection;
 			
 			/**
 			 * close the window
@@ -40,31 +46,25 @@
 			 * save the changes:
 			 * */
 			private function saveData(event:Event):void {
-				var startTime:int = entryShec.getStartTime();
-				var endTime:int = entryShec.getEndTime();
+				if (_entryShec != null){
 
-				// we edit dummy entries, not the original 
-				var clonedSelectedEntries:ArrayCollection = new ArrayCollection();
-				for (var i:int = 0; i < _selectedEntries.length; i++) {
-					clonedSelectedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+					// update entries:
+					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _clonedSelectedEntries, false);
+					cgEvent.dispatch();
+	
+					// stats:
+					for each (var etr:Object in _clonedSelectedEntries) {
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "setSchedulingForEntries", etr.id);
+					}
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING, GoogleAnalyticsConsts.CONTENT);
 				}
-
-				// set sheduling of each entry:
-				for each (var entry:KalturaBaseEntry in clonedSelectedEntries) {
-					entry.startDate = startTime;
-					entry.endDate = endTime;
-				}
-
-				// update entries:
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, clonedSelectedEntries, false);
-				cgEvent.dispatch();
-
-				// stats:
-				for each (var etr:Object in clonedSelectedEntries) {
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "setSchedulingForEntries", etr.id);
-				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_SET_SCHEDULING, GoogleAnalyticsConsts.CONTENT);
 				closeWindow();
+			}
+			
+			override protected function createChildren():void{
+				super.createChildren();
+				
+				PanelLoader.instance.createPanel(PanelConsts.SCHEDULING_PANEL, onPanelCreated);
 			}
 			
 			protected function onHelp(event:Event):void {
@@ -78,6 +78,32 @@
 			public function set selectedEntries(arr:ArrayCollection):void {
 				_selectedEntries = arr;
 			}
+			
+			private function onPanelCreated(panel:IDrilldownPanel):void	{
+				_entryShec = panel;
+				_entryShec.init();
+				addEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+				
+				addChildAt(_entryShec as DisplayObject, 1);
+			}
+			
+			protected function onUpdateComplete(event:FlexEvent):void{
+				removeEventListener(FlexEvent.UPDATE_COMPLETE, onUpdateComplete);
+				
+				// we edit dummy entries, not the original 
+				_clonedSelectedEntries = new ArrayCollection();
+				for (var i:int = 0; i < _selectedEntries.length; i++) {
+					_clonedSelectedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+				}
+				
+				var entryVect:Vector.<KalturaBaseEntry> = Vector.<KalturaBaseEntry>(_clonedSelectedEntries.source);
+				var compositeEntry:CompositeKBaseEntry = new CompositeKBaseEntry(entryVect);
+				
+				_entryShec.selectedEntry = compositeEntry;
+				
+				_entryShec.initData();
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'schedulingOverrideMsg')}"/>

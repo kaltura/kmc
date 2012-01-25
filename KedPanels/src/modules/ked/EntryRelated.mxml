@@ -8,6 +8,9 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.constants.RelatedFileActionType;
 			import com.kaltura.edw.control.events.RelatedFileEvent;
 			import com.kaltura.edw.control.events.UploadTokenEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
@@ -28,10 +31,6 @@
 			// ===============================================================
 			// consts
 			// ===============================================================
-			
-			public static const FILE_CHANGED:String = "fileChanged";
-			public static const FILE_DELETED:String = "fileDeleted";
-			public static const EDIT_FILE:String = "editFile";
 			
 			public static const ALLOWED_EXT:String = "*.*";
 			
@@ -141,9 +140,9 @@
 			// ===============================================================
 			
 			private function onCreationComplete():void {
-				dataGrid.addEventListener(EntryRelated.FILE_CHANGED, onFileChanged);
-				dataGrid.addEventListener(EntryRelated.FILE_DELETED, onFileDeleted);
-				dataGrid.addEventListener(EntryRelated.EDIT_FILE, editFile);
+				dataGrid.addEventListener(RelatedFileActionType.FILE_CHANGED, onFileChanged);
+				dataGrid.addEventListener(RelatedFileActionType.FILE_DELETED, onFileDeleted);
+				dataGrid.addEventListener(RelatedFileActionType.EDIT_FILE, editFile);
 			}
 			
 			
@@ -204,6 +203,7 @@
 			}
 			
 			public function init():void {
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.RELATED_PANEL);
 			}
 			
 			
@@ -215,9 +215,9 @@
 			
 			
 			public function destroy():void {
-				dataGrid.removeEventListener(EntryRelated.FILE_CHANGED, onFileChanged);
-				dataGrid.removeEventListener(EntryRelated.FILE_DELETED, onFileDeleted);
-				dataGrid.removeEventListener(EntryRelated.EDIT_FILE, editFile);
+				dataGrid.removeEventListener(RelatedFileActionType.FILE_CHANGED, onFileChanged);
+				dataGrid.removeEventListener(RelatedFileActionType.FILE_DELETED, onFileDeleted);
+				dataGrid.removeEventListener(RelatedFileActionType.EDIT_FILE, editFile);
 			}
 			
 			
