@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.view.*" layout="absolute"
 				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)" paddingLeft="0"
-				paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0" backgroundColor="0xFFFFFF">
+				paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0" backgroundColor="0xFFFFFF" >
 	<mx:Metadata>
 		[ResourceBundle("kmc")]
 	</mx:Metadata>
@@ -470,6 +470,10 @@
 				permissionManager.addEventListener(KedErrorEvent.ERROR, onError);
 				permissionManager.init(uidefinition, roleOfCurrentUser, event.data[4] as KalturaPermissionListResponse);
 
+				// GAtracking
+				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
+				ga.init(_modelLocator.userInfo.user.partnerId.toString(), _modelLocator.userInfo.user.id, this, "KMC", _flashvars.urchinnumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+			
 				// load locale
 				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
 
@@ -890,6 +894,7 @@
 				navigateToURL(new URLRequest(url), "_blank");
 			}
 			
+
 		]]>
 	</mx:Script>
 	<mx:ViewStack id="mainViewStack" width="100%" height="100%"/>

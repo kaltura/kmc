@@ -4,14 +4,14 @@
 				   xmlns:business="com.kaltura.kmc.modules.studio.business.*" xmlns:controls="com.kaltura.controls.*"
 				   layout="vertical" minHeight="510" minWidth="1000" borderThickness="0" borderStyle="solid"
 				   paddingLeft="0" paddingRight="0" paddingTop="0" paddingBottom="0" horizontalScrollPolicy="off"
-				   verticalScrollPolicy="off">
+				   verticalScrollPolicy="off" addedToStage="initTracker(event);">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.uiConf.UiConfGet;
-			import com.kaltura.config.KalturaConfig;
-			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.events.KalturaEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
@@ -19,9 +19,6 @@
 			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			import com.kaltura.kmc.vo.Context;
-			import com.kaltura.utils.KUtils;
-			import com.kaltura.utils.ObjectHelpers;
-			import com.kaltura.utils.PathUtil;
 			import com.kaltura.vo.KalturaUiConf;
 			
 			import mx.controls.Alert;
@@ -122,7 +119,12 @@
 				kc.post(uiconf);
 				
 				PermissionManager.getInstance().applyAllAttributes(this,id);
+				
 				setModuleReady();
+			}
+			
+			protected function initTracker(event:Event):void {
+				GoogleAnalyticsTracker.getInstance().setBasePath("KMC/Studio");
 			}
 
 

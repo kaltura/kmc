@@ -2,11 +2,11 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 		 xmlns:playerlist="com.kaltura.kmc.modules.studio.business.playerlist.*"
 		 xmlns:view="com.kaltura.kmc.modules.studio.view.*" xmlns:controls="com.kaltura.controls.*"
-		 creationComplete="onCreationComplete()" horizontalGap="0" verticalGap="0">
+		 creationComplete="onCreationComplete()" horizontalGap="0" verticalGap="0" >
 	<mx:Script>
 		<![CDATA[
-			import com.adobe.serialization.json.JSON;
-			import com.kaltura.KalturaClient;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.MultiRequest;
 			import com.kaltura.commands.uiConf.UiConfClone;
 			import com.kaltura.commands.uiConf.UiConfDelete;
@@ -162,6 +162,8 @@
 
 					var playerUiConfVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, ui, snapshot, playerListDg.selectedItem.name);
 					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.EDIT_PLAYER, playerUiConfVo));
+					
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_EDIT_PLAYER, GoogleAnalyticsConsts.STUDIO);
 				}
 			}
 
@@ -190,6 +192,8 @@
 					mr.addEventListener(KalturaEvent.FAILED, fault);
 					mr.queued = false;
 					Studio.kc.post(mr);
+					
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DUPLICATE_PLAYER, GoogleAnalyticsConsts.STUDIO);
 				}
 			}
 
@@ -213,13 +217,18 @@
 				var selectedTemplateXml:XML = (evt.target as Button).data as XML;
 				var playerId:String = selectedTemplateXml.@id.toString();
 				var playerUiVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, null, null);
+				var gaEvent:String = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_SINGLE_VIDEO;
 				if (selectedTemplateXml.@isSinglePlaylist.toString() == "true") {
 					playerUiVo.isSinglePlaylist = true;
+					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_PLAYLIST;
 				}
 				if (selectedTemplateXml.@isMultiPlaylistTemplate.toString() == "true") {
 					playerUiVo.isMultiPlaylistTemplate = true;
+					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST;
 				}
 				dispatchEvent(new ApsUiConfEvent(ApsUiConfEvent.NEW_PLAYER_CHOSEN, playerUiVo));
+				// analytics:
+				GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.STUDIO);
 			}
 
 
@@ -235,6 +244,8 @@
 					deleteUiConf.addEventListener(KalturaEvent.COMPLETE, onDeleted);
 					deleteUiConf.addEventListener(KalturaEvent.FAILED, fault);
 					Studio.kc.post(deleteUiConf);
+					
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DELETE_PLAYER, GoogleAnalyticsConsts.STUDIO);
 					refresh();
 				}
 			}
@@ -373,9 +384,11 @@
 						else {
 							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
 						}
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_SELECT_CONTENT, GoogleAnalyticsConsts.STUDIO);
 						break;
 					case 'previewAndEmbed':
 						ExternalInterface.call("openPlayer", playerListDg.selectedItem.name, playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(), _previewOnly);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_PNE, GoogleAnalyticsConsts.STUDIO);
 						break;
 					case 'duplicate':
 						onDuplicate();
@@ -618,6 +631,8 @@
 				return false;
 			}
 			
+
+
 		]]>
 	</mx:Script>
 	<mx:Metadata>

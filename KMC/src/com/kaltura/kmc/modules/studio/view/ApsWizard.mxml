@@ -12,6 +12,8 @@ The main window for new player wizard.
 		verticalScrollPolicy="off" layout="horizontal" xmlns:controls="com.kaltura.controls.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.commands.uiConf.UiConfAdd;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.uiConf.UiConfUpdate;
@@ -861,6 +863,36 @@ The main window for new player wizard.
 					if (!wizardViewStack.visible)
 						closePreview();
 				}
+				
+				// track pageview
+				trackPageView();
+			}
+			
+			
+			/**
+			 * send info about the page in view to Google Analytics
+			 * */
+			private function trackPageView():void {
+				var gaEvent:String;
+				switch (wizardViewStack.selectedChild) {
+					case templatePage:
+						gaEvent = GoogleAnalyticsConsts.STUDIO_WIZARD_BASICS;
+						break;
+					case featurePage:
+						gaEvent = GoogleAnalyticsConsts.STUDIO_WIZARD_FEATURES;
+						break;
+					case advertizingPage:
+						gaEvent = GoogleAnalyticsConsts.STUDIO_WIZARD_ADS;
+						break;
+					case stylePage:
+						gaEvent = GoogleAnalyticsConsts.STUDIO_WIZARD_STYLE;
+						break;
+					case contentPage:
+						gaEvent = GoogleAnalyticsConsts.STUDIO_WIZARD_CONTENT;
+						break;
+				}
+				
+				GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.STUDIO);
 			}
 			
 			

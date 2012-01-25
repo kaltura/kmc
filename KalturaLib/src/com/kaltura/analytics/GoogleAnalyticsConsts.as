@@ -1,7 +1,7 @@
 package com.kaltura.analytics {
 
 	public class GoogleAnalyticsConsts {
-		public static const PAGE_VIEW:String = "Page view/"; // V
+		public static const PAGE_VIEW:String = "Page view/";
 		public static const ACTION:String = "Action/";
 		/**
 		 * on paging 
@@ -207,34 +207,77 @@ package com.kaltura.analytics {
 		// ==================================================================
 		// dashboard:
 		// ==================================================================
-		public static const DASHBOARD_UPLOAD_CONTENT:String = "Upload Content"; // V
+		// actions
+		// ==============================
+		/**
+		 * request upload files
+		 */
+		public static const DASHBOARD_UPLOAD_CONTENT:String = "Upload Content";
+		
+		/**
+		 * request bulk upload 
+		 */
 		public static const DASHBOARD_IMPORT_CONTENT:String = "Import Content";
-		public static const DASHBOARD_ACCOUNT_CONTACT_US:String = "Account Contact Us";
+
+		/**
+		 * request bulk samples 
+		 */
+		public static const DASHBOARD_DNLD_SAMPLES:String = "Download Bulk Samples";
+		
+		/**
+		 * click on "contect us" link 
+		 */
+		public static const DASHBOARD_ACCOUNT_CONTACT_US:String = "Contact Us";
+		
+		/**
+		 * go to analytics page
+		 */
 		public static const DASHBOARD_VIEW_REPORTS:String = "View Reports";
+		
+		/**
+		 * go to content tab 
+		 */		
 		public static const DASHBOARD_EMBED_PLAYER:String = "Embed player";
+		
+		/**
+		 * go to playlists tab
+		 */
 		public static const DASHBOARD_EMBED_PLAYLIST:String = "Embed PlayList";
+		
+		/**
+		 * go to studio 
+		 */
 		public static const DASHBOARD_CUSTOMIZE_PLAYERS:String = "Customize Players";
 
-		//
-		public static const LOGIN:String = "User Logs In"; // V
-		public static const LOGIN_FIRST_TIME:String = "login first time"; // V
+		// ==================================================================
+		// Login screen (NOT in KMC):
+		// ==================================================================
+		public static const LOGIN:String = "User Logs In"; 
+		public static const LOGIN_FIRST_TIME:String = "login first time"; 
 
 
 		// ==================================================================
 		// studio:
 		// ==================================================================
-		public static const APP_STUDIO_NEW_PLAYER_SINGLE_VIDEO:String = "App Studio New Player Single Video";
-		public static const APP_STUDIO_NEW_PLAYER_PLAYLIST:String = "App Studio New Player Playlist";
-		public static const APP_STUDIO_FIRST_NEW_PLAYER_PLAYLIST:String = "App Studio first New Player Playlist";
-		public static const APP_STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST:String = "App Studio New Player Multitab Playlist";
-		public static const APP_STUDIO_EDIT_PLAYER_SINGLE_VIDEO:String = "App Studio Edit Player Single Video";
-		public static const APP_STUDIO_EDIT_PLAYER_PLAYLIST:String = "App Studio Edit Player Playlist";
-		public static const APP_STUDIO_EDIT_PLAYER_MULTI_TAB_PLAYLIST:String = "App Studio Edit Player Multi Tab Playlist";
-		public static const APP_STUDIO_DUPLICATE_PLAYER:String = "App Studio Duplicate Player";
-
-		public static const FUTURE_USE_1:String = "Future Use 1";
-		public static const FUTURE_USE_2:String = "Future Use 2";
-		public static const FUTURE_USE_3:String = "Future Use 3";
+		// page views
+		// ==============================
+		public static const STUDIO_WIZARD_BASICS:String = "Wizard/Basics";
+		public static const STUDIO_WIZARD_FEATURES:String = "Wizard/Features";
+		public static const STUDIO_WIZARD_ADS:String = "Wizard/Advertising";
+		public static const STUDIO_WIZARD_STYLE:String = "Wizard/Style";
+		public static const STUDIO_WIZARD_CONTENT:String = "Wizard/Content";
+		
+		// actions
+		// ==============================
+		public static const STUDIO_NEW_PLAYER_SINGLE_VIDEO:String = "New Player Single Video";
+		public static const STUDIO_NEW_PLAYER_PLAYLIST:String = "New Player Playlist";
+		public static const STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST:String = "New Player Multitab Playlist";
+		
+		public static const STUDIO_EDIT_PLAYER:String = "Edit Player";
+		public static const STUDIO_DUPLICATE_PLAYER:String = "Duplicate Player";
+		public static const STUDIO_DELETE_PLAYER:String = "Delete Player";
+		public static const STUDIO_SELECT_CONTENT:String = "Select Player Content";
+		public static const STUDIO_PNE:String = "Preview and Embed";
 
 		// ==================================================================
 		// analytics:

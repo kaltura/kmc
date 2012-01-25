@@ -78,6 +78,14 @@ package com.kaltura.analytics {
 			_userId = userId;
 			_tracker = new GATracker(parentDisplayObject, _urchinNumber, langCode, debug);
 		}
+		
+		/**
+		 * set the default value used for base track path 
+		 * @param path	new path
+		 */		
+		public function setBasePath(path:String):void {
+			_kmcVersion = path;
+		}
 
 
 		/**
