@@ -122,8 +122,6 @@
 
 
 			private function onDeleteCheckedProfileClick(event:Event):void {
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE, "Account>Access Control Delete");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE, GoogleAnalyticsConsts.ACCOUNT);
 				var selItems:Array = accessControlProfilesTable.selectedItems;
 				if (selItems.length == 0) {
 					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
@@ -164,6 +162,8 @@
 					var deleteProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
 					deleteProfilesEvent.data = ids;
 					deleteProfilesEvent.dispatch();
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE, "Account>Access Control Delete");
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE, GoogleAnalyticsConsts.ACCOUNT);
 				}
 			}
 

@@ -26,7 +26,6 @@ package com.kaltura.analytics {
 		// ============================================================
 		// Content
 		// ============================================================
-		// ==============================
 		// page views
 		// ==============================
 		public static const CONTENT_ENTRIES:String = "Entries";
@@ -51,7 +50,6 @@ package com.kaltura.analytics {
 		public static const CONTENT_DRILLDOWN_CONTENT:String = "DrillDown/Content";
 		public static const CONTENT_DRILLDOWN_LIVE:String = "DrillDown/Live Streaming";
 		
-		// ==============================
 		// actions
 		// ==============================
 		/**
@@ -107,7 +105,7 @@ package com.kaltura.analytics {
 		/**
 		 *  
 		 */
-		public static const CONTENT_CHANGE_THUMBNAIL:String = "Change Thumbnail"; // V
+		public static const CONTENT_CHANGE_THUMBNAIL:String = "Change Thumbnail"; //TODO CONTENT_CHANGE_THUMBNAIL
 		
 		/**
 		 * add tags to multiple entries
@@ -162,17 +160,50 @@ package com.kaltura.analytics {
 		// ==================================================================
 		// account settings:
 		// ==================================================================
-		public static const ACCOUNT_CHANGE_PARTNER_INFO:String = "Account Change Partner Info"; // V
-		public static const ACCOUNT_CHANGE_LOGIN_INFO:String = "Account Change Login Info"; // V
-		public static const ACCOUNT_CONTACT_US_USAGE:String = "Account Contact Us Usage"; // V
-		public static const ACCOUNT_UPDATE_SERVER_SETTINGS:String = "Account Update Server Settings"; // V
-		public static const ACCOUNT_ACCESS_CONTROL:String = "Access Control"; // V
-		public static const ACCOUNT_TRANSCODING_SETTINGS:String = "Transcoding Settings"; // V
-		public static const ACCOUNT_ACCOUNT_UPGRADE:String = "Account Upgrade"; // V
-		public static const ACCOUNT_SAVE_SEVER_SETTINGS:String = "Save Server Settings"; // V
-		public static const ACCOUNT_ACCESS_CONTROL_DELETE:String = "Access Control Delete"; // V
-		public static const ACCOUNT_SAVE_TRANSCODING_SETTINGS:String = " Save Transcoding Settings"; // V
-
+		// page views
+		// ==============================
+		public static const ACCOUNT_ACCOUNT_INFO:String = "Account Info";
+		public static const ACCOUNT_INTEGRATION:String = "Integration";
+		public static const ACCOUNT_ACCESS_CONTROL:String = "Access Control";
+		public static const ACCOUNT_TRANSCODING_SETTINGS:String = "Transcoding Settings";
+		public static const ACCOUNT_CUTOM_DATA:String = "Custom Data";
+		public static const ACCOUNT_MY_USER:String = "My User Settings";
+		public static const ACCOUNT_ACCOUNT_UPGRADE:String = "Account Upgrade";
+		
+		// actions
+		// ==============================
+		
+		/**
+		 * click "save" on account info page 
+		 */
+		public static const ACCOUNT_CHANGE_PARTNER_INFO:String = "Update Partner Info";
+		
+		/**
+		 * 
+		 */
+		public static const ACCOUNT_CHANGE_LOGIN_INFO:String = "Account Change Login Info"; //TODO ACCOUNT_CHANGE_LOGIN_INFO
+		
+		/**
+		 * click on "send" in contact us page 
+		 */
+		public static const ACCOUNT_CONTACT_US_USAGE:String = "Contact Us Usage"; 
+		
+		/**
+		 * click "save" on integration settings 
+		 */
+		public static const ACCOUNT_UPDATE_INTEGRATION:String = "Update Integration Settings";
+		
+		/**
+		 * access control profile deleted 
+		 */		
+		public static const ACCOUNT_ACCESS_CONTROL_DELETE:String = "Access Control Delete";
+		
+		/**
+		 * click "save" on default conversion profile page 
+		 */
+		public static const ACCOUNT_SAVE_DEF_TRANSCODING_PROF:String = "Save Default Transcoding Profile";
+		
+		
 		// ==================================================================
 		// dashboard:
 		// ==================================================================
@@ -235,7 +266,7 @@ package com.kaltura.analytics {
 		public static const ANALYTICS:String = "KMC/Reports and Analytics";
 		public static const CONTENT:String = "KMC/Content";
 		public static const STUDIO:String = "KMC/Studio";
-		public static const ACCOUNT:String = "KMC/Account";
+		public static const ACCOUNT:String = "KMC/Settings";
 		public static const DASHBOARD:String = "KMC/Dashboard";
 		public static const ADMIN:String = "KMC/Administration";
 

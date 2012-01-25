@@ -106,9 +106,9 @@
 
 
 			public function saveChanges():void {
-				savePartnerInfo();
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_SAVE_SERVER_SETTINGS, "Account>Save Server Settings");
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_SEVER_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_UPDATE_INTEGRATION, GoogleAnalyticsConsts.ACCOUNT);
+				savePartnerInfo();
 			}
 
 
@@ -123,11 +123,6 @@
 					//do save
 					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.UPDATE_PARTNER);
 					partnerEvent.dispatch();
-
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_UPDATE_SERVER_SETTINGS, "serverSettingScreen>saveUpdateBtn");
-
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_UPDATE_SERVER_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
-
 				}
 			}
 

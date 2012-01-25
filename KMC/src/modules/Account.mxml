@@ -14,7 +14,6 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.google.analytics.AnalyticsTracker;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -26,11 +25,12 @@
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
 			import com.kaltura.kmc.modules.account.vo.AdminVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.core.Container;
 			import mx.events.CloseEvent;
+			import mx.events.IndexChangedEvent;
 			import mx.events.ItemClickEvent;
 
 			/**
@@ -38,8 +38,6 @@
 			 * this const as the id of this module.
 			 * */
 			public static const NAME:String = "account";
-
-			private static const VERSION:String = "4.0";
 
 			[Bindable]
 			/**
@@ -143,7 +141,7 @@
 
 				//// init analytics feature and Google Analytics
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
-				ka.init(_model.context.kc, "Account", VERSION, _model.context.userId);
+				ka.init(_model.context.kc, "Account", "4.0", _model.context.userId);
 
 
 
@@ -196,7 +194,7 @@
 					removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 				}
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
-				ga.init(_model.context.kc.partnerId, _model.context.userId, this, "KMC/settings", urchinNumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+				ga.init(_model.context.kc.partnerId, _model.context.userId, this, "KMC/Settings", urchinNumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
 
 				if (_initialTab) {
 					switchToTab(_initialTab);
@@ -219,75 +217,49 @@
 				else {
 					_model.context.rootUrl = "http://" + objParam.host;
 				}
-
 				_model.context.kc = _kc;
-
 
 			}
 
 
-//			private function openPayPalWindow(isIt:Boolean):void {
-//				if (isIt) {
-//					if (!_paypalWin) {
-//						_paypalWin = new PayPalFormWin();
-//						_paypalWin.styleName = "TitleWindowType2";
-//						_paypalWin.paymentDetailsVo = _model.paymentDetailsVo;
-//						_paypalWin.data = _model.modalWinData;
-//						if ((_model.modalWinData as PackagesVO).cycleFee == _model.partnerPackage.cycleFee)
-//							_paypalWin.title = resourceManager.getString('account', 'updatePaymetInfo');
-//						else if ((_model.modalWinData as PackagesVO).cycleFee > _model.partnerPackage.cycleFee)
-//							_paypalWin.title = resourceManager.getString('account', 'upgradePackage');
-//						else {
-//							_paypalWin.title = resourceManager.getString('account', 'downgradePackage');
-//							_paypalWin.actionBtnText = resourceManager.getString('account', 'downgradeNow');
-//						}
-//
-//						_paypalWin.title += " - " + _model.modalWinData.name;
-//						PopUpManager.addPopUp(_paypalWin, this, true);
-//						PopUpManager.centerPopUp(_paypalWin);
-//						enableHtmlTabs(false);
-//					}
-//				}
-//				else {
-//					if (_paypalWin) {
-//						PopUpManager.removePopUp(_paypalWin);
-//						enableHtmlTabs(true);
-//						_paypalWin = null;
-//					}
-//				}
-//			}
 
 			/**
 			 * when a user asks to change tab (clicks another tab), track that change.
 			 * if the current page is changed, pop a "save changes" question,
 			 * otherwise switch to the new selected tab.
 			 * */
-			private function onTabChange(event:ItemClickEvent):void {
-				switch (event.index) {
-					case 0:
+			private function onTabChange(event:IndexChangedEvent):void {
+				switch (contentView.selectedChild) {
+					case overview:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCOUNT_OVERVIEW, "Account>Account Overview");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_CHANGE_PARTNER_INFO, GoogleAnalyticsConsts.ACCOUNT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_ACCOUNT_INFO, GoogleAnalyticsConsts.ACCOUNT);
 						break;
-					case 1:
+					case integration:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_UPDATE_SERVER_SETTINGS, "Account>Update Server Settings");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_SAVE_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_INTEGRATION, GoogleAnalyticsConsts.ACCOUNT);
 						break;
-					case 2:
+					case accessControl:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL, "Account>Access Control");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL, GoogleAnalyticsConsts.ACCOUNT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL, GoogleAnalyticsConsts.ACCOUNT);
 						break;
-					case 3:
+					case transcoding:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_TRANSCODING_SETTINGS, "Account>Transcoding Settings");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_TRANSCODING_SETTINGS, GoogleAnalyticsConsts.ACCOUNT);
 						break;
-					case 4:
+					case metadata:
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_CUTOM_DATA, GoogleAnalyticsConsts.ACCOUNT);
+						break;
+					case user:
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_MY_USER, GoogleAnalyticsConsts.ACCOUNT);
+						break;
+					case upgrade:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCOUNT_UPGRADE, "Account>Account Upgrade");
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCOUNT_UPGRADE, GoogleAnalyticsConsts.ACCOUNT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ACCOUNT_ACCOUNT_UPGRADE, GoogleAnalyticsConsts.ACCOUNT);
 						break;
 
 				}
 
-				_newSelectedTab = event.index;
+				_newSelectedTab = event.newIndex;
 
 				if ((contentView.getChildAt(_oldSelectedTab) as IUndoable).isChanged()) {
 					Alert.show(resourceManager.getString('account', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQ);
@@ -402,7 +374,7 @@
 	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView">
 
 		<mx:HBox width="100%" styleName="tabsContainer">
-			<mx:TabBar id="secTln" styleName="tln" itemClick="onTabChange(event)" buttonMode="true"
+			<mx:TabBar id="secTln" styleName="tln" buttonMode="true"
 					   dataProvider="contentView" visible="false">
 			</mx:TabBar>
 			<mx:Spacer width="100%"/>
@@ -410,7 +382,7 @@
 		</mx:HBox>
 
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" minWidth="900"
-					  minHeight="500" visible="false">
+					  minHeight="500" visible="false" change="onTabChange(event)">
 			<view:AccountOverview id="overview" width="100%"
 								  label="{resourceManager.getString('account','accountOverview')}" styleName="pageStyle"
 								  users="{_model.usersList}" partnerData="{_model.partnerData}"
