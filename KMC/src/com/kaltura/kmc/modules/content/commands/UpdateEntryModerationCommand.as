@@ -92,7 +92,7 @@ package com.kaltura.kmc.modules.content.commands
 					case (1):
 					for each (var baseEntryApprove:BaseEntryApprove in data.currentTarget.actions )
 					{
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_APPROVE_MODERATION+"/entry_id="+baseEntryApprove.args.entryId,GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_APPROVE_MODERATION, GoogleAnalyticsConsts.CONTENT);
 				        KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_APPROVE_MODERATION,
 																  "Moderation>ApproveSelected");
 					}
@@ -100,7 +100,7 @@ package com.kaltura.kmc.modules.content.commands
 					case(2):
 					for each (var baseEntryReject:BaseEntryReject in data.currentTarget.actions )
 					{
-				    	GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REJECT_MODERATION+"/entry_id="+baseEntryReject.args.entryId,GoogleAnalyticsConsts.CONTENT);
+				    	GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REJECT_MODERATION, GoogleAnalyticsConsts.CONTENT);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_REJECT_MODERATION,
 															  "Moderation>RejectSelected");
 					}

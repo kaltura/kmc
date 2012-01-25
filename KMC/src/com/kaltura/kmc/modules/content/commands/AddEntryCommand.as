@@ -45,11 +45,11 @@ package com.kaltura.kmc.modules.content.commands {
 
 			if (_playListType == KalturaPlaylistType.DYNAMIC) {
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "RuleBasedPlayList>AddPlayList" + ">" + data.data.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_RULEBASED_PLAYLIST + "/PlayList_id=" + data.data.id, GoogleAnalyticsConsts.CONTENT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_RULEBASED_PLAYLIST, GoogleAnalyticsConsts.CONTENT);
 			}
 			else if (_playListType == KalturaPlaylistType.STATIC_LIST) {
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_ADD_PLAYLIST, "ManuallPlayList>AddPlayList" + ">" + data.data.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_PLAYLIST + "/PlayList_id=" + data.data.id, GoogleAnalyticsConsts.CONTENT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_PLAYLIST, GoogleAnalyticsConsts.CONTENT);
 			}
 
 		}

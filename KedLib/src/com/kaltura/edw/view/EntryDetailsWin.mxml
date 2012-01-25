@@ -16,7 +16,10 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
-			import com.kaltura.analytics.*;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTracker;
+			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IDrilldownPanel;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -811,7 +814,7 @@
 				edwController.dispatch(cgEvent);
 				
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_ENTRY, "EditedtDrillDown", undoToEntry.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY + ">entryID>" + undoToEntry.id, GoogleAnalyticsConsts.CONTENT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_ENTRY, GoogleAnalyticsConsts.CONTENT);
 			}
 
 			private function handleSaveComplete():void {
@@ -840,6 +843,58 @@
 						}
 					}
 				}
+				trackNavigation(viewStack.selectedChild.id);
+			}
+			
+			
+			/**
+			 * send tracking events about the current page
+			 * @panelId		page (panel) id
+			 * */
+			private function trackNavigation(panelId:String):void {
+				var event:String = '';
+				switch (panelId) {
+					case PanelConsts.ACCESS_CONTROL_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_ACCESS_CONTROL;
+						break;
+					case PanelConsts.ADS_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_ADVERTISEMENTS;
+						break;
+					case PanelConsts.ASSETS_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS;
+						break;
+					case PanelConsts.CAPTIONS_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CAPTIONS;
+						break;
+					case PanelConsts.CLIPS_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CLIPS;
+						break;
+					case PanelConsts.CONTENT_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CONTENT;
+						break;
+					case PanelConsts.CUSTOM_DATA_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CUSTOM_DATA;
+						break;
+					case PanelConsts.DISTRIBUTION_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_DISTRIBUTION;
+						break;
+					case PanelConsts.LIVE_STREAM_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_LIVE;
+						break;
+					case PanelConsts.METADATA_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_METADATA;
+						break;
+					case PanelConsts.RELATED_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_RELATED_FILES;
+						break;
+					case PanelConsts.SCHEDULING_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_SCHEDULING;
+						break;
+					case PanelConsts.THUMBNAILS_PANEL:
+						event = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAILS;
+						break;
+				}
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + event, GoogleAnalyticsConsts.CONTENT);
 			}
 
 			private function setEnabledByLoadingFlag(val:Boolean):void {

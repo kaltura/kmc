@@ -93,7 +93,7 @@ package com.kaltura.analytics {
 			if (!modulePath) {
 				modulePath = _kmcVersion;
 			}
-			_tracker.trackPageview(modulePath + "/" + eventTracked + "/" + "partner_id=" + _partnerId + "/user_id=" + _userId);
+			_tracker.trackPageview(modulePath + "/" + eventTracked + "/" + "partner_id=" + _partnerId);
 		}
 		
 		

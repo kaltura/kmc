@@ -13,7 +13,7 @@ package com.kaltura.edw.constants
 		public static const RELATED_PANEL:String = "entryRelated";
 		public static const CUSTOM_DATA_PANEL:String = "customData";
 		public static const METADATA_PANEL:String = "entryMetaData";
-		public static const ACCESS_POINT_PANEL:String = "entryAcp";
+		public static const ACCESS_CONTROL_PANEL:String = "entryAcp";
 		public static const SCHEDULING_PANEL:String = "entrySch";
 		public static const CLIPS_PANEL:String = "entryClips";
 	}

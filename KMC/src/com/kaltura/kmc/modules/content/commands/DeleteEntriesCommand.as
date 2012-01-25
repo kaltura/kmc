@@ -97,20 +97,17 @@ package com.kaltura.kmc.modules.content.commands {
 						deleteEntry = new PlaylistDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_PLAYLIST,
 							"Playlists>DeletePlaylist", _model.selectedEntries[i].id);
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_PLAYLIST +
-							"/entry_id=" + _model.selectedEntries[i].id, GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_PLAYLIST, GoogleAnalyticsConsts.CONTENT);
 					} else if (_model.selectedEntries[i] is KalturaMixEntry) {
 						deleteEntry = new MixingDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_MIX,
 							"Delete Mix", _model.selectedEntries[i].id);
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MIX +
-							"/entry_id=" + _model.selectedEntries[i].id, GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MIX, GoogleAnalyticsConsts.CONTENT);
 					} else {
 						deleteEntry = new BaseEntryDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_ITEM,
 							"Delete Entry", _model.selectedEntries[i].id);
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM +
-							"/entry_id=" + _model.selectedEntries[i].id, GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM, GoogleAnalyticsConsts.CONTENT);
 					}
 
 					mr.addAction(deleteEntry);
