@@ -272,37 +272,62 @@ package com.kaltura.analytics {
 		public static const STUDIO_NEW_PLAYER_SINGLE_VIDEO:String = "New Player Single Video";
 		public static const STUDIO_NEW_PLAYER_PLAYLIST:String = "New Player Playlist";
 		public static const STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST:String = "New Player Multitab Playlist";
-		
 		public static const STUDIO_EDIT_PLAYER:String = "Edit Player";
 		public static const STUDIO_DUPLICATE_PLAYER:String = "Duplicate Player";
 		public static const STUDIO_DELETE_PLAYER:String = "Delete Player";
 		public static const STUDIO_SELECT_CONTENT:String = "Select Player Content";
 		public static const STUDIO_PNE:String = "Preview and Embed";
 
+		
 		// ==================================================================
 		// analytics:
 		// ==================================================================
-		public static const REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB:String = "BandWidth Usage Tab";
-		public static const REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY:String = "BandWidth Usage view Monthly";
-		public static const REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY:String = "BandWidth Usage view Yearly";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB:String = "Content Reports Tab";
-		public static const REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB:String = "Users And Community Reports Tab";
-		public static const REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS:String = "Users And Community Reports Tab>Top Contributors";
-		public static const REPORTS_AND_ANALYTICS_MAP_OVERLAYS:String = "Users And Community Reports Tab>Map Contributors";
-		public static const REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN:String = "Users And Community Reports Tab>Map Contributors DrillDown";
-		public static const REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS:String = "Users And Community Reports Tab>Top Syndications";
-		public static const REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN:String = "Users And Community Reports Tab>Top Syndications DrillDown";
-		public static const REPORTS_AND_ANALYTICS_TOP_CONTENT:String = "Content Reports>Top Content";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_DROPOFF:String = "Content Reports>Content Drop-off";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_INTERACTIONS:String = "Content Reports>Content Interactions";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS:String = "Content Reports>Content Contributions";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN:String = "Content Reports>Content Contributions DrillDown";
-		public static const REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN:String = "Content Reports>Video Drill Down";
-		public static const REPORTS_AND_ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION:String = "Content Reports>Content Drill Down Interaction";
-		public static const REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF:String = "Content Reports>Video Drill Down Dropoff";
+		// page views
+		// ==============================
+		public static const ANALYTICS_BANDWIDTH_USAGE:String = "BandWidth Usage";
+		public static const ANALYTICS_CONTENT_REPORTS:String = "Content Reports";
+		public static const ANALYTICS_USERS_AND_COMMUNITY_REPORTS:String = "Users And Community Reports";
+		
+		// actions
+		// ==============================
+		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY:String = "BandWidth Usage view Monthly";
+		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY:String = "BandWidth Usage view Yearly";
+		
+		public static const ANALYTICS_TOP_CONTRIBUTORS:String = "Users And Community Reports>Top Contributors";
+		public static const ANALYTICS_MAP_OVERLAYS:String = "Users And Community Reports>Geographic Distribution";
+		public static const ANALYTICS_MAP_OVERLAYS_DRILLDOWN:String = "Users And Community Reports>Geographic Distribution DrillDown";
+		public static const ANALYTICS_TOP_SYNDICATIONS:String = "Users And Community Reports>Top Syndications";
+		public static const ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN:String = "Users And Community Reports>Top Syndications DrillDown";
+		
+		public static const ANALYTICS_TOP_CONTENT:String = "Content Reports>Top Content";
+		public static const ANALYTICS_CONTENT_DROPOFF:String = "Content Reports>Content Drop-off";
+		public static const ANALYTICS_CONTENT_INTERACTIONS:String = "Content Reports>Content Interactions";
+		public static const ANALYTICS_CONTENT_CONTRIBUTIONS:String = "Content Reports>Content Contributions";
+		public static const ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN:String = "Content Reports>Content Contributions DrillDown";
+		public static const ANALYTICS_VIDEO_DRILL_DOWN:String = "Content Reports>Video Drill Down";
+		public static const ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION:String = "Content Reports>Content Drill Down Interaction";
+		public static const ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF:String = "Content Reports>Video Drill Down Dropoff";
 
-
-
+		// ==================================================================
+		// administration:
+		// ==================================================================
+		// page views
+		// ==============================
+		public static const ADMIN_USERS:String = "Users";
+		public static const ADMIN_ROLES:String = "Roles";
+		
+		// actions
+		// ==============================
+		public static const ADMIN_USER_ADD:String = "Add User";
+		public static const ADMIN_USER_EDIT:String = "Edit User";
+		public static const ADMIN_USER_BLOCK:String = "Block User";
+		public static const ADMIN_USER_UNBLOCK:String = "Unblock User";
+		public static const ADMIN_USER_DELETE:String = "Delete User";
+		public static const ADMIN_ROLE_ADD:String = "Add Role";
+		public static const ADMIN_ROLE_EDIT:String = "Edit Role";
+		public static const ADMIN_ROLE_DELETE:String = "Delete Role";
+		
+		
 		// ==================================================================
 		// module names:
 		// ==================================================================

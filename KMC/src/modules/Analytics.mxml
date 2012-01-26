@@ -136,9 +136,6 @@
 			 * shows a subtab as dictated by subtab
 			 * */
 			private function showTab(subtab:String):void {
-				//[Avi]:09/08/2009 - in case the usage tab is reduced from view stack
-				//				var countTabsDiff:int = (contentView.numChildren == 4) ? 0 : 1;
-				
 				switch (subtab) {
 					case BANDWIDTH_USAGE:
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 0))
@@ -152,10 +149,6 @@
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 2))
 						contentView.selectedIndex = 2;
 						break;
-					// what's this case?
-					//					case resourceManager.getString('analytics', 'serverSettings'):
-					//						contentView.selectedIndex = (3 - countTabsDiff);
-					//						break;
 					default:
 						trace("din't get annea dese, eh got " + subtab);
 				}
@@ -216,7 +209,7 @@
 				var stateEvent:StateEvent;
 				if (event.index == 0) {
 					// trackers:
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB , GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_BANDWIDTH_USAGE , GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
 						"Main Menu>Bandwidth Usage Tab");
 					JSGate.writeUrlHash(Analytics.NAME, BANDWIDTH_USAGE);
@@ -231,20 +224,14 @@
 					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTENT);
 					stateEvent.dispatch();
 					// trackers:
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB, GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_CONTENT_REPORTS, GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_REPORTS_TAB,
 						"Main Menu>Contents and Reports Tab");
 					JSGate.writeUrlHash(Analytics.NAME, CONTENT);
-					
-					// Atar - calling this twice on purpose?
-					// seems not to be necessary, every button press triggers onShow.
-					//					if (content.topContet) {
-					//						content.topContet.onShow();
-					//					}
 				}
 				else if (event.index == 2) {
 					// trackers:
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB, GoogleAnalyticsConsts.ANALYTICS);
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_USERS_AND_COMMUNITY_REPORTS, GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB,
 						"Main Menu>Users and Community Reports");
 					JSGate.writeUrlHash(Analytics.NAME, USERS_AND_COMMUNITY);

@@ -6,6 +6,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
@@ -14,7 +15,7 @@
 			import com.kaltura.kmc.modules.analytics.view.dtn.DTNItem;
 			import com.kaltura.types.KalturaReportType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
 
@@ -105,20 +106,24 @@
 
 			private function selectedReportChange(selectedReport:ReportData):void {
 				if (selectedReport) {
+					var gaEvent:String;
 					switch (_model.currentScreenState) {
 						case ScreenTypes.TOP_CONTENT:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_CONTENT;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'topContentLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_DROPOFF:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DROPOFF;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentDropoffLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_INTERACTIONS:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_INTERACTIONS;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 								selectedReport.message = resourceManager.getString('analytics', 'contentInteractionsLbl', [selectedReport.totalCount, sum]);
@@ -127,24 +132,28 @@
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
@@ -153,11 +162,15 @@
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN:
+							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN;
 							if (_model.selectedEntry && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsSourceLbl', [ContributionTypes.getContributionType(int(_model.selectedEntry)), selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
+					}
+					if (gaEvent) {
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
 					}
 				}
 			}
@@ -177,9 +190,6 @@
 								dimCbDp="{ _model.reportDimension.topContent }"
 								reportType="{KalturaReportType.TOP_CONTENT}" helpUrl="{'section11'}"
 								drillDown="{onDrillDown(ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT)}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentDropOff" width="100%" height="100%" context="{_model.context}"
 								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
@@ -190,9 +200,6 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.contentDropoff }"
 								tableHeaders="{ _model.tableHeaders.contentDropoff }" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.CONTENT_DROPOFF}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_DROPOFF}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_DROPOFF}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="contentInteractions" width="100%" height="100%" context="{_model.context}"
 								filterVo="{_model.filter}" loadChart="{_model.loadingChartFlag}"
@@ -205,9 +212,6 @@
 								dimCbDp="{ _model.reportDimension.contentInteraction }" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.CONTENT_INTERACTIONS}"
 								label="{resourceManager.getString('analytics','contentInteractions')}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_INTERACTIONS}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_INTERACTIONS}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_INTERACTIONS}"
 								styleName="pageStyle"/>
 		<view:KalturaReportView id="contentContributions" width="100%" height="100%" context="{_model.context}"
 								filterVo="{_model.filter}" dateOnlyFlag="{true}" loadChart="{_model.loadingChartFlag}"
@@ -219,9 +223,6 @@
 								tableHeaders="{ _model.tableHeaders.contentContributions }"
 								dimCbDp="{ _model.reportDimension.contentContributions }"
 								reportType="{KalturaReportType.CONTENT_CONTRIBUTIONS}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS}"
 								helpUrl="{'section11'}"
 								drillDown="{onDrillDown(ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN)}"
 								label="{resourceManager.getString('analytics','contentContributions')}"
@@ -235,9 +236,6 @@
 								dimCbDp="{ _model.reportDimension.topContent }"
 								backScreenType="{ScreenTypes.TOP_CONTENT}" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.TOP_CONTENT}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTENT}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_CONTENT}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTENT}"
 								label="{resourceManager.getString('analytics','topContent')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="videoDrillDownDropoff" width="100%" height="100%" filterVo="{_model.filter}"
 								context="{_model.context}" loadChart="{_model.loadingChartFlag}"
@@ -248,9 +246,6 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.contentDropoff }"
 								backScreenType="{ScreenTypes.CONTENT_DROPOFF}" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.CONTENT_DROPOFF}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF}"
 								label="{resourceManager.getString('analytics','contentDropOff')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="videoDrillDownInteractions" showKDP="true" showTable="false"
 								filterVo="{_model.filter}" context="{_model.context}"
@@ -262,9 +257,6 @@
 								dimCbDp="{ _model.reportDimension.contentInteraction }"
 								backScreenType="{ScreenTypes.CONTENT_INTERACTIONS}" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.CONTENT_INTERACTIONS}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION}"
 								label="{resourceManager.getString('analytics','contentInteractions')}"
 								styleName="pageStyle"/>
 		<view:KalturaReportView id="contentContributionsDrillDown" width="100%" height="100%" filterVo="{_model.filter}"
@@ -279,9 +271,6 @@
 								tableHeaders="{ _model.tableHeaders.contentContributions }"
 								dimCbDp="{ _model.reportDimension.contentContributions }"
 								backScreenType="{ScreenTypes.CONTENT_CONTRIBUTIONS}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN}"
 								helpUrl="{'section11'}" reportType="{KalturaReportType.CONTENT_CONTRIBUTIONS}"
 								label="{resourceManager.getString('analytics','contentContributions')}"
 								styleName="pageStyle"/>

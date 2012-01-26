@@ -7,6 +7,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.analytics.control.PermissionEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
@@ -73,22 +74,28 @@
 
 
 			private function onStateChnage(newState:int):void {
+				var gaEvent:String;
 				switch (newState) {
 					case ScreenTypes.TOP_CONTRIBUTORS:
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_CONTRIBUTORS;
 						userViewStack.selectedIndex = dtn.selectedIndex = 0;
 						break;
 					case ScreenTypes.MAP_OVERLAY:
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_MAP_OVERLAYS;
 						userViewStack.selectedIndex = dtn.selectedIndex = 1;
 						break;
 					case ScreenTypes.TOP_SYNDICATIONS:
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_SYNDICATIONS;
 						userViewStack.selectedIndex = dtn.selectedIndex = 2;
 						break;
 					case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN;
 						userViewStack.selectedIndex = 3;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(2) as DTNItem).btn.styleName = "selectedDtnBtn";
 						break;
 					case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_MAP_OVERLAYS_DRILLDOWN;
 						userViewStack.selectedIndex = 4;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(1) as DTNItem).btn.styleName = "selectedDtnBtn";
@@ -96,6 +103,9 @@
 					default:
 						// the new screen is not in Users's scope, need to hide panel
 						(userViewStack.selectedChild as KalturaReportView).onHide();
+				}
+				if (gaEvent) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
 				}
 			}
 
@@ -179,9 +189,6 @@
 								dimCbDp="{ _model.reportDimension.topContrib }" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.TOP_CONTRIBUTORS}"
 								label="{resourceManager.getString('analytics','topContributors')}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_CONTRIBUTORS}"
 								styleName="pageStyle"/>
 		<view:KalturaReportView id="mapOverlay" width="100%" dateOnlyFlag="{true}" context="{_model.context}"
 								filterVo="{_model.filter}" reportData="{_model.selectedReportData}"
@@ -194,9 +201,6 @@
 								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.MAP_OVERLAY}"
 								label="{resourceManager.getString('analytics','mapOverlay')}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS}"
 								styleName="pageStyle"/>
 		<view:KalturaReportView id="topSyndications" dateOnlyFlag="{true}" context="{_model.context}"
 								filterVo="{_model.filter}" width="100%" height="100%" orderBy="count_plays"
@@ -209,9 +213,6 @@
 								dimCbDp="{ _model.reportDimension.syndicator }"
 								drillDown="{onDrillDown(ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)}"
 								helpUrl="{'section11'}" reportType="{KalturaReportType.TOP_SYNDICATION}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="syndicationsDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
 								filterVo="{_model.filter}" context="{_model.context}" width="100%" height="100%"
@@ -225,9 +226,6 @@
 								dimCbDp="{ _model.reportDimension.syndicator }" reportData="{_model.selectedReportData}"
 								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.TOP_SYNDICATION}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="mapOverlayDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
 								filterVo="{_model.filter}" context="{_model.context}"
@@ -239,9 +237,6 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
 								tableHeaders="{ _model.tableHeaders.mapOverlay }" helpUrl="{'section11'}"
 								reportType="{KalturaReportType.MAP_OVERLAY}"
-								gaEventName="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
-								KalturaEventName="{KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
-								KalturaEventDesc="{GoogleAnalyticsConsts.REPORTS_AND_ANALYTICS_MAP_OVERLAYS_DRILLDOWN}"
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"/>
 	</mx:ViewStack>
 
