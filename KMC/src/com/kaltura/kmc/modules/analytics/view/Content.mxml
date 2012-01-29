@@ -56,45 +56,57 @@
 			 * @param newState	new value for <code>_model.currentScreenState</code>
 			 * */
 			private function onStateChange(newState:int):void {
+				var gaEvent:String;
 				for (var i:int = 0; i < dtn.numChildren; i++)
 					(dtn.getChildAt(i) as DTNItem).btn.styleName = "dtnButton";
 
 				switch (newState) {
 					case ScreenTypes.TOP_CONTENT:
 						contentViewStack.selectedIndex = dtn.selectedIndex = 0;
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_CONTENT;
 						break;
 					case ScreenTypes.CONTENT_DROPOFF:
 						contentViewStack.selectedIndex = dtn.selectedIndex = 1;
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DROPOFF;
 						break;
 					case ScreenTypes.CONTENT_INTERACTIONS:
 						contentViewStack.selectedIndex = dtn.selectedIndex = 2;
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_INTERACTIONS;
 						break;
 					case ScreenTypes.CONTENT_CONTRIBUTIONS:
 						contentViewStack.selectedIndex = dtn.selectedIndex = 3;
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS;
 						break;
 					case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
 						contentViewStack.selectedIndex = 4;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(0) as DTNItem).btn.styleName = "selectedDtnBtn";
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN;
 						break;
 					case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
 						contentViewStack.selectedIndex = 5;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(1) as DTNItem).btn.styleName = "selectedDtnBtn";
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF;
 						break;
 					case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
 						contentViewStack.selectedIndex = 6;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(2) as DTNItem).btn.styleName = "selectedDtnBtn";
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION;
 						break;
 					case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN:
 						contentViewStack.selectedIndex = 7;
 						dtn.selectedIndex = -1;
 						(dtn.getChildAt(3) as DTNItem).btn.styleName = "selectedDtnBtn";
+						gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN;
 						break;
 					default:
 						// the new screen is not in Content's scope, need to hide panel
 						(contentViewStack.selectedChild as KalturaReportView).onHide();
+				}
+				if (gaEvent) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
 				}
 			}
 
@@ -106,24 +118,20 @@
 
 			private function selectedReportChange(selectedReport:ReportData):void {
 				if (selectedReport) {
-					var gaEvent:String;
 					switch (_model.currentScreenState) {
 						case ScreenTypes.TOP_CONTENT:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_TOP_CONTENT;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'topContentLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_DROPOFF:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DROPOFF;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentDropoffLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_INTERACTIONS:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_INTERACTIONS;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 								selectedReport.message = resourceManager.getString('analytics', 'contentInteractionsLbl', [selectedReport.totalCount, sum]);
@@ -132,28 +140,24 @@
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS;
 							if (selectedReport.totalCount && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsLbl', [selectedReport.totalCount, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDefaultLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION;
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
@@ -162,15 +166,11 @@
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN:
-							gaEvent = GoogleAnalyticsConsts.ANALYTICS_CONTENT_CONTRIBUTIONS_DRILLDOWN;
 							if (_model.selectedEntry && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[0] && selectedReport.aggregatedDataArrCol[0].value != null)
 								selectedReport.message = resourceManager.getString('analytics', 'contentContributionsSourceLbl', [ContributionTypes.getContributionType(int(_model.selectedEntry)), selectedReport.aggregatedDataArrCol[0].value]);
 							else
 								selectedReport.message = '';
 							break;
-					}
-					if (gaEvent) {
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent , GoogleAnalyticsConsts.ANALYTICS);
 					}
 				}
 			}
