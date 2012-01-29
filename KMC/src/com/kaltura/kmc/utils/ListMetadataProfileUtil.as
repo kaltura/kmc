@@ -28,27 +28,28 @@ package com.kaltura.kmc.utils
 		{
 			var profilesArray:ArrayCollection = new ArrayCollection();
 		
-			for (var i:int = 0; i< response.objects.length; i++ ) {
-				var recievedProfile:KalturaMetadataProfile = response.objects[i] as KalturaMetadataProfile;
-				if (!recievedProfile)
-					continue;
-				var metadataProfile : KMCMetadataProfileVO = new KMCMetadataProfileVO();
-				metadataProfile.profile = recievedProfile;
-				metadataProfile.downloadUrl = context.kc.protocol + context.kc.domain + KMCMetadataProfileVO.serveURL + "/ks/" + context.kc.ks + "/id/" + recievedProfile.id;
-				//parses only profiles that were created from KMC
-				//change later to refer only to creation mode=kmc
-				if (!(recievedProfile.createMode) || (recievedProfile.createMode == KalturaMetadataProfileCreateMode.KMC)) {
-					metadataProfile.xsd = new XML(recievedProfile.xsd);
-					metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+			if (response.objects) {
+				for (var i:int = 0; i< response.objects.length; i++ ) {
+					var recievedProfile:KalturaMetadataProfile = response.objects[i] as KalturaMetadataProfile;
+					if (!recievedProfile)
+						continue;
+					var metadataProfile : KMCMetadataProfileVO = new KMCMetadataProfileVO();
+					metadataProfile.profile = recievedProfile;
+					metadataProfile.downloadUrl = context.kc.protocol + context.kc.domain + KMCMetadataProfileVO.serveURL + "/ks/" + context.kc.ks + "/id/" + recievedProfile.id;
+					//parses only profiles that were created from KMC
+					//change later to refer only to creation mode=kmc
+					if (!(recievedProfile.createMode) || (recievedProfile.createMode == KalturaMetadataProfileCreateMode.KMC)) {
+						metadataProfile.xsd = new XML(recievedProfile.xsd);
+						metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+					}
+					//none KMC profile
+					else {
+						metadataProfile.profileDisabled = true;
+					}
+					
+					profilesArray.addItem(metadataProfile);
 				}
-				//none KMC profile
-				else {
-					metadataProfile.profileDisabled = true;
-				}
-				
-				profilesArray.addItem(metadataProfile);
 			}
-			
 			return profilesArray;
 		}
 	}

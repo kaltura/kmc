@@ -77,54 +77,56 @@ package com.kaltura.edw.control.commands.customData {
 				var response:KalturaMetadataProfileListResponse = data.data as KalturaMetadataProfileListResponse;
 				var metadataProfiles:Array = new Array();
 				var formBuilders:Array = new Array();
-				for (var i:int = 0; i < response.objects.length; i++) {
-					var recievedProfile:KalturaMetadataProfile = response.objects[i];
-					if (recievedProfile) {
-						var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
-						metadataProfile.profile = recievedProfile;
-						metadataProfile.xsd = new XML(recievedProfile.xsd);
-						metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
-
-						//set the displayed label of each label
-						for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
-							var label:String = ResourceManager.getInstance().getString('customFields', field.defaultLabel);
-							if (label) {
-								field.displayedLabel = label;
-							}
-							else {
-								field.displayedLabel = field.defaultLabel;
-							}
-						}
-
-						//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
-						metadataProfiles.push(metadataProfile);
-						var fb:FormBuilder = new FormBuilder(metadataProfile);
-						formBuilders.push(fb);
-						var isViewExist:Boolean = false;
-
-						if (recievedProfile.views) {
-							try {
-								var recievedView:XML = new XML(recievedProfile.views);
-							}
-							catch (e:Error) {
-								//invalid view xmls
-								continue;
-							}
-							for each (var layout:XML in recievedView.children()) {
-								if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
-									metadataProfile.viewXML = layout;
-									isViewExist = true;
-									continue;
+				if (response.objects) {
+					for (var i:int = 0; i < response.objects.length; i++) {
+						var recievedProfile:KalturaMetadataProfile = response.objects[i];
+						if (recievedProfile) {
+							var metadataProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
+							metadataProfile.profile = recievedProfile;
+							metadataProfile.xsd = new XML(recievedProfile.xsd);
+							metadataProfile.metadataFieldVOArray = MetadataProfileParser.fromXSDtoArray(metadataProfile.xsd);
+	
+							//set the displayed label of each label
+							for each (var field:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
+								var label:String = ResourceManager.getInstance().getString('customFields', field.defaultLabel);
+								if (label) {
+									field.displayedLabel = label;
+								}
+								else {
+									field.displayedLabel = field.defaultLabel;
 								}
 							}
-						}
-						if (!isViewExist) {
-							var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-							//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
-							if (cddp.metadataDefaultUiconfXML){
-								metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
+	
+							//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
+							metadataProfiles.push(metadataProfile);
+							var fb:FormBuilder = new FormBuilder(metadataProfile);
+							formBuilders.push(fb);
+							var isViewExist:Boolean = false;
+	
+							if (recievedProfile.views) {
+								try {
+									var recievedView:XML = new XML(recievedProfile.views);
+								}
+								catch (e:Error) {
+									//invalid view xmls
+									continue;
+								}
+								for each (var layout:XML in recievedView.children()) {
+									if (layout.@id == ListMetadataProfileCommand.KMC_LAYOUT_NAME) {
+										metadataProfile.viewXML = layout;
+										isViewExist = true;
+										continue;
+									}
+								}
 							}
-							fb.buildInitialMxml();
+							if (!isViewExist) {
+								var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+								//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
+								if (cddp.metadataDefaultUiconfXML){
+									metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
+								}
+								fb.buildInitialMxml();
+							}
 						}
 					}
 				}
