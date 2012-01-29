@@ -103,10 +103,6 @@ package com.kaltura.analytics {
 		 */
 		public static const CONTENT_SET_SCHEDULING:String = "Set Scheduling Multiple Entries";
 		
-		/**
-		 *  
-		 */
-		public static const CONTENT_CHANGE_THUMBNAIL:String = "Change Thumbnail"; //TODO CONTENT_CHANGE_THUMBNAIL
 		
 		/**
 		 * add tags to multiple entries
@@ -158,6 +154,33 @@ package com.kaltura.analytics {
 		
 		public static const CONTENT_FIRST_TIME_PLAYLIST_CREATION:String = "content first time playlist creation";
 
+		// Thumbnail actions:
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_ADD:String = "Add Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DEFAULT:String = "Set Default Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DELETE:String = "Delete Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DNLD:String = "Download Thumbnail";
+		
+		// Flavor actions:
+		public static const CONTENT_DRILLDOWN_FLAVOR_DELETE:String = "Delete Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_DNLD:String = "Download Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_UPLOAD:String = "Upload Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_LINK:String = "Link Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_IMPORT:String = "Import Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_MATCH:String = "Match Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_PREVIEW:String = "Preview Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_CONVERT:String = "Convert Flavor";
+		
+		// replace media actions
+		public static const CONTENT_DRILLDOWN_FLAVORS_UPLOAD:String = "Replace Content>Upload"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_IMPORT:String = "Replace Content>Import"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_LINK:String = "Replace Content>Link"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_MATCH:String = "Replace Content>Match"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_APPROVE:String = "Replace Content>Approve Replacement"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_REJECT:String = "Replace Content>Reject Replacement"; 
+		
+		
+		
+		
 		// ==================================================================
 		// account settings:
 		// ==================================================================

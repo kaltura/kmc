@@ -7,6 +7,8 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.view.FlavorsTable;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
@@ -211,41 +213,52 @@
 
 
 			private function launchAction(actionName:String):void {
+				var gaEvent:String;
 				switch (actionName) {
 					case resourceManager.getString('cms', 'previewActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.PREVIEW_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_PREVIEW;
 						break;
 					}
 					case resourceManager.getString('cms', 'downloadActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.DOWNLOAD_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_DNLD;
 						break;
 					}
 					case resourceManager.getString('cms', 'deleteActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.DELETE_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_DELETE;
 						break;
 					}
 					case resourceManager.getString('cms', 'reconvertActionLabel'):
 					case resourceManager.getString('cms', 'convertActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.CONVERT_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_CONVERT;
 						break;
 					}
 					case resourceManager.getString('cms', 'uploadActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.UPLOAD_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_UPLOAD;
 						break;
 					}
 					case resourceManager.getString('cms', 'matchActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.MATCH_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_MATCH;
 						break;
 					}
 					case resourceManager.getString('cms', 'linkActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.LINK_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_LINK;
 						break;
 					}
 					case resourceManager.getString('cms', 'importActionLabel'):  {
 						dispatchEvent(new Event(FlavorsTable.IMPORT_FLAVOR, true));
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVOR_IMPORT;
 						break;
 					}
-
+				}
+				if (gaEvent) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent);
 				}
 			}
 

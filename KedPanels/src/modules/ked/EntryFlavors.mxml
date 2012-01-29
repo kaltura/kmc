@@ -12,6 +12,8 @@ Flavours tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -582,6 +584,9 @@ Flavours tab of EntryDetailsWin
 					uploadMultiFlavors();
 				else
 					uploadSingleFlavor();
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_UPLOAD);
 			}
 			
 			
@@ -794,6 +799,9 @@ Flavours tab of EntryDetailsWin
 			private function onCancelReplacementClick():void {
 				var cancelReplacement:MediaEvent = new MediaEvent(MediaEvent.CANCEL_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				controller.dispatch(cancelReplacement);
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_REJECT);
 			}
 			
 			
@@ -803,6 +811,9 @@ Flavours tab of EntryDetailsWin
 			private function onApproveReplacementClick():void {
 				var approveReplacement:MediaEvent = new MediaEvent(MediaEvent.APPROVE_REPLACEMENT, (_selectedEntry as KalturaMediaEntry));
 				controller.dispatch(approveReplacement);
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_APPROVE);
 			}
 			
 			
@@ -835,6 +846,9 @@ Flavours tab of EntryDetailsWin
 				PopUpManager.centerPopUp(matchFromDropFodlerWin);
 				//resets data
 				_selectedFlavorWithParams = null;
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_MATCH);
 			}
 			
 			
@@ -868,11 +882,15 @@ Flavours tab of EntryDetailsWin
 			
 			protected function onImportBtnClick(event:MouseEvent):void {
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_IMPORT, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_IMPORT);
 			}
 			
 			
 			protected function onLinkBtnClick(event:MouseEvent):void {
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, new ArrayCollection([new UploadFileVo()]), multiFlavorsIngestionAllowed);
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_FLAVORS_LINK);
 			}
 		]]>
 	</mx:Script>

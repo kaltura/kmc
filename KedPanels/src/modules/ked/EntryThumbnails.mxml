@@ -11,6 +11,8 @@ Thumbnails tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.constants.ThumbnailsActionType;
@@ -237,6 +239,9 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			
+			/**
+			 * trigger the different options to add new thumbnail 
+			 * */
 			private function addThumb(event:Event):void {
 				switch (actionCB.selectedItem) {
 					case resourceManager.getString('drilldown', 'upload'):
@@ -269,6 +274,7 @@ Thumbnails tab of EntryDetailsWin
 			private function onThumbnailSelected(event:Event):void {
 				var uploadThumbnailEvent:UploadFromImageThumbAssetEvent = new UploadFromImageThumbAssetEvent(UploadFromImageThumbAssetEvent.ADD_FROM_IMAGE, selectedEntry.id, _fileReference);
 				controller.dispatch(uploadThumbnailEvent);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_ADD, GoogleAnalyticsConsts.CONTENT);
 			}
 			
 			
@@ -321,24 +327,30 @@ Thumbnails tab of EntryDetailsWin
 			 * handler for thumb actions
 			 * */
 			private function thumbActionHandler(event:Event):void {
+				var gaEvent:String;
 				var thAs:ThumbnailWithDimensions = event.target.data as ThumbnailWithDimensions;
 				switch (event.type){
 					case ThumbnailsActionType.SET_DEFAULT:
 						var setDefaultEvent:ThumbnailAssetEvent = new ThumbnailAssetEvent(ThumbnailAssetEvent.SET_AS_DEFAULT, thAs);
 						controller.dispatch(setDefaultEvent);
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_DEFAULT;
 						break;
 					
 					case ThumbnailsActionType.DOWNLOAD:
 						var urlRequest:URLRequest = new URLRequest(thAs.thumbUrl);
 						navigateToURL(urlRequest , '_self');
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_DNLD;
 						break;
 					
 					case ThumbnailsActionType.DELETE:
 						_thumbAsset = thAs;
 						Alert.show(resourceManager.getString('drilldown','deleteThumbnailMsg'), 
 							resourceManager.getString('drilldown','deleteThumbnailTitle'), Alert.YES | Alert.NO, null, deleteHandler);		
+						gaEvent = GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_DELETE;
 						break;
-					
+				}
+				if (gaEvent) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.CONTENT);
 				}
 			}
 			

@@ -10,6 +10,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.control.events.GenerateThumbAssetEvent;
 			import com.kaltura.edw.vo.ThumbnailWithDimensions;
 			import com.kaltura.kmvc.control.KMvCController;
@@ -418,6 +420,9 @@
 				var generateThumbEvent:GenerateThumbAssetEvent = new GenerateThumbAssetEvent(GenerateThumbAssetEvent.GENERATE, thumbParams, _selectedThumbnail.thumbAsset.id);
 				controller.dispatch(generateThumbEvent);
 
+				// analytics:
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_ADD, GoogleAnalyticsConsts.CONTENT);
+				
 				_isDirty = false;
 			}
 

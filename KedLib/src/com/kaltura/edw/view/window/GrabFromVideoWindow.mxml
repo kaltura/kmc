@@ -5,6 +5,8 @@
 				creationComplete="{onCreationComplete()}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.control.events.ThumbnailAssetEvent;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.events.KdpEventTypes;
@@ -121,6 +123,7 @@
 			private function onThumbnailSaved(event:Event):void {
 				_kdp3SwfLoader.content.removeEventListener(KdpEventTypes.CAPTURE_THUMBNAIL, onThumbnailSaved)
 				_refreshRequired = true;
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_THUMBNAIL_ADD, GoogleAnalyticsConsts.CONTENT);
 			}
 		]]>
 	</mx:Script>
