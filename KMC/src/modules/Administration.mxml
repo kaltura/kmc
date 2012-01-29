@@ -11,6 +11,8 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.admin.control.events.GeneralEvent;
@@ -21,7 +23,6 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.events.FlexEvent;
-			private static const VERSION:String = "0.1";
 
 			/**
 			 * KMC is responsible to use the value of
@@ -99,7 +100,7 @@
 //				for each (var subtabName:String in tabsToHide) {
 //					contentView.removeChild(this[subtabName]);
 //				}
-				
+				GoogleAnalyticsTracker.getInstance().setBasePath(GoogleAnalyticsConsts.ADMIN);
 				initModel();
 				handleReady();
 			}
@@ -126,11 +127,13 @@
 					case 'roles':
 						secTln.selectedIndex = 1;
 						roles.refreshData();
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLES);
 						break;
 					case 'users':
 					default:
 						secTln.selectedIndex = 0;
 						users.refreshData();
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USERS);
 						break;
 				}
 			}
@@ -157,9 +160,18 @@
 			 * change url
 			 * */
 			private function onItemClick(event:Event):void {
-				(contentView.selectedChild as IAdminSubtab).refreshData();
+				var subTab:IAdminSubtab = contentView.selectedChild as IAdminSubtab; 
+				subTab.refreshData();
 				var label:String = contentView.selectedChild.id;
-				JSGate.writeUrlHash( Administration.NAME, label);
+				JSGate.writeUrlHash(Administration.NAME, label);
+				switch (subTab) {
+					case users:
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USERS);
+						break;
+					case roles:
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLES);
+						break;
+				}
 			}
 
 

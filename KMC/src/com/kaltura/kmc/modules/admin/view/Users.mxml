@@ -9,6 +9,8 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcErrorEvent;
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -395,6 +397,9 @@
 				
 				// open drilldown for this user
 				_userDrilldown = drillToSelectedUser();
+				
+				// analytics:
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_ADD);
 			}
 
 
@@ -405,6 +410,9 @@
 				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.USERS_SET_STATE, DrilldownMode.EDIT);
 				ce.dispatch();
 				_userDrilldown = drillToSelectedUser();
+				
+				// analytics:
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_EDIT);
 			}
 			
 
@@ -417,6 +425,9 @@
 				ce.dispatch();
 				var cg:CairngormEvent = new ListItemsEvent(ListItemsEvent.LIST_PARTNER_PERMISSIONS);
 				cg.dispatch();
+				
+				// analytics:
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_DELETE);
 			}
 
 

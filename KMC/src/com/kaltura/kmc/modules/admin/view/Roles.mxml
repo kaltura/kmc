@@ -9,6 +9,8 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
@@ -219,6 +221,9 @@
 				
 				// open drilldown for this role
 				_roleDrilldown = drillToSelectedRole();
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLE_ADD);
 			}
 			
 			
@@ -229,6 +234,9 @@
 				var ce:DrilldownEvent = new DrilldownEvent(DrilldownEvent.ROLES_SET_STATE, DrilldownMode.EDIT);
 				ce.dispatch();
 				_roleDrilldown = drillToSelectedRole();
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLE_EDIT);
 			}
 			
 			
@@ -238,6 +246,9 @@
 			protected function duplicateRole(event:Event):void {
 				var ce:RoleEvent = new RoleEvent(RoleEvent.DUPLICATE_ROLE, model.selectedRole);
 				ce.dispatch();
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLE_DUPLICATE);
 			}
 			
 			/**
@@ -246,6 +257,9 @@
 			protected function deleteRole(event:Event):void {
 				var ce:RoleEvent = new RoleEvent(RoleEvent.DELETE_ROLE, model.selectedRole);
 				ce.dispatch();
+				
+				// analytics
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_ROLE_DELETE);
 			}
 			
 			

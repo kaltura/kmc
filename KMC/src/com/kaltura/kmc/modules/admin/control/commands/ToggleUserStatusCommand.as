@@ -1,6 +1,8 @@
 package com.kaltura.kmc.modules.admin.control.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.analytics.GoogleAnalyticsConsts;
+	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.user.UserList;
 	import com.kaltura.commands.user.UserUpdate;
@@ -18,13 +20,16 @@ package com.kaltura.kmc.modules.admin.control.commands
 		override public function execute(event:CairngormEvent):void {
 			var mr:MultiRequest = new MultiRequest();
 			// toggle
+			var gaEvent:String;
 			var usr:KalturaUser = (event as UserEvent).user;
 			usr.setUpdatedFieldsOnly(true);
 			if (usr.status == KalturaUserStatus.ACTIVE) {
 				usr.status = KalturaUserStatus.BLOCKED;
+				gaEvent = GoogleAnalyticsConsts.ADMIN_USER_BLOCK;
 			}
 			else if(usr.status == KalturaUserStatus.BLOCKED) {
 				usr.status = KalturaUserStatus.ACTIVE;
+				gaEvent = GoogleAnalyticsConsts.ADMIN_USER_UNBLOCK;
 			}
 			var call:KalturaCall = new UserUpdate(usr.id, usr);
 			mr.addAction(call);
@@ -36,6 +41,7 @@ package com.kaltura.kmc.modules.admin.control.commands
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.increaseLoadCounter();
 			_model.kc.post(mr);
+			GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + gaEvent);
 		}
 		
 		override protected function result(data:Object):void {

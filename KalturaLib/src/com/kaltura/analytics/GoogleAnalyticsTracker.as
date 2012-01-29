@@ -26,7 +26,7 @@ package com.kaltura.analytics {
 		/**
 		 * used as module path if one is not given
 		 */
-		private var _kmcVersion:String;
+		private var _baseModule:String;
 
 		/**
 		 * should events be tracked 
@@ -64,15 +64,15 @@ package com.kaltura.analytics {
 		 * @param partnerId		partner in current session
 		 * @param userId		user in current session
 		 * @param parentDisplayObject	to be used in tracker debug mode
-		 * @param kmcVersion	current kmc version, used as default value when 
+		 * @param baseModule	current kmc version, used as default value when 
 		 * 		no module path is given for events
 		 * @param urchinNumber	google analytics account to use for tracking
 		 * @param langCode		language version code (AS3)
 		 * @param debug			should the tracker run in debug mode
 		 * 
 		 */
-		public function init(partnerId:String, userId:String, parentDisplayObject:DisplayObject, kmcVersion:String, urchinNumber:String, langCode:String, debug:Boolean):void {
-			_kmcVersion = kmcVersion;
+		public function init(partnerId:String, userId:String, parentDisplayObject:DisplayObject, baseModule:String, urchinNumber:String, langCode:String, debug:Boolean):void {
+			_baseModule = baseModule;
 			_urchinNumber = urchinNumber;
 			_partnerId = partnerId;
 			_userId = userId;
@@ -84,7 +84,7 @@ package com.kaltura.analytics {
 		 * @param path	new path
 		 */		
 		public function setBasePath(path:String):void {
-			_kmcVersion = path;
+			_baseModule = path;
 		}
 
 
@@ -94,12 +94,12 @@ package com.kaltura.analytics {
 		 * @param eventTracked	the event being tracked
 		 * @param modulePath	the module that dispatched this event
 		 */		
-		public function sendToGA(eventTracked:String, modulePath:String):void {
+		public function sendToGA(eventTracked:String, modulePath:String=""):void {
 			if (!_enabled || !_urchinNumber) {
 				return;
 			} 
 			if (!modulePath) {
-				modulePath = _kmcVersion;
+				modulePath = _baseModule;
 			}
 			_tracker.trackPageview(modulePath + "/" + eventTracked + "/" + "partner_id=" + _partnerId);
 		}

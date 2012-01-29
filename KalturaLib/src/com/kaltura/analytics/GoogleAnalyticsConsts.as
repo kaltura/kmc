@@ -326,6 +326,7 @@ package com.kaltura.analytics {
 		public static const ADMIN_ROLE_ADD:String = "Add Role";
 		public static const ADMIN_ROLE_EDIT:String = "Edit Role";
 		public static const ADMIN_ROLE_DELETE:String = "Delete Role";
+		public static const ADMIN_ROLE_DUPLICATE:String = "Duplicate Role";
 		
 		
 		// ==================================================================
