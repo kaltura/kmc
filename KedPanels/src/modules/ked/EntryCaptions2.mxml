@@ -15,6 +15,8 @@ Captions tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.KLangList;
 			import com.kaltura.edw.constants.PanelConsts;
@@ -114,6 +116,7 @@ Captions tab of EntryDetailsWin
 			private function changeDefaultCaption(event:GeneralNonCairngormEvent):void {
 				var caption:EntryCaptionVO = event.data as EntryCaptionVO;
 				_defaultCaption = caption;
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CAPTIONS_DEFAULT);
 			}
 			
 			
@@ -124,9 +127,13 @@ Captions tab of EntryDetailsWin
 				if ((event.data as EntryCaptionVO).caption.id) {
 					_captionsToRemove.push(event.data);
 				}
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CAPTIONS_DELETE);
 			}
 			
 			
+			private function trackDownload(event:GeneralNonCairngormEvent):void {
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CAPTIONS_DNLD);
+			}
 			
 			private function onCreationComplete(event:FlexEvent):void {
 				_captionsToRemove = new Array();
@@ -143,6 +150,7 @@ Captions tab of EntryDetailsWin
 				// add it to the dp
 				entryCaptionsArr.push(captionVO);
 				captionsTable.invalidateList();
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_CAPTIONS_ADD);
 			}
 			
 			
@@ -265,6 +273,6 @@ Captions tab of EntryDetailsWin
 	<mx:Button label="{resourceManager.getString('drilldown','addCaptions')}" click="addCaption()" visible="{editable}"/>
 	<captionsComponents:CaptionsTable id="captionsTable" width="100%" height="100%" dataProvider="{entryCaptionsArr}"
 									  captionRemoved="removeCaption(event)" changeDefault="changeDefaultCaption(event)"
-									  controller="{controller}" rowHeight="90"/>
+									  captionDownloaded="trackDownload(event)" controller="{controller}" rowHeight="90"/>
 	
 </mx:Module>

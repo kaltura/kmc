@@ -9,6 +9,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.control.events.RelatedFileEvent;
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.vo.KalturaAttachmentAsset;
@@ -61,6 +63,8 @@
 				saveEvent.attachmentAsset = file;
 				controller.dispatch(saveEvent);
 
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_RELATED_EDIT);
+				
 				removeMe();
 			}
 		]]>

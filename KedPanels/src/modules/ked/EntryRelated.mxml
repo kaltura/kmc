@@ -8,6 +8,8 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.constants.RelatedFileActionType;
@@ -174,6 +176,7 @@
 					_filesToAdd.removeItemAt(_filesToAdd.getItemIndex(deletedFile));
 				}
 				relatedFiles.removeItemAt(relatedFiles.getItemIndex(deletedFile));
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_RELATED_DELETE);
 			}
 			
 			
@@ -261,6 +264,8 @@
 						break;
 					}
 				}
+				
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_RELATED_ADD);
 			}
 			
 			

@@ -3,6 +3,7 @@
 	<mx:Metadata>
 		[Event(name="captionRemoved", type="com.kaltura.edw.events.GeneralNonCairngormEvent")]
 		[Event(name="changeDefault", type="com.kaltura.edw.events.GeneralNonCairngormEvent")]
+		[Event(name="captionDownloaded", type="com.kaltura.edw.events.GeneralNonCairngormEvent")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
@@ -30,6 +31,7 @@
 			public static const TYPE_CHANGED:String = 'captionTypeChanged';
 			public static const LANGUAGE_CHANGED:String = 'captionLanguageChanged';
 			public static const LABEL_CHANGED:String = 'captionLabelChanged';
+			
 			public static const ACTION_DOWNLOAD:String = 'actionDownload';
 			public static const ACTION_UPLOAD:String = 'actionUpload';
 			public static const ACTION_SET_DEFAULT:String = 'actionSetDefault';
@@ -39,6 +41,7 @@
 			/*
 			 * Events the table dispatches
 			 */
+			public static const CAPTION_DOWNLOADED:String = "captionDownloaded";
 			public static const CAPTION_REMOVED:String = "captionRemoved";
 			public static const CHANGE_DEFAULT:String = "changeDefault";
 
@@ -140,9 +143,15 @@
 					fileName += '.xml';
 				}
 				var fr:FileReference = new FileReference();
+				fr.addEventListener(Event.COMPLETE, onDnldComplete);
 				fr.download(urlRequest, fileName);
 			}
 
+			protected function onDnldComplete(event:Event):void {
+				event.target.removeEventListener(Event.COMPLETE, onDnldComplete);
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CAPTION_DOWNLOADED, true);
+				dispatchEvent(e);
+			}
 
 			/**
 			 * remove a single caption

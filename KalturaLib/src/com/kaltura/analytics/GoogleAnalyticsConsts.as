@@ -155,28 +155,40 @@ package com.kaltura.analytics {
 		public static const CONTENT_FIRST_TIME_PLAYLIST_CREATION:String = "content first time playlist creation";
 
 		// Thumbnail actions:
-		public static const CONTENT_DRILLDOWN_THUMBNAIL_ADD:String = "Add Thumbnail"; 
-		public static const CONTENT_DRILLDOWN_THUMBNAIL_DEFAULT:String = "Set Default Thumbnail"; 
-		public static const CONTENT_DRILLDOWN_THUMBNAIL_DELETE:String = "Delete Thumbnail"; 
-		public static const CONTENT_DRILLDOWN_THUMBNAIL_DNLD:String = "Download Thumbnail";
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_ADD:String = "DrillDown/Add Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DEFAULT:String = "DrillDown/Set Default Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DELETE:String = "DrillDown/Delete Thumbnail"; 
+		public static const CONTENT_DRILLDOWN_THUMBNAIL_DNLD:String = "DrillDown/Download Thumbnail";
 		
 		// Flavor actions:
-		public static const CONTENT_DRILLDOWN_FLAVOR_DELETE:String = "Delete Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_DNLD:String = "Download Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_UPLOAD:String = "Upload Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_LINK:String = "Link Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_IMPORT:String = "Import Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_MATCH:String = "Match Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_PREVIEW:String = "Preview Flavor"; 
-		public static const CONTENT_DRILLDOWN_FLAVOR_CONVERT:String = "Convert Flavor";
+		public static const CONTENT_DRILLDOWN_FLAVOR_DELETE:String = "DrillDown/Delete Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_DNLD:String = "DrillDown/Download Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_UPLOAD:String = "DrillDown/Upload Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_LINK:String = "DrillDown/Link Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_IMPORT:String = "DrillDown/Import Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_MATCH:String = "DrillDown/Match Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_PREVIEW:String = "DrillDown/Preview Flavor"; 
+		public static const CONTENT_DRILLDOWN_FLAVOR_CONVERT:String = "DrillDown/Convert Flavor";
 		
 		// replace media actions
-		public static const CONTENT_DRILLDOWN_FLAVORS_UPLOAD:String = "Replace Content>Upload"; 
-		public static const CONTENT_DRILLDOWN_FLAVORS_IMPORT:String = "Replace Content>Import"; 
-		public static const CONTENT_DRILLDOWN_FLAVORS_LINK:String = "Replace Content>Link"; 
-		public static const CONTENT_DRILLDOWN_FLAVORS_MATCH:String = "Replace Content>Match"; 
-		public static const CONTENT_DRILLDOWN_FLAVORS_APPROVE:String = "Replace Content>Approve Replacement"; 
-		public static const CONTENT_DRILLDOWN_FLAVORS_REJECT:String = "Replace Content>Reject Replacement"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_UPLOAD:String = "DrillDown/Replace Content>Upload"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_IMPORT:String = "DrillDown/Replace Content>Import"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_LINK:String = "DrillDown/Replace Content>Link"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_MATCH:String = "DrillDown/Replace Content>Match"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_APPROVE:String = "DrillDown/Replace Content>Approve Replacement"; 
+		public static const CONTENT_DRILLDOWN_FLAVORS_REJECT:String = "DrillDown/Replace Content>Reject Replacement"; 
+
+		// Captions actions:
+		public static const CONTENT_DRILLDOWN_CAPTIONS_ADD:String = "DrillDown/Add Caption"; 
+		public static const CONTENT_DRILLDOWN_CAPTIONS_DEFAULT:String = "DrillDown/Set Default Captions"; 
+		public static const CONTENT_DRILLDOWN_CAPTIONS_DELETE:String = "DrillDown/Delete Captions"; 
+		public static const CONTENT_DRILLDOWN_CAPTIONS_DNLD:String = "DrillDown/Download Captions";
+
+		// Related Files actions:
+		public static const CONTENT_DRILLDOWN_RELATED_ADD:String = "DrillDown/Add Related File"; 
+		public static const CONTENT_DRILLDOWN_RELATED_EDIT:String = "DrillDown/Edit Related File"; 
+		public static const CONTENT_DRILLDOWN_RELATED_DELETE:String = "DrillDown/Delete Related File"; 
+		public static const CONTENT_DRILLDOWN_RELATED_DNLD:String = "DrillDown/Download Related File";
 		
 		
 		

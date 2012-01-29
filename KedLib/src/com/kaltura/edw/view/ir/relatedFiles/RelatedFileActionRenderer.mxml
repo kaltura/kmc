@@ -4,6 +4,8 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.analytics.GoogleAnalyticsConsts;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.constants.RelatedFileActionType;
 			import com.kaltura.edw.vo.RelatedFileVO;
 			import com.kaltura.types.KalturaFlavorAssetStatus;
@@ -95,6 +97,7 @@
 				if (!isNotSaved(resourceManager.getString('drilldown','unsavedDownloadAlert'))) {
 					var urlRequest:URLRequest = new URLRequest(_relatedVo.serveUrl);
 					navigateToURL(urlRequest , '_self');
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DRILLDOWN_RELATED_DNLD);
 				}
 			}
 
