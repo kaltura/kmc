@@ -241,6 +241,7 @@
 			
 			
 			public function init():void {
+				Security.allowDomain("*");
 				if (!_watchCPCount) {
 					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, model, "cuepointsCount");
 				}
@@ -263,7 +264,7 @@
 			 * */
 			private function uncaughtErrorHandler(event:Event):void {
 				event.preventDefault();
-				trace("uncaughtErrorHandler: ");
+				trace("uncaughtErrorHandler in Entry Ads: ");
 				trace(event, event["error"]);
 			}
 			
@@ -504,13 +505,12 @@
 					}
 				}
 				else {
-					
-//					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
-//					EntryAds.kdpLoader = new SWFLoader();
-//					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
-//					kdpLoader.scaleContent = false;
-//					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
-//					kdpLoader.load(newUrl);
+					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
+					EntryAds.kdpLoader = new SWFLoader();
+					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
+					kdpLoader.scaleContent = false;
+					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+					kdpLoader.load(newUrl);
 				}
 			}
 			
