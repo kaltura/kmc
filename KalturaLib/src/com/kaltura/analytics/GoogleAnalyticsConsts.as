@@ -3,6 +3,7 @@ package com.kaltura.analytics {
 	public class GoogleAnalyticsConsts {
 		public static const PAGE_VIEW:String = "Page view/";
 		public static const ACTION:String = "Action/";
+		
 		/**
 		 * on paging 
 		 */
