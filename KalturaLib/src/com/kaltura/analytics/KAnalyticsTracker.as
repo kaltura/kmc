@@ -39,6 +39,8 @@ package com.kaltura.analytics
         
         public function sendEvent(moduleName:String , eventCode:int, eventPath:String, entryId:String=null, uiconfId:int=int.MIN_VALUE, widgetId:String=null):void
         {
+			// if not intialised, don't log.
+			if (!_kc) return;
         	var analyticsEvent:KalturaStatsKmcEvent = new KalturaStatsKmcEvent();
         	analyticsEvent.kmcEventType = eventCode;
         	analyticsEvent.kmcEventActionPath = eventPath;
