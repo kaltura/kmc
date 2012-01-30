@@ -143,7 +143,7 @@
 						PanelLoader.instance;
 					} catch (e:IllegalOperationError) {
 						var contextDp:ContextDataPack = value.getDataPack(ContextDataPack) as ContextDataPack;
-						var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(contextDp.uiConfData.uiconf[0].entryDrilldown[0].panels[0]);
+						var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(contextDp.panelsConfig);
 						PanelLoader.initialize(panelDataVO, contextDp.sourceUrl);
 					}
 					
@@ -830,7 +830,9 @@
 			}
 
 			private function onChangeView():void {
-				panels[PanelConsts.METADATA_PANEL].pausePreview();
+				if (panels[PanelConsts.METADATA_PANEL]) {
+					panels[PanelConsts.METADATA_PANEL].pausePreview();
+				}
 				_hadFirstNavigation = true;
 				// all data for entry metadata is loaded before the window opens.
 				// other panels need data that is loaded when the panel opens, so 
