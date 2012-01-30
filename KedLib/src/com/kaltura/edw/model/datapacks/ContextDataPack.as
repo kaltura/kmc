@@ -20,17 +20,34 @@ package com.kaltura.edw.model.datapacks
 	
  		public var userId:String;
 		public var isAnonymous:Boolean;
-	//	public var partnerId:String;
 		public var subpId:int;
-	//	public var ks:String;
 		public var uiConfigId:String = DEFAULT_UI_CONFIG_ID;
 		public var moderationUiconf:String = DEFAULT_UI_CONFIG_ID;
 		public var drilldownUiconf:String = DEFAULT_UI_CONFIG_ID;
 		public var captureThumbnailUiconf:String;
 		
-		public var uiConfData:XML;
+		/**
+		 * panels definitions
+		 * <panels>
+		 * 		<panel id="panelid" url="/modules/panel.swf" styleName="metaDataHbox" index="0" />
+		 *		..
+		 * </panels> 
+		 */
+		public var panelsConfig:XML;
+		
+		/**
+		 * should embed code be shown in P&E window 
+		 */		
 		public var showEmbedCode:Boolean;
+		
+		/**
+		 * partner's landing page 
+		 */		
 		public var landingPage:String;
+		
+		/**
+		 * JS function used to open P&E
+		 */
 		public var openPlayerFunc:String;
 		
 		/**
