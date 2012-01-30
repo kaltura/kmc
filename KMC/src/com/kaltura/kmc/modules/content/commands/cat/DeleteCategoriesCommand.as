@@ -6,7 +6,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.kmc.modules.content.control.KedController;
+	import com.kaltura.edw.control.KedController;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	
 	import mx.controls.Alert;

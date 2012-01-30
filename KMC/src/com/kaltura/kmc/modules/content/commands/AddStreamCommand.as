@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.liveStream.LiveStreamAdd;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.content.control.KedController;
+	import com.kaltura.edw.control.KedController;
 	import com.kaltura.kmc.modules.content.events.AddStreamEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.kmc.modules.content.vo.StreamVo;

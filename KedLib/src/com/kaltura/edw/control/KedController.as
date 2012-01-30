@@ -1,10 +1,8 @@
-package com.kaltura.kmc.modules.content.control
+package com.kaltura.edw.control
 {
 	import com.kaltura.edw.control.commands.*;
 	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmvc.control.KMvCController;
-	
-	import org.flexunit.internals.runners.InitializationError;
 	
 	/**
 	 * Controller which is accessible from all elements, so that KMC
