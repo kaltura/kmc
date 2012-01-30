@@ -1,4 +1,423 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="955" minHeight="600">
-	
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" minWidth="930" minHeight="595"
+				implements="com.kaltura.edw.business.IDataOwner"
+				creationComplete="creationCompleteHandler(event)"
+				addedToStage="initTracker(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.analytics.GoogleAnalyticsTracker;
+			import com.kaltura.commands.uiConf.UiConfGet;
+			import com.kaltura.config.KalturaConfig;
+			import com.kaltura.edw.business.IDataOwner;
+			import com.kaltura.edw.control.CustomDataTabController;
+			import com.kaltura.edw.control.KedController;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.events.LoadEvent;
+			import com.kaltura.edw.control.events.MetadataProfileEvent;
+			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.edw.model.datapacks.CuePointsDataPack;
+			import com.kaltura.edw.model.datapacks.CustomDataDataPack;
+			import com.kaltura.edw.model.datapacks.FilterDataPack;
+			import com.kaltura.edw.view.EntryDetailsWin;
+			import com.kaltura.events.KalturaEvent;
+			import com.kaltura.kmvc.control.KMvCController;
+			import com.kaltura.kmvc.model.KMvCModel;
+			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaUiConf;
+			
+			import mx.containers.TitleWindow;
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.events.PropertyChangeEvent;
+			import mx.events.ResourceEvent;
+			import mx.events.StyleEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.ResourceManager;
+			
+			private const FALLBACK_LOCALE:String = "en_US";
+			
+			public static const VERSION:String = "0.1";
+			
+			/**
+			 * application parameters
+			 * */
+			private var _flashvars:Object;
+			
+			/**
+			 * timer to flush KalturaCalls queue
+			 * */
+			private var _kcTimer:Timer;
+			
+			/**
+			 * Kaltura Client for making API calls
+			 * */
+			private var _client:KalturaClient;
+			
+			/**
+			 * list of EDWs opened by this app (to allow replacement, parent, etc)
+			 * */
+			private var _popups:Vector.<EntryDetailsWin>;
+			
+			/**
+			 * configuration object
+			 * */
+			protected var _uiconf:KalturaUiConf;
+			
+			/**
+			 * currently showing locale code
+			 * */
+			protected var _localeCode:String;
+			
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				Security.allowDomain("*");
+				
+				_flashvars = fixFlashvars();
+				_client = createClient(_flashvars);
+				
+				// load resources
+				loadSkin("assets/kmc_skin.swf");
+				loadUiconf(_flashvars.uiconf_id);
+			}
+			
+			
+			/**
+			 * Load locale data.
+			 * @param localePath	path to the locale (.swf) file
+			 * @param language		locale code (i.e. en_US)
+			 * */
+			protected function loadLocale(localePath:String, language:String):void {
+				_localeCode = language;
+				localePath = localePath.replace(/{locale}/g, language);
+				var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
+				eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
+				eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+			}
+			
+			
+			/**
+			 * Set use of loaded locale.
+			 * This is also the place to update any values which are not
+			 * bound to resource manager values and have to be set manualy.
+			 * */
+			protected function localeLoadCompleteHandler(event:ResourceEvent):void {
+				event.target.removeEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
+				event.target.removeEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
+				if (event.type == ResourceEvent.ERROR) {
+					Alert.show(event.errorText, "Locale Error", Alert.OK);
+				}
+				var chain:Array;
+				if (_localeCode == FALLBACK_LOCALE) {
+					chain = [_localeCode];
+				}
+				else {
+					chain = [_localeCode, FALLBACK_LOCALE];
+				}
+				ResourceManager.getInstance().localeChain = chain;
+				start();
+			}
+			
+			/**
+			 * load skin dynamically
+			 * @param path	path to skin .swf file
+			 * */
+			protected function loadSkin(path:String = ""):void {
+				var eventDispatcher:IEventDispatcher = StyleManager.loadStyleDeclarations(path);
+				eventDispatcher.addEventListener(StyleEvent.COMPLETE, onSkinLoaded, false, 0, true);
+				eventDispatcher.addEventListener(StyleEvent.ERROR, onSkinLoaded, false, 0, true);
+			}
+			
+			
+			/**
+			 * Skin loaded or load error. </br>
+			 * We go on anyway, alerting the user if skin load failed.
+			 * */
+			protected function onSkinLoaded(event:StyleEvent):void {
+				if (event.type == StyleEvent.ERROR) {
+					Alert.show(event.errorText, ResourceManager.getInstance().getString('kmc', 'skin_load_error_title'));
+				}
+			}
+			
+			
+			public function onRequestedDataLoaded():void {
+				// after filter data is loaded, open the drilldown
+				var edw:EntryDetailsWin = openEntryDetails();
+				PopUpManager.addPopUp(edw, this);
+				_popups.push(edw);
+				
+				var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _flashvars.entryid);
+				KedController.getInstance().dispatch(kEvent);
+			}
+			
+			/**
+			 * opens a popup window with entry details
+			 * */
+			private function openEntryDetails():EntryDetailsWin {
+				var edw:EntryDetailsWin = new EntryDetailsWin();
+				edw.styleName = "WinTitleStyle";
+				edw.addEventListener(KedDataEvent.ENTRY_RELOADED, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.CLOSE_WINDOW, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.ENTRY_UPDATED, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.OPEN_REPLACEMENT, handleKedEvents, false, 0, true);
+				edw.addEventListener(KedDataEvent.OPEN_ENTRY, handleKedEvents, false, 0, true);
+				edw.isNewEntry = false;//state == EntryDetailsWindowState.NEW_ENTRY;
+				
+				//get the selected entry from the server
+//				if (state != EntryDetailsWindowState.NEW_ENTRY) {
+//					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null,
+//						_entryData.selectedEntry.id);
+//					KedController.getInstance().dispatch(getSelectedEntry);
+//				}
+//				if (state == EntryDetailsWindowState.REPLACEMENT_ENTRY) {
+//					setReplacementDrilldown(edw);
+//				}
+				
+				
+				edw.entryDetailsModel = KMvCModel.getInstance();
+//				if (state != EntryDetailsWindowState.NORMAL_ENTRY)
+				edw.showNextPrevBtns = false;
+//				else if (_model.listableVo)	// only for normal entries
+//					edw.entriesAC = _model.listableVo.arrayCollection;
+				return edw;
+			}
+			
+				
+				
+			
+			private function initModel():void {
+				var uiconf:XML = new XML (_uiconf.confFile);
+				var model:KMvCModel = KMvCModel.getInstance();
+				
+				// filter
+				(model.getDataPack(FilterDataPack) as FilterDataPack).filterModel = new FilterModel();
+				
+				(model.getDataPack(CustomDataDataPack) as CustomDataDataPack).metadataDefaultUiconf = uiconf.uiconf.metadata.text().toString();
+				
+				(model.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(uiconf.cuepoints.text().toString());
+				
+				// context
+				var contextData:ContextDataPack = KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack;
+				contextData.showEmbedCode = true; //_model.showSingleEntryEmbedCode;
+				contextData.landingPage = "testLandingPage.html?entryId={entryId}";//_model.extSynModel.partnerData.landingPage;
+				contextData.openPlayerFunc = _flashvars.openPlayerFunc; 
+				contextData.panelsConfig = uiconf.uiconf.entryDrilldown.panels[0];
+				contextData.drilldownUiconf = uiconf.uiconf.kdp.drilldown.text().toString();
+				contextData.kClipAdsUiconf = uiconf.uiconf.kclip.ads.text().toString();
+				contextData.sourceUrl = systemManager.loaderInfo.url.substr(0, systemManager.loaderInfo.url.lastIndexOf("/"));
+				contextData.debugMode = _flashvars.debugmode;
+				contextData.userId = _flashvars.uid;
+				contextData.subpId = _flashvars.subpid;
+				contextData.rootUrl = _flashvars.host;
+				contextData.cdnHost = _flashvars.cdnhost ? _flashvars.cdnhost : _flashvars.host;
+				contextData.kc = _client;
+			}
+			
+			
+			protected function getFullUrl(url:String):String {
+				if (url.indexOf('://') == -1) {
+					// no protocol, concat from client
+					url = _client.protocol + _client.domain + url; 
+				}
+				return url;
+			}
+
+			
+			
+			/**
+			 * create KalturaClient using given parameters 
+			 * @param params	application parameters
+			 * */
+			private function createClient(params:Object):KalturaClient {
+				// 
+				var configuration:KalturaConfig = new KalturaConfig();
+				configuration.partnerId = params.partnerid;
+				configuration.ignoreNull = 1;
+				configuration.protocol = params.protocol ? params.protocol : "http://";
+				configuration.domain = params.host;
+				configuration.srvUrl = params.srvurl;
+				configuration.clientTag = "ked:" + VERSION;
+				configuration.ks = params.ks;
+				
+				var kalturaClient:KalturaClient = new KalturaClient(configuration);
+				kalturaClient.queueing = true;
+				kalturaClient.addEventListener(KalturaClient.CALL_QUEUED, setTimer);
+				kalturaClient.addEventListener(KalturaClient.QUEUE_FLUSHED, setTimer);
+				
+				return kalturaClient;
+			}
+			
+			
+			/**
+			 * handle events dispatched by the drilldown
+			 * */
+			private function handleKedEvents(e:KedDataEvent):void {
+				switch (e.type) {
+					case KedDataEvent.ENTRY_UPDATED:
+						break; 
+
+					case KedDataEvent.ENTRY_RELOADED:
+						break;
+					
+					case KedDataEvent.CLOSE_WINDOW:
+						// close the drilldown
+						var edw:EntryDetailsWin = _popups.pop();
+						PopUpManager.removePopUp(edw);
+						break;
+					
+					case KedDataEvent.OPEN_REPLACEMENT:
+						break;
+					
+					case KedDataEvent.OPEN_ENTRY:
+						var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, e.data as KalturaBaseEntry);
+						KedController.getInstance().dispatch(kEvent);
+						break;
+				}
+			}
+			
+			
+			/**
+			 * save flashvars (keep original keys as well as lowercased keys)
+			 * */
+			private function fixFlashvars():Object {
+				var objParam:Object = Application.application.parameters;
+				var oLowers:Object = ObjectHelpers.lowerNoUnderscore(objParam);
+				for (var key:String in oLowers) {
+					objParam[key] = oLowers[key];
+				}
+				return objParam;
+			}
+
+			
+			/**
+			 * load configuration info
+			 * */
+			protected function loadUiconf(uiconfId:String):void {
+				var uiconf:UiConfGet = new UiConfGet(int(uiconfId));
+				uiconf.addEventListener(KalturaEvent.COMPLETE, configurationLoadHandler);
+				uiconf.addEventListener(KalturaEvent.FAILED, configurationLoadHandler);
+				_client.post(uiconf);
+			}
+			
+			
+			/**
+			 * use configuration info
+			 * @param e		data from server
+			 * */
+			protected function configurationLoadHandler(e:KalturaEvent):void {
+				if (e.type == KalturaEvent.COMPLETE) {
+					_uiconf = e.data as KalturaUiConf;
+					// update any values from flashvars
+//					_uiconf.confFile = overrideDataByFlashvars(_uiconf.confFile, _flashvars);
+					var confFile:XML = new XML(_uiconf.confFile);
+					loadLocale(getLoadUrl(confFile.locale.path.toString()), confFile.locale.language.toString());
+				}
+				else {
+					Alert.show(e.error.errorMsg, "Error");
+				}
+			}
+			
+			
+			protected function start():void {
+				_popups = new Vector.<EntryDetailsWin>();
+				initModel();
+				var filterData:FilterModel = (KMvCModel.getInstance().getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+				// get default metadata view
+				if (filterData.enableCustomData) {
+					//if we asked for metadata view, listen to propertyChangeEvent on the DP,
+					// only when appropriate event received ask for drilldown. otherwise open drilldown
+					var cddp:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
+					if (!cddp.metadataDefaultUiconfXML) {
+						cddp.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onMetadataViewUiconfLoaded);
+						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
+						CustomDataTabController.getInstance().dispatch(getMetadataUiconf);
+					}
+					else {
+						loadFilterData();
+					}
+				}
+			}
+			
+			
+			protected function loadFilterData():void {
+				var filterData:FilterModel = (KMvCModel.getInstance().getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
+				KedController.getInstance().dispatch(fe);
+				
+			}
+			
+			
+			protected function onMetadataViewUiconfLoaded(e:PropertyChangeEvent):void {
+				if (e.property == "metadataDefaultUiconfXML" && e.newValue != null) {
+					var cddp:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
+					cddp.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, onMetadataViewUiconfLoaded);
+					
+					loadFilterData();
+				}
+			}
+			
+			/**
+			 * create the client flushing timer, activate or deactivate it as needed.
+			 * */
+			private function setTimer(e:Event):void {
+				switch (e.type) {
+					case KalturaClient.CALL_QUEUED:
+						if (!_kcTimer) {
+							_kcTimer = new Timer(250);
+							_kcTimer.addEventListener(TimerEvent.TIMER, handleTimer, false, 0, true);
+						}
+						if (!_kcTimer.running) {
+							_kcTimer.start();
+						}
+						break;
+					case KalturaClient.QUEUE_FLUSHED:
+						if (_kcTimer) {
+							_kcTimer.stop();
+						}
+						break;
+				}
+			}
+			
+			
+			/**
+			 * flush client calls.
+			 * */
+			private function handleTimer(e:TimerEvent):void {
+				_client.flush();
+			}
+
+
+			protected function initTracker(event:Event):void {
+				// GAtracking
+				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
+				ga.init(_flashvars.partnerid, _flashvars.userid, this, "Ked SA/", _flashvars.urchinnumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
+			}
+			
+			/**
+			 * decide if should use relative or absolute url.
+			 * if the given path is ablsolute, return the same string.
+			 * if the given path is relative, concatenate it to the swf url.
+			 * @param	given path
+			 * @return	path to use
+			 * */
+			protected function getLoadUrl(path:String):String {
+				var url:String;
+				if (path.indexOf("http") == 0) {
+					url = path;
+				}
+				else {
+					var li:String = Application.application.loaderInfo.url; 
+					var base:String = li.substr(0, li.lastIndexOf("/"));  
+					url = base + "/" + path;
+				}
+				return url;
+			}
+
+
+		]]>
+	</mx:Script>
 </mx:Application>
