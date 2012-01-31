@@ -40,11 +40,6 @@
 			public var client:KalturaClient;
 			
 			
-			private const VIDEO_TYPES:Array = ["flv","asf","qt","mov","mpg","avi","wmv","mp4","3gp","f4v","m4v"];
-			private const AUDIO_TYPES:Array = ["mp3","wav"];
-			private const IMAGE_TYPES:Array = ["jpg","bmp","png","gif","tiff"];
-
-			
 			[Bindable]
 			/**
 			 * list of available conversion profiles 
@@ -108,22 +103,37 @@
 				var dot:int = fr.name.lastIndexOf(".");
 				var ext:String = fr.name.substring(dot + 1).toLowerCase();
 				var str:String;
-				for each (str in VIDEO_TYPES) {
+				var types:Array = getTypesInFilter(filterDefinitions.(@name=="video_files")[0].@ext);
+				for each (str in types) {
 					if (str == ext) {
 						return KalturaMediaType.VIDEO;
 					}
 				}
-				for each (str in AUDIO_TYPES) {
+				types = getTypesInFilter(filterDefinitions.(@name=="audio_files")[0].@ext);
+				for each (str in types) {
 					if (str == ext) {
 						return KalturaMediaType.AUDIO;
 					}
 				}
-				for each (str in IMAGE_TYPES) {
+				types = getTypesInFilter(filterDefinitions.(@name=="image_files")[0].@ext);
+				for each (str in types) {
 					if (str == ext) {
 						return KalturaMediaType.IMAGE;
 					}
 				}
 				return -1;
+			}
+			
+			
+			/**
+			 * get a list of file extensions that are used in the filter
+			 * @param ext	string passed to file filter ("*.jpg;*.jpeg;*.gif;*.png")
+			 * @return array with file extensions
+			 * */
+			private function getTypesInFilter(ext:String):Array {
+				var cleanString:String = ext.replace(/\*\./g, "");
+				var result:Array = cleanString.split(";");
+				return result;
 			}
 
 			
