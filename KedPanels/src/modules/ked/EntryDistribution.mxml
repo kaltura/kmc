@@ -64,9 +64,6 @@ Distribution tab of EntryDetailsWin
 				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				var contextData:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				viewStack = contextData.edwViewStack;
-				
-				if ((_dpModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
-					_selectDistributorsEnabled = false;
 			}
 			
 			public function get helpAnchor():String{
@@ -143,7 +140,13 @@ Distribution tab of EntryDetailsWin
 				_distributionData.loadFlavors(controller, _selectedEntry);
 				_distributionData.loadThumbs(controller, _selectedEntry);
 				
-				_selectDistributorsEnabled = true;
+				var kalturaDistributionProfilesArray:Array = (_dpModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray; 
+				if (!kalturaDistributionProfilesArray || kalturaDistributionProfilesArray.length == 0) {
+					_selectDistributorsEnabled = false;
+				}
+				else {
+					_selectDistributorsEnabled = true;
+				}
 			}
 			
 			
