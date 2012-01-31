@@ -35,5 +35,17 @@ package com.kaltura.kmc.modules.content.events
 			_folder = folder;
 			_flags = folderFlags;
 		}
+
+		public function get flags():uint
+		{
+			return _flags;
+		}
+
+		public function get folder():KalturaDropFolder
+		{
+			return _folder;
+		}
+
+
 	}
 }

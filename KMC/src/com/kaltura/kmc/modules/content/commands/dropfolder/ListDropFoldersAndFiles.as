@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.KMCDropFolderEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaDropFolderContentFileHandlerMatchPolicy;
 	import com.kaltura.types.KalturaDropFolderFileHandlerType;
@@ -42,7 +43,7 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 
 
 		override public function execute(event:CairngormEvent):void {
-			_flags = (event as DropFolderEvent).flags;
+			_flags = (event as KMCDropFolderEvent).flags;
 			_model.increaseLoadCounter();
 			if (event.data is KalturaDropFolderFileFilter) {
 				_fileFilter = event.data;
