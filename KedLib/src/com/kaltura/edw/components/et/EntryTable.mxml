@@ -109,7 +109,7 @@
 			/**
 			 * the current sort index
 			 * */
-			private var _sortIndex:int = 4;
+			private var _sortIndex:int = 5;
 
 			[Bindable]
 			/**
@@ -157,13 +157,13 @@
 
 
 			public function updateDefaultSortColumn():void {
-				var index:int = 0;
-				for each (var col:DataGridColumn in this.columns) {
-					if (col.headerText == resourceManager.getString('cms', 'createAt')) {
-						_sortIndex = index;
+				var cols:Array = this.columns;
+				var col:DataGridColumn;
+				for (var i:int = 0; i<cols.length; i++) {
+					if ((cols[i] as DataGridColumn).headerText == resourceManager.getString('cms', 'createAt')) {
+						_sortIndex = i;
 						break;
 					}
-					index++;
 				}
 
 				setSortIndicator();
@@ -189,11 +189,6 @@
 						controller.dispatch(ee);
 					}
 				}
-			}
-
-
-			private function dataChanged(data:Object):void {
-				setSortIndicator();
 			}
 
 
@@ -298,6 +293,7 @@
 				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
 				arrCol.addItemAt(_thumbnailsColumn, 0);
 				columns = arrCol.source;
+				updateDefaultSortColumn();
 			}
 
 
@@ -685,6 +681,7 @@
 					}
 				}
 				PermissionManager.getInstance().applyAllAttributes(this, id);
+				updateDefaultSortColumn();
 			}
 			
 			
