@@ -17,7 +17,7 @@ Flavours tab of EntryDetailsWin
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
-			import com.kaltura.edw.constants.FlavorTypes;
+			import com.kaltura.edw.constants.FileTypes;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.DropFolderEvent;
 			import com.kaltura.edw.control.events.FlavorAssetEvent;
@@ -431,6 +431,7 @@ Flavours tab of EntryDetailsWin
 					profileEvent = new ProfileEvent(ProfileEvent.LIST_STORAGE_PROFILES);
 					controller.dispatch(profileEvent);
 				}
+				FileTypes.setFileTypes((_dpModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).fileFilters);
 				
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ASSETS_PANEL);
 			}
@@ -701,9 +702,9 @@ Flavours tab of EntryDetailsWin
 			private function getTypeFilter(mediaType:int):FileFilter {
 				var fileFilter:FileFilter;
 				if (mediaType == KalturaMediaType.VIDEO)
-					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + FlavorTypes.VIDEO_TYPES + ")", FlavorTypes.VIDEO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'video') + "(" + FileTypes.VIDEO_TYPES + ")", FileTypes.VIDEO_TYPES);
 				else if (mediaType == KalturaMediaType.AUDIO)
-					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + FlavorTypes.AUDIO_TYPES + ")", FlavorTypes.AUDIO_TYPES);
+					fileFilter = new FileFilter(resourceManager.getString('drilldown', 'audio') + "(" + FileTypes.AUDIO_TYPES + ")", FileTypes.AUDIO_TYPES);
 				
 				return fileFilter;
 			}

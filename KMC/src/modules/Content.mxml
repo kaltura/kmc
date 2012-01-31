@@ -28,6 +28,7 @@
 			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.components.playlist.types.ManualPlaylistWindowMode;
 			import com.kaltura.edw.control.CustomDataTabController;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.control.events.MetadataProfileEvent;
@@ -47,7 +48,6 @@
 			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.*;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.types.EntryDetailsWindowState;
@@ -189,7 +189,6 @@
 
 
 			override protected function start():void {
-
 				Security.allowDomain('*');
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 
@@ -508,6 +507,7 @@
 				_model.context.drilldownUiconf = confFile.uiconf.kdp.drilldown.text().toString();
 				_model.context.captureThumbnailUiconf = confFile.uiconf.kdp.captureThumbnail.text().toString();
 				_model.context.kClipAdsUiconf = confFile.uiconf.kclip.ads.text().toString();
+				_model.context.panelsConfig = confFile.uiconf.entryDrilldown.panels[0];
 
 				// model:
 				_customDataData.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
@@ -518,8 +518,7 @@
 					(_model.entryDetailsModel.getDataPack(ContentDataPack) as ContentDataPack).showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
 				}
 				
-				var contextDp:ContextDataPack = _model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack;
-				contextDp.panelsConfig = confFile.uiconf.entryDrilldown.panels[0];
+				(_model.entryDetailsModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).fileFilters = confFile.filters.filter;
 
 			}
 			
