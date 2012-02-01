@@ -2,10 +2,9 @@ package com.kaltura.edw.business
 {
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaMediaEntry;
+	import com.kaltura.vo.KalturaPlayableEntry;
 	
 	import mx.collections.ArrayCollection;
-	import mx.events.PropertyChangeEvent;
 
 	/**
 	 * This class will hold functions related to kaltura entries 
@@ -46,7 +45,7 @@ package com.kaltura.edw.business
 			oldEntry.replacedEntryId = newEntry.replacedEntryId;
 			oldEntry.replacingEntryId = newEntry.replacingEntryId;
 			oldEntry.replacementStatus = newEntry.replacementStatus;
-			(oldEntry as KalturaMediaEntry).duration = (newEntry as KalturaMediaEntry).duration;
+			(oldEntry as KalturaPlayableEntry).duration = (newEntry as KalturaPlayableEntry).duration;
 		}
 	}
 }
