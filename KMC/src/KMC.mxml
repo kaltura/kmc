@@ -846,9 +846,16 @@
 			 * This text should already be localized by the module
 			 * which dispatched this event.
 			 * */
-			protected function onError(e:KmcErrorEvent):void {
+			protected function onError(e:Event):void {
 				e.stopImmediatePropagation();
-				alert(e.error, ResourceManager.getInstance().getString('kmc', 'error_title'));
+				var error:String;
+				if (e is KmcErrorEvent) {
+					error = (e as KmcErrorEvent).error;
+				}
+				else if (e is KedErrorEvent) {
+					error = (e as KedErrorEvent).error;
+				}
+				alert(error, ResourceManager.getInstance().getString('kmc', 'error_title'));
 			}
 
 
