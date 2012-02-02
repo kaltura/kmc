@@ -712,6 +712,7 @@
 						if (undoToEntry.referenceId && undoToEntry.referenceId != KalturaClient.NULL_STRING && _selectedEntry.referenceId != undoToEntry.referenceId) {
 							// list all entries with the same refid , if any - show message
 							if (!_sameRefidWatcher) {
+								_entryDp.entriesWSameRefidAsSelected = new Array();
 								_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _entryDp, "entriesWSameRefidAsSelected");
 							}
 							var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, undoToEntry);
@@ -749,10 +750,7 @@
 			 * confirm saving entry with existing referenceId
 			 * */
 			private function confirmSameRefid(value:Object):void {
-				if (!value)
-					return;
-
-				if (value.length > 0) {
+				if (value && value.length > 0) {
 					// we have entries with the same refid
 					var ar:Array = [];
 					for each (var o:KalturaBaseEntry in value) {
@@ -761,10 +759,13 @@
 					Alert.show(resourceManager.getString('drilldown', 'existingRefid', [undoToEntry.referenceId, ar]),
 						resourceManager.getString('drilldown', 'warning'), Alert.YES | Alert.NO, this, save);
 				}
-				else {
+				else if (!value) {
 					save();
 				}
-				_entryDp.entriesWSameRefidAsSelected = null;
+				
+				if (!value || value.length > 0) {
+					_entryDp.entriesWSameRefidAsSelected = new Array();
+				}
 			}
 
 
