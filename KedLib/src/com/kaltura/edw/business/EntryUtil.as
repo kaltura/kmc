@@ -46,6 +46,7 @@ package com.kaltura.edw.business
 			oldEntry.replacingEntryId = newEntry.replacingEntryId;
 			oldEntry.replacementStatus = newEntry.replacementStatus;
 			(oldEntry as KalturaPlayableEntry).duration = (newEntry as KalturaPlayableEntry).duration;
+			(oldEntry as KalturaPlayableEntry).msDuration = (newEntry as KalturaPlayableEntry).msDuration;
 		}
 	}
 }
