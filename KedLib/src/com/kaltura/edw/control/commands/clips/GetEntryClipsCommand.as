@@ -25,7 +25,14 @@ package com.kaltura.edw.control.commands.clips
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			(_model.getDataPack(ClipsDataPack) as ClipsDataPack).clips = (data.data as KalturaBaseEntryListResponse).objects;
+			var res:Array = (data.data as KalturaBaseEntryListResponse).objects;
+			if (res) {
+				(_model.getDataPack(ClipsDataPack) as ClipsDataPack).clips = res;
+			}
+			else {
+				// if the server returned nothing, use an empty array for the tab to remove itself.
+				(_model.getDataPack(ClipsDataPack) as ClipsDataPack).clips = new Array();
+			}
 			_model.decreaseLoadCounter();
 		}
 	}

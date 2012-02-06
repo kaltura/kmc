@@ -41,19 +41,22 @@
 			}
 			public function set dataPackModel(value:IDataPackRepository):void{
 				_dpModel = value;
-				var clipsData:ClipsDataPack = _dpModel.getDataPack(ClipsDataPack) as ClipsDataPack;
-				clips = clipsData.clips;
+				_clipsData = _dpModel.getDataPack(ClipsDataPack) as ClipsDataPack;
+//				clips = clipsData.clips;
 			}
+			
+			[Bindable]
+			private var _clipsData:ClipsDataPack; 
 			
 			public function get helpAnchor():String{
 				return "entry_clips";
 			}
 			
-			[Bindable]
-			/**
-			 * vos for the clips to show in the table
-			 * */
-			public var clips:Array;
+//			[Bindable]
+//			/**
+//			 * vos for the clips to show in the table
+//			 * */
+//			public var clips:Array;
 			
 			/**
 			 * to watch when <code>clips</code> change
@@ -91,7 +94,7 @@
 				controller.dispatch(ce);
 				// monitor data change if needed
 				if (!_cw) {
-					_cw = BindingUtils.bindSetter(removeTab, this, "clips");
+					_cw = BindingUtils.bindSetter(removeTab, _clipsData, "clips");
 				}
 				// get data
 				getNext();
@@ -148,11 +151,11 @@
 	<control:ClipsTabController id="controller" />
 	<mx:VBox styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%" >
 		<et1:EntryTable id="entryTable" width="100%" height="100%" kalturaSorting="false" 
-						showLinks="false" dataProvider="{clips}" creationComplete="removeColumns(event)"/>
+						showLinks="false" dataProvider="{_clipsData.clips}" creationComplete="removeColumns(event)"/>
 		
 		<controls:Paging id="paging" width="100%" styleName="paging"
 						 rowsInPageChange="getNext()" nextPage="getNext()" prvPage="getNext()"
-						 getPageNum="getNext()" totalCount="{clips.length}"
+						 getPageNum="getNext()" totalCount="{_clipsData.clips.length}"
 						 showRowsInPage="true" defaultPageSize="10" />
 	</mx:VBox>
 </mx:Module>

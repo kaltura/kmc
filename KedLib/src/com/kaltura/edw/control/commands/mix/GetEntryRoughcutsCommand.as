@@ -32,7 +32,6 @@ package com.kaltura.edw.control.commands.mix
 			if(data.data && data.data is Array) {
 				var cdp:ContentDataPack = _model.getDataPack(ContentDataPack) as ContentDataPack;
 				cdp.contentParts = data.data;
-//				_model.entryDetailsModel.selectedEntry.dispatchEvent(new Event("partsChanged"));
 			}
 			else
 				trace("Error getting the list of roughcut entries");
