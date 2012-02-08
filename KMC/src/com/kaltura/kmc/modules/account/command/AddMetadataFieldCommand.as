@@ -33,6 +33,9 @@ package com.kaltura.kmc.modules.account.command
 			var newField:MetadataFieldVO = (event as MetadataFieldEvent).metadataField;
 			if (!newField || !_model.selectedMetadataProfile)
 				return;
+			
+			_model.selectedMetadataProfile.metadataFieldVOArray.addItem(newField);
+			
 			if (!_model.selectedMetadataProfile.xsd) {
 				_model.selectedMetadataProfile.xsd = MetadataProfileParser.createNewXSD();
 			}

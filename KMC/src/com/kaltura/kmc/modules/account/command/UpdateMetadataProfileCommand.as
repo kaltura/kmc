@@ -2,9 +2,11 @@ package com.kaltura.kmc.modules.account.command
 {	
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.base.types.XSDConstants;
 	import com.kaltura.commands.metadataProfile.MetadataProfileUpdate;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
+	import com.kaltura.kmc.modules.account.business.CustomDataStringUtil;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KalturaMetadataProfile;
@@ -25,7 +27,8 @@ package com.kaltura.kmc.modules.account.command
 		private var _model:AccountModelLocator = AccountModelLocator.getInstance();
 		
 		/**
-		 * This function will send an update profile request to the server, with the current profile id and the current XSD 
+		 * This function will send an update profile request to the server, 
+		 * with the current profile id and the current XSD 
 		 * @param event the event that triggered this command
 		 * 
 		 */		
@@ -33,7 +36,21 @@ package com.kaltura.kmc.modules.account.command
 		{
 			_model.loadingFlag = true;
 			_model.selectedMetadataProfile.profile.setUpdatedFieldsOnly(true);
-			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.selectedMetadataProfile.profile.id, _model.selectedMetadataProfile.profile, _model.selectedMetadataProfile.xsd.toString());
+			// before sending the xsd to the server, handle "&" in fields of type "list".
+			var ns:Namespace = XSDConstants.NAMESPACE; 
+			var xsd:XML = _model.selectedMetadataProfile.xsd;
+			var enumerations:XMLList = xsd..ns::enumeration;
+			/*	<xsd:enumeration value="I"/>
+			<xsd:enumeration value="Me"/>
+			<xsd:enumeration value="Myself"/>	*/
+			var val:String;
+			for each (var enum:XML in enumerations) {
+				val = enum.@value;
+				val = CustomDataStringUtil.escapeAmps(val);
+				enum.@value = val;
+			}
+			
+			var updateMetadataProfle:MetadataProfileUpdate = new MetadataProfileUpdate(_model.selectedMetadataProfile.profile.id, _model.selectedMetadataProfile.profile, xsd.toString());
 			updateMetadataProfle.addEventListener(KalturaEvent.COMPLETE, result);
 			updateMetadataProfle.addEventListener(KalturaEvent.FAILED, fault);
 
