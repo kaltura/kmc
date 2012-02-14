@@ -450,6 +450,12 @@
 				addNewCategoryEvent.data = event.data;
 				addNewCategoryEvent.dispatch();
 			}
+			
+			
+			protected function filter_updateEntriesHandler(event:FilterEvent):void {
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, (event.data as ArrayCollection), false);
+				cgEvent.dispatch();
+			}
 		]]>
 	</mx:Script>
 	<mx:HBox styleName="filtersHeadTitleHBox" width="100%">
@@ -459,16 +465,7 @@
 					   toggle="true" styleName="expendableButtonWithCloseIcon"/>
 		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
 				  visible="false"/>
-		<mx:Spacer width="100%">
-			<mx:Script>
-				<![CDATA[
-					protected function filter_updateEntriesHandler(event:FilterEvent):void {
-						var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, (event.data as ArrayCollection), false);
-						cgEvent.dispatch();
-					}
-				]]>
-			</mx:Script>
-		</mx:Spacer>
+		<mx:Spacer width="100%"/>
 
 		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
 					   styleName="recycleIcon"/>
