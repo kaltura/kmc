@@ -26,6 +26,7 @@
 			import com.kaltura.vo.KalturaAttachmentAsset;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
 			import mx.managers.PopUpManager;
@@ -70,7 +71,8 @@
 			public function set dataPackModel(value:IDataPackRepository):void{
 				_dpModel = value;
 				var relatedData:RelatedFilesDataPack = _dpModel.getDataPack(RelatedFilesDataPack) as RelatedFilesDataPack;
-				relatedFiles = relatedData.relatedFilesAC;
+				BindingUtils.bindProperty(this, "relatedFiles", relatedData, "relatedFilesAC"); 
+//				relatedFiles = relatedData.relatedFilesAC;
 			}
 			
 			public function get helpAnchor():String{
