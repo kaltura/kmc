@@ -9,37 +9,67 @@
 			import com.kaltura.edw.constants.RelatedFileActionType;
 			import com.kaltura.edw.vo.RelatedFileVO;
 			import com.kaltura.types.KalturaAttachmentType;
-			private var _relatedFile:RelatedFileVO;
+			
+			import mx.resources.ResourceManager;
+			
 			[Bindable]
+			private static var formats:Array = [ResourceManager.getInstance().getString('drilldown','document'), 
+				ResourceManager.getInstance().getString('drilldown','media'),
+				ResourceManager.getInstance().getString('drilldown','text')
+			];
+			
+			/**
+			 * the related file being presented
+			 * */
+			private var _relatedFile:RelatedFileVO;
+			
+			
+			[Bindable]
+			/**
+			 * currently selected index in drop down
+			 * */
 			private var _selectedIndex:int;
 
 
 			override public function set data(value:Object):void {
 				super.data = value;
 				_relatedFile = value as RelatedFileVO;
-				if (!_relatedFile.file.format)
-					_selectedIndex = -1;
+				if (_relatedFile.file.format == KalturaAttachmentType.DOCUMENT) {
+					_selectedIndex = 0;
+				}
+				else if (_relatedFile.file.format == KalturaAttachmentType.MEDIA) {
+					_selectedIndex = 1;
+				}
+				else if (_relatedFile.file.format == KalturaAttachmentType.TEXT) {
+					_selectedIndex = 2;
+				}
 				else {
-					if (_relatedFile.file.format == KalturaAttachmentType.MEDIA)
-						_selectedIndex = 1;
-					else
-						_selectedIndex = 0;
+					_selectedIndex = -1;		
 				}
 			}
 
 
 			protected function onTypeChange():void {
-				if (typeCb.selectedIndex == 1)
-					_relatedFile.file.format = KalturaAttachmentType.MEDIA;
-				else
-					_relatedFile.file.format = KalturaAttachmentType.DOCUMENT;
+				
+				switch (typeCb.selectedIndex){
+					case 0:
+						_relatedFile.file.format = KalturaAttachmentType.DOCUMENT;
+						break;
+					case 1:
+						_relatedFile.file.format = KalturaAttachmentType.MEDIA;
+						break;
+					case 2:
+						_relatedFile.file.format = KalturaAttachmentType.TEXT;
+						break;
+				}
 
+				_selectedIndex = typeCb.selectedIndex;
 				dispatchEvent(new Event(RelatedFileActionType.FILE_CHANGED, true));
 			}
-			//dataProvider="{new Array(resourceManager.getString('cms','document'), resourceManager.getString('cms','media'))}"
+			
 		]]>
 	</mx:Script>
 	<mx:ComboBox id="typeCb" selectedIndex="{_selectedIndex}" enabled="{parentDocument.editable}"
-				 dataProvider="{new Array(resourceManager.getString('drilldown','document'), resourceManager.getString('drilldown','media'))}"
+				 dataProvider="{formats}"
 				 prompt="{resourceManager.getString('drilldown','selectType')}" change="onTypeChange()"/>
 </mx:VBox>
