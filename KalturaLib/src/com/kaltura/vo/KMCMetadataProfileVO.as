@@ -26,12 +26,12 @@ package com.kaltura.vo
 	
 	import mx.collections.ArrayCollection;
 
+	[Bindable]
 	/**
 	 *	This class represents a profile of metadata custom fields
 	 * @author Michal
 	 * 
 	 */
-	[Bindable]
 	public class KMCMetadataProfileVO implements IValueObject
 	{
 		public static var serveURL:String = "/api_v3/index.php/service/metadata_metadataprofile/action/serve";

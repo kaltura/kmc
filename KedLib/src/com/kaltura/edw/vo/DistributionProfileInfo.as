@@ -2,12 +2,12 @@ package com.kaltura.edw.vo
 {
 	import mx.collections.ArrayCollection;
 	
+	[Bindable]
 	/**
 	 * This class will hold information regarding distribution profiles.
 	 * @author Michal
 	 * 
 	 */
-	[Bindable]
 	public class DistributionProfileInfo
 	{
 		//array of distribution profiels configured for current partner
