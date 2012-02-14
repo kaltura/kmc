@@ -308,6 +308,7 @@ package com.kaltura.analytics {
 		public static const STUDIO_NEW_PLAYER_SINGLE_VIDEO:String = "New Player Single Video";
 		public static const STUDIO_NEW_PLAYER_PLAYLIST:String = "New Player Playlist";
 		public static const STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST:String = "New Player Multitab Playlist";
+		public static const STUDIO_NEW_PLAYER_508:String = "New 508 Player";
 		public static const STUDIO_EDIT_PLAYER:String = "Edit Player";
 		public static const STUDIO_DUPLICATE_PLAYER:String = "Duplicate Player";
 		public static const STUDIO_DELETE_PLAYER:String = "Delete Player";

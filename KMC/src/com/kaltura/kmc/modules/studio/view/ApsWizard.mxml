@@ -112,10 +112,15 @@ The main window for new player wizard.
 					linkDtn.selectedIndex = 1; //Select Features First	
 				}
 				templatePage.templateData = tvo;
-				// remove / add tabs according to roles and permissions
+				// multi playlist?
 				if (!_playerUiConfVO.isMultiPlaylistTemplate) {
 					wizardViewStack.removeChild(contentPage);
 				}
+				// style defs?
+				if (!_playerUiConfVO.editableStyle) {
+					wizardViewStack.removeChild(stylePage);
+				}
+				
 				if (!_isNewPlayer) {
 					linkDtn.selectedIndex = 1; //Select Features First	
 					showPreview(true);
@@ -125,6 +130,7 @@ The main window for new player wizard.
 				this.parent.addEventListener(Event.RESIZE, onResize);
 				previewPlayerPage.addEventListener(ApsWizPreviewPlayer.REFRESH_KDP, previewKdp);
 				
+				// remove / add tabs according to roles and permissions
 				if (_isNewPlayer) {
 					PermissionManager.getInstance().applyAllAttributes(this, "wizard_add");
 				}
@@ -172,6 +178,8 @@ The main window for new player wizard.
 				// for editing old players
 				delete newUiConfXML..Plugin.(@id == "adaptv")[0];
 				delete newUiConfXML..Plugin.(@id == "tremor")[0];
+				// for editing 508 players, they catch keys and don't allow editing text..
+				delete newUiConfXML..Plugin.(@id == "shortcuts508")[0];
 				previewPlayerPage.unLoadKdp();
 				previewPlayerPage.loadKdp(swfUrl, newUiConfXML);
 			}
@@ -324,12 +332,14 @@ The main window for new player wizard.
 				}
 				
 				// styles tab:
-				stylePage.playerUiconfVo = _playerUiConfVO;
-				var theme:XML = _playerUiConfVO.snapshot.visual.theme.(attribute("selected") == "true")[0];
-				if (!theme) {
-					theme = _playerUiConfVO.snapshot.visual.theme[0];
+				if (stylePage.parent) {
+					stylePage.playerUiconfVo = _playerUiConfVO;
+					var theme:XML = _playerUiConfVO.snapshot.visual.theme.(attribute("selected") == "true")[0];
+					if (!theme) {
+						theme = _playerUiConfVO.snapshot.visual.theme[0];
+					}
+					stylePage.setStyleData(theme);
 				}
-				stylePage.setStyleData(theme);
 			}
 			
 			

@@ -34,6 +34,11 @@ package com.kaltura.kmc.modules.studio.vo {
 		//TODO: CHANGE THE isMultiPlaylistTemplate | isSinglePlaylist TO ONE ATTRIBUTE 
 		private var _isMultiPlaylistTemplate:Boolean = false;
 		private var _isSinglePlaylist:Boolean;
+		
+		/**
+		 * is it possible to edit the style for this template  
+		 */
+		public var editableStyle:Boolean = false;
 
 		private var _tags:String = "Player";
 
@@ -68,6 +73,7 @@ package com.kaltura.kmc.modules.studio.vo {
 			_snapshot = snapshot;
 
 			if (snapshot != null) {
+				editableStyle = snapshot.visual.children().length() > 0;
 				_advertizing = new AdvertizingVo();
 				if (snapshot.advertising.length() > 0) {
 					populateAdvertizingVo(snapshot.advertising[0]);
@@ -209,8 +215,7 @@ package com.kaltura.kmc.modules.studio.vo {
 				}
 			}
 		}
-
-
+		
 		public function set fullplayer(value:XML):void {
 			_fullplayer = value;
 			setPlayerType(_fullplayer);

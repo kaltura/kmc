@@ -166,5 +166,9 @@ package com.kaltura.kmc.business
 		public static function getPanelPosition():int {
 			return ExternalInterface.call("kmc.functions.getAddPanelPosition");
 		}
+		
+		public static function alerti(str:String):void {
+			ExternalInterface.call("alert", str);
+		}
 	}
 }

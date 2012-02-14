@@ -2,7 +2,8 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" verticalAlign="middle"
 		 xmlns:view="com.kaltura.kmc.modules.studio.view.*"
 		 horizontalAlign="center" disabledOverlayAlpha="0"
-		 creationComplete="onCreationComplete()">
+		 creationComplete="onCreationComplete()"
+		 addedToStage="addedToStageHandler(event)">
 	
 	<mx:Metadata>
 		[Event(name="errorLoading", type="flash.events.Event")] 
@@ -17,6 +18,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.events.KdpEventTypes;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
 			import com.kaltura.kmc.modules.studio.vo.PlayerContentVo;
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
@@ -158,6 +160,9 @@
 			 * */
 			public function dispose():void {
 				unLoadKdp();
+				if (stage) {
+					stage.removeEventListener(KeyboardEvent.KEY_DOWN, handleKeyboard);
+				}
 			}
 
 
@@ -179,6 +184,7 @@
 				}
 				autoPreview.selected = autopreview;
 				autoPreviewChanged();
+				
 			}
 
 
@@ -333,6 +339,21 @@
 				kdpHeight.value = value.playerHeight;
 				kdpWidth.value = value.playerWidth;
 			}
+
+			private function addedToStageHandler(event:Event):void {
+				stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyboard, false, 0, true);
+			}
+			
+			/**
+			 * if alt+ctrl+p, trace the current uiconf
+			 * */
+			private function handleKeyboard(e:KeyboardEvent):void {
+				if (e.altKey && e.ctrlKey && e.keyCode == 80) {
+//					JSGate.alerti(_tempUiConf);
+					trace(_tempUiConf);
+				}
+			}
+
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" verticalAlign="middle">

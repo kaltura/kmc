@@ -226,6 +226,13 @@
 					playerUiVo.isMultiPlaylistTemplate = true;
 					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST;
 				}
+				if (selectedTemplateXml.@editableStyle.toString() == "true") {
+					playerUiVo.editableStyle = true;
+				}
+				else {
+					// if no style defs, is 508 player
+					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_508;
+				}
 				dispatchEvent(new ApsUiConfEvent(ApsUiConfEvent.NEW_PLAYER_CHOSEN, playerUiVo));
 				// analytics:
 				GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.STUDIO);

@@ -82,13 +82,15 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			if (buttonType == "buttonVideoArea") {
 				buttonXml.@buttonType = "onScreenButton";
 			}
-			buttonXml.@color1 = colorObject.color1;
-			buttonXml.@color2 = colorObject.color2;
-			buttonXml.@color3 = colorObject.color3;
-			buttonXml.@color4 = colorObject.color4;
-			buttonXml.@color5 = colorObject.color5;
-			if (colorObject.fontName)
-				buttonXml.@font = colorObject.fontName;
+			if (colorObject) {
+				buttonXml.@color1 = colorObject.color1;
+				buttonXml.@color2 = colorObject.color2;
+				buttonXml.@color3 = colorObject.color3;
+				buttonXml.@color4 = colorObject.color4;
+				buttonXml.@color5 = colorObject.color5;
+				if (colorObject.fontName)
+					buttonXml.@font = colorObject.fontName;
+			}
 			return buttonXml;
 		}
 
@@ -142,19 +144,25 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			var visual:XML =
 				<visual/>
 				;
-			var createdTheme:XML = getStyleXML(style);
-			visual.appendChild(createdTheme);
+			var createdTheme:XML;
+			if (style){ // 508 players don't have style
+				createdTheme = getStyleXML(style);
+				visual.appendChild(createdTheme);
+			}
 			snapshot.appendChild(visual);
 
 			// add player properties:
 			var playerProperties:XML =
 				<playerProperties/>
 			var playerWidth:XML = XML("<width>" + size.playerWidth.toString() + "</width>");
-			var playerHeight:XML = XML("<height>" + size.playerHeight.toString() + "</height>");
-			var playerTheme:XML = XML("<theme>" + createdTheme.@id + "</theme>");
 			playerProperties.appendChild(playerWidth);
+			var playerHeight:XML = XML("<height>" + size.playerHeight.toString() + "</height>");
 			playerProperties.appendChild(playerHeight);
-			playerProperties.appendChild(playerTheme);
+
+			if (style){
+				var playerTheme:XML = XML("<theme>" + createdTheme.@id + "</theme>");
+				playerProperties.appendChild(playerTheme);
+			}
 			snapshot.appendChild(playerProperties);
 
 			// build the uiVars section
@@ -325,7 +333,9 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				}
 			}
 
-			fullPlayerCopy = colorSpecificUiElements(fullPlayerCopy, style);
+			if (style) {
+				fullPlayerCopy = colorSpecificUiElements(fullPlayerCopy, style);
+			}
 
 			// ADVERTISING
 			fullPlayerCopy = setAdvertisingData(fullPlayerCopy, advo, style);
@@ -339,11 +349,13 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					gigyaLayer.@uiconfId = gigyaFeature.descendants().(attribute("id").toString() == 'uiconfId')[0].@k_value.toString();
 			}
 
-			// GIGYA THEME 
-			fullPlayerCopy = selectGigyaTheme(fullPlayerCopy, style.themeId);
+			if (style) {
+				// GIGYA THEME (if no style > is 508 > no gigya anyway)
+				fullPlayerCopy = selectGigyaTheme(fullPlayerCopy, style.themeId);
 
-			// skin path:
-			fullPlayerCopy.@skinPath = style.skinPath;
+				// skin path:
+				fullPlayerCopy.@skinPath = style.skinPath;
+			}
 
 
 			// delete all "selected" attributes from the player
@@ -387,13 +399,16 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					//set the font to the itemRenderer labels
 					var allLabels:XMLList = renderer..Label;
 					for each (var lab:XML in allLabels) {
+						// burried assumption - 508 players (no style) are not playlist players
 						lab.@font = style.fontName;
 					}
 				}
 			}
 
 			// color all the marked plugins
-			fullPlayerCopy = colorMarkedPlugins(activeFeatures, fullPlayerCopy, style);
+			if (style) {
+				fullPlayerCopy = colorMarkedPlugins(activeFeatures, fullPlayerCopy, style);
+			}
 
 
 			// UIVARS:
@@ -751,8 +766,11 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					if (advo.skipEnabled) {
 						var skip:XML = player..Button.(@id == "skipBtn")[0];
 						skip.@label = advo.skipText;
-						skip.@color1 = style.color1.toString();
-						skip.@color2 = style.color2.toString();
+						if (style) {
+							// 508 players don't have style
+							skip.@color1 = style.color1.toString();
+							skip.@color2 = style.color2.toString();
+						}
 					}
 					else {
 						delete player..Button.(@id == "skipBtn")[0];
@@ -761,11 +779,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					// notice message 
 					if (advo.noticeEnabled) {
 						var notice:XML = player..Label.(@id == "noticeMessage")[0];
-//						var s:String = advo.noticeText;
-//						s = s.split("$(remainingSeconds)").join("{SequenceProxy.timeRemaining}");
-//						notice.@text = s;
 						notice.@text = advo.noticeText;
-						notice.@color1 = style.color1.toString();
+						if (style) {
+							notice.@color1 = style.color1.toString();
+						}
 					}
 					else {
 						delete player..Label.(@id == "noticeMessage")[0];
