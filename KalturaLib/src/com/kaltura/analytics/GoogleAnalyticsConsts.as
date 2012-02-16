@@ -214,10 +214,6 @@ package com.kaltura.analytics {
 		 */
 		public static const ACCOUNT_CHANGE_PARTNER_INFO:String = "Update Partner Info";
 		
-		/**
-		 * 
-		 */
-		public static const ACCOUNT_CHANGE_LOGIN_INFO:String = "Account Change Login Info"; //TODO ACCOUNT_CHANGE_LOGIN_INFO
 		
 		/**
 		 * click on "send" in contact us page 
