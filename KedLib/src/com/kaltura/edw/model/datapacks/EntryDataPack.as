@@ -20,7 +20,7 @@ package com.kaltura.edw.model.datapacks
 		
 		/**
 		 * list of Object {label}	<br>
-		 * used for entry details window > entry metadata
+		 * used for entry details window > entry metadata (autocomplete DP)
 		 * */
 		public var categoriesFullNameList:ArrayCollection = new ArrayCollection();
 		
