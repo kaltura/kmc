@@ -80,25 +80,36 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		}
 		
 		
-		private function buildCategoriesHyrarchy(array:Array, totalEntryCount:String):CategoryVO {
+		/**
+		 * builds category data as a tree
+		 * @param kCategories		list of KalturaCategory objects to create heirarchy
+		 * @param totalEntryCount	total number of entries 
+		 * @return 	the root category in the tree
+		 */		
+		private function buildCategoriesHyrarchy(kCategories:Array, totalEntryCount:String):CategoryVO {
+			// get a reference to the categories map
 			var catMap:HashMap = _filterModel.categoriesMap;
 			catMap.clear();
 
+			// create the dummy "root" category
+			var kCat:KalturaCategory = new KalturaCategory();
+			kCat.fullName = '';
+			kCat.entriesCount = int(totalEntryCount);
 			var root:CategoryVO = new CategoryVO(0,
-												 ResourceManager.getInstance().getString('cms',
-																						 'rootCategoryName'),
-												 new KalturaCategory());
-			root.category.fullName = '';
-			root.category.entriesCount = int(totalEntryCount);
-			catMap.put(0 + '', root);
+												 ResourceManager.getInstance().getString('cms', 'rootCategoryName'),
+												 kCat);
+			catMap.put("0", root);
 
+			
+			// temp array collection (the values to be used later are stored in the hashmap)
 			var categories:ArrayCollection = new ArrayCollection();
-
+			// list of categories' full names, to be used as dataProvider for the categories autocomplete
 			var categoryNames:ArrayCollection = new ArrayCollection();
 
+			// build categoryVOs:
 			var category:CategoryVO;
 			var catName:Object;
-			for each (var kCat:KalturaCategory in array) {
+			for each (kCat in kCategories) {
 				category = new CategoryVO(kCat.id, kCat.name, kCat);
 				catMap.put(kCat.id + '', category);
 				catName = new Object();
@@ -109,20 +120,32 @@ package com.kaltura.kmc.modules.content.commands.cat {
 
 			(_model.entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack).categoriesFullNameList = categoryNames;
 
-			for each (var cat:CategoryVO in categories) {
-				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
+			// map parents to children
+			for each (category in categories) {
+				var parentCategory:CategoryVO = catMap.getValue(category.category.parentId + '') as CategoryVO;
 				if (parentCategory != null) {
-					parentCategory.children.addItem(cat);
-					sortCategories(parentCategory.children);
+					parentCategory.children.addItem(category);
+					// this is stupid, why not run once after all mapping is done?
+//					sortCategories(parentCategory.children);
 				}
 			}
-
+			
+			for each (category in categories) {
+				sortCategories(category.children);
+			}
 
 			return root;
 		}
 
 
+		/**
+		 * sort the given array collection by "name" attribute 
+		 * @param catArrCol		the list to sort
+		 */
 		private function sortCategories(catArrCol:ArrayCollection):void {
+			if (!catArrCol) {
+				return;
+			}
 			var dataSortField:SortField = new SortField();
 			dataSortField.name = "name";
 			dataSortField.caseInsensitive = true;
