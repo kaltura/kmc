@@ -41,21 +41,11 @@ package com.kaltura.edw.components.filter.cat {
 
 
 		private function onDeleteCategoryEvent(event:Event):void {
-//			var dataVo:CategoryVO = data as CategoryVO;
-//			var deleteCategoryPopUp:DeleteCategoryWin = new DeleteCategoryWin();
-//			deleteCategoryPopUp.selectedCategory = dataVo;
-//			PopUpManager.addPopUp(deleteCategoryPopUp, (Application.application as Container), true);
-//			PopUpManager.centerPopUp(deleteCategoryPopUp);
 			dispatchEvent(new Event(CategoriesTree.OPEN_DELETE_CATEGORY, true));
 		}
 
 
 		private function onAddCategoryEvent(event:Event):void {
-//			var dataVo:CategoryVO = data as CategoryVO;
-//			var addCategoryPopUp:AddNewCategoryWin = new AddNewCategoryWin();
-//			addCategoryPopUp.parentCategory = dataVo;
-//			PopUpManager.addPopUp(addCategoryPopUp, (Application.application as Container), true);
-//			PopUpManager.centerPopUp(addCategoryPopUp);
 			dispatchEvent(new Event(CategoriesTree.OPEN_ADD_CATEGORY, true));
 		}
 
@@ -65,7 +55,6 @@ package com.kaltura.edw.components.filter.cat {
 		 * to set the font color and style of each node.
 		 * */
 		override public function set data(value:Object):void {
-			var vo:CategoryVO = value as CategoryVO;
 			if (value == null)
 				return;
 
@@ -108,7 +97,7 @@ package com.kaltura.edw.components.filter.cat {
 
 			//Setting the width of the description field
 			//causes the height calculation to happen
-			hBox.width = explicitWidth - super.label.x;
+			hBox.width = explicitWidth - label.x;
 
 			//We add the measuredHeight to the renderers measured height
 			measuredHeight = hBox.measuredHeight;
@@ -122,15 +111,15 @@ package com.kaltura.edw.components.filter.cat {
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 
-			if (super.data && (super.data is CategoryVO)) {
-				var vo:CategoryVO = super.data as CategoryVO;
-				super.label.htmlText = vo.name + " <font color='#666666' size='11'> (" +
+			if (data && (data is CategoryVO)) {
+				var vo:CategoryVO = data as CategoryVO;
+				label.htmlText = vo.name + " <font color='#666666' size='11'> (" +
 					vo.category.entriesCount + ")</font>";
-				super.label.height = 25;
-				super.label.toolTip = super.label.text;
+				label.height = 25;  //TODO cat tree variableRowHeight probably fails because of this
+				label.toolTip = label.text;
 
-				var gWid:int = /* (super.label.textWidth > 170) ? 170 : */ super.label.textWidth;
-				hBox.x = super.label.x + gWid + 2;
+				var gWid:int = label.textWidth;
+				hBox.x = label.x + gWid + 2;
 				hBox.height = 26;
 			}
 		}
