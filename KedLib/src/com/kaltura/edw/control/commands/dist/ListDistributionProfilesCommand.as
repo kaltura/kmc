@@ -46,6 +46,13 @@ package com.kaltura.edw.control.commands.dist
 			_model.decreaseLoadCounter();
 		}
 		
+		/**
+		 * create KalturaDistributionProfile objects from the results and use them instead of the actual result.
+		 * initially, as3flexClient can't generate these objects since we don't include them in the swf, but
+		 * we know they all inherit from KalturaDistributionProfile so one can be created and its attributes 
+		 * can be populated with the values from the results.  
+		 * @param profilesResult	the results returned from the server
+		 */
 		public function handleListDistributionProfileResult(profilesResult:KalturaDistributionProfileListResponse) : void {
 			var profilesArray:Array = new Array();
 			//as3flexClient can't generate these objects since we don't include them in the swf 
