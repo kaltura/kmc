@@ -355,7 +355,6 @@
 			
 			
 			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
-//				trace('updateDisplayList');
 				if (_metadataDirtyFlag) {
 					_metadataDirtyFlag = false;
 					setMetadataTabVisibility();
@@ -368,7 +367,6 @@
 			 * in search, remove the metadata tab from the accordion
 			 * */
 			private function setMetadataTabVisibility():void {
-//				trace('setMetadataTabVisibility')
 				//clean previous metadata children
 				for (var i:int = accordion.numChildren-1; i>=0; i--) {
 					if (accordion.getChildAt(i) is MetadataAccordionTab) {
@@ -377,7 +375,6 @@
 				}
 				if (_enableCustomData && _metadataProfilesArray) {
 					for (var j:int = _metadataProfilesArray.length-1; j>=0; j--) {
-						//for each (var profile:KMCMetadataProfileVO in _metadataProfilesArray) {
 						var profile:KMCMetadataProfileVO = _metadataProfilesArray.getItemAt(j) as KMCMetadataProfileVO;
 						if (profile.metadataFieldVOArray && profile.metadataFieldVOArray.length) {
 							var metadataTab:MetadataAccordionTab = new MetadataAccordionTab();
@@ -489,7 +486,6 @@
 					getDistributionFilters(currentFilter);
 				}
 				// category build
-				//				currentFilter.categoriesMatchOr = catTree.selectedFilterCategories;
 				currentFilter.categoriesIdsMatchOr = catTree.selectedFilterCategories;
 				updateFilterStatus(currentFilter);
 			}
@@ -605,7 +601,6 @@
 			 * initialize the different filters and panels
 			 * */
 			public function init():void {
-				//_dynamicFilterData = new Object();
 				accordion.addEventListener(FilterAccordionHeader.EDIT_CATEGORIES_MODE_EVENT, onEditCategories);
 				// flavor params
 				if ((_flavorParams != null) && (_flavorParams.length != 0)) {
@@ -616,7 +611,6 @@
 					buildAccessControlList();
 				}
 				//if enableCustomData is false and metadata exists remove the metadata filter header
-//				setMetadataTabVisibility();
 				_metadataDirtyFlag = true;
 				
 				// update view
@@ -707,7 +701,6 @@
 				}
 				var flvorParamsArr:Array = createButtonsGroup(resourceManager.getString('cms', 'allFlavorsBtn'), "flavorParams", arr, 
 					"name", onAutoTitleClick, onAutoMemberClick, _metadataButtons);
-				//_dynamicFilterData["flavorParams"] = flvorParamsArr;
 				injectGroupToContainer(transcodingFlavor, flvorParamsArr);
 			}
 			
@@ -720,7 +713,6 @@
 				}
 				var conv_profile:Array = createButtonsGroup(resourceManager.getString('cms', 'allAccessControlBtn'), "convProfile", 
 					arr, "name", onAutoTitleClick, onAutoMemberClick, _metadataButtons);
-				//_dynamicFilterData["convProfile"] = conv_profile;
 				injectGroupToContainer(accessControl, conv_profile);
 				
 			}
@@ -816,9 +808,6 @@
 				// free text
 				searchBox.setFilter(filterVo);
 				
-//				if (filterVo.startDateGreaterThanOrEqual == filterVo.startDateGreaterThanOrEqualOrNull == filterVo.startDateLessThanOrEqual == filterVo.startDateLessThanOrEqualOrNull == filterVo.endDateGreaterThanOrEqual == filterVo.endDateGreaterThanOrEqualOrNull == filterVo.endDateLessThanOrEqual == filterVo.endDateLessThanOrEqualOrNull == int.MIN_VALUE) {
-//					scheduling.allSchedulingBtn.selected = true;
-//				}
 				scheduling.setFilter(filterVo);
 				
 				// set categories here
@@ -849,8 +838,6 @@
 													break;
 												}
 											}
-											/* updateImageButton(_metadataButtons.source);
-											validateNow(); */
 											break;
 										}
 									}
@@ -895,7 +882,6 @@
 			 * */
 			public function set enableCustomData(value:Boolean):void {
 				_enableCustomData = value;
-//				setMetadataTabVisibility();
 				_metadataDirtyFlag = true;
 			}
 			
