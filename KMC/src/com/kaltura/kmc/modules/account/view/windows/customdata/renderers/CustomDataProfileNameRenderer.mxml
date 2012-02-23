@@ -3,38 +3,26 @@
 
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.AddCustomDataProfilePopup;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			
-			import mx.core.Application;
-			import mx.managers.PopUpManager;
-			
-			private var _profile:KMCMetadataProfileVO;
-			[Bindable]
-			private var _text:String;
-			[Bindable]
-			private var _btnEnabled:Boolean = true;
 			
 			override public function set data(value:Object):void {
-				_profile = value as KMCMetadataProfileVO;
-				_text = _profile.profile.name;
-				if (_profile.profileDisabled ) {
-					_text = _text + '*';
+				super.data = value;
+				var profile:KMCMetadataProfileVO = value as KMCMetadataProfileVO;
+				linkBtn.label = profile.profile.name;
+				if (profile.profileDisabled ) {
+					linkBtn.label += '*';
 					parentDocument.displayCustomSchemaMsg = true;
 				}
-				_btnEnabled = !_profile.profileDisabled;
+				linkBtn.enabled = !profile.profileDisabled 
 			}
 			
 			private function onBtnClick():void {
-				parentDocument.setSelectedProfile(_profile);
-				var editProfileWindow:AddCustomDataProfilePopup = new AddCustomDataProfilePopup();
-				editProfileWindow.metadataProfile = _profile;
-				PopUpManager.addPopUp(editProfileWindow, (Application.application as DisplayObject), true);
-				PopUpManager.centerPopUp(editProfileWindow);
+				dispatchEvent(new Event("editProfile", true));
 			}
 		]]>
 	</mx:Script>
 	
-	<mx:LinkButton id="linkBtn" textAlign="left" label="{_text}" enabled="{_btnEnabled}"
+	<mx:LinkButton id="linkBtn" textAlign="left"
 			  toolTip="{linkBtn.label}" click="{onBtnClick()}"/>
 </mx:HBox>

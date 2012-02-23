@@ -9,7 +9,7 @@
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
-			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.AddCustomDataProfilePopup;
+			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.CustomDataProfileDetails;
 			import com.kaltura.types.KalturaMetadataObjectType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			
@@ -35,6 +35,7 @@
 			
 			private function creationCompleteHandler(event:FlexEvent):void
 			{
+				addEventListener("editProfile", addEditProfile);
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				//BindingUtils.bindSetter(onProfilesChange, this, "profilesArray");
 			}
@@ -101,16 +102,27 @@
 			public function saveChanges():void {}
 
 			
-			private function addProfile():void {
-				var addProfileWindow:AddCustomDataProfilePopup = new AddCustomDataProfilePopup();
+			/**
+			 * open profile drilldown for add / edit
+			 * @param e		an event bubbling from the profile name IR, or null for new window. 
+			 * */
+			private function addEditProfile(e:Event = null):void {
+				var addProfileWindow:CustomDataProfileDetails = new CustomDataProfileDetails();
 				
-				var newProfile:KMCMetadataProfileVO = new KMCMetadataProfileVO();
-				setSelectedProfile(newProfile);
-				addProfileWindow.currentState = 'newProfileState';
-				addProfileWindow.metadataProfile = newProfile;
+				var profile:KMCMetadataProfileVO;
+				if (e) {
+					profile = e.target.data as KMCMetadataProfileVO;
+				}
+				else {
+					profile = new KMCMetadataProfileVO();
+					addProfileWindow.currentState = 'newProfileState';
+				}
+				setSelectedProfile(profile);
+				addProfileWindow.metadataProfile = profile;
 				PopUpManager.addPopUp(addProfileWindow, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(addProfileWindow);
 			}
+			
 			
 			private function deleteProfile():void {
 				if (!dg.selectedItem) {
@@ -208,7 +220,7 @@
 		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox" verticalScrollPolicy="off">
 			<mx:Button id="addButton"
 					   label="{resourceManager.getString('account','addNewSchema')}" useHandCursor="true"
-					   buttonMode="true" click="{addProfile()}" styleName="listActionButton"/>
+					   buttonMode="true" click="{addEditProfile()}" styleName="listActionButton"/>
 		</mx:VBox>
 	</mx:HBox>
 	
