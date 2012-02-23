@@ -10,6 +10,7 @@
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.AddCustomDataProfilePopup;
+			import com.kaltura.types.KalturaMetadataObjectType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			
 			import mx.binding.utils.BindingUtils;
@@ -137,6 +138,26 @@
 					deleteMetadata.dispatch();
 				}
 			}
+			
+			
+			/**
+			 * get the correct text to show on the "apply on" (metadataObjectType) column
+			 * @param data 	IR data
+			 * */
+			private function getSchemaObjectTypeLabel(item:Object, column:DataGridColumn):String {
+				var oType:String = item.profile.metadataObjectType;
+				var result:String = '';
+				if (oType == KalturaMetadataObjectType.ENTRY) {
+					result = resourceManager.getString('account', 'customSchemasEntryType');
+				}
+				else if (oType == KalturaMetadataObjectType.CATEGORY) {
+					result = resourceManager.getString('account', 'customSchemasCategoryType');
+				}
+				else {
+					result = oType;
+				}
+				return result;
+			}
 
 		]]>
 	</mx:Script>
@@ -167,6 +188,8 @@
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
+					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasTypeCol')}" paddingLeft="5"
+									   dataField="metadataObjectType" labelFunction="getSchemaObjectTypeLabel" />
 					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasFieldsIncludedCol')}" paddingLeft="5"
 									   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataFieldsIncludedRenderer"/>
 						
