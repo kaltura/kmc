@@ -30,7 +30,6 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaMetadataSearchItem;
-			import com.kaltura.vo.KalturaPlaylistFilter;
 			import com.kaltura.vo.KalturaSearchCondition;
 			import com.kaltura.vo.KalturaSearchOperator;
 			import com.kaltura.vo.MetadataFieldVO;
@@ -71,21 +70,10 @@
 			
 			[Bindable]
 			/**
-			 * show "approved" option in <code>moderationStatusContainer</code>
-			 * */
-			public var showApprovedOption:Boolean = true;
-			
-			[Bindable]
-			/**
 			 * show "rejected" option in <code>moderationStatusContainer</code>
 			 * */
 			public var showRejectedOption:Boolean = true;
 			
-			[Bindable]
-			/**
-			 * show "pending" option in <code>moderationStatusContainer</code>
-			 * */
-			public var showPendingModerationOption:Boolean = true;
 			
 			[Bindable]
 			/**
@@ -148,6 +136,7 @@
 			 * @copy #enableDistribution
 			 * */
 			private var _enableDistribution:Boolean;
+			
 			/**
 			 * filter initialization flag, set to true on creationComplete
 			 * */
@@ -164,6 +153,7 @@
 			private var _metadataFilters:Object = new Object();
 			
 			private var _currentMetadataFilterId:String;
+			
 			/**
 			 * initial filtering data. when the filter is set the data is
 			 * nullified until a new filter is externaly set. changing filter
@@ -415,16 +405,18 @@
 			
 
 			/**
-			 * update button icons and start a search with new data
+			 * update button icons of the changed filter 
+			 * tab and start a search with the new data
 			 * */
-			private function onTabChanged(e:Event):void {
+			private function onSelectionChanged(e:Event):void {
 				var btns:Array = (e.target as IFilterTab).buttons;
 				updateImageButton(btns);
 				preformNewSearch();
 			}
 			
 			/**
-			 * generate a KalturaMediaEntryFilterVo or KalturaMediaEntryFilterForPlaylist from current view
+			 * generate a KalturaMediaEntryFilterVo or 
+			 * KalturaMediaEntryFilterForPlaylist from current view
 			 * */
 			private function renderFilterVo(currentFilter:KalturaBaseEntryFilter):void {
 				var tmpStr:String;
@@ -489,6 +481,7 @@
 				currentFilter.categoriesIdsMatchOr = catTree.selectedFilterCategories;
 				updateFilterStatus(currentFilter);
 			}
+			
 			
 			/**
 			 * get metadata filters
@@ -647,12 +640,18 @@
 				return container;
 			}
 			
+			
+			/**
+			 * create the buttons for the filters in the profiles
+			 * @param kmcMetadataProfileVO metadata profile with searchable list fields
+			 * @param metadataTab	the container to which buttons should be added
+			 * */
 			private function buildMetadataProfileFilter(kmcMetadataProfileVO:KMCMetadataProfileVO, metadataTab:VBox):void {
 				for (var i:int = 0; i < kmcMetadataProfileVO.metadataFieldVOArray.length; i++) {
 					//if appear in search is true and we need to create additinal filter
 					var mfvo:MetadataFieldVO = kmcMetadataProfileVO.metadataFieldVOArray[i] as MetadataFieldVO;
 					if (mfvo && mfvo.appearInSearch) {
-						var container:Container = createDynamicFilter(kmcMetadataProfileVO.metadataFieldVOArray[i], metadataTab.id);
+						var container:Container = createDynamicFilter(mfvo, metadataTab.id);
 						
 						if (container) // if we need to add visual filter
 							metadataTab.addChild(container);
@@ -1007,7 +1006,7 @@
 
 	<filter:TextSearchTab id="searchBox" includeInLayout="true" visible="true" styleName="searchHBox"
 						  label="{resourceManager.getString('cms', 'searchFilter')}" width="100%"
-						  filterChanged="{onTabChanged(event)}"/>
+						  filterChanged="{onSelectionChanged(event)}"/>
 	<mx:Accordion id="accordion" height="100%" creationPolicy="all" width="100%" headerHeight="30" selectedIndex="2" change="{onAccordionChange()}">
 		<mx:headerRenderer>
 			<mx:Component>
@@ -1032,30 +1031,29 @@
 							   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
 			</mx:VBox>
 			<filter:MediaTypesTab id="mediaTypes" width="100%" styleName="typesVBox"
-								  enablelivestream="{enablelivestream}" filterChanged="{onTabChanged(event)}"/>
+								  enablelivestream="{enablelivestream}" filterChanged="{onSelectionChanged(event)}"/>
 			<filter:ConversionStatusTab id="conversionStatus" width="100%" styleName="typesVBox"
 										label="{resourceManager.getString('cms', 'status')}"
 										visible="{showStatusOptions}" includeInLayout="{showStatusOptions}"
-										filterChanged="{onTabChanged(event)}"/>
+										filterChanged="{onSelectionChanged(event)}"/>
 			<filter:DurationTab id="durationStatus" width="100%" styleName="typesVBox"
 								label="{resourceManager.getString('cms', 'durationLabel')}"
-								filterChanged="{onTabChanged(event)}"/>
+								filterChanged="{onSelectionChanged(event)}"/>
 			<filter:ClipsTab id="clipsFilter" width="100%" styleName="typesVBox"
 								label="{resourceManager.getString('cms', 'allOrigClipEntries')}"
-								filterChanged="{onTabChanged(event)}"/>
+								filterChanged="{onSelectionChanged(event)}"/>
 			<filter:SchedulingTab id="scheduling" width="100%" styleName="typesVBox"
-								  filterChanged="{onTabChanged(event)}" visible="{showSchedulingOptions}"
+								  filterChanged="{onSelectionChanged(event)}" visible="{showSchedulingOptions}"
 								  includeInLayout="{showSchedulingOptions}"/>
 			<filter:ModerationStatusTab id="moderationStatus" label="{resourceManager.getString('cms', 'status')}"
-										filterChanged="{onTabChanged(event)}"
-										showPendingModerationOption="{showPendingModerationOption}"
+										filterChanged="{onSelectionChanged(event)}"
 										showRejectedOption="{showRejectedOption}"
-										showApprovedOption="{showApprovedOption}" styleName="typesVBox"
+										styleName="typesVBox"
 										visible="{showModerationOptions}" includeInLayout="{showModerationOptions}"/>
 			<filter:ReplacementStatusTab id="replacementStatus" width="100%" styleName="typesVBox"
 										label="{resourceManager.getString('cms', 'status')}"
 										visible="{showReplacementOptions}" includeInLayout="{showReplacementOptions}"
-										filterChanged="{onTabChanged(event)}"/>
+										filterChanged="{onSelectionChanged(event)}"/>
 			<mx:VBox id="accessControl" width="100%" styleName="typesVBox" visible="{showAccessControlOptions}"
 					 includeInLayout="{showAccessControlOptions}"/>
 			<mx:VBox id="transcodingFlavor" width="100%" styleName="typesVBox"
