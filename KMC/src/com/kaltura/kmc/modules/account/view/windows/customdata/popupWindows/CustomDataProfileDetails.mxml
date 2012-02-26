@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <!---
 
 This popup window is used to add or edit an Custom Data Profile.
 Use the 'newProfileState' state for the 'Add New..' action
 
 -->
-
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"		
 				xmlns:dataGrid="com.kaltura.kmc.view.dataGrid.*"
 				xmlns:customdata="com.kaltura.kmc.modules.account.view.windows.customdata.*"
@@ -24,16 +21,13 @@ Use the 'newProfileState' state for the 'Add New..' action
 			<mx:SetProperty name="title" value="{resourceManager.getString('account', 'newMetadataSchema')}"/>
 		</mx:State>
 	</mx:states>
-
-
 	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.kmc.modules.account.events.AddMetadataFieldEvent;
-			import com.kaltura.kmc.modules.account.events.MetadataFieldEvent;
-			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
+			import com.kaltura.kmc.modules.account.events.*;
+			import com.kaltura.types.KalturaMetadataObjectType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
@@ -47,14 +41,20 @@ Use the 'newProfileState' state for the 'Add New..' action
 			import mx.managers.PopUpManager;
 			import mx.validators.ValidationResult;
 			
-			import org.flexunit.internals.namespaces.classInternal;
-			
 			
 			// events const
 			public static const SAVE_UPDATED_PROFILE:String = "saveUpdatedProfile";
 			public static const SAVE_NEW_PROFILE:String = "saveNewProfile";
 
 			private const maxNameLength:int = 31;
+			
+			[Bindable]
+			/**
+			 * schema object types (categorie, entries)
+			 * @internal
+			 * used as DP for the "apply on" dropdown
+			 * */
+			private var objectTypes:Array;
 			
 			/**
 			 *  the metadataProfile to add ot edit
@@ -99,12 +99,48 @@ Use the 'newProfileState' state for the 'Add New..' action
 			 */
 			private function onCreationComplete():void {
 				this.mx_internal::closeButton.buttonMode = true;
+				objectTypes = [{data:KalturaMetadataObjectType.ENTRY, label:resourceManager.getString('account', 'customSchemasEntryType')}, 
+					{data:KalturaMetadataObjectType.CATEGORY, label:resourceManager.getString('account', 'customSchemasCategoryType')}];
+				
+				if (metadataProfile) {
+					if (metadataProfile.profile.metadataObjectType) {
+						// this is an existing profile
+						objectTypeCB.selectedIndex = getItemIndex(metadataProfile.profile.metadataObjectType, objectTypes);
+						objectTypeCB.enabled = false;
+					}
+					else {
+						// this is a new profile
+						objectTypeCB.prompt = resourceManager.getString('account', 'metadataSchemaSelectObjectType');
+						objectTypeCB.selectedIndex = -1;
+					}
+				}
+				
+				
 				//edit state
 				if (currentState == null)
 					PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup_edit");
 				//add new state
 				else
 					PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup_add");
+			}
+			
+			/**
+			 * Returns the index of the item in the Array who has the same data as the given.
+			 * (it is assumed that the item has a "data" attribute.
+			 * @param data The data of the item to find in the Array. 
+			 * @param source The Array to search for the item.
+			 * @return The index of the item, and -1 if the item is not in the list.
+			 */
+			public static function getItemIndex(data:Object, source:Array):int
+			{
+				var n:int = source.length;
+				for (var i:int = 0; i < n; i++)
+				{
+					if (source[i].data === data)
+						return i;
+				}
+				
+				return -1;           
 			}
 	
 			/**
@@ -134,7 +170,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 			}
 			
 			
-			public function saveChanges():void {
+			private function saveChanges():void {
 				nameValidator.source = profileNameTi;
 				var vre:ValidationResultEvent = nameValidator.validate();
 				if (vre.results != null && vre.results.length > 0) {
@@ -147,6 +183,11 @@ Use the 'newProfileState' state for the 'Add New..' action
 					return;
 				}
 				
+				if (!_metadataProfile.profile.metadataObjectType) {
+					Alert.show(resourceManager.getString('account','metadataNoObjectType'), resourceManager.getString('account','metadataInvalidInput'));
+					return;
+				}
+				
 				if (! metadataProfile.isNewProfile) {
 					if (metadataProfile.metadataProfileReordered){
 						Alert.show(resourceManager.getString('account', 'metadataReorderWarning'), resourceManager.getString('account', 'metadataReorderWarningTitle'),  Alert.YES | Alert.NO, null, updateSchemaAfterApproval);
@@ -155,6 +196,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 					}
 				}
 				else {
+					//TODO make sure there is value selected for object type
 					var addMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.ADD);
 					addMetadataProfile.dispatch();
 				}
@@ -223,6 +265,11 @@ Use the 'newProfileState' state for the 'Add New..' action
 				_metadataProfile.metadataProfileChanged = true;
 			}
 			
+			private function onObjTypeChanged(event:Event) : void {
+				_metadataProfile.profile.metadataObjectType = objectTypeCB.selectedItem.data;
+				_metadataProfile.metadataProfileChanged = true;
+			}
+			
 			private function downloadXSD():void {
 				var urlRequest:URLRequest = new URLRequest(metadataProfile.downloadUrl);
 				navigateToURL(urlRequest , '_self');
@@ -250,14 +297,18 @@ Use the 'newProfileState' state for the 'Add New..' action
 	<mx:VBox verticalScrollPolicy="off" horizontalScrollPolicy="off" height="100%" width="100%"
 			 styleName="acpPopUpMainVBox">
 		<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('account', 'profileName')}" width="80"/>
-				<mx:TextInput id='profileNameTi' width="100%" change="{onNameChanged(event)}"
-							  text="{metadataProfile.profile.name}"/>		
+			<mx:Label text="{resourceManager.getString('account', 'profileName')}" width="80"/>
+			<mx:TextInput id='profileNameTi' width="100%" change="{onNameChanged(event)}"
+						  text="{metadataProfile.profile.name}"/>		
 		</mx:HBox>
 		<mx:HBox width="100%">
-				<mx:Label text="{resourceManager.getString('account', 'profileDescription')}" width="80"/>
-				<mx:TextInput id='descriptionTi' width="100%" text="{metadataProfile.profile.description}"
-							  change="{onDescriptionChanged(event)}"/>		
+			<mx:Label text="{resourceManager.getString('account', 'profileDescription')}" width="80"/>
+			<mx:TextInput id='descriptionTi' width="100%" text="{metadataProfile.profile.description}"
+						  change="{onDescriptionChanged(event)}"/>		
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('account', 'metadataSchemaObjectType')}" width="80"/>
+			<mx:ComboBox id="objectTypeCB" change="{onObjTypeChanged(event)}" dataProvider="{objectTypes}" />
 		</mx:HBox>
 		<mx:LinkButton id="downloadXSDBtn" paddingLeft="0" label="{resourceManager.getString('account', 'downloadSchema')}" click="downloadXSD()"/>
 		<mx:HBox id="fieldsTableBox" width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">

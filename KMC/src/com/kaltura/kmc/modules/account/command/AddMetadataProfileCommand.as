@@ -43,7 +43,6 @@ package com.kaltura.kmc.modules.account.command
 			
 			var mr:MultiRequest = new MultiRequest();
 			
-			_model.selectedMetadataProfile.profile.metadataObjectType = KalturaMetadataObjectType.ENTRY;		
 			_model.selectedMetadataProfile.profile.createMode = KalturaMetadataProfileCreateMode.KMC;		
 			var addMetadataProfile:MetadataProfileAdd = new MetadataProfileAdd(_model.selectedMetadataProfile.profile, _model.selectedMetadataProfile.xsd.toXMLString());
 			mr.addAction(addMetadataProfile);
@@ -52,6 +51,7 @@ package com.kaltura.kmc.modules.account.command
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
 			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
+//			filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, _model.metadataFilterPager);
 			mr.addAction(listMetadataProfile);
 			
@@ -75,7 +75,7 @@ package com.kaltura.kmc.modules.account.command
 				_model.selectedMetadataProfile.isCurrentlyEdited = false;
 			}
 			//last request is always the list request
-			var listResult:KalturaMetadataProfileListResponse  = responseArray[1]as KalturaMetadataProfileListResponse;
+			var listResult:KalturaMetadataProfileListResponse = responseArray[1]as KalturaMetadataProfileListResponse;
 			_model.metadataProfilesTotalCount = listResult.totalCount;
 			_model.metadataProfilesArray = ListMetadataProfileUtil.handleListMetadataResult(listResult, _model.context);
 		}
