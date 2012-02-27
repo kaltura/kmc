@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel" show="onShow()"
-		   verticalGap="{customDataVerticalGap}"
-		   label="{resourceManager.getString('drilldown', 'customData')}">
+<mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" implements="com.kaltura.edw.business.IDrilldownPanel" 
+		   verticalGap="{customDataVerticalGap}" label="{resourceManager.getString('drilldown', 'customData')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -14,7 +13,6 @@
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.CustomDataTabController;
 			import com.kaltura.edw.control.events.MetadataDataEvent;
-			import com.kaltura.edw.control.events.MetadataProfileEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.datapacks.CustomDataDataPack;
@@ -22,7 +20,6 @@
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.vo.EntryMetadataDataVO;
 			import com.kaltura.kmvc.model.IDataPackRepository;
-			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
@@ -33,10 +30,6 @@
 			private static const customDataVerticalGap:int = 5;
 			
 			private var controller:CustomDataTabController = CustomDataTabController.getInstance();
-			
-//			public var model:KMvCModel;
-			
-			public var selectedProfileIndex:int;
 			
 			
 			[Bindable]
@@ -136,11 +129,20 @@
 			
 			
 			public function destroy():void {
-				for (var i:int = 0; i < profilesVBox.numChildren; i++) {
-					(profilesVBox.getChildAt(i) as SingleCustomData).destroy();
+				var curCustomData:SingleCustomData;
+				for (var i:int = profilesVBox.numChildren-1; i>=0; i--) {
+					curCustomData = profilesVBox.getChildAt(i) as SingleCustomData; 
+					curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
+					curCustomData.destroy();
 				}
 			}
 			
+			
+			/**
+			 * create the visual representation of each profile
+			 * @param profilesAC list of custom data profiles (<code>KMCMetadataProfileVO</code>)
+			 * @param formBuildersAC	list of matching form builders (<code>FormBuilder</code>)
+			 * */
 			private function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
 				_profilesAC = new ArrayCollection();
 				//remove old data and old binding
@@ -152,8 +154,7 @@
 					
 					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
 						var curCustomData:SingleCustomData = new SingleCustomData();
-						var curFormBuilder:FormBuilder = formBuildersAC.getItemAt(i) as FormBuilder;
-						curCustomData.formBuilder = curFormBuilder;
+						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as FormBuilder;
 						curCustomData.controller = controller;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
 						
@@ -171,13 +172,6 @@
 			}
 			
 			
-			
-			private function onShow():void {
-				for (var i:int = 0; i < profilesVBox.numChildren; i++) {
-					if (profilesVBox.getChildAt(i) is SingleCustomData)
-						(profilesVBox.getChildAt(i) as SingleCustomData).onShow();
-				}
-			}
 			
 			
 			protected function jumpToProfile():void {

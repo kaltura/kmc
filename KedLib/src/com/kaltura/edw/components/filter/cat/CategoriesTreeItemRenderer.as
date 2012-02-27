@@ -2,19 +2,27 @@ package com.kaltura.edw.components.filter.cat {
 	import com.kaltura.edw.components.filter.CategoriesTree;
 	import com.kaltura.edw.vo.CategoryVO;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
 	import mx.containers.HBox;
+	import mx.controls.CheckBox;
 	import mx.controls.LinkButton;
+	import mx.controls.Tree;
 	import mx.controls.treeClasses.TreeItemRenderer;
+	import mx.controls.treeClasses.TreeListData;
+	import mx.core.mx_internal;
 	import mx.events.ResizeEvent;
+	
+	use namespace mx_internal;
 
 	public class CategoriesTreeItemRenderer extends TreeItemRenderer {
 		protected var _tree:CategoriesTree;
 		protected var hBox:HBox;
 		protected var addBtn:LinkButton;
 		protected var deleteBtn:LinkButton;
+		protected var cb:CheckBox;
 
 		override protected function createChildren():void {
 			super.createChildren();
@@ -39,6 +47,18 @@ package com.kaltura.edw.components.filter.cat {
 			addChild(hBox);
 		}
 
+		override mx_internal function createLabel(childIndex:int):void {
+			super.createLabel(childIndex);
+			if (!cb){
+				cb = new CheckBox();
+				trace(childIndex);
+				if (childIndex == -1)
+					addChildAt(DisplayObject(cb), getChildIndex(getLabel() as DisplayObject));
+				else 
+					addChildAt(DisplayObject(cb), childIndex);
+//				addChildAt(cb, childIndex);
+			}
+		}
 
 		private function onDeleteCategoryEvent(event:Event):void {
 			dispatchEvent(new Event(CategoriesTree.OPEN_DELETE_CATEGORY, true));
@@ -95,12 +115,14 @@ package com.kaltura.edw.components.filter.cat {
 		override protected function measure():void {
 			super.measure();
 
-			//Setting the width of the description field
-			//causes the height calculation to happen
-			hBox.width = explicitWidth - label.x;
-
-			//We add the measuredHeight to the renderers measured height
-			measuredHeight = hBox.measuredHeight;
+			if (hBox) {
+				//Setting the width of the description field
+				//causes the height calculation to happen
+				hBox.width = explicitWidth - label.x;
+	
+				//We add the measuredHeight to the renderers measured height
+				measuredHeight = hBox.measuredHeight;
+			}
 		}
 
 
@@ -110,7 +132,107 @@ package com.kaltura.edw.components.filter.cat {
 		 * */
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
-
+			var ld:TreeListData = listData as TreeListData;
+			var listOwner:Tree = Tree(ld.owner);
+			var startx:Number = data ? ld.indent : 0;
+			
+			if (disclosureIcon)
+			{
+				disclosureIcon.x = startx;
+				
+				startx = disclosureIcon.x + disclosureIcon.width;
+				
+				disclosureIcon.setActualSize(disclosureIcon.width,
+					disclosureIcon.height);
+				
+				disclosureIcon.visible = data ?
+					ld.hasChildren :
+					false;
+			}
+			
+			if (icon)
+			{
+				icon.x = startx;
+				startx = icon.x + icon.measuredWidth;
+				icon.setActualSize(icon.measuredWidth, icon.measuredHeight);
+			}
+			
+			cb.x = startx;
+			startx = cb.x + cb.measuredWidth;
+			cb.setActualSize(cb.measuredWidth, cb.measuredHeight);
+			
+			label.x = startx;
+			label.setActualSize(unscaledWidth - startx, measuredHeight);
+			
+			var verticalAlign:String = getStyle("verticalAlign");
+			if (verticalAlign == "top")
+			{
+				label.y = 0;
+				cb.y = 0;
+				if (icon)
+					icon.y = 0;
+				if (disclosureIcon)
+					disclosureIcon.y = 0;
+			}
+			else if (verticalAlign == "bottom")
+			{
+				cb.y = unscaledHeight - cb.height + 2; // 2 for gutter
+				label.y = unscaledHeight - label.height + 2; // 2 for gutter
+				if (icon)
+					icon.y = unscaledHeight - icon.height;
+				if (disclosureIcon)
+					disclosureIcon.y = unscaledHeight - disclosureIcon.height;
+			}
+			else
+			{
+				cb.y = (unscaledHeight - cb.height) / 2;
+				label.y = (unscaledHeight - label.height) / 2;
+				if (icon)
+					icon.y = (unscaledHeight - icon.height) / 2;
+				if (disclosureIcon)
+					disclosureIcon.y = (unscaledHeight - disclosureIcon.height) / 2;
+			}
+			
+			var labelColor:Number;
+			
+			if (data && parent)
+			{
+				if (!enabled)
+					labelColor = getStyle("disabledColor");
+					
+				else if (listOwner.isItemHighlighted(listData.uid))
+					labelColor = getStyle("textRollOverColor");
+					
+				else if (listOwner.isItemSelected(listData.uid))
+					labelColor = getStyle("textSelectedColor");
+					
+				else
+					labelColor = getStyle("color");
+				
+				label.setColor(labelColor);
+			}
+			
+			if (data != null)
+			{			
+				if (listOwner.showDataTips)
+				{
+					if (label.textWidth > label.width ||
+						listOwner.dataTipFunction != null)
+					{
+						toolTip = listOwner.itemToDataTip(data);
+					}
+					else
+					{
+						toolTip = null;
+					}
+				}
+				else
+				{
+					toolTip = null;
+				}
+			}
+			// ===========================================================================
+			// ===========================================================================
 			if (data && (data is CategoryVO)) {
 				var vo:CategoryVO = data as CategoryVO;
 				label.htmlText = vo.name + " <font color='#666666' size='11'> (" +
