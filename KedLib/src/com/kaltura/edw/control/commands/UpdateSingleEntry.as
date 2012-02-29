@@ -47,7 +47,7 @@ package com.kaltura.edw.control.commands {
 					var metadataInfo:EntryMetadataDataVO = cddp.metadataInfoArray[j] as EntryMetadataDataVO;
 					var profile:KMCMetadataProfileVO = metadataProfiles[j] as KMCMetadataProfileVO;
 					if (metadataInfo && profile && profile.profile) {
-						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo.metadataDataObject, profile);
+						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo, profile);
 						//metadata exists--> update request
 						if (metadataInfo.metadata) {
 							var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);

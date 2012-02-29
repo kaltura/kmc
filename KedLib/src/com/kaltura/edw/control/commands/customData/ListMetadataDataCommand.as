@@ -61,42 +61,33 @@ package com.kaltura.edw.control.commands.customData
 		override public function result(data:Object):void
 		{
 			super.result(data);
+			
 			var metadataResponse:KalturaMetadataListResponse = data.data as KalturaMetadataListResponse;
+			
 			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 			cddp.metadataInfoArray = new ArrayCollection;
+			
+			
 			//go over all profiles and match to the metadata data
 			for (var i:int = 0; i<_filterModel.metadataProfiles.length; i++) {
-				var curMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
-				cddp.metadataInfoArray.addItem(curMetadata);
-				var curFormBuilder:FormBuilder = _filterModel.formBuilders[i] as FormBuilder;
-				curFormBuilder.metadataInfo = curMetadata;
-				var curProfile:KMCMetadataProfileVO = _filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
+				var entryMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
+				cddp.metadataInfoArray.addItem(entryMetadata);
+				
+				// get the form builder that matches this profile:
+				var formBuilder:FormBuilder = _filterModel.formBuilders[i] as FormBuilder;
+				formBuilder.metadataInfo = entryMetadata;
+				
+				// add the KalturaMetadata of this profile to the EntryMetadataDataVO
+				var profileId:int = (_filterModel.metadataProfiles[i] as KMCMetadataProfileVO).profile.id;
 				for each (var metadata:KalturaMetadata in metadataResponse.objects) {
-					if ((metadata.metadataProfileId == curProfile.profile.id) &&
-						(metadata.metadataProfileVersion == curProfile.profile.version)) {
-						curMetadata.metadata = metadata;
+					if (metadata.metadataProfileId == profileId) {
+						entryMetadata.metadata = metadata;
 						break;
 					}
 				}
-				curFormBuilder.updateMultiTags();
+				formBuilder.updateMultiTags();
 			}
 		}
 		
-//		/**
-//		 * this function will be called if the request failed 
-//		 * @param info the info returned from the server
-//		 * 
-//		 */		
-//		public function fault(info:Object):void
-//		{
-//			if(info && info.error && info.error.errorMsg && info.error.errorMsg.toString().indexOf("Invalid KS") > -1 )
-//			{
-//				JSGate.expired();
-//				return;
-//			}
-//			_model.decreaseLoadCounter();
-//			Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-//		}
-
 	}
 }

@@ -15,7 +15,9 @@ package com.kaltura.edw.vo
 		 * dynamic object, represents metadata values
 		 * */
 		public var metadataDataObject:MetadataDataObject = new MetadataDataObject();
+		
 		public var finalViewMxml:XML;
+		
 		public var metadata:KalturaMetadata;
 		
 		public function EntryMetadataDataVO()

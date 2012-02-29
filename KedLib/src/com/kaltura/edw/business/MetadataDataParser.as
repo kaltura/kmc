@@ -4,6 +4,7 @@ package com.kaltura.edw.business
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.model.MetadataDataObject;
+	import com.kaltura.edw.vo.EntryMetadataDataVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.MetadataFieldVO;
@@ -19,25 +20,42 @@ package com.kaltura.edw.business
 	public class MetadataDataParser
 	{
 		public static const METADATA_ROOT:String = "<metadata/>";
+		
+		
 		/**
 		 * This function transforms a given metadataDataObject to a valid metadataData XML
-		 * by handling different cases for different field types 
-		 * @param metadataObject the given MetadataDataObject
-		 * @return a vaid metadataData XML
-		 * 
+		 * by handling different cases for different field types. 
+		 * if a field in the profile has no value, the function will create an 
+		 * empty node for it only if previously there was one.   
+		 * @param entryMetadata		entry metadata with new values to transform to XML and old saved data
+		 * @param metadataProfile	the profile this metadata matches
+		 * @return a valid metadataData XML
 		 */		
-		public static function toMetadataXML(metadataObject:MetadataDataObject, metadataProfile:KMCMetadataProfileVO):XML {
+		public static function toMetadataXML(entryMetadata:EntryMetadataDataVO, metadataProfile:KMCMetadataProfileVO):XML {
 			var result:XML = new XML(METADATA_ROOT);
+			var metadataObject:MetadataDataObject = entryMetadata.metadataDataObject;
 			
 			for each (var curField:MetadataFieldVO in metadataProfile.metadataFieldVOArray) {
 				var attr:String = curField.name;
 				if (metadataObject[attr]) {
+					// nodes with value
 					addNode(attr, metadataObject, curField, result);
+				}
+				else if (entryMetadata.metadata && entryMetadata.metadata.xml){
+					// add empty nodes only if previously saved data contained empty nodes.
+					// look for node of same name in old data:
+					var oldNode:XMLList = XML(entryMetadata.metadata.xml).descendants(attr); 
+					if (oldNode.length() == 1 && oldNode[0].children().length() == 0) {
+						// the old node was empty, create empty node:
+						var valueNode:XML = getNode(attr, null);
+						result.appendChild(valueNode);
+					}
 				}
 			}
 			
 			return result;
 		}
+		
 		
 		/**
 		 * This function sorts the attributes from the given metadataDataObject and returns the sorted attributes 
@@ -184,21 +202,25 @@ package com.kaltura.edw.business
 		}
 		
 		/**
-		 * This function recieves metadata data in XML form 
-		 * and returns an arrayCollection, with the values from the XML represented by MetadataDataVO objects
-		 * */
+		 * convert metadata XML data to hashmaps, including nesting support
+		 * @param metadataXml	metadata values in XML form
+		 * @return HashMap where for each field name there is a list of field values (as Strings)
+		 */		
 		public static function getMetadataDataValues(metadataXml:XML):HashMap 
 		{
 			var dataValues:HashMap = new HashMap();
 			for each (var node:XML in metadataXml.children()) 
 			{
-				var currentField:String = node.localName();
-				var updatedArray:Array = new Array();
+				var fieldName:String = node.localName();
+				var updatedArray:Array;
 				
-				if (dataValues.containsKey(currentField)) 
+				if (dataValues.containsKey(fieldName)) 
 				{
-					updatedArray = dataValues.getValue(currentField);
+					updatedArray = dataValues.getValue(fieldName);
 				}	
+				else {
+					updatedArray = new Array();
+				}
 				
 				var value:String = node.text().toString();
 				
@@ -206,10 +228,11 @@ package com.kaltura.edw.business
 				if (value=="" && node.children().length()>0) {
 					updatedArray.push(getMetadataDataValues(node));
 				}
-				else if (value!="")	
+				else /*if (value!="")*/	{
 					updatedArray.push(value);
+				}
 				
-				dataValues.put(currentField, updatedArray);
+				dataValues.put(fieldName, updatedArray);
 			}
 			
 			return dataValues;

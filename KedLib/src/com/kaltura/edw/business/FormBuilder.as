@@ -57,7 +57,11 @@ package com.kaltura.edw.business {
 		private var _isInvalidView:Boolean = false;
 
 		private var _metadataProfile:KMCMetadataProfileVO;
-		private var _metadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
+		
+		/**
+		 * @copy #metadataInfo 
+		 */		
+		private var _entryMetadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
 			
 		/**
 		 * map of objects that will be bound to others
@@ -90,12 +94,12 @@ package com.kaltura.edw.business {
 		 *
 		 */
 		public function get metadataInfo():EntryMetadataDataVO {
-			return _metadataInfo;
+			return _entryMetadataInfo;
 		}
 
 
 		public function set metadataInfo(value:EntryMetadataDataVO):void {
-			_metadataInfo = value;
+			_entryMetadataInfo = value;
 		}
 
 
@@ -111,35 +115,29 @@ package com.kaltura.edw.business {
 		}
 
 
-		/**
-		 * go through the view xml and duplicates fields if neccessary, according to metadata data
-		 * @param mxml the fields mxml view
-		 * @param metadataData the existing data of current entry
-		 * @return a new mxml with the existing data in the fields nodes, under the "text" property
-		 *
-		 */
+		
 		public function updateMultiTags():void {
-			//var metadataInfo:EntryMetadataDataVO = _model.entryDetailsModel.metadataInfo;
-			if (!_metadataInfo)
-				return;
 			if (!_metadataProfile.viewXML) {
-				Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidView', [_metadataProfile.profile.name]), 
-					ResourceManager.getInstance().getString('drilldown', 'error'));
+				// the profile has no view definitions
+				Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidView', new Array(_metadataProfile.profile.name)), ResourceManager.getInstance().getString('drilldown', 'error'));
 				return;
 			}
-			if (!_metadataInfo.metadata) {
-				_metadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
+			if (!_entryMetadataInfo.metadata) {
+				// there was no previous data for this profile + entry, use the profile's default view
+				_entryMetadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
 				return;
 			}
-
+			
+			// view:
 			var mxml:XML = _metadataProfile.viewXML.copy();
-			var metadataData:XML = new XML(_metadataInfo.metadata.xml);
-
+			// saved data:
+			var metadataData:XML = new XML(_entryMetadataInfo.metadata.xml);
+			
 			var dataMap:HashMap = MetadataDataParser.getMetadataDataValues(metadataData);
 			for each (var field:XML in mxml.children())
-				setFieldData(field, dataMap);
-
-			_metadataInfo.finalViewMxml = mxml;
+			setFieldData(field, dataMap);
+			
+			_entryMetadataInfo.finalViewMxml = mxml;
 		}
 
 
@@ -481,7 +479,7 @@ package com.kaltura.edw.business {
 			}
 
 			//if it's a nested component we will recieve the bound metadata object. otherwhise use the one from the model
-			var boundObject:MetadataDataObject = metadataObject ? metadataObject : _metadataInfo.metadataDataObject;
+			var boundObject:MetadataDataObject = metadataObject ? metadataObject : _entryMetadataInfo.metadataDataObject;
 			try {
 				var child:UIComponent = buildComponent(field, boundObject, fieldsArray);
 			}
