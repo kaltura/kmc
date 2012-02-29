@@ -184,50 +184,60 @@
 			private function changeDateByRange(event:ListEvent):void {
 				var today:Date = new Date();
 				var todaysHourInMiliSeconds:Number = (((today.hoursUTC) * 60 + today.minutesUTC) * 60 + today.secondsUTC) * 1000 + today.millisecondsUTC;
-				var i:int = 0;
-				var index:int = 0;
+				var todayStart:Number = today.time - todaysHourInMiliSeconds;
 
 				_filterVo.selectedDate = (event.target as ComboBox).selectedItem.toString();
 
 				switch ((event.target as ComboBox).selectedItem.toString()) {
 					case resourceManager.getString('analytics', 'yesterday'):
-						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 2 * ONE_DAY);
-
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives the day before yesterday
+						_filterVo.fromDate = new Date(todayStart - 2 * ONE_DAY);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'last7Days'):
-						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 7 * ONE_DAY);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives 6 days, starting 7 days ago and ending yesterday
+						_filterVo.fromDate = new Date(todayStart - 7 * ONE_DAY);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'thisWeek'):
-						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - (_filterVo.toDate.day + 1) * ONE_DAY);
-
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives from last sunday to yesterday
+						_filterVo.fromDate = new Date(todayStart - today.day * ONE_DAY);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'lastWeek'):
-						_filterVo.fromDate = new Date(_filterVo.toDate.time - 6 * ONE_DAY);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - (today.day + 1) * ONE_DAY);
-
+						// actually gives 2 sundays ago to last sunday 
+						_filterVo.fromDate = new Date(todayStart - (today.day + 8) * ONE_DAY);
+						_filterVo.toDate = new Date(todayStart - (today.day + 1) * ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'last30Days'):
-						_filterVo.fromDate = new Date(today.time - todaysHourInMiliSeconds - 31 * ONE_DAY);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives 31 days ago until yesterday
+						_filterVo.fromDate = new Date(todayStart - 31 * ONE_DAY);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'last12Months'):
-						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC - 1, today.monthUTC, today.dateUTC);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives a year ago today until yesterday
+						_filterVo.fromDate = new Date(today.fullYear - 1, today.month, today.date);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'thisMonth'):
-						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC, today.monthUTC, 1);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives first day of the month until yesterday
+						_filterVo.fromDate = new Date(today.fullYear, today.month, 1);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					case resourceManager.getString('analytics', 'lastMonth'):
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - (ONE_DAY * today.date));
-						_filterVo.fromDate = adjustDateToUTC(_filterVo.toDate.fullYearUTC, _filterVo.toDate.monthUTC, 1);
+						// actually gives from the first of last month to the last of last month
+						if (today.month > 0) {
+							_filterVo.fromDate = new Date(today.fullYear, today.month-1, 1);
+						}
+						else {
+							_filterVo.fromDate = new Date(today.fullYear - 1, 11, 1);
+						}
+						_filterVo.toDate = new Date(todayStart - (ONE_DAY * today.date));
 						break;
 					case resourceManager.getString('analytics', 'thisYear'):
-						_filterVo.fromDate = adjustDateToUTC(today.fullYearUTC, 0, 1);
-						_filterVo.toDate = new Date(today.time - todaysHourInMiliSeconds - ONE_DAY);
+						// actually gives from the 1/1 of current year to yesterday
+						_filterVo.fromDate = new Date(today.fullYear, 0, 1);
+						_filterVo.toDate = new Date(todayStart - ONE_DAY);
 						break;
 					default:
 						return;
