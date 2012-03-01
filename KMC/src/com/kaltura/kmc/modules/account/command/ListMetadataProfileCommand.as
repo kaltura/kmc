@@ -41,8 +41,8 @@ package com.kaltura.kmc.modules.account.command
 		{
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
-			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
-//			filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
+//			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
+			filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, _model.metadataFilterPager);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);

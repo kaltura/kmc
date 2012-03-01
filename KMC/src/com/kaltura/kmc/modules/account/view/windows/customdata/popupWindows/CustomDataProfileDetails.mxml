@@ -8,7 +8,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"		
 				xmlns:dataGrid="com.kaltura.kmc.view.dataGrid.*"
 				xmlns:customdata="com.kaltura.kmc.modules.account.view.windows.customdata.*"
-				title="{resourceManager.getString('account', 'editMetadataSchema')}" showCloseButton="true"
+				showCloseButton="true"
 				close="{onCloseBtn()}" layout="vertical" creationComplete="{onCreationComplete()}"
 				width="950" height="550"
 				styleName="TitleWindowType2"
@@ -29,6 +29,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 			import com.kaltura.kmc.modules.account.events.*;
 			import com.kaltura.types.KalturaMetadataObjectType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaMetadataProfile;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.binding.utils.BindingUtils;
@@ -107,6 +108,8 @@ Use the 'newProfileState' state for the 'Add New..' action
 						// this is an existing profile
 						objectTypeCB.selectedIndex = getItemIndex(metadataProfile.profile.metadataObjectType, objectTypes);
 						objectTypeCB.enabled = false;
+						
+						title = resourceManager.getString('account', 'editMetadataSchema', [getSchemaObjectTypeLabel(metadataProfile.profile)]);
 					}
 					else {
 						// this is a new profile
@@ -122,6 +125,23 @@ Use the 'newProfileState' state for the 'Add New..' action
 				//add new state
 				else
 					PermissionManager.getInstance().applyAllAttributes(this, "addCustomDataProfilePopup_add");
+			}
+			
+			
+			
+			private function getSchemaObjectTypeLabel(profile:KalturaMetadataProfile):String {
+				var oType:String = profile.metadataObjectType;
+				var result:String = '';
+				if (oType == KalturaMetadataObjectType.ENTRY) {
+					result = resourceManager.getString('account', 'customSchemasEntryType');
+				}
+				else if (oType == KalturaMetadataObjectType.CATEGORY) {
+					result = resourceManager.getString('account', 'customSchemasCategoryType');
+				}
+				else {
+					result = oType;
+				}
+				return result;
 			}
 			
 			/**
@@ -232,7 +252,7 @@ Use the 'newProfileState' state for the 'Add New..' action
 			 *
 			 */
 			private function openAddFieldPopup(event:Event):void {
-				var addCustomFieldPopup:CustomDataAddEditPopup = new CustomDataAddEditPopup();
+				var addCustomFieldPopup:CustomDataFieldDetails = new CustomDataFieldDetails();
 				addCustomFieldPopup.metadataProfile = _metadataProfile;
 				addCustomFieldPopup.addEventListener(AddMetadataFieldEvent.ADD, addNewFieldHandler);
 				addCustomFieldPopup.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);

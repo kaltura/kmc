@@ -50,8 +50,8 @@ package com.kaltura.kmc.modules.account.command
 			//list the latest metadata profiles (after all deletion is done)s
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
-			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
-//			filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
+//			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
+			filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
 			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, _model.metadataFilterPager);
 			mr.addAction(listMetadataProfile);
 			
