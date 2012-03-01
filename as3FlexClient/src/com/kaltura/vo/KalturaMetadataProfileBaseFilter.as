@@ -46,6 +46,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var metadataObjectTypeIn : String = null;
+
+		/** 
+		* 		* */ 
 		public var versionEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -91,6 +95,7 @@ package com.kaltura.vo
 			arr.push('idEqual');
 			arr.push('partnerIdEqual');
 			arr.push('metadataObjectTypeEqual');
+			arr.push('metadataObjectTypeIn');
 			arr.push('versionEqual');
 			arr.push('nameEqual');
 			arr.push('systemNameEqual');

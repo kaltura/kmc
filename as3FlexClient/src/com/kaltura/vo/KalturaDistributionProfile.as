@@ -116,6 +116,10 @@ package com.kaltura.vo
 		public var recommendedDcForDownload : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var recommendedDcForExecute : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -138,6 +142,7 @@ package com.kaltura.vo
 			arr.push('sunsetDefaultOffset');
 			arr.push('recommendedStorageProfileForDownload');
 			arr.push('recommendedDcForDownload');
+			arr.push('recommendedDcForExecute');
 			return arr;
 		}
 

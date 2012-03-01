@@ -25,47 +25,38 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.uploadToken
+package com.kaltura.commands.metadataProfile
 {
 	import flash.net.FileReference;
 	import com.kaltura.net.KalturaFileCall;
-	import com.kaltura.delegates.uploadToken.UploadTokenUploadDelegate;
+	import com.kaltura.delegates.metadataProfile.MetadataProfileUpdateTransformationFromFileDelegate;
 
-	public class UploadTokenUpload extends KalturaFileCall
+	public class MetadataProfileUpdateTransformationFromFile extends KalturaFileCall
 	{
-		public var fileData:Object;
+		public var xsltFile:Object;
 
 		/**
-		 * @param uploadTokenId String
-		 * @param fileData Object - FileReference or ByteArray
-		 * @param resume Boolean
-		 * @param finalChunk Boolean
-		 * @param resumeAt Number
+		 * @param id int
+		 * @param xsltFile Object - FileReference or ByteArray
 		 **/
-		public function UploadTokenUpload( uploadTokenId : String,fileData : Object,resume : Boolean=false,finalChunk : Boolean=true,resumeAt : Number=-1 )
+		public function MetadataProfileUpdateTransformationFromFile( id : int,xsltFile : Object )
 		{
-			service= 'uploadtoken';
-			action= 'upload';
+			service= 'metadata_metadataprofile';
+			action= 'updateTransformationFromFile';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('uploadTokenId');
-			valueArr.push(uploadTokenId);
-			this.fileData = fileData;
-			keyArr.push('resume');
-			valueArr.push(resume);
-			keyArr.push('finalChunk');
-			valueArr.push(finalChunk);
-			keyArr.push('resumeAt');
-			valueArr.push(resumeAt);
+			keyArr.push('id');
+			valueArr.push(id);
+			this.xsltFile = xsltFile;
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new UploadTokenUploadDelegate( this , config );
+			delegate = new MetadataProfileUpdateTransformationFromFileDelegate( this , config );
 		}
 	}
 }

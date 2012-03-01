@@ -58,6 +58,7 @@ package com.kaltura.types
 		public static const METADATA_TRANSFORM : String = '28';
 		public static const FILESYNC_IMPORT : String = '29';
 		public static const CAPTURE_THUMB : String = '30';
+		public static const DELETE_FILE : String = '31';
 		public static const VIRUS_SCAN : String = 'virusScan.VirusScan';
 		public static const DISTRIBUTION_SUBMIT : String = 'contentDistribution.DistributionSubmit';
 		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';

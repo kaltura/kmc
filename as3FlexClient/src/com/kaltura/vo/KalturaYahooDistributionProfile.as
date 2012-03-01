@@ -56,6 +56,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var contactEmail : String = null;
 
+		/** 
+		* 		* */ 
+		public var processFeed : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -66,6 +70,7 @@ package com.kaltura.vo
 			arr.push('ftpHost');
 			arr.push('contactTelephone');
 			arr.push('contactEmail');
+			arr.push('processFeed');
 			return arr;
 		}
 

@@ -72,6 +72,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var videoMediaType : String = null;
 
+		/** 
+		* 		* */ 
+		public var disableEpisodeNumberCustomValidation : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -86,6 +90,7 @@ package com.kaltura.vo
 			arr.push('seasonSynopsis');
 			arr.push('seasonTuneInInformation');
 			arr.push('videoMediaType');
+			arr.push('disableEpisodeNumberCustomValidation');
 			return arr;
 		}
 

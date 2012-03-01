@@ -81,6 +81,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var xslt : String = null;
+
+		/** 
+		* 		* */ 
 		public var createMode : int = int.MIN_VALUE;
 
 		/** 

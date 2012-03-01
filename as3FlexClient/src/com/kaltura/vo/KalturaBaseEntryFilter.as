@@ -40,12 +40,17 @@ package com.kaltura.vo
 		* 		* */ 
 		public var isRoot : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
+		public var categoriesFullNameIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('freeText');
 			arr.push('isRoot');
+			arr.push('categoriesFullNameIn');
 			return arr;
 		}
 

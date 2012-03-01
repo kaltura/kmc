@@ -25,47 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.uploadToken
+package com.kaltura.commands.partner
 {
-	import flash.net.FileReference;
-	import com.kaltura.net.KalturaFileCall;
-	import com.kaltura.delegates.uploadToken.UploadTokenUploadDelegate;
+	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.delegates.partner.PartnerListDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	public class UploadTokenUpload extends KalturaFileCall
+	public class PartnerList extends KalturaCall
 	{
-		public var fileData:Object;
-
+		public var filterFields : String;
 		/**
-		 * @param uploadTokenId String
-		 * @param fileData Object - FileReference or ByteArray
-		 * @param resume Boolean
-		 * @param finalChunk Boolean
-		 * @param resumeAt Number
+		 * @param filter KalturaPartnerFilter
+		 * @param pager KalturaFilterPager
 		 **/
-		public function UploadTokenUpload( uploadTokenId : String,fileData : Object,resume : Boolean=false,finalChunk : Boolean=true,resumeAt : Number=-1 )
+		public function PartnerList( filter : KalturaPartnerFilter=null,pager : KalturaFilterPager=null )
 		{
-			service= 'uploadtoken';
-			action= 'upload';
+			service= 'partner';
+			action= 'list';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
-			keyArr.push('uploadTokenId');
-			valueArr.push(uploadTokenId);
-			this.fileData = fileData;
-			keyArr.push('resume');
-			valueArr.push(resume);
-			keyArr.push('finalChunk');
-			valueArr.push(finalChunk);
-			keyArr.push('resumeAt');
-			valueArr.push(resumeAt);
+ 			if (filter) { 
+ 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
+ 			keyValArr = kalturaObject2Arrays(pager, 'pager');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new UploadTokenUploadDelegate( this , config );
+			delegate = new PartnerListDelegate( this , config );
 		}
 	}
 }

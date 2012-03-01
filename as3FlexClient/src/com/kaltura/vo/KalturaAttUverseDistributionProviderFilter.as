@@ -25,47 +25,26 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.uploadToken
+package com.kaltura.vo
 {
-	import flash.net.FileReference;
-	import com.kaltura.net.KalturaFileCall;
-	import com.kaltura.delegates.uploadToken.UploadTokenUploadDelegate;
+	import com.kaltura.vo.KalturaAttUverseDistributionProviderBaseFilter;
 
-	public class UploadTokenUpload extends KalturaFileCall
+	[Bindable]
+	public dynamic class KalturaAttUverseDistributionProviderFilter extends KalturaAttUverseDistributionProviderBaseFilter
 	{
-		public var fileData:Object;
-
-		/**
-		 * @param uploadTokenId String
-		 * @param fileData Object - FileReference or ByteArray
-		 * @param resume Boolean
-		 * @param finalChunk Boolean
-		 * @param resumeAt Number
-		 **/
-		public function UploadTokenUpload( uploadTokenId : String,fileData : Object,resume : Boolean=false,finalChunk : Boolean=true,resumeAt : Number=-1 )
+		override public function getUpdateableParamKeys():Array
 		{
-			service= 'uploadtoken';
-			action= 'upload';
-
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('uploadTokenId');
-			valueArr.push(uploadTokenId);
-			this.fileData = fileData;
-			keyArr.push('resume');
-			valueArr.push(resume);
-			keyArr.push('finalChunk');
-			valueArr.push(finalChunk);
-			keyArr.push('resumeAt');
-			valueArr.push(resumeAt);
-			applySchema(keyArr, valueArr);
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
 		}
 
-		override public function execute() : void
+		override public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new UploadTokenUploadDelegate( this , config );
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
 		}
+
 	}
 }

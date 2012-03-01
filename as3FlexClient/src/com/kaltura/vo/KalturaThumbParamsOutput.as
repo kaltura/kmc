@@ -48,6 +48,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var thumbAssetVersion : String = null;
 
+		/** 
+		* 		* */ 
+		public var rotate : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -56,6 +60,7 @@ package com.kaltura.vo
 			arr.push('thumbParamsVersion');
 			arr.push('thumbAssetId');
 			arr.push('thumbAssetVersion');
+			arr.push('rotate');
 			return arr;
 		}
 

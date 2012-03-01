@@ -120,6 +120,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var videoBitrateTolerance : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
+		public var clipOffset : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var clipDuration : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -146,6 +154,8 @@ package com.kaltura.vo
 			arr.push('forceFrameToMultiplication16');
 			arr.push('videoConstantBitrate');
 			arr.push('videoBitrateTolerance');
+			arr.push('clipOffset');
+			arr.push('clipDuration');
 			return arr;
 		}
 

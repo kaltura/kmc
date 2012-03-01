@@ -112,6 +112,10 @@ package com.kaltura.vo
 		public var creationMode : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var html5Url : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -132,6 +136,7 @@ package com.kaltura.vo
 			arr.push('tags');
 			arr.push('swfUrlVersion');
 			arr.push('creationMode');
+			arr.push('html5Url');
 			return arr;
 		}
 
