@@ -123,9 +123,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			template:TemplateVo, genFeatures:XML,
 			content:ApsWizardContent):XML {
 			// implement the full template within the snapshot
-			var snapshot:XML =
-				<snapshot/>
-				;
+			var snapshot:XML = <snapshot/>;
 			snapshot.@fullPlayerId = fullPlayerID;
 			// add features:
 			var features:XML = getFeaturesXML();
@@ -152,8 +150,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			snapshot.appendChild(visual);
 
 			// add player properties:
-			var playerProperties:XML =
-				<playerProperties/>
+			var playerProperties:XML = <playerProperties/>
 			var playerWidth:XML = XML("<width>" + size.playerWidth.toString() + "</width>");
 			playerProperties.appendChild(playerWidth);
 			var playerHeight:XML = XML("<height>" + size.playerHeight.toString() + "</height>");
@@ -213,9 +210,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * @return 		same player data without the nonactive features
 		 */
 		private function deleteNonactiveFeatures(player:XML):XML {
-			var allFeatures:XML =
-				<allFeatures/>
-				;
+			var allFeatures:XML = <allFeatures/>;
 			allFeatures.appendChild(_featuresCollection.copy());
 			var nonActiveFeatures:XMLList = allFeatures..feature.(attribute("selected") == "false");
 			var nonActivePlayerFeatures:XMLList;
@@ -314,7 +309,8 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 
 			for each (featureXml in activeFeatures) {
 				activeFeatureName = featureXml.attribute("id")[0].toString();
-				var controllerButtons:XMLList = featureXml.descendants().(attribute("k_param") == "k_buttonType" && (attribute("k_value") == "buttonIconControllerArea" || attribute("k_value") == "buttonControllerArea"));
+				var controllerButtons:XMLList = featureXml.descendants().(attribute("k_param") == "k_buttonType" &&
+					(attribute("k_value") == "buttonIconControllerArea" || attribute("k_value") == "buttonControllerArea"));
 				// controller buttons
 				if (controllerButtons.length() > 0) {
 					var featureNameToLookFor:String = featureXml.@id.toString() + "ControllerScreen"
@@ -323,7 +319,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						clearIconsOrLabels(contButton, controllerButtons.@k_value, style);
 				}
 				//screen buttons
-				var onScreenButtonsList:XMLList = featureXml.descendants().((attribute("id") == "StartScreen") || (attribute("id") == "EndScreen") || (attribute("id") == "PauseScreen") || (attribute("id") == "PlayScreen"));
+				var onScreenButtonsList:XMLList = featureXml.descendants().((attribute("id") == "StartScreen") 
+														|| (attribute("id") == "EndScreen") 
+														|| (attribute("id") == "PauseScreen") 
+														|| (attribute("id") == "PlayScreen"));
 				for each (var onscreenXML:XML in onScreenButtonsList) {
 					if (onscreenXML.@k_value.toString() == "true") {
 						contButton = (fullPlayerCopy.descendants().(attribute("id") == (featureXml.@id.toString() + onscreenXML.@id.toString()))[0]);
@@ -779,6 +778,9 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					// notice message 
 					if (advo.noticeEnabled) {
 						var notice:XML = player..Label.(@id == "noticeMessage")[0];
+//						var s:String = advo.noticeText;
+//						s = s.split("$(remainingSeconds)").join("{SequenceProxy.timeRemaining}");
+//						notice.@text = s;
 						notice.@text = advo.noticeText;
 						if (style) {
 							notice.@color1 = style.color1.toString();
@@ -846,13 +848,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * @return features data
 		 */
 		private function getFeaturesXML():XML {
-			var featuresXml:XML =
-				<featuresData/>
-				;
+			var featuresXml:XML = <featuresData/>;
 
 			// a wrapper for _featuresCollection
-			var dataFeaturesXml:XML =
-				<xml></xml>
+			var dataFeaturesXml:XML = <xml></xml>
 			for each (var xml:XML in _featuresCollection) {
 				dataFeaturesXml.appendChild(xml);
 			}
@@ -867,9 +866,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					if (dataFeature.@id[0])
 						fullName = dataFeature.@id + "." + fullName;
 				}
-				var node:XML =
-					<feature/>
-					;
+				var node:XML = <feature/>;
 				node.@k_fullName = fullName;
 				node.@k_value = k_value;
 				featuresXml.appendChild(node);
@@ -920,8 +917,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						<overlay/>
 						<values/>
 					</timeline>
-				</advertising>
-				;
+				</advertising>;
 
 			adData.@enabled = adVo.adsEnabled.toString();
 
@@ -932,9 +928,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			var attsLst:Array;
 			var i:int, l:int = adVo.adSources.length;
 			for (i = 0; i < l; i++) {
-				xml =
-					<source/>
-					;
+				xml = <source/>;
 				src = adVo.adSources[i] as AdSourceVo;
 				attsLst = ObjectUtil.getObjectAllKeys(src);
 				for (att in attsLst) {
@@ -972,9 +966,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				var ca:CompanionAdVo;
 				for (i = 0; i < l; i++) {
 					ca = adVo.companions[i];
-					xml =
-						<ad/>
-						;
+					xml = <ad/>;
 					attsLst = ObjectUtil.getObjectAllKeys(ca);
 					for (att in attsLst) {
 						if (attsLst[att] != "dp") {
@@ -985,9 +977,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					adData.playerConfig.companion[0].appendChild(xml);
 					// new custom companion locations:
 					if (ca.elementid == CUSTOM) {
-						xml =
-							<element/>
-							;
+						xml = <element />;
 						xml.@elementid = ca.elementid + i; //UIDUtil.createUID();
 						xml.@relativeTo = ca.relativeTo;
 						xml.@position = ca.position;
@@ -1000,9 +990,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			l = adVo.flashCompanionLocations.length;
 			var o:Object;
 			for (i = 0; i < l; i++) {
-				xml =
-					<element/>
-					;
+				xml = <element />;
 				o = adVo.flashCompanionLocations.getItemAt(i);
 				// don't take custom ads, already taken care of.
 				if (o.elementid.indexOf(CUSTOM) == -1) {
@@ -1013,9 +1001,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				}
 			}
 			// add the "template" custom ad
-			xml =
-				<element/>
-				;
+			xml = <element />;
 			xml.@elementid = CUSTOM;
 			xml.@relativeTo = "";
 			xml.@position = "";
@@ -1072,8 +1058,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * @return	XML with selected values
 		 */
 		private function getStyleXML(style:StyleVo):XML {
-			var styleXml:XML =
-				<theme/>
+			var styleXml:XML = <theme />
 			styleXml.@id = style.themeId;
 			styleXml.@name = style.themeFriendlyName;
 			styleXml.appendChild(new XML("<themeSkinPath>" + style.skinPath + "</themeSkinPath>"));
@@ -1093,18 +1078,14 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		 * @param wpl				widget playlist xml
 		 * */
 		private function getUiVarsXml(templateType:String, template:TemplateVo, generalUiVarsAndPlugins:XML, wpl:XML):XML {
-			var uiVars:XML =
-				<uiVars/>
-				;
+			var uiVars:XML = <uiVars/>;
 			if (wpl != null) {
 				uiVars.appendChild(wpl.children());
 			}
 
 			var param:XML;
 			// stretch behaviour: 
-			param =
-				<var></var>
-				;
+			param = <var></var>;
 			param.@key = "video.keepAspectRatio";
 			if (template.keepAspectRatio) {
 				param.@value = "true";
@@ -1115,21 +1096,15 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			uiVars.appendChild(param);
 
 			//playlist params:
-			param =
-				<var></var>
-				;
+			param = <var></var>;
 			param.@key = "playlistAPI.autoContinue";
 			param.@value = template.playlistAutoContinue.toString();
 			uiVars.appendChild(param);
-			param =
-				<var></var>
-				;
+			param = <var></var>;
 			param.@key = "imageDefaultDuration";
 			param.@value = template.imageDefaultDuration.toString();
 			uiVars.appendChild(param);
-			param =
-				<var></var>
-				;
+			param = <var></var>;
 
 			// autoplay:
 
@@ -1141,9 +1116,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			uiVars.appendChild(param);
 
 			// automute:
-			param =
-				<var></var>
-				;
+			param = <var></var>;
 			param.@key = "autoMute";
 			param.@value = template.autoMute;
 			uiVars.appendChild(param);
