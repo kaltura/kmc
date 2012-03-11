@@ -237,7 +237,7 @@ package com.kaltura.edw.components.filter.cat {
 				var vo:CategoryVO = data as CategoryVO;
 				label.htmlText = vo.name + " <font color='#666666' size='11'> (" +
 					vo.category.entriesCount + ")</font>";
-				label.height = 25;  //TODO cat tree variableRowHeight probably fails because of this
+				label.height = 25;
 				label.toolTip = label.text;
 
 				var gWid:int = label.textWidth;
