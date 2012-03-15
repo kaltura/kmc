@@ -227,7 +227,7 @@ package com.kaltura.kmc.modules {
 		protected function loadLocale(localePath:String, language:String):void {
 			_localeCode = language;
 			localePath = localePath.replace(/{locale}/g, language);
-			var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath);
+			var eventDispatcher:IEventDispatcher = ResourceManager.getInstance().loadResourceModule(localePath, true);
 			eventDispatcher.addEventListener(ResourceEvent.ERROR, localeLoadCompleteHandler);
 			eventDispatcher.addEventListener(ResourceEvent.COMPLETE, localeLoadCompleteHandler);
 		}
