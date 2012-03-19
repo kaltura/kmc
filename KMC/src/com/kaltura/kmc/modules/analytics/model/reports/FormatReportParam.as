@@ -42,7 +42,13 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "avg_time_viewed": return KTimeUtil.formatTime( Number(value)*60 , true ); break;
 				case "event_date_id": return new Date(Number(value)*1000).toDateString(); break;
 				
-				case "country": return ResourceManager.getInstance().getString('map',value); break;
+				case "country": 
+					var result:String = ResourceManager.getInstance().getString('map',value);
+					if (!result) {
+						result = value;
+					}
+					return result; 
+					break;
 			}
 			return value;			
 		}
