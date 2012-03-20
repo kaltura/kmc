@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:MultiAttributeFilter xmlns:mx="http://www.adobe.com/2006/mxml"
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 implements="com.kaltura.edw.components.fltr.IMultiAttributeFilterComponent"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.BaseFilter;
+			import com.kaltura.vo.KalturaPlayableEntryFilter;
+			
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+
+			
+			
+			
+			/**
+			 * previous custom date range values to allow reverting illegal values
+			 * */
+			private var _selectedStartDate:int;
+			private var _selectedEndDate:int;
+			
+			
+			
+			
+			
+			
+			override public function set kfilters(value:Array):void {
+				// update vo:
+				super.kfilters = value;
+				
+				// update ui:
+				var now:Number = new Date().time / 1000;
+				
+				finished.selected = _vo.endDateLessThanOrEqual != int.MIN_VALUE && _vo.endDateLessThanOrEqual < now;
+				
+				live.selected = _vo.startDateLessThanOrEqualOrNull <= now && _vo.endDateGreaterThanOrEqualOrNull >= now;
+				
+				future.selected = _vo.startDateGreaterThanOrEqual > now;
+				
+				var sched:Boolean = false;
+				if (_vo.endDateGreaterThanOrEqualOrNull && _vo.endDateGreaterThanOrEqualOrNull != int.MIN_VALUE) {
+					startDate.selectedDate = new Date(null, null, null, null, null, null, _vo.endDateGreaterThanOrEqualOrNull * 1000);
+					sched = true;
+				}
+				if (_vo.startDateLessThanOrEqualOrNull && _vo.startDateLessThanOrEqualOrNull != int.MIN_VALUE) {
+					endDate.selectedDate = new Date(null, null, null, null, null, null, _vo.startDateLessThanOrEqualOrNull * 1000);
+					sched = true;
+				}
+				scheduled.selected = sched;
+				
+				// "all" button is selected if all the above are selected, or if none of them is.
+				all.selected = finished.selected && live.selected && future.selected && sched;
+				all.selected ||= !finished.selected && !live.selected && !future.selected && !sched;
+				
+				if (all.selected) {
+					finished.selected = false;
+					live.selected = false;
+					future.selected = false;
+					scheduled.selected = false;
+				}
+			}
+			
+			
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_buttons = [all, finished, live, future, scheduled];
+			}
+
+
+
+			/**
+			 * scheduling date fields click handler:
+			 * if selected dates are valid, continue to update.
+			 * */
+			private function onSchedulingDateFieldClick(evt:Event):void {
+				if (validateDates(startDate, endDate)) {
+					// let the auto system handle everything from here:
+					scheduled.selected = false;
+					scheduled.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				}
+				else {
+					// let user know 
+					Alert.show(resourceManager.getString('cms', 'fromToDateAlert'));
+
+					// (I have no idea why, but this only works after the alert:)
+					// reset to old value
+					if (evt.target == startDate) {
+						if (_selectedStartDate) {
+							startDate.selectedDate = new Date(null, null, null, null, null, null, _selectedStartDate * 1000);
+						}
+						else {
+							startDate.selectedDate = null;
+						}
+					}
+					else if (evt.target == endDate) {
+						if (_selectedEndDate) {
+							endDate.selectedDate = new Date(null, null, null, null, null, null, _selectedEndDate * 1000);
+						}
+						else {
+							endDate.selectedDate = null;
+						}
+					}
+				}
+			}
+
+
+			/**
+			 * validate start date is before end date.
+			 * @param fromDate	starting date
+			 * @param toDate	end date
+			 * @return true if dates are valid, false otherwise.
+			 * */
+			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
+				var isDatesOk:Boolean = true;
+				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
+					// starting date is after ending date.
+					if (fromDate.selectedDate.time >= toDate.selectedDate.time) {
+						isDatesOk = false;
+					}
+				}
+				return isDatesOk;
+			}
+
+
+			protected function onTitleClicked(event:MouseEvent):void {
+				if (all.selected) {
+					// uncheck all other buttons 
+					for (var i:int = 1; i < _buttons.length; i++) {
+						(_buttons[i] as CheckBox).selected = false;
+					}
+					
+					// reset filter values
+					for (var key:String in _vo) {
+						_vo[key] = int.MIN_VALUE;
+					}
+				}
+				else {
+					// the title can't be unselected if it was selected before
+					all.selected = true;
+				}
+				dispatchChange();
+			}
+
+
+			/**
+			 * set scheduling data on filter object, according to tab data.
+			 * @param filter	filter object to update
+			 * */
+			protected function updateSchedulingData(event:MouseEvent):void {
+				var i:int;
+				var selectTheTitle:Boolean = true;
+				//if we unselected a member we should go over and see if we need to select the title 
+				if (!(event.target as CheckBox).selected) {
+					for (i = 1; i < _buttons.length; i++) {
+						if (_buttons[i].selected)
+							selectTheTitle = false;
+					}
+
+					if (selectTheTitle) {
+						_buttons[0].selected = true;
+						onTitleClicked(null);
+						return;
+					}
+				}
+				else {
+					// if any of the members has been selected shut down the title
+					_buttons[0].selected = false;
+				}
+
+				// set new values on filter:
+				var now:Number = new Date().time / 1000;
+				if (event.target == live) {
+					if (live.selected) {
+						_vo.startDateLessThanOrEqualOrNull = now;
+						_vo.endDateGreaterThanOrEqualOrNull = now;
+					}
+					else {
+						_vo.startDateLessThanOrEqualOrNull = int.MIN_VALUE;
+						_vo.endDateGreaterThanOrEqualOrNull = int.MIN_VALUE;
+					}
+				}
+				else if (event.target == future) {
+					if (future.selected) {
+						_vo.startDateGreaterThanOrEqual = now;
+					}
+					else {
+						_vo.startDateGreaterThanOrEqual = int.MIN_VALUE;
+					}
+				}
+				else if (event.target == finished) {
+					if (finished.selected) {
+						_vo.endDateLessThanOrEqual = now;
+					}
+					else {
+						_vo.endDateLessThanOrEqual = int.MIN_VALUE;
+					}
+				}
+				else if (event.target == scheduled) { // custom dates
+					if (scheduled.selected) {
+						if (startDate.selectedDate != null) {
+							var startTime:Number = startDate.selectedDate.time / 1000;
+							_vo.startDateGreaterThanOrEqual = startTime;
+							_selectedStartDate = startTime;
+						}
+
+						if (endDate.selectedDate != null) {
+							var endTime:Number = endDate.selectedDate.time / 1000;
+							_vo.endDateLessThanOrEqual = endTime;
+							_selectedEndDate = endTime;
+						}
+					}
+				}
+
+				dispatchChange();
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="all" width="100%" selected="true" label="{resourceManager.getString('cms', 'anyTimeBtn')}"
+				 click="onTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="finished" width="100%" label="{resourceManager.getString('cms', 'finishedBtn')}"
+				 click="updateSchedulingData(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="live" width="100%" label="{resourceManager.getString('cms', 'liveBtn')}"
+				 click="updateSchedulingData(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="future" width="100%" label="{resourceManager.getString('cms', 'futureBtn')}"
+				 click="updateSchedulingData(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="scheduled" width="100%" label="{resourceManager.getString('cms', 'scheduledBtn')}"
+				 click="updateSchedulingData(event)" styleName="innerFilterGroupButton"
+				 toolTip="{resourceManager.getString('cms', 'scheduledBtnToolTip')}"/>
+	<mx:HBox width="100%" styleName="bottomDatesHbox">
+		<mx:DateField id="startDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  change="{onSchedulingDateFieldClick(event)}"
+					  toolTip="{resourceManager.getString('cms', 'formDateToolTip')}"/>
+		<mx:Label text="-"/>
+		<mx:DateField id="endDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  change="{onSchedulingDateFieldClick(event)}"
+					  toolTip="{resourceManager.getString('cms', 'toDateToolTip')}"/>
+	</mx:HBox>
+</panels:MultiAttributeFilter>
+

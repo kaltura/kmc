@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 implements="com.kaltura.edw.components.fltr.IFilterComponent">
+	<mx:Metadata>
+		[Event(name="changed", type="flash.events.Event")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.resources.ResourceManager;
+			import mx.utils.StringUtil;
+			
+			private const MIN_SEARCH_CHARS:int = 3;
+			
+			/**
+			 * regex to test search text validity.
+			 * */
+			private var _invalidCharsRegexp:RegExp = /[`;!#\&*\+?\\{}<>"\[\]]/;
+			
+
+			// -------------------
+			// IFilterComponent
+			// -------------------
+			
+			
+			private var _attribute:String;
+
+			/**
+			 * @inheritDoc
+			 * */
+			public function get attribute():String {
+				return _attribute;
+			}
+
+			/**
+			 * @private
+			 * */
+			public function set attribute(value:String):void {
+				_attribute = value;
+			}
+			
+			/**
+			 * returns the text the user asked to search for
+			 * */
+			public function get filter():Object {
+				var res:String = '';
+				if (searchFilter.text != resourceManager.getString('filter', 'searchEntries')) {
+					var trimmedText:String = StringUtil.trim(searchFilter.text);
+					res = trimmedText;
+				}
+				return res;
+			}
+			
+			
+			/**
+			 * @private
+			 * */
+			public function set filter(value:Object):void {
+				if (value) {
+					searchFilter.text = value.toString();
+					setClearSearchIcon();
+					searchBtn.enabled = true;
+				}
+				else {
+					searchFilter.text = '';
+				}
+			}
+			
+			
+			
+			
+			/**
+			 * if legal data, update button and send update event.
+			 * */
+			private function updateFilter():void {
+				// when clicking enter key, we might get here even if the btn is disabled.
+				if (!searchBtn.enabled) return;
+				// see if need to clear or send search
+				if (searchBtn.selected) {
+					// clear search
+					searchFilter.text = resourceManager.getString('filter', 'searchEntries');
+					setSearchIcon();
+					searchBtn.enabled = false;
+					// announce change
+					dispatchEvent(new Event("changed"));
+				}
+				else {
+					// if text to search is not valid, do nothing..
+					if (validateSearchText(false)) {
+						// change icon according to data
+						setClearSearchIcon();
+						// announce change
+						dispatchEvent(new Event("changed"));
+					}
+				}
+			}
+			
+			
+			/**
+			 * reset default text to the search text field if necessary
+			 * */
+			private function resetDefaultText(event:FocusEvent):void {
+				if (StringUtil.trim(searchFilter.text) == '') {
+					searchFilter.text = resourceManager.getString('filter', 'searchEntries');
+				}
+			}
+			
+			
+			/**
+			 * remove the default text from the search text field
+			 * */
+			private function removeDefaultText(event:FocusEvent):void {
+				if (searchFilter.text == resourceManager.getString('filter', 'searchEntries')) {
+					searchFilter.text = '';
+				}
+			}
+			
+			
+			/**
+			 * checks if text contains only valid characters and at least MIN_SEARCH_CHARS characters
+			 * @param allowEmpty	is an emptry string acceptable value
+			 * */
+			public function validateSearchText(allowEmpty:Boolean):Boolean {
+				var result:Boolean = true;
+				if (searchFilter.text == resourceManager.getString('filter', 'searchEntries')) {
+					result = allowEmpty;
+				}
+				if (_invalidCharsRegexp.test(searchFilter.text)) {
+					Alert.show(ResourceManager.getInstance().getString('filter', 'filterTextError'));
+					result = false;
+				}
+				if ((searchFilter.text.length > 0) && (searchFilter.text.length < MIN_SEARCH_CHARS)) {
+					Alert.show(resourceManager.getString('filter', 'min3chars'));
+					result = false;
+				}
+				return result;
+			}
+			
+			
+			
+			/**
+			 * make the button look like magnifier with matching tooltip
+			 * */
+			private function setSearchIcon():void {
+				searchBtn.toolTip = null;
+				searchBtn.selected = false;
+			}
+			
+			
+			/**
+			 * make the button look like "x" with matching tooltip
+			 * */
+			private function setClearSearchIcon():void {
+				searchBtn.toolTip = resourceManager.getString('filter', 'clearFreeSearchToolTip');
+				searchBtn.selected = true;
+			}
+			
+			
+			private function onSearchTextChanged():void {
+				setSearchIcon();
+				searchBtn.enabled = true;
+			}
+			
+			
+			/**
+			 * empty implementation, this panel doesn't have buttons.
+			 * @inheritDoc
+			 * */
+			public function get buttons():Array {
+				return [];
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:TextInput id="searchFilter" width="100%" styleName="searchTextInput" 
+				  text="{resourceManager.getString('filter', 'searchEntries')}" 
+				  toolTip="{resourceManager.getString('filter', 'freeSearchToolTip')}" 
+				  enter="updateFilter()"
+				  change="onSearchTextChanged()" 
+				  focusIn="removeDefaultText(event)"
+				  focusOut="resetDefaultText(event)"/>
+	<mx:Button id="searchBtn" styleName="searchButton" click="updateFilter()"
+			   buttonMode="{searchBtn.enabled}" enabled="false"/>
+</mx:HBox>

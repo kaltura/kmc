@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml"
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.types.KalturaEntryReplacementStatus;
+			import com.kaltura.types.KalturaNullableBoolean;
+			
+			import mx.events.FlexEvent;
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value || value == KalturaEntryReplacementStatus.NONE) {
+					//no moderation 
+					all.selected = true;
+					processing.selected = false;
+					readyForReview.selected = false;
+				}
+				else {
+					// one or more moderation types selected
+					all.selected = false;
+					var mods:Array = value.split(',');
+					for each (var mod:String in mods) {
+						switch (mod) {
+							case KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY:
+							case KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED:
+								processing.selected = true;
+								break;
+							case KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED:
+								readyForReview.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+			
+			override public function get filter():Object {
+				var str:String = '';
+				if (processing.selected)
+					str += KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED + "," + 
+						KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY + ",";
+				if (readyForReview.selected)
+					str += KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED + ",";
+				
+				if (str) {
+					// remove last ","
+					str = str.slice(0, str.length - 1);
+					return str;
+				}
+				return null;
+			}
+			
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_buttons = [all, processing, readyForReview];
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="all" width="100%" selected="true" styleName="mainFilterGroupButton"
+				 label="{resourceManager.getString('cms', 'allReplacementStatus')}"
+				 click="onDynamicTitleClicked(event)"/>
+	<mx:CheckBox id="processing" width="100%" selected="false" styleName="innerFilterGroupButton"
+				 label="{resourceManager.getString('cms', 'processingNewBtn')}"
+				 click="onDynamicMemberClicked(event)"/>
+	<mx:CheckBox id="readyForReview" width="100%" selected="false" styleName="innerFilterGroupButton"
+				 label="{resourceManager.getString('cms', 'readyForReviewBtn')}"
+				 click="onDynamicMemberClicked(event)"/>
+</panels:AdditionalFilter>

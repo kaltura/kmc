@@ -10,10 +10,16 @@ package com.kaltura.edw.vo
 	 */
 	public class DistributionProfileInfo
 	{
-		//array of distribution profiels configured for current partner
+		/**
+		 * array of distribution profiels configured for current partner
+		 * */
 		private var _kalturaDistributionProfilesArray:Array;
-		//array of thumbnail dimensions, required by the distribution profiles
+		
+		/**
+		 * array of thumbnail dimensions, required by the distribution profiles
+		 * */
 		private var _thumbnailDimensionsArray:Array;
+		
 		private var _entryDistributionArray:Array;
 	
 		public function DistributionProfileInfo()

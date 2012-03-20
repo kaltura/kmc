@@ -13,6 +13,39 @@ package com.kaltura.edw.model
 	 */	
 	public class FilterModel {
 		
+		// --------------------
+		// categories
+		// --------------------
+		
+		/**
+		 * the root of a category hierarchy. 
+		 * */
+		public var categories:CategoryVO = null;
+		
+		/**
+		 * should categories data be loaded in chunks 
+		 */		
+		public var chunkedCategoriesLoad:Boolean = true;
+		
+		/**
+		 * categories listing
+		 * */
+		public var categoriesMap:HashMap = new HashMap();
+		
+		// --------------------
+		// flavor params
+		// --------------------
+		
+		
+		/**
+		 * list of <code>KalturaFlavorParams</code>
+		 * */
+		public var flavorParams:ArrayCollection = new ArrayCollection();
+
+		// --------------------
+		// custom data
+		// --------------------
+		
 		
 		/**
 		 * this partner is allowed to see metadata related stuff.
@@ -21,21 +54,6 @@ package com.kaltura.edw.model
 		public var enableCustomData:Boolean = true;
 		
 		/**
-		 * the root of a category hierarchy. 
-		 * */
-		public var categories:CategoryVO = null;
-		
-		/**
-		 * categories listing
-		 * */
-		public var categoriesMap:HashMap = new HashMap();
-		
-		/**
-		 * list of <code>KalturaFlavorParams</code>
-		 * */
-		public var flavorParams:ArrayCollection = new ArrayCollection();
-
-		/**
 		 * list of KMCMetadataProfileVO
 		 * */
 		public var metadataProfiles:ArrayCollection;
@@ -43,6 +61,11 @@ package com.kaltura.edw.model
 		 * list of FormBuilder, the indices should suit the metadataProfiles arrayCollection
 		 * */
 		public var formBuilders:ArrayCollection;
+		
+		// --------------------
+		// access control
+		// --------------------
+		
 		
 		/**
 		 * a list of access control profiles of the current partner,
@@ -55,10 +78,20 @@ package com.kaltura.edw.model
 		 */		
 		public var oneTimeLoadAccessControlLoadedFlag:Boolean = false;
 		
+		
+		// --------------------
+		// distribution
+		// --------------------
+		
 		/**
 		 * indicates if we have the distribution plugin
 		 * */
 		public var enableDistribution:Boolean = true;
+		
+		
+		// --------------------
+		// general
+		// --------------------
 		
 		/**
 		 * indicates if re-loading of filter data is required

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaNullableBoolean;
+			
+			import mx.events.FlexEvent;
+			
+			
+			override public function set filter(value:Object):void {
+				//show all
+				if (value == KalturaNullableBoolean.NULL_VALUE || value == int.MIN_VALUE) {
+					origAndClipsBtn.selected = true;
+					original.selected = false;
+					clipped.selected = false;
+				}
+				else {
+					origAndClipsBtn.selected = false;
+					if (value == KalturaNullableBoolean.TRUE_VALUE) {
+						original.selected = true;
+						clipped.selected = false;
+					}
+					else {
+						original.selected = false;
+						clipped.selected = true;
+					}
+				}
+			}
+			
+			override public function get filter():Object {
+				var value:int;
+				//if non of the items are selected or all selected
+				if ((original.selected && clipped.selected) || (!original.selected && !clipped.selected)) {
+					value = KalturaNullableBoolean.NULL_VALUE;
+				}
+				else {
+					if (original.selected) {
+						value = KalturaNullableBoolean.TRUE_VALUE;
+					}
+					else if (clipped.selected) {
+						value = KalturaNullableBoolean.FALSE_VALUE;
+					}
+				}
+				
+				return value;
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [origAndClipsBtn, original, clipped];
+			}
+
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="origAndClipsBtn" width="100%" label="{resourceManager.getString('cms', 'allOrigClipEntries')}"
+			   selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="original" width="100%" label="{resourceManager.getString('cms', 'originalEntries')}" toggle="true"
+			   click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="clipped" width="100%" label="{resourceManager.getString('cms', 'clippedEntries')}"
+			   toggle="true" click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

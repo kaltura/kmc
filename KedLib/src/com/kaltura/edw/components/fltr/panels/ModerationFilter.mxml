@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml"
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.types.KalturaNullableBoolean;
+			
+			import mx.events.FlexEvent;
+
+
+			override public function set filter(value:Object):void {
+				if (!value) {
+					//no moderation 
+					all.selected = true;
+					approved.selected = false;
+					rejected.selected = false;
+					flagged.selected = false;
+					
+					autoApproved.selected = false;
+					pendingModeration.selected = false;
+				}
+				else {
+					// one or more moderation types selected
+					all.selected = false;
+					var mods:Array = value.split(',');
+					for each (var mod:String in mods) {
+						switch (mod) {
+							case KalturaEntryModerationStatus.APPROVED:
+								approved.selected = true;
+								break;
+							case KalturaEntryModerationStatus.REJECTED:
+								rejected.selected = true;
+								break;
+							case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:
+								flagged.selected = true;
+								break;
+							case KalturaEntryModerationStatus.AUTO_APPROVED:
+								autoApproved.selected = true;
+								break;
+							case KalturaEntryModerationStatus.PENDING_MODERATION:
+								pendingModeration.selected = true;
+								break;
+						}
+					}
+				}
+			}
+
+
+			override public function get filter():Object {
+				var moderationString:String = '';
+				if (approved.selected)
+					moderationString += KalturaEntryModerationStatus.APPROVED + ",";
+				if (rejected.selected)
+					moderationString += KalturaEntryModerationStatus.REJECTED + ",";
+				if (flagged.selected)
+					moderationString += KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW + ",";
+				if (autoApproved.selected)
+					moderationString += KalturaEntryModerationStatus.AUTO_APPROVED + ",";
+				if (pendingModeration.selected)
+					moderationString += KalturaEntryModerationStatus.PENDING_MODERATION + ",";
+				
+				if (moderationString) {
+					// remove last ","
+					moderationString = moderationString.slice(0, moderationString.length - 1);
+					return moderationString;
+				}
+				return null;
+			}
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_buttons = [all, approved, flagged, rejected, autoApproved, pendingModeration];
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="all" width="100%" selected="true" styleName="mainFilterGroupButton"
+				 label="{resourceManager.getString('cms', 'allModerationStatus')}"
+				 click="onDynamicTitleClicked(event)" />
+	<mx:CheckBox id="approved" width="100%" selected="false" styleName="innerFilterGroupButton" 
+				 label="{resourceManager.getString('cms', 'approved')}"
+				 click="onDynamicMemberClicked(event)"/>
+	<mx:CheckBox id="flagged" width="100%" selected="false" styleName="innerFilterGroupButton" 
+				 label="{resourceManager.getString('cms', 'pending')}"
+				 click="onDynamicMemberClicked(event)"/>
+	<mx:CheckBox id="rejected" width="100%" selected="false" styleName="innerFilterGroupButton" 
+				 label="{resourceManager.getString('cms', 'rejected')}"
+				 click="onDynamicMemberClicked(event)"/>
+	<mx:CheckBox id="autoApproved" width="100%" selected="false" styleName="innerFilterGroupButton" 
+				 label="{resourceManager.getString('cms', 'autoApproved')}" 
+				 click="onDynamicMemberClicked(event)"/>
+	<mx:CheckBox id="pendingModeration" width="100%" selected="false" styleName="innerFilterGroupButton" 
+				 label="{resourceManager.getString('cms', 'pendingModeration')}" 
+				 click="onDynamicMemberClicked(event)"/>
+</panels:AdditionalFilter>

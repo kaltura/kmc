@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaMediaType;
+			
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var showLiveStream:Boolean = true;
+			
+			/**
+			 * Creates an object with keys as media types,
+			 * later used for easy access while parsing this data.
+			 * The optional keys are enumerated in <code>KalturaMediaType</code>
+			 * @param mediaTypes	the string that represents media
+			 * 						types on a filter
+			 * @return an object like {1:true, 201:true, ..}
+			 * */
+			protected function mediaTypesToObject(mediaTypes:String = ''):Object {
+				var result:Object = {};
+				if (mediaTypes) {
+					var mediaTypesArray:Array = mediaTypes.split(",");
+					for (var i:int = 0; i < mediaTypesArray.length; i++) {
+						result[mediaTypesArray[i]] = true;
+					}
+				}
+				return result;
+			}
+			
+
+			override public function set filter(value:Object):void {
+				// value is a list of KalturaMediaType-s separated by ",".
+				var mediaTypes:Object  = mediaTypesToObject(value.toString()) ;
+				if (!value || (mediaTypes[KalturaMediaType.VIDEO] && mediaTypes[6] && mediaTypes[KalturaMediaType.AUDIO] && mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH] && mediaTypes[KalturaMediaType.IMAGE])) {
+					// all types selected
+					selectAllTypesBtn.selected = true;
+					mixType.selected = false;
+					audioType.selected = false;
+					videoType.selected = false;
+					imageType.selected = false;
+					imageType.selected = false;
+					streamType.selected = false;
+				}
+				else {
+					selectAllTypesBtn.selected = false;
+					
+					if (mediaTypes[KalturaMediaType.VIDEO])
+						videoType.selected = true;
+					if (mediaTypes[6])
+						mixType.selected = true;
+					if (mediaTypes[KalturaMediaType.AUDIO])
+						audioType.selected = true;
+					if (mediaTypes[KalturaMediaType.IMAGE])
+						imageType.selected = true;
+					if (mediaTypes[KalturaMediaType.LIVE_STREAM_FLASH])
+						streamType.selected = true;
+				}
+			}
+			
+			override public function get filter():Object {
+				var mediaTypeString:String = '';
+				//if the select all media types is selected - add all media types
+				if (selectAllTypesBtn.selected) {
+					mediaTypeString = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
+				}
+				else {
+					if (videoType.selected)
+						mediaTypeString += KalturaMediaType.VIDEO + ",";
+					if (imageType.selected)
+						mediaTypeString += KalturaMediaType.IMAGE + ",";
+					if (audioType.selected)
+						mediaTypeString += KalturaMediaType.AUDIO + ",";
+					if (streamType.selected)
+						mediaTypeString += KalturaMediaType.LIVE_STREAM_FLASH + ",";
+					if (mixType.selected) {
+						// mix is not in the enum, so it's hardcoded
+						mediaTypeString += "6,";
+					}
+					//remove the last ,				 
+					mediaTypeString = mediaTypeString.slice(0, mediaTypeString.length - 1);
+				}
+				return mediaTypeString;
+			}
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_buttons = [selectAllTypesBtn, videoType, imageType, audioType, mixType, streamType];
+				// this attribute should always have value, even if not changed
+				dispatchChange();
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:CheckBox id="selectAllTypesBtn" width="100%" selected="true"
+			   label="{resourceManager.getString('cms', 'allMediaTypes')}" buttonMode="true" toggle="true"
+			   click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="videoType" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'videoSingle')}" buttonMode="true" toggle="true"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="imageType" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'image')}" buttonMode="true" toggle="true"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="audioType" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'audio')}" buttonMode="true" toggle="true"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="mixType" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'videoMix')}" buttonMode="true" toggle="true"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="streamType" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'liveStream')}" buttonMode="true"
+				 toggle="true" visible="{showLiveStream}" includeInLayout="{showLiveStream}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+</panels:AdditionalFilter>

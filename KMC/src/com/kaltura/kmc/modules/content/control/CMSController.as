@@ -5,7 +5,6 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;
-	import com.kaltura.kmc.modules.content.commands.cat.*;
 	import com.kaltura.kmc.modules.content.commands.dropfolder.*;
 	import com.kaltura.kmc.modules.content.events.*;
 
@@ -16,8 +15,6 @@ package com.kaltura.kmc.modules.content.control {
 
 
 		public function initializeCommands():void {
-			// model event
-//			addCommand(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL, DuplicateEntryDetailsModelCommand);
 			
 			//Search Event
 			addCommand(KMCSearchEvent.DO_SEARCH_ENTRIES, DoSearchSequenceCommand);
@@ -79,16 +76,6 @@ package com.kaltura.kmc.modules.content.control {
 			//FilterEvent
 			addCommand(KMCFilterEvent.SET_FILTER_TO_MODEL, SetFilterToModelCommand);
 
-			// Load Events
-//			addCommand(LoadEvent.LOAD_FILTER_DATA, LoadFilterDataCommand);
-//			addCommand(LoadEvent.LOAD_ENTRY_DATA, LoadEntryDrilldownDataCommand);
-
-			//Category Event
-			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand);
-			addCommand(CategoryEvent.DELETE_CATEGORY, DeleteCategoriesCommand);
-			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
-			addCommand(CategoryEvent.UPDATE_CATEGORY, UpdateCategoryCommand);
-
 			//User Events
 			addCommand(UserEvent.BAN_USER, BanUserCommand);
 
@@ -115,6 +102,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_REMOTE_STORAGE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ENABLE_THUMBS_LIST, ChangeModelValueCommand);
+			addCommand(ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG, ChangeModelValueCommand);
 
 			// drop folder stuff
 			addCommand(KMCDropFolderEvent.LIST_FOLDERS_AND_FILES, ListDropFoldersAndFiles);

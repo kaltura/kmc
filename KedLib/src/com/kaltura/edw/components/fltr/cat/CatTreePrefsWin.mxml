@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
+							layout="vertical" width="400" height="300" showHelpButton="false"
+							creationComplete="creationCompleteHandler(event)" showCloseButton="true"
+							title="{resourceManager.getString('filter', 'preferencesWindowTitle')}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
+			
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			
+			private var _so:SharedObject;
+
+			private var _oldSelectionMode:int;
+			private var _selectionMode:int;
+			
+			/**
+			 * save prefs and dispatch change event if needed, then request close.
+			 * */
+			protected function saveBtn_clickHandler(event:MouseEvent):void {
+				if (_selectionMode != _oldSelectionMode) {
+					// save data in sharedObject
+					_so.data.selectionMode = _selectionMode;
+					_so.flush();
+					dispatchEvent(new CatTreePrefsEvent(CatTreePrefsEvent.PREFS_CHANGED, _selectionMode));
+				}
+				// dispatch close event
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+			
+
+			/**
+			 * return current value
+			 * */
+			public function getValue():int {
+				if (selectionMode.selection == exact) {
+					return CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
+				}
+				else {
+					return CatTreeSelectionMode.MULTIPLE_SELECT_PLUS; 
+				}
+			}
+
+
+			/**
+			 * save old value and show it in radio buttons
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				_so = SharedObject.getLocal("KMC_catTree");
+				if (_so.data.selectionMode) {
+					_oldSelectionMode = _so.data.selectionMode;
+					if (_oldSelectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
+						exact.selected = true;
+						plus.selected = false;
+					}
+					else {
+						exact.selected = false;
+						plus.selected = true;
+					}
+				}
+			}
+
+
+			/**
+			 * remember selected value
+			 * */
+			protected function selectionMode_changeHandler(event:Event):void
+			{
+				if (selectionMode.selection == exact) {
+					_selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
+				}
+				else if (selectionMode.selection == plus) {
+					_selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_PLUS;
+				}
+			}
+
+
+		]]>
+	</mx:Script>
+	<mx:Text text="{resourceManager.getString('filter', 'preferencesExplain')}" />
+	<mx:RadioButtonGroup id="selectionMode" change="selectionMode_changeHandler(event)"/>
+	<mx:RadioButton id="exact" group="{selectionMode}" label="{resourceManager.getString('filter', 'preferencesExact')}" />
+	<mx:RadioButton id="plus" group="{selectionMode}" label="{resourceManager.getString('filter', 'preferencesPlus')}" />
+	<mx:ControlBar horizontalGap="5">
+		<mx:Button id="saveBtn" label="{resourceManager.getString('filter','save')}" click="saveBtn_clickHandler(event)"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

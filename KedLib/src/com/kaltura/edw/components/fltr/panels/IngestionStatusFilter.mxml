@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml"
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaEntryStatus;
+			
+			import mx.events.FlexEvent;
+
+
+			override public function set filter(value:Object):void {
+				if (!value) {
+					allBtn.selected = true;
+					convertingBtn.selected = false;
+					errorBtn.selected = false;
+					readyBtn.selected = false;
+					noMediaBtn.selected = false;
+					pendingBtn.selected = false;
+					uploadingBtn.selected = false;
+				}
+				else {
+					allBtn.selected = false;
+					var convStatusArr:Array = value.split(',');
+					for each (var convCode:String in convStatusArr) {
+						switch (convCode) {
+							case KalturaEntryStatus.ERROR_CONVERTING:
+							case KalturaEntryStatus.ERROR_IMPORTING:
+								errorBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.IMPORT:
+								uploadingBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.PRECONVERT:
+								convertingBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.READY:
+								readyBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.NO_CONTENT:
+								noMediaBtn.selected = true;
+								break;
+							
+							case KalturaEntryStatus.PENDING:
+								pendingBtn.selected = true;
+								break;
+							
+						}
+					}
+				}
+			}
+
+
+			override public function get filter():Object {
+				var convStatusArray:Array;
+				
+				if (allBtn.selected) {
+					convStatusArray = [ KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING,
+						KalturaEntryStatus.IMPORT,
+						KalturaEntryStatus.PRECONVERT,
+						KalturaEntryStatus.READY,
+						KalturaEntryStatus.NO_CONTENT,
+						KalturaEntryStatus.PENDING ];
+				}
+				else {
+					convStatusArray = [];
+					if (errorBtn.selected) { // for error
+						convStatusArray.push(KalturaEntryStatus.ERROR_CONVERTING, KalturaEntryStatus.ERROR_IMPORTING);
+					}
+					if (uploadingBtn.selected) { // for uploading 
+						convStatusArray.push(KalturaEntryStatus.IMPORT);
+					}
+					if (convertingBtn.selected) { // for converting
+						convStatusArray.push(KalturaEntryStatus.PRECONVERT);
+					}
+					if (readyBtn.selected) { // for ready 
+						convStatusArray.push(KalturaEntryStatus.READY);
+					}
+					if (noMediaBtn.selected) { // for no media 
+						convStatusArray.push(KalturaEntryStatus.NO_CONTENT);
+					}
+					if (pendingBtn.selected) { // for pending
+						convStatusArray.push(KalturaEntryStatus.PENDING);
+					}
+				}
+				return convStatusArray.join(',');
+			}
+
+
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void {
+				_buttons = [allBtn, readyBtn, noMediaBtn, pendingBtn, uploadingBtn, convertingBtn, errorBtn];
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" selected="true"
+				 label="{resourceManager.getString('cms', 'allConversionStatus')}" 
+				 click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="readyBtn" width="100%" selected="false" 
+				 label="{resourceManager.getString('cms', 'readyBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="noMediaBtn" width="100%" selected="false" 
+				 label="{resourceManager.getString('cms', 'noMediaBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="pendingBtn" width="100%" selected="false" 
+				 label="{resourceManager.getString('cms', 'pendingBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton" />
+	<mx:CheckBox id="uploadingBtn" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'uploadingBtn')}" 
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="convertingBtn" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'convertingBtn')}" 
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="errorBtn" width="100%" selected="false"
+				 label="{resourceManager.getString('cms', 'convertErrorBtn')}" 
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

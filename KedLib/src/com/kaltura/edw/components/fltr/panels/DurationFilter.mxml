@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaDurationType;
+			
+			import mx.events.FlexEvent;
+
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, shortBtn, mediumBtn, longBtn];
+			}
+			
+			override public function get filter():Object {
+				var durationString:String = "";
+				//if non of the items are selected or all selected
+				if ((shortBtn.selected && mediumBtn.selected && longBtn.selected) 
+					|| (!shortBtn.selected && !mediumBtn.selected && !longBtn.selected)) {
+					durationString = "";
+				}
+				else {
+					if (shortBtn.selected) {
+						durationString += KalturaDurationType.SHORT + ",";
+					}
+					if (mediumBtn.selected) {
+						durationString += KalturaDurationType.MEDIUM + ",";
+					}
+					if (longBtn.selected) {
+						durationString += KalturaDurationType.LONG + ",";
+					}
+					//remove last , 
+					durationString = durationString.slice(0, durationString.length - 1);
+				}
+				return durationString;
+			}
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					shortBtn.selected = false;
+					mediumBtn.selected = false;
+					longBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaDurationType.SHORT:
+								shortBtn.selected = true;
+								break;
+							
+							case KalturaDurationType.MEDIUM:
+								mediumBtn.selected = true;
+								break;
+							
+							case KalturaDurationType.LONG:
+								longBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('cms', 'allDurationsBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="shortBtn" width="100%" label="{resourceManager.getString('cms', 'shortduration')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="mediumBtn" width="100%" label="{resourceManager.getString('cms', 'mediumduration')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="longBtn" width="100%" label="{resourceManager.getString('cms', 'longduration')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

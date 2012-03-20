@@ -108,22 +108,22 @@ package com.kaltura.edw.control.commands
 			multiRequest.addAction(getListAccessControlProfiles);
 			
 			//categories
-			var mefilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
-			
-			mefilter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
-				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
-				KalturaEntryStatus.READY;
-			mefilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
-				KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
-			
-			// to bypass server defaults
-			mefilter.moderationStatusIn = '';
-			
-			var getEntryCount:BaseEntryCount = new BaseEntryCount(mefilter);
-			multiRequest.addAction(getEntryCount);
-			
-			var listCategories:CategoryList = new CategoryList(new KalturaCategoryFilter());
-			multiRequest.addAction(listCategories);
+//			var mefilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
+//			
+//			mefilter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
+//				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
+//				KalturaEntryStatus.READY;
+//			mefilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
+//				KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
+//			
+//			// to bypass server defaults
+//			mefilter.moderationStatusIn = '';
+//			
+//			var getEntryCount:BaseEntryCount = new BaseEntryCount(mefilter);
+//			multiRequest.addAction(getEntryCount);
+//			
+//			var listCategories:CategoryList = new CategoryList(new KalturaCategoryFilter());
+//			multiRequest.addAction(listCategories);
 			
 			
 			// listeners
@@ -151,7 +151,7 @@ package com.kaltura.edw.control.commands
 			responseCount ++;
 			
 			// categories
-			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
+//			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
 			
 			_filterModel.loadingRequired = false;
 			_caller.onRequestedDataLoaded();

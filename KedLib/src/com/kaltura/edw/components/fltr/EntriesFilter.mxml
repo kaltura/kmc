@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fltr:BaseFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:fltr="com.kaltura.edw.components.fltr.*"
+				 xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:filter="com.kaltura.edw.components.filter.*"
+				 creationComplete="creationCompleteHandler(event)"
+				 xmlns:panels="com.kaltura.edw.components.fltr.panels.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.components.fltr.panels.MetadataFilter;
+			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
+			import com.kaltura.edw.control.MetadataTabController;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaPlayableEntryFilter;
+			import com.kaltura.vo.MetadataFieldVO;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			// ----------------
+			// scheduling
+			// ----------------
+			
+			/**
+			 * attributes for scheduling filter
+			 * */
+			private const _schedulingAttributes:Array = ["startDateLessThanOrEqualOrNull", "endDateGreaterThanOrEqualOrNull",
+				"startDateGreaterThanOrEqual", "endDateLessThanOrEqual",
+				"startDateGreaterThanOrEqual", "endDateLessThanOrEqual"];
+			
+			// ----------------
+			// livestream
+			// ----------------
+			
+			[Bindable]
+			/**
+			 * R&P: livestream feature
+			 * @internal
+			 * set directly by permissions manager
+			 * */
+			public var enableLiveStream:Boolean = true;
+
+			// ----------------
+			// distribution
+			// ----------------
+			
+			[Bindable]
+			/**
+			 * R&P: content distribution feature
+			 * @internal
+			 * set directly by permissions manager
+			 * */
+			public var enableDistribution:Boolean = true;
+
+
+			[Bindable]
+			/**
+			 * list of distribution prfiles to show as filters
+			 * */
+			public var distributionProfiles:Array;
+
+			[Bindable]
+			/**
+			 * distribution profiles in AC
+			 * @see wrapInAC()
+			 * */
+			private var _distProfAC:ArrayCollection;
+
+			/**
+			 * wrap the given array in array collection.
+			 * @internal 
+			 * since distribution profiles data on the model is in Array
+			 * but the additionalPanel's dataProvider is an ArrayCollection, 
+			 * use this little ugly workaround.
+			 * */
+			private function wrapInAC(value:Array):void {
+				_distProfAC = new ArrayCollection(value);
+			}
+			
+			// ----------------
+			// custom data
+			// ----------------
+			
+			protected var _metadataProfiles:ArrayCollection;
+			
+			[Bindable]
+			/**
+			 * metadata profiles to show as filters
+			 * */
+			public function get metadataProfiles():ArrayCollection {
+				return _metadataProfiles;
+			}
+			
+			public function set metadataProfiles(value:ArrayCollection):void {
+				_metadataProfiles = value;
+				createMetadataFilters(value);
+			}
+			
+			protected function createMetadataFilters(value:ArrayCollection):void {
+				var i:int;
+				// clean previous metadata children
+				for (i = accordion.numChildren-1; i>=0; i--) {
+					if (accordion.getChildAt(i) is MetadataProfileFilter) {
+						accordion.removeChildAt(i);
+					}
+				}
+				// if no value, don't build panels
+				if (!value) return;
+				
+				// build panels
+				var profileVo:KMCMetadataProfileVO;
+				var metadataTab:MetadataProfileFilter;
+				var field:MetadataFieldVO;
+				var hasSearchableFields:Boolean = false;
+				for (i = _metadataProfiles.length-1; i>=0; i--) {
+					profileVo = _metadataProfiles.getItemAt(i) as KMCMetadataProfileVO;
+					if (profileVo.metadataFieldVOArray && profileVo.metadataFieldVOArray.length) {
+						// look for searchable fields of type list:
+						hasSearchableFields = false;						
+						for each (var obj:Object in profileVo.metadataFieldVOArray) {
+							field = obj as MetadataFieldVO;
+							if (field && field.appearInSearch && (field.type == MetadataCustomFieldTypes.LIST)) {
+								hasSearchableFields = true;
+								break;
+							}
+						}
+						if (hasSearchableFields) {
+							metadataTab = buildMetadataProfileFilter(profileVo); 
+							// add the tab after additional filters tab
+							accordion.addChildAt(metadataTab, 2);
+						}
+					}
+				}
+			}
+			
+			/**
+			 * create a MetadataFilter for the given profile on the given accordion tab
+			 * @param profileVo 	metadata profile with searchable list fields
+			 * */
+			private function buildMetadataProfileFilter(profileVo:KMCMetadataProfileVO):MetadataProfileFilter {
+				var metadataTab:MetadataProfileFilter = new MetadataProfileFilter();
+				metadataTab.label = profileVo.profile.name;
+				metadataTab.id = profileVo.profile.id.toString();
+				metadataTab.percentWidth = 100;
+				metadataTab.attribute = profileVo.profile.id.toString();
+				metadataTab.dataProvider = profileVo.metadataFieldVOArray;
+				
+				metadataTab.addEventListener("changed", updateFilterValue, false, 0, true);
+				
+				return metadataTab;
+			}
+			
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				if (!_kalturaFilter) {
+					_kalturaFilter = new KalturaPlayableEntryFilter();
+				}
+				BindingUtils.bindSetter(wrapInAC, this, "distributionProfiles");
+			}
+		]]>
+	</mx:Script>
+	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30">
+		<mx:headerRenderer>
+			<mx:Component>
+				<filter:FilterAccordionHeader/>
+			</mx:Component>
+		</mx:headerRenderer>
+		<!--<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%"
+				 height="100%" styleName="additinalFilterVBox">
+			<mx:VBox id="transcodingFlavor" width="100%" styleName="typesVBox"
+					 visible="{showFlavorsOptions}" includeInLayout="{showFlavorsOptions}"/>
+		</mx:VBox>-->
+
+
+		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('cms', 'categoriesLabel')}" width="100%"
+				   height="100%" styleName="categoriesTreeVBox">
+			<!--<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>mask="{maskCanvas}"-->
+			<cat:CatTree id="catTree" attribute="categoriesIdsMatchOr" categories="{filterModel.categoriesMap}"
+						 dataProvider="{filterModel.categories}" changed="updateFilterValue(event)"
+						 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" prefsButton="{prefs}"
+						 chunkedData="{filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" width="100%"
+						 height="100%"/>
+			<mx:Button id="prefs" label="settings" right="7" y="0"/>
+		</mx:Canvas>
+		<mx:VBox id="additional" label="{resourceManager.getString('cms', 'additionalFiltersLabel')}" width="100%"
+				 height="100%" styleName="additinalFilterVBox">
+			<panels:CreationDateFilter width="100%"
+									   attributes="{['createdAtGreaterThanOrEqual', 'createdAtLessThanOrEqual']}"
+									   changed="updateFilterValue(event)"/>
+			<panels:MediaTypesFilter width="100%" attribute="mediaTypeIn" changed="updateFilterValue(event)"
+									 showLiveStream="{enableLiveStream}"/>
+			<panels:IngestionStatusFilter width="100%" attribute="statusIn" changed="updateFilterValue(event)"/>
+			<panels:DurationFilter width="100%" attribute="durationTypeMatchOr" changed="updateFilterValue(event)"/>
+			<panels:ClipsFilter width="100%" attribute="isRoot" changed="updateFilterValue(event)"/>
+			<panels:SchedulingFilter width="100%" changed="updateFilterValue(event)"
+									 attributes="{_schedulingAttributes}"/>
+			<panels:ModerationFilter width="100%" attribute="moderationStatusIn" changed="updateFilterValue(event)"/>
+			<panels:ReplacementStatusFilter width="100%" attribute="replacementStatusIn"
+											changed="updateFilterValue(event)"/>
+			<panels:AccessControlFilter width="100%" attribute="accessControlIdIn" changed="updateFilterValue(event)"
+										mainButtonTitle="{resourceManager.getString('cms', 'allAccessControlBtn')}"
+										dataProvider="{filterModel.accessControlProfiles}"/>
+			<panels:FlavorFilter width="100%" attribute="flavorParamsIdsMatchOr" changed="updateFilterValue(event)"
+								 mainButtonTitle="{resourceManager.getString('cms', 'allFlavorsBtn')}"
+								 dataProvider="{filterModel.flavorParams}"/>
+			<panels:DistributionFilter width="100%" visible="{enableDistribution}"
+									   includeInLayout="{enableDistribution}" 
+									   changed="updateFilterValue(event)"
+									   mainButtonTitle="{resourceManager.getString('cms', 'destinations')}"
+									   dataProvider="{_distProfAC}"/>
+		</mx:VBox>
+	</mx:Accordion>
+</fltr:BaseFilter>

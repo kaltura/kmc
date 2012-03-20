@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:MultiAttributeFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.BaseFilter;
+			
+			import mx.controls.Alert;
+			
+			/**
+			 * when changing dates of search range, saves the old starting
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentStartOld:Date = null;
+			
+			/**
+			 * when changing dates of search range, saves the old ending
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentEndOld:Date = null;
+			
+			
+			override public function set kfilters(value:Array):void {
+				// update vo:
+				super.kfilters = value;
+				
+				// update ui:
+				var date:Date;
+				// from date:
+				if (!_vo.createdAtGreaterThanOrEqual || _vo.createdAtGreaterThanOrEqual == int.MIN_VALUE) {
+					fromDate.selectedDate = null;
+				} 
+				else {
+					date = new Date(_vo.createdAtGreaterThanOrEqual * 1000);
+					fromDate.selectedDate = date;
+				}
+				
+				// to date:
+				if (!_vo.createdAtLessThanOrEqual || _vo.createdAtLessThanOrEqual == int.MIN_VALUE) {
+					toDate.selectedDate = null;
+				}
+				else {
+					date = new Date(_vo.createdAtLessThanOrEqual * 1000);
+					toDate.selectedDate = date;
+				}
+			}
+			
+			
+			
+			private function clearDates():void {
+				fromDate.selectedDate = null;
+				fromDate.selectedItem = new Date();
+				_vo.createdAtGreaterThanOrEqual = int.MIN_VALUE;
+				
+				toDate.selectedDate = null;
+				toDate.selectedItem = new Date();
+				_vo.createdAtLessThanOrEqual = int.MIN_VALUE;
+				
+				dispatchChange();
+			}
+			
+			private function currentDatesChange(event:Event):void {
+				if (validateDates(fromDate, toDate)) {
+					if (fromDate.selectedDate != null) {
+						_currentStartOld = fromDate.selectedDate;
+						_vo.createdAtGreaterThanOrEqual = _currentStartOld.time / 1000; 
+					}
+					else {
+						_currentStartOld = null;
+						_vo.createdAtGreaterThanOrEqual = int.MIN_VALUE;
+					}
+					
+					if (toDate.selectedDate != null) {
+						_currentEndOld = toDate.selectedDate;
+						_vo.createdAtLessThanOrEqual = _currentEndOld.time / 1000; 
+					}
+					else {
+						_currentEndOld = null;
+						_vo.createdAtLessThanOrEqual = int.MIN_VALUE;
+					}
+					dispatchChange();				
+				}
+				else {
+					Alert.show(resourceManager.getString('cms', 'fromToDateAlert'));
+					toDate.selectedDate = _currentEndOld;
+					fromDate.selectedDate = _currentStartOld;
+				}
+			}
+			
+			
+			/**
+			 * validate start date is before end date.
+			 * @param fromDate	starting date
+			 * @param toDate	end date
+			 * @return true if dates are valid, false otherwise.
+			 * */
+			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
+				var isDatesOk:Boolean = true;
+				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
+					// starting date is after ending date.
+					if (fromDate.selectedDate.time >= toDate.selectedDate.time) {
+						isDatesOk = false;
+					}
+				}
+				return isDatesOk;
+			}	
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
+	<mx:HBox styleName="innerUpperDatesHBox">
+		<mx:DateField id="fromDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  toolTip="{resourceManager.getString('cms', 'from')}"
+					  change="{currentDatesChange(event)}"/>
+		<mx:Label id="toDateTxt" text="-"/>
+		<mx:DateField id="toDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  toolTip="{resourceManager.getString('cms', 'to')}"
+					  change="{currentDatesChange(event)}"/>
+	</mx:HBox>
+	<mx:LinkButton label="{resourceManager.getString('cms', 'clearDates')}" click="clearDates()" height="17"
+				   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
+</panels:MultiAttributeFilter>

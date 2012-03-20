@@ -21,6 +21,8 @@ package com.kaltura.kmc.modules.content.events
 
 		public static const SET_ENABLE_THUMBS_LIST : String = "content_SET_ENABLE_THUMBS_LIST";
 		
+		public static const SET_LOTS_OF_CATEGORIES_FLAG : String = "content_lotsOfCategoriesFlag";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

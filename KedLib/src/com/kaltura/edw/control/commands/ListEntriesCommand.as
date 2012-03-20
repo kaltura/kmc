@@ -6,9 +6,9 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaBaseEntryFilter;
 	import com.kaltura.vo.KalturaBaseEntryListResponse;
 	import com.kaltura.vo.KalturaMediaEntry;
-	import com.kaltura.vo.KalturaMediaEntryFilter;
 	import com.kaltura.vo.KalturaMixEntry;
 	
 	import mx.collections.ArrayCollection;
@@ -24,7 +24,7 @@ package com.kaltura.edw.control.commands
 		{
 			_model.increaseLoadCounter();
 			_caller = (event as SearchEvent).listableVo;
-			var getMediaList:BaseEntryList = new BaseEntryList(_caller.filterVo as KalturaMediaEntryFilter ,_caller.pagingComponent.kalturaFilterPager );
+			var getMediaList:BaseEntryList = new BaseEntryList(_caller.filterVo as KalturaBaseEntryFilter ,_caller.pagingComponent.kalturaFilterPager );
 		 	getMediaList.addEventListener(KalturaEvent.COMPLETE, result);
 			getMediaList.addEventListener(KalturaEvent.FAILED, fault);
 			_client.post(getMediaList);	  
