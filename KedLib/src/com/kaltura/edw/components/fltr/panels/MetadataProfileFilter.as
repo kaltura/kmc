@@ -18,6 +18,13 @@ package com.kaltura.edw.components.fltr.panels
 		 */
 		override public function set filter(value:Object):void {
 			//TODO implement
+//			// scan filter items (fields)
+//			for each (var msi:KalturaMetadataSearchItem in value.items) {
+//				// for each field, find a matching filter and set it.
+//				for (var i:int = 0; i<numChildren; i++) {
+//					if ((getChildAt(i) as MetadataFilter).
+//				}
+//			}
 		}
 		
 		override public function get filter():Object {
@@ -44,6 +51,7 @@ package com.kaltura.edw.components.fltr.panels
 			_dataProvider = value;
 			buildFilters();
 		}
+		
 		
 		/**
 		 * build MetadataFilters for the searchable fields 
