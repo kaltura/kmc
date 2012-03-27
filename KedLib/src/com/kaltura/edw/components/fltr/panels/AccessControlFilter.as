@@ -93,6 +93,7 @@ package com.kaltura.edw.components.fltr.panels {
 		 * 
 		 */
 		protected function creationCompleteHandler(event:FlexEvent):void {
+			friendlyName = resourceManager.getString('filter', 'acessControlToolTip');
 			removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 			labelFunction = getAcpName;
 			if (_dataProvider) {

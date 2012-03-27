@@ -84,6 +84,7 @@ package com.kaltura.edw.components.fltr.panels
 		 */
 		protected function creationCompleteHandler(event:FlexEvent):void {
 			removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
+			friendlyName = resourceManager.getString('filter', 'flavorsTooltip');
 			labelField = "name";
 			if (_dataProvider) {
 				dataProvider = _dataProvider;

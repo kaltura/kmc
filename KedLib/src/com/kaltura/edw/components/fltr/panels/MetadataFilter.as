@@ -13,6 +13,7 @@ package com.kaltura.edw.components.fltr.panels
 		
 		private var _initialFilter:KalturaMetadataSearchItem;
 		
+		
 		override public function set filter(value:Object):void {
 			if (!value) {
 				_buttons[0].selected = true;
@@ -69,6 +70,9 @@ package com.kaltura.edw.components.fltr.panels
 			super.dataProvider = value;
 			if (_initialFilter) {
 				filter = _initialFilter;
+			}
+			if (_mainButtonTitle) {
+				friendlyName = _mainButtonTitle;
 			}
 		}
 	

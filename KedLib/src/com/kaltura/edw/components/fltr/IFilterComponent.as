@@ -1,11 +1,9 @@
 package com.kaltura.edw.components.fltr
 {
+	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+	
 	import flash.events.IEventDispatcher;
 
-	/**
-	 * dispatched when the value of the component have changed 
-	 */	
-	[Event(name="changed", type="flash.events.Event")]
 	
 	/**
 	 * A part of the visual filter that manipulates data of a given KalturaFilter attribute 
@@ -27,6 +25,14 @@ package com.kaltura.edw.components.fltr
 		function set filter(value:Object):void;
 		function get filter():Object;
 		
+		
+		/**
+		 * remove partial filter. <br>
+		 * the IFilterComponent implementation should know how to remove the indicated 
+		 * item, because it created the indicatorVo in the first place  
+		 * @param item	the item that specifies the partial filter to remove
+		 */
+		function removeItem(item:IndicatorVo):void;
 		
 	}
 }

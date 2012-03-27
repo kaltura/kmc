@@ -7,10 +7,10 @@
 		<![CDATA[
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
-			import com.kaltura.edw.components.fltr.panels.MetadataFilter;
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
-			import com.kaltura.edw.control.MetadataTabController;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlayableEntryFilter;
 			import com.kaltura.vo.MetadataFieldVO;
 			
@@ -146,32 +146,26 @@
 				metadataTab.attribute = profileVo.profile.id.toString();
 				metadataTab.dataProvider = profileVo.metadataFieldVOArray;
 				
-				metadataTab.addEventListener("changed", updateFilterValue, false, 0, true);
+				metadataTab.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 				
 				return metadataTab;
 			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (!_kalturaFilter) {
-					_kalturaFilter = new KalturaPlayableEntryFilter();
+					_kalturaFilter = new KalturaMediaEntryFilter();
+					_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
 				}
 				BindingUtils.bindSetter(wrapInAC, this, "distributionProfiles");
 			}
 		]]>
 	</mx:Script>
-	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30">
-		<mx:headerRenderer>
-			<mx:Component>
-				<filter:FilterAccordionHeader/>
-			</mx:Component>
-		</mx:headerRenderer>
-
-
+	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30" >
 		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('filter', 'categoriesLabel')}" width="100%"
 				   height="100%" styleName="categoriesTreeVBox">
 			<!--<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>mask="{maskCanvas}"-->
 			<cat:CatTree id="catTree" attribute="categoriesIdsMatchOr" categories="{filterModel.categoriesMap}"
-						 dataProvider="{filterModel.categories}" changed="updateFilterValue(event)"
+						 dataProvider="{filterModel.categories}" valueChange="updateFilterValue(event)"
 						 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" prefsButton="{prefs}"
 						 chunkedData="{filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" width="100%"
 						 height="100%" showRoot="{false}"/>
@@ -181,26 +175,26 @@
 				 height="100%" styleName="additinalFilterVBox">
 			<panels:CreationDateFilter width="100%"
 									   attributes="{['createdAtGreaterThanOrEqual', 'createdAtLessThanOrEqual']}"
-									   changed="updateFilterValue(event)"/>
-			<panels:MediaTypesFilter width="100%" attribute="mediaTypeIn" changed="updateFilterValue(event)"
+									   valueChange="updateFilterValue(event)"/>
+			<panels:MediaTypesFilter width="100%" attribute="mediaTypeIn" valueChange="updateFilterValue(event)"
 									 showLiveStream="{enableLiveStream}"/>
-			<panels:IngestionStatusFilter width="100%" attribute="statusIn" changed="updateFilterValue(event)"/>
-			<panels:DurationFilter width="100%" attribute="durationTypeMatchOr" changed="updateFilterValue(event)"/>
-			<panels:ClipsFilter width="100%" attribute="isRoot" changed="updateFilterValue(event)"/>
-			<panels:SchedulingFilter width="100%" changed="updateFilterValue(event)"
+			<panels:IngestionStatusFilter width="100%" attribute="statusIn" valueChange="updateFilterValue(event)"/>
+			<panels:DurationFilter width="100%" attribute="durationTypeMatchOr" valueChange="updateFilterValue(event)"/>
+			<panels:ClipsFilter width="100%" attribute="isRoot" valueChange="updateFilterValue(event)"/>
+			<panels:SchedulingFilter width="100%" valueChange="updateFilterValue(event)"
 									 attributes="{_schedulingAttributes}"/>
-			<panels:ModerationFilter width="100%" attribute="moderationStatusIn" changed="updateFilterValue(event)"/>
+			<panels:ModerationFilter width="100%" attribute="moderationStatusIn" valueChange="updateFilterValue(event)"/>
 			<panels:ReplacementStatusFilter width="100%" attribute="replacementStatusIn"
-											changed="updateFilterValue(event)"/>
-			<panels:AccessControlFilter width="100%" attribute="accessControlIdIn" changed="updateFilterValue(event)"
+											valueChange="updateFilterValue(event)"/>
+			<panels:AccessControlFilter width="100%" attribute="accessControlIdIn" valueChange="updateFilterValue(event)"
 										mainButtonTitle="{resourceManager.getString('filter', 'allAccessControlBtn')}"
 										dataProvider="{filterModel.accessControlProfiles}"/>
-			<panels:FlavorFilter width="100%" attribute="flavorParamsIdsMatchOr" changed="updateFilterValue(event)"
+			<panels:FlavorFilter width="100%" attribute="flavorParamsIdsMatchOr" valueChange="updateFilterValue(event)"
 								 mainButtonTitle="{resourceManager.getString('filter', 'allFlavorsBtn')}"
 								 dataProvider="{filterModel.flavorParams}"/>
 			<panels:DistributionFilter width="100%" visible="{enableDistribution}"
 									   includeInLayout="{enableDistribution}" 
-									   changed="updateFilterValue(event)"
+									   valueChange="updateFilterValue(event)"
 									   mainButtonTitle="{resourceManager.getString('filter', 'destinations')}"
 									   dataProvider="{_distProfAC}"/>
 		</mx:VBox>

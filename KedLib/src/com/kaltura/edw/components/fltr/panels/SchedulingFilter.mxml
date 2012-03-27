@@ -6,9 +6,12 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.fltr.BaseFilter;
+			import com.kaltura.edw.components.fltr.FilterComponentEvent;
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 			import com.kaltura.vo.KalturaPlayableEntryFilter;
 			
 			import mx.controls.Alert;
+			import mx.controls.Button;
 			import mx.events.FlexEvent;
 
 			
@@ -19,11 +22,6 @@
 			 * */
 			private var _selectedStartDate:int;
 			private var _selectedEndDate:int;
-			
-			
-			
-			
-			
 			
 			override public function set kfilters(value:Array):void {
 				// update vo:
@@ -65,6 +63,7 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				_buttons = [all, finished, live, future, scheduled];
+				friendlyName = resourceManager.getString('filter', 'scheduling');
 			}
 
 
@@ -134,12 +133,16 @@
 					for (var key:String in _vo) {
 						_vo[key] = int.MIN_VALUE;
 					}
+					
+					var ivo:IndicatorVo = new IndicatorVo();
+					ivo.attribute = attributes.join("~~");
+					dispatchChange(ivo, FilterComponentEvent.EVENT_KIND_REMOVE_ALL);
 				}
 				else {
 					// the title can't be unselected if it was selected before
 					all.selected = true;
 				}
-				dispatchChange();
+				
 			}
 
 
@@ -167,7 +170,7 @@
 					// if any of the members has been selected shut down the title
 					_buttons[0].selected = false;
 				}
-
+				
 				// set new values on filter:
 				var now:Number = new Date().time / 1000;
 				if (event.target == live) {
@@ -211,8 +214,28 @@
 						}
 					}
 				}
-
-				dispatchChange();
+				
+				// change event parameters:
+				var eventKind:String;
+				if ((event.target as Button).selected) {
+					if (event.target == scheduled) {
+						// this one we only want to add once
+						eventKind = FilterComponentEvent.EVENT_KIND_UPDATE;
+					}
+					else {
+						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
+					}
+				}
+				else {
+					eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;					
+				}
+				
+				var ivo:IndicatorVo = new IndicatorVo();
+				ivo.label = (event.target as Button).label;
+				ivo.tooltip = friendlyName +":" + ivo.label;
+				ivo.attribute = attributes.join("~~");
+				ivo.value = ivo.label;
+				dispatchChange(ivo, eventKind);
 			}
 		]]>
 	</mx:Script>

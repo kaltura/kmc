@@ -105,6 +105,7 @@ package com.kaltura.edw.components.fltr.panels
 			removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 			_attribute = "distributionProfiles";
 			labelField = "name";
+			friendlyName = resourceManager.getString('filter', 'distributionTooltip');
 			if (_dataProvider) {
 				dataProvider = _dataProvider;
 			}

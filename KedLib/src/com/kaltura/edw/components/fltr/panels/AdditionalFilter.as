@@ -1,5 +1,7 @@
 package com.kaltura.edw.components.fltr.panels {
+	import com.kaltura.edw.components.fltr.FilterComponentEvent;
 	import com.kaltura.edw.components.fltr.IFilterComponent;
+	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
@@ -12,7 +14,7 @@ package com.kaltura.edw.components.fltr.panels {
 	/**
 	 * dispatched when the value of the component have changed
 	 */
-	[Event(name = "changed", type = "flash.events.Event")]
+	[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")]
 
 	public class AdditionalFilter extends VBox implements IFilterComponent {
 
@@ -23,6 +25,12 @@ package com.kaltura.edw.components.fltr.panels {
 		public var labelField:String;
 		
 		public var labelFunction:Function;
+		
+		
+		/**
+		 * the text that is displayed in the indicators on tooltip with current value 
+		 */
+		public var friendlyName:String;
 
 
 		protected var _mainButtonTitle:String;
@@ -124,8 +132,8 @@ package com.kaltura.edw.components.fltr.panels {
 		}
 
 
-		protected function dispatchChange():void {
-			dispatchEvent(new Event("changed"));
+		protected function dispatchChange(vo:IndicatorVo, kind:String):void {
+			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, vo, kind));
 		}
 
 
@@ -163,6 +171,26 @@ package com.kaltura.edw.components.fltr.panels {
 			throw new Error("Method get filter() must be implemented");
 			return null;
 		}
+		
+		public function removeItem(item:IndicatorVo):void {
+			// item.value is button.data
+			// find correct button, set "selected", dispatch change
+			// basically - dispatch a "click" from the matching button
+			for each (var btn:Button in _buttons) {
+				if (btn.data) {
+				 	if (btn.data == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+				}
+				else {
+					// if no data, we use label
+				 	if (btn.label == item.value) {
+						btn.dispatchEvent(new MouseEvent(MouseEvent.CLICK, true));
+					}
+				}
+			}
+			
+		} 
 
 		// --------------------
 		// buttons
@@ -186,9 +214,9 @@ package com.kaltura.edw.components.fltr.panels {
 				for (var i:int = 1; i < _buttons.length; i++) {
 					_buttons[i].selected = false;
 				}
-
-//				updateImageButton(btnArr);
-				dispatchChange();
+				var vo:IndicatorVo = new IndicatorVo();
+				vo.attribute = attribute;
+				dispatchChange(vo, FilterComponentEvent.EVENT_KIND_REMOVE_ALL);
 			}
 			else {
 				//the title can't be unselected if it was selected before
@@ -201,25 +229,36 @@ package com.kaltura.edw.components.fltr.panels {
 		 * Handler for clicking an individual member of a button group.
 		 * */
 		protected function onDynamicMemberClicked(event:MouseEvent):void {
+			var btn:Button = event.target as Button; 
 			var i:int;
 			var selectTheTitle:Boolean = true;
+			var eventKind:String;
 			//if we unselected a member we should go over and see if we need to select the title 
-			if (!(event.target as Button).selected) {
+			if (!btn.selected) {
+				eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 				for (i = 1; i < _buttons.length; i++) {
 					if (_buttons[i].selected)
 						selectTheTitle = false;
 				}
 
-				if (selectTheTitle)
+				if (selectTheTitle) {
 					_buttons[0].selected = true;
+					eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;	
+				}
 			}
 			else {
 				// if any of the members has been selected shut down the title
 				_buttons[0].selected = false;
+				eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 			}
-
-//			updateImageButton(btnArr);
-			dispatchChange();
+			var vo:IndicatorVo = new IndicatorVo();
+			vo.label = btn.label;
+			if (friendlyName) {
+				vo.tooltip = friendlyName + ":" + btn.label;
+			}
+			vo.attribute = attribute;
+			vo.value = btn.data ? btn.data : btn.label;
+			dispatchChange(vo, eventKind);
 		}
 	}
 }

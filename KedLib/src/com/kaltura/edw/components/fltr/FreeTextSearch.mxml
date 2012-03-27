@@ -2,10 +2,12 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 		 implements="com.kaltura.edw.components.fltr.IFilterComponent">
 	<mx:Metadata>
-		[Event(name="changed", type="flash.events.Event")] 
+		[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			
 			import mx.controls.Alert;
 			import mx.resources.ResourceManager;
 			import mx.utils.StringUtil;
@@ -43,8 +45,8 @@
 			 * returns the text the user asked to search for
 			 * */
 			public function get filter():Object {
-				var res:String = '';
-				if (searchFilter.text != resourceManager.getString('filter', 'searchEntries')) {
+				var res:String = null;
+				if (searchFilter.text && searchFilter.text != resourceManager.getString('filter', 'searchEntries')) {
 					var trimmedText:String = StringUtil.trim(searchFilter.text);
 					res = trimmedText;
 				}
@@ -67,7 +69,18 @@
 			}
 			
 			
+			public function removeItem(vo:IndicatorVo):void {
+				clearSearchText(true);
+			}
 			
+			private function getIndicatorVo():IndicatorVo {
+				var ivo:IndicatorVo = new IndicatorVo();
+				ivo.attribute = attribute;
+				ivo.label = searchFilter.text;
+				ivo.tooltip = resourceManager.getString('filter', 'freeSearchToolTip');
+				ivo.value = "freeTextSearch";	// just some string so we can update indicators with new search terms
+				return ivo;
+			}
 			
 			/**
 			 * if legal data, update button and send update event.
@@ -78,23 +91,39 @@
 				// see if need to clear or send search
 				if (searchBtn.selected) {
 					// clear search
-					searchFilter.text = resourceManager.getString('filter', 'searchEntries');
-					setSearchIcon();
-					searchBtn.enabled = false;
-					// announce change
-					dispatchEvent(new Event("changed"));
+					clearSearchText(true);
 				}
 				else {
-					// if text to search is not valid, do nothing..
-					if (validateSearchText(false)) {
+					if (searchFilter.text == '') {
+						// i.e, user deleted text and focus still on TF
+						clearSearchText(true);
+						// put focus somehwere else
+						searchBtn.setFocus();
+					}
+					else if (validateSearchText(false)) {
 						// change icon according to data
 						setClearSearchIcon();
 						// announce change
-						dispatchEvent(new Event("changed"));
+						dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, getIndicatorVo(), FilterComponentEvent.EVENT_KIND_UPDATE));
 					}
+					// if text to search is not valid, do nothing..
 				}
 			}
 			
+			
+			/**
+			 * clear the search term
+			 * @param notify	if true, update event is dispatched after clear
+			 * */
+			private function clearSearchText(notify:Boolean):void {
+				searchFilter.text = resourceManager.getString('filter', 'searchEntries');
+				setSearchIcon();
+				searchBtn.enabled = false;
+				// announce change
+				if (notify) {
+					dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, getIndicatorVo(), FilterComponentEvent.EVENT_KIND_REMOVE));
+				}
+			}
 			
 			/**
 			 * reset default text to the search text field if necessary

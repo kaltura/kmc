@@ -1,5 +1,8 @@
 package com.kaltura.edw.components.fltr
 {
+	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+	import com.kaltura.edw.components.fltr.indicators.Indicators;
+	import com.kaltura.edw.components.fltr.indicators.IndicatorsEvent;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.types.KalturaSearchOperatorType;
 	import com.kaltura.vo.KalturaContentDistributionSearchItem;
@@ -8,9 +11,12 @@ package com.kaltura.edw.components.fltr
 	import com.kaltura.vo.KalturaSearchItem;
 	import com.kaltura.vo.KalturaSearchOperator;
 	
+	import flash.display.DisplayObject;
 	import flash.events.Event;
 	
+	import mx.collections.ArrayCollection;
 	import mx.containers.VBox;
+	import mx.core.Container;
 	
 	[ResourceBundle("filter")]
 	
@@ -38,7 +44,9 @@ package com.kaltura.edw.components.fltr
 		 * @param event	change event of an IFilterComponent
 		 * 
 		 */
-		protected function updateFilterValue(event:Event):void {
+		protected function updateFilterValue(event:FilterComponentEvent):void {
+			
+			// update KalturaFilter relevant values
 			if (event.target is IMultiAttributeFilterComponent) {
 				var atts:Array = (event.target as IMultiAttributeFilterComponent).attributes;
 				var fltrs:Array = (event.target as IMultiAttributeFilterComponent).kfilters;
@@ -54,7 +62,71 @@ package com.kaltura.edw.components.fltr
 				var tgt:IFilterComponent = event.target as IFilterComponent;
 				_kalturaFilter[tgt.attribute] = tgt.filter;
 			}
+			
+			// show correct indicators
+			updateIndicators(event.kind, event.data);
+			
+			// tell the world
 			dispatchEvent(new Event("filterChanged"));
+		}
+		
+		
+		/**
+		 * add / remove indicator vo to reflect current filtering status
+		 * @param action	add / remove / remove all
+		 * @param item		the item to act upon
+		 */
+		protected function updateIndicators(action:String, item:IndicatorVo):void {
+			var i:int;
+			var ivo:IndicatorVo;
+			switch (action) {
+				case FilterComponentEvent.EVENT_KIND_UPDATE:
+					// add if not found
+//					var bFound:Boolean;
+					for (i = 0; i<indicators.length; i++) {
+						ivo = indicators.getItemAt(i) as IndicatorVo;
+						if (ivo.attribute == item.attribute) {
+							if (ivo.value == item.value) {
+								// if found, replace 
+//								bFound = true;
+								indicators.removeItemAt(i);
+								
+								break;
+							}
+						}
+					}
+					// if not found, i == indicators.length
+					indicators.addItemAt(item, i);
+//					if (!bFound) {
+//						indicators.addItem(item);
+//					}
+					break;
+				
+				case FilterComponentEvent.EVENT_KIND_ADD:
+					indicators.addItem(item);
+					break;
+				
+				case FilterComponentEvent.EVENT_KIND_REMOVE:
+					for (i = 0; i<indicators.length; i++) {
+						ivo = indicators.getItemAt(i) as IndicatorVo;
+						if (ivo.attribute == item.attribute) {
+							if (ivo.value == item.value) {
+								indicators.removeItemAt(i);
+								break;
+							}
+						}
+					}
+					break;
+				
+				case FilterComponentEvent.EVENT_KIND_REMOVE_ALL:
+					for (i = indicators.length-1; i >= 0; i--) {
+						ivo = indicators.getItemAt(i) as IndicatorVo;
+						if (ivo.attribute == item.attribute) {
+							indicators.removeItemAt(i);
+						}
+					}
+					break;
+			}
 		}
 		 
 		
@@ -119,7 +191,7 @@ package com.kaltura.edw.components.fltr
 
 		public function set freeTextSearch(value:IFilterComponent):void {
 			_freeTextSearch = value;
-			_freeTextSearch.addEventListener("changed", updateFilterValue, false, 0, true);
+			_freeTextSearch.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 		}
 		
 		
@@ -146,6 +218,96 @@ package com.kaltura.edw.components.fltr
 			_additionalFiltersIds = value;
 		}
 		
+		
+		// --------------------
+		// filter indicators
+		// --------------------
+		
+
+		[Bindable]
+		/**
+		 * list of vos with data relevant to showing current filtering status.
+		 * <code>IndicatorVo</code> objects
+		 */
+		public var indicators:ArrayCollection = new ArrayCollection();
+
+		
+		/**
+		 * remove a filter by its representing vo 
+		 * @param vo	representation vo
+		 * 
+		 */
+		public function removeFilter(item:IndicatorVo):void {
+			// remove from indicators list
+			for (var i:int = 0; i<indicators.length; i++) {
+				if (indicators.getItemAt(i) == item) {
+					indicators.removeItemAt(i);
+					break;
+				}
+			}
+			// let filter component remove the relevant attribute
+			var comp:IFilterComponent;
+			if (_freeTextSearch && _freeTextSearch.attribute == item.attribute) {
+				comp = _freeTextSearch;
+			}
+			else {
+				comp = getComponentByAttribute(item.attribute, this);
+			}
+			comp.removeItem(item);
+		}
+		
+		/**
+		 * retreive a filter component that matches a given attribute  
+		 * @param attribute	
+		 * @param container
+		 * @return filter component whose attribute is the same as the given
+		 */
+		protected function getComponentByAttribute(attribute:String, container:Container):IFilterComponent {
+			//TODO will this work for multiAttribute components ?
+			if (isIt(attribute, container)) {
+				return container as IFilterComponent;
+			}
+			
+			var child:DisplayObject;
+			var fc:IFilterComponent;
+			// scan all direct children
+			for (var i:int = 0; i<container.numChildren; i++) {
+				child = container.getChildAt(i);
+				if (isIt(attribute, child)) {
+					return child as IFilterComponent;
+				}
+				if (child is Container) {
+					fc = getComponentByAttribute(attribute, child as Container);
+					if (fc) {
+						return fc;
+					}
+				}
+			}
+			// not found in this container, return null
+			return null;
+		}
+		
+		/**
+		 * is the given DisplayObject a IFilterComponent whose attribute matches the given one 
+		 * @param attribute
+		 * @param child
+		 * @return true if it is 
+		 */
+		private function isIt(attribute:String, child:DisplayObject):Boolean {
+			if (child is IFilterComponent) {
+				if ((child as IFilterComponent).attribute == attribute) {
+					return true;
+				}
+				else if (child is IMultiAttributeFilterComponent) {
+					// the vos generated by these hold all attributes concatenated.
+					var at:String = (child as IMultiAttributeFilterComponent).attributes.join ("~~");
+					if (at == attribute) {
+						return true;						
+					}
+				}
+			}
+			return false;
+		}
 		
 		// --------------------
 		// model
@@ -189,6 +351,7 @@ package com.kaltura.edw.components.fltr
 		 */		
 		public function set kalturaFilter(value:KalturaFilter):void {
 			_kalturaFilter = value;
+			indicators = new ArrayCollection();
 		}
 		
 	}

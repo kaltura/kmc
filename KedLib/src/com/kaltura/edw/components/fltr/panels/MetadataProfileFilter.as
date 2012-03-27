@@ -1,6 +1,7 @@
 package com.kaltura.edw.components.fltr.panels
 {
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
+	import com.kaltura.edw.components.fltr.FilterComponentEvent;
 	import com.kaltura.edw.components.fltr.IAdvancedSearchFilterComponent;
 	import com.kaltura.types.KalturaSearchOperatorType;
 	import com.kaltura.vo.KalturaMetadataSearchItem;
@@ -12,12 +13,12 @@ package com.kaltura.edw.components.fltr.panels
 	
 	public class MetadataProfileFilter extends AdditionalFilter implements IAdvancedSearchFilterComponent {
 		
-		
+	
 		/**
 		 * filter is KalturaMetadataSearchItem whose items are KalturaMetadataSearchItems
 		 */
 		override public function set filter(value:Object):void {
-			//TODO implement
+			//TODO implement set filter
 //			// scan filter items (fields)
 //			for each (var msi:KalturaMetadataSearchItem in value.items) {
 //				// for each field, find a matching filter and set it.
@@ -62,7 +63,7 @@ package com.kaltura.edw.components.fltr.panels
 			for each (var mfvo:MetadataFieldVO in _dataProvider) {
 				if (mfvo.appearInSearch && mfvo.type == MetadataCustomFieldTypes.LIST) {
 					metadataFilter = new MetadataFilter();
-					metadataFilter.addEventListener("changed", updateFilterValue, false, 0, true);
+					metadataFilter.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 					metadataFilter.data = mfvo;
 					metadataFilter.attribute = mfvo.id;
 					metadataFilter.mainButtonTitle = mfvo.displayedLabel;
@@ -72,10 +73,10 @@ package com.kaltura.edw.components.fltr.panels
 			}
 		}
 		
-		private function updateFilterValue(e:Event):void {
+		private function updateFilterValue(e:FilterComponentEvent):void {
 			e.stopImmediatePropagation();
 			// need to have this item as event.target..
-			dispatchChange();
+			dispatchChange(e.data, e.kind);
 		}
 	}
 }

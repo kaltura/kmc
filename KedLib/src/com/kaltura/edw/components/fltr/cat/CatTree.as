@@ -2,11 +2,13 @@ package com.kaltura.edw.components.fltr.cat
 {
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.components.TriStateCheckBox;
+	import com.kaltura.edw.components.fltr.FilterComponentEvent;
 	import com.kaltura.edw.components.fltr.IFilterComponent;
 	import com.kaltura.edw.components.fltr.cat.data.*;
 	import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
 	import com.kaltura.edw.components.fltr.cat.events.CategoriesDataManagerEvent;
 	import com.kaltura.edw.components.fltr.cat.renderers.*;
+	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	import com.kaltura.edw.control.CategoriesTreeController;
 	import com.kaltura.edw.vo.CategoryVO;
 	
@@ -30,7 +32,7 @@ package com.kaltura.edw.components.fltr.cat
 	/**
 	 * dispatched when the value of the component have changed 
 	 */	
-	[Event(name="changed", type="flash.events.Event")]
+	[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")]
 
 	
 	/**
@@ -219,8 +221,16 @@ package com.kaltura.edw.components.fltr.cat
 				return;
 			
 			e.stopPropagation();
-			// set new value
-			var cat:CategoryVO = e.target.data as CategoryVO;
+			handleSelectionChange(e.target.data as CategoryVO);
+		}
+		
+		
+		/**
+		 * set selected categories according to selection mode
+		 * @param cat	category subject of change
+		 */
+		private function handleSelectionChange(cat:CategoryVO):void {
+			var eventKind:String;
 			// set value according to mode 
 			switch (_selectionMode) {
 				case CatTreeSelectionMode.SINGLE_SELECT:
@@ -243,11 +253,13 @@ package com.kaltura.edw.components.fltr.cat
 						// if there is a value, it means it was selected before
 						delete _selectedCategories[cat.id];
 						cat.selected = CatSelectionStatus.UNSELECTED;
+						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
 						_selectedCategories[cat.id] = cat;
 						cat.selected = CatSelectionStatus.SELECTED;
+						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
 					break;
 				
@@ -256,16 +268,26 @@ package com.kaltura.edw.components.fltr.cat
 						// if there is a value, it means it was selected before
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED);
 						makeParentsPartial(cat);
+						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
 						setChildrenSelection(cat, TriStateCheckBox.SELECTED);
 						remarkParents(cat);
+						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
 					break;
 			}
 			
-			dispatchEvent(new Event("changed"));
+			
+			// indicators: no need to handle single select state (doesn't exist in filter)
+			var ivo:IndicatorVo = new IndicatorVo();
+			ivo.label = cat.category.name;
+			ivo.tooltip = cat.category.fullName;
+			ivo.attribute = attribute;
+			ivo.value = cat.id;
+			//TODO for selection with children, indicators for all children?
+			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, ivo, eventKind));
 		}
 		
 		/**
@@ -412,7 +434,11 @@ package com.kaltura.edw.components.fltr.cat
 			return null;
 		}
 		
-		
+		public function removeItem(item:IndicatorVo):void {
+			// item.value is id of cat to remove
+			handleSelectionChange(_selectedCategories[item.value] as CategoryVO);
+				
+		}
 		
 		// --------------------
 		// Tree Selection mode
