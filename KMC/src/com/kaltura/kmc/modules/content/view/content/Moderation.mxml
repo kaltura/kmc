@@ -8,7 +8,7 @@
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
 		 creationComplete="init()" 
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*">
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -19,6 +19,7 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
@@ -29,7 +30,6 @@
 			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.KdpEventTypes;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
@@ -40,7 +40,9 @@
 			import com.kaltura.kmc.modules.content.vo.UserVO;
 			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.KMvCModel;
+			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
+			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntry;
@@ -154,7 +156,6 @@
 			// ===============================================
 			
 			public function onRequestedDataLoaded():void {
-				filter.init();
 				loadEntries();
 			}
 
@@ -172,33 +173,20 @@
 
 					toolBar.approveSelected.addEventListener(MouseEvent.CLICK, clearKdp);
 					toolBar.rejectSelected.addEventListener(MouseEvent.CLICK, clearKdp);
-					//TODO clean up.. ?
 					toolBar.removeCombos();
-
-					// setting defaults to view only pending and flagged and Status Ready.
-					//TODO (filter) remove hardcoded references
-					filter.moderationStatus.allModerationStatus.selected = false;
-					filter.moderationStatus.rejected.selected = false;
-					filter.moderationStatus.approved.selected = false;
-					filter.moderationStatus.pending.selected = true;
-					filter.moderationStatus.pendingModeration.selected = true;
 					
-					filter.conversionStatus.allConversionStatusBtn.selected = true;
-					filter.conversionStatus.convReadyBtn.selected = false;
-					filter.conversionStatus.convConvertingBtn.selected = false;
-					filter.conversionStatus.convErrorBtn.selected = false;
-					filter.conversionStatus.convUploadingBtn.selected = false;
-
-					///////////////////////////////////////
-
-//					paging.kalturaFilterPager.pageIndex = 0;
-//					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-					
+					var kFilter:KalturaMediaEntryFilter;
 					if (_initialFilter) {
-						filter.ps3filter = _initialFilter;
+						kFilter = _initialFilter
 					}
+					else {
+						kFilter = new KalturaMediaEntryFilter();
+						kFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
 					
-					filter.validateNow();
+						// setting defaults to view only pending and flagged.
+						kFilter.moderationStatusIn = KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW;
+					}
+					filter.kalturaFilter = kFilter;
 					
 					loadFilterData();
 					loadKDP();
@@ -219,25 +207,6 @@
 			 * load all the data the filter needs
 			 * */
 			private function loadFilterData():void {
-//				// distribution
-//				if (filterModel.enableDistribution) {
-//					var listDistribution:DistributionProfileEvent = new DistributionProfileEvent(DistributionProfileEvent.LIST);
-//					listDistribution.dispatch();
-//				}
-//				// flavor params
-//				var getAllFlavorParams:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_FLAVOR_PARAMS);
-//				getAllFlavorParams.dispatch();
-//				// metadata profile
-//				if (filterModel.enableCustomData) {
-//					var listMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-//					listMetadataProfile.dispatch();
-//				}
-//				// access control
-//				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
-//				getAllProfilesEvent.dispatch();
-//				//categories
-//				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-//				getCategoriesList.dispatch();
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
 				KedController.getInstance().dispatch(fe);
 			}
@@ -273,7 +242,7 @@
 				}
 
 				clearKdp();
-				_listableVo = new ListableVo(filter.ps3filter, paging, null);
+				_listableVo = new ListableVo(filter.kalturaFilter, paging, null);
 				// set the order-by to the filter
 				if (_orderBy) {
 					_listableVo.filterVo.orderBy = _orderBy;
@@ -281,7 +250,6 @@
 				
 				var cgEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _listableVo);
 				cgEvent.dispatch();
-				updateExpenderLabel();
 			}
 
 
@@ -422,39 +390,11 @@
 
 
 			/**
-			 * fold / unfold filter
-			 */
-			private function foldFilter():void {
-				var flag:Boolean = !filterContainer.visible;
-				filterContainer.visible = flag;
-				filterContainer.includeInLayout = flag;
-				filterLabel.visible = flag;
-				filterLabel.includeInLayout = flag;
-
-//				foldBtn.setStyle('icon', flag ? closeFilterImage : openFilterImage);
-//				foldBtn.styleName = flag ? "expendableButtonWithCloseIcon" : "expendableButtonWithOpenIcon";
-				
-				
-				foldBtn.labelPlacement = flag ? 'right' : 'left';
-			}
-
-
-			/**
 			 * Entry table dispatched an order-by changing
 			 */
 			private function onOrderByChanged():void {
 				_orderBy = entryTable.orderBy;
 				loadEntries();
-			}
-
-
-			private function updateExpenderLabel():void {
-				if (!filter.isFilterOn) {
-					filteredLabel.visible = false;
-				}
-				else {
-					filteredLabel.visible = true;
-				}
 			}
 
 
@@ -592,30 +532,33 @@
 
 		]]>
 	</mx:Script>
-	<mx:WipeLeft id="wipeLeft" duration="400"/>
-	<mx:WipeRight id="wipeRight" duration="500"/>
 	<mx:HBox width="100%">
-		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
-				  styleName="filterTitleHeader"/>
-		<mx:LinkButton id="foldBtn"  toggle="true" label="{resourceManager.getString('cms', 'moderationEntriesTable')}"
-					   click="{foldFilter()}" styleName="expendableButtonWithCloseIcon" />
-		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
-				  visible="false"/>
-		<mx:Spacer width="100%"/>
-		
+		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'moderationEntriesTable')}" styleName="filterTitleHeader" height="60"/>
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
+							 attribute="freeText"
+							 label="{resourceManager.getString('cms', 'searchFilter')}" />
+		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
+							   dataProvider="{filter.indicators}"
+							   boxClicked="filter.removeFilter(event.data)"/>
 		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
+	
 	<mx:HDividedBox id="topContainer">
 		<mx:VBox id='filterContainer'>
-			<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
+			<!--<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
 						   enableCustomData="{filterModel.enableCustomData}" metadataProfilesArray="{filterModel.metadataProfiles}"
 						   flavorParams="{filterModel.flavorParams}"
 						   catMap="{filterModel.categoriesMap}"
 						   accessControlProfiles="{filterModel.accessControlProfiles}"
 						   newSearch="{paging.selectedPage=1;loadEntries()}"
 						   enableDistribution="{filterModel.enableDistribution}"
-						   distributionProfileArr="{distributionProfilesArray}"/>
+						   distributionProfileArr="{distributionProfilesArray}"/>-->
+			<fltr:EntriesFilter id="filter" height="100%" width="245"  
+								freeTextSearch="{searchBox}"
+								metadataProfiles="{filterModel.metadataProfiles}"
+								distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
+								filterModel="{filterModel}" filterChanged="{paging.selectedPage=1;loadEntries()}"/>
 		</mx:VBox>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">

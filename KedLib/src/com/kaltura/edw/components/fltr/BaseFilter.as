@@ -5,6 +5,7 @@ package com.kaltura.edw.components.fltr
 	import com.kaltura.edw.components.fltr.indicators.IndicatorsEvent;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.types.KalturaSearchOperatorType;
+	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaContentDistributionSearchItem;
 	import com.kaltura.vo.KalturaFilter;
 	import com.kaltura.vo.KalturaMetadataSearchItem;
@@ -82,24 +83,18 @@ package com.kaltura.edw.components.fltr
 			switch (action) {
 				case FilterComponentEvent.EVENT_KIND_UPDATE:
 					// add if not found
-//					var bFound:Boolean;
 					for (i = 0; i<indicators.length; i++) {
 						ivo = indicators.getItemAt(i) as IndicatorVo;
 						if (ivo.attribute == item.attribute) {
 							if (ivo.value == item.value) {
 								// if found, replace 
-//								bFound = true;
 								indicators.removeItemAt(i);
-								
 								break;
 							}
 						}
 					}
 					// if not found, i == indicators.length
 					indicators.addItemAt(item, i);
-//					if (!bFound) {
-//						indicators.addItem(item);
-//					}
 					break;
 				
 				case FilterComponentEvent.EVENT_KIND_ADD:
@@ -263,7 +258,6 @@ package com.kaltura.edw.components.fltr
 		 * @return filter component whose attribute is the same as the given
 		 */
 		protected function getComponentByAttribute(attribute:String, container:Container):IFilterComponent {
-			//TODO will this work for multiAttribute components ?
 			if (isIt(attribute, container)) {
 				return container as IFilterComponent;
 			}
@@ -352,7 +346,27 @@ package com.kaltura.edw.components.fltr
 		public function set kalturaFilter(value:KalturaFilter):void {
 			_kalturaFilter = value;
 			indicators = new ArrayCollection();
+			setFilterValuesToComponents();
 		}
 		
+		protected function setFilterValuesToComponents():void {
+			var comp:IFilterComponent;
+			var att:String;
+			var keys:Array = ObjectUtil.getObjectAllKeys(_kalturaFilter);
+			for (var i:int = 0; i<keys.length; i++) {
+				att = keys[i];
+				if (_kalturaFilter[att] && _kalturaFilter[att] != int.MIN_VALUE) { // default value for strings is null, numbers int.MIN_VALUE
+					comp = getComponentByAttribute(att, this);
+					if (comp) {
+						comp.filter = _kalturaFilter[att];
+					}
+					else {
+						if (_freeTextSearch && att == _freeTextSearch.attribute) {
+							_freeTextSearch.filter = _kalturaFilter[att];
+						}
+					}
+				}
+			}
+		}
 	}
 }

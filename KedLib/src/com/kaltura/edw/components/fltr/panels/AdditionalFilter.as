@@ -120,17 +120,6 @@ package com.kaltura.edw.components.fltr.panels {
 			}
 		}
 
-		/**
-		 * remove selection indication from the button
-		 * which corresponds to the given data.
-		 * this is required for removing filters via indicators.
-		 * @param data
-		 *
-		 */
-		public function deselect(data:Object):void {
-			//TODO implement
-		}
-
 
 		protected function dispatchChange(vo:IndicatorVo, kind:String):void {
 			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, vo, kind));
