@@ -224,6 +224,19 @@ package com.kaltura.edw.components.fltr.cat
 			handleSelectionChange(e.target.data as CategoryVO);
 		}
 		
+
+		/**
+		 * removes all categories from the selected list and sets their status to unselected 
+		 */		
+		private function deselectAllCategories():void {
+			if (_selectedCategories) {
+				for each (var oldcat:CategoryVO in _selectedCategories) {
+					oldcat.selected = CatSelectionStatus.UNSELECTED;
+				}
+			}
+			
+			_selectedCategories = new Object();
+		}
 		
 		/**
 		 * set selected categories according to selection mode
@@ -235,21 +248,21 @@ package com.kaltura.edw.components.fltr.cat
 			switch (_selectionMode) {
 				case CatTreeSelectionMode.SINGLE_SELECT:
 					// deselect previous
-					if (_selectedCategories) {
-						// if there is a selected category there is only one, but we don't know its id, so..
-						// the loop will not be heavy, it only scans a single object.
-						for each (var oldcat:CategoryVO in _selectedCategories) {
-							oldcat.selected = CatSelectionStatus.UNSELECTED;
-						}
-					}
+					deselectAllCategories();
 					// select new
-					_selectedCategories = new Object();
 					_selectedCategories[cat.id] = cat;
 					cat.selected = CatSelectionStatus.SELECTED;
 					break;
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_EXACT:
-					if (_selectedCategories[cat.id]) {
+					if (cat.id == 0) {
+						// root category clicked; remove all selections
+						cat.selected = CatSelectionStatus.UNSELECTED;
+						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
+						// deselect previous
+						deselectAllCategories();
+					}
+					else if (_selectedCategories[cat.id]) {
 						// if there is a value, it means it was selected before
 						delete _selectedCategories[cat.id];
 						cat.selected = CatSelectionStatus.UNSELECTED;
@@ -264,7 +277,14 @@ package com.kaltura.edw.components.fltr.cat
 					break;
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_PLUS:
-					if (_selectedCategories[cat.id]) {
+					if (cat.id == 0) {
+						// root category clicked; remove all selections
+						cat.selected = CatSelectionStatus.UNSELECTED;
+						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
+						// deselect previous
+						deselectAllCategories();
+					}
+					else if (_selectedCategories[cat.id]) {
 						// if there is a value, it means it was selected before
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED);
 						makeParentsPartial(cat);
