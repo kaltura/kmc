@@ -8,7 +8,7 @@
 				 implements="com.kaltura.edw.business.IListable,com.kaltura.edw.business.IDataOwner"
 				 creationComplete="{onCreationComplete()}" showCloseButton="true" close="{onClose(event)}" help="{onHelp()}"
 				 verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="980" height="560"
-				 styleName="TitleWindowType2" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" 
+				 styleName="TitleWindowType2" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" 
 				 >
 	<mx:Script>
 		<![CDATA[
@@ -28,11 +28,14 @@
 			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.types.KalturaBaseEntryOrderBy;
+			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			
@@ -136,7 +139,6 @@
 
 
 			public function onRequestedDataLoaded():void {
-				filter.init();
 				loadEntries();
 			}
 
@@ -214,9 +216,6 @@
 					var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.GET_PLAYLIST);
 					e.data = _editPlaylist;
 					dispatchEvent(e);
-					
-//					var cgEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_PLAYLIST, _editPlaylist);
-//					cgEvent.dispatch();
 				}
 				else if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
 					// edit custom data linked entries
@@ -228,49 +227,22 @@
 					title = resourceManager.getString('cms', 'newManualPlaylist');
 				}
 
-				//TODO (filter) remove hardcoded references 
+				var kFilter:KalturaMediaEntryFilter = filter.kalturaFilter as KalturaMediaEntryFilter;
 				//a unique moderation & Conversion status for custom data
 				if (context == ManualPlaylistWindowMode.EDIT_LINKED_ENTRIES_MODE || context == ManualPlaylistWindowMode.NEW_LINKED_ENTRIES) {
-					filter.moderationStatus.allModerationStatus.selected = true;
-					filter.moderationStatus.rejected.selected = false;
-					filter.moderationStatus.approved.selected = false;
-					filter.moderationStatus.pending.selected = false;
-					filter.moderationStatus.pendingModeration.selected = false;
-					filter.moderationStatus.autoApprovedBtn.selected = false;
-
-					filter.conversionStatus.allConversionStatusBtn.selected = true;
-					filter.conversionStatus.convErrorBtn.selected = false;
-					filter.conversionStatus.convUploadingBtn.selected = false;
-					filter.conversionStatus.convConvertingBtn.selected = false;
-					filter.conversionStatus.convReadyBtn.selected = false;
+					kFilter.moderationStatusIn = null;
+					kFilter.statusIn = null;
 				}
 				else {
-					//setting defaults to hide rejected
 					//view only approved and pending
-					///////////////////////////////////////
-					filter.moderationStatus.allModerationStatus.selected = false;
-					filter.moderationStatus.rejected.selected = false;
-					filter.moderationStatus.approved.selected = true;
-					filter.moderationStatus.pending.selected = true;
-					filter.moderationStatus.pendingModeration.selected = true;
-					filter.moderationStatus.autoApprovedBtn.selected = true;
-					////// setting conversion status //////
+					kFilter.moderationStatusIn = KalturaEntryModerationStatus.APPROVED + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW
+						 + "," + KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.AUTO_APPROVED;
 					// view only ready and converting
-					filter.conversionStatus.allConversionStatusBtn.selected = false;
-					filter.conversionStatus.convErrorBtn.selected = false;
-					filter.conversionStatus.convUploadingBtn.selected = false;
-					filter.conversionStatus.convConvertingBtn.selected = true;
-					filter.conversionStatus.convReadyBtn.selected = true;
+					kFilter.statusIn = KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY;
 				}
 
 				paging.kalturaFilterPager.pageIndex = 0;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-
-//				if (playlistModel.onTheFlyPlaylistType == SetPlaylistTypeEvent.MANUAL_PLAYLIST) {
-//					// this is not an empty or edit existing playlist - this is a
-//					// new playlist created on the fly from entries screen 
-//					_playlistArrayCollection = playlistModel.onTheFlyPlaylistEntries;
-//				}
 				loadFilterData();
 				filter.validateNow();
 				if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
@@ -283,12 +255,8 @@
 
 
 			private function loadFilterData():void {
-				
 				var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.LOAD_FILTER_DATA);
 				dispatchEvent(e);
-				
-//				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this);
-//				fe.dispatch();
 			}
 
 
@@ -325,7 +293,7 @@
 
 
 			public function get filterVo():Object {
-				return filter.ps3filter;
+				return filter.kalturaFilter;
 			}
 
 
@@ -335,7 +303,7 @@
 
 
 			public function loadEntries():void {
-				_listableVo = new ListableVo(filter.ps3filter, paging, null, this);
+				_listableVo = new ListableVo(filter.kalturaFilter, paging, null, this);
 				_listableVo.filterVo.orderBy = _orderBy;
 				
 				var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SEARCH_ENTRIES);
@@ -625,13 +593,14 @@
 	<mx:HBox id="playlistWorkArea" width="100%" height="100%" verticalAlign="middle">
 		<mx:VBox height="400" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formSubTitleLabel"/>
-			<filter1:Filter id="filter" width="260" height="100%" newSearch="{loadEntries()}"
-						   enableCustomData="{filterData.enableCustomData}" catMap="{filterData.categoriesMap}"
-						   metadataProfilesArray="{filterData.metadataProfiles}" categories="{filterData.categories}"
-						   flavorParams="{filterData.flavorParams}" showRejectedOption="false"
-						   accessControlProfiles="{filterData.accessControlProfiles}"
-						   enableDistribution="{filterData.enableDistribution}"
-						   distributionProfileArr="{distributionProfilesArray}" showStatusOptions="false"/>
+			<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}"
+								 attribute="freeText"
+								 label="{resourceManager.getString('cms', 'searchFilter')}" />
+			<fltr:EntriesFilter id="filter" width="260" height="100%" filterChanged="loadEntries()"
+								freeTextSearch="{searchBox}" enableIngestionStatus="false"
+								metadataProfiles="{filterData.metadataProfiles}"
+								distributionProfiles="{distributionProfilesArray}"
+								filterModel="{filterData}" />
 		</mx:VBox>
 
 		<mx:VBox id="availableEntriesContainer" width="100%" height="400" verticalGap="0" horizontalScrollPolicy="off"
@@ -656,8 +625,7 @@
 		<playlist:PlaylistEntries id="entries" width="100%" height="400" dataProvider="{_playlistArrayCollection}"
 								   showLinks="{showLinks}" allowSort="true" moveItemUp="{moveItemUp()}" 
 								   moveItemDown="{moveItemDown()}" showEntryDetails="entryTable_showDetailsHandler(event)" 
-								   creationComplete="{setEntriesListTitle(event)}">
-		</playlist:PlaylistEntries>
+								   creationComplete="{setEntriesListTitle(event)}" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>

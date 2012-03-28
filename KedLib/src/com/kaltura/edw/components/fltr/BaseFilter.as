@@ -211,6 +211,7 @@ package com.kaltura.edw.components.fltr
 		 */		
 		public function set additionalFiltersIds(value:String):void {
 			_additionalFiltersIds = value;
+			//TODO implement
 		}
 		
 		

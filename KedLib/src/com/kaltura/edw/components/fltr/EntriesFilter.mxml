@@ -30,6 +30,16 @@
 				"startDateGreaterThanOrEqual", "endDateLessThanOrEqual"];
 			
 			// ----------------
+			// ingestion
+			// ----------------
+			
+			[Bindable]
+			/**
+			 * show ingestion status filter
+			 * */
+			public var enableIngestionStatus:Boolean = true;
+			
+			// ----------------
 			// livestream
 			// ----------------
 			
@@ -151,6 +161,11 @@
 				return metadataTab;
 			}
 			
+			
+			// ----------------
+			// general
+			// ----------------
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (!_kalturaFilter) {
 					_kalturaFilter = new KalturaMediaEntryFilter();
@@ -167,12 +182,13 @@
 			private function setFilterValues():void {
 				setFilterValuesToComponents();
 			}
+			
+			
 		]]>
 	</mx:Script>
 	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30" >
 		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('filter', 'categoriesLabel')}" width="100%"
 				   height="100%" styleName="categoriesTreeVBox">
-			<!--<mx:Canvas width="100%" height="100%" backgroundColor="#FFFFFF" id="maskCanvas"/>mask="{maskCanvas}"-->
 			<cat:CatTree id="catTree" attribute="categoriesIdsMatchOr" categories="{filterModel.categoriesMap}"
 						 dataProvider="{filterModel.categories}" valueChange="updateFilterValue(event)"
 						 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" prefsButton="{prefs}"
@@ -188,7 +204,8 @@
 									   valueChange="updateFilterValue(event)"/>
 			<panels:MediaTypesFilter width="100%" attribute="mediaTypeIn" valueChange="updateFilterValue(event)"
 									 showLiveStream="{enableLiveStream}"/>
-			<panels:IngestionStatusFilter width="100%" attribute="statusIn" valueChange="updateFilterValue(event)"/>
+			<panels:IngestionStatusFilter width="100%" attribute="statusIn" valueChange="updateFilterValue(event)"
+										  visible="{enableIngestionStatus}" includeInLayout="{enableIngestionStatus}"/>
 			<panels:DurationFilter width="100%" attribute="durationTypeMatchOr" valueChange="updateFilterValue(event)"/>
 			<panels:ClipsFilter width="100%" attribute="isRoot" valueChange="updateFilterValue(event)"/>
 			<panels:SchedulingFilter width="100%" valueChange="updateFilterValue(event)"
