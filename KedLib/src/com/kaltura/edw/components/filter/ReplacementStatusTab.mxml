@@ -40,23 +40,17 @@
 			 * filter by replacement status
 			 * */
 			public function getFilterString():String {
-				var replacementStatusArray:Array = [];
-				
-				if (allReplacementStatusBtn.selected) {
-					replacementStatusArray.push('');
-//					replacementStatusArray.push(KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY, 
-//						KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED, KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED);
-				}
-				else {
+				if (!allReplacementStatusBtn.selected) {
+					var replacementStatusArray:Array = [];
 					if (processingNewBtn.selected) { // for processing new files 
 						replacementStatusArray.push(KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED,KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY);
 					}
 					if (readyForReviewBtn.selected) { // for ready for review
 						replacementStatusArray.push(KalturaEntryReplacementStatus.READY_BUT_NOT_APPROVED);
 					}
-					
+					return replacementStatusArray.join(',');
 				}
-				return replacementStatusArray.join(',');
+				return null;
 			}
 			
 			/**

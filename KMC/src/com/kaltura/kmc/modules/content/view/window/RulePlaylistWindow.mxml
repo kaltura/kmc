@@ -20,11 +20,11 @@
 			import com.kaltura.edw.business.IDataOwner;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.components.playlist.PlaylistEntries;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.PlaylistModel;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
@@ -121,7 +121,6 @@
 			
 			public function onRequestedDataLoaded():void {
 				// after filter data was loaded, init stuff
-				simpleRule.filter.init();
 				initWindow();
 			}
 			
@@ -135,7 +134,10 @@
 				if (onTheFlyFilter) {
 					//this is a new playlist with a given filter (on the fly rule based playlist)
 					simpleRule.ruleToEdit = onTheFlyFilter;
-					simpleRule.validateNow();
+//					simpleRule.validateNow();
+				}
+				else {
+					simpleRule.ruleToEdit = new KalturaMediaEntryFilterForPlaylist();
 				}
 				simpleRule.runRule();
 				PermissionManager.getInstance().applyAllAttributes(this, "ruleBasedPlaylistDrilldown_add");

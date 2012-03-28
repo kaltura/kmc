@@ -30,18 +30,32 @@
 				"startDateGreaterThanOrEqual", "endDateLessThanOrEqual"];
 			
 			// ----------------
-			// ingestion
+			// show / hide panels
 			// ----------------
+			
+			[Bindable]
+			/**
+			 * show moderation status filter
+			 * */
+			public var enableModeration:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * show access control filter
+			 * */
+			public var enableAccessControl:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * show scheduling filter
+			 * */
+			public var enableScheduling:Boolean = true;
 			
 			[Bindable]
 			/**
 			 * show ingestion status filter
 			 * */
 			public var enableIngestionStatus:Boolean = true;
-			
-			// ----------------
-			// livestream
-			// ----------------
 			
 			[Bindable]
 			/**
@@ -209,13 +223,16 @@
 			<panels:DurationFilter width="100%" attribute="durationTypeMatchOr" valueChange="updateFilterValue(event)"/>
 			<panels:ClipsFilter width="100%" attribute="isRoot" valueChange="updateFilterValue(event)"/>
 			<panels:SchedulingFilter width="100%" valueChange="updateFilterValue(event)"
-									 attributes="{_schedulingAttributes}"/>
-			<panels:ModerationFilter width="100%" attribute="moderationStatusIn" valueChange="updateFilterValue(event)"/>
+									 attributes="{_schedulingAttributes}"
+									 visible="{enableScheduling}" includeInLayout="{enableScheduling}"/>
+			<panels:ModerationFilter width="100%" attribute="moderationStatusIn" valueChange="updateFilterValue(event)"
+									 visible="{enableModeration}" includeInLayout="{enableModeration}"/>
 			<panels:ReplacementStatusFilter width="100%" attribute="replacementStatusIn"
 											valueChange="updateFilterValue(event)"/>
 			<panels:AccessControlFilter width="100%" attribute="accessControlIdIn" valueChange="updateFilterValue(event)"
 										mainButtonTitle="{resourceManager.getString('filter', 'allAccessControlBtn')}"
-										dataProvider="{filterModel.accessControlProfiles}"/>
+										dataProvider="{filterModel.accessControlProfiles}"
+										visible="{enableAccessControl}" includeInLayout="{enableAccessControl}"/>
 			<panels:FlavorFilter width="100%" attribute="flavorParamsIdsMatchOr" valueChange="updateFilterValue(event)"
 								 mainButtonTitle="{resourceManager.getString('filter', 'allFlavorsBtn')}"
 								 dataProvider="{filterModel.flavorParams}"/>

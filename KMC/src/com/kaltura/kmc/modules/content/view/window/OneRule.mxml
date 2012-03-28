@@ -4,16 +4,17 @@
 -->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 		 creationComplete="onCreationComplete()"
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:playlist="com.kaltura.edw.components.playlist.*" xmlns:filter1="com.kaltura.edw.components.filter.*" 
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:playlist="com.kaltura.edw.components.playlist.*"
+		 xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" 
 		 >
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.RuleBasedTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -43,29 +44,19 @@
 			 * */
 			public var playlistEntries:ArrayCollection = new ArrayCollection();
 			
+			
+			
 			private var _ruleToEdit:KalturaMediaEntryFilterForPlaylist;
 			
 			public function set ruleToEdit(value:KalturaMediaEntryFilterForPlaylist):void {
 				_ruleToEdit = value;
 				// make sure to view only allowed content and hide moderation container
-				//TODO (filter) remove hardcoded references
 				value.moderationStatusIn = "2,6,1,5";
-				filter.moderationStatus.allModerationStatus.selected = false;
-				filter.moderationStatus.visible = false;
-				filter.moderationStatus.includeInLayout = false;
-				filter.moderationStatus.visible;
 				// convertion status
 				value.statusIn = "2,1";
-				//TODO (filter) remove hardcoded references
-				filter.conversionStatus.allConversionStatusBtn.selected = false;
-				filter.conversionStatus.convErrorBtn.selected = false;
-				filter.conversionStatus.convUploadingBtn.selected = false;
-				filter.conversionStatus.convConvertingBtn.selected = true;
-				filter.conversionStatus.convReadyBtn.selected = true;
-				filter.ps3filter = value;
+				filter.kalturaFilter = value;
 				entries.limit = value.limit;
 				entries.ruleBasedPlaylistOrderBy.selectedIndex = PlaylistEntries.ORDER_BY_ARR.indexOf(value.orderBy);
-				//set filter to view only allowed entries and hide the moderation controllers
 			}
 			
 			public function get ruleToEdit():KalturaMediaEntryFilterForPlaylist {
@@ -81,35 +72,12 @@
 			[Bindable]
 			public var distributionProfilesArray : Array;
 			
-//			public function onRequestedDataLoaded():void {
-//				//TODO we never triggger dataload here, so we never get here... maybe triggered from wrapper?
-//				filter.init();
-//				if (_ruleToEdit) {
-//					// make sure to view only allowed content and hide moderation container
-//					// (filter) remove hardcoded references
-//					_ruleToEdit.moderationStatusIn = "2,6,1,5";
-//					filter.moderationStatus.allModerationStatus.selected = false;
-//					filter.moderationStatus.visible = false;
-//					filter.moderationStatus.includeInLayout = false;
-//					filter.moderationStatus.visible;
-//					// convertion status
-//					_ruleToEdit.statusIn = "2,1";
-//					// (filter) remove hardcoded references
-//					filter.conversionStatus.allConversionStatusBtn.selected = false;
-//					filter.conversionStatus.convErrorBtn.selected = false;
-//					filter.conversionStatus.convUploadingBtn.selected = false;
-//					filter.conversionStatus.convConvertingBtn.selected = true;
-//					filter.conversionStatus.convReadyBtn.selected = true;
-//					filter.ps3filter = _ruleToEdit;
-//					entries.limit = _ruleToEdit.limit;
-//					entries.ruleBasedPlaylistOrderBy.selectedIndex = PlaylistEntries.ORDER_BY_ARR.indexOf(_ruleToEdit.orderBy);
-//					//set filter to view only allowed entries and hide the moderation controllers
-//				}
-//			}
 
 			private function onCreationComplete():void {
 				entries.upDownContainer.visible = false;
 				entries.upDownContainer.includeInLayout = false;
+//				filter.kalturaFilter = new KalturaMediaEntryFilterForPlaylist();
+				//not necessary, we always set filter.kalturaFilter
 			}
 
 			/**
@@ -123,11 +91,8 @@
 
 				var orderByStr:String = entries.getSelectedOrderBy();
 
-				var kmef:KalturaMediaEntryFilter = filter.ps3filter;
-				kmef.moderationStatusIn = "2,6,1,5";
+				var kmef:KalturaMediaEntryFilter = filter.kalturaFilter as KalturaMediaEntryFilter;
 				kmef.orderBy = orderByStr;
-				// request only ready assets
-				kmef.statusIn = "2,1";
 				playlist.filters.push(kmef);
 				playlist.parts = playlistEntries;
 
@@ -150,10 +115,8 @@
 			 * Get current rule filter
 			 */
 			public function get ruleFilter():KalturaMediaEntryFilterForPlaylist {
-				var plf:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter;
-				plf.statusIn = "2,1"; // only ready items 
+				var plf:KalturaMediaEntryFilterForPlaylist = filter.kalturaFilter as KalturaMediaEntryFilterForPlaylist;
 				plf.limit = PlaylistEntries.MAX_ENTRIES_IN_PL;
-//				plf.limit = entries.getPlaylistLimit();
 				plf.orderBy = entries.getSelectedOrderBy();
 				return plf;
 			}
@@ -186,18 +149,17 @@
 	</mx:Metadata>
 	<mx:VBox height="100%" verticalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 		<mx:Label text="{resourceManager.getString('cms', 'filters')}" styleName="formSubTitleLabel"/>
-		<filter1:Filter id="filter" width="260" height="100%" 
-					   newSearch="{runRule()}" 
-					   categories="{filterData.categories}"
-					   catMap="{filterData.categoriesMap}"
-					   enableCustomData="{filterData.enableCustomData}"
-					   metadataProfilesArray="{filterData.metadataProfiles}" 
-					   showSchedulingOptions="false"
-					   showAccessControlOptions="false" 
-					   showModerationOptions="false" 
-					   showStatusOptions="false"
-					   enableDistribution="{filterData.enableDistribution}"
-					   distributionProfileArr="{distributionProfilesArray}"/>
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}"
+							 attribute="freeText"
+							 label="{resourceManager.getString('cms', 'searchFilter')}" />
+		<fltr:EntriesFilter id="filter" width="260" height="100%" filterChanged="runRule()"
+							freeTextSearch="{searchBox}" 
+							metadataProfiles="{filterData.metadataProfiles}"
+							distributionProfiles="{distributionProfilesArray}"
+							filterModel="{filterData}"
+							enableIngestionStatus="false" enableAccessControl="false"
+							enableModeration="false" enableScheduling="false"/>
+		
 		<mx:LinkButton id="advancedBtn" label="{resourceManager.getString('cms','switchToAdvanceMode')}"
 					   click="dispatchEvent(new Event(OneRule.SWITCH_TO_ADVANCED))" includeInLayout="{showAdvanceModeBtn}"
 					   visible="{showAdvanceModeBtn}"/>
