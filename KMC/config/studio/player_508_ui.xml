@@ -40,6 +40,11 @@
 				<Watermark id="watermark" width="100%" height="100%"
 						   watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
 						   watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topLeft"/>
+						   
+				<!-- notice message -->
+				<Label id="noticeMessage" text="Video starts in {sequenceProxy.timeRemaining} seconds"
+					   height="18" width="100%" font="TimesNewRoman" styleName="movieName" dynamicColor="true"
+					   color1="0xFF0000" visible="{sequenceProxy.isAdLoaded}" includeInLayout="{sequenceProxy.isAdLoaded}"/>
 
 				<!-- overlay plugin -->
 				<Plugin id="overlay" swfUrls="{vast.overlays}" overlayStartAt="{vast.overlayStartAt}"
@@ -113,7 +118,7 @@
 							emphasizedSelectedDownIcon="Button_emphasized_previousBtn"
 							emphasizedSelectedDisabledIcon="Button_emphasized_previousBtn"
 							accessibilityName="Skip Backwards - click Control  SHIFT B" tooltip="Skip Backwards - R"
-							tabIndex="6"/>
+							tabIndex="5"/>
 
 					<Button id="playBtnControllerScreen" command="play" minWidth="44" minHeight="44"
 							icon="Button_upIcon_playBtn" upIcon="Button_upIcon_playBtn"
@@ -130,7 +135,7 @@
 							emphasizedSelectedDownIcon="Button_emphasized_pauseBtn"
 							emphasizedSelectedDisabledIcon="Button_emphasized_pauseBtn"
 							accessibilityName="click Control P to play or pause video" tooltip="Play/Pause Video - P"
-							tabIndex="1"/>
+							tabIndex="6"/>
 
 					<Button id="fwdButton" maxWidth="36" minHeight="30" kClick="sendNotification ('seekForward' , '5')"
 							icon="Button_upIcon_nextBtn" upIcon="Button_upIcon_nextBtn"
@@ -237,15 +242,15 @@
 					  selectedIndex="{closedCaptionsOverPlayer.currentCCFileIndex}"
 					  kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverList.selectedItem)"
 					  dataProvider="{closedCaptionsOverPlayer.availableCCFilesLabels}" visible="{openDropDownOver.selected}"
-					  tooltip="" tabIndex="4"/>
+					  tooltip="" tabIndex="3"/>
 				<List id="ccUnderList" styleName="_captions" width="110" rowHeight="26"
 					  selectedIndex="{closedCaptionsUnderPlayer.currentCCFileIndex}"
 					  kevent_change="sendNotification( 'closedCaptionsSelected' , ccUnderList.selectedItem)"
 					  dataProvider="{closedCaptionsUnderPlayer.availableCCFilesLabels}" visible="{openDropDownUnder.selected}"
-					  tooltip="" tabIndex="4"/>
+					  tooltip="" tabIndex="3"/>
 				<VBox id="startContainer" width="95" height="100%" verticalAlign="top" horizontalAlign="right">
 					<HBox id="ccHBox" width="100%" height="70" horizontalAlign="right">
-						<Button id="openDropDownOver" tabIndex="3" maxHeight="17" maxWidth="17" toggle="true"
+						<Button id="openDropDownOver" tabIndex="2" maxHeight="17" maxWidth="17" toggle="true"
 								visible="{or (closedCaptionsOverPlayer.hasCaptions, closedCaptionsUnderPlayer.hasCaptions)}"
 								upIcon="Button_upSkin_selectLang" overIcon="Button_overSkin_selectLang"
 								downIcon="Button_downSkin_selectLang" disabeledIcon="Button_disabledSkin_selectLang"
@@ -270,7 +275,7 @@
 								emphasizedSelectedDownSkin="skin_selectLang"
 								emphasizedSelectedDisabledSkin="skin_selectLang"/>
 
-<!--						<Button id="openDropDownUnder" tabIndex="3" maxHeight="17" maxWidth="17" toggle="true"-->
+<!--						<Button id="openDropDownUnder" tabIndex="2" maxHeight="17" maxWidth="17" toggle="true"-->
 <!--								visible="{closedCaptionsUnderPlayer.hasCaptions}"-->
 <!--								upIcon="Button_upSkin_selectLang" overIcon="Button_overSkin_selectLang"-->
 <!--								downIcon="Button_downSkin_selectLang" disabeledIcon="Button_disabledSkin_selectLang"-->
@@ -311,7 +316,7 @@
 								emphasizedSelectedDisabledIcon="Button_selectedDisabledIcon_ccBtn"
 								styleName="onScreenBtn"
 								accessibilityName="closed captions - click Control SHIFT C to turn on or off"
-								tooltip="Closed Captions on/off - C" tabIndex="2"/>
+								tooltip="Closed Captions on/off - C" tabIndex="1"/>
 
 					</HBox>
 					<Spacer width="100%" height="8"/>
@@ -330,7 +335,7 @@
 							emphasizedSelectedDownIcon="Button_selectedDownIcon_adBtn"
 							emphasizedSelectedDisabledIcon="Button_selectedDisabledIcon_adBtn" styleName="onScreenBtn"
 							accessibilityName="Audio Description - click Control SHIFT A turn on or off"
-							tooltip="Audio Description on/off - A" tabIndex="5"/>
+							tooltip="Audio Description on/off - A" tabIndex="4"/>
 				</VBox>
 				<Spacer height="100%" width="16"/>
 			</HBox>
