@@ -179,5 +179,15 @@ package com.kaltura.kmc.modules.content.view.content {
 		public function get lotsOfCategoriesFlag():Boolean {
 			return true;
 		}
+		
+		
+		public function set confirmModeration(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_CONFIRM_MODERATION	, value);
+			cge.dispatch();
+		}
+		
+		public function get confirmModeration():Boolean {
+			return true;
+		}
 	}
 }

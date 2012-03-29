@@ -18,6 +18,9 @@ package com.kaltura.kmc.modules.content.commands {
 				case ChangeModelEvent.SET_CUSTOM_METADATA:
 					_model.filterModel.enableCustomData = (event as ChangeModelEvent).newValue;
 					break;
+				case ChangeModelEvent.SET_CONFIRM_MODERATION:
+					_model.moderationModel.confirmModeration = (event as ChangeModelEvent).newValue;
+					break;
 				case ChangeModelEvent.SET_UPDATE_CUSTOM_DATA:
 						pdp.enableUpdateMetadata = (event as ChangeModelEvent).newValue;
 					break;

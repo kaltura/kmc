@@ -32,15 +32,6 @@ package com.kaltura.kmc.modules.content.commands
 			var entriesToUpdate:Array = (event as ModerationsEvent).entries;
 		    moderationType = (event as ModerationsEvent).moderationType;
 			
-			// ps3 implementation
-			if(entriesToUpdate.length == 0)
-			{
-				Alert.show( ResourceManager.getInstance().getString('cms','pleaseSelectEntriesFirst') , 
-							ResourceManager.getInstance().getString('cms','pleaseSelectEntriesFirstTitle') );
-				return;
-			}
-			
-				
 			var mr:MultiRequest = new MultiRequest();
 			var i:uint;
 			if (moderationType == ModerationsEvent.APPROVE) {

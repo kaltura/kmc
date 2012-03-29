@@ -18,5 +18,11 @@ package com.kaltura.kmc.modules.content.model {
 		 * */
 		public var moderationsArray:ArrayCollection;
 		
+		
+		/**
+		 * in moderation screen, should confirmation popup be displayed
+		 * when approving / rejecting entry moderation 
+		 */
+		public var confirmModeration:Boolean = true; 
 	}
 }

@@ -23,6 +23,8 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_LOTS_OF_CATEGORIES_FLAG : String = "content_lotsOfCategoriesFlag";
 		
+		public static const SET_CONFIRM_MODERATION : String = "content_SET_CONFIRM_MODERATION";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)
