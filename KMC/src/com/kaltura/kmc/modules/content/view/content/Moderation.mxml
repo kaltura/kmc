@@ -152,6 +152,11 @@
 			 * */
 			public var showThumbnails:Boolean = true;
 			
+			/**
+			 * list of entries that are being approved / rejected
+			 * */
+			private var _affectedEntries:Array;
+			
 			// ===============================================
 			// methods
 			// ===============================================
@@ -373,8 +378,8 @@
 			 * approve button was clicked
 			 */
 			private function onApprove(evt:Event):void {
-				var entries:Array = entryTable.selectedItems;
-				if(entries.length == 0) {
+				_affectedEntries = entryTable.selectedItems.concat();
+				if(_affectedEntries.length == 0) {
 					Alert.show( resourceManager.getString('cms','pleaseSelectEntriesFirst') , 
 						resourceManager.getString('cms','pleaseSelectEntriesFirstTitle') );
 					return;
@@ -382,8 +387,8 @@
 				if (_moderationModel.confirmModeration) {
 					
 					var confirmString:String = resourceManager.getString('cms', 'confirmApprove');
-					for (var i:int = 0; i<entries.length; i++) {
-						confirmString += (i+1) + '. ' + (entries[i] as KalturaBaseEntry).name + '\n';
+					for (var i:int = 0; i<_affectedEntries.length; i++) {
+						confirmString += (i+1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
 					}
 					Alert.show(confirmString, resourceManager.getString('cms', 'confirmApproveTitle'), Alert.YES|Alert.NO, this, approveEntries);
 				}
@@ -394,10 +399,10 @@
 			
 			private function approveEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
-					var entriesToApprove:Array = entryTable.selectedItems;
-					var cgEvent:ModerationsEvent = new ModerationsEvent(ModerationsEvent.UPDATE_ENTRY_MODERATION, ModerationsEvent.APPROVE, entriesToApprove)
+					var cgEvent:ModerationsEvent = new ModerationsEvent(ModerationsEvent.UPDATE_ENTRY_MODERATION, ModerationsEvent.APPROVE, _affectedEntries)
 					cgEvent.dispatch();
 				}
+				_affectedEntries = null;
 			}
 
 
@@ -405,8 +410,8 @@
 			 * reject button was clicked
 			 */
 			private function onReject(evt:Event):void {
-				var entries:Array = entryTable.selectedItems;
-				if(entries.length == 0) {
+				_affectedEntries = entryTable.selectedItems.concat();
+				if(_affectedEntries.length == 0) {
 					Alert.show( resourceManager.getString('cms','pleaseSelectEntriesFirst') , 
 						resourceManager.getString('cms','pleaseSelectEntriesFirstTitle') );
 					return;
@@ -414,8 +419,8 @@
 				if (_moderationModel.confirmModeration) {
 					
 					var confirmString:String = resourceManager.getString('cms', 'confirmReject');
-					for (var i:int = 0; i<entries.length; i++) {
-						confirmString += (i+1) + '. ' + (entries[i] as KalturaBaseEntry).name + '\n';
+					for (var i:int = 0; i<_affectedEntries.length; i++) {
+						confirmString += (i+1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
 					}
 					Alert.show(confirmString, resourceManager.getString('cms', 'confirmRejectTitle'), Alert.YES|Alert.NO, this, rejectEntries);
 				}
@@ -426,10 +431,10 @@
 			
 			private function rejectEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
-					var entriesToReject:Array = entryTable.selectedItems;
-					var cgEvent:ModerationsEvent = new ModerationsEvent(ModerationsEvent.UPDATE_ENTRY_MODERATION, ModerationsEvent.REJECT, entriesToReject)
+					var cgEvent:ModerationsEvent = new ModerationsEvent(ModerationsEvent.UPDATE_ENTRY_MODERATION, ModerationsEvent.REJECT, _affectedEntries)
 					cgEvent.dispatch();
 				}
+				_affectedEntries = null;
 			}
 
 
