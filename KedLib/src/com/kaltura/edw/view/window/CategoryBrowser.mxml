@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="220" height="470" xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
+				creationComplete="creationCompleteHandler(event)" styleName="TitleWindowType2" showCloseButton="true">
+	<mx:Metadata>
+		/**
+		 * dispatched when the "apply" button is clicked
+		 * */
+		[Event(name="apply", type="fl.events.Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.FilterComponentEvent;
+			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.model.FilterModel;
+			
+			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			public var filterModel:FilterModel;
+			
+
+			/**
+			 * container for the categories ids variable
+			 * */
+			private var _catids:String;
+			
+			/**
+			 * ids of selected categories (comma seperated list)
+			 * */
+			public function set catids(value:String):void {
+				if (catTree) {
+					catTree.filter = value;
+				}
+				else {
+					_catids = value;
+				}
+			}
+			
+			public function get catids():String {
+				return catTree.filter.toString();
+			}
+			
+
+			protected function button1_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new Event("apply"));
+				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				if (_catids) {
+					catids = _catids;
+					_catids = null;
+				}
+			}
+
+		]]>
+	</mx:Script>
+	<cat:CatTree id="catTree" styleName="categoriesTree" width="100%" height="100%" 
+				 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}"
+				 chunkedData="{filterModel.chunkedCategoriesLoad}"
+				 categories="{filterModel.categoriesMap}"
+				 dataProvider="{filterModel.categories}" />
+	<mx:ControlBar>
+		<mx:Button label="{resourceManager.getString('drilldown', 'apply')}" click="button1_clickHandler(event)" />
+	</mx:ControlBar>
+</mx:TitleWindow>

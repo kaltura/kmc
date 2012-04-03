@@ -80,6 +80,19 @@ package com.kaltura.edw.components.fltr.cat
 		
 		
 		/**
+		 * get a list of categories which are currently selected
+		 * @return array of <code>CategoryVO</code> objects 
+		 */		
+		public function getSelectedCategories():Array {
+			var ar:Array = [];
+			for each (var cat:CategoryVO in _selectedCategories) {
+				ar.push(cat);
+			}
+			return ar; 
+		}
+		
+		
+		/**
 		 * manually set filter value
 		 * 
 		 * @internal
@@ -250,7 +263,7 @@ package com.kaltura.edw.components.fltr.cat
 					// deselect previous
 					deselectAllCategories();
 					// select new
-					_selectedCategories[cat.id] = cat;
+					_selectedCategories[cat.id.toString()] = cat;
 					cat.selected = CatSelectionStatus.SELECTED;
 					break;
 				
@@ -262,15 +275,15 @@ package com.kaltura.edw.components.fltr.cat
 						// deselect previous
 						deselectAllCategories();
 					}
-					else if (_selectedCategories[cat.id]) {
+					else if (_selectedCategories[cat.id.toString()]) {
 						// if there is a value, it means it was selected before
-						delete _selectedCategories[cat.id];
+						delete _selectedCategories[cat.id.toString()];
 						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
-						_selectedCategories[cat.id] = cat;
+						_selectedCategories[cat.id.toString()] = cat;
 						cat.selected = CatSelectionStatus.SELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
@@ -284,7 +297,7 @@ package com.kaltura.edw.components.fltr.cat
 						// deselect previous
 						deselectAllCategories();
 					}
-					else if (_selectedCategories[cat.id]) {
+					else if (_selectedCategories[cat.id.toString()]) {
 						// if there is a value, it means it was selected before
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED);
 						makeParentsPartial(cat);

@@ -9,13 +9,14 @@
     <property name="DEPLOY_DIR" value="${basedir}/bin-release"/>
 	
 	<property name="KMC_VERSION" value="v5.0"/>
-	<property name="KDP_VERSION" value="v3.5.48"/>
+	<property name="KDP_VERSION" value="v3.5.54"/>
 	<property name="KCLIP_VERSION" value="v1.1.2"/>
 	
 	<!-- include flex tasks -->
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 	
-	<target name="build" description="general build" depends="clean, init, compile_locales, compile, pack">
+	<!-- clean, init, compile_locales,  -->
+	<target name="build" description="general build" depends="compile, pack">
 		
 		<length property="length" mode="each">
 		    <fileset dir="${basedir}/../${KMC_VERSION}" >
@@ -57,7 +58,7 @@
 	<target name="compile" description="compile release build of KMC and drilldown panels">
 		<fb.exportReleaseBuild project="KMC" /> 
 		<echo>KMC release build created</echo>
-		<fb.exportReleaseBuild project="KedPanels" /> 
+		<fb.exportReleaseBuild project="KedPanels" destdir="${DEPLOY_DIR}" /> 
 		<echo>Ked Panels release build created</echo>
 	</target>
 			
@@ -77,6 +78,8 @@
 	
 	<target name="init">
 		<mkdir dir="${DEPLOY_DIR}" description="Make sure there is a bin directory"/>
+		<mkdir dir="${DEPLOY_DIR}/modules" description="Make sure there is a bin directory"/>
+		<mkdir dir="${DEPLOY_DIR}/modules/ked" description="Make sure there is a bin directory"/>
 	</target>
 	
 </project>

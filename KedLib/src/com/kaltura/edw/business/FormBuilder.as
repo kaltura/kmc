@@ -34,6 +34,7 @@ package com.kaltura.edw.business {
 	import mx.controls.Alert;
 	import mx.controls.Label;
 	import mx.controls.Spacer;
+	import mx.controls.Text;
 	import mx.core.Container;
 	import mx.core.UIComponent;
 	import mx.resources.IResourceManager;
@@ -312,7 +313,6 @@ package com.kaltura.edw.business {
 			}
 			//!setting the context param should be here, we will need it to set the dataArray property
 			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
-				//TODO make sure the type of the context attribute was changed to match datapack
 				compInstance["context"] = _model.getDataPack(ContextDataPack);
 				compInstance["profileName"] = metadataProfile.profile.name;
 			}
@@ -466,12 +466,13 @@ package com.kaltura.edw.business {
 				item = new HBox();
 			}
 
+			// create the form label:
 			for each (var fieldVo:MetadataFieldVO in fieldsArray) {
 				if (fieldVo.name == field.@name) {
-					var label:Label = new Label();
+					var label:Text = new Text();
 					label.text = fieldVo.displayedLabel + ":";
 					label.setStyle("styleName", "metadataFormLabel");
-					label.width = 150;
+					label.width = 90;
 					item.addChild(label);
 					item.toolTip = fieldVo.description;
 					break;

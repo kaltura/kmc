@@ -22,8 +22,25 @@ package com.kaltura.edw.model.datapacks
 		public var isAnonymous:Boolean;
 		public var subpId:int;
 		public var uiConfigId:String = DEFAULT_UI_CONFIG_ID;
+		
+		/**
+		 * uiconf for player in moderation tab 
+		 */
 		public var moderationUiconf:String = DEFAULT_UI_CONFIG_ID;
+		
+		/**
+		 * uiconf for metadata tab in drilldown 
+		 */		
 		public var drilldownUiconf:String = DEFAULT_UI_CONFIG_ID;
+		
+		/**
+		 * uiconf for advertisements tab in drilldown
+		 */
+		public var drilldownAdsUiconf:String = DEFAULT_UI_CONFIG_ID;
+		
+		/**
+		 * uiconf for capture thumbnail player 
+		 */
 		public var captureThumbnailUiconf:String;
 		
 		/**

@@ -27,7 +27,7 @@
 			import com.kaltura.edw.components.playlist.ManualPlaylistWindow;
 			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.components.playlist.types.ManualPlaylistWindowMode;
-			import com.kaltura.edw.control.CustomDataTabController;
+			import com.kaltura.edw.control.DataTabController;
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
@@ -300,12 +300,12 @@
 				if (_model.filterModel.enableCustomData) {
 					if (!_customDataData.metadataDefaultUiconfXML) {
 						var getMetadataUiconf:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.GET_METADATA_UICONF);
-						CustomDataTabController.getInstance().dispatch(getMetadataUiconf);
+						DataTabController.getInstance().dispatch(getMetadataUiconf);
 					}
 				}
 				// if there is entryid to start with, open the entry drilldown.
 				if (_model.attic.entryid) {
-					//TODO need to set a dummy dispatcher, so we'll know when the entry is loaded.
+					// need to set a dummy dispatcher, so we'll know when the entry is loaded.
 					_entryIdDispatcher = new EventDispatcher();
 					_entryIdDispatcher.addEventListener(KedDataEvent.OPEN_ENTRY, handleKedEvents, false, 0, true);
 					(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher = _entryIdDispatcher;
@@ -517,6 +517,7 @@
 				// context:
 				_model.context.moderationUiconf = confFile.uiconf.kdp.moderation.text().toString();
 				_model.context.drilldownUiconf = confFile.uiconf.kdp.drilldown.text().toString();
+				_model.context.drilldownAdsUiconf = confFile.uiconf.kdp.drilldownAds.text().toString();
 				_model.context.captureThumbnailUiconf = confFile.uiconf.kdp.captureThumbnail.text().toString();
 				_model.context.kClipAdsUiconf = confFile.uiconf.kclip.ads.text().toString();
 				_model.context.panelsConfig = confFile.uiconf.entryDrilldown.panels[0];

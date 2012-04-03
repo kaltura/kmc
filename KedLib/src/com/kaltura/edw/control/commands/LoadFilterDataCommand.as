@@ -9,7 +9,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.core.KClassFactory;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.business.IDataOwner;
-	import com.kaltura.edw.control.CustomDataTabController;
+	import com.kaltura.edw.control.DataTabController;
 	import com.kaltura.edw.control.events.LoadEvent;
 	import com.kaltura.edw.control.events.MetadataProfileEvent;
 	import com.kaltura.edw.model.FilterModel;
@@ -85,7 +85,7 @@ package com.kaltura.edw.control.commands
 			
 			// custom data hack
 			var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-			CustomDataTabController.getInstance().dispatch(lmdp);
+			DataTabController.getInstance().dispatch(lmdp);
 			
 			var multiRequest:MultiRequest = new MultiRequest();
 			
