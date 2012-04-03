@@ -72,6 +72,11 @@
 			private function onHeaderRelease( event : DataGridEvent ) : void
 			{
 				event.preventDefault();
+				if (event.itemRenderer.data.dataField == "entry_name") {
+					// can't sort by this field
+					return;
+				}
+				
 				var dir:String = _sortDirection;
 				
 				if(orderBy == "-" + event.itemRenderer.data.dataField || orderBy == event.itemRenderer.data.dataField)
