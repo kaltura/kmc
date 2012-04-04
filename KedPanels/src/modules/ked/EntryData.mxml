@@ -99,7 +99,7 @@
 			private const LABEL_WIDTH:Number = 90;
 			private const TEXT_WIDTH:Number = 264;
 			
-			private const RIGHT_LABEL_WIDTH:Number = 70;
+			private const RIGHT_LABEL_WIDTH:Number = 75;
 			private const RIGHT_TEXT_WIDTH:Number = 90;
 			private const RIGHT_TEXT_WIDTH2:Number = 60;
 			
@@ -941,12 +941,13 @@
 							  styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.votes}"  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown','plays')}:" 
-							  width="{RIGHT_LABEL_WIDTH}" styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.plays}"  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
 				
+				<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
+						 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
+					<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)" width="{RIGHT_TEXT_WIDTH2}"/>
+				</mx:HBox>
 			</mx:VBox>
 			
 			<mx:VBox width="100%" >
@@ -971,11 +972,10 @@
 							  width="{RIGHT_LABEL_WIDTH}" styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 				</mx:HBox>				
-				<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
-						 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
-					<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)"/>
+				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+					<mx:Label text="{resourceManager.getString('drilldown','plays')}:" 
+							  width="{RIGHT_LABEL_WIDTH}" styleName="drillDownLabel"/>
+					<mx:Label text="{selectedEntry.plays}"  width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:HBox>

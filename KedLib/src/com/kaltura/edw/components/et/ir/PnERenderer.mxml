@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.et.EntryTable;
+			import com.kaltura.types.KalturaEntryStatus;
+			
+			public static const PREVIEW_CLICKED:String = "previewClicked";
+			
+			
+			override public function set data(value:Object):void {
+				btn.label = (owner as EntryTable).previewLabel;
+				btn.visible = btn.includeInLayout = value.status == KalturaEntryStatus.READY;
+			}
+			
+			
+			private function linkbutton1_clickHandler(event:MouseEvent):void {
+				event.stopImmediatePropagation();
+				dispatchEvent(new Event(PREVIEW_CLICKED, true));
+			}
+			
+			
+			
+		]]>
+	</mx:Script>
+
+	<mx:LinkButton id="btn" click="linkbutton1_clickHandler(event)"/>
+</mx:HBox>

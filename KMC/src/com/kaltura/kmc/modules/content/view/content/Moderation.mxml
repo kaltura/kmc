@@ -18,6 +18,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.components.et.EntryTableColumns;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
@@ -236,7 +237,7 @@
 					entryTable.height = entryTableContainer.height - (paging.height + toolBar.height); //entryTable.rowHeight*11+entryTable.headerHeight;
 					kdpContainer.height = entryTable.height;
 					entryTable.rowCount = 10;
-					filterContainer.height = entryTableContainer.height;
+					filter.height = entryTableContainer.height;
 					topContainer.height = entryTableContainer.height;
 				}
 				else {
@@ -244,7 +245,7 @@
 					entryTableContainer.percentHeight = 100;
 					entryTable.percentHeight = 100;
 					entryTable.rowCount = -1;
-					filterContainer.percentHeight = 100;
+					filter.percentHeight = 100;
 				}
 
 				clearKdp();
@@ -286,16 +287,15 @@
 
 
 			private function removeColums(event:Event):void {
-				if (!showThumbnails) {
-					entryTable.removeColumn(resourceManager.getString('cms', 'thumbnail'));
+				
+				var ar:Array = [EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
+					EntryTableColumns.PLAYER_LOADS, EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT,
+					EntryTableColumns.FLAGS, EntryTableColumns.STATUS];
+				
+				if (showThumbnails) {
+					ar.push(EntryTableColumns.THUMBNAIL);
 				}
-				entryTable.removeColumn(resourceManager.getString('cms', 'rating'));
-				entryTable.removeColumn(resourceManager.getString('cms', 'creator'));
-				entryTable.removeColumn(resourceManager.getString('cms', 'duration'));
-				entryTable.removeColumn(resourceManager.getString('cms', 'playlistType'));
-				entryTable.removeColumn(resourceManager.getString('cms', 'preview'));
-				entryTable.removeColumn(resourceManager.getString('cms', 'intime'));
-//				entryTable.removeColumn(resourceManager.getString('cms', 'idHeader'));
+				entryTable.showColumns(ar);
 
 				for each (var col:DataGridColumn in entryTable.columns) {
 					col.minWidth = 45;
@@ -303,18 +303,15 @@
 
 				entryTable.updateDefaultSortColumn();
 
-				percentWidth = 100;
-				topContainer.percentWidth = 100;
-				entryTableContainer.percentWidth = 100;
-				mainCont.percentWidth = 100;
-//				entryTable.percentWidth = 75;
-//				kdpContainer.percentWidth = 25;
-				paging.percentWidth = 100;
-				toolBar.percentWidth = 100;
-				filterContainer.width = 245;
-				filter.percentWidth = 100;
-				validateNow();
-				validateDisplayList()
+//				percentWidth = 100;
+//				topContainer.percentWidth = 100;
+//				entryTableContainer.percentWidth = 100;
+//				mainCont.percentWidth = 100;
+//				paging.percentWidth = 100;
+//				toolBar.percentWidth = 100;
+//				filter.percentWidth = 100;
+//				validateNow();
+//				validateDisplayList()
 			}
 
 
@@ -593,22 +590,12 @@
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	
-	<mx:HDividedBox id="topContainer">
-		<mx:VBox id='filterContainer'>
-			<!--<filter1:Filter id="filter" showEffect="{wipeLeft}" categories="{filterModel.categories}" width="245"
-						   enableCustomData="{filterModel.enableCustomData}" metadataProfilesArray="{filterModel.metadataProfiles}"
-						   flavorParams="{filterModel.flavorParams}"
-						   catMap="{filterModel.categoriesMap}"
-						   accessControlProfiles="{filterModel.accessControlProfiles}"
-						   newSearch="{paging.selectedPage=1;loadEntries()}"
-						   enableDistribution="{filterModel.enableDistribution}"
-						   distributionProfileArr="{distributionProfilesArray}"/>-->
-			<fltr:EntriesFilter id="filter" height="100%" width="245"  
-								freeTextSearch="{searchBox}"
-								metadataProfiles="{filterModel.metadataProfiles}"
-								distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
-								filterModel="{filterModel}" filterChanged="{paging.selectedPage=1;loadEntries()}"/>
-		</mx:VBox>
+	<mx:HDividedBox id="topContainer" width="100%">
+		<fltr:EntriesFilter id="filter" height="100%" width="245"  
+							freeTextSearch="{searchBox}"
+							metadataProfiles="{filterModel.metadataProfiles}"
+							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
+							filterModel="{filterModel}" filterChanged="{paging.selectedPage=1;loadEntries()}"/>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
 				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
@@ -643,11 +630,11 @@
 				</mx:Panel>
 			</mx:HBox>
 
-			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="{mainCont.width}"  creationComplete="paging_creationCompleteHandler(event)"
+			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="100%"  creationComplete="paging_creationCompleteHandler(event)"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true" />
 
 			<view:ControlToolBar id="toolBar" selectAllEntries="onSelectAllEntries(event)" enablelivestream="false"
-								 deselectAllEntries="onDeselectAllEntries(event)" width="{mainCont.width}"
+								 deselectAllEntries="onDeselectAllEntries(event)" width="100%"
 								 approveSelectedEntries="{onApprove(event)}" rejectSelectedEntries="{onReject(event)}"/>
 		</mx:VBox>
 	</mx:HDividedBox>

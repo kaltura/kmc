@@ -15,6 +15,7 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.components.et.EntryTableColumns;
 			import com.kaltura.edw.constants.PanelConsts;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
@@ -148,17 +149,11 @@
 			 * remove column that are not relevant for
 			 * this view from the entry contents table
 			 * */
-			private function removeColums(event:Event):void {
-				event.target.removeColumn(resourceManager.getString('drilldown', 'preview'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'idHeader'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'mediaType'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'playlistType'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'flags'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'moderationStatus'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'creator'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'rating'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'playerLoads'));
-				event.target.removeColumn(resourceManager.getString('drilldown', 'intime'));
+			private function removeColumns(event:Event):void {
+				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.NAME, EntryTableColumns.PLAYS,
+					EntryTableColumns.CREATE_AT, EntryTableColumns.DURATION, EntryTableColumns.STATUS];
+				
+				table.showColumns(ar);
 			}
 			
 			private function removeTab(value:Array):void {
@@ -173,7 +168,7 @@
 		]]>
 	</mx:Script>
 	<control:ContentTabController id="controller" />
-	<et:EntryTable id="table" width="100%" height="100%" creationComplete="{removeColums(event)}"
+	<et:EntryTable id="table" width="100%" height="100%" creationComplete="{removeColumns(event)}"
 				   sortableColumns="false" showLinks="false"/>
 	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" 
 					 getPageNum="onPaging()" showRowsInPage="false"/>

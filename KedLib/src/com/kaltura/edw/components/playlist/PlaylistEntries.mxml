@@ -3,6 +3,7 @@
 		 creationComplete="onCreationComplete()" verticalGap="0" xmlns:et1="com.kaltura.edw.components.et.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.components.et.EntryTableColumns;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
 			import com.kaltura.edw.events.KedDataEvent;
@@ -103,20 +104,10 @@
 
 
 			private function onEntryTableCreatedComplete():void {
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'playlistType'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'idHeader'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'rating'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'flags'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'createAt'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'thumbnail'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'playerLoads'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'moderationStatus'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'rating'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'creator'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'status'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'adminTags'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'preview'));
-				playlistEntriesList.removeColumn(resourceManager.getString('cms', 'intime'));
+				var ar:Array = [EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE, 
+					EntryTableColumns.PLAYS, EntryTableColumns.DURATION];
+				playlistEntriesList.showColumns(ar);
+				
 				playlistEntriesList.allowMultipleSelection = false;
 
 				for each (var col:DataGridColumn in playlistEntriesList.columns) {

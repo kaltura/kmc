@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			// -------------------------
+			// "owner" is EntryTable
+			// -------------------------
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.types.KalturaMediaType;
+			
+			
+			
+			public static const NAME_CLICKED:String = "nameClicked";
+			
+			private function getDrillDownEnabled(type:int):Boolean {
+				if (type == KalturaMediaType.LIVE_STREAM_FLASH) {
+					return data.status == KalturaEntryStatus.READY && owner["showLinks"];
+				}
+				else
+					return parentDocument.showLinks;
+			}
+			
+			/**
+			 * This function builds the tooltip for the entry name
+			 * @param tags
+			 * @ param adminTags
+			 */
+			private function tagsAndAdminTags(tags:String, adminTags:String):String {
+				if (!tags && !adminTags)
+					return '';
+				var str:String = "";
+				if (tags)
+					str += "Tags:\n" + tags + "\n";
+				if (adminTags)
+					str += "Categories:\n" + adminTags;
+				
+				return str;
+			}
+			
+			public function getUnderlineType(data:Object):String {
+				if (owner["showLinks"])
+					return "underline"
+				else
+					return "";
+			}
+
+
+			protected function linkbutton1_clickHandler(event:MouseEvent):void
+			{
+				event.stopImmediatePropagation();
+				dispatchEvent(new Event(NAME_CLICKED, true));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:LinkButton label="{data.name}" textDecoration="{getUnderlineType(data)}"
+				   enabled="{getDrillDownEnabled(data.mediaType)}"
+				   click="linkbutton1_clickHandler(event)"
+				   toolTip="{tagsAndAdminTags(data.tags,data.adminTags)}"/>
+</mx:HBox>

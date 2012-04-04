@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:DataGrid id="dataGrid" width="100%" headerHeight="25" rowHeight="45"
-				 height="{(_entriesArray.length*dataGrid.rowHeight) + dataGrid.headerHeight}"
+				 height="{(_entriesArray.length*45) + dataGrid.headerHeight}"
 				 dataProvider="{_entriesArray}" verticalScrollPolicy="off" visible="{_entriesArray.length > 0}"
 				 includeInLayout="{_entriesArray.length > 0}" selectable="false" sortableColumns="false">
 		<mx:Script>
@@ -59,9 +59,6 @@
 				
 				[Bindable]
 				private var _entriesArray:ArrayCollection = new ArrayCollection();
-				
-				[Bindable]
-				public var usedForModeration:Boolean = false;
 				
 				[Bindable]
 				public var distributionProfilesArr : Array;
@@ -218,8 +215,7 @@
 									
 									private function getDrillDownEnabled(type:int):Boolean {
 										if (type == KalturaMediaType.LIVE_STREAM_FLASH) {
-											return data.status == KalturaEntryStatus.READY &&
-												!outerDocument.usedForModeration;
+											return data.status == KalturaEntryStatus.READY;
 										}
 										else
 											return true;

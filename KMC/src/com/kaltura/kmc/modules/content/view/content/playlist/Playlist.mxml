@@ -17,13 +17,14 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.components.et.EntryTableColumns;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.ListableVo;
-			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.SetListableEvent;
@@ -298,17 +299,9 @@
 
 
 			private function removeColums():void {
-				playlistTable.removeColumn(resourceManager.getString('cms', 'thumbnail'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'rating'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'creator'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'plays'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'status'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'flags'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'type'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'moderationStatus'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'duration'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'playerLoads'));
-				playlistTable.removeColumn(resourceManager.getString('cms', 'intime'));
+				var ar:Array = [EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.PLAYLIST_TYPE,
+				EntryTableColumns.CREATE_AT, EntryTableColumns.PREVIEW];
+				playlistTable.showColumns(ar);
 
 				playlistTable.updateDefaultSortColumn();
 			}
