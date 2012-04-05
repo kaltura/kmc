@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.content.commands.bulk
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.kmc.modules.content.events.BulkEvent;
-	import com.kaltura.kmc.modules.content.view.controls.FileManager;
+	import com.kaltura.kmc.modules.content.business.FileManager;
 	import com.kaltura.commands.bulkUpload.BulkUploadAdd;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.vo.KalturaBulkUpload;

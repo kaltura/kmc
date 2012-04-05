@@ -1,4 +1,4 @@
-package  com.kaltura.kmc.modules.content.view.controls
+package  com.kaltura.kmc.modules.content.business
 {
 	import com.kaltura.kmc.modules.content.view.window.ProgressWin;
 	
