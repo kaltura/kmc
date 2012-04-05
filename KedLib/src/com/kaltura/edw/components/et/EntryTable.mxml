@@ -6,6 +6,9 @@
 			 dragOver="onDragOver(event)" creationComplete="creationCompleteHandler(event)" 
 			 dragExit="onDragExit(event)" xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
+		
+		[ResourceBundle("entrytable")]
+		
 		[Event(name="orderByChanged", type="flash.events.Event")] 
 		[Event(name="openEntry", type="flash.events.Event")] 
 		[Event(name="selectionChanged", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
@@ -21,18 +24,10 @@
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
-			import com.kaltura.edw.components.et.ir.PnERenderer;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.kmvc.control.KMvCController;
-			import com.kaltura.types.KalturaEntryModerationStatus;
-			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
-			import com.kaltura.types.KalturaPlaylistType;
-			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
-			import com.kaltura.vo.KalturaClipAttributes;
-			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
-			import com.kaltura.vo.KalturaOperationAttributes;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -41,7 +36,6 @@
 			import mx.events.DragEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
-			import mx.formatters.DateFormatter;
 			import mx.managers.CursorManager;
 			import mx.resources.ResourceManager;
 
@@ -122,7 +116,7 @@
 			 * the text to show under "publish" column.
 			 * (public because it is used in the item renderer)
 			 * */
-			public var previewLabel:String = ResourceManager.getInstance().getString('cms', 'previewAndEmbed');
+			public var previewLabel:String = ResourceManager.getInstance().getString('entrytable', 'previewAndEmbed');
 
 			[Bindable]
 			public var allSelected:Boolean = false;
@@ -203,7 +197,7 @@
 				var cols:Array = this.columns;
 				var col:DataGridColumn;
 				for (var i:int = 0; i<cols.length; i++) {
-					if ((cols[i] as DataGridColumn).headerText == resourceManager.getString('cms', 'createAt')) {
+					if ((cols[i] as DataGridColumn).headerText == resourceManager.getString('entrytable', 'createAt')) {
 						_sortIndex = i;
 						break;
 					}
@@ -234,38 +228,6 @@
 				}
 			}
 
-
-			/**
-			 * The function translate media type enum to the matching locale string
-			 * @param str
-			 * @param type - special param for mix since mix is type 2 and other types are type 1 with different mediaTypes
-			 */
-			public function getMediaTypes(mediaType:String, type:String):String {
-				if (type == "2") {
-					return resourceManager.getString('cms', 'videoMix');
-				}
-				switch (mediaType) {
-					case "1":
-						return resourceManager.getString('cms', 'video');
-						break;
-					case "2":
-						return resourceManager.getString('cms', 'image');
-						break;
-					case "5":
-						return resourceManager.getString('cms', 'audio');
-						break;
-					case "6":
-						return resourceManager.getString('cms', 'videoMix');
-						break;
-					case "10":
-						return resourceManager.getString('cms', 'xml');
-						break;
-				}
-
-				return "";
-			}
-
-
 			
 
 			public function openEditEntry(e:Object):void {
@@ -289,7 +251,7 @@
 					dispatchEvent(new Event(OPEN_ENTRY));
 				}
 				else {
-					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
+					Alert.show(resourceManager.getString('entrytable', 'pleaseSelectEntriesFirst'));
 				}
 			}
 
@@ -306,7 +268,7 @@
 				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
 				var columnsList:Array = [];	// column names (headerText)
 				for each (var str:String in columnKeys) {
-					columnsList.push(resourceManager.getString('cms', str));
+					columnsList.push(resourceManager.getString('entrytable', str));
 				}
 				
 				var found:Boolean;
@@ -430,32 +392,32 @@
 
 					var sortDir:Boolean = _columnsSortMap.getValue(headerText) as Boolean;
 					switch (event.itemRenderer.data.headerText) {
-						case resourceManager.getString('cms', 'createAt'):
+						case resourceManager.getString('entrydetails', 'createAt'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.CREATED_AT_ASC : KalturaMediaEntryOrderBy.CREATED_AT_DESC;
 							break;
-						case resourceManager.getString('cms', 'name'):
+						case resourceManager.getString('entrydetails', 'name'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.NAME_ASC : KalturaMediaEntryOrderBy.NAME_DESC;
 							break;
-						case resourceManager.getString('cms', 'playerLoads'):
+						case resourceManager.getString('entrydetails', 'playerLoads'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.VIEWS_ASC : KalturaMediaEntryOrderBy.VIEWS_ASC;
 							break;
-						case resourceManager.getString('cms', 'plays'):
+						case resourceManager.getString('entrydetails', 'plays'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.PLAYS_ASC : KalturaMediaEntryOrderBy.PLAYS_DESC;
 							break;
-						case resourceManager.getString('cms', 'type'):
+						case resourceManager.getString('entrydetails', 'type'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MEDIA_TYPE_ASC : KalturaMediaEntryOrderBy.MEDIA_TYPE_DESC;
 							break;
-						case resourceManager.getString('cms', 'flags'):
+						case resourceManager.getString('entrydetails', 'flags'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MODERATION_COUNT_ASC : KalturaMediaEntryOrderBy.MODERATION_COUNT_DESC;
 							break;
-						case resourceManager.getString('cms', 'rating'):
+						case resourceManager.getString('entrydetails', 'rating'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.RANK_ASC : KalturaMediaEntryOrderBy.RANK_DESC;
 							break;
-						case resourceManager.getString('cms', 'duration'):
+						case resourceManager.getString('entrydetails', 'duration'):
 							_orderBy = sortDir ? KalturaMediaEntryOrderBy.DURATION_ASC : KalturaMediaEntryOrderBy.DURATION_DESC;
 							break;
 						default:
-							Alert.show(resourceManager.getString('cms', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('cms', 'cannotOrderByItTitle'));
+							Alert.show(resourceManager.getString('entrydetails', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('entrydetails', 'cannotOrderByItTitle'));
 							return;
 							break;
 					}
@@ -543,7 +505,7 @@
 				
 				// keep a reference to the thumbnails columns
 				for (var i:int = 0; i < columns.length; ++i) {
-					if (columns[i].headerText == resourceManager.getString('cms', 'thumbnail')) {
+					if (columns[i].headerText == resourceManager.getString('entrytable', 'thumbnail')) {
 						_thumbnailsColumn = columns[i]; 
 						break;
 					}
@@ -571,9 +533,9 @@
 			 */
 			public function set showEmbed(value:Boolean):void {
 				if (value)
-					previewLabel = ResourceManager.getInstance().getString('cms', 'previewAndEmbed');
+					previewLabel = resourceManager.getString('entrytable', 'previewAndEmbed');
 				else {
-					previewLabel = resourceManager.getString('cms', 'previewOnly');
+					previewLabel = resourceManager.getString('entrytable', 'previewOnly');
 				}
 				_showEmbed = value;
 			}
@@ -589,69 +551,69 @@
 
 
 	<mx:columns>
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'thumbnail')}" width="72" minWidth="54"
+		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" />
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" width="90"
-						   headerText="{resourceManager.getString('cms', 'idHeader')}"
+						   headerText="{resourceManager.getString('entrytable', 'idHeader')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
-						   headerText="{resourceManager.getString('cms', 'name')}" 
+						   headerText="{resourceManager.getString('entrytable', 'name')}" 
 						   itemRenderer="com.kaltura.edw.components.et.ir.NameRenderer" />
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80" 
-						   headerText="{resourceManager.getString('cms', 'playlistType')}"
+						   headerText="{resourceManager.getString('entrytable', 'playlistType')}"
 						   labelFunction="{EntryTableLabelFunctions.getPlaylistMediaTypes}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 		
-		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('cms', 'type')}"
+		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('entrytable', 'type')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.MediaTypeRenderer"
 						   headerStyleName="centerTableColumnHeader"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="views" width="80"
-						   headerText="{resourceManager.getString('cms', 'playerLoads')}"
+						   headerText="{resourceManager.getString('entrytable', 'playerLoads')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="plays" width="55"
-						   headerText="{resourceManager.getString('cms', 'plays')}"
+						   headerText="{resourceManager.getString('entrytable', 'plays')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"
 						   headerStyleName="centerTableColumnHeader"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="rank" width="50"
-						   headerText="{resourceManager.getString('cms', 'rating')}"
+						   headerText="{resourceManager.getString('entrytable', 'rating')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
-						   headerText="{resourceManager.getString('cms', 'creator')}" showDataTips="true"
+						   headerText="{resourceManager.getString('entrytable', 'creator')}" showDataTips="true"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
-						   headerText="{resourceManager.getString('cms', 'createAt')}"
+						   headerText="{resourceManager.getString('entrytable', 'createAt')}"
 						   labelFunction="{EntryTableLabelFunctions.formatDate}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75"
-						   headerText="{resourceManager.getString('cms', 'intime')}"
+						   headerText="{resourceManager.getString('entrytable', 'intime')}"
 						   labelFunction="{EntryTableLabelFunctions.formatDate}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" 
-						   headerText="{resourceManager.getString('cms', 'duration')}"
+						   headerText="{resourceManager.getString('entrytable', 'duration')}"
 						   labelFunction="{EntryTableLabelFunctions.getTimeFormat}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="moderationCount" width="40"
-						   headerText="{resourceManager.getString('cms', 'flags')}"
+						   headerText="{resourceManager.getString('entrytable', 'flags')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
-						   headerText="{usedForModeration ? resourceManager.getString('cms', 'moderationStatus') : resourceManager.getString('cms', 'status')}"
+						   headerText="{usedForModeration ? resourceManager.getString('entrytable', 'moderationStatus') : resourceManager.getString('entrytable', 'status')}"
 						   labelFunction="{usedForModeration ? EntryTableLabelFunctions.getStatusForModeration : EntryTableLabelFunctions.getStatus}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="130"
-						   headerText="{resourceManager.getString('cms', 'preview')}"
+						   headerText="{resourceManager.getString('entrytable', 'actions')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ActionsRenderer" />
 			
 	</mx:columns>

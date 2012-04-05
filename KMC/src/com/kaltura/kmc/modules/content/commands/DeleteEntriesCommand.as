@@ -40,7 +40,7 @@ package com.kaltura.kmc.modules.content.commands {
 //						'pleaseSelectPlaylistsFirstTitle'));
 //				} 
 //				else {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectEntriesFirst'),
+					Alert.show(ResourceManager.getInstance().getString('entrytable', 'pleaseSelectEntriesFirst'),
 						ResourceManager.getInstance().getString('cms',
 						'pleaseSelectEntriesFirstTitle'));
 //				}
