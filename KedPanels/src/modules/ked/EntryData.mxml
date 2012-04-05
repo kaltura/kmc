@@ -12,10 +12,6 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
-			import com.kaltura.analytics.GoogleAnalyticsConsts;
-			import com.kaltura.analytics.GoogleAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTracker;
-			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.FormBuilder;
@@ -48,9 +44,7 @@
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
-			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KTimeUtil;
-			import com.kaltura.utils.SoManager;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaFlavorAsset;
@@ -830,6 +824,17 @@
 				profilesCB.selectedIndex = -1;
 			}
 			
+
+			protected function tagsComplete_changeHandler(event:Event):void
+			{
+				var str:String = '';
+				var ac:ArrayCollection = tagsComplete.selectedItems;
+				for each (var tag:String in ac) {
+					str += tag + ",";
+				}
+				selectedEntry.tags = str;
+			}
+
 		]]>
 	</mx:Script>
 	
@@ -864,8 +869,9 @@
 					<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
 					
-					<components:AutoComplete id="tagsComplete" allowDuplicates="true" allowMultipleSelection="true" 
-											 labelField="tag"/>
+					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" 
+											 allowMultipleSelection="true" allowNewValues="true" 
+											 labelField="tag" change="tagsComplete_changeHandler(event)"/>
 					
 					
 					<!--<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
