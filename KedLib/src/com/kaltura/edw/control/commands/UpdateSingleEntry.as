@@ -11,6 +11,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaEntryStatus;
@@ -19,6 +20,8 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	public class UpdateSingleEntry extends KedCommand {
 		
@@ -84,6 +87,24 @@ package com.kaltura.edw.control.commands {
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
+			
+			var isErr:Boolean;
+			if (data.data && data.data is Array) {
+				for (var i:uint = 0; i < (data.data as Array).length; i++) {
+					if ((data.data as Array)[i] is KalturaError) {
+						isErr = true;
+						Alert.show(ResourceManager.getInstance().getString('drilldown', 'error') + ": " +
+							((data.data as Array)[i] as KalturaError).errorMsg);
+					}
+					else if ((data.data as Array)[i].hasOwnProperty("error")) {
+						isErr = true;
+						Alert.show((data.data as Array)[i].error.message, ResourceManager.getInstance().getString('drilldown', 'error'));
+					}
+				}
+			}
+			if (isErr) {
+				return;
+			}
 			
 			var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_UPDATED);
 			e.data = data.data[data.data.length-1]; // send the updated entry as event data
