@@ -28,6 +28,7 @@
 package com.kaltura.commands.category
 {
 	import com.kaltura.vo.KalturaCategoryFilter;
+	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.category.CategoryListDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -36,8 +37,9 @@ package com.kaltura.commands.category
 		public var filterFields : String;
 		/**
 		 * @param filter KalturaCategoryFilter
+		 * @param pager KalturaFilterPager
 		 **/
-		public function CategoryList( filter : KalturaCategoryFilter=null )
+		public function CategoryList( filter : KalturaCategoryFilter=null,pager : KalturaFilterPager=null )
 		{
 			service= 'category';
 			action= 'list';
@@ -47,6 +49,11 @@ package com.kaltura.commands.category
 			var keyValArr : Array = new Array();
  			if (filter) { 
  			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
+ 			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
  			} 

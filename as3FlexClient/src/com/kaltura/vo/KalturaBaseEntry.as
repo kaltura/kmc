@@ -53,6 +53,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var creatorId : String = null;
+
+		/** 
+		* 		* */ 
 		public var tags : String = null;
 
 		/** 
@@ -176,6 +180,14 @@ package com.kaltura.vo
 		public var operationAttributes : Array = null;
 
 		/** 
+		* 		* */ 
+		public var entitledUsersEdit : String = null;
+
+		/** 
+		* 		* */ 
+		public var entitledUsersPublish : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -200,6 +212,8 @@ package com.kaltura.vo
 			arr.push('partnerSortValue');
 			arr.push('conversionProfileId');
 			arr.push('operationAttributes');
+			arr.push('entitledUsersEdit');
+			arr.push('entitledUsersPublish');
 			return arr;
 		}
 
@@ -210,6 +224,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
+			arr.push('creatorId');
 			arr.push('thumbnailUrl');
 			return arr;
 		}

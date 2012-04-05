@@ -34,7 +34,7 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var comparison : int = int.MIN_VALUE;
+		public var comparison : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{

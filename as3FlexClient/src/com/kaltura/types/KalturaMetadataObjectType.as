@@ -31,6 +31,8 @@ package com.kaltura.types
 	{
 		public static const ENTRY : String = '1';
 		public static const CATEGORY : String = '2';
+		public static const USER : String = '3';
+		public static const PARTNER : String = '3';
 		public static const ANNOTATION : String = 'annotationMetadata.Annotation';
 		public static const AD_CUE_POINT : String = 'adCuePointMetadata.AdCuePoint';
 		public static const CODE_CUE_POINT : String = 'codeCuePointMetadata.CodeCuePoint';

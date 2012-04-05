@@ -64,6 +64,78 @@ package com.kaltura.vo
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var updatedAt : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var description : String = null;
+
+		/** 
+		* 		* */ 
+		public var tags : String = null;
+
+		/** 
+		* If category will be returned for list action.		* */ 
+		public var appearInList : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var privacy : int = int.MIN_VALUE;
+
+		/** 
+		* If Category members are inherited from parent category or set manualy.		* */ 
+		public var inheritanceType : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var userJoinPolicy : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var defaultPermissionLevel : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var owner : String = null;
+
+		/** 
+		* 		* */ 
+		public var directEntriesCount : int = int.MIN_VALUE;
+
+		/** 
+		* Category external id, controlled and managed by the partner.		* */ 
+		public var referenceId : String = null;
+
+		/** 
+		* 		* */ 
+		public var contributionPolicy : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var membersCount : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var pendingMembersCount : int = int.MIN_VALUE;
+
+		/** 
+		* Set privacy context for search entries that assiged to private and public categories. the entries will be private if the search context is set with those categories.		* */ 
+		public var privacyContext : String = null;
+
+		/** 
+		* 		* */ 
+		public var privacyContexts : String = null;
+
+		/** 
+		* 		* */ 
+		public var status : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var inheritedParentId : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -72,6 +144,17 @@ package com.kaltura.vo
 			arr = new Array();
 			arr.push('parentId');
 			arr.push('name');
+			arr.push('description');
+			arr.push('tags');
+			arr.push('appearInList');
+			arr.push('privacy');
+			arr.push('inheritanceType');
+			arr.push('userJoinPolicy');
+			arr.push('defaultPermissionLevel');
+			arr.push('owner');
+			arr.push('referenceId');
+			arr.push('contributionPolicy');
+			arr.push('privacyContext');
 			return arr;
 		}
 

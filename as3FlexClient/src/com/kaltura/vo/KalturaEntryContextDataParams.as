@@ -27,14 +27,11 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.BaseFlexVo;
-	[Bindable]
-	public dynamic class KalturaEntryContextDataParams extends BaseFlexVo
-	{
-		/** 
-		* 		* */ 
-		public var referrer : String = null;
+	import com.kaltura.vo.KalturaAccessControlScope;
 
+	[Bindable]
+	public dynamic class KalturaEntryContextDataParams extends KalturaAccessControlScope
+	{
 		/** 
 		* 		* */ 
 		public var flavorAssetId : String = null;
@@ -47,27 +44,20 @@ package com.kaltura.vo
 		* 		* */ 
 		public var mediaProtocol : String = null;
 
-		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
-		public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
-			arr.push('referrer');
+			arr = super.getUpdateableParamKeys();
 			arr.push('flavorAssetId');
 			arr.push('streamerType');
 			arr.push('mediaProtocol');
 			return arr;
 		}
 
-		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
-		public function getInsertableParamKeys():Array
+		override public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
+			arr = super.getInsertableParamKeys();
 			return arr;
 		}
 

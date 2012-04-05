@@ -32,10 +32,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCategoryFilter extends KalturaCategoryBaseFilter
 	{
+		/** 
+		* 		* */ 
+		public var freeText : String = null;
+
+		/** 
+		* 		* */ 
+		public var membersIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('freeText');
+			arr.push('membersIn');
 			return arr;
 		}
 

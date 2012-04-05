@@ -39,8 +39,6 @@ package com.kaltura.types
 		public static const OOCONVERT : String = '7';
 		public static const CONVERT_PROFILE : String = '10';
 		public static const POSTCONVERT : String = '11';
-		public static const PULL : String = '12';
-		public static const REMOTE_CONVERT : String = '13';
 		public static const EXTRACT_MEDIA : String = '14';
 		public static const MAIL : String = '15';
 		public static const NOTIFICATION : String = '16';
@@ -59,6 +57,7 @@ package com.kaltura.types
 		public static const FILESYNC_IMPORT : String = '29';
 		public static const CAPTURE_THUMB : String = '30';
 		public static const DELETE_FILE : String = '31';
+		public static const INDEX : String = '32';
 		public static const VIRUS_SCAN : String = 'virusScan.VirusScan';
 		public static const DISTRIBUTION_SUBMIT : String = 'contentDistribution.DistributionSubmit';
 		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';

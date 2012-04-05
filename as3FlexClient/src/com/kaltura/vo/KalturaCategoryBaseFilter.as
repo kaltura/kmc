@@ -60,6 +60,70 @@ package com.kaltura.vo
 		* 		* */ 
 		public var fullNameStartsWith : String = null;
 
+		/** 
+		* 		* */ 
+		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var tagsLike : String = null;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeOr : String = null;
+
+		/** 
+		* 		* */ 
+		public var tagsMultiLikeAnd : String = null;
+
+		/** 
+		* 		* */ 
+		public var appearInListEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var privacyEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var privacyIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var inheritanceTypeEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var inheritanceTypeIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var statusEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var statusIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var inheritedParentIdEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var inheritedParentIdIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -71,6 +135,22 @@ package com.kaltura.vo
 			arr.push('depthEqual');
 			arr.push('fullNameEqual');
 			arr.push('fullNameStartsWith');
+			arr.push('createdAtGreaterThanOrEqual');
+			arr.push('createdAtLessThanOrEqual');
+			arr.push('updatedAtGreaterThanOrEqual');
+			arr.push('updatedAtLessThanOrEqual');
+			arr.push('tagsLike');
+			arr.push('tagsMultiLikeOr');
+			arr.push('tagsMultiLikeAnd');
+			arr.push('appearInListEqual');
+			arr.push('privacyEqual');
+			arr.push('privacyIn');
+			arr.push('inheritanceTypeEqual');
+			arr.push('inheritanceTypeIn');
+			arr.push('statusEqual');
+			arr.push('statusIn');
+			arr.push('inheritedParentIdEqual');
+			arr.push('inheritedParentIdIn');
 			return arr;
 		}
 

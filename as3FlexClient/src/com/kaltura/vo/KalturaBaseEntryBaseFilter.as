@@ -73,6 +73,10 @@ package com.kaltura.vo
 		public var userIdEqual : String = null;
 
 		/** 
+		* 		* */ 
+		public var creatorIdEqual : String = null;
+
+		/** 
 		* This filter should be in use for retrieving specific entries. It should include only one string to search for in entry tags (no wildcards, spaces are treated as part of the string).		* */ 
 		public var tagsLike : String = null;
 
@@ -306,6 +310,7 @@ package com.kaltura.vo
 			arr.push('partnerIdEqual');
 			arr.push('partnerIdIn');
 			arr.push('userIdEqual');
+			arr.push('creatorIdEqual');
 			arr.push('tagsLike');
 			arr.push('tagsMultiLikeOr');
 			arr.push('tagsMultiLikeAnd');

@@ -76,6 +76,14 @@ package com.kaltura.vo
 		public var storageProfilesXML : String = null;
 
 		/** 
+		* 		* */ 
+		public var accessControlMessages : Array = null;
+
+		/** 
+		* 		* */ 
+		public var accessControlActions : Array = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -93,6 +101,8 @@ package com.kaltura.vo
 			arr.push('streamerType');
 			arr.push('mediaProtocol');
 			arr.push('storageProfilesXML');
+			arr.push('accessControlMessages');
+			arr.push('accessControlActions');
 			return arr;
 		}
 

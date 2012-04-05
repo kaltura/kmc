@@ -64,6 +64,10 @@ package com.kaltura.vo
 		public var restrictions : Array = null;
 
 		/** 
+		* 		* */ 
+		public var containsUnsuportedRestrictions : Boolean;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
