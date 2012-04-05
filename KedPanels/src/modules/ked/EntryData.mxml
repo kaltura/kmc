@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Module layout="horizontal" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.edw.business.*"
 		   creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
-		   xmlns:control="com.kaltura.edw.control.*" label="{resourceManager.getString('drilldown', 'metadata')}">
+		   xmlns:control="com.kaltura.edw.control.*" label="{resourceManager.getString('drilldown', 'metadata')}" 
+		   xmlns:components="com.hillelcoren.components.*">
 	<mx:Metadata> 
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
 		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
@@ -15,6 +16,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.FormBuilder;
 			import com.kaltura.edw.business.KedJSGate;
@@ -142,6 +144,13 @@
 				else {
 					offlineHolder.visible = false;
 					offlineHolder.includeInLayout = false;
+				}
+				if (value && value.tags) {
+					var ac:ArrayCollection = new ArrayCollection(value.tags.split(",")); 
+					tagsComplete.selectedItems = ac;
+				}
+				else {
+					tagsComplete.selectedItems = new ArrayCollection();
 				}
 				_selectedEntry = value;
 			}
@@ -410,6 +419,7 @@
 			
 			protected function onCreationComplete():void {
 				name_input.setFocus();
+				new KACTagsController(tagsComplete, _context.kc);
 			}
 			
 			
@@ -853,8 +863,13 @@
 				<mx:HBox width="100%">
 					<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
-								  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>
+					
+					<components:AutoComplete id="tagsComplete" allowDuplicates="true" allowMultipleSelection="true" 
+											 labelField="tag"/>
+					
+					
+					<!--<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
+								  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>-->
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:HBox styleName="noPadding" width="{LABEL_WIDTH}" horizontalScrollPolicy="off" horizontalGap="2">
@@ -862,7 +877,7 @@
 								  styleName="drillDownLabel"/>
 						<mx:LinkButton id="btnCategories" click="btnCategories_clickHandler(event)" styleName="editButton" />
 					</mx:HBox>
-					<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" height="{tagsTi.height}"
+					<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" 
 										text="{selectedEntry.categories}" styleName="autoComplete"
 										dataProvider="{_entryData.categoriesFullNameList}"/>
 				</mx:HBox>
