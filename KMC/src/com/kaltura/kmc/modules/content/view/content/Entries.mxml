@@ -5,8 +5,12 @@
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
-		 creationComplete="creationCompleteHandler(event)" xmlns:view="com.kaltura.kmc.modules.content.view.*"
-		 xmlns:et="com.kaltura.edw.components.et.*" xmlns:filter="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*">
+		 creationComplete="creationCompleteHandler(event)" 
+		 xmlns:view="com.kaltura.kmc.modules.content.view.*"
+		 xmlns:business="com.kaltura.kmc.modules.content.business.*"
+		 xmlns:et="com.kaltura.edw.components.et.*" 
+		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
+		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -333,50 +337,6 @@
 
 
 
-			protected function entryTable_itemClickHandler(event:EntryTableEvent):void {
-				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, entryTable.selectedItems);
-				cgEvent.dispatch();
-			}
-
-
-			protected function entryTable_showDetailsHandler(event:EntryTableEvent):void {
-				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
-
-				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (entryTable.dataProvider as ArrayCollection).getItemIndex(entry));
-				KedController.getInstance().dispatch(kEvent);
-//				if (entry is KalturaPlaylist) {
-//					//switch manual / rule base
-//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
-//						// manual list
-//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
-//						cgEvent.dispatch();
-//					}
-//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
-//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
-//						cgEvent.dispatch();
-//					}
-//				}
-//				else {
-				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
-				cgEvent.dispatch();
-//				}
-			}
-
-
-			private function preview(event:EntryTableEvent):void {
-				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
-				var cgEvent:KMCEntryEvent;
-				if (entry is KalturaPlaylist)
-					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaPlaylist);
-				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
-					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaBaseEntry);
-				else {
-					trace("Error: no PlaylistVO nor EntryVO");
-					return;
-				}
-
-				cgEvent.dispatch();
-			}
 
 
 //			protected function filter_updateCategoryHandler(event:FilterEvent):void {
@@ -406,7 +366,7 @@
 //			}
 		]]>
 	</mx:Script>
-
+	<business:EntryTableActionsManager id="actionsManager" />
 	<mx:HBox width="100%">
 		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'entries')}" styleName="filterTitleHeader" height="60"/>
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
@@ -419,19 +379,20 @@
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:HDividedBox id="topContainer" width="100%" height="100%">
-		<!--<mx:VBox id="filterContainer" height="100%">-->
-			<fltr:EntriesFilter id="filter" height="100%" width="245"  
-								freeTextSearch="{searchBox}"
-								metadataProfiles="{filterModel.metadataProfiles}"
-								distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
-								filterModel="{filterModel}" filterChanged="newSearchhFromFilter()"/>
-		<!--</mx:VBox>-->
+		<fltr:EntriesFilter id="filter" height="100%" width="245"  
+							freeTextSearch="{searchBox}"
+							metadataProfiles="{filterModel.metadataProfiles}"
+							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
+							filterModel="{filterModel}" filterChanged="newSearchhFromFilter()"/>
 
 		<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
 			<et:EntryTable id="entryTable" rowCount="10" width="100%" height="100%"
-						   selectionChanged="entryTable_itemClickHandler(event)"
-						   showDetails="entryTable_showDetailsHandler(event)" openPreview="preview(event)"
-						   dataProvider="{_listableVo.arrayCollection}" creationComplete="removeColums(event)"
+						   selectionChanged="actionsManager.itemClickHandler(event)"
+						   showDetails="actionsManager.showEntryDetailsHandler(event)" 
+						   openPreview="actionsManager.preview(event)"
+						   deleteEntry="actionsManager.deleteEntries(event)"
+						   dataProvider="{_listableVo.arrayCollection}" 
+						   creationComplete="removeColums(event)"
 						   selectedEntry="{(entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry}"
 						   showEmbed="{showEmbed}" orderByChanged="{onOrderByChanged()}"/>
 

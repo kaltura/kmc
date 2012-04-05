@@ -8,7 +8,7 @@
 		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
 		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel,com.kaltura.edw.business.IDataOwner"
 		 creationComplete="init()" 
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*">
+		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:business="com.kaltura.kmc.modules.content.business.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -537,47 +537,12 @@
 
 
 
-			protected function entryTable_showDetailsHandler(event:EntryTableEvent):void {
-				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
-				
-				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (entryTable.dataProvider as ArrayCollection).getItemIndex(entry));
-				KedController.getInstance().dispatch(kEvent);
-				var cgEvent:CairngormEvent;
-				if (entry is KalturaPlaylist) {
-					//switch manual / rule base
-					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
-						// manual list
-						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
-						cgEvent.dispatch();
-					}
-					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
-						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
-						cgEvent.dispatch();
-					}
-				}
-				else {
-					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
-					cgEvent.dispatch();
-				}
-			}
 			
-			private function preview(event:EntryTableEvent):void {
-				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry; 
-				var cgEvent:KMCEntryEvent;
-				if (entry is KalturaPlaylist)
-					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaPlaylist);
-				else if (entry is KalturaMediaEntry || entry is KalturaMixEntry)
-					cgEvent = new KMCEntryEvent(KMCEntryEvent.PREVIEW, entry as KalturaBaseEntry);
-				else {
-					trace("Error: no PlaylistVO nor EntryVO");
-					return;
-				}
-				
-				cgEvent.dispatch();
-			}
 
 		]]>
 	</mx:Script>
+	<business:EntryTableActionsManager id="actionsManager" />
+	
 	<mx:HBox width="100%">
 		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'moderationEntriesTable')}" styleName="filterTitleHeader" height="60"/>
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
@@ -599,9 +564,9 @@
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
 				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
-							   selectionChanged="entryTable_itemClickHandler(event)" 
-							   showDetails="entryTable_showDetailsHandler(event)"
-							   openPreview="preview(event)"
+							   selectionChanged="actionsManager.itemClickHandler(event)" 
+							   showDetails="actionsManager.showEntryDetailsHandler(event)"
+							   openPreview="actionsManager.preview(event)"
 							   sortDirection="{EntryTable.ASCENDING}" 
 							   dataProvider="{_listableVo.arrayCollection}"
 							   selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"

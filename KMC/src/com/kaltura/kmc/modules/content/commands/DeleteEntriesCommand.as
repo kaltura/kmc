@@ -9,9 +9,10 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.baseEntry.BaseEntryDelete;
 	import com.kaltura.commands.mixing.MixingDelete;
 	import com.kaltura.commands.playlist.PlaylistDelete;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.edw.control.events.SearchEvent;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.types.KalturaStatsKmcEventType;
@@ -22,6 +23,7 @@ package com.kaltura.kmc.modules.content.commands {
 	
 	import mx.controls.Alert;
 	import mx.events.CloseEvent;
+	import mx.messaging.messages.ErrorMessage;
 	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -31,21 +33,21 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		override public function execute(event:CairngormEvent):void {
-			_isPlaylist = (event.data == "Playlist");
 			if (_model.selectedEntries.length == 0) {
-				if (_isPlaylist) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectPlaylistsFirst'),
-						ResourceManager.getInstance().getString('cms',
-						'pleaseSelectPlaylistsFirstTitle'));
-				} 
-				else {
+//				if (_isPlaylist) {
+//					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectPlaylistsFirst'),
+//						ResourceManager.getInstance().getString('cms',
+//						'pleaseSelectPlaylistsFirstTitle'));
+//				} 
+//				else {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectEntriesFirst'),
 						ResourceManager.getInstance().getString('cms',
 						'pleaseSelectEntriesFirstTitle'));
-				}
+//				}
 				return;
 			} 
-			else if (_model.selectedEntries.length < 13) {
+			_isPlaylist = (_model.selectedEntries[0] is KalturaPlaylist);
+			if (_model.selectedEntries.length < 13) {
 				var entryNames:String = "\n";
 				for (var i:int = 0; i < _model.selectedEntries.length; i++)
 					entryNames += (i + 1) + ". " + _model.selectedEntries[i].name + "\n";
@@ -123,13 +125,23 @@ package com.kaltura.kmc.modules.content.commands {
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
+			var er:KalturaError = (data as KalturaEvent).error;
 			var rm:IResourceManager = ResourceManager.getInstance();
-			if (_isPlaylist) {
-				Alert.show(rm.getString('cms', 'playlistsDeleted'),
-					rm.getString('cms', 'deletePlaylists'), 4, null, refresh);
-			} else {
-				Alert.show(rm.getString('cms', 'entriesDeleted'),
-					rm.getString('cms', 'deleteEntries'), 4, null, refresh);
+			if (er) {
+				var str:String = rm.getString('cms', er.errorCode);
+				if (!str) {
+					str = er.errorMsg;
+				} 
+				Alert.show(str, rm.getString('cms', 'deleteEntries'));
+			}
+			else {
+				if (_isPlaylist) {
+					Alert.show(rm.getString('cms', 'playlistsDeleted'),
+						rm.getString('cms', 'deletePlaylists'), 4, null, refresh);
+				} else {
+					Alert.show(rm.getString('cms', 'entriesDeleted'),
+						rm.getString('cms', 'deleteEntries'), 4, null, refresh);
+				}
 			}
 		}
 

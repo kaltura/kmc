@@ -11,12 +11,15 @@
 		[Event(name="selectionChanged", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="showDetails", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="openPreview", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
+		[Event(name="deleteEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 	</mx:Metadata>
 
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.et.business.EntryTableActions;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
+			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
 			import com.kaltura.edw.components.et.ir.PnERenderer;
 			import com.kaltura.edw.control.events.KedEntryEvent;
@@ -54,6 +57,8 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
+			
+			
 
 			/**
 			 * controller for communication with application model
@@ -67,6 +72,50 @@
 			 * issue that requires it sometimes be shown (instead of sometimes be hidden).
 			 * */
 			private var _thumbnailsColumn:DataGridColumn;
+			
+			
+			/**
+			 * show the delete action in the actions renderer
+			 * */
+			public function get showDelete():Boolean {
+				var actions:Array = ActionsRenderer.actions;
+				var found:Boolean;
+				for (var i:int = 0; i<actions.length; i++) {
+					if (actions[i] == EntryTableActions.DELETE) {
+						found = true;
+						break;
+					}
+				}
+				return found;
+			}
+			
+			public function set showDelete(value:Boolean):void {
+				var actions:Array = ActionsRenderer.actions;
+				var i:int;
+				if (value) {
+					var found:Boolean;
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == EntryTableActions.DELETE) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						actions.push(EntryTableActions.DELETE);
+					}
+					
+				}
+				else {
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == EntryTableActions.DELETE) {
+							actions.splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
+			
+			
 			
 			[Bindable]
 			/**
@@ -427,6 +476,16 @@
 				this.mx_internal::sortDirection = _sortDirection;
 			}
 
+			
+			/**
+			 * dispatch a deleteEntry event
+			 * */
+			private function deleteEntry(event:Event):void {
+				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.DELETE_ENTRY);
+				e.data = event.target.data as KalturaBaseEntry;
+				dispatchEvent(e);
+			}
+			
 
 			/**
 			 * request opening preview & embed popup for an entry.
@@ -477,7 +536,10 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				// add IR listernes
 				addEventListener(NameRenderer.NAME_CLICKED, openEditEntry, false, 0, true);
-				addEventListener(PnERenderer.PREVIEW_CLICKED, preview, false, 0, true);
+				// actions
+				addEventListener(EntryTableActions.EMBED, preview, false, 0, true);
+				addEventListener(EntryTableActions.EDIT, openEditEntry, false, 0, true);
+				addEventListener(EntryTableActions.DELETE, deleteEntry, false, 0, true);
 				
 				// keep a reference to the thumbnails columns
 				for (var i:int = 0; i < columns.length; ++i) {
@@ -590,7 +652,7 @@
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="130"
 						   headerText="{resourceManager.getString('cms', 'preview')}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.PnERenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.ActionsRenderer" />
 			
 	</mx:columns>
 </mx:DataGrid>

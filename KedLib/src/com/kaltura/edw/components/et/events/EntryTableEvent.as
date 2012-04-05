@@ -20,6 +20,12 @@ package com.kaltura.edw.components.et.events
 		 * "data" attribute holds the required entry
 		 */		
 		public static const OPEN_PREVIEW:String = "openPreview";
+
+		/**
+		 * delete an entry
+		 * "data" attribute holds the required entry
+		 */		
+		public static const DELETE_ENTRY:String = "deleteEntry";
 		
 		
 		
