@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="DataGridActions" 
+		 creationComplete="hbox1_creationCompleteHandler(event)" >
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.events.MenuEvent;
+			
+			// http://help.adobe.com/en_US/FlashPlatform/reference/actionscript/3/mx/controls/MenuBar.html
+			
+			/**
+			 * the actions shown in the menu
+			 * */
+			protected var actions:Array;
+
+
+
+			protected function hbox1_creationCompleteHandler(event:FlexEvent):void {
+				createMenu();
+			}
+
+			protected function createMenu():Array {
+				var mi:MenuItemVo = new MenuItemVo();
+				mi.label = "Set Scheduling";
+				mi.data = "scheduling";
+				actions.push(mi);
+				
+				mi = new MenuItemVo();
+				mi.label = "Set Access Control";
+				mi.data = "accessControl";
+				actions.push(mi);
+				
+				mi = new MenuItemVo();
+				mi.label = "Change Owner";
+				mi.data = "owner";
+				actions.push(mi);
+
+				// --- TAGS
+				mi = new MenuItemVo();
+				mi.label = "Edit Tags";
+				mi.children = [];
+				actions.push(mi);
+				
+				var smi:MenuItemVo = new MenuItemVo();
+				smi.label = "Add Tags";
+				smi.data = "addTags";
+				mi.children.push(smi);
+				
+				var smi:MenuItemVo = new MenuItemVo();
+				smi.label = "Remove Tags";
+				smi.data = "removeTags";
+				mi.children.push(smi);
+				
+				// --- CATEGORIES
+				mi = new MenuItemVo();
+				mi.label = "Edit Categories";
+				mi.children = [];
+				actions.push(mi);
+				
+				smi = new MenuItemVo();
+				smi.label = "Add Categories";
+				smi.data = "addCategories";
+				mi.children.push(smi);
+				
+				var smi:MenuItemVo = new MenuItemVo();
+				smi.label = "Remove Categories";
+				smi.data = "removeCategories";
+				mi.children.push(smi);
+				
+				// --- PLAYLIST/CATEGORIES
+				mi = new MenuItemVo();
+				mi.label = "Add New Category/Playlist";
+				mi.children = [];
+				actions.push(mi);
+				
+				smi = new MenuItemVo();
+				smi.label = "Add New Category";
+				smi.data = "addCategory";
+				mi.children.push(smi);
+				
+				var smi:MenuItemVo = new MenuItemVo();
+				smi.label = "Add to New Playlist";
+				smi.data = "addPlaylist";
+				mi.children.push(smi);
+				
+				
+				// --- PLAYLIST/CATEGORIES
+				mi = new MenuItemVo();
+				mi.label = "Download";
+				mi.data = "download";
+				actions.push(mi);
+				
+				mi = new MenuItemVo();
+				mi.label = "Delete";
+				mi.data = "delete";
+				actions.push(mi);
+			}
+
+
+			protected function menu_itemClickHandler(event:MenuEvent):void {
+				trace(event.item.data);
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:MenuBar id="menu" dataProvider="{actions}" itemClick="menu_itemClickHandler(event)"/>
+</mx:HBox>
