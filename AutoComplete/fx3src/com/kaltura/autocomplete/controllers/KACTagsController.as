@@ -6,6 +6,7 @@ package com.kaltura.autocomplete.controllers
 	import com.kaltura.commands.tag.TagSearch;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.vo.KalturaTag;
 	import com.kaltura.vo.KalturaTagFilter;
 	import com.kaltura.vo.KalturaTagListResponse;
 	
@@ -30,7 +31,14 @@ package com.kaltura.autocomplete.controllers
 		}
 		
 		override protected function fetchElements(data:Object):Array{
-			return (data.data as KalturaTagListResponse).objects;
+			var tags:Vector.<KalturaTag> = Vector.<KalturaTag>((data.data as KalturaTagListResponse).objects);
+			var tagNames:Array = new Array();
+			
+			for each (var tag:KalturaTag in tags){
+				tagNames.push(tag.tag);
+			}
+				
+			return tagNames;
 		}
 	}
 }
