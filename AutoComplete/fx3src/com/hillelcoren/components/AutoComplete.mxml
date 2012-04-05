@@ -174,12 +174,12 @@
 			public static const MATCH_WORD:String		= "word";
 			public static const MATCH_ANY_PART:String	= "anyPart";
 			
-			private static const LABEL_FIELD:String = "name";
+//			private static const LABEL_FIELD:String = "name";
 			
-			public static function getLabel(item:Object):String{
-				if (LABEL_FIELD && item.hasOwnProperty( LABEL_FIELD ))
+			public static function getLabel(item:Object, labelField:String):String{
+				if (labelField && item.hasOwnProperty( labelField ))
 				{
-					return item[ LABEL_FIELD ];
+					return item[ labelField ];
 				}
 				else
 				{
@@ -627,7 +627,7 @@
 					return true;
 				}
 				
-				var str:String = getLabel( item );
+				var str:String = getLabel( item , _labelField);
 				
 				switch (_matchType)
 				{
@@ -661,7 +661,7 @@
 			 */
 			public function defaultDropDownLabelFunction( item:Object ):String
 			{
-				var string:String = getLabel( item );
+				var string:String = getLabel( item , _labelField);
 				var searchStr:String = searchText;
 				
 				if (string == null)
@@ -823,7 +823,7 @@
 								_selectedItems.removeItemAt( index - 1 );
 								dispatchEvent( new Event( Event.CHANGE ) );
 								
-								var label:String = getLabel( item ); 
+								var label:String = getLabel( item , _labelField); 
 								searchText = label.substr( 0, label.length - 1 );
 								
 								textInput.setFocus();
@@ -1050,6 +1050,7 @@
 					{
 						var selectedItem:ISelectionItemRenderer = selectionItemRendererClassFactory.newInstance() as ISelectionItemRenderer;
 						selectedItem.item = item;
+						selectedItem.labelField = _labelField;
 						selectedItem.height = textInput.height;
 						selectedItem.allowMultipleSelection = _allowMultipleSelection;
 						selectedItem.showRemoveIcon = _showRemoveIcon;
@@ -1238,7 +1239,7 @@
 					}
 					else
 					{
-						var label:String = getLabel( item );
+						var label:String = getLabel( item, _labelField );
 						
 						if (label.toLowerCase() == str.toLowerCase())
 						{
@@ -1577,7 +1578,7 @@
 				
 				for each (var item:Object in _selectedItems)
 				{
-					str += getLabel( item ) + ", ";
+					str += getLabel( item , _labelField) + ", ";
 				}
 				
 				str = str.substring( 0, str.length - 2);

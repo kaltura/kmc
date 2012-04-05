@@ -34,6 +34,8 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 		[Bindable]			
 		protected var _showRemoveIcon:Boolean = true;
 		
+		private var _labelField:String;
+		
 		public static const REMOVE_ITEM:String = "removeItem";
 		
 		public var button:IconButton;
@@ -198,7 +200,7 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 		public function set item(value:Object):void
 		{
 			_item = value;
-			setText(AutoComplete.getLabel(_item));
+			setText(AutoComplete.getLabel(_item, _labelField));
 		}
 		
 		private function setText( value:String ):void
@@ -229,6 +231,10 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 		public function get showRemoveIcon():Boolean
 		{
 			return _showRemoveIcon;
+		}
+		
+		public function set labelField(value:String):void{
+			_labelField = value;
 		}
 	}
 }

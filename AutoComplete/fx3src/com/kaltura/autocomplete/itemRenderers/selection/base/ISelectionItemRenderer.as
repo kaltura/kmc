@@ -10,6 +10,7 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 //		function set data(value:Object):void;
 		function set selected(value:Boolean):void;
 		function set showRemoveIcon(value:Boolean):void;
+		function set labelField(value:String):void;
 //		function get item():Object;
 	}
 }

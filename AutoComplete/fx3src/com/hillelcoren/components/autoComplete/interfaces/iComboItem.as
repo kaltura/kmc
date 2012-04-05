@@ -12,5 +12,6 @@ package com.hillelcoren.components.autoComplete.interfaces
 		function get text():String
 		function get item():Object
 		function set item(value:Object):void;
+//		function set labelField(value:String):void;
 	}
 }
