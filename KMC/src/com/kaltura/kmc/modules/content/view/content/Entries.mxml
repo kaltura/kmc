@@ -10,7 +10,7 @@
 		 xmlns:business="com.kaltura.kmc.modules.content.business.*"
 		 xmlns:et="com.kaltura.edw.components.et.*" 
 		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
-		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*">
+		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -26,6 +26,7 @@
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
@@ -370,8 +371,7 @@
 	<mx:HBox width="100%">
 		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'entries')}" styleName="filterTitleHeader" height="60"/>
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
-							 attribute="freeText"
-							 label="{resourceManager.getString('cms', 'searchFilter')}" />
+							 attribute="freeText" />
 		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
 							   dataProvider="{filter.indicators}"
 							   boxClicked="filter.removeFilter(event.data)"/>
@@ -382,6 +382,7 @@
 		<fltr:EntriesFilter id="filter" height="100%" width="245"  
 							freeTextSearch="{searchBox}"
 							metadataProfiles="{filterModel.metadataProfiles}"
+							context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
 							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
 							filterModel="{filterModel}" filterChanged="newSearchhFromFilter()"/>
 
@@ -396,10 +397,16 @@
 						   selectedEntry="{(entryDetailsModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry}"
 						   showEmbed="{showEmbed}" orderByChanged="{onOrderByChanged()}"/>
 
-			<controls:Paging id="paging" width="100%" styleName="paging"
-							 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
-							 getPageNum="gotoPageNum()" showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}"/>
-
+			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+				
+				<bulkactions:BulkActionsMenu height="{paging.height}"
+											 createNewManualPlaylist="onNewManualPlaylist()"/>
+				
+				<controls:Paging id="paging" width="100%" styleName="paging"
+								 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
+								 getPageNum="gotoPageNum()" showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}"/>
+				
+			</mx:HBox>
 			<view:ControlToolBar id="toolBar" width="100%"
 								 selectAllEntries="onSelectAllEntries(event)"
 								 deselectAllEntries="onDeselectAllEntries(event)"

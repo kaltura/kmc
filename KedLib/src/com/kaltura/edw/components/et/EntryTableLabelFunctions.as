@@ -79,19 +79,19 @@ package com.kaltura.edw.components.et
 			var rm:IResourceManager = ResourceManager.getInstance();
 			switch (entry.moderationStatus) {
 				case KalturaEntryModerationStatus.APPROVED:  {
-					return rm.getString('cms', 'approvedStatus');
+					return rm.getString('entrytable', 'approvedStatus');
 				}
 				case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-					return rm.getString('cms', 'autoApprovedStatus');
+					return rm.getString('entrytable', 'autoApprovedStatus');
 				}
 				case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-					return rm.getString('cms', 'flaggedStatus');
+					return rm.getString('entrytable', 'flaggedStatus');
 				}
 				case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-					return rm.getString('cms', 'pendingStatus');
+					return rm.getString('entrytable', 'pendingStatus');
 				}
 				case KalturaEntryModerationStatus.REJECTED:  {
-					return rm.getString('cms', 'rejectedStatus');
+					return rm.getString('entrytable', 'rejectedStatus');
 				}
 			}
 			return '';
@@ -185,22 +185,22 @@ package com.kaltura.edw.components.et
 				case KalturaEntryModerationStatus.AUTO_APPROVED:
 				case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  
 					if (schedulingType == SCHEDULING_ALL_OR_IN_FRAME){
-						result = rm.getString('cms', 'liveStatus');
+						result = rm.getString('entrytable', 'liveStatus');
 					}
 					else if (schedulingType == SCHEDULING_BEFORE_FRAME) {
-						result = rm.getString('cms', 'scheduledStatus');
+						result = rm.getString('entrytable', 'scheduledStatus');
 					}
 					else if (schedulingType == SCHEDULING_AFTER_FRAME) {
-						result = rm.getString('cms', 'finishedStatus');
+						result = rm.getString('entrytable', 'finishedStatus');
 					}
 					break;
 				
 				case KalturaEntryModerationStatus.PENDING_MODERATION:  
-					result = rm.getString('cms', 'pendingStatus');
+					result = rm.getString('entrytable', 'pendingStatus');
 					break;
 				
 				case KalturaEntryModerationStatus.REJECTED:  
-					result = rm.getString('cms', 'rejectedStatus');
+					result = rm.getString('entrytable', 'rejectedStatus');
 					break;
 				
 			}
