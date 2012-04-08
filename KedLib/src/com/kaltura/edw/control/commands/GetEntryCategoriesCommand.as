@@ -6,6 +6,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KalturaCategoryEntryFilter;
+	import com.kaltura.vo.KalturaCategoryEntryListResponse;
 	
 	import mx.collections.ArrayCollection;
 
@@ -29,7 +30,7 @@ package com.kaltura.edw.control.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
-			edp.entryCategories = new ArrayCollection(data.objects);
+			edp.entryCategories = new ArrayCollection((data.data as KalturaCategoryEntryListResponse).objects);
 			_model.decreaseLoadCounter();
 		}
 	}
