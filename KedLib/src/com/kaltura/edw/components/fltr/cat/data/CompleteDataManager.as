@@ -1,25 +1,8 @@
 package com.kaltura.edw.components.fltr.cat.data
 {
-	import com.kaltura.commands.MultiRequest;
-	import com.kaltura.commands.baseEntry.BaseEntryCount;
-	import com.kaltura.commands.category.CategoryList;
-	import com.kaltura.edw.business.KedJSGate;
 	import com.kaltura.edw.control.CategoriesTreeController;
 	import com.kaltura.edw.control.events.CategoriesTreeEvent;
-	import com.kaltura.edw.model.FilterModel;
-	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.edw.vo.CategoryVO;
-	import com.kaltura.errors.KalturaError;
-	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.types.KalturaEntryStatus;
-	import com.kaltura.types.KalturaMediaType;
-	import com.kaltura.vo.KalturaCategory;
-	import com.kaltura.vo.KalturaCategoryListResponse;
-	import com.kaltura.vo.KalturaMediaEntryFilter;
-	
-	import mx.collections.ArrayCollection;
-	import mx.controls.Alert;
-	import mx.resources.ResourceManager;
 
 	public class CompleteDataManager implements ICategoriesDataManger {
 		

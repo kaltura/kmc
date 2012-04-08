@@ -57,5 +57,11 @@ package com.kaltura.edw.model.datapacks
 		public var entriesWSameRefidAsSelected:Array;
 		
 		public var loadRoughcuts:Boolean = true;
+		
+		
+		/**
+		 * list of categories the current entry is associated with
+		 */
+		public var entryCategories:ArrayCollection;
 	}
 }

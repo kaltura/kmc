@@ -55,8 +55,6 @@ package com.kaltura.edw.control.commands.categories
 		}
 		
 		private function buildCategoriesHyrarchy(kCats:Array, catMap:HashMap):void {
-			
-			
 			// create the rest of the category VOs
 			var categories:ArrayCollection = new ArrayCollection();
 			var category:CategoryVO;

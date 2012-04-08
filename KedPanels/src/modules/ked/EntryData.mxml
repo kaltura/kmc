@@ -12,7 +12,9 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACCategoryController;
 			import com.kaltura.autocomplete.controllers.KACTagsController;
+			import com.kaltura.edw.business.EntryDataHelper;
 			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.FormBuilder;
 			import com.kaltura.edw.business.KedJSGate;
@@ -33,6 +35,7 @@
 			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.view.window.CategoryBrowser;
+			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.edw.vo.EntryMetadataDataVO;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.events.KdpEventTypes;
@@ -47,11 +50,14 @@
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaFlavorAsset;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Image;
 			import mx.formatters.DateFormatter;
@@ -137,6 +143,11 @@
 			 * landing page according to partner's data
 			 * */
 			private var _landingPage:String;
+			
+			/**
+			 * change watcher for categories list
+			 * */
+			private var _catWatcher:ChangeWatcher;
 			
 			
 			// =================================================================
@@ -229,31 +240,6 @@
 			// Methods
 			// =================================================================
 			
-			/**
-			 * retrieves the list of categories this entry should be asisgned to
-			 * @return array of category names
-			 * */
-			private function getEntryCategories():Array {
-				var catArr:Array = categoriesTextInput.text.split(',');
-				var tempArr:Array = [];
-				for each (var cat:String in catArr) {
-					var sCat:String = StringUtil.trim(cat);
-					if (sCat != '') {
-						tempArr.push(sCat);
-					}
-				}
-				return tempArr;
-			}
-			
-			/**
-			 * ask JS to open the preview player, log the action to analytics
-			 * */
-			private function openPreview():void {
-				EntryUtil.openPreview(selectedEntry, _dpModel, !_showEmbed);
-			}
-			
-			
-		
 			
 			
 			public function isChanged():Boolean {
@@ -263,8 +249,10 @@
 				res ||= selectedEntry.name != orig.name;
 				res ||= selectedEntry.description != orig.description;
 				res ||= selectedEntry.tags != orig.tags;
-				res ||= selectedEntry.categories != orig.categories;
 				res ||= selectedEntry.referenceId != orig.referenceId;
+				
+				// categories:
+				res ||= !EntryDataHelper.areCollectionsEqual(_entryCategories, catComplete.selectedItems);
 				
 				// custom data:
 				var customDataDataPack:CustomDataDataPack = _dpModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
@@ -292,17 +280,20 @@
 			
 			
 			public function save():void {
-				// set the categories on the entry
-				selectedEntry.categories = getEntryCategories().join(',');
-				
 				if (selectedEntry is KalturaLiveStreamAdminEntry) {
 					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 				}
+				
+				//update categories
+				var saveEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, selectedEntry);
+				saveEvent.data = EntryDataHelper.getCategoriesUpdateValues(catComplete.selectedItems, _entryCategories);
+				controller.dispatch(saveEvent);
 				
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 				
 				// custom data save is done in update entries command, not here
 			}
+			
 			
 			
 			public function validate():void {
@@ -319,7 +310,7 @@
 				if (!errorMessage) {
 					// categories section
 					// auto-complete event isn't full so we need to add this here
-					if (getEntryCategories().length > _entryData.maxNumCategories) {
+					if (catComplete.selectedItems.length > _entryData.maxNumCategories) {
 						errorMessage = resourceManager.getString('drilldown', 'categoriesLimitErrorMsg', [_entryData.maxNumCategories]);
 						errorTitle = resourceManager.getString('drilldown', 'categoriesErrorTitle');
 						success = false;
@@ -333,24 +324,7 @@
 			}
 			
 			
-			/**
-			 * for trim / clip buttons, decide if the button should be
-			 * enabled according to whether entry has source flavor.
-			 * @param flavors	the list of flavors associated with this entry
-			 * @return whether the button should be enabled or not
-			 * */
-			private function entryHasSource(flavors:ArrayCollection):Boolean {
-				var hasSource:Boolean = false;
-				var asset:KalturaFlavorAsset;
-				for each (var vo:FlavorAssetWithParamsVO in flavors) {
-					asset = vo.kalturaFlavorAssetWithParams.flavorAsset;
-					if (asset && asset.isOriginal) {
-						hasSource = true;
-						break;
-					}
-				}
-				return hasSource;
-			}
+			
 			
 			
 			public function initData():void {
@@ -388,10 +362,16 @@
 				
 				var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
 				controller.dispatch(listCustomData);
+				
+				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_CATEGORIES, selectedEntry);
+				controller.dispatch(listCats);
 			}
 			
 			
 			public function destroy():void {
+				if (_catWatcher) {
+					_catWatcher.unwatch();
+				} 
 				var curCustomData:SingleCustomData;
 				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
 					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
@@ -407,6 +387,7 @@
 			 * remove any playing entry from the preview player
 			 * */
 			public function clear():void {
+				_entryCategories = null;
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
@@ -415,26 +396,19 @@
 			}
 			
 			
-			
-			/**
-			 * Format the creation date
-			 */
-			private function formatDate(date:Number):String {
-				var df:DateFormatter = new DateFormatter();
-				df.formatString = resourceManager.getString('drilldown', 'drilldowndateformat');
-				var dt:Date = new Date();
-				dt.setTime(date * 1000);
-				return df.format(dt);
-			};
+		
 			
 			
 			public function init():void {
 				Security.allowDomain("*");
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.METADATA_PANEL);
 				
+				_catWatcher = BindingUtils.bindSetter(setCategoriesOnScreen , _entryData, ["entryCategories"]);
+				
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 				
 				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				
 				//TODO permissions: unite with PanelConsts.METADATA_PANEL
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.CUSTOM_DATA_PANEL);
 			}
@@ -443,6 +417,7 @@
 			protected function onCreationComplete():void {
 				name_input.setFocus();
 				new KACTagsController(tagsComplete, _context.kc);
+				new KACCategoryController(catComplete, _context.kc);
 			}
 			
 			
@@ -519,26 +494,12 @@
 			}
 			
 			
-			
-			/**
-			 * Check if this entry is a mix and if it was made in advanced editor
-			 * if it is
-			 */
-			private function checkIfNotAdvanced(undoToEntry:*):Boolean {
-				// editorType.toString();
-				if (((undoToEntry is KalturaMixEntry) && (undoToEntry as KalturaMixEntry).editorType == KalturaEditorType.ADVANCED) || selectedEntry.status != KalturaEntryStatus.READY)
-					return false;
-				return true;
-			}
-			
-			
 			private function onPreviewClick():void {
 				//stop the player from playing 
 				if (kdp3StaticSwfLoader) {
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 				}
-				//				dispatchEvent(new Event(EntryMetadata.OPEN_PREVIEW));
-				openPreview();
+				EntryUtil.openPreview(selectedEntry, _dpModel, !_showEmbed);
 			}
 			
 			
@@ -587,63 +548,7 @@
 			}
 			
 			
-			private function getModeration(moderationCode:int):String {
-				switch (moderationCode) {
-					case KalturaEntryModerationStatus.APPROVED:  {
-						return resourceManager.getString('drilldown', 'approved');
-					}
-					case KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW:  {
-						return resourceManager.getString('drilldown', 'pending');
-					}
-					case KalturaEntryModerationStatus.REJECTED:  {
-						return resourceManager.getString('drilldown', 'rejected');
-					}
-					case KalturaEntryModerationStatus.AUTO_APPROVED:  {
-						return resourceManager.getString('drilldown', 'autoApproved');
-					}
-					case KalturaEntryModerationStatus.PENDING_MODERATION:  {
-						return resourceManager.getString('drilldown', 'pendingModeration');
-					}
-						
-					default:  {
-						return ' -- ';
-					}
-				}
-			}
 			
-			
-			/**
-			 * The function translate media type enum to the matching locale string
-			 * @param mediaType
-			 * @param type - special param for mix since mix is type 2 and other types are type 1 with different mediaTypes
-			 */
-			private function getMediaTypes(mediaType:int, type:String):String {
-				if (type == KalturaEntryType.MIX) {
-					return resourceManager.getString('drilldown', 'videoMix');
-				}
-				switch (mediaType) {
-					case KalturaMediaType.VIDEO:
-						return resourceManager.getString('drilldown', 'video');
-						break;
-					case KalturaMediaType.IMAGE:
-						return resourceManager.getString('drilldown', 'image');
-						break;
-					case KalturaMediaType.AUDIO:
-						return resourceManager.getString('drilldown', 'audio');
-						break;
-					case "6":
-						return resourceManager.getString('drilldown', 'videoMix');
-						break;
-					case "10":
-						return resourceManager.getString('drilldown', 'xml');
-						break;
-					case KalturaMediaType.LIVE_STREAM_FLASH:
-						return resourceManager.getString('drilldown', 'liveStream');
-						break;
-				}
-				
-				return "";
-			}
 			
 			
 			/**
@@ -703,34 +608,65 @@
 			}
 			
 			// =================================================================
-			// Categories Editor
+			// Categories Stuff
 			// =================================================================
+			
+			[Bindable]
+			/**
+			 * list of categories the current entry is associated with
+			 * */
+			private var _entryCategories:ArrayCollection;
+			
+			/**
+			 * pass the given categories to the autocomplete component
+			 * @param value array collection of <code>KalturaCategory</code> objects
+			 * */
+			private function setCategoriesOnScreen(value:ArrayCollection):void {
+				catComplete.selectedItems = value;
+				_entryCategories = value;
+			}
+			
 			
 			/**
 			 * open category editor
 			 * */
-			protected function btnCategories_clickHandler(event:MouseEvent):void {
+			private function btnCategories_clickHandler(event:MouseEvent):void {
 				var catBrs:CategoryBrowser = new CategoryBrowser();
 				catBrs.filterModel = (_dpModel.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-				catBrs.catids = _selectedEntry.categoriesIds;
+				var cats:ArrayCollection = catComplete.selectedItems;
+				var catids:String = '';
+				for each (var kCat:KalturaCategory in cats) {
+					catids += kCat.id + ",";
+				}
+				catBrs.catids = catids;
 				catBrs.addEventListener(Event.CLOSE, closeCatPopup);
-				catBrs.addEventListener("apply", setCatsToEntry);
+				catBrs.addEventListener("apply", setCatsToAutocomplete);
 				
 				PopUpManager.addPopUp(catBrs, this, true);
 				PopUpManager.centerPopUp(catBrs);
 			}
 			
-			protected function setCatsToEntry(e:Event):void {
+			
+			/**
+			 * set new selected items to catComplete
+			 * */
+			private function setCatsToAutocomplete(e:Event):void {
 				var tgt:CategoryBrowser = e.target as CategoryBrowser;
-//TODO				_selectedEntry.categoriesIds = tgt.catids;
+				var cats:Array = tgt.getCategories(); //categoryVo objects
+				var cat:CategoryVO;
+				var kCats:Array = [];
+				for each (cat in cats) {
+					kCats.push(cat.category);
+				}
+				catComplete.selectedItems = new ArrayCollection(kCats);
 			}
 			
-			protected function closeCatPopup(e:Event):void {
+			private function closeCatPopup(e:Event):void {
 				var tgt:CategoryBrowser = e.target as CategoryBrowser;
 				if (tgt) {
 					PopUpManager.removePopUp(tgt);
 					tgt.removeEventListener(Event.CLOSE, closeCatPopup);
-					tgt.removeEventListener("apply", setCatsToEntry);
+					tgt.removeEventListener("apply", setCatsToAutocomplete);
 				}
 			}
 			
@@ -806,7 +742,8 @@
 			private function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
 				_profilesAC = new ArrayCollection();
 				_profileNames = new ArrayCollection();
-				_profileNames.addItem("Entry Data");
+				// header for entry metadata section in the dropdown
+				_profileNames.addItem(resourceManager.getString('drilldown', 'metadata'));
 				// remove old data and old binding
 				destroy();
 				// remove custom datas, don't remove entry data box
@@ -898,10 +835,9 @@
 					<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
 					
-					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" showRemoveIcon="true" 
-											 allowMultipleSelection="true" allowNewValues="true" 
-											 labelField="tag" change="tagsComplete_changeHandler(event)" selectedItemStyleName="facebook"/>
-					
+					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
+											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
+											 labelField="tag" change="tagsComplete_changeHandler(event)" />
 					
 					<!--<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
 								  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>-->
@@ -912,9 +848,12 @@
 								  styleName="drillDownLabel"/>
 						<mx:LinkButton id="btnCategories" click="btnCategories_clickHandler(event)" styleName="editButton" />
 					</mx:HBox>
-					<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" 
+					<components:AutoComplete id="catComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
+											 showRemoveIcon="true" allowMultipleSelection="true" labelField="name" />
+					
+					<!--<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" 
 										text="{selectedEntry.categories}" styleName="autoComplete"
-										dataProvider="{_entryData.categoriesFullNameList}"/>
+										dataProvider="{_entryData.categoriesFullNameList}"/>-->
 				</mx:HBox>
 				<mx:HBox id="offlineHolder" width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"
@@ -953,11 +892,11 @@
 						   enabled="{(selectedEntry.status == KalturaEntryStatus.READY) &amp;&amp; _previewEnable}"/>
 			<mx:Spacer width="100%" />
 			<mx:LinkButton id="btnClipping" click="openClipping(event)"
-						   enabled="{entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
+						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
 						   label="{resourceManager.getString('drilldown','openClipping')}"
 						   visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}"/>
 			<mx:LinkButton id="btnTrimming" click="openTrimming(event)"
-						   enabled="{entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
+						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
 						   label="{resourceManager.getString('drilldown','openTrimming')}"
 						   visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}"/>
 		</mx:HBox>
@@ -971,19 +910,19 @@
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:Label text="{formatDate(selectedEntry.createdAt)}" width="{RIGHT_TEXT_WIDTH}"
+					<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="{RIGHT_TEXT_WIDTH}"
 							  styleName="drillDownSubLabel"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:Label text="{getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
+					<mx:Label text="{EntryDataHelper.getMediaTypes(int(selectedEntry.mediaType),selectedEntry.type)}"
 							  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','moderation')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:Label text="{getModeration(selectedEntry.moderationStatus)}"  width="{RIGHT_TEXT_WIDTH}"
+					<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}"  width="{RIGHT_TEXT_WIDTH}"
 							  styleName="drillDownSubLabel"/>
 				</mx:HBox>
 				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">

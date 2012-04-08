@@ -57,6 +57,16 @@ package com.kaltura.edw.control.events
 		 * reset entry parts list on the model
 		 */
 		public static const RESET_PARTS : String = "content_resetParts";
+
+		/**
+		 * get the categories related to the given entry
+		 */
+		public static const GET_ENTRY_CATEGORIES : String = "content_getEntryCategories";
+
+		/**
+		 * add / remove categories related to the given entry
+		 */
+		public static const UPDATE_ENTRY_CATEGORIES : String = "content_updateEntryCategories";
 		
 		// ======================================================
 		// Private Members

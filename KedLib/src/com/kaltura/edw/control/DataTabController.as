@@ -1,9 +1,11 @@
 package com.kaltura.edw.control
 {
 	import com.kaltura.edw.control.commands.DuplicateEntryDetailsModelCommand;
+	import com.kaltura.edw.control.commands.GetEntryCategoriesCommand;
 	import com.kaltura.edw.control.commands.GetSingleEntryCommand;
 	import com.kaltura.edw.control.commands.ListEntriesCommand;
 	import com.kaltura.edw.control.commands.LoadFilterDataCommand;
+	import com.kaltura.edw.control.commands.UpdateEntryCategoriesCommand;
 	import com.kaltura.edw.control.commands.customData.*;
 	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.edw.control.events.LoadEvent;
@@ -40,6 +42,8 @@ package com.kaltura.edw.control
 			
 			addCommand(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL, DuplicateEntryDetailsModelCommand);
 			addCommand(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, GetSingleEntryCommand);	
+			addCommand(KedEntryEvent.GET_ENTRY_CATEGORIES, GetEntryCategoriesCommand);	
+			addCommand(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, UpdateEntryCategoriesCommand);	
 		}
 	}
 }

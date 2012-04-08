@@ -167,6 +167,7 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		private function onItemOpen(event:TreeEvent):void {
 			_dataManager.branchClicked(event.itemRenderer.data as CategoryVO);
+			selectFromInitial(event.itemRenderer.data as CategoryVO); // complete manager does nothing, so we can mark here
 		}
 		
 		
@@ -177,6 +178,8 @@ package com.kaltura.edw.components.fltr.cat
 		private function reopenBranch(e:CategoriesDataManagerEvent):void {
 			expandItem(e.data, false);
 			expandItem(e.data, true);
+			// mark cats from initFilter
+			selectFromInitial(e.data as CategoryVO);
 		}
 		
 		// ---------------------
@@ -423,20 +426,31 @@ package com.kaltura.edw.components.fltr.cat
 		
 		public function set filter(value:Object):void {
 			// reset selected
-			_selectedCategories = new ArrayCollection();
+			_selectedCategories = new Object();
 			
 			// save value (assume it was string..)
 			_initialFilter = value.toString();
 			
+			selectFromInitial(dataProvider.getItemAt(0) as CategoryVO);
+		}
+		
+		
+		private function selectFromInitial(headCat:CategoryVO):void {
+			if (!_initialFilter) { return; }
 			var selectedIds:ArrayCollection = new ArrayCollection(_initialFilter.split(","));
 			// add from new value:
-			for each (var cat:CategoryVO in dataProvider) {
-				if (selectedIds.contains(cat.id)) {
-					_selectedCategories.addItem(cat);
+			for each (var cat:CategoryVO in headCat.children) {
+				if (selectedIds.contains(cat.id.toString())) {
+					_selectedCategories[cat.id.toString()] = cat;
 					cat.selected = CatSelectionStatus.SELECTED;
 					//TODO handle partial selection
+					
+					// remove from initial filter
+					var i:int = selectedIds.getItemIndex(cat.id.toString());
+					selectedIds.removeItemAt(i);
 				}
 			}
+			_initialFilter = selectedIds.source.join(',');
 		}
 		
 		/**
@@ -444,9 +458,8 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		public function get filter():Object{
 			var result:String = '';
-			var cat:CategoryVO;
 			// add from selected categories
-			for each(cat in _selectedCategories) {
+			for each(var cat:CategoryVO in _selectedCategories) {
 				result += cat.id + ",";
 			}
 			
