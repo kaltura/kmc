@@ -25,16 +25,26 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaMetadataObjectType
+	import com.kaltura.vo.KalturaCategoryEntryBaseFilter;
+
+	[Bindable]
+	public dynamic class KalturaCategoryEntryFilter extends KalturaCategoryEntryBaseFilter
 	{
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
-		public static const PARTNER : String = '4';
-		public static const ANNOTATION : String = 'annotationMetadata.Annotation';
-		public static const AD_CUE_POINT : String = 'adCuePointMetadata.AdCuePoint';
-		public static const CODE_CUE_POINT : String = 'codeCuePointMetadata.CodeCuePoint';
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

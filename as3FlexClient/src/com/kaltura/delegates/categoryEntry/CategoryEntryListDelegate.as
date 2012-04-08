@@ -25,16 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.delegates.categoryEntry
 {
-	public class KalturaMetadataObjectType
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class CategoryEntryListDelegate extends WebDelegateBase
 	{
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
-		public static const PARTNER : String = '4';
-		public static const ANNOTATION : String = 'annotationMetadata.Annotation';
-		public static const AD_CUE_POINT : String = 'adCuePointMetadata.AdCuePoint';
-		public static const CODE_CUE_POINT : String = 'codeCuePointMetadata.CodeCuePoint';
+		public function CategoryEntryListDelegate(call:KalturaCall, config:KalturaConfig)
+		{
+			super(call, config);
+		}
+
 	}
 }

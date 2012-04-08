@@ -39,6 +39,8 @@ package com.kaltura.types
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
 		public static const RANK_ASC : String = '+rank';
 		public static const RANK_DESC : String = '-rank';
+		public static const TOTAL_RANK_ASC : String = '+totalRank';
+		public static const TOTAL_RANK_DESC : String = '-totalRank';
 		public static const START_DATE_ASC : String = '+startDate';
 		public static const START_DATE_DESC : String = '-startDate';
 		public static const END_DATE_ASC : String = '+endDate';

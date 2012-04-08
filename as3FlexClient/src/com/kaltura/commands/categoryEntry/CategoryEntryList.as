@@ -25,16 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.categoryEntry
 {
-	public class KalturaMetadataObjectType
+	import com.kaltura.vo.KalturaCategoryEntryFilter;
+	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.delegates.categoryEntry.CategoryEntryListDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	public class CategoryEntryList extends KalturaCall
 	{
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
-		public static const PARTNER : String = '4';
-		public static const ANNOTATION : String = 'annotationMetadata.Annotation';
-		public static const AD_CUE_POINT : String = 'adCuePointMetadata.AdCuePoint';
-		public static const CODE_CUE_POINT : String = 'codeCuePointMetadata.CodeCuePoint';
+		public var filterFields : String;
+		/**
+		 * @param filter KalturaCategoryEntryFilter
+		 * @param pager KalturaFilterPager
+		 **/
+		public function CategoryEntryList( filter : KalturaCategoryEntryFilter=null,pager : KalturaFilterPager=null )
+		{
+			service= 'categoryentry';
+			action= 'list';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+ 			if (filter) { 
+ 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
+ 			keyValArr = kalturaObject2Arrays(pager, 'pager');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CategoryEntryListDelegate( this , config );
+		}
 	}
 }

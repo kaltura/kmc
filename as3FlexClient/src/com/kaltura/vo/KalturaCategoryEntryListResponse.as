@@ -25,16 +25,39 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaMetadataObjectType
+	import com.kaltura.vo.BaseFlexVo;
+	[Bindable]
+	public dynamic class KalturaCategoryEntryListResponse extends BaseFlexVo
 	{
-		public static const ENTRY : String = '1';
-		public static const CATEGORY : String = '2';
-		public static const USER : String = '3';
-		public static const PARTNER : String = '4';
-		public static const ANNOTATION : String = 'annotationMetadata.Annotation';
-		public static const AD_CUE_POINT : String = 'adCuePointMetadata.AdCuePoint';
-		public static const CODE_CUE_POINT : String = 'codeCuePointMetadata.CodeCuePoint';
+		/** 
+		* 		* */ 
+		public var objects : Array = null;
+
+		/** 
+		* 		* */ 
+		public var totalCount : int = int.MIN_VALUE;
+
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
+
 	}
 }
