@@ -10,7 +10,9 @@ package com.kaltura.edw.components.fltr.cat
 	import com.kaltura.edw.components.fltr.cat.renderers.*;
 	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	import com.kaltura.edw.control.CategoriesTreeController;
+	import com.kaltura.edw.events.GeneralNonCairngormEvent;
 	import com.kaltura.edw.vo.CategoryVO;
+	import com.kaltura.vo.KalturaCategory;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -99,7 +101,7 @@ package com.kaltura.edw.components.fltr.cat
 		 * when extracting a new filter, some of these values may not be
 		 * in the data provider but we still want to add them to the filter.   
 		 */		
-		protected var _initialFilter:String;
+		protected var _initialFilter:String = '';
 		
 		
 		/**
@@ -122,6 +124,21 @@ package com.kaltura.edw.components.fltr.cat
 			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete, false, 0, true);
 		}
 		
+		
+		/**
+		 * add a category from the autocomplete component
+		 * */
+		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
+			var cat:KalturaCategory = event.data as KalturaCategory;
+			if (categories.containsKey(cat.id.toString())) {
+				var catvo:CategoryVO = categories.getValue(cat.id.toString()) as CategoryVO;
+				handleSelectionChange(catvo);
+			}
+			else {
+				// the part of the tree that holsd this category was not yet loaded
+				_initialFilter = cat.id + "," + _initialFilter;
+			}
+		}
 		
 		
 		private function onCreationComplete(e:Event):void {

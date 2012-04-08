@@ -8,6 +8,7 @@
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
@@ -64,6 +65,9 @@
 			 * set directly by permissions manager
 			 * */
 			public var enableLiveStream:Boolean = true;
+			
+			[Bindable]
+			public var context:ContextDataPack;
 
 			// ----------------
 			// distribution
@@ -203,11 +207,15 @@
 	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30" >
 		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('filter', 'categoriesLabel')}" width="100%"
 				   height="100%" styleName="categoriesTreeVBox">
-			<cat:CatTree id="catTree" attribute="categoriesIdsMatchOr" categories="{filterModel.categoriesMap}"
-						 dataProvider="{filterModel.categories}" valueChange="updateFilterValue(event)"
-						 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" prefsButton="{prefs}"
-						 chunkedData="{filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" width="100%"
-						 height="100%" />
+			<mx:VBox styleName="noPadding" width="100%" height="100%">
+				<cat:CatTree id="catTree" attribute="categoriesIdsMatchOr" categories="{filterModel.categoriesMap}"
+							 dataProvider="{filterModel.categories}" valueChange="updateFilterValue(event)"
+							 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" prefsButton="{prefs}"
+							 chunkedData="{filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" width="100%"
+							 height="100%" />
+				<cat:CategoryAutocomplete kClient="{context.kc}" width="100%"
+										  valueChange="{catTree.addFromAutoComplete(event)}"/>
+			</mx:VBox>
 			<mx:Button id="prefs" label="settings" right="7" y="0"/>
 		</mx:Canvas>
 		<mx:VBox id="additional" label="{resourceManager.getString('filter', 'additionalFiltersLabel')}" 

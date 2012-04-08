@@ -14,6 +14,8 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACCategoryController;
 			import com.kaltura.autocomplete.controllers.KACTagsController;
+			import com.kaltura.autocomplete.itemRenderers.dropdown.CategoryDropDownIR;
+			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
 			import com.kaltura.edw.business.EntryDataHelper;
 			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.FormBuilder;
@@ -849,7 +851,9 @@
 						<mx:LinkButton id="btnCategories" click="btnCategories_clickHandler(event)" styleName="editButton" />
 					</mx:HBox>
 					<components:AutoComplete id="catComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
-											 showRemoveIcon="true" allowMultipleSelection="true" labelField="name" />
+											 showRemoveIcon="true" allowMultipleSelection="true" labelField="name"
+											 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
+											 dropDownItemRenderer="{new ClassFactory(CategoryDropDownIR)}"/>
 					
 					<!--<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" 
 										text="{selectedEntry.categories}" styleName="autoComplete"
