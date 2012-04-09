@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							height="220" width="390" layout="vertical" 
+							showCloseButton="false" showHelpButton="false"
+							title="{resourceManager.getString('drilldown', 'changeOwnerTitle')}"
+							creationComplete="creationCompleteHandler(event)" xmlns:components="com.hillelcoren.components.*">
+	<mx:Metadata>
+		/**
+		 * dispatched when user requests save
+		 * */
+		[Event(name="save", type="fl.events.Event")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.edw.control.KedController;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.vo.KalturaUser;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			public var entryData:EntryDataPack;
+			
+			
+			/**
+			 * client for autocomplete API calls
+			 * */
+			public var kClient:KalturaClient
+			
+			private var _userWatcher:ChangeWatcher;
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				new KACUsersController(usersComplete, kClient);
+				if (_selectedUser) {
+					selectedUser = _selectedUser;
+				}
+			}
+
+			
+			/**
+			 * container for selected user if not creationComplete yet
+			 * */
+			private var _selectedUser:KalturaUser
+			
+			/**
+			 * retreive the currently selected user
+			 * */
+			public function get selectedUser():KalturaUser {
+				return usersComplete.selectedItem as KalturaUser;
+			}
+			
+			public function set selectedUser(value:KalturaUser):void {
+				if (usersComplete) {
+					usersComplete.selectedItems = new ArrayCollection([value]);
+				}
+				else {
+					_selectedUser = value;
+				}
+			}
+			
+			
+			public function setUserById(userid:String):void {
+				_userWatcher = BindingUtils.bindProperty(this, "selecteduser", entryData, "selectedEntryOwner");
+				var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_OWNER, entryData.selectedEntry);
+				kEvent.data = userid;
+				KedController.getInstance().dispatch(kEvent);
+			}
+
+
+			private function closeWin(event:MouseEvent):void {
+				if (_userWatcher) {
+					_userWatcher.unwatch();
+				}
+				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+
+
+			private function apply(event:MouseEvent):void {
+				dispatchEvent(new Event("save"));
+				closeWin(null);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('drilldown', 'changeOwnerText')}" width="100%" />
+	<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true"
+							 prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}" />
+	
+	 <mx:ControlBar width="100%" horizontalAlign="right">
+		 <mx:Button label="{resourceManager.getString('drilldown', 'cancel')}" styleName="cancelBtnStyle"
+					click="closeWin(event)"/>
+		 <mx:VRule height="25" />
+		 <mx:Button label="{resourceManager.getString('drilldown', 'save')}" styleName="saveBtnStyle"
+					click="apply(event)"/>
+	 </mx:ControlBar>
+</containers:HelpTitleWindow>

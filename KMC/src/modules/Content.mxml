@@ -43,6 +43,7 @@
 			import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.view.EntryDetailsWin;
+			import com.kaltura.edw.view.window.SetOwnerWindow;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.events.FileUploadEvent;
@@ -85,6 +86,7 @@
 			import mx.core.Application;
 			import mx.core.IFlexDisplayObject;
 			import mx.core.UIComponent;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ResizeEvent;
@@ -847,6 +849,23 @@
 				return mpw;
 			}
 			
+			private function handleChangeOwnerEvents(e:Event):void {
+				switch (e.type) {
+					case "save":
+						// set entry owner for all selected entries
+						var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
+						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_ENTRIES_OWNER, new ArrayCollection(_model.selectedEntries));
+						kEvent.data = tgt.selectedUser.id;
+						kEvent.dispatch();
+						break;
+					case CloseEvent.CLOSE:
+						// close the popup
+						var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						break;
+				}
+			}
+			
 			private function handleManPlEvents(e:ManualPlaylistWindowEvent) :void {
 				var cgEvent:CairngormEvent;
 				switch (e.type) {
@@ -985,6 +1004,14 @@
 							break;
 						case WindowsStates.PREVIEW:
 							openPreviewEmbed();
+							break;
+						case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
+							currentPopUp = new SetOwnerWindow();
+							currentPopUp.addEventListener("save", handleChangeOwnerEvents, false, 0, true);
+							currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeOwnerEvents, false, 0, true);
+							(currentPopUp as SetOwnerWindow).kClient = _kc;
+//							(currentPopUp as SetOwnerWindow).entryData = _entryData;
+//							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
 							break;
 					}
 

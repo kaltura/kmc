@@ -2,6 +2,7 @@ package com.kaltura.edw.model.datapacks
 {
 	import com.kaltura.kmvc.model.IDataPack;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaUser;
 	
 	import mx.collections.ArrayCollection;
 	
@@ -63,5 +64,11 @@ package com.kaltura.edw.model.datapacks
 		 * list of categories the current entry is associated with
 		 */
 		public var entryCategories:ArrayCollection;
+		
+		
+		/**
+		 * the owner of the selected entry
+		 */		
+		public var selectedEntryOwner:KalturaUser;
 	}
 }

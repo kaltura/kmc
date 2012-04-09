@@ -14,6 +14,14 @@ package com.kaltura.kmc.modules.content.events {
 		public static const DELETE_ENTRIES:String = "content_deleteEntries";
 		
 		/**
+		 * set the owner of the given entries to the given user
+		 * event.data is userId
+		 * event.entries are entries to update
+		 */
+		public static const SET_ENTRIES_OWNER:String = "content_setEntriesOwner";
+		
+		
+		/**
 		 * add new entry. event.data is the entry to add
 		 * */
 		public static const ADD_ENTRY:String = "content_addEntry";

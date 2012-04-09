@@ -25,6 +25,7 @@ package com.kaltura.edw.model.types
 		public static const DOWNLOAD_WINDOW : String = "downloadWindow";
 		public static const PREVIEW : String = "preview";
 		public static const BULK_SETTINGS_WINDOW : String = "bulkSettingsWindow";
+		public static const CHANGE_ENTRY_OWNER_WINDOW : String = "changeEntryOwnerWindow";
 		
 		public static const SETTING_ACCESS_CONTROL_PROFILES_WINDOW : String = "settingACPsWindow";
 		public static const SETTING_SCHEDULING_WINDOW : String = "settingSchedulingWindow";
