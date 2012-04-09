@@ -9,6 +9,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.model.FilterModel;
@@ -20,7 +21,10 @@
 			[Bindable]
 			public var filterModel:FilterModel;
 			
-
+			[Bindable]
+			public var kClient:KalturaClient;
+			
+			
 			/**
 			 * container for the categories ids variable
 			 * */
@@ -70,6 +74,8 @@
 				 chunkedData="{filterModel.chunkedCategoriesLoad}"
 				 categories="{filterModel.categoriesMap}"
 				 dataProvider="{filterModel.categories}" />
+	<cat:CategoryAutocomplete kClient="{kClient}" width="100%"
+							  valueChange="{catTree.addFromAutoComplete(event)}"/>
 	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('drilldown', 'apply')}" click="button1_clickHandler(event)" />
 	</mx:ControlBar>
