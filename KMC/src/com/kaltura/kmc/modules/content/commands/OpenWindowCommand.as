@@ -22,10 +22,9 @@ package com.kaltura.kmc.modules.content.commands
 			switch(newState)
 			{
 				case WindowsStates.DOWNLOAD_WINDOW: 			
-				case WindowsStates.ADD_ADMIN_TAGS_WINDOW:
-				case WindowsStates.REMOVE_ADMIN_TAGS_WINDOW:
 				case WindowsStates.REMOVE_TAGS_WINDOW:
 				case WindowsStates.ADD_TAGS_WINDOW: 
+				case WindowsStates.REMOVE_CATEGORIES_WINDOW: 
 				case WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW:
 				case WindowsStates.SETTING_SCHEDULING_WINDOW:
 					if(_model.selectedEntries.length > 0)
