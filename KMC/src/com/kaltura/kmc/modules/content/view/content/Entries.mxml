@@ -127,20 +127,13 @@
 
 
 
-
-			private function setEntriesToolbar():void {
-				toolBar.removeController(toolBar.approveSelected);
-				toolBar.removeController(toolBar.rejectSelected);
-			}
-
-
 			public function loadEntries():void {
 				if (!searchBox.validateSearchText(true)) {
 					return;
 				}
 				if (paging.pageSize == 10) {
 					entryTable.rowCount = 10;
-					topContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10 + paging.height + toolBar.height;
+					topContainer.height = (entryTable.rowHeight * 10) + entryTable.headerHeight + 10 + paging.height;
 				}
 				else {
 					topContainer.percentHeight = 100;
@@ -165,23 +158,23 @@
 			}
 
 
-			/**
-			 * controller has selected all entries
-			 */
-			private function onSelectAllEntries(evt:Event):void {
-				entryTable.selectAll();
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-					new ArrayCollection(entryTable.selectedItems));
-				cgEvent.dispatch();
-			}
-
-
-			private function onDeselectAllEntries(evt:Event):void {
-				entryTable.deselectAll();
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-					new ArrayCollection(entryTable.selectedItems));
-				cgEvent.dispatch();
-			}
+//			/**
+//			 * controller has selected all entries
+//			 */
+//			private function onSelectAllEntries(evt:Event):void {
+//				entryTable.selectAll();
+//				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+//					new ArrayCollection(entryTable.selectedItems));
+//				cgEvent.dispatch();
+//			}
+//
+//
+//			private function onDeselectAllEntries(evt:Event):void {
+//				entryTable.deselectAll();
+//				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+//					new ArrayCollection(entryTable.selectedItems));
+//				cgEvent.dispatch();
+//			}
 
 
 			/**
@@ -261,14 +254,6 @@
 //			}
 
 
-			/**
-			 * create a new livestream entry
-			 * */
-			public function createNewLivestreamHandler(event:Event):void {
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
-				cgEvent.dispatch();
-			}
-
 
 
 			/**
@@ -313,7 +298,6 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				setEntriesToolbar();
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				BindingUtils.bindProperty(this, "showThumbnails", entryDetailsModel.getDataPack(PermissionsDataPack), "enableThumbsList");
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_STARTED, onGroupUploadStarted);
@@ -407,11 +391,6 @@
 								 getPageNum="gotoPageNum()" showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}"/>
 				
 			</mx:HBox>
-			<view:ControlToolBar id="toolBar" width="100%"
-								 selectAllEntries="onSelectAllEntries(event)"
-								 deselectAllEntries="onDeselectAllEntries(event)"
-								 createNewManualPlaylist="onNewManualPlaylist()"
-								 createNewLivestream="createNewLivestreamHandler(event)"/>
 		</mx:VBox>
 	</mx:HDividedBox>
 
