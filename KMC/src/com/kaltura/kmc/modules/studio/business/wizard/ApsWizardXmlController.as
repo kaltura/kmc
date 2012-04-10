@@ -44,10 +44,13 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 
 		
 		/**
-		 * get XMLList of all nodes that the string appears in their id
+		 * get XMLList of all nodes whose Id starts with given substring
+		 * @param xml	full player
+		 * @param idSubstring	the string to find
+		 * @reutrn list of matching nodes
 		 */
-		private function getElementsWithSubStringInId(xml:XML, idSubstring:String):XMLList {
-			return xml..descendants().(attribute("id").toString().indexOf(idSubstring) > -1);
+		private function getElementsWhereIdStartsWith(xml:XML, idSubstring:String):XMLList {
+			return xml..descendants().(attribute("id").toString().indexOf(idSubstring) == 0);
 		}
 
 
@@ -218,7 +221,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				// search for a matching item in the player and delete it (search in all screens)
 				var featureName:String = featureFormXml.attribute("id")[0].toString();
 				// get all related features, based on their ids. (i.e. fullscreen button in controller, start screen, hover, etc)
-				nonActivePlayerFeatures = getElementsWithSubStringInId(player, featureName);
+				nonActivePlayerFeatures = getElementsWhereIdStartsWith(player, featureName);
 				for each (var featureToDelete:XML in nonActivePlayerFeatures) {
 					var nameOfFeatureToDelete:String = featureToDelete.attribute("id").toString();
 					delete(player.descendants().(attribute("id") == nameOfFeatureToDelete)[0]);
@@ -275,7 +278,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				// get all parameters
 				var attributesToUpdate:XMLList = featureXml.descendants().(attribute("k_param").toString().length != 0 && attribute("applyTo").toString().length == 0);
 				// get the matching elements in the real player XML 
-				var playerElements:XMLList = getElementsWithSubStringInId(fullPlayerCopy, activeFeatureName);
+				var playerElements:XMLList = getElementsWhereIdStartsWith(fullPlayerCopy, activeFeatureName);
 
 				for each (element in playerElements) {
 					for each (param in attributesToUpdate) {
