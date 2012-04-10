@@ -25,48 +25,50 @@ package com.kaltura.kmc.modules {
 	import mx.events.ResourceEvent;
 	import mx.modules.Module;
 	import mx.resources.ResourceManager;
+	
+	// =====================================================
+	// events
+	// =====================================================
 
+	/**
+	 * Dispatched when the module is ready to take action.
+	 * @eventType flash.events.Event
+	 */
+	[Event(name="moduleReady", type="flash.events.Event")]
+	
+	/**
+	 * Dispatched when the module needs to navigate to another module.
+	 * @eventType com.kaltura.kmc.events.KmcNavigationEvent
+	 */
+	[Event(name="navigate", type="com.kaltura.kmc.events.KmcNavigationEvent")]
+
+	/**
+	 * Dispatched when the module encountered some error that prevents it from functioning.
+	 * @eventType com.kaltura.kmc.events.KmcErrorEvent
+	 */
+	[Event(name="error", type="com.kaltura.kmc.events.KmcErrorEvent")]
+
+	/**
+	 * Dispatched when user clicked a help link.
+	 * The <code>page</code> parameter is the anchor on help page.
+	 * @eventType com.kaltura.kmc.events.KmcHelpEvent
+	 */
+	[Event(name="help", type="com.kaltura.kmc.events.KmcHelpEvent")]
+
+	/**
+	 * Dispatched when module has finished saving necessary data and application can navigate
+	 * to a different module
+	 * @eventType flash.events.Event
+	 */
+	[Event(name="finishedSaving", type="flash.events.Event")]
+
+	
+	
 	/**
 	 * KmcModule is an abstract class that holds common functionalities of KMC modules.
 	 * */
 	public class KmcModule extends Module {
 		
-		
-		// =====================================================
-		// events
-		// =====================================================
-
-		/**
-		 * Dispatched when the module is ready to take action.
-		 * @eventType flash.events.Event
-		 */
-		[Event(name="moduleReady", type="flash.events.Event")]
-		
-		/**
-		 * Dispatched when the module needs to navigate to another module.
-		 * @eventType com.kaltura.kmc.events.KmcNavigationEvent
-		 */
-		[Event(name="navigate", type="com.kaltura.kmc.events.KmcNavigationEvent")]
-
-		/**
-		 * Dispatched when the module encountered some error that prevents it from functioning.
-		 * @eventType com.kaltura.kmc.events.KmcErrorEvent
-		 */
-		[Event(name="error", type="com.kaltura.kmc.events.KmcErrorEvent")]
-
-		/**
-		 * Dispatched when user clicked a help link.
-		 * The <code>page</code> parameter is the anchor on help page.
-		 * @eventType com.kaltura.kmc.events.KmcHelpEvent
-		 */
-		[Event(name="help", type="com.kaltura.kmc.events.KmcHelpEvent")]
-
-		/**
-		 * Dispatched when module has finished saving necessary data and application can navigate
-		 * to a different module
-		 * @eventType flash.events.Event
-		 */
-		[Event(name="finishedSaving", type="flash.events.Event")]
 
 		// =====================================================
 		// members
