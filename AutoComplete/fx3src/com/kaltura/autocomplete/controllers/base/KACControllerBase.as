@@ -45,6 +45,7 @@ package com.kaltura.autocomplete.controllers.base
 					
 					call.addEventListener(KalturaEvent.COMPLETE, result);
 					call.addEventListener(KalturaEvent.FAILED, fault);
+					call.queued = false;
 					_autoComp.notifySearching();
 					_pendingCall = call;
 					_client.post(call);
