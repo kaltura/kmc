@@ -14,6 +14,11 @@ package com.kaltura.kmc.modules.content.events {
 		public static const DELETE_ENTRIES:String = "content_deleteEntries";
 		
 		/**
+		 * get the categories to which the selected entries are assigned 
+		 */
+		public static const GET_SELECTED_ENTRIES_CATEGORIES:String = "content_getSelectedEntriesCategories";
+		
+		/**
 		 * set the owner of the given entries to the given user
 		 * event.data is userId
 		 * event.entries are entries to update

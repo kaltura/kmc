@@ -58,6 +58,8 @@
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
+			import flash.utils.setTimeout;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -202,6 +204,8 @@
 				_context = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				_entryData = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
+					
+				_catWatcher = BindingUtils.bindSetter(setCategoriesOnScreen , _entryData, ["entryCategories"]);
 				showEmbed = _context.showEmbedCode;
 				_landingPage = _context.landingPage;
 			}
@@ -374,14 +378,7 @@
 				if (_catWatcher) {
 					_catWatcher.unwatch();
 				} 
-				var curCustomData:SingleCustomData;
-				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
-					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
-					if (curCustomData) {
-						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
-						curCustomData.destroy();
-					}
-				}
+				
 			}
 			
 			
@@ -394,7 +391,14 @@
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
-				
+				var curCustomData:SingleCustomData;
+				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
+					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
+					if (curCustomData) {
+						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
+						curCustomData.destroy();
+					}
+				}
 			}
 			
 			
@@ -405,7 +409,7 @@
 				Security.allowDomain("*");
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.METADATA_PANEL);
 				
-				_catWatcher = BindingUtils.bindSetter(setCategoriesOnScreen , _entryData, ["entryCategories"]);
+				
 				
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 				
@@ -747,8 +751,8 @@
 				_profileNames = new ArrayCollection();
 				// header for entry metadata section in the dropdown
 				_profileNames.addItem(resourceManager.getString('drilldown', 'metadata'));
-				// remove old data and old binding
-				destroy();
+//				// remove old data and old binding
+//				destroy();
 				// remove custom datas, don't remove entry data box
 				while (editableBox.numChildren > 1) {
 					editableBox.removeChildAt(1);
@@ -855,10 +859,6 @@
 											 showRemoveIcon="true" allowMultipleSelection="true" labelField="name"
 											 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
 											 dropDownItemRenderer="{new ClassFactory(CategoryDropDownIR)}"/>
-					
-					<!--<utils:AutoComplete id='categoriesTextInput' width="{TEXT_WIDTH}" 
-										text="{selectedEntry.categories}" styleName="autoComplete"
-										dataProvider="{_entryData.categoriesFullNameList}"/>-->
 				</mx:HBox>
 				<mx:HBox id="offlineHolder" width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','offlineMessage')}" width="{LABEL_WIDTH}"

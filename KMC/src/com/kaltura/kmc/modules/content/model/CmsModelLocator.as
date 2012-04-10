@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.model {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import mx.collections.ArrayCollection;
 	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
 
@@ -159,6 +160,12 @@ package com.kaltura.kmc.modules.content.model {
 		 * (used for all windows except admin tags)
 		 */
 		public var selectedEntries:Array = new Array();
+		
+		
+		/**
+		 * all the categories to which the selected entries are assigned (||, not &&) 
+		 */
+		public var selectedEntriesCategories:ArrayCollection;
 
 		/**
 		 * current open window (popup) 
