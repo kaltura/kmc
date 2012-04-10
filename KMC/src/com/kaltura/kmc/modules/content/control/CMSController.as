@@ -49,6 +49,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(EntriesEvent.DELETE_ENTRIES, DeleteEntriesCommand);
 			addCommand(EntriesEvent.SET_ENTRIES_OWNER, SetEntriesOwnerCommand);
 			addCommand(EntriesEvent.GET_SELECTED_ENTRIES_CATEGORIES, ListEntriesCategoriesCommand);
+			addCommand(EntriesEvent.REMOVE_CATEGORIES_ENTRIES, RemoveCategoriesEntriesCommand);
 			//media Event
 			addCommand(EntriesEvent.ADD_ENTRY, AddMediaEntryCommand);
 

@@ -19,6 +19,12 @@ package com.kaltura.kmc.modules.content.events {
 		public static const GET_SELECTED_ENTRIES_CATEGORIES:String = "content_getSelectedEntriesCategories";
 		
 		/**
+		 * remove the given categories from the selected entries
+		 * event.data is categories to remove (KalturaCategory objects)
+		 */
+		public static const REMOVE_CATEGORIES_ENTRIES:String = "content_removeCategoriesEntries";
+		
+		/**
 		 * set the owner of the given entries to the given user
 		 * event.data is userId
 		 * event.entries are entries to update

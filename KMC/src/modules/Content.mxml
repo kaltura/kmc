@@ -57,6 +57,7 @@
 			import com.kaltura.kmc.modules.content.view.window.AddStream;
 			import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.DownloadWin;
+			import com.kaltura.kmc.modules.content.view.window.RemoveCategoriesWindow;
 			import com.kaltura.kmc.modules.content.view.window.RemoveTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.RulePlaylistWindow;
 			import com.kaltura.kmc.modules.content.view.window.SetAccessControlProfileWin;
@@ -865,6 +866,23 @@
 				}
 			}
 			
+			private function handleRemoveCategoriesEvents(e:Event):void {
+				switch (e.type) {
+					case "apply":
+//						// set entry owner for all selected entries
+//						var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
+//						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_ENTRIES_OWNER, new ArrayCollection(_model.selectedEntries));
+//						kEvent.data = tgt.selectedUser.id;
+//						kEvent.dispatch();
+						break;
+					case CloseEvent.CLOSE:
+						// close the popup
+						var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						break;
+				}
+			}
+			
 			private function handleManPlEvents(e:ManualPlaylistWindowEvent) :void {
 				var cgEvent:CairngormEvent;
 				switch (e.type) {
@@ -1011,6 +1029,14 @@
 							(currentPopUp as SetOwnerWindow).kClient = _kc;
 //							(currentPopUp as SetOwnerWindow).entryData = _entryData;
 //							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
+							break;
+						case WindowsStates.REMOVE_CATEGORIES_WINDOW:
+							currentPopUp = new RemoveCategoriesWindow();
+							currentPopUp.addEventListener("apply", handleRemoveCategoriesEvents, false, 0, true);
+							currentPopUp.addEventListener(CloseEvent.CLOSE, handleRemoveCategoriesEvents, false, 0, true);
+							(currentPopUp as RemoveCategoriesWindow).model = _model;
+//							(currentPopUp as RemoveCategoriesWindow).entryData = _entryData;
+//							(currentPopUp as RemoveCategoriesWindow).setUserById(_entryData.selectedEntry.userId);
 							break;
 					}
 
