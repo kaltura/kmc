@@ -42,6 +42,7 @@
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.edw.model.datapacks.FlavorsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.edw.view.CategoryDetailsWin;
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.view.window.SetOwnerWindow;
 			import com.kaltura.edw.vo.ListableVo;
@@ -1021,6 +1022,12 @@
 							break;
 						case WindowsStates.PREVIEW:
 							openPreviewEmbed();
+							break;
+						case WindowsStates.CATEGORY_DETAILS_WIMDOW:
+							var catDetails:CategoryDetailsWin;
+							currentPopUp = catDetails = new CategoryDetailsWin();
+							catDetails.filterModel = _model.filterModel;
+							catDetails.addEventListener(KedDataEvent.CLOSE_WINDOW, handleKedEvents, false, 0, true);
 							break;
 						case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
 							currentPopUp = new SetOwnerWindow();

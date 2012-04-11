@@ -21,6 +21,7 @@ package com.kaltura.edw.model.types
 		public static const CHANGE_ENTRY_OWNER_WINDOW : String = "changeEntryOwnerWindow";
 		public static const REMOVE_CATEGORIES_WINDOW : String = "removeCategoriesWindow";
 		
+		public static const CATEGORY_DETAILS_WIMDOW:String = "categoryDetailsWindow";
 		
 		public static const SETTING_ACCESS_CONTROL_PROFILES_WINDOW : String = "settingACPsWindow";
 		public static const SETTING_SCHEDULING_WINDOW : String = "settingSchedulingWindow";
