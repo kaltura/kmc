@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" height="40" width="100%"
-		 creationComplete="creationCompleteHandler(event)">
+		 creationComplete="creationCompleteHandler(event)" styleName="pagerTopBox">
 
 	<mx:Metadata>
 		
@@ -36,16 +36,19 @@
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
-			protected var rm:IResourceManager = ResourceManager.getInstance();
 			// locale for end/start button 
-			public var prevString:String = rm.getString('windows', 'prv');
-			public var nextString:String = rm.getString('windows', 'next');
+			public var prevString:String;
+			public var nextString:String;
 
-			public var firstString:String = rm.getString('windows', 'first');
-			public var lastString:String = rm.getString('windows', 'last');
+			public var firstString:String;
+			public var lastString:String;
 
 			[Bindable]
-			public var rowsComboLabel:String = rm.getString('windows', 'rowsInPage');
+			public var rowsComboLabel:String;
+			
+			[Bindable]
+			private var _outOfText:String;
+			
 
 			[Bindable]
 			protected var _visible:Boolean = false;
@@ -74,15 +77,18 @@
 			 * Total items count. The division of _totalCount with _pageSize will output the _totalPageCount
 			 */
 			protected var _totalCount:int;
+		
 			/**
 			 * Total items in page to view
 			 */
 			protected var _pageSize:int = 10;
+		
 			/**
 			 * How many pages to show from each side of the selected page.
 			 * IE value 2 with selected page 4 will show 2 3 4 5 6, 2 item in each side
 			 */
 			protected var _sideLinkCount:int = 2;
+			
 			/**
 			 * in case of page 1 and last page, to show only half of the list or full
 			 * IE  doubleEnd = true with selected 1 would show 12345 and with false 123
@@ -91,10 +97,13 @@
 
 			[Bindable]
 			public var kalturaFilterPager:KalturaFilterPager;
+			
 			[Bindable]
 			public var rowsInPage:Array = [10, 25, 50, 100, 250, 500];
+			
 			[Bindable]
 			public var showRowsInPage:Boolean = true;
+			
 			public var defaultPageSize:int = 10;
 
 
@@ -116,8 +125,11 @@
 			}
 
 
-			// the total count of the entries that the pager represent
+			
 			[Bindable]
+			/**
+			 * the total count of the entries that the pager represent
+			 * */
 			public function get totalCount():int {
 				return _totalCount;
 			}
@@ -129,6 +141,7 @@
 
 				_totalCount = value;
 				_totalPageCount = Math.ceil(_totalCount / _pageSize);
+				
 				updatePaging();
 			}
 
@@ -258,7 +271,14 @@
 					btn.addEventListener(MouseEvent.CLICK, last);
 					pagingContainer.addChild(btn);
 				}
-
+				
+				// out-of text:
+				var firstItem:int = (kalturaFilterPager.pageIndex-1) * kalturaFilterPager.pageSize + 1;
+				var lastItem:int = kalturaFilterPager.pageIndex * kalturaFilterPager.pageSize;
+				if (lastItem > _totalCount) {
+					lastItem = _totalCount;
+				}
+				_outOfText = resourceManager.getString('windows', 'outOfText', [firstItem, lastItem, _totalCount]);
 
 			}
 
@@ -343,10 +363,19 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				// pager:
 				kalturaFilterPager = new KalturaFilterPager();
 				kalturaFilterPager.pageIndex = 1;
 				kalturaFilterPager.pageSize = pageSize;
-				styleName = "pagerTopBox";
+				
+				// texts:
+				prevString = resourceManager.getString('windows', 'prv');
+				nextString = resourceManager.getString('windows', 'next');
+				firstString = resourceManager.getString('windows', 'first');
+				lastString = resourceManager.getString('windows', 'last');
+				rowsComboLabel = resourceManager.getString('windows', 'rowsInPage');
+
+				// page size
 				var selectedFromSO:Boolean = true;
 				var selectedIndex:int;
 				// if page size selection available, used saved value:
@@ -373,10 +402,18 @@
 					rowInPageCb.selectedIndex = selectedIndex;
 					resultSizeChange();
 				}
+				
+				
 			}
 		]]>
 	</mx:Script>
+	<mx:Spacer width="100%" />
 	<mx:HBox id="pagingContainer" height="100%" styleName="pagerBox"/>
+	
+	<!-- out of -->
+	<mx:Label text="{_outOfText}" styleName="selectRowsLable"/>
+	<mx:Spacer width="100%" />
+	<!-- rows in page -->
 	<mx:HBox visible="{_visible}" includeInLayout="{_visible}" verticalAlign="middle">
 		<mx:Label id="rowInPageLbl" text="{rowsComboLabel}" visible="{showRowsInPage}" styleName="selectRowsLable"/>
 		<mx:ComboBox id="rowInPageCb" visible="{showRowsInPage}" includeInLayout="{showRowsInPage}" styleName="boldComboText"
