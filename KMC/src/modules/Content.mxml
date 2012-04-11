@@ -44,6 +44,7 @@
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.view.CategoryDetailsWin;
 			import com.kaltura.edw.view.EntryDetailsWin;
+			import com.kaltura.edw.view.window.CategoryBrowser;
 			import com.kaltura.edw.view.window.SetOwnerWindow;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.AccessControlProfileEvent;
@@ -867,14 +868,14 @@
 				}
 			}
 			
-			private function handleRemoveCategoriesEvents(e:Event):void {
+			private function handleAddCategoriesEvents(e:Event):void {
 				switch (e.type) {
 					case "apply":
-//						// set entry owner for all selected entries
-//						var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
-//						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_ENTRIES_OWNER, new ArrayCollection(_model.selectedEntries));
-//						kEvent.data = tgt.selectedUser.id;
-//						kEvent.dispatch();
+						// add categories to all selected entries
+						var tgt:CategoryBrowser = e.target as CategoryBrowser;
+						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_CATEGORIES_ENTRIES, new ArrayCollection(_model.selectedEntries));
+						kEvent.data = tgt.getCategories();
+						kEvent.dispatch();
 						break;
 					case CloseEvent.CLOSE:
 						// close the popup
@@ -883,6 +884,27 @@
 						break;
 				}
 			}
+			
+			
+			private function handleRemoveCategoriesEvents(e:Event):void {
+				switch (e.type) {
+//					case "apply": (handled inside the window)
+//						// set entry owner for all selected entries
+//						var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
+//						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_ENTRIES_OWNER, new ArrayCollection(_model.selectedEntries));
+//						kEvent.data = tgt.selectedUser.id;
+//						kEvent.dispatch();
+//						break;
+					case CloseEvent.CLOSE:
+						// close the popup
+						var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						break;
+				}
+			}
+			
+			
+			
 			
 			private function handleManPlEvents(e:ManualPlaylistWindowEvent) :void {
 				var cgEvent:CairngormEvent;
@@ -1037,13 +1059,18 @@
 //							(currentPopUp as SetOwnerWindow).entryData = _entryData;
 //							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
 							break;
+						case WindowsStates.ADD_CATEGORIES_WINDOW:
+							currentPopUp = new CategoryBrowser();
+							currentPopUp.addEventListener("apply", handleAddCategoriesEvents, false, 0, true);
+							currentPopUp.addEventListener(CloseEvent.CLOSE, handleAddCategoriesEvents, false, 0, true);
+							(currentPopUp as CategoryBrowser).filterModel = _model.filterModel;
+							(currentPopUp as CategoryBrowser).kClient = _kc;
+							break;
 						case WindowsStates.REMOVE_CATEGORIES_WINDOW:
 							currentPopUp = new RemoveCategoriesWindow();
 							currentPopUp.addEventListener("apply", handleRemoveCategoriesEvents, false, 0, true);
 							currentPopUp.addEventListener(CloseEvent.CLOSE, handleRemoveCategoriesEvents, false, 0, true);
 							(currentPopUp as RemoveCategoriesWindow).model = _model;
-//							(currentPopUp as RemoveCategoriesWindow).entryData = _entryData;
-//							(currentPopUp as RemoveCategoriesWindow).setUserById(_entryData.selectedEntry.userId);
 							break;
 					}
 

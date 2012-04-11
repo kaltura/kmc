@@ -19,6 +19,12 @@ package com.kaltura.kmc.modules.content.events {
 		public static const GET_SELECTED_ENTRIES_CATEGORIES:String = "content_getSelectedEntriesCategories";
 		
 		/**
+		 * add the given categories to the selected entries
+		 * event.data is categories to add (KalturaCategory objects)
+		 */
+		public static const ADD_CATEGORIES_ENTRIES:String = "content_addCategoriesEntries";
+		
+		/**
 		 * remove the given categories from the selected entries
 		 * event.data is categories to remove (KalturaCategory objects)
 		 */
