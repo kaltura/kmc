@@ -640,12 +640,8 @@
 				var catBrs:CategoryBrowser = new CategoryBrowser();
 				catBrs.filterModel = (_dpModel.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 				catBrs.kClient = _context.kc;
-				var cats:ArrayCollection = catComplete.selectedItems;
-				var catids:String = '';
-				for each (var kCat:KalturaCategory in cats) {
-					catids += kCat.id + ",";
-				}
-				catBrs.catids = catids;
+				catBrs.showText = false;
+				catBrs.setCategories(catComplete.selectedItems.source);
 				catBrs.addEventListener(Event.CLOSE, closeCatPopup);
 				catBrs.addEventListener("apply", setCatsToAutocomplete);
 				
@@ -659,11 +655,11 @@
 			 * */
 			private function setCatsToAutocomplete(e:Event):void {
 				var tgt:CategoryBrowser = e.target as CategoryBrowser;
-				var cats:Array = tgt.getCategories(); //categoryVo objects
-				var cat:CategoryVO;
+				var cats:Array = tgt.getCategories(); //KalturaCategory objects
+				var cat:KalturaCategory;
 				var kCats:Array = [];
 				for each (cat in cats) {
-					kCats.push(cat.category);
+					kCats.push(cat);
 				}
 				catComplete.selectedItems = new ArrayCollection(kCats);
 			}
@@ -845,9 +841,6 @@
 					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
 											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
 											 labelField="tag" change="tagsComplete_changeHandler(event)" />
-					
-					<!--<mx:TextInput id="tagsTi" width="{TEXT_WIDTH}" text="{selectedEntry.tags}"
-								  change="{selectedEntry.tags = event.target.text}" styleName="drillDownSubLabel"/>-->
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:HBox styleName="noPadding" width="{LABEL_WIDTH}" horizontalScrollPolicy="off" horizontalGap="2">

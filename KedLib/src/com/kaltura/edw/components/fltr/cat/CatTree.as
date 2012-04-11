@@ -130,13 +130,23 @@ package com.kaltura.edw.components.fltr.cat
 		 * */
 		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
 			var cat:KalturaCategory = event.data as KalturaCategory;
-			if (categories.containsKey(cat.id.toString())) {
-				var catvo:CategoryVO = categories.getValue(cat.id.toString()) as CategoryVO;
+			addByCatId(cat.id);
+		}
+		
+		
+		/**
+		 * 
+		 * @param catid
+		 * 
+		 */
+		public function addByCatId(catid:int):void {
+			if (categories.containsKey(catid.toString())) {
+				var catvo:CategoryVO = categories.getValue(catid.toString()) as CategoryVO;
 				handleSelectionChange(catvo);
 			}
 			else {
 				// the part of the tree that holsd this category was not yet loaded
-				_initialFilter = cat.id + "," + _initialFilter;
+				_initialFilter = catid + "," + _initialFilter;
 			}
 		}
 		

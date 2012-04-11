@@ -20,6 +20,7 @@
 			import mx.core.mx_internal;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.messaging.channels.StreamingAMFChannel;
 			
 			[Bindable]
 			public var filterModel:FilterModel;
@@ -27,33 +28,30 @@
 			[Bindable]
 			public var kClient:KalturaClient;
 			
+			[Bindable]
+			public var showText:Boolean = true;
 			
-			/**
-			 * container for the categories ids variable
-			 * */
-			private var _catids:String;
+			private var _categories:Array;
 			
-			/**
-			 * ids of selected categories (comma seperated list)
-			 * */
-			public function set catids(value:String):void {
-				if (catTree) {
-					catTree.filter = value;
+			public function setCategories(value:Array):void {
+				if (catComplete) {
+					catComplete.selectedItems = new ArrayCollection(value);
+					var catids:String = '';
+					for each (var kCat:KalturaCategory in value) {
+						catids += kCat.id + ",";
+					}
+					catTree.filter = catids;
 				}
 				else {
-					_catids = value;
+					_categories = value;
 				}
-			}
-			
-			public function get catids():String {
-				return catTree.filter.toString();
 			}
 			
 			/**
 			 * get list of selected categories
 			 * */
 			public function getCategories():Array {
-				return catTree.getSelectedCategories();
+				return catComplete.selectedItems.source;
 			}
 
 			protected function button1_clickHandler(event:MouseEvent):void {
@@ -64,9 +62,9 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				if (_catids) {
-					catids = _catids;
-					_catids = null;
+				if (_categories) {
+					setCategories(_categories);
+					_categories = null;
 				}
 			}
 
@@ -89,13 +87,14 @@
 						fromAC.addItem(catvo.category);
 					}
 				}
-				// set to catComplet
-				catComplete.selectedItems = fromAC;
 			}
 
 		]]>
 	</mx:Script>
-	<cat:CategoryAutocomplete id="catComplete" kClient="{kClient}" width="100%" />
+	<cat:CategoryAutocomplete id="catComplete" kClient="{kClient}" width="100%" height="60" 
+							  visible="{showText}" includeInLayout="{showText}"
+							  valueChange="{catTree.addFromAutoComplete(event)}"
+							  keepValues="true"/>
 	<cat:CatTree id="catTree" styleName="categoriesTree" width="100%" height="100%" 
 				 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}"
 				 chunkedData="{filterModel.chunkedCategoriesLoad}"
