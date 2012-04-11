@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		 * reloads data 
 		 */		
 		protected function refresh():void {
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
 			getCategoriesList.dispatch();
 //			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.CATEGORY_CHANGED));
 			var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );

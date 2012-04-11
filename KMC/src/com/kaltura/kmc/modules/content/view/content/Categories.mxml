@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
+		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" 
+		 xmlns:categories="com.kaltura.kmc.modules.content.view.content.categories.*" 
+		 xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*" 
+		 xmlns:controls="com.kaltura.controls.*" 
+		 xmlns:filter="com.kaltura.kmc.modules.content.view.content.categories.filter.*"
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.kmvc.model.KMvCModel;
+			import com.kaltura.types.KalturaCategoryOrderBy;
+			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaCategoryFilter;
+			
+			import mx.events.FlexEvent;
+
+			[Bindable]
+			/**
+			 * screen data
+			 * */
+			public var categoriesModel:CategoriesModel;
+			
+			[Bindable]
+			/**
+			 * filtering data
+			 * */
+			public var filterModel:FilterModel;
+			
+			[Bindable]
+			/**
+			 * entries-related data
+			 * */
+			public var entryDetailsModel:KMvCModel;
+			
+
+			/**
+			 * initialize the panel.
+			 * @param initFilter	filter for initial entry loading. (not relevant for this panel)
+			 * */
+			public function init(initFilter:KalturaBaseEntryFilter = null):void {
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
+				//init as 10 lines 
+//				if (initFilter && initFilter is KalturaMediaEntryFilter) {
+//					filter.kalturaFilter = initFilter as KalturaMediaEntryFilter;
+//				}
+				filter.kalturaFilter = new KalturaCategoryFilter();
+//TODO if no other permissions we need to load				loadFilterData();
+				loadCategories();
+			}
+			
+			private function loadCategories():void {
+				// dispatch event that will load data according to screen filter
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				filter.kalturaFilter.orderBy = categoriesTable.orderBy;
+				cgEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager];
+				cgEvent.dispatch();
+			}
+			
+			
+			/**
+			 * This is a new search called by an action on the filter vo
+			 */
+			private function newSearchFromFilter():void {
+				paging.selectedPage = 1;
+				loadCategories();
+			}
+
+
+
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'entries')}" styleName="filterTitleHeader" height="60"/>
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{filter.width}" height="{pageLabel.height}"
+							 attribute="freeText" />
+		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
+							   dataProvider="{filter.indicators}"
+							   boxClicked="filter.removeFilter(event.data)"/>
+		<mx:LinkButton click="loadCategories()" label="{resourceManager.getString('cms','refresh')}"
+					   styleName="recycleIcon"/>
+	</mx:HBox>
+	<mx:HBox styleName="noPadding" horizontalGap="0" width="100%" height="100%">
+		<mx:HDividedBox id="topContainer" width="100%" height="100%">
+			<filter:CategoriesFilter id="filter" height="100%" width="245"  
+								freeTextSearch="{searchBox}" filterModel="{filterModel}"
+								context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
+								filterChanged="newSearchFromFilter()"/>
+			
+			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
+				<categories:CategoriesTable id="categoriesTable" rowCount="10" width="100%" height="100%"
+							   dataProvider="{categoriesModel.categoriesList}" 
+							   orderByChanged="loadCategories()"/>
+				<!-- selectionChanged="actionsManager.itemClickHandler(event)"
+				showDetails="actionsManager.showEntryDetailsHandler(event)" -->
+				
+				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" />
+					
+					<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{categoriesModel.totalCategories}"
+									 rowsInPageChange="loadCategories()" nextPage="loadCategories()" prvPage="loadCategories()"
+									 getPageNum="loadCategories()" showRowsInPage="true" defaultPageSize="50"/>
+					
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HDividedBox>
+		<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
+			<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
+					   buttonMode="true" 
+					   styleName="listActionButton" visible="false" />
+			<mx:Button id="addRuleBasedPlaylistBtn" label="{resourceManager.getString('cms', 'addRuleBasedPlaylist')}" 
+					   buttonMode="true" 
+					   styleName="listActionButton" visible="false" />
+		</mx:VBox>
+	</mx:HBox>
+</mx:VBox>

@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;
+	import com.kaltura.kmc.modules.content.commands.cat.*;
 	import com.kaltura.kmc.modules.content.commands.dropfolder.*;
 	import com.kaltura.kmc.modules.content.events.*;
 
@@ -117,6 +118,10 @@ package com.kaltura.kmc.modules.content.control {
 
 			// things that come from the EDW
 			addCommand(UpdateEntryEvent.UPDATE_ENTRY_IN_LIST, UpdateEntryInListCommand);
+			
+			
+			// categories
+			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
 			
 		}
 	}

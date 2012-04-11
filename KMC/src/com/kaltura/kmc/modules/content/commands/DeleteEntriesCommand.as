@@ -165,8 +165,8 @@ package com.kaltura.kmc.modules.content.commands {
 			}
 
 
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-			getCategoriesList.dispatch();
+//			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
+//			getCategoriesList.dispatch();
 		}
 	}
 }

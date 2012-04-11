@@ -1,20 +1,12 @@
 package com.kaltura.kmc.modules.content.view.controls.bulkactions
 {
-	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.edw.model.types.WindowsStates;
-	import com.kaltura.kmc.modules.content.events.WindowEvent;
-	
 	import flash.events.Event;
 	
 	import mx.events.MenuEvent;
 	
-
-	[Event(name="approveEntries", type="flash.events.Event")] 
-	
 	[Event(name="rejectEntries", type="flash.events.Event")]
 	
-	public class BulkModerationActionsMenu extends BulkEntryActionsMenu {
-		
+	public class BulkCategoryActionsMenu extends BulkEntryActionsMenu {
 		
 		override protected function createMenu():void {
 			actions = [];

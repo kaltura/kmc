@@ -54,11 +54,7 @@ package com.kaltura.kmc.modules.content.commands
 			var er:KalturaError = (data as KalturaEvent).error;
 			var rm:IResourceManager = ResourceManager.getInstance();
 			if (er) {
-				str = rm.getString('cms', er.errorCode);
-				if (!str) {
-					str = er.errorMsg;
-				} 
-				Alert.show(str, rm.getString('cms', 'error'));
+				Alert.show(getErrorText(er), rm.getString('cms', 'error'));
 				return;
 			}
 			

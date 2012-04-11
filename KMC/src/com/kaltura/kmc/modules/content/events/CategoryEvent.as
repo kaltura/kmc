@@ -4,7 +4,15 @@ package com.kaltura.kmc.modules.content.events
 
 	public class CategoryEvent extends CairngormEvent
 	{
+		
+		
+		/**
+		 * list categories to show in categories screen 
+		 * event.data is [filter, pager]
+		 */
 		public static const LIST_CATEGORIES : String = "content_listCategories";
+		
+		
 		public static const UPDATE_CATEGORY : String = "content_updateCategory";
 		public static const DELETE_CATEGORY : String = "content_deleteCategory";
 		public static const ADD_CATEGORY    : String = "content_addCategory";

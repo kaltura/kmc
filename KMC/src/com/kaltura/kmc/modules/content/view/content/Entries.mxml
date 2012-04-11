@@ -10,7 +10,8 @@
 		 xmlns:business="com.kaltura.kmc.modules.content.business.*"
 		 xmlns:et="com.kaltura.edw.components.et.*" 
 		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
-		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
+		 xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" 
+		 xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -152,10 +153,6 @@
 			}
 
 
-			//paging
-			private function gotoPage():void {
-				loadEntries();
-			}
 
 
 //			/**
@@ -202,7 +199,6 @@
 			 * This is a new search called by an action on the filter vo
 			 */
 			private function newSearchhFromFilter():void {
-				paging.kalturaFilterPager.pageIndex = 1;
 				paging.selectedPage = 1;
 				loadEntries();
 			}
@@ -236,7 +232,7 @@
 
 			}
 
-//	on he fly rule based playlist creation is cancelled for Falcon
+//	on the fly rule based playlist creation is cancelled for Falcon
 //			/**
 //			 * Create a new ruled based playlist based on current filter
 //			 */
@@ -269,7 +265,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>Show Rows");
-				gotoPage()
+				loadEntries();
 			}
 
 
@@ -277,7 +273,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.NEXT_PAGE, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>NextPage/Page" + paging.selectedPage);
-				gotoPage()
+				loadEntries();
 			}
 
 
@@ -285,7 +281,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PREV_PAGE, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>PrevPage/Page" + paging.selectedPage);
-				gotoPage()
+				loadEntries();
 			}
 
 
@@ -293,7 +289,7 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE_NUM, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
 					"content>GoToPage/Page" + paging.selectedPage);
-				gotoPage()
+				loadEntries();
 			}
 
 

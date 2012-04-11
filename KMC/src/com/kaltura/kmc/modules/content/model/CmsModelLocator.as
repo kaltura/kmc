@@ -99,6 +99,11 @@ package com.kaltura.kmc.modules.content.model {
 		public var dropFolderModel:DropFolderModel;
 		
 		/**
+		 * data that is used by the categories screen  
+		 */		
+		public var categoriesModel:CategoriesModel;
+		
+		/**
 		 * placeholder for data received via showSubtab().
 		 * when putting things on this object one should make sure one doesn't override 
 		 * irrelevant vars (i.e., don't change the object, add / remove attributes). 
@@ -260,6 +265,7 @@ package com.kaltura.kmc.modules.content.model {
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
 			dropFolderModel = new DropFolderModel();
+			categoriesModel = new CategoriesModel();
 			
 			bulkUploadModel = new BulkUploadModel();
 			bulkUploadModel.bulkUploadFilterPager = new KalturaFilterPager();

@@ -128,9 +128,6 @@ package com.kaltura.kmc.modules.content.commands {
 				mr.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(mr);
 				
-				// update categories contents
-				var updateCategoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				updateCategoriesEvent.dispatch();
 			}
 		}
 

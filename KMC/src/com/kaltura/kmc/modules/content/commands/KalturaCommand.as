@@ -73,5 +73,17 @@ package com.kaltura.kmc.modules.content.commands {
 		}
 
 
+		/**
+		 * get localized error text (from cms bundle) if any, or server error. 
+		 * @param er	the error to parse
+		 * @return 		possible localised error message
+		 */
+		protected function getErrorText(er:KalturaError):String {
+			var str:String = ResourceManager.getInstance().getString('cms', er.errorCode);
+			if (!str) {
+				str = er.errorMsg;
+			} 
+			return str;
+		}
 	}
 }

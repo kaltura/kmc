@@ -72,9 +72,6 @@ package com.kaltura.kmc.modules.content.commands
 			var searchEvent : SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
 			KedController.getInstance().dispatch(searchEvent);
 			
-			var categoriesEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-			categoriesEvent.dispatch();
-			
 
 			//dispatching - single dispatch for each entry
 			if(moderationType)

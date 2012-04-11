@@ -34,7 +34,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			_model.decreaseLoadCounter();
 			Alert.show(ResourceManager.getInstance().getString('cms', 'categoryDeleteDoneMsg'));
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
 			getCategoriesList.dispatch();
 			
 			
