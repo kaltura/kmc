@@ -1,10 +1,11 @@
-package com.kaltura.edw.components.fltr.panels
+package com.kaltura.kmc.modules.content.view.content.dropfolder
 {
 	import com.kaltura.vo.KalturaDropFolder;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Button;
 	import mx.events.FlexEvent;
+	import com.kaltura.edw.components.fltr.panels.AdditionalFilter;
 
 	public class DropFoldersFilter extends AdditionalFilter {
 		
