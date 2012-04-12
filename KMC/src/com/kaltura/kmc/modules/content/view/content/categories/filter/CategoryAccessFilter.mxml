@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+				 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+				 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaPrivacyType;
+			
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, publicBtn, authorisedBtn, membersBtn];
+				friendlyName = resourceManager.getString('filter', 'accessTooltip');
+			}
+			
+			override public function get filter():Object {
+				var accessString:String = "";
+				//if non of the items are selected or all selected
+				if ((publicBtn.selected && authorisedBtn.selected && membersBtn.selected) 
+					|| (!publicBtn.selected && !authorisedBtn.selected && !membersBtn.selected)) {
+					accessString = "";
+				}
+				else {
+					if (publicBtn.selected) {
+						accessString += KalturaPrivacyType.ALL + ",";
+					}
+					if (authorisedBtn.selected) {
+						accessString += KalturaPrivacyType.AUTHENTICATED_USERS + ",";
+					}
+					if (membersBtn.selected) {
+						accessString += KalturaPrivacyType.MEMBERS_ONLY + ",";
+					}
+					//remove last , 
+					accessString = accessString.slice(0, accessString.length - 1);
+				}
+				return accessString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					publicBtn.selected = false;
+					authorisedBtn.selected = false;
+					membersBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaPrivacyType.ALL:
+								publicBtn.selected = true;
+								break;
+							
+							case KalturaPrivacyType.AUTHENTICATED_USERS:
+								authorisedBtn.selected = true;
+								break;
+							
+							case KalturaPrivacyType.MEMBERS_ONLY:
+								membersBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'accessAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="publicBtn" width="100%" label="{resourceManager.getString('filter', 'accessPublicBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="authorisedBtn" width="100%" label="{resourceManager.getString('filter', 'accessAuthorisedBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="membersBtn" width="100%" label="{resourceManager.getString('filter', 'accessMembersBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

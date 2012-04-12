@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaAppearInListType;
+			
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, hasBtn, noBtn];
+				friendlyName = resourceManager.getString('filter', 'membersTooltip');
+			}
+			
+			override public function get filter():Object {
+				var accessString:String = "";
+				//if non of the items are selected or all selected
+				if ((hasBtn.selected && noBtn.selected ) 
+					|| (!hasBtn.selected && !noBtn.selected)) {
+					accessString = "";
+				}
+				else {
+					if (hasBtn.selected) {
+						accessString += KalturaAppearInListType.CATEGORY_MEMBERS_ONLY + ",";
+					}
+					if (noBtn.selected) {
+						accessString += KalturaAppearInListType.PARTNER_ONLY + ",";
+					}
+					//remove last , 
+					accessString = accessString.slice(0, accessString.length - 1);
+				}
+				return accessString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					hasBtn.selected = false;
+					noBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaAppearInListType.CATEGORY_MEMBERS_ONLY:
+								hasBtn.selected = true;
+								break;
+							
+							case KalturaAppearInListType.PARTNER_ONLY:
+								noBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'membersAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="hasBtn" width="100%" label="{resourceManager.getString('filter', 'membersHasMembersBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="noBtn" width="100%" label="{resourceManager.getString('filter', 'membersNoMembers')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

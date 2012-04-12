@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaAppearInListType;
+			
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, listedBtn, unlistedBtn];
+				friendlyName = resourceManager.getString('filter', 'listingTooltip');
+			}
+			
+			override public function get filter():Object {
+				var accessString:String = "";
+				//if non of the items are selected or all selected
+				if ((listedBtn.selected && unlistedBtn.selected ) 
+					|| (!listedBtn.selected && !unlistedBtn.selected)) {
+					accessString = "";
+				}
+				else {
+					if (listedBtn.selected) {
+						accessString += KalturaAppearInListType.CATEGORY_MEMBERS_ONLY + ",";
+					}
+					if (unlistedBtn.selected) {
+						accessString += KalturaAppearInListType.PARTNER_ONLY + ",";
+					}
+					//remove last , 
+					accessString = accessString.slice(0, accessString.length - 1);
+				}
+				return accessString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					listedBtn.selected = false;
+					unlistedBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaAppearInListType.CATEGORY_MEMBERS_ONLY:
+								listedBtn.selected = true;
+								break;
+							
+							case KalturaAppearInListType.PARTNER_ONLY:
+								unlistedBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'listingAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="listedBtn" width="100%" label="{resourceManager.getString('filter', 'listingListedBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="unlistedBtn" width="100%" label="{resourceManager.getString('filter', 'listingUnlistedBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>
