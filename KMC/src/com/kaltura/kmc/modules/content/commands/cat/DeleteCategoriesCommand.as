@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
 	import mx.resources.IResourceManager;
@@ -20,8 +21,16 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			_model.increaseLoadCounter();
 		 	var mr:MultiRequest = new MultiRequest();
-			for each (var id:int in event.data)
-			{
+			var ids:Array = event.data as Array;
+			if (!ids) {
+				// get from model
+				ids = [];
+				for each (var kCat:KalturaCategory in _model.categoriesModel.selectedCategories) {
+					ids.push(kCat.id);
+				}
+			}
+			
+			for each (var id:int in ids) {
 				var deleteCategory:CategoryDelete = new CategoryDelete(id);
 				mr.addAction(deleteCategory);
 			}

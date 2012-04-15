@@ -1,10 +1,13 @@
 package com.kaltura.kmc.modules.content.view.controls.bulkactions
 {
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	
 	import flash.events.Event;
 	
 	import mx.events.MenuEvent;
 	
-	[Event(name="rejectEntries", type="flash.events.Event")]
+	[Event(name="setCategoriesAccess", type="flash.events.Event")]
+	[Event(name="setCategoriesListing", type="flash.events.Event")]
 	
 	public class BulkCategoryActionsMenu extends BulkEntryActionsMenu {
 		
@@ -18,13 +21,18 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			actions.push(topLevel);
 			
 			var mi:MenuItemVo = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'rejectSelected');
-			mi.data = "reject";
+			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');
+			mi.data = "delete";
 			topLevel.children.push(mi);
 			
 			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'approveSelected');
-			mi.data = "approve";
+			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
+			mi.data = "changeAccess";
+			topLevel.children.push(mi);
+			
+			mi = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+			mi.data = "changeListing";
 			topLevel.children.push(mi);
 			
 			
@@ -33,12 +41,17 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 		
 		override protected function menu_itemClickHandler(event:MenuEvent):void {
 			switch (event.item.data) {
-				case "reject":
-					dispatchEvent(new Event("rejectEntries"));
+				case "delete":
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
+					cgEvent.dispatch();
 					break;
 				
-				case "approve":
-					dispatchEvent(new Event("approveEntries"));
+				case "changeAccess":
+					dispatchEvent(new Event("setCategoriesAccess"));
+					break;
+				
+				case "changeListing":
+					dispatchEvent(new Event("setCategoriesListing"));
 					break;
 			}
 		}
