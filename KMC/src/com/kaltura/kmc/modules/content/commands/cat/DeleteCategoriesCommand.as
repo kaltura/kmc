@@ -3,10 +3,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryDelete;
+	import com.kaltura.edw.control.KedController;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.edw.control.KedController;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	
 	import mx.controls.Alert;
@@ -34,13 +34,11 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			_model.decreaseLoadCounter();
 			Alert.show(ResourceManager.getInstance().getString('cms', 'categoryDeleteDoneMsg'));
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
-			getCategoriesList.dispatch();
+//			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
+//			getCategoriesList.dispatch();
 			
-			
-//			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.CATEGORY_CHANGED));
-			var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
-			KedController.getInstance().dispatch(searchEvent);
+			var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			cgEvent.dispatch();
 		}
 	}
 }

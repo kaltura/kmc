@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
+		 implements="mx.controls.listClasses.IDropInListItemRenderer">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.et.EntryTable;
+			import com.kaltura.edw.components.et.business.EntryTableActions;
+			import com.kaltura.kmc.modules.content.view.content.categories.CategoriesTableActions;
+			
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.listClasses.IDropInListItemRenderer;
+			import mx.events.ListEvent;
+			
+			
+			
+			
+			[Bindable] 
+			/**
+			 * Internal variable for the property value. 
+			 * */
+			private var _listData:BaseListData;
+			
+			[Bindable("dataChange")]
+			/**
+			 * Define the getter method and make the listData property bindable.
+			 * */
+			public function get listData():BaseListData
+			{
+				return _listData;
+			}
+			
+			/**
+			 * Define the setter method,
+			 * */
+			public function set listData(value:BaseListData):void
+			{
+				_listData = value;
+			}
+
+			[Bindable]
+			/**
+			 * dp for actions drop down
+			 * */
+			public static var actions:Array = [CategoriesTableActions.EDIT, CategoriesTableActions.DELETE, CategoriesTableActions.VIEW_ENTRIES, CategoriesTableActions.MOVE];
+			
+			
+			private function getLabel(item:Object):String {
+				return resourceManager.getString('cms', item.toString());
+			}
+			
+			protected function combobox1_changeHandler(event:ListEvent):void {
+				dispatchEvent(new Event(dropdown.selectedItem.toString(), true));
+				dropdown.selectedIndex = -1;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1"
+				 prompt="{resourceManager.getString('cms', 'selectActionLabel')}"
+				 change="combobox1_changeHandler(event)" dataProvider="{actions}" labelFunction="getLabel"/>
+</mx:HBox>

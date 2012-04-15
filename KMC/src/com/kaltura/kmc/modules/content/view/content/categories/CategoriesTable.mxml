@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowHeight="36"
+			 creationComplete="datagrid1_creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="orderByChanged", type="flash.events.Event")] 
 		[Event(name="selectionChanged", type="flash.events.Event")] 
@@ -7,7 +8,16 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.edw.components.fltr.EntriesFilter;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.view.content.categories.renderers.NameRenderer;
 			import com.kaltura.types.KalturaCategoryOrderBy;
+			import com.kaltura.vo.KalturaCategory;
+			import com.kaltura.vo.KalturaMediaEntryFilter;
+			
+			import mx.events.FlexEvent;
 			/**
 			 * defines the value of the type property for the <code>orderByChanged</code> event.
 			 * */
@@ -30,12 +40,47 @@
 			public function get orderBy():String {
 				return _orderBy;
 			}
+
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.DELETE, deleteEntry, false, 0, true);
+				addEventListener(CategoriesTableActions.MOVE, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.VIEW_ENTRIES, viewEntries, false, 0, true);
+			}
+			
+			
+			private function openDrilldown(e:Event):void {
+				//TODO implement (e.target.data is KalturaCategory)
+				trace(e.type);
+			}
+			
+			private function deleteEntry(e:Event):void {
+				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
+				cgEvent.data = [(e.target.data as KalturaCategory).id];
+				cgEvent.dispatch();
+			}
+			
+			private function viewEntries(e:Event):void {
+				// set attic.kmef to relevant filter, and move to entries screen
+				var kmef:KalturaMediaEntryFilter = EntriesFilter.generateBaseFilter();
+				kmef.categoriesIdsMatchOr = (e.target.data as KalturaCategory).id.toString();
+				
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmef: kmef}));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:columns>
-		<mx:DataGridColumn id="cid" dataField="id" />
-		<mx:DataGridColumn id="cname" dataField="name" />
-		<mx:DataGridColumn id="items" dataField="entriesCount" />
-		<mx:DataGridColumn id="actions" />
+		<mx:DataGridColumn id="cid" paddingLeft="4" paddingRight="4" dataField="id" 
+						   width="90" headerText="{resourceManager.getString('cms', 'idHeader')}" />
+		<mx:DataGridColumn id="cname" paddingLeft="4" paddingRight="4" dataField="name" 
+						   headerText="{resourceManager.getString('cms', 'name')}" 
+						   itemRenderer="com.kaltura.kmc.modules.content.view.content.categories.renderers.NameRenderer"/>
+		<mx:DataGridColumn id="items" paddingLeft="4" paddingRight="4" dataField="entriesCount" 
+						   headerText="{resourceManager.getString('cms', 'itemCount')}" />
+		<mx:DataGridColumn id="actions" paddingLeft="4" paddingRight="4" width="140"
+						   headerText="{resourceManager.getString('cms', 'actions')}"
+						   itemRenderer="com.kaltura.kmc.modules.content.view.content.categories.renderers.ActionsRenderer"/>
 	</mx:columns>
 </mx:DataGrid>

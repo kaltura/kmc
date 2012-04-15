@@ -122,6 +122,7 @@ package com.kaltura.kmc.modules.content.control {
 			
 			// categories
 			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
+			addCommand(CategoryEvent.DELETE_CATEGORIES, DeleteCategoriesCommand);
 			
 		}
 	}
