@@ -18,7 +18,6 @@ package com.kaltura.edw.components.fltr.cat
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
-	import flash.text.engine.ElementFormat;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Button;
