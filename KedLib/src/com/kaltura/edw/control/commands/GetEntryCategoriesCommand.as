@@ -42,7 +42,10 @@ package com.kaltura.edw.control.commands
 				var kce:KalturaCategoryEntry;
 				var str:String = '';
 				var kces:Array = data.data.objects;
-				if (!kces || !kces.length) return;
+				if (!kces || !kces.length) {
+					_model.decreaseLoadCounter();
+					return;
+				}
 				
 				for each (kce in kces) {
 					str += kce.categoryId + ",";
@@ -60,8 +63,8 @@ package com.kaltura.edw.control.commands
 				// put the KalturaCategories on the model
 				var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 				edp.entryCategories = new ArrayCollection((data.data as KalturaCategoryListResponse).objects);
+				_model.decreaseLoadCounter();
 			}
-			_model.decreaseLoadCounter();
 		}
 	}
 }
