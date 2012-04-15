@@ -185,14 +185,23 @@
 			// general
 			// ----------------
 			
+			
+			/**
+			 * create a filter with all basic attributes
+			 * */
+			public static function generateBaseFilter():KalturaMediaEntryFilter {
+				var _kalturaFilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
+				_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + 
+					KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
+				_kalturaFilter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING + "," +
+					KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY + "," + 
+					KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.PENDING;
+				return _kalturaFilter;
+			}
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (!_kalturaFilter) {
-					_kalturaFilter = new KalturaMediaEntryFilter();
-					_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + 
-						KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
-					_kalturaFilter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING + "," +
-						KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY + "," + 
-						KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.PENDING;
+					_kalturaFilter = EntriesFilter.generateBaseFilter();
 				}
 				BindingUtils.bindSetter(wrapInAC, this, "distributionProfiles");
 			}
