@@ -33,10 +33,12 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			
-			_model.categoriesModel.filter = event.data[0] as KalturaCategoryFilter;
-			_model.categoriesModel.pager = event.data[1] as KalturaFilterPager;
+			if (event.data) {
+				_model.categoriesModel.filter = event.data[0] as KalturaCategoryFilter;
+				_model.categoriesModel.pager = event.data[1] as KalturaFilterPager;
+			}
 			
-			var listCategories:CategoryList = new CategoryList(event.data[0], event.data[1]);
+			var listCategories:CategoryList = new CategoryList(_model.categoriesModel.filter, _model.categoriesModel.pager);
 
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
 			listCategories.addEventListener(KalturaEvent.FAILED, fault);
