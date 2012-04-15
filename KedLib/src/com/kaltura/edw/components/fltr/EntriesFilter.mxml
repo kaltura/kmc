@@ -9,6 +9,7 @@
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
@@ -187,7 +188,11 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (!_kalturaFilter) {
 					_kalturaFilter = new KalturaMediaEntryFilter();
-					_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
+					_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + 
+						KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
+					_kalturaFilter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING + "," +
+						KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY + "," + 
+						KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.PENDING;
 				}
 				BindingUtils.bindSetter(wrapInAC, this, "distributionProfiles");
 			}
