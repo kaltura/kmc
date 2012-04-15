@@ -256,7 +256,14 @@
 			 * reset kclip to accept new duration
 			 * */
 			private function myFunc(newDuration:Number):void {
-				_kClip["setEntryId"](_selectedEntry.id);
+				if (_selectedEntry.status == KalturaEntryStatus.READY) {
+					if (_kClip) {
+						_kClip["setEntryId"](_selectedEntry.id);
+					}
+					if (_kdp) {
+						_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
+					}
+				}
 			}
 			
 			/**
@@ -264,8 +271,7 @@
 			 * */
 			private function uncaughtErrorHandler(event:Event):void {
 				event.preventDefault();
-				trace("uncaughtErrorHandler in Entry Ads: ");
-				trace(event, event["error"]);
+				trace("uncaughtErrorHandler: ", event, event["error"]);
 			}
 			
 			
@@ -505,12 +511,17 @@
 					}
 				}
 				else {
-					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownAdsUiconf + "/nowrapper/1";
-					EntryAds.kdpLoader = new SWFLoader();
-					kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
-					kdpLoader.scaleContent = false;
-					kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
-					kdpLoader.load(newUrl);
+					if (selectedEntry && selectedEntry.status == KalturaEntryStatus.READY) {
+						var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownAdsUiconf + "/nowrapper/1";
+						EntryAds.kdpLoader = new SWFLoader();
+						kdpLoader.addEventListener(Event.COMPLETE, onKdpLoaded);
+						kdpLoader.scaleContent = false;
+						kdpLoader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
+						kdpLoader.load(newUrl);
+					}
+					else {
+						updateKdpStatus(false);
+					}
 				}
 			}
 			
