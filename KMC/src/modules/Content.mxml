@@ -58,6 +58,7 @@
 			import com.kaltura.kmc.modules.content.view.window.AddStream;
 			import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.DownloadWin;
+			import com.kaltura.kmc.modules.content.view.window.MoveCategoriesWindow;
 			import com.kaltura.kmc.modules.content.view.window.RemoveCategoriesWindow;
 			import com.kaltura.kmc.modules.content.view.window.RemoveTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.RulePlaylistWindow;
@@ -903,6 +904,23 @@
 				}
 			}
 			
+			private function handleMoveCategoriesEvents(e:Event):void {
+				switch (e.type) {
+					case "apply": 
+						// set all categories as children of the selected parent category 
+						var tgt:MoveCategoriesWindow = e.target as MoveCategoriesWindow;
+						var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.MOVE_CATEGORIES);
+						kEvent.data = [tgt.getCategories(), tgt.getParent()];
+						kEvent.dispatch();
+						break;
+					case CloseEvent.CLOSE:
+						// close the popup
+						var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+						cgEvent.dispatch();
+						break;
+				}
+			}
+			
 			
 			
 			
@@ -1071,6 +1089,13 @@
 							currentPopUp.addEventListener("apply", handleRemoveCategoriesEvents, false, 0, true);
 							currentPopUp.addEventListener(CloseEvent.CLOSE, handleRemoveCategoriesEvents, false, 0, true);
 							(currentPopUp as RemoveCategoriesWindow).model = _model;
+							break;
+						case WindowsStates.MOVE_CATEGORIES_WINDOW:
+							currentPopUp = new MoveCategoriesWindow();
+							currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
+							currentPopUp.addEventListener(CloseEvent.CLOSE, handleMoveCategoriesEvents, false, 0, true);
+							(currentPopUp as MoveCategoriesWindow).filterModel = _model.filterModel;
+							(currentPopUp as MoveCategoriesWindow).setCategories(_model.categoriesModel.selectedCategories);
 							break;
 					}
 

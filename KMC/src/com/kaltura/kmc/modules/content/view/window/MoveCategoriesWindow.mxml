@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+							xmlns:containers="com.kaltura.containers.*" 
+							layout="vertical" width="400" height="300"
+							title="{_windowTitle}" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.vo.KalturaCategory;
+			
+			import mx.core.mx_internal;
+			
+			import org.hamcrest.collection.array;
+			
+			[Bindable]
+			private var _windowTitle:String;
+			
+			[Bindable]
+			private var _descriptionTxt:String;
+			
+			
+			[Bindable]
+			public var filterModel:FilterModel;
+			
+			
+			/**
+			 * container variable for affected categories list
+			 * */
+			private var _categories:Array;
+			
+			/**
+			 * list of categories to move
+			 * KalturaCategory objects
+			 * */
+			public function setCategories(value:Array):void {
+				_categories = value;
+				if (value.length > 1) {
+					_windowTitle = resourceManager.getString('cms', 'moveSingleCategoryTitle');
+					_descriptionTxt = resourceManager.getString('cms', 'moveSingleCategoryText');
+				}
+				else {
+					_windowTitle = resourceManager.getString('cms', 'moveMultiCategoriesTitle');
+					_descriptionTxt = resourceManager.getString('cms', 'moveMultiCategoriesText');
+				}
+			}
+			
+			/**
+			 * retrieve a list of affected categories
+			 * */
+			public function getCategories():Array {
+				return _categories;
+			}
+			
+			/**
+			 * get new parent category
+			 * */
+			public function getParent():KalturaCategory {
+				return (catTree.getSelectedCategories()[0] as CategoryVO).category;
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new Event("apply"));
+				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Text text="{_descriptionTxt}" width="100%"/>
+	<cat:CatTree id="catTree" styleName="categoriesTree" width="100%" height="100%" 
+				 selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
+				 chunkedData="{filterModel.chunkedCategoriesLoad}"
+				 categories="{filterModel.categoriesMap}"
+				 dataProvider="{filterModel.categories}" />
+	<mx:ControlBar>
+		<mx:Button label="{resourceManager.getString('cms', 'apply')}" click="button1_clickHandler(event)" />
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

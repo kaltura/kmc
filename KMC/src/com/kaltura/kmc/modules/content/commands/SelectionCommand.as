@@ -6,9 +6,15 @@ package com.kaltura.kmc.modules.content.commands
 	public class SelectionCommand extends KalturaCommand
 	{
 		
-		override public function execute(event:CairngormEvent):void
-		{
-			_model.selectedEntries = (event as SelectionEvent).entries;
+		override public function execute(event:CairngormEvent):void {
+			switch (event.type) {
+				case SelectionEvent.ENTRIES_SELECTION_CHANGED:
+					_model.selectedEntries = (event as SelectionEvent).items;
+					break;
+				case SelectionEvent.CATEGORIES_SELECTION_CHANGED:
+					_model.categoriesModel.selectedCategories = (event as SelectionEvent).items;
+					break;
+			}
 		}
 
 	}

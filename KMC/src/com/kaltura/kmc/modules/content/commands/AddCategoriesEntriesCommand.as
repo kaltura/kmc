@@ -49,15 +49,10 @@ package com.kaltura.kmc.modules.content.commands
 			_model.decreaseLoadCounter();
 			
 			// look for error
-			var str:String = '';
 			var er:KalturaError = (data as KalturaEvent).error;
 			var rm:IResourceManager = ResourceManager.getInstance();
 			if (er) {
-				str = rm.getString('cms', er.errorCode);
-				if (!str) {
-					str = er.errorMsg;
-				} 
-				Alert.show(str, rm.getString('cms', 'error'));
+				Alert.show(getErrorText(er), rm.getString('cms', 'error'));
 				
 			}
 			else {
@@ -66,17 +61,13 @@ package com.kaltura.kmc.modules.content.commands
 					er = o as KalturaError;
 					if (er) {
 //						if (er.errorCode != "ENTRY_IS_NOT_ASSIGNED_TO_CATEGORY") {
-							str = rm.getString('cms', er.errorCode);
-							if (!str) {
-								str = er.errorMsg;
-							} 
-							Alert.show(str, rm.getString('cms', 'error'));
+						Alert.show(getErrorText(er), rm.getString('cms', 'error'));
 //						}
 					}
 					else if (o.error) {
 						// in MR errors aren't created
 //						if (o.error.code != "ENTRY_IS_NOT_ASSIGNED_TO_CATEGORY") {
-							str = rm.getString('cms', o.error.code);
+							var str:String = rm.getString('cms', o.error.code);
 							if (!str) {
 								str = o.error.message;
 							} 

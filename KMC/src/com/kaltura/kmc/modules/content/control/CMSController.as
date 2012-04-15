@@ -56,7 +56,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(EntriesEvent.ADD_ENTRY, AddMediaEntryCommand);
 
 			//selection Event
-			addCommand(SelectionEvent.SELECTION_CHANGED, SelectionCommand);
+			addCommand(SelectionEvent.ENTRIES_SELECTION_CHANGED, SelectionCommand);
+			addCommand(SelectionEvent.CATEGORIES_SELECTION_CHANGED, SelectionCommand);
 
 			//Window Event
 			addCommand(WindowEvent.CLOSE, CloseWindowCommand);
@@ -123,6 +124,7 @@ package com.kaltura.kmc.modules.content.control {
 			// categories
 			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
 			addCommand(CategoryEvent.DELETE_CATEGORIES, DeleteCategoriesCommand);
+			addCommand(CategoryEvent.MOVE_CATEGORIES, ReparentCategoriesCommand);
 			
 		}
 	}

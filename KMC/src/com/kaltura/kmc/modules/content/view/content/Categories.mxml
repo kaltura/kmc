@@ -11,8 +11,12 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaCategoryOrderBy;
@@ -74,6 +78,17 @@
 			}
 
 
+			private function categoriesTable_moveCategoryHandler(event:GeneralNonCairngormEvent):void {
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
+				cgEvent.dispatch();
+			}
+			
+			
+			private function categoriesTable_itemClickHandler(event:Event):void {
+				var et:CategoriesTable = event.target as CategoriesTable;
+				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, et.selectedItems);
+				cgEvent.dispatch();
+			}
 
 		]]>
 	</mx:Script>
@@ -100,9 +115,11 @@
 			<mx:VBox id="entryTableContainer" height="100%" width="100%" styleName="entriesTablePagerAndButtonsVbox">
 				<categories:CategoriesTable id="categoriesTable" rowCount="10" width="100%" height="100%"
 							   dataProvider="{categoriesModel.categoriesList}" 
-							   orderByChanged="loadCategories()"/>
-				<!-- selectionChanged="actionsManager.itemClickHandler(event)"
-				showDetails="actionsManager.showEntryDetailsHandler(event)" -->
+							   orderByChanged="loadCategories()"
+							   selectionChanged="categoriesTable_itemClickHandler(event)"
+							   moveCategory="categoriesTable_moveCategoryHandler(event)"/>
+				<!--showDetails="actionsManager.showEntryDetailsHandler(event)"-->
+				 
 				
 				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" />

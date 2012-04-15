@@ -86,7 +86,7 @@ package com.kaltura.kmc.modules.content.business
 		
 		public function itemClickHandler(event:EntryTableEvent):void {
 			var et:EntryTable = event.target as EntryTable;
-			var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.SELECTION_CHANGED, et.selectedItems);
+			var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.ENTRIES_SELECTION_CHANGED, et.selectedItems);
 			cgEvent.dispatch();
 		}
 		

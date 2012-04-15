@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="220" height="470" xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
-				creationComplete="creationCompleteHandler(event)" styleName="TitleWindowType2" showCloseButton="true">
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="220" height="470" 
+				xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
+				creationComplete="creationCompleteHandler(event)" 
+				styleName="TitleWindowType2" showCloseButton="true">
 	<mx:Metadata>
 		/**
 		 * dispatched when the "apply" button is clicked
@@ -18,9 +20,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.mx_internal;
-			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
-			import mx.messaging.channels.StreamingAMFChannel;
 			
 			[Bindable]
 			public var filterModel:FilterModel;
@@ -29,10 +29,20 @@
 			public var kClient:KalturaClient;
 			
 			[Bindable]
+			/**
+			 * show / hide the autocomplete component
+			 * */
 			public var showText:Boolean = true;
 			
+			/**
+			 * container variable for initial categories list
+			 * */
 			private var _categories:Array;
 			
+			/**
+			 * set categories which will appear as selected
+			 * @param value	Array of KalturaCategory objects
+			 * */
 			public function setCategories(value:Array):void {
 				if (catComplete) {
 					catComplete.selectedItems = new ArrayCollection(value);

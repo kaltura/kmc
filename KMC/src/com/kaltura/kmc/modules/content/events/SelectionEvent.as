@@ -5,19 +5,19 @@ package com.kaltura.kmc.modules.content.events
 
 	public class SelectionEvent extends CairngormEvent
 	{
-		public static const SELECTION_CHANGED : String = "content_selectionChanged";
+		public static const ENTRIES_SELECTION_CHANGED : String = "content_selectionChanged";
 		
-		private var _entries : Array;
+		public static const CATEGORIES_SELECTION_CHANGED : String = "content_categoriesSelectionChanged";
 		
-		public function SelectionEvent(type:String, entries : Array , bubbles:Boolean=false, cancelable:Boolean=false)
-		{
+		private var _items : Array;
+		
+		public function SelectionEvent(type:String, items : Array , bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
-			_entries = entries;
+			_items = items;
 		}
 
-		public function get entries():Array
-		{
-			return _entries;
+		public function get items():Array {
+			return _items;
 		}
 
 	}

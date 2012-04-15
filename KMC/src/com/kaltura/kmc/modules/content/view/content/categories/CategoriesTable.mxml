@@ -1,35 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowHeight="36"
-			 creationComplete="datagrid1_creationCompleteHandler(event)">
+			 creationComplete="datagrid1_creationCompleteHandler(event)"
+			 itemClick="setSelection(event)" change="setSelection(event)">
 	<mx:Metadata>
 		[Event(name="orderByChanged", type="flash.events.Event")] 
 		[Event(name="selectionChanged", type="flash.events.Event")] 
-		[Event(name="showDetails", type="flash.events.Event")] 
+		[Event(name="showDetails", type="com.kaltura.edw.events.GeneralNonCairngormEvent")] 
+		[Event(name="moveCategory", type="com.kaltura.edw.events.GeneralNonCairngormEvent")] 
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.edw.components.fltr.EntriesFilter;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
+			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.view.content.categories.renderers.NameRenderer;
 			import com.kaltura.types.KalturaCategoryOrderBy;
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
 			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
+			
 			/**
 			 * defines the value of the type property for the <code>orderByChanged</code> event.
 			 * */
 			public static const ORDER_BY_CHANGED:String = "orderByChanged";
+			
 			/**
 			 * defines the value of the type property for the <code>selectionChanged</code> event.
 			 * */
 			public static const SELECTION_CHANGED:String = "selectionChanged";
+			
 			/**
 			 * defines the value of the type property for the <code>showDetails</code> event.
 			 * */
 			public static const SHOW_DETAILS:String = "showDetails";
+			
+			/**
+			 * defines the value of the type property for the <code>moveCategory</code> event.
+			 * */
+			public static const MOVE_CATEGORY:String = "moveCategory";
 			
 			
 			private var _orderBy:String = KalturaCategoryOrderBy.CREATED_AT_DESC;
@@ -40,25 +54,43 @@
 			public function get orderBy():String {
 				return _orderBy;
 			}
+			
+			/**
+			 * selection or deselection was made
+			 */
+			private function setSelection(event:ListEvent):void {
+				if (event.itemRenderer.data) {
+					var e:Event = new Event(SELECTION_CHANGED);
+					dispatchEvent(e);
+				}
+			}
 
 			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
-				addEventListener(CategoriesTableActions.DELETE, deleteEntry, false, 0, true);
-				addEventListener(CategoriesTableActions.MOVE, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);
+				addEventListener(CategoriesTableActions.MOVE, moveCategory, false, 0, true);
 				addEventListener(CategoriesTableActions.VIEW_ENTRIES, viewEntries, false, 0, true);
 			}
 			
 			
 			private function openDrilldown(e:Event):void {
-				//TODO implement (e.target.data is KalturaCategory)
-				trace(e.type);
+				// (e.target.data is KalturaCategory)
+				var nce:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CategoriesTable.SHOW_DETAILS);
+				nce.data = e.target.data as KalturaCategory;
+				dispatchEvent(nce);
 			}
 			
-			private function deleteEntry(e:Event):void {
+			private function deleteCategory(e:Event):void {
 				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
 				cgEvent.data = [(e.target.data as KalturaCategory).id];
 				cgEvent.dispatch();
+			}
+			
+			private function moveCategory(e:Event):void {
+				var nce:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(CategoriesTable.MOVE_CATEGORY);
+				nce.data = e.target.data as KalturaCategory;
+				dispatchEvent(nce);
 			}
 			
 			private function viewEntries(e:Event):void {

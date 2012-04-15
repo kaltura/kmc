@@ -9,6 +9,11 @@ package com.kaltura.kmc.modules.content.model
 	public class CategoriesModel {
 		
 		/**
+		 * categories selected in the table 
+		 */		
+		public var selectedCategories:Array;
+		
+		/**
 		 * categories returned from latest list action 
 		 */		
 		public var categoriesList:ArrayCollection;

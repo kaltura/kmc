@@ -14,6 +14,13 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		/**
+		 * reparent categories
+		 * event.data is [categories to move, new parent] 
+		 */
+		public static const MOVE_CATEGORIES : String = "content_moveCategories";
+		
+		
+		/**
 		 * delete a category
 		 * event.data is an array of category ids 
 		 */

@@ -16,6 +16,7 @@ package com.kaltura.edw.model
 		// --------------------
 		// categories
 		// --------------------
+//		public var 
 		
 		/**
 		 * the root of a category hierarchy. 
