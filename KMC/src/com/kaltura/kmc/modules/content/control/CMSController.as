@@ -52,7 +52,6 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(EntriesEvent.GET_SELECTED_ENTRIES_CATEGORIES, ListEntriesCategoriesCommand);
 			addCommand(EntriesEvent.REMOVE_CATEGORIES_ENTRIES, RemoveCategoriesEntriesCommand);
 			addCommand(EntriesEvent.ADD_CATEGORIES_ENTRIES, AddCategoriesEntriesCommand);
-			//media Event
 			addCommand(EntriesEvent.ADD_ENTRY, AddMediaEntryCommand);
 
 			//selection Event

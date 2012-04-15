@@ -62,8 +62,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 			}
 			if (!isError) {			
 				Alert.show(ResourceManager.getInstance().getString('cms', 'categoryDeleteDoneMsg'));
-	//			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
-	//			getCategoriesList.dispatch();
+				if (_model.filterModel.catTreeDataManager) {
+					_model.filterModel.catTreeDataManager.resetData();
+				}
 				
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				cgEvent.dispatch();

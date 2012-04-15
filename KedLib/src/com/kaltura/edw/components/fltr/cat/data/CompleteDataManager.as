@@ -17,6 +17,9 @@ package com.kaltura.edw.components.fltr.cat.data
 		public function set controller(value:CategoriesTreeController):void
 		{
 			_controller = value;
+			var cte:CategoriesTreeEvent = new CategoriesTreeEvent(CategoriesTreeEvent.SET_CATEGORIES_DATA_MANAGER_TO_MODEL);
+			cte.data = this;
+			_controller.dispatch(cte);
 		}
 		
 		public function CompleteDataManager() {	}

@@ -26,6 +26,13 @@ package com.kaltura.edw.control.events
 		 */
 		public static const CREATE_ROOT_CATEGORY:String = "create_root_category"; 
 		
+		/**
+		 * remember the data manager on the model so we can trigger its methods 
+		 * from commands which manipulate categories
+		 * event.data is the ICategoriesDataManager 
+		 */
+		public static const SET_CATEGORIES_DATA_MANAGER_TO_MODEL : String = "set_categories_datamanager_to_model";
+		
 		public function CategoriesTreeEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 		}

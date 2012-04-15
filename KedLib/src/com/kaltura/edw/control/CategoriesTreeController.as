@@ -22,6 +22,7 @@ package com.kaltura.edw.control
 			addCommand(CategoriesTreeEvent.CREATE_ROOT_CATEGORY, CreateRootCatCommand);
 			addCommand(CategoriesTreeEvent.LIST_CATEGORIES_UNDER, ListCategoriesUnderCommand);
 			addCommand(CategoriesTreeEvent.FLUSH_CATEGORIES, FlushCategoriesDataCommand);
+			addCommand(CategoriesTreeEvent.SET_CATEGORIES_DATA_MANAGER_TO_MODEL, SetCategoriesManagerCommand);
 		}
 		
 		

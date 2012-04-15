@@ -1,6 +1,7 @@
 package com.kaltura.edw.model
 {
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.edw.components.fltr.cat.data.ICategoriesDataManger;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	
@@ -16,7 +17,7 @@ package com.kaltura.edw.model
 		// --------------------
 		// categories
 		// --------------------
-//		public var 
+		public var catTreeDataManager:ICategoriesDataManger;
 		
 		/**
 		 * the root of a category hierarchy. 
