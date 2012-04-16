@@ -41,11 +41,13 @@ package com.kaltura.vo
 		public var adultContent : String = null;
 
 		/** 
-		* 		* */ 
+		* feed description
+         		* */ 
 		public var feedDescription : String = null;
 
 		/** 
-		* feed landing page (i.		* */ 
+		* feed landing page (i.e publisher website)
+         		* */ 
 		public var feedLandingPage : String = null;
 
 		override public function getUpdateableParamKeys():Array

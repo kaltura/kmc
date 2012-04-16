@@ -33,19 +33,23 @@ package com.kaltura.vo
 	public dynamic class KalturaLiveStreamAdminEntry extends KalturaLiveStreamEntry
 	{
 		/** 
-		* 		* */ 
+		* The broadcast primary ip
+	 		* */ 
 		public var encodingIP1 : String = null;
 
 		/** 
-		* 		* */ 
+		* The broadcast secondary ip
+	 		* */ 
 		public var encodingIP2 : String = null;
 
 		/** 
-		* 		* */ 
+		* The broadcast password
+	 		* */ 
 		public var streamPassword : String = null;
 
 		/** 
-		* 		* */ 
+		* The broadcast username
+	 		* */ 
 		public var streamUsername : String = null;
 
 		override public function getUpdateableParamKeys():Array

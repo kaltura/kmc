@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaAccessControlAction extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The type of the access control action
+	 		* */ 
 		public var type : String = null;
 
 		/** 

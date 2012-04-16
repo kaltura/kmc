@@ -84,7 +84,8 @@ package com.kaltura.vo
 		public var tags : String = null;
 
 		/** 
-		* 		* */ 
+		* Admin tags can be updated only by using an admin session
+	 		* */ 
 		public var adminTags : String = null;
 
 		/** 
@@ -96,15 +97,18 @@ package com.kaltura.vo
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Last update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Can be used to store various partner related data as a string 
+	 		* */ 
 		public var partnerData : String = null;
 
 		/** 

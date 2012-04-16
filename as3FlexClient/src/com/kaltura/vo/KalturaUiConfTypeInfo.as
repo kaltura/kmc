@@ -32,19 +32,23 @@ package com.kaltura.vo
 	public dynamic class KalturaUiConfTypeInfo extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* UiConf Type
+	 		* */ 
 		public var type : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Available versions
+     		* */ 
 		public var versions : Array = null;
 
 		/** 
-		* 		* */ 
+		* The direcotry this type is saved at
+     		* */ 
 		public var directory : String = null;
 
 		/** 
-		* 		* */ 
+		* Filename for this UiConf type
+     		* */ 
 		public var filename : String = null;
 
 		/** 

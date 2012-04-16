@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaAuthenticatedCondition extends KalturaCondition
 	{
 		/** 
-		* 		* */ 
+		* The privelege needed to remove the restriction
+	 		* */ 
 		public var privileges : Array = null;
 
 		override public function getUpdateableParamKeys():Array

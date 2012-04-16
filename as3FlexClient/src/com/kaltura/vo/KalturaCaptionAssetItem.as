@@ -36,11 +36,13 @@ package com.kaltura.vo
 	public dynamic class KalturaCaptionAssetItem extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The Caption Asset object
+	 		* */ 
 		public var asset : KalturaCaptionAsset;
 
 		/** 
-		* 		* */ 
+		* The entry object
+	 		* */ 
 		public var entry : KalturaBaseEntry;
 
 		/** 

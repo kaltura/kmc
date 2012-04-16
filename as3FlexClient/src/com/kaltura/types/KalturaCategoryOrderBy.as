@@ -33,9 +33,13 @@ package com.kaltura.types
 		public static const DEPTH_DESC : String = '-depth';
 		public static const FULL_NAME_ASC : String = '+fullName';
 		public static const FULL_NAME_DESC : String = '-fullName';
+		public static const ENTRIES_COUNT_ASC : String = '+entriesCount';
+		public static const ENTRIES_COUNT_DESC : String = '-entriesCount';
 		public static const CREATED_AT_ASC : String = '+createdAt';
 		public static const CREATED_AT_DESC : String = '-createdAt';
 		public static const UPDATED_AT_ASC : String = '+updatedAt';
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
+		public static const DIRECT_ENTRIES_COUNT_ASC : String = '+directEntriesCount';
+		public static const DIRECT_ENTRIES_COUNT_DESC : String = '-directEntriesCount';
 	}
 }

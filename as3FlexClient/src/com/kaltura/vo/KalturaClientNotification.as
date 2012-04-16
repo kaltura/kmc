@@ -32,11 +32,13 @@ package com.kaltura.vo
 	public dynamic class KalturaClientNotification extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The URL where the notification should be sent to 
+     		* */ 
 		public var url : String = null;
 
 		/** 
-		* 		* */ 
+		* The serialized notification data to send
+     		* */ 
 		public var data : String = null;
 
 		/** 

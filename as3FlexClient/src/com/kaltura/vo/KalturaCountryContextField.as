@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaCountryContextField extends KalturaStringField
 	{
 		/** 
-		* 		* */ 
+		* The ip geo coder engine to be used
+	 		* */ 
 		public var geoCoderType : String = null;
 
 		override public function getUpdateableParamKeys():Array

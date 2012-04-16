@@ -39,5 +39,6 @@ package com.kaltura.types
 		public static const READY : int = 2;
 		public static const DELETED : int = 3;
 		public static const IMPORTING : int = 7;
+		public static const EXPORTING : int = 9;
 	}
 }

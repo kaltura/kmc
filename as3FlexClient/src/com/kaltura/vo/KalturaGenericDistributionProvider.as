@@ -33,15 +33,18 @@ package com.kaltura.vo
 	public dynamic class KalturaGenericDistributionProvider extends KalturaDistributionProvider
 	{
 		/** 
-		* 		* */ 
+		* Auto generated
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Generic distribution provider creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Generic distribution provider last update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 

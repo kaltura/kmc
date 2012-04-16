@@ -33,11 +33,13 @@ package com.kaltura.vo
 	public dynamic class KalturaEntryResource extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* ID of the source entry 
+	 		* */ 
 		public var entryId : String = null;
 
 		/** 
-		* 		* */ 
+		* ID of the source flavor params, set to null to use the source flavor
+	 		* */ 
 		public var flavorParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

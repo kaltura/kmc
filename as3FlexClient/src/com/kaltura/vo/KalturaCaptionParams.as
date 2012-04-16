@@ -33,23 +33,28 @@ package com.kaltura.vo
 	public dynamic class KalturaCaptionParams extends KalturaAssetParams
 	{
 		/** 
-		* 		* */ 
+		* The language of the caption content
+	 		* */ 
 		public var language : String = null;
 
 		/** 
-		* 		* */ 
+		* Is default caption asset of the entry
+	 		* */ 
 		public var isDefault : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Friendly label
+	 		* */ 
 		public var label : String = null;
 
 		/** 
-		* 		* */ 
+		* The caption format
+	 		* */ 
 		public var format : String = null;
 
 		/** 
-		* 		* */ 
+		* Id of the caption params or the flavor params to be used as source for the caption creation
+	 		* */ 
 		public var sourceParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

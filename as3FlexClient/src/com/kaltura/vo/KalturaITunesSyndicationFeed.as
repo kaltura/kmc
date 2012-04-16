@@ -33,27 +33,33 @@ package com.kaltura.vo
 	public dynamic class KalturaITunesSyndicationFeed extends KalturaBaseSyndicationFeed
 	{
 		/** 
-		* 		* */ 
+		* feed description
+         		* */ 
 		public var feedDescription : String = null;
 
 		/** 
-		* 		* */ 
+		* feed language
+         		* */ 
 		public var language : String = null;
 
 		/** 
-		* feed landing page (i.		* */ 
+		* feed landing page (i.e publisher website)
+         		* */ 
 		public var feedLandingPage : String = null;
 
 		/** 
-		* 		* */ 
+		* author/publisher name
+         		* */ 
 		public var ownerName : String = null;
 
 		/** 
-		* 		* */ 
+		* publisher email
+         		* */ 
 		public var ownerEmail : String = null;
 
 		/** 
-		* 		* */ 
+		* podcast thumbnail
+         		* */ 
 		public var feedImageUrl : String = null;
 
 		/** 

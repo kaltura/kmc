@@ -32,11 +32,13 @@ package com.kaltura.vo
 	public dynamic class KalturaFilterPager extends BaseFlexVo
 	{
 		/** 
-		* The number of objects to retrieve. (Default is 30, maximum page size is 500).		* */ 
+		* The number of objects to retrieve. (Default is 30, maximum page size is 500).
+	 		* */ 
 		public var pageSize : int = int.MIN_VALUE;
 
 		/** 
-		* The page number for which {pageSize} of objects should be retrieved (Default is 1).		* */ 
+		* The page number for which {pageSize} of objects should be retrieved (Default is 1).
+	 		* */ 
 		public var pageIndex : int = int.MIN_VALUE;
 
 		/** 

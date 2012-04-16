@@ -33,11 +33,13 @@ package com.kaltura.vo
 	public dynamic class KalturaIpAddressRestriction extends KalturaBaseRestriction
 	{
 		/** 
-		* 		* */ 
+		* Ip address restriction type (Allow or deny)
+	 		* */ 
 		public var ipAddressRestrictionType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Comma separated list of ip address to allow to deny 
+	 		* */ 
 		public var ipAddressList : String = null;
 
 		override public function getUpdateableParamKeys():Array

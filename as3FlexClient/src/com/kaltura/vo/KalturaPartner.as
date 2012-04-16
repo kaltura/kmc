@@ -56,7 +56,8 @@ package com.kaltura.vo
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* deprecated - lastName and firstName replaces this field
+	 		* */ 
 		public var adminName : String = null;
 
 		/** 
@@ -156,19 +157,23 @@ package com.kaltura.vo
 		public var adminUserId : String = null;
 
 		/** 
-		* 		* */ 
+		* firstName and lastName replace the old (deprecated) adminName
+	 		* */ 
 		public var firstName : String = null;
 
 		/** 
-		* 		* */ 
+		* lastName and firstName replace the old (deprecated) adminName
+	 		* */ 
 		public var lastName : String = null;
 
 		/** 
-		* 		* */ 
+		* country code (2char) - this field is optional
+	 		* */ 
 		public var country : String = null;
 
 		/** 
-		* 		* */ 
+		* state code (2char) - this field is optional
+	 		* */ 
 		public var state : String = null;
 
 		/** 

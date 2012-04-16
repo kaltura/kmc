@@ -72,7 +72,8 @@ package com.kaltura.vo
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Can be used to store various partner related data as a string 
+	 		* */ 
 		public var partnerData : String = null;
 
 		/** 

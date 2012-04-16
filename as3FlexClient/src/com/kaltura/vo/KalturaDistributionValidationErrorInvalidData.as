@@ -41,7 +41,9 @@ package com.kaltura.vo
 		public var validationErrorType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Parameter of the validation error
+	 For example, minimum value for KalturaDistributionValidationErrorType::STRING_TOO_SHORT validation error
+	 		* */ 
 		public var validationErrorParam : String = null;
 
 		override public function getUpdateableParamKeys():Array

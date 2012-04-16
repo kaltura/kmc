@@ -32,19 +32,23 @@ package com.kaltura.vo
 	public dynamic class KalturaEntryDistribution extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Auto generated unique id
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Entry distribution creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Entry distribution last update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Entry distribution submission date as Unix timestamp (In seconds)
+	 		* */ 
 		public var submittedAt : int = int.MIN_VALUE;
 
 		/** 
@@ -72,31 +76,38 @@ package com.kaltura.vo
 		public var dirtyStatus : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Comma separated thumbnail asset ids
+	 		* */ 
 		public var thumbAssetIds : String = null;
 
 		/** 
-		* 		* */ 
+		* Comma separated flavor asset ids
+	 		* */ 
 		public var flavorAssetIds : String = null;
 
 		/** 
-		* 		* */ 
+		* Entry distribution publish time as Unix timestamp (In seconds)
+	 		* */ 
 		public var sunrise : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Entry distribution un-publish time as Unix timestamp (In seconds)
+	 		* */ 
 		public var sunset : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The id as returned from the distributed destination
+	 		* */ 
 		public var remoteId : String = null;
 
 		/** 
-		* 		* */ 
+		* The plays as retrieved from the remote destination reports
+	 		* */ 
 		public var plays : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The views as retrieved from the remote destination reports
+	 		* */ 
 		public var views : int = int.MIN_VALUE;
 
 		/** 

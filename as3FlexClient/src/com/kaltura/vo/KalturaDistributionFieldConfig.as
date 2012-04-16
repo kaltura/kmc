@@ -32,32 +32,40 @@ package com.kaltura.vo
 	public dynamic class KalturaDistributionFieldConfig extends BaseFlexVo
 	{
 		/** 
-		* Field enum class should be returned by the provider's getFieldEnumClass function.		* */ 
+		* A value taken from a connector field enum which associates the current configuration to that connector field
+     Field enum class should be returned by the provider's getFieldEnumClass function.
+     		* */ 
 		public var fieldName : String = null;
 
 		/** 
-		* 		* */ 
+		* A string that will be shown to the user as the field name in error messages related to the current field
+     		* */ 
 		public var userFriendlyFieldName : String = null;
 
 		/** 
 		* An XSLT string that extracts the right value from the Kaltura entry MRSS XML.
-The value of the current connector field will be the one that is returned from transforming the Kaltura entry MRSS XML using this XSLT string.		* */ 
+     The value of the current connector field will be the one that is returned from transforming the Kaltura entry MRSS XML using this XSLT string.
+     		* */ 
 		public var entryMrssXslt : String = null;
 
 		/** 
-		* 		* */ 
+		* Is the field required to have a value for submission ?
+     		* */ 
 		public var isRequired : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Trigger distribution update when this field changes or not ?
+     		* */ 
 		public var updateOnChange : Boolean;
 
 		/** 
-		* 		* */ 
+		* Entry column or metadata xpath that should trigger an update
+     		* */ 
 		public var updateParams : Array = null;
 
 		/** 
-		* 		* */ 
+		* Is this field config is the default for the distribution provider?
+     		* */ 
 		public var isDefault : Boolean;
 
 		/** 

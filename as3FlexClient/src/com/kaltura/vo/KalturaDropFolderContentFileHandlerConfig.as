@@ -38,8 +38,10 @@ package com.kaltura.vo
 
 		/** 
 		* Regular expression that defines valid file names to be handled.
-- (?P<referenceId>\w+) - will be used as the drop folder file's parsed slug.
-- (?P<flavorName>\w+)  - will be used as the drop folder file's parsed flavor.		* */ 
+	 The following might be extracted from the file name and used if defined:
+	 - (?P<referenceId>\w+) - will be used as the drop folder file's parsed slug.
+	 - (?P<flavorName>\w+)  - will be used as the drop folder file's parsed flavor.
+	 		* */ 
 		public var slugRegex : String = null;
 
 		override public function getUpdateableParamKeys():Array

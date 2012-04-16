@@ -53,7 +53,8 @@ package com.kaltura.vo
 		public var endTime : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Duration in milliseconds
+	 		* */ 
 		public var duration : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

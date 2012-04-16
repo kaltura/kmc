@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaAccessControlContextTypeHolder extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The type of the access control condition context
+	 		* */ 
 		public var type : String = null;
 
 		/** 

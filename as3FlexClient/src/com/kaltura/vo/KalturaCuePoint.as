@@ -64,7 +64,8 @@ package com.kaltura.vo
 		public var tags : String = null;
 
 		/** 
-		* 		* */ 
+		* Start time in milliseconds
+	 		* */ 
 		public var startTime : int = int.MIN_VALUE;
 
 		/** 

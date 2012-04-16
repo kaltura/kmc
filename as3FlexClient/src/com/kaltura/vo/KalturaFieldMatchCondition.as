@@ -35,7 +35,8 @@ package com.kaltura.vo
 	public dynamic class KalturaFieldMatchCondition extends KalturaMatchCondition
 	{
 		/** 
-		* 		* */ 
+		* Field to evaluate
+	 		* */ 
 		public var field : KalturaStringField;
 
 		override public function getUpdateableParamKeys():Array

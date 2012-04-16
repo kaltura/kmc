@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaCategory extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The id of the Category
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
@@ -48,91 +49,114 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* The name of the Category.		* */ 
+		* The name of the Category. 
+	 The following characters are not allowed: '<', '>', ','
+	 		* */ 
 		public var name : String = null;
 
 		/** 
-		* 		* */ 
+		* The full name of the Category
+	 		* */ 
 		public var fullName : String = null;
 
 		/** 
-		* 		* */ 
+		* Number of entries in this Category (including child categories)
+	 		* */ 
 		public var entriesCount : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Category description
+	 		* */ 
 		public var description : String = null;
 
 		/** 
-		* 		* */ 
+		* Category tags
+	 		* */ 
 		public var tags : String = null;
 
 		/** 
-		* If category will be returned for list action.		* */ 
+		* If category will be returned for list action.
+	 		* */ 
 		public var appearInList : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* defines the privacy of the entries that assigned to this category
+	 		* */ 
 		public var privacy : int = int.MIN_VALUE;
 
 		/** 
-		* If Category members are inherited from parent category or set manualy.		* */ 
+		* If Category members are inherited from parent category or set manualy. 
+	 		* */ 
 		public var inheritanceType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Who can ask to join this category
+	 		* */ 
 		public var userJoinPolicy : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Default permissionLevel for new users
+	 		* */ 
 		public var defaultPermissionLevel : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Category Owner (User id)
+	 		* */ 
 		public var owner : String = null;
 
 		/** 
-		* 		* */ 
+		* Number of entries that belong to this category directly
+	 		* */ 
 		public var directEntriesCount : int = int.MIN_VALUE;
 
 		/** 
-		* Category external id, controlled and managed by the partner.		* */ 
+		* Category external id, controlled and managed by the partner.
+	 		* */ 
 		public var referenceId : String = null;
 
 		/** 
-		* 		* */ 
+		* who can assign entries to this category
+	 		* */ 
 		public var contributionPolicy : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Number of active members for this category
+	 		* */ 
 		public var membersCount : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Number of pending members for this category
+	 		* */ 
 		public var pendingMembersCount : int = int.MIN_VALUE;
 
 		/** 
-		* Set privacy context for search entries that assiged to private and public categories. the entries will be private if the search context is set with those categories.		* */ 
+		* Set privacy context for search entries that assiged to private and public categories. the entries will be private if the search context is set with those categories.
+	 		* */ 
 		public var privacyContext : String = null;
 
 		/** 
-		* 		* */ 
+		* comma separated parents that defines a privacyContext for search
+	 		* */ 
 		public var privacyContexts : String = null;
 
 		/** 
-		* 		* */ 
+		* Status
+	 		* */ 
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Status
+	 		* */ 
 		public var inheritedParentId : int = int.MIN_VALUE;
 
 		/** 

@@ -33,43 +33,53 @@ package com.kaltura.vo
 	public dynamic class KalturaMediaEntry extends KalturaPlayableEntry
 	{
 		/** 
-		* 		* */ 
+		* The media type of the entry
+	 		* */ 
 		public var mediaType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Override the default conversion quality  
+	 		* */ 
 		public var conversionQuality : String = null;
 
 		/** 
-		* 		* */ 
+		* The source type of the entry 
+	 		* */ 
 		public var sourceType : String = null;
 
 		/** 
-		* 		* */ 
+		* The search provider type used to import this entry
+	 		* */ 
 		public var searchProviderType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The ID of the media in the importing site
+	 		* */ 
 		public var searchProviderId : String = null;
 
 		/** 
-		* 		* */ 
+		* The user name used for credits
+	 		* */ 
 		public var creditUserName : String = null;
 
 		/** 
-		* 		* */ 
+		* The URL for credits
+	 		* */ 
 		public var creditUrl : String = null;
 
 		/** 
-		* 		* */ 
+		* The media date extracted from EXIF data (For images) as Unix timestamp (In seconds)
+	 		* */ 
 		public var mediaDate : int = int.MIN_VALUE;
 
 		/** 
-		* The URL used for playback. This is not the download URL.		* */ 
+		* The URL used for playback. This is not the download URL.
+	 		* */ 
 		public var dataUrl : String = null;
 
 		/** 
-		* 		* */ 
+		* Comma separated flavor params ids that exists for this media entry
+	 		* */ 
 		public var flavorParamsIds : String = null;
 
 		override public function getUpdateableParamKeys():Array

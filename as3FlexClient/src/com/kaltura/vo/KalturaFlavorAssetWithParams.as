@@ -36,15 +36,18 @@ package com.kaltura.vo
 	public dynamic class KalturaFlavorAssetWithParams extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The Flavor Asset (Can be null when there are params without asset)
+	 		* */ 
 		public var flavorAsset : KalturaFlavorAsset;
 
 		/** 
-		* 		* */ 
+		* The Flavor Params
+	 		* */ 
 		public var flavorParams : KalturaFlavorParams;
 
 		/** 
-		* 		* */ 
+		* The entry id
+	 		* */ 
 		public var entryId : String = null;
 
 		/** 

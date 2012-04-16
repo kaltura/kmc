@@ -35,7 +35,8 @@ package com.kaltura.vo
 	public dynamic class KalturaOperationResource extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* Only KalturaEntryResource and KalturaAssetResource are supported
+	 		* */ 
 		public var resource : KalturaContentResource;
 
 		/** 
@@ -43,7 +44,8 @@ package com.kaltura.vo
 		public var operationAttributes : Array = null;
 
 		/** 
-		* 		* */ 
+		* ID of alternative asset params to be used instead of the system default flavor params 
+	 		* */ 
 		public var assetParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

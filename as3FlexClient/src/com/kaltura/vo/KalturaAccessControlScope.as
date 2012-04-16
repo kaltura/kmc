@@ -32,27 +32,33 @@ package com.kaltura.vo
 	public dynamic class KalturaAccessControlScope extends BaseFlexVo
 	{
 		/** 
-		* URL to be used to test domain conditions.		* */ 
+		* URL to be used to test domain conditions.
+	 		* */ 
 		public var referrer : String = null;
 
 		/** 
-		* IP to be used to test geographic location conditions.		* */ 
+		* IP to be used to test geographic location conditions.
+	 		* */ 
 		public var ip : String = null;
 
 		/** 
-		* Kaltura session to be used to test session and user conditions.		* */ 
+		* Kaltura session to be used to test session and user conditions.
+	 		* */ 
 		public var ks : String = null;
 
 		/** 
-		* Browser or client application to be used to test agent conditions.		* */ 
+		* Browser or client application to be used to test agent conditions.
+	 		* */ 
 		public var userAgent : String = null;
 
 		/** 
-		* Unix timestamp (In seconds) to be used to test entry scheduling, keep null to use now.		* */ 
+		* Unix timestamp (In seconds) to be used to test entry scheduling, keep null to use now.
+	 		* */ 
 		public var time : int = int.MIN_VALUE;
 
 		/** 
-		* Indicates what contexts should be tested. No contexts means any context.		* */ 
+		* Indicates what contexts should be tested. No contexts means any context.
+	 		* */ 
 		public var contexts : Array = null;
 
 		/** 

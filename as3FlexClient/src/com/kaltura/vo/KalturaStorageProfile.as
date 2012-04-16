@@ -132,11 +132,13 @@ package com.kaltura.vo
 		public var urlManagerParams : Array = null;
 
 		/** 
-		* 		* */ 
+		* No need to create enum for temp field
+	 		* */ 
 		public var trigger : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Delivery Priority
+	 		* */ 
 		public var deliveryPriority : int = int.MIN_VALUE;
 
 		/** 

@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaDropFolderFileResource extends KalturaDataCenterContentResource
 	{
 		/** 
-		* 		* */ 
+		* Id of the drop folder file object
+	 		* */ 
 		public var dropFolderFileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

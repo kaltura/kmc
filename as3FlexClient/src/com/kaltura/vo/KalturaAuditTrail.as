@@ -42,7 +42,8 @@ package com.kaltura.vo
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Indicates when the data was parsed
+	 		* */ 
 		public var parsedAt : int = int.MIN_VALUE;
 
 		/** 
@@ -102,7 +103,8 @@ package com.kaltura.vo
 		public var context : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The API service and action that called and caused this audit
+	 		* */ 
 		public var entryPoint : String = null;
 
 		/** 

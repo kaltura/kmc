@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaRemoteStorageResources extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* Array of remote stoage resources 
+	 		* */ 
 		public var resources : Array = null;
 
 		override public function getUpdateableParamKeys():Array

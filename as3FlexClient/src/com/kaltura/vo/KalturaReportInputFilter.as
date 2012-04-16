@@ -56,7 +56,8 @@ package com.kaltura.vo
 		public var categories : String = null;
 
 		/** 
-		* 		* */ 
+		* time zone offset in minutes
+	 		* */ 
 		public var timeZoneOffset : int = int.MIN_VALUE;
 
 		/** 

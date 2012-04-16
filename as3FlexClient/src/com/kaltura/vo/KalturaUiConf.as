@@ -36,7 +36,8 @@ package com.kaltura.vo
 		public var id : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Name of the uiConf, this is not a primary key
+	 		* */ 
 		public var name : String = null;
 
 		/** 
@@ -100,11 +101,13 @@ package com.kaltura.vo
 		public var swfUrlVersion : String = null;
 
 		/** 
-		* 		* */ 
+		* Entry creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Entry creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 

@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaModerationFlag extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Moderation flag id
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
@@ -40,27 +41,33 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The user id that added the moderation flag
+	 		* */ 
 		public var userId : String = null;
 
 		/** 
-		* 		* */ 
+		* The type of the moderation flag (entry or user)
+	 		* */ 
 		public var moderationObjectType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* If moderation flag is set for entry, this is the flagged entry id
+	 		* */ 
 		public var flaggedEntryId : String = null;
 
 		/** 
-		* 		* */ 
+		* If moderation flag is set for user, this is the flagged user id
+	 		* */ 
 		public var flaggedUserId : String = null;
 
 		/** 
-		* 		* */ 
+		* The moderation flag status
+	 		* */ 
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The comment that was added to the flag
+	 		* */ 
 		public var comments : String = null;
 
 		/** 

@@ -32,19 +32,23 @@ package com.kaltura.vo
 	public dynamic class KalturaCropDimensions extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Crop left point
+	 		* */ 
 		public var left : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Crop top point
+	 		* */ 
 		public var top : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Crop width
+	 		* */ 
 		public var width : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Crop height
+	 		* */ 
 		public var height : int = int.MIN_VALUE;
 
 		/** 

@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaAccessControl extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The id of the Access Control Profile
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
@@ -40,31 +41,38 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The name of the Access Control Profile
+	 		* */ 
 		public var name : String = null;
 
 		/** 
-		* 		* */ 
+		* System name of the Access Control Profile
+	 		* */ 
 		public var systemName : String = null;
 
 		/** 
-		* 		* */ 
+		* The description of the Access Control Profile
+	 		* */ 
 		public var description : String = null;
 
 		/** 
-		* 		* */ 
+		* Creation date as Unix timestamp (In seconds) 
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* True if this Conversion Profile is the default
+	 		* */ 
 		public var isDefault : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Array of Access Control Restrictions
+	 		* */ 
 		public var restrictions : Array = null;
 
 		/** 
-		* 		* */ 
+		* Indicates that the access control profile is new and should be handled using KalturaAccessControlProfile object and accessControlProfile service
+	 		* */ 
 		public var containsUnsuportedRestrictions : Boolean;
 
 		/** 

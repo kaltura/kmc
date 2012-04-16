@@ -77,19 +77,23 @@ package com.kaltura.vo
 		public var scaleHeight : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
-		* 		* */ 
+		* Hexadecimal value
+	 		* */ 
 		public var backgroundColor : String = null;
 
 		/** 
-		* 		* */ 
+		* Id of the flavor params or the thumbnail params to be used as source for the thumbnail creation
+	 		* */ 
 		public var sourceParamsId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The container format of the Flavor Params
+	 		* */ 
 		public var format : String = null;
 
 		/** 
-		* 		* */ 
+		* The image density (dpi) for example: 72 or 96
+	 		* */ 
 		public var density : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

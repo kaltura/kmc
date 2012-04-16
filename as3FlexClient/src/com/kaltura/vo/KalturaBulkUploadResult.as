@@ -32,15 +32,18 @@ package com.kaltura.vo
 	public dynamic class KalturaBulkUploadResult extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The id of the result
+     		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The id of the parent job
+	 		* */ 
 		public var bulkUploadJobId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The index of the line in the CSV
+	 		* */ 
 		public var lineIndex : int = int.MIN_VALUE;
 
 		/** 
@@ -68,7 +71,8 @@ package com.kaltura.vo
 		public var entryStatus : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The data as recieved in the csv
+	 		* */ 
 		public var rowData : String = null;
 
 		/** 

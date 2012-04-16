@@ -32,27 +32,33 @@ package com.kaltura.vo
 	public dynamic class KalturaConversionProfileAssetParams extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The id of the conversion profile
+	 		* */ 
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The id of the asset params
+	 		* */ 
 		public var assetParamsId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The ingestion origin of the asset params
+	 		* */ 
 		public var readyBehavior : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The ingestion origin of the asset params
+	 		* */ 
 		public var origin : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Asset params system name
+	 		* */ 
 		public var systemName : String = null;
 
 		/** 
-		* 		* */ 
+		* Starts conversion even if the decision layer reduced the configuration to comply with the source
+	 		* */ 
 		public var forceNoneComplied : int = int.MIN_VALUE;
 
 		/** 

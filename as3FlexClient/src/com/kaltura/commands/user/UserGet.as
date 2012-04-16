@@ -36,7 +36,7 @@ package com.kaltura.commands.user
 		/**
 		 * @param userId String
 		 **/
-		public function UserGet( userId : String )
+		public function UserGet( userId : String = null )
 		{
 			service= 'user';
 			action= 'get';

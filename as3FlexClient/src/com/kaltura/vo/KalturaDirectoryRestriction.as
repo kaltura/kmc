@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaDirectoryRestriction extends KalturaBaseRestriction
 	{
 		/** 
-		* 		* */ 
+		* Kaltura directory restriction type
+	 		* */ 
 		public var directoryRestrictionType : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

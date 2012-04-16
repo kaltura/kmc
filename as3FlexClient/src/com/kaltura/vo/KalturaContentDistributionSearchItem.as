@@ -57,7 +57,8 @@ package com.kaltura.vo
 		public var hasEntryDistributionValidationErrors : Boolean;
 
 		/** 
-		* 		* */ 
+		* Comma seperated validation error types
+	 		* */ 
 		public var entryDistributionValidationErrors : String = null;
 
 		override public function getUpdateableParamKeys():Array

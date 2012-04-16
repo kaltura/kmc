@@ -33,15 +33,18 @@ package com.kaltura.vo
 	public dynamic class KalturaSshUrlResource extends KalturaUrlResource
 	{
 		/** 
-		* 		* */ 
+		* SSH private key
+	 		* */ 
 		public var privateKey : String = null;
 
 		/** 
-		* 		* */ 
+		* SSH public key
+	 		* */ 
 		public var publicKey : String = null;
 
 		/** 
-		* 		* */ 
+		* Passphrase for SSH keys
+	 		* */ 
 		public var keyPassphrase : String = null;
 
 		override public function getUpdateableParamKeys():Array

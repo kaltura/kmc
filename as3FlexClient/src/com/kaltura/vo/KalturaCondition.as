@@ -32,7 +32,8 @@ package com.kaltura.vo
 	public dynamic class KalturaCondition extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The type of the access control condition
+	 		* */ 
 		public var type : String = null;
 
 		/** 

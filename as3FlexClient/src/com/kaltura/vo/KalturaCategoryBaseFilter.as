@@ -110,6 +110,22 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var membersCountGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var membersCountLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var pendingMembersCountGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var pendingMembersCountLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -147,6 +163,10 @@ package com.kaltura.vo
 			arr.push('privacyIn');
 			arr.push('inheritanceTypeEqual');
 			arr.push('inheritanceTypeIn');
+			arr.push('membersCountGreaterThanOrEqual');
+			arr.push('membersCountLessThanOrEqual');
+			arr.push('pendingMembersCountGreaterThanOrEqual');
+			arr.push('pendingMembersCountLessThanOrEqual');
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('inheritedParentIdEqual');

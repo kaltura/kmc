@@ -32,15 +32,18 @@ package com.kaltura.vo
 	public dynamic class KalturaSyndicationFeedEntryCount extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* the total count of entries that should appear in the feed without flavor filtering
+	 		* */ 
 		public var totalEntryCount : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* count of entries that will appear in the feed (including all relevant filters)
+	 		* */ 
 		public var actualEntryCount : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* count of entries that requires transcoding in order to be included in feed
+	 		* */ 
 		public var requireTranscodingCount : int = int.MIN_VALUE;
 
 		/** 

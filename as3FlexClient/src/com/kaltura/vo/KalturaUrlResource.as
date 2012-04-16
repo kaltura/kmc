@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaUrlResource extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* Remote URL, FTP, HTTP or HTTPS 
+	 		* */ 
 		public var url : String = null;
 
 		override public function getUpdateableParamKeys():Array

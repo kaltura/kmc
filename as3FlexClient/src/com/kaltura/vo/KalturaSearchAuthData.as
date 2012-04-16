@@ -32,15 +32,18 @@ package com.kaltura.vo
 	public dynamic class KalturaSearchAuthData extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The authentication data that further should be used for search
+	 		* */ 
 		public var authData : String = null;
 
 		/** 
-		* 		* */ 
+		* Login URL when user need to sign-in and authorize the search
+	 		* */ 
 		public var loginUrl : String = null;
 
 		/** 
-		* 		* */ 
+		* Information when there was an error
+	 		* */ 
 		public var message : String = null;
 
 		/** 

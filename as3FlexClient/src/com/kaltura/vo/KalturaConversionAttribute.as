@@ -32,15 +32,18 @@ package com.kaltura.vo
 	public dynamic class KalturaConversionAttribute extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The id of the flavor params, set to null for source flavor
+	 		* */ 
 		public var flavorParamsId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Attribute name  
+	 		* */ 
 		public var name : String = null;
 
 		/** 
-		* 		* */ 
+		* Attribute value  
+	 		* */ 
 		public var value : String = null;
 
 		/** 

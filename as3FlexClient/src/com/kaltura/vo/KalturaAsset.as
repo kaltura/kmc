@@ -32,11 +32,13 @@ package com.kaltura.vo
 	public dynamic class KalturaAsset extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* The ID of the Flavor Asset
+	 		* */ 
 		public var id : String = null;
 
 		/** 
-		* 		* */ 
+		* The entry ID of the Flavor Asset
+	 		* */ 
 		public var entryId : String = null;
 
 		/** 
@@ -44,19 +46,23 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The version of the Flavor Asset
+	 		* */ 
 		public var version : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The size (in KBytes) of the Flavor Asset
+	 		* */ 
 		public var size : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Tags used to identify the Flavor Asset in various scenarios
+	 		* */ 
 		public var tags : String = null;
 
 		/** 
-		* 		* */ 
+		* The file extension
+	 		* */ 
 		public var fileExt : String = null;
 
 		/** 
@@ -72,15 +78,18 @@ package com.kaltura.vo
 		public var deletedAt : int = int.MIN_VALUE;
 
 		/** 
-		* System description, error message, warnings and failure cause.		* */ 
+		* System description, error message, warnings and failure cause.
+	 		* */ 
 		public var description : String = null;
 
 		/** 
-		* 		* */ 
+		* Partner private data
+	 		* */ 
 		public var partnerData : String = null;
 
 		/** 
-		* 		* */ 
+		* Partner friendly description
+	 		* */ 
 		public var partnerDescription : String = null;
 
 		/** 

@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaServerFileResource extends KalturaDataCenterContentResource
 	{
 		/** 
-		* 		* */ 
+		* Full path to the local file 
+	 		* */ 
 		public var localFilePath : String = null;
 
 		override public function getUpdateableParamKeys():Array

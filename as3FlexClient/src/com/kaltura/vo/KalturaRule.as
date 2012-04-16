@@ -32,23 +32,28 @@ package com.kaltura.vo
 	public dynamic class KalturaRule extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Message to be thrown to the player in case the rule fulfilled
+	 		* */ 
 		public var message : String = null;
 
 		/** 
-		* 		* */ 
+		* Actions to be performed by the player in case the rule fulfilled
+	 		* */ 
 		public var actions : Array = null;
 
 		/** 
-		* 		* */ 
+		* Conditions to validate the rule
+	 		* */ 
 		public var conditions : Array = null;
 
 		/** 
-		* 		* */ 
+		* Indicates what contexts should be tested by this rule 
+	 		* */ 
 		public var contexts : Array = null;
 
 		/** 
-		* 		* */ 
+		* Indicates that this rule is enough and no need to continue checking the rest of the rules 
+	 		* */ 
 		public var stopProcessing : Boolean;
 
 		/** 

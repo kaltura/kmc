@@ -44,7 +44,10 @@ package com.kaltura.vo
 		public var mediaType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Use this field to pass dynamic data for searching
+	 For example - if you set this field to "mymovies_$partner_id"
+	 The $partner_id will be automatically replcaed with your real partner Id
+	 		* */ 
 		public var extraData : String = null;
 
 		/** 

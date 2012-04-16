@@ -33,19 +33,23 @@ package com.kaltura.vo
 	public dynamic class KalturaThumbAsset extends KalturaAsset
 	{
 		/** 
-		* 		* */ 
+		* The Flavor Params used to create this Flavor Asset
+	 		* */ 
 		public var thumbParamsId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The width of the Flavor Asset 
+	 		* */ 
 		public var width : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The height of the Flavor Asset
+	 		* */ 
 		public var height : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The status of the asset
+	 		* */ 
 		public var status : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

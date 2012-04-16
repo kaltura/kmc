@@ -32,15 +32,18 @@ package com.kaltura.vo
 	public dynamic class KalturaDistributionProfile extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Auto generated unique id
+	 		* */ 
 		public var id : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Profile creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Profile last update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
@@ -76,47 +79,58 @@ package com.kaltura.vo
 		public var reportEnabled : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Comma separated flavor params ids that should be auto converted
+	 		* */ 
 		public var autoCreateFlavors : String = null;
 
 		/** 
-		* 		* */ 
+		* Comma separated thumbnail params ids that should be auto generated
+	 		* */ 
 		public var autoCreateThumb : String = null;
 
 		/** 
-		* 		* */ 
+		* Comma separated flavor params ids that should be submitted if ready
+	 		* */ 
 		public var optionalFlavorParamsIds : String = null;
 
 		/** 
-		* 		* */ 
+		* Comma separated flavor params ids that required to be readt before submission
+	 		* */ 
 		public var requiredFlavorParamsIds : String = null;
 
 		/** 
-		* 		* */ 
+		* Thumbnail dimensions that should be submitted if ready
+	 		* */ 
 		public var optionalThumbDimensions : Array = null;
 
 		/** 
-		* 		* */ 
+		* Thumbnail dimensions that required to be readt before submission
+	 		* */ 
 		public var requiredThumbDimensions : Array = null;
 
 		/** 
-		* 		* */ 
+		* If entry distribution sunrise not specified that will be the default since entry creation time, in seconds
+	 		* */ 
 		public var sunriseDefaultOffset : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* If entry distribution sunset not specified that will be the default since entry creation time, in seconds
+	 		* */ 
 		public var sunsetDefaultOffset : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The best external storage to be used to download the asset files from
+	 		* */ 
 		public var recommendedStorageProfileForDownload : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The best Kaltura data center to be used to download the asset files to
+	 		* */ 
 		public var recommendedDcForDownload : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The best Kaltura data center to be used to execute the distribution job
+	 		* */ 
 		public var recommendedDcForExecute : int = int.MIN_VALUE;
 
 		/** 

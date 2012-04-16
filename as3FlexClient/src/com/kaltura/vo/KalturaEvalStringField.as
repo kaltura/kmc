@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaEvalStringField extends KalturaStringField
 	{
 		/** 
-		* 		* */ 
+		* PHP code
+	 		* */ 
 		public var code : String = null;
 
 		override public function getUpdateableParamKeys():Array

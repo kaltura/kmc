@@ -33,7 +33,11 @@ package com.kaltura.vo
 	public dynamic class KalturaPlaylist extends KalturaBaseEntry
 	{
 		/** 
-		* 		* */ 
+		* Content of the playlist - 
+	 XML if the playlistType is dynamic 
+	 text if the playlistType is static 
+	 url if the playlistType is mRss 
+	 		* */ 
 		public var playlistContent : String = null;
 
 		/** 
@@ -41,23 +45,28 @@ package com.kaltura.vo
 		public var filters : Array = null;
 
 		/** 
-		* 		* */ 
+		* Maximum count of results to be returned in playlist execution
+	 		* */ 
 		public var totalResults : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Type of playlist
+	 		* */ 
 		public var playlistType : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Number of plays
+	 		* */ 
 		public var plays : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Number of views
+	 		* */ 
 		public var views : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* The duration in seconds
+	 		* */ 
 		public var duration : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

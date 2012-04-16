@@ -33,7 +33,8 @@ package com.kaltura.vo
 	public dynamic class KalturaStringResource extends KalturaContentResource
 	{
 		/** 
-		* 		* */ 
+		* Textual content
+	 		* */ 
 		public var content : String = null;
 
 		override public function getUpdateableParamKeys():Array

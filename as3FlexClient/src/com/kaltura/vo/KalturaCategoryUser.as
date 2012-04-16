@@ -36,31 +36,38 @@ package com.kaltura.vo
 		public var categoryId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* User id
+	 		* */ 
 		public var userId : String = null;
 
 		/** 
-		* 		* */ 
+		* Partner id
+	 		* */ 
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Partner id
+	 		* */ 
 		public var permissionLevel : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Status
+	 		* */ 
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* CategoryUser creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* CategoryUser update date as Unix timestamp (In seconds)
+	 		* */ 
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Update method can be either manual or automatic to distinguish between manual operations (for example in KMC) on automatic - using bulk upload 
+	 		* */ 
 		public var updateMethod : int = int.MIN_VALUE;
 
 		/** 

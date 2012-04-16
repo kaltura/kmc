@@ -64,11 +64,13 @@ package com.kaltura.vo
 		public var isAdmin : Boolean;
 
 		/** 
-		* 		* */ 
+		* http/rtmp/hdnetwork
+	 		* */ 
 		public var streamerType : String = null;
 
 		/** 
-		* 		* */ 
+		* http/https, rtmp/rtmpe
+	 		* */ 
 		public var mediaProtocol : String = null;
 
 		/** 
@@ -76,11 +78,13 @@ package com.kaltura.vo
 		public var storageProfilesXML : String = null;
 
 		/** 
-		* 		* */ 
+		* Array of messages as received from the access control rules that invalidated
+	 		* */ 
 		public var accessControlMessages : Array = null;
 
 		/** 
-		* 		* */ 
+		* Array of actions as received from the access control rules that invalidated
+	 		* */ 
 		public var accessControlActions : Array = null;
 
 		/** 

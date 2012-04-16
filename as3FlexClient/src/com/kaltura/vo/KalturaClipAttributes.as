@@ -33,11 +33,13 @@ package com.kaltura.vo
 	public dynamic class KalturaClipAttributes extends KalturaOperationAttributes
 	{
 		/** 
-		* 		* */ 
+		* Offset in milliseconds
+	 		* */ 
 		public var offset : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Duration in milliseconds
+	 		* */ 
 		public var duration : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

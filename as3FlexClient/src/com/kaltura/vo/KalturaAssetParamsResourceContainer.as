@@ -35,11 +35,13 @@ package com.kaltura.vo
 	public dynamic class KalturaAssetParamsResourceContainer extends KalturaResource
 	{
 		/** 
-		* 		* */ 
+		* The content resource to associate with asset params
+	 		* */ 
 		public var resource : KalturaContentResource;
 
 		/** 
-		* 		* */ 
+		* The asset params to associate with the reaource
+	 		* */ 
 		public var assetParamsId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array

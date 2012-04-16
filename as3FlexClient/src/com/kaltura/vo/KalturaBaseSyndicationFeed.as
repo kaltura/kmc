@@ -44,35 +44,48 @@ package com.kaltura.vo
 		public var partnerId : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* link a playlist that will set what content the feed will include
+	 if empty, all content will be included in feed
+	 		* */ 
 		public var playlistId : String = null;
 
 		/** 
-		* 		* */ 
+		* feed name
+	 		* */ 
 		public var name : String = null;
 
 		/** 
-		* 		* */ 
+		* feed status
+	 		* */ 
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* feed type
+	 		* */ 
 		public var type : int = int.MIN_VALUE;
 
 		/** 
-		* This is required by all syndication types.		* */ 
+		* Base URL for each video, on the partners site
+	 This is required by all syndication types.
+	 		* */ 
 		public var landingPage : String = null;
 
 		/** 
-		* 		* */ 
+		* Creation date as Unix timestamp (In seconds)
+	 		* */ 
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
-		* or just to provide a link to the landing page.		* */ 
+		* allow_embed tells google OR yahoo weather to allow embedding the video on google OR yahoo video results
+	 or just to provide a link to the landing page.
+	 it is applied on the video-player_loc property in the XML (google)
+	 and addes media-player tag (yahoo)
+	 		* */ 
 		public var allowEmbed : Boolean;
 
 		/** 
-		* 		* */ 
+		* Select a uiconf ID as player skin to include in the kwidget url
+	 		* */ 
 		public var playerUiconfId : int = int.MIN_VALUE;
 
 		/** 

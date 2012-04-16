@@ -33,11 +33,13 @@ package com.kaltura.vo
 	public dynamic class KalturaSystemPartnerUsageFilter extends KalturaFilter
 	{
 		/** 
-		* 		* */ 
+		* Date range from
+	 		* */ 
 		public var fromDate : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Date range to
+	 		* */ 
 		public var toDate : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
