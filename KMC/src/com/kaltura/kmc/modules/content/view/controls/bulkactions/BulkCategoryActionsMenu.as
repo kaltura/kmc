@@ -20,9 +20,9 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			topLevel.children = [];
 			actions.push(topLevel);
 			
-			var mi:MenuItemVo = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');
-			mi.data = "delete";
+			mi = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+			mi.data = "changeListing";
 			topLevel.children.push(mi);
 			
 			mi = new MenuItemVo();
@@ -30,12 +30,10 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			mi.data = "changeAccess";
 			topLevel.children.push(mi);
 			
-			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
-			mi.data = "changeListing";
-			topLevel.children.push(mi);
-			
-			
+			var mi:MenuItemVo = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');
+			mi.data = "delete";
+			topLevel.children.push(mi);	
 		}
 		
 		
