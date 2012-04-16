@@ -21,6 +21,7 @@
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaCategoryOrderBy;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaCategoryFilter;
 			
 			import mx.events.FlexEvent;
@@ -92,6 +93,13 @@
 
 
 
+
+			protected function categoriesTable_showDetailsHandler(event:GeneralNonCairngormEvent):void
+			{
+				// TODO Auto-generated method stub
+//				(event.data is KalturaCategory)
+			}
+
 		]]>
 	</mx:Script>
 	
@@ -119,13 +127,13 @@
 							   dataProvider="{categoriesModel.categoriesList}" 
 							   orderByChanged="loadCategories()"
 							   selectionChanged="categoriesTable_itemClickHandler(event)"
-							   moveCategory="categoriesTable_moveCategoryHandler(event)"/>
-				<!--showDetails="actionsManager.showEntryDetailsHandler(event)"-->
+							   moveCategory="categoriesTable_moveCategoryHandler(event)"
+							   showDetails="categoriesTable_showDetailsHandler(event)"/>
+				
 				 
 				
 				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" 
-														 />
+					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" />
 					
 					<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{categoriesModel.totalCategories}"
 									 rowsInPageChange="loadCategories()" nextPage="loadCategories()" prvPage="loadCategories()"
