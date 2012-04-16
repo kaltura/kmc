@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowHeight="36"
+			 allowMultipleSelection="true" headerRelease="headerReleaseHandler(event)" 
 			 creationComplete="datagrid1_creationCompleteHandler(event)"
 			 itemClick="setSelection(event)" change="setSelection(event)">
 	<mx:Metadata>
@@ -11,6 +12,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.fltr.EntriesFilter;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.types.WindowsStates;
@@ -22,8 +24,15 @@
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
+			import mx.controls.Alert;
+			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			
+			// ---------------------------------------------
+			// Events
+			// ---------------------------------------------
+			
 			
 			/**
 			 * defines the value of the type property for the <code>orderByChanged</code> event.
@@ -46,6 +55,12 @@
 			public static const MOVE_CATEGORY:String = "moveCategory";
 			
 			
+			
+			// ---------------------------------------------
+			// table sorting
+			// ---------------------------------------------
+			
+			
 			private var _orderBy:String = KalturaCategoryOrderBy.CREATED_AT_DESC;
 			
 			/**
@@ -54,6 +69,74 @@
 			public function get orderBy():String {
 				return _orderBy;
 			}
+			
+			/**
+			 * the current sort index
+			 * */
+			private var _sortIndex:int = 5;
+			
+			[Bindable]
+			/**
+			 * the current sort direction
+			 * */
+			private var _sortDirection:String = "DESC";
+			
+			private var _columnsSortMap:HashMap = new HashMap();
+			
+			private function headerReleaseHandler(event:DataGridEvent):void {
+				
+				event.preventDefault();
+				
+				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
+					var headerText:String = event.itemRenderer.data.headerText;
+					if (!_columnsSortMap.containsKey(headerText)) {
+						_columnsSortMap.put(headerText, false);
+					}
+					
+					var sortDir:Boolean = _columnsSortMap.getValue(headerText) as Boolean;
+					switch (event.itemRenderer.data.headerText) {
+//						case resourceManager.getString('entrytable', 'createAt'):
+//							_orderBy = sortDir ? KalturaCategoryOrderBy.CREATED_AT_ASC : KalturaCategoryOrderBy.CREATED_AT_DESC;
+//							break;
+//						case resourceManager.getString('entrytable', 'idHeader'):
+//							_orderBy = sortDir ? KalturaCategoryOrderBy.PLAYS_ASC : KalturaCategoryOrderBy.PLAYS_DESC;
+//							break;
+						case resourceManager.getString('cms', 'name'):
+							_orderBy = sortDir ? KalturaCategoryOrderBy.FULL_NAME_ASC : KalturaCategoryOrderBy.FULL_NAME_DESC;
+							break;
+						case resourceManager.getString('cms', 'itemCount'):
+							_orderBy = sortDir ? KalturaCategoryOrderBy.ENTRIES_COUNT_ASC : KalturaCategoryOrderBy.ENTRIES_COUNT_DESC;
+							break;
+						default:
+							Alert.show(resourceManager.getString('cms', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('cms', 'cannotOrderByItTitle'));
+							return;
+							break;
+					}
+					
+					// remember the direction and change the sign
+					_sortIndex = event.columnIndex;
+					_sortDirection = sortDir ? "ASC" : "DESC";
+					_columnsSortMap.setValue(headerText, !sortDir);
+					setSortIndicator();
+					
+					dispatchEvent(new Event(ORDER_BY_CHANGED));
+				}
+			}
+			
+			
+			private function setSortIndicator():void {
+				this.mx_internal::sortIndex = _sortIndex;
+				this.mx_internal::sortDirection = _sortDirection;
+			}
+
+			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
+				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);
+				addEventListener(CategoriesTableActions.MOVE, moveCategory, false, 0, true);
+				addEventListener(CategoriesTableActions.VIEW_ENTRIES, viewEntries, false, 0, true);
+			}
+			
 			
 			/**
 			 * selection or deselection was made
@@ -65,13 +148,10 @@
 				}
 			}
 
-			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
-				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
-				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
-				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);
-				addEventListener(CategoriesTableActions.MOVE, moveCategory, false, 0, true);
-				addEventListener(CategoriesTableActions.VIEW_ENTRIES, viewEntries, false, 0, true);
-			}
+			
+			// ----------------------------------------------
+			// table actions
+			// ----------------------------------------------
 			
 			
 			private function openDrilldown(e:Event):void {
@@ -106,11 +186,14 @@
 	<mx:columns>
 		<mx:DataGridColumn id="cid" paddingLeft="4" paddingRight="4" dataField="id" 
 						   width="90" headerText="{resourceManager.getString('cms', 'idHeader')}" />
+		
 		<mx:DataGridColumn id="cname" paddingLeft="4" paddingRight="4" dataField="name" 
 						   headerText="{resourceManager.getString('cms', 'name')}" 
 						   itemRenderer="com.kaltura.kmc.modules.content.view.content.categories.renderers.NameRenderer"/>
-		<mx:DataGridColumn id="items" paddingLeft="4" paddingRight="4" dataField="entriesCount" 
+		
+		<mx:DataGridColumn id="items" paddingLeft="4" paddingRight="4" dataField="directEntriesCount" 
 						   headerText="{resourceManager.getString('cms', 'itemCount')}" />
+		
 		<mx:DataGridColumn id="actions" paddingLeft="4" paddingRight="4" width="140"
 						   headerText="{resourceManager.getString('cms', 'actions')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.content.categories.renderers.ActionsRenderer"/>
