@@ -19,7 +19,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	{
 		override public function execute(event:CairngormEvent):void
 		{
-			_model.increaseLoadCounter();
+			
 		 	var mr:MultiRequest = new MultiRequest();
 			var ids:Array = event.data as Array;
 			if (!ids) {
@@ -29,12 +29,20 @@ package com.kaltura.kmc.modules.content.commands.cat
 					ids.push(kCat.id);
 				}
 			}
+			if (ids.length == 0) {
+				// no categories
+				var rm:IResourceManager = ResourceManager.getInstance();
+				Alert.show(rm.getString('entrytable', 'selectCategoriesFirst'),
+					rm.getString('cms', 'selectCategoriesFirstTitle'));
+				return;
+			}
 			
 			for each (var id:int in ids) {
 				var deleteCategory:CategoryDelete = new CategoryDelete(id);
 				mr.addAction(deleteCategory);
 			}
 			
+			_model.increaseLoadCounter();
 	        mr.addEventListener(KalturaEvent.COMPLETE, result);
             mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr); 
