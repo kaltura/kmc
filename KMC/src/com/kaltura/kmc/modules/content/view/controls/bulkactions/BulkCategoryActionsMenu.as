@@ -1,6 +1,9 @@
 package com.kaltura.kmc.modules.content.view.controls.bulkactions
 {
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.edw.model.types.WindowsStates;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	
 	import flash.events.Event;
 	
@@ -30,6 +33,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			mi.data = "changeAccess";
 			topLevel.children.push(mi);
 			
+			mi = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'bulkMoveCategories');
+			mi.data = "moveCategories";
+			topLevel.children.push(mi);
+			
 			var mi:MenuItemVo = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');
 			mi.data = "delete";
@@ -38,9 +46,10 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 		
 		
 		override protected function menu_itemClickHandler(event:MenuEvent):void {
+			var cgEvent:CairngormEvent;
 			switch (event.item.data) {
 				case "delete":
-					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
+					cgEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
 					cgEvent.dispatch();
 					break;
 				
@@ -50,6 +59,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 				
 				case "changeListing":
 					dispatchEvent(new Event("setCategoriesListing"));
+					break;
+				
+				case "moveCategories":
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
+					cgEvent.dispatch();
 					break;
 			}
 		}
