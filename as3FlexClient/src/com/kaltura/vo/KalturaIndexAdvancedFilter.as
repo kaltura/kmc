@@ -25,11 +25,31 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaAudioCodec
+	import com.kaltura.vo.KalturaSearchOperator;
+
+	[Bindable]
+	public dynamic class KalturaIndexAdvancedFilter extends KalturaSearchOperator
 	{
-		public static const ENTRY : int = 1;
-		public static const CATEGORY : int = 2;
+		/** 
+		* 		* */ 
+		public var indexIdGreaterThan : int = int.MIN_VALUE;
+
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			arr.push('indexIdGreaterThan');
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
+
 	}
 }

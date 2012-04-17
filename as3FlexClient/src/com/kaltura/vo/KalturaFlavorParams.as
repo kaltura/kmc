@@ -45,7 +45,7 @@ package com.kaltura.vo
 		/** 
 		* The audio codec of the Flavor Params
 	 		* */ 
-		public var audioCodec : String = null;
+		public var audioCodec : int = int.MIN_VALUE;
 
 		/** 
 		* The audio bitrate (in KBits) of the Flavor Params
@@ -127,6 +127,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var isGopInSec : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var videoConstantBitrate : int = int.MIN_VALUE;
 
 		/** 
@@ -165,6 +169,7 @@ package com.kaltura.vo
 			arr.push('format');
 			arr.push('aspectRatioProcessingMode');
 			arr.push('forceFrameToMultiplication16');
+			arr.push('isGopInSec');
 			arr.push('videoConstantBitrate');
 			arr.push('videoBitrateTolerance');
 			arr.push('clipOffset');

@@ -140,6 +140,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var inheritedParentIdIn : String = null;
 
+		/** 
+		* 		* */ 
+		public var partnerSortValueGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var partnerSortValueLessThanOrEqual : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -171,6 +179,8 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			arr.push('inheritedParentIdEqual');
 			arr.push('inheritedParentIdIn');
+			arr.push('partnerSortValueGreaterThanOrEqual');
+			arr.push('partnerSortValueLessThanOrEqual');
 			return arr;
 		}
 

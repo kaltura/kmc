@@ -160,6 +160,21 @@ package com.kaltura.vo
 		public var inheritedParentId : int = int.MIN_VALUE;
 
 		/** 
+		* Can be used to store various partner related data as a numeric value
+	 		* */ 
+		public var partnerSortValue : int = int.MIN_VALUE;
+
+		/** 
+		* Can be used to store various partner related data as a string 
+	 		* */ 
+		public var partnerData : String = null;
+
+		/** 
+		* Enable client side applications to define how to sort the category child categories 
+	 		* */ 
+		public var defaultOrderBy : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -179,6 +194,9 @@ package com.kaltura.vo
 			arr.push('referenceId');
 			arr.push('contributionPolicy');
 			arr.push('privacyContext');
+			arr.push('partnerSortValue');
+			arr.push('partnerData');
+			arr.push('defaultOrderBy');
 			return arr;
 		}
 

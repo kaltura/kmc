@@ -41,5 +41,7 @@ package com.kaltura.types
 		public static const UPDATED_AT_DESC : String = '-updatedAt';
 		public static const DIRECT_ENTRIES_COUNT_ASC : String = '+directEntriesCount';
 		public static const DIRECT_ENTRIES_COUNT_DESC : String = '-directEntriesCount';
+		public static const PARTNER_SORT_VALUE_ASC : String = '+partnerSortValue';
+		public static const PARTNER_SORT_VALUE_DESC : String = '-partnerSortValue';
 	}
 }

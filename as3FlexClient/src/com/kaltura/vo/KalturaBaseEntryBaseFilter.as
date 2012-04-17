@@ -191,6 +191,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var totalRankLessThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var totalRankGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
 		public var groupIdEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -354,6 +362,8 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
+			arr.push('totalRankLessThanOrEqual');
+			arr.push('totalRankGreaterThanOrEqual');
 			arr.push('groupIdEqual');
 			arr.push('searchTextMatchAnd');
 			arr.push('searchTextMatchOr');
