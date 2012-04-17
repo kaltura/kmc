@@ -6,7 +6,8 @@
 		 xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*" 
 		 xmlns:controls="com.kaltura.controls.*" 
 		 xmlns:filter="com.kaltura.kmc.modules.content.view.content.categories.filter.*"
-		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel">
+		 implements="com.kaltura.kmc.modules.content.view.content.IContentPanel"
+		 creationComplete="creationCompleteHandler(event)">
 	
 	
 	<mx:Script>
@@ -61,6 +62,20 @@
 				loadCategories();
 			}
 			
+			/**
+			 * fix the new playlists buttons
+			 * */
+			private function setButtonsWidth():void {
+				// this is a one-time-assignment, there's no reason to use binding.
+				var newButtonsWidth:Number = Math.max(addCatBtn.width, uploadCatsBtn.width, uploadUsersBtn.width);
+				addCatBtn.width = newButtonsWidth;
+				uploadCatsBtn.width = newButtonsWidth;
+				uploadUsersBtn.width = newButtonsWidth;
+				addCatBtn.visible = true;
+				uploadCatsBtn.visible = true;
+				uploadUsersBtn.visible = true;
+			}
+			
 			private function loadCategories():void {
 				// dispatch event that will load data according to screen filter
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
@@ -98,6 +113,33 @@
 			{
 				// TODO Auto-generated method stub
 //				(event.data is KalturaCategory)
+			}
+
+
+			protected function addCatBtn_clickHandler(event:MouseEvent):void
+			{
+				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
+				cgEvent.dispatch();
+			}
+			
+//			protected function filter_updateCategoryHandler(event:FilterEvent):void {
+//				var updateEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+//				updateEvent.data = event.data;
+//				updateEvent.dispatch();
+//			}
+//
+//
+//			protected function filter_addCategoryHandler(event:FilterEvent):void {
+//				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+//				addNewCategoryEvent.data = event.data;
+//				addNewCategoryEvent.dispatch();
+//			}
+//			
+
+
+
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				setButtonsWidth();
 			}
 
 		]]>
@@ -143,10 +185,13 @@
 			</mx:VBox>
 		</mx:HDividedBox>
 		<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
-			<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
-					   buttonMode="true" styleName="listActionButton"  />
-			<mx:Button id="addRuleBasedPlaylistBtn" label="{resourceManager.getString('cms', 'addRuleBasedPlaylist')}" 
-					   buttonMode="true" styleName="listActionButton" />
+			<mx:Button id="addCatBtn" label="{resourceManager.getString('cms', 'addNewCat')}" 
+					   styleName="listActionButton" visible="false" buttonMode="true"
+					   click="addCatBtn_clickHandler(event)" />
+			<mx:Button id="uploadCatsBtn" label="{resourceManager.getString('cms', 'uploadCatsCsv')}" 
+					   styleName="listActionButton" visible="false" buttonMode="true" />
+			<mx:Button id="uploadUsersBtn" label="{resourceManager.getString('cms', 'uploadMembersCsv')}" 
+					   styleName="listActionButton" visible="false" buttonMode="true" />
 		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>
