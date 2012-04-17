@@ -163,14 +163,11 @@ package com.kaltura.edw.components.fltr.cat
 			if (so.data && so.data.selectionMode) {
 				selectionMode = so.data.selectionMode;
 			}
-			
-//			initDataManager();
 		}
 		
 		private function initDataManager():void {
 			// destroy old controller
 			if (_dataManager) {
-//				_dataManager.controller.destroy();
 				return;
 			}
 			
@@ -467,9 +464,9 @@ package com.kaltura.edw.components.fltr.cat
 			// add from new value:
 			for each (var cat:CategoryVO in headCat.children) {
 				if (selectedIds.contains(cat.id.toString())) {
-					_selectedCategories[cat.id.toString()] = cat;
-					cat.selected = CatSelectionStatus.SELECTED;
-					//TODO handle partial selection
+					handleSelectionChange(cat);
+//					_selectedCategories[cat.id.toString()] = cat;
+//					cat.selected = CatSelectionStatus.SELECTED;
 					
 					// remove from initial filter
 					var i:int = selectedIds.getItemIndex(cat.id.toString());
