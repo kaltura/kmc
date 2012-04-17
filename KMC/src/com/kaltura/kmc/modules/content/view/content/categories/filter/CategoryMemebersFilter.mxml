@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+<panels:MultiAttributeFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
 						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
 						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
 	<mx:Script>
@@ -12,53 +12,61 @@
 			{
 				_buttons = [allBtn, hasBtn, noBtn];
 				friendlyName = resourceManager.getString('filter', 'membersTooltip');
+				_vo.membersCountLessThanOrEqual = int.MIN_VALUE;
+				_vo.membersCountGreaterThanOrEqual = int.MIN_VALUE;
 			}
 			
-			override public function get filter():Object {
-				var accessString:String = "";
-				//if non of the items are selected or all selected
-				if ((hasBtn.selected && noBtn.selected ) 
-					|| (!hasBtn.selected && !noBtn.selected)) {
-					accessString = "";
-				}
+			
+			override public function set kfilters(value:Array):void {
+				// update vo:
+				super.kfilters = value;
+				
+				// has
+				if (_vo.membersCountGreaterThanOrEqual && _vo.membersCountGreaterThanOrEqual != int.MIN_VALUE) {
+					// don't care about the value, assuming it's 1
+					hasBtn.selected = true;
+				} 
 				else {
-					if (hasBtn.selected) {
-						accessString += KalturaAppearInListType.CATEGORY_MEMBERS_ONLY + ",";
-					}
-					if (noBtn.selected) {
-						accessString += KalturaAppearInListType.PARTNER_ONLY + ",";
-					}
-					//remove last , 
-					accessString = accessString.slice(0, accessString.length - 1);
-				}
-				return accessString;
-			}
-			
-			
-			override public function set filter(value:Object):void {
-				if (!value) {
-					// no duration 
-					allBtn.selected = true;
 					hasBtn.selected = false;
-					noBtn.selected = false;
+					_vo.membersCountGreaterThanOrEqual = int.MIN_VALUE;
+				}
+				
+				// doesn't have
+				if (_vo.membersCountLessThanOrEqual && _vo.membersCountLessThanOrEqual != int.MIN_VALUE) {
+					// don't care about the value, assuming it's 0
+					noBtn.selected = true;
 				}
 				else {
-					//set all duration to unselected
-					allBtn.selected = false;
-					
-					var arr:Array = value.split(',');
-					for each (var code:String in arr) {
-						switch (code) {
-							case KalturaAppearInListType.CATEGORY_MEMBERS_ONLY:
-								hasBtn.selected = true;
-								break;
-							
-							case KalturaAppearInListType.PARTNER_ONLY:
-								noBtn.selected = true;
-								break;
-						}
+					noBtn.selected = false;
+					_vo.membersCountLessThanOrEqual = int.MIN_VALUE;
+				}
+			}
+			
+			
+			override protected function onDynamicTitleClicked(event:MouseEvent):void {
+				_vo.membersCountLessThanOrEqual = int.MIN_VALUE;
+				_vo.membersCountGreaterThanOrEqual = int.MIN_VALUE;
+				super.onDynamicTitleClicked(event);
+			}
+			
+			override protected function onDynamicMemberClicked(event:MouseEvent):void {
+				if (event.target == hasBtn) {
+					if (hasBtn.selected) {
+						_vo.membersCountGreaterThanOrEqual = 1;	
+					}
+					else {
+						_vo.membersCountGreaterThanOrEqual = int.MIN_VALUE;
 					}
 				}
+				else if (event.target == noBtn) {
+					if (noBtn.selected) {
+						_vo.membersCountLessThanOrEqual = 0;
+					}
+					else {
+						_vo.membersCountLessThanOrEqual = int.MIN_VALUE;
+					}
+				}
+				super.onDynamicMemberClicked(event);
 			}
 			
 		]]>
@@ -69,4 +77,4 @@
 				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
 	<mx:CheckBox id="noBtn" width="100%" label="{resourceManager.getString('filter', 'membersNoMembers')}"
 				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
-</panels:AdditionalFilter>
+</panels:MultiAttributeFilter>
