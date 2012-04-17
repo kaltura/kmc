@@ -124,6 +124,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
 			addCommand(CategoryEvent.DELETE_CATEGORIES, DeleteCategoriesCommand);
 			addCommand(CategoryEvent.MOVE_CATEGORIES, ReparentCategoriesCommand);
+			addCommand(CategoryEvent.LIST_METADATA_PROFILES, ListCategoryMetadataProfileCommand);
 			
 		}
 	}

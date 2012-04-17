@@ -21,6 +21,11 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		/**
+		 * list categories metadata profiles
+		 */
+		public static const LIST_METADATA_PROFILES : String = "content_listCategoryMetadataProfiles";
+		
+		/**
 		 * delete a category
 		 * event.data is an array of category ids 
 		 */

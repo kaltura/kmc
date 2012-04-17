@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" creationComplete="vbox1_creationCompleteHandler(event)">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
@@ -36,21 +36,13 @@
 			public function get selectedCategoty():KalturaCategory{
 				return catTree.selectedItem as KalturaCategory;
 			}
-			
-			// just for debug
-			private function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
-				trace("bla");
-			}
-			
-			// TODO: resource bundles
 		]]>
 	</mx:Script>
 	
-	<mx:Label text="1. Select the parent category under which the new category will appear" />
+	<mx:Label text="{resourceManager.getString('cms', 'selectParentCategory')}" />
 	<cat:CatTree id="catTree" width="100%" height="100%" selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
 				 categories="{_filterModel.categoriesMap}" dataProvider="{_filterModel.categories}" 
 				 chunkedData="{_filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" valueChange="onParentCategorySelected(event)" />
 	
-	<mx:Button id="nextBtn" label="Next" enabled="false" click="{dispatchEvent(new Event(Event.CHANGE))}"/>
+	<mx:Button id="nextBtn" label="{resourceManager.getString('cms', 'selectParentCategoryNext')}" enabled="false" click="{dispatchEvent(new Event(Event.CHANGE))}"/>
 </mx:VBox>

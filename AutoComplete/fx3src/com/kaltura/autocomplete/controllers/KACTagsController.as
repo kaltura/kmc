@@ -23,7 +23,7 @@ package com.kaltura.autocomplete.controllers
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			
 			// TODO: Check size limit?
-			pager.pageSi1ze = 30;
+			pager.pageSize = 30;
 			pager.pageIndex = 0;
 			
 			var listTags:TagSearch = new TagSearch(filter, pager);
@@ -31,6 +31,7 @@ package com.kaltura.autocomplete.controllers
 		}
 		
 		override protected function fetchElements(data:Object):Array{
+			if ((data.data as KalturaTagListResponse).objects != null) {
 			var tags:Vector.<KalturaTag> = Vector.<KalturaTag>((data.data as KalturaTagListResponse).objects);
 			var tagNames:Array = new Array();
 			
@@ -39,6 +40,10 @@ package com.kaltura.autocomplete.controllers
 			}
 				
 			return tagNames;
+			
+			} else {
+				return new Array();
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	
 	import mx.controls.Alert;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
 
@@ -62,6 +63,23 @@ package com.kaltura.kmc.modules.content.commands {
 					result (data.data[i]);
 				}
 			}*/
+		}
+		
+		final protected function checkError(resultData:Object):Boolean{
+			// look for error
+			var str:String = '';
+			var er:KalturaError = (resultData as KalturaEvent).error;
+			var rm:IResourceManager = ResourceManager.getInstance();
+			if (er) {
+				str = rm.getString('cms', er.errorCode);
+				if (!str) {
+					str = er.errorMsg;
+				} 
+				Alert.show(str, rm.getString('cms', 'error'));
+				return true;
+			} else {
+				return false;
+			}
 		}
 
 
