@@ -12,6 +12,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
@@ -20,7 +21,6 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmvc.model.KMvCModel;
-			import com.kaltura.types.KalturaCategoryOrderBy;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaCategoryFilter;
@@ -53,12 +53,11 @@
 			public function init(initFilter:KalturaBaseEntryFilter = null):void {
 				paging.selectedPage = 1;
 				paging.pageSize = paging.rowInPageCb.value as int;
-				//init as 10 lines 
 //				if (initFilter && initFilter is KalturaMediaEntryFilter) {
 //					filter.kalturaFilter = initFilter as KalturaMediaEntryFilter;
 //				}
 				filter.kalturaFilter = new KalturaCategoryFilter();
-//TODO if no other permissions we need to load				loadFilterData();
+//TODO if no other permissions we need to load categories for filter				loadFilterData();
 				loadCategories();
 			}
 			
@@ -111,14 +110,21 @@
 
 			protected function categoriesTable_showDetailsHandler(event:GeneralNonCairngormEvent):void
 			{
-				// TODO Auto-generated method stub
-//				(event.data is KalturaCategory)
+				// (event.data is KalturaCategory)
+				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [event.data]);
+				cgEvent.dispatch();
+				
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
+				cgEvent.dispatch();
 			}
 
 
 			protected function addCatBtn_clickHandler(event:MouseEvent):void
 			{
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
+				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [new KalturaCategory()]);
+				cgEvent.dispatch();
+				
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
 				cgEvent.dispatch();
 			}
 			
