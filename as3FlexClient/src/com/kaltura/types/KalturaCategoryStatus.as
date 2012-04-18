@@ -32,5 +32,6 @@ package com.kaltura.types
 		public static const UPDATING : int = 1;
 		public static const ACTIVE : int = 2;
 		public static const DELETED : int = 3;
+		public static const PURGED : int = 4;
 	}
 }

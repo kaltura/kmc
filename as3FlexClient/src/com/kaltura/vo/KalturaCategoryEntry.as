@@ -41,6 +41,11 @@ package com.kaltura.vo
 		public var entryId : String = null;
 
 		/** 
+		* Creation date as Unix timestamp (In seconds)
+	 		* */ 
+		public var createdAt : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array

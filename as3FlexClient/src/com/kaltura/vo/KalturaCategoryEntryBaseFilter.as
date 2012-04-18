@@ -44,6 +44,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var entryIdEqual : String = null;
 
+		/** 
+		* 		* */ 
+		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -51,6 +59,8 @@ package com.kaltura.vo
 			arr.push('categoryIdEqual');
 			arr.push('categoryIdIn');
 			arr.push('entryIdEqual');
+			arr.push('createdAtGreaterThanOrEqual');
+			arr.push('createdAtLessThanOrEqual');
 			return arr;
 		}
 

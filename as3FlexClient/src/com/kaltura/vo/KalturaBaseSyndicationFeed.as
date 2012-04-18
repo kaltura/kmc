@@ -109,6 +109,10 @@ package com.kaltura.vo
 		public var storageId : int = int.MIN_VALUE;
 
 		/** 
+		* 		* */ 
+		public var entriesOrderBy : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -125,6 +129,7 @@ package com.kaltura.vo
 			arr.push('addToDefaultConversionProfile');
 			arr.push('categories');
 			arr.push('storageId');
+			arr.push('entriesOrderBy');
 			return arr;
 		}
 
