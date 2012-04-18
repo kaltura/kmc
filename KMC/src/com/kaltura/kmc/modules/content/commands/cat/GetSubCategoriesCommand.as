@@ -58,7 +58,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 			if ((data.data as KalturaCategoryListResponse).totalCount <= CategoriesModel.SUB_CATEGORIES_LIMIT) {
 				// only set to model if less than 50
 				var ar:Array = (data.data as KalturaCategoryListResponse).objects;
-				ar.sortOn("partnerSortValue");
+				if (ar) {
+					ar.sortOn("partnerSortValue");
+				}
 				_model.categoriesModel.subCategories = new ArrayCollection(ar);
 			}
 		}
