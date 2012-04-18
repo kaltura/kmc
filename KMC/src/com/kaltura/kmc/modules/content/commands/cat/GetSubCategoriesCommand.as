@@ -31,7 +31,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 					// filter
 					var f:KalturaCategoryFilter = new KalturaCategoryFilter();
 					f.parentIdEqual = (_model.categoriesModel.selectedCategories[0] as KalturaCategory).id;
-					f.orderBy = KalturaCategoryOrderBy.FULL_NAME_ASC;
+					f.orderBy = KalturaCategoryOrderBy.NAME_DESC;
 					// pager
 					var p:KalturaFilterPager = new KalturaFilterPager();
 					p.pageSize = CategoriesModel.SUB_CATEGORIES_LIMIT;
