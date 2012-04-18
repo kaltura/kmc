@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 horizontalGap="0" horizontalAlign="center" verticalAlign="middle" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			
+			public static const MOVE_UP:String = "moveUp";
+			public static const MOVE_DOWN:String = "moveDown";
+			
+			private function moveItemUp(event:Event):void {
+				dispatchEvent(new Event(MOVE_UP, true));
+			}
+			
+			private function moveItemDown(event:Event):void {
+				dispatchEvent(new Event(MOVE_DOWN, true));	
+			}
+		]]>
+	</mx:Script>
+	<mx:LinkButton id="upBtn" click="moveItemUp(event)" styleName="moveUpButton" buttonMode="true"
+				   toolTip="{resourceManager.getString('account','moveUp')}"
+				   visible="{!data.isFirst}"/>
+	<mx:LinkButton id="downBtn" click="moveItemDown(event)" styleName="moveDownButton" buttonMode="true"
+				   toolTip="{resourceManager.getString('account','moveDown')}"
+				   visible="{!data.isLast}"/>
+</mx:HBox>

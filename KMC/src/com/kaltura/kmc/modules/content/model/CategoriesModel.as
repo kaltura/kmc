@@ -9,31 +9,40 @@ package com.kaltura.kmc.modules.content.model
 	public class CategoriesModel {
 		
 		/**
-		 * categories selected in the table 
+		 * numbers of subcategories that may be reordered 
+		 */
+		public static const SUB_CATEGORIES_LIMIT:int = 50;
+		
+		
+		/**
+		 * categories selected in the table (categories screen)
 		 */		
 		public var selectedCategories:Array;
 		
 		/**
-		 * categories returned from latest list action 
+		 * categories returned from latest list action (for categories screen)
 		 */		
 		public var categoriesList:ArrayCollection;
 		
 		/**
-		 * the totalCount of the latest list action 
+		 * the totalCount of the latest list action (categories screen)
 		 */		
 		public var totalCategories:int;
 		
 		/**
-		 * the filter used for the latest list action 
+		 * the filter used for the latest list action (categories screen)
 		 */		
 		public var filter:KalturaCategoryFilter;
 		
 		/**
-		 * the pager used for the latest list action 
+		 * the pager used for the latest list action (categories screen)
 		 */
 		public var pager:KalturaFilterPager;
 		
-
+		/**
+		 * sub categories of selected category (category drilldown) 
+		 */
+		public var subCategories:ArrayCollection;
 		
 	}
 }

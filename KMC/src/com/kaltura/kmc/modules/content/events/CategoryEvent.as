@@ -7,6 +7,24 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		/**
+		 * clear the list of subcategories of the current selected category (category drilldown) 
+		 */
+		public static const RESET_SUB_CATEGORIES : String = "content_resetSubCategories";
+		
+		/**
+		 * get a list of subcategories of the current selected category (category drilldown) 
+		 */
+		public static const GET_SUB_CATEGORIES : String = "content_getSubCategories";
+		
+		
+		/**
+		 * update subcategories order for the current selected category (category drilldown)
+		 * event.data is array of KalturaCategories to update 
+		 */
+		public static const UPDATE_SUB_CATEGORIES : String = "content_updateSubCategories";
+		
+		
+		/**
 		 * list categories to show in categories screen 
 		 * event.data is [filter, pager]
 		 */
