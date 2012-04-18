@@ -23,6 +23,31 @@
 			 * */
 			public static const CREATE_NEW_MANUAL_PLAYLIST:String = "createNewManualPlaylist";
 			
+			
+			/**
+			 * RnP: show tags actions
+			 * */
+			public var includeTags:Boolean = true;
+
+			/**
+			 * RnP: show scheduling action
+			 * */
+			public var includeScheduling:Boolean = true;
+
+			/**
+			 * RnP: show access control action
+			 * */
+			public var includeAccessControl:Boolean = true;
+			
+			/**
+			 * RnP: show dnld action
+			 * */
+			public var includeDownload:Boolean = true;
+			
+			/**
+			 * RnP: show playlist actions
+			 * */
+			public var includePlaylist:Boolean = true;
 
 			[Bindable]
 			/**
@@ -46,17 +71,22 @@
 				topLevel.children = [];
 				actions.push(topLevel);
 
+				var mi:MenuItemVo, smi:MenuItemVo;
 				// --- 
-
-				var mi:MenuItemVo = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'setScheduling');
-				mi.data = "scheduling";
-				topLevel.children.push(mi);
-
-				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'setAccessCOntrolProfile');
-				mi.data = "accessControl";
-				topLevel.children.push(mi);
+				
+				if (includeScheduling) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'setScheduling');
+					mi.data = "scheduling";
+					topLevel.children.push(mi);
+				}
+				
+				if (includeAccessControl) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'setAccessCOntrolProfile');
+					mi.data = "accessControl";
+					topLevel.children.push(mi);
+				}
 
 				mi = new MenuItemVo();
 				mi.label = resourceManager.getString('cms', 'changeOwner');
@@ -64,21 +94,22 @@
 				topLevel.children.push(mi);
 
 				// --- TAGS
-				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'editTags');
-				mi.children = [];
-				topLevel.children.push(mi);
-
-				var smi:MenuItemVo = new MenuItemVo();
-				smi.label = resourceManager.getString('cms', 'addTags');
-				smi.data = "addTags";
-				mi.children.push(smi);
-
-				smi = new MenuItemVo();
-				smi.label = resourceManager.getString('cms', 'removeTags');
-				smi.data = "removeTags";
-				mi.children.push(smi);
-
+				if (includeTags) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'editTags');
+					mi.children = [];
+					topLevel.children.push(mi);
+	
+					smi = new MenuItemVo();
+					smi.label = resourceManager.getString('cms', 'addTags');
+					smi.data = "addTags";
+					mi.children.push(smi);
+	
+					smi = new MenuItemVo();
+					smi.label = resourceManager.getString('cms', 'removeTags');
+					smi.data = "removeTags";
+					mi.children.push(smi);
+				}
 				// --- CATEGORIES
 				mi = new MenuItemVo();
 				mi.label = resourceManager.getString('cms', 'editCategories');
@@ -106,17 +137,21 @@
 				smi.data = "addCategory";
 				mi.children.push(smi);
 
-				smi = new MenuItemVo();
-				smi.label = resourceManager.getString('cms', 'createManualPlaylist');
-				smi.data = "addPlaylist";
-				mi.children.push(smi);
+				if (includePlaylist) {
+					smi = new MenuItemVo();
+					smi.label = resourceManager.getString('cms', 'createManualPlaylist');
+					smi.data = "addPlaylist";
+					mi.children.push(smi);
+				}
 
 
 				// --- DOWNLOAD
-				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'download');
-				mi.data = "download";
-				topLevel.children.push(mi);
+				if (includeDownload) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'download');
+					mi.data = "download";
+					topLevel.children.push(mi);
+				}
 
 				// --- DELETE
 				mi = new MenuItemVo();
