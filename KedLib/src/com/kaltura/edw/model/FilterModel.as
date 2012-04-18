@@ -55,12 +55,23 @@ package com.kaltura.edw.model
 		 * */
 		public var enableCustomData:Boolean = true;
 		
+		
 		/**
-		 * list of KMCMetadataProfileVO
+		 * list of KMCMetadataProfileVO of the categories
+		 */
+		public var categoryMetadataProfiles:ArrayCollection;
+		
+		/**
+		 * list of FormBuilders, the indices should suit the categoryMetadataProfiles arrayCollection
+		 */
+		public var categoryFormBuilders:ArrayCollection;
+		
+		/**
+		 * list of KMCMetadataProfileVO of the enries
 		 * */
 		public var metadataProfiles:ArrayCollection;
 		/**
-		 * list of FormBuilder, the indices should suit the metadataProfiles arrayCollection
+		 * list of FormBuilders, the indices should suit the metadataProfiles arrayCollection
 		 * */
 		public var formBuilders:ArrayCollection;
 		
