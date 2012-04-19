@@ -1,35 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 creationComplete="initCategoryEndUserAcessTab(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.view.window.OneRule;
+			import com.kaltura.kmc.modules.content.view.window.cdw.users.ChangeOwnerWin;
+			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaContributionPolicyType;
+			import com.kaltura.types.KalturaInheritanceType;
+			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.vo.KalturaCategory;
 			
-			[Bindable] public var category:KalturaCategory;
+			import mx.core.mx_internal;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 150;
+			
+			[Bindable] private var _category:KalturaCategory;
+			public function get category() : KalturaCategory {return _category;}
+			[Bindable] public function set category( value : KalturaCategory ) : void
+			{
+				_category = value;
+			}
+
+
+			protected function initCategoryEndUserAcessTab(event:FlexEvent):void
+			{
+
+			}
+			
+			protected function changeOwner() : void
+			{
+				var cowin : ChangeOwnerWin = new ChangeOwnerWin();
+				cowin.undoOwnerId = _category.owner;
+				PopUpManager.addPopUp( cowin , this , true);
+				PopUpManager.centerPopUp( cowin );
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'endUserAccessTitle')}"/>
 	<mx:HBox width="100%">
 		<mx:Label width="{LABEL_WIDTH}" text="{resourceManager.getString('cms', 'integrationPrivacyKey')}"  styleName="drillDownLabel" />
-		<mx:Text width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.privacyContexts}"/>
+		<mx:Text width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{_category.privacyContexts}"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms', 'contentPrivacy')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
-				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
+				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}" 
+								selected="{_category.privacy == KalturaPrivacyType.ALL}"
+								change="{ if((event.target as RadioButton).selected)_category.privacy = KalturaPrivacyType.ALL }"
 								groupName="contentPrivacy" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'noRestrictionDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','requiresAuthentication')}"
+								selected="{_category.privacy == KalturaPrivacyType.AUTHENTICATED_USERS}"
+								change="{ if((event.target as RadioButton).selected)_category.privacy = KalturaPrivacyType.AUTHENTICATED_USERS }"
 								groupName="contentPrivacy" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'requiresAuthenticationDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','private')}"
-								groupName="contentPrivacy" />
+								groupName="contentPrivacy" 
+								selected="{_category.privacy == KalturaPrivacyType.MEMBERS_ONLY}"
+								change="{ if((event.target as RadioButton).selected)_category.privacy = KalturaPrivacyType.MEMBERS_ONLY }"/>
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'privateDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 		</mx:VBox>
@@ -40,11 +78,15 @@
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
+								selected="{_category.appearInList == KalturaAppearInListType.PARTNER_ONLY}"
+								change="{ if((event.target as RadioButton).selected)_category.appearInList = KalturaAppearInListType.PARTNER_ONLY }"
 								groupName="categoryListing" />
-				<mx:Label width="100%" text="{resourceManager.getString('cms', 'noRestrictionDesc')}" styleName="smallLabel"/>
+				<mx:Label width="100%" text="{resourceManager.getString('cms', 'noRestrictionDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','private')}"
+								selected="{_category.appearInList == KalturaAppearInListType.CATEGORY_MEMBERS_ONLY}"
+								change="{ if((event.target as RadioButton).selected)_category.appearInList = KalturaAppearInListType.CATEGORY_MEMBERS_ONLY }"
 								groupName="categoryListing" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'privateDesc')}" styleName="smallLabel"/>
 			</mx:HBox>
@@ -56,11 +98,15 @@
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
+								selected="{_category.contributionPolicy == KalturaContributionPolicyType.ALL}"
+								change="{ if((event.target as RadioButton).selected)_category.contributionPolicy = KalturaContributionPolicyType.ALL }"
 								groupName="whoCanAddContent" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'noRestrictionDesc')}" styleName="smallLabel"/>
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','private')}"
+								selected="{_category.contributionPolicy == KalturaContributionPolicyType.MODERATOR}"
+								change="{ if((event.target as RadioButton).selected)_category.contributionPolicy = KalturaContributionPolicyType.MODERATOR }"
 								groupName="whoCanAddContent" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'privateDesc')}" styleName="smallLabel" />
 			</mx:HBox>
@@ -72,12 +118,16 @@
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','no')}"
-								groupName="whoCanAddContent" />
+								selected="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"
+								change="{ if((event.target as RadioButton).selected)_category.inheritanceType = KalturaInheritanceType.MANUAL }"
+								groupName="inheritEndUserSpecific" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'inheritEndUserSpecificNoDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','yes')}"
-								groupName="whoCanAddContent" />
+								selected="{_category.inheritanceType == KalturaInheritanceType.INHERIT}"
+								change="{ if((event.target as RadioButton).selected)_category.inheritanceType = KalturaInheritanceType.INHERIT }"
+								groupName="inheritEndUserSpecific" />
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'inheritEndUserSpecificYesDesc')}" styleName="smallLabel" />
 			</mx:HBox>
 		</mx:VBox>
@@ -89,11 +139,11 @@
 		</mx:HBox>
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms', 'owner')}" styleName="drillDownLabel" />
-			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.owner}" />
-			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" />
+			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{_category.owner}" />
+			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" click="changeOwner()"/>
 			<mx:VRule height="10" />
 			<mx:Label text="{resourceManager.getString('cms', 'users')}"  styleName="drillDownLabel" />
-			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.membersCount}"/>
+			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{_category.membersCount}"/>
 			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" />
 		</mx:HBox>
 	</mx:VBox>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							creationComplete="onInit(event)"
+							layout="vertical" width="400" height="300" xmlns:controllers="com.kaltura.autocomplete.controllers.*" xmlns:components="com.hillelcoren.components.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.vo.KalturaCategory;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			/**
+			 * client for autocomplete API calls
+			 * */
+			public var kClient:KalturaClient;
+			
+			[Bindable] private var _category:KalturaCategory;
+			public function get category() : KalturaCategory {return _category;}
+			[Bindable] public function set category( value : KalturaCategory ) : void
+			{
+				_category = value;
+				_undoOwnerId = _category.owner;
+			}
+			
+			[Bindable] private var _undoOwnerId : String;
+			public function get undoOwnerId() : String { return _undoOwnerId; }
+			public function set undoOwnerId( value : String ) : void { _undoOwnerId = value; }
+			
+			
+			private function onInit(event:FlexEvent):void {
+				//Create a new Controler that wrap the Auto Complete component
+				new KACUsersController(usersComplete, kClient);
+			}
+			
+			protected function onSave() : void
+			{
+				_category.owner = _undoOwnerId;
+				PopUpManager.removePopUp( this );
+			}
+			
+			protected function onClose( event : CloseEvent ) : void
+			{
+				Alert.show(resourceManager.getString('cms', 'undoEntryDetails'),
+					resourceManager.getString('cms', 'undoEntryDetailsTitle'),
+					Alert.YES | Alert.NO,
+					null,
+					onCloseComplete);
+			}
+			
+			protected function onCloseComplete(event:CloseEvent) : void
+			{
+				if (event.detail == Alert.YES)
+					onSave();
+				else
+					PopUpManager.removePopUp( this );
+			}
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('cms', 'changeOwnerDesc')}"  styleName="drillDownLabel" />
+	<components:AutoComplete id="usersComplete" allowNewValues="false" labelField="id" showRemoveIcon="true"
+							 selectedItemIdentifier="{_undoOwnerId}" 
+							 change="{_undoOwnerId = usersComplete.selectedItemIdentifier.toString()}"
+							 prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}" />
+
+</containers:HelpTitleWindow>
