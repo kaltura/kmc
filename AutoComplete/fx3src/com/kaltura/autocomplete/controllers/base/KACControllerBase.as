@@ -66,7 +66,7 @@ package com.kaltura.autocomplete.controllers.base
 			_autoComp.search();
 		}
 		
-		private function fault(info:KalturaEvent):void{
+		protected function fault(info:KalturaEvent):void{
 			throw new Error(info.error.errorMsg);
 		}
 		

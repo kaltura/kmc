@@ -35,6 +35,9 @@
 		 */
 		[Style(name="selectedItemStyleName", type="String", inherit="yes", enumeration="macMail,facebook,underline,none")]
 		
+		
+		[ResourceBundle("autocomplete")]
+		
 	</mx:Metadata>
 		
 	<mx:Script>
@@ -1503,6 +1506,19 @@
 			}
 			
 			/**
+			 * An identifier of some type that will be used by an external entity (probably the controller) to identify 
+			 * and set the actual selectedItem.
+			 */
+			[Bindable]
+			public function set selectedItemIdentifier( value:Object ):void{
+				_selectedItemIdentifier = value;
+			}
+			
+			public function get selectedItemIdentifier():Object{
+				return _selectedItemIdentifier;
+			}
+			
+			/**
 			 * An items in this list will be considered unavailable for selection. This
 			 * allows you to apply unqiue logic across multiple AutoCompletes
 			 */
@@ -1808,6 +1824,7 @@
 				
 			private var _isSearching:Boolean;
 			private var _messagePopup:List;
+			private var _selectedItemIdentifier:Object;
 			
 			public function notifySearching():void{
 				if (! _isSearching){
