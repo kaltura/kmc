@@ -17,29 +17,29 @@ package com.kaltura.kmc.modules.content.business
 			super(metadataProfile);
 		}
 		
-		public function set metadataDataInfo(value:KalturaMetadata):void{
-			_metadataDataInfo = value;
-		}
-		
-		public function get metadataDataInfo():KalturaMetadata{
-			return _metadataDataInfo;
-		}
-		
-		public function set finalViewMxml(value:XML):void{
-			_finalViewMxml = value;
-		}
-		
-		public function get finalViewMxml():XML{
-			return _finalViewMxml;
-		}
-		
-		public function set metadataDataObject(value:MetadataDataObject):void{
-			_metadataDataObject = value;
-		}
-		
-		public function get metadataDataObject():MetadataDataObject{
-			return _metadataDataObject;
-		}
+//		public function set metadataDataInfo(value:KalturaMetadata):void{
+//			_metadataDataInfo = value;
+//		}
+//		
+//		public function get metadataDataInfo():KalturaMetadata{
+//			return _metadataDataInfo;
+//		}
+//		
+//		public function set finalViewMxml(value:XML):void{
+//			_finalViewMxml = value;
+//		}
+//		
+//		public function get finalViewMxml():XML{
+//			return _finalViewMxml;
+//		}
+//		
+//		public function set metadataDataObject(value:MetadataDataObject):void{
+//			_metadataDataObject = value;
+//		}
+//		
+//		public function get metadataDataObject():MetadataDataObject{
+//			return _metadataDataObject;
+//		}
 		
 //		[Bindable]
 //		/**
