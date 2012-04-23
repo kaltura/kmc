@@ -2,11 +2,11 @@ package com.kaltura.kmc.modules.content.commands.cat
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.category.CategoryUpdate;
+	import com.kaltura.edw.control.KedController;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
-	import com.kaltura.edw.control.KedController;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.vo.KalturaCategory;
 	
@@ -19,18 +19,18 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			_model.increaseLoadCounter();
 			var cat:CategoryVO = event.data as CategoryVO;
-			var updatedCat:KalturaCategory = new KalturaCategory();
+//			var updatedCat:KalturaCategory = new KalturaCategory();
 			
 		//	updatedCat.createdAt = cat.category.createdAt;
 		//	updatedCat.depth = cat.category.depth;
 		//	updatedCat.entriesCount = cat.category.entriesCount;
 		//	updatedCat.fullName = cat.category.fullName;
 		//	updatedCat.id = cat.category.id;
-			updatedCat.name = cat.category.name;
-			updatedCat.parentId = cat.category.parentId;
+		//	updatedCat.name = cat.category.name;
+		//	updatedCat.parentId = cat.category.parentId;
 		//	updatedCat.partnerId = cat.category.partnerId;
 			
-		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, updatedCat);
+		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, cat.category);
 		 	updateCategory.addEventListener(KalturaEvent.COMPLETE, result);
 			updateCategory.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(updateCategory);	   
@@ -48,7 +48,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		 * reloads data 
 		 */		
 		protected function refresh():void {
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
+			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			getCategoriesList.dispatch();
 //			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.CATEGORY_CHANGED));
 			var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );

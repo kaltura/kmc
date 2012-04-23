@@ -2,10 +2,10 @@ package com.kaltura.kmc.modules.content.commands
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
-	import com.kaltura.edw.business.FormBuilder;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.business.CategoryFormBuilder;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
@@ -72,7 +72,7 @@ package com.kaltura.kmc.modules.content.commands
 							
 							//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
 							metadataProfiles.push(metadataProfile);
-							var fb:FormBuilder = new FormBuilder(metadataProfile);
+							var fb:CategoryFormBuilder = new CategoryFormBuilder(metadataProfile);
 							formBuilders.push(fb);
 							var isViewExist:Boolean = false;
 							

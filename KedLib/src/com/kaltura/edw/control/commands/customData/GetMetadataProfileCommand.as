@@ -1,7 +1,7 @@
 package com.kaltura.edw.control.commands.customData
 {
 	import com.kaltura.commands.metadataProfile.MetadataProfileGet;
-	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.business.EntryFormBuilder;
 	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.control.events.MetadataProfileEvent;
 	import com.kaltura.edw.model.FilterModel;
@@ -33,7 +33,7 @@ package com.kaltura.edw.control.commands.customData
 					var profile:KMCMetadataProfileVO = filterModel.metadataProfiles[i] as KMCMetadataProfileVO;
 					if (profile.profile.id == recievedProfile.id) {
 						profile.profile = recievedProfile;
-						(filterModel.formBuilders[i] as FormBuilder).metadataProfile = profile;
+						(filterModel.formBuilders[i] as EntryFormBuilder).metadataProfile = profile;
 						break;
 					}
 				}

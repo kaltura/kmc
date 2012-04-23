@@ -1,6 +1,6 @@
 package com.kaltura.edw.control.commands.customData {
 	import com.kaltura.commands.metadataProfile.MetadataProfileList;
-	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.business.EntryFormBuilder;
 	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
@@ -99,7 +99,7 @@ package com.kaltura.edw.control.commands.customData {
 	
 							//adds the profile to metadataProfiles, and its matching formBuilder to formBuilders
 							metadataProfiles.push(metadataProfile);
-							var fb:FormBuilder = new FormBuilder(metadataProfile);
+							var fb:EntryFormBuilder = new EntryFormBuilder(metadataProfile);
 							formBuilders.push(fb);
 							var isViewExist:Boolean = false;
 	

@@ -1,7 +1,7 @@
 package com.kaltura.edw.control.commands.customData
 {
 	import com.kaltura.commands.metadata.MetadataList;
-	import com.kaltura.edw.business.FormBuilder;
+	import com.kaltura.edw.business.EntryFormBuilder;
 	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
@@ -74,7 +74,7 @@ package com.kaltura.edw.control.commands.customData
 				cddp.metadataInfoArray.addItem(entryMetadata);
 				
 				// get the form builder that matches this profile:
-				var formBuilder:FormBuilder = _filterModel.formBuilders[i] as FormBuilder;
+				var formBuilder:EntryFormBuilder = _filterModel.formBuilders[i] as EntryFormBuilder;
 				formBuilder.metadataInfo = entryMetadata;
 				
 				// add the KalturaMetadata of this profile to the EntryMetadataDataVO

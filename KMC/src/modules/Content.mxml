@@ -76,6 +76,7 @@
 			import com.kaltura.utils.SoManager;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
+			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaLiveStreamBitrate;
 			import com.kaltura.vo.KalturaMediaEntry;
@@ -573,6 +574,11 @@
 				}
 				
 				_entryData.maxNumCategories = objParam.maxnumcategories;
+				
+				
+				// Custom data hack
+				var listCategoryMetadataProfiles:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
+				listCategoryMetadataProfiles.dispatch();
 			}
 
 
@@ -1061,6 +1067,10 @@
 						case WindowsStates.CATEGORY_DETAILS_WINDOW:
 							var catDetails:CategoryDetailsWin;
 							currentPopUp = catDetails = new CategoryDetailsWin();
+							var selectedCat:KalturaCategory = _model.categoriesModel.selectedCategories[0] as KalturaCategory;
+							if (selectedCat.name == null){
+								catDetails.isNewCategory = true;
+							}
 							catDetails.filterModel = _model.filterModel;
 							catDetails.category = _model.categoriesModel.selectedCategories[0];
 							catDetails.categoriesModel = _model.categoriesModel;

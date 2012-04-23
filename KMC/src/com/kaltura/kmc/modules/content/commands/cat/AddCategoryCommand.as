@@ -23,7 +23,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			super.result(data);
 			_model.decreaseLoadCounter();
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
+			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			getCategoriesList.dispatch();
 		}
 		

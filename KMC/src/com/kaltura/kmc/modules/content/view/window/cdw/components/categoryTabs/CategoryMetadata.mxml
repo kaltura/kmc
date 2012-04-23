@@ -1,46 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" creationComplete="vbox1_creationCompleteHandler(event)">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.EntryFormBuilder;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.view.customData.SingleCustomData;
+			import com.kaltura.kmc.modules.content.business.CategoryFormBuilder;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaCategory;
 			
+			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 90;
 			
+			[Bindable]
 			public var category:KalturaCategory;
 			public var filterModel:FilterModel;
+			private var _profilesAC:ArrayCollection;
+			private var _profileNames:ArrayCollection;
 			
 			
-			private function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
+			/**
+			 * create the visual representation of each profile
+			 * @param profilesAC list of custom data profiles (<code>KMCMetadataProfileVO</code>)
+			 * @param formBuildersAC	list of matching form builders (<code>FormBuilder</code>)
+			 * */
+			private function buildProfiles(profilesAC:ArrayCollection, formBuildersAC:ArrayCollection):void {
+				_profilesAC = new ArrayCollection();
+				_profileNames = new ArrayCollection();
+				// header for entry metadata section in the dropdown
+				_profileNames.addItem(resourceManager.getString('drilldown', 'metadata'));
+				//				// remove old data and old binding
+				//				destroy();
+				// remove custom datas, don't remove entry data box
+				while (editableBox.numChildren > 1) {
+					editableBox.removeChildAt(1);
+				}
 				
+				for (var i:int = 0; i < profilesAC.length; i++) {
+					var curProfile:KMCMetadataProfileVO = profilesAC.getItemAt(i) as KMCMetadataProfileVO;
+					
+					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
+						var curCustomData:SingleCustomData = new SingleCustomData();
+						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as CategoryFormBuilder;
+//						curCustomData.controller = controller;
+						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
+						
+						_profilesAC.addItem(curProfile);
+						_profileNames.addItem(curProfile.profile.name);
+						editableBox.addChild(curCustomData);
+					}
+				}
+				
+				scrollToTop(null);
+			}
+			
+			/**
+			 * jump to the top profile (entry data) 
+			 * */
+			private function scrollToTop(event:Event):void {
+				editableBox.verticalScrollPosition = 0;
+			}
+			
+			
+			public function validate():void{
 				
 			}
 			
+			public function save():void{
+				
+			}
+			
+			public function destroy():void{
+				
+			}
+			
+			public function clear():void{
+				
+			}
+			
+			public function initData():void{
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_INFO);
+				cgEvent.dispatch();
+			}
+			
+			public function init():void{
+				buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+			}
+			
+			public function isChanged():Boolean{
+				return false;
+			}
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+		<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.name}" change="{category.name = nameInput.text}"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+		<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.description}" change="{category.description = decriptionInput.text}"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
 		<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
 								 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
-								 labelField="tag" />
+								 labelField="tag" selectedItems="{new ArrayCollection(category.tags.split(','))}" change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
 	</mx:HBox>
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}" />
+		<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}" text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
 	</mx:HBox>
 	
-	<!-- custom data goes here -->
+	<mx:VBox width="100%" id="editableBox">
+		
+	</mx:VBox>
 	
 </mx:VBox>

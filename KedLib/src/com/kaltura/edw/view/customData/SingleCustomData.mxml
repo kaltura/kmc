@@ -7,7 +7,8 @@
 		 styleName="customDataProfileContainer" width="100%">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.business.FormBuilder;
+			import com.kaltura.edw.business.EntryFormBuilder;
+			import com.kaltura.edw.business.base.FormBuilderBase;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.control.events.MetadataProfileEvent;
 			import com.kaltura.edw.vo.EntryMetadataDataVO;
@@ -29,7 +30,7 @@
 			/**
 			 * app controller
 			 * */
-			public var controller:KMvCController;
+//			public var controller:KMvCController;
 
 			
 			/**
@@ -60,7 +61,7 @@
 			/**
 			 * the component that builds the form for the current entry + profile
 			 * */
-			private var _formBuilder:FormBuilder;
+			private var _formBuilder:FormBuilderBase;
 
 			
 			/**
@@ -89,12 +90,12 @@
 			/**
 			 * The form builder for current custom data profile
 			 * */
-			public function get formBuilder():FormBuilder {
+			public function get formBuilder():FormBuilderBase {
 				return _formBuilder;
 			}
 
 
-			public function set formBuilder(value:FormBuilder):void {
+			public function set formBuilder(value:FormBuilderBase):void {
 				_formBuilder = value;
 				_metadataViewWatcher = BindingUtils.bindSetter(setFinalMXML, _formBuilder, ["metadataInfo", "finalViewMxml"]);
 			}

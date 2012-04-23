@@ -44,5 +44,10 @@ package com.kaltura.kmc.modules.content.model
 		 */
 		public var subCategories:ArrayCollection;
 		
+		/**
+		 * Metadata info array of the selected category (category metadata --> category drilldown)
+		 */		
+		public var metadataInfo:ArrayCollection;
+		
 	}
 }

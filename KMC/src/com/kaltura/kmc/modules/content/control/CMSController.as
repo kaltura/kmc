@@ -128,6 +128,9 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.RESET_SUB_CATEGORIES, GetSubCategoriesCommand);
 			addCommand(CategoryEvent.UPDATE_SUB_CATEGORIES, UpdateSubCategoriesCommand);
 			addCommand(CategoryEvent.LIST_METADATA_PROFILES, ListCategoryMetadataProfileCommand);
+			addCommand(CategoryEvent.LIST_METADATA_INFO, ListCategoryMetadataDataCommand);
+			addCommand(CategoryEvent.UPDATE_CATEGORY, UpdateCategoryCommand);
+			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand);
 		}
 	}
 }

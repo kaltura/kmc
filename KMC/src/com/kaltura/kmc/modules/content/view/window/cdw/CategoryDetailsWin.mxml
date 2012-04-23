@@ -1,23 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" height="595" width="930" showCloseButton="true" showHelpButton="false"
-							close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18" title="{resourceManager.getString('cms', 'newCategoryTitle')}" xmlns:containers="com.kaltura.containers.*" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:window="com.kaltura.kmc.view.window.*" xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*" >
+							close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18" xmlns:containers="com.kaltura.containers.*" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:window="com.kaltura.kmc.view.window.*" xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*" initialize="onInitialize(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.commands.category.CategoryUpdate;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
+			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.utils.ObjectHelpers;
+			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			private var _isNewCategory:Boolean;
 			
 			[Bindable]
 			private var _model:CategoriesModel;
 			
+			private var _origCategory:KalturaCategory;
+			
 			[Bindable]
-			private var _category:KalturaCategory;
+			private var _undoCategory:KalturaCategory;
 			
 			[Bindable]
 			private var _filterModel:FilterModel;
+			
+//			private var _setParentCategory:CategoryVO;
 			
 			public function get filterModel():FilterModel {
 				return _filterModel;
@@ -28,11 +39,13 @@
 			}
 			
 			public function set category(value:KalturaCategory):void{
-				_category = value;
+				_origCategory = value;
+				_undoCategory = new KalturaCategory();
+				ObjectUtil.copyObject(_origCategory, _undoCategory);
 			}
 			
 			public function get category():KalturaCategory{
-				return _category;
+				return _origCategory;
 			}
 			
 			public function set categoriesModel(value:CategoriesModel):void{
@@ -44,33 +57,72 @@
 			}
 			
 			public function set isNewCategory(value:Boolean):void{
-				
+				_isNewCategory = value;
 			}
 			
 			private function onClose(event:CloseEvent):void{
+				tabsNav.clear();
+				tabsNav.destroy();
 				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
-			}
-			
-			override protected function createChildren():void{
-				super.createChildren();
-				parentSelect.addEventListener(Event.CHANGE, onParentSelected);
 			}
 			
 			private function onParentSelected(event:Event):void
 			{
 				currentState = "tabs";
+//				_setParentCategory = parentSelect.catTree.selectedItem as CategoryVO;
+				var parentCategory:CategoryVO = parentSelect.catTree.selectedItem as CategoryVO;
+				_undoCategory.parentId = parentCategory.category.id;
+			}
+			
+			private function onInitialize(evt:FlexEvent):void
+			{
+				if (_isNewCategory){
+					title = resourceManager.getString('cms', 'newCategoryTitle');
+					currentState = "parentSelect";
+				} else {
+					title = resourceManager.getString('cms', 'editCategoryTitle');
+					currentState = "tabs";
+				}
+			}
+			
+			
+			private function onSave():void
+			{
+				if (_isNewCategory){
+//					_undoCategory.parentId = /z.category.id;
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+					cgEvent.data = _undoCategory;
+					cgEvent.dispatch();
+				} else {
+					var hasChanged:Boolean = ObjectUtil.compareObjects(_origCategory, _undoCategory);
+					if (! hasChanged){
+						hasChanged = tabsNav.isChanged();
+					}
+					
+					if (hasChanged){
+						tabsNav.save();
+					}
+					
+					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+					cgEvent.data = catVO;
+					cgEvent.dispatch();
+				}
 			}
 			
 		]]>
 	</mx:Script>
 	<containers:states>
 		<mx:State name="tabs">
-			<mx:RemoveChild target="{parentSelect}"/>
 			<mx:AddChild>
-				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_category}" model="{_model}"/>
+				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()"/>
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="parentSelect">
+			<mx:AddChild>
+				<components:ParentCategorySelection change="onParentSelected(event)" id="parentSelect" width="100%" height="100%" filterModel="{_filterModel}"/>
 			</mx:AddChild>
 		</mx:State>
 	</containers:states>
 	
-	<components:ParentCategorySelection id="parentSelect" width="100%" height="100%" filterModel="{_filterModel}"/>
 </containers:HelpTitleWindow>
