@@ -1,6 +1,6 @@
 package com.kaltura.edw.model
 {
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.vo.KalturaBaseEntry;
 	
 	import mx.collections.ArrayCollection;

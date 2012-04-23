@@ -7,7 +7,7 @@ package com.kaltura.edw.control.commands.customData
 	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -70,7 +70,7 @@ package com.kaltura.edw.control.commands.customData
 			
 			//go over all profiles and match to the metadata data
 			for (var i:int = 0; i<_filterModel.metadataProfiles.length; i++) {
-				var entryMetadata:EntryMetadataDataVO = new EntryMetadataDataVO(); 
+				var entryMetadata:CustomMetadataDataVO = new CustomMetadataDataVO(); 
 				cddp.metadataInfoArray.addItem(entryMetadata);
 				
 				// get the form builder that matches this profile:

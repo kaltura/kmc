@@ -131,6 +131,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.LIST_METADATA_INFO, ListCategoryMetadataDataCommand);
 			addCommand(CategoryEvent.UPDATE_CATEGORY, UpdateCategoryCommand);
 			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand);
+			addCommand(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA, UpdateCategoryMetadataDataCommand);
+			addCommand(CategoryEvent.GET_PARENT_CATEGORY, GetParentCategoryCommand);
 		}
 	}
 }

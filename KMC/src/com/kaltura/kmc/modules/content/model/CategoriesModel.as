@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.content.model
 {
+	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	
@@ -49,5 +50,9 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var metadataInfo:ArrayCollection;
 		
+		/**
+		 * The parent category of the selected category (category drilldown).
+		 */
+		public var parentCategory:KalturaCategory;
 	}
 }

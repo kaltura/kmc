@@ -3,6 +3,8 @@
 		 creationComplete="initCategoryEndUserAcessTab(event)" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.OneRule;
 			import com.kaltura.kmc.modules.content.view.window.cdw.users.ChangeOwnerWin;
 			import com.kaltura.types.KalturaAppearInListType;
@@ -11,12 +13,16 @@
 			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.vo.KalturaCategory;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.core.mx_internal;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 150;
+			
+			public var model:CategoriesModel;
 			
 			[Bindable] private var _category:KalturaCategory;
 			public function get category() : KalturaCategory {return _category;}
@@ -44,7 +50,13 @@
 			}
 			
 			public function save():void{
-				
+				if (category.inheritanceType == KalturaInheritanceType.INHERIT){
+					var parentCat:KalturaCategory = model.parentCategory;
+					category.userJoinPolicy = parentCat.userJoinPolicy;
+					category.owner = parentCat.owner;
+					category.defaultPermissionLevel = parentCat.defaultPermissionLevel;
+					// TODO: handle end users as well.
+				}
 			}
 			
 			public function destroy():void{
@@ -58,7 +70,9 @@
 			
 			
 			public function initData():void{
-				
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
+				cgEvent.data = category;
+				cgEvent.dispatch();
 			}
 			
 			public function init():void{

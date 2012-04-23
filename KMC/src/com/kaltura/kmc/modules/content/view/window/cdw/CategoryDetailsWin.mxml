@@ -15,6 +15,8 @@
 			
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			
+			[Bindable]
 			private var _isNewCategory:Boolean;
 			
 			[Bindable]
@@ -28,7 +30,6 @@
 			[Bindable]
 			private var _filterModel:FilterModel;
 			
-//			private var _setParentCategory:CategoryVO;
 			
 			public function get filterModel():FilterModel {
 				return _filterModel;
@@ -60,18 +61,19 @@
 				_isNewCategory = value;
 			}
 			
-			private function onClose(event:CloseEvent):void{
-				tabsNav.clear();
-				tabsNav.destroy();
+			private function onClose(event:Event):void{
+				if (tabsNav != null){
+					tabsNav.clear();
+					tabsNav.destroy();
+				}
 				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
 			}
 			
 			private function onParentSelected(event:Event):void
 			{
-				currentState = "tabs";
-//				_setParentCategory = parentSelect.catTree.selectedItem as CategoryVO;
 				var parentCategory:CategoryVO = parentSelect.catTree.selectedItem as CategoryVO;
 				_undoCategory.parentId = parentCategory.category.id;
+				currentState = "tabs";
 			}
 			
 			private function onInitialize(evt:FlexEvent):void
@@ -104,9 +106,9 @@
 					}
 					
 					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
-					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-					cgEvent.data = catVO;
-					cgEvent.dispatch();
+					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+					cgEvent2.data = catVO;
+					cgEvent2.dispatch();
 				}
 			}
 			
@@ -115,7 +117,7 @@
 	<containers:states>
 		<mx:State name="tabs">
 			<mx:AddChild>
-				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()"/>
+				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()" close="onClose(event)" isNewCategory="{_isNewCategory}"/>
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="parentSelect">

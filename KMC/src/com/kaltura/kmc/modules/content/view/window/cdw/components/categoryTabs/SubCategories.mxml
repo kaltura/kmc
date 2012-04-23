@@ -16,13 +16,13 @@
 			
 			
 			[Bindable]
-			private var _categories:ArrayCollection;
+			private var _subCategories:ArrayCollection;
 			
 			/**
 			 * list of categories for reordering
 			 * */
-			public function set categories(value:ArrayCollection):void {
-				_categories = value;
+			public function set subCategories(value:ArrayCollection):void {
+				_subCategories = value;
 				if (value) {
 					if (value.length == 0 || value.length > CategoriesModel.SUB_CATEGORIES_LIMIT) {
 						if (this.parent) {
@@ -35,8 +35,8 @@
 				}
 			}
 			
-			public function get categories():ArrayCollection {
-				return _categories;
+			public function get subCategories():ArrayCollection {
+				return _subCategories;
 			}
 			
 			private function creationCompleteHandler(event:FlexEvent):void {
@@ -49,8 +49,8 @@
 			 * tell the head and tail of the list they are head and tail
 			 * */
 			private function setFirstLast():void {
-				_categories.getItemAt(0).isFirst = true;
-				_categories.getItemAt(_categories.length-1).isLast = true;
+				_subCategories.getItemAt(0).isFirst = true;
+				_subCategories.getItemAt(_subCategories.length-1).isLast = true;
 			}
 			
 			
@@ -61,27 +61,27 @@
 			 * */
 			private function handleMove(e:Event):void {
 				var cat:KalturaCategory = e.target.data as KalturaCategory;
-				var ind:int = _categories.getItemIndex(cat);
+				var ind:int = _subCategories.getItemIndex(cat);
 				
 				if (e.type == CategoryPositionRenderer.MOVE_DOWN) {
-					if (ind == _categories.length - 2) {
-						_categories.getItemAt(_categories.length - 1).isLast = false;
+					if (ind == _subCategories.length - 2) {
+						_subCategories.getItemAt(_subCategories.length - 1).isLast = false;
 					}
 					else if (ind == 0) {
 						cat.isFirst = false;
 					}
-					_categories.removeItemAt(ind);
-					_categories.addItemAt(cat, ind + 1);
+					_subCategories.removeItemAt(ind);
+					_subCategories.addItemAt(cat, ind + 1);
 				}
 				else if (e.type == CategoryPositionRenderer.MOVE_UP) {
 					if (ind == 1) {
-						_categories.getItemAt(0).isFirst = false;
+						_subCategories.getItemAt(0).isFirst = false;
 					}
-					else if (ind == _categories.length-1) {
+					else if (ind == _subCategories.length-1) {
 						cat.isLast = false;
 					}
-					_categories.removeItemAt(ind);
-					_categories.addItemAt(cat, ind - 1);
+					_subCategories.removeItemAt(ind);
+					_subCategories.addItemAt(cat, ind - 1);
 				}
 				setFirstLast();
 			}
@@ -94,8 +94,8 @@
 			public function save():void {
 				var updated:Array = [];
 				var cat:KalturaCategory;
-				for (var i:int = 0; i<_categories.length; i++) {
-					cat = _categories.getItemAt(i) as KalturaCategory;
+				for (var i:int = 0; i<_subCategories.length; i++) {
+					cat = _subCategories.getItemAt(i) as KalturaCategory;
 					if (cat.partnerSortValue != i) {
 						cat.partnerSortValue = i;
 						updated.push(cat);
@@ -123,13 +123,12 @@
 			}
 			
 			public function init():void {
-			
 			}
 			
 			public function isChanged():Boolean {
 				var cat:KalturaCategory;
-				for (var i:int = 0; i<_categories.length; i++) {
-					cat = _categories.getItemAt(i) as KalturaCategory;
+				for (var i:int = 0; i<_subCategories.length; i++) {
+					cat = _subCategories.getItemAt(i) as KalturaCategory;
 					if (cat.partnerSortValue != i) {
 						return true;
 					}
@@ -142,7 +141,7 @@
 	</mx:Script>
 	
 	<mx:Label text="{resourceManager.getString('cms', 'subcatsDescription')}" />
-	<mx:DataGrid id="catsList" dataProvider="{_categories}" width="100%" height="100%">
+	<mx:DataGrid id="catsList" dataProvider="{_subCategories}" width="100%" height="100%">
 		<mx:columns>
 			<mx:DataGridColumn id="catName" dataField="name" 
 							   headerText="{resourceManager.getString('cms', 'subcat')}"/>

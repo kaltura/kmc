@@ -14,16 +14,19 @@
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
 			import com.kaltura.vo.KalturaCategory;
 			
+			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			
 			public static const SAVE_EVENT:String = "save";
-//			public static const CLOSE_EVENT:String = "close";
+			public static const CLOSE_EVENT:String = "close";
 			
 			[Bindable]
-			public var filterModel:FilterModel
+			public var filterModel:FilterModel;
 			
 			[Bindable]
 			public var model:CategoriesModel;
+			
+			public var isNewCategory:Boolean;
 			
 			private var _category:KalturaCategory;
 			
@@ -35,7 +38,7 @@
 			
 			private function onSaveAndClose():void{
 				dispatchEvent(new Event(SAVE_EVENT)); 
-				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
+				dispatchEvent(new Event(CLOSE_EVENT));
 			}
 			
 			public function validate():Boolean{
@@ -50,12 +53,21 @@
 			
 			private function onCreationComplete(event:FlexEvent):void
 			{
+				if (isNewCategory){
+					viewStack.removeChild(subCategories);
+				}
+				
 	 			_tabs = new Vector.<ICategoryDrilldownPanel>;
 				for (var index:uint = 0; index < viewStack.numChildren; index++){
 					var tab:ICategoryDrilldownPanel = viewStack.getChildAt(index) as ICategoryDrilldownPanel;
+					
 					_tabs.push(tab);
 					
 					tab.init();
+					
+					if (_category != null){
+						tab.initData();
+					}
 				} 
 			}
 			
@@ -101,9 +113,9 @@
 				   useHandCursor="true"  buttonMode="true" tabHeight="25"/>
 		
 		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all" creationComplete="onCreationComplete(event)" styleName="sectionViewStack" selectedIndex="{tabBar.selectedIndex}" >
-			<categoryTabs:CategoryMetadata label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%" height="100%" category="{category}" filterModel="{filterModel}"/>
-			<categoryTabs:CategoryEndUserAccess width="100%" height="100%"	label="{resourceManager.getString('cms', 'endUserAccess')}"	category="{category}"/>
-			<categoryTabs:SubCategories  width="100%" height="100%"  categories="{model.categoriesList}" label="{resourceManager.getString('cms', 'categorySubCategories')}" /> <!--  -->
+			<categoryTabs:CategoryMetadata label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%" height="100%" category="{category}" filterModel="{filterModel}" model="{model}" />
+			<categoryTabs:CategoryEndUserAccess width="100%" height="100%"	label="{resourceManager.getString('cms', 'endUserAccess')}"	category="{category}" model="{model}"/>
+			<categoryTabs:SubCategories  id="subCategories" width="100%" height="100%"  subCategories="{model.subCategories}" label="{resourceManager.getString('cms', 'categorySubCategories')}" /> <!--  -->
 			
 		</mx:ViewStack>
 	</mx:HBox>

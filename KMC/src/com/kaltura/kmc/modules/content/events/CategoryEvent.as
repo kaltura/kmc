@@ -54,9 +54,25 @@ package com.kaltura.kmc.modules.content.events
 		 */
 		public static const DELETE_CATEGORIES : String = "content_deleteCategories";
 		
+		/**
+		 * Update the selected category with new set values.
+		 */
 		public static const UPDATE_CATEGORY : String = "content_updateCategory";
 		
+		/**
+		 * Add a new category with new set values.
+		 */
 		public static const ADD_CATEGORY    : String = "content_addCategory";
+		
+		/**
+		 * Update the metadata data of the selected category.
+		 */
+		public static const UPDATE_CATEGORY_METADATA_DATA : String = "content_updateCategoryMetadataData";
+		
+		/**
+		 * Retrieve the parent kaltura category object of the selected category
+		 */
+		public static const GET_PARENT_CATEGORY : String = "content_getParentCategory";
 		
 		public function CategoryEvent( type:String , 
 									   bubbles:Boolean=false,

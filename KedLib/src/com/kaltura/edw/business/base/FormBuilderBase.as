@@ -10,6 +10,7 @@ package com.kaltura.edw.business.base
 	import com.kaltura.edw.view.customData.ConsistentDateField;
 	import com.kaltura.edw.view.customData.DateFieldWithTime;
 	import com.kaltura.edw.view.customData.MultiComponent;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadata;
 	import com.kaltura.vo.MetadataFieldVO;
@@ -48,11 +49,12 @@ package com.kaltura.edw.business.base
 		
 		private var _objectsHM:HashMap;
 		
-		protected var _metadataDataInfo:KalturaMetadata;
+//		protected var _metadataDataInfo:KalturaMetadata;
 		
-		protected var _finalViewMxml:XML;
+//		protected var _finalViewMxml:XML;
 		
-		protected var _metadataDataObject:MetadataDataObject;
+//		protected var _metadataDataObject:MetadataDataObject;
+		private var _metadataInfo:CustomMetadataDataVO;
 		
 		public function FormBuilderBase(metadataProfile:KMCMetadataProfileVO) {
 			_metadataProfile = metadataProfile;
@@ -65,22 +67,22 @@ package com.kaltura.edw.business.base
 				Alert.show(ResourceManager.getInstance().getString('drilldown', 'metadataInvalidView', new Array(_metadataProfile.profile.name)), ResourceManager.getInstance().getString('drilldown', 'error'));
 				return;
 			}
-			if (!_metadataDataInfo) {
+			if (!_metadataInfo.metadata) {
 				// there was no previous data for this profile + entry, use the profile's default view
-				_finalViewMxml = _metadataProfile.viewXML.copy();
+				_metadataInfo.finalViewMxml = _metadataProfile.viewXML.copy();
 				return;
 			}
 			
 			// view:
 			var mxml:XML = _metadataProfile.viewXML.copy();
 			// saved data:
-			var metadataData:XML = new XML(_metadataDataInfo.xml);
+			var metadataData:XML = new XML(_metadataInfo.metadata.xml);
 			
 			var dataMap:HashMap = MetadataDataParser.getMetadataDataValues(metadataData);
 			for each (var field:XML in mxml.children())
 			setFieldData(field, dataMap);
 			
-			_finalViewMxml = mxml;
+			_metadataInfo.finalViewMxml = mxml;
 		}
 		
 		/**
@@ -146,17 +148,20 @@ package com.kaltura.edw.business.base
 					}
 				}
 				else {
-					setNonVBoxFieldDataHook(field, valuesHashMap);
 //					metadataDataAttribute = field.@metadataData;
+					if (! handleNonVBoxFieldDataHook(field, valuesHashMap)){
+						field.@[field.@metadataData] = valuesHashMap.getValue(field.@name)[0];
+					}
 //					//in linked entry we want all the values array
 //					if (field.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE)
 //						field.@[metadataDataAttribute] = valuesHashMap.getValue(field.@name);
 //					else
-//						field.@[metadataDataAttribute] = valuesHashMap.getValue(field.@name)[0];
 				}
 			}
 		}
-		protected function setNonVBoxFieldDataHook(field:XML, valuesHashMap:HashMap):void{}
+		protected function handleNonVBoxFieldDataHook(field:XML, valuesHashMap:HashMap):Boolean{
+			return false;
+		}
 			
 		/**
 		 * sets in viewXml the suitable mxml for the ui represantation.
@@ -421,7 +426,7 @@ package com.kaltura.edw.business.base
 			}
 			
 			//if it's a nested component we will recieve the bound metadata object. otherwhise use the one from the model
-			var boundObject:MetadataDataObject = metadataObject ? metadataObject : _metadataDataObject;
+			var boundObject:MetadataDataObject = metadataObject ? metadataObject : _metadataInfo.metadataDataObject;
 			try {
 				var child:UIComponent = buildComponent(field, boundObject, fieldsArray);
 			}
@@ -547,5 +552,28 @@ package com.kaltura.edw.business.base
 		public function get metadataProfile():KMCMetadataProfileVO{
 			return _metadataProfile;
 		}
+		
+		[Bindable]
+		public function set metadataInfo(value:CustomMetadataDataVO):void {
+			_metadataInfo = value;
+//			_finalViewMxml = _metadataInfo.finalViewMxml;
+//			_metadataDataInfo = _metadataInfo.metadata;
+//			_metadataDataObject = _metadataInfo.metadataDataObject;
+		}
+		
+		public function get metadataInfo():CustomMetadataDataVO {
+			return _metadataInfo;
+		}
+		
+		
+//		[Bindable]
+//		public function set finalViewMxml(value:XML):void{
+//			_finalViewMxml = value;
+//		}
+//	
+//		
+//		public function get finalViewMxml():XML{
+//			return _finalViewMxml;
+//		}
 	}
 }

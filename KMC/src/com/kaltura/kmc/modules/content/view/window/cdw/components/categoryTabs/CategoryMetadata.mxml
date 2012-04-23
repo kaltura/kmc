@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.EntryFormBuilder;
+			import com.kaltura.edw.business.MetadataDataParser;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.view.customData.SingleCustomData;
+			import com.kaltura.edw.vo.CustomMetadataDataVO;
 			import com.kaltura.kmc.modules.content.business.CategoryFormBuilder;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaCategory;
 			
@@ -16,11 +21,17 @@
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 90;
 			
-			[Bindable]
-			public var category:KalturaCategory;
+			private  var _category:KalturaCategory;
 			public var filterModel:FilterModel;
+			public var model:CategoriesModel;
+			
+			[Bindable]
 			private var _profilesAC:ArrayCollection;
+			
+			[Bindable]
 			private var _profileNames:ArrayCollection;
+			
+			private static const customDataVerticalGap:int = 5;
 			
 			
 			/**
@@ -71,7 +82,8 @@
 			}
 			
 			public function save():void{
-				
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
+				cgEvent.dispatch();
 			}
 			
 			public function destroy():void{
@@ -89,34 +101,92 @@
 			
 			public function init():void{
 				buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+				
+				new KACTagsController(tagsInput, CmsModelLocator.getInstance().context.kc);
+			}
+						
+			public function isChanged():Boolean{
+				var res:Boolean = false;
+				
+				var infoArray:ArrayCollection = model.metadataInfo;
+				
+				if (_profilesAC.length && infoArray && infoArray.length) {
+					for (var i:int = 0; i < _profilesAC.length; i++) {
+						var metadataInfo:CustomMetadataDataVO = infoArray.getItemAt(i) as CustomMetadataDataVO;
+						var metadataProfile:KMCMetadataProfileVO = _profilesAC.getItemAt(i) as KMCMetadataProfileVO;
+						if (metadataProfile && metadataProfile.profile && metadataInfo) {
+							var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo, metadataProfile);
+							if (metadataInfo.metadata) {
+								var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+								if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+									res = true;
+								}
+							}
+								//new metadata was inserted
+							else if (newMetadataXML.children().length() > 0) {
+								res = true;
+							}
+						}
+					}
+				}
+				return res;
 			}
 			
-			public function isChanged():Boolean{
-				return false;
+			[Bindable]
+			public function set category(value:KalturaCategory):void{
+				_category = value;
+				
+				if (_category && _category.tags != null){
+					tagsInput.selectedItems = new ArrayCollection(_category.tags.split(","));
+				}
+			}
+			
+			public function get category():KalturaCategory{
+				return _category;
+			}
+			
+			private function jumpToProfile():void {
+				var scrollPos:int = 0;
+				var childIndex:int = profilesCB.selectedIndex;
+				if (childIndex != -1) {
+					//sums up all heights before the desired profile
+					for (var i:int = 0; i < childIndex; i++) {
+						scrollPos += editableBox.getChildAt(i).height + customDataVerticalGap;
+					}
+					editableBox.verticalScrollPosition = scrollPos;
+				}
+				profilesCB.selectedIndex = -1;
 			}
 		]]>
 	</mx:Script>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.name}" change="{category.name = nameInput.text}"/>
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.description}" change="{category.description = decriptionInput.text}"/>
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
-								 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
-								 labelField="tag" selectedItems="{new ArrayCollection(category.tags.split(','))}" change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
-	</mx:HBox>
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-		<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}" text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
-	</mx:HBox>
-	
-	<mx:VBox width="100%" id="editableBox">
-		
+	<mx:VBox width="100%" height="{height}" horizontalAlign="right">
+		<!-- navigation -->
+		<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()" styleName="customDataProfilesCB"
+					 prompt="{resourceManager.getString('drilldown','jumpToPrompt')}" selectedIndex="-1"
+					 fontWeight="bold" visible="{_profileNames.length > 2}" includeInLayout="{_profileNames.length > 2}"/>
+		<mx:VBox id="editableBox" styleName="noPadding" verticalGap="{customDataVerticalGap}"
+				 height="{height - profilesCB.height - getStyle('verticalGap')}" width="100%">
+			<mx:VBox id="categoryMetadata" width="100%">
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+					<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.name}" change="{category.name = nameInput.text}"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+					<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.description}" change="{category.description = decriptionInput.text}"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+					<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
+											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
+											 labelField="tag" change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+					<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}" text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:VBox>
 	</mx:VBox>
 	
-</mx:VBox>
+</mx:HBox>

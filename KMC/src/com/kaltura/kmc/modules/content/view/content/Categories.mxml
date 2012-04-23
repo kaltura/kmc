@@ -21,6 +21,10 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmvc.model.KMvCModel;
+			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaContributionPolicyType;
+			import com.kaltura.types.KalturaInheritanceType;
+			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaCategoryFilter;
@@ -121,29 +125,23 @@
 
 			protected function addCatBtn_clickHandler(event:MouseEvent):void
 			{
-				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [new KalturaCategory()]);
+				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [createCategoryObject()]);
 				cgEvent.dispatch();
 				
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
 				cgEvent.dispatch();
 			}
 			
-//			protected function filter_updateCategoryHandler(event:FilterEvent):void {
-//				var updateEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-//				updateEvent.data = event.data;
-//				updateEvent.dispatch();
-//			}
-//
-//
-//			protected function filter_addCategoryHandler(event:FilterEvent):void {
-//				var addNewCategoryEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-//				addNewCategoryEvent.data = event.data;
-//				addNewCategoryEvent.dispatch();
-//			}
-//			
-
-
-
+			private function createCategoryObject():KalturaCategory{
+				var cat:KalturaCategory = new KalturaCategory();
+				cat.privacy = KalturaPrivacyType.ALL;
+				cat.appearInList = KalturaAppearInListType.PARTNER_ONLY;
+				cat.contributionPolicy = KalturaContributionPolicyType.ALL;
+				cat.inheritanceType = KalturaInheritanceType.MANUAL;
+				
+				return cat;
+			}
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				setButtonsWidth();
 			}

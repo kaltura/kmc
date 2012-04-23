@@ -3,13 +3,14 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.metadata.MetadataList;
 	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.business.CategoryFormBuilder;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.model.CategoriesModel;
 	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.kmc.modules.content.view.content.Categories;
-	import com.kaltura.kmc.modules.content.vo.CategoryMetadataDataVO;
+	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaFilterPager;
@@ -36,12 +37,13 @@ package com.kaltura.kmc.modules.content.commands.cat
 			var filterModel:FilterModel = _model.filterModel;
 //			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 			var catModel:CategoriesModel = _model.categoriesModel;
-			if (!filterModel.metadataProfiles ||!catModel.selectedCategories.length != 1)
+			if (!filterModel.categoryMetadataProfiles || catModel.selectedCategories.length != 1)
 				return;
 			
 			var filter:KalturaMetadataFilter = new KalturaMetadataFilter();
 			var selectedCategory:KalturaCategory = catModel.selectedCategories[0] as KalturaCategory;
 			filter.objectIdEqual = String(selectedCategory.id);	
+			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.CATEGORY;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			
 			var listMetadataData:MetadataList = new MetadataList(filter, pager);
@@ -69,16 +71,16 @@ package com.kaltura.kmc.modules.content.commands.cat
 			catModel.metadataInfo = new ArrayCollection;
 			
 			//go over all profiles and match to the metadata data
-			for (var i:int = 0; i<filterModel.metadataProfiles.length; i++) {
-				var categoryMetadata:CategoryMetadataDataVO = new CategoryMetadataDataVO(); 
+			for (var i:int = 0; i<filterModel.categoryMetadataProfiles.length; i++) {
+				var categoryMetadata:CustomMetadataDataVO = new CustomMetadataDataVO(); 
 				catModel.metadataInfo.addItem(categoryMetadata);
 				
 				// get the form builder that matches this profile:
-				var formBuilder:CategoryFormBuilder = filterModel.formBuilders[i] as CategoryFormBuilder;
+				var formBuilder:CategoryFormBuilder = filterModel.categoryFormBuilders[i] as CategoryFormBuilder;
 				formBuilder.metadataInfo = categoryMetadata;
 				
 				// add the KalturaMetadata of this profile to the EntryMetadataDataVO
-				var profileId:int = (filterModel.metadataProfiles[i] as KMCMetadataProfileVO).profile.id;
+				var profileId:int = (filterModel.categoryMetadataProfiles[i] as KMCMetadataProfileVO).profile.id;
 				for each (var metadata:KalturaMetadata in metadataResponse.objects) {
 					if (metadata.metadataProfileId == profileId) {
 						categoryMetadata.metadata = metadata;

@@ -30,6 +30,8 @@ package com.kaltura.kmc.modules.content.commands.cat
 		//	updatedCat.parentId = cat.category.parentId;
 		//	updatedCat.partnerId = cat.category.partnerId;
 			
+			cat.category.setUpdatedFieldsOnly(true);
+			
 		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, cat.category);
 		 	updateCategory.addEventListener(KalturaEvent.COMPLETE, result);
 			updateCategory.addEventListener(KalturaEvent.FAILED, fault);

@@ -10,7 +10,7 @@ package com.kaltura.edw.control.commands {
 	import com.kaltura.edw.model.datapacks.CustomDataDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.datapacks.PermissionsDataPack;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
@@ -47,7 +47,7 @@ package com.kaltura.edw.control.commands {
 			if ((_model.getDataPack(PermissionsDataPack) as PermissionsDataPack).enableUpdateMetadata && cddp.metadataInfoArray) {
 				var metadataProfiles:ArrayCollection = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel.metadataProfiles;
 				for (var j:int = 0; j < cddp.metadataInfoArray.length; j++) {
-					var metadataInfo:EntryMetadataDataVO = cddp.metadataInfoArray[j] as EntryMetadataDataVO;
+					var metadataInfo:CustomMetadataDataVO = cddp.metadataInfoArray[j] as CustomMetadataDataVO;
 					var profile:KMCMetadataProfileVO = metadataProfiles[j] as KMCMetadataProfileVO;
 					if (metadataInfo && profile && profile.profile) {
 						var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo, profile);

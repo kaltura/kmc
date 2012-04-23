@@ -18,7 +18,7 @@ package com.kaltura.edw.business {
 	import com.kaltura.edw.view.customData.DateFieldWithTime;
 	import com.kaltura.edw.view.customData.EntryIDLinkTable;
 	import com.kaltura.edw.view.customData.MultiComponent;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
@@ -63,7 +63,7 @@ package com.kaltura.edw.business {
 		/**
 		 * @copy #metadataInfo 
 		 */		
-		private var _entryMetadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
+//		private var _entryMetadataInfo:EntryMetadataDataVO = new EntryMetadataDataVO();
 			
 //		/**
 //		 * map of objects that will be bound to others
@@ -89,23 +89,23 @@ package com.kaltura.edw.business {
 //			_metadataProfile = value;
 //		}
 
-
+		
 		/**
 		 *  The metadata info, containing the data that was inserted to the current metadata profile
 		 * @return the used metadataInfo
 		 *
 		 */
-		public function get metadataInfo():EntryMetadataDataVO {
-			return _entryMetadataInfo;
-		}
+//		public function get metadataInfo():EntryMetadataDataVO {
+//			return _entryMetadataInfo;
+//		}
 
-
-		public function set metadataInfo(value:EntryMetadataDataVO):void {
-			_entryMetadataInfo = value;
-			_finalViewMxml = _entryMetadataInfo.finalViewMxml;
-			_metadataDataInfo = _entryMetadataInfo.metadata;
-			_metadataDataObject = _entryMetadataInfo.metadataDataObject;
-		}
+//		[Bindable]
+//		public function set metadataInfo(value:EntryMetadataDataVO):void {
+//			_entryMetadataInfo = value;
+//			_finalViewMxml = _entryMetadataInfo.finalViewMxml;
+//			_metadataDataInfo = _entryMetadataInfo.metadata;
+//			_metadataDataObject = _entryMetadataInfo.metadataDataObject;
+//		}
 
 
 		/**
@@ -222,13 +222,15 @@ package com.kaltura.edw.business {
 //			}
 //		}
 		
-		override protected function setNonVBoxFieldDataHook(field:XML, valuesHashMap:HashMap):void{
+		override protected function handleNonVBoxFieldDataHook(field:XML, valuesHashMap:HashMap):Boolean{
 			var metadataDataAttribute:String = field.@metadataData;
 			//in linked entry we want all the values array
-			if (field.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE)
+			if (field.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE){
 				field.@[metadataDataAttribute] = valuesHashMap.getValue(field.@name);
-			else
-				field.@[metadataDataAttribute] = valuesHashMap.getValue(field.@name)[0];
+				return true;
+			}
+			
+			return false;
 		}
 
 

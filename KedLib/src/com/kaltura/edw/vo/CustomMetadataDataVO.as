@@ -9,7 +9,7 @@ package com.kaltura.edw.vo
 	 * @author Michal
 	 * 
 	 */	
-	public class EntryMetadataDataVO
+	public class CustomMetadataDataVO
 	{
 		/**
 		 * dynamic object, represents metadata values
@@ -20,7 +20,7 @@ package com.kaltura.edw.vo
 		
 		public var metadata:KalturaMetadata;
 		
-		public function EntryMetadataDataVO()
+		public function CustomMetadataDataVO()
 		{
 		}
 	}

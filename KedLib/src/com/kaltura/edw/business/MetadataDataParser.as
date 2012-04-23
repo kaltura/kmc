@@ -4,7 +4,7 @@ package com.kaltura.edw.business
 	import com.kaltura.base.types.MetadataCustomFieldTypes;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.model.MetadataDataObject;
-	import com.kaltura.edw.vo.EntryMetadataDataVO;
+	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.MetadataFieldVO;
@@ -31,7 +31,7 @@ package com.kaltura.edw.business
 		 * @param metadataProfile	the profile this metadata matches
 		 * @return a valid metadataData XML
 		 */		
-		public static function toMetadataXML(entryMetadata:EntryMetadataDataVO, metadataProfile:KMCMetadataProfileVO):XML {
+		public static function toMetadataXML(entryMetadata:CustomMetadataDataVO, metadataProfile:KMCMetadataProfileVO):XML {
 			var result:XML = new XML(METADATA_ROOT);
 			var metadataObject:MetadataDataObject = entryMetadata.metadataDataObject;
 			
