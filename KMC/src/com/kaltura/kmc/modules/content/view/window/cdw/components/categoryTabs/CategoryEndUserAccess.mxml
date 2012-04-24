@@ -40,7 +40,7 @@
 			protected function changeOwner() : void
 			{
 				var cowin : ChangeOwnerWin = new ChangeOwnerWin();
-				cowin.undoOwnerId = _category.owner;
+				cowin.category = _category;
 				PopUpManager.addPopUp( cowin , this , true);
 				PopUpManager.centerPopUp( cowin );
 			}
@@ -65,14 +65,17 @@
 			
 			
 			public function clear():void{
-				
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.CLEAR_PARENT_CATEGORY);
+				cgEvent.dispatch();
 			}
 			
 			
 			public function initData():void{
-				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
-				cgEvent.data = category;
-				cgEvent.dispatch();
+				if (category.parentId > 0){
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
+					cgEvent.data = category;
+					cgEvent.dispatch();
+				}
 			}
 			
 			public function init():void{
@@ -169,6 +172,7 @@
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
 				<mx:RadioButton label="{resourceManager.getString('cms','yes')}"
+								enabled="{category.parentId > 0}"
 								selected="{_category.inheritanceType == KalturaInheritanceType.INHERIT}"
 								change="{ if((event.target as RadioButton).selected)_category.inheritanceType = KalturaInheritanceType.INHERIT }"
 								groupName="inheritEndUserSpecific" />
@@ -184,7 +188,7 @@
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('cms', 'owner')}" styleName="drillDownLabel" />
 			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{_category.owner}" />
-			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" click="changeOwner()"/>
+			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}" click="changeOwner()"/>
 			<mx:VRule height="10" />
 			<mx:Label text="{resourceManager.getString('cms', 'users')}"  styleName="drillDownLabel" />
 			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{_category.membersCount}"/>

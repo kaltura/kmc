@@ -70,9 +70,14 @@ package com.kaltura.kmc.modules.content.events
 		public static const UPDATE_CATEGORY_METADATA_DATA : String = "content_updateCategoryMetadataData";
 		
 		/**
-		 * Retrieve the parent kaltura category object of the selected category
+		 * Retrieve the parent kaltura category object of the selected category.
 		 */
 		public static const GET_PARENT_CATEGORY : String = "content_getParentCategory";
+		
+		/**
+		 * Clear parent category from the model.
+		 */
+		public static const CLEAR_PARENT_CATEGORY : String = "content_clearParentCategory";
 		
 		public function CategoryEvent( type:String , 
 									   bubbles:Boolean=false,

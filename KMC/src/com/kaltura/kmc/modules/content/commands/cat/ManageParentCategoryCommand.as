@@ -5,24 +5,35 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
 	
-	public class GetParentCategoryCommand extends KalturaCommand{
+	public class ManageParentCategoryCommand extends KalturaCommand{
 		
 		override public function execute(event:CairngormEvent):void{
-			_model.increaseLoadCounter();
-			
-			var selectedCat:KalturaCategory = event.data as KalturaCategory;
-			var parentId:int = selectedCat.parentId;
-			
-			var req:CategoryGet = new CategoryGet(parentId);
-			req.addEventListener(KalturaEvent.COMPLETE, result);
-			req.addEventListener(KalturaEvent.FAILED, fault);
-
-			_model.context.kc.post(req);
+			switch (event.type){
+				case CategoryEvent.CLEAR_PARENT_CATEGORY:
+					_model.categoriesModel.parentCategory = null;
+					break;
+				
+				case CategoryEvent.GET_PARENT_CATEGORY:
+					
+					_model.increaseLoadCounter();
+					
+					var selectedCat:KalturaCategory = event.data as KalturaCategory;
+					var parentId:int = selectedCat.parentId;
+					
+					var req:CategoryGet = new CategoryGet(parentId);
+					req.addEventListener(KalturaEvent.COMPLETE, result);
+					req.addEventListener(KalturaEvent.FAILED, fault);
+		
+					_model.context.kc.post(req);
+					
+					break;
+			}
 		}
 		
 		override public function result(data:Object):void{

@@ -132,7 +132,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.UPDATE_CATEGORY, UpdateCategoryCommand);
 			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand);
 			addCommand(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA, UpdateCategoryMetadataDataCommand);
-			addCommand(CategoryEvent.GET_PARENT_CATEGORY, GetParentCategoryCommand);
+			addCommand(CategoryEvent.GET_PARENT_CATEGORY, ManageParentCategoryCommand);
+			addCommand(CategoryEvent.CLEAR_PARENT_CATEGORY, ManageParentCategoryCommand);
 		}
 	}
 }
