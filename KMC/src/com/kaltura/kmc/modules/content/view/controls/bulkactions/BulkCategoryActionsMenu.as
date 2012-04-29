@@ -15,6 +15,7 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 	public class BulkCategoryActionsMenu extends BulkEntryActionsMenu {
 		
 		override protected function createMenu():void {
+			var mi:MenuItemVo;
 			actions = [];
 			
 			var topLevel:MenuItemVo = new MenuItemVo();
@@ -38,7 +39,7 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			mi.data = "moveCategories";
 			topLevel.children.push(mi);
 			
-			var mi:MenuItemVo = new MenuItemVo();
+			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');
 			mi.data = "delete";
 			topLevel.children.push(mi);	
