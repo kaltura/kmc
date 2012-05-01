@@ -24,6 +24,19 @@ package com.kaltura.autocomplete.controllers
 			super(autoComp, client);
 			
 			BindingUtils.bindSetter(onIdentifierSet, autoComp, "selectedItemIdentifier");
+			autoComp.addEventListener(Event.CHANGE, onSelectionChanged, false, int.MAX_VALUE);
+		}
+		
+		private function onSelectionChanged(event:Event):void
+		{
+			for (var index:uint = 0; index < _autoComp.selectedItems.length; index++){
+				var item:Object = _autoComp.selectedItems.getItemAt(index);
+				if (item is String){
+					var userItem:KalturaUser = new KalturaUser();
+					userItem.id = item as String;
+					_autoComp.selectedItems.setItemAt(userItem, index);
+				}
+			}
 		}
 		
 		private function onIdentifierSet(ident:Object):void
