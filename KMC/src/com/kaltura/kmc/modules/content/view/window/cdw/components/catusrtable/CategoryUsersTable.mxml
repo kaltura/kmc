@@ -1,13 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false">
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false" 
+			 creationComplete="datagrid1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
+			import com.kaltura.kmc.modules.content.view.window.cdw.users.SetPermissionLevelWin;
 			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
 			import com.kaltura.types.KalturaCategoryUserStatus;
 			import com.kaltura.types.KalturaUpdateMethodType;
 			
+			import mx.events.FlexEvent;
 			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
+			
+
+
+			/**
+			 * if true, actions in table are enabled
+			 * */
+			public function set allowActions(value:Boolean):void {
+				ActionsRenderer.allowActions = value;
+			}
+
 			
 			/**
 			 * get a textual value according to user permission level
@@ -79,6 +94,70 @@
 			}
 			
 
+
+
+			private function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+				addEventListener(CatUsrTableActions.APPROVE, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.ACTIVATE, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.DEACTIVATE, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.DELETE, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.EDIT_PERMISSION_LEVEL, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.SET_AUTO_UPDATE, doAction, false, 0, true);
+				addEventListener(CatUsrTableActions.SET_MANUAL_UPDATE, doAction, false, 0, true);
+			}
+			
+			
+			/**
+			 * handle the different actions
+			 * */
+			private function doAction(event:Event):void {
+				var cue:CategoryUserEvent;
+				switch (event.type) {
+					case CatUsrTableActions.APPROVE:
+						cue = new CategoryUserEvent(CategoryUserEvent.ACTIVATE_CATEGORY_USER);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.ACTIVATE:
+						cue = new CategoryUserEvent(CategoryUserEvent.ACTIVATE_CATEGORY_USER);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.DEACTIVATE:
+						cue = new CategoryUserEvent(CategoryUserEvent.DEACTIVATE_CATEGORY_USER);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.DELETE:
+						cue = new CategoryUserEvent(CategoryUserEvent.DELETE_CATEGORY_USERS);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.SET_AUTO_UPDATE:
+						cue = new CategoryUserEvent(CategoryUserEvent.SET_CATEGORY_USERS_AUTO_UPDATE);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.SET_MANUAL_UPDATE:
+						cue = new CategoryUserEvent(CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE);
+						cue.data = [event.target.data];
+						cue.dispatch();
+						break;
+					
+					case CatUsrTableActions.EDIT_PERMISSION_LEVEL:
+						var permLvlWin:SetPermissionLevelWin = new SetPermissionLevelWin();
+						permLvlWin.users = [event.target.data];
+						PopUpManager.addPopUp(permLvlWin, this, true);
+						PopUpManager.centerPopUp(permLvlWin);
+						break;
+				}
+			}
+
 		]]>
 	</mx:Script>
 	
@@ -109,7 +188,7 @@
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" 
 						   headerText="{resourceManager.getString('cms', 'uthActions')}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+						   itemRenderer="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.ActionsRenderer"/>
 		
 	</mx:columns>
 </mx:DataGrid>

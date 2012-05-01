@@ -137,6 +137,15 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.LIST_CATEGORY_USERS, listCategoryUsersCommand);
 			addCommand(CategoryEvent.INHERIT_USERS_FROM_PARENT, inheritUsersCommand);
 			addCommand(CategoryEvent.ADD_CATEGORY_USERS, addUsersCommand);
+			
+			// category users
+			addCommand(CategoryUserEvent.ACTIVATE_CATEGORY_USER, ToggleCategoryUserStatusCommand);
+			addCommand(CategoryUserEvent.DEACTIVATE_CATEGORY_USER, ToggleCategoryUserStatusCommand);
+			addCommand(CategoryUserEvent.DELETE_CATEGORY_USERS, DeleteCategoryUserCommand);
+			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_AUTO_UPDATE, SetCategoryUserUpdateMethod);
+			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE, SetCategoryUserUpdateMethod);
+			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_PERMISSION_LEVEL, SetCategoryUsersPermLevel);
+			
 		}
 	}
 }

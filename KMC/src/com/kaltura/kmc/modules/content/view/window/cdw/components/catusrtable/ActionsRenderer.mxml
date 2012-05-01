@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaCategoryUserStatus;
+			import com.kaltura.types.KalturaUpdateMethodType;
+			import com.kaltura.vo.KalturaCategoryUser;
+			
+			import mx.events.ListEvent;
+			
+			[Bindable]
+			public static var allowActions:Boolean = true;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				
+//				box.selectedIndex = -1;
+				
+				// build actions list:
+				var actions:Array = [];
+				var kcu:KalturaCategoryUser = value as KalturaCategoryUser;
+				
+				// approve / archive / activate
+				if (kcu.status == KalturaCategoryUserStatus.PENDING) {
+					actions.push({label:resourceManager.getString('cms', 'utaApprove'), data:CatUsrTableActions.APPROVE});
+				}
+				else if (kcu.status == KalturaCategoryUserStatus.ACTIVE) {
+					actions.push({label:resourceManager.getString('cms', 'utaDeactivate'), data:CatUsrTableActions.DEACTIVATE});
+				}
+				else if (kcu.status == KalturaCategoryUserStatus.NOT_ACTIVE) {
+					actions.push({label:resourceManager.getString('cms', 'utaActivate'), data:CatUsrTableActions.ACTIVATE});
+				}
+				
+				if (kcu.status != KalturaCategoryUserStatus.NOT_ACTIVE) {
+					// permission level
+					actions.push({label:resourceManager.getString('cms', 'utaPermLvl'), data:CatUsrTableActions.EDIT_PERMISSION_LEVEL});
+					
+					// update method
+					if (kcu.updateMethod == KalturaUpdateMethodType.MANUAL) {
+						actions.push({label:resourceManager.getString('cms', 'utaMethodAuto'), data:CatUsrTableActions.SET_AUTO_UPDATE});
+					}
+					else if (kcu.updateMethod == KalturaUpdateMethodType.AUTOMATIC) {
+						actions.push({label:resourceManager.getString('cms', 'utaMethodManual'), data:CatUsrTableActions.SET_MANUAL_UPDATE});
+					}
+				}
+				
+				// delete
+				actions.push({label:resourceManager.getString('cms', 'utaDelete'), data:CatUsrTableActions.DELETE});
+				
+				
+				box.dataProvider = actions;
+			}
+
+			private function box_changeHandler(event:ListEvent):void {
+				event.stopImmediatePropagation();
+				event.preventDefault();
+				dispatchEvent(new Event(box.selectedItem.data, true));
+				box.selectedIndex = -1;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:ComboBox id="box" width="100%" prompt="{resourceManager.getString('cms', 'selectActionLabel')}"
+				 change="box_changeHandler(event)" enabled="{ActionsRenderer.allowActions}"/>
+</mx:HBox>

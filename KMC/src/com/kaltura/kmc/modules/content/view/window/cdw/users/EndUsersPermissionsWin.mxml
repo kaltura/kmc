@@ -5,7 +5,7 @@
 							layout="vertical" width="900" height="500" showCloseButton="true"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)" xmlns:ctrls="com.kaltura.controls.*"
-							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*">
+							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*" xmlns:catusrtable="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
@@ -42,12 +42,6 @@
 
 
 			private function creationCompleteHandler(event:FlexEvent):void {
-				if (_category.inheritanceType == KalturaInheritanceType.INHERIT || _category.parentId == 0) {
-					addFromParentBtn.enabled = false;
-				}
-				if (_category.inheritanceType == KalturaInheritanceType.INHERIT) {
-					addUsersBtn.enabled = false;
-				}
 				
 				loadUsers();
 				BindingUtils.bindSetter(hideParentBtn, model, "categoryUsers");
@@ -140,12 +134,14 @@
 	</mx:HBox>
 
 	<mx:HBox width="100%" height="100%" styleName="noPadding">
-		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="245"
+		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="220"
 							   filterChanged="filterChangedHandler(event)"/>
 		<mx:VBox height="100%" width="100%" verticalGap="0" styleName="noPadding">
-			<users:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"/>
+			<catusrtable:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"
+											allowActions="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}"/>
+				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}" 
+											   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 				<ctrls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadUsers()"
 							  nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
 							  showRowsInPage="true" defaultPageSize="25"/>
@@ -154,9 +150,11 @@
 		<mx:VBox id="actionsBox" styleName="listActionsBox" height="100%" width="160">
 			<mx:Button id="addUsersBtn" width="100%" styleName="listActionButton" buttonMode="true"
 					   label="{resourceManager.getString('cms', 'addUsersBtn')}" 
-					   click="addUsersBtn_clickHandler(event)" />
+					   click="addUsersBtn_clickHandler(event)"
+					   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 			<controls:CanvasButton id="addFromParentBtn" styleName="listActionButton" width="100%"
-								   click="addFromParentBtn_clickHandler(event)">
+								   click="addFromParentBtn_clickHandler(event)"
+								   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; _category.parentId != 0}">
 				<mx:Text text="{resourceManager.getString('cms', 'addFromParentBtn')}" styleName="listActionButton"
 						 width="100%"/>
 			</controls:CanvasButton>
@@ -164,6 +162,7 @@
 	</mx:HBox>
 
 	<mx:ControlBar width="100%" horizontalAlign="center">
-		<mx:Button label="{resourceManager.getString('cms','save')}"/>
+		<mx:Button label="{resourceManager.getString('cms','save')}"
+				   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
