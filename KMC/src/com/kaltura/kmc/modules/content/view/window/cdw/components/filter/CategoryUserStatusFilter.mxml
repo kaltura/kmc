@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaCategoryUserStatus;
+			
+			import mx.events.FlexEvent;
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, activeBtn, pendBtn, archBtn];
+				//				friendlyName = resourceManager.getString('cms', '');
+				// friendly name is only used for indicators, not required here
+			}
+			
+			override public function get filter():Object {
+				var levelString:String = "";
+				//if non of the items are selected or all selected
+				if ((activeBtn.selected && pendBtn.selected && archBtn.selected) 
+					|| (!activeBtn.selected && !pendBtn.selected && !archBtn.selected)) {
+					levelString = "";
+				}
+				else {
+					if (activeBtn.selected) {
+						levelString += KalturaCategoryUserStatus.ACTIVE + ",";
+					}
+					if (pendBtn.selected) {
+						levelString += KalturaCategoryUserStatus.PENDING + ",";
+					}
+					if (archBtn.selected) {
+						levelString += KalturaCategoryUserStatus.NOT_ACTIVE + ",";
+					}
+					//remove last , 
+					levelString = levelString.slice(0, levelString.length - 1);
+				}
+				return levelString;
+			}
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no filter 
+					allBtn.selected = true;
+					activeBtn.selected = false;
+					pendBtn.selected = false;
+					archBtn.selected = false;
+				}
+				else {
+					//set all to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaCategoryUserStatus.ACTIVE:
+								activeBtn.selected = true;
+								break;
+							
+							case KalturaCategoryUserStatus.PENDING:
+								pendBtn.selected = true;
+								break;
+							
+							case KalturaCategoryUserStatus.NOT_ACTIVE:
+								archBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('cms', 'catUserStatusAll')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="activeBtn" width="100%" label="{resourceManager.getString('cms', 'catUserStatusActive')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="pendBtn" width="100%" label="{resourceManager.getString('cms', 'catUserStatusPending')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="archBtn" width="100%" label="{resourceManager.getString('cms', 'catUserStatusArchived')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

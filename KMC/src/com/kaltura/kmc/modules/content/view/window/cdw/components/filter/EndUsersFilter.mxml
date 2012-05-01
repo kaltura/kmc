@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fltr:BaseFilter xmlns:mx="http://www.adobe.com/2006/mxml"
+				 xmlns:fltr="com.kaltura.edw.components.fltr.*"
+				 creationComplete="basefilter1_creationCompleteHandler(event)" xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.vo.KalturaCategoryUserFilter;
+			
+			import mx.events.FlexEvent;
+
+			/**
+			 * create a filter with all basic attributes
+			 * */
+			public static function generateBaseFilter():KalturaCategoryUserFilter {
+				var kalturaFilter:KalturaCategoryUserFilter = new KalturaCategoryUserFilter();
+				return kalturaFilter;
+			}
+			
+			
+			private function basefilter1_creationCompleteHandler(event:FlexEvent):void {
+				if (!_kalturaFilter) {
+					_kalturaFilter = EndUsersFilter.generateBaseFilter();
+				}
+			}
+			
+			/**
+			 * reset kalturaFilter so any values that apply 
+			 * to the accordion components will be set
+			 * */
+			private function setFilterValues():void {
+				setFilterValuesToComponents();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Accordion id="accordion" height="100%" width="100%" headerHeight="30" creationPolicy="all">
+		<mx:VBox id="additional" label="{resourceManager.getString('filter', 'additionalFiltersLabel')}" 
+				 width="100%" height="100%" styleName="additinalFilterVBox" horizontalScrollPolicy="off" 
+				 creationComplete="setFilterValues()">
+			<filter:PermissionLevelFilter width="100%" attribute="permissionLevelIn"
+										  valueChange="updateFilterValue(event)"/>
+			<filter:CategoryUserStatusFilter width="100%" attribute="statusIn"
+											 valueChange="updateFilterValue(event)"/>
+			<filter:UpdateMethodFilter width="100%" attribute="upadteMethodIn"
+									   valueChange="updateFilterValue(event)"/>
+			
+		</mx:VBox>
+	</mx:Accordion>
+</fltr:BaseFilter>

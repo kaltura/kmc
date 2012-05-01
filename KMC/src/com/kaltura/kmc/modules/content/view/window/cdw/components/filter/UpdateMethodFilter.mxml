@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaUpdateMethodType;
+			
+			import mx.events.FlexEvent;
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, manualBtn, autoBtn];
+				//				friendlyName = resourceManager.getString('cms', '');
+				// friendly name is only used for indicators, not required here
+			}
+			
+			override public function get filter():Object {
+				var levelString:String = "";
+				//if non of the items are selected or all selected
+				if ((manualBtn.selected && autoBtn.selected) 
+					|| (!manualBtn.selected && !autoBtn.selected)) {
+					levelString = "";
+				}
+				else {
+					if (manualBtn.selected) {
+						levelString += KalturaUpdateMethodType.MANUAL + ",";
+					}
+					if (autoBtn.selected) {
+						levelString += KalturaUpdateMethodType.AUTOMATIC + ",";
+					}
+					//remove last , 
+					levelString = levelString.slice(0, levelString.length - 1);
+				}
+				return levelString;
+			}
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no filter 
+					allBtn.selected = true;
+					manualBtn.selected = false;
+					autoBtn.selected = false;
+				}
+				else {
+					//set all to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaUpdateMethodType.MANUAL:
+								manualBtn.selected = true;
+								break;
+							
+							case KalturaUpdateMethodType.AUTOMATIC:
+								autoBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('cms', 'updateMethodAll')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="manualBtn" width="100%" label="{resourceManager.getString('cms', 'updateMethodManual')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="autoBtn" width="100%" label="{resourceManager.getString('cms', 'updateMethodAuto')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

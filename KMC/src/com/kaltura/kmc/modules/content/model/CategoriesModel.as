@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.content.model
 {
+	import com.kaltura.KalturaClient;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaFilterPager;
@@ -14,6 +15,10 @@ package com.kaltura.kmc.modules.content.model
 		 */
 		public static const SUB_CATEGORIES_LIMIT:int = 50;
 		
+		/**
+		 * reference to the API client 
+		 */
+		public var client:KalturaClient;
 		
 		/**
 		 * categories selected in the table (categories screen)
@@ -54,5 +59,10 @@ package com.kaltura.kmc.modules.content.model
 		 * The parent category of the selected category (category drilldown).
 		 */
 		public var parentCategory:KalturaCategory;
+		
+		/**
+		 * users associated with selected category (KalturaCategoryUser objects, end users popup)
+		 */
+		public var categoryUsers:ArrayCollection;
 	}
 }

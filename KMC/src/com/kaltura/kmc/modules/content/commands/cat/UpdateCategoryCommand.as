@@ -53,8 +53,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			getCategoriesList.dispatch();
 //			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.CATEGORY_CHANGED));
-			var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
-			KedController.getInstance().dispatch(searchEvent);
+			if (_model.listableVo) {
+				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
+				KedController.getInstance().dispatch(searchEvent);
+			}
 		}
 		
 		override public function fault(info:Object):void

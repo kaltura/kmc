@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
+			import com.kaltura.types.KalturaCategoryUserStatus;
+			import com.kaltura.types.KalturaUpdateMethodType;
+			
+			import mx.formatters.DateFormatter;
+			import mx.resources.ResourceManager;
+			
+			/**
+			 * get a textual value according to user permission level
+			 * */
+			private function getPermissionLevel(item:Object, column:DataGridColumn):String {
+				switch (item.permissionLevel) {
+					case KalturaCategoryUserPermissionLevel.CONTRIBUTOR:
+						return ResourceManager.getInstance().getString('cms', 'permLvlContributor');
+						break;
+					case KalturaCategoryUserPermissionLevel.MANAGER:
+						return ResourceManager.getInstance().getString('cms', 'permLvlManager');
+						break;
+					case KalturaCategoryUserPermissionLevel.MEMBER:
+						return ResourceManager.getInstance().getString('cms', 'permLvlMember');
+						break;
+					case KalturaCategoryUserPermissionLevel.MODERATOR:
+						return ResourceManager.getInstance().getString('cms', 'permLvlModerator');
+						break;
+				}
+				return item.permissionLevel;
+			}
+			
+			
+			/**
+			 * get a textual value according to user status
+			 * */
+			private function getStatus(item:Object, column:DataGridColumn):String {
+				switch (item.status) {
+					case KalturaCategoryUserStatus.ACTIVE:
+						return ResourceManager.getInstance().getString('cms', 'catUserStatusActive');
+						break;
+					case KalturaCategoryUserStatus.PENDING:
+						return ResourceManager.getInstance().getString('cms', 'catUserStatusPending');
+						break;
+					case KalturaCategoryUserStatus.NOT_ACTIVE:
+						return ResourceManager.getInstance().getString('cms', 'catUserStatusArchived');
+						break;
+				}
+				return item.status;
+			}
+			
+			
+			/**
+			 * get a textual value according to user update method
+			 * */
+			private function getUpdateMethod(item:Object, column:DataGridColumn):String {
+				switch (item.updateMethod) {
+					case KalturaUpdateMethodType.AUTOMATIC:
+						return ResourceManager.getInstance().getString('cms', 'updateMethodAuto');
+						break;
+					case KalturaUpdateMethodType.MANUAL:
+						return ResourceManager.getInstance().getString('cms', 'updateMethodManual');
+						break;
+				}
+				return item.updateMethod;
+			}
+			
+			
+			/**
+			 * get a formatted representation of last update date
+			 * */
+			private function getUpdateDate(item:Object, column:DataGridColumn):String {
+				var df:DateFormatter = new DateFormatter();
+				df.formatString = ResourceManager.getInstance().getString('cms', 'mm_dd_yyyy_hh_nn');
+				var dt:Date = new Date();
+				dt.hours = dt.minutes = dt.seconds = 0;
+				dt.milliseconds = item.updatedAt;
+				return df.format(dt);
+			}
+			
+
+		]]>
+	</mx:Script>
+	
+	<mx:columns>
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
+						   headerText="{resourceManager.getString('cms', 'uthName')}"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+						   headerText="{resourceManager.getString('cms', 'uthPerm')}"
+						   labelFunction="getPermissionLevel"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+						   headerText="{resourceManager.getString('cms', 'uthStatus')}"
+						   labelFunction="getStatus"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+						   headerText="{resourceManager.getString('cms', 'uthMethod')}"
+						   labelFunction="getUpdateMethod"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" 
+						   headerText="{resourceManager.getString('cms', 'uthUpdatedOn')}"
+						   labelFunction="getUpdateDate"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" 
+						   headerText="{resourceManager.getString('cms', 'uthActions')}"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
+		
+	</mx:columns>
+</mx:DataGrid>

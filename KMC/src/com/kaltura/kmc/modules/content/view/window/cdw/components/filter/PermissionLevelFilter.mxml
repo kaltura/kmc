@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
+			
+			import mx.events.FlexEvent;
+			protected function creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, memberBtn, contBtn, modBtn, managerBtn];
+//				friendlyName = resourceManager.getString('cms', '');
+				// friendly name is only used for indicators, not required here
+			}
+			
+			override public function get filter():Object {
+				var levelString:String = "";
+				//if non of the items are selected or all selected
+				if ((memberBtn.selected && contBtn.selected && modBtn.selected && managerBtn.selected) 
+					|| (!memberBtn.selected && !contBtn.selected && !modBtn.selected && !managerBtn.selected)) {
+					levelString = "";
+				}
+				else {
+					if (memberBtn.selected) {
+						levelString += KalturaCategoryUserPermissionLevel.MEMBER + ",";
+					}
+					if (contBtn.selected) {
+						levelString += KalturaCategoryUserPermissionLevel.CONTRIBUTOR + ",";
+					}
+					if (modBtn.selected) {
+						levelString += KalturaCategoryUserPermissionLevel.MODERATOR + ",";
+					}
+					if (managerBtn.selected) {
+						levelString += KalturaCategoryUserPermissionLevel.MANAGER + ",";
+					}
+					//remove last , 
+					levelString = levelString.slice(0, levelString.length - 1);
+				}
+				return levelString;
+			}
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no filter 
+					allBtn.selected = true;
+					memberBtn.selected = false;
+					contBtn.selected = false;
+					modBtn.selected = false;
+					managerBtn.selected = false;
+				}
+				else {
+					//set all to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaCategoryUserPermissionLevel.MEMBER:
+								memberBtn.selected = true;
+								break;
+							
+							case KalturaCategoryUserPermissionLevel.CONTRIBUTOR:
+								contBtn.selected = true;
+								break;
+							
+							case KalturaCategoryUserPermissionLevel.MODERATOR:
+								modBtn.selected = true;
+								break;
+							
+							case KalturaCategoryUserPermissionLevel.MANAGER:
+								managerBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('cms', 'permLvlAll')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="memberBtn" width="100%" label="{resourceManager.getString('cms', 'permLvlMember')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="contBtn" width="100%" label="{resourceManager.getString('cms', 'permLvlContributor')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="modBtn" width="100%" label="{resourceManager.getString('cms', 'permLvlModerator')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="managerBtn" width="100%" label="{resourceManager.getString('cms', 'permLvlManager')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*"
+							xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:controls="flexlib.controls.*"
+							layout="vertical" width="900" height="500" showCloseButton="true"
+							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
+							creationComplete="creationCompleteHandler(event)" xmlns:ctrls="com.kaltura.controls.*"
+							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.types.KalturaInheritanceType;
+			import com.kaltura.vo.KalturaCategory;
+			import com.kaltura.vo.KalturaCategoryUserFilter;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.resources.IResourceManager;
+			import mx.resources.ResourceManager;
+
+			[Bindable]
+			public var model:CategoriesModel;
+
+			[Bindable]
+			private var _category:KalturaCategory;
+
+
+			public function get category():KalturaCategory {
+				return _category;
+			}
+
+
+			public function set category(value:KalturaCategory):void {
+				_category = value;
+				title = ResourceManager.getInstance().getString('cms', 'usersPermissionsTitle', [_category.name]);
+			}
+
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				if (_category.inheritanceType == KalturaInheritanceType.INHERIT || _category.parentId == 0) {
+					addFromParentBtn.enabled = false;
+				}
+				if (_category.inheritanceType == KalturaInheritanceType.INHERIT) {
+					addUsersBtn.enabled = false;
+				}
+				
+				loadUsers();
+				BindingUtils.bindSetter(hideParentBtn, model, "categoryUsers");
+			}
+
+
+			/**
+			 * remove the popup
+			 * */
+			private function closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function helpHandler(event:Event):void {
+
+			}
+
+
+			/**
+			 * get users according to filter / pager
+			 * */
+			private function loadUsers():void {
+				if (!searchBox.validateSearchText(true)) {
+					return;
+				}
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
+				(filter.kalturaFilter as KalturaCategoryUserFilter).categoryIdEqual = _category.id;
+				cgEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager];
+				cgEvent.dispatch();
+			}
+
+
+			/**
+			 * reset paging and re-load users
+			 * */
+			private function filterChangedHandler(event:Event):void {
+				paging.selectedPage = 1;
+				loadUsers();
+			}
+
+
+
+			/**
+			 * if already has users, hide the "add from parent" btn
+			 * */
+			private function hideParentBtn(value:ArrayCollection):void {
+				if (value && value.length) {
+					addFromParentBtn.enabled = false;
+				}
+			}
+
+
+			/**
+			 * show confirmation message
+			 * */
+			private function addFromParentBtn_clickHandler(event:MouseEvent):void {
+				Alert.show(resourceManager.getString('cms', 'addFromParentConfirm'),
+					resourceManager.getString('cms', 'addFromParentConfirmTitle'), Alert.YES | Alert.NO, null, inheritFromParent);
+			}
+
+
+
+			/**
+			 * get the list of users asociated with parent category and add them to the current category
+			 * */
+			private function inheritFromParent(event:CloseEvent):void {
+				if (event.detail == Alert.YES) {
+					var cge:CategoryEvent = new CategoryEvent(CategoryEvent.INHERIT_USERS_FROM_PARENT);
+					cge.data = category;
+					cge.dispatch();
+				}
+			}
+
+			private function addUsersBtn_clickHandler(event:MouseEvent):void {
+				var cauw:CategoryAddUsersWin = new CategoryAddUsersWin();
+				cauw.kClient = model.client;
+				cauw.category = _category;
+				PopUpManager.addPopUp(cauw, this, true);
+				PopUpManager.centerPopUp(cauw);
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" styleName="noPadding">
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="245" attribute="freeText"/>
+		<mx:HBox styleName="flavorsReplacementVBox" width="100%" visible="{_category.inheritanceType == KalturaInheritanceType.INHERIT}">
+			<mx:Label text="{resourceManager.getString('cms', 'permsInheritFrom', [_category.inheritedParentId])}"/>
+		</mx:HBox>
+	</mx:HBox>
+
+	<mx:HBox width="100%" height="100%" styleName="noPadding">
+		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="245"
+							   filterChanged="filterChangedHandler(event)"/>
+		<mx:VBox height="100%" width="100%" verticalGap="0" styleName="noPadding">
+			<users:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"/>
+			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}"/>
+				<ctrls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadUsers()"
+							  nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
+							  showRowsInPage="true" defaultPageSize="25"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox id="actionsBox" styleName="listActionsBox" height="100%" width="160">
+			<mx:Button id="addUsersBtn" width="100%" styleName="listActionButton" buttonMode="true"
+					   label="{resourceManager.getString('cms', 'addUsersBtn')}" 
+					   click="addUsersBtn_clickHandler(event)" />
+			<controls:CanvasButton id="addFromParentBtn" styleName="listActionButton" width="100%"
+								   click="addFromParentBtn_clickHandler(event)">
+				<mx:Text text="{resourceManager.getString('cms', 'addFromParentBtn')}" styleName="listActionButton"
+						 width="100%"/>
+			</controls:CanvasButton>
+		</mx:VBox>
+	</mx:HBox>
+
+	<mx:ControlBar width="100%" horizontalAlign="center">
+		<mx:Button label="{resourceManager.getString('cms','save')}"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

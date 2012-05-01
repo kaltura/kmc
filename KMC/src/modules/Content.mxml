@@ -575,7 +575,7 @@
 				
 				_entryData.maxNumCategories = objParam.maxnumcategories;
 				
-				
+				_model.categoriesModel.client = _kc;
 				// Custom data hack
 				var listCategoryMetadataProfiles:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
 				listCategoryMetadataProfiles.dispatch();
@@ -858,7 +858,7 @@
 				return mpw;
 			}
 			
-			private function handleChangeOwnerEvents(e:Event):void {
+			private function handleChangeEntryOwnerEvents(e:Event):void {
 				switch (e.type) {
 					case "save":
 						// set entry owner for all selected entries
@@ -1078,8 +1078,8 @@
 							break;
 						case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
 							currentPopUp = new SetOwnerWindow();
-							currentPopUp.addEventListener("save", handleChangeOwnerEvents, false, 0, true);
-							currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeOwnerEvents, false, 0, true);
+							currentPopUp.addEventListener("save", handleChangeEntryOwnerEvents, false, 0, true);
+							currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeEntryOwnerEvents, false, 0, true);
 							(currentPopUp as SetOwnerWindow).kClient = _kc;
 //							(currentPopUp as SetOwnerWindow).entryData = _entryData;
 //							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);

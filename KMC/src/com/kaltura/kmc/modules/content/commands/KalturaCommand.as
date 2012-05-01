@@ -56,13 +56,22 @@ package com.kaltura.kmc.modules.content.commands {
 			if (er && er.errorCode == APIErrorCode.INVALID_KS) {
 				// redirect to login, or whatever JS does with invalid KS.
 				KedJSGate.expired();
+				return;
 			}
-			/*else if (data.data.length) {
+			if (data.data is Array && data.data.length) {
 				// this was a multirequest, we need to check its contents.
 				for (var i:int = 0; i<data.data.length; i++) {
-					result (data.data[i]);
+					var o:Object = data.data[i];
+					if (o.error) {
+						// in MR errors aren't created
+						var str:String = ResourceManager.getInstance().getString('cms', o.error.code);
+						if (!str) {
+							str = o.error.message;
+						} 
+						Alert.show(str, ResourceManager.getInstance().getString('cms', 'error'));
+					}
 				}
-			}*/
+			}
 		}
 		
 		final protected function checkError(resultData:Object):Boolean{

@@ -1,47 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
-							layout="vertical" width="400" height="300"
-							title="{resourceManager.getString('cms', 'categoryAddUsers')}" xmlns:components="com.hillelcoren.components.*">
+<!-- add new category users popup -->
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							xmlns:components="com.hillelcoren.components.*"
+							layout="vertical" width="550" height="400"
+							showCloseButton="true" close="closeHandler(event)"
+							showHelpButton="true" help="helpHandler(event)"
+							creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
+			import com.kaltura.types.KalturaCategoryUserStatus;
+			import com.kaltura.types.KalturaUpdateMethodType;
+			import com.kaltura.vo.KalturaCategory;
+			
 			import mx.collections.ArrayCollection;
-			private const TEXT_WIDTH:Number = 264;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
 			private const LABEL_WIDTH:Number = 150;
-			[Bindable] private const PERMISSION_LEVELS : ArrayCollection = new ArrayCollection([
-				resourceManager.getString('cms', 'member'),
-				resourceManager.getString('cms', 'moderator'),
-				resourceManager.getString('cms', 'manager')
-			]);
-			[Bindable] private const STATUS : ArrayCollection = new ArrayCollection([
-				resourceManager.getString('cms', 'active'),
-				resourceManager.getString('cms', 'pendingApproval')
-			]);
-			[Bindable] private const UPDATE_METHOD : ArrayCollection = new ArrayCollection([
-				resourceManager.getString('cms', 'menual'),
-				resourceManager.getString('cms', 'automatic')
-			]);
+			private const TEXT_WIDTH:Number = 264;
+			
+			
+			
+			
+			private var _category:KalturaCategory;
+
+			public function get category():KalturaCategory {
+				return _category;
+			}
+
+			public function set category(value:KalturaCategory):void {
+				_category = value;
+				title = resourceManager.getString('cms', 'categoryAddUsers', [value.name]);
+			}
+			
+			/**
+			 * KalturaClient for autocomplete's API calls
+			 * */
+			public var kClient:KalturaClient;
+			
+			
+			private function creationCompleteHandler(event:FlexEvent):void {
+				permCb.dataProvider = [
+					{label:resourceManager.getString('cms', 'member'), data:KalturaCategoryUserPermissionLevel.MEMBER},
+					{label:resourceManager.getString('cms', 'contributor'), data: KalturaCategoryUserPermissionLevel.CONTRIBUTOR},
+					{label:resourceManager.getString('cms', 'moderator'), data: KalturaCategoryUserPermissionLevel.MODERATOR},
+					{label:resourceManager.getString('cms', 'manager'), data:KalturaCategoryUserPermissionLevel.MANAGER}
+				];
+				permCb.selectedIndex = 0;
+				
+				methodCb.dataProvider = [
+					{label:resourceManager.getString('cms', 'manual'), data: KalturaUpdateMethodType.MANUAL},
+					{label:resourceManager.getString('cms', 'automatic'), data: KalturaUpdateMethodType.AUTOMATIC},
+				];
+				methodCb.selectedIndex = 0;
+				
+				new KACUsersController(usersComplete, kClient);
+			}
+
+			
+			/**
+			 * add users to the category
+			 * */
+			private function submit(event:MouseEvent):void {
+				var cge:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY_USERS);
+				// [categoryid, permission level, update method, ([KalturaUsers])]
+				cge.data = [_category.id, permCb.selectedItem.data, methodCb.selectedItem.data, usersComplete.selectedItems];
+				cge.dispatch();
+				
+				// reset form data:
+				permCb.selectedIndex = 0;
+				methodCb.selectedIndex = 0;
+				usersComplete.selectedItems = new ArrayCollection();
+			}
+
+			/**
+			 * add useres to the category then close the popup
+			 * */
+			private function submitNClose(event:MouseEvent):void {
+				submit(null);
+				closeHandler(null);
+			}
+			
+
+
+			private function closeHandler(event:CloseEvent):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function helpHandler(event:Event):void {
+				// TODO Auto-generated method stub
+			}
+
+
+			
+
 		]]>
 	</mx:Script>
-	<mx:Label text="{resourceManager.getString('cms', 'categoryAddUsersDesc')}"  styleName="drillDownLabel" />
+	<mx:Text text="{resourceManager.getString('cms', 'categoryAddUsersDesc')}" 
+			 width="100%" styleName="drillDownLabel"/>
 	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms','permissionLevel')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
-		<mx:ComboBox editable="false" dataProvider="{PERMISSION_LEVELS}"/>
-	</mx:HBox>	
-	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms','status')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
-		<mx:ComboBox editable="false" dataProvider="{STATUS}"/>
+		<mx:Label text="{resourceManager.getString('cms','permissionLevel')}" width="{LABEL_WIDTH}"
+				  styleName="feedParamLabel"/>
+		<mx:ComboBox id="permCb" width="{TEXT_WIDTH}" />
 	</mx:HBox>
 	<mx:HBox width="100%">
-		<mx:Label text="{resourceManager.getString('cms','updateMethod')}" width="{LABEL_WIDTH}" styleName="feedParamLabel"/>
-		<mx:ComboBox editable="false" dataProvider="{UPDATE_METHOD}"/>
+		<mx:Label text="{resourceManager.getString('cms','updateMethod')}" width="{LABEL_WIDTH}"
+				  styleName="feedParamLabel"/>
+		<mx:ComboBox id="methodCb" width="{TEXT_WIDTH}"/>
 	</mx:HBox>
-	<components:AutoComplete id="usersComplete" allowNewValues="false" labelField="id" showRemoveIcon="true"
-							 selectedItemIdentifier="{_undoOwnerId}" allowMultipleSelection="true"
-							 prompt="{resourceManager.getString('drilldown', '')}" />
-	
-	<mx:ControlBar>
-		<mx:LinkButton label="{resourceManager.getString('drilldown','addAandClose')}"/>
-		<mx:VRule height="5" />
-		<mx:Button label="{resourceManager.getString('drilldown', 'add')}" click="onSave()" />
+	<mx:HBox width="100%">
+		<mx:Label text="{resourceManager.getString('cms','selectUsers')}" width="{LABEL_WIDTH}"
+				  styleName="feedParamLabel"/>
+		<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true"
+							 allowMultipleSelection="true" width="{TEXT_WIDTH}"/>
+	</mx:HBox>
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="{resourceManager.getString('cms','addNClose')}" click="submitNClose(event)"/>
+		<mx:Button label="{resourceManager.getString('cms', 'add')}" click="submit(event)"/>
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
