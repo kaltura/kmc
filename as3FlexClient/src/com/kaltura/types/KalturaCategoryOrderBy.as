@@ -35,6 +35,8 @@ package com.kaltura.types
 		public static const NAME_DESC : String = '-name';
 		public static const FULL_NAME_ASC : String = '+fullName';
 		public static const FULL_NAME_DESC : String = '-fullName';
+		public static const FULL_IDS_ASC : String = '+fullIds';
+		public static const FULL_IDS_DESC : String = '-fullIds';
 		public static const ENTRIES_COUNT_ASC : String = '+entriesCount';
 		public static const ENTRIES_COUNT_DESC : String = '-entriesCount';
 		public static const CREATED_AT_ASC : String = '+createdAt';

@@ -30,5 +30,8 @@ package com.kaltura.types
 	public class KalturaBulkUploadResultObjectType
 	{
 		public static const ENTRY : String = '1';
+		public static const CATEGORY : String = '2';
+		public static const USER : String = '3';
+		public static const CATEGORY_USER : String = '4';
 	}
 }

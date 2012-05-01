@@ -45,7 +45,7 @@ package com.kaltura.vo
 		/** 
 		* The audio codec of the Flavor Params
 	 		* */ 
-		public var audioCodec : int = int.MIN_VALUE;
+		public var audioCodec : String = null;
 
 		/** 
 		* The audio bitrate (in KBits) of the Flavor Params

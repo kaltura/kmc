@@ -126,6 +126,10 @@ package com.kaltura.vo
 		public var applicationId : String = null;
 
 		/** 
+		* 		* */ 
+		public var eventContext : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -151,6 +155,7 @@ package com.kaltura.vo
 			arr.push('referrer');
 			arr.push('isFirstInSession');
 			arr.push('applicationId');
+			arr.push('eventContext');
 			return arr;
 		}
 

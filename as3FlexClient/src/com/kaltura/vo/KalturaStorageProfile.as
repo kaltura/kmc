@@ -150,6 +150,10 @@ package com.kaltura.vo
 		public var rtmpPrefix : String = null;
 
 		/** 
+		* 		* */ 
+		public var readyBehavior : int = int.MIN_VALUE;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -181,6 +185,7 @@ package com.kaltura.vo
 			arr.push('deliveryPriority');
 			arr.push('deliveryStatus');
 			arr.push('rtmpPrefix');
+			arr.push('readyBehavior');
 			return arr;
 		}
 

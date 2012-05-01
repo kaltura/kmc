@@ -96,6 +96,14 @@ package com.kaltura.vo
 		public var description : String = null;
 
 		/** 
+		* 		* */ 
+		public var numOfObjects : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var bulkUploadObjectType : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -118,6 +126,8 @@ package com.kaltura.vo
 			arr.push('errorNumber');
 			arr.push('fileName');
 			arr.push('description');
+			arr.push('numOfObjects');
+			arr.push('bulkUploadObjectType');
 			return arr;
 		}
 

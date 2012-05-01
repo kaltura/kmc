@@ -46,6 +46,11 @@ package com.kaltura.vo
 		public var createdAt : int = int.MIN_VALUE;
 
 		/** 
+		* The full ids of the Category
+	 		* */ 
+		public var categoryFullIds : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array

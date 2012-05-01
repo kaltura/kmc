@@ -29,10 +29,11 @@ package com.kaltura.types
 {
 	public class KalturaBulkUploadAction
 	{
-		public static const ADD : int = 1;
-		public static const UPDATE : int = 2;
-		public static const DELETE : int = 3;
-		public static const REPLACE : int = 4;
-		public static const TRANSFORM_XSLT : int = 5;
+		public static const ADD : String = '1';
+		public static const UPDATE : String = '2';
+		public static const DELETE : String = '3';
+		public static const REPLACE : String = '4';
+		public static const TRANSFORM_XSLT : String = '5';
+		public static const ADD_OR_UPDATE : String = '6';
 	}
 }

@@ -57,5 +57,9 @@ package com.kaltura.types
 		public static const END_DATE_DESC : String = '-endDate';
 		public static const PARTNER_SORT_VALUE_ASC : String = '+partnerSortValue';
 		public static const PARTNER_SORT_VALUE_DESC : String = '-partnerSortValue';
+		public static const RECENT_ASC : String = '+recent';
+		public static const RECENT_DESC : String = '-recent';
+		public static const WEIGHT_ASC : String = '+weight';
+		public static const WEIGHT_DESC : String = '-weight';
 	}
 }

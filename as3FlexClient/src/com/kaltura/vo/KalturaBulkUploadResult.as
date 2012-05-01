@@ -52,11 +52,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var action : int = int.MIN_VALUE;
+		public var status : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
-		public var entryId : String = null;
+		public var action : String = null;
 
 		/** 
 		* 		* */ 
@@ -64,11 +64,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var bulkUploadResultObjectType : String = null;
+		public var objectStatus : int = int.MIN_VALUE;
 
 		/** 
 		* 		* */ 
-		public var entryStatus : int = int.MIN_VALUE;
+		public var bulkUploadResultObjectType : String = null;
 
 		/** 
 		* The data as recieved in the csv
@@ -77,59 +77,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var title : String = null;
-
-		/** 
-		* 		* */ 
-		public var description : String = null;
-
-		/** 
-		* 		* */ 
-		public var tags : String = null;
-
-		/** 
-		* 		* */ 
-		public var url : String = null;
-
-		/** 
-		* 		* */ 
-		public var contentType : String = null;
-
-		/** 
-		* 		* */ 
-		public var conversionProfileId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var accessControlProfileId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var category : String = null;
-
-		/** 
-		* 		* */ 
-		public var scheduleStartDate : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var scheduleEndDate : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var thumbnailUrl : String = null;
-
-		/** 
-		* 		* */ 
-		public var thumbnailSaved : Boolean;
-
-		/** 
-		* 		* */ 
 		public var partnerData : String = null;
 
 		/** 
 		* 		* */ 
-		public var errorDescription : String = null;
+		public var objectErrorDescription : String = null;
 
 		/** 
 		* 		* */ 
@@ -137,15 +89,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var sshPrivateKey : String = null;
+		public var errorDescription : String = null;
 
 		/** 
 		* 		* */ 
-		public var sshPublicKey : String = null;
+		public var errorCode : String = null;
 
 		/** 
 		* 		* */ 
-		public var sshKeyPassphrase : String = null;
+		public var errorType : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -157,30 +109,18 @@ package com.kaltura.vo
 			arr.push('bulkUploadJobId');
 			arr.push('lineIndex');
 			arr.push('partnerId');
+			arr.push('status');
 			arr.push('action');
-			arr.push('entryId');
 			arr.push('objectId');
+			arr.push('objectStatus');
 			arr.push('bulkUploadResultObjectType');
-			arr.push('entryStatus');
 			arr.push('rowData');
-			arr.push('title');
-			arr.push('description');
-			arr.push('tags');
-			arr.push('url');
-			arr.push('contentType');
-			arr.push('conversionProfileId');
-			arr.push('accessControlProfileId');
-			arr.push('category');
-			arr.push('scheduleStartDate');
-			arr.push('scheduleEndDate');
-			arr.push('thumbnailUrl');
-			arr.push('thumbnailSaved');
 			arr.push('partnerData');
-			arr.push('errorDescription');
+			arr.push('objectErrorDescription');
 			arr.push('pluginsData');
-			arr.push('sshPrivateKey');
-			arr.push('sshPublicKey');
-			arr.push('sshKeyPassphrase');
+			arr.push('errorDescription');
+			arr.push('errorCode');
+			arr.push('errorType');
 			return arr;
 		}
 

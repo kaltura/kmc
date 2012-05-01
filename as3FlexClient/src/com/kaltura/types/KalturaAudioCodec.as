@@ -29,7 +29,14 @@ package com.kaltura.types
 {
 	public class KalturaAudioCodec
 	{
-		public static const ENTRY : int = 1;
-		public static const CATEGORY : int = 2;
+		public static const NONE : String = '';
+		public static const MP3 : String = 'mp3';
+		public static const AAC : String = 'aac';
+		public static const VORBIS : String = 'vorbis';
+		public static const WMA : String = 'wma';
+		public static const WMAPRO : String = 'wmapro';
+		public static const AMRNB : String = 'amrnb';
+		public static const MPEG2 : String = 'mpeg2';
+		public static const COPY : String = 'copy';
 	}
 }

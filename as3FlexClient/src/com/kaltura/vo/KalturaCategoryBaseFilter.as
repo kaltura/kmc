@@ -62,6 +62,14 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var fullIdsEqual : String = null;
+
+		/** 
+		* 		* */ 
+		public var fullIdsStartsWith : String = null;
+
+		/** 
+		* 		* */ 
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -107,6 +115,10 @@ package com.kaltura.vo
 		/** 
 		* 		* */ 
 		public var inheritanceTypeIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var referenceIdEqual : String = null;
 
 		/** 
 		* 		* */ 
@@ -159,6 +171,8 @@ package com.kaltura.vo
 			arr.push('depthEqual');
 			arr.push('fullNameEqual');
 			arr.push('fullNameStartsWith');
+			arr.push('fullIdsEqual');
+			arr.push('fullIdsStartsWith');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');
@@ -171,6 +185,7 @@ package com.kaltura.vo
 			arr.push('privacyIn');
 			arr.push('inheritanceTypeEqual');
 			arr.push('inheritanceTypeIn');
+			arr.push('referenceIdEqual');
 			arr.push('membersCountGreaterThanOrEqual');
 			arr.push('membersCountLessThanOrEqual');
 			arr.push('pendingMembersCountGreaterThanOrEqual');

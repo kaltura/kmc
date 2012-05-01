@@ -52,6 +52,14 @@ package com.kaltura.vo
 		* 		* */ 
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
+		public var categoryFullIdsStartsWith : String = null;
+
+		/** 
+		* 		* */ 
+		public var categoryFullIdsEqual : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -61,6 +69,8 @@ package com.kaltura.vo
 			arr.push('entryIdEqual');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
+			arr.push('categoryFullIdsStartsWith');
+			arr.push('categoryFullIdsEqual');
 			return arr;
 		}
 

@@ -60,6 +60,11 @@ package com.kaltura.vo
 		public var fullName : String = null;
 
 		/** 
+		* The full ids of the Category
+	 		* */ 
+		public var fullIds : String = null;
+
+		/** 
 		* Number of entries in this Category (including child categories)
 	 		* */ 
 		public var entriesCount : int = int.MIN_VALUE;
@@ -173,6 +178,11 @@ package com.kaltura.vo
 		* Enable client side applications to define how to sort the category child categories 
 	 		* */ 
 		public var defaultOrderBy : String = null;
+
+		/** 
+		* Some category fields cannot be updated while the category is locked
+	 		* */ 
+		public var lock : Boolean;
 
 		/** 
 		* a list of attributes which may be updated on this object 

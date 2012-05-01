@@ -32,12 +32,12 @@ package com.kaltura.vo
 	public dynamic class KalturaRule extends BaseFlexVo
 	{
 		/** 
-		* Message to be thrown to the player in case the rule fulfilled
+		* Message to be thrown to the player in case the rule is fulfilled
 	 		* */ 
 		public var message : String = null;
 
 		/** 
-		* Actions to be performed by the player in case the rule fulfilled
+		* Actions to be performed by the player in case the rule is fulfilled
 	 		* */ 
 		public var actions : Array = null;
 
