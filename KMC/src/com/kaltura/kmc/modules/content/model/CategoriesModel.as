@@ -66,8 +66,14 @@ package com.kaltura.kmc.modules.content.model
 		public var categoryUsers:ArrayCollection;
 		
 		/**
+		 * the totalCount of the latest users list action (end users popup)
+		 */
+		public var totalCategoryUsers:int;
+
+		/**
 		 * selected users in table (KalturaCategoryUser objects, end users popup)
 		 */
 		public var selectedCategoryUsers:Array;
+		
 	}
 }

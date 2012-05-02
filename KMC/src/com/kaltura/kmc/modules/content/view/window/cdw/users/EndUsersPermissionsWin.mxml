@@ -2,7 +2,7 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*"
 							xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:controls="flexlib.controls.*"
-							layout="vertical" width="920" height="500" showCloseButton="true"
+							layout="vertical" width="940" height="500" showCloseButton="true"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)" xmlns:ctrls="com.kaltura.controls.*"
 							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*" xmlns:catusrtable="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.*">
@@ -136,14 +136,14 @@
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" styleName="noPadding">
-		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="220" attribute="freeText"/>
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="180" attribute="freeText"/>
 		<mx:HBox styleName="flavorsReplacementVBox" width="100%" visible="{_category.inheritanceType == KalturaInheritanceType.INHERIT}">
 			<mx:Label text="{resourceManager.getString('cms', 'permsInheritFrom', [_category.inheritedParentId])}"/>
 		</mx:HBox>
 	</mx:HBox>
 
 	<mx:HBox width="100%" height="100%" styleName="noPadding">
-		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="220"
+		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="180"
 							   filterChanged="filterChangedHandler(event)"/>
 		<mx:VBox height="100%" width="100%" verticalGap="0" styleName="noPadding">
 			<catusrtable:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"
@@ -152,12 +152,12 @@
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}" users="{model.selectedCategoryUsers}"
 											   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
-				<ctrls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadUsers()"
-							  nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
+				<ctrls:Paging id="paging" width="100%" styleName="paging" totalCount="{model.totalCategoryUsers}"
+							  rowsInPageChange="loadUsers()" nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
 							  showRowsInPage="true" defaultPageSize="25"/>
 			</mx:HBox>
 		</mx:VBox>
-		<mx:VBox id="actionsBox" styleName="listActionsBox" height="100%" width="160">
+		<mx:VBox id="actionsBox" styleName="listActionsBox" paddingLeft="10" paddingRight="10" height="100%" width="130">
 			<mx:Button id="addUsersBtn" width="100%" styleName="listActionButton" buttonMode="true"
 					   label="{resourceManager.getString('cms', 'addUsersBtn')}" 
 					   click="addUsersBtn_clickHandler(event)"
