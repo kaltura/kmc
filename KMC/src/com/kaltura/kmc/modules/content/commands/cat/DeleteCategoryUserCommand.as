@@ -9,17 +9,42 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 	import com.kaltura.vo.KalturaCategoryUser;
 	
+	import mx.controls.Alert;
+	import mx.events.CloseEvent;
+	import mx.resources.IResourceManager;
+	import mx.resources.ResourceManager;
+	
 	public class DeleteCategoryUserCommand extends KalturaCommand {
 		
+		private var _usrs:Array;
+		private var _eventType:String;
+		
 		override public function execute(event:CairngormEvent):void {
-			_model.increaseLoadCounter();
+		
 			// event.data is [KalturaCategoryUser]
-			var usrs:Array = event.data;
+			_usrs = event.data;
+			
+			if (!_model.categoriesModel.categoryUserFirstAction) {
+				var rm:IResourceManager = ResourceManager.getInstance();
+				Alert.show(rm.getString('cms', 'catUserFirstAction'), rm.getString('cms', 'catUserFirstActionTitle'), Alert.OK|Alert.CANCEL, null, afterConfirm);
+				_model.categoriesModel.categoryUserFirstAction = true;
+			}
+			else {
+				afterConfirm();
+			}
+		}
+		
+		private function afterConfirm(event:CloseEvent = null):void {
+			if (event && event.detail == Alert.CANCEL) {
+				return;
+			}
+			
+			_model.increaseLoadCounter();
 			
 			var mr:MultiRequest = new MultiRequest();
 			var cu:KalturaCategoryUser;
-			for (var i:int = 0; i<usrs.length; i++) {
-				cu = usrs[i] as KalturaCategoryUser;
+			for (var i:int = 0; i<_usrs.length; i++) {
+				cu = _usrs[i] as KalturaCategoryUser;
 				mr.addAction(new CategoryUserDelete(cu.categoryId, cu.userId));
 			} 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);

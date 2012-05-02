@@ -75,5 +75,11 @@ package com.kaltura.kmc.modules.content.model
 		 */
 		public var selectedCategoryUsers:Array;
 		
+		/**
+		 * indicates the first action in the end users permissions popup had occured
+		 * (used to show confirmation message) 
+		 */		
+		public var categoryUserFirstAction:Boolean;
+		
 	}
 }
