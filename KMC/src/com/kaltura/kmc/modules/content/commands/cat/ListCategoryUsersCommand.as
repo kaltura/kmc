@@ -48,6 +48,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			var resp:KalturaCategoryUserListResponse = data.data as KalturaCategoryUserListResponse;
 			_model.categoriesModel.categoryUsers = new ArrayCollection(resp.objects);
+			_model.categoriesModel.totalCategoryUsers = resp.totalCount;
 			_model.decreaseLoadCounter();
 		}
 	}
