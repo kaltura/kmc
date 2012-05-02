@@ -10,25 +10,25 @@ package com.kaltura.edw.business
 	import mx.collections.ArrayCollection;
 	
 	/**
-	 * parts of code relevant to navigation between entries 
+	 * parts of code relevant to navigation between entries / categories 
 	 * @author Atar
 	 * 
 	 */	
 	public class ChangeableDataViewer extends HelpTitleWindow {
 		
 		
-		protected var _entriesAC:ArrayCollection;
+		protected var _itemsAC:ArrayCollection;
 		
 		/**
 		 * list of entries in current page
 		 * (entries we can navigate between using the "next" and "prev" buttons)
 		 * */
-		public function get entriesAC():ArrayCollection {
-			return _entriesAC;
+		public function get itemsAC():ArrayCollection {
+			return _itemsAC;
 		}
 		
-		public function set entriesAC(value:ArrayCollection):void {
-			_entriesAC = value;
+		public function set itemsAC(value:ArrayCollection):void {
+			_itemsAC = value;
 			setButtonsState();
 		}
 		
@@ -39,7 +39,7 @@ package com.kaltura.edw.business
 		public var showNextPrevBtns:Boolean = true;
 
 		
-		protected var _entryIndex:int = -1;
+		protected var _itemIndex:int = -1;
 		
 		
 		[Bindable]
@@ -62,15 +62,15 @@ package com.kaltura.edw.business
 		 * Index of current entry within the listableVo array, or after  
 		 * prev/next clicked the index of the next entry to be navigated to.
 		 * */
-		public function get entryIndex():int {
-			return _entryIndex;
+		public function get itemIndex():int {
+			return _itemIndex;
 		} 
 		
 		/**
 		 * @private
 		 * */
-		public function set entryIndex(value:int):void {
-			_entryIndex = value;
+		public function set itemIndex(value:int):void {
+			_itemIndex = value;
 			setButtonsState();
 		}
 		
@@ -80,9 +80,9 @@ package com.kaltura.edw.business
 		 * according to entries list and entry index 
 		 * */
 		protected function setButtonsState():void {
-			if (_entriesAC) {
-				_prevEnabled = checkNavigatableEntryExists(false, _entryIndex);
-				_nextEnabled = checkNavigatableEntryExists(true, _entryIndex);
+			if (_itemsAC) {
+				_prevEnabled = checkNavigatableItemExists(false, _itemIndex);
+				_nextEnabled = checkNavigatableItemExists(true, _itemIndex);
 			}
 			else {
 				_prevEnabled = _nextEnabled = false;
@@ -90,8 +90,8 @@ package com.kaltura.edw.business
 		}
 		
 		
-		protected function checkNavigatableEntryExists(goForward:Boolean, entryInd:int):Boolean {
-			return getNavigatableEntryIndex(goForward, entryInd) != -1;
+		protected function checkNavigatableItemExists(goForward:Boolean, itemInd:int):Boolean {
+			return getNavigatableItemIndex(goForward, itemInd) != -1;
 		}
 		
 		
@@ -99,19 +99,12 @@ package com.kaltura.edw.business
 		 * Gets the next entry index it's possible to navigate to,
 		 * or -1 if no entry in that direction can be navigated to.
 		 * */
-		protected function getNavigatableEntryIndex(goForward:Boolean, entryInd:int):int {
-			var nextEntryIndex:int = goForward ? entryInd + 1 : entryInd - 1;
-			if (nextEntryIndex < 0 || nextEntryIndex > _entriesAC.length - 1) {
+		protected function getNavigatableItemIndex(goForward:Boolean, itemInd:int):int {
+			var nextItemIndex:int = goForward ? itemInd + 1 : itemInd - 1;
+			if (nextItemIndex < 0 || nextItemIndex > _itemsAC.length - 1) {
 				return -1;
 			}
-			
-			var nextEntry:KalturaMediaEntry = _entriesAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
-			if (nextEntry && nextEntry.mediaType == KalturaMediaType.LIVE_STREAM_FLASH && nextEntry.status != KalturaEntryStatus.READY) {
-				return getNavigatableEntryIndex(goForward, nextEntryIndex);
-			}
-			else {
-				return nextEntryIndex;
-			}
+			return nextItemIndex;
 		}
 
 	}

@@ -4,21 +4,22 @@
 	<mx:Metadata>
 		[Event(name="save",type="flash.events.Event")]
 		[Event(name="close",type="flash.events.Event")]
+		[Event(name="gotoNext",type="flash.events.Event")]
+		[Event(name="gotoPrev",type="flash.events.Event")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.business.IDrilldownPanel;
-			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
 			import com.kaltura.vo.KalturaCategory;
 			
-			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
 			
 			public static const SAVE_EVENT:String = "save";
 			public static const CLOSE_EVENT:String = "close";
+			public static const GOTO_NEXT_EVENT:String = "gotoNext";
+			public static const GOTO_PREV_EVENT:String = "gotoPrev";
 			
 			[Bindable]
 			public var filterModel:FilterModel;
@@ -26,11 +27,21 @@
 			[Bindable]
 			public var model:CategoriesModel;
 			
+			[Bindable]
+			public var prevEnabled:Boolean;
+			
+			[Bindable]
+			public var nextEnabled:Boolean;
+			
+			[Bindable]
+			public var showNextPrevBtns:Boolean = true;
+			
 			public var isNewCategory:Boolean;
 			
 			private var _category:KalturaCategory;
 			
 			private var _tabs:Vector.<ICategoryDrilldownPanel>;
+			
 			
 			private function onSave():void{
 				dispatchEvent(new Event(SAVE_EVENT)); 
@@ -106,6 +117,10 @@
 					tab.destroy();
 				}
 			}
+			
+			
+			
+			
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%">
@@ -119,8 +134,19 @@
 			
 		</mx:ViewStack>
 	</mx:HBox>
-	<mx:ControlBar horizontalAlign="center" width="100%">
-		<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" click="onSave()" />
-		<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" click="onSaveAndClose()"/>
+	<mx:ControlBar horizontalGap="5" width="100%">
+		<mx:HBox width="33%"/>
+		<mx:HBox width="33%" horizontalAlign="center">
+			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" buttonMode="true" click="onSave()" />
+			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" click="onSaveAndClose()" buttonMode="true"/>
+		</mx:HBox>
+		<mx:HBox horizontalAlign="right" width="33%">
+			<mx:LinkButton label="{resourceManager.getString('cms', 'prevCategory')}" click="dispatchEvent(new Event(GOTO_PREV_EVENT))"
+						   buttonMode="true" enabled="{prevEnabled}" visible="{showNextPrevBtns}"
+						   styleName="drillDownNavPrevBtn"/>
+			<mx:LinkButton label="{resourceManager.getString('cms', 'nextCategory')}" click="dispatchEvent(new Event(GOTO_NEXT_EVENT))"
+						   buttonMode="true" enabled="{nextEnabled}" visible="{showNextPrevBtns}"
+						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
+		</mx:HBox>
 	</mx:ControlBar>
 </mx:VBox>

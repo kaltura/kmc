@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" height="595" width="930" showCloseButton="true" showHelpButton="false"
+<navigation:ChangeableDataViewer xmlns:navigation="com.kaltura.edw.business.*" xmlns:mx="http://www.adobe.com/2006/mxml" height="595" width="930" showCloseButton="true" showHelpButton="false"
 							close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18" xmlns:containers="com.kaltura.containers.*" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:window="com.kaltura.kmc.view.window.*" xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*" initialize="onInitialize(event)">
 	<mx:Script>
 		<![CDATA[
@@ -13,6 +13,9 @@
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaCategory;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
@@ -30,6 +33,7 @@
 			[Bindable]
 			private var _filterModel:FilterModel;
 			
+			private var _nextPendingCategory:int;
 			
 			public function get filterModel():FilterModel {
 				return _filterModel;
@@ -39,18 +43,20 @@
 				_filterModel = value;
 			}
 			
-			public function set category(value:KalturaCategory):void{
-				_origCategory = value;
-				_undoCategory = new KalturaCategory();
-				ObjectUtil.copyObject(_origCategory, _undoCategory);
-			}
-			
-			public function get category():KalturaCategory{
-				return _origCategory;
-			}
+//			public function set category(value:KalturaCategory):void{
+//				_origCategory = value;
+//				_undoCategory = new KalturaCategory();
+//				ObjectUtil.copyObject(_origCategory, _undoCategory);
+//			}
+//			
+//			public function get category():KalturaCategory{
+//				return _origCategory;
+//			}
 			
 			public function set categoriesModel(value:CategoriesModel):void{
 				_model = value;
+				_itemsAC = _model.categoriesList;
+				BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
 			}
 			
 			public function get categoriesModel():CategoriesModel{
@@ -59,6 +65,9 @@
 			
 			public function set isNewCategory(value:Boolean):void{
 				_isNewCategory = value;
+				if (_isNewCategory && showNextPrevBtns){
+					showNextPrevBtns = false;
+				}
 			}
 			
 			private function onClose(event:Event):void{
@@ -96,28 +105,65 @@
 					cgEvent.data = _undoCategory;
 					cgEvent.dispatch();
 				} else {
-					var hasChanged:Boolean = ObjectUtil.compareObjects(_origCategory, _undoCategory);
-					if (! hasChanged){
-						hasChanged = tabsNav.isChanged();
-					}
-					
-					if (hasChanged){
+					if (hasChanged()){
 						tabsNav.save();
+						var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
+						var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+						cgEvent2.data = catVO;
+						cgEvent2.dispatch();
 					}
-					
-					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
-					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-					cgEvent2.data = catVO;
-					cgEvent2.dispatch();
 				}
+			}
+				
+			private function hasChanged():Boolean{
+				var res:Boolean =  ! ObjectUtil.compareObjects(_origCategory, _undoCategory);
+				if (! res){
+					res = tabsNav.isChanged();
+				}
+				
+				return res;
+			}
+			
+			private function gotoNextCategory(ascending:Boolean):void {
+				_nextPendingCategory = ascending ? 1 : -1;
+				if (hasChanged()) {
+					// discard changes?
+					Alert.show(resourceManager.getString('cms', 'undoCategoryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, setNextCategory);
+				}
+				else {
+					setNextCategory();
+				}
+			}
+			
+			private function setNextCategory(event:CloseEvent = null):void {
+				if (_nextPendingCategory == 0) {
+					throw new Error("calling setNextCategory() with _nextPendingCategory == 0");
+					return;
+				}
+				if ((event == null || event.detail == Alert.YES)) {
+					itemIndex = getNavigatableItemIndex(_nextPendingCategory == 1, itemIndex);
+					var selectCategory:CategoryEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+					selectCategory.data = _itemsAC.getItemAt(itemIndex);
+					selectCategory.dispatch();
+				}
+				_nextPendingCategory = 0;
+			}
+			
+			private function setCategory(selectedCategories:Array):void
+			{
+				_origCategory = selectedCategories[0] as KalturaCategory;
+				_undoCategory = new KalturaCategory();
+				ObjectUtil.copyObject(_origCategory, _undoCategory);
+				itemIndex = _model.categoriesList.getItemIndex(_origCategory);
 			}
 			
 		]]>
 	</mx:Script>
-	<containers:states>
+	<navigation:states>
 		<mx:State name="tabs">
 			<mx:AddChild>
-				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()" close="onClose(event)" isNewCategory="{_isNewCategory}"/>
+				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()" close="onClose(event)" isNewCategory="{_isNewCategory}"
+												prevEnabled="{_prevEnabled}" nextEnabled="{_nextEnabled}" gotoNext="gotoNextCategory(true)" gotoPrev="gotoNextCategory(false)"/>
 			</mx:AddChild>
 		</mx:State>
 		<mx:State name="parentSelect">
@@ -125,6 +171,6 @@
 				<components:ParentCategorySelection change="onParentSelected(event)" id="parentSelect" width="100%" height="100%" filterModel="{_filterModel}"/>
 			</mx:AddChild>
 		</mx:State>
-	</containers:states>
+	</navigation:states>
 	
-</containers:HelpTitleWindow>
+</navigation:ChangeableDataViewer>

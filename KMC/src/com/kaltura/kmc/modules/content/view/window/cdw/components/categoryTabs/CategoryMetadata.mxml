@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel" creationComplete="onCreationComplete(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.autocomplete.controllers.KACTagsController;
@@ -15,13 +15,15 @@
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaCategory;
 			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 90;
 			
-			private  var _category:KalturaCategory;
+//			private  var _category:KalturaCategory;
 			public var filterModel:FilterModel;
 			public var model:CategoriesModel;
 			
@@ -33,6 +35,11 @@
 			
 			private static const customDataVerticalGap:int = 5;
 			
+			[Bindable]
+			public var category:KalturaCategory;
+			
+			
+			private var _tagsWatcher:ChangeWatcher;
 			
 			/**
 			 * create the visual representation of each profile
@@ -87,7 +94,10 @@
 			}
 			
 			public function destroy():void{
-				
+				if (_tagsWatcher != null){
+					_tagsWatcher.unwatch();
+					_tagsWatcher = null;
+				}
 			}
 			
 			public function clear():void{
@@ -132,18 +142,18 @@
 				return res;
 			}
 			
-			[Bindable]
-			public function set category(value:KalturaCategory):void{
-				_category = value;
-				
-				if (_category && _category.tags != null){
-					tagsInput.selectedItems = new ArrayCollection(_category.tags.split(","));
-				}
-			}
-			
-			public function get category():KalturaCategory{
-				return _category;
-			}
+//			[Bindable]
+//			public function set category(value:KalturaCategory):void{
+//				_category = value;
+//				
+//				if (_category && _category.tags != null){
+//					tagsInput.selectedItems = new ArrayCollection(_category.tags.split(","));
+//				}
+//			}
+//			
+//			public function get category():KalturaCategory{
+//				return _category;
+//			}
 			
 			private function jumpToProfile():void {
 				var scrollPos:int = 0;
@@ -157,6 +167,17 @@
 				}
 				profilesCB.selectedIndex = -1;
 			}
+			
+			private function onCreationComplete(event:FlexEvent):void{
+				_tagsWatcher = BindingUtils.bindSetter(onTagsSet, this, ["category", "tags"]);
+			}
+			
+			private function onTagsSet(tags:String):void{
+				if (tags != null){
+					tagsInput.selectedItems = new ArrayCollection(tags.split(","));
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%" height="{height}" horizontalAlign="right">

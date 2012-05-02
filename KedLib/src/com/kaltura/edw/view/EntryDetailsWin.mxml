@@ -40,6 +40,7 @@
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
+			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMixEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -963,8 +964,8 @@
 					return;
 				}
 				if ((event == null || event.detail == Alert.YES)) {
-					entryIndex = getNavigatableEntryIndex(_nextPendingEntry == 1, entryIndex);
-					var selectEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, _entriesAC.getItemAt(entryIndex) as KalturaBaseEntry, '', entryIndex, true);
+					itemIndex = getNavigatableItemIndex(_nextPendingEntry == 1, itemIndex);
+					var selectEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, _itemsAC.getItemAt(itemIndex) as KalturaBaseEntry, '', itemIndex, true);
 					edwController.dispatch(selectEntry);
 				}
 				_nextPendingEntry = 0;
@@ -1064,6 +1065,21 @@
 				isUiEnabled = true;
 			}
 			
+			
+			override protected function getNavigatableItemIndex(goForward:Boolean, itemInd:int):int{
+				var nextEntryIndex:int = super.getNavigatableItemIndex(goForward, itemInd);
+				if (nextEntryIndex == -1){
+					return nextEntryIndex;
+				}
+				
+				var nextEntry:KalturaMediaEntry = _itemsAC.getItemAt(nextEntryIndex) as KalturaMediaEntry;
+				if (nextEntry && nextEntry.mediaType == KalturaMediaType.LIVE_STREAM_FLASH && nextEntry.status != KalturaEntryStatus.READY) {
+					return getNavigatableItemIndex(goForward, nextEntryIndex);
+				}
+				else {
+					return nextEntryIndex;
+				}
+			}
 		]]>
 	</mx:Script>
 

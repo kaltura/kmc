@@ -80,6 +80,11 @@ package com.kaltura.kmc.modules.content.events
 		public static const CLEAR_PARENT_CATEGORY : String = "content_clearParentCategory";
 		
 		/**
+		 * Set the selected category in the category drilldown.
+		 */
+		public static const SET_SELECTED_CATEGORY : String = "content_setSelectedCategory";
+		
+		/**
 		 * list category users
 		 * event.data is [filter, pager]
 		 */
