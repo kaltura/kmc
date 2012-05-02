@@ -7,6 +7,12 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		/**
+		 * save selected category users on model
+		 * event.data is ([KalturaCategoryUser])
+		 */
+		public static const SET_SELECTED_CATEGORY_USERS:String = 'cnt_setSelectedCategoryUsers';
+		
+		/**
 		 * event.data is [desired perm lvl, [KalturaCategoryUser]]
 		 */
 		public static const SET_CATEGORY_USERS_PERMISSION_LEVEL:String = 'cnt_editCategoryUsersPermissionLevel';

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false" 
-			 creationComplete="datagrid1_creationCompleteHandler(event)">
+			 creationComplete="datagrid1_creationCompleteHandler(event)"
+			 allowMultipleSelection="true" itemClick="setSelection(event)" change="setSelection(event)">
+	<mx:Metadata>
+		[Event(name="selectionChanged", type="flash.events.Event")] 
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
@@ -10,17 +14,33 @@
 			import com.kaltura.types.KalturaUpdateMethodType;
 			
 			import mx.events.FlexEvent;
+			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
+			/**
+			 * defines the value of the type property for the <code>selectionChanged</code> event.
+			 * */
+			public static const SELECTION_CHANGED:String = "selectionChanged";
 
-
+			
 			/**
 			 * if true, actions in table are enabled
 			 * */
 			public function set allowActions(value:Boolean):void {
 				ActionsRenderer.allowActions = value;
+			}
+			
+			
+			/**
+			 * selection or deselection was made
+			 */
+			private function setSelection(event:ListEvent):void {
+				if (event.itemRenderer.data) {
+					var e:Event = new Event(SELECTION_CHANGED);
+					dispatchEvent(e);
+				}
 			}
 
 			
@@ -114,11 +134,6 @@
 				var cue:CategoryUserEvent;
 				switch (event.type) {
 					case CatUsrTableActions.APPROVE:
-						cue = new CategoryUserEvent(CategoryUserEvent.ACTIVATE_CATEGORY_USER);
-						cue.data = [event.target.data];
-						cue.dispatch();
-						break;
-					
 					case CatUsrTableActions.ACTIVATE:
 						cue = new CategoryUserEvent(CategoryUserEvent.ACTIVATE_CATEGORY_USER);
 						cue.data = [event.target.data];

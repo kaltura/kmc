@@ -64,5 +64,10 @@ package com.kaltura.kmc.modules.content.model
 		 * users associated with selected category (KalturaCategoryUser objects, end users popup)
 		 */
 		public var categoryUsers:ArrayCollection;
+		
+		/**
+		 * selected users in table (KalturaCategoryUser objects, end users popup)
+		 */
+		public var selectedCategoryUsers:Array;
 	}
 }

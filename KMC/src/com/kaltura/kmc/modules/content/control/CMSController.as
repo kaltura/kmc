@@ -145,6 +145,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_AUTO_UPDATE, SetCategoryUserUpdateMethod);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE, SetCategoryUserUpdateMethod);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_PERMISSION_LEVEL, SetCategoryUsersPermLevel);
+			addCommand(CategoryUserEvent.SET_SELECTED_CATEGORY_USERS, SetSelectedCategoryUsersCommand);
 			
 		}
 	}

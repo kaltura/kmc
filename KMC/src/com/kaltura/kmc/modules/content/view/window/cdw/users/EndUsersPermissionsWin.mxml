@@ -2,13 +2,14 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*"
 							xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:controls="flexlib.controls.*"
-							layout="vertical" width="900" height="500" showCloseButton="true"
+							layout="vertical" width="920" height="500" showCloseButton="true"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)" xmlns:ctrls="com.kaltura.controls.*"
 							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*" xmlns:catusrtable="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.types.KalturaInheritanceType;
 			import com.kaltura.vo.KalturaCategory;
@@ -123,11 +124,19 @@
 				PopUpManager.addPopUp(cauw, this, true);
 				PopUpManager.centerPopUp(cauw);
 			}
+			
+
+			private function table_selectionChangedHandler(event:Event):void {
+				var et:CategoryUsersTable = event.target as CategoryUsersTable;
+				var cgEvent:CategoryUserEvent = new CategoryUserEvent(CategoryUserEvent.SET_SELECTED_CATEGORY_USERS);
+				cgEvent.data = et.selectedItems;
+				cgEvent.dispatch();
+			}
 
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" styleName="noPadding">
-		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="245" attribute="freeText"/>
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="220" attribute="freeText"/>
 		<mx:HBox styleName="flavorsReplacementVBox" width="100%" visible="{_category.inheritanceType == KalturaInheritanceType.INHERIT}">
 			<mx:Label text="{resourceManager.getString('cms', 'permsInheritFrom', [_category.inheritedParentId])}"/>
 		</mx:HBox>
@@ -138,9 +147,10 @@
 							   filterChanged="filterChangedHandler(event)"/>
 		<mx:VBox height="100%" width="100%" verticalGap="0" styleName="noPadding">
 			<catusrtable:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"
+											selectionChanged="table_selectionChangedHandler(event)"
 											allowActions="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}" 
+				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}" users="{model.selectedCategoryUsers}"
 											   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 				<ctrls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadUsers()"
 							  nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
