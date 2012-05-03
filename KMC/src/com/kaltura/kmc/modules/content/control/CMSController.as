@@ -133,6 +133,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.ADD_CATEGORY, AddCategoryCommand);
 			addCommand(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA, UpdateCategoryMetadataDataCommand);
 			addCommand(CategoryEvent.GET_PARENT_CATEGORY, ManageParentCategoryCommand);
+			addCommand(CategoryEvent.GET_INHERITED_PARENT_CATEGORY, ManageParentCategoryCommand);
 			addCommand(CategoryEvent.CLEAR_PARENT_CATEGORY, ManageParentCategoryCommand);
 			addCommand(CategoryEvent.SET_SELECTED_CATEGORY, SetSelectedCategoryCommand);
 			addCommand(CategoryEvent.LIST_CATEGORY_USERS, ListCategoryUsersCommand);

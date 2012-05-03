@@ -61,6 +61,11 @@ package com.kaltura.kmc.modules.content.model
 		public var parentCategory:KalturaCategory;
 		
 		/**
+		 * The category from which the selected category inherits values (category drilldown).
+		 */
+		public var inheritedParentCategory:KalturaCategory;
+		
+		/**
 		 * users associated with selected category (KalturaCategoryUser objects, end users popup)
 		 */
 		public var categoryUsers:ArrayCollection;

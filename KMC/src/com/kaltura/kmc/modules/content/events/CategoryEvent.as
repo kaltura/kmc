@@ -73,9 +73,14 @@ package com.kaltura.kmc.modules.content.events
 		 * Retrieve the parent kaltura category object of the selected category.
 		 */
 		public static const GET_PARENT_CATEGORY : String = "content_getParentCategory";
+
+		/**
+		 * Retrieve the inherited parent category of the selected category.
+		 */
+		public static const GET_INHERITED_PARENT_CATEGORY : String = "content_getInheritedParentCategory";
 		
 		/**
-		 * Clear parent category from the model.
+		 * Clear parent + inherited parent category from the model.
 		 */
 		public static const CLEAR_PARENT_CATEGORY : String = "content_clearParentCategory";
 		

@@ -26,10 +26,15 @@
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 150;
 
+			[Bindable]
 			public var model:CategoriesModel;
 
 			[Bindable]
 			private var _category:KalturaCategory;
+			
+			private var _originalOwner:String;
+			private var _originalJoinPolicy:int;
+			private var _originalPermLvl:int;
 
 			public function get category():KalturaCategory {
 				return _category;
@@ -43,6 +48,9 @@
 					}
 				}
 				_category = value;
+				_originalOwner = value.owner;
+				_originalJoinPolicy = value.userJoinPolicy;
+				_originalPermLvl = value.defaultPermissionLevel;
 			}
 
 
@@ -55,6 +63,20 @@
 				if (_category && _category.userJoinPolicy == int.MIN_VALUE) {
 					_category.userJoinPolicy = KalturaUserJoinPolicyType.NOT_ALLOWED;
 				}
+				
+				// default permissions
+				levelCb.dataProvider = [{label: resourceManager.getString('cms', 'permLvlMember'), data: KalturaCategoryUserPermissionLevel.MEMBER},
+					{label: resourceManager.getString('cms', 'permLvlContributor'), data: KalturaCategoryUserPermissionLevel.CONTRIBUTOR},
+					{label: resourceManager.getString('cms', 'permLvlModerator'), data: KalturaCategoryUserPermissionLevel.MODERATOR},
+					{label: resourceManager.getString('cms', 'permLvlManager'), data: KalturaCategoryUserPermissionLevel.MANAGER}];
+				if (_category && _category.defaultPermissionLevel == int.MIN_VALUE) {
+					_category.defaultPermissionLevel = KalturaCategoryUserPermissionLevel.MEMBER;
+				}
+				
+				setCBValuesFromCategory();
+			}
+
+			private function setCBValuesFromCategory():void {
 				switch (_category.userJoinPolicy) {
 					case KalturaUserJoinPolicyType.NOT_ALLOWED:
 						policyCb.selectedIndex = 0;
@@ -67,14 +89,6 @@
 						break;
 				}
 
-				// default permissions
-				levelCb.dataProvider = [{label: resourceManager.getString('cms', 'permLvlMember'), data: KalturaCategoryUserPermissionLevel.MEMBER},
-					{label: resourceManager.getString('cms', 'permLvlContributor'), data: KalturaCategoryUserPermissionLevel.CONTRIBUTOR},
-					{label: resourceManager.getString('cms', 'permLvlModerator'), data: KalturaCategoryUserPermissionLevel.MODERATOR},
-					{label: resourceManager.getString('cms', 'permLvlManager'), data: KalturaCategoryUserPermissionLevel.MANAGER}];
-				if (_category && _category.defaultPermissionLevel == int.MIN_VALUE) {
-					_category.defaultPermissionLevel = KalturaCategoryUserPermissionLevel.MEMBER;
-				}
 				switch (_category.defaultPermissionLevel) {
 					case KalturaCategoryUserPermissionLevel.MEMBER:
 						levelCb.selectedIndex = 0;
@@ -88,9 +102,8 @@
 					case KalturaCategoryUserPermissionLevel.MANAGER:
 						levelCb.selectedIndex = 3;
 						break;
-				}
+				}	
 			}
-
 
 			/**
 			 * open the end user permissions popup
@@ -140,9 +153,15 @@
 
 
 			public function initData():void {
-				if (category.parentId > 0) {
-					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
-					cgEvent.data = category;
+				var cgEvent:CategoryEvent;
+				if (_category.parentId > 0) {
+					cgEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
+					cgEvent.data = _category;
+					cgEvent.dispatch();
+				}
+				if (_category.inheritanceType == KalturaInheritanceType.INHERIT) {
+					cgEvent = new CategoryEvent(CategoryEvent.GET_INHERITED_PARENT_CATEGORY);
+					cgEvent.data = _category;
 					cgEvent.dispatch();
 				}
 			}
@@ -166,6 +185,33 @@
 			private function policyCb_changeHandler(event:ListEvent):void {
 				_category.userJoinPolicy = policyCb.selectedItem.data;
 			}
+
+			
+			protected function inheritNo_changeHandler(event:Event):void {
+				if((event.target as RadioButton).selected) {
+					_category.inheritanceType = KalturaInheritanceType.MANUAL; 
+					_category.owner = _originalOwner;
+					_category.userJoinPolicy = _originalJoinPolicy;
+					_category.defaultPermissionLevel = _originalPermLvl;
+					setCBValuesFromCategory();
+				}
+			}
+
+
+			protected function inheritYes_changeHandler(event:Event):void {
+				if((event.target as RadioButton).selected) {
+					_category.inheritanceType = KalturaInheritanceType.INHERIT;
+					var parentCat:KalturaCategory = model.inheritedParentCategory;
+					if (!parentCat) {
+						parentCat = model.parentCategory;
+					}
+					_category.owner = parentCat.owner;
+					_category.userJoinPolicy = parentCat.userJoinPolicy;
+					_category.defaultPermissionLevel = parentCat.defaultPermissionLevel;
+					setCBValuesFromCategory();		
+				}
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('cms', 'endUserAccessTitle')}"/>
@@ -253,18 +299,18 @@
 				 styleName="drillDownLabel" toolTip="{resourceManager.getString('cms', 'inheritEndUserSpecificTooltip')}"/>
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
-				<mx:RadioButton label="{resourceManager.getString('cms','no')}" 
+				<mx:RadioButton label="{resourceManager.getString('cms','no')}" id="inheritNo"
 								selected="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"
-								change="{ if((event.target as RadioButton).selected)_category.inheritanceType = KalturaInheritanceType.MANUAL }"
+								change="inheritNo_changeHandler(event)"
 								groupName="inheritEndUserSpecific"/>
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'inheritEndUserSpecificNoDesc')}"
 						  styleName="smallLabel"/>
 			</mx:HBox>
 			<mx:HBox styleName="plstAddRemoveCont">
-				<mx:RadioButton label="{resourceManager.getString('cms','yes')}" enabled="{category.parentId > 0}"
+				<mx:RadioButton label="{resourceManager.getString('cms','yes')}" id="inheritYes"
 								selected="{_category.inheritanceType == KalturaInheritanceType.INHERIT}"
-								change="{ if((event.target as RadioButton).selected)_category.inheritanceType = KalturaInheritanceType.INHERIT }"
-								groupName="inheritEndUserSpecific"/>
+								change="inheritYes_changeHandler(event)"
+								groupName="inheritEndUserSpecific" enabled="{category.parentId > 0}"/>
 				<mx:Label width="100%" text="{resourceManager.getString('cms', 'inheritEndUserSpecificYesDesc')}"
 						  styleName="smallLabel"/>
 			</mx:HBox>
@@ -276,7 +322,8 @@
 			<mx:Label text="{resourceManager.getString('cms', 'endUserSpecificActionPer')}" styleName="drillDownLabel"/>
 			<mx:HBox styleName="noPadding" visible="{_category.inheritanceType == KalturaInheritanceType.INHERIT}">
 				<mx:Label text="{resourceManager.getString('cms', 'inheritedFrom')}" styleName="drillDownLabel"/>	
-				<mx:Label styleName="drillDownSubLabel" text="{_category.inheritedParentId}" maxWidth="{TEXT_WIDTH}" />
+				<mx:Label styleName="drillDownSubLabel" maxWidth="{TEXT_WIDTH}"  
+						  text="{model.inheritedParentCategory ? model.inheritedParentCategory.fullName : model.parentCategory.fullName}" />
 			</mx:HBox>
 		</mx:HBox>
 		<mx:HBox width="100%">
