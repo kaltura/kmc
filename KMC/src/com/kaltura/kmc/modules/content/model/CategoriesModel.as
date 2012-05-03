@@ -86,5 +86,11 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var categoryUserFirstAction:Boolean;
 		
+		/**
+		 * indicates the category currently being edited in 
+		 * the category drilldown has not been saved yet.
+		 */		
+		public var processingNewCategory:Boolean = false;
+		
 	}
 }

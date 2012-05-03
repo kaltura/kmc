@@ -132,11 +132,10 @@
 
 			public function save():void {
 				if (category.inheritanceType == KalturaInheritanceType.INHERIT) {
-					var parentCat:KalturaCategory = model.parentCategory;
-					category.userJoinPolicy = parentCat.userJoinPolicy;
-					category.owner = parentCat.owner;
-					category.defaultPermissionLevel = parentCat.defaultPermissionLevel;
-						// TODO: handle end users as well.
+					// make sure we don't send inherited fields
+					category.userJoinPolicy = int.MIN_VALUE;
+					category.owner = null;
+					category.defaultPermissionLevel = int.MIN_VALUE;
 				}
 			}
 

@@ -46,28 +46,16 @@
 				return _filterModel;
 			}
 
-
 			public function set filterModel(value:FilterModel):void {
 				_filterModel = value;
 			}
 
-
-//			public function set category(value:KalturaCategory):void{
-//				_origCategory = value;
-//				_undoCategory = new KalturaCategory();
-//				ObjectUtil.copyObject(_origCategory, _undoCategory);
-//			}
-//			
-//			public function get category():KalturaCategory{
-//				return _origCategory;
-//			}
 
 			public function set categoriesModel(value:CategoriesModel):void {
 				_model = value;
 				_itemsAC = _model.categoriesList;
 				BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
 			}
-
 
 			public function get categoriesModel():CategoriesModel {
 				return _model;
@@ -94,6 +82,12 @@
 			private function onParentSelected(event:Event):void {
 				var parentCategory:CategoryVO = parentSelect.catTree.selectedItem as CategoryVO;
 				_undoCategory.parentId = parentCategory.category.id;
+				if (parentCategory.category.privacyContexts) {
+					// little hack to show the end users tab if it is needed: simulate inheriting privacy contexts
+					_undoCategory.privacyContexts = parentCategory.category.privacyContexts; 
+					_undoCategory.pendingMembersCount = 0;
+					_undoCategory.membersCount = 0;
+				}
 				currentState = "tabs";
 			}
 
@@ -111,8 +105,11 @@
 
 
 			private function onSave():void {
-				if (_isNewCategory) {
-//					_undoCategory.parentId = /z.category.id;
+				if (_isNewCategory && _model.processingNewCategory) {
+					// remove any privacy contexts (if required, they will be set by server)
+					_undoCategory.privacyContexts = null;
+					_undoCategory.pendingMembersCount = int.MIN_VALUE;
+					_undoCategory.membersCount = int.MIN_VALUE;
 					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
 					cgEvent.data = _undoCategory;
 					cgEvent.dispatch();
