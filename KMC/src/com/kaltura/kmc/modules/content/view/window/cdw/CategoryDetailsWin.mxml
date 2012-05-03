@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation:ChangeableDataViewer xmlns:navigation="com.kaltura.edw.business.*" xmlns:mx="http://www.adobe.com/2006/mxml"
 								 height="595" width="930" showCloseButton="true" showHelpButton="false"
-								 close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18" 
-								 xmlns:containers="com.kaltura.containers.*" 
-								 xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:window="com.kaltura.kmc.view.window.*" 
-								 xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*" 
-								 initialize="onInitialize(event)" paddingBottom="0" paddingLeft="0" paddingRight="0" >
+								 close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
+								 xmlns:containers="com.kaltura.containers.*"
+								 xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
+								 xmlns:window="com.kaltura.kmc.view.window.*"
+								 xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*"
+								 initialize="onInitialize(event)" paddingBottom="0" paddingLeft="0" paddingRight="0">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.commands.category.CategoryUpdate;
@@ -17,37 +18,40 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaCategory;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
-			
+
 			[Bindable]
 			private var _isNewCategory:Boolean;
-			
+
 			[Bindable]
 			private var _model:CategoriesModel;
-			
+
 			private var _origCategory:KalturaCategory;
-			
+
 			[Bindable]
 			private var _undoCategory:KalturaCategory;
-			
+
 			[Bindable]
 			private var _filterModel:FilterModel;
-			
+
 			private var _nextPendingCategory:int;
-			
+
+
 			public function get filterModel():FilterModel {
 				return _filterModel;
 			}
-			
+
+
 			public function set filterModel(value:FilterModel):void {
 				_filterModel = value;
 			}
-			
+
+
 //			public function set category(value:KalturaCategory):void{
 //				_origCategory = value;
 //				_undoCategory = new KalturaCategory();
@@ -57,60 +61,64 @@
 //			public function get category():KalturaCategory{
 //				return _origCategory;
 //			}
-			
-			public function set categoriesModel(value:CategoriesModel):void{
+
+			public function set categoriesModel(value:CategoriesModel):void {
 				_model = value;
 				_itemsAC = _model.categoriesList;
 				BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
 			}
-			
-			public function get categoriesModel():CategoriesModel{
+
+
+			public function get categoriesModel():CategoriesModel {
 				return _model;
 			}
-			
-			public function set isNewCategory(value:Boolean):void{
+
+
+			public function set isNewCategory(value:Boolean):void {
 				_isNewCategory = value;
-				if (_isNewCategory && showNextPrevBtns){
+				if (_isNewCategory && showNextPrevBtns) {
 					showNextPrevBtns = false;
 				}
 			}
-			
-			private function onClose(event:Event):void{
-				if (tabsNav != null){
+
+
+			private function onClose(event:Event):void {
+				if (tabsNav != null) {
 					tabsNav.clear();
 					tabsNav.destroy();
 				}
 				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
 			}
-			
-			private function onParentSelected(event:Event):void
-			{
+
+
+			private function onParentSelected(event:Event):void {
 				var parentCategory:CategoryVO = parentSelect.catTree.selectedItem as CategoryVO;
 				_undoCategory.parentId = parentCategory.category.id;
 				currentState = "tabs";
 			}
-			
-			private function onInitialize(evt:FlexEvent):void
-			{
-				if (_isNewCategory){
+
+
+			private function onInitialize(evt:FlexEvent):void {
+				if (_isNewCategory) {
 					title = resourceManager.getString('cms', 'newCategoryTitle');
 					currentState = "parentSelect";
-				} else {
+				}
+				else {
 					title = resourceManager.getString('cms', 'editCategoryTitle');
 					currentState = "tabs";
 				}
 			}
-			
-			
-			private function onSave():void
-			{
-				if (_isNewCategory){
+
+
+			private function onSave():void {
+				if (_isNewCategory) {
 //					_undoCategory.parentId = /z.category.id;
 					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
 					cgEvent.data = _undoCategory;
 					cgEvent.dispatch();
-				} else {
-					if (hasChanged()){
+				}
+				else {
+					if (hasChanged()) {
 						tabsNav.save();
 						var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
 						var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
@@ -119,27 +127,36 @@
 					}
 				}
 			}
-				
-			private function hasChanged():Boolean{
-				var res:Boolean =  ! ObjectUtil.compareObjects(_origCategory, _undoCategory);
-				if (! res){
+			
+			private function onSaveAndClose():void {
+				onSave();
+				onClose(null);
+			}
+
+
+			private function hasChanged():Boolean {
+				var res:Boolean = !ObjectUtil.compareObjects(_origCategory, _undoCategory);
+				if (!res) {
 					res = tabsNav.isChanged();
 				}
-				
+
 				return res;
 			}
-			
+
+
 			private function gotoNextCategory(ascending:Boolean):void {
 				_nextPendingCategory = ascending ? 1 : -1;
 				if (hasChanged()) {
 					// discard changes?
-					Alert.show(resourceManager.getString('cms', 'undoCategoryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, setNextCategory);
+					Alert.show(resourceManager.getString('cms', 'undoCategoryDetails'), 
+						resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, setNextCategory);
 				}
 				else {
 					setNextCategory();
 				}
 			}
-			
+
+
 			private function setNextCategory(event:CloseEvent = null):void {
 				if (_nextPendingCategory == 0) {
 					throw new Error("calling setNextCategory() with _nextPendingCategory == 0");
@@ -153,29 +170,51 @@
 				}
 				_nextPendingCategory = 0;
 			}
-			
-			private function setCategory(selectedCategories:Array):void
-			{
+
+
+			private function setCategory(selectedCategories:Array):void {
 				_origCategory = selectedCategories[0] as KalturaCategory;
 				_undoCategory = new KalturaCategory();
 				ObjectUtil.copyObject(_origCategory, _undoCategory);
 				itemIndex = _model.categoriesList.getItemIndex(_origCategory);
 			}
-			
 		]]>
 	</mx:Script>
 	<navigation:states>
 		<mx:State name="tabs">
 			<mx:AddChild>
-				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}" category="{_undoCategory}" model="{_model}" save="onSave()" close="onClose(event)" isNewCategory="{_isNewCategory}"
-												prevEnabled="{_prevEnabled}" nextEnabled="{_nextEnabled}" gotoNext="gotoNextCategory(true)" gotoPrev="gotoNextCategory(false)"/>
+				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}"
+												category="{_undoCategory}" model="{_model}"
+												isNewCategory="{_isNewCategory}"/>
 			</mx:AddChild>
+			<mx:SetProperty target="{saveBtn}" name="enabled" value="true" />
+			<mx:SetProperty target="{saveAndCloseBtn}" name="enabled" value="true" />
 		</mx:State>
 		<mx:State name="parentSelect">
 			<mx:AddChild>
-				<components:ParentCategorySelection change="onParentSelected(event)" id="parentSelect" width="100%" height="100%" filterModel="{_filterModel}"/>
+				<components:ParentCategorySelection change="onParentSelected(event)" id="parentSelect" width="100%"
+													height="100%" filterModel="{_filterModel}"/>
 			</mx:AddChild>
+			<mx:SetProperty target="{saveBtn}" name="enabled" value="false" />
+			<mx:SetProperty target="{saveAndCloseBtn}" name="enabled" value="false" />
 		</mx:State>
 	</navigation:states>
 	
+	<mx:ControlBar horizontalGap="5" width="100%">
+		<mx:HBox width="33%"/>
+		<mx:HBox width="33%" horizontalAlign="center">
+			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" 
+					   click="onSave()" buttonMode="true" />
+			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
+					   click="onSaveAndClose()" buttonMode="true" />
+		</mx:HBox>
+		<mx:HBox horizontalAlign="right" width="33%">
+			<mx:LinkButton label="{resourceManager.getString('cms', 'prevCategory')}" click="gotoNextCategory(false)"
+						   buttonMode="true" enabled="{_prevEnabled}" visible="{showNextPrevBtns}"
+						   styleName="drillDownNavPrevBtn"/>
+			<mx:LinkButton label="{resourceManager.getString('cms', 'nextCategory')}" click="gotoNextCategory(true)"
+						   buttonMode="true" enabled="{_nextEnabled}" visible="{showNextPrevBtns}"
+						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
+		</mx:HBox>
+	</mx:ControlBar>
 </navigation:ChangeableDataViewer>
