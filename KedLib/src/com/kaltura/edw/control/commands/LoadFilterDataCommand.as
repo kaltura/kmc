@@ -107,25 +107,6 @@ package com.kaltura.edw.control.commands
 			var getListAccessControlProfiles:AccessControlList = new AccessControlList(acfilter, pager1);
 			multiRequest.addAction(getListAccessControlProfiles);
 			
-			//categories
-//			var mefilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
-//			
-//			mefilter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
-//				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
-//				KalturaEntryStatus.READY;
-//			mefilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
-//				KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
-//			
-//			// to bypass server defaults
-//			mefilter.moderationStatusIn = '';
-//			
-//			var getEntryCount:BaseEntryCount = new BaseEntryCount(mefilter);
-//			multiRequest.addAction(getEntryCount);
-//			
-//			var listCategories:CategoryList = new CategoryList(new KalturaCategoryFilter());
-//			multiRequest.addAction(listCategories);
-			
-			
 			// listeners
 			multiRequest.addEventListener(KalturaEvent.COMPLETE, result);
 			multiRequest.addEventListener(KalturaEvent.FAILED, fault);
@@ -149,9 +130,6 @@ package com.kaltura.edw.control.commands
 			// access control
 			handleAccessControls(data.data[responseCount] as KalturaAccessControlListResponse);
 			responseCount ++;
-			
-			// categories
-//			handleCategoriesList(data.data[(responseCount + 1)] as KalturaCategoryListResponse, data.data[responseCount] as String);
 			
 			_filterModel.loadingRequired = false;
 			_caller.onRequestedDataLoaded();
@@ -220,13 +198,6 @@ package com.kaltura.edw.control.commands
 			_filterModel.accessControlProfiles = tempArrCol;
 		}
 		
-		/**
-		 * coppied from ListCategoriesCommand 
-		 */
-		private function handleCategoriesList(kclr:KalturaCategoryListResponse, totalEntriesCount:String):void {
-			var categories:Array = kclr.objects;
-			_filterModel.categories = buildCategoriesHyrarchy(categories, totalEntriesCount);
-		}
 		
 		/**
 		 * This function will convert a given object to an XML 
@@ -244,47 +215,6 @@ package com.kaltura.edw.control.commands
 		
 		private function clearOldFlavorData():void {
 			_filterModel.flavorParams.removeAll();
-		}
-		
-		private function buildCategoriesHyrarchy(array:Array, totalEntryCount:String):CategoryVO {
-			var catMap:HashMap = _filterModel.categoriesMap;
-			catMap.clear();
-			
-			var root:CategoryVO = new CategoryVO(0,
-				ResourceManager.getInstance().getString('cms',
-					'rootCategoryName'),
-				new KalturaCategory());
-			root.category.fullName = '';
-			root.category.entriesCount = int(totalEntryCount);
-			catMap.put(0 + '', root);
-			
-			var categories:ArrayCollection = new ArrayCollection();
-			
-			var categoryNames:ArrayCollection = new ArrayCollection();
-			
-			var category:CategoryVO;
-			var catName:Object;
-			for each (var kCat:KalturaCategory in array) {
-				category = new CategoryVO(kCat.id, kCat.name, kCat);
-				catMap.put(kCat.id + '', category);
-				catName = new Object();
-				catName.label = kCat.fullName;
-				categoryNames.addItem(catName);
-				categories.addItem(category)
-			}
-			
-			(_model.getDataPack(EntryDataPack) as EntryDataPack).categoriesFullNameList = categoryNames;
-			
-			for each (var cat:CategoryVO in categories) {
-				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
-				if (parentCategory != null) {
-					parentCategory.children.addItem(cat);
-					sortCategories(parentCategory.children);
-				}
-			}
-			
-			
-			return root;
 		}
 		
 		

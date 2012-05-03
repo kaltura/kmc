@@ -17,8 +17,8 @@
 			import com.kaltura.autocomplete.itemRenderers.dropdown.CategoryDropDownIR;
 			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
 			import com.kaltura.edw.business.EntryDataHelper;
-			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.EntryFormBuilder;
+			import com.kaltura.edw.business.EntryUtil;
 			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.business.MetadataDataParser;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -26,6 +26,7 @@
 			import com.kaltura.edw.control.DataTabController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.MetadataDataEvent;
+			import com.kaltura.edw.control.events.MetadataProfileEvent;
 			import com.kaltura.edw.control.events.ModelEvent;
 			import com.kaltura.edw.events.InternalKedEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
@@ -152,6 +153,11 @@
 			 * change watcher for categories list
 			 * */
 			private var _catWatcher:ChangeWatcher;
+			
+			/**
+			 * change watcher for custom data profiles, if not previously loaded via filter 
+			 * */
+			private var _profsWatcher:ChangeWatcher;
 			
 			
 			// =================================================================
@@ -366,8 +372,11 @@
 						landingPageLabel.text = _landingPage + selectedEntry.id;
 				}
 				
-				var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
-				controller.dispatch(listCustomData);
+				if (_profilesAC) {
+					// only list custom data if custom data profiles are loaded
+					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
+					controller.dispatch(listCustomData);
+				}
 				
 				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_CATEGORIES, selectedEntry);
 				controller.dispatch(listCats);
@@ -379,6 +388,10 @@
 					_catWatcher.unwatch();
 				} 
 				
+				if (_profsWatcher) {
+					_profsWatcher.unwatch();
+				} 
+				
 			}
 			
 			
@@ -386,6 +399,7 @@
 			 * remove any playing entry from the preview player
 			 * */
 			public function clear():void {
+				_originalRefid = null;
 				_entryCategories = null;
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
@@ -402,21 +416,39 @@
 			}
 			
 			
-		
-			
 			
 			public function init():void {
 				Security.allowDomain("*");
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.METADATA_PANEL);
 				
-				
-				
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 				
-				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				if (filterData.filterModel.metadataProfiles) {
+					buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				}
+				else {
+					// if custonm data profiles are not loaded, load them
+					_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterData, ["filterModel", "formBuilders"]);
+					var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+					controller.dispatch(lmdp);
+				}
 				
 				//TODO permissions: unite with PanelConsts.METADATA_PANEL
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.CUSTOM_DATA_PANEL);
+			}
+			
+			
+			/**
+			 * after custom data profiles are loaded we can build the custom data UI.
+			 * */
+			private function onSetProfiles(value:ArrayCollection):void {
+				if (!value) {
+					return;
+				}
+				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
+				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
+				controller.dispatch(listCustomData);
 			}
 			
 			
@@ -747,8 +779,6 @@
 				_profileNames = new ArrayCollection();
 				// header for entry metadata section in the dropdown
 				_profileNames.addItem(resourceManager.getString('drilldown', 'metadata'));
-//				// remove old data and old binding
-//				destroy();
 				// remove custom datas, don't remove entry data box
 				while (editableBox.numChildren > 1) {
 					editableBox.removeChildAt(1);
@@ -760,7 +790,6 @@
 					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
 						var curCustomData:SingleCustomData = new SingleCustomData();
 						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as EntryFormBuilder;
-//						curCustomData.controller = controller;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
 						
 						_profilesAC.addItem(curProfile);
