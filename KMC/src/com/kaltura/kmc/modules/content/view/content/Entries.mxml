@@ -22,7 +22,6 @@
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.components.et.EntryTableColumns;
-			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
@@ -35,10 +34,8 @@
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
-			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
-			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.SetListableEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -47,12 +44,8 @@
 			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
-			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
-			import com.kaltura.vo.KalturaMixEntry;
-			import com.kaltura.vo.KalturaPlaylist;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
@@ -153,27 +146,6 @@
 			}
 
 
-
-
-//			/**
-//			 * controller has selected all entries
-//			 */
-//			private function onSelectAllEntries(evt:Event):void {
-//				entryTable.selectAll();
-//				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-//					new ArrayCollection(entryTable.selectedItems));
-//				cgEvent.dispatch();
-//			}
-//
-//
-//			private function onDeselectAllEntries(evt:Event):void {
-//				entryTable.deselectAll();
-//				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-//					new ArrayCollection(entryTable.selectedItems));
-//				cgEvent.dispatch();
-//			}
-
-
 			/**
 			 * should thumbnails be shown in entries table
 			 * */
@@ -231,24 +203,6 @@
 				cgEvent2.dispatch();
 
 			}
-
-//	on the fly rule based playlist creation is cancelled for Falcon
-//			/**
-//			 * Create a new ruled based playlist based on current filter
-//			 */
-//			private function onNewRulePlaylist():void {
-//				var filterVo:KalturaMediaEntryFilterForPlaylist = filter.playlistFilter;
-//				filterVo.orderBy = KalturaPlayableEntryOrderBy.PLAYS_DESC;
-//				// add the selected filter to the model
-//				var cgEvent:CairngormEvent = new KMCFilterEvent(KMCFilterEvent.SET_FILTER_TO_MODEL, filterVo);
-//				cgEvent.dispatch();
-//				//tell the model that this is not a regular playlist - but a playlist with pre-defined entries
-//				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.RULE_BASED_PLAYLIST);
-//				cgEvent.dispatch();
-//				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
-//				cgEvent.dispatch();
-//			}
-
 
 
 
@@ -358,9 +312,7 @@
 				<controls:Paging id="paging" width="100%" styleName="paging"
 								 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"
 								 getPageNum="gotoPageNum()" showRowsInPage="true" defaultPageSize="{DEFAULT_PAGE_SIZE}"/>
-				
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HDividedBox>
-
 </mx:VBox>
