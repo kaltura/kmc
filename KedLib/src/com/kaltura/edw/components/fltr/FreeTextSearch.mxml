@@ -19,6 +19,11 @@
 			 * */
 			private var _invalidCharsRegexp:RegExp = /[`;!#\&*\+?\\{}<>"\[\]]/;
 			
+			[Bindable]
+			/**
+			 * text to show when no search text is entered
+			 * */
+			public var defaultText:String;
 
 			// -------------------
 			// IFilterComponent
@@ -46,7 +51,7 @@
 			 * */
 			public function get filter():Object {
 				var res:String = null;
-				if (searchFilter.text && searchFilter.text != resourceManager.getString('filter', 'searchEntries')) {
+				if (searchFilter.text && searchFilter.text != defaultText) {
 					var trimmedText:String = StringUtil.trim(searchFilter.text);
 					res = trimmedText;
 				}
@@ -116,7 +121,7 @@
 			 * @param notify	if true, update event is dispatched after clear
 			 * */
 			private function clearSearchText(notify:Boolean):void {
-				searchFilter.text = resourceManager.getString('filter', 'searchEntries');
+				searchFilter.text = defaultText;
 				setSearchIcon();
 				searchBtn.enabled = false;
 				// announce change
@@ -130,7 +135,7 @@
 			 * */
 			private function resetDefaultText(event:FocusEvent):void {
 				if (StringUtil.trim(searchFilter.text) == '') {
-					searchFilter.text = resourceManager.getString('filter', 'searchEntries');
+					searchFilter.text = defaultText;
 				}
 			}
 			
@@ -139,7 +144,7 @@
 			 * remove the default text from the search text field
 			 * */
 			private function removeDefaultText(event:FocusEvent):void {
-				if (searchFilter.text == resourceManager.getString('filter', 'searchEntries')) {
+				if (searchFilter.text == defaultText) {
 					searchFilter.text = '';
 				}
 			}
@@ -151,7 +156,7 @@
 			 * */
 			public function validateSearchText(allowEmpty:Boolean):Boolean {
 				var result:Boolean = true;
-				if (searchFilter.text == resourceManager.getString('filter', 'searchEntries')) {
+				if (searchFilter.text == defaultText) {
 					result = allowEmpty;
 				}
 				if (_invalidCharsRegexp.test(searchFilter.text)) {
@@ -203,7 +208,7 @@
 		]]>
 	</mx:Script>
 	<mx:TextInput id="searchFilter" width="100%" height="100%" styleName="searchTextInput" 
-				  text="{resourceManager.getString('filter', 'searchEntries')}" 
+				  text="{defaultText}" 
 				  toolTip="{resourceManager.getString('filter', 'freeSearchToolTip')}" 
 				  enter="updateFilter()"
 				  change="onSearchTextChanged()" 

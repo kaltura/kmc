@@ -42,10 +42,6 @@ package com.kaltura.edw.control.commands
 			var kbe:KalturaBaseEntry;
 			var mix:KalturaMixEntry;
 			var recivedData:KalturaBaseEntryListResponse = KalturaBaseEntryListResponse(data.data);
-//			if (!(_caller.parentCaller is ManualPlaylistWindow))
-//			{
-//				_model.selectedEntries = new Array();
-//			}
 			// only use object we can handle
 			var tempAr:Array = [];
 			for each (var o:Object in recivedData.objects) {
@@ -54,9 +50,7 @@ package com.kaltura.edw.control.commands
 				}
 			}
 			_caller.arrayCollection = new ArrayCollection (tempAr);
-//			_model.entryDetailsModel.totalEntriesCount = recivedData.totalCount;
 			_caller.pagingComponent.totalCount = recivedData.totalCount;
-//			_model.refreshEntriesRequired = false;
 			_model.decreaseLoadCounter();
 		}
 		
