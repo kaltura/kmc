@@ -24,7 +24,12 @@ package com.kaltura.kmc.modules.content.commands.cat {
 				// addition worked out fine
 				_model.categoriesModel.processingNewCategory = false;
 				// copy any attributes from the server object to the client object 
-				ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategories[0]); 
+				ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategories[0]);
+				
+				if (_model.filterModel.catTreeDataManager) {
+					_model.filterModel.catTreeDataManager.resetData();
+				}
+				
 				var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				getCategoriesList.dispatch();
 			}
