@@ -63,7 +63,6 @@ Distribution tab of EntryDetailsWin
 				_dpModel = value;
 				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				var contextData:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
-				viewStack = contextData.edwViewStack;
 			}
 			
 			public function get helpAnchor():String{
@@ -71,8 +70,6 @@ Distribution tab of EntryDetailsWin
 			}
 			
 			private var _distributionDetailsWindow:DistributionDetailsWindow;
-			
-//			private var _model:KMvCModel;
 			
 			[Bindable]
 			private var _entryDistributions:Array;
@@ -84,12 +81,6 @@ Distribution tab of EntryDetailsWin
 			private var _selectDistributorsEnabled:Boolean = true;
 			
 			private var _cw:ChangeWatcher;
-			
-			/**
-			 * view stack of current entry details window.
-			 * read by SubmissionStatusRenderer via parentDocument
-			 * */
-			public var viewStack:ViewStack;
 			
 			
 			public function clear():void {
@@ -118,6 +109,8 @@ Distribution tab of EntryDetailsWin
 				dataGrid.removeEventListener(DistributionActionType.SUBMIT_UPDATE, actionHandler);
 				// distributor
 				dataGrid.removeEventListener(DistributionActionType.SHOW_DETAILS, showDistributionDetails);
+				// status
+				dataGrid.removeEventListener(KedDataEvent.NAVIGATE, navigate);
 			}
 			
 			public function validate():void {
@@ -170,21 +163,6 @@ Distribution tab of EntryDetailsWin
 			}
 			
 			
-//			public function get model():KMvCModel {
-//				return _model;
-//			}
-			
-			
-//			public function set model(value:KMvCModel):void {
-//				if (!value)
-//					return;
-//				
-//				_model = value;
-				
-//				if ((value.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray.length == 0)
-//					_selectDistributorsEnabled = false;
-//			}
-			
 			public function setEntryDistributions(value:Array):void {
 				_entryDistributions = value;
 				_notDeletedEntries = new Array();
@@ -232,16 +210,21 @@ Distribution tab of EntryDetailsWin
 				return 1;
 			}
 			
-			protected function vbox1_creationCompleteHandler(event:FlexEvent):void
-			{
+			protected function vbox1_creationCompleteHandler(event:FlexEvent):void {
 				// actions:
 				dataGrid.addEventListener(DistributionActionType.RETRY, actionHandler);
 				dataGrid.addEventListener(DistributionActionType.SUBMIT, actionHandler);
 				dataGrid.addEventListener(DistributionActionType.SUBMIT_UPDATE, actionHandler);
 				// distributor
 				dataGrid.addEventListener(DistributionActionType.SHOW_DETAILS, showDistributionDetails);
+				// status
+				dataGrid.addEventListener(KedDataEvent.NAVIGATE, navigate);
+			}
+			
+			private function navigate(e:KedDataEvent):void {
 				
 			}
+			
 			
 			private function showDistributionDetails(event:Event):void {
 				var distribution:EntryDistributionWithProfile = event.target.data as EntryDistributionWithProfile;

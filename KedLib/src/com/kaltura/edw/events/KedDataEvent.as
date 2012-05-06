@@ -39,6 +39,12 @@ package com.kaltura.edw.events
 		 */
 		public static const OPEN_ENTRY:String = "kedOpenEntry"; 
 		
+		/**
+		 * this event tells the EDW that it should switch to another panel
+		 * event.data is the id of the required panel
+		 */
+		public static const NAVIGATE:String = "kedNavigate"; 
+		
 		
 		
 		public var data:*;

@@ -9,6 +9,9 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.events.KedDataEvent;
+			
 			import mx.containers.VBox;
 			import mx.containers.ViewStack;
 			import mx.controls.Label;
@@ -22,7 +25,6 @@
 			public static const GENERAL_ERROR:String = "generalError";
 			
 			private var _type:String;
-			public var viewStack:ViewStack;
 			[Bindable]
 			private var _visibleBtn:Boolean = false;
 			[Bindable]
@@ -34,7 +36,11 @@
 			private var _isFirstParam:Boolean = true;
 			[Bindable]
 			public var enableLinks:Boolean = false;
+			
 			[Bindable]
+			/**
+			 * (set from SubmissionStatusRenderer)
+			 * */
 			public var showCustomDataBtn:Boolean = false;
 			
 			
@@ -84,27 +90,23 @@
 			private function onLinkClick(event:Event):void {
 				switch (_type) {
 					case MISSING_THUMB_ERROR:
-						setSelectedChild("entryThumbnails");
+						setSelectedChild(PanelConsts.THUMBNAILS_PANEL);
 						break;
 					case MISSING_FLAVOR_ERROR:
-						setSelectedChild("entryAssets")
+						setSelectedChild(PanelConsts.ASSETS_PANEL)
 						break;
 					case MISSING_METADATA:
 					case METADATA_ERROR:
-						if (event.target==linkBtn) {
-							setSelectedChild("entryMetaData")
-						}
-						else {
-							setSelectedChild("customData")							
-						}
+						setSelectedChild(PanelConsts.METADATA_PANEL)
 						break;
 				}
 				PopUpManager.removePopUp(this);
 			}
 			
 			private function setSelectedChild(childName:String):void {
-				if (viewStack.getChildByName(childName))	
-					viewStack.selectedChild = viewStack.getChildByName(childName) as Container;
+				var de:KedDataEvent = new KedDataEvent(KedDataEvent.NAVIGATE);
+				de.data = childName;
+				dispatchEvent(de);
 			}
 			
 			private function onClose():void {
@@ -131,21 +133,14 @@
 			
 		]]>
 	</mx:Script>
-	<!--<mx:VBox height="115" width="100%" styleName="distributionErrorVBox">-->
 	<mx:Text  htmlText="{_infoLabel}" width="100%"/>
 	<mx:Text text="{_extraInfoLabel}" width="100%" visible="{_visibleBtn}" includeInLayout="{_visibleBtn}"/>
 	
-	<!--	</mx:VBox>
-	<mx:HBox height="100%" width="100%">-->
 	<mx:ControlBar>
 		
-		<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{_visibleBtn &amp;&amp; enableLinks}" includeInLayout="{_visibleBtn &amp;&amp; enableLinks}" 
-					   click="{onLinkClick(event)}"/>
-		<mx:Spacer width="100%"/>
-		<mx:LinkButton id="customDataBtn" label="{resourceManager.getString('drilldown','gotoCustomDataTab')}" paddingRight="0"
-					   visible="{showCustomDataBtn &amp;&amp; enableLinks}" includeInLayout="{showCustomDataBtn &amp;&amp; enableLinks}"
+		<mx:LinkButton id="linkBtn" paddingLeft="0" label="{_btnText}" visible="{(showCustomDataBtn || _visibleBtn) &amp;&amp; enableLinks}" 
+					   includeInLayout="{showCustomDataBtn &amp;&amp; _visibleBtn &amp;&amp; enableLinks}" 
 					   click="{onLinkClick(event)}"/>
 	</mx:ControlBar>
 	
-	<!--	</mx:HBox>-->
 </mx:TitleWindow>

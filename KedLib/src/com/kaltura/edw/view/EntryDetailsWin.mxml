@@ -47,6 +47,7 @@
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.Container;
 			import mx.core.UIComponent;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
@@ -442,11 +443,25 @@
 			private function onWindowCreationComplete():void {
 				// roles and permissions 
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
+				addEventListener(KedDataEvent.NAVIGATE, switchTab, false, 0, true);
 				_isCreationComplete = true;
 				initWindow();
 			}
  
+			
+			/**
+			 * switch to another tab (panel)
+			 * e.data is the id of the required tab
+			 * */
+			private function switchTab(e:KedDataEvent):void {
+				var tabid:String = e.data as String;
+				viewStack.selectedChild = panels[tabid] as Container;
+			}
 
+			
+			/**
+			 * bind uiEnabled flag to model's loadingFlag
+			 * */
 			private function setUIEnbaled(value:Boolean):void {
 				isUiEnabled = !value;
 			}

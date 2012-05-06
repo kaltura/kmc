@@ -7,6 +7,8 @@
 	<mx:Tile id="tile" paddingLeft="0" paddingRight="0" direction="horizontal" horizontalGap="0">
 		<mx:Script>
 			<![CDATA[
+				import com.kaltura.edw.control.events.KedEntryEvent;
+				import com.kaltura.edw.events.KedDataEvent;
 				import com.kaltura.edw.model.EntryDistributionWithProfile;
 				import com.kaltura.edw.model.datapacks.DistributionDataPack;
 				import com.kaltura.edw.view.window.DistributionDetailsWindow;
@@ -237,12 +239,18 @@
 						errorDetails.enableLinks = false;
 					else {
 						errorDetails.enableLinks = true;
-						errorDetails.viewStack = parentDocument.viewStack;
+						errorDetails.addEventListener(KedDataEvent.NAVIGATE, onNavigateRequest, false, 0, true);
 					}
 					errorDetails.setType(type);
 					errorDetails.title = title;
-
+					
 					return errorDetails;
+				}
+				
+				private function onNavigateRequest(e:KedDataEvent):void {
+					var evt:KedDataEvent = new KedDataEvent(KedDataEvent.NAVIGATE, true);
+					evt.data = e.data; // where to navigate
+					dispatchEvent(evt);
 				}
 
 
@@ -255,7 +263,7 @@
 				private function getFlavorsError(error:KalturaDistributionValidationErrorMissingFlavor):String {
 					var id:int = parseInt(error.flavorParamsId);
 					var flavorName:String;
-					var flavors:ArrayCollection = ((parentDocument/*EntryDistribution*/.model as KMvCModel).getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId;
+					var flavors:ArrayCollection = ((parentDocument/*EntryDistribution*/.dataPackModel as KMvCModel).getDataPack(DistributionDataPack) as DistributionDataPack).flavorParamsAndAssetsByEntryId;
 					for each (var flavorWithParams:FlavorAssetWithParamsVO in flavors) {
 						if (flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.id == id) {
 							flavorName = flavorWithParams.kalturaFlavorAssetWithParams.flavorParams.name;

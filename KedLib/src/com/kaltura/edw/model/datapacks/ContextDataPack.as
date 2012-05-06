@@ -117,7 +117,6 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var dispatcher:IEventDispatcher;
 		
-		public var edwViewStack:ViewStack;
 
 		public function get defaultUrlVars() :Object
 		{
