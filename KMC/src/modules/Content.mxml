@@ -354,10 +354,6 @@
 
 				handleEntryId();
 				
-				// Should happen soon enough before it's needed - Biton.
-				var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
-				listCategoryMetadata.dispatch();
-
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
@@ -475,6 +471,13 @@
 			private function loadChangableData():void {
 				var getAllProfilesEvent:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				getAllProfilesEvent.dispatch();
+				
+				var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				DataTabController.getInstance().dispatch(lmdp);
+				
+				// Should happen soon enough before it's needed - Biton. 
+				var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
+				listCategoryMetadata.dispatch();
 
 				if (contentView.selectedChild == manage) {
 					manage.loadEntries();
@@ -1370,11 +1373,6 @@
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
 
-
-//			protected function resizeToContent():void {
-//				contentView.height = contentView.selectedChild.height;
-//			}
-			
 			
 			/**
 			 * refresh bulk uploads list

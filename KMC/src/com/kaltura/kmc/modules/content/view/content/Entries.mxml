@@ -102,21 +102,16 @@
 				if (initFilter && initFilter is KalturaMediaEntryFilter) {
 					filter.kalturaFilter = initFilter as KalturaMediaEntryFilter;
 				}
-				loadFilterData();
+				
+				// load all the data the filter needs
+				trace("load filter data");
+				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
+				KedController.getInstance().dispatch(fe);
 
 				// get partner info
 				var getPartnerInfoEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 				getPartnerInfoEvent.dispatch();
 
-			}
-
-
-			/**
-			 * load all the data the filter needs
-			 * */
-			private function loadFilterData():void {
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
-				KedController.getInstance().dispatch(fe);
 			}
 
 
