@@ -117,7 +117,9 @@
 			 * if this attribute has a value (passed in from the wrapper), it means 
 			 * this is an on-the-fly playlist. 
 			 * */
-			public var onTheFlyEntries:ArrayCollection;
+			public function set onTheFlyEntries(value:ArrayCollection):void {
+				_playlistArrayCollection = value;
+			}
 
 			/**
 			 * a copy of the original playlist object, for editing.
@@ -243,10 +245,9 @@
 					kFilter.statusIn = KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY;
 				}
 
-				paging.kalturaFilterPager.pageIndex = 0;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
 				loadFilterData();
-				filter.validateNow();
 				if (context != ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE) {
 					PermissionManager.getInstance().applyAllAttributes(this, "manualPlaylistDrilldown_add");
 				}
