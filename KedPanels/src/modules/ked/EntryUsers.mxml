@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="vertical" width="100%" height="100%" 
+		   implements="com.kaltura.edw.business.IDrilldownPanel" creationComplete="creationCompleteHandler(event)"
+		   label="{resourceManager.getString('drilldown','entryUsers')}" xmlns:components="com.hillelcoren.components.*" xmlns:control="com.kaltura.edw.control.*">
+	<mx:Metadata>
+		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
+		[Event(name="saved", type="com.kaltura.edw.events.InternalKedEvent")] 
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.constants.PanelConsts;
+			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.events.UsersEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
+			import com.kaltura.edw.model.datapacks.ContextDataPack;
+			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.edw.view.window.SetOwnerWindow;
+			import com.kaltura.kmvc.model.IDataPackRepository;
+			import com.kaltura.utils.KArrayUtil;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaUser;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			import mx.utils.ArrayUtil;
+			
+			
+			// layout consts
+			private const LABEL_WIDTH:int = 200;
+			private const ITEM_WIDTH:int = 400;
+			
+			[Bindable]
+			private var _selectedEntry:KalturaBaseEntry;
+			
+			/**
+			 * current selected entry
+			 * */
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				_selectedEntry = value;
+			}
+			
+			private var _dpModel:IDataPackRepository;
+			
+			public function get dataPackModel():IDataPackRepository {
+				return _dpModel;
+			}
+			public function set dataPackModel(value:IDataPackRepository):void {
+				_dpModel = value;
+				_entryData = value.getDataPack(EntryDataPack) as EntryDataPack;
+				BindingUtils.bindSetter(setEditors, _entryData, "entryEditors");
+				BindingUtils.bindSetter(setPublishers, _entryData, "entryPublishers");
+			}
+			
+			public function get helpAnchor():String{
+				return "entry_users";
+			}
+			
+			[Bindable]
+			private var _entryData:EntryDataPack;
+			
+			private var _kClient:KalturaClient;
+			
+			
+			private function setEditors(value:Array):void {
+				editorsComplete.selectedItems = new ArrayCollection(value);
+			}
+			
+			private function setPublishers(value:Array):void {
+				publishersComplete.selectedItems = new ArrayCollection(value);
+			}
+			
+			public function validate():void {
+				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
+				dispatchEvent(e);
+			}
+			
+			
+			public function clear():void {
+				var gtusr:UsersEvent = new UsersEvent(UsersEvent.RESET_ENTRY_USERS);
+				controller.dispatch(gtusr);
+			}
+			
+			public function init():void {
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.USERS_PANEL);
+			}
+			
+			
+			public function initData():void {
+				var gtusr:UsersEvent = new UsersEvent(UsersEvent.GET_ENTRY_CREATOR);
+				gtusr.data = _selectedEntry.creatorId;
+				controller.dispatch(gtusr);
+				
+				gtusr = new UsersEvent(UsersEvent.GET_ENTRY_OWNER);
+				gtusr.data = _selectedEntry.userId;
+				controller.dispatch(gtusr);
+				
+				if (_selectedEntry.entitledUsersEdit) {
+					gtusr = new UsersEvent(UsersEvent.GET_ENTRY_EDITORS);
+					gtusr.data = _selectedEntry.entitledUsersEdit;
+					controller.dispatch(gtusr);
+				}
+				
+				if (_selectedEntry.entitledUsersPublish) {
+					gtusr = new UsersEvent(UsersEvent.GET_ENTRY_PUBLISHERS);
+					gtusr.data = _selectedEntry.entitledUsersPublish;
+					controller.dispatch(gtusr);
+				}
+				
+			}
+			
+			
+			public function destroy():void {
+				
+			}
+			
+			public function save():void {
+				// update stuff on entry object (_selectedEntry.userId is updated immediately)
+				_selectedEntry.entitledUsersEdit = getIdsString(editorsComplete.selectedItems);
+				_selectedEntry.entitledUsersPublish = getIdsString(publishersComplete.selectedItems);
+				
+				// done
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
+			}
+			
+			
+			public function isChanged():Boolean {
+				var edp:EntryDataPack = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
+				// owner
+				if (_selectedEntry.userId != edp.selectedEntryOwner.id) {
+					return true;
+				}
+				// editors
+				if (idsChanged(getIdsString(editorsComplete.selectedItems), _selectedEntry.entitledUsersEdit)) {
+					return true;
+				}
+				// publishers
+				if (idsChanged(getIdsString(publishersComplete.selectedItems), _selectedEntry.entitledUsersPublish)) {
+					return true;
+				}
+				
+				return false;
+			}
+			
+			
+			/**
+			 * get a comma separated string of user ids
+			 * @param usrs	ArrayCollection of KalturaUsers
+			 * @return user ids
+			 * */
+			private function getIdsString(usrs:ArrayCollection):String {
+				var str:String = '';
+				for each (var usr:KalturaUser in usrs) {
+					str += usr.id + ",";
+				}
+				return str;
+			}
+			
+			/**
+			 * do the gived strings contain the same ids (disregard order)
+			 * @param news	new ids (comma seperated)
+			 * @param olds	old ids (comma seperated)
+			 * @return true if equal, false otherwise
+			 * */
+			private function idsChanged (news:String, olds:String):Boolean {
+				var newids:Array = news.split(",");
+				var oldids:Array = olds.split(",");
+				if (newids.length != oldids.length) {
+					return true;
+				}
+				else {
+					var found:Boolean;
+					var id:String;
+					for (var i:int = 0; i<newids.length; i++) {
+						found = false;
+						id = newids[i];
+						for (var j:int = 0; j<oldids.length; j++) {
+							if (id == oldids[j]){
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+
+			
+			private function creationCompleteHandler(event:FlexEvent):void {
+				_kClient = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).kc;
+				new KACUsersController(editorsComplete, _kClient);
+				new KACUsersController(publishersComplete, _kClient);
+				
+			}
+
+
+			private function changeBtn_clickHandler(event:MouseEvent):void {
+				var currentPopUp:SetOwnerWindow = new SetOwnerWindow();
+				currentPopUp.addEventListener("save", handleChangeEntryOwnerEvents, false, 0, true);
+				currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeEntryOwnerEvents, false, 0, true);
+				currentPopUp.kClient = _kClient;
+//				currentPopUp.entryData = _entryData;
+				PopUpManager.addPopUp(currentPopUp, this, true);
+				PopUpManager.centerPopUp(currentPopUp);
+			}
+			
+			private function handleChangeEntryOwnerEvents(e:Event):void {
+				var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
+				switch (e.type) {
+					case "save":
+						// set entry owner for all selected entries
+						_selectedEntry.userId = tgt.selectedUser.id;
+						var kEvent:UsersEvent = new UsersEvent(UsersEvent.SET_ENTRY_OWNER);
+						kEvent.data = tgt.selectedUser;
+						controller.dispatch(kEvent);
+						break;
+					case CloseEvent.CLOSE:
+						// close the popup
+						PopUpManager.removePopUp(tgt);
+						break;
+				}
+			}
+
+		]]>
+	</mx:Script>
+	
+	<control:UsersTabController id="controller" />
+	
+	<mx:Text text="{resourceManager.getString('drilldown', 'usersTabDescription')}" width="100%"/>
+	<mx:HBox styleName="noPadding">
+		<mx:Label text="{resourceManager.getString('drilldown', 'usrUploader')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+		<mx:Label text="{_entryData.selectedEntryCreator.screenName}" styleName="drillDownSubLabel" toolTip="{_entryData.selectedEntryCreator.id}" />
+	</mx:HBox>
+	<mx:HBox styleName="noPadding">
+		<mx:Label text="{resourceManager.getString('drilldown', 'usrOwner')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+		<mx:Label text="{_entryData.selectedEntryOwner.screenName}" styleName="drillDownSubLabel" toolTip="{_entryData.selectedEntryOwner.id}" />
+		<mx:LinkButton id="changeBtn" label="{resourceManager.getString('drilldown', 'usrCngOwner')}" click="changeBtn_clickHandler(event)"/>
+	</mx:HBox>
+	<mx:HBox styleName="noPadding">
+		<mx:Label text="{resourceManager.getString('drilldown', 'usrEditors')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+		<components:AutoComplete id="editorsComplete" allowNewValues="true" allowMultipleSelection="true" 
+								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}"/>
+	</mx:HBox>
+	<mx:HBox styleName="noPadding">
+		<mx:Label text="{resourceManager.getString('drilldown', 'usrPublishers')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+		<components:AutoComplete id="publishersComplete" allowNewValues="true" allowMultipleSelection="true" 
+								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}"/>
+	</mx:HBox>
+</mx:Module>

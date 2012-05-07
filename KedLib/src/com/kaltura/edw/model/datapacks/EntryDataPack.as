@@ -70,5 +70,22 @@ package com.kaltura.edw.model.datapacks
 		 * the owner of the selected entry
 		 */		
 		public var selectedEntryOwner:KalturaUser;
+		
+		/**
+		 * the creator of the selected entry
+		 */		
+		public var selectedEntryCreator:KalturaUser;
+		
+		/**
+		 * the editors of the selected entry
+		 * [KalturaUser]
+		 */		
+		public var entryEditors:Array;
+		
+		/**
+		 * the publishers of the selected entry
+		 * [KalturaUser]
+		 */		
+		public var entryPublishers:Array;
 	}
 }

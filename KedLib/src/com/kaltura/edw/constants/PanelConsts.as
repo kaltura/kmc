@@ -16,5 +16,6 @@ package com.kaltura.edw.constants
 		public static const ACCESS_CONTROL_PANEL:String = "entryAcp";
 		public static const SCHEDULING_PANEL:String = "entrySch";
 		public static const CLIPS_PANEL:String = "entryClips";
+		public static const USERS_PANEL:String = "entryUsers";
 	}
 }

@@ -49,7 +49,7 @@ package com.kaltura.edw.control.commands
 					ResourceManager.getInstance().getString('common', 'forbiden_error_title'), Alert.OK, null, logout);
 			}
 			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
+				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('drilldown', 'error'));
 			}
 		}
 		
@@ -73,6 +73,41 @@ package com.kaltura.edw.control.commands
 				KedJSGate.expired();
 			}
 		}
+		
+		/**
+		 * display any errors that are encountered in the result
+		 * @param data KalturaEvent
+		 * @return true if no errors are found
+		 * 
+		 */		
+		protected function checkErrors(data:Object):Boolean {
+			var isError:Boolean;
+			var str:String;
+			if (data.data is KalturaError) {
+				str = ResourceManager.getInstance().getString('drilldown', (data.data as KalturaError).errorCode);
+				if (!str) {
+					str = (data.data as KalturaError).errorMsg;
+				} 
+				Alert.show(str, ResourceManager.getInstance().getString('drilldown', 'error'));
+			}
+			else if (data.data && data.data is Array) {
+				// this was a multirequest, we need to check its contents.
+				for (var i:int = 0; i<data.data.length; i++) {
+					var o:Object = data.data[i];
+					if (o.error) {
+						isError = true;
+						// in MR errors aren't created
+						str = ResourceManager.getInstance().getString('drilldown', o.error.code);
+						if (!str) {
+							str = o.error.message;
+						} 
+						Alert.show(str, ResourceManager.getInstance().getString('drilldown', 'error'));
+					}
+				}
+			}
+			return isError;
+		}
+		
 		
 		
 		/**

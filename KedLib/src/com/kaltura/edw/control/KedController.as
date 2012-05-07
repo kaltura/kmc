@@ -1,6 +1,7 @@
 package com.kaltura.edw.control
 {
 	import com.kaltura.edw.control.commands.*;
+	import com.kaltura.edw.control.commands.usrs.GetEntryUserCommand;
 	import com.kaltura.edw.control.events.*;
 	import com.kaltura.kmvc.control.KMvCController;
 	
@@ -31,7 +32,7 @@ package com.kaltura.edw.control
 			addCommand(KedEntryEvent.SET_SELECTED_ENTRY, SetSelectedEntryCommand);
 			addCommand(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, GetSingleEntryCommand);
 			addCommand(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, GetSingleEntryCommand);
-			addCommand(KedEntryEvent.GET_ENTRY_OWNER, GetEntryOwnerCommand);
+			addCommand(UsersEvent.GET_ENTRY_OWNER, GetEntryUserCommand);
 			addCommand(SearchEvent.SEARCH_ENTRIES, ListEntriesCommand);
 		}
 	}

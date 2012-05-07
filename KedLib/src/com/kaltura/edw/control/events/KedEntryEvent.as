@@ -68,11 +68,7 @@ package com.kaltura.edw.control.events
 		 */
 		public static const UPDATE_ENTRY_CATEGORIES : String = "content_updateEntryCategories";
 
-		/**
-		 * get the KalturaUser object that is this entry's owner
-		 * (data is user id)
-		 */
-		public static const GET_ENTRY_OWNER : String = "content_getEntryOwner";
+
 		
 		// ======================================================
 		// Private Members

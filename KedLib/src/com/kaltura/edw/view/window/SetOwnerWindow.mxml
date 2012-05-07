@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- change entry owner window -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							height="220" width="390" layout="vertical" 
-							showCloseButton="false" showHelpButton="false"
+							showCloseButton="true" showHelpButton="false" 
 							title="{resourceManager.getString('drilldown', 'changeOwnerTitle')}"
 							creationComplete="creationCompleteHandler(event)" xmlns:components="com.hillelcoren.components.*">
 	<mx:Metadata>
@@ -17,6 +18,7 @@
 			import com.kaltura.autocomplete.controllers.KACUsersController;
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
+			import com.kaltura.edw.control.events.UsersEvent;
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.vo.KalturaUser;
 			
@@ -69,7 +71,7 @@
 			
 			public function setUserById(userid:String):void {
 				_userWatcher = BindingUtils.bindProperty(this, "selecteduser", entryData, "selectedEntryOwner");
-				var kEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_OWNER, entryData.selectedEntry);
+				var kEvent:UsersEvent = new UsersEvent(UsersEvent.GET_ENTRY_OWNER);
 				kEvent.data = userid;
 				KedController.getInstance().dispatch(kEvent);
 			}
