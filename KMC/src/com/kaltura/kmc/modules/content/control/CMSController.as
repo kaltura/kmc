@@ -43,8 +43,9 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(SetListableEvent.SET_NEW_LIST_TO_MODEL, SetCurrentListableCommand);
 
 			//Entries Event
-			addCommand(EntriesEvent.SET_SELECTED_ENTRIES_FOR_PLAYLIST, SetSelectedEntriesForPlaylistCommand);
 			addCommand(EntriesEvent.SET_SELECTED_ENTRIES, SetSelectedEntriesCommand);
+			addCommand(EntriesEvent.SET_SELECTED_ENTRIES_FOR_PLAYLIST, SetSelectedEntriesCommand);
+			addCommand(EntriesEvent.SET_SELECTED_ENTRIES_FOR_CATEGORY, SetSelectedEntriesCommand);
 			addCommand(EntriesEvent.UPDATE_ENTRIES, UpdateEntriesCommand);
 			addCommand(EntriesEvent.UPDATE_PLAYLISTS, UpdateEntriesCommand);
 			addCommand(EntriesEvent.DELETE_ENTRIES, DeleteEntriesCommand);
@@ -52,6 +53,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(EntriesEvent.GET_SELECTED_ENTRIES_CATEGORIES, ListEntriesCategoriesCommand);
 			addCommand(EntriesEvent.REMOVE_CATEGORIES_ENTRIES, RemoveCategoriesEntriesCommand);
 			addCommand(EntriesEvent.ADD_CATEGORIES_ENTRIES, AddCategoriesEntriesCommand);
+			addCommand(EntriesEvent.ADD_ON_THE_FLY_CATEGORY, AddCategoriesEntriesCommand);
 			addCommand(EntriesEvent.ADD_ENTRY, AddMediaEntryCommand);
 
 			//selection Event

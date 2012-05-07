@@ -92,5 +92,11 @@ package com.kaltura.kmc.modules.content.model
 		 */		
 		public var processingNewCategory:Boolean = false;
 		
+		/**
+		 * predefined entries to add to newly created category
+		 * (from entries screen>bulk actions)
+		 */
+		public var onTheFlyCategoryEntries:Array;
+		
 	}
 }

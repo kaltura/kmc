@@ -7,8 +7,22 @@ package com.kaltura.kmc.modules.content.events {
 	 * this class represents an event concerning a group of entries
 	 */
 	public class EntriesEvent extends CairngormEvent {
+		
+		/**
+		 * remember the given entries on the model 
+		 */		
 		public static const SET_SELECTED_ENTRIES:String = "content_setSelectedEntries";
+		
+		/**
+		 * remember the selected entries to add them to a new manual playlist after creation 
+		 */
 		public static const SET_SELECTED_ENTRIES_FOR_PLAYLIST:String = "content_setSelectedEntriesForPlaylist";
+		
+		/**
+		 * remember the selected entries to add them to a new category after creation 
+		 */		
+		public static const SET_SELECTED_ENTRIES_FOR_CATEGORY:String = "content_setSelectedEntriesForCategory";
+		
 		public static const UPDATE_ENTRIES:String = "content_updateEntries";
 		public static const UPDATE_PLAYLISTS:String = "content_updatePlaylists";
 		public static const DELETE_ENTRIES:String = "content_deleteEntries";
@@ -23,6 +37,12 @@ package com.kaltura.kmc.modules.content.events {
 		 * event.data is categories to add (KalturaCategory objects)
 		 */
 		public static const ADD_CATEGORIES_ENTRIES:String = "content_addCategoriesEntries";
+		
+		/**
+		 * add the given categories to on the fly entries
+		 * event.data is category to add (KalturaCategory objects)
+		 */
+		public static const ADD_ON_THE_FLY_CATEGORY:String = "content_addOnTheFlyCategory";
 		
 		/**
 		 * remove the given categories from the selected entries
@@ -43,6 +63,9 @@ package com.kaltura.kmc.modules.content.events {
 		 * */
 		public static const ADD_ENTRY:String = "content_addEntry";
 
+		
+		
+		
 		/**
 		 * entries relevant for this event.
 		 * each entry is <code>KalturaBaseEntry</code>

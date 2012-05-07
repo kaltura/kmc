@@ -4,6 +4,7 @@
 	
 	<mx:Metadata>
 		[Event(name="createNewManualPlaylist", type="flash.events.Event")] 
+		[Event(name="createNewCategory", type="flash.events.Event")] 
 	</mx:Metadata>
 	
 	<mx:Script>
@@ -11,8 +12,11 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
+			import com.kaltura.kmc.modules.content.view.content.Categories;
 			
+			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.events.MenuEvent;
 
@@ -22,6 +26,11 @@
 			 * defines the value of the type property of the createNewManualPlaylist event.
 			 * */
 			public static const CREATE_NEW_MANUAL_PLAYLIST:String = "createNewManualPlaylist";
+			
+			/**
+			 * defines the value of the type property of the createNewCategory event.
+			 * */
+			public static const CREATE_NEW_CATEGORY:String = "createNewCategory";
 			
 			
 			/**
@@ -202,11 +211,11 @@
 						break;
 
 					case "addCategory":
-						trace(event.item.data);
+						dispatchEvent(new Event(CREATE_NEW_CATEGORY));
 						break;
 
 					case "addPlaylist":
-						dispatchEvent(new Event(CREATE_NEW_MANUAL_PLAYLIST))
+						dispatchEvent(new Event(CREATE_NEW_MANUAL_PLAYLIST));
 						break;
 
 					case "download":

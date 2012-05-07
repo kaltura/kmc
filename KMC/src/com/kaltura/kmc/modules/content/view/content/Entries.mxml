@@ -36,6 +36,7 @@
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
+			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.SetListableEvent;
 			import com.kaltura.kmc.modules.content.events.SetPlaylistTypeEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -198,6 +199,42 @@
 
 			}
 
+			/**
+			 * Create a new category based on current entries selection
+			 */
+			private function onNewCategory():void {
+
+				if (entryTable.selectedItems.length == 0) {
+					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'));
+					return;
+				}
+//				var kEvent:KMvCEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY, null);
+//				KedController.getInstance().dispatch(kEvent);
+//
+//				// add the selected items to the model 
+//				var cgEvent:CairngormEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
+//					new ArrayCollection(entryTable.selectedItems));
+//				cgEvent.dispatch();
+//				
+//				// tell the model that this is not a regular playlist - but a playlist with pre-defined entries
+//				cgEvent = new SetPlaylistTypeEvent(SetPlaylistTypeEvent.MANUAL_PLAYLIST);
+//				cgEvent.dispatch();
+//
+//				//open a new manual playlist window to edit this 
+//				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
+//				cgEvent.dispatch();
+				
+				cgEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES_FOR_CATEGORY);
+				cgEvent.dispatch();
+				
+				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [Categories.createCategoryObject()]);
+				cgEvent.dispatch();
+				
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
+				cgEvent.dispatch();
+
+			}
+
 
 
 			/**
@@ -301,7 +338,8 @@
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 				
 				<bulkactions:BulkEntryActionsMenu id="bulkActions" height="{paging.height}"
-											 createNewManualPlaylist="onNewManualPlaylist()"/>
+											 createNewManualPlaylist="onNewManualPlaylist()"
+											 createNewCategory="onNewCategory()"/>
 				
 				<controls:Paging id="paging" width="100%" styleName="paging"
 								 rowsInPageChange="changeRows()" nextPage="{nxtPage()}" prvPage="{prvPage()}"

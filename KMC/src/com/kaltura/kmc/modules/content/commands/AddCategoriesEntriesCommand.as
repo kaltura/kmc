@@ -22,7 +22,13 @@ package com.kaltura.kmc.modules.content.commands
 			var e:EntriesEvent = event as EntriesEvent;
 			var categories:Array = e.data as Array; // elements are KalturaCategories
 			// for each entry, add the category.
-			var entries:Array = _model.selectedEntries;
+			var entries:Array;
+			if (event.type == EntriesEvent.ADD_ON_THE_FLY_CATEGORY) {
+				entries = _model.categoriesModel.onTheFlyCategoryEntries;
+			}
+			else if (event.type == EntriesEvent.ADD_CATEGORIES_ENTRIES) {
+				entries = _model.selectedEntries;
+			}
 			
 			var cea:CategoryEntryAdd;
 			var kce:KalturaCategoryEntry;

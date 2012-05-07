@@ -109,6 +109,7 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		
+		
 		public function CategoryEvent( type:String , 
 									   bubbles:Boolean=false,
 									   cancelable:Boolean=false)
