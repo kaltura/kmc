@@ -59,6 +59,7 @@ package com.kaltura.types
 		public static const DELETE_FILE : String = '31';
 		public static const INDEX : String = '32';
 		public static const MOVE_CATEGORY_ENTRIES : String = '33';
+		public static const COPY : String = '34';
 		public static const VIRUS_SCAN : String = 'virusScan.VirusScan';
 		public static const DISTRIBUTION_SUBMIT : String = 'contentDistribution.DistributionSubmit';
 		public static const DISTRIBUTION_UPDATE : String = 'contentDistribution.DistributionUpdate';
@@ -70,6 +71,5 @@ package com.kaltura.types
 		public static const DROP_FOLDER_WATCHER : String = 'dropFolder.DropFolderWatcher';
 		public static const DROP_FOLDER_HANDLER : String = 'dropFolder.DropFolderHandler';
 		public static const PARSE_CAPTION_ASSET : String = 'captionSearch.parseCaptionAsset';
-		public static const EVENT_NOTIFICATION_HANDLER : String = 'eventNotification.EventNotificationHandler';
 	}
 }

@@ -38,6 +38,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var categoryReferenceId : String = null;
+
+		/** 
+		* 		* */ 
 		public var userId : String = null;
 
 		/** 
@@ -48,14 +52,20 @@ package com.kaltura.vo
 		* 		* */ 
 		public var updateMethod : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
+		public var requiredObjectStatus : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('categoryId');
+			arr.push('categoryReferenceId');
 			arr.push('userId');
 			arr.push('permissionLevel');
 			arr.push('updateMethod');
+			arr.push('requiredObjectStatus');
 			return arr;
 		}
 

@@ -27,21 +27,7 @@
 // ===================================================================================================
 package com.kaltura.types
 {
-	public class KalturaReportType
+	public class KalturaUverseClickToOrderDistributionProviderOrderBy
 	{
-		public static const TOP_CONTENT : int = 1;
-		public static const CONTENT_DROPOFF : int = 2;
-		public static const CONTENT_INTERACTIONS : int = 3;
-		public static const MAP_OVERLAY : int = 4;
-		public static const TOP_CONTRIBUTORS : int = 5;
-		public static const TOP_SYNDICATION : int = 6;
-		public static const CONTENT_CONTRIBUTIONS : int = 7;
-		public static const WIDGETS_STATS : int = 8;
-		public static const USER_ENGAGEMENT : int = 11;
-		public static const SPEFICIC_USER_ENGAGEMENT : int = 12;
-		public static const USER_TOP_CONTENT : int = 13;
-		public static const USER_CONTENT_DROPOFF : int = 14;
-		public static const USER_CONTENT_INTERACTIONS : int = 15;
-		public static const APPLICATIONS : int = 16;
 	}
 }

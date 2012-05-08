@@ -35,9 +35,9 @@ package com.kaltura.commands.baseEntry
 		public var filterFields : String;
 		/**
 		 * @param id String
-		 * @param shouldUpdate int
+		 * @param shouldUpdate Boolean
 		 **/
-		public function BaseEntryIndex( id : String,shouldUpdate : int )
+		public function BaseEntryIndex( id : String,shouldUpdate : Boolean )
 		{
 			service= 'baseentry';
 			action= 'index';

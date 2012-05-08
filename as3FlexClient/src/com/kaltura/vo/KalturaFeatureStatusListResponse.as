@@ -29,51 +29,15 @@ package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
 	[Bindable]
-	public dynamic class KalturaCategoryUser extends BaseFlexVo
+	public dynamic class KalturaFeatureStatusListResponse extends BaseFlexVo
 	{
 		/** 
 		* 		* */ 
-		public var categoryId : int = int.MIN_VALUE;
+		public var objects : Array = null;
 
 		/** 
-		* User id
-	 		* */ 
-		public var userId : String = null;
-
-		/** 
-		* Partner id
-	 		* */ 
-		public var partnerId : int = int.MIN_VALUE;
-
-		/** 
-		* Permission level
-	 		* */ 
-		public var permissionLevel : int = int.MIN_VALUE;
-
-		/** 
-		* Status
-	 		* */ 
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		* CategoryUser creation date as Unix timestamp (In seconds)
-	 		* */ 
-		public var createdAt : int = int.MIN_VALUE;
-
-		/** 
-		* CategoryUser update date as Unix timestamp (In seconds)
-	 		* */ 
-		public var updatedAt : int = int.MIN_VALUE;
-
-		/** 
-		* Update method can be either manual or automatic to distinguish between manual operations (for example in KMC) on automatic - using bulk upload 
-	 		* */ 
-		public var updateMethod : int = int.MIN_VALUE;
-
-		/** 
-		* The full ids of the Category
-	 		* */ 
-		public var categoryFullIds : String = null;
+		* 		* */ 
+		public var totalCount : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -82,8 +46,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('permissionLevel');
-			arr.push('updateMethod');
 			return arr;
 		}
 
@@ -94,8 +56,6 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('categoryId');
-			arr.push('userId');
 			return arr;
 		}
 

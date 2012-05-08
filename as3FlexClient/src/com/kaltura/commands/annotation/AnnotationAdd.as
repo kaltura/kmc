@@ -27,7 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.annotation
 {
-	import com.kaltura.vo.KalturaAnnotation;
+	import com.kaltura.vo.KalturaCuePoint;
 	import com.kaltura.delegates.annotation.AnnotationAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
@@ -35,9 +35,9 @@ package com.kaltura.commands.annotation
 	{
 		public var filterFields : String;
 		/**
-		 * @param annotation KalturaAnnotation
+		 * @param annotation KalturaCuePoint
 		 **/
-		public function AnnotationAdd( annotation : KalturaAnnotation )
+		public function AnnotationAdd( annotation : KalturaCuePoint )
 		{
 			service= 'annotation_annotation';
 			action= 'add';

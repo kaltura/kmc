@@ -160,7 +160,7 @@ package com.kaltura.vo
 		public var status : int = int.MIN_VALUE;
 
 		/** 
-		* Status
+		* the category id that this category inherit its members and members permission (for contribution and join)
 	 		* */ 
 		public var inheritedParentId : int = int.MIN_VALUE;
 
@@ -178,11 +178,6 @@ package com.kaltura.vo
 		* Enable client side applications to define how to sort the category child categories 
 	 		* */ 
 		public var defaultOrderBy : String = null;
-
-		/** 
-		* Some category fields cannot be updated while the category is locked
-	 		* */ 
-		public var lock : Boolean;
 
 		/** 
 		* a list of attributes which may be updated on this object 

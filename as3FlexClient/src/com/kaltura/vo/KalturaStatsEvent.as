@@ -127,7 +127,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var eventContext : int = int.MIN_VALUE;
+		public var contextId : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var featureType : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -155,7 +159,8 @@ package com.kaltura.vo
 			arr.push('referrer');
 			arr.push('isFirstInSession');
 			arr.push('applicationId');
-			arr.push('eventContext');
+			arr.push('contextId');
+			arr.push('featureType');
 			return arr;
 		}
 

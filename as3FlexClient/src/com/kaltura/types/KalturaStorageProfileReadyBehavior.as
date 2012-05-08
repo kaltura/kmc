@@ -29,7 +29,7 @@ package com.kaltura.types
 {
 	public class KalturaStorageProfileReadyBehavior
 	{
-		public static const NO_EFFECT : int = 0;
+		public static const NO_IMPACT : int = 0;
 		public static const REQUIRED : int = 1;
 	}
 }

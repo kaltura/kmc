@@ -62,6 +62,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var fullNameIn : String = null;
+
+		/** 
+		* 		* */ 
 		public var fullIdsEqual : String = null;
 
 		/** 
@@ -171,6 +175,7 @@ package com.kaltura.vo
 			arr.push('depthEqual');
 			arr.push('fullNameEqual');
 			arr.push('fullNameStartsWith');
+			arr.push('fullNameIn');
 			arr.push('fullIdsEqual');
 			arr.push('fullIdsStartsWith');
 			arr.push('createdAtGreaterThanOrEqual');

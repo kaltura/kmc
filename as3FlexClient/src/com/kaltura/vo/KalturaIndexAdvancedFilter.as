@@ -34,13 +34,13 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
-		public var indexIdGreaterThanOrEqual : int = int.MIN_VALUE;
+		public var indexIdGreaterThan : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('indexIdGreaterThanOrEqual');
+			arr.push('indexIdGreaterThan');
 			return arr;
 		}
 

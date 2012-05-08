@@ -34,6 +34,14 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
+		public var flavorParamsIdEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var flavorParamsIdIn : String = null;
+
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -48,6 +56,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('flavorParamsIdEqual');
+			arr.push('flavorParamsIdIn');
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('statusNotIn');

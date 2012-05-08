@@ -84,6 +84,18 @@ package com.kaltura.vo
 		* 		* */ 
 		public var updateMethodEqual : int = int.MIN_VALUE;
 
+		/** 
+		* 		* */ 
+		public var updateMethodIn : String = null;
+
+		/** 
+		* 		* */ 
+		public var categoryFullIdsStartsWith : String = null;
+
+		/** 
+		* 		* */ 
+		public var categoryFullIdsEqual : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -101,6 +113,9 @@ package com.kaltura.vo
 			arr.push('updatedAtGreaterThanOrEqual');
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('updateMethodEqual');
+			arr.push('updateMethodIn');
+			arr.push('categoryFullIdsStartsWith');
+			arr.push('categoryFullIdsEqual');
 			return arr;
 		}
 

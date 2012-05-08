@@ -52,7 +52,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var status : int = int.MIN_VALUE;
+		public var status : String = null;
 
 		/** 
 		* 		* */ 

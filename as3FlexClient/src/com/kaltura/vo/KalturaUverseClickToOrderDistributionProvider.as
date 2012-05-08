@@ -27,75 +27,22 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.vo.KalturaDistributionProvider;
+
 	[Bindable]
-	public dynamic class KalturaCategoryUser extends BaseFlexVo
+	public dynamic class KalturaUverseClickToOrderDistributionProvider extends KalturaDistributionProvider
 	{
-		/** 
-		* 		* */ 
-		public var categoryId : int = int.MIN_VALUE;
-
-		/** 
-		* User id
-	 		* */ 
-		public var userId : String = null;
-
-		/** 
-		* Partner id
-	 		* */ 
-		public var partnerId : int = int.MIN_VALUE;
-
-		/** 
-		* Permission level
-	 		* */ 
-		public var permissionLevel : int = int.MIN_VALUE;
-
-		/** 
-		* Status
-	 		* */ 
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		* CategoryUser creation date as Unix timestamp (In seconds)
-	 		* */ 
-		public var createdAt : int = int.MIN_VALUE;
-
-		/** 
-		* CategoryUser update date as Unix timestamp (In seconds)
-	 		* */ 
-		public var updatedAt : int = int.MIN_VALUE;
-
-		/** 
-		* Update method can be either manual or automatic to distinguish between manual operations (for example in KMC) on automatic - using bulk upload 
-	 		* */ 
-		public var updateMethod : int = int.MIN_VALUE;
-
-		/** 
-		* The full ids of the Category
-	 		* */ 
-		public var categoryFullIds : String = null;
-
-		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
-		public function getUpdateableParamKeys():Array
+		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
-			arr.push('permissionLevel');
-			arr.push('updateMethod');
+			arr = super.getUpdateableParamKeys();
 			return arr;
 		}
 
-		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
-		public function getInsertableParamKeys():Array
+		override public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = new Array();
-			arr.push('categoryId');
-			arr.push('userId');
+			arr = super.getInsertableParamKeys();
 			return arr;
 		}
 

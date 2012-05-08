@@ -72,6 +72,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var flashPlaybackType : String = null;
 
+		/** 
+		* 		* */ 
+		public var fileExt : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -86,6 +90,7 @@ package com.kaltura.vo
 			arr.push('credit');
 			arr.push('licenseType');
 			arr.push('flashPlaybackType');
+			arr.push('fileExt');
 			return arr;
 		}
 

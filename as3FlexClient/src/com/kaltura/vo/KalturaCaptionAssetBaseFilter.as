@@ -34,6 +34,14 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
+		public var captionParamsIdEqual : int = int.MIN_VALUE;
+
+		/** 
+		* 		* */ 
+		public var captionParamsIdIn : String = null;
+
+		/** 
+		* 		* */ 
 		public var formatEqual : String = null;
 
 		/** 
@@ -56,6 +64,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('captionParamsIdEqual');
+			arr.push('captionParamsIdIn');
 			arr.push('formatEqual');
 			arr.push('formatIn');
 			arr.push('statusEqual');
