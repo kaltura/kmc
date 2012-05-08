@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<controls:CanvasButtonAccordionHeader verticalScrollPolicy="off" horizontalScrollPolicy="off" mouseChildren="true"  
+									  xmlns:controls="flexlib.containers.accordionClasses.*"
+									  xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+
+			[Bindable]
+			public var showAnimation:Boolean;
+
+			[Bindable]
+			/**
+			 * text to show on this header
+			 * */
+			private var _label:String;
+
+
+
+			override public function set label(value:String):void {
+				super.label = "";
+				_label = value;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%" styleName="accordionHeaderBox" >
+		<mx:Label text="{_label}" styleName="accordionHeaderLabel"/>
+		<mx:Spacer width="100%" />
+		<mx:Image visible="{_label == resourceManager.getString('cms', 'categoriesLabel') &amp;&amp; showAnimation}"
+				  includeInLayout="{_label == resourceManager.getString('cms', 'categoriesLabel') &amp;&amp; showAnimation}"
+				  source="{StyleManager.getStyleDeclaration('.imageBank').getStyle('SpinnerImg')}" />
+	</mx:HBox>
+</controls:CanvasButtonAccordionHeader>

@@ -6,6 +6,7 @@ package com.kaltura.kmc.modules.content.control {
 	import com.kaltura.kmc.modules.content.commands.*;
 	import com.kaltura.kmc.modules.content.commands.bulk.*;
 	import com.kaltura.kmc.modules.content.commands.cat.*;
+	import com.kaltura.kmc.modules.content.commands.cattrack.*;
 	import com.kaltura.kmc.modules.content.commands.dropfolder.*;
 	import com.kaltura.kmc.modules.content.events.*;
 
@@ -150,6 +151,9 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE, SetCategoryUserUpdateMethod);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_PERMISSION_LEVEL, SetCategoryUsersPermLevel);
 			addCommand(CategoryUserEvent.SET_SELECTED_CATEGORY_USERS, SetSelectedCategoryUsersCommand);
+			
+			// categories tracker (update flags)
+			addCommand(CatTrackEvent.UPDATE_STATUS, GetCategoriesStatusCommand);
 			
 		}
 	}

@@ -58,23 +58,10 @@ package com.kaltura.kmc.modules.content.commands {
 				KedJSGate.expired();
 				return;
 			}
-			if (data.data is Array && data.data.length) {
-				// this was a multirequest, we need to check its contents.
-				for (var i:int = 0; i<data.data.length; i++) {
-					var o:Object = data.data[i];
-					if (o.error) {
-						// in MR errors aren't created
-						var str:String = ResourceManager.getInstance().getString('cms', o.error.code);
-						if (!str) {
-							str = o.error.message;
-						} 
-						Alert.show(str, ResourceManager.getInstance().getString('cms', 'error'));
-					}
-				}
-			}
+			
 		}
 		
-		final protected function checkError(resultData:Object):Boolean{
+		protected function checkError(resultData:Object):Boolean {
 			// look for error
 			var str:String = '';
 			var er:KalturaError = (resultData as KalturaEvent).error;
@@ -86,9 +73,25 @@ package com.kaltura.kmc.modules.content.commands {
 				} 
 				Alert.show(str, rm.getString('cms', 'error'));
 				return true;
-			} else {
-				return false;
+			} 
+			else {
+				if (resultData.data is Array && resultData.data.length) {
+					// this was a multirequest, we need to check its contents.
+					for (var i:int = 0; i<resultData.data.length; i++) {
+						var o:Object = resultData.data[i];
+						if (o.error) {
+							// in MR errors aren't created
+							str = rm.getString('cms', o.error.code);
+							if (!str) {
+								str = o.error.message;
+							} 
+							Alert.show(str, rm.getString('cms', 'error'));
+							return true;
+						}
+					}
+				}
 			}
+			return false;
 		}
 
 

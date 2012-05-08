@@ -34,6 +34,57 @@ package com.kaltura.edw.model
 		 * */
 		public var categoriesMap:HashMap = new HashMap();
 		
+		
+		
+		/**
+		 * set the value of the flag indicating categories are locked 
+		 * @param value new flag value
+		 */
+		public function setCatLockFlag(value:Boolean):void {
+			if (_categoriesLocked != value) {
+				_categoriesLocked = value;
+				dispatchEvent(new Event("categoriesFlagChanged"));
+			}
+		}
+		
+		private var _categoriesLocked:Boolean;
+		
+		[Bindable(event="categoriesFlagChanged")]
+		/**
+		 * indicates categories are currently locked
+		 * @see GetCategoriesStatusCommand
+		 * */
+		public function get categoriesLocked():Boolean {
+			return _categoriesLocked;
+		}
+		
+		
+		/**
+		 * set the value of the flag indicating categories are updating and categories data may be incorrect 
+		 * @param value new flag value
+		 */
+		public function setCatUpdateFlag(value:Boolean):void {
+			if (_categoriesUpdatingCategories != value) {
+				_categoriesUpdatingCategories = value;
+				dispatchEvent(new Event("categoriesFlagChanged"));
+			}
+		}
+		
+		private var _categoriesUpdatingCategories:Boolean;
+		
+		[Bindable(event="categoriesFlagChanged")]
+		/**
+		 * indicates categories are currently updating and data may be incorrect
+		 * (users, full names, etc)
+		 * @see GetCategoriesStatusCommand
+		 * */
+		public function get categoriesUpdating():Boolean {
+			return _categoriesUpdatingCategories;
+		}
+		
+		
+		
+		
 		// --------------------
 		// flavor params
 		// --------------------
