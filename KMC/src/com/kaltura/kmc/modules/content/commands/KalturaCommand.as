@@ -61,6 +61,11 @@ package com.kaltura.kmc.modules.content.commands {
 			
 		}
 		
+		/**
+		 * displays any erorr in the response 
+		 * @param resultData
+		 * @return true if error was encountered, false otherwise
+		 */		
 		protected function checkError(resultData:Object):Boolean {
 			// look for error
 			var str:String = '';

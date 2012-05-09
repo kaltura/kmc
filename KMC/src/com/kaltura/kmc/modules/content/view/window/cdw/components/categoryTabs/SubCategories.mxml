@@ -92,19 +92,21 @@
 			}
 			
 			public function save():void {
-				var updated:Array = [];
-				var cat:KalturaCategory;
-				for (var i:int = 0; i<_subCategories.length; i++) {
-					cat = _subCategories.getItemAt(i) as KalturaCategory;
-					if (cat.partnerSortValue != i) {
-						cat.partnerSortValue = i;
-						updated.push(cat);
+				if (isChanged()) {
+					var updated:Array = [];
+					var cat:KalturaCategory;
+					for (var i:int = 0; i<_subCategories.length; i++) {
+						cat = _subCategories.getItemAt(i) as KalturaCategory;
+						if (cat.partnerSortValue != i) {
+							cat.partnerSortValue = i;
+							updated.push(cat);
+						}
 					}
-				}
-				if (updated.length > 0) {
-					var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.UPDATE_SUB_CATEGORIES);
-					cgEvent.data = updated;
-					cgEvent.dispatch();
+					if (updated.length > 0) {
+						var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.UPDATE_SUB_CATEGORIES);
+						cgEvent.data = updated;
+						cgEvent.dispatch();
+					}
 				}
 			}
 			

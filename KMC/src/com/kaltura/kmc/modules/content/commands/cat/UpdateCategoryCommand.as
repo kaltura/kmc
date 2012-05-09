@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
@@ -19,19 +20,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			_model.increaseLoadCounter();
 			var cat:CategoryVO = event.data as CategoryVO;
-//			var updatedCat:KalturaCategory = new KalturaCategory();
-			
-		//	updatedCat.createdAt = cat.category.createdAt;
-		//	updatedCat.depth = cat.category.depth;
-		//	updatedCat.entriesCount = cat.category.entriesCount;
-		//	updatedCat.fullName = cat.category.fullName;
-		//	updatedCat.id = cat.category.id;
-		//	updatedCat.name = cat.category.name;
-		//	updatedCat.parentId = cat.category.parentId;
-		//	updatedCat.partnerId = cat.category.partnerId;
-			
 			cat.category.setUpdatedFieldsOnly(true);
-			
 		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, cat.category);
 		 	updateCategory.addEventListener(KalturaEvent.COMPLETE, result);
 			updateCategory.addEventListener(KalturaEvent.FAILED, fault);
@@ -42,7 +31,19 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			super.result(data);
 			_model.decreaseLoadCounter();
-			refresh();
+			if (!checkError(data)) {
+				var catSource:KalturaCategory = data.data as KalturaCategory;
+				var catTarget:KalturaCategory = _model.categoriesModel.selectedCategories[0]
+				var atts:Array = ObjectUtil.getObjectAllKeys(catTarget);
+				var att:String;
+				for (var i:int = 0; i<atts.length; i++) {
+					att = atts[i];
+					if (catSource[att] != catTarget[att]){
+						catTarget[att] = catSource[att];
+					}
+				}
+				refresh();
+			}
 		}
 		
 		
@@ -52,10 +53,15 @@ package com.kaltura.kmc.modules.content.commands.cat
 		protected function refresh():void {
 			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			getCategoriesList.dispatch();
-//			(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.CATEGORY_CHANGED));
+
 			if (_model.listableVo) {
-				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo  );
+				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES , _model.listableVo);
 				KedController.getInstance().dispatch(searchEvent);
+			}
+			
+			// reload categories for tree
+			if (_model.filterModel.catTreeDataManager) {
+				_model.filterModel.catTreeDataManager.resetData();
 			}
 		}
 		
