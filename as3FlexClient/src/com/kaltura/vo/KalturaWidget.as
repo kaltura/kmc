@@ -81,6 +81,16 @@ package com.kaltura.vo
 		public var widgetHTML : String = null;
 
 		/** 
+		* Should enforce entitlement on feed entries
+	 		* */ 
+		public var enforceEntitlement : Boolean;
+
+		/** 
+		* Set privacy context for search entries that assiged to private and public categories within a category privacy context.
+	 		* */ 
+		public var privacyContext : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -93,6 +103,8 @@ package com.kaltura.vo
 			arr.push('securityType');
 			arr.push('securityPolicy');
 			arr.push('partnerData');
+			arr.push('enforceEntitlement');
+			arr.push('privacyContext');
 			return arr;
 		}
 

@@ -6,22 +6,35 @@ package com.kaltura.kmc.modules.content.events
 
 	public class BulkEvent extends CairngormEvent
 	{
+		
+		/**
+		 * upload a csv of category users
+		 * event.data is fileReference
+		 */
+		public static const BULK_UPLOAD_CATEGORY_USERS : String = "content_bulkUploadCategoryUsers";
+		
+		/**
+		 * upload a csv of categories
+		 * event.data is fileReference
+		 */
+		public static const BULK_UPLOAD_CATEGORIES : String = "content_bulkUploadCategories";
+		
+		
 		public static const LIST_BULK_UPLOAD : String = "content_listBulkUpload";
-		public static const ADD_BULK_UPLOAD : String = "content_addBulkUpload";
 		
 		/**
 		 * use the <code>event.data</code> for object id 
 		 */		
 		public static const DELETE_BULK_UPLOAD : String = "content_deleteBulkUpload";
 		
-		public var filterVO : FilterVO;
-		public var fm : FileManager;
+		/**
+		 * filter for list actions
+		 */
+		public var filterVO:FilterVO;
 		
-		public function BulkEvent(type:String, filterVO : FilterVO = null, fm : FileManager = null ,bubbles:Boolean=false , cancelable:Boolean=false)
-		{
+		public function BulkEvent(type:String, filterVO:FilterVO = null, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 			this.filterVO = filterVO;
-			this.fm = fm;
 		}	
 	}
 }

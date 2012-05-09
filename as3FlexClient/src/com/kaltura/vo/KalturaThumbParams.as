@@ -96,6 +96,11 @@ package com.kaltura.vo
 	 		* */ 
 		public var density : int = int.MIN_VALUE;
 
+		/** 
+		* Strip profiles and comments
+	 		* */ 
+		public var stripProfiles : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -115,6 +120,7 @@ package com.kaltura.vo
 			arr.push('sourceParamsId');
 			arr.push('format');
 			arr.push('density');
+			arr.push('stripProfiles');
 			return arr;
 		}
 

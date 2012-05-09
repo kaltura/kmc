@@ -113,6 +113,16 @@ package com.kaltura.vo
 		public var entriesOrderBy : String = null;
 
 		/** 
+		* Should enforce entitlement on feed entries
+	 		* */ 
+		public var enforceEntitlement : Boolean;
+
+		/** 
+		* Set privacy context for search entries that assiged to private and public categories within a category privacy context.
+	 		* */ 
+		public var privacyContext : String = null;
+
+		/** 
 		* a list of attributes which may be updated on this object 
 		* */ 
 		public function getUpdateableParamKeys():Array
@@ -130,6 +140,8 @@ package com.kaltura.vo
 			arr.push('categories');
 			arr.push('storageId');
 			arr.push('entriesOrderBy');
+			arr.push('enforceEntitlement');
+			arr.push('privacyContext');
 			return arr;
 		}
 

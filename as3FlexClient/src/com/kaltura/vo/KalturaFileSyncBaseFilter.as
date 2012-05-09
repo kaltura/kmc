@@ -142,11 +142,11 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileSizeGreaterThanOrEqual : int = int.MIN_VALUE;
+		public var fileSizeGreaterThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
-		public var fileSizeLessThanOrEqual : int = int.MIN_VALUE;
+		public var fileSizeLessThanOrEqual : Number = Number.NEGATIVE_INFINITY;
 
 		override public function getUpdateableParamKeys():Array
 		{

@@ -75,8 +75,9 @@ package com.kaltura.kmc.modules.content.control {
 
 			//Bulk Upload Event
 			addCommand(BulkEvent.LIST_BULK_UPLOAD, ListBulkUploadCommand);
-			addCommand(BulkEvent.ADD_BULK_UPLOAD, AddBulkUploadCommand);
 			addCommand(BulkEvent.DELETE_BULK_UPLOAD, DeleteBulkUploadCommand);
+			addCommand(BulkEvent.BULK_UPLOAD_CATEGORIES, AddBulkUploadCommand);
+			addCommand(BulkEvent.BULK_UPLOAD_CATEGORY_USERS, AddBulkUploadCommand);
 
 			// flavor params
 			addCommand(ConversionSettingsEvent.LIST_FLAVOR_PARAMS, ListFlavorsParamsCommand);

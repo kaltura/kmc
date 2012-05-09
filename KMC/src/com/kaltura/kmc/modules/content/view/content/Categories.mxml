@@ -16,6 +16,7 @@
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
+			import com.kaltura.kmc.modules.content.events.BulkEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
@@ -49,6 +50,10 @@
 			 * */
 			public var entryDetailsModel:KMvCModel;
 			
+			/**
+			 * file reference object for bulk uploads
+			 * */
+			private var _bulkUpldFileRef:FileReference;
 
 			/**
 			 * initialize the panel.
@@ -142,9 +147,50 @@
 				return cat;
 			}
 			
-			protected function creationCompleteHandler(event:FlexEvent):void {
+			private function creationCompleteHandler(event:FlexEvent):void {
 				setButtonsWidth();
 			}
+
+
+			private function setCategoriesAccessHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			private function setCategoriesListingHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+			}
+
+
+			private function bulkBtn_clickHandler(event:MouseEvent):void {
+				_bulkUpldFileRef = new FileReference();
+				if (event.target == uploadCatsBtn) {
+					_bulkUpldFileRef.addEventListener(Event.SELECT, uploadCats);
+				}
+				else if (event.target == uploadUsersBtn) {
+					_bulkUpldFileRef.addEventListener(Event.SELECT, uploadCUsrs);
+					
+				}
+				_bulkUpldFileRef.browse([new FileFilter(resourceManager.getString('cms', 'file_types'), "*.csv")]);
+			}
+			
+			
+			private function uploadCats(event:Event):void {
+				var bulk:BulkEvent = new BulkEvent(BulkEvent.BULK_UPLOAD_CATEGORIES);
+				bulk.data = event.target;
+				bulk.dispatch();
+			}
+			
+			
+			private function uploadCUsrs(event:Event):void {
+				var bulk:BulkEvent = new BulkEvent(BulkEvent.BULK_UPLOAD_CATEGORY_USERS);
+				bulk.data = event.target;
+				bulk.dispatch();
+			}
+
+
 
 		]]>
 	</mx:Script>
@@ -179,7 +225,9 @@
 				 
 				
 				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" />
+					<bulkactions:BulkCategoryActionsMenu height="{paging.height}"
+														 setCategoriesAccess="setCategoriesAccessHandler(event)"
+														 setCategoriesListing="setCategoriesListingHandler(event)"/>
 					
 					<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{categoriesModel.totalCategories}"
 									 rowsInPageChange="loadCategories()" nextPage="loadCategories()" prvPage="loadCategories()"
@@ -193,9 +241,11 @@
 					   styleName="listActionButton" visible="false" buttonMode="true"
 					   click="addCatBtn_clickHandler(event)" />
 			<mx:Button id="uploadCatsBtn" label="{resourceManager.getString('cms', 'uploadCatsCsv')}" 
-					   styleName="listActionButton" visible="false" buttonMode="true" />
+					   styleName="listActionButton" visible="false" buttonMode="true" 
+					   click="bulkBtn_clickHandler(event)"/>
 			<mx:Button id="uploadUsersBtn" label="{resourceManager.getString('cms', 'uploadMembersCsv')}" 
-					   styleName="listActionButton" visible="false" buttonMode="true" />
+					   styleName="listActionButton" visible="false" buttonMode="true"
+					   click="bulkBtn_clickHandler(event)"/>
 		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>
