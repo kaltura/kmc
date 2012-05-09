@@ -13,6 +13,9 @@ package com.kaltura.kmc.modules.content.business
 	 */
 	public class CategoriesStatusTracker {
 		
+		public var enabled:Boolean = true;
+		
+		
 		/**
 		 * the timer used to time samples 
 		 */		
@@ -25,7 +28,9 @@ package com.kaltura.kmc.modules.content.business
 		 */		
 		public function set sampleRate(value:int):void {
 			_sampleRate = value;
-			startTracking();
+			if (enabled) {
+				startTracking();
+			}
 		}
 		
 		
