@@ -18,7 +18,7 @@
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaCategory;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -116,12 +116,31 @@
 				}
 				else {
 					if (hasChanged()) {
-						tabsNav.save();
-						var catVO:CategoryVO = new CategoryVO(_origCategory.id, _origCategory.name, _undoCategory);
-						var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-						cgEvent2.data = catVO;
-						cgEvent2.dispatch();
+						if (_origCategory.name != _undoCategory.name) {
+							var action:String = resourceManager.getString('cms', 'catBatchName');
+							Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, updateCategory); 
+						}
+						else {
+							updateCategory();
+						}
 					}
+				}
+			}
+			
+			/**
+			 * perform the actual update
+			 * */
+			private function updateCategory(e:CloseEvent = null):void {
+				if (!e || e.detail == Alert.OK) {
+					tabsNav.save();
+					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
+					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+					cgEvent2.data = catVO;
+					cgEvent2.dispatch();	
+				}
+				else {
+					// e.detail = cancel, so revert
+					_undoCategory.name = _origCategory.name;
 				}
 			}
 			
