@@ -53,7 +53,7 @@
 
 			public function set categoriesModel(value:CategoriesModel):void {
 				_model = value;
-				_itemsAC = _model.categoriesList;
+				_itemsAC = value.categoriesList;
 				BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
 			}
 
@@ -200,20 +200,20 @@
 	</navigation:states>
 	
 	<mx:ControlBar horizontalGap="5" width="100%">
-		<mx:HBox width="33%"/>
+		<mx:Spacer width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" 
-					   click="onSave()" buttonMode="true" />
+					   click="onSave()" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
-					   click="onSaveAndClose()" buttonMode="true" />
+					   click="onSaveAndClose()" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
 			<mx:LinkButton label="{resourceManager.getString('cms', 'prevCategory')}" click="gotoNextCategory(false)"
-						   buttonMode="true" enabled="{_prevEnabled}" visible="{showNextPrevBtns}"
-						   styleName="drillDownNavPrevBtn"/>
+						   buttonMode="true" enabled="{_prevEnabled &amp;&amp; !_model.loadingFlag}" 
+						   visible="{showNextPrevBtns}" styleName="drillDownNavPrevBtn"/>
 			<mx:LinkButton label="{resourceManager.getString('cms', 'nextCategory')}" click="gotoNextCategory(true)"
-						   buttonMode="true" enabled="{_nextEnabled}" visible="{showNextPrevBtns}"
-						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
+						   buttonMode="true" enabled="{_nextEnabled &amp;&amp; !_model.loadingFlag}" 
+						   visible="{showNextPrevBtns}" styleName="drillDownNavNextBtn" labelPlacement="left" />
 		</mx:HBox>
 	</mx:ControlBar>
 </navigation:ChangeableDataViewer>

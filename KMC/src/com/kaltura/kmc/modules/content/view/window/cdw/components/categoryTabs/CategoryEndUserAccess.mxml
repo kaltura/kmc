@@ -18,7 +18,9 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.Alert;
 			import mx.core.mx_internal;
+			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
@@ -35,6 +37,7 @@
 			private var _originalOwner:String;
 			private var _originalJoinPolicy:int;
 			private var _originalPermLvl:int;
+			private var _orginalInheritanceValue:int;
 
 			public function get category():KalturaCategory {
 				return _category;
@@ -42,15 +45,12 @@
 
 			[Bindable]
 			public function set category(value:KalturaCategory):void {
-				if (!value.privacyContexts) {
-					if (this.parent) {
-						this.parent.removeChild(this);
-					}
-				}
+				
 				_category = value;
 				_originalOwner = value.owner;
 				_originalJoinPolicy = value.userJoinPolicy;
 				_originalPermLvl = value.defaultPermissionLevel;
+				_orginalInheritanceValue = value.inheritanceType;
 			}
 
 
@@ -152,6 +152,12 @@
 
 
 			public function initData():void {
+				if (!_category.privacyContexts) {
+					if (this.parent) {
+						this.parent.removeChild(this);
+					}
+					return;
+				}
 				var cgEvent:CategoryEvent;
 				if (_category.parentId > 0) {
 					cgEvent = new CategoryEvent(CategoryEvent.GET_PARENT_CATEGORY);
@@ -186,7 +192,7 @@
 			}
 
 			
-			protected function inheritNo_changeHandler(event:Event):void {
+			private function inheritNo_changeHandler(event:Event):void {
 				if((event.target as RadioButton).selected) {
 					_category.inheritanceType = KalturaInheritanceType.MANUAL; 
 					_category.owner = _originalOwner;
@@ -197,8 +203,22 @@
 			}
 
 
-			protected function inheritYes_changeHandler(event:Event):void {
+			
+			private function inheritYes_changeHandler(event:Event):void {
 				if((event.target as RadioButton).selected) {
+					if (_orginalInheritanceValue == KalturaInheritanceType.MANUAL) {
+						// show alert
+						Alert.show(resourceManager.getString('cms', 'attention'), resourceManager.getString('cms', 'attention'), Alert.OK|Alert.CANCEL, null, approveInherit);
+					}
+					else {
+						approveInherit();	
+					}
+							
+				}
+			}
+			
+			private function approveInherit(e:CloseEvent = null):void {
+				if (!e || e.detail == Alert.OK) {
 					_category.inheritanceType = KalturaInheritanceType.INHERIT;
 					var parentCat:KalturaCategory = model.inheritedParentCategory;
 					if (!parentCat) {
@@ -207,7 +227,7 @@
 					_category.owner = parentCat.owner;
 					_category.userJoinPolicy = parentCat.userJoinPolicy;
 					_category.defaultPermissionLevel = parentCat.defaultPermissionLevel;
-					setCBValuesFromCategory();		
+					setCBValuesFromCategory();
 				}
 			}
 

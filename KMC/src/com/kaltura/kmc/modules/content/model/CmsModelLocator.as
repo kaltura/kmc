@@ -14,6 +14,7 @@ package com.kaltura.kmc.modules.content.model {
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
@@ -265,7 +266,9 @@ package com.kaltura.kmc.modules.content.model {
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
 			dropFolderModel = new DropFolderModel();
+			
 			categoriesModel = new CategoriesModel();
+			BindingUtils.bindProperty(categoriesModel, "loadingFlag", this, "loadingFlag");
 			
 			bulkUploadModel = new BulkUploadModel();
 			bulkUploadModel.bulkUploadFilterPager = new KalturaFilterPager();

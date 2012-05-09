@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:tabbar="com.kaltura.controls.tabbar.*" 
-		 xmlns:categoryTabs="com.kaltura.kmc.modules.content.view.window.cdw.components.categoryTabs.*" 
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:tabbar="com.kaltura.controls.tabbar.*"
+		 xmlns:categoryTabs="com.kaltura.kmc.modules.content.view.window.cdw.components.categoryTabs.*"
 		 horizontalAlign="center" styleName="noPadding">
 	<mx:Metadata>
 		[Event(name="save",type="flash.events.Event")]
@@ -15,106 +15,126 @@
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
 			import com.kaltura.vo.KalturaCategory;
 			
-			import mx.events.FlexEvent;
+			import flash.utils.setTimeout;
 			
+			import mx.events.FlexEvent;
+
 			public static const SAVE_EVENT:String = "save";
 			public static const CLOSE_EVENT:String = "close";
 			public static const GOTO_NEXT_EVENT:String = "gotoNext";
 			public static const GOTO_PREV_EVENT:String = "gotoPrev";
-			
+
 			[Bindable]
 			public var filterModel:FilterModel;
-			
+
 			[Bindable]
 			public var model:CategoriesModel;
-			
+
 			public var isNewCategory:Boolean;
-			
+
 			private var _category:KalturaCategory;
-			
+
 			private var _tabs:Vector.<ICategoryDrilldownPanel>;
-			
-			
-			public function validate():Boolean{
+
+
+			public function validate():Boolean {
 				return true;
 			}
-			
-			public function save():void{
-				for each (var tab:ICategoryDrilldownPanel in _tabs){
+
+
+			public function save():void {
+				for each (var tab:ICategoryDrilldownPanel in _tabs) {
 					tab.save();
 				}
 			}
-			
-			private function onCreationComplete(event:FlexEvent):void
-			{
-				if (isNewCategory){
+
+
+			private function onCreationComplete(event:FlexEvent):void {
+				if (isNewCategory) {
 					viewStack.removeChild(subCategories);
 				}
-				
-	 			_tabs = new Vector.<ICategoryDrilldownPanel>;
-				for (var index:uint = 0; index < viewStack.numChildren; index++){
+
+				_tabs = new Vector.<ICategoryDrilldownPanel>;
+				for (var index:int = viewStack.numChildren-1; index >= 0; index--) {
+					// some tabs remove themselves on initData, so we need to run from the top down
 					var tab:ICategoryDrilldownPanel = viewStack.getChildAt(index) as ICategoryDrilldownPanel;
-					
-					_tabs.push(tab);
-					
+					_tabs.unshift(tab); // add in reverse order
 					tab.init();
-					
-					if (_category != null){
+					if (_category != null) {
 						tab.initData();
 					}
-				} 
+				}
 			}
-			
-			public function isChanged():Boolean{
-				for each (var tab:ICategoryDrilldownPanel in _tabs){
-					if (tab.isChanged()){
+
+
+			public function isChanged():Boolean {
+				for each (var tab:ICategoryDrilldownPanel in _tabs) {
+					if (tab.isChanged()) {
 						return true;
 					}
 				}
-				
+
 				return false;
 			}
+
 			
-			[Bindable]
-			public function set category(value:KalturaCategory):void{
-				_category = value;
-				if (_tabs != null){
-					for each (var tab:ICategoryDrilldownPanel in _tabs){
-						tab.initData();
-						viewStack.addChild(tab as DisplayObject);
-					}
+			private function initTabsData():void {
+				for each (var tab:ICategoryDrilldownPanel in _tabs) {
+					viewStack.addChild(tab as DisplayObject);
+					tab.initData();
 				}
 			}
 			
-			public function get category():KalturaCategory{
+			
+
+			
+			[Bindable]
+			public function set category(value:KalturaCategory):void {
+				_category = value;
+				if (_tabs != null) {
+					// need to clear the stack trace so the new category will be updated on the panels 
+					setTimeout(initTabsData, 0);
+				}
+			}
+
+
+			public function get category():KalturaCategory {
 				return _category;
 			}
-			
-			public function clear():void{
-				for each (var tab:ICategoryDrilldownPanel in _tabs){
+
+
+			public function clear():void {
+				for each (var tab:ICategoryDrilldownPanel in _tabs) {
 					tab.clear();
 				}
 			}
-			
-			public function destroy():void{
-				for each (var tab:ICategoryDrilldownPanel in _tabs){
+
+
+			public function destroy():void {
+				for each (var tab:ICategoryDrilldownPanel in _tabs) {
 					tab.destroy();
 				}
 			}
-			
-			
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%" styleName="categoryDetails">
 		<mx:TabBar id="tabBar" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
-				   useHandCursor="true"  buttonMode="true" tabHeight="25"/>
-		
-		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all" creationComplete="onCreationComplete(event)" styleName="sectionViewStack" selectedIndex="{tabBar.selectedIndex}" >
-			<categoryTabs:CategoryMetadata label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%" height="100%" category="{category}" filterModel="{filterModel}" model="{model}" />
-			<categoryTabs:CategoryEndUserAccess width="100%" height="100%"	label="{resourceManager.getString('cms', 'endUserAccess')}"	category="{category}" model="{model}"/>
-			<categoryTabs:SubCategories  id="subCategories" width="100%" height="100%"  subCategories="{model.subCategories}" label="{resourceManager.getString('cms', 'categorySubCategories')}" /> <!--  -->
-			
+				   useHandCursor="true" buttonMode="true" tabHeight="25" enabled="{!model.loadingFlag}"/>
+
+		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all"
+					  creationComplete="onCreationComplete(event)" styleName="sectionViewStack"
+					  selectedIndex="{tabBar.selectedIndex}">
+			<categoryTabs:CategoryMetadata label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%"
+										   height="100%" category="{category}" filterModel="{filterModel}"
+										   model="{model}"/>
+			<categoryTabs:CategoryEndUserAccess width="100%" height="100%"
+												label="{resourceManager.getString('cms', 'endUserAccess')}"
+												category="{category}" model="{model}"/>
+			<categoryTabs:SubCategories id="subCategories" width="100%" height="100%"
+										subCategories="{model.subCategories}"
+										label="{resourceManager.getString('cms', 'categorySubCategories')}"/>
+
 		</mx:ViewStack>
 	</mx:HBox>
-	
+
 </mx:VBox>

@@ -16,6 +16,14 @@ package com.kaltura.kmc.modules.content.model
 		public static const SUB_CATEGORIES_LIMIT:int = 50;
 		
 		/**
+		 * when data is being loaded, value is true.
+		 * bound to the general model's loadingFlag and is  
+		 * not meant to be changed manually (by convention). 
+		 */		
+		public var loadingFlag:Boolean;
+		
+		
+		/**
 		 * reference to the API client 
 		 */
 		public var client:KalturaClient;
