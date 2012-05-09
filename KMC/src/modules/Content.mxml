@@ -44,7 +44,7 @@
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.edw.view.window.CategoryBrowser;
-			import com.kaltura.edw.view.window.SetOwnerWindow;
+			import com.kaltura.edw.view.window.SetEntryOwnerWindow;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.AccessControlProfileEvent;
 			import com.kaltura.events.FileUploadEvent;
@@ -867,7 +867,7 @@
 				switch (e.type) {
 					case "save":
 						// set entry owner for all selected entries
-						var tgt:SetOwnerWindow = e.target as SetOwnerWindow;
+						var tgt:SetEntryOwnerWindow = e.target as SetEntryOwnerWindow;
 						var kEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_ENTRIES_OWNER, new ArrayCollection(_model.selectedEntries));
 						kEvent.data = tgt.selectedUser.id;
 						kEvent.dispatch();
@@ -1082,10 +1082,10 @@
 							catDetails.addEventListener(KedDataEvent.CLOSE_WINDOW, handleKedEvents, false, 0, true);
 							break;
 						case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
-							currentPopUp = new SetOwnerWindow();
+							currentPopUp = new SetEntryOwnerWindow();
 							currentPopUp.addEventListener("save", handleChangeEntryOwnerEvents, false, 0, true);
 							currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeEntryOwnerEvents, false, 0, true);
-							(currentPopUp as SetOwnerWindow).kClient = _kc;
+							(currentPopUp as SetEntryOwnerWindow).kClient = _kc;
 //							(currentPopUp as SetOwnerWindow).entryData = _entryData;
 //							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
 							break;
