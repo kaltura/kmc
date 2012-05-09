@@ -9,8 +9,6 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 	
 	import mx.events.MenuEvent;
 	
-	[Event(name="setCategoriesAccess", type="flash.events.Event")]
-	[Event(name="setCategoriesListing", type="flash.events.Event")]
 	
 	public class BulkCategoryActionsMenu extends BulkEntryActionsMenu {
 		
@@ -55,11 +53,13 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 					break;
 				
 				case "changeAccess":
-					dispatchEvent(new Event("setCategoriesAccess"));
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_ACCESS_WINDOW);
+					cgEvent.dispatch();
 					break;
 				
 				case "changeListing":
-					dispatchEvent(new Event("setCategoriesListing"));
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_LISTING_WINDOW);
+					cgEvent.dispatch();
 					break;
 				
 				case "moveCategories":

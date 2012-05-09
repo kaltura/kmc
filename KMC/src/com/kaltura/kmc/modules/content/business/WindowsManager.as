@@ -37,6 +37,8 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.kmc.modules.content.utils.StringUtil;
 	import com.kaltura.kmc.modules.content.view.window.AddStream;
 	import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
+	import com.kaltura.kmc.modules.content.view.window.CategoriesAccessWindow;
+	import com.kaltura.kmc.modules.content.view.window.CategoriesListingWindow;
 	import com.kaltura.kmc.modules.content.view.window.DownloadWin;
 	import com.kaltura.kmc.modules.content.view.window.MoveCategoriesWindow;
 	import com.kaltura.kmc.modules.content.view.window.RemoveCategoriesWindow;
@@ -108,6 +110,71 @@ package com.kaltura.kmc.modules.content.business
 		 * entry data
 		 * */
 		private var _entryData:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;		
+
+		
+		/**
+		 * adds a popup window to the screen
+		 * */
+		private function addPopup(currentPopUp:TitleWindow):void {
+			currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
+			// remember the new window
+			model.popups.push(currentPopUp);
+			if (model.popups.length == 1) {
+				// this is the first popup
+				owner.pEnableHtmlTabs(false);
+				
+			}
+			PopUpManager.addPopUp(currentPopUp, Application.application as DisplayObject, true);
+			currentPopUp.setFocus();
+			centerPopups();
+		}
+		
+		
+		/**
+		 * close popup window.
+		 * if this was the last opened popup, enable HTML tabs
+		 * */
+		private function closePopup():void {
+			var popup:TitleWindow = model.topPopup;
+			if (popup) {
+				popup.removeEventListener(KmcHelpEvent.HELP, onHelp, false);
+				PopUpManager.removePopUp(popup);
+				model.popups.pop();
+			}
+			if (!model.topPopup) {
+				if (popup) {
+					// only do this if we actualy closed a popup
+					owner.pEnableHtmlTabs(true);
+					if (contentView) {
+						contentView.selectedChild.setFocus();
+					}
+				}
+			}
+		}
+		
+		/**
+		 * bring any visible popups to the center of the screen
+		 * */
+		public function centerPopups(event:Event = null):void {
+			for (var i:int = 0; i < model.popups.length; i++) {
+				PopUpManager.centerPopUp(model.popups[i]);
+			}
+		}
+		
+		
+		private function onHelp(e:KmcHelpEvent):void {
+			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+		}
+		
+		/**
+		 * request to close the popup as response of window "x" button
+		 * @param e
+		 */
+		private function handleClosePopup(e:CloseEvent):void {
+			var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+			cgEvent.dispatch();
+		}
+		
 		
 		/**
 		 * opens or closes needed popup windows according to new state
@@ -187,30 +254,39 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
 						currentPopUp = new SetEntryOwnerWindow();
 						currentPopUp.addEventListener("save", handleChangeEntryOwnerEvents, false, 0, true);
-						currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeEntryOwnerEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						(currentPopUp as SetEntryOwnerWindow).kClient = (KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack).kc;
-						//							(currentPopUp as SetOwnerWindow).entryData = _entryData;
-						//							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
+//							(currentPopUp as SetOwnerWindow).entryData = _entryData;
+//							(currentPopUp as SetOwnerWindow).setUserById(_entryData.selectedEntry.userId);
 						break;
 					case WindowsStates.ADD_CATEGORIES_WINDOW:
 						currentPopUp = new CategoryBrowser();
 						currentPopUp.addEventListener("apply", handleAddCategoriesEvents, false, 0, true);
-						currentPopUp.addEventListener(CloseEvent.CLOSE, handleAddCategoriesEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						(currentPopUp as CategoryBrowser).filterModel = model.filterModel;
 						(currentPopUp as CategoryBrowser).kClient = (KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack).kc;
 						break;
 					case WindowsStates.REMOVE_CATEGORIES_WINDOW:
 						currentPopUp = new RemoveCategoriesWindow();
-						currentPopUp.addEventListener("apply", handleRemoveCategoriesEvents, false, 0, true);
-						currentPopUp.addEventListener(CloseEvent.CLOSE, handleRemoveCategoriesEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						(currentPopUp as RemoveCategoriesWindow).model = model;
 						break;
 					case WindowsStates.MOVE_CATEGORIES_WINDOW:
 						currentPopUp = new MoveCategoriesWindow();
 						currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
-						currentPopUp.addEventListener(CloseEvent.CLOSE, handleMoveCategoriesEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						(currentPopUp as MoveCategoriesWindow).filterModel = model.filterModel;
 						(currentPopUp as MoveCategoriesWindow).setCategories(model.categoriesModel.selectedCategories);
+						break;
+					case WindowsStates.CATEGORIES_LISTING_WINDOW:
+						currentPopUp = new CategoriesListingWindow();
+						currentPopUp.addEventListener("apply", handleCategoriesListingEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						break;
+					case WindowsStates.CATEGORIES_ACCESS_WINDOW:
+						currentPopUp = new CategoriesAccessWindow();
+						currentPopUp.addEventListener("apply", handleCategoriesAccessEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
 				}
 				
@@ -227,59 +303,7 @@ package com.kaltura.kmc.modules.content.business
 		}
 		
 		
-		/**
-		 * adds a popup window to the screen
-		 * */
-		private function addPopup(currentPopUp:TitleWindow):void {
-			currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
-			// remember the new window
-			model.popups.push(currentPopUp);
-			if (model.popups.length == 1) {
-				// this is the first popup
-				owner.pEnableHtmlTabs(false);
-				
-			}
-			PopUpManager.addPopUp(currentPopUp, Application.application as DisplayObject, true);
-			currentPopUp.setFocus();
-			centerPopups();
-		}
 		
-		
-		/**
-		 * close popup window.
-		 * if this was the last opened popup, enable HTML tabs
-		 * */
-		private function closePopup():void {
-			var popup:TitleWindow = model.topPopup;
-			if (popup) {
-				popup.removeEventListener(KmcHelpEvent.HELP, onHelp, false);
-				PopUpManager.removePopUp(popup);
-				model.popups.pop();
-			}
-			if (!model.topPopup) {
-				if (popup) {
-					// only do this if we actualy closed a popup
-					owner.pEnableHtmlTabs(true);
-					if (contentView) {
-						contentView.selectedChild.setFocus();
-					}
-				}
-			}
-		}
-		
-		/**
-		 * bring any visible popups to the center of the screen
-		 * */
-		public function centerPopups(event:Event = null):void {
-			for (var i:int = 0; i < model.popups.length; i++) {
-				PopUpManager.centerPopUp(model.popups[i]);
-			}
-		}
-		
-		
-		private function onHelp(e:KmcHelpEvent):void {
-			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-		}
 		
 		/**
 		 * allows download of a single image or opens a download popup window
@@ -639,11 +663,6 @@ package com.kaltura.kmc.modules.content.business
 					kEvent.data = tgt.selectedUser.id;
 					kEvent.dispatch();
 					break;
-				case CloseEvent.CLOSE:
-					// close the popup
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-					cgEvent.dispatch();
-					break;
 			}
 		}
 		
@@ -657,28 +676,8 @@ package com.kaltura.kmc.modules.content.business
 					kEvent.data = tgt.getCategories();
 					kEvent.dispatch();
 					break;
-				case CloseEvent.CLOSE:
-					// close the popup
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-					cgEvent.dispatch();
-					break;
 			}
 		}
-		
-		
-		
-		private function handleRemoveCategoriesEvents(e:Event):void {
-			switch (e.type) {
-				//					case "apply": (handled inside the window)
-				//						break;
-				case CloseEvent.CLOSE:
-					// close the popup
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-					cgEvent.dispatch();
-					break;
-			}
-		}
-
 		
 		
 		
@@ -691,10 +690,27 @@ package com.kaltura.kmc.modules.content.business
 					kEvent.data = [tgt.getCategories(), tgt.getParent()];
 					kEvent.dispatch();
 					break;
-				case CloseEvent.CLOSE:
-					// close the popup
-					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-					cgEvent.dispatch();
+			}
+		}
+		
+		private function handleCategoriesListingEvents(e:Event):void {
+			switch (e.type) {
+				case "apply": 
+					var tgt:CategoriesListingWindow = e.target as CategoriesListingWindow;
+					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_LISTING);
+					kEvent.data = tgt.getListing();
+					kEvent.dispatch();
+					break;
+			}
+		}
+		
+		private function handleCategoriesAccessEvents(e:Event):void {
+			switch (e.type) {
+				case "apply": 
+					var tgt:CategoriesAccessWindow = e.target as CategoriesAccessWindow;
+					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_ACCESS);
+					kEvent.data = tgt.getAccess();
+					kEvent.dispatch();
 					break;
 			}
 		}

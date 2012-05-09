@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							layout="vertical" width="400" height="300"
+							showCloseButton="true" showHelpButton="true" 
+							title="{resourceManager.getString('cms', 'catListTitle')}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaAppearInListType;
+			
+
+
+			public function getListing():int {
+				return myGroup.selectedValue as int;
+			}
+
+			protected function applyBtn_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new Event("apply"));
+				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+
+
+			protected function myGroup_changeHandler(event:Event):void {
+				applyBtn.enabled = true;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:Text width="100%" text="{resourceManager.getString('cms', 'catListDesc')}" />
+	
+	<mx:RadioButtonGroup id="myGroup" change="myGroup_changeHandler(event)"/>
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catListListed')}" 
+					value="{KalturaAppearInListType.PARTNER_ONLY}" groupName="myGroup" />
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catListUnlisted')}" 
+					value="{KalturaAppearInListType.CATEGORY_MEMBERS_ONLY}" groupName="myGroup" />
+	
+	
+	<mx:ControlBar>
+		<mx:Button id="applyBtn" label="{resourceManager.getString('cms', 'apply')}" click="applyBtn_clickHandler(event)" 
+				   enabled="false"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

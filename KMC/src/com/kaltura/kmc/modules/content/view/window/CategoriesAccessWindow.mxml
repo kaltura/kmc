@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
+							layout="vertical" width="400" height="300"
+							showCloseButton="true" showHelpButton="true" 
+							title="{resourceManager.getString('cms', 'catAcTitle')}">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaPrivacyType;
+			
+			
+			
+			public function getAccess():int {
+				return myGroup.selectedValue as int;
+			}
+			
+			protected function applyBtn_clickHandler(event:MouseEvent):void {
+				dispatchEvent(new Event("apply"));
+				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+			
+			
+			protected function myGroup_changeHandler(event:Event):void {
+				applyBtn.enabled = true;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Text width="100%" text="{resourceManager.getString('cms', 'catAcDesc')}" />
+	
+	<mx:RadioButtonGroup id="myGroup" change="myGroup_changeHandler(event)"/>
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catAcPublic')}" 
+					value="{KalturaPrivacyType.ALL}" groupName="myGroup" />
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catAcAutho')}" 
+					value="{KalturaPrivacyType.AUTHENTICATED_USERS}" groupName="myGroup" />
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catAcPrivate')}" 
+					value="{KalturaPrivacyType.MEMBERS_ONLY}" groupName="myGroup" />
+	
+	
+	<mx:ControlBar>
+		<mx:Button id="applyBtn" label="{resourceManager.getString('cms', 'apply')}" click="applyBtn_clickHandler(event)" 
+				   enabled="false"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

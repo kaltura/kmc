@@ -49,6 +49,18 @@ package com.kaltura.kmc.modules.content.events
 		public static const LIST_METADATA_INFO : String = "content_listCategoryMetadataInfo";
 		
 		/**
+		 * set the listing of the currently selected categories
+		 * event.data is new listing value (KalturaAppearInListType)
+		 */
+		public static const SET_CATEGORIES_LISTING : String = "content_setCategoriesListing";
+		
+		/**
+		 * set the access of the currently selected categories
+		 * event.data is new access value (KalturaPrivacyType)
+		 */
+		public static const SET_CATEGORIES_ACCESS : String = "content_setCategoriesAccess";
+		
+		/**
 		 * delete a category
 		 * event.data is an array of category ids 
 		 */

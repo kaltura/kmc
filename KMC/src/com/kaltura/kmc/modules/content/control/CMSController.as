@@ -128,6 +128,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.LIST_CATEGORIES, ListCategoriesCommand);
 			addCommand(CategoryEvent.DELETE_CATEGORIES, DeleteCategoriesCommand);
 			addCommand(CategoryEvent.MOVE_CATEGORIES, ReparentCategoriesCommand);
+			addCommand(CategoryEvent.SET_CATEGORIES_LISTING, SetCategoriesAttributeCommand);
+			addCommand(CategoryEvent.SET_CATEGORIES_ACCESS, SetCategoriesAttributeCommand);
 			addCommand(CategoryEvent.GET_SUB_CATEGORIES, GetSubCategoriesCommand);
 			addCommand(CategoryEvent.RESET_SUB_CATEGORIES, GetSubCategoriesCommand);
 			addCommand(CategoryEvent.UPDATE_SUB_CATEGORIES, UpdateSubCategoriesCommand);
