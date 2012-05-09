@@ -88,21 +88,7 @@ package com.kaltura.edw.control.commands {
 			super.result(data);
 			_model.decreaseLoadCounter();
 			
-			var isErr:Boolean;
-			if (data.data && data.data is Array) {
-				for (var i:uint = 0; i < (data.data as Array).length; i++) {
-					if ((data.data as Array)[i] is KalturaError) {
-						isErr = true;
-						Alert.show(ResourceManager.getInstance().getString('drilldown', 'error') + ": " +
-							((data.data as Array)[i] as KalturaError).errorMsg);
-					}
-					else if ((data.data as Array)[i].hasOwnProperty("error")) {
-						isErr = true;
-						Alert.show((data.data as Array)[i].error.message, ResourceManager.getInstance().getString('drilldown', 'error'));
-					}
-				}
-			}
-			if (isErr) {
+			if (checkErrors(data)) {
 				return;
 			}
 			
