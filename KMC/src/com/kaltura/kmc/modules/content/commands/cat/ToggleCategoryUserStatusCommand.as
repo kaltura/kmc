@@ -8,7 +8,6 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
-	import com.kaltura.kmc.modules.content.view.content.Categories;
 	import com.kaltura.vo.KalturaCategoryUser;
 	
 	import mx.controls.Alert;

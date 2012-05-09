@@ -7,7 +7,7 @@
 				   implements="com.kaltura.edw.business.IDataOwner" layout="vertical" 
 				   minWidth="950" borderThickness="0" borderStyle="solid" verticalGap="0" paddingLeft="0"
 				   paddingRight="0" paddingTop="0" paddingBottom="0" preloader="com.kaltura.preloaders.KmcPreloader"
-				   enabled="{!_model.loadingFlag}">
+				   enabled="{!_model.loadingFlag}" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:playlist1="com.kaltura.kmc.modules.content.view.playlist.*">
 
 	<mx:Metadata>
 		[ResourceBundle("cms")]
@@ -54,7 +54,7 @@
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.kmc.modules.content.model.types.EntryDetailsWindowState;
 			import com.kaltura.kmc.modules.content.utils.StringUtil;
-			import com.kaltura.kmc.modules.content.view.content.IContentPanel;
+			import com.kaltura.kmc.modules.content.business.IContentPanel;
 			import com.kaltura.kmc.modules.content.view.window.AddStream;
 			import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 			import com.kaltura.kmc.modules.content.view.window.DownloadWin;
@@ -1401,7 +1401,7 @@
 	<control:CMSController/>
 
 	<business:CategoriesStatusTracker id="categoriesTracker" />
-	<content:GeneralPermissionsSetter id="generalPermissions"/>
+	<business:GeneralPermissionsSetter id="generalPermissions"/>
 
 	<mx:VBox id="mainView" width="100%" height="100%" styleName="mainView" verticalScrollPolicy="off">
 		<mx:HBox width="100%" styleName="tabsContainer" verticalAlign="middle">
@@ -1445,34 +1445,34 @@
 		</mx:HBox>
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" 
 					  change="initSelectedTab(event)" >
-			<content:Entries id="manage" height="100%" styleName="pageStyle"
+			<view:Entries id="manage" height="100%" styleName="pageStyle"
 							 entryDetailsModel="{_model.entryDetailsModel}" 
 							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
 							 label="{ResourceManager.getInstance().getString('cms','entriesTitle')}"
 							 windowState="{_model.windowState}"/>
-			<content:Moderation id="moderation" styleName="pageStyle" height="100%" entryDetailsModel="{_model.entryDetailsModel}"
+			<view:Moderation id="moderation" styleName="pageStyle" height="100%" entryDetailsModel="{_model.entryDetailsModel}"
 								context="{_model.context}" selectedEntry="{_entryData.selectedEntry}"
 								filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}"
 								label="{ResourceManager.getInstance().getString('cms','moderation')}" />
-			<playlist:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
+			<view:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
 							   selectedEntry="{_entryData.selectedEntry}"
 							   showEmbed="{_model.showPlaylistEmbedCode}"
 							   label="{ResourceManager.getInstance().getString('cms','playlistTitle')}"/>
-			<content:ExternalSyndication id="syndication" styleName="pageStyle" 
+			<view:ExternalSyndication id="syndication" styleName="pageStyle" 
 										 flavorParams="{_model.filterModel.flavorParams}"
 										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"
 										 label="{ResourceManager.getInstance().getString('cms','externalSyndication')}"/>
-			<content:Categories id="categories" width="100%" height="100%" styleName="pageStyle"
+			<view:Categories id="categories" width="100%" height="100%" styleName="pageStyle"
 								entryDetailsModel="{_model.entryDetailsModel}" 
 								filterModel="{_model.filterModel}" 
 								categoriesModel="{_model.categoriesModel}"
 								label="{ResourceManager.getInstance().getString('cms','categoriesPageTitle')}"/>
 
-			<content:Uploads id="uploads" width="100%" height="100%" 
+			<view:Uploads id="uploads" width="100%" height="100%" 
 							 files="{_files}"
 							 styleName="pageStyle" 
 							 bulkUploadDataProvider="{_model.bulkUploadModel}" />
-			<content:DropFolders id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
+			<view:DropFolders id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
 									  dropFolderModel="{_model.dropFolderModel}" />
 
 		</mx:ViewStack>

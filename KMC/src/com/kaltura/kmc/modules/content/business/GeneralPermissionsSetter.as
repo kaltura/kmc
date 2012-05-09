@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.view.content {
+package com.kaltura.kmc.modules.content.business {
 	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.modules.content.events.ChangeModelEvent;
 	

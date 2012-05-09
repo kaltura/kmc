@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.content.view.content.dropfolder
+package com.kaltura.kmc.modules.content.view.dropfolder
 {
 	import com.kaltura.vo.KalturaDropFolder;
 	

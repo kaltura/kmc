@@ -8,8 +8,6 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.kmc.modules.content.business.CategoryFormBuilder;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.model.CategoriesModel;
-	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-	import com.kaltura.kmc.modules.content.view.content.Categories;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaCategory;
@@ -35,7 +33,6 @@ package com.kaltura.kmc.modules.content.commands.cat
 		override public function execute(event:CairngormEvent):void
 		{
 			var filterModel:FilterModel = _model.filterModel;
-//			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
 			var catModel:CategoriesModel = _model.categoriesModel;
 			if (!filterModel.categoryMetadataProfiles || catModel.selectedCategories.length != 1)
 				return;
