@@ -20,6 +20,7 @@
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -27,20 +28,42 @@
 
 			[Bindable]
 			private var _isNewCategory:Boolean;
+			
+			public function set isNewCategory(value:Boolean):void {
+				_isNewCategory = value;
+				if (_isNewCategory && showNextPrevBtns) {
+					showNextPrevBtns = false;
+				}
+			}
+
 
 			[Bindable]
 			private var _model:CategoriesModel;
+			
+			public function set categoriesModel(value:CategoriesModel):void {
+				if (_selectedCatWatcher) {
+					_selectedCatWatcher.unwatch();
+				}
+				_model = value;
+				_itemsAC = value.categoriesList;
+				_selectedCatWatcher = BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
+			}
+			
+			public function get categoriesModel():CategoriesModel {
+				return _model;
+			}
+			
 
 			private var _origCategory:KalturaCategory;
 
 			[Bindable]
 			private var _undoCategory:KalturaCategory;
 
-			[Bindable]
-			private var _filterModel:FilterModel;
-
 			private var _nextPendingCategory:int;
 
+
+			[Bindable]
+			private var _filterModel:FilterModel;
 
 			public function get filterModel():FilterModel {
 				return _filterModel;
@@ -51,29 +74,21 @@
 			}
 
 
-			public function set categoriesModel(value:CategoriesModel):void {
-				_model = value;
-				_itemsAC = value.categoriesList;
-				BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
-			}
-
-			public function get categoriesModel():CategoriesModel {
-				return _model;
-			}
+			/**
+			 * watches setting of selected category
+			 * */
+			private var _selectedCatWatcher:ChangeWatcher;
 
 
-			public function set isNewCategory(value:Boolean):void {
-				_isNewCategory = value;
-				if (_isNewCategory && showNextPrevBtns) {
-					showNextPrevBtns = false;
-				}
-			}
-
+			
 
 			private function onClose(event:Event):void {
 				if (tabsNav != null) {
 					tabsNav.clear();
 					tabsNav.destroy();
+				}
+				if (_selectedCatWatcher) {
+					_selectedCatWatcher.unwatch();
 				}
 				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
 			}
