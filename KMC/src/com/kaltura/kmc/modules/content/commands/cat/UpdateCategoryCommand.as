@@ -47,6 +47,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 					var existingCat:KalturaCategory = _model.categoriesModel.selectedCategories[0];
 					// copy any attributes from the server object to the client object 
 					ObjectUtil.copyObject(data.data, existingCat);
+					// retrigger binding
 					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategories", _model.categoriesModel.selectedCategories, _model.categoriesModel.selectedCategories));
 				}
 			}
