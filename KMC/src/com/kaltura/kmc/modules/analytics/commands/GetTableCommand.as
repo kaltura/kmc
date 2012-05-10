@@ -1,16 +1,17 @@
 package com.kaltura.kmc.modules.analytics.commands {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.report.ReportGetTable;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reports.FormatReportParam;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
-	import com.kaltura.commands.report.ReportGetTable;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	import com.kaltura.vo.KalturaReportTable;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.rpc.IResponder;
 
@@ -24,8 +25,6 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 			ExecuteReportHelper.reportSetupBeforeExecution();
 
-			var krif:KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
-
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();
 				_model.selectedReportData.pager.pageSize = 10;
@@ -38,16 +37,36 @@ package com.kaltura.kmc.modules.analytics.commands {
 										|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
 										|| _model.currentScreenState == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
 										|| _model.currentScreenState == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
-										|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)) {
+										|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
+										|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN)) {
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 
 			if ((event as ReportEvent).orderBy)
 				_model.selectedReportData.orderBy = (event as ReportEvent).orderBy;
 
-			var reportGetTable:ReportGetTable = new ReportGetTable((event as ReportEvent).reportType, krif, 
-																	_model.selectedReportData.pager, 
-																	_model.selectedReportData.orderBy, objectIds);
+			var reportGetTable:ReportGetTable;
+			//If we have a user report call we need to have another fileter (that support application and users) 
+			//when we generate the report get total call
+			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
+				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
+			{
+				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				reportGetTable = new ReportGetTable((event as ReportEvent).reportType, keurif, 
+					_model.selectedReportData.pager, 
+					_model.selectedReportData.orderBy, objectIds);
+			}
+			else
+			{
+				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+				reportGetTable = new ReportGetTable((event as ReportEvent).reportType, krif, 
+					_model.selectedReportData.pager, 
+					_model.selectedReportData.orderBy, objectIds);
+			}
+			 
 			reportGetTable.queued = false;
 			reportGetTable.addEventListener(KalturaEvent.COMPLETE, result);
 			reportGetTable.addEventListener(KalturaEvent.FAILED, fault);
@@ -94,11 +113,25 @@ package com.kaltura.kmc.modules.analytics.commands {
 				}
 			}
 
-			if (_model.currentScreenState != ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)
+			//On some cases we have id that return from the server and we need to filter it 
+			//for presentation without id as a table column but in some cases we want to show it
+			if (_model.currentScreenState != ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
+				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT
+				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
+				&& ! ( _model.entitlementEnabled 
+					 && ( _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT
+					 	  || _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF
+					 	  || _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS)
+					)
+				)
+			{
 				_model.reportDataMap[_model.currentScreenState].dataFieldDp = headersArr = headersArr.slice(1, headersArr.length); //remove the entry_id
+			}
 			else
+			{
 				_model.reportDataMap[_model.currentScreenState].dataFieldDp = headersArr;
-
+			}
+			
 			_model.reportDataMap[_model.currentScreenState].tableDp = arrCol;
 			_model.reportDataMap[_model.currentScreenState].totalCount = krt.totalCount;
 			_model.filter = _model.filter;

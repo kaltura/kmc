@@ -21,6 +21,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			
 			_model.currentScreenState = newStae;
 			_model.filter.keywords = "";
+			_model.filter.userIds = "";
 
 			switch (newStae) {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:

@@ -3,21 +3,23 @@
 		 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" xmlns:map="com.kaltura.kmc.modules.analytics.view.map.*"
 		 xmlns:charts="com.kaltura.kmc.modules.analytics.view.charts.*"
 		 xmlns:aggregateBar="com.kaltura.kmc.modules.analytics.view.aggregateBar.*"
-		 xmlns:controls="com.kaltura.controls.*">
+		 xmlns:controls="com.kaltura.controls.*" xmlns:components="com.hillelcoren.components.*">
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.autocomplete.controllers.KACUsersController;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PageEvent;
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
-			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
+			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaBaseEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.SWFLoader;
@@ -59,6 +61,12 @@
 			public var showTable:Boolean = true;
 			[Bindable]
 			public var showKDP:Boolean = false;
+			
+			//Show or Hide the user filter UI
+			[Bindable] public var filterUsersFlag:Boolean = true;
+			
+			//Show or Hide the application filter UI
+			[Bindable] public var filterApplicationsFlag:Boolean = true;
 			////////////////////////////////////////////////////////
 
 			//LOADING FLAGS
@@ -132,7 +140,7 @@
 			private static var playerLoadedFlag:Boolean = false;
 			private static var playerReadyFlag:Boolean = false;
 
-			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+			[Bindable] private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 
 
 			private function init():void {
@@ -158,7 +166,7 @@
 				_showFlag = true;
 				_changeWatcher = BindingUtils.bindSetter(onSelectedMediaEntryChange, this.reportData, "seletedMediaEntry");
 				filter.filterVo = filterVo;
-
+				
 				getReports();
 			}
 
@@ -360,6 +368,8 @@
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, helpUrl));
 			}
+
+
 		]]>
 	</mx:Script>
 
@@ -384,14 +394,20 @@
 
 	<!-- report filter -->
 	<mx:VBox width="100%" >
-		<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
-					 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
-					 showDrillDownNav="{showDrillDownNav}" isLoading="{_isLoading}"/>
-		<mx:Spacer height="5"/>
-		<mx:HRule width="100%"/>
-		<mx:Spacer height="5"/>
+		<mx:HBox>
+			<!-- entry filter -->
+			<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
+						 applicationsList="{_model.applicationsList}"
+						 filterUsersFlag="{filterUsersFlag}" filterApplicationsFlag="{filterApplicationsFlag}"
+						 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
+						 kc="{_model.kc}"
+						 showDrillDownNav="{showDrillDownNav}" isLoading="{_isLoading}"/>
+		</mx:HBox>
 	</mx:VBox>
-
+	<mx:Spacer height="5"/>
+	<mx:HRule width="100%"/>
+	<mx:Spacer height="5"/>
+	
 	<!-- graph dimension -->
 	<mx:HBox width="100%">
 		<view:DimComboBox id="dimCb" width="200" dataProvider="{dimCbDp}" visible="{showDimention}"
@@ -439,7 +455,7 @@
 	<mx:HBox id="kdpSection" width="100%" enabled="{_isVisibleEntry}" visible="{showKDP}" includeInLayout="{showKDP}">
 		<view:EntryDetails height="292.6" width="100%" styleName="blueBox" data="{reportData.seletedMediaEntry}"/>
 	</mx:HBox>
-
+	
 	<!-- table -->
 	<view:KTable id="ktable" width="100%" height="295" rowHeight="27" orderBy="{orderBy}" enabled="{_isVisibleTable}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"

@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.analytics.model
 {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.KalturaClient;
+	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.reports.AggregateHeaders;
 	import com.kaltura.kmc.modules.analytics.model.reports.ReportDimension;
@@ -10,7 +11,6 @@ package com.kaltura.kmc.modules.analytics.model
 	import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
 	import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 	import com.kaltura.kmc.modules.analytics.vo.PartnerVO;
-	import com.kaltura.dataStructures.HashMap;
 	
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
@@ -64,6 +64,17 @@ package com.kaltura.kmc.modules.analytics.model
 		public var categoriesFullNameList : ArrayCollection  = new ArrayCollection();
 		
 		/**
+		 * Set to enable disable entitlement feature in analytics
+		 * and by that hide/show the relevent UI
+		 */
+		public var entitlementEnabled : Boolean = true;
+		
+		/**
+		 * All the applications of the partner is listed here
+		 */
+		public var applicationsList : ArrayCollection = new ArrayCollection();
+		
+		/**
 		 * dataprovider for content reports tab sub-navigation 
 		 */		
 		public var contentDtnDp : ArrayCollection = new ArrayCollection( 
@@ -78,8 +89,9 @@ package com.kaltura.kmc.modules.analytics.model
 		public var userDtnDp : ArrayCollection = new ArrayCollection( 
 										  [ ResourceManager.getInstance().getString('analytics','topContributors') ,
 										 	ResourceManager.getInstance().getString('analytics','mapOverlay') ,
-										 	ResourceManager.getInstance().getString('analytics','topSyndications') ]);
-										 								 
+										 	ResourceManager.getInstance().getString('analytics','topSyndications'),
+											ResourceManager.getInstance().getString('analytics','userEngagement')]);
+									 								 
 	    //---------------------------------------------------------
 		/**
 		 * current showing screen, enumerated in <code>ScreenTypes</code>.
@@ -94,6 +106,7 @@ package com.kaltura.kmc.modules.analytics.model
 		public var loadingTotalFlag : Boolean = false;
 		public var loadingEntryFlag : Boolean = false;
 		public var partnerInfoLoaded : Boolean = false;
+		public var loadingApplicationsFlag : Boolean = false;
 		
 		//---------------------------------------------------------
 		//singleton methods

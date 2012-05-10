@@ -62,8 +62,16 @@
 				else if(data.entry_media_source_name) object_name = data.entry_media_source_name;
 				else if(data.entry_name) object_name = data.entry_name;
 				else if(data.domain_name) object_name = data.domain_name;
+				else if(data.name) object_name = data.name;
 				
-				var drillDownEvent : DrillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name); //data.entry_id
+				var drillDownEvent : DrillDownEvent;
+				
+				//if we drill down a user
+				if(data.name)
+					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.name , 0 , object_name);
+				else // else we drill down an entry
+					drillDownEvent = new DrillDownEvent(DrillDownEvent.DRILL_DOWN , data.object_id , 0 , object_name); //data.entry_id
+				
 				drillDownEvent.dispatch();	
 			}
 			

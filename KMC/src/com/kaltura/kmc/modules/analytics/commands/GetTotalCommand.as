@@ -2,13 +2,14 @@ package com.kaltura.kmc.modules.analytics.commands
 {
 	import com.adobe.cairngorm.commands.ICommand;
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.report.ReportGetTotal;
+	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reports.FormatReportParam;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.vo.AggregateDataVo;
-	import com.kaltura.commands.report.ReportGetTotal;
-	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	import com.kaltura.vo.KalturaReportTotal;
 	
@@ -25,10 +26,6 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingFlag = true;	
 			_model.loadingTotalFlag = true;
 			
-			ExecuteReportHelper.reportSetupBeforeExecution();
-			
-			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
-			
 			var objectIds : String = '';
 			if(_model.selectedEntry &&  
 				( _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || 
@@ -41,7 +38,24 @@ package com.kaltura.kmc.modules.analytics.commands
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 			
-			var reportGetTotal : ReportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , krif , objectIds);
+			var reportGetTotal : ReportGetTotal;
+			//If we have a user report call we need to have another fileter (that support application and users) 
+			//when we generate the report get total call
+			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
+				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
+			{
+				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				reportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , keurif , objectIds);
+			}
+			else
+			{
+				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+				reportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , krif , objectIds);
+			}
+			
 			reportGetTotal.queued = false;
 			reportGetTotal.addEventListener( KalturaEvent.COMPLETE , result );
 			reportGetTotal.addEventListener( KalturaEvent.FAILED , fault );

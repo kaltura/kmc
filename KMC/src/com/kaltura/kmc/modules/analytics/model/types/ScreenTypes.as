@@ -16,5 +16,8 @@ package com.kaltura.kmc.modules.analytics.model.types
 		public static const TOP_SYNDICATIONS : int = 11;
 		public static const TOP_SYNDICATIONS_DRILL_DOWN  : int = 12;
 		public static const MAP_OVERLAY_DRILL_DOWN  : int = 13;
+		
+		public static const END_USER_ENGAGEMENT  : int = 14; 
+		public static const END_USER_ENGAGEMENT_DRILL_DOWN  : int = 15;
 	}
 }

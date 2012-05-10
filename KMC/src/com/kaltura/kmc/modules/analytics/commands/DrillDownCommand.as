@@ -34,9 +34,36 @@ package com.kaltura.kmc.modules.analytics.commands
 			{
 				switch(_model.currentScreenState)
 				{
-					case ScreenTypes.TOP_CONTENT: _model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT; break;
-					case ScreenTypes.CONTENT_DROPOFF: _model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF; break;
-					case ScreenTypes.CONTENT_INTERACTIONS: _model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS; break;
+					case ScreenTypes.TOP_CONTENT:
+						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT;
+						if((event as DrillDownEvent).entryId)
+						{
+							if(_model.entitlementEnabled)
+								_model.filter.userIds = (event as DrillDownEvent).entryId;
+							else
+								_model.selectedEntry = (event as DrillDownEvent).entryId;
+						}
+					break;
+					case ScreenTypes.CONTENT_DROPOFF: 
+						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF; 
+						if((event as DrillDownEvent).entryId)
+						{
+							if(_model.entitlementEnabled)
+								_model.filter.userIds = (event as DrillDownEvent).entryId;
+							else
+								_model.selectedEntry = (event as DrillDownEvent).entryId;
+						}
+					break;
+					case ScreenTypes.CONTENT_INTERACTIONS: 
+						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS; 
+						if((event as DrillDownEvent).entryId)
+						{
+							if(_model.entitlementEnabled)
+								_model.filter.userIds = (event as DrillDownEvent).entryId;
+							else
+								_model.selectedEntry = (event as DrillDownEvent).entryId;
+						}
+					break;
 					case ScreenTypes.CONTENT_CONTRIBUTIONS: 
 						getEntryFlag = false;
 						_model.currentScreenState = ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN; 
@@ -49,11 +76,22 @@ package com.kaltura.kmc.modules.analytics.commands
 						getEntryFlag = false;
 						_model.currentScreenState = ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN;
 					break;
+					case ScreenTypes.END_USER_ENGAGEMENT:
+						getEntryFlag = false;
+						if(_model.entitlementEnabled)
+							if((event as DrillDownEvent).entryId)
+								_model.filter.userIds = (event as DrillDownEvent).entryId;
+						_model.currentScreenState = ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN;
+					break;
+						
 				}
 			}
 			
-			if((event as DrillDownEvent).entryId)
-				_model.selectedEntry = (event as DrillDownEvent).entryId;
+			if(_model.entitlementEnabled)
+				getEntryFlag = false;
+					
+			//if((event as DrillDownEvent).entryId)
+				//_model.selectedEntry = (event as DrillDownEvent).entryId;
 				
 			_model.selectedReportData = null; //refreash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState] = new ReportData();

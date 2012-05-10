@@ -14,6 +14,8 @@ package com.kaltura.kmc.modules.analytics.vo
 		public var keywords : String;
 		public var searchInAdminTags : Boolean = false;
 		public var searchInTags : Boolean = true;
+		public var application : String;
+		public var userIds : String;
 		
 		public function FilterVo()
 		{

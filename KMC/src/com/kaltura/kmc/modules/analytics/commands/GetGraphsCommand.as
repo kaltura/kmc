@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.analytics.commands
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
@@ -34,9 +35,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingChartFlag = true;
 			
 			ExecuteReportHelper.reportSetupBeforeExecution();
-			
-			var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
-			
+
 			var objectIds : String = '';
 			if( _model.selectedEntry &&  
 				( _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || 
@@ -48,7 +47,24 @@ package com.kaltura.kmc.modules.analytics.commands
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 			
-			var reportGetGraphs : ReportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , krif , _model.selectedReportData.selectedDim , objectIds);
+			var reportGetGraphs : ReportGetGraphs;
+			//If we have a user report call we need to have another fileter (that support application and users) 
+			//when we generate the report get total call
+			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
+				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
+			{
+				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				reportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , keurif , _model.selectedReportData.selectedDim, objectIds);
+			}
+			else
+			{
+				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
+				reportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , krif , _model.selectedReportData.selectedDim, objectIds);
+			}
+			
 			reportGetGraphs.queued = false;
 			reportGetGraphs.addEventListener( KalturaEvent.COMPLETE , result );
 			reportGetGraphs.addEventListener( KalturaEvent.FAILED , fault );

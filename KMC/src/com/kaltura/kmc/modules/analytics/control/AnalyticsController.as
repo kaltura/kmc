@@ -44,6 +44,9 @@ package com.kaltura.kmc.modules.analytics.control
 			// permissions events
 			addCommand(PermissionEvent.REMOVE_REPORT, RemoveReportCommand );
 			
+			// lsit partner applications
+			addCommand( PartnerEvent.GET_PARTNER_APPLICATIONS, GetApplicationsCommand );
+			
 		}
 	}
 }
