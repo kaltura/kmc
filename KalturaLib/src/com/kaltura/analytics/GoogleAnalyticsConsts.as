@@ -36,6 +36,7 @@ package com.kaltura.analytics {
 		public static const CONTENT_UPLOADS:String = "Uploads";
 		public static const CONTENT_BULK_UPLOADS:String = "Bulk Uploads";
 		public static const CONTENT_DROP_FOLDERS:String = "Drop Folders";
+		
 		// ==============================
 		public static const CONTENT_DRILLDOWN_METADATA:String = "DrillDown/Metadata";
 		public static const CONTENT_DRILLDOWN_THUMBNAILS:String = "DrillDown/Thumbnails";
@@ -331,6 +332,8 @@ package com.kaltura.analytics {
 		public static const ANALYTICS_MAP_OVERLAYS_DRILLDOWN:String = "Users And Community Reports>Geographic Distribution DrillDown";
 		public static const ANALYTICS_TOP_SYNDICATIONS:String = "Users And Community Reports>Top Syndications";
 		public static const ANALYTICS_TOP_SYNDICATIONS_DRILL_DOWN:String = "Users And Community Reports>Top Syndications DrillDown";
+		public static const ANALYTICS_USER_ENGAGEMENT:String = "Users And Community Reports>User Engagement";
+		public static const ANALYTICS_USER_ENGAGEMEN_DRILL_DOWN:String = "Users And Community Reports>User Engagement DrillDown";
 		
 		public static const ANALYTICS_TOP_CONTENT:String = "Content Reports>Top Content";
 		public static const ANALYTICS_CONTENT_DROPOFF:String = "Content Reports>Content Drop-off";
@@ -340,6 +343,7 @@ package com.kaltura.analytics {
 		public static const ANALYTICS_VIDEO_DRILL_DOWN:String = "Content Reports>Video Drill Down";
 		public static const ANALYTICS_CONTENT_DRILL_DOWN_INTERACTION:String = "Content Reports>Content Drill Down Interaction";
 		public static const ANALYTICS_VIDEO_DRILL_DOWN_DROPOFF:String = "Content Reports>Video Drill Down Dropoff";
+		
 
 		// ==================================================================
 		// administration:
