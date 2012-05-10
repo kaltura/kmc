@@ -7,6 +7,8 @@ package com.kaltura.kmc.modules.content.commands.cat {
 	import com.kaltura.kmc.modules.content.events.EntriesEvent;
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaCategory;
+	
+	import mx.events.PropertyChangeEvent;
 
 	public class AddCategoryCommand extends KalturaCommand {
 		
