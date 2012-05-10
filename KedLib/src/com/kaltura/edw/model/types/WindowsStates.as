@@ -14,8 +14,10 @@ package com.kaltura.edw.model.types
 		public static const PLAYLIST_MANUAL_WINDOW: String = "playlistManualWindow";
 		public static const PLAYLIST_RULE_BASED_WINDOW: String = "playlistRuleBasedWindow";
 		public static const ADD_LIVE_STREAM : String = "addLiveStream";
-		public static const ADD_TAGS_WINDOW : String = "addTagsWindow";
-		public static const REMOVE_TAGS_WINDOW : String = "removeTagsWindow";
+		public static const ADD_ENTRY_TAGS_WINDOW : String = "addEntryTagsWindow";
+		public static const ADD_CATEGORY_TAGS_WINDOW : String = "addCategoryTagsWindow";
+		public static const REMOVE_ENTRY_TAGS_WINDOW : String = "removeEntryTagsWindow";
+		public static const REMOVE_CATEGORY_TAGS_WINDOW : String = "removeCategoryTagsWindow";
 		public static const DOWNLOAD_WINDOW : String = "downloadWindow";
 		public static const PREVIEW : String = "preview";
 		public static const CHANGE_ENTRY_OWNER_WINDOW : String = "changeEntryOwnerWindow";

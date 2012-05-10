@@ -74,14 +74,20 @@ package com.kaltura.kmc.modules.content.events
 		public static const DELETE_CATEGORIES : String = "content_deleteCategories";
 		
 		/**
+		 * save the given categories to the server
+		 * event.data is [KalturaCategories]
+		 */
+		public static const UPDATE_CATEGORIES : String = "content_updateCategories";
+		
+		/**
 		 * Update the selected category with new set values.
-		 * event.data id [CategoryVO, refreshList]
+		 * event.data is [CategoryVO, refreshList]
 		 */
 		public static const UPDATE_CATEGORY : String = "content_updateCategory";
 		
 		/**
 		 * Add a new category with new set values.
-		 * event.data id [CategoryVO, refreshList]
+		 * event.data is [CategoryVO, refreshList]
 		 */
 		public static const ADD_CATEGORY    : String = "content_addCategory";
 		

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"
-				 help="{onHelp()}" close="{removeMe()}" showCloseButton="true"
-				 xmlns="com.kaltura.containers.*" layout="vertical" >
+<HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" help="{onHelp()}"
+				 showCloseButton="true" xmlns="com.kaltura.containers.*" layout="vertical"
+				 title="{resourceManager.getString('cms', 'removeTags')}">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.adobe.utils.ArrayUtil;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.edw.business.Cloner;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -18,74 +19,69 @@
 			import mx.collections.ArrayCollection;
 			import mx.core.mx_internal;
 			import mx.utils.StringUtil;
-			use namespace mx_internal;
 
-			private var _selectedEntries:ArrayCollection = new ArrayCollection();
-			private var _selectedChangedEntries:ArrayCollection = new ArrayCollection();
+			
+			public static const OBJECT_TYPE_ENTRY:String = "entry";
+			public static const OBJECT_TYPE_CATEGORY:String = "category";
+			
+			private var _objects:ArrayCollection = new ArrayCollection();
 
 			[Bindable]
+			/**
+			 * tags list
+			 * */
 			private var _listDP:ArrayCollection = new ArrayCollection();
-			private var _isAdminTag:Boolean = false;
 
-
-			private function init():void {
-				if (_isAdminTag) {
-					this.title = resourceManager.getString('cms', 'removeTags');
-					removeTagsText.text = resourceManager.getString('cms', 'removeAdminTagsDescription');
-				}
-				else {
-					this.title = resourceManager.getString('cms', 'removeTags');
-					removeTagsText.text = resourceManager.getString('cms', 'removeTagsDescription');
-				}
-			}
-
+			/**
+			 * optional values: "entry" / "category"
+			 * */
+			public var objectType:String; 
+			
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section114'));
 			}
 
-			private function removeMe():void {
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-				cgEvent.dispatch();
-			}
-
 
 			private function removeTags():void {
-				for (var i:int = 0; i < _selectedChangedEntries.length; i++) {
+				for (var i:int = 0; i < _objects.length; i++) {
 					for (var j:int = 0; j < list.selectedItems.length; j++) {
-						if (_isAdminTag)
-							_selectedChangedEntries[i].adminTags = String(_selectedChangedEntries[i].adminTags).replace(list.selectedItems[j],
-																														'');
-						else
-							_selectedChangedEntries[i].tags = String(_selectedChangedEntries[i].tags).replace(list.selectedItems[j],
-																											  '');
+						_objects[i].tags = String(_objects[i].tags).replace(list.selectedItems[j], '');
 					}
 
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_REMOVE_TAGS,
-															  "Entry>RemoveTagsWindow",
-															  _selectedChangedEntries[i].id);
+					if (objectType == OBJECT_TYPE_ENTRY) {
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_REMOVE_TAGS,
+							"Entry>RemoveTagsWindow",
+							_objects[i].id);
+					}
 				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REMOVE_TAGS,GoogleAnalyticsConsts.CONTENT);
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _selectedChangedEntries);
-				cgEvent.dispatch();
-
+				var cgEvent:CairngormEvent;
+				if (objectType == OBJECT_TYPE_ENTRY) {
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_REMOVE_TAGS, GoogleAnalyticsConsts.CONTENT);
+					cgEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _objects);
+					cgEvent.dispatch();
+					// for entries, the update command closes the window
+				}
+				else if (objectType == OBJECT_TYPE_CATEGORY) {
+					cgEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORIES);
+					cgEvent.data = _objects.source;
+					cgEvent.dispatch();
+					// close window
+					mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				}
+				
 			}
 
 
-			public function get selectedEntries():ArrayCollection {
-				return _selectedEntries;
-			}
-
-
-			public function set selectedEntries(arrCol:ArrayCollection):void {
-				_selectedEntries = arrCol;
-				for (var i:int = 0; i < _selectedEntries.length; i++) {
-					_selectedChangedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
-
+			/**
+			 * 
+			 * @param arrCol	array collection of items that have attribute "tags"
+			 * */
+			public function setObjects(arrCol:ArrayCollection):void {
+				_objects = arrCol;
+				for (var i:int = 0; i < _objects.length; i++) {
 					var newArr:Array;
-					if (_isAdminTag && (_selectedEntries[i].adminTags != null))
-						newArr = String(_selectedEntries[i].adminTags).split(',');
-					else if (_selectedEntries[i].tags != null)
-						newArr = String(_selectedEntries[i].tags).split(',');
+					if (_objects[i].tags != null)
+						newArr = String(_objects[i].tags).split(',');
 
 					if (newArr != null) {
 						for (var j:int = 0; j < newArr.length; j++) {
@@ -103,20 +99,11 @@
 				uniqeArr.sort();
 				_listDP = new ArrayCollection(uniqeArr);
 			}
-
-
-			public function set isAdminTag(isIt:Boolean):void {
-				_isAdminTag = isIt;
-			}
-
-
-			public function get isAdminTag():Boolean {
-				return _isAdminTag;
-			}
 		]]>
 	</mx:Script>
 	<mx:Text id="removeTagsText" text="{resourceManager.getString('cms', 'removeTagsDescription')}"/>
-	<mx:List id="list" minWidth="150" width="100%" dataProvider="{_listDP}" allowMultipleSelection="true" variableRowHeight="true"/>
+	<mx:List id="list" minWidth="150" width="100%" dataProvider="{_listDP}" allowMultipleSelection="true"
+			 variableRowHeight="true"/>
 	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('cms', 'remove')}" enabled="{list.selectedItems.length > 0}"
 				   click="removeTags()" buttonMode="true"/>

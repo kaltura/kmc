@@ -208,7 +208,7 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.DOWNLOAD_WINDOW:
 						currentPopUp = openDownload();
 						break;
-					case WindowsStates.ADD_TAGS_WINDOW:
+					case WindowsStates.ADD_ENTRY_TAGS_WINDOW:
 						var atw:AddTagsWin = new AddTagsWin();
 						atw.selectedEntries = new ArrayCollection(model.selectedEntries);
 						currentPopUp = atw;
@@ -216,9 +216,11 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.ADD_LIVE_STREAM:
 						currentPopUp = new AddStream();
 						break;
-					case WindowsStates.REMOVE_TAGS_WINDOW:
+					case WindowsStates.REMOVE_ENTRY_TAGS_WINDOW:
 						currentPopUp = new RemoveTagsWin();
-						(currentPopUp as RemoveTagsWin).selectedEntries = new ArrayCollection(model.selectedEntries);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						(currentPopUp as RemoveTagsWin).objectType = RemoveTagsWin.OBJECT_TYPE_ENTRY;
+						(currentPopUp as RemoveTagsWin).setObjects(new ArrayCollection(model.selectedEntries));
 						break;
 					case WindowsStates.PLAYLIST_MANUAL_WINDOW:
 						currentPopUp = openManualPlaylist();
@@ -294,6 +296,12 @@ package com.kaltura.kmc.modules.content.business
 						currentPopUp.addEventListener("apply", handleChangeCatOwnerEvent, false, 0, true);
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
+					case WindowsStates.REMOVE_CATEGORY_TAGS_WINDOW:
+						currentPopUp = new RemoveTagsWin();
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						(currentPopUp as RemoveTagsWin).objectType = RemoveTagsWin.OBJECT_TYPE_CATEGORY;
+						(currentPopUp as RemoveTagsWin).setObjects(new ArrayCollection(model.categoriesModel.selectedCategories));
+						break;
 				}
 				
 				// add the new window
@@ -307,10 +315,6 @@ package com.kaltura.kmc.modules.content.business
 				}
 			}
 		}
-		
-		
-
-		
 		
 		
 		/**

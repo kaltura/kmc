@@ -37,6 +37,24 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			mi.data = "changeOwner";
 			topLevel.children.push(mi);
 			
+			// --- TAGS
+			
+			mi = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'editTags');
+			mi.children = [];
+			topLevel.children.push(mi);
+			
+			var smi:MenuItemVo = new MenuItemVo();
+			smi.label = resourceManager.getString('cms', 'addTags');
+			smi.data = "addTags";
+			mi.children.push(smi);
+			
+			smi = new MenuItemVo();
+			smi.label = resourceManager.getString('cms', 'removeTags');
+			smi.data = "removeTags";
+			mi.children.push(smi);
+			
+			
 			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'bulkMoveCategories');
 			mi.data = "moveCategories";
@@ -74,6 +92,16 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 				
 				case "moveCategories":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
+					cgEvent.dispatch();
+					break;
+				
+				case "addTags":
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_CATEGORY_TAGS_WINDOW);
+					cgEvent.dispatch()
+					break;
+				
+				case "removeTags":
+					cgEvent = new WindowEvent(WindowEvent.OPEN , WindowsStates.REMOVE_CATEGORY_TAGS_WINDOW);
 					cgEvent.dispatch();
 					break;
 			}
