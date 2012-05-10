@@ -47,6 +47,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.kmc.modules.content.view.window.SetAccessControlProfileWin;
 	import com.kaltura.kmc.modules.content.view.window.SetSchedulingWin;
 	import com.kaltura.kmc.modules.content.view.window.cdw.CategoryDetailsWin;
+	import com.kaltura.kmc.modules.content.view.window.cdw.users.SetCatOwnerWindow;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.types.KalturaMediaType;
@@ -288,6 +289,11 @@ package com.kaltura.kmc.modules.content.business
 						currentPopUp.addEventListener("apply", handleCategoriesAccessEvents, false, 0, true);
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
+					case WindowsStates.CATEGORIES_OWNER_WINDOW:
+						currentPopUp = new SetCatOwnerWindow();
+						currentPopUp.addEventListener("apply", handleChangeCatOwnerEvent, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						break;
 				}
 				
 				// add the new window
@@ -302,6 +308,8 @@ package com.kaltura.kmc.modules.content.business
 			}
 		}
 		
+		
+
 		
 		
 		
@@ -704,6 +712,7 @@ package com.kaltura.kmc.modules.content.business
 			}
 		}
 		
+		
 		private function handleCategoriesAccessEvents(e:Event):void {
 			switch (e.type) {
 				case "apply": 
@@ -715,6 +724,17 @@ package com.kaltura.kmc.modules.content.business
 			}
 		}
 		
+		
+		private function handleChangeCatOwnerEvent(e:Event):void {
+			var tgt:SetCatOwnerWindow = e.target as SetCatOwnerWindow;
+			switch (e.type) {
+				case "apply":
+					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_OWNER);
+					kEvent.data = tgt.ownerId;
+					kEvent.dispatch();
+					break;
+			}
+		}		
 		
 	}
 }

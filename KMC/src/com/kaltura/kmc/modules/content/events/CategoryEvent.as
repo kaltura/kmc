@@ -60,6 +60,13 @@ package com.kaltura.kmc.modules.content.events
 		 */
 		public static const SET_CATEGORIES_ACCESS : String = "content_setCategoriesAccess";
 		
+		
+		/**
+		 * set the owner of the currently selected categories
+		 * event.data is new owner (user id)
+		 */
+		public static const SET_CATEGORIES_OWNER : String = "content_setCategoriesOwner";
+		
 		/**
 		 * delete a category
 		 * event.data is an array of category ids 

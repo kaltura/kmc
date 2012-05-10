@@ -33,6 +33,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			topLevel.children.push(mi);
 			
 			mi = new MenuItemVo();
+			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
+			mi.data = "changeOwner";
+			topLevel.children.push(mi);
+			
+			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'bulkMoveCategories');
 			mi.data = "moveCategories";
 			topLevel.children.push(mi);
@@ -59,6 +64,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 				
 				case "changeListing":
 					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_LISTING_WINDOW);
+					cgEvent.dispatch();
+					break;
+				
+				case "changeOwner":
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_OWNER_WINDOW);
 					cgEvent.dispatch();
 					break;
 				

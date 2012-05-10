@@ -29,6 +29,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 				else if (_type == CategoryEvent.SET_CATEGORIES_ACCESS) {
 					kCat.privacy = event.data as int;
 				} 
+				else if (_type == CategoryEvent.SET_CATEGORIES_OWNER) {
+					kCat.owner = event.data as String;
+				} 
 				var update:CategoryUpdate = new CategoryUpdate(kCat.id, kCat);
 				mr.addAction(update);
 			}
@@ -49,6 +52,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 				}
 				else if (_type == CategoryEvent.SET_CATEGORIES_ACCESS) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'catAcSuccess'));
+				}
+				else if (_type == CategoryEvent.SET_CATEGORIES_OWNER) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'catOwnSuccess'));
 				}
 			}
 		}
