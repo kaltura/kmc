@@ -118,19 +118,25 @@
 				}
 			}
 
+			/**
+			 * should categories/entries list be refreshed after save action
+			 * (only true for save&close)
+			 * */
+			private var _refreshListsRequired:Boolean;
 
-			private function onSave():void {
+			private function onSave(refreshLists:Boolean):void {
 				if (_isNewCategory && _model.processingNewCategory) {
 					// remove any privacy contexts (if required, they will be set by server)
 					_undoCategory.privacyContexts = null;
 					_undoCategory.pendingMembersCount = int.MIN_VALUE;
 					_undoCategory.membersCount = int.MIN_VALUE;
 					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-					cgEvent.data = _undoCategory;
+					cgEvent.data = [_undoCategory, refreshLists];
 					cgEvent.dispatch();
 				}
 				else {
 					if (hasChanged()) {
+						_refreshListsRequired = refreshLists;
 						if (_origCategory.name != _undoCategory.name) {
 							var action:String = resourceManager.getString('cms', 'catBatchName');
 							Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, updateCategory); 
@@ -150,7 +156,7 @@
 					tabsNav.save();
 					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-					cgEvent2.data = catVO;
+					cgEvent2.data = [catVO, _refreshListsRequired];
 					cgEvent2.dispatch();	
 				}
 				else {
@@ -160,7 +166,7 @@
 			}
 			
 			private function onSaveAndClose():void {
-				onSave();
+				onSave(true);
 				onClose(null);
 			}
 
@@ -237,7 +243,7 @@
 		<mx:Spacer width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" 
-					   click="onSave()" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
+					   click="onSave(false)" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
 					   click="onSaveAndClose()" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
 		</mx:HBox>

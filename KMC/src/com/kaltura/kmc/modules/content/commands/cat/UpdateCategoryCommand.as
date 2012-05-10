@@ -12,15 +12,23 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
+	import mx.events.PropertyChangeEvent;
 	import mx.resources.ResourceManager;
 	
 	public class UpdateCategoryCommand extends KalturaCommand 
 	{
+		/**
+		 * should categories / entries lists be refreshed after save
+		 * (only refreshed if cat drilldown is closed) 
+		 */		
+		private var _refreshList:Boolean;
+		
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
-			var cat:CategoryVO = event.data as CategoryVO;
+			var cat:CategoryVO = event.data[0] as CategoryVO;
 			cat.category.setUpdatedFieldsOnly(true);
+			_refreshList = event.data[1];
 		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, cat.category);
 		 	updateCategory.addEventListener(KalturaEvent.COMPLETE, result);
 			updateCategory.addEventListener(KalturaEvent.FAILED, fault);
@@ -32,17 +40,15 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			_model.decreaseLoadCounter();
 			if (!checkError(data)) {
-				var catSource:KalturaCategory = data.data as KalturaCategory;
-				var catTarget:KalturaCategory = _model.categoriesModel.selectedCategories[0]
-				var atts:Array = ObjectUtil.getObjectAllKeys(catTarget);
-				var att:String;
-				for (var i:int = 0; i<atts.length; i++) {
-					att = atts[i];
-					if (catSource[att] != catTarget[att]){
-						catTarget[att] = catSource[att];
-					}
+				if (_refreshList) {
+					refreshLists();
 				}
-				refresh();
+				else {
+					var existingCat:KalturaCategory = _model.categoriesModel.selectedCategories[0];
+					// copy any attributes from the server object to the client object 
+					ObjectUtil.copyObject(data.data, existingCat);
+					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategories", _model.categoriesModel.selectedCategories, _model.categoriesModel.selectedCategories));
+				}
 			}
 		}
 		
@@ -50,7 +56,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		/**
 		 * reloads data 
 		 */		
-		protected function refresh():void {
+		private function refreshLists():void {
 			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			getCategoriesList.dispatch();
 
@@ -69,7 +75,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			_model.decreaseLoadCounter();
 			var alert : Alert = Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
-			refresh();
+			refreshLists();
 		}
 	}
 }
