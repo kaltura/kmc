@@ -29,99 +29,15 @@ package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
 	[Bindable]
-	public dynamic class KalturaFileSync extends BaseFlexVo
+	public dynamic class KalturaStatsKeyListResponse extends BaseFlexVo
 	{
 		/** 
 		* 		* */ 
-		public var id : int = int.MIN_VALUE;
+		public var objects : Array = null;
 
 		/** 
 		* 		* */ 
-		public var partnerId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var fileObjectType : String = null;
-
-		/** 
-		* 		* */ 
-		public var objectId : String = null;
-
-		/** 
-		* 		* */ 
-		public var version : String = null;
-
-		/** 
-		* 		* */ 
-		public var objectSubType : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var dc : String = null;
-
-		/** 
-		* 		* */ 
-		public var original : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var createdAt : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var updatedAt : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var readyAt : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var syncTime : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var fileType : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var linkedId : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var linkCount : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var fileRoot : String = null;
-
-		/** 
-		* 		* */ 
-		public var filePath : String = null;
-
-		/** 
-		* 		* */ 
-		public var fileSize : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var fileUrl : String = null;
-
-		/** 
-		* 		* */ 
-		public var fileContent : String = null;
-
-		/** 
-		* 		* */ 
-		public var fileDiscSize : int = int.MIN_VALUE;
-
-		/** 
-		* 		* */ 
-		public var isCurrentDc : Boolean;
+		public var totalCount : int = int.MIN_VALUE;
 
 		/** 
 		* a list of attributes which may be updated on this object 
