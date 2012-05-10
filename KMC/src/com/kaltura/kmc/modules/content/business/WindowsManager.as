@@ -209,9 +209,10 @@ package com.kaltura.kmc.modules.content.business
 						currentPopUp = openDownload();
 						break;
 					case WindowsStates.ADD_ENTRY_TAGS_WINDOW:
-						var atw:AddTagsWin = new AddTagsWin();
-						atw.selectedEntries = new ArrayCollection(model.selectedEntries);
-						currentPopUp = atw;
+						currentPopUp = new AddTagsWin();
+						(currentPopUp as AddTagsWin).objectType = AddTagsWin.OBJECT_TYPE_ENTRY;
+						(currentPopUp as AddTagsWin).setObjects(model.selectedEntries);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
 					case WindowsStates.ADD_LIVE_STREAM:
 						currentPopUp = new AddStream();
@@ -294,6 +295,12 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.CATEGORIES_OWNER_WINDOW:
 						currentPopUp = new SetCatOwnerWindow();
 						currentPopUp.addEventListener("apply", handleChangeCatOwnerEvent, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						break;
+					case WindowsStates.ADD_CATEGORY_TAGS_WINDOW:
+						currentPopUp = new AddTagsWin();
+						(currentPopUp as AddTagsWin).objectType = AddTagsWin.OBJECT_TYPE_CATEGORY;
+						(currentPopUp as AddTagsWin).setObjects(model.categoriesModel.selectedCategories);
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
 					case WindowsStates.REMOVE_CATEGORY_TAGS_WINDOW:

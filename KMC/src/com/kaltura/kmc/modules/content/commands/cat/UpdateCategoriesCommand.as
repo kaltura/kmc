@@ -34,7 +34,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			
 			var isErr:Boolean = checkError(data);
 			if (!isErr) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'catRemTagsSuccess'));
+				Alert.show(ResourceManager.getInstance().getString('cms', 'catUpdtSuccess'));
 			}
 		}
 	}

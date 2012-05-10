@@ -3,145 +3,90 @@
 	window used to add and modify entry tags
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.kaltura.containers.*"
-				 layout="vertical" creationComplete="{setTexts()}"
-				 help="{onHelp()}"
-				 showCloseButton="true" close="{removeMe()}" >
+				 layout="vertical"  help="{onHelp()}" showCloseButton="true"
+				 title="{resourceManager.getString('cms', 'addTags')}">
 
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
-			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.mx_internal;
-			use namespace mx_internal;
 
 			
-			/**
-			 * @copy #selectedEntries
-			 * */
-			private var _selectedEntries:ArrayCollection = new ArrayCollection();
+			public static const OBJECT_TYPE_ENTRY:String = "entry";
+			public static const OBJECT_TYPE_CATEGORY:String = "category";
 			
 			/**
-			 * processed entries (copy of the selected entries)
+			 * optional values: "entry" / "category"
 			 * */
-			private var _selectedChangedEntries:ArrayCollection = new ArrayCollection();
+			public var objectType:String; 
 			
 			
-			/**
-			 * @copy #isAdminTag
-			 * */
-			private var _isAdminTag:Boolean = false;
+			private var _objects:Array = new Array();
+			
 			
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section113'));
 			}
 
-			private function setTexts():void {
-				if (_isAdminTag) {
-					this.title = resourceManager.getString('cms', 'addTags');
-					addTagsText.text = resourceManager.getString('cms', 'howToEnterTags')
-				}
-				else {
-					this.title = resourceManager.getString('cms', 'addTags');
-					addTagsText.text = resourceManager.getString('cms', 'howToEnterTags');
-				}
-			}
-
-
-			private function removeMe():void {
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-				cgEvent.dispatch();
-			}
 
 
 			/**
 			 * save modified entries
 			 * */
 			private function save():void {
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, _selectedChangedEntries);
-				cgEvent.dispatch();
-
-				for each (var ent:Object in _selectedChangedEntries) {
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADD_TAGS,
-															  "Entry>AddTagsWindow", ent.id);
-				}
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_TAGS,GoogleAnalyticsConsts.CONTENT);
-			}
-
-
-			private function updateChangedEntries():void {
-				if (_selectedEntries) {
-					for (var i:int = 0; i < _selectedEntries.length; i++) {
-						if (_isAdminTag) {
-							if (_selectedEntries[i].adminTags) {
-								_selectedChangedEntries[i].adminTags = _selectedEntries[i].adminTags + "," +
-									tags.text;
-							}
-							else {
-								_selectedChangedEntries[i].adminTags = tags.text;
-							}
+				if (_objects) {
+					for (var i:int = 0; i < _objects.length; i++) {
+						if (_objects[i].tags) {
+							_objects[i].tags = _objects[i].tags + "," + tags.text;
 						}
 						else {
-							if (_selectedEntries[i].tags) {
-								_selectedChangedEntries[i].tags = _selectedEntries[i].tags + "," + tags.text;
-							}
-							else {
-								_selectedChangedEntries[i].tags = tags.text;
-							}
+							_objects[i].tags = tags.text;
 						}
 					}
 				}
-//				else {
-//					trace("Error updateChangedEntries==>save: no enries set");
-//				}
-			}
-
-
-			/**
-			 * the entries the tags should be changed on.
-			 * */
-			public function get selectedEntries():ArrayCollection {
-				return _selectedEntries;
-			}
-
-			
-			/**
-			 * @private
-			 * */
-			public function set selectedEntries(arr:ArrayCollection):void {
-				_selectedEntries = arr;
-				for (var i:int = 0; i < _selectedEntries.length; i++) {
-					_selectedChangedEntries.addItem(Cloner.cloneKalturaBaseEntry(_selectedEntries[i]));
+				
+				var cgEvent:CairngormEvent;
+				if (objectType == OBJECT_TYPE_ENTRY) {
+					cgEvent = new EntriesEvent(EntriesEvent.UPDATE_ENTRIES, new ArrayCollection(_objects));
+					cgEvent.dispatch();
+	
+					for each (var ent:Object in _objects) {
+						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_ADD_TAGS,
+																  "Entry>AddTagsWindow", ent.id);
+					}
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_TAGS,GoogleAnalyticsConsts.CONTENT);
+				}
+				else {
+					cgEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORIES);
+					cgEvent.data = _objects;
+					cgEvent.dispatch();
+					// close window
+					mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 				}
 			}
 
+
+
 			
-			/**
-			 * the tags being processed are admintags 
-			 * */
-			public function set isAdminTag(isIt:Boolean):void {
-				_isAdminTag = isIt;
+			public function setObjects(arr:Array):void {
+				_objects = arr;
 			}
 
 			
-			/**
-			 * @private
-			 * */
-			public function get isAdminTag():Boolean {
-				return _isAdminTag;
-			}
 		]]>
 	</mx:Script>
 	<mx:Text id="addTagsText" text="{resourceManager.getString('cms', 'howToEnterTags')}"/>
-	<mx:TextInput id="tags" change="updateChangedEntries()" width="100%"/>
+	<mx:TextInput id="tags" width="100%"/>
 	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('cms', 'saveChanges')}" click="save()" buttonMode="true"/>
 	</mx:ControlBar>
