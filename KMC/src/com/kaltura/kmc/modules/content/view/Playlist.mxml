@@ -41,7 +41,7 @@
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.resources.ResourceManager;
@@ -51,45 +51,45 @@
 			// =============================================
 			// fields
 			// =============================================
-			
+
 			[Bindable]
 			/**
 			 * should the actionbox in the entry table show "preview & embed" or "preview"
 			 * */
 			public var showEmbed:Boolean;
-			
-			
+
+
 			[Bindable]
 			/**
 			 * last selected entry
 			 * */
 			public var selectedEntry:KalturaBaseEntry;
-			
-			
+
+
 			private var _pager:Pager;
-			
+
 			/**
-			 * table ordering 
+			 * table ordering
 			 * */
 			private var _orderBy:String = KalturaMediaEntryOrderBy.CREATED_AT_DESC;
-			
+
 			/**
 			 * defines characters which are illegal as search text
 			 * */
 			private var _invalidCharsRegex:RegExp = /[`~:;!@#$%\^&*()\-+=|'.?\/\\{}<>"\[\]]/;
-			
+
 			private var _currentOldStartDate:Date = null;
-			
+
 			private var _currentOldEndDate:Date = null;
-			
+
 			[Bindable]
 			private var _listableVo:ListableVo;
-			
+
 			/**
 			 * this flag is true if init is requested before the ui is ready.
 			 * */
 			private var _initFlag:Boolean;
-			
+
 			/**
 			 * initial filter data
 			 * */
@@ -110,7 +110,7 @@
 					_initFlag = true;
 				}
 			}
-			
+
 			/**
 			 * fix the new playlists buttons
 			 * */
@@ -124,20 +124,9 @@
 			}
 
 
-			private function updateExpenderLabel():void {
-				if ((StringUtil.trim(searchFilter.text) == resourceManager.getString('cms', 'searchPlaylists') ||
-					(StringUtil.trim(searchFilter.text) == '')) && (fromDate.selectedDate == null) &&
-					(toDate.selectedDate == null)) {
-					filteredLabel.visible = false;
-				}
-				else {
-					filteredLabel.visible = true;
-				}
-			}
-			
-			
+
 			/**
-			 * set filter data. 
+			 * set filter data.
 			 * this method doesn't trigger data load, only local data change.
 			 * */
 			protected function initFilter(plf:KalturaPlaylistFilter):void {
@@ -155,7 +144,7 @@
 				filter.validateNow();
 			}
 
-			
+
 			/**
 			 * all actions from both init() and onCreationComplete()
 			 * */
@@ -229,13 +218,12 @@
 			private function preformNewSearch():void {
 				if (_invalidCharsRegex.test(searchFilter.text)) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'),
-																	   ResourceManager.getInstance().getString('cms',
-																											   'error'));
+						ResourceManager.getInstance().getString('cms',
+						'error'));
 					return;
 				}
 				paging.selectedPage = 1;
 				loadEntries();
-				updateExpenderLabel();
 			}
 
 
@@ -283,7 +271,7 @@
 
 			private function addManualPlaylist():void {
 				var kmvce:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY,
-															new KalturaBaseEntry());
+					new KalturaBaseEntry());
 				KedController.getInstance().dispatch(kmvce);
 				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
 				cgEvent.dispatch();
@@ -292,7 +280,7 @@
 
 			private function addRuleBasedPlaylist():void {
 				var kmvce:KedEntryEvent = new KedEntryEvent(KedEntryEvent.SET_SELECTED_ENTRY,
-															new KalturaBaseEntry());
+					new KalturaBaseEntry());
 				KedController.getInstance().dispatch(kmvce);
 				var cgEvent:CairngormEvent  = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
 				cgEvent.dispatch();
@@ -315,7 +303,7 @@
 				loadEntries();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE,GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE,
-														  "content>Show Rows");
+					"content>Show Rows");
 			}
 
 
@@ -323,7 +311,7 @@
 			private function onDeselectAll():void {
 				playlistTable.deselectAll();
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-															new ArrayCollection(playlistTable.selectedItems));
+					new ArrayCollection(playlistTable.selectedItems));
 				cgEvent.dispatch();
 			}
 
@@ -331,24 +319,10 @@
 			private function onSelectAll():void {
 				playlistTable.selectAll();
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-															new ArrayCollection(playlistTable.selectedItems));
+					new ArrayCollection(playlistTable.selectedItems));
 				cgEvent.dispatch();
 			}
 
-
-			/**
-			 * fold / unfold filter
-			 */
-			private function foldFilter():void {
-				var flag:Boolean = !filter.visible;
-				filter.visible = flag;
-				filter.includeInLayout = flag;
-				filterLabel.visible = flag;
-				filterLabel.includeInLayout = flag;
-
-				foldBtn.labelPlacement = flag ? 'right' : 'left';
-
-			}
 
 
 			/**
@@ -367,7 +341,7 @@
 				clearDatesBtn.enabled = false;
 			}
 
-			
+
 
 
 			private function cureentDatesChange(event:Event):void {
@@ -436,7 +410,7 @@
 				}
 				//	 	searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
 				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
-																							   'clearFreeSearchToolTip');
+					'clearFreeSearchToolTip');
 
 			}
 
@@ -444,64 +418,67 @@
 			private function onSearchEnterClick(event:Event):void {
 				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
 				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
-																							   'clearFreeSearchToolTip');
+					'clearFreeSearchToolTip');
 
 				preformNewSearch();
 			}
-			
+
 			// =============================================
 			// getters / setters
 			// =============================================
-			
+
 			public function set pager(pager:Pager):void {
 				_pager = pager;
 				if (paging && _pager) {
 					paging.totalCount = _pager.numPagesTotal * _pager.localPageSize;
 				}
 			}
-			
-			
+
+
 			public function get pager():Pager {
 				return _pager;
 			}
-			
-			
+
+
 			// =============================================
 			// playlist table event handlers
 			// =============================================
 
 
-			
-			
-		
 
-			
+
+
+
+
 
 		]]>
 	</mx:Script>
-	
+
 	<business:EntryTableActionsManager id="actionsManager" />
-	
-	<mx:HBox>
-		<mx:Label id="filterLabel" width="{filter.width}" text="{resourceManager.getString('cms', 'filters')}"
-				  styleName="filterTitleHeader"/>
-		<mx:LinkButton id="foldBtn" label="{resourceManager.getString('cms', 'playlistTable')}" click="{foldFilter()}"
-					   toggle="true" styleName="expendableButtonWithCloseIcon" />
-		<mx:Label id="filteredLabel" text="{resourceManager.getString('cms', 'filtered')}" styleName="filtered"
-				  visible="false"/>
+
+
+	<mx:HBox width="100%">
+		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'playlistTitle')}" styleName="filterTitleHeader" 
+				  width="{filter.width}"/>
+		<mx:HBox id="freeText" includeInLayout="true" visible="true" styleName="searchHBox" width="{245}" height="{pageLabel.height}">
+			<mx:TextInput id="searchFilter" width="100%" height="100%" 
+						  enter="onSearchEnterClick(event)"
+						  text="{resourceManager.getString('cms', 'searchPlaylists')}"
+						  change='onSearchTextChange(event)' buttonMode="true"
+						  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}"
+						  styleName="searchTextInput" focusIn="onFoucsInSearchEvent(event)"
+						  focusOut="onFoucsOutSearchEvent(event)"/>
+			<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true"
+					   click="updateSearchButtonMode()" buttonMode="true" height="{searchFilter.height}" />
+		</mx:HBox>
+		<mx:Spacer width="100%" />
+		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
+					   styleName="recycleIcon"/>
 	</mx:HBox>
-	<mx:HBox width="100%" height="100%">
+	<mx:Spacer height="15" />
+	<mx:HDividedBox width="100%" height="100%">
 		<mx:VBox id="filter" height="100%">
-			<mx:HBox id="freeText" includeInLayout="true" visible="true" styleName="searchHBox" width="100%">
-				<mx:TextInput id="searchFilter" width="100%" enter="onSearchEnterClick(event)"
-							  text="{resourceManager.getString('cms', 'searchPlaylists')}"
-							  change='onSearchTextChange(event)' buttonMode="true"
-							  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}"
-							  styleName="searchTextInput" focusIn="onFoucsInSearchEvent(event)"
-							  focusOut="onFoucsOutSearchEvent(event)"/>
-				<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true"
-						   click="updateSearchButtonMode()" buttonMode="true"/>
-			</mx:HBox>
+			
 			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
 					 styleName="publishSearchAndFilterBox" height="100%">
 				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
@@ -519,32 +496,33 @@
 			</mx:VBox>
 		</mx:VBox>
 
+		<mx:HBox width="100%" height="100%" >
+			<mx:VBox width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
+				<mx:HBox width="100%" height="100%" id="entryTableContainer">
+					<et:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
+								   selectionChanged="actionsManager.itemClickHandler(event)"
+								   showDetails="actionsManager.showPlaylistDetailsHandler(event)"
+								   openPreview="actionsManager.preview(event)"
+								   deleteEntry="actionsManager.deleteEntries(event)"
+								   orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
+								   selectedEntry="{selectedEntry}" showEmbed="{showEmbed}"
+								   creationComplete="{removeColums()}" dragEnabled="false" dragMoveEnabled="false"
+								   dropEnabled="false" />
+				</mx:HBox>
+				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"/>
 
-		<mx:VBox width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
-			<mx:HBox width="100%" height="100%" id="entryTableContainer">
-				<et:EntryTable id="playlistTable" width="100%" height="100%" minHeight="150"
-							   selectionChanged="actionsManager.itemClickHandler(event)"
-							   showDetails="actionsManager.showPlaylistDetailsHandler(event)"
-							   openPreview="actionsManager.preview(event)"
-							   deleteEntry="actionsManager.deleteEntries(event)"
-							   orderByChanged="{onOrderByChanged()}" dataProvider="{_listableVo.arrayCollection}"
-							   selectedEntry="{selectedEntry}" showEmbed="{showEmbed}"
-							   creationComplete="{removeColums()}" dragEnabled="false" dragMoveEnabled="false"
-							   dropEnabled="false" />
-			</mx:HBox>
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
-							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"/>
-
-			<view:ControlToolBar id="toolBar" width="100%" entryType="Playlist" selectAllEntries="onSelectAll()"
-								 deselectAllEntries="onDeselectAll()"/>
-		</mx:VBox>
-		<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
-			<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
-					   buttonMode="true" click="addManualPlaylist()" 
-					   styleName="listActionButton" visible="false" />
-			<mx:Button id="addRuleBasedPlaylistBtn" label="{resourceManager.getString('cms', 'addRuleBasedPlaylist')}" 
-					   buttonMode="true" click="addRuleBasedPlaylist()"
-					   styleName="listActionButton" visible="false" />
-		</mx:VBox>
-	</mx:HBox>
+				<view:ControlToolBar id="toolBar" width="100%" entryType="Playlist" selectAllEntries="onSelectAll()"
+									 deselectAllEntries="onDeselectAll()"/>
+			</mx:VBox>
+			<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
+				<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
+						   buttonMode="true" click="addManualPlaylist()" 
+						   styleName="listActionButton" visible="false" />
+				<mx:Button id="addRuleBasedPlaylistBtn" label="{resourceManager.getString('cms', 'addRuleBasedPlaylist')}" 
+						   buttonMode="true" click="addRuleBasedPlaylist()"
+						   styleName="listActionButton" visible="false" />
+			</mx:VBox>
+		</mx:HBox>
+	</mx:HDividedBox>
 </mx:VBox>
