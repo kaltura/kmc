@@ -59,7 +59,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 			{
 				tablesArr = krt.data.split(";");
 				arrCol = new ArrayCollection(tablesArr);
-							
+				
+				//Remove the last empty cell
+				arrCol.removeItemAt(arrCol.length-1);	
+				
 				//add all as the first item in the list
 				arrCol.addItemAt(ResourceManager.getInstance().getString('analytics', 'all'),0);
 				_model.applicationsList = arrCol;

@@ -57,6 +57,7 @@ package com.kaltura.kmc.modules.analytics.model
 		public var aggregateHeaders : AggregateHeaders = new AggregateHeaders();
 		public var tableHeaders : TableHeaders = new TableHeaders();
 		public var selectedEntry : String;
+		public var selectedUserId : String;
 		
 		
 		public var categories : Object = null;

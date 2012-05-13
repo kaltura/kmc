@@ -94,7 +94,8 @@ package com.kaltura.kmc.modules.analytics.commands
 					if( pointsArr[j])
 					{
 						var xYArr : Array = pointsArr[j].split(",");
-						if(_model.currentScreenState != ScreenTypes.CONTENT_DROPOFF && _model.currentScreenState != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
+						if(_model.currentScreenState != ScreenTypes.CONTENT_DROPOFF && 
+						   _model.currentScreenState != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
 						{
 							var year : String = String(xYArr[0]).substring(0,4);
 							var month : String = String(xYArr[0]).substring(4,6); 	
@@ -136,8 +137,12 @@ package com.kaltura.kmc.modules.analytics.commands
 					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap[_model.reportDataMap[_model.currentScreenState].selectedDim];
 			}
 			else
-				_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap["content_dropoff"];
-				
+			{
+				if(_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF && _model.entitlementEnabled)
+					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap["user_content_dropoff"];
+				else
+					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap["content_dropoff"];
+			}	
 			_model.filter = _model.filter;
 			_model.selectedReportData = null; //refreash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];	

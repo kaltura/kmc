@@ -36,33 +36,17 @@ package com.kaltura.kmc.modules.analytics.commands
 				{
 					case ScreenTypes.TOP_CONTENT:
 						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT;
-						if((event as DrillDownEvent).entryId)
-						{
-							if(_model.entitlementEnabled)
-								_model.filter.userIds = (event as DrillDownEvent).entryId;
-							else
-								_model.selectedEntry = (event as DrillDownEvent).entryId;
-						}
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
 					break;
 					case ScreenTypes.CONTENT_DROPOFF: 
 						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF; 
-						if((event as DrillDownEvent).entryId)
-						{
-							if(_model.entitlementEnabled)
-								_model.filter.userIds = (event as DrillDownEvent).entryId;
-							else
-								_model.selectedEntry = (event as DrillDownEvent).entryId;
-						}
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
+
 					break;
 					case ScreenTypes.CONTENT_INTERACTIONS: 
 						_model.currentScreenState = ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS; 
-						if((event as DrillDownEvent).entryId)
-						{
-							if(_model.entitlementEnabled)
-								_model.filter.userIds = (event as DrillDownEvent).entryId;
-							else
-								_model.selectedEntry = (event as DrillDownEvent).entryId;
-						}
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
+
 					break;
 					case ScreenTypes.CONTENT_CONTRIBUTIONS: 
 						getEntryFlag = false;
