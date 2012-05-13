@@ -30,10 +30,21 @@ package com.kaltura.kmc.modules.content.commands {
 
 	public class DeleteEntriesCommand extends KalturaCommand implements ICommand, IResponder {
 		private var _isPlaylist:Boolean = false;
+		
+		private var _entries:Array;
 
 
 		override public function execute(event:CairngormEvent):void {
-			if (_model.selectedEntries.length == 0) {
+			if (event.data is KalturaBaseEntry) {
+				// if an entry was given, use it
+				_entries = [event.data];
+			}
+			else {
+				// otherwise use selected entries from the model (bulk action)
+				_entries = _model.selectedEntries;
+			}
+			
+			if (_entries.length == 0) {
 //				if (_isPlaylist) {
 //					Alert.show(ResourceManager.getInstance().getString('cms', 'pleaseSelectPlaylistsFirst'),
 //						ResourceManager.getInstance().getString('cms',
@@ -46,11 +57,11 @@ package com.kaltura.kmc.modules.content.commands {
 //				}
 				return;
 			} 
-			_isPlaylist = (_model.selectedEntries[0] is KalturaPlaylist);
-			if (_model.selectedEntries.length < 13) {
+			_isPlaylist = (_entries[0] is KalturaPlaylist);
+			if (_entries.length < 13) {
 				var entryNames:String = "\n";
-				for (var i:int = 0; i < _model.selectedEntries.length; i++)
-					entryNames += (i + 1) + ". " + _model.selectedEntries[i].name + "\n";
+				for (var i:int = 0; i < _entries.length; i++)
+					entryNames += (i + 1) + ". " + _entries[i].name + "\n";
 
 
 				if (_isPlaylist) {
@@ -86,29 +97,29 @@ package com.kaltura.kmc.modules.content.commands {
 
 
 		/**
-		 * Delete _model.selectedEntries entries with a multi request
+		 * Delete _entries entries with a multi request
 		 */
 		private function deleteEntries(event:CloseEvent):void {
 			if (event.detail == Alert.YES) {
 				_model.increaseLoadCounter();
 				var mr:MultiRequest = new MultiRequest();
-				for (var i:uint = 0; i < _model.selectedEntries.length; i++) {
+				for (var i:uint = 0; i < _entries.length; i++) {
 					var deleteEntry:KalturaCall;
 					// create the correct delete action by entry type, and track deletion.
-					if (_model.selectedEntries[i] is KalturaPlaylist) {
-						deleteEntry = new PlaylistDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
+					if (_entries[i] is KalturaPlaylist) {
+						deleteEntry = new PlaylistDelete((_entries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_PLAYLIST,
-							"Playlists>DeletePlaylist", _model.selectedEntries[i].id);
+							"Playlists>DeletePlaylist", _entries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_PLAYLIST, GoogleAnalyticsConsts.CONTENT);
-					} else if (_model.selectedEntries[i] is KalturaMixEntry) {
-						deleteEntry = new MixingDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
+					} else if (_entries[i] is KalturaMixEntry) {
+						deleteEntry = new MixingDelete((_entries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_MIX,
-							"Delete Mix", _model.selectedEntries[i].id);
+							"Delete Mix", _entries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MIX, GoogleAnalyticsConsts.CONTENT);
 					} else {
-						deleteEntry = new BaseEntryDelete((_model.selectedEntries[i] as KalturaBaseEntry).id);
+						deleteEntry = new BaseEntryDelete((_entries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_ITEM,
-							"Delete Entry", _model.selectedEntries[i].id);
+							"Delete Entry", _entries[i].id);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM, GoogleAnalyticsConsts.CONTENT);
 					}
 
@@ -154,7 +165,7 @@ package com.kaltura.kmc.modules.content.commands {
 			if (_model.listableVo.filterVo is KalturaMediaEntryFilterForPlaylist) {
 				searchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _model.listableVo);
 				searchEvent.dispatch();
-			} else if (_model.selectedEntries[0] && _model.selectedEntries[0] is KalturaPlaylist) {
+			} else if (_entries[0] && _entries[0] is KalturaPlaylist) {
 				//refresh the playlist 
 				searchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
 				searchEvent.dispatch();
@@ -164,9 +175,6 @@ package com.kaltura.kmc.modules.content.commands {
 				searchEvent.dispatch();
 			}
 
-
-//			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_FOR_TREE);
-//			getCategoriesList.dispatch();
 		}
 	}
 }

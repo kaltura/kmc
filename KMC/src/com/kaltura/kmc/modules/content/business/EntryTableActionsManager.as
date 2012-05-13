@@ -31,6 +31,7 @@ package com.kaltura.kmc.modules.content.business
 		 */
 		public function deleteEntries(event:EntryTableEvent):void {
 			var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.DELETE_ENTRIES);
+			cgEvent.data = event.data;
 			cgEvent.dispatch();
 		}
 		
