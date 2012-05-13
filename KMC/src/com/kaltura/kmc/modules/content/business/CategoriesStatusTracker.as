@@ -28,7 +28,7 @@ package com.kaltura.kmc.modules.content.business
 		 */		
 		public function set sampleRate(value:int):void {
 			_sampleRate = value;
-			if (enabled) {
+			if (enabled && value > 0) {
 				startTracking();
 			}
 		}
