@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
-			 allowMultipleSelection="true" rowHeight="36" itemClick="{setSelection(event)}"
-			 change="{setSelection(event)}" headerRelease="{headerReleaseHandler(event)}" 
-			 dragEnabled="true" dropEnabled="true" dragMoveEnabled="false" dragDrop="onDragDrop(event)"
-			 dragOver="onDragOver(event)" creationComplete="creationCompleteHandler(event)" 
-			 dragExit="onDragExit(event)" xmlns:view="com.kaltura.kmc.modules.content.view.*">
+			 rowHeight="36" selectable="false" headerRelease="{headerReleaseHandler(event)}" 
+			 creationComplete="creationCompleteHandler(event)" 
+			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
 	<mx:Metadata>
 		
 		[ResourceBundle("entrytable")]
@@ -24,6 +22,7 @@
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
+			import com.kaltura.edw.components.et.ir.SelectionRenderer;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
@@ -36,12 +35,16 @@
 			import mx.events.DragEvent;
 			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
+			import mx.events.PropertyChangeEvent;
 			import mx.managers.CursorManager;
 			import mx.resources.ResourceManager;
 
 			public static const ASCENDING:String = "ASC";
 			public static const DESCENDING:String = "DESC";
 
+			
+			// events
+			// ==================
 			/**
 			 * defines the value of the type property for the <code>orderByChanged</code> event.
 			 * */
@@ -51,6 +54,15 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
+			
+			
+			// other constants
+			// ==================
+			
+			/**
+			 * name of the attribute on VO objects that the table uses to mark selection
+			 * */
+			public static const SELECTION_ATTRIBUTE:String = "tableSelected";
 			
 			
 
@@ -118,8 +130,6 @@
 			 * */
 			public var previewLabel:String = ResourceManager.getInstance().getString('entrytable', 'previewAndEmbed');
 
-			[Bindable]
-			public var allSelected:Boolean = false;
 
 			public var kalturaSorting:Boolean = true;
 
@@ -135,6 +145,57 @@
 			 */
 			public var usedForModeration:Boolean = false;
 
+			
+			
+			override public function set selectedItem(item:Object):void {
+				setSelectedItems([item]);
+			}
+			
+			
+			override public function set selectedItems(items:Array):void {
+				setSelectedItems(items);
+			}
+			
+//			override public function get selectedItems():Array {
+//				return super.selectedItems;
+//			}
+			
+			
+			/**
+			 * set the SELECTION_ATTRIBUTE on the given objects to true, 
+			 * then set them as selected items
+			 * */
+			protected function setSelectedItems(items:Array):void {
+				var entry:KalturaBaseEntry;
+				var si:Array = super.selectedItems; // currently selected items
+				// mark all currently selected items as not selected
+				for (var i:int = si.length-1; i>=0; i--) {
+					entry = si[i] as KalturaBaseEntry;
+					entry[SELECTION_ATTRIBUTE] = false;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, true, false));
+				}
+				if (items == null) {
+					super.selectedItems = null;
+				}
+				else {
+					si = [];
+					// find selectedItems in the DP and add them to the selected list
+					for each (var nkbe:KalturaBaseEntry in items) {
+						for each (entry in dataProvider) {
+							if (nkbe.id == entry.id) {
+								// add the item that was in the dataprovider to start with
+								si.push(entry);
+								entry[SELECTION_ATTRIBUTE] = true;
+								entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, false, true));
+								break;
+							}
+						}
+					}
+					super.selectedItems = si;
+				}
+				setSelection();
+				
+			}
 
 			/**
 			 * @copy #orderBy
@@ -176,7 +237,6 @@
 			[Bindable]
 			override public function set dataProvider(value:Object):void {
 				super.dataProvider = value;
-				setIsAllSelected();
 				setSortIndicator();
 				markSelectedEntry();
 			}
@@ -260,7 +320,7 @@
 			 * remove columns which are not in the list
 			 * in case we don't want to show all of the entry table's columns, 
 			 * pass in a list of columns we want shown.
-			 * @param columnsList	array with "ids" of columns to show
+			 * @param columnsList	array with "ids" of columns to show 
 			 * 
 			 * @see EntryTableColumns
 			 * */
@@ -272,7 +332,7 @@
 				}
 				
 				var found:Boolean;
-				for (var i:int = arrCol.length - 1; i>=0 ; i--) {
+				for (var i:int = arrCol.length - 1; i>0 ; i--) {	// arrcol[0] is the selection column
 					found = false;
 					for (var j:int = 0; j<columnsList.length; j++) {
 						if (arrCol[i].headerText == columnsList[j]) {
@@ -300,7 +360,7 @@
 			
 			public function returnThumbnailsColumn():void {
 				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
-				arrCol.addItemAt(_thumbnailsColumn, 0);
+				arrCol.addItemAt(_thumbnailsColumn, 1);
 				columns = arrCol.source;
 				updateDefaultSortColumn();
 			}
@@ -309,70 +369,14 @@
 			/**
 			 * selection or deselection was made
 			 */
-			private function setSelection(event:ListEvent):void {
-				if (event.itemRenderer.data) {
-					var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.SELECTION_CHANGED);
-					e.data = this.selectedItems;
-					dispatchEvent(e);
-				}
+			private function setSelection():void {
+				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.SELECTION_CHANGED);
+				e.data = selectedItems;
+				dispatchEvent(e);
 			}
 
 
-			private function onDragExit(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(false);
-				}
-			}
-
-
-			private function onDragOver(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(true);
-				}
-			}
-
-
-			private function onDragDrop(event:DragEvent):void {
-				if (this == event.dragInitiator) {
-					event.preventDefault();
-					event.currentTarget.hideDropFeedback(event);
-					showRejectDropCursor(false);
-				}
-			}
-
-			/**
-			 * Update: Show a reject drop cursor or clear it. Depending on the
-			 * situation one might want to walk up to the parent node to
-			 * get it&apos;s status in order to show a reject for all child nodes
-			 * of a node that has the rejection.
-			 **/
-			private var rejectCursorID:int;
-
-
-			private function showRejectDropCursor(value:Boolean):void {
-				if (value == true && CursorManager.currentCursorID != rejectCursorID) {
-					var newCursorClass:Class;
-
-					//grab the reject cursor from the dragmanager style declaration
-					var styleSheet:CSSStyleDeclaration = StyleManager.getStyleDeclaration("DragManager");
-					newCursorClass = styleSheet.getStyle("rejectCursor");
-
-					//assign it as top level
-					rejectCursorID = CursorManager.setCursor(newCursorClass, 0);
-
-				}
-				else if (value == false) {
-					//remove our rejectCursorID from the list    
-					CursorManager.removeCursor(rejectCursorID);
-					rejectCursorID = -1;
-				}
-
-			}
-
+			
 
 
 			private function headerReleaseHandler(event:DataGridEvent):void {
@@ -478,23 +482,10 @@
 				selectedItems = (dataProvider as ArrayCollection).source;
 			}
 
-
-			public function setIsAllSelected():void {
-				var isIt:Boolean = true;
-
-				if (this.dataProvider.length == 0)
-					isIt = false;
-
-				for (var i:int = 0; i < this.dataProvider.length; i++) {
-					if (!this.dataProvider[i].selected)
-						isIt = false;
-				}
-
-				allSelected = isIt;
-			}
 			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				// add IR listernes
+				addEventListener(SelectionRenderer.SELECTION_CHANGED, handleSelectionChanged, false, 0, true);
 				addEventListener(NameRenderer.NAME_CLICKED, openEditEntry, false, 0, true);
 				// actions
 				addEventListener(EntryTableActions.EMBED, preview, false, 0, true);
@@ -509,6 +500,52 @@
 					}
 				}
 				updateDefaultSortColumn();
+			}
+			
+			
+			/**
+			 * if e.target.data is datagridcolumn:
+			 * select / deselect all
+			 * 
+			 * if e.target.data is entry:
+			 * set new selection value to the vo
+			 * add/remove the vo to the selected items
+			 * */
+			protected function handleSelectionChanged(e:Event):void {
+				// set value on data
+				var entry:KalturaBaseEntry = e.target.data as KalturaBaseEntry;
+				if (entry) {
+					// the click was inside the table
+					var oldVal:Boolean = entry[SELECTION_ATTRIBUTE]; 
+					entry[SELECTION_ATTRIBUTE] = !oldVal;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, oldVal, !oldVal));
+					// set value on selectedItems array
+					var si:Array = selectedItems;
+					if (oldVal) {
+						// the entry was in the selectedItems array
+						for (var i:int = 0; i<si.length; i++) {
+							if ((si[i] as KalturaBaseEntry).id == entry.id) {
+								si.splice(i, 1);
+								break;
+							}
+						}
+					}
+					else {
+						si.push(entry);
+					}
+					selectedItems = si;
+				}
+				else if (e.target.data is DataGridColumn) {
+					// the click was on the headerRenderer
+					if (selectedItems.length) {
+						deselectAll();
+						e.target.cb.selected = false;
+					}
+					else {
+						selectAll();
+						e.target.cb.selected = true;
+					}
+				}
 			}
 			
 			
@@ -549,6 +586,10 @@
 
 
 	<mx:columns>
+		<mx:DataGridColumn width="32" minWidth="32" 
+						   headerRenderer="com.kaltura.edw.components.et.ir.SelectionRenderer"
+						   itemRenderer="com.kaltura.edw.components.et.ir.SelectionRenderer" />
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" />
 		

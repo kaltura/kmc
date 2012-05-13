@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.et.EntryTable;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			
+			
+			public static const SELECTION_CHANGED:String = "ET_selection_changed";
+			
+			private var _watcher:ChangeWatcher;
+			
+			override public function set data(value:Object):void {
+				super.data = value;
+				
+				if (value is DataGridColumn) {
+					return;
+				}
+				// remove previous binding
+				if (_watcher) {
+					_watcher.unwatch();
+				}
+				_watcher = BindingUtils.bindSetter(selectionStatusChanged, value, EntryTable.SELECTION_ATTRIBUTE);
+			}
+			
+			
+			private function selectionStatusChanged(value:Boolean):void {
+				cb.selected = value;
+			}
+
+			protected function cb_changeHandler(event:Event):void {
+				event.stopPropagation();
+				// let the table know this item was clicked
+				dispatchEvent(new Event(SelectionRenderer.SELECTION_CHANGED, true));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="cb" change="cb_changeHandler(event)"/>
+</mx:VBox>
