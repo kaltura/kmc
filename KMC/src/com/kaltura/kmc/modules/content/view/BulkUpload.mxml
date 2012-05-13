@@ -11,11 +11,12 @@
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.kmc.modules.content.business.FileManager;
 			import com.kaltura.kmc.modules.content.events.BulkEvent;
 			import com.kaltura.kmc.modules.content.model.BulkUploadModel;
 			import com.kaltura.kmc.modules.content.model.types.BulkTypes;
-			import com.kaltura.kmc.modules.content.business.FileManager;
 			import com.kaltura.kmc.modules.content.vo.FilterVO;
+			import com.kaltura.types.KalturaBulkUploadObjectType;
 			import com.kaltura.types.KalturaBulkUploadType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
@@ -162,7 +163,7 @@
 
 
 			public function getEntriesNumber(fileObj:Object):String {
-				return (fileObj.numOfEntries == int.MIN_VALUE) ? '' : (fileObj.numOfEntries + '');
+				return (fileObj.numOfObjects == int.MIN_VALUE) ? '' : (fileObj.numOfObjects + '');
 			}
 
 
@@ -288,6 +289,26 @@
 				return str.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 			}
 			
+			
+			public function getUploadObjectType(str:String):String {
+				var result:String = '';
+				switch (str) {
+					case KalturaBulkUploadObjectType.CATEGORY:
+						result = resourceManager.getString('cms', 'categories');
+						break;
+					case KalturaBulkUploadObjectType.CATEGORY_USER:
+						result = resourceManager.getString('cms', 'categoryUsers');
+						break;
+					case KalturaBulkUploadObjectType.ENTRY:
+						result = resourceManager.getString('cms', 'entries');
+						break;
+					case KalturaBulkUploadObjectType.USER:
+						result = resourceManager.getString('cms', 'users');
+						break;
+				}
+				return result;
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -327,9 +348,9 @@
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
 						
-						<!-- number of entries -->
-						<mx:DataGridColumn dataField="numOfEntries" width="110"
-										   headerText="{resourceManager.getString('cms', 'numOfEntries')}">
+						<!-- number of items -->
+						<mx:DataGridColumn dataField="numOfObjects" width="110"
+										   headerText="{resourceManager.getString('cms', 'numOfItems')}">
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:HBox width="100%" horizontalAlign="center">
@@ -349,10 +370,20 @@
 						</mx:DataGridColumn>
 						
 						<!-- error -->
-						<mx:DataGridColumn dataField="error" headerText="{resourceManager.getString('cms', 'error')}" >
+						<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'notification')}" >
 							<mx:itemRenderer>
 								<mx:Component>
 									<mx:Label paddingLeft="7" text="{outerDocument.replaceBrackets(data.error)}"
+											  toolTip="{this.text}"/>
+								</mx:Component>
+							</mx:itemRenderer>	
+						</mx:DataGridColumn>
+						
+						<!-- object type -->
+						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'objectType')}" >
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:Label paddingLeft="7" text="{outerDocument.getUploadObjectType(data.bulkUploadObjectType)}"
 											  toolTip="{this.text}"/>
 								</mx:Component>
 							</mx:itemRenderer>	
