@@ -16,15 +16,18 @@ package com.kaltura.edw.components.fltr.cat
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.net.SharedObject;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.ICollectionView;
 	import mx.controls.Button;
 	import mx.controls.Tree;
 	import mx.core.Application;
 	import mx.core.ClassFactory;
 	import mx.events.CloseEvent;
+	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
 	import mx.events.TreeEvent;
 	import mx.managers.PopUpManager;
@@ -67,6 +70,53 @@ package com.kaltura.edw.components.fltr.cat
 		 * */
 		protected var _dataManager:ICategoriesDataManger; 
 		
+		/**
+		 *container variable for the categories that should appear disabled 
+		 */		
+		private var _disabledCategories:Array;
+		
+		/**
+		 * list of categories which should be displayed as non-selectable if shows 
+		 */		
+		public function set disabledCategories(value:Array):void {
+			_disabledCategories = value;
+			if (categories) {
+				disableItems();
+			}
+		}
+
+		
+		/**
+		 * mark items that should be disabled as disabled in the dataprovider 
+		 */		
+		private function disableItems(e:CollectionEvent=null):void {
+			if (!_disabledCategories) {
+				return;
+			}
+			var kCat:CategoryVO;
+			var disCat:KalturaCategory;
+			var bFound:Boolean;
+			
+			for (var i:int=0; i<_disabledCategories.length; i++) {
+				disCat = _disabledCategories[i] as KalturaCategory;
+			
+				if (categories.containsKey(disCat.id.toString())) {
+					var catvo:CategoryVO = categories.getValue(disCat.id.toString()) as CategoryVO;
+					catvo.enabled = false;
+				}
+			}
+		}
+		
+//		override public function set dataProvider(value:Object):void {
+//			if (dataProvider && dataProvider is IEventDispatcher) {
+//				dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, disableItems);
+//			}
+//			if (value is IEventDispatcher) {
+//				value.addEventListener(CollectionEvent.COLLECTION_CHANGE, disableItems);
+//			}
+//			super.dataProvider = value;
+//			disableItems();
+//		}
 		
 		/**
 		 * easy access to categories (key is category id) 
@@ -191,6 +241,7 @@ package com.kaltura.edw.components.fltr.cat
 		private function onItemOpen(event:TreeEvent):void {
 			_dataManager.branchClicked(event.itemRenderer.data as CategoryVO);
 			selectFromInitial(event.itemRenderer.data as CategoryVO); // complete manager does nothing, so we can mark here
+			disableItems();
 		}
 		
 		
@@ -203,6 +254,7 @@ package com.kaltura.edw.components.fltr.cat
 			expandItem(e.data, true);
 			// mark cats from initFilter
 			selectFromInitial(e.data as CategoryVO);
+			disableItems();
 		}
 		
 		// ---------------------

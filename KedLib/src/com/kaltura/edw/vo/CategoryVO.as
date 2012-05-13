@@ -22,6 +22,13 @@ package com.kaltura.edw.vo
 		public var selected:int = 0;
 		
 		
+		[Bindable]
+		/**
+		 * is this category available for selection in the tree. 
+		 */		
+		public var enabled:Boolean = true;
+		
+		
 		[ArrayElementType("com.kaltura.edw.vo.CategoryVO")]
 		public var children:ArrayCollection = new ArrayCollection();
 		

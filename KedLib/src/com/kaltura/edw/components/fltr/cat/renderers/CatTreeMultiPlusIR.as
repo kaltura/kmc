@@ -209,9 +209,11 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 						cb.selected = TriStateCheckBox.SELECTED;
 						break;
 				}
+				cb.enabled = vo.enabled;
 			}
 			else {
 				cb.selected = TriStateCheckBox.UNSELECTED;
+				cb.enabled = true;
 			}
 		}
 	}

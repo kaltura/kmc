@@ -195,9 +195,11 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 //			}
 			if (vo ){
 				cb.selected = vo.selected != CatSelectionStatus.UNSELECTED;
+				cb.enabled = vo.enabled;
 			}
 			else {
 				cb.selected = false;
+				cb.enabled = true;
 			}
 		}
 	}

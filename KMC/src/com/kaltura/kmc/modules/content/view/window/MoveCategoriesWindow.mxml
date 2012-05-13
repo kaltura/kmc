@@ -2,6 +2,7 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 							xmlns:containers="com.kaltura.containers.*" 
 							layout="vertical" width="400" height="300"
+							showCloseButton="true" showHelpButton="false"
 							title="{_windowTitle}" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
 	<mx:Script>
 		<![CDATA[
@@ -26,6 +27,7 @@
 			public var filterModel:FilterModel;
 			
 			
+			[Bindable]
 			/**
 			 * container variable for affected categories list
 			 * */
@@ -73,7 +75,8 @@
 				 selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
 				 chunkedData="{filterModel.chunkedCategoriesLoad}"
 				 categories="{filterModel.categoriesMap}"
-				 dataProvider="{filterModel.categories}" />
+				 dataProvider="{filterModel.categories}" 
+				 disabledCategories="{_categories}"/>
 	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('cms', 'apply')}" click="button1_clickHandler(event)" />
 	</mx:ControlBar>

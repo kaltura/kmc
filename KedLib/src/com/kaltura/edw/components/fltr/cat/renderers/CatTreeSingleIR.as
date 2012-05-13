@@ -44,11 +44,13 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 			if (_watcher) {
 				_watcher.unwatch();
 			}
+			
 			var cat:CategoryVO = data as CategoryVO;
 			// bind CB to cat selected 
 			// use binding instead of assignment because when setting filter 
 			// "selected" can change after data is set
 			_watcher = BindingUtils.bindSetter(catSelectionStatusChanged, cat, "selected");
+			
 		}
 		
 		
@@ -210,9 +212,11 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 						cb.selected = true;
 						break;
 				}
+				cb.enabled = vo.enabled;
 			}
 			else {
 				cb.selected = false;
+				cb.enabled = true;
 			}
 		}
 	}
