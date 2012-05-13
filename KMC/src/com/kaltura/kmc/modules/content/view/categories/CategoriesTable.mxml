@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowHeight="36"
-			 allowMultipleSelection="true" headerRelease="headerReleaseHandler(event)" 
-			 creationComplete="datagrid1_creationCompleteHandler(event)"
-			 itemClick="setSelection(event)" change="setSelection(event)">
+<table:SelectionTable xmlns:table="com.kaltura.controls.table.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" rowHeight="36"
+			 selectable="false" headerRelease="headerReleaseHandler(event)" 
+			 creationComplete="creationCompleteHandler(event)" >
 	<mx:Metadata>
 		[Event(name="orderByChanged", type="flash.events.Event")] 
 		[Event(name="selectionChanged", type="flash.events.Event")] 
@@ -12,13 +12,12 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.fltr.EntriesFilter;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
-			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.view.categories.renderers.NameRenderer;
 			import com.kaltura.types.KalturaCategoryOrderBy;
 			import com.kaltura.vo.KalturaCategory;
@@ -27,7 +26,6 @@
 			import mx.controls.Alert;
 			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
 			
 			// ---------------------------------------------
 			// Events
@@ -39,10 +37,6 @@
 			 * */
 			public static const ORDER_BY_CHANGED:String = "orderByChanged";
 			
-			/**
-			 * defines the value of the type property for the <code>selectionChanged</code> event.
-			 * */
-			public static const SELECTION_CHANGED:String = "selectionChanged";
 			
 			/**
 			 * defines the value of the type property for the <code>showDetails</code> event.
@@ -129,7 +123,7 @@
 				this.mx_internal::sortDirection = _sortDirection;
 			}
 
-			protected function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+			private function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);
@@ -138,16 +132,8 @@
 			}
 			
 			
-			/**
-			 * selection or deselection was made
-			 */
-			private function setSelection(event:ListEvent):void {
-				if (event.itemRenderer.data) {
-					var e:Event = new Event(SELECTION_CHANGED);
-					dispatchEvent(e);
-				}
-			}
-
+			
+			
 			
 			// ----------------------------------------------
 			// table actions
@@ -183,7 +169,11 @@
 
 		]]>
 	</mx:Script>
-	<mx:columns>
+	<table:columns>
+		<mx:DataGridColumn width="32" minWidth="32" 
+						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
+		
 		<mx:DataGridColumn id="cid" paddingLeft="4" paddingRight="4" dataField="id" 
 						   width="90" headerText="{resourceManager.getString('cms', 'idHeader')}" 
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
@@ -199,5 +189,5 @@
 		<mx:DataGridColumn id="actions" paddingLeft="4" paddingRight="4" width="140"
 						   headerText="{resourceManager.getString('cms', 'actions')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.categories.renderers.ActionsRenderer"/>
-	</mx:columns>
-</mx:DataGrid>
+	</table:columns>
+</table:SelectionTable>

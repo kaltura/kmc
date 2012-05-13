@@ -22,7 +22,7 @@
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
-			import com.kaltura.edw.components.et.ir.SelectionRenderer;
+			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
@@ -55,14 +55,6 @@
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
 			
-			
-			// other constants
-			// ==================
-			
-			/**
-			 * name of the attribute on VO objects that the table uses to mark selection
-			 * */
-			public static const SELECTION_ATTRIBUTE:String = "tableSelected";
 			
 			
 
@@ -171,8 +163,8 @@
 				// mark all currently selected items as not selected
 				for (var i:int = si.length-1; i>=0; i--) {
 					entry = si[i] as KalturaBaseEntry;
-					entry[SELECTION_ATTRIBUTE] = false;
-					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, true, false));
+					entry[SelectionRenderer.SELECTION_ATTRIBUTE] = false;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, true, false));
 				}
 				if (items == null) {
 					super.selectedItems = null;
@@ -185,8 +177,8 @@
 							if (nkbe.id == entry.id) {
 								// add the item that was in the dataprovider to start with
 								si.push(entry);
-								entry[SELECTION_ATTRIBUTE] = true;
-								entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, false, true));
+								entry[SelectionRenderer.SELECTION_ATTRIBUTE] = true;
+								entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, false, true));
 								break;
 							}
 						}
@@ -516,9 +508,9 @@
 				var entry:KalturaBaseEntry = e.target.data as KalturaBaseEntry;
 				if (entry) {
 					// the click was inside the table
-					var oldVal:Boolean = entry[SELECTION_ATTRIBUTE]; 
-					entry[SELECTION_ATTRIBUTE] = !oldVal;
-					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SELECTION_ATTRIBUTE, oldVal, !oldVal));
+					var oldVal:Boolean = entry[SelectionRenderer.SELECTION_ATTRIBUTE]; 
+					entry[SelectionRenderer.SELECTION_ATTRIBUTE] = !oldVal;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, oldVal, !oldVal));
 					// set value on selectedItems array
 					var si:Array = selectedItems;
 					if (oldVal) {
@@ -587,8 +579,8 @@
 
 	<mx:columns>
 		<mx:DataGridColumn width="32" minWidth="32" 
-						   headerRenderer="com.kaltura.edw.components.et.ir.SelectionRenderer"
-						   itemRenderer="com.kaltura.edw.components.et.ir.SelectionRenderer" />
+						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
 		
 		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" />
