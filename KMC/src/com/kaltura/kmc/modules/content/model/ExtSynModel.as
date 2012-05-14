@@ -18,7 +18,7 @@ package com.kaltura.kmc.modules.content.model
 		/**
 		 * data of current syndication
 		 * */
-		public var externalSyndicationData:ArrayCollection = new ArrayCollection();
+		public var externalSyndications:ArrayCollection = new ArrayCollection();
 		
 		/**
 		 * a list of players which can be used to display syndicated content.

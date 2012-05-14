@@ -150,8 +150,8 @@
 					delStr += '\n' + feed.kSyndicationFeed.name;
 				}
 
-				var msg:String = "Are you sure you want to delete the following feeds:" + delStr + "\n?";
-				var title:String = "Delete ?";
+				var msg:String = resourceManager.getString('cms', 'exsDeleteFeedsApprove', [delStr]);
+				var title:String = resourceManager.getString('cms', 'exsDeleteFeedsApproveTitle');
 
 				Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
 			}
@@ -184,11 +184,6 @@
 				e.dispatch();
 				paging.selectedPage = 1;
 				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-				
-				
-				// Added as a patch. The filter isuue needs some more research and refactoring. -Biton.
-				extSynModel.syndicationFeedsFilterPager.pageIndex = 1;
-				extSynModel.syndicationFeedsFilterPager.pageSize = paging.rowInPageCb.value as int;
 			}
 
 
@@ -206,7 +201,7 @@
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox id='tableContainer' width="100%" horizontalAlign="center" styleName="entriesTablePagerAndButtonsVbox">
 			<es:ExternalSyndicationTable id='feedsTable'
-										 dataProvider="{extSynModel.externalSyndicationData}"/>
+										 dataProvider="{extSynModel.externalSyndications}"/>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" 
 							 kalturaFilterPager="{extSynModel.syndicationFeedsFilterPager}"
 							 totalCount="{extSynModel.externalSyndicationFeedsTotalCount}" nextPage="gotoPage()"

@@ -37,7 +37,7 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(event);
 			_model.decreaseLoadCounter();
 			var tempArr:ArrayCollection = new ArrayCollection();
-			_model.extSynModel.externalSyndicationData.removeAll();
+			_model.extSynModel.externalSyndications.removeAll();
 			var response:KalturaBaseSyndicationFeedListResponse = event.data as KalturaBaseSyndicationFeedListResponse;
 			_model.extSynModel.externalSyndicationFeedsTotalCount = response.totalCount;
 			
@@ -50,10 +50,11 @@ package com.kaltura.kmc.modules.content.commands
 					}
 					var exSyn:ExternalSyndicationVO = new ExternalSyndicationVO();
 					exSyn.kSyndicationFeed = feed as KalturaBaseSyndicationFeed;
+					exSyn.id = feed.id;
 					tempArr.addItem(exSyn);
 				}
 			}
-			_model.extSynModel.externalSyndicationData = tempArr;
+			_model.extSynModel.externalSyndications = tempArr;
 		}
 	}
 }

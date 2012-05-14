@@ -2,10 +2,9 @@
 <!---
 	 External syndications list in <code>ExternalSyndication</code>.
 -->
-<table:SelectionTable xmlns:table="com.kaltura.controls.table.*" 
-	xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
-			 itemClick="onItemClick(event)" headerRelease="headerReleaseHandler(event)" rowHeight="30"
-			 creationComplete="creationCompleteHandler(event)">
+<table:SelectionTable xmlns:table="com.kaltura.controls.table.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%"
+					  headerRelease="headerReleaseHandler(event)" rowHeight="30"
+					  creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.dataStructures.HashMap;
@@ -101,18 +100,6 @@
 			}
 
 
-			private function onItemClick(event:Event):void {
-				var esVo:ExternalSyndicationVO;
-				for each (esVo in this.dataProvider) {
-					esVo.selected = false;
-				}
-				for each (esVo in this.selectedItems) {
-					esVo.selected = true;
-					esVo.dispatchEvent(new Event(ExternalSyndicationVO.SELECTED_CHANGED_EVENT));
-				}
-			}
-
-
 			/**
 			 * open edit syndication window
 			 * */
@@ -147,18 +134,27 @@
 
 
 	<table:columns>
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedIdColumnHeader')}" 
-						   dataField="id" width="80"
+		<mx:DataGridColumn width="32" minWidth="32" 
+						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
+		
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedIdColumnHeader')}" dataField="id"
+						   width="80"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationIdRenderer"/>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedNameColumnHeader')}" dataField="name"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationNameRenderer"/>
-		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedTypeColumnHeader')}" 
-						   dataField="type" width="80"
+		
+		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedTypeColumnHeader')}" dataField="type"
+						   width="80"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationTypeRenderer"/>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedContentColumnHeader')}"
 						   dataField="content"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationContentRenderer"/>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedURLColumnHeader')}" dataField="url"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationURLFeedRenderer"/>
+		
 	</table:columns>
 </table:SelectionTable>

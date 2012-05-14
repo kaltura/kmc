@@ -18,14 +18,20 @@ package com.kaltura.kmc.modules.content.vo {
 		 */
 		public static const SELECTED_CHANGED_EVENT:String = "externalSyndicationSelectedChanged";
 
+		/**
+		 * feed id 
+		 */		
+		public var id:String;
 
-
+		/**
+		 * feed object 
+		 */		
 		public var kSyndicationFeed:KalturaBaseSyndicationFeed;
 
 		/**
-		 * @copy #selected
-		 */
-		private var _selected:Boolean = false;
+		 * used to mark selections in ExternalSyndicationTable 
+		 */		
+		public var tableSelected:Boolean;
 
 
 		/**
@@ -35,7 +41,7 @@ package com.kaltura.kmc.modules.content.vo {
 		public function clone():ExternalSyndicationVO {
 			var clonedVo:ExternalSyndicationVO = new ExternalSyndicationVO();
 
-			clonedVo.selected = this.selected;
+			clonedVo.tableSelected = this.tableSelected;
 			clonedVo.kSyndicationFeed = cloneKFeeder(this.kSyndicationFeed);
 
 			return clonedVo;
@@ -148,17 +154,6 @@ package com.kaltura.kmc.modules.content.vo {
 			}
 
 			return clonedSynFeeder;
-		}
-
-
-		public function get selected():Boolean {
-			return _selected;
-		}
-
-
-		public function set selected(selected:Boolean):void {
-			_selected = selected;
-			dispatchEvent(new Event(SELECTED_CHANGED_EVENT));
 		}
 
 

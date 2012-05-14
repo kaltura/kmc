@@ -28,6 +28,7 @@ package com.kaltura.controls.table
 		public function SelectionTable() {
 			super();
 			addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler, false, 0, true);
+			selectable = false;
 		}
 		
 		private function creationCompleteHandler(e:FlexEvent):void {
