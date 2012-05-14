@@ -1,70 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
-		 xmlns:controls="com.kaltura.controls.*"
-		 creationComplete="creationCompleteHandler(event)">
-	
+		 xmlns:controls="com.kaltura.controls.*" creationComplete="creationCompleteHandler(event)"
+		 xmlns:customdata="com.kaltura.kmc.modules.account.view.windows.customdata.*">
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.windows.customdata.popupWindows.CustomDataProfileDetails;
-			import com.kaltura.types.KalturaMetadataObjectType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
-			
-			import mx.binding.utils.BindingUtils;
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+
 			[Bindable]
 			public var profilesArray:ArrayCollection;
+
 			[Bindable]
 			public var profilesTotalCount:int;
+
 			[Bindable]
-			public var displayCustomSchemaMsg:Boolean = false; 
-			
+			public var displayCustomSchemaMsg:Boolean = false;
+
+
 			public function init():void {
 				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 				getMetadataProfile.dispatch();
 			}
-			
-			private function creationCompleteHandler(event:FlexEvent):void
-			{
+
+
+			private function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener("editProfile", addEditProfile);
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				//BindingUtils.bindSetter(onProfilesChange, this, "profilesArray");
 			}
-			
-			
+
+
 			private function onPagerCreationComplete(event:Event):void {
 				AccountModelLocator.getInstance().metadataFilterPager = paging.kalturaFilterPager;
-				paging.kalturaFilterPager.pageIndex = 1;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-				loadMetadataProfilesList();
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
+				loadProfiles();
 			}
-			
-			private function onDGChange():void {
-				setSelectedProfile(dg.selectedItem as KMCMetadataProfileVO);
-			}
-			
-			public function setSelectedProfile(profile:KMCMetadataProfileVO):void {
-				var selectProfileEvent:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.SELECT, profile);
-				selectProfileEvent.dispatch();
-			}
-			
-			private function loadMetadataProfilesList():void {
-				
+
+
+
+
+
+			private function loadProfiles():void {
+
 				if (paging.pageSize == 10) {
-					tableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height + bottomActionBox.height + 15;
-					dg.height = tableContainer.height - (paging.height + bottomActionBox.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					tableContainer.height = (dg.rowHeight * 10) + dg.headerHeight + paging.height  + 15;
+					dg.height = tableContainer.height - paging.height; 
 					dg.rowCount = 10;
-					actionBox.height = dg.height + paging.height + bottomActionBox.height;
-					tableMainHbox.height = tableContainer.height ;
+					actionBox.height = dg.height + paging.height;
+					tableMainHbox.height = tableContainer.height;
 				}
 				else {
 					tableMainHbox.percentHeight = 100;
@@ -72,35 +67,37 @@
 					dg.percentHeight = 100;
 					dg.rowCount = -1;
 					actionBox.percentHeight = 100;
-				} 
-				
+				}
+
 				var getMetadataProfile:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 				getMetadataProfile.dispatch();
 			}
-			
-			//paging
-			private function gotoPage():void {
-				// update filter here
-				paging.kalturaFilterPager.pageIndex = paging.selectedPage;			
-				loadMetadataProfilesList();
-			}
-			
-			public function resetClonedData():void {}
-			
-			public function isChanged():Boolean { return false;}
-			
-			public function undo():void {}
-			
-			public function saveChanges():void {}
 
-			
+
+			public function resetClonedData():void {
+			}
+
+
+			public function isChanged():Boolean {
+				return false;
+			}
+
+
+			public function undo():void {
+			}
+
+
+			public function saveChanges():void {
+			}
+
+
 			/**
 			 * open profile drilldown for add / edit
-			 * @param e		an event bubbling from the profile name IR, or null for new window. 
+			 * @param e		an event bubbling from the profile name IR, or null for new window.
 			 * */
 			private function addEditProfile(e:Event = null):void {
 				var addProfileWindow:CustomDataProfileDetails = new CustomDataProfileDetails();
-				
+
 				var profile:KMCMetadataProfileVO;
 				if (e) {
 					profile = e.target.data as KMCMetadataProfileVO;
@@ -110,113 +107,52 @@
 					profile.isNewProfile = true;
 					addProfileWindow.currentState = 'newProfileState';
 				}
-				setSelectedProfile(profile);
+				dg.setSelectedProfile(profile);
 				addProfileWindow.metadataProfile = profile;
 				PopUpManager.addPopUp(addProfileWindow, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(addProfileWindow);
 			}
-			
-			
+
+
 			private function deleteProfile():void {
-				if (!dg.selectedItem) {
-					Alert.show(resourceManager.getString('account', 'customSchemaDeleteError'), resourceManager.getString('account', 'customSchemaDeleteErrorTitle'));
-					return;
-				}
-				
-				var delStr:String = '';
+				var schemas:Array = new Array();
 				for each (var item:Object in dg.selectedItems) {
-					delStr += '\n' + (item as KMCMetadataProfileVO).profile.name;
+					var indexToRemove:int = profilesArray.getItemIndex(item);
+					var scehmaToRemove:KMCMetadataProfileVO = profilesArray.getItemAt(indexToRemove) as KMCMetadataProfileVO;
+					schemas.push(scehmaToRemove);
 				}
-				
-				Alert.show(resourceManager.getString('account', 'metadataSchemaDeleteAlert') + delStr, resourceManager.getString('account', 'metadataSchemaDeleteTitle'), Alert.YES | Alert.NO, null, deleteResponseFunc);
+				var deleteMetadata:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.DELETE, null, schemas);
+				deleteMetadata.dispatch();
 			}
-			
-			private function deleteResponseFunc(event:CloseEvent):void {
-				if (event.detail == Alert.YES) {
-					var schemas:Array = new Array();
-					for each (var item:Object in dg.selectedItems) {
-						var indexToRemove:int = profilesArray.getItemIndex(item);
-						var scehmaToRemove:KMCMetadataProfileVO = profilesArray.getItemAt(indexToRemove) as KMCMetadataProfileVO;
-						schemas.push(scehmaToRemove);
-					}
-					var deleteMetadata:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.DELETE, null, schemas);
-					deleteMetadata.dispatch();
-				}
-			}
-			
-			
-			/**
-			 * get the correct text to show on the "apply on" (metadataObjectType) column
-			 * @param data 	IR data
-			 * */
-			private function getSchemaObjectTypeLabel(item:Object, column:DataGridColumn):String {
-				var oType:String = item.profile.metadataObjectType;
-				var result:String = '';
-				if (oType == KalturaMetadataObjectType.ENTRY) {
-					result = resourceManager.getString('account', 'customSchemasEntryType');
-				}
-				else if (oType == KalturaMetadataObjectType.CATEGORY) {
-					result = resourceManager.getString('account', 'customSchemasCategoryType');
-				}
-				else {
-					result = oType;
-				}
-				return result;
-			}
+
 
 		]]>
 	</mx:Script>
-	
+
 	<mx:Label text="{resourceManager.getString('account', 'customDataSchemas')}" styleName="expendableButton"/>
 	<mx:Label text="{resourceManager.getString('account', 'customDataSchemasText')}" styleName="pageDescription"/>
-	
+
 	<mx:HBox id="tableMainHbox" width="100%" styleName="tablePagerAndButtonsBarBox">
-		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center" verticalScrollPolicy="off">
-	
-			<mx:DataGrid id="dg" width="100%" sortableColumns="false" dataProvider="{profilesArray}" change="onDGChange()"
-						 allowMultipleSelection="true"
-						 rowCount="10" rowHeight="36">
-				<mx:columns>
-					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasIdCol')}" width="120" paddingLeft="5">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:Label text="{data.profile.id}" toolTip="{data.profile.id}" selectable="true"/>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasNameCol')}" width="140"
-									   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataProfileNameRenderer"/>
-					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasDescriptionCol')}" paddingLeft="5">
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:Label text="{data.profile.description}" toolTip="{data.profile.description}"/>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasTypeCol')}" paddingLeft="5"
-									   dataField="metadataObjectType" labelFunction="getSchemaObjectTypeLabel" />
-					<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasFieldsIncludedCol')}" paddingLeft="5"
-									   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataFieldsIncludedRenderer"/>
-						
-				</mx:columns>	
-			</mx:DataGrid>
-			
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
-							 totalCount="{profilesTotalCount}"
-							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
-							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"/>
-			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
-				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','deleteSchema')}"
-						   useHandCursor="true" buttonMode="true" click="{deleteProfile()}"/>
+		<mx:VBox width="100%" id="tableContainer" styleName="tableAndPagerContainerStyle" horizontalAlign="center"
+				 verticalScrollPolicy="off">
+			<customdata:CustomDataProfilesTable id="dg" width="100%" dataProvider="{profilesArray}"/>
+			<mx:HBox styleName="noPadding" horizontalGap="0" width="100%" >
+				<mx:HBox styleName="DataGridActions" height="{paging.height}">
+					<mx:Button id="deleteProfilesBtn" label="{resourceManager.getString('account','deleteSchema')}"
+							   useHandCursor="true" buttonMode="true" click="{deleteProfile()}"/>
+				</mx:HBox>
+				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadProfiles()"
+								 totalCount="{profilesTotalCount}" nextPage="loadProfiles()" prvPage="loadProfiles()"
+								 getPageNum="loadProfiles()" visible="true" showRowsInPage="true"
+								 creationComplete="onPagerCreationComplete(event)"/>
 			</mx:HBox>
 		</mx:VBox>
-		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox" verticalScrollPolicy="off">
-			<mx:Button id="addButton"
-					   label="{resourceManager.getString('account','addNewSchema')}" useHandCursor="true"
+		<mx:VBox id="actionBox" height="100%" styleName="listActionsBox" verticalScrollPolicy="off">
+			<mx:Button id="addButton" label="{resourceManager.getString('account','addNewSchema')}" useHandCursor="true"
 					   buttonMode="true" click="{addEditProfile()}" styleName="listActionButton"/>
 		</mx:VBox>
 	</mx:HBox>
-	
+
 	<mx:Label text="{resourceManager.getString('account','customSchemaMessage')}" visible="{displayCustomSchemaMsg}"/>
 
 </mx:VBox>

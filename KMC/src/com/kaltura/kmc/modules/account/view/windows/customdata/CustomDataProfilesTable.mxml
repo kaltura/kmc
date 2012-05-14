@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowCount="10" rowHeight="36"
+			 sortableColumns="false" change="onDGChange()">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
+			import com.kaltura.types.KalturaMetadataObjectType;
+			import com.kaltura.vo.KMCMetadataProfileVO;
+			
+			/**
+			 * get the correct text to show on the "apply on" (metadataObjectType) column
+			 * @param data 	IR data
+			 * */
+			private function getSchemaObjectTypeLabel(item:Object, column:DataGridColumn):String {
+				var oType:String = item.profile.metadataObjectType;
+				var result:String = '';
+				if (oType == KalturaMetadataObjectType.ENTRY) {
+					result = resourceManager.getString('account', 'customSchemasEntryType');
+				}
+				else if (oType == KalturaMetadataObjectType.CATEGORY) {
+					result = resourceManager.getString('account', 'customSchemasCategoryType');
+				}
+				else {
+					result = oType;
+				}
+				return result;
+			}
+			
+			private function onDGChange():void {
+				setSelectedProfile(selectedItem as KMCMetadataProfileVO);
+			}
+			
+			public function setSelectedProfile(profile:KMCMetadataProfileVO):void {
+				var selectProfileEvent:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.SELECT, profile);
+				selectProfileEvent.dispatch();
+			}
+		]]>
+	</mx:Script>
+	<mx:columns>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasIdCol')}" width="120" paddingLeft="5">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:Label text="{data.profile.id}" toolTip="{data.profile.id}" selectable="true"/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasNameCol')}" width="140"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataProfileNameRenderer"/>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasDescriptionCol')}" paddingLeft="5">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:Label text="{data.profile.description}" toolTip="{data.profile.description}"/>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:DataGridColumn>
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasTypeCol')}" paddingLeft="5"
+						   dataField="metadataObjectType" labelFunction="getSchemaObjectTypeLabel" />
+		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasFieldsIncludedCol')}" paddingLeft="5"
+						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataFieldsIncludedRenderer"/>
+		
+	</mx:columns>
+</mx:DataGrid>
