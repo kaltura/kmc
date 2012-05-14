@@ -98,6 +98,7 @@ package com.kaltura.kmc.modules.account.command {
 			for each (var cProfile:KalturaConversionProfile in convsProfilesRespones.objects) {
 				var cp:ConversionProfileVO = new ConversionProfileVO();
 				cp.profile = cProfile;
+				cp.id = cProfile.id.toString();
 
 				if (cp.profile.isDefault) {
 					convProfilesTmpArrCol.addItemAt(cp, 0);

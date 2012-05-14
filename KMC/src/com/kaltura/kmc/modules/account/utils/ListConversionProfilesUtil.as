@@ -26,6 +26,7 @@ package com.kaltura.kmc.modules.account.utils {
 				if (cProfile) {
 					var cp:ConversionProfileVO = new ConversionProfileVO();
 					cp.profile = cProfile;
+					cp.id = cProfile.id.toString();
 					if (cp.profile.isDefault) {
 						tempArrCol.addItemAt(cp, 0);
 					}

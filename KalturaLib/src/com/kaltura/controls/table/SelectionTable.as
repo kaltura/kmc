@@ -12,6 +12,11 @@ package com.kaltura.controls.table
 	import mx.events.PropertyChangeEvent;
 	
 	/**
+	 * dispatched whenever the "selectedItems" contents change
+	 * */
+	[Event(name="change", type="flash.events.Event")]
+	
+	/**
 	 * A DataGrid with a column of CheckBoxes for selection.
 	 * it is assumed that when declaring the table columns, the selection column is there.
 	 * 
@@ -46,11 +51,12 @@ package com.kaltura.controls.table
 		 * if e.target.data is datagridcolumn:
 		 * select / deselect all
 		 * 
-		 * if e.target.data is entry:
+		 * else 
 		 * set new selection value to the vo
 		 * add/remove the vo to the selected items
 		 * */
 		protected function handleSelectionChanged(e:Event):void {
+			e.stopImmediatePropagation();
 			if (e.target.data is DataGridColumn) {
 				// the click was on the headerRenderer
 				if (selectedItems.length) {
@@ -88,7 +94,7 @@ package com.kaltura.controls.table
 				}
 				selectedItems = si;
 			}
-			
+			dispatchEvent(new Event("change"));	
 		}
 		
 		

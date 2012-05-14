@@ -3,18 +3,26 @@ package com.kaltura.kmc.modules.account.vo {
 	import com.kaltura.utils.ObjectUtil;
 	import com.kaltura.vo.KalturaConversionProfile;
 	import com.kaltura.vo.KalturaConversionProfileAssetParams;
+	
+	import mx.utils.ObjectProxy;
 
 	[Bindable]
 	public class ConversionProfileVO implements IValueObject {
 
-
-
-		private var _selected:Boolean = false;
+		/**
+		 * used for marking selection in AdvancedConversionSettingsTable 
+		 */
+		public var tableSelected:Boolean;
 
 		/**
 		 * conversion profile
 		 */
 		public var profile:KalturaConversionProfile;
+		
+		/**
+		 * id of the wrapped profile 
+		 */		
+		public var id:String;
 
 		
 		[ArrayElementType("com.kaltura.vo.KalturaConversionProfileAssetParams")]
@@ -34,28 +42,11 @@ package com.kaltura.kmc.modules.account.vo {
 
 
 		/**
-		 * indicates this profile is selected
-		 */
-		public function get selected():Boolean {
-			return _selected;
-		}
-
-
-		/**
-		 * @private
-		 */
-		public function set selected(selected:Boolean):void {
-			_selected = selected;
-		}
-
-
-		/**
 		 * returns a clone of this vo
 		 */
 		public function clone():ConversionProfileVO {
 			var ncp:ConversionProfileVO = new ConversionProfileVO();
 			var ar:Array = ObjectUtil.getObjectAllKeys(this.profile);
-			ncp.selected = this.selected;
 			ncp.flavors = this.flavors;
 
 			for (var i:int = 0; i < ar.length; i++) {
