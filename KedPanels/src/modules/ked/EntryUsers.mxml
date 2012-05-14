@@ -162,6 +162,12 @@
 				for each (var usr:KalturaUser in usrs) {
 					str += usr.id + ",";
 				}
+				if (str) {
+					str = str.substr(0, str.length-1);
+				}
+				if (str == '') {
+					str = null;
+				}
 				return str;
 			}
 			
@@ -172,6 +178,14 @@
 			 * @return true if equal, false otherwise
 			 * */
 			private function idsChanged (news:String, olds:String):Boolean {
+				if (!news && !olds) {
+					return false;
+				}
+				
+				if ((!news && olds) || (news && !olds)) {
+					return true;
+				} 
+				
 				var newids:Array = news.split(",");
 				var oldids:Array = olds.split(",");
 				if (newids.length != oldids.length) {
