@@ -39,9 +39,6 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 
-			[Bindable]
-			public var allSelected:Boolean = false;
-
 
 			[Bindable]
 			/**
@@ -64,14 +61,6 @@
 			 * */
 			private var watchersCreated:Boolean;
 
-			/**
-			 * set all syndications data
-			 * @param externalSyndicationData new syndication data
-			 * */
-			private function setExternalSyndicationData(externalSyndicationData:ArrayCollection):void {
-				loadSyndicationData(externalSyndicationData);
-				updateBtnStatus();
-			}
 
 
 			/**
@@ -81,7 +70,6 @@
 			public function init(kmef:KalturaBaseEntryFilter = null):void {
 				if (!watchersCreated) {
 					// only bind once
-					BindingUtils.bindSetter(setExternalSyndicationData, extSynModel, "externalSyndicationData");
 					BindingUtils.bindSetter(onPlaylistReady, extSynModel, "generalPlayListdata");
 					watchersCreated = true;
 				}
@@ -129,21 +117,6 @@
 			}
 
 
-			private function loadSyndicationData(externalSyndicationData:ArrayCollection):void {
-				for each (var extSynd:ExternalSyndicationVO in externalSyndicationData) {
-					extSynd.addEventListener(ExternalSyndicationVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
-				}
-			}
-
-
-			private function updateBtnStatus(event:Event = null):void {
-				var numSelected:int = 0;
-				for each (var extSynd:ExternalSyndicationVO in extSynModel.externalSyndicationData) {
-					numSelected += extSynd.selected ? 1 : 0;
-				}
-
-				allSelected = (extSynModel.externalSyndicationData.length == numSelected);
-			}
 
 
 			private function showNewVideoFeedWindow(event:Event):void {
@@ -232,7 +205,7 @@
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox id='tableContainer' width="100%" horizontalAlign="center" styleName="entriesTablePagerAndButtonsVbox">
-			<es:ExternalSyndicationTable id='feedsTable' allSelected="{allSelected}"
+			<es:ExternalSyndicationTable id='feedsTable'
 										 dataProvider="{extSynModel.externalSyndicationData}"/>
 			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()" 
 							 kalturaFilterPager="{extSynModel.syndicationFeedsFilterPager}"

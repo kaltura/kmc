@@ -2,7 +2,8 @@
 <!---
 	 External syndications list in <code>ExternalSyndication</code>.
 -->
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" allowMultipleSelection="true" selectable="true"
+<table:SelectionTable xmlns:table="com.kaltura.controls.table.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
 			 itemClick="onItemClick(event)" headerRelease="headerReleaseHandler(event)" rowHeight="30"
 			 creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
@@ -35,9 +36,6 @@
 			 * the current sort direction
 			 * */
 			private var _sortDirection:String = DESCENDING;
-
-			[Bindable]
-			public var allSelected:Boolean = false;
 
 
 			[Bindable]
@@ -136,11 +134,6 @@
 			}
 
 
-			public function dispatchSelection(event:Event):void {
-				var cbEvent:ExternalSyndicationEvent = new ExternalSyndicationEvent(ExternalSyndicationEvent.MARK_EXTERNAL_SYNDICATION,
-					!allSelected);
-				cbEvent.dispatch();
-			}
 
 
 			/**
@@ -153,7 +146,7 @@
 	</mx:Script>
 
 
-	<mx:columns>
+	<table:columns>
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedIdColumnHeader')}" 
 						   dataField="id" width="80"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationIdRenderer"/>
@@ -167,5 +160,5 @@
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationContentRenderer"/>
 		<mx:DataGridColumn headerText="{resourceManager.getString('cms','exsFeedURLColumnHeader')}" dataField="url"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationURLFeedRenderer"/>
-	</mx:columns>
-</mx:DataGrid>
+	</table:columns>
+</table:SelectionTable>
