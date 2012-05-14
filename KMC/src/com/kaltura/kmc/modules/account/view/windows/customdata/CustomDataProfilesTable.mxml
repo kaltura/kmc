@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" rowCount="10" rowHeight="36"
-			 sortableColumns="false" change="onDGChange()">
+<table:SelectionTable xmlns:table="com.kaltura.controls.table.*"
+					  xmlns:mx="http://www.adobe.com/2006/mxml" rowCount="10" rowHeight="36"
+					  sortableColumns="false" >
+	<mx:Metadata>
+		/**
+		 * the event is actually dispatched by CustomDataProfileNameRenderer
+		 * and bubbles through the table
+		 * */
+		[Event(name="editProfile", type="flash.events.Event")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.account.events.MetadataProfileEvent;
@@ -26,17 +34,14 @@
 				return result;
 			}
 			
-			private function onDGChange():void {
-				setSelectedProfile(selectedItem as KMCMetadataProfileVO);
-			}
 			
-			public function setSelectedProfile(profile:KMCMetadataProfileVO):void {
-				var selectProfileEvent:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.SELECT, profile);
-				selectProfileEvent.dispatch();
-			}
 		]]>
 	</mx:Script>
-	<mx:columns>
+	<table:columns>
+		<mx:DataGridColumn width="32" minWidth="32" 
+						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasIdCol')}" width="120" paddingLeft="5">
 			<mx:itemRenderer>
 				<mx:Component>
@@ -44,8 +49,10 @@
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasNameCol')}" width="140"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataProfileNameRenderer"/>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasDescriptionCol')}" paddingLeft="5">
 			<mx:itemRenderer>
 				<mx:Component>
@@ -53,10 +60,12 @@
 				</mx:Component>
 			</mx:itemRenderer>
 		</mx:DataGridColumn>
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasTypeCol')}" paddingLeft="5"
 						   dataField="metadataObjectType" labelFunction="getSchemaObjectTypeLabel" />
+		
 		<mx:DataGridColumn headerText="{resourceManager.getString('account','customSchemasFieldsIncludedCol')}" paddingLeft="5"
 						   itemRenderer="com.kaltura.kmc.modules.account.view.windows.customdata.renderers.CustomDataFieldsIncludedRenderer"/>
 		
-	</mx:columns>
-</mx:DataGrid>
+	</table:columns>
+</table:SelectionTable>

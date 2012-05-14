@@ -36,7 +36,6 @@
 
 
 			private function creationCompleteHandler(event:FlexEvent):void {
-				addEventListener("editProfile", addEditProfile);
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
 
@@ -89,7 +88,11 @@
 
 			public function saveChanges():void {
 			}
-
+			
+			private function setSelectedProfile(profile:KMCMetadataProfileVO):void {
+				var selectProfileEvent:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.SELECT, profile);
+				selectProfileEvent.dispatch();
+			}
 
 			/**
 			 * open profile drilldown for add / edit
@@ -107,7 +110,7 @@
 					profile.isNewProfile = true;
 					addProfileWindow.currentState = 'newProfileState';
 				}
-				dg.setSelectedProfile(profile);
+				setSelectedProfile(profile);
 				addProfileWindow.metadataProfile = profile;
 				PopUpManager.addPopUp(addProfileWindow, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(addProfileWindow);
@@ -115,13 +118,7 @@
 
 
 			private function deleteProfile():void {
-				var schemas:Array = new Array();
-				for each (var item:Object in dg.selectedItems) {
-					var indexToRemove:int = profilesArray.getItemIndex(item);
-					var scehmaToRemove:KMCMetadataProfileVO = profilesArray.getItemAt(indexToRemove) as KMCMetadataProfileVO;
-					schemas.push(scehmaToRemove);
-				}
-				var deleteMetadata:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.DELETE, null, schemas);
+				var deleteMetadata:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.DELETE, null, dg.selectedItems);
 				deleteMetadata.dispatch();
 			}
 
@@ -135,7 +132,8 @@
 	<mx:HBox id="tableMainHbox" width="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id="tableContainer" styleName="tableAndPagerContainerStyle" horizontalAlign="center"
 				 verticalScrollPolicy="off">
-			<customdata:CustomDataProfilesTable id="dg" width="100%" dataProvider="{profilesArray}"/>
+			<customdata:CustomDataProfilesTable id="dg" width="100%" dataProvider="{profilesArray}"
+												editProfile="addEditProfile(event)"/>
 			<mx:HBox styleName="noPadding" horizontalGap="0" width="100%" >
 				<mx:HBox styleName="DataGridActions" height="{paging.height}">
 					<mx:Button id="deleteProfilesBtn" label="{resourceManager.getString('account','deleteSchema')}"
