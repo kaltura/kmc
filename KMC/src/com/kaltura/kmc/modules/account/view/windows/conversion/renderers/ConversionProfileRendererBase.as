@@ -1,4 +1,4 @@
-package com.kaltura.kmc.modules.account.view.windows.conversionsettings.renderers
+package com.kaltura.kmc.modules.account.view.windows.conversion.renderers
 {
 	import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 	
