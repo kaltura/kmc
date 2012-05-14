@@ -41,7 +41,7 @@
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.resources.ResourceManager;
@@ -150,8 +150,6 @@
 			 * */
 			private function initPanel():void {
 				// cc:
-				setEntriesToolbar();
-				toolBar.removeCombos();
 				setButtonsWidth();
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 
@@ -190,7 +188,7 @@
 						entryTableContainer.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
 						playlistTable.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
 						playlistTable.rowCount = 10;
-						filter.height = entryTableContainer.height + paging.height + toolBar.height;
+						filter.height = entryTableContainer.height + paging.height;
 						actionsBox.height = filter.height;
 					}
 					else {
@@ -249,24 +247,6 @@
 				return mediaFilterForPlaylist;
 			}
 
-
-			/**
-			 * remove buttons which are not relevant for this screen
-			 * */
-			private function setEntriesToolbar():void {
-				toolBar.removeController(toolBar.approveSelected);
-				toolBar.removeController(toolBar.rejectSelected);
-
-				toolBar.removeController(toolBar.download); 
-				toolBar.removeController(toolBar.setAccessControlProfile);
-				toolBar.removeController(toolBar.setScheduling);
-
-				toolBar.removeController(toolBar.addTags);
-				toolBar.removeController(toolBar.removeTags);
-
-				toolBar.removeController(toolBar.manualPlaylistBtn);
-				toolBar.removeController(toolBar.ruleBasedPlaylistBtn);
-			}
 
 
 			private function addManualPlaylist():void {
@@ -449,7 +429,13 @@
 
 
 
-
+			/**
+			 * delete selected entries
+			 */
+			private function deleteEntries(event:MouseEvent):void {
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.DELETE_ENTRIES);
+				cgEvent.dispatch();
+			}
 
 		]]>
 	</mx:Script>
@@ -509,11 +495,15 @@
 								   creationComplete="{removeColums()}" dragEnabled="false" dragMoveEnabled="false"
 								   dropEnabled="false" />
 				</mx:HBox>
-				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+				
+				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+					<mx:HBox height="{paging.height}" styleName="DataGridActions">
+						<mx:Button id="deleteBtn" click="deleteEntries(event)" label="{resourceManager.getString('cms', 'delete')}"/>
+					</mx:HBox>
+					
+					<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true"/>
-
-				<view:ControlToolBar id="toolBar" width="100%" entryType="Playlist" selectAllEntries="onSelectAll()"
-									 deselectAllEntries="onDeselectAll()"/>
+				</mx:HBox>
 			</mx:VBox>
 			<mx:VBox styleName="listActionsBox" height="100%" id='actionsBox'>
 				<mx:Button id="addManualPlaylistBtn"  label="{resourceManager.getString('cms', 'addManualPlaylist')}" 
