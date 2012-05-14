@@ -74,13 +74,11 @@
 			[Bindable]
 			public function set entryDetailsModel(value:KMvCModel):void {
 				_entryDetailsModel = value;
-				showThumbnails = (entryDetailsModel.getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbsList;
 				if (_disProfWatcher) {
 					_disProfWatcher.unwatch();
 				}
 				var dpi:DistributionProfileInfo = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo; 
 				_disProfWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", dpi, "kalturaDistributionProfilesArray"); 
-//				_distributionProfilesArray = dpi.kalturaDistributionProfilesArray;
 			}
 			
 			public function get entryDetailsModel():KMvCModel {
@@ -149,11 +147,6 @@
 			private var _initialFilter:KalturaMediaEntryFilter;
 
 
-			/**
-			 * should thumbnails be shown in entries table
-			 * */
-			public var showThumbnails:Boolean = true;
-			
 			/**
 			 * list of entries that are being approved / rejected
 			 * */
@@ -269,13 +262,9 @@
 
 			private function removeColums(event:Event):void {
 				
-				var ar:Array = [EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
+				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
 					EntryTableColumns.PLAYER_LOADS, EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT,
 					EntryTableColumns.FLAGS, EntryTableColumns.STATUS];
-				
-				if (showThumbnails) {
-					ar.push(EntryTableColumns.THUMBNAIL);
-				}
 				entryTable.showColumns(ar);
 
 				for each (var col:DataGridColumn in entryTable.columns) {

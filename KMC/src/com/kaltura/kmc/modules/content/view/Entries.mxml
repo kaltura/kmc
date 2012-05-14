@@ -29,7 +29,6 @@
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
-			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.FileUploadEvent;
@@ -48,7 +47,6 @@
 			import com.kaltura.vo.KalturaBaseEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			
-			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
@@ -141,18 +139,10 @@
 			}
 
 
-			/**
-			 * should thumbnails be shown in entries table
-			 * */
-			public function set showThumbnails(value:Boolean):void {
-				if (value) {
-					entryTable.returnThumbnailsColumn();
-				}
-			}
 
 
 			private function removeColums(event:Event):void {
-				var ar:Array = [EntryTableColumns.ID, EntryTableColumns.NAME, 
+				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.ID, EntryTableColumns.NAME, 
 					EntryTableColumns.MEDIA_TYPE, EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT,
 					EntryTableColumns.DURATION, EntryTableColumns.STATUS, EntryTableColumns.ACTIONS];
 				entryTable.showColumns(ar);
@@ -280,7 +270,6 @@
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				BindingUtils.bindProperty(this, "showThumbnails", entryDetailsModel.getDataPack(PermissionsDataPack), "enableThumbsList");
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.GROUP_UPLOAD_STARTED, onGroupUploadStarted);
 			}
 

@@ -109,7 +109,6 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(ChangeModelEvent.SET_DISTRIBUTION, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_REMOTE_STORAGE, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_ENABLE_THUMB_RESIZE, ChangeModelValueCommand);
-			addCommand(ChangeModelEvent.SET_ENABLE_THUMBS_LIST, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG, ChangeModelValueCommand);
 			addCommand(ChangeModelEvent.SET_CONFIRM_MODERATION, ChangeModelValueCommand);
 

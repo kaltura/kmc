@@ -17,12 +17,12 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.et.business.EntryTableActions;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
-			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
@@ -63,14 +63,8 @@
 			 * */
 			public var controller:KMvCController;
 
-			/**
-			 * reference to the thumbnails column so we can add it back.
-			 * thumbnails column is by default non-existant, and if it is required
-			 * it is added. this is an ugly hack because of roles and permissions 
-			 * issue that requires it sometimes be shown (instead of sometimes be hidden).
-			 * */
-			private var _thumbnailsColumn:DataGridColumn;
-			
+			[Bindable]
+			public var showThumbnails:Boolean = false;
 			
 			/**
 			 * show the delete action in the actions renderer
@@ -148,9 +142,6 @@
 				setSelectedItems(items);
 			}
 			
-//			override public function get selectedItems():Array {
-//				return super.selectedItems;
-//			}
 			
 			
 			/**
@@ -350,12 +341,6 @@
 				}
 			}
 			
-			public function returnThumbnailsColumn():void {
-				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
-				arrCol.addItemAt(_thumbnailsColumn, 1);
-				columns = arrCol.source;
-				updateDefaultSortColumn();
-			}
 
 
 			/**
@@ -484,13 +469,6 @@
 				addEventListener(EntryTableActions.EDIT, openEditEntry, false, 0, true);
 				addEventListener(EntryTableActions.DELETE, deleteEntry, false, 0, true);
 				
-				// keep a reference to the thumbnails columns
-				for (var i:int = 0; i < columns.length; ++i) {
-					if (columns[i].headerText == resourceManager.getString('entrytable', 'thumbnail')) {
-						_thumbnailsColumn = columns[i]; 
-						break;
-					}
-				}
 				updateDefaultSortColumn();
 			}
 			
@@ -583,7 +561,7 @@
 						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
 		
 		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
-						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" visible="{showThumbnails}"/>
 		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" width="90"
 						   headerText="{resourceManager.getString('entrytable', 'idHeader')}"

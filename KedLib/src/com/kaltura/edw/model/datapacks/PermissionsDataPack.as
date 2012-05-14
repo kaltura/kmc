@@ -27,11 +27,5 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var enableThumbResize:Boolean = false;
 		
-		/**
-		 * R&P: for accounts who use remote storage, we can't resize thumbs so we 
-		 * don't show the thumbs column (so we won't load large images).
-		 * */
-		public var enableThumbsList:Boolean = false;
-		
 	}
 }

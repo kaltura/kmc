@@ -19,8 +19,6 @@ package com.kaltura.kmc.modules.content.events
 
 		public static const SET_ENABLE_THUMB_RESIZE : String = "content_setDisableThumbResize";
 
-		public static const SET_ENABLE_THUMBS_LIST : String = "content_SET_ENABLE_THUMBS_LIST";
-		
 		public static const SET_LOTS_OF_CATEGORIES_FLAG : String = "content_lotsOfCategoriesFlag";
 		
 		public static const SET_CONFIRM_MODERATION : String = "content_SET_CONFIRM_MODERATION";

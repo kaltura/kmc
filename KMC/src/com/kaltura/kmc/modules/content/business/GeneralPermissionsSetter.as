@@ -159,17 +159,6 @@ package com.kaltura.kmc.modules.content.business {
 		}
 
 
-		public function set enableThumbsList(value:Boolean):void {
-			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ENABLE_THUMBS_LIST, value);
-			cge.dispatch();
-		}
-
-
-		public function get enableThumbsList():Boolean {
-			return true;
-		}
-
-
 		public function set lotsOfCategoriesFlag(value:Boolean):void {
 			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG, value);
 			cge.dispatch();

@@ -33,9 +33,6 @@ package com.kaltura.kmc.modules.content.commands {
 				case ChangeModelEvent.SET_ENABLE_THUMB_RESIZE:
 						pdp.enableThumbResize = (event as ChangeModelEvent).newValue;
 					break;
-				case ChangeModelEvent.SET_ENABLE_THUMBS_LIST:
-						pdp.enableThumbsList = (event as ChangeModelEvent).newValue;
-					break;
 				case ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG:
 						_model.filterModel.chunkedCategoriesLoad = (event as ChangeModelEvent).newValue;
 					break;
