@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
-		 xmlns:conversionsettings="com.kaltura.kmc.modules.account.view.windows.conversionsettings.*"
+		 xmlns:conversion="com.kaltura.kmc.modules.account.view.windows.conversion.*"
 		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
 	<mx:states>
 		<mx:State name="advanceModeState">
@@ -21,7 +21,7 @@
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
-			import com.kaltura.kmc.modules.account.view.windows.conversionsettings.ConversionProfileSettings;
+			import com.kaltura.kmc.modules.account.view.windows.conversion.ConversionProfileSettings;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -132,7 +132,8 @@
 				var selItems:Array = conversionProfilesTable.selectedItems;
 				if (selItems.length == 0) {
 					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
-				} else {
+				}
+				else {
 					var delStr:String = "";
 					for each (var cp:ConversionProfileVO in selItems) {
 						if (!cp.profile.isDefault) {
@@ -145,7 +146,8 @@
 					if (selItems.length == conversionData.length) {
 						msg = resourceManager.getString('account', 'deleteAllAlertMsg');
 						title = resourceManager.getString('account', 'deleteAllAlertTitle');
-					} else {
+					}
+					else {
 						msg = resourceManager.getString('account', 'deleteAlertMsg') + delStr + " ?";
 						title = resourceManager.getString('account', 'deleteAlertTitle');
 					}
@@ -179,7 +181,8 @@
 				if (simpleTable.isFlavorsSelected() && (simpleTable.cProfile.profile.flavorParamsIds != null)) {
 					var up:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.UPDATE_CONVERSION_PROFILE, false, simpleTable.cProfile);
 					up.dispatch();
-				} else {
+				}
+				else {
 					Alert.show(resourceManager.getString('account', 'oneFlvorSelection'), resourceManager.getString('account', 'missingFlavorTitle'));
 				}
 			}
@@ -236,10 +239,8 @@
 	<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all">
 		<!-- simple mode -->
 		<mx:VBox width="100%" verticalGap="0">
-			<conversionsettings:ConversionSettingsTable id="simpleTable" height="100%"
-														allSelected="{allFlavorsSelected}"
-														dataProvider="{flavorParamData}"
-														creationComplete="setData()"/>
+			<conversion:ConversionSettingsTable id="simpleTable" height="100%" allSelected="{allFlavorsSelected}"
+												dataProvider="{flavorParamData}" creationComplete="setData()"/>
 			<mx:HBox width="100%" styleName="DataGridActions">
 				<mx:VBox width="40%" height="100%" verticalAlign="middle">
 					<mx:LinkButton id="advancedModeBtn"
@@ -256,26 +257,24 @@
 		<!-- advanced mode -->
 		<mx:HBox width="100%" height="100%">
 			<mx:VBox id="subVbox" width="100%" height="100%" verticalGap="0">
-				<conversionsettings:AdvancedConversionSettingsTable id="conversionProfilesTable" width="100%"
-																	height="100%" selectable="true"
-																	allowMultipleSelection="true"
-																	dataProvider="{conversionData}"/>
+				<conversion:AdvancedConversionSettingsTable id="conversionProfilesTable" height="100%" width="100%"
+															dataProvider="{conversionData}"/>
 
-				<controls:Paging id="paging" width="{conversionProfilesTable.width}" styleName="paging"
-								 rowsInPageChange="doPaging()" nextPage="{doPaging()}" prvPage="{doPaging()}"
-								 getPageNum="doPaging()" totalCount="{totalProfiles}" showRowsInPage="true"/>
-
-				<mx:HBox width="100%" styleName="DataGridActions">
-					<mx:VBox width="40%" height="100%" verticalAlign="middle">
-						<mx:LinkButton id="simpleModeBtn"
-									   label="{resourceManager.getString('account','switchToSimpleMode')}"
-									   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
-					</mx:VBox>
-					<mx:VBox width="60%" height="100%" verticalAlign="middle">
+				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+					<mx:HBox height="{paging.height}" styleName="DataGridActions">
 						<mx:Button id="deleteProfileBtn" click="onDeleteConversionProfiles(event)"
 								   label="{resourceManager.getString('account', 'disabledDeleteButton')}"
 								   useHandCursor="true" buttonMode="true"/>
-					</mx:VBox>
+					</mx:HBox>
+
+					<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="doPaging()"
+									 nextPage="{doPaging()}" prvPage="{doPaging()}" getPageNum="doPaging()"
+									 totalCount="{totalProfiles}" showRowsInPage="true"/>
+				</mx:HBox>
+				<mx:HBox width="100%" styleName="DataGridActions" horizontalAlign="left">
+					<mx:LinkButton id="simpleModeBtn"
+								   label="{resourceManager.getString('account','switchToSimpleMode')}"
+								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
 				</mx:HBox>
 			</mx:VBox>
 			<mx:VBox id="actionBox" styleName="listActionsBox" height="100%">
