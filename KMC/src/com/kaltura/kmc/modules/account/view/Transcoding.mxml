@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
 		 xmlns:conversion="com.kaltura.kmc.modules.account.view.windows.conversion.*"
 		 creationComplete="creationCompleteHandler(event)" xmlns:controls="com.kaltura.controls.*">
 	<mx:states>
@@ -21,11 +21,12 @@
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.ConversionSettingsEvent;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.windows.conversion.ConversionProfileSettings;
 			import com.kaltura.kmc.modules.account.vo.ConversionProfileVO;
 			import com.kaltura.kmc.modules.account.vo.FlavorVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.core.Application;
@@ -33,9 +34,8 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 
-			[Bindable]
-			private var _conversionData:ArrayCollection;
-
+			private var _initRequested:Boolean;
+			
 			private var _flavorParamData:ArrayCollection;
 
 
@@ -51,22 +51,26 @@
 
 			[Bindable]
 			/**
-			 * total number of conversion profiles
+			 * total number of conversion profiles (for pager)
 			 * */
 			public var totalProfiles:int;
 
 			[Bindable]
 			public var allFlavorsSelected:Boolean = false;
 
-
-			[Bindable]
+			
+			
 			[ArrayElementType("com.kaltura.kmc.modules.account.vo.ConversionProfileVO")]
-			public function get conversionData():ArrayCollection {
+			private var _conversionData:ArrayCollection;
+
+			
+			[Bindable]
+			public function get conversionProfs():ArrayCollection {
 				return _conversionData;
 			}
 
 
-			public function set conversionData(conversionData:ArrayCollection):void {
+			public function set conversionProfs(conversionData:ArrayCollection):void {
 				_conversionData = conversionData;
 				setData();
 			}
@@ -77,7 +81,12 @@
 			 * get data
 			 * */
 			public function init():void {
-				listProfiles();
+				if (advancedMode) {
+					advancedMode.listProfiles();
+				}
+				else {
+					_initRequested = true;
+				}
 			}
 
 
@@ -115,63 +124,13 @@
 			}
 
 
-			private function onOpenNewConversionProfilePopUp(event:Event):void {
-				var addNewConversionProfileWindow:ConversionProfileSettings = new ConversionProfileSettings();
-				addNewConversionProfileWindow.addEventListener(KmcHelpEvent.HELP, dispatchHelp, false, 0, true);
-				PopUpManager.addPopUp(addNewConversionProfileWindow, Application.application as DisplayObject, true);
-				PopUpManager.centerPopUp(addNewConversionProfileWindow);
-			}
-
 
 			private function dispatchHelp(e:KmcHelpEvent):void {
 				dispatchEvent(e.clone());
 			}
 
 
-			private function onDeleteConversionProfiles(event:Event):void {
-				var selItems:Array = conversionProfilesTable.selectedItems;
-				if (selItems.length == 0) {
-					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
-				}
-				else {
-					var delStr:String = "";
-					for each (var cp:ConversionProfileVO in selItems) {
-						if (!cp.profile.isDefault) {
-							delStr += '\n' + cp.profile.name;
-						}
-					}
-
-					var msg:String = "";
-					var title:String = "";
-					if (selItems.length == conversionData.length) {
-						msg = resourceManager.getString('account', 'deleteAllAlertMsg');
-						title = resourceManager.getString('account', 'deleteAllAlertTitle');
-					}
-					else {
-						msg = resourceManager.getString('account', 'deleteAlertMsg') + delStr + " ?";
-						title = resourceManager.getString('account', 'deleteAlertTitle');
-					}
-
-					Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
-				}
-			}
-
-
-			private function responeFnc(evt:CloseEvent):void {
-				if (evt.detail == Alert.YES) {
-					var selItems:Array = conversionProfilesTable.selectedItems;
-					var ids:Array = new Array();
-					for each (var cp:ConversionProfileVO in selItems) {
-						if (!cp.profile.isDefault) {
-							ids.push(cp.profile.id);
-						}
-					}
-
-					var deletetProfilesEvent:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.DELETE_CONVERSION_PROFILE);
-					deletetProfilesEvent.data = ids;
-					deletetProfilesEvent.dispatch();
-				}
-			}
+			
 
 
 			private function onSaveProfileClick(event:Event):void {
@@ -211,20 +170,13 @@
 
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
+				if (_initRequested) {
+					// re-trigger init()
+					init();
+				}
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 			}
 
-
-			private function doPaging():void {
-				listProfiles(paging.selectedPage, paging.pageSize);
-			}
-
-
-			private function listProfiles(page:Number = 0, pageSize:Number = 0):void {
-				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				getAllData.data = paging;
-				getAllData.dispatch();
-			}
 		]]>
 	</mx:Script>
 	<mx:Label styleName="expendableButton" width="100%" id="titleText"
@@ -255,34 +207,8 @@
 		</mx:VBox>
 
 		<!-- advanced mode -->
-		<mx:HBox width="100%" height="100%">
-			<mx:VBox id="subVbox" width="100%" height="100%" verticalGap="0">
-				<conversion:AdvancedConversionSettingsTable id="conversionProfilesTable" height="100%" width="100%"
-															dataProvider="{conversionData}"/>
-
-				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-					<mx:HBox height="{paging.height}" styleName="DataGridActions">
-						<mx:Button id="deleteProfileBtn" click="onDeleteConversionProfiles(event)"
-								   label="{resourceManager.getString('account', 'disabledDeleteButton')}"
-								   useHandCursor="true" buttonMode="true"/>
-					</mx:HBox>
-
-					<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="doPaging()"
-									 nextPage="{doPaging()}" prvPage="{doPaging()}" getPageNum="doPaging()"
-									 totalCount="{totalProfiles}" showRowsInPage="true"/>
-				</mx:HBox>
-				<mx:HBox width="100%" styleName="DataGridActions" horizontalAlign="left">
-					<mx:LinkButton id="simpleModeBtn"
-								   label="{resourceManager.getString('account','switchToSimpleMode')}"
-								   click="onChangeState(event)" styleName="switchModesLinkButtonStyle"/>
-				</mx:HBox>
-			</mx:VBox>
-			<mx:VBox id="actionBox" styleName="listActionsBox" height="100%">
-				<mx:Button id="addNewProfileBtn"
-						   label="{resourceManager.getString('account', 'addNewTranscodingProfileButton')}"
-						   useHandCursor="true" buttonMode="true" click='onOpenNewConversionProfilePopUp(event)'
-						   styleName="listActionButton"/>
-			</mx:VBox>
-		</mx:HBox>
+		<conversion:AdvancedMode id="advancedMode" width="100%" height="100%" 
+								 conversionData="{conversionProfs}" totalProfiles="{totalProfiles}"
+								 changeState="onChangeState(event)"/>
 	</mx:ViewStack>
 </mx:VBox>

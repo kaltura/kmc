@@ -45,8 +45,8 @@ package com.kaltura.kmc.modules.account.command {
 
 			pager = new KalturaFilterPager();
 			if (event.data) {
-				pager.pageIndex = (event.data as Paging).selectedPage;
-				pager.pageSize = (event.data as Paging).pageSize;
+				pager.pageIndex = event.data[0];
+				pager.pageSize = event.data[1];
 			}
 			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, pager);
 			mr.addAction(listConversionProfiles);

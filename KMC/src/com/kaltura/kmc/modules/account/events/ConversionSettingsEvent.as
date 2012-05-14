@@ -8,7 +8,12 @@ package com.kaltura.kmc.modules.account.events
 		public static const DELETE_CONVERSION_PROFILE : String = "account_deleteConversionProfile";
 		public static const LIST_CONVERSION_PROFILES : String = "account_listConversionProfiles";
 		public static const LIST_FLAVOR_PARAMS : String = "account_listFlavorParams";
+		
+		/**
+		 * event.data (can be) [pageIndex, pageSize] 
+		 */
 		public static const LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS : String = "account_listConversionProfilesAndFlavorParams";
+		
 		public static const MARK_FLAVORS : String = "account_markFlavors";
 		public static const MARK_CONVERSION_PROFILES : String = "account_markConversionProfiles";
 		public static const UPDATE_CONVERSION_PROFILE : String = "account_updateConversionProfile";
