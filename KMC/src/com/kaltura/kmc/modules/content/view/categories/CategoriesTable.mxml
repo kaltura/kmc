@@ -64,18 +64,6 @@
 				return _orderBy;
 			}
 			
-			/**
-			 * the current sort index
-			 * */
-			private var _sortIndex:int = 5;
-			
-			[Bindable]
-			/**
-			 * the current sort direction
-			 * */
-			private var _sortDirection:String = "DESC";
-			
-			private var _columnsSortMap:HashMap = new HashMap();
 			
 			private function headerReleaseHandler(event:DataGridEvent):void {
 				
@@ -83,11 +71,11 @@
 				
 				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
 					var headerText:String = event.itemRenderer.data.headerText;
-					if (!_columnsSortMap.containsKey(headerText)) {
-						_columnsSortMap.put(headerText, false);
+					if (!columnsSortMap.containsKey(headerText)) {
+						columnsSortMap.put(headerText, false);
 					}
 					
-					var sortDir:Boolean = _columnsSortMap.getValue(headerText) as Boolean;
+					var sortDir:Boolean = columnsSortMap.getValue(headerText) as Boolean;
 					switch (event.itemRenderer.data.headerText) {
 //						case resourceManager.getString('entrytable', 'createAt'):
 //							_orderBy = sortDir ? KalturaCategoryOrderBy.CREATED_AT_ASC : KalturaCategoryOrderBy.CREATED_AT_DESC;
@@ -109,8 +97,8 @@
 					
 					// remember the direction and change the sign
 					_sortIndex = event.columnIndex;
-					_sortDirection = sortDir ? "ASC" : "DESC";
-					_columnsSortMap.setValue(headerText, !sortDir);
+					_sortDirection = sortDir ? SelectionTable.ASCENDING : SelectionTable.DESCENDING;
+					columnsSortMap.setValue(headerText, !sortDir);
 					setSortIndicator();
 					
 					dispatchEvent(new Event(ORDER_BY_CHANGED));
@@ -118,12 +106,9 @@
 			}
 			
 			
-			private function setSortIndicator():void {
-				this.mx_internal::sortIndex = _sortIndex;
-				this.mx_internal::sortDirection = _sortDirection;
-			}
 
 			private function creationCompleteHandler(event:FlexEvent):void {
+				_sortIndex = 5;
 				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);

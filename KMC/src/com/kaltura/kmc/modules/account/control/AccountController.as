@@ -40,7 +40,6 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(AccessControlEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);
 			addCommand(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES, DeleteAccessControlProfilesCommand);
 			addCommand(AccessControlEvent.ACCOUNT_LIST_ACCESS_CONTROLS_PROFILES, ListAccessControlsCommand);
-			addCommand(AccessControlEvent.ACCOUNT_MARK_PROFILES, MarkAccessControlProfilesCommand);
 			addCommand(AccessControlEvent.ACCOUNT_UPDATE_ACCESS_CONTROL_PROFILE, UpdateAccessControlProfileCommand);
 			
 			// Conversion Profile Events

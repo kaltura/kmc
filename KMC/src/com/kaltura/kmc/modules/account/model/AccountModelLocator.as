@@ -69,7 +69,7 @@ package com.kaltura.kmc.modules.account.model {
 		/* ****************************************************
 		 * access control
 		 **************************************************** */
-		public var accessControlData:ArrayCollection = new ArrayCollection();
+		public var accessControls:ArrayCollection = new ArrayCollection();
 		public var accessControlProfilesTotalCount:int = 10;
 		public var filterPager:KalturaFilterPager;
 		public var acpFilter:KalturaAccessControlFilter;

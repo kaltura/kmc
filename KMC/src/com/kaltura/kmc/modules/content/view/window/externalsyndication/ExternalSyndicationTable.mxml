@@ -15,26 +15,12 @@
 			import com.kaltura.kmc.modules.content.view.window.externalsyndication.renderers.ExternalSyndicationNameRenderer;
 			import com.kaltura.kmc.modules.content.vo.ExternalSyndicationVO;
 			import com.kaltura.types.KalturaBaseSyndicationFeedOrderBy;
-
+			
 			import mx.core.Application;
 			import mx.events.DataGridEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 
-			public static const ASCENDING:String = "ASC";
-			public static const DESCENDING:String = "DESC";
-
-			private var columnsSortMap:HashMap = new HashMap();
-
-			/**
-			 * the current sort index
-			 * */
-			private var _sortIndex:int = -1;
-
-			/**
-			 * the current sort direction
-			 * */
-			private var _sortDirection:String = DESCENDING;
 
 
 			[Bindable]
@@ -44,10 +30,6 @@
 			}
 
 
-			private function setSortIndicator():void {
-				this.mx_internal::sortIndex = _sortIndex;
-				this.mx_internal::sortDirection = _sortDirection;
-			}
 
 
 			private function headerReleaseHandler(event:DataGridEvent):void {
@@ -84,7 +66,7 @@
 					}
 					// remember the direction and change the sign
 					_sortIndex = event.columnIndex;
-					_sortDirection = sortDir ? ASCENDING : DESCENDING;
+					_sortDirection = sortDir ? SelectionTable.ASCENDING : SelectionTable.DESCENDING;
 					columnsSortMap.setValue(headerText, !sortDir);
 					setSortIndicator();
 
@@ -128,6 +110,8 @@
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				addEventListener(ExternalSyndicationNameRenderer.PROFILE_NAME_CLICK, onClickProfileName, false, 0, true);
+				_sortDirection = SelectionTable.DESCENDING;
+				_sortIndex = -1;
 			}
 		]]>
 	</mx:Script>

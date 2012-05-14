@@ -1,10 +1,13 @@
 package com.kaltura.controls.table
 {
+	import com.kaltura.dataStructures.HashMap;
+	
 	import flash.events.Event;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.DataGrid;
 	import mx.controls.dataGridClasses.DataGridColumn;
+	import mx.core.mx_internal;
 	import mx.events.FlexEvent;
 	import mx.events.PropertyChangeEvent;
 	
@@ -12,18 +15,21 @@ package com.kaltura.controls.table
 	 * A DataGrid with a column of CheckBoxes for selection.
 	 * it is assumed that when declaring the table columns, the selection column is there.
 	 * 
-	 * 
-	 *  
 	 * @author atar.shadmi
-	 * 
 	 */	
 	public class SelectionTable extends DataGrid {
+		
+		
+		public static const ASCENDING:String = "ASC";
+		public static const DESCENDING:String = "DESC";
 		
 		/**
 		 * defines the value of the type property for the <code>selectionChanged</code> event.
 		 * */
 		public static const SELECTION_CHANGED:String = "selectionChanged";
 		
+		
+		protected var columnsSortMap:HashMap = new HashMap();
 		
 		public function SelectionTable() {
 			super();
@@ -138,6 +144,22 @@ package com.kaltura.controls.table
 			}
 			setSelection();
 			
+		}
+		
+		/**
+		 * the current sort index
+		 * */
+		protected var _sortIndex:int = 5;
+		
+		[Bindable]
+		/**
+		 * the current sort direction
+		 * */
+		protected var _sortDirection:String = "DESC";
+		
+		protected function setSortIndicator():void {
+			this.mx_internal::sortIndex = _sortIndex;
+			this.mx_internal::sortDirection = _sortDirection;
 		}
 
 	}

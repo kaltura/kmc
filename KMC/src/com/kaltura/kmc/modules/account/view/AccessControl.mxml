@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="mainACPvBox"
-		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" width="100%" height="100%"
-		 xmlns:controls="com.kaltura.controls.*" creationComplete="creationCompleteHandler(event)"
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
+		 xmlns:controls="com.kaltura.controls.*" 
+		 creationComplete="creationCompleteHandler(event)" width="100%" height="100%"
 		 xmlns:ac="com.kaltura.kmc.modules.account.view.windows.accesscontrol.*">
 
 	<mx:Script>
@@ -27,34 +28,23 @@
 			import mx.managers.PopUpManager;
 
 
-			[Bindable]
-			private var _accessControlsList:ArrayCollection;
-			[Bindable]
-			public var rootUrl:String;
-			[Bindable]
-			public var allSelected:Boolean = false;
 
 			public static const NAME:String = "accessControl";
 
-
-			public function set accessControlsList(accessControlsList:ArrayCollection):void {
-				_accessControlsList = accessControlsList;
-				setListenerToProfilesData();
-			}
-
+			[Bindable]
+			public var rootUrl:String;
+			
 
 			[Bindable]
-			public function get accessControlsList():ArrayCollection {
-				return _accessControlsList;
-			}
+			public var accessControlsList:ArrayCollection ;
 
 
 			private function loadAccessControlsList():void {
 				if (paging.pageSize == 10) {
-					tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height + 15;
-					accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height + deleteProfilesBtn.height); //entryTable.rowHeight*11+entryTable.headerHeight;
+					tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + 15;
+					accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height ); 
 					accessControlProfilesTable.rowCount = 10;
-					actionBox.height = accessControlProfilesTable.height + paging.height + bottomActionBox.height;
+					actionBox.height = accessControlProfilesTable.height + paging.height ;
 				}
 				else {
 					tableContainer.percentHeight = 100;
@@ -67,23 +57,6 @@
 				getAllProfilesEvent.dispatch();
 			}
 
-
-			private function setListenerToProfilesData():void {
-				for each (var profile:AccessControlProfileVO in accessControlsList) {
-					profile.addEventListener(AccessControlProfileVO.SELECTED_CHANGED_EVENT, updateBtnStatus);
-				}
-				updateBtnStatus();
-			}
-
-
-			private function updateBtnStatus(event:Event = null):void {
-				var numSelected:int = 0;
-				for each (var profile:AccessControlProfileVO in accessControlsList) {
-					numSelected += profile.selected ? 1 : 0;
-				}
-
-				allSelected = (accessControlsList.length == numSelected);
-			}
 
 
 			private function onAddNewProfileClick(event:Event):void {
@@ -121,66 +94,26 @@
 
 
 
-			private function onDeleteCheckedProfileClick(event:Event):void {
-				var selItems:Array = accessControlProfilesTable.selectedItems;
-				if (selItems.length == 0) {
-					Alert.show(resourceManager.getString('account', 'noProfilesSelected'));
-					return;
-				}
-
-				var delStr:String = '';
-				for each (var acp:AccessControlProfileVO in selItems) {
-					if (!acp.profile.isDefault) {
-						delStr += '\n' + acp.profile.name;
-					}
-				}
-
-				var msg:String = "";
-				var title:String = "";
-				if (accessControlProfilesTable.selectedItems.length == accessControlsList.length) {
-					msg = resourceManager.getString('account', 'deleteAllAccessControlAlertMsg');
-					title = resourceManager.getString('account', 'deleteAllAccessControlAlertTitle');
-				}
-				else {
-					msg = resourceManager.getString('account', 'deleteAccessControlAlertMsg') + delStr + " ?";
-					title = resourceManager.getString('account', 'deleteAccessControlAlertTitle');
-				}
-
-				Alert.show(msg, title, Alert.YES | Alert.NO, null, responeFnc);
+			private function deleteProfiles(event:Event):void {
+				var deleteProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
+				deleteProfilesEvent.data = accessControlProfilesTable.selectedItems;
+				deleteProfilesEvent.dispatch();
 
 			}
 
-
-			private function responeFnc(evt:CloseEvent):void {
-				if (evt.detail == Alert.YES) {
-					var ids:Array = new Array();
-					for each (var acp:AccessControlProfileVO in accessControlProfilesTable.selectedItems) {
-						if (!acp.profile.isDefault) {
-							ids.push(acp.profile.id);
-						}
-					}
-					var deleteProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.ACCOUNT_DELETE_ACCESS_CONTROL_PROFILES);
-					deleteProfilesEvent.data = ids;
-					deleteProfilesEvent.dispatch();
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ACCOUNT, KalturaStatsKmcEventType.ACCOUNT_ACCESS_CONTROL_DELETE, "Account>Access Control Delete");
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.ACCOUNT_ACCESS_CONTROL_DELETE, GoogleAnalyticsConsts.ACCOUNT);
-				}
-			}
 
 
 			//paging
 			private function gotoPage():void {
 				// update filter here
-				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
-
 				loadAccessControlsList();
 			}
 
 
 			private function onPagerCreationComplete(event:Event):void {
 				AccountModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
-				paging.kalturaFilterPager.pageIndex = 0;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
 				loadAccessControlsList();
 			}
 
@@ -223,15 +156,17 @@
 	<mx:HBox width="100%" height="100%" styleName="tablePagerAndButtonsBarBox">
 		<mx:VBox width="100%" id='tableContainer' styleName="tableAndPagerContainerStyle" horizontalAlign="center">
 			<ac:AccessControlProfilesTable id='accessControlProfilesTable' 
-				dataProvider="{accessControlsList}" allSelected="{allSelected}"/>
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+				dataProvider="{accessControlsList}"/>
+			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
+				<mx:HBox id='bottomActionBox' styleName="DataGridActions" height="{paging.height}">
+					<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','disabledDeleteButton')}"
+							   useHandCursor="true" buttonMode="true" click='deleteProfiles(event)'/>
+				</mx:HBox>
+				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
 							 totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
 							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
 							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)"
 							 rowsInPage="{[10, 15, 20, 25]}"/>
-			<mx:HBox id='bottomActionBox' width="100%" styleName="DataGridActions">
-				<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','disabledDeleteButton')}"
-						   useHandCursor="true" buttonMode="true" click='onDeleteCheckedProfileClick(event)'/>
 			</mx:HBox>
 		</mx:VBox>
 		<mx:VBox id='actionBox' height="100%" styleName="listActionsBox">
