@@ -561,23 +561,11 @@
 				
 				//set kdp params
 				var params:Object = new Object();
-//				params.widgetId = "_" + _context.kc.partnerId;
-//				params.cdnHost = _context.cdnHost;
-//				params.host = _context.rootUrl;
-//				params.autoPlay = "false";
-//				params.loop = "false";
-//				params.autoRewind = "false";
-//				params.sourceType = "entryId";
 				params.entryId = _entryData.selectedEntry.id;
-				//				if (context.rootUrl)
-				//					params.host = context.rootUrl;
-//				if (_context.drilldownUiconf)
-//					params.uiConfId = _context.drilldownUiconf;
 				params.ks = _context.kc.ks;
 				params.partnerId = _context.kc.partnerId;
 				params.subpId = _context.kc.partnerId + "00";
 				
-				//				params.cdnUrl = context.rootUrl;
 				params.debugMode = _context.debugMode;
 				
 				kdp3StaticSwfLoader.content["flashvars"] = params;
@@ -672,7 +660,6 @@
 				var catBrs:CategoryBrowser = new CategoryBrowser();
 				catBrs.filterModel = (_dpModel.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 				catBrs.kClient = _context.kc;
-//				catBrs.showText = false;
 				catBrs.setCategories(catComplete.selectedItems.source);
 				catBrs.addEventListener(Event.CLOSE, closeCatPopup);
 				catBrs.addEventListener("apply", setCatsToAutocomplete);
@@ -789,6 +776,7 @@
 					
 					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
 						var curCustomData:SingleCustomData = new SingleCustomData();
+						curCustomData.visibleHeader = profilesAC.length > 2;
 						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as EntryFormBuilder;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
 						
@@ -836,7 +824,7 @@
 		]]>
 	</mx:Script>
 	
-	<mx:StringValidator id='nameListValidator' source="{name_input}" property="text" triggerEvent="change"
+	<mx:StringValidator id="nameListValidator" source="{name_input}" property="text" triggerEvent="change"
 						required="true"
 						requiredFieldError="{resourceManager.getString('drilldown', 'entryNameIsMandatory')}"/>
 	
@@ -952,7 +940,8 @@
 					<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}"  width="{RIGHT_TEXT_WIDTH}"
 							  styleName="drillDownSubLabel"/>
 				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.votes}" 
+						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.votes}">
 					<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:"  width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.votes}"  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
@@ -983,7 +972,8 @@
 							  styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.flags}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.rank}" 
+						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.rank}">
 					<mx:Label text="{resourceManager.getString('drilldown','rating')}:" 
 							  width="{RIGHT_LABEL_WIDTH2}" styleName="drillDownLabel"/>
 					<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
