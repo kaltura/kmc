@@ -202,6 +202,9 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.ENTRY_DETAILS_WINDOW:
 						currentPopUp = openEntryDetails(EntryDetailsWindowState.NORMAL_ENTRY);
 						break;
+					case WindowsStates.ENTRY_DETAILS_WINDOW_SA:
+						currentPopUp = openEntryDetails(EntryDetailsWindowState.NORMAL_ENTRY_SA);
+						break;
 					case WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW:
 						currentPopUp = openEntryDetails(EntryDetailsWindowState.PLAYLIST_ENTRY);
 						break;
@@ -426,7 +429,7 @@ package com.kaltura.kmc.modules.content.business
 				}
 			}
 			else {
-				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW);
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ENTRY_DETAILS_WINDOW_SA);
 				cgEvent.dispatch();
 			}
 		}

@@ -10,6 +10,7 @@ package com.kaltura.edw.model.types
 		public static const ENTRY_DETAILS_WINDOW_NEW_ENTRY : String = "entryDetailsWindowNewEntry";
 		public static const REPLACEMENT_ENTRY_DETAILS_WINDOW : String = "replacementEntryDetailsWindow";
 		public static const ENTRY_DETAILS_WINDOW : String = "entryDetailsWindow";
+		public static const ENTRY_DETAILS_WINDOW_SA : String = "entryDetailsWindowSa";
 		public static const PLAYLIST_ENTRY_DETAILS_WINDOW : String = "playlistEntryDetailsWindow";
 		public static const PLAYLIST_MANUAL_WINDOW: String = "playlistManualWindow";
 		public static const PLAYLIST_RULE_BASED_WINDOW: String = "playlistRuleBasedWindow";

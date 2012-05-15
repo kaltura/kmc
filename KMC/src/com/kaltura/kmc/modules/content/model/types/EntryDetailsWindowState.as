@@ -11,6 +11,12 @@ package com.kaltura.kmc.modules.content.model.types
 		 */		
 		public static const NORMAL_ENTRY:String = "normal_entry";
 		
+		
+		/**
+		 * normal entry drilldown with no prev/next (i.e. clips)
+		 */		
+		public static const NORMAL_ENTRY_SA:String = "normal_entry_sa";
+		
 		/**
 		 * drilldown to a new entry, when closing the window without "save"
 		 * the user will be asked if they want to save the entry 

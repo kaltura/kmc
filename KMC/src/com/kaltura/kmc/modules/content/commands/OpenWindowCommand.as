@@ -18,7 +18,10 @@ package com.kaltura.kmc.modules.content.commands
 			//close the opened window and open other instead
 			if(newState == _model.windowState)
 				_model.windowState = WindowsStates.NONE;
-				
+			
+			if(_model.windowState == WindowsStates.ENTRY_DETAILS_WINDOW && newState == WindowsStates.ENTRY_DETAILS_WINDOW_SA)
+				_model.windowState = WindowsStates.NONE;
+							
 			switch(newState)
 			{
 				case WindowsStates.DOWNLOAD_WINDOW: 			
