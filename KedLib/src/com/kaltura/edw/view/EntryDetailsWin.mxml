@@ -87,12 +87,6 @@
 			private var _uiEnabledWatcher:ChangeWatcher;
 
 			/**
-			 * a watcher for binding this.enabled to model.loadingFlag
-			 * once only.
-			 * */
-			private var _enabledWatcher:ChangeWatcher;
-
-			/**
 			 * watcher for binding
 			 * */
 			private var _sameRefidWatcher:ChangeWatcher;
@@ -141,9 +135,10 @@
 					}
 					
 					// Init the Panel Loader on the first time
-					try{
+					try {
 						PanelLoader.instance;
-					} catch (e:IllegalOperationError) {
+					} 
+					catch (e:IllegalOperationError) {
 						var contextDp:ContextDataPack = value.getDataPack(ContextDataPack) as ContextDataPack;
 						var panelDataVO:PanelMetadataVO = PanelMetadataParser.parse(contextDp.panelsConfig);
 						PanelLoader.initialize(panelDataVO, contextDp.sourceUrl);
@@ -199,17 +194,12 @@
 			/**
 			 * whether there was first navigation: meaning init data was loaded, so we can enable tln
 			 * */
-			private var _hadFirstNavigation:Boolean = false;
+			private var _enableTLN:Boolean = false;
 
 			/**
 			 * list of tabs which will be visible
 			 * */
 			private var _visibleTabs:Vector.<String>;
-
-			/**
-			 * original tabs in initial view stack
-			 * */
-//			private var _originalTabs:Array;
 
 
 			/**
@@ -232,6 +222,9 @@
 			public var isUiEnabled:Boolean = true;
 
 			[Bindable]
+			/**
+			 * RnP - user may not edit data
+			 * */
 			public var saveEnabled:Boolean = true;
 
 			/**
@@ -246,37 +239,31 @@
 			
 			/**
 			 * Panels pending for creation process to be completed by the PanelLoader
-			 * @private 
 			 */
 			private var _panelsToCreate:Vector.<String>;
 			
 			/**
 			 * The currently available panels mapping from panel instance to panel ID.
-			 * @private 
 			 */
 			private var _currentPanelsMapping:Dictionary = new Dictionary();
 			
 			/**
 			 * A list of panel ids. This is the same as values of the _currentPanelsMapping dictionary, but used for easier access.
-			 * @private 
 			 */
 			private var _lastCreatedPanels:Vector.<String>;
 			
 			/**
 			 * A mapping between panel instances and ChangeWatcher that are related to them, that were created from binding to selectedEntry.
-			 * @private 
 			 */
 			private var _selectedEntryWatchers:Dictionary;
 			
 			/**
-			 * A mapping between panel instances and ChangeWatcher that are related to them, that were created from binding to isUiEnabled.
-			 * @private 
+			 * A mapping between panel instances and ChangeWatcher that are related to them, that were created from binding to _model.loadingFlag.
 			 */
 			private var _panelEnabledWatchers:Dictionary;
 			
 			/**
 			 * A list of panels instances that were created in the last initiliaztion iteration.
-			 * @private 
 			 */
 			private var _newPanels:Vector.<IDrilldownPanel> = new Vector.<IDrilldownPanel>;
 
@@ -544,7 +531,6 @@
 					}
 					//if none of the profiles contain fields (the only child is the navigation hbox)
 					if (! isCustomDataIn) {
-//						removeTabs([customData], tabs);
 						allTabs = filterVector(allTabs, Vector.<String>([PanelConsts.CUSTOM_DATA_PANEL])); 
 					}	
 				}
@@ -654,9 +640,6 @@
 			 * remove all binding watchers
 			 * */
 			private function removeWatchers():void {
-				if (_enabledWatcher) {
-					_enabledWatcher.unwatch();
-				}
 				if (_entryWatcher) {
 					_entryWatcher.unwatch();
 				}
@@ -841,18 +824,7 @@
 			}
 
 			private function onChangeView():void {
-				_hadFirstNavigation = true;
-				// all data for entry metadata is loaded before the window opens.
-				// other panels need data that is loaded when the panel opens, so 
-				// we disable them until data is loaded.
-				if (viewStack.selectedChild != panels[PanelConsts.METADATA_PANEL]) {
-					if (_entryDetailsModel.loadingFlag) {
-						this.enabled = false;
-						if (!_enabledWatcher) {
-							_enabledWatcher = BindingUtils.bindSetter(setEnabledByLoadingFlag, _entryDetailsModel, "loadingFlag");
-						}
-					}
-				}
+				_enableTLN = true;
 				trackNavigation(viewStack.selectedChild.id);
 			}
 			
@@ -1101,7 +1073,7 @@
 	<control:EDWController id="edwController"/>
 
 	<mx:TabBar id="dtn" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn" useHandCursor="true"
-			   buttonMode="true" tabHeight="25" enabled="{!_entryDetailsModel.loadingFlag || _hadFirstNavigation}"/>
+			   buttonMode="true" tabHeight="25" enabled="{!_entryDetailsModel.loadingFlag || _enableTLN}"/>
 
 	<mx:ViewStack id="viewStack" width="100%" height="100%" change="{onChangeView()}" creationPolicy="all"
 				  selectedIndex="{dtn.selectedIndex}" styleName="sectionViewStack" />
@@ -1110,17 +1082,17 @@
 		<mx:HBox width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('drilldown', 'save')}"
-					   click="submitChanges(false)" buttonMode="true" enabled="{isUiEnabled &amp;&amp; saveEnabled}"/>
+					   click="submitChanges(false)" buttonMode="true" enabled="{!_entryDetailsModel.loadingFlag &amp;&amp; saveEnabled}"/>
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('drilldown', 'saveAndClose')}"
-					   click="submitChanges(true)" buttonMode="true" enabled="{isUiEnabled &amp;&amp; saveEnabled}"/>
+					   click="submitChanges(true)" buttonMode="true" enabled="{!_entryDetailsModel.loadingFlag &amp;&amp; saveEnabled}"/>
 
 		</mx:HBox>
-		<mx:HBox horizontalAlign="right" width="33%">
+		<mx:HBox horizontalAlign="right" width="33%" >
 			<mx:LinkButton label="{resourceManager.getString('drilldown', 'prevEntry')}" click="gotoNextEntry(false)"
-						   buttonMode="true" enabled="{isUiEnabled &amp;&amp; _prevEnabled}" visible="{showNextPrevBtns}"
+						   buttonMode="true" enabled="{!_entryDetailsModel.loadingFlag &amp;&amp; _prevEnabled}" visible="{showNextPrevBtns}"
 						   styleName="drillDownNavPrevBtn"/>
 			<mx:LinkButton label="{resourceManager.getString('drilldown', 'nextEntry')}" click="gotoNextEntry(true)"
-						   buttonMode="true" enabled="{isUiEnabled &amp;&amp; _nextEnabled}" visible="{showNextPrevBtns}"
+						   buttonMode="true" enabled="{!_entryDetailsModel.loadingFlag &amp;&amp; _nextEnabled}" visible="{showNextPrevBtns}"
 						   styleName="drillDownNavNextBtn" labelPlacement="left"/>
 		</mx:HBox>
 	</mx:ControlBar>
