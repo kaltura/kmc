@@ -39,14 +39,10 @@ package com.kaltura.edw.model.datapacks
 		public var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
 		
 		/**
-		 * Indicates whether flavors were loaded
+		 * Indicates whether flavors were loaded 
+		 * used in DistributionDetailsWindow
 		 * */
 		public var flavorsLoaded:Boolean = false;
-		
-		/**
-		 * Indicates whether thumbs were loaded
-		 * */
-//		public var thumbsLoaded:Boolean = false;
 		
 		/**
 		 * Holds a reference to the current entry to check whether it changed or not when loadThumbs is called. 
@@ -92,19 +88,21 @@ package com.kaltura.edw.model.datapacks
 			}
 		}
 		
+		/**
+		 * since refreshFlavors is triggered by both set status and set replacementStatus on FlavorsTab,
+		 * we get a redundant call if both change. this function removes one call.
+		 * */
 		public function refreshFlavors():void{
-			_refreshOnce = true;
-			_timeoutTimer.addEventListener(TimerEvent.TIMER_COMPLETE, refreshOnce);
-			_timeoutTimer.start();
+			if (!_timeoutTimer.running && _flavorRequestorEntry) {
+				_timeoutTimer.addEventListener(TimerEvent.TIMER_COMPLETE, refreshOnce);
+				_timeoutTimer.start();
+			}
 		}
 		
 		private function refreshOnce(event:TimerEvent):void {
 			_timeoutTimer.removeEventListener(TimerEvent.TIMER_COMPLETE, refreshOnce);
 			_timeoutTimer.reset();
-			if (_refreshOnce) {
-				refreshData(false);
-				_refreshOnce = false;
-			}
+			refreshData(false);
 		}
 		
 		private function refreshData(refreshEntry:Boolean):void {

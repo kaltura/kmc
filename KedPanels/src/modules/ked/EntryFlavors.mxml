@@ -38,10 +38,7 @@ Flavours tab of EntryDetailsWin
 			import com.kaltura.edw.view.window.flavors.MatchFromDropFolderWindow;
 			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.edw.vo.UploadFileVo;
-			import com.kaltura.events.FileUploadEvent;
 			import com.kaltura.kmvc.model.IDataPackRepository;
-			import com.kaltura.kmvc.model.KMvCModel;
-			import com.kaltura.managers.FileUploadManager;
 			import com.kaltura.types.KalturaEntryReplacementStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
@@ -63,8 +60,6 @@ Flavours tab of EntryDetailsWin
 			// =====================================================================
 			// Data
 			// =====================================================================
-			
-//			public var model:KMvCModel;
 			
 			private var _selectedEntry:KalturaBaseEntry;
 			
@@ -159,6 +154,9 @@ Flavours tab of EntryDetailsWin
 			// =====================================================================
 			
 			private var _flavorsWatcher:ChangeWatcher;
+			private var _repStatWchr:ChangeWatcher;
+			private var _repIdWchr:ChangeWatcher;
+			private var _statWchr:ChangeWatcher;
 			
 			/*
 			* watchers for binding to matchFromDropFolderWindow
@@ -187,20 +185,12 @@ Flavours tab of EntryDetailsWin
 			private var _replacementStatus:String;
 			private var _replacingEntryId:String;
 			
-			/**
-			 * indicates if event listener to uploadManager.uploadStarted was already added
-			 * */
-//			private var _listenToUpload:Boolean = false;
 			
 			/**
 			 * entry status
 			 * */
 			private var _status:String;
 			
-			/**
-			 * should flavor data be listed
-			 * */
-//			private var _refreshOnce:Boolean;
 			
 			private var _dpModel:IDataPackRepository;
 			private var _distributionData:DistributionDataPack;
@@ -216,14 +206,11 @@ Flavours tab of EntryDetailsWin
 				
 				_selectedEntry = value;
 				
-				refreshEntry();
+				setTextsAndButtons();
 				
-				BindingUtils.bindProperty(this, "replacementStatus", _selectedEntry, "replacementStatus");
-				BindingUtils.bindProperty(this, "replacingEntryId", _selectedEntry, "replacingEntryId");
-				BindingUtils.bindProperty(this, "status", _selectedEntry, "status");
 			}
 			
-			private function refreshEntry():void{
+			private function setTextsAndButtons():void{
 				if (_selectedEntry.replacingEntryId) {
 					replacementEntryId.text = _selectedEntry.replacingEntryId;
 					_showActions = false;
@@ -300,30 +287,20 @@ Flavours tab of EntryDetailsWin
 			}
 			
 			
-			
-			
-			public function get status():String {
-				return _status;
-			}
-			
-			
-			public function set status(value:String):void {
-				if (value && (!_status || (_status != value))) {
-//					_refreshOnce = true;
-//					setTimeout(refreshOnce, 5);
-					_distributionData.refreshFlavors();
-				}
-				_status = value;
-//				selectedEntry = _selectedEntry;
-				refreshEntry();
-			}
-			
 			public function clear():void {
 				if ((_selectedEntry is KalturaMixEntry || 
 					(_selectedEntry is KalturaMediaEntry && (_selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE))) {
 					_distributionData.clearFlavorUpdates();
-//					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-//					_listenToUpload = false;
+				}
+				
+				if (_repStatWchr) {
+					_repStatWchr.unwatch();
+				}
+				if (_repIdWchr) {
+					_repIdWchr.unwatch();
+				}
+				if (_statWchr) {
+					_statWchr.unwatch();
 				}
 			}
 			
@@ -343,16 +320,24 @@ Flavours tab of EntryDetailsWin
 				dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true));
 			}
 			
-			/**
-			 * since refreshData is triggered by both set status and set replacement status,
-			 * we get a redundant call if both change. this function removes one call.
-			 * */
-//			private function refreshOnce():void {
-//				if (_refreshOnce) {
-//					refreshData(false);
-//					_refreshOnce = false;
-//				}
-//			}
+			
+			
+			
+			
+			
+			public function get status():String {
+				return _status;
+			}
+			
+			
+			public function set status(value:String):void {
+				if (value && (!_status || (_status != value))) {
+					_distributionData.refreshFlavors();
+				}
+				_status = value;
+				setTextsAndButtons();
+			}
+			
 			
 			
 			public function get replacementStatus():String {
@@ -365,7 +350,7 @@ Flavours tab of EntryDetailsWin
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
 						openReplacementDrilldown();
 					}
-						//if replacement entry doesn't exist anymore
+					//if replacement entry doesn't exist anymore
 					else {
 						Alert.show(resourceManager.getString('drilldown', 'replacementNotExistMsg'), resourceManager.getString('drilldown', 'replacementNotExistTitle'));
 					}
@@ -373,13 +358,10 @@ Flavours tab of EntryDetailsWin
 				}
 				
 				if (value && (!_replacementStatus || (_replacementStatus != value))) {
-//					_refreshOnce = true;
-//					setTimeout(refreshOnce, 5);
 					_distributionData.refreshFlavors();
 				}
 				_replacementStatus = value;
-//				selectedEntry = _selectedEntry;
-				refreshEntry();
+				setTextsAndButtons();
 			}
 			
 			
@@ -397,7 +379,7 @@ Flavours tab of EntryDetailsWin
 				
 				_replacingEntryId = value;
 //				selectedEntry = _selectedEntry;
-				refreshEntry();
+				setTextsAndButtons();
 			}
 			
 			
@@ -419,8 +401,8 @@ Flavours tab of EntryDetailsWin
 			}
 			
 			public function init():void {
+				var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				if (!_flavorsWatcher) {
-					var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 					_flavorsWatcher = BindingUtils.bindProperty(this, "flavorAssets", ddp, "flavorParamsAndAssetsByEntryId");
 				}
 				//the following data is required for the actions buttons
@@ -441,14 +423,10 @@ Flavours tab of EntryDetailsWin
 			 * loads required data from server
 			 * */
 			public function initData():void {
-				//to listen only once
-//				if (!_listenToUpload) {
-//					FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-//					_listenToUpload = true;
-//				}
-//				
-//				_refreshOnce = true;
-//				setTimeout(refreshOnce, 5);
+				_repStatWchr = BindingUtils.bindProperty(this, "replacementStatus", _selectedEntry, "replacementStatus");
+				_repIdWchr = BindingUtils.bindProperty(this, "replacingEntryId", _selectedEntry, "replacingEntryId");
+				_statWchr = BindingUtils.bindProperty(this, "status", _selectedEntry, "status");
+				
 				_distributionData.loadFlavors(controller, _selectedEntry)
 			}
 			
@@ -462,10 +440,6 @@ Flavours tab of EntryDetailsWin
 				dg.removeEventListener(FlavorsTable.DELETE_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.DOWNLOAD_FLAVOR, actionHandler);
 				dg.removeEventListener(FlavorsTable.PREVIEW_FLAVOR, actionHandler);
-//				if (_listenToUpload) {
-//					FileUploadManager.getInstance().removeEventListener(FileUploadEvent.UPLOAD_STARTED, onFlavorsChanged);
-//					_listenToUpload = false;
-//				}
 				_distributionData.clearFlavorUpdates();
 				if (_flavorsWatcher)
 					_flavorsWatcher.unwatch();
@@ -563,11 +537,6 @@ Flavours tab of EntryDetailsWin
 				openAddFlavorsWindow(AddFlavorAssetsWindow.ACTION_LINK, filesList, false);
 				//resets data
 				_selectedFlavorWithParams = null;
-			}
-			
-			
-			private function onFlavorsChanged(event:Event):void {
-				refreshData(true);
 			}
 			
 			

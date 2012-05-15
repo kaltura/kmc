@@ -107,16 +107,6 @@ package com.kaltura.edw.components.fltr.cat
 			}
 		}
 		
-//		override public function set dataProvider(value:Object):void {
-//			if (dataProvider && dataProvider is IEventDispatcher) {
-//				dataProvider.removeEventListener(CollectionEvent.COLLECTION_CHANGE, disableItems);
-//			}
-//			if (value is IEventDispatcher) {
-//				value.addEventListener(CollectionEvent.COLLECTION_CHANGE, disableItems);
-//			}
-//			super.dataProvider = value;
-//			disableItems();
-//		}
 		
 		/**
 		 * easy access to categories (key is category id) 
@@ -517,8 +507,6 @@ package com.kaltura.edw.components.fltr.cat
 			for each (var cat:CategoryVO in headCat.children) {
 				if (selectedIds.contains(cat.id.toString())) {
 					handleSelectionChange(cat);
-//					_selectedCategories[cat.id.toString()] = cat;
-//					cat.selected = CatSelectionStatus.SELECTED;
 					
 					// remove from initial filter
 					var i:int = selectedIds.getItemIndex(cat.id.toString());

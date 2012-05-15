@@ -20,7 +20,6 @@ package com.kaltura.edw.control.commands {
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			(_model.getDataPack(DistributionDataPack) as DistributionDataPack).flavorsLoaded = false;
-//			_model.entryDetailsModel.flavorsLoaded = false;
 			var entryId:String = (event as KedEntryEvent).entryVo.id;
 			var getAssetsAndFlavorsByEntryId:FlavorAssetGetFlavorAssetsWithParams = new FlavorAssetGetFlavorAssetsWithParams(entryId);
 			getAssetsAndFlavorsByEntryId.addEventListener(KalturaEvent.COMPLETE, result);
@@ -33,7 +32,6 @@ package com.kaltura.edw.control.commands {
 			_model.decreaseLoadCounter();
 			var entry:KalturaBaseEntry = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
 			// if this is a replacement entry
-//			if (_model.windowState == WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW) {
 			if (entry.replacedEntryId) {
 				var er:KalturaError = (info as KalturaEvent).error;
 				if (er.errorCode == APIErrorCode.ENTRY_ID_NOT_FOUND) {
@@ -59,7 +57,7 @@ package com.kaltura.edw.control.commands {
 
 		private function setDataInModel(arrCol:Array):void {
 			var flavorParamsAndAssetsByEntryId:ArrayCollection = new ArrayCollection();
-			flavorParamsAndAssetsByEntryId.removeAll();
+//			flavorParamsAndAssetsByEntryId.removeAll();
 			var tempAc:ArrayCollection = new ArrayCollection();
 			var foundIsOriginal:Boolean = false;
 			for each (var assetWithParam:KalturaFlavorAssetWithParams in arrCol) {
