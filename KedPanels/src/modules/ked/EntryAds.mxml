@@ -74,19 +74,6 @@
 			private var _kdp:DisplayObject;
 			private static var kdpLoader:SWFLoader;
 			
-			/**
-			 * remember if the kdp already got its first "doPlay" call.
-			 * when we get updatePlayhead from kclip, if kdpFirstPlayed
-			 * we do doSeek, otherwise we do mediaPlayFrom and doPlay+doPause
-			 * */
-			private var _kdpFirstPlayed:Boolean = false;
-			
-			
-			/**
-			 * when the KDP plays for the first time, if kClip initiated the play
-			 * we need to pause the KDP. otherwise, keep playing.
-			 * */
-			private var _kClipInitiatedPlay:Boolean = false;
 			
 			/**
 			 * to stop loop between updating playhead in kclip/kdp
@@ -109,7 +96,6 @@
 			public var context:ContextDataPack;
 			
 			
-			//			public var entryDetailsModel:EntryDetailsModel;
 			/**
 			 * data for this panel
 			 * */
@@ -173,7 +159,7 @@
 			/**
 			 * the cuepoint currently being edited
 			 * */
-			private var _selectedCuePoint:KalturaAdCuePoint /*  = new KalturaAdCuePoint() */;
+			private var _selectedCuePoint:KalturaAdCuePoint;
 			
 			/**
 			 * change watcher for reacting to cueopints count being set on model
@@ -271,7 +257,7 @@
 			 * */
 			private function uncaughtErrorHandler(event:Event):void {
 				event.preventDefault();
-				trace("uncaughtErrorHandler: ", event, event["error"]);
+				trace("uncaughtErrorHandler (EntryAds): ", event, event["error"]);
 			}
 			
 			
@@ -288,7 +274,6 @@
 			
 			public function destroy():void {
 				if (_kdp) {
-					//					_kdp.removeEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false);
 					_kdp.removeEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false);
@@ -317,12 +302,6 @@
 				// reset number of cuepoints
 				var cg:CuePointEvent = new CuePointEvent(CuePointEvent.RESET_CUEPOINTS_COUNT);
 				controller.dispatch(cg);
-				//				if (!_watchCPCount) {
-				//					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, model, "cuepointsCount");
-				//				}
-				//				if (!_watchCPReload) {
-				//					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, model, "reloadCuePoints");
-				//				}
 				loadWidgets();
 				// get number of entry cuepoints
 				cg = new CuePointEvent(CuePointEvent.COUNT_CUEPOINTS);
@@ -330,21 +309,6 @@
 				controller.dispatch(cg);
 			}
 			
-			
-			//			/**
-			//			 * triggers save action for cuepoints if needed.
-			//			 * @return true if save process required (and began), false otherwise
-			//			 * */
-			//			public function saveCuepoints():Boolean {
-			//				var res:Boolean = false;
-			//				if (_kClipReady && _kClip["isSaveRequired"]()) {
-			//					_kClip.addEventListener(KClipEventTypes.SAVED, handleKClipEvents);
-			//					_kClip["save"]();
-			//					res = true;
-			//				}
-			// if the component wasn't ready data couldn't change, therefore save isn't required.
-			//				return res;
-			//			}
 			
 			
 			/**
@@ -403,7 +367,6 @@
 						}
 						if (setEntryId) {
 							_kdp["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _selectedEntry.id});
-							_kdpFirstPlayed = false;
 						}
 					}
 					if (_img && _img.parent) {
@@ -423,12 +386,6 @@
 				else {
 					dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 				}
-				//				var result:EntryDetailsValidationError = new EntryDetailsValidationError();
-				//				if (!validate()) {
-				//					//failed validation
-				//					result.error = EntryDetailsValidationError.CUEPOINTS_DATA;
-				//				}
-				//				return result;
 			}
 			
 			
@@ -526,7 +483,6 @@
 			}
 			
 			private function addKDPListeners():void {
-				//				_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAYED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PAUSED, handleKdpEvents, false, 0, true);
 				_kdp.addEventListener(KdpEventTypes.PLAYER_PLAY_END, handleKdpEvents, false, 0, true);
@@ -541,8 +497,6 @@
 				kClipLoader.width = kClipHolder.width;
 				kClipLoader.height = kClipHolder.height;
 				kClipLoader.content.addEventListener(FlexEvent.APPLICATION_COMPLETE, onKClipApplicationReady);
-				//				if (kClipLoader.loaderInfo.hasOwnProperty("uncaughtErrorEvents"))
-				//					IEventDispatcher(kClipLoader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 			}
 			
 			
@@ -612,9 +566,6 @@
 			 * */
 			private function handleKClipEvents(e:Event):void {
 				e.stopImmediatePropagation();
-//				if (context.debugMode) {
-//					trace("EntryAds.handleKClipEvents:", e.type, e["data"]);
-//				}
 				switch (e.type) {
 					case KClipEventTypes.PLAYHEAD_DRAG_START:
 						_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents);
@@ -716,47 +667,27 @@
 			private function initKdp():void {
 				//set kdp params
 				var params:Object = new Object();
-//				params.widgetId = "_" + context.kc.partnerId;
-//				params.cdnHost = context.cdnHost;
-//				params.host = context.rootUrl;
-//				params.autoPlay = "false";
-//				params.loop = "false";
-//				params.autoRewind = "false";
-//				params.sourceType = "entryId";
 				params.entryId = _selectedEntry.id;
-//				if (context.drilldownAdsUiconf)
-//					params.uiConfId = context.drilldownAdsUiconf;
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
 				
-				params.debugMode = context.debugMode; //"true";//
+				params.debugMode = context.debugMode; 
 				
 				_kdp["flashvars"] = params;
-				//start the loading sqeunce of the kdp	
+				//start the loading sequence of the kdp	
 				_kdp["init"]();
 				addKDPListeners();
 			}
 			
 			
 			private function handleKdpEvents(e:Event):void {
-//				if (context.debugMode) {
-//					trace("EntryAds.handleKdpEvents, ", e.type, e["data"]);
-//				}
 				switch (e.type) {
 					case KdpEventTypes.PLAYER_PLAYED:
 						if (_kClip) {
 							_kClip.removeEventListener(KClipEventTypes.PLAYHEAD_UPDATED, handleKClipEvents, false);
 						}
 						_kdp.addEventListener(KdpEventTypes.PLAYER_UPDATE_PLAYHEAD, handleKdpEvents, false, 0, true);
-						if (!_kdpFirstPlayed) {
-							_kdpFirstPlayed = true;
-							if (_kClipInitiatedPlay) {
-								// if kclip initiated, doPause
-								_kdp["sendNotification"](KdpEventTypes.DO_PAUSE);
-								_kClipInitiatedPlay = false;
-							}
-						}
 						break;
 					case KdpEventTypes.PLAYER_PAUSED:
 					case KdpEventTypes.PLAYER_PLAY_END:
@@ -799,18 +730,18 @@
 			 * */
 			private function updateKdpPlayhead(n:Number):void {
 				_kdpInitiatedUpdate = false;
-				if (_kdp) {
-					if (_kdpFirstPlayed) {
-						// kdp played before. just seek
+//				if (_kdp) {
+//					if (_kdpFirstPlayed) {
+//						// kdp played before. just seek
 						_kdp["sendNotification"](KdpEventTypes.DO_SEEK, n);
-					}
-					else {
-						// cause first play
-						_kClipInitiatedPlay = true;
-						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
-						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
-					}
-				}
+//					}
+//					else {
+//						// cause first play
+//						_kClipInitiatedPlay = true;
+//						_kdp["setAttribute"]("mediaProxy", "mediaPlayFrom", n);
+//						_kdp["sendNotification"](KdpEventTypes.DO_PLAY);
+//					}
+//				}
 			}
 			
 			
@@ -858,7 +789,6 @@
 				var result:Boolean = true;
 				// ad type - must have value
 				if (cp.adType != KalturaAdType.VIDEO && cp.adType != KalturaAdType.OVERLAY) {
-					//					trace("cpid:", cp.id, "no adType selected");
 					if (showUI) {
 						cbType.errorString = "no adType selected";
 					}
@@ -870,14 +800,12 @@
 				// duration
 				if (cp.adType == KalturaAdType.OVERLAY) {
 					if (cp.endTime < cp.startTime) {
-						//						trace("cpid:", cp.id, "endTime before startTime");
 						if (showUI) {
 							teDuration.errorString = "endTime before startTime";
 						}
 						result &&= false;
 					}
 					else if (cp.endTime > (_selectedEntry as KalturaMediaEntry).duration * 1000) {
-						//						trace("cpid:", cp.id, "endTime after entry.duration");
 						if (showUI) {
 							teDuration.errorString = "endTime after entry.duration";
 						}
@@ -892,7 +820,6 @@
 				}
 				// for vast - url is mandatory
 				if (cp.protocolType == KalturaAdProtocolType.VAST && !cp.sourceUrl) {
-					//					trace("cpid:", cp.id, "vast, no sourceUrl");
 					if (showUI) {
 						tiUrl.errorString = "vast, no sourceUrl";
 					}
@@ -999,15 +926,6 @@
 				return -1;
 			}
 			
-			
-			/* 	private function updateKClipWidth(event:FlexEvent):void {
-			if (kClipLoader) {
-			kClipLoader.width = kClipHolder.width ;
-			if (_kClip) {
-			_kClip.width = kClipLoader.width;
-			}
-			}
-			} */
 			
 			
 			private function removeAllCuePoints(event:MouseEvent):void {
