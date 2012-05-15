@@ -48,8 +48,8 @@ package com.kaltura.edw.control.commands
 				Alert.show(ResourceManager.getInstance().getString('common','forbiddenError',[er.errorMsg]), 
 					ResourceManager.getInstance().getString('common', 'forbiden_error_title'), Alert.OK, null, logout);
 			}
-			else if (er.errorMsg) {
-				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('drilldown', 'error'));
+			else {
+				Alert.show(getErrorText(er), ResourceManager.getInstance().getString('drilldown', 'error'));
 			}
 		}
 		
@@ -109,6 +109,18 @@ package com.kaltura.edw.control.commands
 		}
 		
 		
+		/**
+		 * get localized error text (from drilldown bundle) if any, or server error. 
+		 * @param er	the error to parse
+		 * @return 		possible localised error message
+		 */
+		protected function getErrorText(er:KalturaError):String {
+			var str:String = ResourceManager.getInstance().getString('drilldown', er.errorCode);
+			if (!str) {
+				str = er.errorMsg;
+			} 
+			return str;
+		}
 		
 		/**
 		 * @inheritDocs
