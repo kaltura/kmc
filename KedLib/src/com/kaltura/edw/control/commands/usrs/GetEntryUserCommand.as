@@ -77,7 +77,7 @@ package com.kaltura.edw.control.commands.usrs
 					}
 				}
 				else {
-					Alert.show(/*getErrorText(er)*/"pfff", ResourceManager.getInstance().getString('drilldown', 'error'));
+					Alert.show(getErrorText(er), ResourceManager.getInstance().getString('drilldown', 'error'));
 				}
 			}
 			_model.decreaseLoadCounter();
