@@ -12,7 +12,8 @@ package com.kaltura.edw.business
 	 */	
 	public interface IDrilldownPanel extends IEventDispatcher
 	{
-		
+		function get id():String;		
+		function set id(value:String):void;
 		
 		/**
 		 * reference to the current entry 

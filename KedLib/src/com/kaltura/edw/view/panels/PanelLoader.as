@@ -127,6 +127,7 @@ class PanelLoaderImp implements IPanelLoaderImp{
 	private function createAndNotify(callback:Function, module:IModuleInfo, passThrough:Object, panelId:String):void{
 		var obj:Object = module.factory.create();
 		var panel:IDrilldownPanel =  obj as IDrilldownPanel;
+		panel.id = panelId;
 		
 		if (_data.styleMapping[panelId] != null){
 			panel.styleName = _data.styleMapping[panelId] as String;
