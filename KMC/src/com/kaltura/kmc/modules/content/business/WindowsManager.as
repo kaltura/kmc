@@ -278,11 +278,8 @@ package com.kaltura.kmc.modules.content.business
 						(currentPopUp as RemoveCategoriesWindow).model = model;
 						break;
 					case WindowsStates.MOVE_CATEGORIES_WINDOW:
-						currentPopUp = new MoveCategoriesWindow();
-						currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
-						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
-						(currentPopUp as MoveCategoriesWindow).filterModel = model.filterModel;
-						(currentPopUp as MoveCategoriesWindow).setCategories([model.categoriesModel.selectedCategory]);
+					case WindowsStates.MOVE_CATEGORY_WINDOW:
+						currentPopUp = openMoveCatsWin(newState);
 						break;
 					case WindowsStates.CATEGORIES_LISTING_WINDOW:
 						currentPopUp = new CategoriesListingWindow();
@@ -325,6 +322,19 @@ package com.kaltura.kmc.modules.content.business
 			}
 		}
 		
+		private function openMoveCatsWin(newState:String):MoveCategoriesWindow {
+			var currentPopUp:MoveCategoriesWindow = new MoveCategoriesWindow();
+			currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
+			currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+			(currentPopUp as MoveCategoriesWindow).filterModel = model.filterModel;
+			if (newState == WindowsStates.MOVE_CATEGORIES_WINDOW) {
+				(currentPopUp as MoveCategoriesWindow).setCategories(model.categoriesModel.selectedCategories);
+			}
+			else if (newState == WindowsStates.MOVE_CATEGORY_WINDOW) {
+				(currentPopUp as MoveCategoriesWindow).setCategories([model.categoriesModel.selectedCategory]);
+			}
+			return currentPopUp;
+		}
 		
 		/**
 		 * allows download of a single image or opens a download popup window
