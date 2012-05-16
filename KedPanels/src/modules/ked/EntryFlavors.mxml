@@ -60,9 +60,23 @@ Flavours tab of EntryDetailsWin
 			// =====================================================================
 			// Data
 			// =====================================================================
-			
+			[Bindable]
 			private var _selectedEntry:KalturaBaseEntry;
 			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (!value)
+					return;
+				
+				_selectedEntry = value;
+				
+				setTextsAndButtons();
+				
+			}
 			
 			
 			// =====================================================================
@@ -195,20 +209,7 @@ Flavours tab of EntryDetailsWin
 			private var _dpModel:IDataPackRepository;
 			private var _distributionData:DistributionDataPack;
 			
-			public function get selectedEntry():KalturaBaseEntry {
-				return _selectedEntry;
-			}
-			
-			
-			public function set selectedEntry(value:KalturaBaseEntry):void {
-				if (!value)
-					return;
-				
-				_selectedEntry = value;
-				
-				setTextsAndButtons();
-				
-			}
+		
 			
 			private function setTextsAndButtons():void{
 				if (_selectedEntry.replacingEntryId) {
@@ -838,9 +839,9 @@ Flavours tab of EntryDetailsWin
 			 * @param allowAdd		allow adding media to a no_content entry
 			 * @param allowReplace	allow replacing media of a ready entry
 			 * */
-			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean):Boolean {
+			private function showActionsBox(entryState:Boolean, allowAdd:Boolean, allowReplace:Boolean, entry:KalturaBaseEntry):Boolean {
 				var result:Boolean = entryState;
-				if (_selectedEntry && (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT)) {
+				if (entry && (entry.status == KalturaEntryStatus.NO_CONTENT)) {
 					result &&= allowAdd;
 				}
 				else {
@@ -873,8 +874,8 @@ Flavours tab of EntryDetailsWin
 		<mx:Label id="stateLabel" styleName="drillDownSubLabel"/>
 	</mx:HBox>
 	<!-- action buttons -->
-	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}"
-			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia)}">
+	<mx:HBox visible="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia, _selectedEntry)}"
+			 includeInLayout="{showActionsBox(_showActions, allowAddMedia, allowReplaceMedia, _selectedEntry)}">
 		<mx:Label id="actionLabel" styleName="drillDownLabel"/>
 		<mx:Button id="uploadFilesBtn"
 				   label="{multiFlavorsIngestionAllowed ? resourceManager.getString('drilldown','uploadFiles') : resourceManager.getString('drilldown','uploadFile')}"

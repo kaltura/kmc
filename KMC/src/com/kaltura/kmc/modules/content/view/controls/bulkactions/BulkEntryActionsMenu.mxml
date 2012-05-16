@@ -16,6 +16,7 @@
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.view.Categories;
 			
+			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.events.MenuEvent;
@@ -32,31 +33,41 @@
 			 * */
 			public static const CREATE_NEW_CATEGORY:String = "createNewCategory";
 			
-			
+			[Bindable]
 			/**
 			 * RnP: show tags actions
 			 * */
 			public var includeTags:Boolean = true;
 
+			[Bindable]
 			/**
 			 * RnP: show scheduling action
 			 * */
 			public var includeScheduling:Boolean = true;
 
+			[Bindable]
 			/**
 			 * RnP: show access control action
 			 * */
 			public var includeAccessControl:Boolean = true;
 			
+			[Bindable]
 			/**
 			 * RnP: show dnld action
 			 * */
 			public var includeDownload:Boolean = true;
 			
+			[Bindable]
 			/**
 			 * RnP: show playlist actions
 			 * */
 			public var includePlaylist:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * RnP: show delete action
+			 * */
+			public var includeDelete:Boolean = true;
 
 			[Bindable]
 			/**
@@ -83,19 +94,17 @@
 				var mi:MenuItemVo, smi:MenuItemVo;
 				// --- 
 				
-				if (includeScheduling) {
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'setScheduling');
-					mi.data = "scheduling";
-					topLevel.children.push(mi);
-				}
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'setScheduling');
+				mi.data = "scheduling";
+				BindingUtils.bindProperty(mi, "enabled", this, "includeScheduling");
+				topLevel.children.push(mi);
 				
-				if (includeAccessControl) {
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'setAccessCOntrolProfile');
-					mi.data = "accessControl";
-					topLevel.children.push(mi);
-				}
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'setAccessCOntrolProfile');
+				mi.data = "accessControl";
+				BindingUtils.bindProperty(mi, "enabled", this, "includeAccessControl");
+				topLevel.children.push(mi);
 
 				mi = new MenuItemVo();
 				mi.label = resourceManager.getString('cms', 'changeOwner');
@@ -103,22 +112,22 @@
 				topLevel.children.push(mi);
 
 				// --- TAGS
-				if (includeTags) {
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'editTags');
-					mi.children = [];
-					topLevel.children.push(mi);
-	
-					smi = new MenuItemVo();
-					smi.label = resourceManager.getString('cms', 'addTags');
-					smi.data = "addTags";
-					mi.children.push(smi);
-	
-					smi = new MenuItemVo();
-					smi.label = resourceManager.getString('cms', 'removeTags');
-					smi.data = "removeTags";
-					mi.children.push(smi);
-				}
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'editTags');
+				mi.children = [];
+				BindingUtils.bindProperty(mi, "enabled", this, "includeTags");
+				topLevel.children.push(mi);
+
+				smi = new MenuItemVo();
+				smi.label = resourceManager.getString('cms', 'addTags');
+				smi.data = "addTags";
+				mi.children.push(smi);
+
+				smi = new MenuItemVo();
+				smi.label = resourceManager.getString('cms', 'removeTags');
+				smi.data = "removeTags";
+				mi.children.push(smi);
+				
 				// --- CATEGORIES
 				mi = new MenuItemVo();
 				mi.label = resourceManager.getString('cms', 'editCategories');
@@ -146,26 +155,25 @@
 				smi.data = "addCategory";
 				mi.children.push(smi);
 
-				if (includePlaylist) {
-					smi = new MenuItemVo();
-					smi.label = resourceManager.getString('cms', 'createManualPlaylist');
-					smi.data = "addPlaylist";
-					mi.children.push(smi);
-				}
+				smi = new MenuItemVo();
+				smi.label = resourceManager.getString('cms', 'createManualPlaylist');
+				smi.data = "addPlaylist";
+				BindingUtils.bindProperty(smi, "enabled", this, "includePlaylist");
+				mi.children.push(smi);
 
 
 				// --- DOWNLOAD
-				if (includeDownload) {
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'download');
-					mi.data = "download";
-					topLevel.children.push(mi);
-				}
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'download');
+				mi.data = "download";
+				BindingUtils.bindProperty(mi, "enabled", this, "includeDownload");
+				topLevel.children.push(mi);
 
 				// --- DELETE
 				mi = new MenuItemVo();
 				mi.label = resourceManager.getString('cms', 'delete');
 				mi.data = "delete";
+				BindingUtils.bindProperty(mi, "enabled", this, "includeDelete");
 				topLevel.children.push(mi);
 			}
 
