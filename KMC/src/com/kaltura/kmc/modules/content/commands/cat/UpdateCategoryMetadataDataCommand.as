@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		override public function execute(event:CairngormEvent):void{
 			_model.increaseLoadCounter();
 			
-			var selectedCat:KalturaCategory = _model.categoriesModel.selectedCategories[0] as KalturaCategory;
+			var selectedCat:KalturaCategory = _model.categoriesModel.selectedCategory;
 			
 			var mr:MultiRequest = new MultiRequest();
 			

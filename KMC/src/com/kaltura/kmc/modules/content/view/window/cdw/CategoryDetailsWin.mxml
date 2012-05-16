@@ -47,7 +47,7 @@
 				}
 				_model = value;
 				_itemsAC = value.categoriesList;
-				_selectedCatWatcher = BindingUtils.bindSetter(setCategory, _model, "selectedCategories");
+				_selectedCatWatcher = BindingUtils.bindSetter(setCategory, _model, "selectedCategory");
 			}
 			
 			public function get categoriesModel():CategoriesModel {
@@ -210,12 +210,12 @@
 			}
 
 
-			private function setCategory(selectedCategories:Array):void {
-				_origCategory = selectedCategories[0] as KalturaCategory;
+			private function setCategory(selectedCategory:KalturaCategory):void {
+				_origCategory = selectedCategory;
 				_undoCategory = new KalturaCategory();
 				ObjectUtil.copyObject(_origCategory, _undoCategory);
 				if (_model.categoriesList) {
-					itemIndex = _model.categoriesList.getItemIndex(_origCategory);
+					itemIndex = _model.categoriesList.getItemIndex(selectedCategory);
 				}
 			}
 		]]>

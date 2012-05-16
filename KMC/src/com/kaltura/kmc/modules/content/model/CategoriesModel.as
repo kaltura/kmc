@@ -29,6 +29,11 @@ package com.kaltura.kmc.modules.content.model
 		public var client:KalturaClient;
 		
 		/**
+		 * when acting on a single category, the selected category (category table actions)
+		 */		
+		public var selectedCategory:KalturaCategory;
+		
+		/**
 		 * categories selected in the table (categories screen)
 		 */		
 		public var selectedCategories:Array;

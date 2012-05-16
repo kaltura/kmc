@@ -8,7 +8,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	{
 		override public function execute(event:CairngormEvent):void{
 			var catToSet:KalturaCategory = event.data as KalturaCategory;
-			_model.categoriesModel.selectedCategories = [catToSet];
+			_model.categoriesModel.selectedCategory = catToSet;
 		}
 
 	}

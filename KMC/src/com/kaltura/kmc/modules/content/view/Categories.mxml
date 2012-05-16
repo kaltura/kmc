@@ -108,12 +108,18 @@
 
 
 			private function categoriesTable_moveCategoryHandler(event:GeneralNonCairngormEvent):void {
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
+				// set the single selected category  (event.data is KalturaCategory)
+				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+				cgEvent.data = event.data;
+				cgEvent.dispatch();
+				
+				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.MOVE_CATEGORIES_WINDOW);
 				cgEvent.dispatch();
 			}
 
 
 			private function categoriesTable_itemClickHandler(event:Event):void {
+				// set the list of selected categories
 				var et:CategoriesTable = event.target as CategoriesTable;
 				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, et.selectedItems);
 				cgEvent.dispatch();
@@ -124,8 +130,9 @@
 
 			protected function categoriesTable_showDetailsHandler(event:GeneralNonCairngormEvent):void
 			{
-				// (event.data is KalturaCategory)
-				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [event.data]);
+				// set the single selected category  (event.data is KalturaCategory)
+				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+				cgEvent.data = event.data;
 				cgEvent.dispatch();
 
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
@@ -135,7 +142,8 @@
 
 			protected function addCatBtn_clickHandler(event:MouseEvent):void
 			{
-				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [createCategoryObject()]);
+				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+				cgEvent.data = createCategoryObject();
 				cgEvent.dispatch();
 
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);

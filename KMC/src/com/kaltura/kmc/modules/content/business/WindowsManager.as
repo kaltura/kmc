@@ -249,8 +249,7 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.CATEGORY_DETAILS_WINDOW:
 						var catDetails:CategoryDetailsWin;
 						currentPopUp = catDetails = new CategoryDetailsWin();
-						var selectedCat:KalturaCategory = model.categoriesModel.selectedCategories[0] as KalturaCategory;
-						if (selectedCat.name == null){
+						if (model.categoriesModel.selectedCategory.name == null){
 							model.categoriesModel.processingNewCategory = true;	//TODO make pretty
 							catDetails.isNewCategory = true;
 						}
@@ -283,7 +282,7 @@ package com.kaltura.kmc.modules.content.business
 						currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						(currentPopUp as MoveCategoriesWindow).filterModel = model.filterModel;
-						(currentPopUp as MoveCategoriesWindow).setCategories(model.categoriesModel.selectedCategories);
+						(currentPopUp as MoveCategoriesWindow).setCategories([model.categoriesModel.selectedCategory]);
 						break;
 					case WindowsStates.CATEGORIES_LISTING_WINDOW:
 						currentPopUp = new CategoriesListingWindow();

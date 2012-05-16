@@ -36,7 +36,22 @@ package com.kaltura.kmc.modules.content.commands
 						Alert.show( ResourceManager.getInstance().getString('cms','pleaseSelectEntriesFirst') , 
 									ResourceManager.getInstance().getString('cms','pleaseSelectEntriesFirstTitle') );
 				break;
-				default: _model.windowState = newState;
+				
+				case WindowsStates.REMOVE_CATEGORY_TAGS_WINDOW:
+				case WindowsStates.ADD_CATEGORY_TAGS_WINDOW:
+				case WindowsStates.CATEGORIES_LISTING_WINDOW:
+				case WindowsStates.CATEGORIES_ACCESS_WINDOW:
+				case WindowsStates.CATEGORIES_OWNER_WINDOW:
+					if(_model.categoriesModel.selectedCategories && _model.categoriesModel.selectedCategories.length > 0)
+						_model.windowState =  newState;
+					else
+						Alert.show( ResourceManager.getInstance().getString('cms','pleaseSelectCategoriesFirst') , 
+									ResourceManager.getInstance().getString('cms','pleaseSelectCategoriesFirstTitle') );
+				break;
+				
+				default:
+					_model.windowState = newState;
+					break;
 			}
 			 
 		}	

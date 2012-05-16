@@ -34,12 +34,11 @@ package com.kaltura.kmc.modules.content.commands.cat
 		{
 			var filterModel:FilterModel = _model.filterModel;
 			var catModel:CategoriesModel = _model.categoriesModel;
-			if (!filterModel.categoryMetadataProfiles || catModel.selectedCategories.length != 1)
+			if (!filterModel.categoryMetadataProfiles || !catModel.selectedCategory)
 				return;
 			
 			var filter:KalturaMetadataFilter = new KalturaMetadataFilter();
-			var selectedCategory:KalturaCategory = catModel.selectedCategories[0] as KalturaCategory;
-			filter.objectIdEqual = String(selectedCategory.id);	
+			filter.objectIdEqual = String(catModel.selectedCategory.id);	
 			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.CATEGORY;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			

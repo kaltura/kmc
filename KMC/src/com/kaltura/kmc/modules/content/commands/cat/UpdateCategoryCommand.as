@@ -44,11 +44,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 					refreshLists();
 				}
 				else {
-					var existingCat:KalturaCategory = _model.categoriesModel.selectedCategories[0];
 					// copy any attributes from the server object to the client object 
-					ObjectUtil.copyObject(data.data, existingCat);
+					ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
 					// retrigger binding
-					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategories", _model.categoriesModel.selectedCategories, _model.categoriesModel.selectedCategories));
+					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
 				}
 			}
 		}
