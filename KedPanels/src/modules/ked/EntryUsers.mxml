@@ -47,6 +47,11 @@
 			}
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
+				if (value) {
+					// save original values so we know if need to delete values
+					_origEditors = value.entitledUsersEdit;
+					_origPublishers = value.entitledUsersPublish;
+				}
 			}
 			
 			private var _dpModel:IDataPackRepository;
@@ -70,6 +75,8 @@
 			
 			private var _kClient:KalturaClient;
 			
+			private var _origEditors:String;
+			private var _origPublishers:String;
 			
 			private function setEditors(value:Array):void {
 				editorsComplete.selectedItems = new ArrayCollection(value);
@@ -125,8 +132,19 @@
 			
 			public function save():void {
 				// update stuff on entry object (_selectedEntry.userId is updated immediately)
-				_selectedEntry.entitledUsersEdit = getIdsString(editorsComplete.selectedItems);
-				_selectedEntry.entitledUsersPublish = getIdsString(publishersComplete.selectedItems);
+				var temp:String = getIdsString(editorsComplete.selectedItems);
+				if (temp == null && _origEditors != null) {
+					// need to delete
+					temp = KalturaClient.NULL_STRING;
+				}
+				_selectedEntry.entitledUsersEdit = temp;
+					
+				temp = getIdsString(publishersComplete.selectedItems);
+				if (temp == null && _origPublishers != null) {
+					// need to delete
+					temp = KalturaClient.NULL_STRING;
+				}
+				_selectedEntry.entitledUsersPublish = temp;
 				
 				// done
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
