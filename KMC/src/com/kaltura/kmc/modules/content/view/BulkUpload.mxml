@@ -203,14 +203,13 @@
 
 			private function onPagerCreationComplete(event:Event):void {
 				bulkUploadData.bulkUploadFilterPager = paging.kalturaFilterPager;
-				paging.kalturaFilterPager.pageIndex = 0;
-				paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
 
 			}
 
 
 			private function gotoPage():void {
-				paging.kalturaFilterPager.pageIndex = paging.selectedPage;
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 				loadEntries();
