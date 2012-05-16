@@ -2,11 +2,10 @@ package com.kaltura.kmc.modules.content.commands.cat {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryDelete;
-	import com.kaltura.edw.control.KedController;
-	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.CatTrackEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.vo.KalturaCategory;
 	
@@ -92,7 +91,9 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					_model.filterModel.catTreeDataManager.resetData();
 				}
 
-				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+				cgEvent.dispatch();
+				cgEvent = new CatTrackEvent(CatTrackEvent.UPDATE_STATUS);
 				cgEvent.dispatch();
 			}
 			_model.decreaseLoadCounter();

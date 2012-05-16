@@ -1,13 +1,12 @@
 package com.kaltura.kmc.modules.content.commands.cat
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
-	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryMove;
-	import com.kaltura.commands.category.CategoryUpdate;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.analytics.control.CategoryEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.CatTrackEvent;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
@@ -63,6 +62,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 				move.addEventListener(KalturaEvent.COMPLETE, result);
 				move.addEventListener(KalturaEvent.FAILED, fault);
 				_model.context.kc.post(move);
+				
 			}
 		}
 		
@@ -80,8 +80,11 @@ package com.kaltura.kmc.modules.content.commands.cat
 				_model.filterModel.catTreeDataManager.resetData();
 			}
 			
-			var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 			cgEvent.dispatch();
+			cgEvent = new CatTrackEvent(CatTrackEvent.UPDATE_STATUS);
+			cgEvent.dispatch();
+			
 		}
 	}
 }
