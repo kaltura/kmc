@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:tabbar="com.kaltura.controls.tabbar.*"
 		 xmlns:categoryTabs="com.kaltura.kmc.modules.content.view.window.cdw.components.categoryTabs.*"
-		 horizontalAlign="center" styleName="noPadding">
+		 horizontalAlign="center" styleName="noPadding" creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="save",type="flash.events.Event")]
 		[Event(name="close",type="flash.events.Event")]
@@ -10,6 +10,7 @@
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
@@ -36,6 +37,10 @@
 
 			private var _tabs:Vector.<ICategoryDrilldownPanel>;
 
+			/**
+			 * RnP
+			 * */
+			public var showEndUsersTab:Boolean = true;
 
 			public function validate():Boolean {
 				return true;
@@ -43,7 +48,7 @@
 
 
 			public function save():void {
-				var tab:ICategoryDrilldownPanel 
+				var tab:ICategoryDrilldownPanel;
 				for (var i:int = 0; i<viewStack.numChildren; i++) {
 					tab = viewStack.getChildAt(i) as ICategoryDrilldownPanel;
 					tab.save();
@@ -52,8 +57,14 @@
 
 
 			private function onCreationComplete(event:FlexEvent):void {
+				PermissionManager.getInstance().applyAllAttributes(this, "categoryDrilldown");
 				if (isNewCategory) {
 					viewStack.removeChild(subCategories);
+				}
+				if (!showEndUsersTab) {
+					// assuming permission manager ran before, remove 
+					// endUsers tab so it won't be added to _tabs
+					viewStack.removeChild(endUsers);
 				}
 
 				_tabs = new Vector.<ICategoryDrilldownPanel>;
@@ -117,6 +128,12 @@
 					tab.destroy();
 				}
 			}
+
+			private function creationCompleteHandler(event:FlexEvent):void
+			{
+				PermissionManager.getInstance().applyAllAttributes(this, "categoryDrilldown");
+			}
+
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" height="100%" styleName="categoryDetails">
@@ -126,12 +143,12 @@
 		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all"
 					  creationComplete="onCreationComplete(event)" styleName="sectionViewStack"
 					  selectedIndex="{tabBar.selectedIndex}">
-			<categoryTabs:CategoryMetadata label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%"
+			<categoryTabs:CategoryMetadata id="metadata" label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%"
 										   height="100%" category="{category}" filterModel="{filterModel}"
 										   model="{model}"/>
-			<categoryTabs:CategoryEndUserAccess width="100%" height="100%"
+			<categoryTabs:CategoryEndUserAccess id="endUsers" width="100%" height="100%" 
 												label="{resourceManager.getString('cms', 'endUserAccess')}"
-												category="{category}" model="{model}"/>
+												category="{category}" model="{model}" />
 			<categoryTabs:SubCategories id="subCategories" width="100%" height="100%"
 										subCategories="{model.subCategories}"
 										label="{resourceManager.getString('cms', 'categorySubCategories')}"/>

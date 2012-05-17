@@ -12,6 +12,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.types.WindowsStates;
@@ -161,6 +162,7 @@
 			}
 
 			private function creationCompleteHandler(event:FlexEvent):void {
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 				setButtonsWidth();
 			}
 
@@ -226,7 +228,7 @@
 
 
 				<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-					<bulkactions:BulkCategoryActionsMenu height="{paging.height}" />
+					<bulkactions:BulkCategoryActionsMenu id="bulkActions" height="{paging.height}" />
 
 					<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{categoriesModel.totalCategories}"
 									 rowsInPageChange="loadCategories()" nextPage="loadCategories()" prvPage="loadCategories()"

@@ -10,6 +10,12 @@
 			[Bindable]
 			public var context:ContextDataPack;
 			
+			[Bindable]
+			/**
+			 * RnP: show entitlements related filters
+			 * */
+			public var enableEntitlement:Boolean = true;
+			
 			
 			/**
 			 * reset kalturaFilter so any values that apply 
@@ -47,17 +53,17 @@
 									   attributes="{['createdAtGreaterThanOrEqual', 'createdAtLessThanOrEqual']}"
 									   valueChange="updateFilterValue(event)"/>
 			
-			<filter:CategoryAccessFilter width="100%"
-										 attribute="privacyIn"
+			<filter:CategoryAccessFilter width="100%" attribute="privacyIn"
 										 valueChange="updateFilterValue(event)"/>
 			
-			<filter:CategoryListingFilter width="100%"
-										  attribute="appearInListEqual"
-										  valueChange="updateFilterValue(event)"/>
+			<filter:CategoryListingFilter width="100%" attribute="appearInListEqual"
+										  valueChange="updateFilterValue(event)"
+										  visible="{enableEntitlement}" includeInLayout="{enableEntitlement}"/>
 			
 			<filter:CategoryMemebersFilter width="100%"
 										   attributes="{['membersCountGreaterThanOrEqual', 'membersCountLessThanOrEqual']}"
-										  valueChange="updateFilterValue(event)"/>
+										   valueChange="updateFilterValue(event)"
+										   visible="{enableEntitlement}" includeInLayout="{enableEntitlement}"/>
 			
 		</mx:VBox>
 	</mx:Accordion>

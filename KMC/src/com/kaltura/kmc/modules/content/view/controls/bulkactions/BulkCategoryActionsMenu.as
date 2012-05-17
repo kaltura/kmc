@@ -6,11 +6,29 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	
 	import flash.events.Event;
+	import flash.utils.setTimeout;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.events.MenuEvent;
 	
 	
 	public class BulkCategoryActionsMenu extends BulkEntryActionsMenu {
+		
+		[Bindable]
+		/**
+		 * RnP: show entitlements related actions
+		 * */
+		public var includeEntitlement:Boolean = true;
+		
+		
+		public function BulkCategoryActionsMenu() {
+			BindingUtils.bindSetter(recreateMenu, this, "includeEntitlement");
+		}
+		
+		private function recreateMenu(value:Boolean):void {
+			// update value, then rebuild menu
+			setTimeout(createMenu, 0);
+		}
 		
 		override protected function createMenu():void {
 			var mi:MenuItemVo;
@@ -21,16 +39,18 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			topLevel.data = "bulk";
 			topLevel.children = [];
 			actions.push(topLevel);
-			
-			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
-			mi.data = "changeListing";
-			topLevel.children.push(mi);
-			
-			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
-			mi.data = "changeAccess";
-			topLevel.children.push(mi);
+
+			if (includeEntitlement) {
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+				mi.data = "changeListing";
+				topLevel.children.push(mi);
+				
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
+				mi.data = "changeAccess";
+				topLevel.children.push(mi);
+			}
 			
 			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
