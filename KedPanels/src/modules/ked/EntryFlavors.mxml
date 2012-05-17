@@ -124,6 +124,16 @@ Flavours tab of EntryDetailsWin
 			 * */
 			public var allowImport:Boolean = true;
 			
+			public function set showTagsColumn(value:Boolean):void{
+				dg.tagsCol.visible = value;
+				//				for each (var col:DataGridColumn in dg.columns) {
+				//					col.width = col.width;
+				//				}
+			}
+			
+			public function get showTagsColumn():Boolean{
+				return true;
+			}
 			
 			// =====================================================================
 			// More Stuff
@@ -347,6 +357,7 @@ Flavours tab of EntryDetailsWin
 			
 			
 			public function set replacementStatus(value:String):void {
+				//TODO if replacement status was not changed, this binding won't fire. 
 				if (_drillDownClicked) {
 					if (value && (value != KalturaEntryReplacementStatus.NONE)) {
 						openReplacementDrilldown();
@@ -741,7 +752,6 @@ Flavours tab of EntryDetailsWin
 			private function onReplacementStatusBtnClick():void {
 				//replacement entry is processing - check for updates
 				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
-					(_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntryReloaded = false;
 					_drillDownClicked = true;
 					var entryid:String = (_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
 					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryid);

@@ -43,13 +43,6 @@ Thumbnails tab of EntryDetailsWin
 			
 			public static const IMAGE_TYPES:String = "*.jpg;*.jpeg;*.gif;*.png";
 			
-			//			/**
-//TODO			 * track thumbnail change
-//			 * */
-//			private function trackThumbnailSaved():void {
-//				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CHANGE_THUMBNAIL, GoogleAnalyticsConsts.CONTENT);
-//				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CHANGE_THUMBNAIL, "KDP3>DrillDown>Change Thumbnail");
-//			}
 			/**
 			 * upload new thumbnail FR
 			 * */
@@ -59,6 +52,26 @@ Thumbnails tab of EntryDetailsWin
 			 * @copy #selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
+			
+			public function get selectedEntry():KalturaBaseEntry {
+				return _selectedEntry;
+			}
+			
+			
+			public function set selectedEntry(value:KalturaBaseEntry):void {
+				if (!value)
+					return;
+				_selectedEntry = value;
+				
+				//set the available operations for current entry
+				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
+				if ((_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) && ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
+					_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
+					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
+						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
+				}
+			}
+			
 			
 			/**
 			 * change watcher for thumbnailDimensions array on the distribution profile info
@@ -71,8 +84,18 @@ Thumbnails tab of EntryDetailsWin
 			private var _distributionModel:DistributionDataPack;
 			
 			
+
 			private var _context:ContextDataPack;
 			
+			public function get context():ContextDataPack {
+				return _context;
+			}
+			
+			public function set context(value:ContextDataPack):void {
+				_context = value;
+			}
+			
+
 			[Bindable]
 			private var _dimensionsArray:Array;
 			
@@ -80,17 +103,43 @@ Thumbnails tab of EntryDetailsWin
 			private var _uploadThumbnailActionsDP:Array;
 			
 			private var _cropperWindow:CropThumbnailWindow;
-			private var _dpModel:IDataPackRepository;
+			
 			
 			/**
 			 * when user requests to delete an asset, the asset to delete.
 			 * */
 			private var _thumbAsset:ThumbnailWithDimensions;
+			
 			private var _distibutionEnabled:Boolean = false;
+			
+			/**
+			 * will add the "profiles" column if we have distribution
+			 * */
+			public function set enableDistribution(value:Boolean):void {
+				if (value && !_distibutionEnabled) {
+					var columnsArray:Array = dataGrid.columns;
+					columnsArray.splice(3, 0, partnersCol);
+					dataGrid.columns = columnsArray;
+				}
+				
+				_distibutionEnabled = value;
+			}
+			
+			public function set showTagsColumn(value:Boolean):void{
+				tagsCol.visible = value;
+			}
+			
+			public function get showTagsColumn():Boolean{
+				return true;
+			}
+
+			
+			private var _dpModel:IDataPackRepository;
 			
 			public function get dataPackModel():IDataPackRepository{
 				return _dpModel;
 			}
+			
 			public function set dataPackModel(value:IDataPackRepository):void{
 				_dpModel = value;
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
@@ -149,14 +198,6 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			
-			public function get context():ContextDataPack {
-				return _context;
-			}
-			
-			
-			public function set context(value:ContextDataPack):void {
-				_context = value;
-			}
 			
 			
 			public function get distributionModel():DistributionDataPack {
@@ -177,18 +218,6 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			
-			/**
-			 * will add the "profiles" column if we have distribution
-			 * */
-			public function set enableDistribution(value:Boolean):void {
-				if (value && !_distibutionEnabled) {
-					var columnsArray:Array = dataGrid.columns;
-					columnsArray.splice(3, 0, partnersCol);
-					dataGrid.columns = columnsArray;
-				}
-				
-				_distibutionEnabled = value;
-			}
 			
 			
 			public function set editable(value:Boolean):void {
@@ -219,24 +248,6 @@ Thumbnails tab of EntryDetailsWin
 			}
 			
 			
-			public function get selectedEntry():KalturaBaseEntry {
-				return _selectedEntry;
-			}
-			
-			
-			public function set selectedEntry(value:KalturaBaseEntry):void {
-				if (!value)
-					return;
-				_selectedEntry = value;
-				
-				//set the available operations for current entry
-				_uploadThumbnailActionsDP = new Array(resourceManager.getString('drilldown', 'upload'));
-				if ((_selectedEntry.status != KalturaEntryStatus.NO_CONTENT) && ((_selectedEntry is KalturaMixEntry) || (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO))) {
-					_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'grabFromVideo'));
-					if (int(_selectedEntry.mediaType) == KalturaMediaType.VIDEO)
-						_uploadThumbnailActionsDP.push(resourceManager.getString('drilldown', 'cropNewThumbnail'));
-				}
-			}
 			
 			
 			/**
