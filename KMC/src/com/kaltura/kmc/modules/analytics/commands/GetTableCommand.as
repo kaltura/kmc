@@ -133,7 +133,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 			
 			_model.reportDataMap[_model.currentScreenState].tableDp = arrCol;
-			_model.reportDataMap[_model.currentScreenState].totalCount = krt.totalCount;
+			
+			if(krt.totalCount != int.MIN_VALUE)
+				_model.reportDataMap[_model.currentScreenState].totalCount = krt.totalCount;
+			
 			_model.filter = _model.filter;
 			_model.selectedReportData = null; //refreash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];

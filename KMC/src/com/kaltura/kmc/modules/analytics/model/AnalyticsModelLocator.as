@@ -43,7 +43,11 @@ package com.kaltura.kmc.modules.analytics.model
 		
 		//---------------------------------------------------------
 		//data objects
-		public var drillDownName : String = "";
+		private var _drillDownName : String = "";
+		public function get drillDownName():String { return _drillDownName; }
+		public function set drillDownName(str:String):void { 
+			_drillDownName=str; 
+		}
 		public var reportDataMap : Object = new Object();
 		
 		/**
@@ -58,7 +62,8 @@ package com.kaltura.kmc.modules.analytics.model
 		public var tableHeaders : TableHeaders = new TableHeaders();
 		public var selectedEntry : String;
 		public var selectedUserId : String;
-		
+		public var tableSupportDrillDown : Boolean = true;
+		public var showRefererIcon : Boolean = false;
 		
 		public var categories : Object = null;
 		public var categoriesMap : HashMap = new HashMap();
@@ -87,11 +92,22 @@ package com.kaltura.kmc.modules.analytics.model
 		/**
 		 * dataprovider for the community reports tab sub-navigation 
 		 */		
-		public var userDtnDp : ArrayCollection = new ArrayCollection( 
-										  [ ResourceManager.getInstance().getString('analytics','topContributors') ,
-										 	ResourceManager.getInstance().getString('analytics','mapOverlay') ,
-										 	ResourceManager.getInstance().getString('analytics','topSyndications'),
-											ResourceManager.getInstance().getString('analytics','userEngagement')]);
+		public function get userDtnDp() : ArrayCollection {
+			if(entitlementEnabled){
+				return new ArrayCollection( 
+					[ ResourceManager.getInstance().getString('analytics','topContributors') ,
+						ResourceManager.getInstance().getString('analytics','mapOverlay') ,
+						ResourceManager.getInstance().getString('analytics','topSyndications'),
+						ResourceManager.getInstance().getString('analytics','userEngagement')]);
+			}
+			else
+			{
+				return new ArrayCollection( 
+					[ ResourceManager.getInstance().getString('analytics','topContributors') ,
+						ResourceManager.getInstance().getString('analytics','mapOverlay') ,
+						ResourceManager.getInstance().getString('analytics','topSyndications')]);
+			}
+		}
 									 								 
 	    //---------------------------------------------------------
 		/**

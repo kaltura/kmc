@@ -17,9 +17,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 
 
 		public static function reportSetupBeforeExecution():void {
-			DrillDownLinkButton.showRefererIcon = false;
+			_model.showRefererIcon = false;
 			if (_model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)
-				DrillDownLinkButton.showRefererIcon = true;
+				_model.showRefererIcon = true;
 		}
 
 

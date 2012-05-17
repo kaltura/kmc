@@ -103,7 +103,11 @@
 			private function onItemClick( event : MouseEvent ) :void
 			{
 				var dtnItem : DTNItem =  event.target.parent as DTNItem;
-				selectedIndex = this.getChildIndex( dtnItem );
+				
+				if(!dtnItem) return;
+				
+				if(this.contains(dtnItem))
+					selectedIndex = this.getChildIndex( dtnItem );
 							
 				var listEvent : ItemClickEvent = new ItemClickEvent( ItemClickEvent.ITEM_CLICK ,
 																	 false, 

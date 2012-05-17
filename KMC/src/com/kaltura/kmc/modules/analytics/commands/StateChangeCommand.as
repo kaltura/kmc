@@ -22,16 +22,30 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_model.currentScreenState = newStae;
 			_model.filter.keywords = "";
 			_model.filter.userIds = "";
+			_model.selectedUserId = null;
 
 			switch (newStae) {
 				case ScreenTypes.MAP_OVERLAY_DRILL_DOWN:
 				case ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN:
 				case ScreenTypes.TOP_CONTRIBUTORS:
-					DrillDownLinkButton.linkable = false;
-					break;
+					//if it's not drilldown make the name null
+					_model.drillDownName = null;
+					_model.tableSupportDrillDown = false;
+				break;
+				case ScreenTypes.END_USER_ENGAGEMENT:
+				case ScreenTypes.MAP_OVERLAY:
+				case ScreenTypes.TOP_SYNDICATIONS:
+				case ScreenTypes.CONTENT_CONTRIBUTIONS:
+					 //if it's not drilldown make the name null
+					_model.drillDownName = null;
+					_model.tableSupportDrillDown = true;
+					break;	
+				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
+					_model.tableSupportDrillDown = false;
+					break;	
 				default:
-					DrillDownLinkButton.linkable = true;
-					break;
+					_model.tableSupportDrillDown = true;
+				break;
 			}
 
 			if (_model.reportDataMap[newStae])

@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 	implements="mx.controls.listClasses.IDropInListItemRenderer"
-	horizontalScrollPolicy="off" verticalScrollPolicy="off"
-	creationComplete="init()" show="refrashItemRenderer()">
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
 	<mx:Script>
 		<![CDATA[
-			import mx.utils.URLUtil;
+			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
+			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+			
+			import flash.net.navigateToURL;
 			
 			import mx.controls.listClasses.BaseListData;
 			import mx.controls.listClasses.IDropInListItemRenderer;
-			import flash.net.navigateToURL;
-			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
+			import mx.utils.URLUtil;
 			
-			//because I am not creating the instance of this item renderer i use a static Boolean value to show or hde the referer icon
-			public static var showRefererIcon : Boolean = false;
-			public static var linkable : Boolean = false;
+			[Bindable] private var _model : AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
 			
    		    // Internal variable for the property value.
    			[Bindable] private var _listData:BaseListData;
@@ -31,29 +30,7 @@
 		    {
 		      _listData = value;
 		    }
-		    
-		    private function refrashItemRenderer() : void
-		    {
-		    	refererIcon.visible = showRefererIcon;
-				refererIcon.includeInLayout = showRefererIcon;
-				
-		    	if(linkable && !showRefererIcon)
-				{
-					linkBtn.visible = linkBtn.includeInLayout = true;
-					regularText.visible = regularText.includeInLayout = false;
-				}
-				else
-				{
-					linkBtn.visible = linkBtn.includeInLayout = false;
-					regularText.visible = regularText.includeInLayout = true;
-				}	
-		    }
-		    
-			private function init() : void
-			{
-				refrashItemRenderer();
-			}
-			
+ 
 			private function onItemClick( event : MouseEvent ) : void
 			{
 				var object_name : String;
@@ -89,11 +66,14 @@
 		]]>
 	</mx:Script>
 	<mx:HBox paddingTop="2" paddingLeft="2">
-		<mx:Button id="refererIcon" styleName="refererStyle" buttonMode="true"
-			click="onRefererClick(event)" visible="false" includeInLayout="false"/>
+		<mx:Button id="refererIcon" styleName="refererStyle" buttonMode="true" 
+				   visible="{_model.showRefererIcon}" includeInLayout="{_model.showRefererIcon}"
+				   click="onRefererClick(event)" />
 	</mx:HBox>
-	<mx:Label id="regularText" textAlign="left" text="{_listData.label}" />
+	<mx:Label id="regularText" textAlign="left" text="{_listData.label}" 
+			  visible="{!_model.tableSupportDrillDown}" includeInLayout="{!_model.tableSupportDrillDown}"/>
 	<mx:LinkButton id="linkBtn" click="onItemClick(event)" 
-		textAlign="left" label="{_listData.label}" />
+				   visible="{_model.tableSupportDrillDown}" includeInLayout="{_model.tableSupportDrillDown}"
+				   textAlign="left" label="{_listData.label}" />
 	
 </mx:HBox>

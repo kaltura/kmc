@@ -41,11 +41,12 @@ package com.kaltura.kmc.modules.analytics.commands
 			var reportGetTotal : ReportGetTotal;
 			//If we have a user report call we need to have another fileter (that support application and users) 
 			//when we generate the report get total call
-			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
+			if ( _model.entitlementEnabled &&
+				(_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
 				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ))
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				reportGetTotal = new ReportGetTotal( (event as ReportEvent).reportType , keurif , objectIds);
@@ -86,6 +87,20 @@ package com.kaltura.kmc.modules.analytics.commands
 				
 			_model.reportDataMap[_model.currentScreenState].aggregatedDataArrCol = arrCol;
 			_model.filter = _model.filter;
+			
+			//if we have entitlement and the uniqe users are known
+			if ( _model.entitlementEnabled &&
+				(_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
+					_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+					_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+					_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+					_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ))
+			{
+				//if we recive the number of uniqe users set the pager to this page size
+				if(arrCol[0] != '-')
+					_model.selectedReportData.totalCount = int(arrCol[0].value);
+			}
+			
 			_model.selectedReportData = null; //refreash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];
 		}

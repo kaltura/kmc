@@ -25,7 +25,7 @@
 			import mx.controls.SWFLoader;
 
 			public static var kdp:SWFLoader;
-
+			
 			[Bindable]
 			public var context:Context; //to load the kdp you must pass a context
 			//////////////////////////////////////////////////////////////////////////////////
@@ -231,7 +231,7 @@
 //					if(rdtc.seletedMediaEntry)
 //						drillDownObjectName.text = rdtc.seletedMediaEntry.name; 
 
-					drillDownObjectName.text = rdtc.objectName;
+					//drillDownObjectName.text = rdtc.objectName;
 
 					// set all the reportData parameters form the current report view:
 					rdtc.title = this.label;
@@ -382,7 +382,7 @@
 		<mx:LinkButton label="{this.label}" buttonMode="true"
 					   click="{(new StateEvent( StateEvent.STATE_CHANGE, backScreenType )).dispatch(); }"/>
 		<mx:Label id="drillDownArrow" text=">>" paddingTop="2"/>
-		<mx:Label id="drillDownObjectName" paddingTop="2"/>
+		<mx:Label id="drillDownObjectName" paddingTop="2" text="{_model.drillDownName}"/>
 	</mx:HBox>
 
 	<!-- report title -->
@@ -397,7 +397,8 @@
 		<mx:HBox>
 			<!-- entry filter -->
 			<view:Filter id="filter" filterVo="{filterVo}" width="100%" apply="{getReports(event)}"
-						 applicationsList="{_model.applicationsList}"
+						 applicationsList="{_model.applicationsList}" 
+						 drillDownName="{_model.drillDownName}"
 						 filterUsersFlag="{filterUsersFlag}" filterApplicationsFlag="{filterApplicationsFlag}"
 						 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
 						 kc="{_model.kc}"
@@ -458,6 +459,7 @@
 	
 	<!-- table -->
 	<view:KTable id="ktable" width="100%" height="295" rowHeight="27" orderBy="{orderBy}" enabled="{_isVisibleTable}"
+				 supportDrillDown="{_model.tableSupportDrillDown}"
 				 includeInLayout="{showTable}" visible="{showTable}" headerDataProvider="{tableHeaders}"
 				 reportType="{reportType}" reportData="{ reportData }"/>
 
