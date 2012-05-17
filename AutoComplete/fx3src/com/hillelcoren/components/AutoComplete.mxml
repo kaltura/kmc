@@ -35,6 +35,7 @@
 		 */
 		[Style(name="selectedItemStyleName", type="String", inherit="yes", enumeration="macMail,facebook,underline,none")]
 		
+		[Style(name="unregisteredSelectedItemStyleName", type="String", inherit="yes", enumeration="unregisteredFacebook")]
 		
 		[ResourceBundle("autocomplete")]
 		
@@ -563,10 +564,18 @@
 			public function search():void
 			{
 				validateNow();
-				if (_dataProvider.length == 0 && _isSearching){
+				if (_isSearching){
 					_isSearching = false;
-					hideMessage()
-					showNoResultsMsg();
+					hideMessage();
+					if (_dataProvider.length == 0){
+						showNoResultsMsg();
+						if (isDropDownVisible()){
+							hideDropDown()
+						}
+					} else {
+						showDropDown();
+					}
+					
 				}
 				handleFlowBoxChange( null );
 			}			
@@ -1161,7 +1170,7 @@
 				for each (var searchStr:String in parts)
 				{
 					_searchText = searchStr;					
-					filterData();
+//					filterData();
 					
 					if (_autoSelectEnabled)
 					{
@@ -1189,21 +1198,21 @@
 					return;
 				}
 				
-				if (isDropDownVisible())
-				{
-					if (searchStr.length == 0)
-					{
-						hideDropDown();
-					}
-				}
-				else
-				{
-					if (_searchText && _searchText.length > 0){
-						if (_dataProvider.length > 0){
-							showDropDown();	
-						}
-					}
-				}
+//				if (isDropDownVisible())
+//				{
+//					if (searchStr.length == 0)
+//					{
+//						hideDropDown();
+//					}
+//				}
+//				else
+//				{
+//					if (_searchText && _searchText.length > 0){
+//						if (_dataProvider.length > 0){
+//							showDropDown();	
+//						}
+//					}
+//				}
 				
 				if (isDropDownVisible())
 				{
@@ -1835,7 +1844,7 @@
 					
 					hideMessage();
 					
-					// Getting the seaching message ready;
+					// Getting the searching message ready;
 					showMessage(resourceManager.getString('autocomplete', 'searchingMsg'));
 				}
 				

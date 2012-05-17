@@ -25,40 +25,36 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.categoryUser
+package com.kaltura.vo
 {
-	import com.kaltura.delegates.categoryUser.CategoryUserIndexDelegate;
-	import com.kaltura.net.KalturaCall;
-
-	public class CategoryUserIndex extends KalturaCall
+	import com.kaltura.vo.BaseFlexVo;
+	[Bindable]
+	public dynamic class KalturaTypedArray extends BaseFlexVo
 	{
-		public var filterFields : String;
-		/**
-		 * @param userId String
-		 * @param categoryId int
-		 * @param shouldUpdate Boolean
-		 **/
-		public function CategoryUserIndex( userId : String,categoryId : int,shouldUpdate : Boolean=true )
-		{
-			service= 'categoryuser';
-			action= 'index';
+		/** 
+		* 		* */ 
+		public var count : int = int.MIN_VALUE;
 
-			var keyArr : Array = new Array();
-			var valueArr : Array = new Array();
-			var keyValArr : Array = new Array();
-			keyArr.push('userId');
-			valueArr.push(userId);
-			keyArr.push('categoryId');
-			valueArr.push(categoryId);
-			keyArr.push('shouldUpdate');
-			valueArr.push(shouldUpdate);
-			applySchema(keyArr, valueArr);
+		/** 
+		* a list of attributes which may be updated on this object 
+		* */ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			arr.push('count');
+			return arr;
 		}
 
-		override public function execute() : void
+		/** 
+		* a list of attributes which may only be inserted when initializing this object 
+		* */ 
+		public function getInsertableParamKeys():Array
 		{
-			setRequestArgument('filterFields', filterFields);
-			delegate = new CategoryUserIndexDelegate( this , config );
+			var arr : Array;
+			arr = new Array();
+			return arr;
 		}
+
 	}
 }

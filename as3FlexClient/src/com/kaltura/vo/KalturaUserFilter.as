@@ -34,6 +34,10 @@ package com.kaltura.vo
 	{
 		/** 
 		* 		* */ 
+		public var idOrScreenNameContains : String = null;
+
+		/** 
+		* 		* */ 
 		public var idEqual : String = null;
 
 		/** 
@@ -52,6 +56,7 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('idOrScreenNameContains');
 			arr.push('idEqual');
 			arr.push('idIn');
 			arr.push('loginEnabledEqual');

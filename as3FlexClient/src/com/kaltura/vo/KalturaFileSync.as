@@ -105,7 +105,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileSize : int = int.MIN_VALUE;
+		public var fileSize : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 
@@ -117,7 +117,7 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var fileDiscSize : int = int.MIN_VALUE;
+		public var fileDiscSize : Number = Number.NEGATIVE_INFINITY;
 
 		/** 
 		* 		* */ 

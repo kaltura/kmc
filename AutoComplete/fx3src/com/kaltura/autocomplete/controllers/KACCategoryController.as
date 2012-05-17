@@ -24,7 +24,7 @@ package com.kaltura.autocomplete.controllers
 		
 		override protected function createCallHook():KalturaCall{
 			var filter:KalturaCategoryFilter = new KalturaCategoryFilter();
-			filter.fullNameStartsWith = _autoComp.searchText;
+			filter.nameOrReferenceIdContains = _autoComp.searchText;
 			var listCategories:CategoryList = new CategoryList(filter);
 			
 			return listCategories;

@@ -40,12 +40,17 @@ package com.kaltura.vo
 		* 		* */ 
 		public var membersIn : String = null;
 
+		/** 
+		* 		* */ 
+		public var nameOrReferenceIdContains : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('freeText');
 			arr.push('membersIn');
+			arr.push('nameOrReferenceIdContains');
 			return arr;
 		}
 

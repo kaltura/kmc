@@ -25,24 +25,9 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.category
+package com.kaltura.types
 {
-	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
-
-	public class CategoryIndexDelegate extends WebDelegateBase
+	public class KalturaDynamicEnum
 	{
-		public function CategoryIndexDelegate(call:KalturaCall, config:KalturaConfig)
-		{
-			super(call, config);
-		}
-
-		override public function parse(result:XML) : *
-		{
-			return result.result.toString();
-		}
-
 	}
 }

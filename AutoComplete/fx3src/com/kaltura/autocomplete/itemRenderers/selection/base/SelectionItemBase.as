@@ -17,6 +17,8 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 	[Event(name="change")]
 	[Event(name="removeItem")]
 	[Style(name="selectedItemStyleName", type="String", inherit="yes")]
+	[Style(name="unregisteredSelectedItemStyleName", type="String", inherit="yes")]
+	
 	public class SelectionItemBase extends HBox implements ISelectionItemRenderer
 	{
 		
@@ -129,9 +131,13 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 			{
 				_buttonStyleChanged = false;
 				
-				var styleName:String = getStyle( "selectedItemStyleName" );
+				var styleName:String = getCurrStyle();
 				button.setStyle( "styleName", styleName );
 			}
+		}
+		
+		protected function getCurrStyle():String{
+			return getStyle( "selectedItemStyleName" )
 		}
 		
 		private function handleClick(evt:MouseEvent):void

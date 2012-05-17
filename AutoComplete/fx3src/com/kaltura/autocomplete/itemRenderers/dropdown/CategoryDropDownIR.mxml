@@ -1,8 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml" htmlText="{(data as KalturaCategory).fullName}">
+<mx:Label xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.KalturaCategory;
+			
+			
+			override public function set data(value:Object):void{
+				super.data = value;
+				
+				var category:KalturaCategory = data as KalturaCategory;
+				
+				var labelText:String = category.name;
+				if (category.referenceId != null && category.referenceId != ""){
+					labelText += " (" + category.referenceId + ")";
+				}
+				
+				htmlText = labelText;
+			}
 		]]>
 	</mx:Script>
 	

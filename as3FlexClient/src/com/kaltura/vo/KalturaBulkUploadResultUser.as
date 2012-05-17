@@ -84,6 +84,10 @@ package com.kaltura.vo
 		* 		* */ 
 		public var isAdmin : Boolean;
 
+		/** 
+		* 		* */ 
+		public var roleIds : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -101,6 +105,7 @@ package com.kaltura.vo
 			arr.push('firstName');
 			arr.push('lastName');
 			arr.push('isAdmin');
+			arr.push('roleIds');
 			return arr;
 		}
 

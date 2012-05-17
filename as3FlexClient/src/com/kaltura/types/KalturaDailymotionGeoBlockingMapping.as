@@ -25,23 +25,12 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.delegates.timeWarner
+package com.kaltura.types
 {
-	import com.kaltura.config.KalturaConfig;
-	import com.kaltura.net.KalturaCall;
-	import com.kaltura.delegates.WebDelegateBase;
-	import flash.utils.getDefinitionByName;
-
-	public class TimeWarnerGetFeedDelegate extends WebDelegateBase
+	public class KalturaDailymotionGeoBlockingMapping
 	{
-		public function TimeWarnerGetFeedDelegate(call:KalturaCall, config:KalturaConfig)
-		{
-			super(call, config);
-		}
-
-		override protected function sendRequest():void {
-			call.handleResult(getServeUrl(_call));
-		}
-
+		public static const DISABLED : int = 0;
+		public static const ACCESS_CONTROL : int = 1;
+		public static const METADATA : int = 2;
 	}
 }
