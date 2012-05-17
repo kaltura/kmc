@@ -18,6 +18,7 @@
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
+			import com.kaltura.kmc.modules.content.view.categories.renderers.ActionsRenderer;
 			import com.kaltura.kmc.modules.content.view.categories.renderers.NameRenderer;
 			import com.kaltura.types.KalturaCategoryOrderBy;
 			import com.kaltura.vo.KalturaCategory;
@@ -117,8 +118,92 @@
 			}
 			
 			
+			// ----------------------------------------------
+			// RnP
+			// ----------------------------------------------
+			
+			/**
+			 * show the delete action in the actions renderer
+			 * */
+			public function get showDelete():Boolean {
+				var actions:Array = ActionsRenderer.actions;
+				var found:Boolean;
+				for (var i:int = 0; i<actions.length; i++) {
+					if (actions[i] == CategoriesTableActions.DELETE) {
+						found = true;
+						break;
+					}
+				}
+				return found;
+			}
+			
+			public function set showDelete(value:Boolean):void {
+				var actions:Array = ActionsRenderer.actions;
+				var i:int;
+				if (value) {
+					var found:Boolean;
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == CategoriesTableActions.DELETE) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						actions.push(CategoriesTableActions.DELETE);
+					}
+					
+				}
+				else {
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == CategoriesTableActions.DELETE) {
+							actions.splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
 			
 			
+			/**
+			 * show the move action in the actions renderer
+			 * */
+			public function get showMove():Boolean {
+				var actions:Array = ActionsRenderer.actions;
+				var found:Boolean;
+				for (var i:int = 0; i<actions.length; i++) {
+					if (actions[i] == CategoriesTableActions.MOVE) {
+						found = true;
+						break;
+					}
+				}
+				return found;
+			}
+			
+			public function set showMove(value:Boolean):void {
+				var actions:Array = ActionsRenderer.actions;
+				var i:int;
+				if (value) {
+					var found:Boolean;
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == CategoriesTableActions.MOVE) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						actions.push(CategoriesTableActions.MOVE);
+					}
+					
+				}
+				else {
+					for (i = 0; i<actions.length; i++) {
+						if (actions[i] == CategoriesTableActions.MOVE) {
+							actions.splice(i, 1);
+							break;
+						}
+					}
+				}
+			}
 			
 			// ----------------------------------------------
 			// table actions
