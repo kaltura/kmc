@@ -48,6 +48,7 @@
 				<ui id="addPanel.btnLive" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
+		
 		<!-- Content Management -->
 		<permissionGroup text="Content Management" id="CONTENT_MANAGE_BASE" isAdvancedGroup="true">
 			<ui id="manualPlaylistDrilldown_edit" showLinks="false"/>
@@ -97,6 +98,12 @@
 				<ui id="entryMetaData" customDataEditable="false"/>
 				<ui id="entryDrilldown" saveEnabled="false"/>
 			</permission>
+			<permission text="Modify Entry Admins" id="CONTENT_MANAGE_ENTRY_USERS" dependsOnFeature="FEATURE_END_USER_MANAGE">
+				<ui id="content.manage.bulkActions" includeOwner="false"/>
+				<ui id="entryUsers" changesEnabled="false"/>
+				<ui id="entryDrilldown" saveEnabled="false"/>
+			</permission>
+			
 			<permission text="Delete Content" id="CONTENT_MANAGE_DELETE">
 				<ui id="content.manage.entryTable" showDelete="false"/>
 				<ui id="content.moderation.entryTable" showDelete="false"/>
@@ -141,6 +148,12 @@
 				<ui id="categoryDrilldown.metadata.tagsInput" enabled="false"/>
 				<ui id="categoryDrilldown.metadata.referenceIdInput" enabled="false"/>
 				<ui id="categoryDrilldown.metadata" customDataEditable="false"/>
+			</permission>
+			
+			<permission text="Edit Category End-User Access Settings" id="CONTENT_MANAGE_CATEGORY_USERS" dependsOnFeature="FEATURE_ENTITLEMENTS">
+				<ui id="categoryDrilldown.endUsers" changesEnabled="false" />
+				<ui id="endUserPermissionsWin" changesEnabled="false" />
+				<ui id="content.categories.bulkActions" includeCategoryUserActions="false" />
 			</permission>
 
 			<permission text="Update Live Stream" id="LIVE_STREAM_UPDATE" dependsOnFeature="FEATURE_LIVE_STREAM">
@@ -198,6 +211,7 @@
 				<ui id="entryDrilldown" saveEnabled="false"/>
 			</permission>
 		</permissionGroup>
+		
 		<!-- Playlist management -->
 		<permissionGroup text="Playlist Management" id="PLAYLIST_BASE" isAdvancedGroup="true">
 			<permission text="Create Playlists" id="PLAYLIST_ADD">
@@ -217,9 +231,9 @@
 				<ui id="dashboard.embedPanel.embedOption2Button" enabled="false" buttonMode="false"/>
 				<ui id="studio.playerList" canPreviewAndEmbed="false"/>
 				<ui id="content.playlists" showEmbed="false"/>
-
 			</permission>
 		</permissionGroup>
+		
 		<!-- Syndication management -->
 		<permissionGroup text="Syndication Management" id="SYNDICATION_BASE" isAdvancedGroup="true">
 			<permission text="Create Syndication Feeds" id="SYNDICATION_ADD">
@@ -369,6 +383,7 @@
 				<ui id="account.metadata.deleteProfilesBtn" visible="false" includeInLayout="false"/>
 			</permission>
 		</permissionGroup>
+		
 		<!-- Administration -->
 		<permissionGroup text="Administration" id="ADMIN_BASE" >
 			<permission text="Create Users" id="ADMIN_USER_ADD">
@@ -400,6 +415,9 @@
 			</permission>
 			<permission text="Delete Roles" id="ADMIN_ROLE_DELETE">
 				<ui id="admin.roles.table" enableDelete="false"/>
+			</permission>
+			<permission text="Users Bulk Upload" id="ADMIN_USER_BULK">
+<!--				<ui id="admin.roles.table" enableDelete="false"/>-->
 			</permission>
 		</permissionGroup>
 
@@ -489,7 +507,7 @@
 		<permissionGroup id="FEATURE_KMC_VERIFY_MODERATION">
 				<ui id="content.generalPermissions" confirmModeration="false"/>
 		</permissionGroup>
-		<!-- show moderation approval popup -->
+		<!-- content entitlements -->
 		<permissionGroup id="FEATURE_ENTITLEMENT">
 				<ui id="content.categories.filter" enableEntitlement="false"/>
 				<ui id="content.categories.bulkActions" includeEntitlement="false"/>
@@ -641,6 +659,9 @@
 			</tab>
 			<tab id="entryRelated">
 				<permission id="ATTACHMENT_PLUGIN_PERMISSION"/>
+			</tab>
+			<tab id="entryUsers">
+				<permission id="FEATURE_END_USER_MANAGE"/>
 			</tab>
 		</module>
 	</uimapping>

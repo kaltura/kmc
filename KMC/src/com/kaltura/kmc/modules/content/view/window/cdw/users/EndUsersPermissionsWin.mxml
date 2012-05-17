@@ -8,6 +8,7 @@
 							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*" xmlns:catusrtable="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.*">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
@@ -28,6 +29,12 @@
 			public var model:CategoriesModel;
 
 			[Bindable]
+			/**
+			 * RnP: allow making changes to data in this page
+			 * */
+			public var changesEnabled:Boolean = true;
+			
+			[Bindable]
 			private var _category:KalturaCategory;
 
 
@@ -43,7 +50,7 @@
 
 
 			private function creationCompleteHandler(event:FlexEvent):void {
-				
+				PermissionManager.getInstance().applyAllAttributes(this, "endUserPermissionsWin");
 				loadUsers();
 				BindingUtils.bindSetter(hideParentBtn, model, "categoryUsers");
 			}
@@ -145,21 +152,22 @@
 	</mx:HBox>
 
 	<mx:HBox width="100%" height="100%" styleName="noPadding">
-		<filter:EndUsersFilter id="filter" height="{actionsBox.height}" width="180"
+		<filter:EndUsersFilter id="filter" height="{tableWrapper.height}" width="180"
 							   filterChanged="filterChangedHandler(event)"/>
-		<mx:VBox height="100%" width="100%" verticalGap="0" styleName="noPadding">
+		<mx:VBox id="tableWrapper" height="100%" width="100%" verticalGap="0" styleName="noPadding">
 			<catusrtable:CategoryUsersTable width="100%" height="100%" dataProvider="{model.categoryUsers}"
 											selectionChanged="table_selectionChangedHandler(event)"
-											allowActions="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
+											allowActions="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 				<users:EndUsersBulkActionsMenu id="bulkActions" height="{paging.height}" users="{model.selectedCategoryUsers}"
-											   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
+											   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
 				<ctrls:Paging id="paging" width="100%" styleName="paging" totalCount="{model.totalCategoryUsers}"
 							  rowsInPageChange="loadUsers()" nextPage="loadUsers()" prvPage="loadUsers()" getPageNum="loadUsers()"
 							  showRowsInPage="true" defaultPageSize="25"/>
 			</mx:HBox>
 		</mx:VBox>
-		<mx:VBox id="actionsBox" styleName="listActionsBox" paddingLeft="10" paddingRight="10" height="100%" width="130">
+		<mx:VBox id="actionsBox" styleName="listActionsBox" paddingLeft="10" paddingRight="10" height="{tableWrapper.height}" width="130"
+				 visible="{changesEnabled}" includeInLayout="{changesEnabled}">
 			<mx:Button id="addUsersBtn" width="100%" styleName="listActionButton" buttonMode="true"
 					   label="{resourceManager.getString('cms', 'addUsersBtn')}" 
 					   click="addUsersBtn_clickHandler(event)"

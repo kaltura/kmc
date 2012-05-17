@@ -20,6 +20,12 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 		 * */
 		public var includeEntitlement:Boolean = true;
 		
+		[Bindable]
+		/**
+		 * RnP: show category users related actions
+		 * */
+		public var includeCategoryUserActions:Boolean = true;
+		
 		
 		public function BulkCategoryActionsMenu() {
 			BindingUtils.bindSetter(recreateMenu, this, "includeEntitlement");
@@ -40,23 +46,24 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			topLevel.children = [];
 			actions.push(topLevel);
 
-			if (includeEntitlement) {
-				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
-				mi.data = "changeListing";
-				topLevel.children.push(mi);
+			if (includeCategoryUserActions) {
+				if (includeEntitlement) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+					mi.data = "changeListing";
+					topLevel.children.push(mi);
+					
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
+					mi.data = "changeAccess";
+					topLevel.children.push(mi);
+				}
 				
 				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
-				mi.data = "changeAccess";
+				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
+				mi.data = "changeOwner";
 				topLevel.children.push(mi);
 			}
-			
-			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
-			mi.data = "changeOwner";
-			topLevel.children.push(mi);
-			
 			// --- TAGS
 			
 			mi = new MenuItemVo();

@@ -27,6 +27,12 @@
 
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 150;
+			
+			[Bindable]
+			/**
+			 * RnP: allow making changes to settings in this tab
+			 * */
+			public var changesEnabled:Boolean = true;
 
 			[Bindable]
 			public var model:CategoriesModel;
@@ -263,6 +269,7 @@
 				  styleName="drillDownLabel" toolTip="{resourceManager.getString('cms', 'contentPrivacyTooltip')}"/>
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButtonGroup enabled="{changesEnabled}" id="contentPrivacy" />
 				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
 								selected="{_category.privacy == KalturaPrivacyType.ALL}"
 								change="{ if((event.target as RadioButton).selected)_category.privacy = KalturaPrivacyType.ALL }"
@@ -294,6 +301,7 @@
 				  styleName="drillDownLabel" toolTip="{resourceManager.getString('cms', 'categoryListingTooltip')}"/>
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButtonGroup enabled="{changesEnabled}" id="categoryListing" />
 				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
 								selected="{_category.appearInList == KalturaAppearInListType.PARTNER_ONLY}"
 								change="{ if((event.target as RadioButton).selected)_category.appearInList = KalturaAppearInListType.PARTNER_ONLY }"
@@ -318,6 +326,7 @@
 				 styleName="drillDownLabel" toolTip="{resourceManager.getString('cms', 'whoCanAddContentTooltip')}"/>
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButtonGroup enabled="{changesEnabled}" id="whoCanAddContent" />
 				<mx:RadioButton label="{resourceManager.getString('cms','noRestriction')}"
 								selected="{_category.contributionPolicy == KalturaContributionPolicyType.ALL}"
 								change="{ if((event.target as RadioButton).selected)_category.contributionPolicy = KalturaContributionPolicyType.ALL }"
@@ -342,6 +351,7 @@
 				 styleName="drillDownLabel" toolTip="{resourceManager.getString('cms', 'inheritEndUserSpecificTooltip')}"/>
 		<mx:VBox width="100%">
 			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButtonGroup enabled="{changesEnabled}" id="inheritEndUserSpecific" />
 				<mx:RadioButton label="{resourceManager.getString('cms','no')}" id="inheritNo"
 								selected="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"
 								change="inheritNo_changeHandler(event)"
@@ -373,8 +383,8 @@
 			<mx:Label text="{resourceManager.getString('cms', 'owner')}:" styleName="drillDownLabel"/>
 			<mx:Text maxWidth="{TEXT_WIDTH}" styleName="drillDownSubLabel" 
 					 text="{_category.owner ? _category.owner : resourceManager.getString('cms', 'notSpec')}"/>
-			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}"
-						   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}" click="changeOwner()"/>
+			<mx:LinkButton label="{resourceManager.getString('cms', 'change')}" click="changeOwner()"
+						   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}" />
 			<mx:VRule height="10"/>
 			<mx:Label text="{resourceManager.getString('cms', 'users')}:" styleName="drillDownLabel"/>
 			<mx:Text styleName="drillDownSubLabel"
@@ -388,12 +398,12 @@
 		<mx:Label width="{LABEL_WIDTH}" styleName="drillDownLabel"
 				  text="{resourceManager.getString('cms', 'joinGroupPolicy')}"/>
 		<mx:ComboBox id="policyCb" change="policyCb_changeHandler(event)" 
-					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
+					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
 	</mx:HBox>
 	<mx:HBox width="100%" styleName="noPadding">
 		<mx:Label width="{LABEL_WIDTH}" styleName="drillDownLabel"
 				  text="{resourceManager.getString('cms', 'defaultPermissionLevel')}"/>
 		<mx:ComboBox id="levelCb" change="levelCb_changeHandler(event)" 
-					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
+					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
 	</mx:HBox>
 </mx:VBox>

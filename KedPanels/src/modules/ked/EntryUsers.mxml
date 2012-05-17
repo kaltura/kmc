@@ -37,6 +37,12 @@
 			private const ITEM_WIDTH:int = 400;
 			
 			[Bindable]
+			/**
+			 * RnP: allow making changes to settings in this tab
+			 * */
+			public var changesEnabled:Boolean = true;
+			
+			[Bindable]
 			private var _selectedEntry:KalturaBaseEntry;
 			
 			/**
@@ -278,16 +284,17 @@
 	<mx:HBox styleName="noPadding">
 		<mx:Label text="{resourceManager.getString('drilldown', 'usrOwner')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
 		<mx:Label text="{_entryData.selectedEntryOwner.screenName}" styleName="drillDownSubLabel" toolTip="{_entryData.selectedEntryOwner.id}" />
-		<mx:LinkButton id="changeBtn" label="{resourceManager.getString('drilldown', 'usrCngOwner')}" click="changeBtn_clickHandler(event)"/>
+		<mx:LinkButton id="changeBtn" label="{resourceManager.getString('drilldown', 'usrCngOwner')}" click="changeBtn_clickHandler(event)"
+					   visible="{changesEnabled}"/>
 	</mx:HBox>
 	<mx:HBox styleName="noPadding">
 		<mx:Label text="{resourceManager.getString('drilldown', 'usrEditors')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
 		<components:AutoComplete id="editorsComplete" allowNewValues="true" allowMultipleSelection="true" 
-								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}"/>
+								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}" enabled="{changesEnabled}"/>
 	</mx:HBox>
 	<mx:HBox styleName="noPadding">
 		<mx:Label text="{resourceManager.getString('drilldown', 'usrPublishers')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
 		<components:AutoComplete id="publishersComplete" allowNewValues="true" allowMultipleSelection="true" 
-								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}"/>
+								 labelField="id" showRemoveIcon="true" width="{ITEM_WIDTH}" enabled="{changesEnabled}"/>
 	</mx:HBox>
 </mx:Module>
