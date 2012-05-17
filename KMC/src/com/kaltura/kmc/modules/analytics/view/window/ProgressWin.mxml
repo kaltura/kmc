@@ -6,9 +6,10 @@
 	showCloseButton="true" close="cancelDownload()">
 	<mx:Script>
 		<![CDATA[
-			import mx.managers.PopUpManager;
 			import flash.utils.setTimeout;
+			
 			import mx.core.mx_internal;
+			import mx.managers.PopUpManager;
 			use namespace mx_internal;
 			
 			[Bindable] public var fr : FileReference;
@@ -24,7 +25,13 @@
 			public function progressHandler(event:ProgressEvent):void
 		    {
 		    	if(!fileName.text)
-		    		 fileName.text = fr.name;
+				{
+					if(fr && fr.name)
+						fileName.text = fr.name;
+					else
+						fileName.text = "report_" + new Date().time;
+				}
+		    		
 		    		 
 		        uploadProgress.setProgress(event.bytesLoaded*100/event.bytesTotal, 100);
 		    }
