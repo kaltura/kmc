@@ -159,6 +159,10 @@
 			 * */
 			private var _profsWatcher:ChangeWatcher;
 			
+			/**
+			 * RnP: edit custom data
+			 * */
+			public var customDataEditable:Boolean = true;
 			
 			// =================================================================
 			// Data Model
@@ -432,9 +436,6 @@
 					var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 					controller.dispatch(lmdp);
 				}
-				
-				//TODO permissions: unite with PanelConsts.METADATA_PANEL
-				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.CUSTOM_DATA_PANEL);
 			}
 			
 			
@@ -778,6 +779,7 @@
 						var curCustomData:SingleCustomData = new SingleCustomData();
 						curCustomData.visibleHeader = profilesAC.length > 2;
 						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as EntryFormBuilder;
+						curCustomData.metadataEditable = customDataEditable;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
 						
 						_profilesAC.addItem(curProfile);

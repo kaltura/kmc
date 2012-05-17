@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*" implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel" creationComplete="onCreationComplete(event)">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*"
+		 implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel"
+		 creationComplete="onCreationComplete(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.autocomplete.controllers.KACTagsController;
@@ -14,32 +16,38 @@
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaCategory;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
-			
+
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 90;
-			
+
 			public var filterModel:FilterModel;
 			public var model:CategoriesModel;
-			
+
 			[Bindable]
 			private var _profilesAC:ArrayCollection;
-			
+
 			[Bindable]
 			private var _profileNames:ArrayCollection;
-			
+
 			private static const customDataVerticalGap:int = 5;
-			
+
 			[Bindable]
 			public var category:KalturaCategory;
-			
-			
+
+
 			private var _tagsWatcher:ChangeWatcher;
+
 			
+			/**
+			 * RnP: edit custom data
+			 * */
+			public var customDataEditable:Boolean = true;
+
 			/**
 			 * create the visual representation of each profile
 			 * @param profilesAC list of custom data profiles (<code>KMCMetadataProfileVO</code>)
@@ -54,69 +62,77 @@
 				while (editableBox.numChildren > 1) {
 					editableBox.removeChildAt(1);
 				}
-				
+
 				for (var i:int = 0; i < profilesAC.length; i++) {
 					var curProfile:KMCMetadataProfileVO = profilesAC.getItemAt(i) as KMCMetadataProfileVO;
-					
+
 					if (curProfile.profile && curProfile.metadataFieldVOArray && curProfile.metadataFieldVOArray.length > 0) {
 						var curCustomData:SingleCustomData = new SingleCustomData();
 						curCustomData.visibleHeader = profilesAC.length > 2;
 						curCustomData.formBuilder = formBuildersAC.getItemAt(i) as CategoryFormBuilder;
+						curCustomData.metadataEditable = customDataEditable;
 						curCustomData.addEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop, false, 0, true);
-						
+
 						_profilesAC.addItem(curProfile);
 						_profileNames.addItem(curProfile.profile.name);
 						editableBox.addChild(curCustomData);
 					}
 				}
-				
+
 				scrollToTop(null);
 			}
-			
+
+
 			/**
-			 * jump to the top profile (entry data) 
+			 * jump to the top profile (entry data)
 			 * */
 			private function scrollToTop(event:Event):void {
 				editableBox.verticalScrollPosition = 0;
 			}
-			
-			
-			public function validate():void{
-				
+
+
+			public function validate():void {
+
 			}
-			
-			public function save():void{
+
+
+			public function save():void {
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
 				cgEvent.dispatch();
 			}
-			
-			public function destroy():void{
-				if (_tagsWatcher != null){
+
+
+			public function destroy():void {
+				if (_tagsWatcher != null) {
 					_tagsWatcher.unwatch();
 					_tagsWatcher = null;
 				}
 			}
-			
-			public function clear():void{
-				
+
+
+			public function clear():void {
+
 			}
-			
-			public function initData():void{
+
+
+			public function initData():void {
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_INFO);
 				cgEvent.dispatch();
 			}
-			
-			public function init():void{
+
+
+			public function init():void {
 				buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
-				
+
 				new KACTagsController(tagsInput, CmsModelLocator.getInstance().context.kc);
 			}
-						
-			public function isChanged():Boolean{
+
+
+			public function isChanged():Boolean {
 				var res:Boolean = false;
-				
+
 				var infoArray:ArrayCollection = model.metadataInfo;
-				
+
 				if (_profilesAC.length && infoArray && infoArray.length) {
 					for (var i:int = 0; i < _profilesAC.length; i++) {
 						var metadataInfo:CustomMetadataDataVO = infoArray.getItemAt(i) as CustomMetadataDataVO;
@@ -129,7 +145,7 @@
 									res = true;
 								}
 							}
-								//new metadata was inserted
+							//new metadata was inserted
 							else if (newMetadataXML.children().length() > 0) {
 								res = true;
 							}
@@ -138,8 +154,8 @@
 				}
 				return res;
 			}
-			
-			
+
+
 			private function jumpToProfile():void {
 				var scrollPos:int = 0;
 				var childIndex:int = profilesCB.selectedIndex;
@@ -152,47 +168,57 @@
 				}
 				profilesCB.selectedIndex = -1;
 			}
-			
-			private function onCreationComplete(event:FlexEvent):void{
+
+
+			private function onCreationComplete(event:FlexEvent):void {
 				_tagsWatcher = BindingUtils.bindSetter(onTagsSet, this, ["category", "tags"]);
 			}
-			
-			private function onTagsSet(tags:String):void{
-				if (tags != null){
+
+
+			private function onTagsSet(tags:String):void {
+				if (tags != null) {
 					tagsInput.selectedItems = new ArrayCollection(tags.split(","));
 				}
 			}
-			
 		]]>
 	</mx:Script>
 	<mx:VBox width="100%" height="{height}" horizontalAlign="right">
 		<!-- navigation -->
-		<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()" styleName="customDataProfilesCB"
-					 prompt="{resourceManager.getString('drilldown','jumpToPrompt')}" selectedIndex="-1"
-					 fontWeight="bold" visible="{_profileNames.length > 2}" includeInLayout="{_profileNames.length > 2}"/>
+		<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()"
+					 styleName="customDataProfilesCB" prompt="{resourceManager.getString('drilldown','jumpToPrompt')}"
+					 selectedIndex="-1" fontWeight="bold" visible="{_profileNames.length > 2}"
+					 includeInLayout="{_profileNames.length > 2}"/>
 		<mx:VBox id="editableBox" styleName="noPadding" verticalGap="{customDataVerticalGap}"
 				 height="{height - profilesCB.height - getStyle('verticalGap')}" width="100%">
 			<mx:VBox id="categoryMetadata" width="100%">
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-					<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.name}" change="{category.name = nameInput.text}"/>
+					<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel"
+								  text="{category.name}" change="{category.name = nameInput.text}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-					<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel" text="{category.description}" change="{category.description = decriptionInput.text}"/>
+					<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:TextArea id="decriptionInput" width="{TEXT_WIDTH}" styleName="drillDownSubLabel"
+								 text="{category.description}" change="{category.description = decriptionInput.text}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
+					<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
 					<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
-											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
-											 labelField="tag" change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
+											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true"
+											 labelField="tag"
+											 change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}" styleName="drillDownLabel" />
-					<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}" text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
+					<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:TextArea id="referenceIdInput" styleName="drillDownLabel" width="{TEXT_WIDTH}"
+								 text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
 				</mx:HBox>
 			</mx:VBox>
 		</mx:VBox>
 	</mx:VBox>
-	
+
 </mx:HBox>

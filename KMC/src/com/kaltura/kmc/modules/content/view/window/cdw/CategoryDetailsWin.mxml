@@ -80,7 +80,11 @@
 			 * */
 			private var _selectedCatWatcher:ChangeWatcher;
 
-
+			[Bindable] 
+			/**
+			 * RnP - allow saving changes in the window
+			 * */
+			public var enableSave:Boolean = true; 
 			
 
 			private function onClose(event:Event):void {
@@ -244,9 +248,11 @@
 		<mx:Spacer width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" 
-					   click="onSave(false)" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
+					   click="onSave(false)" buttonMode="{enabled}" 
+					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
-					   click="onSaveAndClose()" buttonMode="true" enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag}" />
+					   click="onSaveAndClose()" buttonMode="{enabled}" 
+					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
 			<mx:LinkButton label="{resourceManager.getString('cms', 'prevCategory')}" click="gotoNextCategory(false)"
