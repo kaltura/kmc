@@ -409,7 +409,6 @@ package com.kaltura.kmc.modules.content.business
 			edp.replacedEntryName = _entryData.selectedEntry.name;
 			//
 			edp.loadRoughcuts = false;
-			//				edw.showNextPrevBtns = false;
 			edw.visibleTabs = Vector.<String>([PanelConsts.ASSETS_PANEL]);
 			edw.styleName = "WinTitleStyle2";
 			edw.setStyle("modalTransparency", 0);

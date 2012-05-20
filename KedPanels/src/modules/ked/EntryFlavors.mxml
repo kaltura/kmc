@@ -750,16 +750,16 @@ Flavours tab of EntryDetailsWin
 			 * opens another entry drill down window, for the replacement entry
 			 * */
 			private function onReplacementStatusBtnClick():void {
-				//replacement entry is processing - check for updates
-				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
-					_drillDownClicked = true;
-					var entryid:String = (_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
-					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryid);
-					controller.dispatch(getSelectedEntry);
-				}
-				else {
+				//replacement entry is processing - check for updates (Atar: this happens anyway when opening replacement, in WindowsManager)
+//				if ((_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.NOT_READY_AND_NOT_APPROVED) || (_selectedEntry.replacementStatus == KalturaEntryReplacementStatus.APPROVED_BUT_NOT_READY)) {
+//					_drillDownClicked = true;
+//					var entryid:String = (_dpModel.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry.id;
+//					var getSelectedEntry:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS, null, entryid);
+//					controller.dispatch(getSelectedEntry);
+//				}
+//				else {
 					openReplacementDrilldown();
-				}
+//				}
 			}
 			
 			
@@ -769,8 +769,6 @@ Flavours tab of EntryDetailsWin
 			private function openReplacementDrilldown():void {
 				var dispatcher:IEventDispatcher = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher;
 				dispatcher.dispatchEvent(new KedDataEvent(KedDataEvent.OPEN_REPLACEMENT));
-				//				var openWindow:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW);
-				//				openWindow.dispatch();
 			}
 			
 			
