@@ -262,10 +262,10 @@
 				var res:Boolean = false;
 				// entry data:
 				var orig:KalturaBaseEntry = _entryData.selectedEntry;
-				res ||= selectedEntry.name != orig.name;
-				res ||= selectedEntry.description != orig.description;
-				res ||= selectedEntry.tags != orig.tags;
-				res ||= selectedEntry.referenceId != orig.referenceId;
+				res ||= _selectedEntry.name != orig.name;
+				res ||= _selectedEntry.description != orig.description;
+				res ||= _selectedEntry.tags != orig.tags;
+				res ||= _selectedEntry.referenceId != orig.referenceId;
 				
 				// categories:
 				res ||= !EntryDataHelper.areCollectionsEqual(_entryCategories, catComplete.selectedItems);
@@ -296,12 +296,12 @@
 			
 			
 			public function save():void {
-				if (selectedEntry is KalturaLiveStreamAdminEntry) {
-					(selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
+				if (_selectedEntry is KalturaLiveStreamAdminEntry) {
+					(_selectedEntry as KalturaLiveStreamAdminEntry).offlineMessage = offlineMessage.text;
 				}
 				
 				//update categories
-				var saveEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, selectedEntry);
+				var saveEvent:KedEntryEvent = new KedEntryEvent(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, _selectedEntry);
 				saveEvent.data = EntryDataHelper.getCategoriesUpdateValues(catComplete.selectedItems, _entryCategories);
 				controller.dispatch(saveEvent);
 				
@@ -344,18 +344,18 @@
 			
 			
 			public function initData():void {
-				_originalRefid = selectedEntry.referenceId;
+				_originalRefid = _selectedEntry.referenceId;
 				
 				if (kdpContainer.getChildAt(0) is Image) {
 					// remove previous image
 					kdpContainer.removeChildAt(0);
 				}
 				
-				if (selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
+				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					addImageThumb(noMediaImage);
 					_entryHasContent = false;
 				}
-				else if ((selectedEntry is KalturaMediaEntry) && (selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
+				else if ((_selectedEntry is KalturaMediaEntry) && (_selectedEntry as KalturaMediaEntry).mediaType == KalturaMediaType.IMAGE) {
 					_entryHasContent = true;
 					addImageThumb();
 				}
@@ -371,9 +371,9 @@
 				if (_landingPage) {
 					var replaceIndex:int = _landingPage.indexOf(ENTRY_PLACEHOLDER);
 					if (replaceIndex > -1)
-						landingPageLabel.text = _landingPage.replace(ENTRY_PLACEHOLDER, selectedEntry.id);
+						landingPageLabel.text = _landingPage.replace(ENTRY_PLACEHOLDER, _selectedEntry.id);
 					else
-						landingPageLabel.text = _landingPage + selectedEntry.id;
+						landingPageLabel.text = _landingPage + _selectedEntry.id;
 				}
 				
 				if (_profilesAC) {
@@ -382,7 +382,7 @@
 					controller.dispatch(listCustomData);
 				}
 				
-				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_CATEGORIES, selectedEntry);
+				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_CATEGORIES, _selectedEntry);
 				controller.dispatch(listCats);
 			}
 			
@@ -494,7 +494,8 @@
 			
 			private function showKDP(event:Event = null):void {
 				kdp3StaticSwfLoader.visible = true;
-				kdpContainer.validateNow();
+				kdp3StaticSwfLoader.includeInLayout = true;
+//				kdpContainer.validateNow();
 			}
 			
 			
@@ -511,7 +512,11 @@
 			
 			
 			private function addImageThumb(imgSource:Object = null):void {
-				kdp3Loader.includeInLayout = kdp3Loader.visible = false;
+				kdp3StaticSwfLoader.includeInLayout = kdp3StaticSwfLoader.visible = false;
+				if (kdp3StaticSwfLoader != kdp3Loader) {
+					// if we start with no content image after we already have a KDP
+					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
+				}
 				_entryImg = new Image();
 				_entryImg.width = 290;
 				_entryImg.height = 160;
@@ -523,10 +528,10 @@
 				}
 				else {
 					if ((KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbResize) {
-						_entryImg.source = selectedEntry.thumbnailUrl + "/width/290/height/160/bgcolor/F7F7F7/type/2";
+						_entryImg.source = _selectedEntry.thumbnailUrl + "/width/290/height/160/bgcolor/F7F7F7/type/2";
 					}
 					else {
-						_entryImg.source = selectedEntry.thumbnailUrl;
+						_entryImg.source = _selectedEntry.thumbnailUrl;
 					}
 				}
 				kdpContainer.addChildAt(_entryImg, 0);
@@ -538,7 +543,7 @@
 				if (kdp3StaticSwfLoader) {
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 				}
-				EntryUtil.openPreview(selectedEntry, _dpModel, !_showEmbed);
+				EntryUtil.openPreview(_selectedEntry, _dpModel, !_showEmbed);
 			}
 			
 			
@@ -586,7 +591,7 @@
 				// create the new model 
 				var cg:KMvCEvent = new ModelEvent(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL);
 				controller.dispatch(cg);
-				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, selectedEntry.rootEntryId);
+				cg = new KedEntryEvent(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, null, _selectedEntry.rootEntryId);
 				controller.dispatch(cg);
 			}
 			
@@ -596,7 +601,7 @@
 			 * */
 			protected function openClipping(event:MouseEvent):void {
 				pausePreview();
-				KedJSGate.openClipApp(selectedEntry.id, "clip");
+				KedJSGate.openClipApp(_selectedEntry.id, "clip");
 			}
 			
 			
@@ -605,7 +610,7 @@
 			 * */
 			protected function openTrimming(event:MouseEvent):void {
 				pausePreview();
-				KedJSGate.openClipApp(selectedEntry.id, "trim");
+				KedJSGate.openClipApp(_selectedEntry.id, "trim");
 			}
 			
 			
@@ -622,15 +627,15 @@
 				if (event.target.text == '') {
 					if (_originalRefid == null) {
 						// no change from original empty value
-						selectedEntry.referenceId = null;
+						_selectedEntry.referenceId = null;
 					}
 					else {
 						// used to have value, delete it
-						selectedEntry.referenceId = KalturaClient.NULL_STRING;
+						_selectedEntry.referenceId = KalturaClient.NULL_STRING;
 					}
 				}
 				else {
-					selectedEntry.referenceId = event.target.text;
+					_selectedEntry.referenceId = event.target.text;
 				}
 			}
 			
@@ -823,7 +828,7 @@
 				if (ac.length) {
 					str = str.substr(0, str.length - 1);
 				}
-				selectedEntry.tags = str;
+				_selectedEntry.tags = str;
 			}
 
 		]]>
