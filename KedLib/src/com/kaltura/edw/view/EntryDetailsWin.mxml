@@ -7,7 +7,7 @@
 							showCloseButton="true" close="{onClose()}" help="{onHelp()}"
 							xmlns:navigation="com.kaltura.edw.business.*"
 							xmlns:ed="com.kaltura.edw.view.*" xmlns:adobe="http://www.adobe.com/2006/fc"
-							creationComplete="{onWindowCreationComplete()}"
+							creationComplete="{onWindowCreationComplete()}" 
 							xmlns:window="com.kaltura.kmc.modules.content.view.window.*"
 							xmlns:control="com.kaltura.edw.control.*">
 	<mx:Metadata>
@@ -294,9 +294,9 @@
 					_selectedEntry = value;
 					undoToEntry = Cloner.cloneByEntryType(_selectedEntry);
 					
-					_selectedEntry.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
-					
 					setWindowTitle();
+						
+					_selectedEntry.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
 					
 					if (_isCreationComplete) {
 						if (!isDifferentEntry) {
@@ -337,6 +337,9 @@
 			private function copyToUndoTo(e:PropertyChangeEvent):void {
 				if (undoToEntry && e.kind == PropertyChangeEventKind.UPDATE) {
 					undoToEntry[e.property] = e.newValue;
+					if (e.property == "name") {
+						setWindowTitle();
+					}
 				}
 			}
 			
@@ -394,8 +397,9 @@
 
 
 			/**
-			 * sets the window title, if entry doesn't have content and title yet,
-			 * will set the title according to its type
+			 * sets the window title. 
+			 * if entry doesn't have content and title yet
+			 * will set the title according to entry type
 			 * */
 			private function setWindowTitle():void {
 				if (undoToEntry.status == KalturaEntryStatus.NO_CONTENT) {
