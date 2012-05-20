@@ -27,5 +27,15 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var enableThumbResize:Boolean = false;
 		
+		/**
+		 * RnP: show clipping button in EDW
+		 * */
+		public var allowClipping:Boolean = true;
+		
+		/**
+		 * RnP: show trimming button in EDW
+		 * */
+		public var allowTrimming:Boolean = true;
+		
 	}
 }

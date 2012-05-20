@@ -23,6 +23,10 @@ package com.kaltura.kmc.modules.content.events
 		
 		public static const SET_CONFIRM_MODERATION : String = "content_SET_CONFIRM_MODERATION";
 		
+		public static const SET_ALLOW_TRIMMING: String = "content_SET_ALLOW_TRIMMING";
+		
+		public static const SET_ALLOW_CLIPPING: String = "content_SET_ALLOW_CLIPPING";
+		
 		private var _newValue:*;
 		
 		public function ChangeModelEvent(type:String, value:*, bubbles:Boolean=false, cancelable:Boolean=false)

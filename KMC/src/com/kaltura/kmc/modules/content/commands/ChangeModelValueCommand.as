@@ -22,19 +22,25 @@ package com.kaltura.kmc.modules.content.commands {
 					_model.moderationModel.confirmModeration = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_UPDATE_CUSTOM_DATA:
-						pdp.enableUpdateMetadata = (event as ChangeModelEvent).newValue;
+					pdp.enableUpdateMetadata = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_DISTRIBUTION: 
 					_model.filterModel.enableDistribution = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_REMOTE_STORAGE:
-						pdp.remoteStorageEnabled = (event as ChangeModelEvent).newValue;
+					pdp.remoteStorageEnabled = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_ENABLE_THUMB_RESIZE:
-						pdp.enableThumbResize = (event as ChangeModelEvent).newValue;
+					pdp.enableThumbResize = (event as ChangeModelEvent).newValue;
 					break;
 				case ChangeModelEvent.SET_LOTS_OF_CATEGORIES_FLAG:
-						_model.filterModel.chunkedCategoriesLoad = (event as ChangeModelEvent).newValue;
+					_model.filterModel.chunkedCategoriesLoad = (event as ChangeModelEvent).newValue;
+					break;
+				case ChangeModelEvent.SET_ALLOW_CLIPPING:
+					pdp.allowClipping = (event as ChangeModelEvent).newValue;
+					break;
+				case ChangeModelEvent.SET_ALLOW_TRIMMING:
+					pdp.allowTrimming = (event as ChangeModelEvent).newValue;
 					break;
 			}
 		}

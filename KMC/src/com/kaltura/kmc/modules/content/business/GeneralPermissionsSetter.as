@@ -178,5 +178,24 @@ package com.kaltura.kmc.modules.content.business {
 		public function get confirmModeration():Boolean {
 			return true;
 		}
+		
+		
+		public function set allowTrimming(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ALLOW_TRIMMING	, value);
+			cge.dispatch();
+		}
+		
+		public function get allowTrimming():Boolean {
+			return true;
+		}
+		
+		public function set allowClipping(value:Boolean):void {
+			var cge:ChangeModelEvent = new ChangeModelEvent(ChangeModelEvent.SET_ALLOW_CLIPPING	, value);
+			cge.dispatch();
+		}
+		
+		public function get allowClipping():Boolean {
+			return true;
+		}
 	}
 }

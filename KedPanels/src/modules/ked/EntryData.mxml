@@ -38,37 +38,26 @@
 			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.view.window.CategoryBrowser;
-			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.edw.vo.CustomMetadataDataVO;
-			import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.IDataPackRepository;
 			import com.kaltura.kmvc.model.KMvCModel;
-			import com.kaltura.types.KalturaEditorType;
-			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
-			import com.kaltura.types.KalturaEntryType;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaCategory;
-			import com.kaltura.vo.KalturaFlavorAsset;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-			import com.kaltura.vo.KalturaMixEntry;
-			
-			import flash.utils.setTimeout;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Image;
-			import mx.formatters.DateFormatter;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
-			import mx.utils.StringUtil;
 			
 			
 			// =================================================================
@@ -145,11 +134,6 @@
 			private var controller:DataTabController = DataTabController.getInstance();
 			
 			/**
-			 * landing page according to partner's data
-			 * */
-			private var _landingPage:String;
-			
-			/**
 			 * change watcher for categories list
 			 * */
 			private var _catWatcher:ChangeWatcher;
@@ -163,6 +147,7 @@
 			 * RnP: edit custom data
 			 * */
 			public var customDataEditable:Boolean = true;
+			
 			
 			// =================================================================
 			// Data Model
@@ -190,6 +175,17 @@
 					offlineHolder.includeInLayout = false;
 				}
 				
+				if (value) {
+					// clipping / trimming
+					var val:Boolean = (value as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE; 
+					val &&= value.status == KalturaEntryStatus.READY;
+					
+					var pdp:PermissionsDataPack = _dpModel.getDataPack(PermissionsDataPack) as PermissionsDataPack;
+				
+					btnClipping.visible = btnClipping.includeInLayout = val && pdp.allowClipping;
+					btnTrimming.visible = btnTrimming.includeInLayout = val && pdp.allowTrimming;
+				}
+				
 				// set entry tags on screen
 				if (value && value.tags) {
 					var ac:ArrayCollection = new ArrayCollection(value.tags.split(", ")); 
@@ -211,13 +207,13 @@
 			}
 			public function set dataPackModel(value:IDataPackRepository):void{
 				_dpModel = value;
-				_context = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				_entryData = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
 					
 				_catWatcher = BindingUtils.bindSetter(setCategoriesOnScreen , _entryData, ["entryCategories"]);
-				showEmbed = _context.showEmbedCode;
-				_landingPage = _context.landingPage;
+				
+				var context:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
+				showEmbed = context.showEmbedCode;
 			}
 			
 			public function get helpAnchor():String{
@@ -225,13 +221,11 @@
 			}
 			
 			
-			[Bindable]
-			private var _context:ContextDataPack;
 			
 			[Bindable]
 			private var _distributionData:DistributionDataPack;
 			
-			[Bindable]
+			
 			private var _entryData:EntryDataPack;
 			
 			/**
@@ -368,12 +362,13 @@
 				}
 				
 				// set landing page string:
-				if (_landingPage) {
-					var replaceIndex:int = _landingPage.indexOf(ENTRY_PLACEHOLDER);
+				var landingPage:String = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).landingPage;
+				if (landingPage) {
+					var replaceIndex:int = landingPage.indexOf(ENTRY_PLACEHOLDER);
 					if (replaceIndex > -1)
-						landingPageLabel.text = _landingPage.replace(ENTRY_PLACEHOLDER, _selectedEntry.id);
+						landingPageLabel.text = landingPage.replace(ENTRY_PLACEHOLDER, _selectedEntry.id);
 					else
-						landingPageLabel.text = _landingPage + _selectedEntry.id;
+						landingPageLabel.text = landingPage + _selectedEntry.id;
 				}
 				
 				if (_profilesAC) {
@@ -455,8 +450,9 @@
 			
 			protected function onCreationComplete():void {
 				name_input.setFocus();
-				new KACTagsController(tagsComplete, _context.kc);
-				new KACCategoryController(catComplete, _context.kc);
+				var kc:KalturaClient = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).kc;
+				new KACTagsController(tagsComplete, kc);
+				new KACCategoryController(catComplete, kc);
 			}
 			
 			
@@ -483,7 +479,8 @@
 					kdp3StaticSwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: _entryData.selectedEntry.id});
 				}
 				else {
-					var newUrl:String = "http://" + _context.cdnHost + "/kwidget/wid/_" + _context.kc.partnerId + "/ui_conf_id/" + _context.drilldownUiconf + "/nowrapper/1";
+					var context:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
+					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + context.drilldownUiconf + "/nowrapper/1";
 					kdp3Loader.scaleContent = false;
 					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kdp3Loader.load(newUrl);
@@ -566,13 +563,14 @@
 					IEventDispatcher(kdp3Loader.loaderInfo["uncaughtErrorEvents"]).addEventListener("uncaughtError", uncaughtErrorHandler, false, 1, true);
 				
 				//set kdp params
+				var context:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				var params:Object = new Object();
 				params.entryId = _entryData.selectedEntry.id;
-				params.ks = _context.kc.ks;
-				params.partnerId = _context.kc.partnerId;
-				params.subpId = _context.kc.partnerId + "00";
+				params.ks = context.kc.ks;
+				params.partnerId = context.kc.partnerId;
+				params.subpId = context.kc.partnerId + "00";
 				
-				params.debugMode = _context.debugMode;
+				params.debugMode = context.debugMode;
 				
 				kdp3StaticSwfLoader.content["flashvars"] = params;
 				//start the loading sqeunce of the kdp	
@@ -663,9 +661,10 @@
 			 * open category editor
 			 * */
 			private function btnCategories_clickHandler(event:MouseEvent):void {
+				var kc:KalturaClient = (_dpModel.getDataPack(ContextDataPack) as ContextDataPack).kc;
 				var catBrs:CategoryBrowser = new CategoryBrowser();
 				catBrs.filterModel = (_dpModel.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-				catBrs.kClient = _context.kc;
+				catBrs.kClient = kc;
 				catBrs.setCategories(catComplete.selectedItems.source);
 				catBrs.addEventListener(Event.CLOSE, closeCatPopup);
 				catBrs.addEventListener("apply", setCatsToAutocomplete);
@@ -918,12 +917,10 @@
 			<mx:Spacer width="100%" />
 			<mx:LinkButton id="btnClipping" click="openClipping(event)"
 						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
-						   label="{resourceManager.getString('drilldown','openClipping')}"
-						   visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}"/>
+						   label="{resourceManager.getString('drilldown','openClipping')}" />
 			<mx:LinkButton id="btnTrimming" click="openTrimming(event)"
 						   enabled="{EntryDataHelper.entryHasSource(_distributionData.flavorParamsAndAssetsByEntryId)}"
-						   label="{resourceManager.getString('drilldown','openTrimming')}"
-						   visible="{(selectedEntry as KalturaMediaEntry).mediaType != KalturaMediaType.IMAGE &amp;&amp; selectedEntry.status == KalturaEntryStatus.READY}"/>
+						   label="{resourceManager.getString('drilldown','openTrimming')}" />
 		</mx:HBox>
 		<!-- no content message -->
 		<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}"
