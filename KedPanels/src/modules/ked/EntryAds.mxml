@@ -228,14 +228,14 @@
 			
 			public function init():void {
 				Security.allowDomain("*");
+				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ADS_PANEL);
+				
 				if (!_watchCPCount) {
 					_watchCPCount = BindingUtils.bindSetter(adjustBulkActions, model, "cuepointsCount");
 				}
 				if (!_watchCPReload) {
 					_watchCPReload = BindingUtils.bindSetter(callReloadCuePoints, model, "reloadCuePoints");
 				}
-				
-				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ADS_PANEL);
 			}
 			
 			/**
@@ -948,14 +948,24 @@
 			private function adjustBulkActions(value:Object):void {
 				// copy the array for the new entry
 				var ar:Array = BULK_ACTIONS.concat();
-				
+				var i:int;
 				if (value != null && value == 0) {
 					// remove the download option
-					ar.splice(1, 1);
+					for (i = 0; i<ar.length; i++) {
+						if (ar[i].value == "ads_bulk_download") {
+							ar.splice(i, 1);
+							break;
+						}
+					}
 				}
 				if (!editable) {
 					// remove the upload action
-					ar.splice(0, 1);
+					for (i = 0; i<ar.length; i++) {
+						if (ar[i].value == "ads_bulk_upload") {
+							ar.splice(i, 1);
+							break;
+						}
+					}
 				}
 				cbActions.dropdown.dataProvider = ar;
 				cbActions.dataProvider = ar;
