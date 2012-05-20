@@ -152,6 +152,11 @@
 			 * */
 			private var _affectedEntries:Array;
 			
+			/**
+			 * a flag indicating the tab was intialised
+			 * */
+			private var _initOnce:Boolean;
+			
 			// ===============================================
 			// methods
 			// ===============================================
@@ -170,26 +175,17 @@
 					_initialFilter = entryFilter as KalturaMediaEntryFilter;
 				}
 				if (_ready) {
-					var kFilter:KalturaMediaEntryFilter;
-					if (_initialFilter) {
-						kFilter = _initialFilter
-					}
-					else {
-						kFilter = new KalturaMediaEntryFilter();
-						kFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
-					
-						// setting defaults to view only pending and flagged.
-						kFilter.moderationStatusIn = KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW;
-					}
-					filter.kalturaFilter = kFilter;
-					
-					loadFilterData();
-					loadKDP();
-
 					paging.selectedPage = 1;
 					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
+					
+					if (_initOnce) {
+						loadEntries();
+					}
+					else {
+						initOnce();
+					}
 
-					PermissionManager.getInstance().applyAllAttributes(this, this.id);
+					
 				}
 				else {
 					_ready = true;
@@ -200,9 +196,30 @@
 			/**
 			 * load all the data the filter needs
 			 * */
-			private function loadFilterData():void {
+			private function initOnce():void {
+				
+				var kFilter:KalturaMediaEntryFilter;
+				if (_initialFilter) {
+					kFilter = _initialFilter
+				}
+				else {
+					kFilter = new KalturaMediaEntryFilter();
+					kFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
+					
+					// setting defaults to view only pending and flagged.
+					kFilter.moderationStatusIn = KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW;
+				}
+				filter.kalturaFilter = kFilter;
+				
+				loadKDP();
+				
+				// load filter data
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
 				KedController.getInstance().dispatch(fe);
+				
+				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				
+				_initOnce = true;
 			}
 
 
