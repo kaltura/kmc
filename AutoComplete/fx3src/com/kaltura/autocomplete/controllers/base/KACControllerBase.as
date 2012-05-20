@@ -32,7 +32,6 @@ package com.kaltura.autocomplete.controllers.base
 		}
 		
 		private function onSearchChange(event:Event):void{
-			trace("onSearchChange");
 			if (_autoComp.searchText != null){
 				if (_pendingCall != null){
 					_pendingCall.removeEventListener(KalturaEvent.COMPLETE, result);
@@ -42,7 +41,6 @@ package com.kaltura.autocomplete.controllers.base
 				_autoComp.clearSuggestions();
 				
 				if (_autoComp.searchText.length > (minPrefixLength - 1)){
-					trace ("search text length: " + _autoComp.searchText.length);
 					_elementSelection.removeAll();
 					
 					var call:KalturaCall = createCallHook();
