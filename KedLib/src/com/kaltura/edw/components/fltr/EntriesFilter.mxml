@@ -11,9 +11,12 @@
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaType;
+			import com.kaltura.types.KalturaSearchOperatorType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlayableEntryFilter;
+			import com.kaltura.vo.KalturaSearchItem;
+			import com.kaltura.vo.KalturaSearchOperator;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.binding.utils.BindingUtils;
@@ -126,6 +129,10 @@
 				createMetadataFilters(value);
 			}
 			
+			
+			/**
+			 * build the visual metadata filter panels
+			 * */
 			protected function createMetadataFilters(value:ArrayCollection):void {
 				var i:int;
 				// clean previous metadata children
@@ -136,6 +143,7 @@
 				}
 				// if no value, don't build panels
 				if (!value) return;
+				
 				
 				// build panels
 				var profileVo:KMCMetadataProfileVO;
@@ -177,6 +185,9 @@
 				
 				metadataTab.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 				
+				// update filter data 
+				handelAdvancedSearchComponent(metadataTab.filter as KalturaSearchItem, metadataTab.attribute);
+				
 				return metadataTab;
 			}
 			
@@ -191,11 +202,14 @@
 			 * */
 			public static function generateBaseFilter():KalturaMediaEntryFilter {
 				var _kalturaFilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
+				
 				_kalturaFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + 
 					KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
+				
 				_kalturaFilter.statusIn = KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING + "," +
 					KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," + KalturaEntryStatus.READY + "," + 
 					KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.PENDING;
+				
 				return _kalturaFilter;
 			}
 			
