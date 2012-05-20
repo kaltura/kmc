@@ -3,9 +3,11 @@ package com.kaltura.edw.components.fltr
 	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 	import com.kaltura.edw.components.fltr.indicators.Indicators;
 	import com.kaltura.edw.components.fltr.indicators.IndicatorsEvent;
+	import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.types.KalturaSearchOperatorType;
 	import com.kaltura.utils.ObjectUtil;
+	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaContentDistributionSearchItem;
 	import com.kaltura.vo.KalturaFilter;
 	import com.kaltura.vo.KalturaMetadataSearchItem;
@@ -368,6 +370,47 @@ package com.kaltura.edw.components.fltr
 					}
 				}
 			}
+		}
+		
+		// ----------------
+		// custom data
+		// ----------------
+		
+		protected var _metadataProfiles:ArrayCollection;
+		
+		[Bindable]
+		/**
+		 * metadata profiles to show as filters
+		 * */
+		public function get metadataProfiles():ArrayCollection {
+			return _metadataProfiles;
+		}
+		
+		public function set metadataProfiles(value:ArrayCollection):void {
+			_metadataProfiles = value;
+			createMetadataFilters(value);
+		}
+		
+		protected function createMetadataFilters(value:ArrayCollection):void {};
+			
+		/**
+		 * create a MetadataFilter for the given profile on the given accordion tab
+		 * @param profileVo 	metadata profile with searchable list fields
+		 * */
+		protected function buildMetadataProfileFilter(profileVo:KMCMetadataProfileVO):MetadataProfileFilter {
+			var metadataTab:MetadataProfileFilter = new MetadataProfileFilter();
+			metadataTab.label = profileVo.profile.name;
+			metadataTab.id = profileVo.profile.id.toString();
+			metadataTab.percentWidth = 100;
+			metadataTab.attribute = profileVo.profile.id.toString();
+			metadataTab.dataProvider = profileVo.metadataFieldVOArray;
+			
+			metadataTab.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
+			
+			// update filter data 
+			handelAdvancedSearchComponent(metadataTab.filter as KalturaSearchItem, metadataTab.attribute);
+			
+			return metadataTab;
 		}
 	}
 }

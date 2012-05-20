@@ -1,43 +1,42 @@
-package com.kaltura.edw.model
-{
+package com.kaltura.edw.model {
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.components.fltr.cat.data.ICategoriesDataManger;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
-	
+
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
 	/**
-	 * data that is needed for all filter instances 
+	 * data that is needed for all filter instances
 	 * @author Atar
-	 */	
+	 */
 	public class FilterModel {
-		
+
 		// --------------------
 		// categories
 		// --------------------
 		public var catTreeDataManager:ICategoriesDataManger;
-		
+
 		/**
-		 * the root of a category hierarchy. 
+		 * the root of a category hierarchy.
 		 * */
 		public var categories:CategoryVO = null;
-		
+
 		/**
-		 * should categories data be loaded in chunks 
-		 */		
+		 * should categories data be loaded in chunks
+		 */
 		public var chunkedCategoriesLoad:Boolean = true;
-		
+
 		/**
 		 * categories listing
 		 * */
 		public var categoriesMap:HashMap = new HashMap();
-		
-		
-		
+
+
+
 		/**
-		 * set the value of the flag indicating categories are locked 
+		 * set the value of the flag indicating categories are locked
 		 * @param value new flag value
 		 */
 		public function setCatLockFlag(value:Boolean):void {
@@ -46,10 +45,11 @@ package com.kaltura.edw.model
 				dispatchEvent(new Event("categoriesFlagChanged"));
 			}
 		}
-		
+
 		private var _categoriesLocked:Boolean;
-		
-		[Bindable(event="categoriesFlagChanged")]
+
+
+		[Bindable(event = "categoriesFlagChanged")]
 		/**
 		 * indicates categories are currently locked
 		 * @see GetCategoriesStatusCommand
@@ -57,10 +57,10 @@ package com.kaltura.edw.model
 		public function get categoriesLocked():Boolean {
 			return _categoriesLocked;
 		}
-		
-		
+
+
 		/**
-		 * set the value of the flag indicating categories are updating and categories data may be incorrect 
+		 * set the value of the flag indicating categories are updating and categories data may be incorrect
 		 * @param value new flag value
 		 */
 		public function setCatUpdateFlag(value:Boolean):void {
@@ -69,10 +69,11 @@ package com.kaltura.edw.model
 				dispatchEvent(new Event("categoriesFlagChanged"));
 			}
 		}
-		
+
 		private var _categoriesUpdatingCategories:Boolean;
-		
-		[Bindable(event="categoriesFlagChanged")]
+
+
+		[Bindable(event = "categoriesFlagChanged")]
 		/**
 		 * indicates categories are currently updating and data may be incorrect
 		 * (users, full names, etc)
@@ -81,15 +82,15 @@ package com.kaltura.edw.model
 		public function get categoriesUpdating():Boolean {
 			return _categoriesUpdatingCategories;
 		}
-		
-		
-		
-		
+
+
+
+
 		// --------------------
 		// flavor params
 		// --------------------
-		
-		
+
+
 		/**
 		 * list of <code>KalturaFlavorParams</code>
 		 * */
@@ -98,65 +99,66 @@ package com.kaltura.edw.model
 		// --------------------
 		// custom data
 		// --------------------
-		
-		
+
+
 		/**
 		 * this partner is allowed to see metadata related stuff.
 		 * value is set via roles and permissions
 		 * */
 		public var enableCustomData:Boolean = true;
-		
-		
+
+
 		/**
 		 * list of KMCMetadataProfileVO of the categories
 		 */
 		public var categoryMetadataProfiles:ArrayCollection;
-		
+
 		/**
 		 * list of FormBuilders, the indices should suit the categoryMetadataProfiles arrayCollection
 		 */
 		public var categoryFormBuilders:ArrayCollection;
-		
+
 		/**
 		 * list of KMCMetadataProfileVO of the enries
 		 * */
 		public var metadataProfiles:ArrayCollection;
+
 		/**
 		 * list of FormBuilders, the indices should suit the metadataProfiles arrayCollection
 		 * */
 		public var formBuilders:ArrayCollection;
-		
+
 		// --------------------
 		// access control
 		// --------------------
-		
-		
+
+
 		/**
 		 * a list of access control profiles of the current partner,
-		 * <Code>AccessControlProfileVO</code> objects 
-		 */		
+		 * <Code>AccessControlProfileVO</code> objects
+		 */
 		public var accessControlProfiles:ArrayCollection = new ArrayCollection();
-		
+
 		/**
-		 * load access control only once 
-		 */		
+		 * load access control only once
+		 */
 		public var oneTimeLoadAccessControlLoadedFlag:Boolean = false;
-		
-		
+
+
 		// --------------------
 		// distribution
 		// --------------------
-		
+
 		/**
 		 * indicates if we have the distribution plugin
 		 * */
 		public var enableDistribution:Boolean = true;
-		
-		
+
+
 		// --------------------
 		// general
 		// --------------------
-		
+
 		/**
 		 * indicates if re-loading of filter data is required
 		 * */

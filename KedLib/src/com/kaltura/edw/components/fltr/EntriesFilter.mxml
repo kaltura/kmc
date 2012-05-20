@@ -110,30 +110,15 @@
 				_distProfAC = new ArrayCollection(value);
 			}
 			
+			
 			// ----------------
 			// custom data
 			// ----------------
 			
-			protected var _metadataProfiles:ArrayCollection;
-			
-			[Bindable]
-			/**
-			 * metadata profiles to show as filters
-			 * */
-			public function get metadataProfiles():ArrayCollection {
-				return _metadataProfiles;
-			}
-			
-			public function set metadataProfiles(value:ArrayCollection):void {
-				_metadataProfiles = value;
-				createMetadataFilters(value);
-			}
-			
-			
 			/**
 			 * build the visual metadata filter panels
 			 * */
-			protected function createMetadataFilters(value:ArrayCollection):void {
+			override protected function createMetadataFilters(value:ArrayCollection):void {
 				var i:int;
 				// clean previous metadata children
 				for (i = accordion.numChildren-1; i>=0; i--) {
@@ -169,26 +154,6 @@
 						}
 					}
 				}
-			}
-			
-			/**
-			 * create a MetadataFilter for the given profile on the given accordion tab
-			 * @param profileVo 	metadata profile with searchable list fields
-			 * */
-			private function buildMetadataProfileFilter(profileVo:KMCMetadataProfileVO):MetadataProfileFilter {
-				var metadataTab:MetadataProfileFilter = new MetadataProfileFilter();
-				metadataTab.label = profileVo.profile.name;
-				metadataTab.id = profileVo.profile.id.toString();
-				metadataTab.percentWidth = 100;
-				metadataTab.attribute = profileVo.profile.id.toString();
-				metadataTab.dataProvider = profileVo.metadataFieldVOArray;
-				
-				metadataTab.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
-				
-				// update filter data 
-				handelAdvancedSearchComponent(metadataTab.filter as KalturaSearchItem, metadataTab.attribute);
-				
-				return metadataTab;
 			}
 			
 			
