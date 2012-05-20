@@ -1092,8 +1092,8 @@ package com.kaltura.utils
 		private function initCountriesFlagsMap():void
 		{
 			var li:String = Application.application.loaderInfo.url; 
-			var base:String = li.substr(0, li.lastIndexOf("/"));  
-			base = base.substr(0, base.lastIndexOf("/"));  
+			// find "modules" folder, remove path down to it
+			var base:String = li.substr(0, li.indexOf("/modules/"));
 			//-----------------------
 			// New codes without flag
 			// ----------------------
