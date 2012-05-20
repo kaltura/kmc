@@ -229,8 +229,8 @@
 			 */
 			private function stopPlayer():void {
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content && _kdp3SwfLoader.content.hasOwnProperty("sendNotification")) {
-					_kdp3SwfLoader.content["sendNotification"]("doPause");
-					_kdp3SwfLoader.content["sendNotification"]("doSeek", "0");
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_SEEK, "0");
 				}
 			}
 
@@ -270,7 +270,7 @@
 				entryTable.selectedIndex = -1;
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content)
 				{
-					_kdp3SwfLoader.content["sendNotification"]("cleanMedia");
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CLEAN_MEDIA);
 					moderationModel.moderationsArray.source = [];					
 				}
 			}
@@ -432,13 +432,13 @@
 				var params:Object = new Object();
 				params.host = context.rootUrl;
 				params.widgetId = "_" + context.kc.partnerId;
-				params.autoPlay = "false";
-				params.loop = "false";
-				params.autoRewind = "false";
-				params.sourceType = "entryId";
+//				params.autoPlay = "false";
+//				params.loop = "false";
+//				params.autoRewind = "false";
+//				params.sourceType = "entryId";
 				params.entryId = "-1";
-				if (context.moderationUiconf)
-					params.uiConfId = context.moderationUiconf;
+//				if (context.moderationUiconf)
+//					params.uiConfId = context.moderationUiconf;
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
@@ -461,7 +461,7 @@
 					//kdp3LoaderParent.removeChild(kdp3Loader);
 					//Change media
 					if (data && data is KalturaBaseEntry) {
-						_kdp3SwfLoader.content["sendNotification"]('changeMedia', {entryId: (data as KalturaBaseEntry).id});
+						_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: (data as KalturaBaseEntry).id});
 					}
 				}
 				else {
@@ -484,7 +484,7 @@
 			 */
 			private function onDrillDown(evt:Event = null):void {
 				if (_kdp3SwfLoader)
-					_kdp3SwfLoader.content["sendNotification"]("doPause");
+					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
 			}
 
 
