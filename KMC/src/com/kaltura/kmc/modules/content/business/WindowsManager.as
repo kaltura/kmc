@@ -449,7 +449,6 @@ package com.kaltura.kmc.modules.content.business
 		 * */
 		public function handleKedEvents(e:KedDataEvent):void {
 			switch (e.type) {
-				
 				case KedDataEvent.ENTRY_UPDATED:
 					// set refresh list required
 					model.refreshEntriesRequired = true;
@@ -466,11 +465,11 @@ package com.kaltura.kmc.modules.content.business
 					var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.CLOSE);
 					cgEvent.dispatch();
 					
-					// make sure list is refreshed when drilldown window is closed
-					if (model.refreshEntriesRequired) {
-						cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, model.listableVo);
-						cgEvent.dispatch();
-					}
+//					// make sure list is refreshed when drilldown window is closed (Atar: this happens in Content)
+//					if (model.refreshEntriesRequired) {
+//						cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, model.listableVo);
+//						cgEvent.dispatch();
+//					}
 					break;
 				
 				case KedDataEvent.CATEGORY_CHANGED:
