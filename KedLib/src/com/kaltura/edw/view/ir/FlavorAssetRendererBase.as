@@ -16,7 +16,7 @@ package com.kaltura.edw.view.ir
 			addEventListener(FlexEvent.CREATION_COMPLETE, onCreatoinComplete);
 		}
 		
-		protected function onCreatoinComplete():void
+		protected function onCreatoinComplete(e:FlexEvent):void
 		{
 			/* var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
 			var bgColor:String = (obj.kalturaFlavorAssetWithParams.flavorAsset != null) ? '#FFFFFF' : '#DED2D2';
