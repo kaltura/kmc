@@ -6,23 +6,25 @@ package com.kaltura.edw.view.ir
 	import com.kaltura.vo.KalturaFlavorAssetWithParams;
 	
 	import mx.containers.HBox;
+	import mx.events.FlexEvent;
 
 	public class FlavorAssetRendererBase extends HBox
 	{
 		public function FlavorAssetRendererBase()
 		{
 			super();
+			addEventListener(FlexEvent.CREATION_COMPLETE, onCreatoinComplete);
 		}
 		
-		public function onCreatoinComplete():void
+		protected function onCreatoinComplete():void
 		{
-			var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
-			/* var bgColor:String = (obj.kalturaFlavorAssetWithParams.flavorAsset != null) ? '#FFFFFF' : '#DED2D2';
+			/* var obj:FlavorAssetWithParamsVO = data as FlavorAssetWithParamsVO;
+			var bgColor:String = (obj.kalturaFlavorAssetWithParams.flavorAsset != null) ? '#FFFFFF' : '#DED2D2';
 			
 			this.setStyle("backgroundColor", bgColor); */
 			
-			this.horizontalScrollPolicy = "off";
-			this.verticalScrollPolicy = "off";
+			horizontalScrollPolicy = "off";
+			verticalScrollPolicy = "off";
 		}	
 				
 	}
