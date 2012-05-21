@@ -24,6 +24,20 @@ U+0061-U+007A,
 U+007B-U+007E ; 
 }
 
+
+@font-face 
+{
+	src: url("fonts/HelveticaNeue-Light.otf");
+	fontFamily: "HelveticaNeueEmbedded";
+	unicode-range:
+		U+0020-U+0040,  
+		U+0041-U+005A,  
+		U+005B-U+0060,  
+		U+0061-U+007A,  
+		U+007B-U+007E ; 
+}
+
+
 .facebook 
 {
 	over-skin: ClassReference("com.hillelcoren.assets.skins.FacebookSkin");
@@ -143,30 +157,39 @@ Label
 
 Accordion
 {
-	fontWeight:normal;
-	theme-color:#111111;
 	headerStyleName:"myaccordionHeader";
 	border-thickness:1;
-	border-style:inset;
-	border-color:#b7babc;
-	headerHeight:26;
-	color:#111111;
+	border-style:solid;
+	border-color:#cecdcd;
+	headerHeight: 26;
+	
 }
+
+
 
 .myaccordionHeader
 {
-	fillColors:#ffffff,#e9e9e9;
-	selected-fill-colors:#ffffff,#e9e9e9;
-	fillAlphas:1,1;
+	fillColors:#ffffff,#ffffff;
+	selected-fill-colors:#f2f2f2,#eaeaea;
+	fillAlphas:1,1,1,1;
 	highlightAlphas:0,0;
 	fontFamily:Arial;
 	fontSize:11;
-	color:#111111;
+	color:#333333;
+	font-thickness:bold;
+	theme-color:#cecdcd;
+	border-color:#cecdcd;
+	up-skin:				Embed("Images/accordion_barra.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");
+	over-skin:				Embed("Images/accordion_barra1.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");	
+	down-skin:				Embed("Images/accordion_barra2.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");
+	selected-up-skin:		Embed("Images/accordion_barra3.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");
+	selected-over-skin:		Embed("Images/accordion_barra3.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");
+	selected-down-skin:		Embed("Images/accordion_barra3.png", scaleGridTop="3", scaleGridBottom="19", scaleGridLeft="3", scaleGridRight="74");
 }
 
 
 ProgressBar {
-	bar-skin:						Embed(source="Images/progress_barra.png", scaleGridTop="3", scaleGridBottom="4", scaleGridLeft="5", scaleGridRight="6");
+	bar-skin:						Embed(source="Images/progress.png", scaleGridTop="3", scaleGridBottom="4", scaleGridLeft="5", scaleGridRight="6");
 	track-skin:						Embed(source="Images/progress.png", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="4", scaleGridRight="6");
 	track-disabled-skin:			Embed(source="Images/progress_dis.png", scaleGridTop="4", scaleGridBottom="5", scaleGridLeft="4", scaleGridRight="6");
 	color: 							#333333;
@@ -177,16 +200,17 @@ ProgressBar {
 	indeterminate-move-interval: 	13;
 }
 
+
 CheckBox
 {
-	up-icon:Embed('images/sub_check_up.png');
-	over-icon:Embed('images/sub_check_over.png');
-	down-icon:Embed('images/sub_check_down.png');
-	selected-up-icon:Embed('images/sub_check_selected.png');
-	selected-over-icon:Embed('images/sub_check_selected.png');
-	selected-down-icon:Embed('images/sub_check_selected_down.png');
-	selected-disabled-icon:Embed('images/sub_check_selected_dis.png');
-	disabled-icon:Embed('images/sub_check_dis.png');
+	up-icon:Embed('images/check_up.png');
+	over-icon:Embed('images/check_over.png');
+	down-icon:Embed('images/check_down.png');
+	selected-up-icon:Embed('images/check_selected.png');
+	selected-over-icon:Embed('images/check_selected.png');
+	selected-down-icon:Embed('images/check_selected_down.png');
+	selected-disabled-icon:Embed('images/check_dis.png');
+	disabled-icon:Embed('images/check_dis.png');
 }
 
 
@@ -242,7 +266,9 @@ HBox.tabsContainer
 	padding-bottom:5;
 	padding-right:15;
 	border-skin:Embed(skinClass='mainViewBg');
+	background-color:#ffffff;
 }
+
 
 LinkButton {
 	font-weight:normal;
@@ -270,7 +296,8 @@ List
 /*every page vbox wrapper*/
 VBox.pageStyle
 {
-	background-color:#efefef;
+
+	background-color:#f0efef;
 	vertical-gap:0;
 	padding-top:0;
 	padding-left:10;
@@ -285,6 +312,7 @@ VBox.noVGap
 	vertical-gap:0;
 }
 
+
 VBox.mainView
 {
 	disabled-color:#efefef;
@@ -292,9 +320,9 @@ VBox.mainView
 	vertical-gap:20;
 	horizontalAlign:left;
 	padding-top:0;
-	background-image:Embed(skinClass='mainview_bg');
-	background-size:"100%";
+	background-color:#f0efef;
 }
+
 
 VRule 
 {
@@ -365,13 +393,14 @@ RadioButton
 }
 
 DataGrid
+
 {
 	alternatingItemColors:#ffffff,#efefef;
 	headerColors:#ffffff,#e9e9e9;
 	verticalGridLineColor:#b7babc;
 	borderColor:#b7babc;
 	rollOverColor:#c1e3f3;
-	selectionColor:#c1e3f3;
+	selectionColor:#ffffcc;
 	color:#333333;
 	fontFamily:Arial;
 	fontSize:11;
@@ -379,6 +408,7 @@ DataGrid
 	horizontalGridLineColor:#ffffff;
 	sortArrowSkin:Embed('images/sort.png');
 	headerStyleName:"mydataGridHeaderStyle";
+
 }
 
 .mydataGridHeaderStyle
@@ -462,6 +492,7 @@ DateField
 	font-weight:				normal;
 	padding-left:				3;
 	padding-top:				2;
+	padding-right:0;
 	
 }
 
@@ -491,12 +522,26 @@ HScrollBar
 	themeColor: #333333;
 }
 
+
+
 VScrollBar {
-	cornerRadius: 0;
-	trackColors: #eeeeee, #ffffff;
-	themeColor: #009dff;
-	thumbOffset: 1;
+	up-arrow-up-skin: 		Embed("Images/Scroll_up.png" );
+	up-arrow-over-skin:		Embed("Images/Scroll_up.png");
+	up-arrow-down-skin:		Embed("Images/Scroll_up1.png");
+	
+	down-arrow-up-skin:		Embed("Images/Scroll_down.png" );
+	down-arrow-over-skin:	Embed("Images/Scroll_down.png");
+	down-arrow-down-skin:	Embed("Images/Scroll_down1.png");
+	
+	thumb-up-skin:			Embed("Images/Scroll_barra.png", scaleGridTop="15", scaleGridBottom="16", scaleGridLeft="4", scaleGridRight="5");
+	thumb-over-skin:		Embed("Images/Scroll_barra1.png", scaleGridTop="15", scaleGridBottom="16", scaleGridLeft="4", scaleGridRight="5");
+	thumb-down-skin:		Embed("Images/Scroll_barra2.png", scaleGridTop="15", scaleGridBottom="16", scaleGridLeft="4", scaleGridRight="5");
+	
+	track-skin: 			Embed("Images/Scroll_fondo.png", scaleGridTop="15", scaleGridBottom="16", scaleGridLeft="4", scaleGridRight="5");
+	/*track-down-skin: 		Embed("Images/Scroll_fondo.png", scaleGridTop="26", scaleGridBottom="28", scaleGridLeft="8", scaleGridRight="9");*/
+	thumb-icon:				Embed("Images/Scroll_icon.png");
 }
+
 
 Text.pageDescription
 {
@@ -1742,7 +1787,6 @@ TabBar.dtn
 			color: #000000;
 		}
 
-
 /* ===================================================================================== */
 
 Button.openPreview
@@ -1772,6 +1816,8 @@ Button.barChartIcon
 {
 skin:Embed('images/barChart.png');
 }
+
+
 /*--------------------------
 Filter section styling
 ----------------------------*/
@@ -1792,6 +1838,8 @@ VBox.categoriesTreeVBox
 fontSize:11;
 background-color:#ffffff;
 }
+
+
 /** Categories Tree style **/
 Tree.categoriesTree
 {
@@ -1802,10 +1850,9 @@ Tree.categoriesTree
 	backgroundAlpha:1;
 	backgroundColor:#ffffff;
 	depthColors:#ffffff,#ffffff,#ffffff,#ffffff;
-	useRollOver:true;
+	useRollOver:false;
 	rollOverColor:#eef4f5;
 	borderStyle:none;
-	selectionColor:#eef4f5;
 	indentation:16;
 	dropShadowEnabled:false;
 	shadowDirection:right;
@@ -1813,7 +1860,12 @@ Tree.categoriesTree
 	textIndent:8;
 	padding-left:8;
 	padding-right:8;
+	padding-top:12;
+	selectionColor: #ffffff;
+	color: #646464;
 }
+
+
 /** HBox that holds the button (-)&(X) in each tree node on Filter edit mode **/
 HBox.treeItemButtonsHBox
 {
@@ -1851,9 +1903,9 @@ HBox.filtersHeadTitleHBox
 /** style for the filter section title label **/
 Label.filterTitleHeader
 {
-	font-size:22;
-	font-weight:bold;
-	color:#2b2b2b;
+	font-size:28;
+	color:#656565;
+	font-family:HelveticaNeueEmbedded;
 }
 
 
@@ -1915,23 +1967,22 @@ HBox.searchHBox
 /** style for the search text input **/
 TextInput.searchTextInput
 {
-/*	background-image: 			Embed("images/textInput.png", scaleGridTop="6", scaleGridBottom="16", scaleGridLeft="6", scaleGridRight="16");
+	background-image: 			Embed("images/textInput.png", scaleGridTop="6", scaleGridBottom="16", scaleGridLeft="6", scaleGridRight="16");
 	background-disabled-color:	none;
 	background-size: 			"100%";
-	color:						#333333;
+	color:						#646464;
 	disabled-color:				#999999;
 	border-thickness:			0;
 	focus-thickness:			0;
 	font-size:					11;
 	border-style:				none;
 	font-weight:				normal;
-	padding-left:				3;
-	padding-top:				2;*/
-	color:#444444;
-	disabled-color:#999999;
-	background-disabled-color:#f5f5f5;
+	vertical-align:middle;
+	padding-top:6;
+	padding-left:10;
+	padding-right:10;
+	padding-bottom:6;
 }
-
 
 /** images used in content > entries list item renderer **/
 .imageBank {
@@ -1957,6 +2008,7 @@ TextInput.searchTextInput
 	helpImg : Embed('assets/images/help.png');
 }
 
+
 /** style for the search button**/
 Button.searchButton {
 	up-skin:Embed('images/btn_search.png');
@@ -1967,6 +2019,7 @@ Button.searchButton {
 	selected-over-skin:Embed('images/btn_clear_over.png');
 	selected-down-skin:Embed('images/btn_clear_down.png');
 }
+
 
 /** VBox that holds the upper dates filter **/
 VBox.upperDatesVBox {
@@ -2055,6 +2108,8 @@ selected-up-skin:Embed(skinClass='filterSelectedSkin');
 selected-over-skin:Embed(skinClass='filterOverSkin');
 selected-down-skin:Embed(skinClass='filterSelectedSkin');
 }
+
+
 /**styleforinnerbuttoninagroupinthefilter**/
 Button.innerFilterGroupButton
 {
@@ -2071,6 +2126,9 @@ selected-up-skin:Embed(skinClass='filterSelectedSkin');
 selected-over-skin:Embed(skinClass='filterOverSkin');
 selected-down-skin:Embed(skinClass='filterSelectedSkin');
 }
+
+
+
 /*-----------------------------------------------
 Content-AccessControlProfile(acp)PopUp
 -------------------------------------------------*/
@@ -2649,6 +2707,7 @@ VBox.adminForm {
 	padding-left:12;
 }
 
+
 CheckBox.adminMainCheckbox 
 {
 	up-icon:Embed('images/check_up.png');
@@ -2664,13 +2723,13 @@ CheckBox.adminMainCheckbox
 CheckBox.adminSubCheckbox 
 {
 	padding-left:20;
-	up-icon:Embed('images/sub_check_up.png');
-	over-icon:Embed('images/sub_check_over.png');
-	down-icon:Embed('images/sub_check_down.png');
-	disabled-icon:Embed('images/sub_check_dis.png');
-	selected-up-icon:Embed('images/sub_check_selected.png');
-	selected-over-icon:Embed('images/sub_check_selected.png');
-	selected-down-icon:Embed('images/sub_check_selected_down.png');
+	up-icon:Embed('images/check_up.png');
+	over-icon:Embed('images/check_over.png');
+	down-icon:Embed('images/check_down.png');
+	disabled-icon:Embed('images/check_dis.png');
+	selected-up-icon:Embed('images/check_selected.png');
+	selected-over-icon:Embed('images/check_selected.png');
+	selected-down-icon:Embed('images/check_selected_down.png');
 	font-weight:normal;
 }
 
@@ -3068,7 +3127,7 @@ HRule {
 	up-icon: Embed('images/Ico_goTop_up.png');
 	over-icon:Embed('images/Ico_goTop_over.png');
 	disabled-icon:Embed('images/Ico_goTop_dis.png');
-	down-icon:Embed('images//Ico_goTop_over.png');
+	down-icon:Embed('images/Ico_goTop_over.png');
 }
 
 Text.adsExplain {
@@ -3087,5 +3146,5 @@ Button.indicatorBoxStyle {
 	up-icon: Embed('images/Ico_goTop_up.png');
 	over-icon:Embed('images/Ico_goTop_over.png');
 	disabled-icon:Embed('images/Ico_goTop_dis.png');
-	down-icon:Embed('images//Ico_goTop_over.png');
+	down-icon:Embed('images/Ico_goTop_over.png');
 }
