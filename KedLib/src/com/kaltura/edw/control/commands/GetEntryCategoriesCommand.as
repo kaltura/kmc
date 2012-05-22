@@ -17,21 +17,29 @@ package com.kaltura.edw.control.commands
 	public class GetEntryCategoriesCommand extends KedCommand {
 		
 		override public function execute(event:KMvCEvent):void {
-			_model.increaseLoadCounter();
-			var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
-			edp.entryCategories = new ArrayCollection();
-			
-			// get a list of KalturaCategoryEntries
-			var e:KedEntryEvent = event as KedEntryEvent;
-			
-			var f:KalturaCategoryEntryFilter = new KalturaCategoryEntryFilter();
-			f.entryIdEqual = e.entryVo.id;
-			var getcats:CategoryEntryList = new CategoryEntryList(f);
-			
-			getcats.addEventListener(KalturaEvent.COMPLETE, result);
-			getcats.addEventListener(KalturaEvent.FAILED, fault);
-			
-			_client.post(getcats);
+			switch (event.type) {
+				case KedEntryEvent.RESET_ENTRY_CATEGORIES:
+					var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+					edp.entryCategories = new ArrayCollection();
+					break;
+				case KedEntryEvent.GET_ENTRY_CATEGORIES:
+					_model.increaseLoadCounter();
+//					var edp:EntryDataPack = _model.getDataPack(EntryDataPack) as EntryDataPack;
+//					edp.entryCategories = new ArrayCollection();
+					
+					// get a list of KalturaCategoryEntries
+					var e:KedEntryEvent = event as KedEntryEvent;
+					
+					var f:KalturaCategoryEntryFilter = new KalturaCategoryEntryFilter();
+					f.entryIdEqual = e.entryVo.id;
+					var getcats:CategoryEntryList = new CategoryEntryList(f);
+					
+					getcats.addEventListener(KalturaEvent.COMPLETE, result);
+					getcats.addEventListener(KalturaEvent.FAILED, fault);
+					
+					_client.post(getcats);
+					break;
+			}
 		}
 		
 		

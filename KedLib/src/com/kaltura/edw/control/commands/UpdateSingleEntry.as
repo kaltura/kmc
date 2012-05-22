@@ -37,6 +37,8 @@ package com.kaltura.edw.control.commands {
 			if (entry.status != KalturaEntryStatus.NO_CONTENT) {
 				entry.conversionProfileId = int.MIN_VALUE;
 			}
+			// don't send categories - we use categoryEntry service to update them in EntryData panel
+			entry.categories = null;
 			// custom data info
 			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 			// use mr to update metadata

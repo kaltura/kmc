@@ -43,6 +43,7 @@ package com.kaltura.edw.control
 			addCommand(ModelEvent.DUPLICATE_ENTRY_DETAILS_MODEL, DuplicateEntryDetailsModelCommand);
 			addCommand(KedEntryEvent.GET_ENTRY_AND_DRILLDOWN, GetSingleEntryCommand);	
 			addCommand(KedEntryEvent.GET_ENTRY_CATEGORIES, GetEntryCategoriesCommand);	
+			addCommand(KedEntryEvent.RESET_ENTRY_CATEGORIES, GetEntryCategoriesCommand);	
 			addCommand(KedEntryEvent.UPDATE_ENTRY_CATEGORIES, UpdateEntryCategoriesCommand);	
 		}
 	}

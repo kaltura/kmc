@@ -64,6 +64,11 @@ package com.kaltura.edw.control.events
 		public static const GET_ENTRY_CATEGORIES : String = "content_getEntryCategories";
 
 		/**
+		 * reset categories list on model
+		 */
+		public static const RESET_ENTRY_CATEGORIES : String = "content_resetEntryCategories";
+
+		/**
 		 * add / remove categories related to the given entry
 		 */
 		public static const UPDATE_ENTRY_CATEGORIES : String = "content_updateEntryCategories";
