@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()"
-		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable">
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" xmlns:components="com.kaltura.kmc.modules.account.components.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -13,7 +13,7 @@
 			import com.kaltura.kmc.modules.account.vo.NotificationVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.controls.List;
@@ -50,7 +50,7 @@
 
 					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 					partnerEvent.dispatch();
-					PermissionManager.getInstance().applyAllAttributes(this,NAME);
+					PermissionManager.getInstance().applyAllAttributes(this, NAME);
 				}
 				else {
 					_ready = true;
@@ -69,8 +69,6 @@
 						noGetNoti.selected = true;
 
 					partnerData.allowQuickEdit ? appendEntry.selectedIndex = 0 : appendEntry.selectedIndex = 1;
-					//partnerData.shouldForceUniqueKshow ? createUniqeMixId.selectedIndex = 0 : createUniqeMixId.selectedIndex = 1;
-					//partnerData.returnDuplicateKshow ? returnDuplicateMix.selectedIndex = 0 : returnDuplicateMix.selectedIndex = 1;
 					partnerData.mergeEntryLists ? returnListOfUserClips.selectedIndex = 0 : returnListOfUserClips.selectedIndex = 1;
 
 					switch (partnerData.appearInSearch) {
@@ -84,13 +82,6 @@
 							appearInUploader.selectedIndex = 2;
 							break;
 					}
-
-					/*switch(partnerData.notificationsConfig)
-					   {
-					   case "*=0": break;
-					   case "*=1": break;
-					   case "*=3": break;
-					 }*/
 				}
 			}
 
@@ -101,6 +92,7 @@
 
 
 			public function isChanged():Boolean {
+				if (!partnerData) return false;
 				return (!partnerData.equals(_clonedPartnerData));
 			}
 
@@ -169,26 +161,12 @@
 					Alert.show(resourceManager.getString('account', 'httpverify'))
 			}
 
-			/**
-			 * helper function to decide if a checkbox on the client list should
-			 * be checked or not. checkboxes which are disabled can not be checked -
-			 * they are disabled becuase these notifications are not available for the client.
-			 * */
-			public function determineSelected(data:Object):Boolean {
-				var nvo:NotificationVO = data as NotificationVO;
-				if (nvo.clientEnabled) {
-					// user asked for this notification
-					return nvo.availableInClient;
-				}
-				else {
-					return false;
-				}
-			}
-			
-			protected function permissionCheck(val1:Boolean, val2:Boolean):Boolean
-			{
+
+
+			protected function permissionCheck(val1:Boolean, val2:Boolean):Boolean {
 				return val1 && val2;
 			}
+			
 		]]>
 	</mx:Script>
 	<!-- Service -->
@@ -200,47 +178,58 @@
 	<!-- Effects -->
 	<mx:WipeUp id="wipeOut"/>
 	<mx:WipeDown id="wipeIn"/>
-	<!-- <mx:HBox width="100%" horizontalAlign="right">
-		 <mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}"
-		 click="toggoleAdvanced()" styleName="openCloseBtnOpen" />
-		 </mx:HBox> -->
 
 	<mx:HBox width="100%" height="100%">
 		<mx:VBox width="100%" height="100%">
-			<mx:VBox id="details" width="100%" height="100%" horizontalAlign="left" styleName="blueBox"
-					 disabledOverlayAlpha="0">
+
+			<!-- account info -->
+			<mx:VBox id="details" width="100%" height="50%" styleName="blueBox" disabledOverlayAlpha="0">
 				<mx:Label text="{resourceManager.getString('account', 'partnerInfo')}" styleName="expendableButton"/>
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'partnerIdB')}"
-							  width="{_lblWidth}" styleName="boldLabel"/>
-					<mx:Label text="{partnerData.pId}" selectable="true" />
+					<mx:Label text="{resourceManager.getString('account', 'partnerIdB')}" width="{_lblWidth}"
+							  styleName="boldLabel"/>
+					<mx:Label text="{partnerData.pId}" selectable="true"/>
 				</mx:HBox>
 
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'subPartnerIdB')}"
-							  width="{_lblWidth}" styleName="boldLabel"/>
-					<mx:Label text="{partnerData.subPId}" selectable="true" />
+					<mx:Label text="{resourceManager.getString('account', 'subPartnerIdB')}" width="{_lblWidth}"
+							  styleName="boldLabel"/>
+					<mx:Label text="{partnerData.subPId}" selectable="true"/>
 				</mx:HBox>
-			
+
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'adminSeceretB')}"
-							  width="{_lblWidth}" styleName="boldLabel" />
-					<mx:Label text="{partnerData.adminSecret}" selectable="true" />
+					<mx:Label text="{resourceManager.getString('account', 'adminSeceretB')}" width="{_lblWidth}"
+							  styleName="boldLabel"/>
+					<mx:Label text="{partnerData.adminSecret}" selectable="true"/>
 				</mx:HBox>
-				
+
 				<mx:HBox>
-					<mx:Label text="{resourceManager.getString('account', 'userSeceretB')}"
-							  width="{_lblWidth}" styleName="boldLabel" />
-					<mx:Label text="{partnerData.secret}" selectable="true" />
+					<mx:Label text="{resourceManager.getString('account', 'userSeceretB')}" width="{_lblWidth}"
+							  styleName="boldLabel"/>
+					<mx:Label text="{partnerData.secret}" selectable="true"/>
 				</mx:HBox>
-				
+
 				<mx:HBox width="100%" height="100%" horizontalAlign="right" verticalAlign="bottom">
 					<mx:LinkButton id="openCloseAdv" label="{resourceManager.getString('account', 'advancedSettings')}"
 								   click="toggoleAdvanced()" styleName="openCloseBtnOpen"/>
 				</mx:HBox>
 			</mx:VBox>
-			<mx:VBox id="advCont" width="100%" height="100%" horizontalAlign="left" styleName="blueBox"
-					 disabledOverlayAlpha="0" visible="false" hideEffect="{wipeOut}" showEffect="{wipeIn}">
+			
+			<!-- Entitlement services -->
+			<mx:VBox id="entitlements" width="{advCont.width}" height="{advCont.height}" styleName="blueBox" disabledOverlayAlpha="0" includeInLayout="false">
+				<mx:Label text="{resourceManager.getString('account', 'entitlements')}" styleName="expendableButton"/>
+				<mx:Text text="{resourceManager.getString('account', 'entitlementsDesc')}" width="100%"/>
+				<mx:HBox width="100%">
+					<mx:Image source="{StyleManager.getStyleDeclaration('.imageBank').getStyle('SpinnerImg')}"/>
+					<mx:Text text="{resourceManager.getString('account', 'entitlementsNote')}" width="100%"/>
+				</mx:HBox>
+				<components:EntitlementTable width="100%" />
+				<mx:LinkButton label="{resourceManager.getString('account', 'addEntitlement')}"/>
+			</mx:VBox>
+
+			<!-- advanced settings -->
+			<mx:VBox id="advCont" width="100%" height="50%" styleName="blueBox"
+					 disabledOverlayAlpha="0" visible="false" hideEffect="{wipeOut}" showEffect="{wipeIn}" >
 				<mx:Label text="{resourceManager.getString('account', 'entryManagment')}" styleName="expendableButton"/>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appendEntry')}"/>
@@ -255,7 +244,8 @@
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'appearInUploader')}"/>
-					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )" enabled="{advCont.enabled}">
+					<mx:ComboBox id="appearInUploader" change="onAppearInUploaderChange( event )"
+								 enabled="{advCont.enabled}">
 						<mx:dataProvider>
 							<mx:String>{resourceManager.getString('account', 'kalturaNetwork')}</mx:String>
 							<mx:String>{resourceManager.getString('account', 'siteSearch')}</mx:String>
@@ -278,7 +268,8 @@
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'userPageUrlFormat')}"/>
 					<mx:TextInput id="userLandingPage" text="{partnerData.userLandingPage}"
-								  change="{partnerData.userLandingPage = userLandingPage.text}" enabled="{advCont.enabled}"/>
+								  change="{partnerData.userLandingPage = userLandingPage.text}"
+								  enabled="{advCont.enabled}"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label width="{_lblWidth}" text="{resourceManager.getString('account', 'mediaPageUrlFormat')}"/>
@@ -295,59 +286,40 @@
 				</mx:HBox>
 			</mx:VBox>
 		</mx:VBox>
+
+
+		<!-- notifications -->
 		<mx:VBox width="100%" height="100%">
-			<mx:VBox id="notifications" width="100%" height="100%" maxHeight="{details.height}" horizontalAlign="left"
-					 styleName="blueBox" disabledOverlayAlpha="0">
+			<mx:VBox id="notifications" width="100%" height="50%" styleName="blueBox" disabledOverlayAlpha="0">
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('account', 'notifications')}" styleName="expendableButton"/>
+					<mx:Label text="{resourceManager.getString('account', 'notifications')}"
+							  styleName="expendableButton"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('account', 'recieveServerNoti')}" width="224"/>
 					<mx:RadioButton id="yesGetNoti" label="{resourceManager.getString('account', 'yes')}"
-									groupName="getNoti" change="onNotificationsConfigChange( event )" enabled="{notifications.enabled}"/>
+									groupName="getNoti" change="onNotificationsConfigChange( event )"
+									enabled="{notifications.enabled}"/>
 					<mx:RadioButton id="noGetNoti" label="{resourceManager.getString('account', 'no')}"
-									groupName="getNoti" change="onNotificationsConfigChange( event )" enabled="{notifications.enabled}"/>
+									groupName="getNoti" change="onNotificationsConfigChange( event )"
+									enabled="{notifications.enabled}"/>
 				</mx:HBox>
 
 				<mx:HBox>
 					<mx:Label width="224" text="{resourceManager.getString('account', 'notificationUrl')}:"/>
 					<mx:TextInput id="recieveServerNoti" width="{_textWidth}" text="{partnerData.url2}"
-								  change="{partnerData.url2 = recieveServerNoti.text}" enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}"/>
+								  change="{partnerData.url2 = recieveServerNoti.text}"
+								  enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}"/>
 					<mx:Button label="{resourceManager.getString('account', 'pingUrl')}" click="{verifyHttp()}"
 							   enabled="{yesGetNoti.selected &amp;&amp; notifications.enabled}" buttonMode="true"/>
 				</mx:HBox>
 			</mx:VBox>
-			<mx:VBox id="notificationsTable" width="100%" height="100%" maxHeight="{advCont.height}"
-					 horizontalAlign="left" styleName="blueBox" disabledOverlayAlpha="0" enabled="{permissionCheck(!noGetNoti.selected,enableNotificationsTable)}">
-				<mx:DataGrid width="100%" height="100%" rowHeight="30" dataProvider="{partnerData.notifications}"
-							 selectable="false">
-					<mx:columns>
-						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('account', 'notiName')}"
-										   dataField="name" dataTipField="name"/>
-						<mx:DataGridColumn width="60"
-										   headerText="{resourceManager.getString('account', 'availableInClient')}"
-										   textAlign="center" dataField="availableInClient"
-										   dataTipField="availableInClient">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:CheckBox enabled="{data.clientEnabled &amp;&amp; outerDocument.notifications.enabled}"
-												 selected="{outerDocument.determineSelected(data)}"
-												 click="{data.availableInClient = this.selected}"/>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn width="60"
-										   headerText="{resourceManager.getString('account', 'availableInServer')}"
-										   textAlign="center" dataField="availableInServer"
-										   dataTipField="availableInServer">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:CheckBox click="{data.availableInServer = this.selected}" enabled="{outerDocument.notifications.enabled}"/>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-					</mx:columns>
-				</mx:DataGrid>
+
+			<!-- notifications table -->
+			<mx:VBox id="notificationsTable" width="100%" height="50%" styleName="blueBox" disabledOverlayAlpha="0"
+					 enabled="{!noGetNoti.selected &amp;&amp; enableNotificationsTable}">
+				<components:NotificationsTable width="100%" height="100%" rowHeight="30" dataProvider="{partnerData.notifications}"
+											   selectable="false" enableEdit="{notifications.enabled}"/>
 			</mx:VBox>
 		</mx:VBox>
 	</mx:HBox>

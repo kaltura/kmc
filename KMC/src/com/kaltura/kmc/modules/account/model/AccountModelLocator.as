@@ -1,13 +1,10 @@
 package com.kaltura.kmc.modules.account.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.kmc.modules.account.model.states.WindowsStates;
-	import com.kaltura.kmc.modules.account.vo.AccountUsageVO;
 	import com.kaltura.kmc.modules.account.vo.AdminVO;
 	import com.kaltura.kmc.modules.account.vo.FlavorVO;
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
-	import com.kaltura.kmc.modules.account.vo.PaymentDetailsVO;
-	import com.kaltura.kmc.modules.account.vo.UIConfVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControlFilter;
@@ -23,39 +20,28 @@ package com.kaltura.kmc.modules.account.model {
 
 	[Bindable]
 	public class AccountModelLocator extends EventDispatcher implements IModelLocator {
-		public static const USAGE_GRAPH_RESULT:String = "usageGraphResult";
-		public static const USAGE_GRAPH_FAULT:String = "usageGraphFault";
 
-		public var context:Context = null;
-		public var uiConfigVo:UIConfVO = null;
-
-		//---------------------------------------------------------
-		//data objects
-		[ArrayElementType("KalturaUser")]
 		/**
-		 * a list of users with administrator role of the current partner 
-		 */		
-		public var usersList:ArrayCollection;
-		
-		
-		[ArrayElementType("KalturaStorageProfile")]
-		/**
-		 * a list of remote storages configured for the partner.
-		 * <code>KalturaStorageProfile</code> objects 
+		 * application context data 
 		 */
-		public var storageProfiles:ArrayCollection;
+		public var context:Context = null;
 		
 		/**
 		 * partner info 
 		 */		
-		public var partnerData:PartnerVO = new PartnerVO();
+		public var partnerData:PartnerVO;
+
+		/* ****************************************************
+		* account info
+		**************************************************** */
 		
-		public var partnerPackage:PackagesVO = null;
+		[ArrayElementType("KalturaUser")]
+		/**
+		 * a list of users with administrator role of the current partner
+		 */		
+		public var usersList:ArrayCollection;
+		
 		public var adminData:AdminVO = new AdminVO();
-		public var usageData:AccountUsageVO = new AccountUsageVO();
-		public var paymentDetailsVo:PaymentDetailsVO = new PaymentDetailsVO();
-		public var listPackages:ArrayCollection;
-		public var modalWinData:Object = null;
 		
 		/* ****************************************************
 		 * metadata
@@ -77,6 +63,13 @@ package com.kaltura.kmc.modules.account.model {
 		/* ****************************************************
 		 * conversion
 		 **************************************************** */
+		[ArrayElementType("KalturaStorageProfile")]
+		/**
+		 * a list of remote storages configured for the partner.
+		 * <code>KalturaStorageProfile</code> objects 
+		 */
+		public var storageProfiles:ArrayCollection;
+		
 		[ArrayElementType("ConversionProfileVO")]
 		/**
 		 * list of conversion profiles <br>
@@ -110,6 +103,15 @@ package com.kaltura.kmc.modules.account.model {
 		 * (only loaded during save for validation) 
 		 */
 		public var defaultEntry:KalturaBaseEntry;
+		
+		
+		/* ****************************************************
+		* upgrade
+		**************************************************** */
+		
+		public var partnerPackage:PackagesVO = null;
+		
+		public var listPackages:ArrayCollection;
 		
 		
 		//---------------------------------------------------------
@@ -149,7 +151,6 @@ package com.kaltura.kmc.modules.account.model {
 
 		public function AccountModelLocator(enforcer:Enforcer) {
 			context = new Context();
-			uiConfigVo = new UIConfVO();
 			acpFilter = new KalturaAccessControlFilter();
 			acpFilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
 

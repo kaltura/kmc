@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.account.vo.NotificationVO;
+			
+			
+			
+			[Bindable]
+			public var enableEdit:Boolean;
+			
+			
+			
+			/**
+			 * helper function to decide if a checkbox on the client list should
+			 * be checked or not. checkboxes which are disabled can not be checked -
+			 * they are disabled becuase these notifications are not available for the client.
+			 * */
+			public function determineSelected(data:Object):Boolean {
+				var nvo:NotificationVO = data as NotificationVO;
+				if (nvo.clientEnabled) {
+					// user asked for this notification
+					return nvo.availableInClient;
+				}
+				else {
+					return false;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+		<mx:columns>
+			<mx:DataGridColumn width="100" headerText="{resourceManager.getString('account', 'notiName')}"
+							   dataField="name" dataTipField="name"/>
+			<mx:DataGridColumn width="60"
+							   headerText="{resourceManager.getString('account', 'availableInClient')}"
+							   textAlign="center" dataField="availableInClient"
+							   dataTipField="availableInClient">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:CheckBox 
+							enabled="{data.clientEnabled &amp;&amp; outerDocument.enableEdit}"
+							selected="{outerDocument.determineSelected(data)}"
+							click="{data.availableInClient = this.selected}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+			<mx:DataGridColumn width="60"
+							   headerText="{resourceManager.getString('account', 'availableInServer')}"
+							   textAlign="center" dataField="availableInServer"
+							   dataTipField="availableInServer">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:CheckBox click="{data.availableInServer = this.selected}"
+									 enabled="{outerDocument.enableEdit}"/>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:DataGridColumn>
+		</mx:columns>
+</mx:DataGrid>

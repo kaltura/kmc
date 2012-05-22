@@ -31,10 +31,6 @@ package com.kaltura.kmc.modules.account.control
 			
 			// Kaltura Events
 			 addCommand( ContactEvent.CONTACT_US , ContactSalesForceCommand );
-			 
-			
-			// Partner Usage Event
-			addCommand(UsageGraphEvent.USAGE_GRAPH, GetUsageGraphCommand);
 			
 			// Access Control Events
 			addCommand(AccessControlEvent.ACCOUNT_ADD_NEW_ACCESS_CONTROL_PROFILE, AddNewAccessControlProfileCommand);

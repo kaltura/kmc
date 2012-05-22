@@ -26,9 +26,6 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			
 			_model.loadingFlag = true;
-		 /*	var params : Object = _model.context.defaultUrlVars;
-			var delegate : GetPartnerInfoDelegate = new GetPartnerInfoDelegate( this );
-			delegate.getPartnerInfo( params );  */
 					
 		 	var getPartnerInfo:PartnerGetInfo = new PartnerGetInfo();
 		 	getPartnerInfo.addEventListener(KalturaEvent.COMPLETE, result);

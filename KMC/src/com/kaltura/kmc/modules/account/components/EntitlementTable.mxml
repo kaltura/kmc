@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				addEventListener("remove", handleTableActions, false, 0, true);
+				addEventListener("change", handleTableActions, false, 0, true);
+			}
+			
+			
+			private function handleTableActions(e:Event):void {
+				e.stopImmediatePropagation();
+				switch (e.type) {
+					case "remove":
+						break;
+					case "change":
+						break;
+				}
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:DataGridColumn id="category" dataField="name" headerText="{resourceManager.getString('account', 'rootCategory')}"/>
+	<mx:DataGridColumn id="contextLabel" dataField="privacyContext" headerText="{resourceManager.getString('account', 'contextLabel')}"/>
+	<mx:DataGridColumn id="actions" headerText="{resourceManager.getString('account', 'transActionsCol')}"/>
+</mx:DataGrid>
