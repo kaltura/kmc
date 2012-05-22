@@ -60,6 +60,12 @@ package com.kaltura.kmc.modules.account.control
 			addCommand(MetadataFieldEvent.DELETE , DeleteMetadataFieldCommand);
 			addCommand(MetadataFieldEvent.EDIT , EditMetadataFieldCommand);
 			addCommand(MetadataFieldEvent.REORDER , ReorderMetadataFieldCommand );
+			
+			
+			// integration
+			addCommand(IntegrationEvent.LIST_CATEGORIES_WITH_PRIVACY_CONTEXT , ListCategoriesCommand);
+			addCommand(IntegrationEvent.UPDATE_CATEGORY , UpdateCategoryCommand);
+			
 		}
 	}
 }

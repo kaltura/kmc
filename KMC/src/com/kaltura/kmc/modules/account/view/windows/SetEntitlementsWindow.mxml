@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
+							layout="vertical" width="400" height="300" creationComplete="creationCompleteHandler(event)" 
+							showCloseButton="true" close="closeHandler(event)" showHelpButton="true"
+							xmlns:components="com.hillelcoren.components.*"
+							title="{resourceManager.getString('account', 'setEntitlementsWindowTitle')}">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACCategoryController;
+			import com.kaltura.autocomplete.itemRenderers.dropdown.CategoryDropDownIR;
+			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
+			import com.kaltura.kmc.modules.account.events.IntegrationEvent;
+			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+			import com.kaltura.vo.KalturaCategory;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			
+			private var _category:KalturaCategory;
+			
+			public function set category(value:KalturaCategory):void {
+				_category = value;
+				if (catComplete) {
+					catComplete.selectedItem = value;
+					catComplete.enabled = false;
+					txt.text = value.privacyContext;
+				}
+			}
+			
+			private function creationCompleteHandler(event:FlexEvent):void {
+				new KACCategoryController(catComplete, AccountModelLocator.getInstance().context.kc);
+				if (_category) {
+					category = _category;
+				}
+			}
+
+
+			private function closeHandler(event:Event):void {
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function validate(event:MouseEvent):void {
+				var kCat:KalturaCategory = catComplete.selectedItem;
+				if (!kCat) {
+					Alert.show(resourceManager.getString('account', 'noCatSelected'), resourceManager.getString('account', 'error'));
+				}
+				else  if (!_category && kCat.privacyContext) {
+					Alert.show(resourceManager.getString('account', 'contextAlreadySet'), resourceManager.getString('account', 'error'));
+				}
+				else {
+					Alert.show(resourceManager.getString('account', 'setEntNote', [kCat.name]), resourceManager.getString('account', 'important'), Alert.OK|Alert.CANCEL, null, savePrivacyContext);
+				}
+			}
+			
+			
+			private function savePrivacyContext(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					var kCat:KalturaCategory = catComplete.selectedItem;
+					kCat.privacyContext = getPrivacyContextString();
+					var cge:CairngormEvent = new IntegrationEvent(IntegrationEvent.UPDATE_CATEGORY);
+					cge.data = kCat;
+					cge.dispatch();
+					closeHandler(null);	
+				}
+			}
+			
+			private function getPrivacyContextString():String {
+				return txt.text;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('account', 'selectParentCat')}"/>
+	<components:AutoComplete id="catComplete" width="100%" selectedItemStyleName="facebook"
+							 showRemoveIcon="true" labelField="name"
+							 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
+							 dropDownItemRenderer="{new ClassFactory(CategoryDropDownIR)}" />
+	<mx:Spacer height="20" />
+	<mx:Label text="{resourceManager.getString('account', 'setPrivLabel')}"/>
+	<mx:TextInput id="txt" width="100%" restrict="A-Za-z0-9,"/>
+		
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="{resourceManager.getString('account', 'save')}" click="validate(event)"/>
+		<mx:Button label="{resourceManager.getString('account', 'cancel')}" click="closeHandler(event)"/>
+	</mx:ControlBar>
+</containers:HelpTitleWindow>

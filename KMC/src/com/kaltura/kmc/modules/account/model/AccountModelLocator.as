@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.account.model {
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaStorageProfile;
 	import com.kaltura.vo.KalturaUser;
+	import com.kaltura.vo.KalturaCategory;
 	
 	import flash.events.EventDispatcher;
 	
@@ -42,6 +43,18 @@ package com.kaltura.kmc.modules.account.model {
 		public var usersList:ArrayCollection;
 		
 		public var adminData:AdminVO = new AdminVO();
+		
+		/* ****************************************************
+		 * integration
+		 **************************************************** */
+		
+		[ArrayElementType("KalturaCategory")]
+		/**
+		 * list of categorys with a defined privacy context 
+		 */		
+		public var categoriesWithPrivacyContext:Array;
+		
+		
 		
 		/* ****************************************************
 		 * metadata

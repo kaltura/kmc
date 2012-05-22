@@ -3,21 +3,29 @@
 		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" xmlns:components="com.kaltura.kmc.modules.account.components.*">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.kmc.events.KmcHelpEvent;
+			import com.kaltura.kmc.modules.account.components.EntitlementActionsRenderer;
+			import com.kaltura.kmc.modules.account.events.IntegrationEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
+			import com.kaltura.kmc.modules.account.view.windows.SetEntitlementsWindow;
 			import com.kaltura.kmc.modules.account.vo.NotificationVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
+			import com.kaltura.vo.KalturaCategory;
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
 			import mx.controls.List;
+			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
 
 			[Bindable]
 			public var rootUrl:String;
@@ -35,7 +43,13 @@
 			public var partnerData:PartnerVO;
 			private var _clonedPartnerData:PartnerVO;
 
-
+			
+			[Bindable]
+			/**
+			 * categories with privacy context label set
+			 * */
+			public var categories:Array;
+			
 			public static const NAME:String = "integration";
 
 			/**
@@ -47,9 +61,13 @@
 			public function init():void {
 				if (_ready) {
 					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
-
-					var partnerEvent:PartnerEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
-					partnerEvent.dispatch();
+					addEventListener(EntitlementActionsRenderer.CHANGE_CONTEXT, handleEntitlementsTableActions, false, 0, true);
+					addEventListener(EntitlementActionsRenderer.REMOVE_CONTEXT, handleEntitlementsTableActions, false, 0, true);
+					
+					var cgEvent:CairngormEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
+					cgEvent.dispatch();
+					cgEvent = new IntegrationEvent(IntegrationEvent.LIST_CATEGORIES_WITH_PRIVACY_CONTEXT);
+					cgEvent.dispatch();
 					PermissionManager.getInstance().applyAllAttributes(this, NAME);
 				}
 				else {
@@ -162,11 +180,48 @@
 			}
 
 
-
-			protected function permissionCheck(val1:Boolean, val2:Boolean):Boolean {
-				return val1 && val2;
+			/**
+			 * add privacy context to category
+			 * */
+			private function addContextsBtn_clickHandler(event:MouseEvent):void {
+				openSetEntitlementWindow();
 			}
 			
+			
+			private function handleEntitlementsTableActions(e:Event):void {
+				e.stopImmediatePropagation();
+				switch (e.type) {
+					case EntitlementActionsRenderer.REMOVE_CONTEXT:
+						catToClearContext = e.target.data as KalturaCategory;
+						Alert.show(resourceManager.getString('account', 'removeEntNote', [catToClearContext.name]), resourceManager.getString('account', 'important'), Alert.OK|Alert.CANCEL, null, removePrivacyContext);
+						break;
+					case EntitlementActionsRenderer.CHANGE_CONTEXT:
+						openSetEntitlementWindow(e.target.data as KalturaCategory);
+						break;
+				}
+			}
+			
+			private var catToClearContext:KalturaCategory;
+			
+			private function removePrivacyContext(e:CloseEvent):void {
+				if (e.detail == Alert.OK) {
+					catToClearContext.privacyContext = KalturaClient.NULL_STRING;
+					var cge:CairngormEvent = new IntegrationEvent(IntegrationEvent.UPDATE_CATEGORY);
+					cge.data = catToClearContext;
+					cge.dispatch();
+				}
+			}
+			
+			private function openSetEntitlementWindow(kCat:KalturaCategory = null):void {
+				var popup:SetEntitlementsWindow = new SetEntitlementsWindow();
+				if (kCat) {
+					popup.category = kCat;
+				}
+				PopUpManager.addPopUp(popup, this, true);	
+				PopUpManager.centerPopUp(popup);
+			}
+
+
 		]]>
 	</mx:Script>
 	<!-- Service -->
@@ -223,8 +278,9 @@
 					<mx:Image source="{StyleManager.getStyleDeclaration('.imageBank').getStyle('SpinnerImg')}"/>
 					<mx:Text text="{resourceManager.getString('account', 'entitlementsNote')}" width="100%"/>
 				</mx:HBox>
-				<components:EntitlementTable width="100%" />
-				<mx:LinkButton label="{resourceManager.getString('account', 'addEntitlement')}"/>
+				<components:EntitlementTable width="100%" dataProvider="{categories}" />
+				<mx:LinkButton id="addContextsBtn" label="{resourceManager.getString('account', 'addEntitlement')}"
+							   click="addContextsBtn_clickHandler(event)" styleName="plusIcon"/>
 			</mx:VBox>
 
 			<!-- advanced settings -->
