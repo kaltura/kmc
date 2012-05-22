@@ -39,6 +39,7 @@ package com.kaltura.edw.control.commands {
 			}
 			// don't send categories - we use categoryEntry service to update them in EntryData panel
 			entry.categories = null;
+			entry.categoriesIds = null;
 			// custom data info
 			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
 			// use mr to update metadata
