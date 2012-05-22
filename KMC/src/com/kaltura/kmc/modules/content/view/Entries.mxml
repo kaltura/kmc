@@ -32,6 +32,7 @@
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.FileUploadEvent;
+			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.PartnerEvent;
@@ -199,10 +200,11 @@
 					return;
 				}
 				
-				cgEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES_FOR_CATEGORY);
+				var cgEvent:CairngormEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES_FOR_CATEGORY);
 				cgEvent.dispatch();
 				
-				var cgEvent:CairngormEvent = new SelectionEvent(SelectionEvent.CATEGORIES_SELECTION_CHANGED, [Categories.createCategoryObject()]);
+				cgEvent = new CategoryEvent(CategoryEvent.SET_SELECTED_CATEGORY);
+				cgEvent.data = Categories.createCategoryObject();
 				cgEvent.dispatch();
 				
 				cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORY_DETAILS_WINDOW);
