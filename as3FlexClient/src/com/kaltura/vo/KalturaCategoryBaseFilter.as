@@ -142,6 +142,10 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
+		public var privacyContextEqual : String = null;
+
+		/** 
+		* 		* */ 
 		public var statusEqual : int = int.MIN_VALUE;
 
 		/** 
@@ -195,6 +199,7 @@ package com.kaltura.vo
 			arr.push('membersCountLessThanOrEqual');
 			arr.push('pendingMembersCountGreaterThanOrEqual');
 			arr.push('pendingMembersCountLessThanOrEqual');
+			arr.push('privacyContextEqual');
 			arr.push('statusEqual');
 			arr.push('statusIn');
 			arr.push('inheritedParentIdEqual');

@@ -32,33 +32,44 @@ package com.kaltura.vo
 	public dynamic class KalturaReportInputFilter extends BaseFlexVo
 	{
 		/** 
-		* 		* */ 
+		* Start date as Unix timestamp (In seconds)
+	 		* */ 
 		public var fromDate : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* End date as Unix timestamp (In seconds)
+	 		* */ 
 		public var toDate : int = int.MIN_VALUE;
 
 		/** 
-		* 		* */ 
+		* Search keywords to filter objects
+	 		* */ 
 		public var keywords : String = null;
 
 		/** 
-		* 		* */ 
+		* Search keywords in onjects tags
+	 		* */ 
 		public var searchInTags : Boolean;
 
 		/** 
-		* 		* */ 
+		* Search keywords in onjects admin tags
+	 		* */ 
 		public var searchInAdminTags : Boolean;
 
 		/** 
-		* 		* */ 
+		* Search onjects in specified categories
+	 		* */ 
 		public var categories : String = null;
 
 		/** 
-		* time zone offset in minutes
+		* Time zone offset in minutes
 	 		* */ 
 		public var timeZoneOffset : int = int.MIN_VALUE;
+
+		/** 
+		* Aggregated results according to interval
+	 		* */ 
+		public var interval : String = null;
 
 		/** 
 		* a list of attributes which may be updated on this object 
@@ -74,6 +85,7 @@ package com.kaltura.vo
 			arr.push('searchInAdminTags');
 			arr.push('categories');
 			arr.push('timeZoneOffset');
+			arr.push('interval');
 			return arr;
 		}
 

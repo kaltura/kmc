@@ -3,6 +3,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
 	import com.kaltura.kmc.modules.analytics.vo.FilterVo;
+	import com.kaltura.types.KalturaReportInterval;
 	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
@@ -40,6 +41,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 				krif.categories = fvo.categories;
 				krif.searchInTags = fvo.searchInTags;
 				krif.searchInAdminTags = fvo.searchInAdminTags;
+				
+				if (fvo.interval != null){
+					krif.interval = fvo.interval;
+				}
+//				krif.interval
 				// add time offset in minutes.
 				krif.timeZoneOffset = today.timezoneOffset;
 			}

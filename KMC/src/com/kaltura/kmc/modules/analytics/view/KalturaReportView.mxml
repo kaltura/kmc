@@ -72,6 +72,9 @@
 			//LOADING FLAGS
 			[Bindable]
 			private var _isLoading:Boolean = false;
+			
+			[Bindable]
+			public var showChartSwitch:Boolean = false;
 
 
 			public function set isLoading(value:Boolean):void {
@@ -136,6 +139,10 @@
 			public var filterVo:FilterVo;
 			[Bindable]
 			public var orderBy:String;
+			[Bindable]
+			public var showTimeUnits:Boolean = false;
+			[Bindable]
+			public var showSearchFilter:Boolean = true;
 			
 			private static var playerLoadedFlag:Boolean = false;
 			private static var playerReadyFlag:Boolean = false;
@@ -219,11 +226,11 @@
 				if (rdtc && this.visible) {
 //					populateFilter( rdtc );
 
-					if (showLineChart)
-						lineChart.dataProvider = rdtc.chartDp;
+//					if (showLineChart)
+					lineChart.dataProvider = rdtc.chartDp;
 
-					if (showColumnChart)
-						columnChart.dataProvider = rdtc.chartDp;
+//					if (showColumnChart)
+					columnChart.dataProvider = rdtc.chartDp;
 
 					if (showTable)
 						paging.totalCount = rdtc.totalCount;
@@ -368,6 +375,16 @@
 			private function help():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, helpUrl));
 			}
+			
+			private function changeToColChart():void{
+				showColumnChart = true;
+				showLineChart = false;
+			}
+			
+			private function changeToLineChart():void{
+				showColumnChart = false;
+				showLineChart = true;
+			}
 
 
 		]]>
@@ -400,11 +417,18 @@
 						 applicationsList="{_model.applicationsList}" 
 						 drillDownName="{_model.drillDownName}"
 						 filterUsersFlag="{filterUsersFlag}" filterApplicationsFlag="{filterApplicationsFlag}"
-						 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}"
-						 kc="{_model.kc}"
+						 dateOnlyFlag="{dateOnlyFlag}" objectIds="{reportData.objectIds}" 
+						 kc="{_model.kc}" showTimeUnits="{showTimeUnits}" showSearchFilter="{showSearchFilter}"
 						 showDrillDownNav="{showDrillDownNav}" isLoading="{_isLoading}"/>
 		</mx:HBox>
 	</mx:VBox>
+	
+	<!-- chart switch -->
+	<mx:HBox width="100%" horizontalAlign="left" includeInLayout="{showChartSwitch}" visible="{showChartSwitch}">
+		<mx:Button styleName="barChartIcon" click="changeToColChart()" buttonMode="true" useHandCursor="true" toolTip="Show Bar Chart"/>
+		<mx:Button  styleName="lineChartIcon" click="changeToLineChart()" buttonMode="true" useHandCursor="true"  toolTip="Show Line Chart"/>
+	</mx:HBox>
+	
 	<mx:Spacer height="5"/>
 	<mx:HRule width="100%"/>
 	<mx:Spacer height="5"/>
@@ -423,7 +447,7 @@
 	<map:KMap id="kmap" width="100%" visible="{showMap}" includeInLayout="{showMap}"/>
 
 	<charts:KColumnChart id="columnChart" width="100%" enabled="{_isVisibleColumnChart}" visible="{showColumnChart}"
-						 includeInLayout="{showColumnChart}"/>
+						 includeInLayout="{showColumnChart}" />
 
 	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart}"
 					   visible="{showLineChart}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>

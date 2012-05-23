@@ -40,12 +40,17 @@ package com.kaltura.vo
 		* 		* */ 
 		public var userIds : String = null;
 
+		/** 
+		* 		* */ 
+		public var playbackContext : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('application');
 			arr.push('userIds');
+			arr.push('playbackContext');
 			return arr;
 		}
 

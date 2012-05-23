@@ -33,6 +33,10 @@ package com.kaltura.kmc.modules.analytics.commands
 			headers = headers.substr(0,headers.length-1);
 			headers += ";";	//";Object Id,"; (see mantis ticket 13090 requesting to remove this header)
 			
+			if (_model.selectedReportData.objectIds == "" || _model.selectedReportData.objectIds == null){
+				headers += "Object Id,";
+			}
+			
 			if(_model.selectedReportData.tableHeaders)
 			{
 				for(var i:int=0;i<_model.selectedReportData.tableHeaders.length; i++)
@@ -45,6 +49,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			headers = headers.substr(0,headers.length-1);
+			
 			
 			//NEVER SHOULD HAPPEN BUT IF DOES THEN IT'S BETTER THEN FAIL SENDING MASSAGE
 			if( _model.selectedReportData.message == "" ) _model.selectedReportData.message="no message"; 

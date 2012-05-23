@@ -42,7 +42,15 @@ package com.kaltura.vo
 
 		/** 
 		* 		* */ 
-		public var nameOrReferenceIdContains : String = null;
+		public var nameOrReferenceIdStartsWith : String = null;
+
+		/** 
+		* 		* */ 
+		public var managerEqual : String = null;
+
+		/** 
+		* 		* */ 
+		public var memberEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -50,7 +58,9 @@ package com.kaltura.vo
 			arr = super.getUpdateableParamKeys();
 			arr.push('freeText');
 			arr.push('membersIn');
-			arr.push('nameOrReferenceIdContains');
+			arr.push('nameOrReferenceIdStartsWith');
+			arr.push('managerEqual');
+			arr.push('memberEqual');
 			return arr;
 		}
 

@@ -34,6 +34,7 @@ package com.kaltura.types
 		public static const DOCUMENT : String = 'document.Document';
 		public static const SWF : String = 'document.SWF';
 		public static const PDF : String = 'document.PDF';
+		public static const IMAGE : String = 'document.Image';
 		public static const CAPTION : String = 'caption.Caption';
 		public static const ATTACHMENT : String = 'attachment.Attachment';
 	}

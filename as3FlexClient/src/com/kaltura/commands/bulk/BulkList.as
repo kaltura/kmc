@@ -27,6 +27,7 @@
 // ===================================================================================================
 package com.kaltura.commands.bulk
 {
+	import com.kaltura.vo.KalturaBulkUploadFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.delegates.bulk.BulkListDelegate;
 	import com.kaltura.net.KalturaCall;
@@ -35,9 +36,10 @@ package com.kaltura.commands.bulk
 	{
 		public var filterFields : String;
 		/**
+		 * @param bulkUploadFilter KalturaBulkUploadFilter
 		 * @param pager KalturaFilterPager
 		 **/
-		public function BulkList( pager : KalturaFilterPager=null )
+		public function BulkList( bulkUploadFilter : KalturaBulkUploadFilter=null,pager : KalturaFilterPager=null )
 		{
 			service= 'bulkupload_bulk';
 			action= 'list';
@@ -45,6 +47,11 @@ package com.kaltura.commands.bulk
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
+ 			if (bulkUploadFilter) { 
+ 			keyValArr = kalturaObject2Arrays(bulkUploadFilter, 'bulkUploadFilter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
  			if (pager) { 
  			keyValArr = kalturaObject2Arrays(pager, 'pager');
 			keyArr = keyArr.concat(keyValArr[0]);

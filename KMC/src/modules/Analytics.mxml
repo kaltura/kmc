@@ -136,15 +136,15 @@
 			 * */
 			private function showTab(subtab:String):void {
 				switch (subtab) {
-					case BANDWIDTH_USAGE:
+					case CONTENT:
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 0))
 						contentView.selectedIndex = 0;
 						break;
-					case CONTENT:
+					case USERS_AND_COMMUNITY:
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 1))
 						contentView.selectedIndex = 1;
 						break;
-					case USERS_AND_COMMUNITY:
+					case BANDWIDTH_USAGE:
 						onItemClick(new ItemClickEvent("itemClick", false, false, "dummy", 2))
 						contentView.selectedIndex = 2;
 						break;
@@ -207,13 +207,6 @@
 				
 				var stateEvent:StateEvent;
 				if (event.index == 0) {
-					// trackers:
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_BANDWIDTH_USAGE , GoogleAnalyticsConsts.ANALYTICS);
-					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
-						"Main Menu>Bandwidth Usage Tab");
-					JSGate.writeUrlHash(Analytics.NAME, BANDWIDTH_USAGE);
-				}
-				if (event.index == 1) {
 					// if we get back to the first subtab we must refresh
 					// because the user might have changed filter
 					if (content.topContet && content.dtn.selectedIndex == 0) {
@@ -228,7 +221,7 @@
 						"Main Menu>Contents and Reports Tab");
 					JSGate.writeUrlHash(Analytics.NAME, CONTENT);
 				}
-				else if (event.index == 2) {
+				if (event.index == 1) {
 					// trackers:
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_USERS_AND_COMMUNITY_REPORTS, GoogleAnalyticsConsts.ANALYTICS);
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_USERS_AND_COMMUNITY_REPORTS_TAB,
@@ -242,7 +235,19 @@
 					
 					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTRIBUTORS);
 					stateEvent.dispatch();
+				}
+				else if (event.index == 2) {
+					// trackers:
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ANALYTICS_BANDWIDTH_USAGE , GoogleAnalyticsConsts.ANALYTICS);
+					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.ANALYTICS,KalturaStatsKmcEventType.REPORTS_AND_ANALYTICS_BANDWIDTH_USAGE_TAB,
+						"Main Menu>Bandwidth Usage Tab");
+					JSGate.writeUrlHash(Analytics.NAME, BANDWIDTH_USAGE);
 					
+					if (usage.pbns && usage.dtn.selectedIndex == 0)
+						usage.pbns.onShow();
+					
+					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.PBNS);
+					stateEvent.dispatch();
 				}
 				
 			}
@@ -284,14 +289,14 @@
 		
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack"
 					  horizontalScrollPolicy="off" verticalScrollPolicy="off" minWidth="900" minHeight="500">
-			<view:Usage id='usage' horizontalScrollPolicy="off" verticalScrollPolicy="off"
-						label="{resourceManager.getString('analytics','usageTabTitle')}" styleName="pageStyle"
-						partnerData="{_model.partnerData}" accountUsageData="{_model.usageData}"/>
 			<view:Content id="content" width="100%" height="100%" horizontalScrollPolicy="off"
 						  verticalScrollPolicy="off" label="{resourceManager.getString('analytics','contentDashboard')}"
 						  styleName="pageStyle"/>
 			<view:Users id="community" width="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off"
 						label="{resourceManager.getString('analytics','usersAndCommunity')}" styleName="pageStyle"/>
+			<view:Usage id='usage' horizontalScrollPolicy="off" verticalScrollPolicy="off" width="100%" height="100%"
+						label="{resourceManager.getString('analytics','usageTabTitle')}" styleName="pageStyle"
+						partnerData="{_model.partnerData}" accountUsageData="{_model.usageData}"/>
 		</mx:ViewStack>
 		
 	</mx:VBox>

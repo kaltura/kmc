@@ -43,5 +43,6 @@ package com.kaltura.types
 		public static const USER_CONTENT_DROPOFF : int = 14;
 		public static const USER_CONTENT_INTERACTIONS : int = 15;
 		public static const APPLICATIONS : int = 16;
+		public static const PARTNER_USAGE : int = 201;
 	}
 }

@@ -70,7 +70,7 @@ package com.kaltura.autocomplete.controllers
 		
 		override protected function createCallHook():KalturaCall{
 			var filter:KalturaUserFilter = new KalturaUserFilter();
-			filter.idOrScreenNameContains = _autoComp.searchText;
+			filter.idOrScreenNameStartsWith = _autoComp.searchText;
 			
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			pager.pageIndex = 0;

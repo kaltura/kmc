@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.analytics.vo
 		public var searchInTags : Boolean = true;
 		public var application : String;
 		public var userIds : String;
+		public var interval:String;
 		
 		public function FilterVo()
 		{

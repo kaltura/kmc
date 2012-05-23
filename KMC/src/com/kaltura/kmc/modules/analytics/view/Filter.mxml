@@ -9,6 +9,7 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
+			import com.kaltura.types.KalturaReportInterval;
 			
 			import flash.utils.setTimeout;
 			
@@ -44,6 +45,12 @@
 			public var applicationsList : ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			public var showTimeUnits:Boolean = false;
+			
+			[Bindable]
+			public var showSearchFilter:Boolean = true;
+			
+			[Bindable]
 			public var drillDownName : String;
 
 			/**
@@ -69,6 +76,9 @@
 			[Bindable]
 			private var _dateRange:Array = [ResourceManager.getInstance().getString('analytics', 'yesterday'), ResourceManager.getInstance().getString('analytics', 'last7Days'), ResourceManager.getInstance().getString('analytics', 'thisWeek'), ResourceManager.getInstance().getString('analytics', 'lastWeek'), ResourceManager.getInstance().getString('analytics', 'last30Days'), ResourceManager.getInstance().getString('analytics', 'thisMonth'), ResourceManager.getInstance().getString('analytics', 'lastMonth'), ResourceManager.getInstance().getString('analytics', 'last12Months'), ResourceManager.getInstance().getString('analytics', 'thisYear'), ResourceManager.getInstance().getString('analytics', 'custom')];
 
+			[Bindable]
+			private var _timeUnitsDp:Array = [ResourceManager.getInstance().getString('analytics', 'monthly'), ResourceManager.getInstance().getString('analytics', 'daily')];
+			
 			[Bindable]
 			public var dateOnlyFlag:Boolean = false;
 			
@@ -391,6 +401,21 @@
 				
 				dispatchEvent(new Event('apply')); //apply
 			}
+			
+			protected function changeTimeUnits(event:ListEvent):void
+			{
+				switch (timeUnitsCb.selectedItem){
+					case ResourceManager.getInstance().getString('analytics', 'monthly'):
+						filterVo.interval = KalturaReportInterval.MONTHS;
+						break;
+					case ResourceManager.getInstance().getString('analytics', 'daily'):
+						filterVo.interval = KalturaReportInterval.DAYS;
+						break;
+				}
+				
+				dispatchEvent(new Event('apply')); //apply
+			}
+			
 		]]>
 	</mx:Script>
 
@@ -402,6 +427,11 @@
 		<mx:Label text="{resourceManager.getString('analytics','dateRange')}"/>
 		<mx:ComboBox id="dateCb" dataProvider="{_dateRange}" change="changeDateByRange(event)"
 					 styleName="analyticsCombo" enabled="{!isLoading}"/>
+		<mx:Label text="{resourceManager.getString('analytics', 'timeUnits')}"
+				  includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" />
+		<mx:ComboBox id="timeUnitsCb" styleName="analyticsCombo" enabled="{!isLoading}"
+					 dataProvider="{_timeUnitsDp}" change="changeTimeUnits(event)"
+					 includeInLayout="{showTimeUnits}" visible="{showTimeUnits}" />
 		<mx:Label text="{resourceManager.getString('analytics','dates')}"/>
 		<mx:DateField id="fromDate" width="100" buttonMode="true" selectedDate="{_filterVo.fromDate}"
 					  change="fromDateChanged( event )" enabled="{!isLoading}"/>
@@ -431,7 +461,7 @@
 					   enabled="{!isLoading}"/>
 	</mx:HBox>
 
-	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
+	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{!dateOnlyFlag &amp;&amp; showSearchFilter}" visible="{!dateOnlyFlag &amp;&amp; showSearchFilter}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchFilter')}"/>
 		<mx:TextInput id="searchTerm" width="205" text="{_filterVo.keywords}"
 					  change="{_filterVo.keywords = searchTerm.text}"

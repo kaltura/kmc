@@ -108,6 +108,9 @@ package com.kaltura.kmc.modules.analytics.model
 						ResourceManager.getInstance().getString('analytics','topSyndications')]);
 			}
 		}
+		public var usageDtnDp : ArrayCollection = new ArrayCollection(
+				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
+					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
 									 								 
 	    //---------------------------------------------------------
 		/**

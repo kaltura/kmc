@@ -17,6 +17,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var topContrib : Array =[ 'screen_name','count_total', 'count_video','count_audio','count_image','count_mix']; //'editor_usage','edit_sessions'
 	    public var mapOverlay : Array = [ 'country_id','count_plays','count_plays_25','count_plays_50','count_plays_75','count_plays_100','play_through_ratio'];
 	    public var syndicator : Array =[ 'domain_name','count_plays','sum_time_viewed','avg_time_viewed','count_loads','load_play_ratio']; //'distinct_plays',
+
+		public var usage : Array = ['date', 'bandwidth', 'storage', 'total_usage'];
+
 		public var userEngagement : Array = ['name','unique_videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
+
 	}
 }
