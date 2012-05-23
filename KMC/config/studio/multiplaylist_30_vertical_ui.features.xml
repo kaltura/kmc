@@ -1,4 +1,4 @@
-<snapshot fullPlayerId="@@Player3_ID@@" playerId="@@Player3_ID@@">
+<snapshot fullPlayerId="@@Player7_ID@@" playerId="@@Player7_ID@@">
 	<features>
 		<!--===============================================================-->
 		<!--===============================================================-->
@@ -16,6 +16,7 @@
 				k_value="true" enabled="false"/>
 			<Spacer/>
 		</feature>
+		
 		<feature showCheckbox="true" specialFeature="true"
 			featureLabel="Your Watermark" id="watermark" selected="true"
 			k_param="selected" k_value="true">
@@ -53,6 +54,7 @@
 			</ComboBox>
 			<Label label="Padding"/>
 			<NumericStepper id="padding" k_param="padding" k_value="5"/>
+			
 		</feature>
 		
 		<feature showCheckbox="true" featureLabel="Left Play Counter"
@@ -237,10 +239,11 @@
 			<Spacer/>
 			<Label label="Location &amp; Playing States:"/>
 			<CheckBox label="Controls Area" id="ControllerScreen" selected="true"
-				k_param="selected" k_value="true" enabled="false"/>
+				k_param="selected" k_value="true" aps_visible="false"
+				enabled="false"/>
 			<Spacer/>
-			<ComboBox id="Display" k_param="k_buttonType" aps_visible="false"
-				k_value="buttonIconControllerArea">
+			<ComboBox id="Display" k_param="k_buttonType" enabled="false"
+				k_value="buttonIconControllerArea" aps_visible="false">
 				<item>
 					<data>buttonIconControllerArea</data>
 					<label>Icon</label>
@@ -268,10 +271,9 @@
 			<Spacer/>
 			<Label label="Tooltip Text:"/>
 			<Input id="Tooltip" k_param="tooltip" k_value="Change volume"/>
-			
+			<Spacer/>
 			<Label label="Volume level for first play:"/>
 			<NumericStepper id="initialVolumeLevel" k_param="initialValue" k_value="1" minimum="0" maximum="1" stepSize="0.1"/>
-			
 			<Label label="Override user saved volume level:"/>
 			<ComboBox id="volumeOverride" k_param="forceInitialValue"
 				k_value="false">
@@ -900,6 +902,7 @@ If you wish to select a different player for syndication, paste the relevant Pla
 			<Input id="ccOverTooltip"  k_param="tooltip" k_value="" applyTo="ccOverComboBox"/>
 			
 		</feature>
+		
 		<feature showCheckbox="true" featureLabel="Captions for accessibility" id="ccUnderComboBox"
 				 pluginId="closedCaptionsUnderPlayer" selected="false" k_param="selected" k_value="false">
 			<Spacer/>
@@ -1003,7 +1006,7 @@ If you wish to select a different player for syndication, paste the relevant Pla
 		</feature>
 		<!--===============================================================-->
 		<!--===============================================================-->
-		<!--feature featureLabel="Advertising" showCheckbox="false"/!-->
+		<!--feature featureLabel="Advertising" showCheckbox="false"/-->
 		<!--===============================================================-->
 		<!--===============================================================-->
 		
@@ -1509,50 +1512,56 @@ If you wish to select a different player for syndication, paste the relevant Pla
 	<advertising enabled="false">
 		<!--corresponds to "requests ads for this player"-->
 		<adSources>
-			<!-- combobox contents. only one has "selected" att., 
-			 the selected tag has url and extra params if supplied as tag content.
-			 url for custom swf is where to find the file, for other options it is the ad tag (the url from which to ask for ads) -->
-			<source id="bumperOnly" label="Bumper Only" url="no url" />
-			<source id="customSwf" label="Custom swf" url="http://" />
+			<!-- combobox contents. only one has "selected" att.,
+			the selected tag has url and extra params if supplied as tag content.
+			url for custom swf is where to find the file, for other options it is the 
+				ad tag (the url from which to ask for ads) -->
+			<source id="bumperOnly" label="Bumper Only" url="no url"/>
+			<source id="customSwf" label="Custom swf" url="http://"/>
 			<source id="tremor" label="Tremor" url="tremorPlugin.swf"/>
-			<source id="adaptv" label="AdapTV" url="adaptvPlugin.swf" selected="true"/>
+			<source id="adaptv" label="AdapTV" url="adaptvPlugin.swf"
+				selected="true"/>
 			<source id="eyewonder" label="Eye Wonder" url="eyewonderPlugin.swf"/>
 			<source id="vastAdServer" label="VAST Ad Server" url="http://"/>
 		</adSources>
 		<playerConfig disableControls="true" timeout="4" trackCuePoints="false">
 			<!-- disableControls corresponds to "disable controls in linear ads"
-				 timeout corresponds to "timeout configuration"
-				trackCuePoints corresponds to "request ads from entry cuepoints"-->
-			<notice enabled="true">
-				Video will start in {sequenceProxy.timeRemaining} seconds
-			</notice>
-			<skip enabled="true" label="skip ad >" />
+				timeout corresponds to "timeout configuration"
+				trackCuePoints corresponds to "request ads from entry cuepoints" -->
+			<notice enabled="true"> Video will start in {sequenceProxy.timeRemaining} seconds
+				</notice>
+			<skip enabled="true" label="skip ad >"/>
 			<companion>
-				<!-- companion ads: flash/html distinction by "type" att. 
-					ad nodes are only present if user asked for companion ads, they are not here by default.-->
-				<!--ad type="html" elementid="23234098" width="250" height="300" />
-				<ad type="flash" elementid="Controls" width="250" height="300" /-->
+				<!-- companion ads: flash/html distinction by "type" att.
+				
+				ad nodes are only present if user asked for companion ads, they are not here by default.-->
+				<!--ad type="html" elementid="23234098" width="250" height="300"/>
+				<ad type="flash" elementid="Controls" width="250" height="300"/-->
 				<elements>
+					
 					<!-- optional values of elelmntid combobox. the value for each ad is on the ad node. -->
 					<element elementid="Controls" relativeTo="controlsHolder" position="lastChild"/>
 					<element elementid="Playlist" relativeTo="playlistHolder" position="lastChild"/>
-					<element elementid="Custom" relativeTo="" position=""/>
 				</elements>
 			</companion>
 		</playerConfig>
 		<timeline enabled="true">
 			<!-- corresponds to "ad policy managed by" -->
-			<preroll enabled="false" nads="1" frequency="1" start="1" url="" />
+			<preroll enabled="false" nads="1" frequency="1" start="1">
 				<!-- enabled: do we have a preroll.
-					display (nads) preroll ads before every (frequency) video starting with the (start) video
-					frequency, start count entries  -->
-			<bumper enabled="false" entryid="" clickurl=""/>
-			<postroll enabled="false" nads="1" frequency="1" start="1" url="" />
+				display (nads) preroll ads before every (frequency) video starting with the (start) video
+				frequency, start count entries  -->
+				key:value;pairs:separated;by:semicolons; </preroll>
+			<bumper enabled="false" entryid="some_entry_id"
+				clickurl="http://bumper.click.url"/>
+			<postroll enabled="false" nads="1" frequency="1" start="1">
 				<!-- enabled: do we have a postroll.
-					display (nads) postroll ads after every (frequency) video starting with the (start) video
-					frequency, start count entries  -->
-			<overlay enabled="false" nads="5" frequency="180" start="120" url="" />
+				display (nads) postroll ads after every (frequency) video starting with the (start) video
+				frequency, start count entries  -->
+				key:value;pairs:separated;by:semicolons; </postroll>
+			<overlay enabled="false" nads="5" frequency="180" start="120">
 				<!-- frequency, start count time in seconds -->
+				key:value;pairs:separated;by:semicolons; </overlay>
 			<values>
 				<!-- comboboxes values for linear ads -->
 				<nads>

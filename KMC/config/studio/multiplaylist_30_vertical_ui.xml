@@ -1,7 +1,7 @@
 <layout id="full" skinPath="/content/uiconf/kaltura/kmc/appstudio/kdp3/falcon/skin/v3.6.1/KDP_Blue.swf" isPlaylist="true">
-	<HBox id="topLevel" width="100%" height="100%">
+	<VBox id="topLevel" width="100%" height="100%">
 		<VBox id="player" width="100%" height="100%" styleName="black">
-			<Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false"/>
+			<Plugin id="playlistAPI" width="0%" height="0%" includeInLayout="false" selectedDataProvider="{tabBar.selectedDataProvider}"/>
 			<Plugin id="kalturaMix" width="0%" height="0%" includeInLayout="false" loadingPolicy="onDemand"/>
 			<Plugin id="download" width="0%" height="0%" includeInLayout="false" loadingPolicy="noWait"/>
 			<Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
@@ -196,8 +196,14 @@
 				</VBox>
 			</Canvas>
 		</VBox>
-		<Canvas id="playlistHolder" width="340" height="100%" hideInFullScreen="true" styleName="black">
-			<VBox id="playlist" width="340" height="100%" styleName="List_background_default" >
+		<Canvas id="playlistHolder" width="100%" height="290" hideInFullScreen="true" styleName="black">
+			<VBox id="playlist" width="100%" height="290" styleName="List_background_default" >
+			<VBox id="tabBarHolder" width="100%" height="26" styleName="tabBg" hideInFullScreen="true">
+					<Spacer height="8"/>
+					<Plugin id="tabBar" width="100%" height="26" rightArrowIcon="RightArrow_up"
+							leftArrowIcon="LeftArrow_up" buttonType="iconButton"
+							dataProvider="{playlistAPI.multiPlaylistDataProvider}"/>
+				</VBox>
 				<Spacer height="8"/>
 				<HBox id="playlistPadding" width="100%" height="100%" styleName="List_background_default">
 					<Plugin id="list" width="100%" height="100%" styleName="List_background_default"
@@ -206,7 +212,7 @@
 				<Spacer height="8"/>
 			</VBox>
 		</Canvas>
-	</HBox>
+	</VBox>
 
 	<screens>
 		<screen id="startScreen">
