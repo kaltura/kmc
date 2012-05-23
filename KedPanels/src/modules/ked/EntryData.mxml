@@ -262,7 +262,9 @@
 				res ||= _selectedEntry.referenceId != orig.referenceId;
 				
 				// categories:
-				res ||= !EntryDataHelper.areCollectionsEqual(_entryCategories, catComplete.selectedItems);
+				if (_entryCategories != null && catComplete.selectedItems && catComplete.selectedItems.length > 0) {
+					res ||= !EntryDataHelper.areCollectionsEqual(_entryCategories, catComplete.selectedItems);
+				}
 				
 				// custom data:
 				var customDataDataPack:CustomDataDataPack = _dpModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
@@ -391,6 +393,14 @@
 					_profsWatcher.unwatch();
 				} 
 				
+				var curCustomData:SingleCustomData;
+				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
+					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
+					if (curCustomData) {
+						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
+						curCustomData.destroy();
+					}
+				}
 			}
 			
 			
@@ -408,14 +418,18 @@
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
-				var curCustomData:SingleCustomData;
-				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
-					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
-					if (curCustomData) {
-						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
-						curCustomData.destroy();
-					}
-				}
+//				var curCustomData:SingleCustomData;
+//				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
+//					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
+//					if (curCustomData) {
+//						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
+//						curCustomData.destroy();
+//					}
+//				}
+				
+				var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
+				controller.dispatch(reset);
+				
 			}
 			
 			

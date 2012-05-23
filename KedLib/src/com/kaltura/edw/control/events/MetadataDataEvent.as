@@ -9,9 +9,19 @@ package com.kaltura.edw.control.events
 	 */
 	public class MetadataDataEvent extends KMvCEvent
 	{
-		public static const ADD : String = "content_add";
-		public static const LIST : String = "content_list";
-		public static const UPDATE : String = "content_update";
+		public static const ADD : String = "content_add_metadata_data";
+		
+		/**
+		 * get current entry data
+		 */
+		public static const LIST : String = "content_list_metadata_data";
+		
+		public static const UPDATE : String = "content_update_metadata_data";
+		
+		/**
+		 * reset current entry data on the model
+		 */
+		public static const RESET : String = "content_reset_metadata_data";
 
 		/**
 		 * Constructs a new MetadataDataEvent 

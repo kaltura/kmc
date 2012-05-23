@@ -33,9 +33,15 @@ package com.kaltura.edw.business.base
 
 	public class FormBuilderBase
 	{
-		//spacer height between container fields
+		
+		/**
+		 * spacer height between container fields
+		 */
 		private static const FIELDS_GAP:int = 4;
-		//padding left for each hierarich level
+
+		/**
+		 * padding left for each hierarich level
+		 */
 		private static const FIELD_INDENT:int = 12;
 		
 		/**
@@ -49,11 +55,6 @@ package com.kaltura.edw.business.base
 		
 		private var _objectsHM:HashMap;
 		
-//		protected var _metadataDataInfo:KalturaMetadata;
-		
-//		protected var _finalViewMxml:XML;
-		
-//		protected var _metadataDataObject:MetadataDataObject;
 		private var _metadataInfo:CustomMetadataDataVO;
 		
 		public function FormBuilderBase(metadataProfile:KMCMetadataProfileVO) {
@@ -80,7 +81,7 @@ package com.kaltura.edw.business.base
 			
 			var dataMap:HashMap = MetadataDataParser.getMetadataDataValues(metadataData);
 			for each (var field:XML in mxml.children())
-			setFieldData(field, dataMap);
+				setFieldData(field, dataMap);
 			
 			_metadataInfo.finalViewMxml = mxml;
 		}
@@ -556,24 +557,11 @@ package com.kaltura.edw.business.base
 		[Bindable]
 		public function set metadataInfo(value:CustomMetadataDataVO):void {
 			_metadataInfo = value;
-//			_finalViewMxml = _metadataInfo.finalViewMxml;
-//			_metadataDataInfo = _metadataInfo.metadata;
-//			_metadataDataObject = _metadataInfo.metadataDataObject;
 		}
 		
 		public function get metadataInfo():CustomMetadataDataVO {
 			return _metadataInfo;
 		}
 		
-		
-//		[Bindable]
-//		public function set finalViewMxml(value:XML):void{
-//			_finalViewMxml = value;
-//		}
-//	
-//		
-//		public function get finalViewMxml():XML{
-//			return _finalViewMxml;
-//		}
 	}
 }
