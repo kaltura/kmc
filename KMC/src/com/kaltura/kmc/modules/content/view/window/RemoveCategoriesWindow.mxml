@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
-							layout="vertical" width="400" height="300" showCloseButton="true" showHelpButton="true"
+							layout="vertical" width="400" height="300" 
+							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
 							title="{resourceManager.getString('cms', 'removeCategoriesTitle')}"
 							creationComplete="creationCompleteHandler(event)"
 							visible="{model.selectedEntriesCategories &amp;&amp; model.selectedEntriesCategories.length > 0}">
 	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			
@@ -34,6 +36,12 @@
 				cgEvent.data = lst.selectedItems;
 				cgEvent.dispatch();
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
+			}
+
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_entry_remove_cats", true));
 			}
 
 		]]>

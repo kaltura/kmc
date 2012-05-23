@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
 							layout="vertical" width="400" height="300" creationComplete="creationCompleteHandler(event)" 
-							showCloseButton="true" close="closeHandler(event)" showHelpButton="true"
+							showCloseButton="true" close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							xmlns:components="com.hillelcoren.components.*"
 							title="{resourceManager.getString('account', 'setEntitlementsWindowTitle')}">
 	<mx:Script>
@@ -11,6 +11,7 @@
 			import com.kaltura.autocomplete.controllers.KACCategoryController;
 			import com.kaltura.autocomplete.itemRenderers.dropdown.CategoryDropDownIR;
 			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.events.IntegrationEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.vo.KalturaCategory;
@@ -72,6 +73,12 @@
 			
 			private function getPrivacyContextString():String {
 				return txt.text;
+			}
+
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_cat_entitlement'));
 			}
 
 		]]>

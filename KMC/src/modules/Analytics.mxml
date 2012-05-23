@@ -14,7 +14,6 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
@@ -22,9 +21,7 @@
 			import com.kaltura.commands.mixing.MixingGetReadyMediaEntries;
 			import com.kaltura.commands.uiConf.UiConfGet;
 			import com.kaltura.commands.widget.WidgetGet;
-			import com.kaltura.config.KalturaConfig;
 			import com.kaltura.kmc.business.JSGate;
-			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.CategoryEvent;
 			import com.kaltura.kmc.modules.analytics.control.PartnerEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
@@ -32,12 +29,9 @@
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.KUtils;
-			import com.kaltura.utils.ObjectHelpers;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
-			import mx.core.Application;
-			import mx.core.UIComponent;
 			import mx.events.ItemClickEvent;
 			
 			/**
@@ -254,7 +248,17 @@
 			}
 			
 			protected function onHelp():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section11'));
+				switch (contentView.selectedChild) {
+					case usage:
+						usage.help();
+						break;
+					case content:
+						content.help();
+						break;
+					case community:
+						community.help();
+						break;
+				}
 			}
 			
 			protected function set entitlementEnabled( value : Boolean ):void {

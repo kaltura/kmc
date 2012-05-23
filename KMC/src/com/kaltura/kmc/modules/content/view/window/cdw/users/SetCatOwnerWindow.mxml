@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- change category owner popup window -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							creationComplete="onInit(event)" showCloseButton="true" showHelpButton="false"
+							creationComplete="onInit(event)" showCloseButton="true" showHelpButton="true"
+							help="helpHandler(event)"
 							title="{resourceManager.getString('cms','changeOwner')}" 
 							layout="vertical" width="400" height="300"
 							xmlns:controllers="com.kaltura.autocomplete.controllers.*"
@@ -10,6 +11,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaCategory;
 			
@@ -72,6 +74,12 @@
 //					_undoOwnerId = KalturaClient.NULL_STRING;
 					ownerId = KalturaClient.NULL_STRING;
 				}
+			}
+
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cats_owner", true));
 			}
 
 		]]>

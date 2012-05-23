@@ -9,6 +9,7 @@
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PermissionEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
@@ -198,6 +199,11 @@
 //				dtn.dataProvider = null;
 				dtn.dataProvider = _model.userDtnDp;
 			}
+			
+			public function help():void {
+				var anchor:String = (userViewStack.selectedChild as KalturaReportView).helpUrl;
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor));
+			}
 		]]>
 	</mx:Script>
 
@@ -212,7 +218,7 @@
 								orderBy="count_total" aggregatedHeaders="{ _model.aggregateHeaders.topContrib }"
 								tableHeaders="{ _model.tableHeaders.topContrib }"
 								filterUsersFlag="false" filterApplicationsFlag="false"
-								dimCbDp="{ _model.reportDimension.topContrib }" helpUrl="{'section11'}"
+								dimCbDp="{ _model.reportDimension.topContrib }" helpUrl="{'section_analytics_top_contributors'}"
 								reportType="{KalturaReportType.TOP_CONTRIBUTORS}"
 								label="{resourceManager.getString('analytics','topContributors')}"
 								styleName="pageStyle"/>
@@ -225,7 +231,7 @@
 								filterUsersFlag="false" filterApplicationsFlag="false"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
 								tableHeaders="{ _model.tableHeaders.mapOverlay }"
-								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}" helpUrl="{'section11'}"
+								drillDown="{onDrillDown(ScreenTypes.MAP_OVERLAY_DRILL_DOWN)}" helpUrl="{'section_analytics_map_overlay'}"
 								reportType="{KalturaReportType.MAP_OVERLAY}"
 								label="{resourceManager.getString('analytics','mapOverlay')}"
 								styleName="pageStyle"/>
@@ -240,7 +246,7 @@
 								tableHeaders="{ _model.tableHeaders.syndicator }"
 								dimCbDp="{ _model.reportDimension.syndicator }"
 								drillDown="{onDrillDown(ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN)}"
-								helpUrl="{'section11'}" reportType="{KalturaReportType.TOP_SYNDICATION}"
+								helpUrl="{'section_analytics_top_syndications'}" reportType="{KalturaReportType.TOP_SYNDICATION}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="userEngagement" width="100%" height="100%" dateOnlyFlag="{true}" context="{_model.context}"
 								filterVo="{_model.filter}" orderBy="count_plays"
@@ -253,7 +259,7 @@
 								tableHeaders="{ _model.tableHeaders.userEngagement }"
 								dimCbDp="{ _model.reportDimension.userEngagement }"
 								drillDown="{onDrillDown(ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN)}"
-								helpUrl="{'section11'}" reportType="{KalturaReportType.USER_ENGAGEMENT}"
+								helpUrl="{'section_analytics_user_engagement'}" reportType="{KalturaReportType.USER_ENGAGEMENT}"
 								label="{resourceManager.getString('analytics','userEngagement')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="syndicationsDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
 								filterVo="{_model.filter}" context="{_model.context}" width="100%" height="100%"
@@ -266,7 +272,7 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.syndicator }"
 								tableHeaders="{ _model.tableHeaders.syndicator }"
 								dimCbDp="{ _model.reportDimension.syndicator }" reportData="{_model.selectedReportData}"
-								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}" helpUrl="{'section11'}"
+								backScreenType="{ScreenTypes.TOP_SYNDICATIONS}" helpUrl="{'section_analytics_syndication_drilldown'}"
 								reportType="{KalturaReportType.TOP_SYNDICATION}"
 								label="{resourceManager.getString('analytics','topSyndications')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="mapOverlayDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
@@ -278,7 +284,7 @@
 								filterUsersFlag="false" filterApplicationsFlag="false"
 								orderBy="count_plays" backScreenType="{ScreenTypes.MAP_OVERLAY}"
 								aggregatedHeaders="{ _model.aggregateHeaders.mapOverlay }"
-								tableHeaders="{ _model.tableHeaders.mapOverlay }" helpUrl="{'section11'}"
+								tableHeaders="{ _model.tableHeaders.mapOverlay }" helpUrl="{'section_analytics_map_drilldown'}"
 								reportType="{KalturaReportType.MAP_OVERLAY}"
 								label="{resourceManager.getString('analytics','mapOverlay')}" styleName="pageStyle"/>
 		<view:KalturaReportView id="userEngagementDrillDown" dateOnlyFlag="{true}" isDrillDown="{true}"
@@ -293,7 +299,7 @@
 								aggregatedHeaders="{ _model.aggregateHeaders.userEngagement }"
 								tableHeaders="{ _model.tableHeaders.userEngagement }"
 								dimCbDp="{ _model.reportDimension.userEngagement }" reportData="{_model.selectedReportData}"
-								backScreenType="{ScreenTypes.END_USER_ENGAGEMENT}" helpUrl="{'section11'}"
+								backScreenType="{ScreenTypes.END_USER_ENGAGEMENT}" helpUrl="{'section_analytics_user_drilldown'}"
 								reportType="{KalturaReportType.SPEFICIC_USER_ENGAGEMENT}"
 								label="{resourceManager.getString('analytics','userEngagement')}" styleName="pageStyle"/>
 	</mx:ViewStack>

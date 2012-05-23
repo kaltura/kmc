@@ -3,9 +3,11 @@
 							title="{resourceManager.getString('cms','setPermissionLevel')}"
 							layout="vertical" width="400" height="300"
 							showCloseButton="true" close="closeHandler(event)"
+							showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
 			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
@@ -42,6 +44,12 @@
 
 			private function closeHandler(event:CloseEvent):void {
 				PopUpManager.removePopUp(this);
+			}
+
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_bulk_cat_user_permission', true));
 			}
 
 		]]>

@@ -24,7 +24,6 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.edw.view.window.SetEntryOwnerWindow;
 	import com.kaltura.edw.vo.ListableVo;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.kmc.events.KmcHelpEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.EntriesEvent;
 	import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
@@ -55,7 +54,6 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.SoManager;
 	import com.kaltura.vo.KalturaBaseEntry;
-	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 	import com.kaltura.vo.KalturaLiveStreamBitrate;
 	import com.kaltura.vo.KalturaMediaEntry;
@@ -117,7 +115,7 @@ package com.kaltura.kmc.modules.content.business
 		 * adds a popup window to the screen
 		 * */
 		private function addPopup(currentPopUp:TitleWindow):void {
-			currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
+//			currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
 			// remember the new window
 			model.popups.push(currentPopUp);
 			if (model.popups.length == 1) {
@@ -138,7 +136,7 @@ package com.kaltura.kmc.modules.content.business
 		private function closePopup():void {
 			var popup:TitleWindow = model.topPopup;
 			if (popup) {
-				popup.removeEventListener(KmcHelpEvent.HELP, onHelp, false);
+//				popup.removeEventListener(KmcHelpEvent.HELP, onHelp, false);
 				PopUpManager.removePopUp(popup);
 				model.popups.pop();
 			}
@@ -163,9 +161,9 @@ package com.kaltura.kmc.modules.content.business
 		}
 		
 		
-		private function onHelp(e:KmcHelpEvent):void {
-			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-		}
+//		private function onHelp(e:KmcHelpEvent):void {
+//			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+//		}
 		
 		/**
 		 * request to close the popup as response of window "x" button

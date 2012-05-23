@@ -4,6 +4,9 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 	import com.kaltura.kmc.modules.content.view.controls.bulkactions.BulkEntryActionsMenu;
 	import com.kaltura.kmc.modules.content.view.controls.bulkactions.MenuItemVo;
 	
+	import flash.display.DisplayObject;
+	
+	import mx.core.Application;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
 	
@@ -80,7 +83,7 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 				case "usersBulkPermLvl":
 					var permLvlWin:SetPermissionLevelWin = new SetPermissionLevelWin();
 					permLvlWin.users = users;
-					PopUpManager.addPopUp(permLvlWin, this, true);
+					PopUpManager.addPopUp(permLvlWin, Application.application as DisplayObject, true);
 					PopUpManager.centerPopUp(permLvlWin);
 					break;
 				

@@ -2,7 +2,7 @@
 <!-- change entry owner window -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							height="220" width="390" layout="vertical" 
-							showCloseButton="true" showHelpButton="false" 
+							showCloseButton="true" showHelpButton="true" help="helpHandler(event)" 
 							title="{resourceManager.getString('drilldown', 'changeOwnerTitle')}"
 							creationComplete="creationCompleteHandler(event)" xmlns:components="com.hillelcoren.components.*">
 	<mx:Metadata>
@@ -19,7 +19,9 @@
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.UsersEvent;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
+			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.vo.KalturaUser;
 			
 			import mx.binding.utils.BindingUtils;
@@ -88,6 +90,14 @@
 			private function apply(event:MouseEvent):void {
 				dispatchEvent(new Event("save"));
 				closeWin(null);
+			}
+
+
+			private function helpHandler(event:Event):void {
+				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
+				e.data = 'section_entry_owner' 
+				dispatchEvent(e);
+				
 			}
 
 		]]>

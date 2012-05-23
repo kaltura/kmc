@@ -2,7 +2,7 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
 							xmlns:containers="com.kaltura.containers.*" 
 							layout="vertical" width="400" height="300"
-							showCloseButton="true" showHelpButton="false"
+							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
 							title="{_windowTitle}" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
 	<mx:Script>
 		<![CDATA[
@@ -10,6 +10,7 @@
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.core.mx_internal;
@@ -68,6 +69,12 @@
 				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
 			
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cat_move", true));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Text text="{_descriptionTxt}" width="100%"/>

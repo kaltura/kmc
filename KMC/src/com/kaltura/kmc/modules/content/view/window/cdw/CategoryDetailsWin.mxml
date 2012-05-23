@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation:ChangeableDataViewer xmlns:navigation="com.kaltura.edw.business.*" xmlns:mx="http://www.adobe.com/2006/mxml"
-								 height="595" width="930" showCloseButton="true" showHelpButton="false"
+								 height="595" width="930" showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
 								 close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
 								 xmlns:containers="com.kaltura.containers.*"
 								 xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
@@ -14,6 +14,7 @@
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.utils.ObjectHelpers;
@@ -222,6 +223,19 @@
 					itemIndex = _model.categoriesList.getItemIndex(selectedCategory);
 				}
 			}
+
+			private function helpHandler(event:Event):void {
+				var anchor:String;
+				if (currentState == "parentSelect") {
+					anchor = "section_category_parent";
+				}
+				else if (currentState == "tabsNav") {
+					anchor = tabsNav.helpAnchor;
+				}
+				
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor, true));
+			}
+
 		]]>
 	</mx:Script>
 	<navigation:states>

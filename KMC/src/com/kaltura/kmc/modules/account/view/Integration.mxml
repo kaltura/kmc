@@ -15,14 +15,12 @@
 			import com.kaltura.kmc.modules.account.events.IntegrationEvent;
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.view.windows.SetEntitlementsWindow;
-			import com.kaltura.kmc.modules.account.vo.NotificationVO;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Alert;
-			import mx.controls.List;
 			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
@@ -222,6 +220,12 @@
 			}
 
 
+
+			private function readMore_linkHandler(event:TextEvent):void {
+//				navigateToURL(new URLRequest(evt.text));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_entitlement_more'));
+			}
+
 		]]>
 	</mx:Script>
 	<!-- Service -->
@@ -276,7 +280,7 @@
 				<mx:Text text="{resourceManager.getString('account', 'entitlementsDesc')}" width="100%"/>
 				<mx:HBox width="100%">
 					<mx:Image source="{StyleManager.getStyleDeclaration('.imageBank').getStyle('SpinnerImg')}"/>
-					<mx:Text text="{resourceManager.getString('account', 'entitlementsNote')}" width="100%"/>
+					<mx:Text htmlText="{resourceManager.getString('account', 'entitlementsNote')}" width="100%" link="readMore_linkHandler(event)"/>
 				</mx:HBox>
 				<components:EntitlementTable width="100%" dataProvider="{categories}" />
 				<mx:LinkButton id="addContextsBtn" label="{resourceManager.getString('account', 'addEntitlement')}"

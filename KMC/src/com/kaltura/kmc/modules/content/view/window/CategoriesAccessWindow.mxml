@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							layout="vertical" width="400" height="300"
-							showCloseButton="true" showHelpButton="true" 
+							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
 							title="{resourceManager.getString('cms', 'catAcTitle')}">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.types.KalturaAppearInListType;
 			import com.kaltura.types.KalturaPrivacyType;
 			
@@ -24,6 +25,12 @@
 				applyBtn.enabled = true;
 			}
 			
+
+			private function helpHandler(event:Event):void
+			{
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cats_access", true));
+			}
+
 		]]>
 	</mx:Script>
 	
