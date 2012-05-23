@@ -111,6 +111,13 @@
 				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'previewAndEmbed'), id: 'previewAndEmbed'});
 				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'duplicate'), id: 'duplicate'});
 				comboDataProviderMulti.addItem({label: resourceManager.getString('aps', 'delete'), id: 'delete'});
+				
+				
+				addEventListener('edit', onActionChange, false, 0, true);
+				addEventListener('selectContent', onActionChange, false, 0, true);
+				addEventListener('previewAndEmbed', onActionChange, false, 0, true);
+				addEventListener('duplicate', onActionChange, false, 0, true);
+				addEventListener('delete', onActionChange, false, 0, true);
 			}
 
 			/**
@@ -149,66 +156,82 @@
 			/**
 			 * edit selected player
 			 * */
-			private function onEdit(evt:MouseEvent = null):void {
-				if (playerListDg.selectedItem) {
-					// player id:
-					var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
+			private function onEdit(uiconf:KalturaUiConf):void {
+				// player id:
+				var playerId:String = uiconf.id.toString();
 
-					// uiconf.xml contents
-					var ui:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
+				// uiconf.xml contents
+				var ui:XML = XML(uiconf.confFile);
 
-					// player options + selected data
-					var snapshot:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFileFeatures);
+				// player options + selected data
+				var snapshot:XML = XML(uiconf.confFileFeatures);
 
-					var playerUiConfVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, ui, snapshot, playerListDg.selectedItem.name);
-					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.EDIT_PLAYER, playerUiConfVo));
-					
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_EDIT_PLAYER, GoogleAnalyticsConsts.STUDIO);
-				}
+				var playerUiConfVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, ui, snapshot, uiconf.name);
+				dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.EDIT_PLAYER, playerUiConfVo));
+				
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_EDIT_PLAYER, GoogleAnalyticsConsts.STUDIO);
 			}
 
 
 			/**
 			 * Clone selected entry
 			 */
-			private function onDuplicate(evt:MouseEvent = null):void {
-				if (playerListDg.selectedItem) {
-					this.enabled = false;
-					CursorManager.setBusyCursor();
-					//clone is actually 2 actions in a multirequest: clone & rename (update) 
-					var mr:MultiRequest = new MultiRequest();
-					//clone the selected uiConf
-					var cloneUiconf:UiConfClone = new UiConfClone((playerListDg.selectedItem as KalturaUiConf).id);
-					mr.addAction(cloneUiconf);
-					//take the cloned object from request 1 and update its name (this is request 2 - UiConfUpdate); 
-					var updateUiConf:UiConfUpdate = new UiConfUpdate(int.MIN_VALUE, new KalturaUiConf());
-					//map the keys from req' 1 to req' 2 
-					mr.mapMultiRequestParam(1, "id", 2, "id");
-					mr.addRequestParam("2:uiConf", "{1:result}");
-					mr.addRequestParam("2:uiConf:name", resourceManager.getString('aps', 'newPlayerPrefix') + uint(Math.random() * 1000));
-					mr.addAction(updateUiConf);
-					//complete the MultiRequest
-					mr.addEventListener(KalturaEvent.COMPLETE, duplicationComplete);
-					mr.addEventListener(KalturaEvent.FAILED, fault);
-					mr.queued = false;
-					Studio.kc.post(mr);
-					
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DUPLICATE_PLAYER, GoogleAnalyticsConsts.STUDIO);
-				}
+			private function onDuplicate(uiconf:KalturaUiConf):void {
+				this.enabled = false;
+				CursorManager.setBusyCursor();
+				//clone is actually 2 actions in a multirequest: clone & rename (update) 
+				var mr:MultiRequest = new MultiRequest();
+				//clone the selected uiConf
+				var cloneUiconf:UiConfClone = new UiConfClone(uiconf.id);
+				mr.addAction(cloneUiconf);
+				//take the cloned object from request 1 and update its name (this is request 2 - UiConfUpdate); 
+				var updateUiConf:UiConfUpdate = new UiConfUpdate(int.MIN_VALUE, new KalturaUiConf());
+				//map the keys from req' 1 to req' 2 
+				mr.mapMultiRequestParam(1, "id", 2, "id");
+				mr.addRequestParam("2:uiConf", "{1:result}");
+				mr.addRequestParam("2:uiConf:name", resourceManager.getString('aps', 'newPlayerPrefix') + uint(Math.random() * 1000));
+				mr.addAction(updateUiConf);
+				//complete the MultiRequest
+				mr.addEventListener(KalturaEvent.COMPLETE, duplicationComplete);
+				mr.addEventListener(KalturaEvent.FAILED, fault);
+				mr.queued = false;
+				Studio.kc.post(mr);
+				
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DUPLICATE_PLAYER, GoogleAnalyticsConsts.STUDIO);
 			}
 
 
 
-			private function onDelete(evt:MouseEvent = null):void {
-				if (playerListDg.selectedItem) {
-					var selectedItem:KalturaUiConf = (playerListDg.selectedItem as KalturaUiConf);
-					approveDeletePlayer(selectedItem.id.toString(), selectedItem.name);
+			private function onDelete(uiconf:KalturaUiConf):void {
+				Alert.show(resourceManager.getString('aps', 'deleteConfirmationQuestion', [uiconf.name, uiconf.id]), 
+					resourceManager.getString('aps', 'deletePlayer'), 
+					Alert.YES | Alert.NO, null, deleteUiconYesNo);
+				
+				function deleteUiconYesNo(event:CloseEvent):void {
+					if (event.detail == Alert.YES) {
+						var deleteUiConf:UiConfDelete = new UiConfDelete(uiconf.id);
+						deleteUiConf.addEventListener(KalturaEvent.COMPLETE, onDeleted);
+						deleteUiConf.addEventListener(KalturaEvent.FAILED, fault);
+						Studio.kc.post(deleteUiConf);
+						
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DELETE_PLAYER, GoogleAnalyticsConsts.STUDIO);
+						refresh();
+					}
 				}
 			}
 
+			
+			
+			
+			
+			private function onDeleted(evt:KalturaEvent):void {
+				loadList(_currentPage, _pageSize);
+				ExternalInterface.call("playlistAdded");
+				ExternalInterface.call("playerAdded");
+			}
 
 
-
+			
 
 			/**
 			 * Load a template from the template list
@@ -238,31 +261,6 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.STUDIO);
 			}
 
-
-
-			private function approveDeletePlayer(playerId:String, playerName:String):void {
-				Alert.show(resourceManager.getString('aps', 'deleteConfirmationQuestion') + " " + playerName + " (" + playerId + ")?", "Delete Player", Alert.YES | Alert.NO, null, deleteUiconYesNo);
-			}
-
-
-			private function deleteUiconYesNo(event:CloseEvent):void {
-				if (event.detail == Alert.YES) {
-					var deleteUiConf:UiConfDelete = new UiConfDelete(playerListDg.selectedItem.id.toString());
-					deleteUiConf.addEventListener(KalturaEvent.COMPLETE, onDeleted);
-					deleteUiConf.addEventListener(KalturaEvent.FAILED, fault);
-					Studio.kc.post(deleteUiConf);
-					
-					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_DELETE_PLAYER, GoogleAnalyticsConsts.STUDIO);
-					refresh();
-				}
-			}
-
-
-			private function onDeleted(evt:KalturaEvent):void {
-				loadList(_currentPage, _pageSize);
-				ExternalInterface.call("playlistAdded");
-				ExternalInterface.call("playerAdded");
-			}
 
 
 
@@ -376,14 +374,16 @@
 			 * perform selected action on selected player
 			 * (used in item renderer)
 			 * */
-			public function onActionChange(event:ListEvent):void {
-				switch (event.target.selectedItem.id) {
+			private function onActionChange(event:Event):void {
+				var uiconf:KalturaUiConf = event.target.data as KalturaUiConf;
+				switch (event.type) {
 					case 'edit':
-						onEdit();
+						onEdit(uiconf);
 						break;
+
 					case 'selectContent':
-						var playerId:String = (playerListDg.selectedItem as KalturaUiConf).id.toString();
-						var confFileXml:XML = XML((playerListDg.selectedItem as KalturaUiConf).confFile);
+						var playerId:String = uiconf.id.toString();
+						var confFileXml:XML = XML(uiconf.confFile);
 						var isPlaylist:Boolean = confFileXml.@isPlaylist.toString() == "true";
 						if (isPlaylist) {
 							dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "playlists", {previewUiconf: playerId, isPlaylist: confFileXml.@isPlaylist.toString()}));
@@ -393,19 +393,19 @@
 						}
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_SELECT_CONTENT, GoogleAnalyticsConsts.STUDIO);
 						break;
+					
 					case 'previewAndEmbed':
-						ExternalInterface.call("openPlayer", playerListDg.selectedItem.name, playerListDg.selectedItem.width.toString(), playerListDg.selectedItem.height.toString(), playerListDg.selectedItem.id.toString(), _previewOnly);
+						ExternalInterface.call("openPlayer", uiconf.name, uiconf.width.toString(), uiconf.height.toString(), uiconf.id.toString(), _previewOnly);
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_PNE, GoogleAnalyticsConsts.STUDIO);
 						break;
 					case 'duplicate':
-						onDuplicate();
+						onDuplicate(uiconf);
 						break;
 					case 'delete':
-						onDelete();
+						onDelete(uiconf);
 						break;
 				}
 
-				(event.target as ComboBox).selectedIndex = -1;
 			}
 
 
@@ -415,10 +415,6 @@
 			private function onTableResize():void {
 				if (playerListDg && playerListDg.dataProvider && playerListDg.dataProvider.length > 0) {
 					playerListDg.rowHeight = (playerListDg.height / _pageSize) - (playerListDg.headerHeight / _pageSize) - 0.5;
-					//TODO if 10 rows set table height to 10 rows, otherwise set table height to 100%
-//					if (paging.pageSize == 10) {
-//						
-//					}
 				}
 			}
 
@@ -445,7 +441,6 @@
 					}
 				}
 				return comboDataProviderNormal;
-//				return new ArrayCollection();
 			}
 
 
@@ -657,7 +652,7 @@
 	</mx:VBox>
 	<mx:HBox width="100%" height="100%" styleName="moderationHBox">
 		<mx:VBox height="100%" width="100%" id="listContainer" verticalGap="0">
-			<mx:DataGrid id="playerListDg" width="100%" height="100%" verticalScrollPolicy="off"
+			<mx:DataGrid id="playerListDg" width="100%" height="100%" verticalScrollPolicy="off" selectable="false"
 						 resize="onTableResize()" draggableColumns="false" sortableColumns="false">
 				<mx:columns>
 					<mx:DataGridColumn id="playerName"
@@ -717,7 +712,7 @@
 					</mx:DataGridColumn>
 					<mx:DataGridColumn id="actions" width="130"
 									   headerText="{resourceManager.getString('aps','actions')}"
-									   itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.ActionsIR" />
+									   itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.StudioActionsIR" />
 				</mx:columns>
 			</mx:DataGrid>
 			<controls:Paging id="paging" width="100%" rowsInPageChange="{gotoPage()}" nextPage="{gotoPage()}"

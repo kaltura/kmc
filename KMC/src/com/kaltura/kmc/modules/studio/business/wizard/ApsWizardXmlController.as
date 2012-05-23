@@ -367,42 +367,43 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			delete fullPlayerCopy..theme[0];
 
 			// PLAYLIST RENDERER
-			//set the vbox height calculated. if more than 4 items add 19 pixels for each one
-			//this is bad but no time
-			if (fullPlayerCopy.renderers && fullPlayerCopy.renderers.renderer) {
-				var renderer:XML = fullPlayerCopy.renderers.renderer[0];
-				if (renderer) {
-					var labelsXml:XML = renderer..VBox.(attribute("id")[0].toString() == "labelsHolder")[0];
-					var labels:XMLList = labelsXml.children();
-
-					// set the rowHeight of the item renderer 
-					var listPlugin:XML = fullPlayerCopy.descendants("Plugin").(attribute("id") == "list")[0];
-
-					// check if there is an Image
-					var imgNode:XML = renderer..Image.(attribute("id")[0].toString() == "irImageIrScreen")[0];
-
-					var rowHeight:Number;
-					// if we have an image and less then 3 labels
-					if (labels.length() < 3 && imgNode) {
-						rowHeight = imgNode.@height;
-						// at least picture height, and no less than 70 pixels.
-						rowHeight = Math.max(rowHeight, 70);
-					}
-					else if (labels.length() > 0) {
-						// number of labels * 20 (which is the height of label + padding etc), plus 10 for cell padding
-						rowHeight = labels.length() * 20 + 10;
-					}
-					else {
-						rowHeight = 30; // min value for item renderer with no image
-					}
-
-					listPlugin.@rowHeight = rowHeight;
-
-					//set the font to the itemRenderer labels
-					var allLabels:XMLList = renderer..Label;
-					for each (var lab:XML in allLabels) {
-						// burried assumption - 508 players (no style) are not playlist players
-						lab.@font = style.fontName;
+			// set the rowHeight of the item renderer 
+			var listPlugin:XML = fullPlayerCopy.descendants("Plugin").(attribute("id") == "list")[0];
+			if (listPlugin){
+				//set the vbox height calculated. if more than 4 items add 19 pixels for each one
+				//this is bad but no time
+				if (fullPlayerCopy.renderers && fullPlayerCopy.renderers.renderer) {
+					var renderer:XML = fullPlayerCopy.renderers.renderer[0];
+					if (renderer) {
+						var labelsXml:XML = renderer..VBox.(attribute("id")[0].toString() == "labelsHolder")[0];
+						var labels:XMLList = labelsXml.children();
+	
+						// check if there is an Image
+						var imgNode:XML = renderer..Image.(attribute("id")[0].toString() == "irImageIrScreen")[0];
+	
+						var rowHeight:Number;
+						// if we have an image and less then 3 labels
+						if (labels.length() < 3 && imgNode) {
+							rowHeight = imgNode.@height;
+							// at least picture height, and no less than 70 pixels.
+							rowHeight = Math.max(rowHeight, 70);
+						}
+						else if (labels.length() > 0) {
+							// number of labels * 20 (which is the height of label + padding etc), plus 10 for cell padding
+							rowHeight = labels.length() * 20 + 10;
+						}
+						else {
+							rowHeight = 30; // min value for item renderer with no image
+						}
+	
+						listPlugin.@rowHeight = rowHeight;
+	
+						//set the font to the itemRenderer labels
+						var allLabels:XMLList = renderer..Label;
+						for each (var lab:XML in allLabels) {
+							// burried assumption - 508 players (no style) are not playlist players
+							lab.@font = style.fontName;
+						}
 					}
 				}
 			}

@@ -4,6 +4,7 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
+			import mx.events.ListEvent;
 			
 			[Bindable]
 			private var _dp:ArrayCollection;
@@ -12,12 +13,23 @@
 				super.data = value;
 				_dp = parentDocument.isMulti(value); 
 			}
+			
+			
+			/**
+			 * perform selected action on selected player
+			 * (used in item renderer)
+			 * */
+			private function onActionChange(event:ListEvent):void {
+				dispatchEvent(new Event(event.target.selectedItem.id, true));
+				(event.target as ComboBox).selectedIndex = -1;
+			}
+
 		]]>
 	</mx:Script>
 	<mx:ComboBox width="130" selectedIndex="-1"
 				 prompt="{resourceManager.getString('aps','selectAction')}"
 				 dataProvider="{_dp}"
-				 change="{parentDocument.onActionChange(event)}">
+				 change="onActionChange(event)">
 	</mx:ComboBox>
 </mx:VBox>
 
