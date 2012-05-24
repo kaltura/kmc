@@ -107,9 +107,7 @@
 			private function getUpdateDate(item:Object, column:DataGridColumn):String {
 				var df:DateFormatter = new DateFormatter();
 				df.formatString = ResourceManager.getInstance().getString('cms', 'mm_dd_yyyy_hh_nn');
-				var dt:Date = new Date();
-				dt.hours = dt.minutes = dt.seconds = 0;
-				dt.milliseconds = item.updatedAt;
+				var dt:Date = new Date(Number(item.updatedAt * 1000));
 				return df.format(dt);
 			}
 			
