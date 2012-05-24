@@ -85,11 +85,21 @@
 			private var _origPublishers:String;
 			
 			private function setEditors(value:Array):void {
-				editorsComplete.selectedItems = new ArrayCollection(value);
+				if (value) {
+					editorsComplete.selectedItems = new ArrayCollection(value);
+				}
+				else {
+					editorsComplete.selectedItems = null;
+				}
 			}
 			
 			private function setPublishers(value:Array):void {
-				publishersComplete.selectedItems = new ArrayCollection(value);
+				if (value) {
+					publishersComplete.selectedItems = new ArrayCollection(value);
+				}
+				else {
+					publishersComplete.selectedItems = null;
+				}
 			}
 			
 			public function validate():void {
@@ -109,20 +119,36 @@
 			
 			
 			public function initData():void {
-				var gtusr:UsersEvent = new UsersEvent(UsersEvent.GET_ENTRY_CREATOR);
-				gtusr.data = _selectedEntry.creatorId;
-				controller.dispatch(gtusr);
+				if (_selectedEntry.creatorId) {
+					var gtusr:UsersEvent = new UsersEvent(UsersEvent.GET_ENTRY_CREATOR);
+					gtusr.data = _selectedEntry.creatorId;
+					controller.dispatch(gtusr);
+				}
 				
-				gtusr = new UsersEvent(UsersEvent.GET_ENTRY_OWNER);
-				gtusr.data = _selectedEntry.userId;
-				controller.dispatch(gtusr);
+				if (_selectedEntry.userId == KalturaClient.NULL_STRING) {
+					// means we deleted it, then clicked "save" (not close), then we are here
+					_selectedEntry.userId = null;
+				}
+				if (_selectedEntry.userId) {
+					gtusr = new UsersEvent(UsersEvent.GET_ENTRY_OWNER);
+					gtusr.data = _selectedEntry.userId;
+					controller.dispatch(gtusr);
+				}
 				
+				if (_selectedEntry.entitledUsersEdit == KalturaClient.NULL_STRING) {
+					// means we deleted it, then clicked "save" (not close), then we are here
+					_selectedEntry.entitledUsersEdit = null;
+				}
 				if (_selectedEntry.entitledUsersEdit) {
 					gtusr = new UsersEvent(UsersEvent.GET_ENTRY_EDITORS);
 					gtusr.data = _selectedEntry.entitledUsersEdit;
 					controller.dispatch(gtusr);
 				}
 				
+				if (_selectedEntry.entitledUsersPublish == KalturaClient.NULL_STRING) {
+					// means we deleted it, then clicked "save" (not close), then we are here
+					_selectedEntry.entitledUsersPublish = null;
+				}
 				if (_selectedEntry.entitledUsersPublish) {
 					gtusr = new UsersEvent(UsersEvent.GET_ENTRY_PUBLISHERS);
 					gtusr.data = _selectedEntry.entitledUsersPublish;
@@ -158,11 +184,15 @@
 			
 			
 			public function isChanged():Boolean {
-				var edp:EntryDataPack = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
 				// owner
-				if (_selectedEntry.userId != edp.selectedEntryOwner.id) {
+				if (!_selectedEntry.userId && _entryData.selectedEntryOwner) {
 					return true;
 				}
+				else if (_entryData.selectedEntryOwner && _selectedEntry.userId != _entryData.selectedEntryOwner.id) {
+					return true;
+				}
+				
+				
 				// editors
 				if (idsChanged(getIdsString(editorsComplete.selectedItems), _selectedEntry.entitledUsersEdit)) {
 					return true;
@@ -249,7 +279,6 @@
 				currentPopUp.addEventListener("save", handleChangeEntryOwnerEvents, false, 0, true);
 				currentPopUp.addEventListener(CloseEvent.CLOSE, handleChangeEntryOwnerEvents, false, 0, true);
 				currentPopUp.kClient = _kClient;
-//				currentPopUp.entryData = _entryData;
 				PopUpManager.addPopUp(currentPopUp, this, true);
 				PopUpManager.centerPopUp(currentPopUp);
 			}

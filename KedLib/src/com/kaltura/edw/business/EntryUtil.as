@@ -6,8 +6,10 @@ package com.kaltura.edw.business
 	import com.kaltura.analytics.KAnalyticsTrackerConsts;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.edw.model.datapacks.DistributionDataPack;
+	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.vo.FlavorAssetWithParamsVO;
 	import com.kaltura.kmvc.model.IDataPackRepository;
+	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.types.KalturaStatsKmcEventType;
 	import com.kaltura.utils.ObjectUtil;
@@ -34,13 +36,12 @@ package com.kaltura.edw.business
 		public static function updateSelectedEntryInList(entryToUpdate:KalturaBaseEntry, entries:ArrayCollection):void {
 			for each (var entry:KalturaBaseEntry in entries) {
 				if (entry.id==entryToUpdate.id) {
+					
 					var atts:Array = ObjectUtil.getObjectAllKeys(entryToUpdate);
-					var oldVal:*;
 					var att:String;
 					for (var i:int = 0; i<atts.length; i++) {
 						att = atts[i];
 						if (entry[att] != entryToUpdate[att]){
-							oldVal = entry[att]; 
 							entry[att] = entryToUpdate[att];
 						}
 					}
