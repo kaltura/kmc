@@ -4,10 +4,11 @@ package com.kaltura.kmc.modules.account.command {
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.user.UserList;
 	import com.kaltura.commands.userRole.UserRoleList;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.account.model.AccountModelLocator;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.types.KalturaUserRoleStatus;
 	import com.kaltura.types.KalturaUserStatus;
 	import com.kaltura.vo.KalturaUser;
@@ -41,7 +42,7 @@ package com.kaltura.kmc.modules.account.command {
 			mr.addAction(rl);
 			// users
 			var ufilter:KalturaUserFilter = new KalturaUserFilter();
-			ufilter.isAdminEqual = true;
+			ufilter.isAdminEqual = KalturaNullableBoolean.TRUE_VALUE;
 			ufilter.loginEnabledEqual = true;
 			ufilter.statusEqual = KalturaUserStatus.ACTIVE;
 			// server can't filter by user role

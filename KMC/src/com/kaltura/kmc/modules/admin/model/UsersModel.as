@@ -1,6 +1,7 @@
 package com.kaltura.kmc.modules.admin.model
 {
 	import com.kaltura.kmc.vo.UserVO;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.types.KalturaUserOrderBy;
 	import com.kaltura.types.KalturaUserStatus;
 	import com.kaltura.vo.KalturaUser;
@@ -15,7 +16,7 @@ package com.kaltura.kmc.modules.admin.model
 		public function UsersModel() {
 			// init filter - only admin users who have access to KMC and are either active or blocked.
 			usersFilter = new KalturaUserFilter();
-			usersFilter.isAdminEqual = true;
+			usersFilter.isAdminEqual = KalturaNullableBoolean.TRUE_VALUE;
 			usersFilter.loginEnabledEqual = true;
 			usersFilter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
 			usersFilter.orderBy = KalturaUserOrderBy.CREATED_AT_ASC;
