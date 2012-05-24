@@ -109,8 +109,8 @@ package com.kaltura.kmc.modules.analytics.model
 			}
 		}
 		public var usageDtnDp : ArrayCollection = new ArrayCollection(
-				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
-					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
+				[ 	ResourceManager.getInstance().getString('analytics', 'pbns')/*,
+					ResourceManager.getInstance().getString('analytics', 'endUserStorage')*/]);
 									 								 
 	    //---------------------------------------------------------
 		/**

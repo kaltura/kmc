@@ -42,7 +42,12 @@ package com.kaltura.kmc.modules.analytics.commands {
 					break;	
 				case ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN:
 					_model.tableSupportDrillDown = false;
-					break;	
+					break;
+				case ScreenTypes.PBNS:
+				case ScreenTypes.END_USER:
+					_model.drillDownName = null;
+					_model.tableSupportDrillDown = false;
+					break;
 				default:
 					_model.tableSupportDrillDown = true;
 				break;

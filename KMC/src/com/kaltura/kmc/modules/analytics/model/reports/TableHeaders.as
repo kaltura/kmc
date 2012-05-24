@@ -18,7 +18,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 	    public var mapOverlay : Array = [ 'country_id','count_plays','count_plays_25','count_plays_50','count_plays_75','count_plays_100','play_through_ratio'];
 	    public var syndicator : Array =[ 'domain_name','count_plays','sum_time_viewed','avg_time_viewed','count_loads','load_play_ratio']; //'distinct_plays',
 
-		public var usage : Array = ['date', 'bandwidth', 'storage', 'total_usage'];
+		public var usage : Array = ['date_id', 'bandwidth_consumption', 'storage_used', 'combined_bandwidth_storage'];
 
 		public var userEngagement : Array = ['name','unique_videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 

@@ -118,6 +118,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 			if (_model.currentScreenState != ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
 				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT
 				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
+				&& _model.currentScreenState != ScreenTypes.PBNS
+				&& _model.currentScreenState != ScreenTypes.END_USER
 				&& ! ( _model.entitlementEnabled 
 					 && ( _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT
 					 	  || _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF
