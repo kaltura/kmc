@@ -17,8 +17,10 @@
 			import com.kaltura.kmc.modules.account.view.windows.SetEntitlementsWindow;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
 			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaContributionPolicyType;
 			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
+			import com.kaltura.utils.KArrayUtil;
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.binding.utils.BindingUtils;
@@ -202,15 +204,38 @@
 			
 			private function removePrivacyContext(e:CloseEvent):void {
 				if (e.detail == Alert.OK) {
+					if (getInheritedPrivacyContexts(catToClearContext.privacyContext, catToClearContext.privacyContexts)) {
+						catToClearContext.privacy = KalturaPrivacyType.ALL;
+						catToClearContext.appearInList = KalturaAppearInListType.PARTNER_ONLY;
+						catToClearContext.contributionPolicy = KalturaContributionPolicyType.ALL;
+					}
 					catToClearContext.privacyContext = KalturaClient.NULL_STRING;
-					catToClearContext.privacy = KalturaPrivacyType.ALL;
-					catToClearContext.appearInList = KalturaAppearInListType.PARTNER_ONLY;
 					var cge:CairngormEvent = new IntegrationEvent(IntegrationEvent.UPDATE_CATEGORY);
 					cge.data = catToClearContext;
 					cge.dispatch();
 				}
 				// reset
 				catToClearContext = null;
+			}
+			
+			
+			/**
+			 * get a list of inherited privacy context labels (without labels of the current category)
+			 * @param selfContexts	non-inherited privacy context labels
+			 * @param allContexts	all privacy context labels for teh current category
+			 * @return comma separated string of inherited context labels
+			 * */
+			private function getInheritedPrivacyContexts(selfContexts:String, allContexts:String):String {
+				var self:Array = selfContexts.split(",");
+				var all:Array = allContexts.split(",");
+				
+				var res:Array = KArrayUtil.subtract(all, self);
+				if (res.length) {
+					return res.join(",");
+				}
+				
+				return null;
+				
 			}
 			
 			private function openSetEntitlementWindow(kCat:KalturaCategory = null):void {
