@@ -10,6 +10,7 @@ package com.kaltura.edw.components.fltr.panels {
 	import mx.containers.VBox;
 	import mx.controls.Button;
 	import mx.controls.CheckBox;
+	import mx.core.ScrollPolicy;
 
 	/**
 	 * dispatched when the value of the component have changed
@@ -18,6 +19,12 @@ package com.kaltura.edw.components.fltr.panels {
 
 	public class AdditionalFilter extends VBox implements IFilterComponent {
 
+		
+		public function AdditionalFilter() {
+			
+			this.horizontalScrollPolicy = ScrollPolicy.OFF;
+		}
+		
 
 		/**
 		 * the name of the field on the objects in the list to use as button label
