@@ -34,9 +34,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaEventFieldCondition extends KalturaEventCondition
 	{
-		/** 
-		* The field to be evaluated at runtime
-	 		* */ 
+		/**
+		 * The field to be evaluated at runtime
+		 * 
+		 **/
 		public var field : KalturaBooleanField;
 
 		override public function getUpdateableParamKeys():Array
@@ -53,6 +54,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

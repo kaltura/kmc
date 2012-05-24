@@ -30,9 +30,12 @@ package com.kaltura.commands.like
 	import com.kaltura.delegates.like.LikeCheckLikeExistsDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class LikeCheckLikeExists extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param entryId String
 		 * @param userId String

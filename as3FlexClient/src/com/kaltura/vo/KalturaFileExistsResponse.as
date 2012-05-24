@@ -28,22 +28,27 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaFileExistsResponse extends BaseFlexVo
 	{
-		/** 
-		* Indicates if the file exists
-	 		* */ 
+		/**
+		 * Indicates if the file exists
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var exists : Boolean;
 
-		/** 
-		* Indicates if the file size is right
-	 		* */ 
+		/**
+		 * Indicates if the file size is right
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var sizeOk : Boolean;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -54,14 +59,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

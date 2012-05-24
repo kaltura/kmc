@@ -30,9 +30,12 @@ package com.kaltura.commands.systemPartner
 	import com.kaltura.delegates.systemPartner.SystemPartnerGetConfigurationDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class SystemPartnerGetConfiguration extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param partnerId int
 		 **/

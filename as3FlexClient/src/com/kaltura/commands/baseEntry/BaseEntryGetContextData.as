@@ -31,9 +31,12 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.delegates.baseEntry.BaseEntryGetContextDataDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class BaseEntryGetContextData extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param entryId String
 		 * @param contextDataParams KalturaEntryContextDataParams

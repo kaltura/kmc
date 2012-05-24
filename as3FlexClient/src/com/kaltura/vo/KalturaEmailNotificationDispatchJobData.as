@@ -32,66 +32,79 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaEmailNotificationDispatchJobData extends KalturaEventNotificationDispatchJobData
 	{
-		/** 
-		* Define the email sender email
-	 		* */ 
+		/**
+		 * Define the email sender email
+		 * 
+		 **/
 		public var fromEmail : String = null;
 
-		/** 
-		* Define the email sender name
-	 		* */ 
+		/**
+		 * Define the email sender name
+		 * 
+		 **/
 		public var fromName : String = null;
 
-		/** 
-		* Email recipient emails and names, key is mail address and value is the name
-	 		* */ 
+		/**
+		 * Email recipient emails and names, key is mail address and value is the name
+		 * 
+		 **/
 		public var to : Array = null;
 
-		/** 
-		* Email cc emails and names, key is mail address and value is the name
-	 		* */ 
+		/**
+		 * Email cc emails and names, key is mail address and value is the name
+		 * 
+		 **/
 		public var cc : Array = null;
 
-		/** 
-		* Email bcc emails and names, key is mail address and value is the name
-	 		* */ 
+		/**
+		 * Email bcc emails and names, key is mail address and value is the name
+		 * 
+		 **/
 		public var bcc : Array = null;
 
-		/** 
-		* Email addresses that a replies should be sent to, key is mail address and value is the name
-	 		* */ 
+		/**
+		 * Email addresses that a replies should be sent to, key is mail address and value is the name
+		 * 
+		 **/
 		public var replyTo : Array = null;
 
-		/** 
-		* Define the email priority
-	 		* */ 
+		/**
+		 * Define the email priority
+		 * 
+		 * @see com.kaltura.types.KalturaEmailNotificationTemplatePriority
+		 **/
 		public var priority : int = int.MIN_VALUE;
 
-		/** 
-		* Email address that a reading confirmation will be sent to
-	 		* */ 
+		/**
+		 * Email address that a reading confirmation will be sent to
+		 * 
+		 **/
 		public var confirmReadingTo : String = null;
 
-		/** 
-		* Hostname to use in Message-Id and Received headers and as default HELO string. 
-	 If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
-	 		* */ 
+		/**
+		 * Hostname to use in Message-Id and Received headers and as default HELO string.
+		 * If empty, the value returned by SERVER_NAME is used or 'localhost.localdomain'.
+		 * 
+		 **/
 		public var hostname : String = null;
 
-		/** 
-		* Sets the message ID to be used in the Message-Id header.
-	 If empty, a unique id will be generated.
-	 		* */ 
+		/**
+		 * Sets the message ID to be used in the Message-Id header.
+		 * If empty, a unique id will be generated.
+		 * 
+		 **/
 		public var messageID : String = null;
 
-		/** 
-		* Adds a e-mail custom header
-	 		* */ 
+		/**
+		 * Adds a e-mail custom header
+		 * 
+		 **/
 		public var customHeaders : Array = null;
 
-		/** 
-		* Define the content dynamic parameters
-	 		* */ 
+		/**
+		 * Define the content dynamic parameters
+		 * 
+		 **/
 		public var contentParameters : Array = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -119,6 +132,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

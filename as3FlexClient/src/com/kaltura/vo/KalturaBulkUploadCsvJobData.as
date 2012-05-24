@@ -32,9 +32,11 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadCsvJobData extends KalturaBulkUploadJobData
 	{
-		/** 
-		* The version of the csv file
-	 		* */ 
+		/**
+		 * The version of the csv file
+		 * 
+		 * @see com.kaltura.types.KalturaBulkUploadCsvVersion
+		 **/
 		public var csvVersion : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -50,6 +52,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -30,9 +30,14 @@ package com.kaltura.commands.bulk
 	import com.kaltura.delegates.bulk.BulkAbortDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Aborts the bulk upload and all its child jobs
+	 * 
+	 **/
 	public class BulkAbort extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 **/

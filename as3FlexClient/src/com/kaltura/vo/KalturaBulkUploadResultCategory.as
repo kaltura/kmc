@@ -32,52 +32,52 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadResultCategory extends KalturaBulkUploadResult
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var relativePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var name : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var referenceId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var description : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tags : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var appearInList : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var privacy : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inheritance : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var userJoinPolicy : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var defaultPermissionLevel : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var owner : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var contributionPolicy : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -105,6 +105,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

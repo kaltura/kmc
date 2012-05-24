@@ -28,52 +28,61 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaReport extends BaseFlexVo
 	{
-		/** 
-		* Report id
-	 		* */ 
+		/**
+		 * Report id
+		 * 
+		 **/
 		public var id : int = int.MIN_VALUE;
 
-		/** 
-		* Partner id associated with the report
-	 		* */ 
+		/**
+		 * Partner id associated with the report
+		 * 
+		 **/
 		public var partnerId : int = int.MIN_VALUE;
 
-		/** 
-		* Report name
-	 		* */ 
+		/**
+		 * Report name
+		 * 
+		 **/
 		public var name : String = null;
 
-		/** 
-		* Used to identify system reports in a friendly way
-	 		* */ 
+		/**
+		 * Used to identify system reports in a friendly way
+		 * 
+		 **/
 		public var systemName : String = null;
 
-		/** 
-		* Report description
-	 		* */ 
+		/**
+		 * Report description
+		 * 
+		 **/
 		public var description : String = null;
 
-		/** 
-		* Report query
-	 		* */ 
+		/**
+		 * Report query
+		 * 
+		 **/
 		public var query : String = null;
 
-		/** 
-		* Creation date as Unix timestamp (In seconds)
-	 		* */ 
+		/**
+		 * Creation date as Unix timestamp (In seconds)
+		 * 
+		 **/
 		public var createdAt : int = int.MIN_VALUE;
 
-		/** 
-		* Last update date as Unix timestamp (In seconds)
-	 		* */ 
+		/**
+		 * Last update date as Unix timestamp (In seconds)
+		 * 
+		 **/
 		public var updatedAt : int = int.MIN_VALUE;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -87,14 +96,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

@@ -28,73 +28,85 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaEventNotificationTemplate extends BaseFlexVo
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var id : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var partnerId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var name : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var systemName : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var description : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaEventNotificationTemplateType
+		 **/
 		public var type : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaEventNotificationTemplateStatus
+		 **/
 		public var status : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAt : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var updatedAt : int = int.MIN_VALUE;
 
-		/** 
-		* Define that the template could be dispatched manually from the API
-	 		* */ 
+		/**
+		 * Define that the template could be dispatched manually from the API
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var manualDispatchEnabled : Boolean;
 
-		/** 
-		* Define that the template could be dispatched automatically by the system
-	 		* */ 
+		/**
+		 * Define that the template could be dispatched automatically by the system
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var automaticDispatchEnabled : Boolean;
 
-		/** 
-		* Define the event that should trigger this notification
-	 		* */ 
+		/**
+		 * Define the event that should trigger this notification
+		 * 
+		 * @see com.kaltura.types.KalturaEventNotificationEventType
+		 **/
 		public var eventType : String = null;
 
-		/** 
-		* Define the object that raied the event that should trigger this notification
-	 		* */ 
+		/**
+		 * Define the object that raied the event that should trigger this notification
+		 * 
+		 * @see com.kaltura.types.KalturaEventNotificationEventObjectType
+		 **/
 		public var eventObjectType : String = null;
 
-		/** 
-		* Define the conditions that cause this notification to be triggered
-	 		* */ 
+		/**
+		 * Define the conditions that cause this notification to be triggered
+		 * 
+		 **/
 		public var eventConditions : Array = null;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -111,8 +123,8 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
@@ -120,6 +132,5 @@ package com.kaltura.vo
 			arr.push('type');
 			return arr;
 		}
-
 	}
 }

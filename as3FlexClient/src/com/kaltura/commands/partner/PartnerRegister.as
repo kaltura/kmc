@@ -31,9 +31,14 @@ package com.kaltura.commands.partner
 	import com.kaltura.delegates.partner.PartnerRegisterDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Create a new Partner object
+	 * 
+	 **/
 	public class PartnerRegister extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param partner KalturaPartner
 		 * @param cmsPassword String

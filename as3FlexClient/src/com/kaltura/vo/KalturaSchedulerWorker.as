@@ -28,82 +28,98 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaSchedulerWorker extends BaseFlexVo
 	{
-		/** 
-		* The id of the Worker
-	 		* */ 
+		/**
+		 * The id of the Worker
+		 * 
+		 **/
 		public var id : int = int.MIN_VALUE;
 
-		/** 
-		* The id as configured in the batch config
-	 		* */ 
+		/**
+		 * The id as configured in the batch config
+		 * 
+		 **/
 		public var configuredId : int = int.MIN_VALUE;
 
-		/** 
-		* The id of the Scheduler
-	 		* */ 
+		/**
+		 * The id of the Scheduler
+		 * 
+		 **/
 		public var schedulerId : int = int.MIN_VALUE;
 
-		/** 
-		* The id of the scheduler as configured in the batch config
-	 		* */ 
+		/**
+		 * The id of the scheduler as configured in the batch config
+		 * 
+		 **/
 		public var schedulerConfiguredId : int = int.MIN_VALUE;
 
-		/** 
-		* The worker type
-	 		* */ 
+		/**
+		 * The worker type
+		 * 
+		 * @see com.kaltura.types.KalturaBatchJobType
+		 **/
 		public var type : String = null;
 
-		/** 
-		* The friendly name of the type
-	 		* */ 
+		/**
+		 * The friendly name of the type
+		 * 
+		 **/
 		public var typeName : String = null;
 
-		/** 
-		* The scheduler name
-	 		* */ 
+		/**
+		 * The scheduler name
+		 * 
+		 **/
 		public var name : String = null;
 
-		/** 
-		* Array of the last statuses
-	 		* */ 
+		/**
+		 * Array of the last statuses
+		 * 
+		 **/
 		public var statuses : Array = null;
 
-		/** 
-		* Array of the last configs
-	 		* */ 
+		/**
+		 * Array of the last configs
+		 * 
+		 **/
 		public var configs : Array = null;
 
-		/** 
-		* Array of jobs that locked to this worker
-	 		* */ 
+		/**
+		 * Array of jobs that locked to this worker
+		 * 
+		 **/
 		public var lockedJobs : Array = null;
 
-		/** 
-		* Avarage time between creation and queue time
-	 		* */ 
+		/**
+		 * Avarage time between creation and queue time
+		 * 
+		 **/
 		public var avgWait : int = int.MIN_VALUE;
 
-		/** 
-		* Avarage time between queue time end finish time
-	 		* */ 
+		/**
+		 * Avarage time between queue time end finish time
+		 * 
+		 **/
 		public var avgWork : int = int.MIN_VALUE;
 
-		/** 
-		* last status time
-	 		* */ 
+		/**
+		 * last status time
+		 * 
+		 **/
 		public var lastStatus : int = int.MIN_VALUE;
 
-		/** 
-		* last status formated
-	 		* */ 
+		/**
+		 * last status formated
+		 * 
+		 **/
 		public var lastStatusStr : String = null;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -125,14 +141,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

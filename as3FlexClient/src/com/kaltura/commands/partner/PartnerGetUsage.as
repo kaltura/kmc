@@ -30,9 +30,17 @@ package com.kaltura.commands.partner
 	import com.kaltura.delegates.partner.PartnerGetUsageDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Get usage statistics for a partner
+	 * Calculation is done according to partner's package
+	 * Additional data returned is a graph points of streaming usage in a timeframe
+	 * The resolution can be "days" or "months"
+	 * 
+	 **/
 	public class PartnerGetUsage extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param year int
 		 * @param month int

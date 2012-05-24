@@ -31,9 +31,14 @@ package com.kaltura.commands.uiConfAdmin
 	import com.kaltura.delegates.uiConfAdmin.UiConfAdminUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Update an existing UIConf with no partner limitation
+	 * 
+	 **/
 	public class UiConfAdminUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 * @param uiConf KalturaUiConfAdmin

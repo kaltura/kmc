@@ -28,22 +28,25 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaFullStatusResponse extends BaseFlexVo
 	{
-		/** 
-		* The status of all queues on the server
-	 		* */ 
+		/**
+		 * The status of all queues on the server
+		 * 
+		 **/
 		public var queuesStatus : Array = null;
 
-		/** 
-		* Array of all schedulers
-	 		* */ 
+		/**
+		 * Array of all schedulers
+		 * 
+		 **/
 		public var schedulers : Array = null;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -54,14 +57,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

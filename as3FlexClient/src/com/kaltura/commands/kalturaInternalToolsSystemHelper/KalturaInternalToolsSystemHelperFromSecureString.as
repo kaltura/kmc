@@ -30,9 +30,14 @@ package com.kaltura.commands.kalturaInternalToolsSystemHelper
 	import com.kaltura.delegates.kalturaInternalToolsSystemHelper.KalturaInternalToolsSystemHelperFromSecureStringDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * KS from Secure String
+	 * 
+	 **/
 	public class KalturaInternalToolsSystemHelperFromSecureString extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param str String
 		 **/

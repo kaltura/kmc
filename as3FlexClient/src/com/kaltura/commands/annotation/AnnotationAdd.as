@@ -31,9 +31,14 @@ package com.kaltura.commands.annotation
 	import com.kaltura.delegates.annotation.AnnotationAddDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Allows you to add an annotation object associated with an entry
+	 * 
+	 **/
 	public class AnnotationAdd extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param annotation KalturaCuePoint
 		 **/

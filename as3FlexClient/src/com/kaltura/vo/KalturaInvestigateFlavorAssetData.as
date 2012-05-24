@@ -38,32 +38,33 @@ package com.kaltura.vo
 	import com.kaltura.vo.KalturaFlavorAsset;
 
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaInvestigateFlavorAssetData extends BaseFlexVo
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorAsset : KalturaFlavorAsset;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fileSyncs : KalturaFileSyncListResponse;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var mediaInfos : KalturaMediaInfoListResponse;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorParams : KalturaFlavorParams;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorParamsOutputs : KalturaFlavorParamsOutputListResponse;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -72,14 +73,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

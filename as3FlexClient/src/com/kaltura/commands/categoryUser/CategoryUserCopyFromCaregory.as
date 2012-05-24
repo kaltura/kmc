@@ -30,9 +30,14 @@ package com.kaltura.commands.categoryUser
 	import com.kaltura.delegates.categoryUser.CategoryUserCopyFromCaregoryDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Copy all memeber from parent category
+	 * 
+	 **/
 	public class CategoryUserCopyFromCaregory extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param categoryId int
 		 **/

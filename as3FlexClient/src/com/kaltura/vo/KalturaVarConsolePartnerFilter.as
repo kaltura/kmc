@@ -32,12 +32,13 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaVarConsolePartnerFilter extends KalturaPartnerFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaPartnerGroupType
+		 **/
 		public var groupTypeEq : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var groupTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -55,6 +56,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

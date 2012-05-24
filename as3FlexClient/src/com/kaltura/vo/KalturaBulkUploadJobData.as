@@ -34,63 +34,76 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var userId : String = null;
 
-		/** 
-		* The screen name of the user
-	 		* */ 
+		/**
+		 * The screen name of the user
+		 * 
+		 **/
 		public var uploadedBy : String = null;
 
-		/** 
-		* Selected profile id for all bulk entries
-	 		* */ 
+		/**
+		 * Selected profile id for all bulk entries
+		 * 
+		 **/
 		public var conversionProfileId : int = int.MIN_VALUE;
 
-		/** 
-		* Created by the API
-	 		* */ 
+		/**
+		 * Created by the API
+		 * 
+		 **/
 		public var resultsFileLocalPath : String = null;
 
-		/** 
-		* Created by the API
-	 		* */ 
+		/**
+		 * Created by the API
+		 * 
+		 **/
 		public var resultsFileUrl : String = null;
 
-		/** 
-		* Number of created entries
-	 		* */ 
+		/**
+		 * Number of created entries
+		 * 
+		 **/
 		public var numOfEntries : int = int.MIN_VALUE;
 
-		/** 
-		* Number of created objects
-	 		* */ 
+		/**
+		 * Number of created objects
+		 * 
+		 **/
 		public var numOfObjects : int = int.MIN_VALUE;
 
-		/** 
-		* The bulk upload file path
-	 		* */ 
+		/**
+		 * The bulk upload file path
+		 * 
+		 **/
 		public var filePath : String = null;
 
-		/** 
-		* Type of object for bulk upload
-	 		* */ 
+		/**
+		 * Type of object for bulk upload
+		 * 
+		 * @see com.kaltura.types.KalturaBulkUploadObjectType
+		 **/
 		public var bulkUploadObjectType : String = null;
 
-		/** 
-		* Name of the bulk upload file
-	 		* */ 
+		/**
+		 * Name of the bulk upload file
+		 * 
+		 **/
 		public var fileName : String = null;
 
-		/** 
-		* Data pertaining to the objects being uploaded
-	 		* */ 
+		/**
+		 * Data pertaining to the objects being uploaded
+		 * 
+		 **/
 		public var objectData : KalturaBulkUploadObjectData;
 
-		/** 
-		* Type of bulk upload
-	 		* */ 
+		/**
+		 * Type of bulk upload
+		 * 
+		 * @see com.kaltura.types.KalturaBulkUploadType
+		 **/
 		public var type : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -107,6 +120,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

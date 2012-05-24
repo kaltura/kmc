@@ -30,9 +30,14 @@ package com.kaltura.commands.bulk
 	import com.kaltura.delegates.bulk.BulkServeDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * serve action returan the original file.
+	 * 
+	 **/
 	public class BulkServe extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 **/

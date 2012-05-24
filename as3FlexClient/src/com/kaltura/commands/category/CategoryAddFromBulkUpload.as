@@ -33,10 +33,13 @@ package com.kaltura.commands.category
 	import com.kaltura.vo.KalturaBulkUploadCategoryData;
 	import com.kaltura.delegates.category.CategoryAddFromBulkUploadDelegate;
 
+	/**
+	 **/
 	public class CategoryAddFromBulkUpload extends KalturaFileCall
 	{
 		public var fileData:Object;
 
+		
 		/**
 		 * @param fileData Object - FileReference or ByteArray
 		 * @param bulkUploadData KalturaBulkUploadJobData

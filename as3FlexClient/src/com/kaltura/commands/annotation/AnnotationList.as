@@ -32,9 +32,14 @@ package com.kaltura.commands.annotation
 	import com.kaltura.delegates.annotation.AnnotationListDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * List annotation objects by filter and pager
+	 * 
+	 **/
 	public class AnnotationList extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param filter KalturaCuePointFilter
 		 * @param pager KalturaFilterPager

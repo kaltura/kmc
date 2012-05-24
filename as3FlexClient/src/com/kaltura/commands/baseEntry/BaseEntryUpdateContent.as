@@ -31,9 +31,14 @@ package com.kaltura.commands.baseEntry
 	import com.kaltura.delegates.baseEntry.BaseEntryUpdateContentDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Update base entry. Only the properties that were set will be updated.
+	 * 
+	 **/
 	public class BaseEntryUpdateContent extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param entryId String
 		 * @param resource KalturaResource

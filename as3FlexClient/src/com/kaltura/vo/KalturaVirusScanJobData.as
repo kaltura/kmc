@@ -32,20 +32,22 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaVirusScanJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorAssetId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaVirusScanJobResult
+		 **/
 		public var scanResult : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaVirusFoundAction
+		 **/
 		public var virusFoundAction : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -65,6 +67,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

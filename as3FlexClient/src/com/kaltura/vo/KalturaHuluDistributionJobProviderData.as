@@ -32,20 +32,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaHuluDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var videoAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var thumbAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var cuePoints : Array = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fileBaseName : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -65,6 +65,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

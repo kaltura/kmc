@@ -32,9 +32,12 @@ package com.kaltura.commands.reportAdmin
 	import com.kaltura.delegates.reportAdmin.ReportAdminListDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class ReportAdminList extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param filter KalturaReportFilter
 		 * @param pager KalturaFilterPager

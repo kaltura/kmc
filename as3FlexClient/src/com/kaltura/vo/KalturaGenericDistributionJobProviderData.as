@@ -32,16 +32,17 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaGenericDistributionJobProviderData extends KalturaDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var xml : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var resultParseData : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaGenericDistributionProviderParser
+		 **/
 		public var resultParserType : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +61,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

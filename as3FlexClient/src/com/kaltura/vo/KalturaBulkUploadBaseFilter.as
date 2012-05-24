@@ -32,12 +32,12 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadBaseFilter extends KalturaFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var bulkUploadObjectTypeEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var bulkUploadObjectTypeIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -55,6 +55,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -32,20 +32,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaFileSyncImportJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sourceUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var filesyncId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tmpFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destFilePath : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -65,6 +65,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

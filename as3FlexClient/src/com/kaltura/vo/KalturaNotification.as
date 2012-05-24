@@ -32,36 +32,39 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaNotification extends KalturaBaseJob
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var puserId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaNotificationType
+		 **/
 		public var type : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var objectId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaNotificationStatus
+		 **/
 		public var status : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var notificationData : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var numberOfAttempts : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var notificationResult : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaNotificationObjectType
+		 **/
 		public var objType : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -85,6 +88,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

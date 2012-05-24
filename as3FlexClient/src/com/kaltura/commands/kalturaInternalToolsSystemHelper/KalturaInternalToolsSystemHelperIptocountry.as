@@ -30,9 +30,14 @@ package com.kaltura.commands.kalturaInternalToolsSystemHelper
 	import com.kaltura.delegates.kalturaInternalToolsSystemHelper.KalturaInternalToolsSystemHelperIptocountryDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * from ip to country
+	 * 
+	 **/
 	public class KalturaInternalToolsSystemHelperIptocountry extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param remote_addr String
 		 **/

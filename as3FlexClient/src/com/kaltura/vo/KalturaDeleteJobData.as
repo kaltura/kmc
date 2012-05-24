@@ -34,9 +34,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDeleteJobData extends KalturaJobData
 	{
-		/** 
-		* The filter should return the list of objects that need to be deleted.
-	 		* */ 
+		/**
+		 * The filter should return the list of objects that need to be deleted.
+		 * 
+		 **/
 		public var filter : KalturaFilter;
 
 		override public function getUpdateableParamKeys():Array
@@ -53,6 +54,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -30,9 +30,12 @@ package com.kaltura.commands.reportAdmin
 	import com.kaltura.delegates.reportAdmin.ReportAdminGetCsvUrlDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class ReportAdminGetCsvUrl extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 * @param reportPartnerId int

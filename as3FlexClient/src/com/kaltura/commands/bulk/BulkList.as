@@ -32,9 +32,14 @@ package com.kaltura.commands.bulk
 	import com.kaltura.delegates.bulk.BulkListDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * List bulk upload batch jobs
+	 * 
+	 **/
 	public class BulkList extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param bulkUploadFilter KalturaBulkUploadFilter
 		 * @param pager KalturaFilterPager

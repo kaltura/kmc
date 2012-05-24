@@ -28,62 +28,73 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaScheduler extends BaseFlexVo
 	{
-		/** 
-		* The id of the Scheduler
-	 		* */ 
+		/**
+		 * The id of the Scheduler
+		 * 
+		 **/
 		public var id : int = int.MIN_VALUE;
 
-		/** 
-		* The id as configured in the batch config
-	 		* */ 
+		/**
+		 * The id as configured in the batch config
+		 * 
+		 **/
 		public var configuredId : int = int.MIN_VALUE;
 
-		/** 
-		* The scheduler name
-	 		* */ 
+		/**
+		 * The scheduler name
+		 * 
+		 **/
 		public var name : String = null;
 
-		/** 
-		* The host name
-	 		* */ 
+		/**
+		 * The host name
+		 * 
+		 **/
 		public var host : String = null;
 
-		/** 
-		* Array of the last statuses
-	 		* */ 
+		/**
+		 * Array of the last statuses
+		 * 
+		 **/
 		public var statuses : Array = null;
 
-		/** 
-		* Array of the last configs
-	 		* */ 
+		/**
+		 * Array of the last configs
+		 * 
+		 **/
 		public var configs : Array = null;
 
-		/** 
-		* Array of the workers
-	 		* */ 
+		/**
+		 * Array of the workers
+		 * 
+		 **/
 		public var workers : Array = null;
 
-		/** 
-		* creation time
-	 		* */ 
+		/**
+		 * creation time
+		 * 
+		 **/
 		public var createdAt : int = int.MIN_VALUE;
 
-		/** 
-		* last status time
-	 		* */ 
+		/**
+		 * last status time
+		 * 
+		 **/
 		public var lastStatus : int = int.MIN_VALUE;
 
-		/** 
-		* last status formated
-	 		* */ 
+		/**
+		 * last status formated
+		 * 
+		 **/
 		public var lastStatusStr : String = null;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -95,14 +106,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

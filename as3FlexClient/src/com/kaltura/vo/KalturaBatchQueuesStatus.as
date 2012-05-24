@@ -28,36 +28,42 @@
 package com.kaltura.vo
 {
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaBatchQueuesStatus extends BaseFlexVo
 	{
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaBatchJobType
+		 **/
 		public var jobType : String = null;
 
-		/** 
-		* The worker configured id
-	 		* */ 
+		/**
+		 * The worker configured id
+		 * 
+		 **/
 		public var workerId : int = int.MIN_VALUE;
 
-		/** 
-		* The friendly name of the type
-	 		* */ 
+		/**
+		 * The friendly name of the type
+		 * 
+		 **/
 		public var typeName : String = null;
 
-		/** 
-		* The size of the queue
-	 		* */ 
+		/**
+		 * The size of the queue
+		 * 
+		 **/
 		public var size : int = int.MIN_VALUE;
 
-		/** 
-		* The avarage wait time
-	 		* */ 
+		/**
+		 * The avarage wait time
+		 * 
+		 **/
 		public var waitTime : int = int.MIN_VALUE;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -71,14 +77,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

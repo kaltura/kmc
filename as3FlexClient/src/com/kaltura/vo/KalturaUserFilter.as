@@ -32,24 +32,25 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserFilter extends KalturaUserBaseFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var idOrScreenNameStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var idEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var idIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var loginEnabledEqual : Boolean;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var roleIdEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -70,6 +71,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -30,9 +30,14 @@ package com.kaltura.commands.partner
 	import com.kaltura.delegates.partner.PartnerGetDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Retrieve partner secret and admin secret
+	 * 
+	 **/
 	public class PartnerGet extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param partnerId int
 		 **/

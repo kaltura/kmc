@@ -30,22 +30,25 @@ package com.kaltura.vo
 	import com.kaltura.vo.KalturaBatchJob;
 
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaBatchJobResponse extends BaseFlexVo
 	{
-		/** 
-		* The main batch job
-	 		* */ 
+		/**
+		 * The main batch job
+		 * 
+		 **/
 		public var batchJob : KalturaBatchJob;
 
-		/** 
-		* All batch jobs that reference the main job as root
-	 		* */ 
+		/**
+		 * All batch jobs that reference the main job as root
+		 * 
+		 **/
 		public var childBatchJobs : Array = null;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -56,14 +59,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

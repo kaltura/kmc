@@ -30,9 +30,12 @@ package com.kaltura.commands.systemPartner
 	import com.kaltura.delegates.systemPartner.SystemPartnerGetPackagesClassOfServiceDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class SystemPartnerGetPackagesClassOfService extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 **/
 		public function SystemPartnerGetPackagesClassOfService(  )

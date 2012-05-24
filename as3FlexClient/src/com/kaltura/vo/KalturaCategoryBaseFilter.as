@@ -32,140 +32,144 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCategoryBaseFilter extends KalturaFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var idEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var idIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var parentIdEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var parentIdIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var depthEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fullNameEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fullNameStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fullNameIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fullIdsEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fullIdsStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var updatedAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var updatedAtLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tagsLike : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tagsMultiLikeOr : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tagsMultiLikeAnd : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaAppearInListType
+		 **/
 		public var appearInListEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaPrivacyType
+		 **/
 		public var privacyEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var privacyIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaInheritanceType
+		 **/
 		public var inheritanceTypeEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inheritanceTypeIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var referenceIdEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var membersCountGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var membersCountLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var pendingMembersCountGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var pendingMembersCountLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var privacyContextEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaCategoryStatus
+		 **/
 		public var statusEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var statusIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inheritedParentIdEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inheritedParentIdIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var partnerSortValueGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var partnerSortValueLessThanOrEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -215,6 +219,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

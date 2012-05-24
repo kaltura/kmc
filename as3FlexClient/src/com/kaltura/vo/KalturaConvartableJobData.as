@@ -34,41 +34,42 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaConvartableJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFileSyncLocalPath : String = null;
 
-		/** 
-		* The translated path as used by the scheduler
-	 		* */ 
+		/**
+		 * The translated path as used by the scheduler
+		 * 
+		 **/
 		public var actualSrcFileSyncLocalPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFileSyncRemoteUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var engineVersion : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorParamsOutputId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorParamsOutput : KalturaFlavorParamsOutput;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var mediaInfoId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var currentOperationSet : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var currentOperationIndex : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -93,6 +94,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -32,36 +32,36 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCategoryEntryBaseFilter extends KalturaFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var categoryIdEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var categoryIdIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var entryIdEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var entryIdIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var categoryFullIdsStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var categoryFullIdsEqual : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -85,6 +85,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

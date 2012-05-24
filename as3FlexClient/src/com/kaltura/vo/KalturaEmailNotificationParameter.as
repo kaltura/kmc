@@ -30,22 +30,25 @@ package com.kaltura.vo
 	import com.kaltura.vo.KalturaStringValue;
 
 	import com.kaltura.vo.BaseFlexVo;
+
 	[Bindable]
 	public dynamic class KalturaEmailNotificationParameter extends BaseFlexVo
 	{
-		/** 
-		* The key in the subject and body to be replaced with the dynamic value
-	 		* */ 
+		/**
+		 * The key in the subject and body to be replaced with the dynamic value
+		 * 
+		 **/
 		public var key : String = null;
 
-		/** 
-		* The dynamic value to be placed in the final output
-	 		* */ 
+		/**
+		 * The dynamic value to be placed in the final output
+		 * 
+		 **/
 		public var value : KalturaStringValue;
 
 		/** 
-		* a list of attributes which may be updated on this object 
-		* */ 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
 		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -56,14 +59,13 @@ package com.kaltura.vo
 		}
 
 		/** 
-		* a list of attributes which may only be inserted when initializing this object 
-		* */ 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
 		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
 			arr = new Array();
 			return arr;
 		}
-
 	}
 }

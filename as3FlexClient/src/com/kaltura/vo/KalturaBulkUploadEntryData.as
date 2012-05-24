@@ -32,9 +32,10 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBulkUploadEntryData extends KalturaBulkUploadObjectData
 	{
-		/** 
-		* Selected profile id for all bulk entries
-     		* */ 
+		/**
+		 * Selected profile id for all bulk entries
+		 * 
+		 **/
 		public var conversionProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -51,6 +52,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

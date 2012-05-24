@@ -30,9 +30,14 @@ package com.kaltura.commands.entryAdmin
 	import com.kaltura.delegates.entryAdmin.EntryAdminGetTracksDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Get base entry by ID with no filters.
+	 * 
+	 **/
 	public class EntryAdminGetTracks extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param entryId String
 		 **/

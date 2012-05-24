@@ -32,22 +32,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAttUverseDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var assetLocalPaths : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var thumbLocalPaths : String = null;
 
-		/** 
-		* The remote URL of the video asset that was distributed
-	 		* */ 
+		/**
+		 * The remote URL of the video asset that was distributed
+		 * 
+		 **/
 		public var remoteAssetFileUrls : String = null;
 
-		/** 
-		* The remote URL of the video asset that was distributed
-	 		* */ 
+		/**
+		 * The remote URL of the video asset that was distributed
+		 * 
+		 **/
 		public var remoteThumbnailFileUrls : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -67,6 +69,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

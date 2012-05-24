@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSshImportJobData extends KalturaImportJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var privateKey : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var publicKey : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var passPhrase : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

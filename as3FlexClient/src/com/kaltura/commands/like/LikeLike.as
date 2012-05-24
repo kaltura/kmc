@@ -30,9 +30,12 @@ package com.kaltura.commands.like
 	import com.kaltura.delegates.like.LikeLikeDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class LikeLike extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param entryId String
 		 **/

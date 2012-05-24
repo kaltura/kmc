@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaExampleDistributionProfile extends KalturaDistributionProfile
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var username : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var password : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var accountId : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

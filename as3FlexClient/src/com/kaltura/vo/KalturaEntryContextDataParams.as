@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaEntryContextDataParams extends KalturaAccessControlScope
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorAssetId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var streamerType : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var mediaProtocol : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -30,9 +30,14 @@ package com.kaltura.commands.uiConfAdmin
 	import com.kaltura.delegates.uiConfAdmin.UiConfAdminDeleteDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Delete an existing UIConf with no partner limitation
+	 * 
+	 **/
 	public class UiConfAdminDelete extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 **/

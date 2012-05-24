@@ -31,9 +31,12 @@ package com.kaltura.commands.reportAdmin
 	import com.kaltura.delegates.reportAdmin.ReportAdminUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class ReportAdminUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 * @param report KalturaReport

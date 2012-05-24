@@ -31,9 +31,14 @@ package com.kaltura.commands.annotation
 	import com.kaltura.delegates.annotation.AnnotationUpdateDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Update annotation by id
+	 * 
+	 **/
 	public class AnnotationUpdate extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id String
 		 * @param annotation KalturaCuePoint

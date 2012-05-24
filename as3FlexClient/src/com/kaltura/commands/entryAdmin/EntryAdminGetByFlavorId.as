@@ -30,9 +30,14 @@ package com.kaltura.commands.entryAdmin
 	import com.kaltura.delegates.entryAdmin.EntryAdminGetByFlavorIdDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Get base entry by flavor ID with no filters.
+	 * 
+	 **/
 	public class EntryAdminGetByFlavorId extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param flavorId String
 		 * @param version int

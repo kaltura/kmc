@@ -30,9 +30,12 @@ package com.kaltura.commands.kalturaInternalToolsSystemHelper
 	import com.kaltura.delegates.kalturaInternalToolsSystemHelper.KalturaInternalToolsSystemHelperGetRemoteAddressDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class KalturaInternalToolsSystemHelperGetRemoteAddress extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 **/
 		public function KalturaInternalToolsSystemHelperGetRemoteAddress(  )

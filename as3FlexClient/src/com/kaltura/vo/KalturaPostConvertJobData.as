@@ -32,37 +32,43 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaPostConvertJobData extends KalturaConvartableJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavorAssetId : String = null;
 
-		/** 
-		* Indicates if a thumbnail should be created
-	 		* */ 
+		/**
+		 * Indicates if a thumbnail should be created
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var createThumb : Boolean;
 
-		/** 
-		* The path of the created thumbnail
-	 		* */ 
+		/**
+		 * The path of the created thumbnail
+		 * 
+		 **/
 		public var thumbPath : String = null;
 
-		/** 
-		* The position of the thumbnail in the media file
-	 		* */ 
+		/**
+		 * The position of the thumbnail in the media file
+		 * 
+		 **/
 		public var thumbOffset : int = int.MIN_VALUE;
 
-		/** 
-		* The height of the movie, will be used to comapare if this thumbnail is the best we can have
-	 		* */ 
+		/**
+		 * The height of the movie, will be used to comapare if this thumbnail is the best we can have
+		 * 
+		 **/
 		public var thumbHeight : int = int.MIN_VALUE;
 
-		/** 
-		* The bit rate of the movie, will be used to comapare if this thumbnail is the best we can have
-	 		* */ 
+		/**
+		 * The bit rate of the movie, will be used to comapare if this thumbnail is the best we can have
+		 * 
+		 **/
 		public var thumbBitrate : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var customData : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -85,6 +91,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

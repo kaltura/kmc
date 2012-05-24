@@ -32,18 +32,20 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaFreewheelGenericDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* Demonstrate passing array of paths to the job
-	 		* */ 
+		/**
+		 * Demonstrate passing array of paths to the job
+		 * 
+		 **/
 		public var videoAssetFilePaths : Array = null;
 
-		/** 
-		* Demonstrate passing single path to the job
-	 		* */ 
+		/**
+		 * Demonstrate passing single path to the job
+		 * 
+		 **/
 		public var thumbAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var cuePoints : Array = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -62,6 +64,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

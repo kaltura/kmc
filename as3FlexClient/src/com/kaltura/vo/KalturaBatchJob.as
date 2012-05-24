@@ -34,130 +34,140 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaBatchJob extends KalturaBaseJob
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var entryId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var entryName : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaBatchJobType
+		 **/
 		public var jobType : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var jobSubType : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var onStressDivertTo : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var data : KalturaJobData;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaBatchJobStatus
+		 **/
 		public var status : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var abort : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var checkAgainTimeout : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var progress : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var message : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var description : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var updatesCount : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var priority : int = int.MIN_VALUE;
 
-		/** 
-		* The id of identical job
-	 		* */ 
+		/**
+		 * The id of identical job
+		 * 
+		 **/
 		public var twinJobId : int = int.MIN_VALUE;
 
-		/** 
-		* The id of the bulk upload job that initiated this job
-	 		* */ 
+		/**
+		 * The id of the bulk upload job that initiated this job
+		 * 
+		 **/
 		public var bulkJobId : int = int.MIN_VALUE;
 
-		/** 
-		* When one job creates another - the parent should set this parentJobId to be its own id.
-	 		* */ 
+		/**
+		 * When one job creates another - the parent should set this parentJobId to be its own id.
+		 * 
+		 **/
 		public var parentJobId : int = int.MIN_VALUE;
 
-		/** 
-		* The id of the root parent job
-	 		* */ 
+		/**
+		 * The id of the root parent job
+		 * 
+		 **/
 		public var rootJobId : int = int.MIN_VALUE;
 
-		/** 
-		* The time that the job was pulled from the queue
-	 		* */ 
+		/**
+		 * The time that the job was pulled from the queue
+		 * 
+		 **/
 		public var queueTime : int = int.MIN_VALUE;
 
-		/** 
-		* The time that the job was finished or closed as failed
-	 		* */ 
+		/**
+		 * The time that the job was finished or closed as failed
+		 * 
+		 **/
 		public var finishTime : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaBatchJobErrorTypes
+		 **/
 		public var errType : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var errNumber : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var fileSize : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var lastWorkerRemote : Boolean;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var schedulerId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var workerId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var batchIndex : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var lastSchedulerId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var lastWorkerId : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var dc : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -202,6 +212,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

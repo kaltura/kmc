@@ -30,9 +30,14 @@ package com.kaltura.commands.partner
 	import com.kaltura.delegates.partner.PartnerListPartnersForUserDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Retrieve a list of partner IDs which the current user is allowed to access.
+	 * 
+	 **/
 	public class PartnerListPartnersForUser extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 **/
 		public function PartnerListPartnersForUser(  )

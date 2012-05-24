@@ -30,9 +30,14 @@ package com.kaltura.commands.category
 	import com.kaltura.delegates.category.CategoryMoveDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Move categories that belong to the same parent category to a traget categroy
+	 * 
+	 **/
 	public class CategoryMove extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param categoryIds String
 		 * @param targetCategoryParentId int

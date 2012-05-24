@@ -32,24 +32,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaYouTubeDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var videoAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var thumbAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sftpDirectory : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sftpMetadataFilename : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var currentPlaylists : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -70,6 +70,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

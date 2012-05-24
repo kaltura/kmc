@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaImportMetadataJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFileUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destFileLocalPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var metadataId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

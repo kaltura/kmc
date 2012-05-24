@@ -34,19 +34,23 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaIndexJobData extends KalturaJobData
 	{
-		/** 
-		* The filter should return the list of objects that need to be reindexed.
-	 		* */ 
+		/**
+		 * The filter should return the list of objects that need to be reindexed.
+		 * 
+		 **/
 		public var filter : KalturaFilter;
 
-		/** 
-		* Indicates the last id that reindexed, used when the batch crached, to re-run from the last crash point.
-	 		* */ 
+		/**
+		 * Indicates the last id that reindexed, used when the batch crached, to re-run from the last crash point.
+		 * 
+		 **/
 		public var lastIndexId : int = int.MIN_VALUE;
 
-		/** 
-		* Indicates that the object columns and attributes values should be recalculated before reindexed.
-	 		* */ 
+		/**
+		 * Indicates that the object columns and attributes values should be recalculated before reindexed.
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var shouldUpdate : Boolean;
 
 		override public function getUpdateableParamKeys():Array
@@ -65,6 +69,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -32,14 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSystemPartnerUsageFilter extends KalturaFilter
 	{
-		/** 
-		* Date range from
-	 		* */ 
+		/**
+		 * Date range from
+		 * 
+		 **/
 		public var fromDate : int = int.MIN_VALUE;
 
-		/** 
-		* Date range to
-	 		* */ 
+		/**
+		 * Date range to
+		 * 
+		 **/
 		public var toDate : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -57,6 +59,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

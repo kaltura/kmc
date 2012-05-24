@@ -32,32 +32,34 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCaptionAssetBaseFilter extends KalturaAssetFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var captionParamsIdEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var captionParamsIdIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaCaptionType
+		 **/
 		public var formatEqual : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var formatIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaCaptionAssetStatus
+		 **/
 		public var statusEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var statusIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var statusNotIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -80,6 +82,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

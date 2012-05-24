@@ -30,9 +30,12 @@ package com.kaltura.commands.systemPartner
 	import com.kaltura.delegates.systemPartner.SystemPartnerGetAdminSessionDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 **/
 	public class SystemPartnerGetAdminSession extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param partnerId int
 		 * @param userId String

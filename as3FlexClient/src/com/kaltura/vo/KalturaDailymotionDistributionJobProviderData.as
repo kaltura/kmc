@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaDailymotionDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var videoAssetFilePath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var accessControlGeoBlockingOperation : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var accessControlGeoBlockingCountryList : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

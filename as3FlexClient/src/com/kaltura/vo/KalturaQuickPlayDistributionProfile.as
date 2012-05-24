@@ -32,68 +32,68 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaQuickPlayDistributionProfile extends KalturaConfigurableDistributionProfile
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sftpHost : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sftpLogin : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var sftpPass : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelTitle : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelLink : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelDescription : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelManagingEditor : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelLanguage : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelImageTitle : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelImageWidth : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelImageHeight : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelImageLink : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelImageUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelCopyright : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelGenerator : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var channelRating : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -125,6 +125,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

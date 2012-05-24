@@ -32,24 +32,24 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaTransformMetadataJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcXslPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcVersion : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destVersion : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destXsdPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var metadataProfileId : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
@@ -70,6 +70,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

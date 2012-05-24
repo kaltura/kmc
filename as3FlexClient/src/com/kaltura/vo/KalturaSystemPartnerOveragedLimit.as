@@ -32,12 +32,12 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaSystemPartnerOveragedLimit extends KalturaSystemPartnerLimit
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var overagePrice : Number = Number.NEGATIVE_INFINITY;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var overageUnit : Number = Number.NEGATIVE_INFINITY;
 
 		override public function getUpdateableParamKeys():Array
@@ -55,6 +55,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

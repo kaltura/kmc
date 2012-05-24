@@ -32,32 +32,33 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaStorageJobData extends KalturaJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var serverUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var serverUsername : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var serverPassword : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
 		public var ftpPassiveMode : Boolean;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFileSyncLocalPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var srcFileSyncId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destFileSyncStoredPath : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -80,6 +81,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

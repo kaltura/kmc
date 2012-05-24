@@ -32,16 +32,16 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaYahooDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var smallThumbPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var largeThumbPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var videoAssetFilePath : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -60,6 +60,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

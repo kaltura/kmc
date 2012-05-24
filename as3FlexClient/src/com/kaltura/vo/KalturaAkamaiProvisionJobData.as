@@ -32,28 +32,28 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaAkamaiProvisionJobData extends KalturaProvisionJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var wsdlUsername : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var wsdlPassword : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var cpcode : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var emailId : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var primaryContact : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var secondaryContact : String = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -75,6 +75,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

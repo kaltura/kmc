@@ -33,10 +33,13 @@ package com.kaltura.commands.user
 	import com.kaltura.vo.KalturaBulkUploadUserData;
 	import com.kaltura.delegates.user.UserAddFromBulkUploadDelegate;
 
+	/**
+	 **/
 	public class UserAddFromBulkUpload extends KalturaFileCall
 	{
 		public var fileData:Object;
 
+		
 		/**
 		 * @param fileData Object - FileReference or ByteArray
 		 * @param bulkUploadData KalturaBulkUploadJobData

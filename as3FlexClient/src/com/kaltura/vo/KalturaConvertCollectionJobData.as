@@ -32,32 +32,32 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaConvertCollectionJobData extends KalturaConvartableJobData
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destDirLocalPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destDirRemoteUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var destFileName : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inputXmlLocalPath : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var inputXmlRemoteUrl : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var commandLinesStr : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var flavors : Array = null;
 
 		override public function getUpdateableParamKeys():Array
@@ -80,6 +80,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }

@@ -30,9 +30,14 @@ package com.kaltura.commands.uiConfAdmin
 	import com.kaltura.delegates.uiConfAdmin.UiConfAdminGetDelegate;
 	import com.kaltura.net.KalturaCall;
 
+	/**
+	 * Retrieve a UIConf by id with no partner limitation
+	 * 
+	 **/
 	public class UiConfAdminGet extends KalturaCall
 	{
 		public var filterFields : String;
+		
 		/**
 		 * @param id int
 		 **/

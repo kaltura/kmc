@@ -32,53 +32,55 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaUserBaseFilter extends KalturaFilter
 	{
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var partnerIdEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var screenNameLike : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var screenNameStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var emailLike : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var emailStartsWith : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tagsMultiLikeOr : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var tagsMultiLikeAnd : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 * @see com.kaltura.types.KalturaUserStatus
+		 **/
 		public var statusEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var statusIn : String = null;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
+		/**
+		 **/
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
-		/** 
-		* 		* */ 
-		public var isAdminEqual : Boolean;
+		/**
+		 * @see com.kaltura.types.KalturaNullableBoolean
+		 **/
+		public var isAdminEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -105,6 +107,5 @@ package com.kaltura.vo
 			arr = super.getInsertableParamKeys();
 			return arr;
 		}
-
 	}
 }
