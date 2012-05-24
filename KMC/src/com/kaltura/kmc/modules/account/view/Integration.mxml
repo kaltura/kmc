@@ -16,6 +16,8 @@
 			import com.kaltura.kmc.modules.account.events.PartnerEvent;
 			import com.kaltura.kmc.modules.account.view.windows.SetEntitlementsWindow;
 			import com.kaltura.kmc.modules.account.vo.PartnerVO;
+			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaCategory;
 			
@@ -59,9 +61,6 @@
 			public function init():void {
 				if (_ready) {
 					BindingUtils.bindSetter(onPartnerDataLoaded, this, "partnerData");
-					addEventListener(EntitlementActionsRenderer.CHANGE_CONTEXT, handleEntitlementsTableActions, false, 0, true);
-					addEventListener(EntitlementActionsRenderer.REMOVE_CONTEXT, handleEntitlementsTableActions, false, 0, true);
-					
 					var cgEvent:CairngormEvent = new PartnerEvent(PartnerEvent.GET_PARTNER_INFO);
 					cgEvent.dispatch();
 					cgEvent = new IntegrationEvent(IntegrationEvent.LIST_CATEGORIES_WITH_PRIVACY_CONTEXT);
@@ -204,10 +203,14 @@
 			private function removePrivacyContext(e:CloseEvent):void {
 				if (e.detail == Alert.OK) {
 					catToClearContext.privacyContext = KalturaClient.NULL_STRING;
+					catToClearContext.privacy = KalturaPrivacyType.ALL;
+					catToClearContext.appearInList = KalturaAppearInListType.PARTNER_ONLY;
 					var cge:CairngormEvent = new IntegrationEvent(IntegrationEvent.UPDATE_CATEGORY);
 					cge.data = catToClearContext;
 					cge.dispatch();
 				}
+				// reset
+				catToClearContext = null;
 			}
 			
 			private function openSetEntitlementWindow(kCat:KalturaCategory = null):void {
@@ -282,7 +285,9 @@
 					<mx:Image source="{StyleManager.getStyleDeclaration('.imageBank').getStyle('SpinnerImg')}"/>
 					<mx:Text htmlText="{resourceManager.getString('account', 'entitlementsNote')}" width="100%" link="readMore_linkHandler(event)"/>
 				</mx:HBox>
-				<components:EntitlementTable width="100%" dataProvider="{categories}" />
+				<components:EntitlementTable width="100%" dataProvider="{categories}" 
+											 changeContext="handleEntitlementsTableActions(event)"
+											 removeContext="handleEntitlementsTableActions(event)"/>
 				<mx:LinkButton id="addContextsBtn" label="{resourceManager.getString('account', 'addEntitlement')}"
 							   click="addContextsBtn_clickHandler(event)" styleName="plusIcon"/>
 			</mx:VBox>
