@@ -415,7 +415,7 @@
 				_originalRefid = null;
 				_entryCategories = null;
 				if (kdp3StaticSwfLoader && kdp3StaticSwfLoader.content) {
-					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_STOP);
+					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
 //				var curCustomData:SingleCustomData;
@@ -527,7 +527,10 @@
 			
 			
 			private function addImageThumb(imgSource:Object = null):void {
-				kdp3StaticSwfLoader.includeInLayout = kdp3StaticSwfLoader.visible = false;
+				if (kdp3StaticSwfLoader) {
+					// if KDP was never loaded before opening a no content entry
+					kdp3StaticSwfLoader.includeInLayout = kdp3StaticSwfLoader.visible = false;
+				}
 				if (kdp3StaticSwfLoader != kdp3Loader) {
 					// if we start with no content image after we already have a KDP
 					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
