@@ -52,8 +52,8 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			
 			//NEVER SHOULD HAPPEN BUT IF DOES THEN IT'S BETTER THEN FAIL SENDING MASSAGE
-			if( _model.selectedReportData.message == "" ) _model.selectedReportData.message="no message"; 
-			if( _model.selectedReportData.title == "" ) _model.selectedReportData.title="no title"; 
+			if( _model.selectedReportData.message == "" || _model.selectedReportData.message == null) _model.selectedReportData.message="no message"; 
+			if( _model.selectedReportData.title == "" || _model.selectedReportData.title == null) _model.selectedReportData.title="no title"; 
 			
 			var export2Csv : ReportGetUrlForReportAsCsv;
 			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
