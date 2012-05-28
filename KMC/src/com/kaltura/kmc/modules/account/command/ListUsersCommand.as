@@ -43,7 +43,7 @@ package com.kaltura.kmc.modules.account.command {
 			// users
 			var ufilter:KalturaUserFilter = new KalturaUserFilter();
 			ufilter.isAdminEqual = KalturaNullableBoolean.TRUE_VALUE;
-			ufilter.loginEnabledEqual = true;
+			ufilter.loginEnabledEqual = KalturaNullableBoolean.TRUE_VALUE;
 			ufilter.statusEqual = KalturaUserStatus.ACTIVE;
 			// server can't filter by user role
 			var ul:UserList = new UserList(ufilter);

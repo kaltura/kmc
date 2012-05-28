@@ -45,9 +45,9 @@ package com.kaltura.vo
 		public var idIn : String = null;
 
 		/**
-		 * @see com.kaltura.types.kalturaBoolean
+		 * @see com.kaltura.types.KalturaNullableBoolean
 		 **/
-		public var loginEnabledEqual : Boolean;
+		public var loginEnabledEqual : int = int.MIN_VALUE;
 
 		/**
 		 **/

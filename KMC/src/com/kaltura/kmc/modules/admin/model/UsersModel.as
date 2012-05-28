@@ -17,7 +17,7 @@ package com.kaltura.kmc.modules.admin.model
 			// init filter - only admin users who have access to KMC and are either active or blocked.
 			usersFilter = new KalturaUserFilter();
 			usersFilter.isAdminEqual = KalturaNullableBoolean.TRUE_VALUE;
-			usersFilter.loginEnabledEqual = true;
+			usersFilter.loginEnabledEqual = KalturaNullableBoolean.TRUE_VALUE;
 			usersFilter.statusIn = KalturaUserStatus.ACTIVE + "," + KalturaUserStatus.BLOCKED;
 			usersFilter.orderBy = KalturaUserOrderBy.CREATED_AT_ASC;
 		}
