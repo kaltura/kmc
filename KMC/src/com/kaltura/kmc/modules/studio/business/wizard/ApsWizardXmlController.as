@@ -57,14 +57,17 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 
 
 		/**
-		 * Clear the icon/s or the label from the button node in Uiconf
+		 * Clear the icon/s or the label from the button node in Uiconf, 
+		 * add colors tags and button type
 		 * @param buttonXml		button node to process
-		 * @param buttonType	the type of the button
-		 * @param colorObject	color defintions to apply
+		 * @param kButtonType	the type of the button as the studio sees it
+		 * @param colorObject	color definitions to apply
 		 * @return processed button node
 		 */
-		protected function clearIconsOrLabels(buttonXml:XML, buttonType:String, colorObject:StyleVo):XML {
-			if (buttonType == "buttonControllerArea") {
+		protected function clearIconsOrLabels(buttonXml:XML, kButtonType:String, colorObject:StyleVo):XML {
+			// old skin
+			if (kButtonType == "buttonControllerArea") {
+				// label buttons on the controller
 				delete buttonXml.@Icon;
 				delete buttonXml.@icon;
 				delete buttonXml.@selectedIcon;
@@ -78,19 +81,31 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				delete buttonXml.@selectedDisabledIcon;
 				buttonXml.@buttonType = "labelButton";
 			}
-			if (buttonType == "buttonIconControllerArea") {
+			else if (kButtonType == "buttonIconControllerArea") {
+				// icon buttons on the controller
 				delete buttonXml.@label[0];
 				buttonXml.@buttonType = "iconButton";
 			}
-			if (buttonType == "buttonVideoArea") {
+			
+			// new (Falcon) skin
+			else if (kButtonType == "falconButtonIconControllerArea") {
+				// icon buttons on the controller
+				delete buttonXml.@label[0];
+				buttonXml.@buttonType = "normal";
+			}
+			
+			else if (kButtonType == "buttonVideoArea") {
 				buttonXml.@buttonType = "onScreenButton";
 			}
+			else if (kButtonType == "falconButtonVideoArea") {
+				buttonXml.@buttonType = "normal";
+			}
+			
+			
+			
+			// style
 			if (colorObject) {
-				buttonXml.@color1 = colorObject.color1;
-				buttonXml.@color2 = colorObject.color2;
-				buttonXml.@color3 = colorObject.color3;
-				buttonXml.@color4 = colorObject.color4;
-				buttonXml.@color5 = colorObject.color5;
+				colorElement(buttonXml, colorObject);
 				if (colorObject.fontName)
 					buttonXml.@font = colorObject.fontName;
 			}
@@ -305,15 +320,14 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				}
 			}
 
-			// Handling the buttons. remove the icons / label in button that 
-			// should not have them (Remove attributes from XML), add colors tags
-			// and add the button type
+			// Handling the buttons. 
 			var contButton:XML;
 
 			for each (featureXml in activeFeatures) {
 				activeFeatureName = featureXml.attribute("id")[0].toString();
 				var controllerButtons:XMLList = featureXml.descendants().(attribute("k_param") == "k_buttonType" &&
-					(attribute("k_value") == "buttonIconControllerArea" || attribute("k_value") == "buttonControllerArea"));
+					(attribute("k_value") == "buttonIconControllerArea" || attribute("k_value") == "buttonControllerArea"
+						|| attribute("k_value") == "falconButtonIconControllerArea"));
 				// controller buttons
 				if (controllerButtons.length() > 0) {
 					var featureNameToLookFor:String = featureXml.@id.toString() + "ControllerScreen"
@@ -329,8 +343,15 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				for each (var onscreenXML:XML in onScreenButtonsList) {
 					if (onscreenXML.@k_value.toString() == "true") {
 						contButton = (fullPlayerCopy.descendants().(attribute("id") == (featureXml.@id.toString() + onscreenXML.@id.toString()))[0]);
-						if (contButton)
-							clearIconsOrLabels(contButton, "buttonVideoArea", style);
+						if (contButton) {
+							if (controllerButtons.@k_value == "falconButtonIconControllerArea") {
+								// assume if the controller button was falcon skin (no coloring), the screen button will be so too
+								clearIconsOrLabels(contButton, "falconButtonVideoArea", style);
+							}
+							else {
+								clearIconsOrLabels(contButton, "buttonVideoArea", style);
+							}
+						}
 					}
 				}
 			}
@@ -448,11 +469,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			var uiElementXml:XML;
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'volumeBar')[0];
 			if (uiElementXml) {
-				uiElementXml.@color1 = style.color1;
-				uiElementXml.@color2 = style.color2;
-				uiElementXml.@color3 = style.color3;
-				uiElementXml.@color4 = style.color4;
-				uiElementXml.@color5 = style.color5;
+				colorElement(uiElementXml, style);
 				uiElementXml.@font = style.fontName;
 			}
 			
@@ -460,44 +477,42 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'movieName')[0];
 			if (uiElementXml) {
 				uiElementXml.@dynamicColor = "true";
-				uiElementXml.@color1 = style.color1;
+				if (style.color1 != int.MAX_VALUE) {
+					uiElementXml.@color1 = style.color1;
+				}
 				uiElementXml.@font = style.fontName;
 			}
 			
 			// handle the tab bar if available 
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'tabBar')[0];
 			if (uiElementXml) {
-				uiElementXml.@color1 = style.color1;
-				uiElementXml.@color2 = style.color2;
-				uiElementXml.@color3 = style.color3;
-				uiElementXml.@color4 = style.color4;
-				uiElementXml.@color5 = style.color5;
+				colorElement(uiElementXml, style);
 				uiElementXml.@dynamicColor = "true";
 				uiElementXml.@font = style.fontName;
 			}
 			
 			// handle scrubber colors
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'scrubber')[0];
-			if (uiElementXml) {
+			if (uiElementXml && style.color1 != int.MAX_VALUE) {
 				uiElementXml.@color1 = style.color1;
 				uiElementXml.@color2 = style.color1;
 			}
 			
 			// handle timer1 colors
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen1')[0];
-			if (uiElementXml) {
+			if (uiElementXml && style.color1 != int.MAX_VALUE) {
 				uiElementXml.@color1 = style.color1;
 			}
 			
 			// handle timer2 colors
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'timerControllerScreen2')[0];
-			if (uiElementXml) {
+			if (uiElementXml && style.color1 != int.MAX_VALUE) {
 				uiElementXml.@color1 = style.color1;
 			}
 			
 			// handle flavorComboControllerScreen colors
 			uiElementXml = fullPlayerCopy.descendants().(attribute("id").toString() == 'flavorComboControllerScreen')[0];
-			if (uiElementXml) {
+			if (uiElementXml && style.color1 != int.MAX_VALUE) {
 				uiElementXml.@color1 = style.color1;
 			}
 			
@@ -568,7 +583,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					var pluginTarget:String = colored.attribute("colorPlugin")[0].toString()
 					targetPlugin = fullPlayerCopy..descendants().(attribute("id") == pluginTarget)[0];
 					if (targetPlugin)
-						addColorsToPlugin(targetPlugin, colorObj);
+						colorElement(targetPlugin, colorObj);
 				}
 			}
 			
@@ -582,7 +597,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 					pluginId = coloredFromList.attribute("id").toString();
 					targetPlugin = fullPlayerCopy..descendants().(attribute("id") == pluginId)[0];
 					if (targetPlugin)
-						addColorsToPlugin(targetPlugin, colorObj);
+						colorElement(targetPlugin, colorObj);
 				}
 			}
 			return fullPlayerCopy;
@@ -591,18 +606,28 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 		
 		
 		/**
-		 * Add all colors from the color Object to the given plugin xml
+		 * Add all colors from the color Object to the given xml
 		 * @param plugin	xml node describing the plugin to be colored
 		 * @param colorObject	color definitions to apply
 		 * @return
 		 *
 		 */
-		protected function addColorsToPlugin(plugin:XML, colorObject:StyleVo):void {
-			plugin.@color1 = colorObject.color1;
-			plugin.@color2 = colorObject.color2;
-			plugin.@color3 = colorObject.color3;
-			plugin.@color4 = colorObject.color4;
-			plugin.@color5 = colorObject.color5;
+		protected function colorElement(element:XML, colorObject:StyleVo):void {
+			if (colorObject.color1 != int.MAX_VALUE) {
+				element.@color1 = colorObject.color1;
+			}
+			if (colorObject.color2 != int.MAX_VALUE) {
+				element.@color2 = colorObject.color2;
+			}
+			if (colorObject.color3 != int.MAX_VALUE) {
+				element.@color3 = colorObject.color3;
+			}
+			if (colorObject.color4 != int.MAX_VALUE) {
+				element.@color4 = colorObject.color4;
+			}
+			if (colorObject.color5 != int.MAX_VALUE) {
+				element.@color5 = colorObject.color5;
+			}
 		}
 
 		/**
@@ -771,8 +796,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						skip.@label = advo.skipText;
 						if (style) {
 							// 508 players don't have style
-							skip.@color1 = style.color1.toString();
-							skip.@color2 = style.color2.toString();
+							if (style.color1 != int.MAX_VALUE)
+								skip.@color1 = style.color1.toString();
+							if (style.color2 != int.MAX_VALUE)
+								skip.@color2 = style.color2.toString();
 						}
 					}
 					else {

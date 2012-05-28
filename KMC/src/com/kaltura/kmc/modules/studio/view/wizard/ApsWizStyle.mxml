@@ -77,11 +77,11 @@
 				vo.themeId = theme.@id.toString();
 				vo.themeFriendlyName = theme.@name.toString();
 				vo.skinPath = theme.themeSkinPath.toString();
-				vo.color1 = Number(theme.color1.toString());
-				vo.color2 = Number(theme.color2.toString());
-				vo.color3 = Number(theme.color3.toString());
-				vo.color4 = Number(theme.color4.toString());
-				vo.color5 = Number(theme.color5.toString());
+				vo.color1 = theme.color1.length() ? Number(theme.color1.toString()) : int.MAX_VALUE;
+				vo.color2 = theme.color2.length() ? Number(theme.color2.toString()) : int.MAX_VALUE;
+				vo.color3 = theme.color3.length() ? Number(theme.color3.toString()) : int.MAX_VALUE;
+				vo.color4 = theme.color4.length() ? Number(theme.color4.toString()) : int.MAX_VALUE;
+				vo.color5 = theme.color5.length() ? Number(theme.color5.toString()) : int.MAX_VALUE;
 				vo.fontName = theme.font.toString();
 				return vo;
 			}
@@ -100,11 +100,36 @@
 						themeSelector.selectedIndex = i;
 					}
 				}
-				color1.selectedColor = vo.color1;
-				color2.selectedColor = vo.color2;
-				color3.selectedColor = vo.color3;
-				color4.selectedColor = vo.color4;
-				color5.selectedColor = vo.color5;
+				if (vo.color1 != int.MAX_VALUE) {
+					color1.selectedColor = vo.color1;
+				}
+				else {
+					color1.enabled = false;
+				}
+				if (vo.color2 != int.MAX_VALUE) {
+					color2.selectedColor = vo.color2;
+				}
+				else {
+					color2.enabled = false;
+				}
+				if (vo.color3 != int.MAX_VALUE) {
+					color3.selectedColor = vo.color3;
+				}
+				else {
+					color3.enabled = false;
+				}
+				if (vo.color4 != int.MAX_VALUE) {
+					color4.selectedColor = vo.color4;
+				}
+				else {
+					color4.enabled = false;
+				}
+				if (vo.color5 != int.MAX_VALUE) {
+					color5.selectedColor = vo.color5;
+				}
+				else {
+					color5.enabled = false;
+				}
 				fontSelector.selectedItem = vo.fontName;
 			}
 

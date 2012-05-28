@@ -32,10 +32,8 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			import mx.controls.ComboBox;
 			import mx.controls.Label;
 			import mx.events.CloseEvent;
-			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.managers.CursorManager;
 
@@ -240,25 +238,21 @@
 				var selectedTemplateXml:XML = (evt.target as Button).data as XML;
 				var playerId:String = selectedTemplateXml.@id.toString();
 				var playerUiVo:PlayerUiConfVo = new PlayerUiConfVo(playerId, null, null);
-				var gaEvent:String = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_SINGLE_VIDEO;
 				if (selectedTemplateXml.@isSinglePlaylist.toString() == "true") {
 					playerUiVo.isSinglePlaylist = true;
-					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_PLAYLIST;
 				}
 				if (selectedTemplateXml.@isMultiPlaylistTemplate.toString() == "true") {
 					playerUiVo.isMultiPlaylistTemplate = true;
-					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_MULTI_TAB_PLAYLIST;
 				}
+				
+				
 				if (selectedTemplateXml.@editableStyle.toString() == "true") {
 					playerUiVo.editableStyle = true;
 				}
-				else {
-					// if no style defs, is 508 player
-					gaEvent = GoogleAnalyticsConsts.STUDIO_NEW_PLAYER_508;
-				}
+				
 				dispatchEvent(new ApsUiConfEvent(ApsUiConfEvent.NEW_PLAYER_CHOSEN, playerUiVo));
 				// analytics:
-				GoogleAnalyticsTracker.getInstance().sendToGA(gaEvent, GoogleAnalyticsConsts.STUDIO);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.STUDIO_NEW_PLAYER, GoogleAnalyticsConsts.STUDIO);
 			}
 
 
@@ -318,7 +312,7 @@
 				filter.orderBy = KalturaUiConfOrderBy.UPDATED_AT_DESC;
 				filter.tagsMultiLikeOr = "kdp3";
 				filter.objTypeEqual = KalturaUiConfObjType.PLAYER;
-				filter.creationModeIn = KalturaUiConfCreationMode.WIZARD.toString();
+				filter.creationModeEqual = KalturaUiConfCreationMode.WIZARD;
 				var pager:KalturaFilterPager = new KalturaFilterPager();
 				if (pageSize == 0) {
 					pager.pageSize = _pageSize
@@ -333,28 +327,28 @@
 			}
 
 
-			/**
-			 * retreives a readble version of the player's creation mode
-			 * (manual, wizard, advanced) for use in item renderer
-			 * */
-			public function getCreationModeLabel(item:Object, column:DataGridColumn):String {
-				var creationType:String;
-				switch (item.creationMode.toString()) {
-					case "1":
-						creationType = "Manual";
-						break;
-					case "2":
-						creationType = "Wizard";
-						break;
-					case "3":
-						creationType = "Advanced";
-						break;
-					default:
-						creationType = "Manual";
-						break;
-				}
-				return creationType;
-			}
+//			/**
+//			 * retreives a readble version of the player's creation mode
+//			 * (manual, wizard, advanced) for use in item renderer
+//			 * */
+//			public function getCreationModeLabel(item:Object, column:DataGridColumn):String {
+//				var creationType:String;
+//				switch (item.creationMode.toString()) {
+//					case "1":
+//						creationType = "Manual";
+//						break;
+//					case "2":
+//						creationType = "Wizard";
+//						break;
+//					case "3":
+//						creationType = "Advanced";
+//						break;
+//					default:
+//						creationType = "Manual";
+//						break;
+//				}
+//				return creationType;
+//			}
 
 
 			/**
