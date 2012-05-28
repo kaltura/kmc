@@ -15,21 +15,22 @@
 			}
 			
 			override public function get filter():Object {
-				var accessString:String = "";
+				var accessString:int = int.MIN_VALUE;
 				//if non of the items are selected or all selected
 				if ((listedBtn.selected && unlistedBtn.selected ) 
 					|| (!listedBtn.selected && !unlistedBtn.selected)) {
-					accessString = "";
+					accessString = int.MIN_VALUE;
 				}
 				else {
 					if (unlistedBtn.selected) {
-						accessString += KalturaAppearInListType.CATEGORY_MEMBERS_ONLY + ",";
+						accessString = KalturaAppearInListType.CATEGORY_MEMBERS_ONLY /* + "," */;
 					}
-					if (listedBtn.selected) {
-						accessString += KalturaAppearInListType.PARTNER_ONLY + ",";
+					// the state of both selected is handled in the first condition
+					else if (listedBtn.selected) {
+						accessString = KalturaAppearInListType.PARTNER_ONLY /* + "," */;
 					}
 					//remove last , 
-					accessString = accessString.slice(0, accessString.length - 1);
+//					accessString = accessString.slice(0, accessString.length - 1);
 				}
 				return accessString;
 			}
