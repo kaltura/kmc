@@ -89,6 +89,7 @@ package com.kaltura.kmc.modules.content.business
 			var et:EntryTable = event.target as EntryTable;
 			var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.ENTRIES_SELECTION_CHANGED, et.selectedItems);
 			cgEvent.dispatch();
+			
 		}
 		
 	}

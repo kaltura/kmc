@@ -3,12 +3,13 @@
 	 "Moderate" section of the content viewstack.
 	 allows moderating flagged entries.
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}"
-		 verticalScrollPolicy="off"
-		 xmlns:controls="com.kaltura.controls.*" xmlns:loader="com.kaltura.kmc.modules.content.view.loader.*"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}" verticalScrollPolicy="off"
+		 xmlns:controls="com.kaltura.controls.*"
 		 implements="com.kaltura.kmc.modules.content.business.IContentPanel,com.kaltura.edw.business.IDataOwner"
-		 creationComplete="init()" 
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:et="com.kaltura.edw.view.et.*" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:et1="com.kaltura.edw.components.et.*" xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:business="com.kaltura.kmc.modules.content.business.*" xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
+		 creationComplete="init()" xmlns:et1="com.kaltura.edw.components.et.*"
+		 xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*"
+		 xmlns:business="com.kaltura.kmc.modules.content.business.*"
+		 xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -67,10 +68,10 @@
 			// ===============================================
 			// fields
 			// ===============================================
-			
+
 			private var _entryDetailsModel:KMvCModel;
-			
-			
+
+
 			[Bindable]
 			public function set entryDetailsModel(value:KMvCModel):void {
 				_entryDetailsModel = value;
@@ -80,7 +81,7 @@
 				var dpi:DistributionProfileInfo = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo; 
 				_disProfWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", dpi, "kalturaDistributionProfilesArray"); 
 			}
-			
+
 			public function get entryDetailsModel():KMvCModel {
 				return _entryDetailsModel;
 			}
@@ -92,11 +93,10 @@
 			private static var _kdp3SwfLoader:SWFLoader;
 
 
-			[Bindable]
 			/**
 			 * last selected entry
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
+			private var _selectedEntry:KalturaBaseEntry;
 
 			[Bindable]
 			/**
@@ -113,12 +113,6 @@
 			[Bindable]
 			private var _listableVo:ListableVo;
 
-			/**
-			 * save the status of the player
-			 */
-			private var _playerHasMedia:Boolean;
-
-
 
 			/**
 			 * moderation tab data
@@ -134,16 +128,16 @@
 			 * used to initialize after both external data is ready and creationComplete
 			 * */
 			private var _ready:Boolean = false;
-			
-			
+
+
 			private var _disProfWatcher:ChangeWatcher;
-			
+
 			[Bindable]
 			/**
 			 * Distribution profiles
 			 * */
 			public var distributionProfilesArray : Array;
-			
+
 			private var _initialFilter:KalturaMediaEntryFilter;
 
 
@@ -151,16 +145,16 @@
 			 * list of entries that are being approved / rejected
 			 * */
 			private var _affectedEntries:Array;
-			
+
 			/**
 			 * a flag indicating the tab was intialised
 			 * */
 			private var _initOnce:Boolean;
-			
+
 			// ===============================================
 			// methods
 			// ===============================================
-			
+
 			public function onRequestedDataLoaded():void {
 				loadEntries();
 			}
@@ -177,7 +171,7 @@
 				if (_ready) {
 					paging.selectedPage = 1;
 					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
-					
+
 					if (_initOnce) {
 						loadEntries();
 					}
@@ -185,19 +179,19 @@
 						initOnce();
 					}
 
-					
+
 				}
 				else {
 					_ready = true;
 				}
 			}
-			
-			
+
+
 			/**
 			 * load all the data the filter needs
 			 * */
 			private function initOnce():void {
-				
+
 				var kFilter:KalturaMediaEntryFilter;
 				if (_initialFilter) {
 					kFilter = _initialFilter
@@ -205,20 +199,20 @@
 				else {
 					kFilter = new KalturaMediaEntryFilter();
 					kFilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," + KalturaMediaType.AUDIO + ",6," + KalturaMediaType.LIVE_STREAM_FLASH;
-					
+
 					// setting defaults to view only pending and flagged.
 					kFilter.moderationStatusIn = KalturaEntryModerationStatus.PENDING_MODERATION + "," + KalturaEntryModerationStatus.FLAGGED_FOR_REVIEW;
 				}
 				filter.kalturaFilter = kFilter;
-				
+
 				loadKDP();
-				
+
 				// load filter data
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
 				KedController.getInstance().dispatch(fe);
-				
+
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				
+
 				_initOnce = true;
 			}
 
@@ -258,7 +252,7 @@
 				if (_orderBy) {
 					_listableVo.filterVo.orderBy = _orderBy;
 				}
-				
+
 				var cgEvent:CairngormEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL, _listableVo);
 				cgEvent.dispatch();
 				cgEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _listableVo);
@@ -278,7 +272,7 @@
 
 
 			private function removeColums(event:Event):void {
-				
+
 				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
 					EntryTableColumns.PLAYER_LOADS, EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT,
 					EntryTableColumns.FLAGS, EntryTableColumns.STATUS];
@@ -300,26 +294,26 @@
 			}
 
 
-			private function getModeration(event:ListEvent):void {
-				var entry:KalturaBaseEntry = (event.itemRenderer.data as KalturaBaseEntry);
-				if (entry.moderationCount > 0) {
-					entry.moderations = new ArrayCollection();
-					var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.LIST_ENTRY_MODERATION, entry);
-					cgEvent.dispatch();
-				}
-				if (kdp3Loader && _kdp3SwfLoader.content) {
-					kdp3Loader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
-					_playerHasMedia = false;
-					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entry.id});
-					_kdp3SwfLoader.content.addEventListener(KdpEventTypes.MEDIA_LOADED, onKdpMediaLoaded);
+			private function getModeration():void {
+				var entry:KalturaBaseEntry = entryTable.selectedItem as KalturaBaseEntry;
+				
+				if (_selectedEntry != entry) {
+					_selectedEntry = entry;	// remember 
+				
+					if (entry && entry.moderationCount > 0) {
+						entry.moderations = new ArrayCollection();
+						var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.LIST_ENTRY_MODERATION, entry);
+						cgEvent.dispatch();
+					}
+					if (kdp3Loader && _kdp3SwfLoader.content) {
+						kdp3Loader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
+						if (entry) {
+							_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entry.id});
+						}
+					}
 				}
 			}
 
-
-
-			private function onKdpMediaLoaded(evt:Event = null):void {
-				_playerHasMedia = true;
-			}
 
 
 			private function banUser():void {
@@ -359,7 +353,7 @@
 					return;
 				}
 				if (_moderationModel.confirmModeration) {
-					
+
 					var confirmString:String = resourceManager.getString('cms', 'confirmApprove');
 					for (var i:int = 0; i<_affectedEntries.length; i++) {
 						confirmString += (i+1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
@@ -370,7 +364,7 @@
 					approveEntries();
 				}
 			}
-			
+
 			private function approveEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
 					clearKdp();
@@ -402,7 +396,7 @@
 					rejectEntries();
 				}
 			}
-			
+
 			private function rejectEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
 					clearKdp();
@@ -508,14 +502,6 @@
 			}
 
 
-			protected function entryTable_itemClickHandler(event:EntryTableEvent):void {
-				var cgEvent:SelectionEvent = new SelectionEvent(SelectionEvent.ENTRIES_SELECTION_CHANGED, entryTable.selectedItems);
-				cgEvent.dispatch();
-			}
-
-
-
-			
 
 		]]>
 	</mx:Script>
@@ -533,7 +519,7 @@
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:Spacer height="15" />
-	
+
 	<mx:HDividedBox id="topContainer" width="100%" height="100%">
 		<fltr:EntriesFilter id="filter" height="100%" width="245"  
 							freeTextSearch="{searchBox}"
@@ -543,15 +529,15 @@
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
 				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
-							   selectionChanged="actionsManager.itemClickHandler(event)" 
-							   showDetails="actionsManager.showEntryDetailsHandler(event)"
-							   openPreview="actionsManager.preview(event)"
-							   sortDirection="{EntryTable.ASCENDING}" 
-							   dataProvider="{_listableVo.arrayCollection}"
-							   selectedEntry="{selectedEntry}" orderByChanged="{onOrderByChanged()}"
-							   creationComplete="removeColums( event )" change="getModeration( event )"
-							   dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"
-							   usedForModeration="true"/>
+								selectionChanged="actionsManager.itemClickHandler(event); getModeration();" 
+								showDetails="actionsManager.showEntryDetailsHandler(event)"
+								openPreview="actionsManager.preview(event)"
+								sortDirection="{EntryTable.ASCENDING}" 
+								dataProvider="{_listableVo.arrayCollection}"
+								orderByChanged="{onOrderByChanged()}"
+								creationComplete="removeColums( event )" 
+								dragEnabled="false" dragMoveEnabled="false" dropEnabled="false"
+								usedForModeration="true"/>
 				<mx:Panel id="kdpContainer" height="100%" minWidth="290"
 						  styleName="modPrev" toolTip="{entryTable.selectedItem.name}" layout="vertical" 
 						  title="{resourceManager.getString('cms', 'preview')} - {entryTable.selectedItem.name}">
@@ -569,15 +555,15 @@
 								 styleName="flagList" selectable="false" borderColor="0xCCCCCC" borderStyle="solid" 
 								 rowHeight="80" dataProvider="{moderationModel.moderationsArray}"
 								 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.ModerationItemRenderer"/>
-						
+
 					</mx:VBox>
 				</mx:Panel>
 			</mx:HBox>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 				<bulkactions:BulkModerationActionsMenu id="bulkActions" height="{paging.height}" 
-						approveEntries="onApprove(event)" rejectEntries="onReject(event)"/>
+													   approveEntries="onApprove(event)" rejectEntries="onReject(event)"/>
 				<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="100%"  creationComplete="paging_creationCompleteHandler(event)"
-							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true" />
+								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true" />
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HDividedBox>
