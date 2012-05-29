@@ -198,11 +198,14 @@ package com.kaltura.edw.components.fltr.cat
 			addEventListener(Event.CHANGE, onSelectionChange, false, 0, true);
 			addEventListener(TreeEvent.ITEM_OPEN, onItemOpen, false, 0, true);
 			
-			// get selection mode from SO
-			var so:SharedObject = SharedObject.getLocal("KMC_catTree");
-			if (so.data && so.data.selectionMode) {
-				selectionMode = so.data.selectionMode;
+			if (selectionMode != CatTreeSelectionMode.SINGLE_SELECT) {
+				// get selection mode from SO
+				var so:SharedObject = SharedObject.getLocal("KMC_catTree");
+				if (so.data && so.data.selectionMode) {
+					selectionMode = so.data.selectionMode;
+				}
 			}
+			
 		}
 		
 		private function initDataManager():void {
