@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaBatchJobStatus;
+			
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, finishedBtn, failedBtn, otherBtn];
+				friendlyName = resourceManager.getString('filter', 'buStatusTooltip');
+			}
+			
+			override public function get filter():Object {
+				var typesString:String = "";
+				//if non of the items are selected or all selected
+				if ((finishedBtn.selected && failedBtn.selected && otherBtn.selected) 
+					|| (!finishedBtn.selected && !failedBtn.selected && !otherBtn.selected)) {
+					typesString = "";
+				}
+				else {
+					if (finishedBtn.selected) {
+						typesString += KalturaBatchJobStatus.FINISHED + ",";
+					}
+					if (failedBtn.selected) {
+						typesString += KalturaBatchJobStatus.FAILED + "," + KalturaBatchJobStatus.FATAL + ",";
+					}
+					if (otherBtn.selected) {
+						typesString += KalturaBatchJobStatus.ABORTED + "," + 
+							KalturaBatchJobStatus.ALMOST_DONE + "," + KalturaBatchJobStatus.DONT_PROCESS + "," +
+							KalturaBatchJobStatus.MOVEFILE + "," + KalturaBatchJobStatus.PENDING + "," +
+							KalturaBatchJobStatus.PROCESSED + "," + KalturaBatchJobStatus.PROCESSING + "," +
+							KalturaBatchJobStatus.QUEUED + "," + KalturaBatchJobStatus.RETRY + ",";
+					}
+					//remove last , 
+					typesString = typesString.slice(0, typesString.length - 1);
+				}
+				return typesString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					finishedBtn.selected = false;
+					failedBtn.selected = false;
+					otherBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaBatchJobStatus.FINISHED:
+								finishedBtn.selected = true;
+								break;
+							
+							case KalturaBatchJobStatus.FAILED:
+							case KalturaBatchJobStatus.FATAL:
+								failedBtn.selected = true;
+								break;
+							
+							case KalturaBatchJobStatus.ABORTED:
+							case KalturaBatchJobStatus.ALMOST_DONE:
+							case KalturaBatchJobStatus.DONT_PROCESS:
+							case KalturaBatchJobStatus.MOVEFILE:
+							case KalturaBatchJobStatus.PENDING:
+							case KalturaBatchJobStatus.PROCESSED:
+							case KalturaBatchJobStatus.PROCESSING:
+							case KalturaBatchJobStatus.QUEUED:
+							case KalturaBatchJobStatus.RETRY:
+								otherBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="finishedBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFinished')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="failedBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusFailed')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="otherBtn" width="100%" label="{resourceManager.getString('filter', 'buStatusOther')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>

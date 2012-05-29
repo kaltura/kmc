@@ -20,6 +20,10 @@ package com.kaltura.kmc.modules.content.events
 		public static const BULK_UPLOAD_CATEGORIES : String = "content_bulkUploadCategories";
 		
 		
+		/**
+		 * list bulk upload jobs
+		 * event.data is [filter, pager] 
+		 */		
 		public static const LIST_BULK_UPLOAD : String = "content_listBulkUpload";
 		
 		/**
@@ -27,14 +31,9 @@ package com.kaltura.kmc.modules.content.events
 		 */		
 		public static const DELETE_BULK_UPLOAD : String = "content_deleteBulkUpload";
 		
-		/**
-		 * filter for list actions
-		 */
-		public var filterVO:FilterVO;
 		
-		public function BulkEvent(type:String, filterVO:FilterVO = null, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function BulkEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
-			this.filterVO = filterVO;
 		}	
 	}
 }

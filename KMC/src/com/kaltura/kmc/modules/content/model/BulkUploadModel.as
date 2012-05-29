@@ -13,12 +13,12 @@ package com.kaltura.kmc.modules.content.model
 		
 		/**
 		 * list of <code>KalturaBulkUpload</code>
-		 * used as dataprovider somewhere in <code>BulkUpload</code>
+		 * used as dataprovider in <code>BulkUpload</code>
 		 * */
 		public var bulkUploads:ArrayCollection = null;
 		
 		/**
-		 * total count for pager somewhere in <code>BulkUpload</code>
+		 * total count for pager in <code>BulkUpload</code>
 		 * */
 		public var bulkUploadTotalCount:int = 0;
 		
@@ -32,16 +32,6 @@ package com.kaltura.kmc.modules.content.model
 		 * the default conversion profile for this partner 
 		 */		
 		public var defaultConversionProfileId:int;
-		
-		/**
-		 * pager for searching bulk uploads 
-		 */
-		public var bulkUploadFilterPager:KalturaFilterPager;
-		
-//		/**
-//		 * path to the bulkupload sample file 
-//		 */		
-//		public var sampleFileUrl:String;
 		
 		/**
 		 * call this JS function to open CW

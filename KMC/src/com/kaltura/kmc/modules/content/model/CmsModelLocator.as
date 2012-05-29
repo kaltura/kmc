@@ -271,8 +271,6 @@ package com.kaltura.kmc.modules.content.model {
 			BindingUtils.bindProperty(categoriesModel, "loadingFlag", this, "loadingFlag");
 			
 			bulkUploadModel = new BulkUploadModel();
-			bulkUploadModel.bulkUploadFilterPager = new KalturaFilterPager();
-			bulkUploadModel.bulkUploadFilterPager.pageSize = 10;
 			
 			extSynModel = new ExtSynModel();
 			extSynModel.syndicationFeedsFilterPager = new KalturaFilterPager();

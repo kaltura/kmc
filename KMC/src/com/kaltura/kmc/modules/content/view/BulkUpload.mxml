@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:navigation="com.kaltura.kmc.modules.content.view.navigation.*"
 		 xmlns:controls="com.kaltura.controls.*"
 		 horizontalAlign="left" width="100%" height="100%" 
-		 creationComplete="{creationCompleteHandler(event)}">
+		 creationComplete="{creationCompleteHandler(event)}" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" xmlns:filter="com.kaltura.kmc.modules.content.view.bulk.filter.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -21,6 +21,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.pager.Pager;
 			import com.kaltura.vo.KalturaBulkUpload;
+			import com.kaltura.vo.KalturaBulkUploadFilter;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
@@ -48,9 +49,6 @@
 			private var _fm:FileManager = new FileManager();
 
 
-			private var _filter:FilterVO = new FilterVO();
-
-
 			public function initPaging():void {
 				if (paging && _pager && _pager.allEntries)
 					paging.totalCount = _pager.numPagesTotal * _pager.localPageSize;
@@ -61,14 +59,21 @@
 			 * load bulkuploads list
 			 * */
 			public function loadEntries():void {
-				if (paging)
-					_filter.page = paging.selectedPage;
 				if (bulkUploadEnabled) {
-					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD, _filter);
+					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD);
+					bulkEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager];
 					bulkEvent.dispatch();
 				}
 			}
-
+			
+			
+			/**
+			 * This is a new search called by an action on the filter vo
+			 */
+			private function newSearchFromFilter():void {
+				paging.selectedPage = 1;
+				loadEntries();
+			}
 
 
 			private function getTypes():Array {
@@ -202,10 +207,8 @@
 
 
 			private function onPagerCreationComplete(event:Event):void {
-				bulkUploadData.bulkUploadFilterPager = paging.kalturaFilterPager;
 				paging.selectedPage = 1;
 				paging.pageSize = paging.rowInPageCb.value as int;
-
 			}
 
 
@@ -221,6 +224,7 @@
 				addEventListener("delete", handleBulkAction);
 				addEventListener("dnldLog", handleBulkAction);
 				addEventListener("dnldOrig", handleBulkAction);
+				filter.kalturaFilter = new KalturaBulkUploadFilter();
 				loadEntries();
 			}
 			
@@ -311,95 +315,108 @@
 		]]>
 	</mx:Script>
 
-		<mx:VBox id="bulkUploadBox" width="100%" height="100%" >
-			<mx:Label text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="expendableButton" />
-			<mx:HBox styleName="noPadding" width="100%">
-				<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" />
-				<mx:Spacer width="100%" />
-				<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}" styleName="recycleIcon"/>
-			</mx:HBox>
-			
-			<mx:VBox styleName="vGapBox" width="100%" height="100%">
-				<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false" verticalAlign="middle"
-							 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
-					<mx:columns>
-						<!-- file type -->
-						<mx:DataGridColumn width="50" labelFunction="getUploadType" 
-										   headerText="{resourceManager.getString('cms', 'uploadType')}" />
-						
-						<!-- object type -->
-						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'objectType')}" >
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getUploadObjectType(data.bulkUploadObjectType)}"
-											  toolTip="{this.text}"/>
-								</mx:Component>
-							</mx:itemRenderer>	
-						</mx:DataGridColumn>
-						
-						<!-- file name -->
-						<mx:DataGridColumn width="110" dataField="fileName" dataTipField="fileName"
-										   headerText="{resourceManager.getString('cms', 'originalFileName')}" />
-						
-						<!-- uploaded by -->
-						<mx:DataGridColumn labelFunction="getScreenNameOrUserId"
-										   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
-										   showDataTips="true" />
-						
-						<!-- uploaded on -->
-						<mx:DataGridColumn dataField="uploadedOn" width="100"
-										   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
-										   showDataTips="true" >
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" />
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						
-						<!-- number of items -->
-						<mx:DataGridColumn dataField="numOfObjects" width="110"
-										   headerText="{resourceManager.getString('cms', 'numOfItems')}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:HBox width="100%" horizontalAlign="center">
-										<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" />
-									</mx:HBox>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						
-						<!-- status -->
-						<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'status')}">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" />
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						
-						<!-- error -->
-						<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'notification')}" >
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:Label paddingLeft="7" text="{outerDocument.replaceBrackets(data.error)}"
-											  toolTip="{this.text}"/>
-								</mx:Component>
-							</mx:itemRenderer>	
-						</mx:DataGridColumn>
-						
-						<!-- actions -->
-						<mx:DataGridColumn id="actions" width="200" paddingLeft="7" paddingRight="7"
-										   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
-										   headerText="{resourceManager.getString('cms', 'action')}" />
-						
-					</mx:columns>
-				</mx:DataGrid>
-				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
-								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()"
-								 showRowsInPage="true" 
-								 creationComplete="onPagerCreationComplete(event)"
-								 totalCount="{bulkUploadData.bulkUploadTotalCount}"/>
+	
+	<mx:HBox width="100%">
+		<mx:VBox styleName="noPadding" >
+			<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'importFromExistingHosting')}" styleName="filterTitleHeader" 
+					  width="{filter.width}" />
+			<mx:Text htmlText="{resourceManager.getString('cms', 'importFromExistingHostingText')}" />
 		</mx:VBox>
-	</mx:VBox>
+		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
+							   dataProvider="{filter.indicators}"
+							   boxClicked="filter.removeFilter(event.data)"/>
+		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
+					   styleName="recycleIcon"/>
+	</mx:HBox>
+	<mx:Spacer height="15" />
+	<mx:HDividedBox id="topContainer" width="100%" height="100%">
+		
+	
+		<filter:BulkLogFilter id="filter" height="100%" width="245"
+							  filterChanged="newSearchFromFilter()"/>
+		
+		<mx:VBox styleName="vGapBox" width="100%" height="100%">
+			<mx:DataGrid id="bulkTable" width="100%" height="100%" sortableColumns="false" verticalAlign="middle"
+						 dataProvider="{bulkUploadData.bulkUploads}" headerRelease="{event.preventDefault()}">
+				<mx:columns>
+					<!-- file type -->
+					<mx:DataGridColumn width="50" labelFunction="getUploadType" 
+									   headerText="{resourceManager.getString('cms', 'uploadType')}" />
+					
+					<!-- object type -->
+					<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'objectType')}" >
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label paddingLeft="7" text="{outerDocument.getUploadObjectType(data.bulkUploadObjectType)}"
+										  toolTip="{this.text}"/>
+							</mx:Component>
+						</mx:itemRenderer>	
+					</mx:DataGridColumn>
+					
+					<!-- file name -->
+					<mx:DataGridColumn width="110" dataField="fileName" dataTipField="fileName"
+									   headerText="{resourceManager.getString('cms', 'originalFileName')}" />
+					
+					<!-- uploaded by -->
+					<mx:DataGridColumn labelFunction="getScreenNameOrUserId"
+									   headerText="{resourceManager.getString('cms', 'uploadedBy')}"
+									   showDataTips="true" />
+					
+					<!-- uploaded on -->
+					<mx:DataGridColumn dataField="uploadedOn" width="100"
+									   headerText="{resourceManager.getString('cms', 'uploadedOn')}"
+									   showDataTips="true" >
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label paddingLeft="7" text="{outerDocument.getDate(data)}" />
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					
+					<!-- number of items -->
+					<mx:DataGridColumn dataField="numOfObjects" width="110"
+									   headerText="{resourceManager.getString('cms', 'numOfItems')}">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:HBox width="100%" horizontalAlign="center">
+									<mx:Label id="entriesLabel" text="{outerDocument.getEntriesNumber(data)}" />
+								</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					
+					<!-- status -->
+					<mx:DataGridColumn width="100" headerText="{resourceManager.getString('cms', 'status')}">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label paddingLeft="7" text="{outerDocument.getStatus(data.status)}" />
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					
+					<!-- error -->
+					<mx:DataGridColumn headerText="{resourceManager.getString('cms', 'notification')}" >
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:Label paddingLeft="7" text="{outerDocument.replaceBrackets(data.error)}"
+										  toolTip="{this.text}"/>
+							</mx:Component>
+						</mx:itemRenderer>	
+					</mx:DataGridColumn>
+					
+					<!-- actions -->
+					<mx:DataGridColumn id="actions" width="200" paddingLeft="7" paddingRight="7"
+									   itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.uploads.LogActionsIR"
+									   headerText="{resourceManager.getString('cms', 'action')}" />
+					
+				</mx:columns>
+			</mx:DataGrid>
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()"
+							 showRowsInPage="true" 
+							 creationComplete="onPagerCreationComplete(event)"
+							 totalCount="{bulkUploadData.bulkUploadTotalCount}"/>
+		</mx:VBox>
+	</mx:HDividedBox>
+	
 </mx:VBox>

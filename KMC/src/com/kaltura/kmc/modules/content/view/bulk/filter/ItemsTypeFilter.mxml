@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.types.KalturaBulkUploadObjectType;
+			
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, entryBtn, categoryBtn, memberBtn, userBtn];
+				friendlyName = resourceManager.getString('filter', 'upItemsTooltip');
+			}
+			
+			override public function get filter():Object {
+				var typesString:String = "";
+				//if non of the items are selected or all selected
+				if ((entryBtn.selected && categoryBtn.selected && memberBtn.selected && userBtn.selected) 
+					|| (!entryBtn.selected && !categoryBtn.selected && !memberBtn.selected && !userBtn.selected)) {
+					typesString = null;
+				}
+				else {
+					if (entryBtn.selected) {
+						typesString += KalturaBulkUploadObjectType.ENTRY + ",";
+					}
+					if (categoryBtn.selected) {
+						typesString += KalturaBulkUploadObjectType.CATEGORY + ",";
+					}
+					if (memberBtn.selected) {
+						typesString += KalturaBulkUploadObjectType.CATEGORY_USER + ",";
+					}
+					if (userBtn.selected) {
+						typesString += KalturaBulkUploadObjectType.USER + ",";
+					}
+					//remove last , 
+					typesString = typesString.slice(0, typesString.length - 1);
+				}
+				return typesString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					entryBtn.selected = false;
+					categoryBtn.selected = false;
+					memberBtn.selected = false;
+					userBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaBulkUploadObjectType.ENTRY:
+								entryBtn.selected = true;
+								break;
+							
+							case KalturaBulkUploadObjectType.CATEGORY:
+								categoryBtn.selected = true;
+								break;
+							
+							case KalturaBulkUploadObjectType.CATEGORY_USER:
+								memberBtn.selected = true;
+								break;
+							
+							case KalturaBulkUploadObjectType.USER:
+								userBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="entryBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsEntry')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="categoryBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsCategory')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="memberBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsMemeber')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="userBtn" width="100%" label="{resourceManager.getString('filter', 'upItemsUser')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>
