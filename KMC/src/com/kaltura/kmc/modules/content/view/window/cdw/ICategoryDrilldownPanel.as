@@ -7,10 +7,10 @@ package com.kaltura.kmc.modules.content.view.window.cdw
 		
 		/**
 		 * the panel will see if the info it holds is valid for saving. When 
-		 * validation process is complete, the panel will dispatch a validation 
-		 * event with the result.
+		 * validation process is complete, the panel will return the result.
+		 * (true if valid, false otherwise)
 		 */
-		function validate():void;
+		function validate():Boolean;
 		
 		/**
 		 * the panel will save its data. When save is complete, panel informs the 

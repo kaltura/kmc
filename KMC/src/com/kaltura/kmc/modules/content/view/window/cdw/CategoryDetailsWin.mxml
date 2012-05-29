@@ -88,7 +88,21 @@
 			public var enableSave:Boolean = true; 
 			
 
+			
 			private function onClose(event:Event):void {
+				if ((_isNewCategory && _model.processingNewCategory) || hasChanged()) {
+					// discard changes?
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
+				}
+				else {
+					removeMe();
+				}
+			}
+			
+			private function removeMe(event:CloseEvent = null):void {
+				if (event && event.detail == Alert.NO) {
+					return;
+				}
 				if (tabsNav != null) {
 					tabsNav.clear();
 					tabsNav.destroy();
@@ -123,6 +137,11 @@
 					currentState = "tabs";
 				}
 			}
+			
+			
+			private function validate():Boolean {
+				return tabsNav.validate();
+			}
 
 			/**
 			 * should categories/entries list be refreshed after save action
@@ -131,24 +150,26 @@
 			private var _refreshListsRequired:Boolean;
 
 			private function onSave(refreshLists:Boolean):void {
-				if (_isNewCategory && _model.processingNewCategory) {
-					// remove any privacy contexts (if required, they will be set by server)
-					_undoCategory.privacyContexts = null;
-					_undoCategory.pendingMembersCount = int.MIN_VALUE;
-					_undoCategory.membersCount = int.MIN_VALUE;
-					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-					cgEvent.data = [_undoCategory, refreshLists];
-					cgEvent.dispatch();
-				}
-				else {
-					if (hasChanged()) {
-						_refreshListsRequired = refreshLists;
-						if (_origCategory.name != _undoCategory.name) {
-							var action:String = resourceManager.getString('cms', 'catBatchName');
-							Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, updateCategory); 
-						}
-						else {
-							updateCategory();
+				if (validate()) {
+					if (_isNewCategory && _model.processingNewCategory) {
+						// remove any privacy contexts (if required, they will be set by server)
+						_undoCategory.privacyContexts = null;
+						_undoCategory.pendingMembersCount = int.MIN_VALUE;
+						_undoCategory.membersCount = int.MIN_VALUE;
+						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+						cgEvent.data = [_undoCategory, refreshLists];
+						cgEvent.dispatch();
+					}
+					else {
+						if (hasChanged()) {
+							_refreshListsRequired = refreshLists;
+							if (_origCategory.name != _undoCategory.name) {
+								var action:String = resourceManager.getString('cms', 'catBatchName');
+								Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, updateCategory); 
+							}
+							else {
+								updateCategory();
+							}
 						}
 					}
 				}
@@ -173,7 +194,7 @@
 			
 			private function onSaveAndClose():void {
 				onSave(true);
-				onClose(null);
+				removeMe();
 			}
 
 

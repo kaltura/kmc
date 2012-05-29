@@ -16,11 +16,14 @@
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.KalturaCategory;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
 			import mx.events.FlexEvent;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.ValidationResult;
 
 			private const TEXT_WIDTH:Number = 264;
 			private const LABEL_WIDTH:Number = 90;
@@ -91,8 +94,23 @@
 			}
 
 
-			public function validate():void {
-
+			public function validate():Boolean {
+				var isOk:Boolean = true;
+				// Name: Mandatory field – not possible to create a category without it.
+				var vre:ValidationResultEvent = nameValidator.validate();
+				if ((vre.results != null) && (vre.results.length > 0)) {
+					isOk = !(vre.results[0] as ValidationResult).isError;
+				}
+				if (!isOk) {
+					Alert.show(resourceManager.getString('cms', 'categoryNameIsMandatory'));
+					return false;
+				}
+				
+//				Reference ID: Should be unique under a category under the same parent category. 
+//								any attempt to create/move a category with existing Reference ID 
+//								from the KMC under a parent category should prompt an warning message 
+//								(same as in entry reference ID)
+				return true;
 			}
 
 
@@ -182,6 +200,10 @@
 			}
 		]]>
 	</mx:Script>
+	
+	<mx:StringValidator id="nameValidator" source="{nameInput}" property="text" triggerEvent="change"
+						required="true" requiredFieldError="{resourceManager.getString('cms', 'categoryNameIsMandatory')}"/>
+	
 	<mx:VBox width="100%" height="{height}" horizontalAlign="right">
 		<!-- navigation -->
 		<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()"
