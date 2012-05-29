@@ -34,6 +34,28 @@ package com.kaltura.vo
 	{
 		/**
 		 **/
+		public var uploadedOnGreaterThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var uploadedOnLessThanOrEqual : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var uploadedOnEqual : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var statusIn : String = null;
+
+		/**
+		 * @see com.kaltura.types.KalturaBatchJobStatus
+		 **/
+		public var statusEqual : int = int.MIN_VALUE;
+
+		/**
+		 * @see com.kaltura.types.KalturaBulkUploadObjectType
+		 **/
 		public var bulkUploadObjectTypeEqual : String = null;
 
 		/**
@@ -44,6 +66,11 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('uploadedOnGreaterThanOrEqual');
+			arr.push('uploadedOnLessThanOrEqual');
+			arr.push('uploadedOnEqual');
+			arr.push('statusIn');
+			arr.push('statusEqual');
 			arr.push('bulkUploadObjectTypeEqual');
 			arr.push('bulkUploadObjectTypeIn');
 			return arr;

@@ -25,26 +25,41 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.commands.partner
 {
-	public class KalturaReportType
+	import com.kaltura.vo.KalturaUserLoginDataFilter;
+	import com.kaltura.delegates.partner.PartnerCheckUserLoginDataExistsDelegate;
+	import com.kaltura.net.KalturaCall;
+
+	/**
+	 * Action checks whether partners with the given login data specifications exists and returns true/false.
+	 * 
+	 **/
+	public class PartnerCheckUserLoginDataExists extends KalturaCall
 	{
-		public static const TOP_CONTENT : int = 1;
-		public static const CONTENT_DROPOFF : int = 2;
-		public static const CONTENT_INTERACTIONS : int = 3;
-		public static const MAP_OVERLAY : int = 4;
-		public static const TOP_CONTRIBUTORS : int = 5;
-		public static const TOP_SYNDICATION : int = 6;
-		public static const CONTENT_CONTRIBUTIONS : int = 7;
-		public static const WIDGETS_STATS : int = 8;
-		public static const USER_ENGAGEMENT : int = 11;
-		public static const SPEFICIC_USER_ENGAGEMENT : int = 12;
-		public static const USER_TOP_CONTENT : int = 13;
-		public static const USER_CONTENT_DROPOFF : int = 14;
-		public static const USER_CONTENT_INTERACTIONS : int = 15;
-		public static const APPLICATIONS : int = 16;
-		public static const USER_USAGE : int = 17;
-		public static const SPECIFIC_USER_USAGE : int = 18;
-		public static const PARTNER_USAGE : int = 201;
+		public var filterFields : String;
+		
+		/**
+		 * @param filter KalturaUserLoginDataFilter
+		 **/
+		public function PartnerCheckUserLoginDataExists( filter : KalturaUserLoginDataFilter )
+		{
+			service= 'partner';
+			action= 'checkUserLoginDataExists';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+ 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
+		}
+
+		override public function execute() : void
+		{
+			setRequestArgument('filterFields', filterFields);
+			delegate = new PartnerCheckUserLoginDataExistsDelegate( this , config );
+		}
 	}
 }

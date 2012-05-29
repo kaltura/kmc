@@ -25,26 +25,35 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.delegates.report
 {
-	public class KalturaReportType
+	import com.kaltura.vo.KalturaReportBaseTotal;KalturaReportBaseTotal;;
+
+	import com.kaltura.core.KClassFactory;
+
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class ReportGetBaseTotalDelegate extends WebDelegateBase
 	{
-		public static const TOP_CONTENT : int = 1;
-		public static const CONTENT_DROPOFF : int = 2;
-		public static const CONTENT_INTERACTIONS : int = 3;
-		public static const MAP_OVERLAY : int = 4;
-		public static const TOP_CONTRIBUTORS : int = 5;
-		public static const TOP_SYNDICATION : int = 6;
-		public static const CONTENT_CONTRIBUTIONS : int = 7;
-		public static const WIDGETS_STATS : int = 8;
-		public static const USER_ENGAGEMENT : int = 11;
-		public static const SPEFICIC_USER_ENGAGEMENT : int = 12;
-		public static const USER_TOP_CONTENT : int = 13;
-		public static const USER_CONTENT_DROPOFF : int = 14;
-		public static const USER_CONTENT_INTERACTIONS : int = 15;
-		public static const APPLICATIONS : int = 16;
-		public static const USER_USAGE : int = 17;
-		public static const SPECIFIC_USER_USAGE : int = 18;
-		public static const PARTNER_USAGE : int = 201;
+		public function ReportGetBaseTotalDelegate(call:KalturaCall, config:KalturaConfig)
+		{
+			super(call, config);
+		}
+
+		override public function parse(result:XML) : *
+		{
+			var arr : Array = new Array();
+			for( var i:int=0; i<result.result.children().length() ; i++)
+			{
+				var cls : Class = getDefinitionByName('com.kaltura.vo.'+ result.result.children()[i].objectType) as Class;
+				var obj : * = (new KClassFactory( cls )).newInstanceFromXML( XMLList(result.result.children()[i]) );
+				arr.push(obj);
+			}
+			return arr;
+		}
+
 	}
 }

@@ -25,26 +25,41 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaReportType
+	import com.kaltura.vo.BaseFlexVo;
+
+	[Bindable]
+	public dynamic class KalturaReportBaseTotal extends BaseFlexVo
 	{
-		public static const TOP_CONTENT : int = 1;
-		public static const CONTENT_DROPOFF : int = 2;
-		public static const CONTENT_INTERACTIONS : int = 3;
-		public static const MAP_OVERLAY : int = 4;
-		public static const TOP_CONTRIBUTORS : int = 5;
-		public static const TOP_SYNDICATION : int = 6;
-		public static const CONTENT_CONTRIBUTIONS : int = 7;
-		public static const WIDGETS_STATS : int = 8;
-		public static const USER_ENGAGEMENT : int = 11;
-		public static const SPEFICIC_USER_ENGAGEMENT : int = 12;
-		public static const USER_TOP_CONTENT : int = 13;
-		public static const USER_CONTENT_DROPOFF : int = 14;
-		public static const USER_CONTENT_INTERACTIONS : int = 15;
-		public static const APPLICATIONS : int = 16;
-		public static const USER_USAGE : int = 17;
-		public static const SPECIFIC_USER_USAGE : int = 18;
-		public static const PARTNER_USAGE : int = 201;
+		/**
+		 **/
+		public var id : String = null;
+
+		/**
+		 **/
+		public var data : String = null;
+
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			arr.push('id');
+			arr.push('data');
+			return arr;
+		}
+
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = new Array();
+			return arr;
+		}
 	}
 }

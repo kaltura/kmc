@@ -42,8 +42,9 @@ package com.kaltura.commands.partner
 		/**
 		 * @param partner KalturaPartner
 		 * @param cmsPassword String
+		 * @param templatePartnerId int
 		 **/
-		public function PartnerRegister( partner : KalturaPartner,cmsPassword : String='' )
+		public function PartnerRegister( partner : KalturaPartner,cmsPassword : String='',templatePartnerId : int=int.MIN_VALUE )
 		{
 			service= 'partner';
 			action= 'register';
@@ -56,6 +57,8 @@ package com.kaltura.commands.partner
 			valueArr = valueArr.concat(keyValArr[1]);
 			keyArr.push('cmsPassword');
 			valueArr.push(cmsPassword);
+			keyArr.push('templatePartnerId');
+			valueArr.push(templatePartnerId);
 			applySchema(keyArr, valueArr);
 		}
 
