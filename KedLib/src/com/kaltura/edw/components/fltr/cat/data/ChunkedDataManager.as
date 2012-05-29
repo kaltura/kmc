@@ -53,7 +53,7 @@ package com.kaltura.edw.components.fltr.cat.data
 		 * fetch children under this branch if needed
 		 * */
 		public function branchClicked(cat:CategoryVO):void {
-			if (cat.children.length == 0) {
+			if (!cat.children || cat.children.length == 0) {
 				// only list children if we don't yet have them
 				var cte:CategoriesTreeEvent = new CategoriesTreeEvent(CategoriesTreeEvent.LIST_CATEGORIES_UNDER);
 				cte.data = cat;

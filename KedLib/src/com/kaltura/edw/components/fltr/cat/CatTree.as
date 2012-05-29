@@ -205,8 +205,9 @@ package com.kaltura.edw.components.fltr.cat
 					selectionMode = so.data.selectionMode;
 				}
 			}
-			
+			showRoot = false;
 		}
+		
 		
 		private function initDataManager():void {
 			// destroy old controller

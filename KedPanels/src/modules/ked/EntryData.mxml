@@ -106,25 +106,18 @@
 			/**
 			 * width of label of noneditable fields on the left
 			 * */
-			private const RIGHT_LABEL_WIDTH:Number = 75;
+			private const RIGHT_LABEL_WIDTH:Number = 86;
 			
 			/**
 			 * width of components of non editable fields on the left
 			 * */
-			private const RIGHT_TEXT_WIDTH:Number = 90;
+			private const RIGHT_TEXT_WIDTH:Number = 80;
 			
 			
 			/**
-			 * width of label of noneditable fields on the left
+			 * width of components of non editable fields on the left
 			 * */
-			private const RIGHT_LABEL_WIDTH2:Number = 65;
-			
-			/**
-			 * width of components of non editable fields on the right
-			 * */
-			private const RIGHT_TEXT_WIDTH2:Number = 60;
-			
-			
+			private const RIGHT_TEXT_WIDTH2:Number = 62;
 			
 			
 			// =================================================================
@@ -885,7 +878,8 @@
 					<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
 					
-					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
+					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" height="{descriptionTi.height}" 
+											 selectedItemStyleName="facebook"
 											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true" 
 											 labelField="tag" change="tagsComplete_changeHandler(event)"
 											 prompt="{resourceManager.getString('drilldown','tagsPrompt')}"/>
@@ -896,7 +890,8 @@
 								  styleName="drillDownLabel"/>
 						<mx:LinkButton id="btnCategories" click="btnCategories_clickHandler(event)" styleName="editButton" />
 					</mx:HBox>
-					<components:AutoComplete id="catComplete" width="{TEXT_WIDTH}" selectedItemStyleName="facebook"
+					<components:AutoComplete id="catComplete" width="{TEXT_WIDTH}" height="{descriptionTi.height}" 
+											 selectedItemStyleName="facebook"
 											 showRemoveIcon="true" allowMultipleSelection="true" labelField="name"
 											 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
 											 dropDownItemRenderer="{new ClassFactory(CategoryDropDownIR)}"
@@ -922,7 +917,7 @@
 	
 	
 	<!-- entry static metadata -->
-	<mx:VBox id="noneditable" width="330" height="100%" styleName="noVGap" paddingLeft="10" >
+	<mx:VBox id="noneditable" width="354" height="100%" styleName="noVGap" paddingLeft="10" >
 		<!-- entry id -->
 		<mx:HBox width="100%">
 			<mx:Label text="{resourceManager.getString('drilldown','entryId')}:" styleName="drillDownTitleLabel" />
@@ -948,16 +943,29 @@
 		<!-- no content message -->
 		<mx:Label visible="{!_entryHasContent}" includeInLayout="{!_entryHasContent}"
 				  text="{resourceManager.getString('drilldown','noContentMessage')}" styleName="noContentLabel" />
-			
+		<mx:Spacer height="20" />
 		<!-- non-editable info -->
-		<mx:HBox width="100%" paddingTop="20">
-			<mx:VBox width="55%" >
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{RIGHT_LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="{RIGHT_TEXT_WIDTH}"
-							  styleName="drillDownSubLabel"/>
-				</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{selectedEntry.creatorId}" width="100%" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('drilldown','createdDate')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label text="{EntryDataHelper.formatDate(selectedEntry.createdAt)}" width="100%"
+					  styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		<mx:HBox width="100%" paddingBottom="15">
+			<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
+					  styleName="drillDownLabel"/>
+			<mx:Label id="landingPageLabel" selectable="true" width="100%" styleName="drillDownSubLabel"/>
+		</mx:HBox>
+		
+		<mx:HRule width="100%" />
+		<!-- - - - - - - 2 columns - - - - - - - -->
+		<mx:HBox width="100%" styleName="noPadding" paddingTop="15" >
+			<mx:VBox width="100%" styleName="noPadding" >
 				<mx:HBox width="100%">
 					<mx:Label text="{resourceManager.getString('drilldown','type')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
@@ -965,60 +973,52 @@
 							  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('drilldown','moderation')}:" width="{RIGHT_LABEL_WIDTH}"
+					<mx:Label text="{resourceManager.getString('drilldown', 'moderation')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}"  width="{RIGHT_TEXT_WIDTH}"
+					<mx:Label text="{EntryDataHelper.getModeration(selectedEntry.moderationStatus)}" width="{RIGHT_TEXT_WIDTH}"
 							  styleName="drillDownSubLabel"/>
+				</mx:HBox>
+				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+					<mx:Label text="{resourceManager.getString('drilldown', 'plays')}:" 
+							  width="{RIGHT_LABEL_WIDTH}" styleName="drillDownLabel"/>
+					<mx:Label text="{selectedEntry.plays}"  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+				</mx:HBox>
+				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.rank}" 
+						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.rank}">
+					<mx:Label text="{resourceManager.getString('drilldown','rating')}:" 
+							  width="{RIGHT_LABEL_WIDTH}" styleName="drillDownLabel"/>
+					<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+				</mx:HBox>				
+			</mx:VBox>
+			
+			<mx:VBox width="100%" styleName="noPadding" >
+				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
+					<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{RIGHT_LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" width="{RIGHT_TEXT_WIDTH2}"
+							  styleName="drillDownSubLabel"/>
+				</mx:HBox>
+				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}" 
+						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.moderationCount}">
+					<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{RIGHT_LABEL_WIDTH}"
+							  styleName="drillDownLabel"/>
+					<mx:Label text="{selectedEntry.moderationCount}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
 				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.votes}" 
 						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.votes}">
 					<mx:Label text="{resourceManager.getString('drilldown','votesCount')}:"  width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.votes}"  width="{RIGHT_TEXT_WIDTH}" styleName="drillDownSubLabel"/>
+					<mx:Label text="{selectedEntry.votes}"  width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
 				</mx:HBox>
-				
+
 				<mx:HBox width="100%" visible="{selectedEntry.rootEntryId != selectedEntry.id}"
 						 includeInLayout="{selectedEntry.rootEntryId != selectedEntry.id}">
 					<mx:Label text="{resourceManager.getString('drilldown','clippedFrom')}:" width="{RIGHT_LABEL_WIDTH}"
 							  styleName="drillDownLabel"/>
-					<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)" width="{RIGHT_TEXT_WIDTH2}" />
+					<mx:LinkButton label="{selectedEntry.rootEntryId}" click="showParentEntry(event)" width="{RIGHT_TEXT_WIDTH2}"
+								   paddingLeft="0"/>
 				</mx:HBox>
 			</mx:VBox>
-			
-			<mx:VBox width="40%" >
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('drilldown','creator')}:" width="{RIGHT_LABEL_WIDTH2}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.creatorId}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown','duration')}:" width="{RIGHT_LABEL_WIDTH2}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{KTimeUtil.formatTime(selectedEntry.duration)}" width="{RIGHT_TEXT_WIDTH2}"
-							  styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown','flags')}:" width="{RIGHT_LABEL_WIDTH2}"
-							  styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.flags}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-				<mx:HBox width="100%" visible="{_entryHasContent &amp;&amp; selectedEntry.rank}" 
-						 includeInLayout="{_entryHasContent &amp;&amp; selectedEntry.rank}">
-					<mx:Label text="{resourceManager.getString('drilldown','rating')}:" 
-							  width="{RIGHT_LABEL_WIDTH2}" styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.rank}" width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
-				</mx:HBox>				
-				<mx:HBox width="100%" visible="{_entryHasContent}" includeInLayout="{_entryHasContent}">
-					<mx:Label text="{resourceManager.getString('drilldown','plays')}:" 
-							  width="{RIGHT_LABEL_WIDTH2}" styleName="drillDownLabel"/>
-					<mx:Label text="{selectedEntry.plays}"  width="{RIGHT_TEXT_WIDTH2}" styleName="drillDownSubLabel"/>
-				</mx:HBox>
-			</mx:VBox>
-		</mx:HBox>
-		<mx:HBox width="100%">
-			<mx:Label text="{resourceManager.getString('drilldown','landingPage')}:" width="{LABEL_WIDTH}"
-					  styleName="drillDownLabel"/>
-			<mx:Label id="landingPageLabel" selectable="true" width="100%" styleName="drillDownSubLabel"/>
 		</mx:HBox>
 	</mx:VBox>
 </mx:Module>

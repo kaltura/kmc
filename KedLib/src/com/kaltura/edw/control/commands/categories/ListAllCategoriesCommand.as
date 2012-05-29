@@ -68,6 +68,9 @@ package com.kaltura.edw.control.commands.categories
 			for each (var cat:CategoryVO in categories) {
 				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
 				if (parentCategory != null) {
+					if (!parentCategory.children) {
+						parentCategory.children = new ArrayCollection();
+					}
 					parentCategory.children.addItem(cat);
 					// (for falcon, don't sort, use received value)
 					// sortCategories(parentCategory.children);
