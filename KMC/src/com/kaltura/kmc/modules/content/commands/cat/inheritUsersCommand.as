@@ -76,6 +76,8 @@ package com.kaltura.kmc.modules.content.commands.cat
 			for (var i:int = 0; i<response.objects.length; i++) {
 				cu = response.objects[i] as KalturaCategoryUser;
 				cu.categoryId = _category.id;
+				cu.setInsertedFields(true);
+				cu.setUpdatedFieldsOnly(true);
 				cua = new CategoryUserAdd(cu);
 				mr.addAction(cua);
 			}
@@ -87,6 +89,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 		
 		override public function result(data:Object):void {
 			super.result(data);
+			if (!checkError(data)) {
+				_model.decreaseLoadCounter();
+				return;
+			}
 			if (_totalUsers > _pager.pageIndex * _pager.pageSize) {
 				getNextPage();
 			}

@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.commands.categoryUser.CategoryUserList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.vo.KalturaCategoryUserFilter;
 	import com.kaltura.vo.KalturaCategoryUserListResponse;
 	import com.kaltura.vo.KalturaFilterPager;
@@ -20,6 +21,13 @@ package com.kaltura.kmc.modules.content.commands.cat
 		private static var lastFilter:KalturaCategoryUserFilter;
 		
 		override public function execute(event:CairngormEvent):void {
+			if (event.type == CategoryEvent.RESET_CATEGORY_USER_LIST) {
+				_model.categoriesModel.categoryUsers = null;
+				_model.categoriesModel.totalCategoryUsers = 0;
+				return;
+			}
+			
+			
 			_model.increaseLoadCounter();
 			var f:KalturaCategoryUserFilter;
 			var p:KalturaFilterPager;
