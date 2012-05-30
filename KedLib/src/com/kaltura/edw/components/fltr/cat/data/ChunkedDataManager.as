@@ -46,6 +46,8 @@ package com.kaltura.edw.components.fltr.cat.data
 			
 			// then load root's children
 			cte = new CategoriesTreeEvent(CategoriesTreeEvent.LIST_CATEGORIES_UNDER);
+			cte.source = this;
+			cte.onComplete = reopenBranch;
 			_controller.dispatch(cte);
 		}
 		

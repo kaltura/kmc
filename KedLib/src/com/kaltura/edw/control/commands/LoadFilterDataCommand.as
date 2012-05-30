@@ -217,16 +217,5 @@ package com.kaltura.edw.control.commands
 			_filterModel.flavorParams.removeAll();
 		}
 		
-		
-		private function sortCategories(catArrCol:ArrayCollection):void {
-			var dataSortField:SortField = new SortField();
-			dataSortField.name = "name";
-			dataSortField.caseInsensitive = true;
-			dataSortField.descending = false;
-			var dataSort:Sort = new Sort();
-			dataSort.fields = [dataSortField];
-			catArrCol.sort = dataSort;
-			catArrCol.refresh();
-		}
 	}
 }

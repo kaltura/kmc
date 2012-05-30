@@ -1,10 +1,13 @@
 package com.kaltura.edw.components.fltr.cat.data
 {
+	import com.kaltura.edw.components.fltr.cat.events.CategoriesDataManagerEvent;
 	import com.kaltura.edw.control.CategoriesTreeController;
 	import com.kaltura.edw.control.events.CategoriesTreeEvent;
 	import com.kaltura.edw.vo.CategoryVO;
+	
+	import flash.events.EventDispatcher;
 
-	public class CompleteDataManager implements ICategoriesDataManger {
+	public class CompleteDataManager extends EventDispatcher implements ICategoriesDataManger {
 		
 		
 		private var _controller:CategoriesTreeController;
@@ -57,7 +60,13 @@ package com.kaltura.edw.components.fltr.cat.data
 			cte = new CategoriesTreeEvent(CategoriesTreeEvent.CREATE_ROOT_CATEGORY);
 			_controller.dispatch(cte);
 			cte = new CategoriesTreeEvent(CategoriesTreeEvent.LIST_ALL_CATEGORIES);
+			cte.source = this;
+			cte.onComplete = reopenBranch;
 			_controller.dispatch(cte);
 		} 
+		
+		private function reopenBranch(item:CategoryVO):void {
+			dispatchEvent(new CategoriesDataManagerEvent(CategoriesDataManagerEvent.REOPEN_BRANCH, item));
+		}
 	}
 }

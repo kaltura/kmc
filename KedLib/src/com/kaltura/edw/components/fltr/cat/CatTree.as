@@ -218,11 +218,11 @@ package com.kaltura.edw.components.fltr.cat
 			// select IDataManager
 			if (_chunkedData) {
 				_dataManager = new ChunkedDataManager();
-				(_dataManager as ChunkedDataManager).addEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, reopenBranch, false, 0, true);
 			}
 			else {
 				_dataManager = new CompleteDataManager();
 			}
+			_dataManager.addEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch, false, 0, true);
 			_dataManager.controller = new CategoriesTreeController();
 			_dataManager.loadInitialData();
 		}
@@ -243,11 +243,19 @@ package com.kaltura.edw.components.fltr.cat
 		 * expand the received branch  
 		 * @param e
 		 */
-		private function reopenBranch(e:CategoriesDataManagerEvent):void {
-			expandItem(e.data, false);
-			expandItem(e.data, true);
+		private function handleReopenBranch(e:CategoriesDataManagerEvent):void {
+			reopenBranch(e.data as CategoryVO);
+		}
+		
+		/**
+		 * expand the branch starting the given category  
+		 * @param catvo VO that represents a category in the tree
+		 */
+		private function reopenBranch(catvo:CategoryVO):void {
+			expandItem(catvo, false);
+			expandItem(catvo, true);
 			// mark cats from initFilter
-			selectFromInitial(e.data as CategoryVO);
+			selectFromInitial(catvo);
 			disableItems();
 		}
 		

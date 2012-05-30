@@ -4,8 +4,10 @@ package com.kaltura.edw.components.fltr.cat.data
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.vo.CategoryVO;
 	
+	import flash.events.IEventDispatcher;
+	
 
-	public interface ICategoriesDataManger {
+	public interface ICategoriesDataManger extends IEventDispatcher {
 		
 		/**
 		 * load the data that is intialy shown on the tree 

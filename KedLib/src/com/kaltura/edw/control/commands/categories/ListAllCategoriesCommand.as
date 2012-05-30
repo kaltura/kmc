@@ -21,25 +21,17 @@ package com.kaltura.edw.control.commands.categories
 
 	public class ListAllCategoriesCommand extends KedCommand {
 		
+		private var _source:*;
+		
+		private var _onComplete:Function;
+		
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
-//			var multiRequest:MultiRequest = new MultiRequest();
-//			var mefilter:KalturaMediaEntryFilter = new KalturaMediaEntryFilter();
-//			
-//			mefilter.statusIn = KalturaEntryStatus.NO_CONTENT + "," + KalturaEntryStatus.ERROR_CONVERTING + "," + KalturaEntryStatus.ERROR_IMPORTING +
-//				"," + KalturaEntryStatus.IMPORT + "," + KalturaEntryStatus.PRECONVERT + "," +
-//				KalturaEntryStatus.READY;
-//			mefilter.mediaTypeIn = KalturaMediaType.VIDEO + "," + KalturaMediaType.IMAGE + "," +
-//				KalturaMediaType.AUDIO + "," + "6" + "," + KalturaMediaType.LIVE_STREAM_FLASH;
-//			
-//			// to bypass server defaults
-//			mefilter.moderationStatusIn = '';
-//			
-//			var getEntryCount:BaseEntryCount = new BaseEntryCount(mefilter);
-//			multiRequest.addAction(getEntryCount);
+			
+			_source = event.source;
+			_onComplete = event.onComplete;
 			
 			var listCategories:CategoryList = new CategoryList();
-//			multiRequest.addAction(listCategories);
 			// listeners
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
 			listCategories.addEventListener(KalturaEvent.FAILED, fault);
@@ -51,6 +43,9 @@ package com.kaltura.edw.control.commands.categories
 			super.result(data);
 			var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 			buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, filterModel.categoriesMap);
+			if (_source && _onComplete != null) {
+				_onComplete.apply(_source, [filterModel.categories]);
+			}
 			_model.decreaseLoadCounter();
 		}
 		
