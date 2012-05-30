@@ -7,6 +7,7 @@
 								 xmlns:window="com.kaltura.kmc.view.window.*"
 								 xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*"
 								 initialize="onInitialize(event)" paddingBottom="0" paddingLeft="0" paddingRight="0"
+								 title="{setTitle(_undoCategory)}"
 								 styleName="WinTitleStyle">
 	<mx:Script>
 		<![CDATA[
@@ -87,7 +88,16 @@
 			 * */
 			public var enableSave:Boolean = true; 
 			
-
+			private function setTitle(cat:KalturaCategory):String {
+				var title:String = '';
+				if (_isNewCategory) {
+					title = resourceManager.getString('cms', 'newCategoryTitle');
+				}
+				else {
+					title = resourceManager.getString('cms', 'editCategoryTitle', [_origCategory.name]);
+				}
+				return title;
+			}
 			
 			private function onClose(event:Event):void {
 				if ((_isNewCategory && _model.processingNewCategory) || hasChanged()) {
@@ -129,11 +139,11 @@
 
 			private function onInitialize(evt:FlexEvent):void {
 				if (_isNewCategory) {
-					title = resourceManager.getString('cms', 'newCategoryTitle');
+//					title = resourceManager.getString('cms', 'newCategoryTitle');
 					currentState = "parentSelect";
 				}
 				else {
-					title = resourceManager.getString('cms', 'editCategoryTitle', [_origCategory.name]);
+//					title = resourceManager.getString('cms', 'editCategoryTitle', [_origCategory.name]);
 					currentState = "tabs";
 				}
 			}
