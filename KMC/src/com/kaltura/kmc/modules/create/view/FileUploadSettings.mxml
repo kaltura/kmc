@@ -25,6 +25,7 @@
 			import com.kaltura.vo.FileUploadVO;
 			import com.kaltura.vo.KalturaConversionProfile;
 			import com.kaltura.vo.KalturaConversionProfileListResponse;
+			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaMediaEntry;
 			
 			import mx.collections.ArrayCollection;
@@ -143,7 +144,9 @@
 			}
 			
 			private function listConversionProfiels():void {
-				var cpl:ConversionProfileList = new ConversionProfileList();
+				var p:KalturaFilterPager = new KalturaFilterPager();
+				p.pageSize = 500;	// very large number that should cover all profiles
+				var cpl:ConversionProfileList = new ConversionProfileList(null, p);
 				cpl.addEventListener(KalturaEvent.COMPLETE, conversionProfilesHandler);
 				cpl.addEventListener(KalturaEvent.FAILED, conversionProfilesHandler);
 				client.post(cpl);
