@@ -7,6 +7,7 @@
 			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.EntryFormBuilder;
 			import com.kaltura.edw.business.MetadataDataParser;
+			import com.kaltura.edw.control.events.MetadataDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.vo.CustomMetadataDataVO;
@@ -45,6 +46,10 @@
 
 			private var _tagsWatcher:ChangeWatcher;
 
+			/**
+			 * change watcher for custom data profiles, if not previously loaded via filter 
+			 * */
+			private var _profsWatcher:ChangeWatcher;
 			
 			/**
 			 * RnP: edit custom data
@@ -140,8 +145,15 @@
 
 
 			public function init():void {
-				buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
-
+				if (filterModel.categoryMetadataProfiles) {
+					buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+				}
+				else {
+					// if custom data profiles are not loaded, load them
+					_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterModel, ["categoryFormBuilders"]);
+					var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
+					listCategoryMetadata.dispatch();
+				}
 				new KACTagsController(tagsInput, CmsModelLocator.getInstance().context.kc);
 			}
 
@@ -171,6 +183,18 @@
 					}
 				}
 				return res;
+			}
+			
+			/**
+			 * after custom data profiles are loaded we can build the custom data UI.
+			 * */
+			private function onSetProfiles(value:ArrayCollection):void {
+				if (!value) {
+					return;
+				}
+				buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_INFO);
+				cgEvent.dispatch();
 			}
 
 

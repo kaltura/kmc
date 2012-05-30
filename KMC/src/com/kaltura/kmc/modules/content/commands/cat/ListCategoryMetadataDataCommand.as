@@ -20,10 +20,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	
 	public class ListCategoryMetadataDataCommand extends KalturaCommand
 	{
-		public function ListCategoryMetadataDataCommand()
-		{
-			super();
-		}
+		
 		/**
 		 * This command requests the server for the latest valid metadata data, that suits
 		 * the current profile id and current profile version
@@ -60,8 +57,6 @@ package com.kaltura.kmc.modules.content.commands.cat
 			
 			var metadataResponse:KalturaMetadataListResponse = data.data as KalturaMetadataListResponse;
 			
-//			var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-//			cddp.metadataInfoArray = new ArrayCollection;
 			var filterModel:FilterModel = _model.filterModel;
 			var catModel:CategoriesModel = _model.categoriesModel;
 			catModel.metadataInfo = new ArrayCollection;

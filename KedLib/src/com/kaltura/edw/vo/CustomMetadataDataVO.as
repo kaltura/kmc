@@ -20,8 +20,5 @@ package com.kaltura.edw.vo
 		
 		public var metadata:KalturaMetadata;
 		
-		public function CustomMetadataDataVO()
-		{
-		}
 	}
 }

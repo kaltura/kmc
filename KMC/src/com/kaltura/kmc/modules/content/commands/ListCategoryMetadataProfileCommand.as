@@ -103,7 +103,6 @@ package com.kaltura.kmc.modules.content.commands
 						}
 					}
 				}
-//				var filterModel:FilterModel = (_model.f getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 				var filterModel:FilterModel = _model.filterModel;
 				filterModel.categoryMetadataProfiles = new ArrayCollection(metadataProfiles);
 				filterModel.categoryFormBuilders = new ArrayCollection(formBuilders);
