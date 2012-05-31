@@ -5,7 +5,7 @@ package com.kaltura.edw.vo
 	
 	import mx.collections.ArrayCollection;
 	
-	public class CategoryVO
+	dynamic public class CategoryVO
 	{
 		public var id:Number;
 		
@@ -13,13 +13,6 @@ package com.kaltura.edw.vo
 		public var name:String;
 		
 		public var category:KalturaCategory;
-		
-		[Bindable]
-		/**
-		 * is this category selected in the tree. 
-		 * optional values enumerated in <code>CatSelectionStatus</code>
-		 */		
-		public var selected:int = 0;
 		
 		
 		[Bindable]
@@ -30,7 +23,7 @@ package com.kaltura.edw.vo
 		
 		
 		[ArrayElementType("com.kaltura.edw.vo.CategoryVO")]
-		public var children:ArrayCollection = new ArrayCollection();
+		public var children:ArrayCollection;
 		
 		
 		public function CategoryVO(id:Number, name:String, category:KalturaCategory)
@@ -38,6 +31,10 @@ package com.kaltura.edw.vo
 			this.id = id;
 			this.name = name;
 			this.category = category;
+			
+			if (category.directSubCategoriesCount > 0) {
+				children = new ArrayCollection();
+			}
 		}
 		
 		public function clone():CategoryVO

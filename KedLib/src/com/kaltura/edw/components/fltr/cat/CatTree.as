@@ -29,6 +29,7 @@ package com.kaltura.edw.components.fltr.cat
 	import mx.events.CloseEvent;
 	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
+	import mx.events.PropertyChangeEvent;
 	import mx.events.TreeEvent;
 	import mx.managers.PopUpManager;
 
@@ -46,6 +47,25 @@ package com.kaltura.edw.components.fltr.cat
 	 */
 	public class CatTree extends Tree implements IFilterComponent {
  
+		/**
+		 * allow multiple instances use the same data provider by using different attributes 
+		 * to mark selection in tree (entriesSelected, moderationSelected, etc).
+		 * the tree and the IRs use the value of this attribute for determining if a category is "selected".  
+		 */		
+		public var selectionAttribute:String = "selected";
+		
+		/**
+		 * set the required selection status and dispatch propertyChange event
+		 * (instead of binding, so we can use dynamic attributes) 
+		 * @param cat
+		 * @param status
+		 */		
+		private function setCatSelectionStatus(cat:CategoryVO, status:int):void {
+			var oldval:int = cat[selectionAttribute];
+			cat[selectionAttribute] = status;
+			(cat as IEventDispatcher).dispatchEvent(PropertyChangeEvent.createUpdateEvent(cat, selectionAttribute, oldval, status));
+		}
+		
 		
 		private var _chunkedData:Boolean;
 
@@ -163,6 +183,14 @@ package com.kaltura.edw.components.fltr.cat
 			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete, false, 0, true);
 		}
 		
+//		override public function set dataProvider(value:Object):void {
+//			_initialFilter = '';
+//			for each (var oldcat:CategoryVO in _selectedCategories) {
+//				_initialFilter += oldcat.id + ",";
+//			}
+//			super.dataProvider = value;
+//			selectFromInitial(dataProvider.getItemAt(0) as CategoryVO);
+//		} 
 		
 		/**
 		 * add a category from the autocomplete component
@@ -224,6 +252,7 @@ package com.kaltura.edw.components.fltr.cat
 			}
 			_dataManager.addEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch, false, 0, true);
 			_dataManager.controller = new CategoriesTreeController();
+			// only load cat list if it doesn't exist yet
 			_dataManager.loadInitialData();
 		}
 		
@@ -324,7 +353,8 @@ package com.kaltura.edw.components.fltr.cat
 		private function deselectAllCategories():void {
 			if (_selectedCategories) {
 				for each (var oldcat:CategoryVO in _selectedCategories) {
-					oldcat.selected = CatSelectionStatus.UNSELECTED;
+					setCatSelectionStatus(oldcat, CatSelectionStatus.UNSELECTED);
+//					oldcat.selected = CatSelectionStatus.UNSELECTED;
 				}
 			}
 			
@@ -344,13 +374,15 @@ package com.kaltura.edw.components.fltr.cat
 					deselectAllCategories();
 					// select new
 					_selectedCategories[cat.id.toString()] = cat;
-					cat.selected = CatSelectionStatus.SELECTED;
+					setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
+//					cat.selected = CatSelectionStatus.SELECTED;
 					break;
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_EXACT:
 					if (cat.id == 0) {
 						// root category clicked; remove all selections
-						cat.selected = CatSelectionStatus.UNSELECTED;
+						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
+//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						deselectAllCategories();
@@ -358,13 +390,15 @@ package com.kaltura.edw.components.fltr.cat
 					else if (_selectedCategories[cat.id.toString()]) {
 						// if there is a value, it means it was selected before
 						delete _selectedCategories[cat.id.toString()];
-						cat.selected = CatSelectionStatus.UNSELECTED;
+						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
+//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
 						_selectedCategories[cat.id.toString()] = cat;
-						cat.selected = CatSelectionStatus.SELECTED;
+						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
+//						cat.selected = CatSelectionStatus.SELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
 					break;
@@ -372,7 +406,8 @@ package com.kaltura.edw.components.fltr.cat
 				case CatTreeSelectionMode.MULTIPLE_SELECT_PLUS:
 					if (cat.id == 0) {
 						// root category clicked; remove all selections
-						cat.selected = CatSelectionStatus.UNSELECTED;
+						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
+//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						deselectAllCategories();
@@ -411,7 +446,8 @@ package com.kaltura.edw.components.fltr.cat
 			var c:CategoryVO = cat;
 			while (c.category.parentId != int.MIN_VALUE) {
 				c = categories.getValue(c.category.parentId.toString()) as CategoryVO;
-				c.selected = CatSelectionStatus.PARTIAL;
+				setCatSelectionStatus(c, CatSelectionStatus.PARTIAL);
+//				c.selected = CatSelectionStatus.PARTIAL;
 			}
 		}
 		
@@ -429,26 +465,29 @@ package com.kaltura.edw.components.fltr.cat
 				var gotUnselectedChildren:Boolean = false;
 				var gotPartialChildren:Boolean = false;
 				for each (var c2:CategoryVO in c1.children) {
-					if (c2.selected == CatSelectionStatus.SELECTED) {
+					if (c2[selectionAttribute] == CatSelectionStatus.SELECTED) {
 						gotSelectedChildren = true;
 					}
-					else  if (c2.selected == CatSelectionStatus.UNSELECTED) {
+					else  if (c2[selectionAttribute] == CatSelectionStatus.UNSELECTED) {
 						gotUnselectedChildren = true;
 					}
-					else  if (c2.selected == CatSelectionStatus.PARTIAL) {
+					else  if (c2[selectionAttribute] == CatSelectionStatus.PARTIAL) {
 						gotPartialChildren = true;
 						break;
 					}
 				}
 				
 				if (gotPartialChildren) {
-					c1.selected = CatSelectionStatus.PARTIAL;
+					setCatSelectionStatus(c1, CatSelectionStatus.PARTIAL);
+//					c1.selected = CatSelectionStatus.PARTIAL;
 				}
 				else if (gotSelectedChildren && !gotUnselectedChildren) {
-					c1.selected = CatSelectionStatus.SELECTED;
+					setCatSelectionStatus(c1, CatSelectionStatus.SELECTED);
+//					c1.selected = CatSelectionStatus.SELECTED;
 				}
 				else if (!gotSelectedChildren && gotUnselectedChildren) {
-					c1.selected = CatSelectionStatus.UNSELECTED;
+					setCatSelectionStatus(c1, CatSelectionStatus.UNSELECTED);
+//					c1.selected = CatSelectionStatus.UNSELECTED;
 				}
 			}
 		}
@@ -460,7 +499,8 @@ package com.kaltura.edw.components.fltr.cat
 		 * 
 		 */
 		private function setChildrenSelection(parent:CategoryVO, value:int):void {
-			parent.selected = value;
+			setCatSelectionStatus(parent, value);
+//			parent.selected = value;
 			if (value == TriStateCheckBox.SELECTED){
 				_selectedCategories[parent.id] = parent;
 			}
@@ -469,7 +509,8 @@ package com.kaltura.edw.components.fltr.cat
 			}
 			
 			for each (var cat:CategoryVO in parent.children) {
-				cat.selected = value;
+				setCatSelectionStatus(cat, value);
+//				cat.selected = value;
 				if (value == TriStateCheckBox.SELECTED){
 					_selectedCategories[cat.id] = cat;
 				}

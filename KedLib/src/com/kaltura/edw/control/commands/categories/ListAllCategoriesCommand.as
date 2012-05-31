@@ -63,7 +63,7 @@ package com.kaltura.edw.control.commands.categories
 			for each (var cat:CategoryVO in categories) {
 				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
 				if (parentCategory != null) {
-					if (!parentCategory.children) {
+ 					if (!parentCategory.children) {
 						parentCategory.children = new ArrayCollection();
 					}
 					parentCategory.children.addItem(cat);

@@ -1,6 +1,7 @@
 package com.kaltura.edw.components.fltr.cat.renderers {
 	import com.kaltura.edw.components.TriStateCheckBox;
 	import com.kaltura.edw.components.fltr.cat.CatSelectionStatus;
+	import com.kaltura.edw.components.fltr.cat.CatTree;
 	import com.kaltura.edw.vo.CategoryVO;
 	
 	import flash.display.DisplayObject;
@@ -27,11 +28,12 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		
 		protected var cb:RadioButton;
 		private var _watcher:ChangeWatcher;
-
+		private var _listOwner:CatTree;
 
 		private function onToggle(e:Event):void {
 			e.stopPropagation();
-//			(data as CategoryVO).selected = cb.selected ? CatSelectionStatus.SELECTED : CatSelectionStatus.UNSELECTED;
+//			var listOwner:CatTree = CatTree((listData as TreeListData).owner);
+//			data[listOwner.selectionAttribute] = cb.selected ? CatSelectionStatus.SELECTED : CatSelectionStatus.UNSELECTED;
 			// let the tree know this item was clicked
 			dispatchEvent(new Event(Event.CHANGE, true));
 		}
@@ -46,11 +48,13 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 			}
 			
 			var cat:CategoryVO = data as CategoryVO;
-			// bind CB to cat selected 
-			// use binding instead of assignment because when setting filter 
-			// "selected" can change after data is set
-			_watcher = BindingUtils.bindSetter(catSelectionStatusChanged, cat, "selected");
-			
+			if (data) {
+				_listOwner = CatTree((listData as TreeListData).owner);
+				// bind CB to cat selected 
+				// use binding instead of assignment because when setting filter 
+				// "selected" can change after data is set
+				_watcher = BindingUtils.bindSetter(catSelectionStatusChanged, cat, _listOwner.selectionAttribute);
+			}
 		}
 		
 		
@@ -59,7 +63,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		 * @param value new cat selection status
 		 */
 		private function catSelectionStatusChanged(value:int):void {
-			if (value == CatSelectionStatus.UNSELECTED) {
+			if (!value || value == CatSelectionStatus.UNSELECTED) {
 				cb.selected = false;
 			}
 //			else if (value == CatSelectionStatus.PARTIAL) {
@@ -201,15 +205,16 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 //				label.htmlText = vo.name + " <font color='#666666' size='11'> (" + vo.category.entriesCount + ")</font>";
 //			}
 			if (vo ){
-				switch (vo.selected){
-					case CatSelectionStatus.UNSELECTED:
-						cb.selected = false;
-						break;
+				switch (vo[_listOwner.selectionAttribute]){
 //					case CatSelectionStatus.PARTIAL:
 //						cb.selected = TriStateCheckBox.PARTIAL;
 //						break;
 					case CatSelectionStatus.SELECTED:
 						cb.selected = true;
+						break;
+					case CatSelectionStatus.UNSELECTED:
+					default:
+						cb.selected = false;
 						break;
 				}
 				cb.enabled = vo.enabled;

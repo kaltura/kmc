@@ -16,6 +16,7 @@ package com.kaltura.edw.control.commands.categories
 			var rootCat:KalturaCategory = new KalturaCategory();
 			rootCat.fullName = '';
 			rootCat.entriesCount = 0;
+			rootCat.directSubCategoriesCount = 1; // this is a dummy value, so its "children" property will be initialised
 			var root:CategoryVO = new CategoryVO(0,
 				ResourceManager.getInstance().getString('filter', 'rootCategoryName'),
 				rootCat);

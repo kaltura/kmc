@@ -66,7 +66,9 @@ package com.kaltura.edw.control.commands.categories
 				categories.addItem(category)
 			}
 			
-			_branchCat.children = new ArrayCollection();
+			if (!_branchCat.children) {
+				_branchCat.children = new ArrayCollection();
+			}
 			// add to tree: list children on parent category
 			for each (var cat:CategoryVO in categories) {
 				_branchCat.children.addItem(cat);

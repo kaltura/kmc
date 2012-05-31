@@ -1,5 +1,6 @@
 package com.kaltura.edw.components.fltr.cat.renderers {
 	import com.kaltura.edw.components.fltr.cat.CatSelectionStatus;
+	import com.kaltura.edw.components.fltr.cat.CatTree;
 	import com.kaltura.edw.vo.CategoryVO;
 	
 	import flash.display.DisplayObject;
@@ -25,11 +26,12 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		
 		protected var cb:CheckBox;
 		private var _watcher:ChangeWatcher;
+		private var _listOwner:CatTree;
 
 
 		private function onToggle(e:Event):void {
 			e.stopPropagation();
-			(data as CategoryVO).selected = cb.selected ? CatSelectionStatus.SELECTED : CatSelectionStatus.UNSELECTED;
+			data[_listOwner.selectionAttribute] = cb.selected ? CatSelectionStatus.SELECTED : CatSelectionStatus.UNSELECTED;
 			// let the tree know this item was clicked
 			dispatchEvent(new Event(Event.CHANGE, true));
 		}
@@ -37,16 +39,18 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		
 		override public function set data(value:Object):void {
 			super.data = value;
-			
 			// remove previous binding
 			if (_watcher) {
 				_watcher.unwatch();
 			}
 			var cat:CategoryVO = data as CategoryVO;
-			// bind CB to cat selected 
-			// use binding instead of assignment because when setting filter 
-			// "selected" can change after data is set
-			_watcher = BindingUtils.bindSetter(catSelectionStatusChanged, cat, "selected");
+			if (cat) {
+				_listOwner = CatTree((listData as TreeListData).owner);
+				// bind CB to cat selected 
+				// use binding instead of assignment because when setting filter 
+				// "selected" can change after data is set
+				_watcher = BindingUtils.bindSetter(catSelectionStatusChanged, cat, _listOwner.selectionAttribute);
+			}
 		}
 		
 		
@@ -55,7 +59,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		 * @param value new cat selection status
 		 */
 		private function catSelectionStatusChanged(value:int):void {
-			if (value == CatSelectionStatus.UNSELECTED) {
+			if (!value || value == CatSelectionStatus.UNSELECTED) {
 				cb.selected = false;
 			}
 			else {
@@ -194,7 +198,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 //				label.htmlText = vo.name + " <font color='#666666' size='11'> (" + vo.category.entriesCount + ")</font>";
 //			}
 			if (vo ){
-				cb.selected = vo.selected != CatSelectionStatus.UNSELECTED;
+				cb.selected = vo[_listOwner.selectionAttribute] && vo[_listOwner.selectionAttribute] != CatSelectionStatus.UNSELECTED;
 				cb.enabled = vo.enabled;
 			}
 			else {
