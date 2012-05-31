@@ -4,9 +4,9 @@
 	xmlns:components="com.hillelcoren.components.*" 
 	xmlns:classes="com.hillelcoren.components.autoComplete.classes.*"
 	implements="mx.controls.listClasses.IDropInListItemRenderer,mx.managers.IFocusManagerComponent"
-	clipContent="false"
+	clipContent="true"
 	verticalAlign="middle" horizontalAlign="left"
-	verticalScrollPolicy="off" horizontalScrollPolicy="off"
+	verticalScrollPolicy="auto" horizontalScrollPolicy="off"
 	initialize="init()">
 	
 	<mx:Metadata>
@@ -1138,6 +1138,9 @@
 			{
 				flowBox.invalidateDisplayList();
 				
+				// Keeping the action in view.
+				verticalScrollPosition = maxVerticalScrollPosition;
+				
 				if (selectedItem && !_allowMultipleSelection && searchText)
 				{
 					_selectedItems.removeAll();							
@@ -1219,7 +1222,7 @@
 					_dropDown.rowCount = (_dataProvider.length < _dropDownRowCount ? _dataProvider.length : _dropDownRowCount);
 					callLater( highlightFirstItem );
 					callLater( positionDropDown );									
-				}	
+				}
 			}
 			
 			protected function highlightFirstItem():void
