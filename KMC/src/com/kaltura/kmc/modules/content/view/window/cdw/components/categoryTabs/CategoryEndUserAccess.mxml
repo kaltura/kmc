@@ -118,11 +118,16 @@
 				var cowin:EndUsersPermissionsWin = new EndUsersPermissionsWin();
 				cowin.category = _category;
 				cowin.model = model;
+				cowin.addEventListener(CloseEvent.CLOSE, updateUsersCount);
 				PopUpManager.addPopUp(cowin, this, true);
 				PopUpManager.centerPopUp(cowin);
 			}
 
 
+			private function updateUsersCount(e:Event):void {
+				category.membersCount = (e.target as EndUsersPermissionsWin).getCurrentUsersCount();
+			}
+			
 			protected function changeOwner():void {
 				var cowin:SetCatOwnerWindow = new SetCatOwnerWindow();
 				cowin.addEventListener("apply", handleChangeOwnerEvent);

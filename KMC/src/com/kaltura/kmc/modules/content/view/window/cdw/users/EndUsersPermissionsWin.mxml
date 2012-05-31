@@ -20,6 +20,7 @@
 			import mx.binding.utils.BindingUtils;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.mx_internal;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -50,6 +51,13 @@
 			}
 
 
+			/**
+			 * retreive current nuber of category users
+			 * */
+			public function getCurrentUsersCount():int {
+				return model.totalCategoryUsers;
+			}
+			
 			private function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, "endUserPermissionsWin");
 				loadUsers();
@@ -183,7 +191,7 @@
 	</mx:HBox>
 
 	<mx:ControlBar width="100%" horizontalAlign="center">
-		<mx:Button label="{resourceManager.getString('cms','close')}" click="closeHandler(event)"
-				   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
+		<mx:Button label="{resourceManager.getString('cms','close')}" 
+				   click="mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));" />
 	</mx:ControlBar>
 </containers:HelpTitleWindow>
