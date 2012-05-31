@@ -25,6 +25,9 @@ package com.kaltura.utils
 
 	import com.hurlant.crypto.hash.MD5;
 	import com.hurlant.util.Hex;
+	import com.kaltura.vo.BaseFlexVo;
+	
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.utils.ObjectUtil;
 
@@ -79,5 +82,38 @@ package com.kaltura.utils
     		}
     		return obj;
     	}
+		
+		/**
+		 * compare updateable/insertable properties of 2 given Kaltura API objects 
+		 * @param object1
+		 * @param object2
+		 * @return 
+		 * 
+		 */		
+		public static function compareKalturaObjects(object1:BaseFlexVo, object2:BaseFlexVo):Boolean
+		{
+			var cls1:String = getQualifiedClassName(object1);
+			var cls2:String = getQualifiedClassName(object2);
+			if (cls1 != cls2) {
+				return false;
+			}
+			
+			var att:String;
+			var atts:Array = object1.getInsertableParamKeys(); // now we know it is the same list for both objects
+			for each (att in atts) {
+				if (object1[att] != object2[att]) {
+					return false;
+				}
+			} 
+			
+			atts = object1.getUpdateableParamKeys(); // now we know it is the same list for both objects
+			for each (att in atts) {
+				if (object1[att] != object2[att]) {
+					return false;
+				}
+			} 
+			
+			return true;
+		}
 	}
 }
