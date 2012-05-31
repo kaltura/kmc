@@ -118,6 +118,10 @@
 			 * open the end user permissions popup
 			 * */
 			protected function openEndUserPermissions():void {
+				if (_category.id == int.MIN_VALUE) {
+					Alert.show(resourceManager.getString('cms', 'saveBeforeUsers'), resourceManager.getString('cms', 'error'));
+					return;
+				}
 				var cowin:EndUsersPermissionsWin = new EndUsersPermissionsWin();
 				cowin.category = _category;
 				cowin.model = model;
