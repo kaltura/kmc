@@ -115,9 +115,11 @@
 			}
 
 			
-			private function initTabsData():void {
+			private function initTabsData(refreshView:Boolean):void {
 				for each (var tab:ICategoryDrilldownPanel in _tabs) {
-					viewStack.addChild(tab as DisplayObject);
+					if (refreshView) {
+						viewStack.addChild(tab as DisplayObject);
+					}
 					tab.initData();
 				}
 			}
@@ -127,10 +129,12 @@
 			
 			[Bindable]
 			public function set category(value:KalturaCategory):void {
+				var refreshView:Boolean = !_category || value.id != _category.id;
 				_category = value;
+				
 				if (_tabs != null) {
 					// need to clear the stack trace so the new category will be updated on the panels 
-					setTimeout(initTabsData, 0);
+					setTimeout(initTabsData, 0, refreshView);
 				}
 			}
 
