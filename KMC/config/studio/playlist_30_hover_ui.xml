@@ -6,14 +6,13 @@
 			<Plugin id="download" width="0%" height="0%" includeInLayout="false" loadingPolicy="noWait"/>
 			<Plugin id="statistics" width="0%" height="0%" includeInLayout="false"/>
 			<Plugin id="captureThumbnail" width="0%" height="0%" includeInLayout="false" loadingPolicy="noWait"/>
+			 <Plugin id="fader" width="0%" height="0%" includeInLayout="false" target="{controllersVbox}" hoverTarget="{PlayerHolder}" duration="0.5" autoHide="true" /> 
 			<!-- new vast plugin -->
 			<Plugin id="vast" numPreroll="1" prerollInterval="2" prerollStartWith="3" prerollUrl="" overlayStartAt=""
 					overlayInterval="" overlayUrl="" numPostroll="" postrollInterval="" postrollStartWith=""
 					postrollUrl="" preSequence="1" postSequence="1" trackCuePoints="false"/>
 
-			<HBox id="TopTitleScreen" width="100%" height="30" styleName="PlayerBg">
-				<Label id="movieName" height="30" styleName="movieName" width="100%" text="{mediaProxy.entry.name}"/>
-			</HBox>
+			
 			<Canvas id="PlayerHolder" height="100%" width="100%" styleName="black">
 				<Video id="video" width="100%" height="100%"/>
 				
@@ -93,113 +92,114 @@
 					<VBox id="playlist" width="260" height="100%" styleName="List_background_Hover"  >
 						<Plugin id="list" width="100%" height="100%" styleName="Hover" useLeftScrollbar="true" supportNewStyle="true"
 								dataProvider="{playlistAPI.dataProvider}" itemRenderer="playlistItemRenderer" rowHeight="110"/>
+					</VBox>
 				</VBox>
 				<VBox id="controllersVbox" width="100%" height="100%" verticalAlign="Bottom">
-			<Spacer id="controllerPusher" width="100%" height="100%" />
-			<VBox id="ControllerScreenHolder" width="100%" height="80" verticalAlign="middle" paddingLeft="5" paddingTop="8" styleName="Player_bg_hover">
+					<Spacer id="controllerPusher" width="100%" height="100%" />
+					<VBox id="ControllerScreenHolder" width="100%" height="80" verticalAlign="middle" paddingLeft="5" paddingTop="8" styleName="Player_bg_hover">
+		
+					  <!-- scrubber box. the scrubber and 2 timers -->
+					  <HBox id="scrubberBox" width="100%" height="25" verticalAlign="middle" paddingRight="8">
+						<HBox id="scrubberContainer" visible="{not(mediaProxy.isLive)}" width="100%" height="25" horizontalGap="0">
+						  <Timer id="timerControllerScreen1" width="55" styleName="timerProgressLeft" format="mm:ss" height="24" timerType="forwards"/>
+						  <Label id="label" text="/" width="10" color1="0xFFFFFF" dynamicColor="true" styleName="timerProgressRight"/>
+						  <Timer id="timerControllerScreen2" width="55" styleName="timerProgressRight" format="mm:ss" height="24" timerType="total"/>
+						  <VBox width="100%" height="100%" paddingLeft="8" paddingRight="8">
+							<Scrubber id="scrubber" width="100%" height="100%"/>
+						  </VBox>
+						</HBox>
+						<Button id="kalturaLogo" height="30" minWidth="50" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
+					  </HBox>
 	
-			  <!-- scrubber box. the scrubber and 2 timers -->
-			  <HBox id="scrubberBox" width="100%" height="25" verticalAlign="middle" paddingRight="8">
-				<HBox id="scrubberContainer" visible="{not(mediaProxy.isLive)}" width="100%" height="25" horizontalGap="0">
-				  <Timer id="timerControllerScreen1" width="55" styleName="timerProgressLeft" format="mm:ss" height="24" timerType="forwards"/>
-				  <Label id="label" text="/" width="10" color1="0xFFFFFF" dynamicColor="true" styleName="timerProgressRight"/>
-				  <Timer id="timerControllerScreen2" width="55" styleName="timerProgressRight" format="mm:ss" height="24" timerType="total"/>
-				  <VBox width="100%" height="100%" paddingLeft="8" paddingRight="8">
-					<Scrubber id="scrubber" width="100%" height="100%"/>
-				  </VBox>
-				</HBox>
-				<Button id="kalturaLogo" height="30" minWidth="50" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
-			  </HBox>
-
-			  <HBox id="ControllerScreen" width="100%" height="40" horizontalGap="9" paddingLeft="9" paddingBottom="8"
-				  verticalAlign="middle" >
-					
-					<Button id="playBtnControllerScreen" width="20" height="30" command="play" icon="playIcon_up" upIcon="playIcon_up" overIcon="playIcon_Hover" downIcon="playIcon_Down" disabeledIcon="playIcon_Disabled" selectedUpIcon="pauseIcon_Up" selectedOverIcon="pauseIcon_Hover" selectedDownIcon="pauseIcon_Down" selectedDisabledIcon="pauseIcon_Disabled"
-					tooltip="Play" upTooltip="Play" selectedTooltip="Pause"/>
-					
-					<Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000"
-						upIcon="onAirIcon_Up" overIcon="onAirIcon_Hover" downIcon="onAirIcon_Down" disabeledIcon="onAirIcon_Disabled"
-						selectedUpIcon="offlineIcon_up" selectedOverIcon="offlineIcon_Hover"
-						selectedDownIcon="offlineIcon_Down" selectedDisabledIcon="offlineIcon_Disabled"
-						isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}"
-						includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
-
-					
-					<VolumeBar id="volumeBar" width="30" height="30" tooltip="Change volume"
-					icon="VolumeIcon_Up" buttonUpSkin="VolumeIcon_Up" styleName="controllerScreen" buttonOverSkin="VolumeIcon_Hover" buttonDownSkin="VolumeIcon_Down" buttonDisabledSkin="VolumeIcon_Disabled" buttonSelectedUpSkin="MuteIcon_up" buttonSelectedOverSkin="MuteIcon_Hover" buttonSelectedDownSkin="MuteIcon_Down" buttonSelectedDisabledSkin="MuteIcon_Disabled"/>
-					<!-- Combo box for captions control -->
-					
-					<ComboBox id="ccUnderComboBox" width="90" height="40" styleName="_kdp" selectedIndex="{closedCaptionsUnderPlayer.currentCCFileIndex}" 
-					  kevent_change="sendNotification( 'closedCaptionsSelected' , ccUnderComboBox.selectedItem)" 
-					  dataProvider="{closedCaptionsUnderPlayer.availableCCFilesLabels}" prompt="Captions"
-					  visible="{closedCaptionsUnderPlayer.hasCaptions}" includeInLayout="{closedCaptionsUnderPlayer.hasCaptions}"/>
-					<Button id="shareBtnControllerScreen"
-						kClick="sendNotification('doGigya')" height="30" width="20" styleName="controllerScreen"
-						tooltip="Share with friends"
-						icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
-					<Button id="flagBtnControllerScreen"
-						kClick="sendNotification('flagForReview')" height="30" width="20" styleName="controllerScreen"
-						tooltip="Flag for review"
-						icon="flagIcon_Up" upIcon="flagIcon_Up" overIcon="flagIcon_Hover" downIcon="flagIcon_Down" disabeledIcon="flagIcon_Disabled"/>
-					<!--Button id="editBtnControllerScreen" label="" buttonType="iconButton" focusRectPadding="0"
-						kClick="jsCall('gotoEditorWindow', mediaProxy.entry.id )" height="22"
-						styleName="controllerScreen" icon="remixIcon" tooltip="Open editor"/-->
-					<Button id="uploadBtnControllerScreen"
-						kClick="jsCall('gotoContributorWindow', mediaProxy.entry.id )" width="20" height="30"
-						styleName="controllerScreen" tooltip="Upload content" 
-						icon="uploadIcon_up" upIcon="uploadIcon_up" overIcon="uploadIcon_Hover" downIcon="uploadIcon_Down" disabeledIcon="uploadIcon_Disabled"/>
-					<Button id="downloadBtnControllerScreen"
-						kClick="sendNotification('doDownload')" width="20" height="30"
-						styleName="controllerScreen" tooltip="Download content"
-						icon="downloadIcon_up" upIcon="downloadIcon_up" overIcon="downloadIcon_Hover" downIcon="downloadIcon_Down" disabeledIcon="downloadIcon_Disabled"/>
-					<Button id="captureThumbBtnControllerScreen" kClick="sendNotification('captureThumbnail')"
-						width="20" height="30" styleName="controllerScreen" tooltip="Change thumbnail"
-						icon="thumbIcon_up" upIcon="thumbIcon_up" overIcon="thumbIcon_Hover" downIcon="thumbIcon_Down" disabeledIcon="thumbIcon_Disabled"/>
-
-					<FlavorCombo id="flavorComboControllerScreen" width="80" height="40" 
-						   streamerType="{configProxy.flashvars.streamerType}"
-						   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" styleName="_kdp"
-						   hdOn="HD On" hdOff="HD Off" selectedMessage=""
-						   autoMessage="Automatically switches between bitrates"
-						   preferedFlavorBR="{mediaProxy.preferedFlavorBR}"
-						   tooltip="{flavorComboControllerScreen.selectedMessage}"
-						   usePixels="{mediaProxy.displayFlavorPixels}"
-						   isAutoSwitch="{mediaProxy.isFlavorSwitching}"/>
-					
-					<Button id="playlistBtnControllerScreen"
-							toggle="true" selected="false" height="30" width="20" styleName="controllerScreen"
-							tooltip="Toggle Playlist"
-							icon="PlaylistIcon_Up" upIcon="PlaylistIcon_Up" overIcon="PlaylistIcon_Hover" downIcon="PlaylistIcon_Down" disabeledIcon="PlaylistIcon_Disabled"/>
-
-					<Button id="fullScreenBtnControllerScreen" command="fullScreen"
-						width="20" height="30" styleName="controllerScreen"
-						allowDisable="false" tooltip="Toggle fullscreen"
-						icon="closeFullScreenIcon_Up" upIcon="closeFullScreenIcon_Up" overIcon="closeFullScreenIcon_Hover" downIcon="closeFullScreenIcon_Down" disabeledIcon="closeFullScreenIcon_Disabled" selectedUpIcon="openFullScreenIcon_Up" selectedOverIcon="openFullScreenIcon_Hover" selectedDownIcon="openFullScreenIcon_Down" selectedDisabledIcon="openFullScreenIcon_Disabled"/>
-					<Button id="custom1BtnControllerScreen" width="20" height="30"
-						kClick="jsCall('customFunc1', mediaProxy.entry.id )" label="Custom 1"
-						styleName="controllerScreen" 
-						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
-					<Button id="custom2BtnControllerScreen" width="20" height="30"
-						kClick="jsCall('customFunc2', mediaProxy.entry.id )" label="Custom 2"
-						styleName="controllerScreen" 
-						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>    
-					<Button id="custom3BtnControllerScreen" width="20" height="30"
-						kClick="jsCall('customFunc3', mediaProxy.entry.id )" label="Custom 3"
-						styleName="controllerScreen" 
-						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
-					<Button id="custom4BtnControllerScreen" width="20" height="30"
-						kClick="jsCall('customFunc4', mediaProxy.entry.id )" label="Custom 4"
-						styleName="controllerScreen" 
-						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
-					<Button id="custom5BtnControllerScreen" width="20" height="30"
-						kClick="jsCall('customFunc5', mediaProxy.entry.id )" label="Custom 5"
-						styleName="controllerScreen" 
-						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
-				  </HBox>
+					  <HBox id="ControllerScreen" width="100%" height="40" horizontalGap="9" paddingLeft="9" paddingBottom="8"
+						  verticalAlign="middle" >
+							
+							<Button id="playBtnControllerScreen" width="20" height="30" command="play" icon="playIcon_up" upIcon="playIcon_up" overIcon="playIcon_Hover" downIcon="playIcon_Down" disabeledIcon="playIcon_Disabled" selectedUpIcon="pauseIcon_Up" selectedOverIcon="pauseIcon_Hover" selectedDownIcon="pauseIcon_Down" selectedDisabledIcon="pauseIcon_Disabled"
+							tooltip="Play" upTooltip="Play" selectedTooltip="Pause"/>
+							
+							<Button id="liveToggleStatus" toggle="true" color1="0xFF0000" color2="0xFF0000"
+								upIcon="onAirIcon_Up" overIcon="onAirIcon_Hover" downIcon="onAirIcon_Down" disabeledIcon="onAirIcon_Disabled"
+								selectedUpIcon="offlineIcon_up" selectedOverIcon="offlineIcon_Hover"
+								selectedDownIcon="offlineIcon_Down" selectedDisabledIcon="offlineIcon_Disabled"
+								isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}"
+								includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
+		
+							
+							<VolumeBar id="volumeBar" width="30" height="30" tooltip="Change volume"
+							icon="VolumeIcon_Up" buttonUpSkin="VolumeIcon_Up" styleName="controllerScreen" buttonOverSkin="VolumeIcon_Hover" buttonDownSkin="VolumeIcon_Down" buttonDisabledSkin="VolumeIcon_Disabled" buttonSelectedUpSkin="MuteIcon_up" buttonSelectedOverSkin="MuteIcon_Hover" buttonSelectedDownSkin="MuteIcon_Down" buttonSelectedDisabledSkin="MuteIcon_Disabled"/>
+							<!-- Combo box for captions control -->
+							
+							<ComboBox id="ccUnderComboBox" width="90" height="40" styleName="_kdp" selectedIndex="{closedCaptionsUnderPlayer.currentCCFileIndex}" 
+							  kevent_change="sendNotification( 'closedCaptionsSelected' , ccUnderComboBox.selectedItem)" 
+							  dataProvider="{closedCaptionsUnderPlayer.availableCCFilesLabels}" prompt="Captions"
+							  visible="{closedCaptionsUnderPlayer.hasCaptions}" includeInLayout="{closedCaptionsUnderPlayer.hasCaptions}"/>
+							<Button id="shareBtnControllerScreen"
+								kClick="sendNotification('doGigya')" height="30" width="20" styleName="controllerScreen"
+								tooltip="Share with friends"
+								icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
+							<Button id="flagBtnControllerScreen"
+								kClick="sendNotification('flagForReview')" height="30" width="20" styleName="controllerScreen"
+								tooltip="Flag for review"
+								icon="flagIcon_Up" upIcon="flagIcon_Up" overIcon="flagIcon_Hover" downIcon="flagIcon_Down" disabeledIcon="flagIcon_Disabled"/>
+							<!--Button id="editBtnControllerScreen" label="" buttonType="iconButton" focusRectPadding="0"
+								kClick="jsCall('gotoEditorWindow', mediaProxy.entry.id )" height="22"
+								styleName="controllerScreen" icon="remixIcon" tooltip="Open editor"/-->
+							<Button id="uploadBtnControllerScreen"
+								kClick="jsCall('gotoContributorWindow', mediaProxy.entry.id )" width="20" height="30"
+								styleName="controllerScreen" tooltip="Upload content" 
+								icon="uploadIcon_up" upIcon="uploadIcon_up" overIcon="uploadIcon_Hover" downIcon="uploadIcon_Down" disabeledIcon="uploadIcon_Disabled"/>
+							<Button id="downloadBtnControllerScreen"
+								kClick="sendNotification('doDownload')" width="20" height="30"
+								styleName="controllerScreen" tooltip="Download content"
+								icon="downloadIcon_up" upIcon="downloadIcon_up" overIcon="downloadIcon_Hover" downIcon="downloadIcon_Down" disabeledIcon="downloadIcon_Disabled"/>
+							<Button id="captureThumbBtnControllerScreen" kClick="sendNotification('captureThumbnail')"
+								width="20" height="30" styleName="controllerScreen" tooltip="Change thumbnail"
+								icon="thumbIcon_up" upIcon="thumbIcon_up" overIcon="thumbIcon_Hover" downIcon="thumbIcon_Down" disabeledIcon="thumbIcon_Disabled"/>
+		
+							<FlavorCombo id="flavorComboControllerScreen" width="80" height="40" 
+								   streamerType="{configProxy.flashvars.streamerType}"
+								   flavorDataProvider="{mediaProxy.kalturaMediaFlavorArray}" styleName="_kdp"
+								   hdOn="HD On" hdOff="HD Off" selectedMessage=""
+								   autoMessage="Automatically switches between bitrates"
+								   preferedFlavorBR="{mediaProxy.preferedFlavorBR}"
+								   tooltip="{flavorComboControllerScreen.selectedMessage}"
+								   usePixels="{mediaProxy.displayFlavorPixels}"
+								   isAutoSwitch="{mediaProxy.isFlavorSwitching}"/>
+							
+							<Button id="playlistBtnControllerScreen"
+									toggle="true" selected="false" height="30" width="20" styleName="controllerScreen"
+									tooltip="Toggle Playlist"
+									icon="PlaylistIcon_Up" upIcon="PlaylistIcon_Up" overIcon="PlaylistIcon_Hover" downIcon="PlaylistIcon_Down" disabeledIcon="PlaylistIcon_Disabled"/>
+		
+							<Button id="fullScreenBtnControllerScreen" command="fullScreen"
+								width="20" height="30" styleName="controllerScreen"
+								allowDisable="false" tooltip="Toggle fullscreen"
+								icon="closeFullScreenIcon_Up" upIcon="closeFullScreenIcon_Up" overIcon="closeFullScreenIcon_Hover" downIcon="closeFullScreenIcon_Down" disabeledIcon="closeFullScreenIcon_Disabled" selectedUpIcon="openFullScreenIcon_Up" selectedOverIcon="openFullScreenIcon_Hover" selectedDownIcon="openFullScreenIcon_Down" selectedDisabledIcon="openFullScreenIcon_Disabled"/>
+							<Button id="custom1BtnControllerScreen" width="20" height="30"
+								kClick="jsCall('customFunc1', mediaProxy.entry.id )" label="Custom 1"
+								styleName="controllerScreen" 
+								icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
+							<Button id="custom2BtnControllerScreen" width="20" height="30"
+								kClick="jsCall('customFunc2', mediaProxy.entry.id )" label="Custom 2"
+								styleName="controllerScreen" 
+								icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>    
+							<Button id="custom3BtnControllerScreen" width="20" height="30"
+								kClick="jsCall('customFunc3', mediaProxy.entry.id )" label="Custom 3"
+								styleName="controllerScreen" 
+								icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
+							<Button id="custom4BtnControllerScreen" width="20" height="30"
+								kClick="jsCall('customFunc4', mediaProxy.entry.id )" label="Custom 4"
+								styleName="controllerScreen" 
+								icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
+							<Button id="custom5BtnControllerScreen" width="20" height="30"
+								kClick="jsCall('customFunc5', mediaProxy.entry.id )" label="Custom 5"
+								styleName="controllerScreen" 
+								icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
+						  </HBox>
+					</VBox>
+					<Spacer id="PaddingBottom" height="5" />
 			</VBox>
-			<Spacer id="PaddingBottom" height="5" />
-		</VBox>
-		</VBox>
+	
 			</Canvas>
 			<!-- closed captions plugin under the player -->
 			<Plugin id="closedCaptionsUnderPlayer" width="100%" height="15%" fontsize="15" bg="0x000000" fontFamily="Arial" 
