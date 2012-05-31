@@ -49,6 +49,7 @@
 			import mx.controls.Alert;
 			import mx.core.Container;
 			import mx.core.UIComponent;
+			import mx.core.mx_internal;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.events.PropertyChangeEvent;
@@ -436,6 +437,7 @@
 				PermissionManager.getInstance().applyAllAttributes(this, "entryDrilldown");
 				addEventListener(KedDataEvent.NAVIGATE, switchTab, false, 0, true);
 				_isCreationComplete = true;
+				mx_internal::closeButton.enabled = isUiEnabled;
 				initWindow();
 			}
  
@@ -455,6 +457,9 @@
 			 * */
 			private function setUIEnbaled(value:Boolean):void {
 				isUiEnabled = !value;
+				if (mx_internal::closeButton) {
+					mx_internal::closeButton.enabled = isUiEnabled; 
+				}
 			}
 
 			
