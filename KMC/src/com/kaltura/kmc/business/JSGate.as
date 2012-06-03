@@ -171,11 +171,12 @@ package com.kaltura.kmc.business
 		
 		
 		/**
-		 * show help pages  
+		 * show help pages
+		 * @param baseURL  
 		 * @param key	help page to show (KMC anchor, mapped to page name in JS)
 		 */
-		public static function openHelp(key:String):void {
-			ExternalInterface.call("kmc.utils.openHelp", key);
+		public static function openHelp(baseURL:String, key:String):void {
+			ExternalInterface.call("kmc.utils.openHelp", baseURL, key);
 		}
 		
 		
