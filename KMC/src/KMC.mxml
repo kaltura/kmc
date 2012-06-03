@@ -56,7 +56,7 @@
 			/**
 			 * KMC version
 			 * */
-			public var VERSION:String = "5.4";
+			public var VERSION:String = "5.5";
 			
 			// ==============================================================================
 			// members
@@ -885,17 +885,14 @@
 			 * */
 			protected function showHelp(e:Event):void {
 				e.stopImmediatePropagation();
-				var url:String = _flashvars.protocol;
-				if (!url) {
-					url = "http://";
-				}
+				var anchor:String;
 				if (e is KmcHelpEvent) {
-					url += _flashvars.host + _helpBaseUrl + '#' + (e as KmcHelpEvent).anchor;
+					anchor = (e as KmcHelpEvent).anchor;
 				}
 				else {
-					url += _flashvars.host + _helpBaseUrl + '#' + e["data"];
+					anchor = e["data"];
 				}
-				navigateToURL(new URLRequest(url), "_blank");
+				JSGate.openHelp(anchor);
 			}
 			
 

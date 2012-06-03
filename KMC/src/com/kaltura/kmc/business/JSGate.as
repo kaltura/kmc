@@ -167,6 +167,18 @@ package com.kaltura.kmc.business
 			return ExternalInterface.call("kmc.functions.getAddPanelPosition");
 		}
 		
+		
+		
+		
+		/**
+		 * show help pages  
+		 * @param key	help page to show (KMC anchor, mapped to page name in JS)
+		 */
+		public static function openHelp(key:String):void {
+			ExternalInterface.call("kmc.utils.openHelp", key);
+		}
+		
+		
 		public static function alerti(str:String):void {
 			ExternalInterface.call("alert", str);
 		}
