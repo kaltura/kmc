@@ -169,6 +169,10 @@
 						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
 						cgEvent.data = [_undoCategory, refreshLists];
 						cgEvent.dispatch();
+						if (refreshLists) {
+							// it's actually "saveAndClose"
+							removeMe();
+						}
 					}
 					else {
 						if (hasChanged()) {
@@ -194,7 +198,11 @@
 					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
 					cgEvent2.data = [catVO, _refreshListsRequired];
-					cgEvent2.dispatch();	
+					cgEvent2.dispatch();
+					if (_refreshListsRequired) {
+						// it's actually "saveAndClose"
+						removeMe();
+					}
 				}
 				else {
 					// e.detail = cancel, so revert
@@ -204,7 +212,6 @@
 			
 			private function onSaveAndClose():void {
 				onSave(true);
-				removeMe();
 			}
 
 
