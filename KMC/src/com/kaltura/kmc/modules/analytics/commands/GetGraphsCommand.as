@@ -57,6 +57,11 @@ package com.kaltura.kmc.modules.analytics.commands
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
+				
+				//in the reports above we need to send playback context and instead of categories
+				keurif.playbackContext = keurif.categories;
+				keurif.categories = null;
+				
 				reportGetGraphs = new ReportGetGraphs( (event as ReportEvent).reportType , keurif , _model.selectedReportData.selectedDim, objectIds);
 			}
 			else

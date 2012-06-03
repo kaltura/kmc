@@ -16,6 +16,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		{
 			var getEntryFlag : Boolean = true;
 			_model.filter.keywords = "";
+			_model.filter.categories = null;
 			_model.selectedUserId = null;
 			
 			if((event as DrillDownEvent).objectName)

@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_model.currentScreenState = newStae;
 			_model.filter.keywords = "";
 			_model.filter.userIds = "";
+			_model.filter.categories = null;
 			_model.selectedUserId = null;
 
 			switch (newStae) {

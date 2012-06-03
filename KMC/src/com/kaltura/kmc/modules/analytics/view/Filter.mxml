@@ -21,7 +21,7 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 
-			public const LBL_WIDTH : int = 80;
+			public const LBL_WIDTH : int = 100;
 			public const INPUT_WIDTH : int = 150;
 			public static const APPLY:String = "apply";
 			
@@ -31,6 +31,9 @@
 			
 			[Bindable]
 			private var selectedCategoriesArr:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var playbackContextFlag : Boolean;
 			
 			[Bindable]
 			private var _filterVo:FilterVo;
@@ -446,9 +449,11 @@
 				   buttonMode="true" click="{dispatchEvent(new Event('apply'))}" styleName="buttonType2"
 				   enabled="{!isLoading}"/-->
 	</mx:HBox>
-	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{!dateOnlyFlag}" visible="{!dateOnlyFlag}">
-		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','categoriesTitle')}"/>
-		<mx:LinkButton id='allCategoriesBtn' label="{resourceManager.getString('analytics','categoriesAll')}"
+	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{ !dateOnlyFlag || playbackContextFlag }" visible="{!dateOnlyFlag || playbackContextFlag}">
+		<mx:Label width="{LBL_WIDTH}" 
+				  text="{ playbackContextFlag ? resourceManager.getString('analytics','playbackContext') :  resourceManager.getString('analytics','categoriesTitle')}"/>
+		<mx:LinkButton id='allCategoriesBtn' 
+					   label="{ resourceManager.getString('analytics','categoriesAll')}"
 					   click="onAllCategoriesSelection(event)" enabled="{!isLoading}"/>
 		<mx:LinkButton id='selectedCategoriesBtn' label="{resourceManager.getString('analytics','selectCategories')}"
 					   click="onCategoriesTreeOpen(event)" enabled="{!isLoading}"/>
