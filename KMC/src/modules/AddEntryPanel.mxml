@@ -4,7 +4,7 @@
 -->
 <mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" width="208" layout="vertical" styleName="addPanel"
 		   preinitialize="createShowingHandler(event)" creationComplete="creationCompleteHandler(event)"
-		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu" visible="false">
+		   implements="com.kaltura.kmc.business.IKmcPlugin,com.kaltura.kmc.business.IPopupMenu" visible="false" xmlns:view="com.kaltura.kmc.modules.create.view.*">
 	<mx:Metadata>
 		[ResourceBundle("create")]
 		[ResourceBundle("common")]
@@ -21,8 +21,8 @@
 			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.business.MenuHandler;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
-			import com.kaltura.kmc.modules.create.BulkUploader;
 			import com.kaltura.kmc.modules.create.MultipleMediaFilesSelector;
+			import com.kaltura.kmc.modules.create.types.BulkTypes;
 			import com.kaltura.kmc.modules.create.view.FileUploadSettings;
 			import com.kaltura.vo.KalturaConversionProfile;
 			import com.kaltura.vo.KalturaFilterPager;
@@ -39,6 +39,7 @@
 			 * */
 			public var config:XML;
 			
+			[Bindable]
 			/**
 			 * url of samples file
 			 * @internal 
@@ -46,7 +47,7 @@
 			 * */
 			public var samplesUrl:String;
 			
-			private const BTN_WIDTH:int = 150;
+			public static const BTN_WIDTH:int = 150;
 			
 			/*
 				WINDOW STATES
@@ -66,6 +67,7 @@
 			 * */
 			private var _approot:DisplayObjectContainer;
 
+			[Bindable]
 			/**
 			 * @copy #client
 			 * */
@@ -88,7 +90,6 @@
 			}
 
 			protected function showUploadSettingsWindow(e:Event):void {
-//				trace("AddEntryPanel.showUploadSettingsWindow");
 				_mmfs.removeEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				var fus:FileUploadSettings = new FileUploadSettings();
 				fus.client = _kc;
@@ -108,7 +109,6 @@
 				_mmfs = new MultipleMediaFilesSelector(config.filter);
 				_mmfs.addEventListener(MultipleMediaFilesSelector.FILES_SELECTED, showUploadSettingsWindow);
 				_mmfs.doFileUpload();
-//				trace("addUpload");
 			}
 
 
@@ -123,17 +123,7 @@
 			}
 
 
-			/**
-			 * Opens a desktop file selection pop-up, allowing csv/xml files selection
-			 * */
-			public function addBulk(event:MouseEvent = null):void {
-				hidePanel();
-				var bu:BulkUploader = new BulkUploader(_kc);
-				bu.addEventListener(Event.COMPLETE, onBulkAdded);
-				bu.doUpload();
-			}
-
-
+			
 			/**
 			 * Opens a KCW with audio/video/image online services options only
 			 * */
@@ -141,28 +131,6 @@
 				_state = SERVICES_STATE;
 				showOptionsScreen(resourceManager.getString('create', 'services_state_title'));
 			}
-			
-			
-
-
-			/**
-			 * downloads csv and xml samples
-			 * */
-			public function downloadSampleFiles(event:MouseEvent = null):void {
-				var req:URLRequest = new URLRequest(getFullUrl(samplesUrl));
-				navigateToURL(req);
-				hidePanel();
-			}
-			 
-			
-			protected function getFullUrl(url:String):String {
-				if (url.indexOf('://') == -1) {
-					// no protocol, concat from client
-					url = _kc.protocol + _kc.domain + url; 
-				}
-				return url;
-			}
-			
 			
 
 
@@ -274,11 +242,6 @@
 				}
 			}
 			
-			protected function onBulkAdded(e:Event):void {
-				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.refreshBulk"}, true));
-//				hidePanel();
-			}
-
 
 			public function setRoot(doc:DisplayObjectContainer):void {
 				_approot = doc;
@@ -345,6 +308,15 @@
 			}
 			
 
+			/**
+			 * @copy BulkSubmissions#addBulk()
+			 * 
+			 * @internal
+			 * forwarding call
+			 * */
+			public function addMediaBulk():void {
+				bulkBox.addBulk(BulkTypes.MEDIA);
+			}
 			
 
 		]]>
@@ -352,24 +324,22 @@
 	<mx:ViewStack id="viewStack" creationPolicy="all" width="100%" styleName="noPadding"
 				  height="{menuScreen.measuredHeight}" >
 		<mx:VBox styleName="noPadding" id="menuScreen" width="100%">
+			<!-- upload / import -->
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'upload_lbl')}"
 					  includeInLayout="{uploadBox.includeInLayout}" visible="{uploadBox.visible}"/>
 			<mx:VBox id="uploadBox" styleName="addPanelButtonBox" width="100%" horizontalAlign="center"
-					 visible="{btnUpload.visible || btnWebcam.visible || btnBulk.visible || btnServices.visible}"
-					 includeInLayout="{btnUpload.includeInLayout || btnWebcam.includeInLayout || btnBulk.includeInLayout || btnServices.includeInLayout}">
+					 visible="{btnUpload.visible || btnWebcam.visible || btnServices.visible}"
+					 includeInLayout="{btnUpload.includeInLayout || btnWebcam.includeInLayout || btnServices.includeInLayout}">
 				<mx:Button id="btnUpload" click="addUpload(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'upload_btn')}" buttonMode="true"/>
 				<mx:Button id="btnWebcam" click="btnWebcam_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
 						   label="{resourceManager.getString('create', 'webcam_btn')}" buttonMode="true"/>
-				<mx:Button id="btnBulk" click="addBulk(event)" width="{BTN_WIDTH}" styleName="addPanelButton"
-						   label="{resourceManager.getString('create', 'bulk_btn')}" buttonMode="true"/>
 				<mx:Button id="btnServices" click="btnServices_clickHandler(event)" width="{BTN_WIDTH}"
 						   styleName="addPanelButton" label="{resourceManager.getString('create', 'services_btn')}"
 						   buttonMode="true"/>
-				<mx:LinkButton id="btnSamples" click="downloadSampleFiles(event)" styleName="addPanelLinkButton"
-							   label="{resourceManager.getString('create', 'samples_btn')}"
-							   visible="{btnBulk.visible}" includeInLayout="{btnBulk.includeInLayout}"/>
 			</mx:VBox>
+			
+			<!-- prepare -->
 			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'prepare_lbl')}"
 					  includeInLayout="{prepareBox.includeInLayout}" visible="{prepareBox.visible}"/>
 			<mx:VBox id="prepareBox" styleName="addPanelButtonBox" width="100%" horizontalAlign="center"
@@ -382,6 +352,13 @@
 				<mx:Button id="btnLive" click="btnLive_clickHandler(event)" width="{BTN_WIDTH}" styleName="addPanelPrepButton"
 						   label="{resourceManager.getString('create', 'live_btn')}" buttonMode="true"/>
 			</mx:VBox>
+			
+			<!-- bulks -->
+			<mx:Label styleName="addPanelLabel" htmlText="{resourceManager.getString('create', 'bulk_lbl')}"
+					  includeInLayout="{bulkBox.includeInLayout}" visible="{bulkBox.visible}"/>
+			<view:BulkSubmissions id="bulkBox" width="100%" hidePanel="hidePanel()" client="{_kc}" 
+								  samplesUrl="{samplesUrl}" />
+			
 		</mx:VBox> 
 		
 		<mx:VBox id="optionsScreen" styleName="noPadding" height="{menuScreen.height}" width="100%">

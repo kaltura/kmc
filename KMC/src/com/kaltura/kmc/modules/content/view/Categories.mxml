@@ -76,21 +76,6 @@
 					Alert.show(resourceManager.getString('cms', 'categoryPageLocked'), resourceManager.getString('cms', 'attention'));
 				}
 			}
-			
-			
-			/**
-			 * fix the new playlists buttons
-			 * */
-			private function setButtonsWidth():void {
-				// this is a one-time-assignment, there's no reason to use binding.
-				var newButtonsWidth:Number = Math.max(addCatBtn.width, uploadCatsBtn.width, uploadUsersBtn.width);
-				addCatBtn.width = newButtonsWidth;
-				uploadCatsBtn.width = newButtonsWidth;
-				uploadUsersBtn.width = newButtonsWidth;
-				addCatBtn.visible = true;
-				uploadCatsBtn.visible = true;
-				uploadUsersBtn.visible = true;
-			}
 
 			private function loadCategories():void {
 				// dispatch event that will load data according to screen filter
@@ -165,36 +150,7 @@
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
-				setButtonsWidth();
 			}
-
-
-			private function bulkBtn_clickHandler(event:MouseEvent):void {
-				_bulkUpldFileRef = new FileReference();
-				if (event.target == uploadCatsBtn) {
-					_bulkUpldFileRef.addEventListener(Event.SELECT, uploadCats);
-				}
-				else if (event.target == uploadUsersBtn) {
-					_bulkUpldFileRef.addEventListener(Event.SELECT, uploadCUsrs);
-
-				}
-				_bulkUpldFileRef.browse([new FileFilter(resourceManager.getString('cms', 'file_types'), "*.csv")]);
-			}
-
-
-			private function uploadCats(event:Event):void {
-				var bulk:BulkEvent = new BulkEvent(BulkEvent.BULK_UPLOAD_CATEGORIES);
-				bulk.data = event.target;
-				bulk.dispatch();
-			}
-
-
-			private function uploadCUsrs(event:Event):void {
-				var bulk:BulkEvent = new BulkEvent(BulkEvent.BULK_UPLOAD_CATEGORY_USERS);
-				bulk.data = event.target;
-				bulk.dispatch();
-			}
-
 
 
 		]]>
@@ -242,14 +198,8 @@
 		</mx:HDividedBox>
 		<mx:VBox styleName="listActionsBox" height="100%" id="actionsBox">
 			<mx:Button id="addCatBtn" label="{resourceManager.getString('cms', 'addNewCat')}" 
-					   styleName="listActionButton" visible="false" buttonMode="true"
+					   styleName="listActionButton" buttonMode="true"
 					   click="addCatBtn_clickHandler(event)" />
-			<mx:Button id="uploadCatsBtn" label="{resourceManager.getString('cms', 'uploadCatsCsv')}" 
-					   styleName="listActionButton" visible="false" buttonMode="true" 
-					   click="bulkBtn_clickHandler(event)"/>
-			<mx:Button id="uploadUsersBtn" label="{resourceManager.getString('cms', 'uploadMembersCsv')}" 
-					   styleName="listActionButton" visible="false" buttonMode="true"
-					   click="bulkBtn_clickHandler(event)"/>
 		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!---
+ 	this component handles all bulk submissions in upload module
+-->
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" styleName="addPanelButtonBox" >
+	<mx:Metadata>
+		/**
+		 * request to hide the panel
+		 * */
+		[Event(name="hidePanel",type="flash.events.Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.kmc.events.KmcNavigationEvent;
+			import com.kaltura.kmc.modules.create.BulkUploader;
+			import com.kaltura.kmc.modules.create.types.BulkTypes;
+			
+			import modules.AddEntryPanel;
+			
+			import mx.events.ListEvent;
+			
+			public var client:KalturaClient;
+			
+			[Bindable]
+			public var samplesUrl:String;
+			
+			[Bindable]
+			private var _bulkTypes:Array = [BulkTypes.MEDIA, BulkTypes.CATEGORY, BulkTypes.USER, BulkTypes.CATEGORY_USER];
+			
+			
+			/**
+			 * get label corresponding to item text for dropdown
+			 */
+			private function getLabel(item:Object):String {
+				var res:String = item.toString();
+				switch (item.toString()) {
+					case BulkTypes.MEDIA:
+						res = resourceManager.getString('create', 'bulk_entries');
+						break;
+					case BulkTypes.CATEGORY:
+						res = resourceManager.getString('create', 'bulk_cats');
+						break;
+					case BulkTypes.USER:
+						res = resourceManager.getString('create', 'bulk_users');
+						break;
+					case BulkTypes.CATEGORY_USER:
+						res = resourceManager.getString('create', 'bulk_cat_users');
+						break;
+				}
+				return res;
+			}
+			
+			
+			/**
+			 * tell content page to refresh bulk upload log
+			 * */
+			private function onBulkAdded(e:Event):void {
+				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmcFunction: "content.refreshBulk"}, true));
+			}
+			
+			
+			/**
+			 * downloads csv and xml samples
+			 * */
+			public function downloadSampleFiles(event:MouseEvent = null):void {
+				var req:URLRequest = new URLRequest(getFullUrl(samplesUrl));
+				navigateToURL(req);
+				dispatchEvent(new Event("hidePanel"));
+			}
+			
+			
+			private function getFullUrl(url:String):String {
+				if (url.indexOf('://') == -1) {
+					// no protocol, concat from client
+					url = client.protocol + client.domain + url; 
+				}
+				return url;
+			}
+			
+			
+			/**
+			 * Opens a desktop file selection pop-up, allowing csv/xml files selection
+			 * @param type tyoe of object for bulk upload
+			 * 
+			 * @see com.kaltura.kmc.modules.create.types.BulkTypes 
+			 * */
+			public function addBulk(type:String):void {
+				dispatchEvent(new Event("hidePanel"));
+				var bu:BulkUploader = new BulkUploader(client);
+				bu.addEventListener(Event.COMPLETE, onBulkAdded);
+				bu.doUpload(type);
+			}
+			
+
+
+			private function dropdown_changeHandler(event:ListEvent):void {
+				addBulk(dropdown.selectedItem.toString());					
+				dropdown.selectedIndex = -1;
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1" width="{btnSamples.width}"
+				 prompt="{resourceManager.getString('create', 'bulk_btn')}"
+				 change="dropdown_changeHandler(event)" dataProvider="{_bulkTypes}" labelFunction="getLabel"/>
+	
+	<mx:LinkButton id="btnSamples" click="downloadSampleFiles(event)" styleName="addPanelLinkButton"
+				   label="{resourceManager.getString('create', 'samples_btn')}" />
+	<!--  visible="{btnBulk.visible}" includeInLayout="{btnBulk.includeInLayout}" -->
+</mx:VBox>
