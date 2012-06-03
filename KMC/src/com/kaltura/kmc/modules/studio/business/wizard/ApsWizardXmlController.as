@@ -412,6 +412,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 						else if (labels.length() > 0) {
 							// number of labels * 20 (which is the height of label + padding etc), plus 10 for cell padding
 							rowHeight = labels.length() * 20 + 10;
+							if (imgNode && imgNode.@height) {
+								// if the image is taller than the labels, use image height (added for falcon skin)
+								rowHeight = Math.max(rowHeight, imgNode.@height + 10);
+							}
 						}
 						else {
 							rowHeight = 30; // min value for item renderer with no image
