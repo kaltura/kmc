@@ -18,6 +18,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
+			import com.kaltura.types.KalturaInheritanceType;
 			import com.kaltura.utils.ObjectHelpers;
 			import com.kaltura.utils.ObjectUtil;
 			import com.kaltura.vo.KalturaCategory;
@@ -166,6 +167,14 @@
 						_undoCategory.privacyContexts = null;
 						_undoCategory.pendingMembersCount = int.MIN_VALUE;
 						_undoCategory.membersCount = int.MIN_VALUE;
+						
+						// if category inherits members from parent, don't send inherited values
+						if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
+							_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+							_undoCategory.userJoinPolicy = int.MIN_VALUE;
+						}
+						
+						// add category
 						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
 						cgEvent.data = [_undoCategory, refreshLists];
 						cgEvent.dispatch();
@@ -195,6 +204,12 @@
 			private function updateCategory(e:CloseEvent = null):void {
 				if (!e || e.detail == Alert.OK) {
 					tabsNav.save();
+					// if category inherits members from parent, don't send inherited values
+					if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
+						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+						_undoCategory.userJoinPolicy = int.MIN_VALUE;
+					}
+					
 					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
 					cgEvent2.data = [catVO, _refreshListsRequired];
@@ -208,10 +223,6 @@
 					// e.detail = cancel, so revert
 					_undoCategory.name = _origCategory.name;
 				}
-			}
-			
-			private function onSaveAndClose():void {
-				onSave(true);
 			}
 
 
@@ -304,7 +315,7 @@
 					   click="onSave(false)" buttonMode="{enabled}" 
 					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
-					   click="onSaveAndClose()" buttonMode="{enabled}" 
+					   click="onSave(true)" buttonMode="{enabled}" 
 					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">
