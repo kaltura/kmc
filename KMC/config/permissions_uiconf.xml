@@ -9,12 +9,10 @@
 			</permission>
 			<!-- Bulk Upload -->
 			<permission text="Import Files & Bulk Upload" id="CONTENT_INGEST_BULK_UPLOAD">
-				<ui id="content.upload.submitBtn" enabled="false"/>
-				<ui id="content.upload" bulkUploadEnabled="false"/>
 				<ui id="dashboard.uploadPanel.uploadOption1Button" enabled="false" buttonMode="false"/>
 				<ui id="dashboard.uploadPanel.bulkSamplesLinkButton" visible="false"/>
 				<ui id="entryAssets" allowImport="false"/>
-				<ui id="addPanel.btnBulk" visible="false" includeInLayout="false"/>
+				<ui id="addPanel.bulkBox" allowMedia="false"/>
 			</permission>
 			<!-- Remote Storage -->
 			<permission text="Set Link to Files on Remote Storage" id="CONTENT_INGEST_REMOTE_STORAGE"
@@ -149,12 +147,14 @@
 				<ui id="categoryDrilldown.metadata.tagsInput" enabled="false"/>
 				<ui id="categoryDrilldown.metadata.referenceIdInput" enabled="false"/>
 				<ui id="categoryDrilldown.metadata" customDataEditable="false"/>
+				<ui id="addPanel.bulkBox" allowCategories="false"/>
 			</permission>
 			
 			<permission text="Edit Category End-User Access Settings" id="CONTENT_MANAGE_CATEGORY_USERS" dependsOnFeature="FEATURE_ENTITLEMENT">
 				<ui id="categoryDrilldown.endUsers" changesEnabled="false" />
 				<ui id="endUserPermissionsWin" changesEnabled="false" />
 				<ui id="content.categories.bulkActions" includeCategoryUserActions="false" />
+				<ui id="addPanel.bulkBox" allowMembers="false"/>
 			</permission>
 
 			<permission text="Update Live Stream" id="LIVE_STREAM_UPDATE" dependsOnFeature="FEATURE_LIVE_STREAM">
@@ -418,8 +418,8 @@
 			<permission text="Delete Roles" id="ADMIN_ROLE_DELETE">
 				<ui id="admin.roles.table" enableDelete="false"/>
 			</permission>
-			<permission text="Users Bulk Upload" id="ADMIN_USER_BULK">
-<!--				<ui id="admin.roles.table" enableDelete="false"/>-->
+			<permission text="Users Bulk Upload" id="ADMIN_USER_BULK" dependsOnFeature="FEATURE_END_USER_MANAGE">
+				<ui id="addPanel.bulkBox" allowUsers="false"/>
 			</permission>
 		</permissionGroup>
 
@@ -516,6 +516,10 @@
 				<ui id="categoryDrilldown.tabsNav" showEndUsersTab="false"/>
 				<ui id="analytics" entitlementEnabled="false"/>
 				<ui id="account.integration.entitlements" visible="false"/>
+		</permissionGroup>
+		<!-- end users management -->
+		<permissionGroup id="FEATURE_END_USER_MANAGE">
+				<ui id="addPanel.bulkBox" allowUsers="false"/>
 		</permissionGroup>
 	</partnerPermissions>
 

@@ -18,6 +18,7 @@
 			
 			import modules.AddEntryPanel;
 			
+			import mx.collections.ArrayCollection;
 			import mx.events.ListEvent;
 			
 			public var client:KalturaClient;
@@ -26,7 +27,66 @@
 			public var samplesUrl:String;
 			
 			[Bindable]
-			private var _bulkTypes:Array = [BulkTypes.MEDIA, BulkTypes.CATEGORY, BulkTypes.USER, BulkTypes.CATEGORY_USER];
+			private var _bulkTypes:ArrayCollection = new ArrayCollection([BulkTypes.MEDIA, BulkTypes.CATEGORY, BulkTypes.USER, BulkTypes.CATEGORY_USER]);
+			
+			
+			/**
+			 * RnP: show media bulk uplooad button
+			 * */
+			public function set allowMedia(value:Boolean):void {
+				removeType(BulkTypes.MEDIA);
+			}
+			
+			public function get allowMedia():Boolean {
+				return true;
+			}
+			
+			/**
+			 * RnP: show categories bulk uplooad button
+			 * */
+			public function set allowCategories(value:Boolean):void {
+				removeType(BulkTypes.CATEGORY);
+			}
+			
+			public function get allowCategories():Boolean {
+				return true;
+			}
+			
+			/**
+			 * RnP: show users bulk uplooad button
+			 * */
+			public function set allowUsers(value:Boolean):void {
+				removeType(BulkTypes.USER);
+			}
+			
+			public function get allowUsers():Boolean {
+				return true;
+			}
+			
+			/**
+			 * RnP: show members (category users) bulk uplooad button
+			 * */
+			public function set allowMembers(value:Boolean):void {
+				removeType(BulkTypes.CATEGORY_USER);
+			}
+			
+			public function get allowMembers():Boolean {
+				return true;
+			}
+			
+			private function removeType (type:String):void {
+				for (var i:int = 0; i<_bulkTypes.length; i++) {
+					if (_bulkTypes.getItemAt(i) == type) {
+						_bulkTypes.removeItemAt(i);
+						break;
+					}
+				}
+				// if all buttons are gone, remove the whole panel
+				if (_bulkTypes.length == 0) {
+					visible = includeInLayout = false;
+				}
+			}
+			
 			
 			
 			/**
@@ -108,5 +168,4 @@
 	
 	<mx:LinkButton id="btnSamples" click="downloadSampleFiles(event)" styleName="addPanelLinkButton"
 				   label="{resourceManager.getString('create', 'samples_btn')}" />
-	<!--  visible="{btnBulk.visible}" includeInLayout="{btnBulk.includeInLayout}" -->
 </mx:VBox>
