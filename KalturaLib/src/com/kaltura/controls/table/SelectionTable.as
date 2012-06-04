@@ -17,6 +17,11 @@ package com.kaltura.controls.table
 	[Event(name="change", type="flash.events.Event")]
 	
 	/**
+	 * dispatched whenever the "selectedItems" contents change
+	 * */
+	[Event(name="selectionChanged", type="flash.events.Event")]
+	
+	/**
 	 * A DataGrid with a column of CheckBoxes for selection.
 	 * it is assumed that when declaring the table columns, the selection column is there.
 	 * 
@@ -33,6 +38,11 @@ package com.kaltura.controls.table
 		 * */
 		public static const SELECTION_CHANGED:String = "selectionChanged";
 		
+		/**
+		 * attribute used to identify objects
+		 * (if two objects have the same value for this attribute, they are considered the same object) 
+		 */		
+		public var identifier:String = "id";
 		
 		protected var columnsSortMap:HashMap = new HashMap();
 		
@@ -83,7 +93,7 @@ package com.kaltura.controls.table
 				if (oldVal) {
 					// the entry was in the selectedItems array
 					for (var i:int = 0; i<si.length; i++) {
-						if (si[i].id == item.id) {
+						if (si[i][identifier] == item[identifier]) {
 							si.splice(i, 1);
 							break;
 						}
@@ -137,7 +147,7 @@ package com.kaltura.controls.table
 				// find selectedItems in the DP and add them to the selected list
 				for each (var nItem:Object in items) {
 					for each (oItem in dataProvider) {
-						if (nItem.id == oItem.id) {
+						if (nItem[identifier] == oItem[identifier]) {
 							// add the item that was in the dataprovider to start with
 							si.push(oItem);
 							oItem[SelectionRenderer.SELECTION_ATTRIBUTE] = true;

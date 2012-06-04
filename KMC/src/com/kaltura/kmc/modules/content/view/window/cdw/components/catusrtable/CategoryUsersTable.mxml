@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false" 
-			 creationComplete="datagrid1_creationCompleteHandler(event)"
-			 allowMultipleSelection="true" itemClick="setSelection(event)" change="setSelection(event)">
-	<mx:Metadata>
-		[Event(name="selectionChanged", type="flash.events.Event")] 
-	</mx:Metadata>
+<table:SelectionTable xmlns:table="com.kaltura.controls.table.*" 
+					  xmlns:mx="http://www.adobe.com/2006/mxml" sortableColumns="false"
+					  creationComplete="datagrid1_creationCompleteHandler(event)" >
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
@@ -14,16 +12,10 @@
 			import com.kaltura.types.KalturaUpdateMethodType;
 			
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
 			import mx.formatters.DateFormatter;
 			import mx.managers.PopUpManager;
 			import mx.resources.ResourceManager;
 			
-			/**
-			 * defines the value of the type property for the <code>selectionChanged</code> event.
-			 * */
-			public static const SELECTION_CHANGED:String = "selectionChanged";
-
 			
 			/**
 			 * if true, actions in table are enabled
@@ -32,17 +24,6 @@
 				ActionsRenderer.allowActions = value;
 			}
 			
-			
-			/**
-			 * selection or deselection was made
-			 */
-			private function setSelection(event:ListEvent):void {
-				if (event.itemRenderer.data) {
-					var e:Event = new Event(SELECTION_CHANGED);
-					dispatchEvent(e);
-				}
-			}
-
 			
 			/**
 			 * get a textual value according to user permission level
@@ -115,6 +96,7 @@
 
 
 			private function datagrid1_creationCompleteHandler(event:FlexEvent):void {
+				identifier = "userId";
 				addEventListener(CatUsrTableActions.APPROVE, doAction, false, 0, true);
 				addEventListener(CatUsrTableActions.ACTIVATE, doAction, false, 0, true);
 				addEventListener(CatUsrTableActions.DEACTIVATE, doAction, false, 0, true);
@@ -174,7 +156,11 @@
 		]]>
 	</mx:Script>
 	
-	<mx:columns>
+	<table:columns>
+		<mx:DataGridColumn width="32" minWidth="32" 
+						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
+		
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
 						   headerText="{resourceManager.getString('cms', 'uthName')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
@@ -203,5 +189,5 @@
 						   headerText="{resourceManager.getString('cms', 'uthActions')}"
 						   itemRenderer="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.ActionsRenderer"/>
 		
-	</mx:columns>
-</mx:DataGrid>
+	</table:columns>
+</table:SelectionTable>
