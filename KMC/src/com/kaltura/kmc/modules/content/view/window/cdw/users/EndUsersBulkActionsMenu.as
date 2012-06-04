@@ -6,9 +6,11 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 	
 	import flash.display.DisplayObject;
 	
+	import mx.controls.Alert;
 	import mx.core.Application;
 	import mx.events.MenuEvent;
 	import mx.managers.PopUpManager;
+	import mx.resources.ResourceManager;
 	
 	public class EndUsersBulkActionsMenu extends BulkEntryActionsMenu {
 		
@@ -66,6 +68,10 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 		
 		override protected function menu_itemClickHandler(event:MenuEvent):void {
 			var cue:CategoryUserEvent;
+			if (!users || users.length < 1) {
+				Alert.show(resourceManager.getString('cms', 'usersBulkSelectUserFirst'), resourceManager.getString('cms', 'usersBulkSelectUserFirstTitle'));
+				return;
+			}
 			switch (event.item.data) {
 				case "usersBulkApprove":
 				case "usersBulkActivate":
@@ -74,7 +80,7 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 					cue.dispatch();
 					break;
 				
-				case "usersBulkDectivate":
+				case "usersBulkDeactivate":
 					cue = new CategoryUserEvent(CategoryUserEvent.DEACTIVATE_CATEGORY_USER);
 					cue.data = users;
 					cue.dispatch();
