@@ -324,14 +324,26 @@
 
 
 
-			private function cureentDatesChange(event:Event):void {
-				validateDates(fromDate, toDate);
-				clearDatesBtn.enabled = true;
-				preformNewSearch();
+			private function currentDatesChange(event:Event):void {
+				if (validateDates(fromDate, toDate)) {
+					clearDatesBtn.enabled = true;
+					preformNewSearch();
+				}
+				else if (toDate.selectedDate  || fromDate.selectedDate) {
+					clearDatesBtn.enabled = true;
+				}
+				else {
+					clearDatesBtn.enabled = false;
+				}
 			}
 
 
-			private function validateDates(fromDate:DateField, toDate:DateField):void {
+			/**
+			 * make sure selected dates are valid for filtering
+			 * @return true if dates are valid
+			 * */
+			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
+				var res:Boolean = true;
 				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
 					var fd:Number = (fromDate.selectedDate as Date).time;
 					var ed:Number = (toDate.selectedDate as Date).time;
@@ -341,12 +353,14 @@
 						toDate.selectedDate = _currentOldEndDate;
 						fromDate.selectedDate = _currentOldStartDate;
 						toDate.validateNow();
+						res = false;
 					}
 					else {
 						_currentOldStartDate = new Date((fromDate.selectedDate as Date).time);
 						_currentOldEndDate = new Date((toDate.selectedDate as Date).time);
 					}
 				}
+				return res;
 			}
 
 
@@ -470,10 +484,10 @@
 				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
 				<mx:HBox styleName="innerUpperDatesHBox">
 					<mx:DateField id="fromDate" width="90" toolTip="{resourceManager.getString('cms', 'from')}"
-								  change="{cureentDatesChange(event)}"/>
+								  change="{currentDatesChange(event)}"/>
 					<mx:Label id="toDateTxt" text="-"/>
 					<mx:DateField id="toDate" width="90" toolTip="{resourceManager.getString('cms', 'to')}"
-								  change="{cureentDatesChange(event)}"/>
+								  change="{currentDatesChange(event)}"/>
 				</mx:HBox>
 				<mx:HBox id="titleAndClearHolder" verticalAlign="middle">
 					<mx:LinkButton id='clearDatesBtn' label="{resourceManager.getString('cms', 'clearDates')}"
