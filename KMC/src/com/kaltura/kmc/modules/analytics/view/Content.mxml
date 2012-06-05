@@ -161,14 +161,22 @@
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF:
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[5] && selectedReport.aggregatedDataArrCol[5].value != null)
-								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
+							{
+								if(_model.entitlementEnabled)
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffEntitlementLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value,selectedReport.aggregatedDataArrCol[0].value]);
+								else
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownDropoffLbl', [selectedReport.seletedMediaEntry.name, selectedReport.aggregatedDataArrCol[5].value]);
+							}
 							else
 								selectedReport.message = '';
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
 								var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
-								selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
+								if(_model.entitlementEnabled)
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', [selectedReport.seletedMediaEntry.name, sum2,selectedReport.aggregatedDataArrCol[0].value]);
+								else	
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
 							}
 							else
 								selectedReport.message = '';

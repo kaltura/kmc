@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="650" height="520"
+				styleName="TitleWindowType2" 
+				showCloseButton="true" close="titlewindow1_closeHandler(event)"
+				layout="vertical" title="{resourceManager.getString('analytics', 'previewEntryWindowTitle')}"
+				creationComplete="titlewindow1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.model.Context;
+			import com.kaltura.vo.KalturaBaseEntry;
+			import com.kaltura.vo.KalturaMediaEntry;
+			
+			import mx.controls.SWFLoader;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable] public static var kdp:SWFLoader;
+			
+			//inoreder of loading the kdp you must pass a context
+			[Bindable] public var context:Context; 
+			
+			//the entry id you preview
+			[Bindable] public var entry:KalturaBaseEntry;
+			
+			//the entry id you preview
+			[Bindable] public var uiconfId:String;
+			
+			[Bindable] private var _lblWidth : Number = 140;
+			
+			protected function titlewindow1_closeHandler(event:CloseEvent):void
+			{
+				disposeAll();
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function disposeAll() : void
+			{
+				/*if(kdp && kdp.content)
+				{
+					if(kdp.content.hasEventListener("kdpReady"))
+						kdp.content.removeEventListener("kdpReady", showKdp);
+					if(kdp.content.hasEventListener("entryReady"))
+						kdp.content.removeEventListener("entryReady", showKdp);
+				
+					if(kdp.content.hasEventListener("mediaReady"))
+						kdp.content.removeEventListener("mediaReady", showKdp);
+				}*/
+				
+				cleanMedia();
+			}
+			
+			protected function showKdp( event : Event ) : void
+			{
+				kdpSection.visible = true;
+				//data = kdp.content['evaluate']('{mediaProxy.entry}');
+			}
+			
+			/**
+			 * send to the KDP clean media if exist
+			 * */
+			protected function cleanMedia() : void
+			{
+				if (kdp && kdp.content)
+					kdp.content["sendNotification"]('cleanMedia');
+			}
+			
+			/**
+			 * add KDP to the stage
+			 * */
+			private function addKDP():void {
+				
+				//hide until it loads due to KDP bug that it can't center the preloader
+				
+				
+				if (!kdp) {
+					kdp = new SWFLoader();
+					kdp.width = 560;
+					kdp.height = 315;
+					kdp.loaderContext = new LoaderContext(false, new ApplicationDomain());
+					kdp.addEventListener(Event.INIT, onKDP3Loaded);
+					var kdpUrl:String = "http://" + context.rootUrl + "/index.php/kwidget/wid/_" + context.partnerId + "/uiconf_id/" + uiconfId + "/nowrapper/1/";
+					kdp.source = kdpUrl;
+					kdp.scaleContent = false;
+					kdpSection.addChildAt(kdp, 0);
+					kdpSection.visible = false;
+
+				}
+				else if (!kdpSection.contains(kdp)) {
+					kdpSection.addChildAt(kdp, 0);
+					kdp.content["sendNotification"]('changeMedia', {entryId: entry.id});
+				}
+				else {
+					kdp.content["sendNotification"]('changeMedia', {entryId: entry.id});
+				}
+			}
+			
+			/**
+			 * Kdp loaded
+			 */
+			private function onKDP3Loaded(event:Event):void { 
+				
+				if(!kdp.content.hasEventListener("entryReady"))
+					kdp.content.addEventListener("entryReady", showKdp);
+				
+				if(!kdp.content.hasEventListener("kdpReady"))
+					kdp.content.addEventListener("kdpReady", showKdp);
+				
+				if(!kdp.content.hasEventListener("mediaReady"))
+					kdp.content.addEventListener("mediaReady", showKdp); 
+				
+				var params:Object = new Object();
+				params.cdnHost = context.cdnHost;
+				params.host = context.hostName;
+				params.autoPlay = "false";
+				params.loop = "false";
+				params.autoRewind = "false";
+				params.sourceType = "entryId";
+				params.partnerId = context.partnerId;
+				params.widgetId = "_" + context.partnerId;
+				params.subpId = context.subpId;
+				params.uiConfId = uiconfId;
+				params.ks = context.ks;
+				params.entryId = entry.id;
+				
+				if (context.debugMode)
+					params.debugMode = "true";
+				
+				// set flashvars
+				event.target.content["flashvars"] = params;
+				
+				// start the loading sqeunce of the kdp 
+				event.target.content["init"]();
+			}
+
+
+			protected function titlewindow1_creationCompleteHandler(event:FlexEvent):void
+			{
+				this.mx_internal::closeButton.buttonMode = true;
+				addKDP();
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="{resourceManager.getString('analytics','loading')}" visible="{!kdpSection.visible}" includeInLayout="{!kdpSection.visible}"/>
+	<mx:HBox id="kdpSection" width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		
+	</mx:HBox>
+	<mx:VBox width="100%">
+		<mx:HBox width="100%" >
+			<mx:Label text="{resourceManager.getString('analytics','name')}:" width="{_lblWidth}" styleName="boldLabel"/>
+			<mx:Text width="100%" text="{entry.name}" />
+		</mx:HBox>
+		<mx:HBox width="100%" >
+			<mx:Label text="{resourceManager.getString('analytics','description')}:" width="{_lblWidth}" styleName="boldLabel"/>
+			<mx:Text width="100%" text="{entry.description}" />
+		</mx:HBox>
+		<mx:HBox width="100%" >
+			<mx:Label text="{resourceManager.getString('analytics','tags')}:" width="{_lblWidth}" styleName="boldLabel"/>
+			<mx:Text width="100%" text="{entry.tags}" />
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="{resourceManager.getString('analytics','adminOwner')}:" width="{_lblWidth}" styleName="boldLabel"/>
+			<mx:Text width="100%" text="{entry.userId}"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>
