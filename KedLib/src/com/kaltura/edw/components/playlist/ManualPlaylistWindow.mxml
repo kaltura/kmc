@@ -34,6 +34,7 @@
 			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.utils.ObjectUtil;
+			import com.kaltura.vo.BaseFlexVo;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
@@ -71,9 +72,10 @@
 			public var distributionProfilesArray:Array;
 
 			/**
-			 * last selected entry
+			 * the item being edited, either KalturaPlaylist (manual playlist),
+			 * KalturaBaseEntry (entry metadata: linked entries) or KalturaCategory (category metadata: linked entry)
 			 * */
-			public var selectedEntry:KalturaBaseEntry;
+			public var editedItem:BaseFlexVo;
 
 			[Bindable]
 			public var filterData:FilterModel;
@@ -207,10 +209,10 @@
 				entries.ruleBaseBar.includeInLayout = false;
 				entries.ruleBaseBar.visible = false;
 				//switch edit or new manual playlist
-				if (selectedEntry && (selectedEntry is KalturaPlaylist)) {
+				if (editedItem && (editedItem is KalturaPlaylist)) {
 					// edit existing playlist
-					title = selectedEntry.name;
-					_originalPlaylist = selectedEntry as KalturaPlaylist;
+					title = editedItem.name;
+					_originalPlaylist = editedItem as KalturaPlaylist;
 					_editPlaylist = Cloner.cloneKalturaPlaylist(_originalPlaylist);
 					playlistName.text = _editPlaylist.name;
 					playlistDescription.text = _editPlaylist.description;
@@ -225,6 +227,9 @@
 					// edit custom data linked entries
 					removeChild(nameAndDescription);
 					_playlistArrayCollection = editLinkedArrayCollection;
+					title = resourceManager.getString('drilldown', 'editEntry') + " - " +
+						editedItem.name + " > " +
+						resourceManager.getString('drilldown', 'linkedEntriedAddRemove');
 				}
 				else {
 					// create new playlist
@@ -300,9 +305,6 @@
 				var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SEARCH_ENTRIES);
 				e.data = _listableVo;
 				dispatchEvent(e);
-				
-//				var searchEvent:SearchEvent = new SearchEvent(SearchEvent.SEARCH_ENTRIES, _listableVo);
-//				searchEvent.dispatch();
 			}
 
 
@@ -414,8 +416,6 @@
 						var ap:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SAVE_NEW_PLAYLIST);
 						ap.data = kalturaPlaylist;
 						dispatchEvent(ap);
-//						var addEntryEvent:EntryEvent = new EntryEvent(EntryEvent.ADD_PLAYLIST, kalturaPlaylist);
-//						addEntryEvent.dispatch();
 					}
 				}
 				else if (validatePlaylist()) {
@@ -428,9 +428,6 @@
 					var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SAVE_EXISTING_PLAYLIST);
 					e.data = _editPlaylist; 
 					dispatchEvent(e);
-//					var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS,
-//						new ArrayCollection([_editPlaylist]));
-//					entriesEvent.dispatch();
 					KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
 						"ManuallPlayList>EditPlayList" + ">" + _editPlaylist.id);
 					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST +
@@ -501,26 +498,6 @@
 			}
 			
 			protected function entryTable_showDetailsHandler(event:KedDataEvent):void {
-//				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
-//				var cgEvent:CairngormEvent;
-//				cgEvent = new EntryEvent(EntryEvent.SET_SELECTED_ENTRY, entry as KalturaBaseEntry, (entry as KalturaBaseEntry).id, (playlistTable.dataProvider as ArrayCollection).getItemIndex(entry));
-//				cgEvent.dispatch();
-//				if (entry is KalturaPlaylist) {
-//					//switch manual / rule base
-//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.STATIC_LIST) {
-//						// manual list
-//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_MANUAL_WINDOW);
-//						cgEvent.dispatch();
-//					}
-//					if ((entry as KalturaPlaylist).playlistType == KalturaPlaylistType.DYNAMIC) {
-//						cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_RULE_BASED_WINDOW);
-//						cgEvent.dispatch();
-//					}
-//				}
-//				else {
-//					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.PLAYLIST_ENTRY_DETAILS_WINDOW);
-//					cgEvent.dispatch();
-//				}
 				var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS);
 				e.data = event.data as KalturaBaseEntry;
 				dispatchEvent(e);
@@ -610,8 +587,7 @@
 						   width="100%" orderByChanged="{onOrderByChanged()}" showLinks="{showLinks}"
 						   showDetails="entryTable_showDetailsHandler(event)"
 						   creationComplete="onEntriesTableReady()" dataProvider="{_listableVo.arrayCollection}"
-						   dragEnabled="false" dropEnabled="false" dragMoveEnabled="false" 
-						   allowMultipleSelection="{(maxAllowedValues!=1)}"/>
+						   singleSelection="{(maxAllowedValues==1)}"/>
 			<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" nextPage="gotoPage()"
 							 prvPage="gotoPage()" getPageNum="gotoPage()" verticalScrollPolicy="off"
 							 horizontalScrollPolicy="off" width="100%" showRowsInPage="true"/>

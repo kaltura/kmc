@@ -30,6 +30,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.CheckBox;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DataGridEvent;
 			import mx.events.DragEvent;
@@ -131,12 +132,41 @@
 			 */
 			public var usedForModeration:Boolean = false;
 
+			/**
+			 *  @private
+			 *  Storage for the singleSelection property.
+			 */
+			private var _singleSelection:Boolean = true;
 			
+			/**
+			 * @internal
+			 * multiple selection is not traditional, 
+			 * as far as the DataGrid is concerned it is always set to false 
+			 * though the default applicative value is true.
+			 * */
+			override public function set allowMultipleSelection(value:Boolean):void {
+				super.allowMultipleSelection = false;
+				
+			}
+			
+			/**
+			 * allow only a single item to be selected at each time. <br>
+			 * this attribute replaces ListBase.allowMultipleSelection
+			 * */
+			public function set singleSelection(value:Boolean):void {
+				if (_singleSelection && !value) {
+					setSelectedItems(null);
+				}
+				_singleSelection = value;
+				
+			}
+			public function get singleSelection():Boolean {
+				return _singleSelection;
+			}
 			
 			override public function set selectedItem(item:Object):void {
 				setSelectedItems([item]);
 			}
-			
 			
 			override public function set selectedItems(items:Array):void {
 				setSelectedItems(items);
@@ -492,7 +522,7 @@
 					// set value on selectedItems array
 					var si:Array = selectedItems;
 					if (oldVal) {
-						// the entry was in the selectedItems array
+						// the entry was in the selectedItems array, remove it
 						for (var i:int = 0; i<si.length; i++) {
 							if ((si[i] as KalturaBaseEntry).id == entry.id) {
 								si.splice(i, 1);
@@ -501,12 +531,23 @@
 						}
 					}
 					else {
-						si.push(entry);
+						// add the entry to the selectedItems array
+						if (!_singleSelection) {
+							si.push(entry);
+						}
+						else {
+							// remember given entry
+							si = [entry];
+						}
 					}
 					selectedItems = si;
 				}
 				else if (e.target.data is DataGridColumn) {
 					// the click was on the headerRenderer
+					if (_singleSelection) {
+						(e.target.cb as CheckBox).selected = false;
+						return;
+					}
 					if (selectedItems.length) {
 						deselectAll();
 						e.target.cb.selected = false;
@@ -515,6 +556,7 @@
 						selectAll();
 						e.target.cb.selected = true;
 					}
+					
 				}
 				setSelection();
 			}

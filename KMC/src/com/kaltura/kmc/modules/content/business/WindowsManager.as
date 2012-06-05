@@ -506,7 +506,7 @@ package com.kaltura.kmc.modules.content.business
 			}	
 			
 			mpw.distributionProfilesArray = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
-			mpw.selectedEntry = _entryData.selectedEntry;
+			mpw.editedItem = _entryData.selectedEntry;
 			if (_entryData.selectedEntry && _entryData.selectedEntry.id){
 				mpw.context = ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE;
 			}
