@@ -263,7 +263,7 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		private function onItemOpen(event:TreeEvent):void {
 			_dataManager.branchClicked(event.itemRenderer.data as CategoryVO);
-			selectFromInitial(event.itemRenderer.data as CategoryVO); // complete manager does nothing, so we can mark here
+//			selectFromInitial(event.itemRenderer.data as CategoryVO); // complete manager does nothing, so we can mark here
 			disableItems();
 		}
 		
@@ -375,14 +375,12 @@ package com.kaltura.edw.components.fltr.cat
 					// select new
 					_selectedCategories[cat.id.toString()] = cat;
 					setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
-//					cat.selected = CatSelectionStatus.SELECTED;
 					break;
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_EXACT:
 					if (cat.id == 0) {
 						// root category clicked; remove all selections
 						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
-//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						deselectAllCategories();
@@ -391,14 +389,12 @@ package com.kaltura.edw.components.fltr.cat
 						// if there is a value, it means it was selected before
 						delete _selectedCategories[cat.id.toString()];
 						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
-//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
 						_selectedCategories[cat.id.toString()] = cat;
 						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
-//						cat.selected = CatSelectionStatus.SELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
 					break;
@@ -407,7 +403,6 @@ package com.kaltura.edw.components.fltr.cat
 					if (cat.id == 0) {
 						// root category clicked; remove all selections
 						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
-//						cat.selected = CatSelectionStatus.UNSELECTED;
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						deselectAllCategories();
@@ -479,15 +474,12 @@ package com.kaltura.edw.components.fltr.cat
 				
 				if (gotPartialChildren) {
 					setCatSelectionStatus(c1, CatSelectionStatus.PARTIAL);
-//					c1.selected = CatSelectionStatus.PARTIAL;
 				}
 				else if (gotSelectedChildren && !gotUnselectedChildren) {
 					setCatSelectionStatus(c1, CatSelectionStatus.SELECTED);
-//					c1.selected = CatSelectionStatus.SELECTED;
 				}
 				else if (!gotSelectedChildren && gotUnselectedChildren) {
 					setCatSelectionStatus(c1, CatSelectionStatus.UNSELECTED);
-//					c1.selected = CatSelectionStatus.UNSELECTED;
 				}
 			}
 		}
@@ -500,7 +492,6 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		private function setChildrenSelection(parent:CategoryVO, value:int):void {
 			setCatSelectionStatus(parent, value);
-//			parent.selected = value;
 			if (value == TriStateCheckBox.SELECTED){
 				_selectedCategories[parent.id] = parent;
 			}
@@ -510,7 +501,6 @@ package com.kaltura.edw.components.fltr.cat
 			
 			for each (var cat:CategoryVO in parent.children) {
 				setCatSelectionStatus(cat, value);
-//				cat.selected = value;
 				if (value == TriStateCheckBox.SELECTED){
 					_selectedCategories[cat.id] = cat;
 				}
@@ -544,7 +534,7 @@ package com.kaltura.edw.components.fltr.cat
 		
 		public function set filter(value:Object):void {
 			// reset selected
-			_selectedCategories = new Object();
+			deselectAllCategories();
 			
 			// save value (assume it was string..)
 			_initialFilter = value.toString();
@@ -552,10 +542,13 @@ package com.kaltura.edw.components.fltr.cat
 			selectFromInitial(dataProvider.getItemAt(0) as CategoryVO);
 		}
 		
-		
-		private function selectFromInitial(headCat:CategoryVO):void {
-			if (!_initialFilter) { return; }
-			var selectedIds:ArrayCollection = new ArrayCollection(_initialFilter.split(","));
+		/**
+		 * recursive helper - go through all children and mark their children. 
+		 * @param headCat	category to start marking from
+		 * @param selectedIds	ids to mark
+		 * @return 	ids left to mark after removing the "used" ones
+		 */		
+		private function selectFromInitialRec(headCat:CategoryVO, selectedIds:ArrayCollection):ArrayCollection {
 			// add from new value:
 			for each (var cat:CategoryVO in headCat.children) {
 				if (selectedIds.contains(cat.id.toString())) {
@@ -565,7 +558,20 @@ package com.kaltura.edw.components.fltr.cat
 					var i:int = selectedIds.getItemIndex(cat.id.toString());
 					selectedIds.removeItemAt(i);
 				}
+				selectedIds = selectFromInitialRec(cat, selectedIds);
 			}
+			return selectedIds;
+		}
+		
+		/**
+		 * mark categories that appear in the initial filter 
+		 * @param headCat
+		 * 
+		 */		
+		private function selectFromInitial(headCat:CategoryVO):void {
+			if (!_initialFilter) { return; }
+			var selectedIds:ArrayCollection = new ArrayCollection(_initialFilter.split(","));
+			selectedIds = selectFromInitialRec(headCat, selectedIds);
 			_initialFilter = selectedIds.source.join(',');
 		}
 		
