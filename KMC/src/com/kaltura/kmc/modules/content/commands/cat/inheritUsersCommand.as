@@ -89,7 +89,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			if (!checkError(data)) {
+			if (checkError(data)) {
 				_model.decreaseLoadCounter();
 				return;
 			}
