@@ -129,7 +129,10 @@
 			
 			[Bindable]
 			public function set category(value:KalturaCategory):void {
-				var refreshView:Boolean = !_category || value.id != _category.id;
+				var refreshView:Boolean = !_category; 	// first opeing the drilldown
+				if (!isNewCategory) {
+					refreshView ||= value.id != _category.id;
+				}
 				_category = value;
 				
 				if (_tabs != null) {
