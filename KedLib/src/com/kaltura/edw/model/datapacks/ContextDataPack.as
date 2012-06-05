@@ -117,6 +117,13 @@ package com.kaltura.edw.model.datapacks
 		 * */
 		public var dispatcher:IEventDispatcher;
 		
+		/**
+		 * max number of categories in a single level that will show in the tree
+		 * when chuncked category load
+		 * @internal
+		 * set in uiconf, should match the server flag that triggers chuncked category load feature 
+		 */
+		public var singleLevelMaxCategories:int;
 
 		public function get defaultUrlVars() :Object
 		{

@@ -4,6 +4,8 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.control.commands.KedCommand;
 	import com.kaltura.edw.model.FilterModel;
+	import com.kaltura.edw.model.datapacks.ContentDataPack;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
@@ -13,6 +15,8 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.vo.KalturaCategoryListResponse;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 	
 	public class ListCategoriesUnderCommand extends KedCommand {
 		
@@ -49,7 +53,13 @@ package com.kaltura.edw.control.commands.categories
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMap);
+			var limit:int = (_model.getDataPack(ContextDataPack) as ContextDataPack).singleLevelMaxCategories;
+			if ((data.data as KalturaCategoryListResponse).totalCount >= limit) {
+				Alert.show(ResourceManager.getInstance().getString('filter', 'catsSingleLevelExceeded', [limit]));
+			}
+			else {
+				addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMap);
+			}
 			if (_source && _onComplete != null) {
 				_onComplete.apply(_source, [_branchCat]);
 			}
