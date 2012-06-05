@@ -12,12 +12,9 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
-			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.WindowEvent;
-			import com.kaltura.kmc.modules.content.view.Categories;
 			
 			import mx.binding.utils.BindingUtils;
-			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			import mx.events.MenuEvent;
 
@@ -244,9 +241,16 @@
 						break;
 				}
 			}
+
+			protected function menu_updateCompleteHandler(event:FlexEvent):void {
+				if (menu.menuBarItems.length > 0) {
+					menu.menuBarItems[0].width = 151;
+				}
+			}
+			
 		]]>
 	</mx:Script>
-
-	<mx:MenuBar id="menu" dataProvider="{actions}" itemClick="menu_itemClickHandler(event)" 
-				styleName="bulkActionsStyle" width="151" height="26"/>
+	
+	<mx:MenuBar id="menu" dataProvider="{actions}" itemClick="menu_itemClickHandler(event)" height="26"
+				styleName="bulkActionsStyle" updateComplete="menu_updateCompleteHandler(event)" />
 </mx:HBox>
