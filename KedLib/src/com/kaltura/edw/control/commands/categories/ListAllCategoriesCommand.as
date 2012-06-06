@@ -25,6 +25,8 @@ package com.kaltura.edw.control.commands.categories
 		
 		private var _onComplete:Function;
 		
+		private var _filterModel:FilterModel;
+		
 		override public function execute(event:KMvCEvent):void {
 			_model.increaseLoadCounter();
 			
@@ -41,18 +43,19 @@ package com.kaltura.edw.control.commands.categories
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-			buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, filterModel.categoriesMap);
+			_filterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
+			buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMap);
 			if (_source && _onComplete != null) {
-				_onComplete.apply(_source, [filterModel.categories]);
+				_onComplete.apply(_source, [_filterModel.categories]);
 			}
 			_model.decreaseLoadCounter();
 		}
 		
 		private function buildCategoriesHyrarchy(kCats:Array, catMap:HashMap):void {
-			// create the rest of the category VOs
+			// create category VOs
 			var categories:ArrayCollection = new ArrayCollection();
 			var category:CategoryVO;
+			// add to hashmap
 			for each (var kCat:KalturaCategory in kCats) {
 				category = new CategoryVO(kCat.id, kCat.name, kCat);
 				catMap.put(kCat.id + '', category);
@@ -69,6 +72,13 @@ package com.kaltura.edw.control.commands.categories
 					parentCategory.children.addItem(cat);
 					// (for falcon, don't sort, use received value)
 					// sortCategories(parentCategory.children);
+				}
+				else {
+					// parent is root
+					if (!_filterModel.categories) {
+						_filterModel.categories = new ArrayCollection();
+					}
+					_filterModel.categories.addItem(cat);
 				}
 			}
 		}

@@ -36,13 +36,18 @@ package com.kaltura.edw.control.commands.categories
 			_source = event.source;
 			_onComplete = event.onComplete;
 			
-			if (!_branchCat) {
-				// if not provided, use root
-				_branchCat = _filterModel.categories;
-			}
+//			if (!_branchCat) {
+//				// if not provided, use root
+//				_branchCat = _filterModel.categories;
+//			}
 			
 			var kcf:KalturaCategoryFilter = new KalturaCategoryFilter();
-			kcf.parentIdEqual = _branchCat.id;
+			if (_branchCat) {
+				kcf.parentIdEqual = _branchCat.id;
+			}
+			else {
+				kcf.parentIdEqual = 0;
+			}
 			var listCategories:CategoryList = new CategoryList(kcf);
 			
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
@@ -70,20 +75,27 @@ package com.kaltura.edw.control.commands.categories
 			// create category VOs
 			var categories:ArrayCollection = new ArrayCollection();
 			var category:CategoryVO;
+			
+			// add to hashmap
 			for each (var kCat:KalturaCategory in kCats) {
 				category = new CategoryVO(kCat.id, kCat.name, kCat);
 				catMap.put(kCat.id + '', category);
 				categories.addItem(category)
 			}
 			
-			if (!_branchCat.children) {
-				_branchCat.children = new ArrayCollection();
-			}
 			// add to tree: list children on parent category
-			for each (var cat:CategoryVO in categories) {
-				_branchCat.children.addItem(cat);
+			if (_branchCat) {
+				if (!_branchCat.children) {
+					_branchCat.children = new ArrayCollection();
+				}
+				for each (var cat:CategoryVO in categories) {
+					_branchCat.children.addItem(cat);
+				}
 			}
-			
+			else {
+				// first level
+				_filterModel.categories = categories;
+			}
 		}
 	}
 }

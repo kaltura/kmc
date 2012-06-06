@@ -3,7 +3,7 @@ package com.kaltura.edw.model {
 	import com.kaltura.edw.components.fltr.cat.data.ICategoriesDataManger;
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
-
+	
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
@@ -21,7 +21,11 @@ package com.kaltura.edw.model {
 		/**
 		 * the root of a category hierarchy.
 		 * */
-		public var categories:CategoryVO = null;
+		public var categories:ArrayCollection = null;
+//		/**
+//		 * the root of a category hierarchy.
+//		 * */
+//		public var categories:CategoryVO = null;
 
 		/**
 		 * should categories data be loaded in chunks

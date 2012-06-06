@@ -68,5 +68,9 @@ package com.kaltura.edw.components.fltr
 		public function get kind():String {
 			return _kind;
 		}
+		
+		override public function clone():Event {
+			return new FilterComponentEvent(type, _data, _kind, bubbles, cancelable);
+		}
 	}
 }

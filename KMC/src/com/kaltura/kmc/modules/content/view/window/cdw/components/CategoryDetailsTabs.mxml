@@ -105,7 +105,9 @@
 
 
 			public function isChanged():Boolean {
-				for each (var tab:ICategoryDrilldownPanel in _tabs) {
+				var tab:ICategoryDrilldownPanel;
+				for (var i:int = 0; i<viewStack.numChildren; i++) {
+					tab = viewStack.getChildAt(i) as ICategoryDrilldownPanel;
 					if (tab.isChanged()) {
 						return true;
 					}
@@ -181,7 +183,7 @@
 												label="{resourceManager.getString('cms', 'endUserAccess')}"
 												category="{category}" model="{model}" />
 			<categoryTabs:SubCategories id="subCategories" width="100%" height="100%"
-										subCategories="{model.subCategories}"
+										subCategories="{model.subCategories}" category="{category}"
 										label="{resourceManager.getString('cms', 'categorySubCategories')}"/>
 
 		</mx:ViewStack>

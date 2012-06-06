@@ -41,13 +41,13 @@ package com.kaltura.edw.components.fltr.cat.data
 			_controller.dispatch(cte);
 			
 			// then create the root
-			cte = new CategoriesTreeEvent(CategoriesTreeEvent.CREATE_ROOT_CATEGORY);
-			_controller.dispatch(cte);
+//			cte = new CategoriesTreeEvent(CategoriesTreeEvent.CREATE_ROOT_CATEGORY);
+//			_controller.dispatch(cte);
 			
 			// then load root's children
 			cte = new CategoriesTreeEvent(CategoriesTreeEvent.LIST_CATEGORIES_UNDER);
-			cte.source = this;
-			cte.onComplete = reopenBranch;
+//			cte.source = this;
+//			cte.onComplete = reopenBranch;
 			_controller.dispatch(cte);
 		}
 		

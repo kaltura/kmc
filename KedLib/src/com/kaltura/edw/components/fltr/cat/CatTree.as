@@ -66,6 +66,9 @@ package com.kaltura.edw.components.fltr.cat
 			(cat as IEventDispatcher).dispatchEvent(PropertyChangeEvent.createUpdateEvent(cat, selectionAttribute, oldval, status));
 		}
 		
+		// -----------------------
+		// Chunked Data
+		// -----------------------
 		
 		private var _chunkedData:Boolean;
 
@@ -83,7 +86,20 @@ package com.kaltura.edw.components.fltr.cat
 			_chunkedData = value;
 			initDataManager(); 
 		}
+		
+		// -----------------------
+		// Data
+		// -----------------------		
 
+		override public function set dataProvider(value:Object):void {
+			super.dataProvider = value;
+			if (value && _initialFilter) {
+				for each (var catvo:CategoryVO in value) {
+					selectFromInitial(catvo);
+				}
+			}
+		}
+		
 		
 		/**
 		 * the data manager responsible for category data load and management
@@ -91,7 +107,7 @@ package com.kaltura.edw.components.fltr.cat
 		protected var _dataManager:ICategoriesDataManger; 
 		
 		/**
-		 *container variable for the categories that should appear disabled 
+		 * container variable for the categories that should appear disabled 
 		 */		
 		private var _disabledCategories:Array;
 		
@@ -163,18 +179,6 @@ package com.kaltura.edw.components.fltr.cat
 		protected var _initialFilter:String = '';
 		
 		
-		/**
-		 * preferences button 
-		 */
-		protected var _prefsBtn:Button;
-		
-		
-		/**
-		 * selection preferences window 
-		 */
-		private var _prefsWin:CatTreePrefsWin;
-		
-		
 		
 		public function CatTree() {
 			super();
@@ -183,14 +187,6 @@ package com.kaltura.edw.components.fltr.cat
 			addEventListener(FlexEvent.CREATION_COMPLETE, onCreationComplete, false, 0, true);
 		}
 		
-//		override public function set dataProvider(value:Object):void {
-//			_initialFilter = '';
-//			for each (var oldcat:CategoryVO in _selectedCategories) {
-//				_initialFilter += oldcat.id + ",";
-//			}
-//			super.dataProvider = value;
-//			selectFromInitial(dataProvider.getItemAt(0) as CategoryVO);
-//		} 
 		
 		/**
 		 * add a category from the autocomplete component
@@ -288,44 +284,7 @@ package com.kaltura.edw.components.fltr.cat
 			disableItems();
 		}
 		
-		// ---------------------
-		// preferences selection
-		// ---------------------
 		
-		/**
-		 * a button that opens the preferences window
-		 * @internal
-		 * we pass a reference because adding a button to the tree component is complicated 
-		 */
-		public function set prefsButton(btn:Button):void {
-			btn.addEventListener(MouseEvent.CLICK, openPrefsWindow, false, 0, true);
-			_prefsBtn = btn;
-		}
-		
-		
-		/**
-		 * show the preferences window  
-		 * @param e
-		 */		
-		private function openPrefsWindow(e:MouseEvent):void {
-			_prefsWin = new CatTreePrefsWin();
-			_prefsWin.addEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
-			_prefsWin.addEventListener(CloseEvent.CLOSE, handlePrefsWin);
-			PopUpManager.addPopUp(_prefsWin, Application.application as DisplayObject);
-		} 
-		
-		
-		private function handlePrefsWin(e:Event):void {
-			if (e.type == CatTreePrefsEvent.PREFS_CHANGED) {
-				selectionMode = (e as CatTreePrefsEvent).newValue;
-			}
-			else if (e.type == CloseEvent.CLOSE) {
-				_prefsWin.removeEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
-				_prefsWin.removeEventListener(CloseEvent.CLOSE, handlePrefsWin);
-				PopUpManager.removePopUp(_prefsWin);
-				_prefsWin = null
-			}
-		}
 		
 		
 		// ----------------------
@@ -348,13 +307,25 @@ package com.kaltura.edw.components.fltr.cat
 		
 
 		/**
-		 * removes all categories from the selected list and sets their status to unselected 
+		 * set all categories as un-selected 
+		 */
+		public function clearSelection():void {
+			// use a dummy "root" to clear all selection
+			var kCat:KalturaCategory = new KalturaCategory();
+			kCat.directSubCategoriesCount = 0;
+			var dummy:CategoryVO = new CategoryVO(0, "root", kCat);
+			handleSelectionChange(dummy);
+		}
+		
+		
+		/**
+		 * removes all categories from the selected list and sets their status to unselected,
+		 * with no effect on actual filter (ui change only)
 		 */		
 		private function deselectAllCategories():void {
 			if (_selectedCategories) {
 				for each (var oldcat:CategoryVO in _selectedCategories) {
 					setCatSelectionStatus(oldcat, CatSelectionStatus.UNSELECTED);
-//					oldcat.selected = CatSelectionStatus.UNSELECTED;
 				}
 			}
 			
@@ -429,7 +400,6 @@ package com.kaltura.edw.components.fltr.cat
 			ivo.tooltip = cat.category.fullName;
 			ivo.attribute = attribute;
 			ivo.value = cat.id;
-			//TODO for selection with children, indicators for all children?
 			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, ivo, eventKind));
 		}
 		
@@ -539,7 +509,11 @@ package com.kaltura.edw.components.fltr.cat
 			// save value (assume it was string..)
 			_initialFilter = value.toString();
 			
-			selectFromInitial(dataProvider.getItemAt(0) as CategoryVO);
+			if ((dataProvider as ArrayCollection).length > 0) {
+				for each (var catvo:CategoryVO in dataProvider) {
+					selectFromInitial(catvo);
+				}
+			}
 		}
 		
 		/**
@@ -639,11 +613,6 @@ package com.kaltura.edw.components.fltr.cat
 					break;
 			}
 		}
-		
-		
-		
-		
-
 		
 	 }
 }

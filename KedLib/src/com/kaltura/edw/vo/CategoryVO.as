@@ -37,25 +37,9 @@ package com.kaltura.edw.vo
 			}
 		}
 		
-		public function clone():CategoryVO
-		{
-			var clonedVo:CategoryVO = new CategoryVO(-1, '', null);
-			
-			
-			clonedVo.name = this.name;
-			clonedVo.id = this.id;
-			clonedVo.category = new KalturaCategory();
+		public function clone():CategoryVO {
+			var clonedVo:CategoryVO = new CategoryVO(id, name, new KalturaCategory());
 			ObjectUtil.copyObject(this.category, clonedVo.category);
-			
-//			clonedVo.category.createdAt = this.category.createdAt;
-//			clonedVo.category.depth = this.category.depth;
-//			clonedVo.category.entriesCount = this.category.entriesCount;
-//			clonedVo.category.fullName = this.category.fullName;
-//			clonedVo.category.id = this.category.id;
-//			clonedVo.category.name = this.category.name;
-//			clonedVo.category.parentId = this.category.parentId;
-//			clonedVo.category.partnerId = this.category.partnerId;
-			
 			return clonedVo;
 		}
 

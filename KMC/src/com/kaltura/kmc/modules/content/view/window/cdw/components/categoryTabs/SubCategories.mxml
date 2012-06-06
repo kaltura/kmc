@@ -14,6 +14,7 @@
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
 			
+			public var category:KalturaCategory;
 			
 			[Bindable]
 			private var _subCategories:ArrayCollection;
@@ -120,8 +121,15 @@
 			}
 			
 			public function initData():void {
-				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.GET_SUB_CATEGORIES);
-				cgEvent.dispatch();
+				if (this.parent) {
+					if (category.directSubCategoriesCount < 1 || category.directSubCategoriesCount > CategoriesModel.SUB_CATEGORIES_LIMIT) {
+						this.parent.removeChild(this);
+					}
+					else {
+						var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.GET_SUB_CATEGORIES);
+						cgEvent.dispatch();
+					}
+				}
 			}
 			
 			public function init():void {
@@ -137,7 +145,7 @@
 				}
 				return false;
 			}
-
+			
 
 		]]>
 	</mx:Script>

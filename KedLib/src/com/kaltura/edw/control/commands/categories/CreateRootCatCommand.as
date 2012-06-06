@@ -24,7 +24,7 @@ package com.kaltura.edw.control.commands.categories
 			// put it in the map and on the tree
 			var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 			filterModel.categoriesMap.put(0 + '', root);
-			filterModel.categories = root;
+//			filterModel.categories = root;
 		}
 	}
 }

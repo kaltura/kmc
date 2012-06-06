@@ -57,11 +57,11 @@ package com.kaltura.edw.components.fltr.cat.data
 		private function reloadAllCategories():void {
 			var cte:CategoriesTreeEvent = new CategoriesTreeEvent(CategoriesTreeEvent.FLUSH_CATEGORIES);
 			_controller.dispatch(cte);
-			cte = new CategoriesTreeEvent(CategoriesTreeEvent.CREATE_ROOT_CATEGORY);
-			_controller.dispatch(cte);
+//			cte = new CategoriesTreeEvent(CategoriesTreeEvent.CREATE_ROOT_CATEGORY);
+//			_controller.dispatch(cte);
 			cte = new CategoriesTreeEvent(CategoriesTreeEvent.LIST_ALL_CATEGORIES);
-			cte.source = this;
-			cte.onComplete = reopenBranch;
+//			cte.source = this;
+//			cte.onComplete = reopenBranch;
 			_controller.dispatch(cte);
 		} 
 		

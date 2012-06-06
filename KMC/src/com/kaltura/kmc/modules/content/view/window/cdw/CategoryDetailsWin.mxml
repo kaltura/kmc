@@ -126,11 +126,11 @@
 
 
 			private function onParentSelected(event:Event):void {
-				var parentCategory:CategoryVO = parentSelect.catTree.selectedItem as CategoryVO;
-				_undoCategory.parentId = parentCategory.category.id;
-				if (parentCategory.category.privacyContexts) {
+				var parentCategory:KalturaCategory = parentSelect.selectedCategory;
+				_undoCategory.parentId = parentCategory.id;
+				if (parentCategory.privacyContexts) {
 					// little hack to show the end users tab if it is needed: simulate inheriting privacy contexts
-					_undoCategory.privacyContexts = parentCategory.category.privacyContexts; 
+					_undoCategory.privacyContexts = parentCategory.privacyContexts; 
 					_undoCategory.pendingMembersCount = 0;
 					_undoCategory.membersCount = 0;
 				}
@@ -140,11 +140,9 @@
 
 			private function onInitialize(evt:FlexEvent):void {
 				if (_isNewCategory) {
-//					title = resourceManager.getString('cms', 'newCategoryTitle');
 					currentState = "parentSelect";
 				}
 				else {
-//					title = resourceManager.getString('cms', 'editCategoryTitle', [_origCategory.name]);
 					currentState = "tabs";
 				}
 			}

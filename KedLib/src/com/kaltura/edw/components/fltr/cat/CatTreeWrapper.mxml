@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="noPadding"
+		 xmlns:cat="com.kaltura.edw.components.fltr.cat.*" implements="com.kaltura.edw.components.fltr.IFilterComponent"
+		 creationComplete="creationCompleteHandler(event)">
+	<mx:Metadata>
+		/**
+		* dispatched when the value of the tree component have changed 
+		*/	
+		[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.fltr.FilterComponentEvent;
+			import com.kaltura.edw.components.fltr.IFilterComponent;
+			import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Button;
+			import mx.core.Application;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			public var categories:HashMap;
+
+			[Bindable]
+			public var dataProvider:Object;
+
+			[Bindable]
+			public var kClient:KalturaClient;
+
+
+			[Bindable]
+			/**
+			 * allow multiple instances use the same data provider by using different attributes
+			 * to mark selection in tree.
+			 *
+			 * @see com.kaltura.edw.components.fltr.cat.CatTree#selectionAttribute
+			 */
+			public var selectionAttribute:String = "selected";
+
+			/**
+			 * container valiable for "attribute"
+			 * */
+			private var _attribute:String;
+
+
+			/**
+			 * Name of the <code>KalturaFilter</code> attribute this component handles. <br>
+			 * delegate to the tree
+			 */
+			public function set attribute(value:String):void {
+				_attribute = value;
+				if (catTree) {
+					catTree.attribute = value;
+				}
+			}
+
+
+			public function get attribute():String {
+				return _attribute;
+			}
+
+			/**
+			 * container variable for "filter"
+			 * */
+			private var _filter:String;
+
+
+			/**
+			 * Value for the relevant attribute on <code>KalturaFilter</code>. <br>
+			 * delegate to the tree
+			 */
+			public function set filter(value:Object):void {
+				_filter = value.toString();
+				if (catTree) {
+					catTree.filter = value;
+				}
+			}
+
+
+			public function get filter():Object {
+				return catTree.filter;
+			}
+
+
+			/**
+			 * remove partial filter. <br>
+			 * delegate to the tree
+			 * @param item	the item that specifies the partial filter to remove
+			 */
+			public function removeItem(item:IndicatorVo):void {
+				catTree.removeItem(item);
+			}
+
+
+			[Bindable]
+			/**
+			 * a flag indicating if data load should be by levels or complete tree
+			 *
+			 * @see com.kaltura.edw.components.fltr.cat.CatTree#chunkedData
+			 */
+			public function get chunkedData():Boolean {
+				return catTree.chunkedData;
+			}
+
+
+			/**
+			 * @private
+			 */
+			public function set chunkedData(value:Boolean):void {
+				catTree.chunkedData = value;
+			}
+
+			// ---------------------
+			// preferences selection
+			// ---------------------
+
+			/**
+			 * preferences button
+			 */
+			protected var _prefsBtn:Button;
+
+
+			/**
+			 * selection preferences window
+			 */
+			private var _prefsWin:CatTreePrefsWin;
+
+
+
+			/**
+			* a button that opens the preferences window
+			* @internal
+			* we pass a reference because adding a button to the tree component is complicated
+			*/
+			public function set prefsButton(btn:Button):void {
+				btn.addEventListener(MouseEvent.CLICK, openPrefsWindow, false, 0, true);
+				_prefsBtn = btn;
+			}
+
+
+			/**
+			* show the preferences window
+			* @param e
+			*/
+			private function openPrefsWindow(e:MouseEvent):void {
+				_prefsWin = new CatTreePrefsWin();
+				_prefsWin.addEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
+				_prefsWin.addEventListener(CloseEvent.CLOSE, handlePrefsWin);
+				PopUpManager.addPopUp(_prefsWin, Application.application as DisplayObject);
+			}
+
+
+			private function handlePrefsWin(e:Event):void {
+				if (e.type == CatTreePrefsEvent.PREFS_CHANGED) {
+					catTree.selectionMode = (e as CatTreePrefsEvent).newValue;
+				}
+				else if (e.type == CloseEvent.CLOSE) {
+					_prefsWin.removeEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
+					_prefsWin.removeEventListener(CloseEvent.CLOSE, handlePrefsWin);
+					PopUpManager.removePopUp(_prefsWin);
+					_prefsWin = null
+				}
+			}
+
+
+			protected function catTree_valueChangeHandler(event:FilterComponentEvent):void {
+				if (event.kind == FilterComponentEvent.EVENT_KIND_ADD) {
+					allBtn.selected = false;
+				}
+				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE){
+					if (catTree.getSelectedCategories().length == 0) {
+						allBtn.selected = true;
+					}
+				}
+				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE_ALL){
+					allBtn.selected = true;
+				}
+				dispatchEvent(event.clone());
+			}
+
+
+			/**
+			 * set initial filter values
+			 * */
+			protected function creationCompleteHandler(event:FlexEvent):void {
+				if (_attribute) {
+					catTree.attribute = _attribute;
+				}
+				if (_filter) {
+					catTree.filter = _filter;
+				}
+			}
+
+			protected function allBtn_clickHandler(event:MouseEvent):void {
+				catTree.clearSelection();
+			}
+
+
+
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'rootCategoryName')}"
+				 selected="true" click="allBtn_clickHandler(event)" styleName="mainFilterGroupButton"/>
+	<cat:CatTree id="catTree" width="100%" height="100%" styleName="categoriesTree"
+				 dataProvider="{dataProvider}" categories="{categories}" valueChange="catTree_valueChangeHandler(event)"
+				 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" selectionAttribute="{selectionAttribute}"
+				 chunkedData="{chunkedData}"/>
+	<cat:CategoryAutocomplete kClient="{kClient}" width="100%" valueChange="{catTree.addFromAutoComplete(event)}"/>
+</mx:VBox>
