@@ -46,6 +46,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var sftpBasePath : String = null;
+
+		/**
+		 **/
 		public var channelTitle : String = null;
 
 		/**
@@ -103,6 +107,7 @@ package com.kaltura.vo
 			arr.push('sftpHost');
 			arr.push('sftpLogin');
 			arr.push('sftpPass');
+			arr.push('sftpBasePath');
 			arr.push('channelTitle');
 			arr.push('channelLink');
 			arr.push('channelDescription');

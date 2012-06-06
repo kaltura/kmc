@@ -25,16 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.delegates.user
 {
-	public class KalturaSchedulerStatusType
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
+
+	public class UserCheckLoginDataExistsDelegate extends WebDelegateBase
 	{
-		public static const RUNNING_BATCHES_COUNT : int = 1;
-		public static const RUNNING_BATCHES_CPU : int = 2;
-		public static const RUNNING_BATCHES_MEMORY : int = 3;
-		public static const RUNNING_BATCHES_NETWORK : int = 4;
-		public static const RUNNING_BATCHES_DISC_IO : int = 5;
-		public static const RUNNING_BATCHES_DISC_SPACE : int = 6;
-		public static const RUNNING_BATCHES_IS_RUNNING : int = 7;
+		public function UserCheckLoginDataExistsDelegate(call:KalturaCall, config:KalturaConfig)
+		{
+			super(call, config);
+		}
+
+		override public function parse(result:XML) : *
+		{
+			return result.result.toString();
+		}
+
 	}
 }

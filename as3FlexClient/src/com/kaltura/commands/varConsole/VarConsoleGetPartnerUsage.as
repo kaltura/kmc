@@ -25,41 +25,57 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.commands.partner
+package com.kaltura.commands.varConsole
 {
-	import com.kaltura.vo.KalturaUserLoginDataFilter;
-	import com.kaltura.delegates.partner.PartnerCheckUserLoginDataExistsDelegate;
+	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.vo.KalturaReportInputFilter;
+	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.delegates.varConsole.VarConsoleGetPartnerUsageDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Action checks whether partners with the given login data specifications exists and returns true/false.
+	 * Function which calulates partner usage of a group of a VAR's sub-publishers
 	 * 
 	 **/
-	public class PartnerCheckUserLoginDataExists extends KalturaCall
+	public class VarConsoleGetPartnerUsage extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
-		 * @param filter KalturaUserLoginDataFilter
+		 * @param partnerFilter KalturaPartnerFilter
+		 * @param usageFilter KalturaReportInputFilter
+		 * @param pager KalturaFilterPager
 		 **/
-		public function PartnerCheckUserLoginDataExists( filter : KalturaUserLoginDataFilter )
+		public function VarConsoleGetPartnerUsage( partnerFilter : KalturaPartnerFilter=null,usageFilter : KalturaReportInputFilter=null,pager : KalturaFilterPager=null )
 		{
-			service= 'partner';
-			action= 'checkUserLoginDataExists';
+			service= 'varconsole_varconsole';
+			action= 'getPartnerUsage';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
 			var keyValArr : Array = new Array();
- 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+ 			if (partnerFilter) { 
+ 			keyValArr = kalturaObject2Arrays(partnerFilter, 'partnerFilter');
 			keyArr = keyArr.concat(keyValArr[0]);
 			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (usageFilter) { 
+ 			keyValArr = kalturaObject2Arrays(usageFilter, 'usageFilter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
+ 			if (pager) { 
+ 			keyValArr = kalturaObject2Arrays(pager, 'pager');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+ 			} 
 			applySchema(keyArr, valueArr);
 		}
 
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new PartnerCheckUserLoginDataExistsDelegate( this , config );
+			delegate = new VarConsoleGetPartnerUsageDelegate( this , config );
 		}
 	}
 }

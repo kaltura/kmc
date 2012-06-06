@@ -25,39 +25,41 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.user
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.vo.KalturaUserLoginDataFilter;
+	import com.kaltura.delegates.user.UserCheckLoginDataExistsDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaDwhHourlyPartnerListResponse extends BaseFlexVo
+	/**
+	 * Action which checks whther user login
+	 * 
+	 **/
+	public class UserCheckLoginDataExists extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		 * @param filter KalturaUserLoginDataFilter
 		 **/
-		public var objects : Array = null;
-
-		/**
-		 **/
-		public var totalCount : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function UserCheckLoginDataExists( filter : KalturaUserLoginDataFilter )
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			service= 'user';
+			action= 'checkLoginDataExists';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+ 			keyValArr = kalturaObject2Arrays(filter, 'filter');
+			keyArr = keyArr.concat(keyValArr[0]);
+			valueArr = valueArr.concat(keyValArr[1]);
+			applySchema(keyArr, valueArr);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new UserCheckLoginDataExistsDelegate( this , config );
 		}
 	}
 }

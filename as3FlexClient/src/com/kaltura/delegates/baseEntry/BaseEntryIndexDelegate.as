@@ -25,54 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.baseEntry
 {
-	import com.kaltura.vo.KalturaBatchJobFilter;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	import com.kaltura.vo.BaseFlexVo;
-
-	[Bindable]
-	public dynamic class KalturaWorkerQueueFilter extends BaseFlexVo
+	public class BaseEntryIndexDelegate extends WebDelegateBase
 	{
-		/**
-		 **/
-		public var schedulerId : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var workerId : int = int.MIN_VALUE;
-
-		/**
-		 * @see com.kaltura.types.KalturaBatchJobType
-		 **/
-		public var jobType : String = null;
-
-		/**
-		 **/
-		public var filter : KalturaBatchJobFilter;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function BaseEntryIndexDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = new Array();
-			arr.push('schedulerId');
-			arr.push('workerId');
-			arr.push('jobType');
-			arr.push('filter');
-			return arr;
+			super(call, config);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

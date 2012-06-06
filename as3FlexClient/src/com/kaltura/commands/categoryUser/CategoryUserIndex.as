@@ -25,68 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.categoryUser
 {
-	import com.kaltura.vo.KalturaBaseJob;
+	import com.kaltura.delegates.categoryUser.CategoryUserIndexDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaNotification extends KalturaBaseJob
+	/**
+	 * Index CategoryUser by userid and category id
+	 * 
+	 **/
+	public class CategoryUserIndex extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		 * @param userId String
+		 * @param categoryId int
+		 * @param shouldUpdate Boolean
 		 **/
-		public var puserId : String = null;
-
-		/**
-		 * @see com.kaltura.types.KalturaNotificationType
-		 **/
-		public var type : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var objectId : String = null;
-
-		/**
-		 * @see com.kaltura.types.KalturaNotificationStatus
-		 **/
-		public var status : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var notificationData : String = null;
-
-		/**
-		 **/
-		public var numberOfAttempts : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var notificationResult : String = null;
-
-		/**
-		 * @see com.kaltura.types.KalturaNotificationObjectType
-		 **/
-		public var objType : int = int.MIN_VALUE;
-
-		override public function getUpdateableParamKeys():Array
+		public function CategoryUserIndex( userId : String,categoryId : int,shouldUpdate : Boolean=true )
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('puserId');
-			arr.push('type');
-			arr.push('objectId');
-			arr.push('status');
-			arr.push('notificationData');
-			arr.push('numberOfAttempts');
-			arr.push('notificationResult');
-			arr.push('objType');
-			return arr;
+			service= 'categoryuser';
+			action= 'index';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('userId');
+			valueArr.push(userId);
+			keyArr.push('categoryId');
+			valueArr.push(categoryId);
+			keyArr.push('shouldUpdate');
+			valueArr.push(shouldUpdate);
+			applySchema(keyArr, valueArr);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CategoryUserIndexDelegate( this , config );
 		}
 	}
 }

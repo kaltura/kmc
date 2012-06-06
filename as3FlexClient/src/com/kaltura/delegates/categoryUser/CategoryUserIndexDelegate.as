@@ -25,34 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.categoryUser
 {
-	import com.kaltura.vo.KalturaBooleanField;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	import com.kaltura.vo.KalturaEventCondition;
-
-	[Bindable]
-	public dynamic class KalturaEventFieldCondition extends KalturaEventCondition
+	public class CategoryUserIndexDelegate extends WebDelegateBase
 	{
-		/**
-		 * The field to be evaluated at runtime
-		 * 
-		 **/
-		public var field : KalturaBooleanField;
-
-		override public function getUpdateableParamKeys():Array
+		public function CategoryUserIndexDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('field');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

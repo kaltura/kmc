@@ -104,6 +104,7 @@ package com.kaltura.vo
 		public var numOfObjects : int = int.MIN_VALUE;
 
 		/**
+		 * @see com.kaltura.types.KalturaBulkUploadObjectType
 		 **/
 		public var bulkUploadObjectType : String = null;
 

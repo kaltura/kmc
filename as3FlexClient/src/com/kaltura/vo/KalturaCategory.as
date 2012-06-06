@@ -215,6 +215,12 @@ package com.kaltura.vo
 		 **/
 		public var defaultOrderBy : String = null;
 
+		/**
+		 * Number of direct children categories
+		 * 
+		 **/
+		public var directSubCategoriesCount : int = int.MIN_VALUE;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -238,6 +244,7 @@ package com.kaltura.vo
 			arr.push('partnerSortValue');
 			arr.push('partnerData');
 			arr.push('defaultOrderBy');
+			arr.push('directSubCategoriesCount');
 			return arr;
 		}
 

@@ -25,36 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.varConsole
 {
-	import com.kaltura.vo.KalturaPartnerFilter;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaVarConsolePartnerFilter extends KalturaPartnerFilter
+	public class VarConsoleGetPartnerUsageDelegate extends WebDelegateBase
 	{
-		/**
-		 * @see com.kaltura.types.KalturaPartnerGroupType
-		 **/
-		public var groupTypeEq : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var groupTypeIn : String = null;
-
-		override public function getUpdateableParamKeys():Array
+		public function VarConsoleGetPartnerUsageDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('groupTypeEq');
-			arr.push('groupTypeIn');
-			return arr;
+			super(call, config);
 		}
 
-		override public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = super.getInsertableParamKeys();
-			return arr;
-		}
 	}
 }

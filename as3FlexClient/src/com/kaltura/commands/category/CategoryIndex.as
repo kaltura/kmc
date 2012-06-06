@@ -25,63 +25,42 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.category
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.delegates.category.CategoryIndexDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaBaseJob extends BaseFlexVo
+	/**
+	 * Index Category by id
+	 * 
+	 **/
+	public class CategoryIndex extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		 * @param id int
+		 * @param shouldUpdate Boolean
 		 **/
-		public var id : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var partnerId : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var createdAt : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var updatedAt : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var deletedAt : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var processorExpiration : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var executionAttempts : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var lockVersion : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryIndex( id : int,shouldUpdate : Boolean=true )
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			service= 'category';
+			action= 'index';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('id');
+			valueArr.push(id);
+			keyArr.push('shouldUpdate');
+			valueArr.push(shouldUpdate);
+			applySchema(keyArr, valueArr);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CategoryIndexDelegate( this , config );
 		}
 	}
 }

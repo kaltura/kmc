@@ -30,57 +30,15 @@ package com.kaltura.vo
 	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
-	public dynamic class KalturaSchedulerStatus extends BaseFlexVo
+	public dynamic class KalturaPartnerUsageListResponse extends BaseFlexVo
 	{
 		/**
-		 * The id of the Category
-		 * 
 		 **/
-		public var id : int = int.MIN_VALUE;
+		public var objects : Array = null;
 
 		/**
-		 * The configured id of the scheduler
-		 * 
 		 **/
-		public var schedulerConfiguredId : int = int.MIN_VALUE;
-
-		/**
-		 * The configured id of the job worker
-		 * 
-		 **/
-		public var workerConfiguredId : int = int.MIN_VALUE;
-
-		/**
-		 * The type of the job worker.
-		 * 
-		 * @see com.kaltura.types.KalturaBatchJobType
-		 **/
-		public var workerType : String = null;
-
-		/**
-		 * The status type
-		 * 
-		 * @see com.kaltura.types.KalturaSchedulerStatusType
-		 **/
-		public var type : int = int.MIN_VALUE;
-
-		/**
-		 * The status value
-		 * 
-		 **/
-		public var value : int = int.MIN_VALUE;
-
-		/**
-		 * The id of the scheduler
-		 * 
-		 **/
-		public var schedulerId : int = int.MIN_VALUE;
-
-		/**
-		 * The id of the worker
-		 * 
-		 **/
-		public var workerId : int = int.MIN_VALUE;
+		public var totalCount : int = int.MIN_VALUE;
 
 		/** 
 		 * a list of attributes which may be updated on this object 
@@ -89,11 +47,8 @@ package com.kaltura.vo
 		{
 			var arr : Array;
 			arr = new Array();
-			arr.push('schedulerConfiguredId');
-			arr.push('workerConfiguredId');
-			arr.push('workerType');
-			arr.push('type');
-			arr.push('value');
+			arr.push('objects');
+			arr.push('totalCount');
 			return arr;
 		}
 

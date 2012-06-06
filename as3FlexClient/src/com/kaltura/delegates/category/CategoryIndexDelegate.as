@@ -25,39 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.category
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaBatchJobListResponse extends BaseFlexVo
+	public class CategoryIndexDelegate extends WebDelegateBase
 	{
-		/**
-		 **/
-		public var objects : Array = null;
-
-		/**
-		 **/
-		public var totalCount : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryIndexDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			super(call, config);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

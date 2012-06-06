@@ -25,61 +25,24 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.categoryEntry
 {
-	import com.kaltura.vo.KalturaFlavorParamsOutputListResponse;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	import com.kaltura.vo.KalturaFlavorParams;
-
-	import com.kaltura.vo.KalturaMediaInfoListResponse;
-
-	import com.kaltura.vo.KalturaFileSyncListResponse;
-
-	import com.kaltura.vo.KalturaFlavorAsset;
-
-	import com.kaltura.vo.BaseFlexVo;
-
-	[Bindable]
-	public dynamic class KalturaInvestigateFlavorAssetData extends BaseFlexVo
+	public class CategoryEntryIndexDelegate extends WebDelegateBase
 	{
-		/**
-		 **/
-		public var flavorAsset : KalturaFlavorAsset;
-
-		/**
-		 **/
-		public var fileSyncs : KalturaFileSyncListResponse;
-
-		/**
-		 **/
-		public var mediaInfos : KalturaMediaInfoListResponse;
-
-		/**
-		 **/
-		public var flavorParams : KalturaFlavorParams;
-
-		/**
-		 **/
-		public var flavorParamsOutputs : KalturaFlavorParamsOutputListResponse;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryEntryIndexDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			super(call, config);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function parse(result:XML) : *
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			return result.result.toString();
 		}
+
 	}
 }

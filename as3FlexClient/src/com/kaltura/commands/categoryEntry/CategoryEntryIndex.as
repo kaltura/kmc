@@ -25,39 +25,45 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.categoryEntry
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.delegates.categoryEntry.CategoryEntryIndexDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaUpgradeMetadataResponse extends BaseFlexVo
+	/**
+	 * Index CategoryEntry by Id
+	 * 
+	 **/
+	public class CategoryEntryIndex extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		 * @param entryId String
+		 * @param categoryId int
+		 * @param shouldUpdate Boolean
 		 **/
-		public var totalCount : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var lowerVersionCount : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryEntryIndex( entryId : String,categoryId : int,shouldUpdate : Boolean=true )
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			service= 'categoryentry';
+			action= 'index';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			keyArr.push('categoryId');
+			valueArr.push(categoryId);
+			keyArr.push('shouldUpdate');
+			valueArr.push(shouldUpdate);
+			applySchema(keyArr, valueArr);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CategoryEntryIndexDelegate( this , config );
 		}
 	}
 }
