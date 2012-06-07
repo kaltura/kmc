@@ -51,10 +51,6 @@ package com.kaltura.edw.control.commands {
 				else if (_eventType == KedEntryEvent.UPDATE_SELECTED_ENTRY_REPLACEMENT_STATUS) {
 					var selectedEntry:KalturaBaseEntry = edp.selectedEntry;
 					EntryUtil.updateChangebleFieldsOnly(resultEntry, selectedEntry);
-//					selectedEntry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(selectedEntry, 
-//						'replacementStatus', selectedEntry.replacementStatus, selectedEntry.replacementStatus));
-					//if in the entries list there's an entry with the same id, replace it.
-//					EntryUtil.updateSelectedEntryInList(selectedEntry, _model.listableVo.arrayCollection);
 					var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_RELOADED);
 					e.data = selectedEntry; 
 					dsp.dispatchEvent(e);

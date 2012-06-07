@@ -1,7 +1,10 @@
 package com.kaltura.edw.control.commands
 {
 	import com.kaltura.commands.baseEntry.BaseEntryGet;
+	import com.kaltura.edw.business.EntryUtil;
 	import com.kaltura.edw.control.events.KedEntryEvent;
+	import com.kaltura.edw.events.KedDataEvent;
+	import com.kaltura.edw.model.datapacks.ContextDataPack;
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
@@ -24,16 +27,19 @@ package com.kaltura.edw.control.commands
 				
 				_client.post(getEntry);
 			}
-			else {
-				_edp.selectedEntry = (event as KedEntryEvent).entryVo;	
-			}
+//			else {
+			_edp.selectedEntry = (event as KedEntryEvent).entryVo;	
+//			}
 		}
 		
 		override public function result(data:Object):void {
 			super.result(data);
 			
 			if (data.data && data.data is KalturaBaseEntry) {
-				_edp.selectedEntry = data.data as KalturaBaseEntry;
+				// update values on the existing entry in the list
+				var e:KedDataEvent = new KedDataEvent(KedDataEvent.ENTRY_UPDATED);
+				e.data = data.data as KalturaBaseEntry; // send the updated entry as event data
+				(_model.getDataPack(ContextDataPack) as ContextDataPack).dispatcher.dispatchEvent(e);
 			}
 			_model.decreaseLoadCounter();
 		}
