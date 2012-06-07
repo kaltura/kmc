@@ -59,6 +59,19 @@
 				}
 			}
 			
+			override public function get kfilters():Array {
+				var result:Array = [];
+				for (var i:int = 0; i<_attributes.length; i++) {
+					if (_vo[_attributes[i]]) {
+						result.push(_vo[_attributes[i]]);
+					}
+					else {
+						// if no value for the attribute, make sure the client won't send it
+						result.push(int.MIN_VALUE);
+					}
+				}
+				return result;
+			}
 			
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
