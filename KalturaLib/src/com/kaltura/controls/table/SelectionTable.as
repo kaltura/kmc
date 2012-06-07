@@ -57,6 +57,12 @@ package com.kaltura.controls.table
 			addEventListener(SelectionRenderer.SELECTION_CHANGED, handleSelectionChanged, false, 0, true);
 		}
 		
+		
+		override public function set dataProvider(value:Object):void {
+			super.dataProvider = value;
+			mx_internal::columnRendererChanged(columns[0]);
+		}
+		
 		/**
 		 * if e.target.data is datagridcolumn:
 		 * select / deselect all
