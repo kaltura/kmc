@@ -8,7 +8,7 @@
 		 implements="com.kaltura.kmc.modules.content.business.IContentPanel"
 		 creationComplete="onCreationComplete()"
 		 verticalScrollPolicy="off" xmlns:view="com.kaltura.kmc.modules.content.view.*" 
-		 xmlns:business="com.kaltura.kmc.modules.content.business.*" xmlns:et="com.kaltura.edw.components.et.*" >
+		 xmlns:business="com.kaltura.kmc.modules.content.business.*" xmlns:et="com.kaltura.edw.components.et.*" xmlns:filter="com.kaltura.kmc.modules.content.view.pl.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*" >
 
 	<mx:Script>
 		<![CDATA[
@@ -126,26 +126,6 @@
 
 
 			/**
-			 * set filter data.
-			 * this method doesn't trigger data load, only local data change.
-			 * */
-			protected function initFilter(plf:KalturaPlaylistFilter):void {
-				// text search
-				if (plf.freeText) {
-					searchFilter.text = plf.freeText;
-				}
-				// dates
-				if (plf.createdAtGreaterThanOrEqual != int.MIN_VALUE) {
-					fromDate.selectedDate = new Date(plf.createdAtGreaterThanOrEqual * 1000);
-				}
-				if (plf.createdAtLessThanOrEqual != int.MIN_VALUE) {
-					toDate.selectedDate = new Date(plf.createdAtLessThanOrEqual * 1000);
-				}
-				filter.validateNow();
-			}
-
-
-			/**
 			 * all actions from both init() and onCreationComplete()
 			 * */
 			private function initPanel():void {
@@ -155,8 +135,10 @@
 
 				// init:
 				if (_initialFilter) {
-					// init filter : 
-					initFilter(_initialFilter);
+					filter.kalturaFilter = _initialFilter;
+				}
+				else {
+					filter.kalturaFilter = new KalturaPlaylistFilter();
 				}
 				loadEntries();
 				paging.kalturaFilterPager.pageIndex = 1;
@@ -183,68 +165,15 @@
 			 * load data according to filter
 			 * */
 			private function loadEntries():void {
-				if (paging) {
-					if (paging.pageSize == 10) {
-						entryTableContainer.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
-						playlistTable.height = (playlistTable.rowHeight * 10.5) + playlistTable.headerHeight;
-						playlistTable.rowCount = 10;
-						filter.height = entryTableContainer.height + paging.height;
-						actionsBox.height = filter.height;
-					}
-					else {
-						entryTableContainer.percentHeight = 100;
-						playlistTable.percentHeight = 100;
-						playlistTable.rowCount = -1;
-						filter.percentHeight = 100;
-						actionsBox.percentHeight = 100;
-					}
-				}
-
-				_listableVo = new ListableVo(getFilterVo(), paging, null);
+				_listableVo = new ListableVo(filter.kalturaFilter, paging, null);
 				if (_orderBy)
 					_listableVo.filterVo.orderBy = _orderBy;
 				// save the new listable vo
-				var cgEvent:SetListableEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL,
-					_listableVo);
+				var cgEvent:SetListableEvent = new SetListableEvent(SetListableEvent.SET_NEW_LIST_TO_MODEL, _listableVo);
 				cgEvent.dispatch();
 				// start search
 				var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _listableVo);
 				searchEvent.dispatch();
-			}
-
-
-			private function preformNewSearch():void {
-				if (_invalidCharsRegex.test(searchFilter.text)) {
-					Alert.show(ResourceManager.getInstance().getString('cms', 'filterTextError'),
-						ResourceManager.getInstance().getString('cms',
-						'error'));
-					return;
-				}
-				paging.selectedPage = 1;
-				loadEntries();
-			}
-
-
-			private function getFilterVo():Object {
-				var mediaFilterForPlaylist:KalturaPlaylistFilter = new KalturaPlaylistFilter();
-
-				// text search
-				if (searchFilter.text != resourceManager.getString('cms', 'searchPlaylists')) {
-					var trimmedText:String = StringUtil.trim(searchFilter.text);
-					mediaFilterForPlaylist.freeText = trimmedText;
-				}
-				else {
-					mediaFilterForPlaylist.freeText = '';
-				}
-
-				//add dates to filter
-				if (fromDate && fromDate.selectedDate) {
-					mediaFilterForPlaylist.createdAtGreaterThanOrEqual = fromDate.selectedDate.time / 1000;
-				}
-				if (toDate && toDate.selectedDate) {
-					mediaFilterForPlaylist.createdAtLessThanOrEqual = toDate.selectedDate.time / 1000;
-				}
-				return mediaFilterForPlaylist;
 			}
 
 
@@ -288,23 +217,6 @@
 
 
 
-			private function onDeselectAll():void {
-				playlistTable.deselectAll();
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-					new ArrayCollection(playlistTable.selectedItems));
-				cgEvent.dispatch();
-			}
-
-
-			private function onSelectAll():void {
-				playlistTable.selectAll();
-				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.SET_SELECTED_ENTRIES,
-					new ArrayCollection(playlistTable.selectedItems));
-				cgEvent.dispatch();
-			}
-
-
-
 			/**
 			 * Entry table dispatched an order-by changing
 			 */
@@ -313,109 +225,6 @@
 				loadEntries();
 			}
 
-
-			private function clearDates():void {
-				fromDate.selectedDate = null;
-				toDate.selectedDate = null;
-				preformNewSearch();
-				clearDatesBtn.enabled = false;
-			}
-
-
-
-
-			private function currentDatesChange(event:Event):void {
-				if (validateDates(fromDate, toDate)) {
-					clearDatesBtn.enabled = true;
-					preformNewSearch();
-				}
-				else if (toDate.selectedDate  || fromDate.selectedDate) {
-					clearDatesBtn.enabled = true;
-				}
-				else {
-					clearDatesBtn.enabled = false;
-				}
-			}
-
-
-			/**
-			 * make sure selected dates are valid for filtering
-			 * @return true if dates are valid
-			 * */
-			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
-				var res:Boolean = true;
-				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
-					var fd:Number = (fromDate.selectedDate as Date).time;
-					var ed:Number = (toDate.selectedDate as Date).time;
-
-					if (fd >= ed) {
-						Alert.show(resourceManager.getString('filter', 'fromToDateAlert'));
-						toDate.selectedDate = _currentOldEndDate;
-						fromDate.selectedDate = _currentOldStartDate;
-						toDate.validateNow();
-						res = false;
-					}
-					else {
-						_currentOldStartDate = new Date((fromDate.selectedDate as Date).time);
-						_currentOldEndDate = new Date((toDate.selectedDate as Date).time);
-					}
-				}
-				return res;
-			}
-
-
-			private function onFoucsInSearchEvent(event:FocusEvent):void {
-				if (searchFilter.text == resourceManager.getString('cms', 'searchPlaylists')) {
-					searchFilter.text = '';
-				}
-			}
-
-
-			private function onFoucsOutSearchEvent(event:FocusEvent):void {
-				if (StringUtil.trim(searchFilter.text) == '') {
-					searchFilter.text = resourceManager.getString('cms', 'searchPlaylists');
-				}
-			}
-
-
-			private function updateSearchButtonMode():void {
-				if (searchBtn.data == 'v') {
-					searchBtn.selected = true;
-					if ((StringUtil.trim(searchFilter.text) != '') &&
-						(searchFilter.text != resourceManager.getString('cms', 'searchPlaylists'))) {
-						searchBtn.data = 'x';
-						searchBtn.toolTip = resourceManager.getString('cms', 'clearFreeSearchToolTip');
-					}
-				}
-				else {
-					searchBtn.selected = false;
-					searchFilter.text = resourceManager.getString('cms', 'searchPlaylists');
-					searchBtn.data = 'v';
-					searchBtn.toolTip = null;
-				}
-
-				preformNewSearch();
-			}
-
-
-			private function onSearchTextChange(event:Event):void {
-				if ((StringUtil.trim(searchFilter.text) == '')) {
-					searchBtn.data = 'v';
-				}
-				//	 	searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
-					'clearFreeSearchToolTip');
-
-			}
-
-
-			private function onSearchEnterClick(event:Event):void {
-				searchBtn.data = (StringUtil.trim(searchFilter.text) == '') ? 'v' : 'x';
-				searchBtn.toolTip = (searchBtn.data == 'v') ? null : resourceManager.getString('cms',
-					'clearFreeSearchToolTip');
-
-				preformNewSearch();
-			}
 
 			// =============================================
 			// getters / setters
@@ -434,15 +243,6 @@
 			}
 
 
-			// =============================================
-			// playlist table event handlers
-			// =============================================
-
-
-
-
-
-
 			/**
 			 * delete selected entries
 			 */
@@ -450,52 +250,38 @@
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.DELETE_ENTRIES);
 				cgEvent.dispatch();
 			}
+			
+			/**
+			 * This is a new search called by an action on the filter vo
+			 */
+			private function newSearchhFromFilter():void {
+				paging.selectedPage = 1;
+				loadEntries();
+			}
 
 		]]>
 	</mx:Script>
 
 	<business:EntryTableActionsManager id="actionsManager" />
-
-
+	
 	<mx:HBox width="100%">
 		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'playlistTitle')}" styleName="filterTitleHeader" 
 				  width="{filter.width}"/>
-		<mx:HBox id="freeText" includeInLayout="true" visible="true" styleName="searchHBox" width="{245}" height="{pageLabel.height}">
-			<mx:TextInput id="searchFilter" width="100%" height="100%" 
-						  enter="onSearchEnterClick(event)"
-						  text="{resourceManager.getString('cms', 'searchPlaylists')}"
-						  change='onSearchTextChange(event)' buttonMode="true"
-						  toolTip="{resourceManager.getString('cms', 'freeSearchToolTip')}"
-						  styleName="searchTextInput" focusIn="onFoucsInSearchEvent(event)"
-						  focusOut="onFoucsOutSearchEvent(event)"/>
-			<mx:Button id='searchBtn' styleName="searchButton" data="v" toggle="true"
-					   click="updateSearchButtonMode()" buttonMode="true" />
-		</mx:HBox>
-		<mx:Spacer width="100%" />
+		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{245}" height="{pageLabel.height}"
+							 attribute="freeText" defaultText="{resourceManager.getString('cms', 'searchPlaylists')}"/>
+		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
+							   dataProvider="{filter.indicators}"
+							   boxClicked="filter.removeFilter(event.data)"/>
 		<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:Spacer height="15" />
+	
+	
 	<mx:HDividedBox width="100%" height="100%">
-		<mx:VBox id="filter" height="100%">
-			
-			<mx:VBox id="dateCont" width="100%" label="{resourceManager.getString('cms', 'createdBetween')}"
-					 styleName="publishSearchAndFilterBox" height="100%">
-				<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('cms', 'createdBetween')}"/>
-				<mx:HBox styleName="innerUpperDatesHBox">
-					<mx:DateField id="fromDate" width="90" toolTip="{resourceManager.getString('cms', 'from')}"
-								  change="{currentDatesChange(event)}"/>
-					<mx:Label id="toDateTxt" text="-"/>
-					<mx:DateField id="toDate" width="90" toolTip="{resourceManager.getString('cms', 'to')}"
-								  change="{currentDatesChange(event)}"/>
-				</mx:HBox>
-				<mx:HBox id="titleAndClearHolder" verticalAlign="middle">
-					<mx:LinkButton id='clearDatesBtn' label="{resourceManager.getString('cms', 'clearDates')}"
-								   click="clearDates()" height="17" enabled="false" styleName="clearDateButton"/>
-				</mx:HBox>
-			</mx:VBox>
-		</mx:VBox>
-
+		<filter:PlaylistFilter id="filter" height="100%" width="245"
+							   freeTextSearch="{searchBox}" filterChanged="newSearchhFromFilter()"/>
+		
 		<mx:HBox width="100%" height="100%" >
 			<mx:VBox width="100%" height="100%" verticalScrollPolicy="off" styleName="entriesTablePagerAndButtonsVbox">
 				<mx:HBox width="100%" height="100%" id="entryTableContainer">

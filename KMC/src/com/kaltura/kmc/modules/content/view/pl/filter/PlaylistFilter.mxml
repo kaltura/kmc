@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<fltr:BaseFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:fltr="com.kaltura.edw.components.fltr.*"
+				 xmlns:panels="com.kaltura.edw.components.fltr.panels.*">
+	<mx:Script>
+		<![CDATA[
+			/**
+			 * reset kalturaFilter so any values that apply 
+			 * to the accordion components will be set
+			 * */
+			private function setFilterValues():void {
+				setFilterValuesToComponents();
+			}
+		]]>
+	</mx:Script>
+	<mx:Accordion id="accordion" height="100%" width="100%" >
+		<mx:headerRenderer>
+			<mx:Component>
+				<fltr:FilterAccordionHeader />
+			</mx:Component>
+		</mx:headerRenderer>
+		<mx:VBox id="additional" label="{resourceManager.getString('filter', 'additionalFiltersLabel')}" 
+				 width="100%" height="100%" styleName="additinalFilterVBox" horizontalScrollPolicy="off" 
+				 creationComplete="setFilterValues()">
+			<panels:CreationDateFilter width="100%"
+									   attributes="{['createdAtGreaterThanOrEqual', 'createdAtLessThanOrEqual']}"
+									   valueChange="updateFilterValue(event)"/>
+			
+		</mx:VBox>
+	</mx:Accordion>
+</fltr:BaseFilter>
