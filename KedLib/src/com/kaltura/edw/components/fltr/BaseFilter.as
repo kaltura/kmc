@@ -349,6 +349,10 @@ package com.kaltura.edw.components.fltr
 		public function set kalturaFilter(value:KalturaFilter):void {
 			_kalturaFilter = value;
 			indicators = new ArrayCollection();
+			if (_metadataProfiles) {
+				// if we didn't build them when the value was set
+				createMetadataFilters(_metadataProfiles);
+			}
 			setFilterValuesToComponents();
 		}
 		
@@ -388,7 +392,9 @@ package com.kaltura.edw.components.fltr
 		
 		public function set metadataProfiles(value:ArrayCollection):void {
 			_metadataProfiles = value;
-			createMetadataFilters(value);
+			if (_kalturaFilter) {
+				createMetadataFilters(value);
+			}
 		}
 		
 		protected function createMetadataFilters(value:ArrayCollection):void {};

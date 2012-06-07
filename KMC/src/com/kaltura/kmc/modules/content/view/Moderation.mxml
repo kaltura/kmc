@@ -426,13 +426,7 @@
 				var params:Object = new Object();
 				params.host = context.rootUrl;
 				params.widgetId = "_" + context.kc.partnerId;
-//				params.autoPlay = "false";
-//				params.loop = "false";
-//				params.autoRewind = "false";
-//				params.sourceType = "entryId";
 				params.entryId = "-1";
-//				if (context.moderationUiconf)
-//					params.uiConfId = context.moderationUiconf;
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
@@ -452,7 +446,6 @@
 				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
 					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
 					kdp3LoaderParent.addChildAt(_kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
-					//kdp3LoaderParent.removeChild(kdp3Loader);
 					//Change media
 					if (data && data is KalturaBaseEntry) {
 						_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: (data as KalturaBaseEntry).id});
@@ -518,6 +511,7 @@
 		<fltr:EntriesFilter id="filter" height="100%" width="245"  
 							freeTextSearch="{searchBox}" categoriesTreeSelectionAttribute="selectedModScreen"
 							metadataProfiles="{filterModel.metadataProfiles}"
+							context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
 							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
 							filterModel="{filterModel}" filterChanged="{paging.selectedPage=1;loadEntries()}"/>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
