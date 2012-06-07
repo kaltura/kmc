@@ -76,7 +76,12 @@
 				}
 			}
 
-			private function loadCategories():void {
+			
+			/**
+			 * list categories according to current filter
+			 * @param resetTree	if tre, category tree in filter is re-loaded
+			 * */
+			private function loadCategories(resetTree:Boolean = false):void {
 				// dispatch event that will load data according to screen filter
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				filter.kalturaFilter.orderBy = categoriesTable.orderBy;
@@ -163,7 +168,7 @@
 		<indicators:Indicators id="indicators" width="100%" height="{pageLabel.height}"
 							   dataProvider="{filter.indicators}"
 							   boxClicked="filter.removeFilter(event.data)"/>
-		<mx:LinkButton click="loadCategories()" label="{resourceManager.getString('cms','refresh')}"
+		<mx:LinkButton click="loadCategories(true)" label="{resourceManager.getString('cms','refresh')}"
 					   styleName="recycleIcon"/>
 	</mx:HBox>
 	<mx:Spacer height="15" />

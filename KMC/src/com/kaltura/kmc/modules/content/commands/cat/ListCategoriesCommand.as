@@ -36,6 +36,14 @@ package com.kaltura.kmc.modules.content.commands.cat {
 			if (event.data) {
 				_model.categoriesModel.filter = event.data[0] as KalturaCategoryFilter;
 				_model.categoriesModel.pager = event.data[1] as KalturaFilterPager;
+				if (event.data.length > 2) {
+					if (event.data[2]) {
+						// reload categories for tree
+						if (_model.filterModel.catTreeDataManager) {
+							_model.filterModel.catTreeDataManager.resetData();
+						}
+					}
+				}
 			}
 			
 			var listCategories:CategoryList = new CategoryList(_model.categoriesModel.filter, _model.categoriesModel.pager);
