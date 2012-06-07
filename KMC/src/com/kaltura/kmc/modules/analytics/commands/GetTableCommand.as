@@ -9,26 +9,40 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.vo.KalturaEndUserReportInputFilter;
 	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.vo.KalturaReportBaseTotal;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	import com.kaltura.vo.KalturaReportTable;
 	
+	import mx.binding.utils.BindingUtils;
+	import mx.binding.utils.ChangeWatcher;
 	import mx.collections.ArrayCollection;
 	import mx.rpc.IResponder;
 
 	public class GetTableCommand implements ICommand, IResponder {
 		private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
-
+		
+		private var _tableData:KalturaReportTable;
+		private var _addTotals:Boolean;
+		private var _baseTotalsWatcher:ChangeWatcher;
+		private var _isDataPending:Boolean;
 
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			_model.loadingTableFlag = true;
 
+			_addTotals = (event as ReportEvent).addTableTotals;
+			
 			ExecuteReportHelper.reportSetupBeforeExecution();
 
 			if (!_model.selectedReportData.pager) {
 				_model.selectedReportData.pager = new KalturaFilterPager();
 				_model.selectedReportData.pager.pageSize = 10;
 				_model.selectedReportData.pager.pageIndex = 1;
+			}
+			
+			// Workaround to the base total limitation
+			if (_addTotals){
+				_model.selectedReportData.pager.pageSize = 500;
 			}
 
 			var objectIds:String = '';
@@ -38,7 +52,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 										|| _model.currentScreenState == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
 										|| _model.currentScreenState == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
 										|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
-										|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN)) {
+										|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
+										|| _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
 
@@ -52,7 +67,9 @@ package com.kaltura.kmc.modules.analytics.commands {
 				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE || 
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				
@@ -84,10 +101,36 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_model.loadingTableFlag = false;
 			_model.checkLoading();
 			
-			var krt:KalturaReportTable = KalturaReportTable(result.data);
-
+			_tableData = KalturaReportTable(result.data);
+			if (_addTotals && _model.loadingBaseTotals){
+				if (_baseTotalsWatcher ){
+					_baseTotalsWatcher.unwatch();
+				}
+				_baseTotalsWatcher = BindingUtils.bindSetter(onBaseTotalsLoaded, _model, ["selectedReportData", "baseTotals"]);
+				_isDataPending = true;
+			} else {
+				parseData();
+			}
+		}
+		
+		private function onBaseTotalsLoaded(data:Object):void
+		{
+			if (data != null){
+				if ( _baseTotalsWatcher ) {
+					_baseTotalsWatcher.unwatch();
+					_baseTotalsWatcher = null;
+				}
+				if (_isDataPending){
+					_isDataPending = false;
+					parseData();
+				}
+			}
+		}
+		
+		private function parseData():void{
+			
 			// if no table data (empty table)
-			if (krt && !krt.data) {
+			if (_tableData && !_tableData.data) {
 				// Atar: the commented part points to the same object as the uncommented. WTF?
 				_model.selectedReportData.tableDp = /*_model.reportDataMap[_model.currentScreenState].tableDp = */ null;
 				_model.selectedReportData.totalCount = /*_model.reportDataMap[_model.currentScreenState].totalCount = */ 0;
@@ -98,23 +141,47 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 
 			// spread received data through the model
-			var tablesArr:Array = krt.data.split(";");
-			var headersArr:Array = krt.header.split(",");
-
+			var i:int;
+			var tablesArr:Array = _tableData.data.split(";");
+			var headersArr:Array = _tableData.header.split(",");
+			
+			var totalCounters:Object = new Object();
+			if (_addTotals){
+				var tempHeaders:Array = new Array();
+				for each (var header:String in headersArr){
+					tempHeaders.push(header);
+					if (header.substr(0, 5) == "added"){
+						var totalHeader:String = "total" + header.slice(5);
+						totalCounters[totalHeader] = getBaseTotal(totalHeader);
+						tempHeaders.push(totalHeader);
+					}
+				}
+				headersArr = tempHeaders;
+			}
+			
 			var arrCol:ArrayCollection = new ArrayCollection();
-
-			for (var i:int = 0; i < tablesArr.length; i++) {
+			
+			for (i = 0; i < tablesArr.length; i++) {
 				if (tablesArr[i]) {
 					var propArr:Array = tablesArr[i].split(",");
 
 					var obj:Object = new Object();
-					for (var j:int = 0; j < propArr.length; j++) {
-						propArr[j] = FormatReportParam.format(headersArr[j], propArr[j]);
-						if (headersArr[j])
-							obj[headersArr[j].toString()] = propArr[j];
+					var propCounter:int = 0;
+					for (var j:int = 0; j < headersArr.length; j++) {
+						var currHeader:String = headersArr[j] as String;
+						if (_addTotals && currHeader.indexOf("total") != -1){
+							totalCounters[currHeader] += parseFloat(propArr[propCounter - 1]);
+							obj[currHeader] = FormatReportParam.format(currHeader, totalCounters[currHeader]);
+						} else {
+//							if (headersArr[j])
+							obj[currHeader] = FormatReportParam.format(currHeader, propArr[propCounter]);
+							propCounter++;
+						}
 					}
 
 					arrCol.addItem(obj);
+					
+					
 				}
 			}
 
@@ -123,8 +190,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 			if (_model.currentScreenState != ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
 				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT
 				&& _model.currentScreenState != ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
-				&& _model.currentScreenState != ScreenTypes.PBNS
-				&& _model.currentScreenState != ScreenTypes.END_USER
+				&& _model.currentScreenState != ScreenTypes.PARTNER_BANDWIDTH_AND_STORAGE
+				&& _model.currentScreenState != ScreenTypes.END_USER_STORAGE_DRILL_DOWN
 				&& ! ( _model.entitlementEnabled 
 					 && ( _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT
 					 	  || _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF
@@ -141,14 +208,26 @@ package com.kaltura.kmc.modules.analytics.commands {
 			
 			_model.reportDataMap[_model.currentScreenState].tableDp = arrCol;
 			
-			if(krt.totalCount != int.MIN_VALUE)
-				_model.reportDataMap[_model.currentScreenState].totalCount = krt.totalCount;
+			if(_tableData.totalCount != int.MIN_VALUE)
+				_model.reportDataMap[_model.currentScreenState].totalCount = _tableData.totalCount;
 			
+			if (_addTotals){
+				_model.selectedReportData.pager.pageSize = arrCol.length;
+			}
 			_model.filter = _model.filter;
 			_model.selectedReportData = null; //refreash
 			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];
 		}
-
+		
+		private function getBaseTotal(totalHeader:String):Number
+		{
+			for each (var baseTotal:KalturaReportBaseTotal in _model.selectedReportData.baseTotals){
+				if (baseTotal.id == totalHeader){
+					return parseFloat(baseTotal.data);
+				}
+			}
+			return Number.NaN;
+		}
 
 		public function fault(info:Object):void {
 			//resets selectedReportData to clean view

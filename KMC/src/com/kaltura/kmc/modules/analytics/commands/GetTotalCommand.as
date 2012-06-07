@@ -33,7 +33,8 @@ package com.kaltura.kmc.modules.analytics.commands
 				  _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
 				  _model.currentScreenState == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN || 
 				  _model.currentScreenState == ScreenTypes.MAP_OVERLAY_DRILL_DOWN || 
-				  _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN) )
+				  _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN ||
+				  _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) )
 			{
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
@@ -46,7 +47,9 @@ package com.kaltura.kmc.modules.analytics.commands
 				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ))
+				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE ||
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN))
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				

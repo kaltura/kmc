@@ -19,6 +19,7 @@
 			import com.kaltura.kmc.modules.analytics.view.window.PreviewEntryWin;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
+			import com.kaltura.types.KalturaReportInterval;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.binding.utils.BindingUtils;
@@ -65,6 +66,11 @@
 			public var showTable:Boolean = true;
 			[Bindable]
 			public var showKDP:Boolean = false;
+			
+			[Bindable]
+			public var addGraphTotals:Boolean = false;
+			[Bindable]
+			public var addTableTotals:Boolean = false;
 			
 			//Show or Hide the user filter UI
 			[Bindable] public var filterUsersFlag:Boolean = true;
@@ -286,13 +292,18 @@
 				reportTotalEvent.dispatch();
 
 				if (showTable) {
-					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, ktable.orderBy);
+					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, ktable.orderBy, true, true, true, false, addTableTotals);
 					reportTableEvent.dispatch();
 				}
 
 				if (showLineChart || showColumnChart) {
-					var reportGraphEvent:ReportEvent = new ReportEvent(ReportEvent.GET_GRAPH, reportType);
+					var reportGraphEvent:ReportEvent = new ReportEvent(ReportEvent.GET_GRAPH, reportType, '', true, true, true, true, false, addGraphTotals);
 					reportGraphEvent.dispatch();
+				}
+				
+				if (addGraphTotals || addTableTotals){
+					var reportBaseTotalsEvent:ReportEvent = new ReportEvent(ReportEvent.GET_BASE_TOTALS, reportType);
+					reportBaseTotalsEvent.dispatch();
 				}
 			}
 
@@ -473,7 +484,7 @@
 						 includeInLayout="{showColumnChart}" createColumnsFromDp="{generalBarChartFlag}"/>
 
 	<charts:KLineChart id="lineChart" width="100%" enabled="{_isVisibleLineChart}" includeInLayout="{showLineChart}"
-					   visible="{showLineChart}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}"/>
+					   visible="{showLineChart}" minHAxisDate="{filterVo.fromDate}" maxHAxisDate="{filterVo.toDate}" monthGraph="{showTimeUnits ? filterVo.interval == KalturaReportInterval.MONTHS : false}"/>
 
 	<!-- loader -->
 	<mx:VBox width="{this.width-150}" height="200" paddingTop="-150" horizontalAlign="center" clipContent="false"

@@ -20,7 +20,8 @@ package com.kaltura.kmc.modules.analytics.model.types
 		public static const END_USER_ENGAGEMENT  : int = 14; 
 		public static const END_USER_ENGAGEMENT_DRILL_DOWN  : int = 15;
 		
-		public static const PBNS : int = 16;
-		public static const END_USER : int = 17;
+		public static const PARTNER_BANDWIDTH_AND_STORAGE : int = 16;
+		public static const END_USER_STORAGE : int = 17;
+		public static const END_USER_STORAGE_DRILL_DOWN : int = 18;
 	}
 }

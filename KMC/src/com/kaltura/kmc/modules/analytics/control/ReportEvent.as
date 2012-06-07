@@ -10,6 +10,7 @@ package com.kaltura.kmc.modules.analytics.control
 		public static const GET_TABLE : String = "analytics_getTable";
 		public static const GET_ENTRY : String = "analytics_getEntry";
 		public static const EXPORT_TO_EXCEL : String = "analytics_exporttoExcel";
+		public static const GET_BASE_TOTALS : String = "analytics_getBaseTotals";
 		
 		public var reportType : int;
 		public var orderBy : String;
@@ -17,6 +18,8 @@ package com.kaltura.kmc.modules.analytics.control
 		public var getGraph : Boolean;
 		public var getTotal : Boolean; 
 		public var getEntry : Boolean;
+		public var addTableTotals:Boolean;
+		public var addGraphTotals:Boolean;
 		
 		public function ReportEvent( type:String, 
 									 reportType : int , 
@@ -24,7 +27,9 @@ package com.kaltura.kmc.modules.analytics.control
 									 getTable : Boolean = true, 
 									 getGraph : Boolean = true, 
 									 getTotal : Boolean = true, 
-									 getEntry : Boolean = false, 
+									 getEntry : Boolean = false,
+									 addTableTotals : Boolean = false,
+									 addGraphTotals : Boolean = false,
 									 bubbles:Boolean=false, 
 									 cancelable:Boolean=false)
 		{
@@ -35,6 +40,8 @@ package com.kaltura.kmc.modules.analytics.control
 			this.getGraph = getGraph;
 			this.getTotal = getTotal;
 			this.getEntry = getEntry;
+			this.addTableTotals = addTableTotals;
+			this.addGraphTotals = addGraphTotals;
 		}
 	}
 }

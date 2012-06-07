@@ -325,8 +325,12 @@ package com.kaltura.analytics {
 		
 		// actions
 		// ==============================
-		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY:String = "BandWidth Usage view Monthly";
-		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY:String = "BandWidth Usage view Yearly";
+//		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_MONTHLY:String = "BandWidth Usage view Monthly";
+//		public static const ANALYTICS_BANDWIDTH_USAGE_VIEW_YEARLY:String = "BandWidth Usage view Yearly";
+	
+		public static const ANALYTICS_PARTNER_USAGE_REPORTS:String = "BandWidth Usage>Publisher Bandwidth and Storage Report";
+		public static const ANALYTICS_USER_USAGE_REPORTS:String = "BandWidth Usage>End Users Storage Report";
+		public static const ANALYTICS_SPECIFIC_USER_USAGE_REPORTS:String = "BandWidth Usage>Specific End User Storage Report";
 		
 		public static const ANALYTICS_TOP_CONTRIBUTORS:String = "Users And Community Reports>Top Contributors";
 		public static const ANALYTICS_MAP_OVERLAYS:String = "Users And Community Reports>Geographic Distribution";

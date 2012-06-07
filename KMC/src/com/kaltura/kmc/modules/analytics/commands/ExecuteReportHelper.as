@@ -67,6 +67,10 @@ package com.kaltura.kmc.modules.analytics.commands {
 				if(fvo.application != ResourceManager.getInstance().getString('analytics', 'all'))
 					keurif.application = fvo.application;
 				
+				if (fvo.interval != null){
+					keurif.interval = fvo.interval;
+				}
+				
 				keurif.userIds = fvo.userIds;
 				keurif.categories = fvo.categories;
 				keurif.searchInTags = fvo.searchInTags;

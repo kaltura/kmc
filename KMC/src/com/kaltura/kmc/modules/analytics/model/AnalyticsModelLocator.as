@@ -109,8 +109,8 @@ package com.kaltura.kmc.modules.analytics.model
 			}
 		}
 		public var usageDtnDp : ArrayCollection = new ArrayCollection(
-				[ 	ResourceManager.getInstance().getString('analytics', 'pbns')/*,
-					ResourceManager.getInstance().getString('analytics', 'endUserStorage')*/]);
+				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
+					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
 									 								 
 	    //---------------------------------------------------------
 		/**
@@ -127,6 +127,7 @@ package com.kaltura.kmc.modules.analytics.model
 		public var loadingEntryFlag : Boolean = false;
 		public var partnerInfoLoaded : Boolean = false;
 		public var loadingApplicationsFlag : Boolean = false;
+		public var loadingBaseTotals : Boolean = false;
 		
 		//---------------------------------------------------------
 		//singleton methods
@@ -158,7 +159,7 @@ package com.kaltura.kmc.modules.analytics.model
 		 */		
 		public function checkLoading() : void
 		{
-			if( !loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && !loadingEntryFlag)
+			if( !loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && !loadingEntryFlag && !loadingBaseTotals)
 			{
 				this.loadingFlag = false;
 			}

@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		
 		public static function format( param : String , value : String) : String
 		{
-			var newDate : Date;
+			var date : Date;
 			var year : String;
 			var month : String;
 			
@@ -58,22 +58,41 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "date_id":
 					year = String(value).substring(0,4);
 					month = String(value).substring(4,6);
-					var date : String = String(value).substring(6,8);	
-					newDate = new Date( Number(year) , Number(month)-1 , Number(date) );
+					var day : String = String(value).substring(6,8);
+					
+					// There was a deduction of the month number, but it was removed as it was found unnecessary.
+					date = new Date( Number(year) , Number(month) , Number(day) );
 					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "dailyDateMask");
-					return _dateFormatter.format(newDate) ; 
+					return _dateFormatter.format(date) ; 
 					break;
 				case "month_id":
 					year = String(value).substring(0,4);
 					month = String(value).substring(4,6);
-					newDate = new Date( Number(year) , Number(month)-1 , 0);
+					date = new Date( Number(year) , Number(month)-1 , 0);
 					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "monthlyDateMask");
-					return _dateFormatter.format(newDate) ; 
+					return _dateFormatter.format(date) ;
+					break;
 				case "bandwidth_consumption":
 				case "storage_used":
 				case "used_storage":
 				case "combined_bandwidth_storage":
+				case "added_storage_mb":
+				case "total_storage_mb":
 					return Math.ceil(parseFloat(value)).toString() + " MB";
+					break;
+				case "added_msecs":
+				case "total_msecs":
+					var numValue:Number = Math.abs(Number(value));
+					var wholeMinutes:Number = Math.floor(numValue / 60000);
+					var wholeSeconds:Number = Math.floor((numValue - (wholeMinutes * 60000)) / 1000);
+					var secondsText:String = wholeMinutes < 10 ? "0" + wholeSeconds.toString() : wholeSeconds.toString(); 
+					var formattedTime:String = wholeMinutes.toString() + ":" + secondsText
+					
+					if (Number(value) < 0){
+						formattedTime = "-" + formattedTime;
+					}
+					
+					return formattedTime;
 			}
 			return value;			
 		}

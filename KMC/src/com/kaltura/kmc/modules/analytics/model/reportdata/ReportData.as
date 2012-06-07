@@ -34,5 +34,6 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		
 		public var mapDp : ArrayCollection;
 		
+		public var baseTotals : Array;
 	}
 }

@@ -75,7 +75,17 @@ package com.kaltura.kmc.modules.analytics.commands
 							}
 						_model.currentScreenState = ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN;
 					break;
-						
+					case ScreenTypes.END_USER_STORAGE:
+						_model.tableSupportDrillDown = false;
+						getEntryFlag = false;
+						if(_model.entitlementEnabled)
+							if((event as DrillDownEvent).entryId)
+							{
+								_model.filter.userIds = (event as DrillDownEvent).entryId;
+								_model.selectedUserId = (event as DrillDownEvent).entryId;
+							}
+						_model.currentScreenState = ScreenTypes.END_USER_STORAGE_DRILL_DOWN;
+					break;
 				}
 
 			}
