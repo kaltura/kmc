@@ -12,7 +12,12 @@
 			
 			override public function set data(value:Object):void {
 				var curUser:KalturaUser = value as KalturaUser;
-				_dateString = formatDate(curUser.lastLoginTime);
+				if (curUser.lastLoginTime && curUser.lastLoginTime != int.MIN_VALUE) {
+					_dateString = formatDate(curUser.lastLoginTime);
+				}
+				else {
+					_dateString = "";
+				}
 				super.data = value;
 			}
 			
