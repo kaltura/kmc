@@ -7,14 +7,16 @@
 				 horizontalAlign="center" width="780" height="585" layout="vertical" styleName="TitleWindowType2"
 				 close="{onClose()}" 
 				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*"
-				 implements="com.kaltura.edw.business.IDataOwner">
+				 implements="com.kaltura.edw.business.IDataOwner" xmlns:components="com.hillelcoren.components.*">
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.IDataOwner;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.components.playlist.PlaylistEntries;
@@ -32,7 +34,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaPlaylist;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -41,6 +43,7 @@
 			import mx.managers.PopUpManager;
 			import mx.validators.ValidationResult;
 
+			public var client:KalturaClient;
 
 			[Bindable]
 			/**
@@ -110,6 +113,7 @@
 
 
 			private function creationCompleteHandler():void {
+				new KACTagsController(tagsComplete, client);
 				// load the data required by filter 
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
 				KedController.getInstance().dispatch(fe);
@@ -149,8 +153,13 @@
 				title = editPlaylist.name;
 				playlistName.text = editPlaylist.name;
 				playlistDescription.text = editPlaylist.description;
-				playlistTags.text = editPlaylist.tags;
 				editPlaylist.parts = simpleRule.playlistEntries;
+				// set entry tags on screen
+				if (editPlaylist.tags) {
+					var ac:ArrayCollection = new ArrayCollection(editPlaylist.tags.split(", ")); 
+					tagsComplete.selectedItems = ac;
+				}
+				
 				//switch between multi / single rule
 				if (editPlaylist.filters.length > 1) {
 					//multi rule - fill rules data and switch view 
@@ -362,7 +371,7 @@
 				newPlaylist.name = playlistName.text;
 				newPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				newPlaylist.description = playlistDescription.text;
-				newPlaylist.tags = playlistTags.text;
+				newPlaylist.tags = getPlaylistTags();
 				newPlaylist.filters = filtersArray;
 				var addEntryEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.ADD_PLAYLIST, newPlaylist);
 				addEntryEvent.dispatch();
@@ -375,7 +384,7 @@
 				editPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				editPlaylist.filters = filtersArray;
 				editPlaylist.description = playlistDescription.text;
-				editPlaylist.tags = playlistTags.text;
+				editPlaylist.tags = getPlaylistTags();
 				var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS,
 					new ArrayCollection([editPlaylist]));
 				entriesEvent.dispatch();
@@ -386,6 +395,17 @@
 
 			}
 
+			private function getPlaylistTags():String {
+				var str:String = '';
+				var ac:ArrayCollection = tagsComplete.selectedItems;
+				for each (var tag:String in ac) {
+					str += tag + ",";
+				}
+				if (ac.length) {
+					str = str.substr(0, str.length - 1);
+				}
+				return str;
+			}
 
 
 			/**
@@ -469,7 +489,7 @@
 			public function set editable(value:Boolean):void {
 				playlistName.enabled = value;
 				playlistDescription.enabled = value;
-				playlistTags.enabled = value;
+				tagsComplete.enabled = value;
 				simpleRule.editable = value;
 				advancedBtn.enabled = value;
 				advancedBtn.buttonMode = value;
@@ -523,7 +543,12 @@
 				<mx:Label text="{resourceManager.getString('cms','tags') + ':'}" styleName="formLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%">
-				<mx:TextInput id="playlistTags" width="100%"/>
+				<!--<mx:TextInput id="playlistTags" width="100%"/>-->
+
+				<components:AutoComplete id="tagsComplete" width="100%" height="{playlistDescription.height}" 
+										 selectedItemStyleName="facebook" showRemoveIcon="true" allowMultipleSelection="true"
+										 allowNewValues="true" labelField="tag"
+										 prompt="{resourceManager.getString('drilldown','tagsPrompt')}" />
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>

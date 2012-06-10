@@ -7,13 +7,15 @@
 				 creationComplete="{onCreationComplete()}" showCloseButton="true" close="{onClose(event)}" help="{onHelp()}"
 				 verticalScrollPolicy="off" horizontalAlign="center" layout="vertical" width="1000" height="595"
 				 styleName="TitleWindowType2" xmlns:et1="com.kaltura.edw.components.et.*" 
-				 xmlns:fltr="com.kaltura.edw.components.fltr.*"  >
+				 xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:components="com.hillelcoren.components.*"  >
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
 			import com.kaltura.analytics.GoogleAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTracker;
 			import com.kaltura.analytics.KAnalyticsTrackerConsts;
+			import com.kaltura.autocomplete.controllers.KACTagsController;
 			import com.kaltura.edw.business.Cloner;
 			import com.kaltura.edw.business.IListable;
 			import com.kaltura.edw.business.permissions.PermissionManager;
@@ -38,12 +40,11 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
-			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
@@ -140,6 +141,7 @@
 			[Bindable]
 			private var _listableVo:ListableVo;
 
+			public var client:KalturaClient;
 
 			public function onRequestedDataLoaded():void {
 				loadEntries();
@@ -171,7 +173,7 @@
 				else {
 					// if this is a new playlist - check if theres a change in name/description and if
 					// there is an entry in the right list
-					if (playlistName.text == "" && playlistDescription.text == "" && playlistTags.text == "" 
+					if (playlistName.text == "" && playlistDescription.text == "" && getPlaylistTags() == "" 
 						&& (_playlistArrayCollection.source && _playlistArrayCollection.source.length == 0))
 						removeMe();
 					else
@@ -203,6 +205,8 @@
 			 * switch between edit / new mode and init window
 			 */
 			private function onCreationComplete():void {
+				new KACTagsController(tagsComplete, client);
+				
 				//hide the box of the rule based
 				entries.ruleBaseBar.includeInLayout = false;
 				entries.ruleBaseBar.visible = false;
@@ -214,8 +218,12 @@
 					_editPlaylist = Cloner.cloneKalturaPlaylist(_originalPlaylist);
 					playlistName.text = _editPlaylist.name;
 					playlistDescription.text = _editPlaylist.description;
-					playlistTags.text = _editPlaylist.tags;
 					_editPlaylist.parts = _playlistArrayCollection;
+					// set entry tags on screen
+					if (_editPlaylist.tags) {
+						var ac:ArrayCollection = new ArrayCollection(_editPlaylist.tags.split(", ")); 
+						tagsComplete.selectedItems = ac;
+					}
 
 					var e:ManualPlaylistWindowEvent = new ManualPlaylistWindowEvent(ManualPlaylistWindowEvent.GET_PLAYLIST);
 					e.data = _editPlaylist;
@@ -380,7 +388,7 @@
 			private function setPlaylistInfoFromScreen(kpl:KalturaPlaylist):void {
 				kpl.name = playlistName.text;
 				kpl.description = playlistDescription.text;
-				kpl.tags = playlistTags.text;
+				kpl.tags = getPlaylistTags();
 				var entriesIds:Array = new Array();
 				for (var i:int = 0; i < _playlistArrayCollection.length; i++) {
 					entriesIds.push(_playlistArrayCollection[i]["id"]);
@@ -388,6 +396,17 @@
 				kpl.playlistContent = entriesIds.join();
 			}
 
+			private function getPlaylistTags():String {
+				var str:String = '';
+				var ac:ArrayCollection = tagsComplete.selectedItems;
+				for each (var tag:String in ac) {
+					str += tag + ",";
+				}
+				if (ac.length) {
+					str = str.substr(0, str.length - 1);
+				}
+				return str;
+			}
 
 			/**
 			 * Save playlist. If this was an edit - use updatePlaylist Command,
@@ -505,7 +524,7 @@
 			public function set editable(value:Boolean):void {
 				playlistName.enabled = value;
 				playlistDescription.enabled = value;
-				playlistTags.enabled = value;
+				tagsComplete.enabled = value;
 				filter.enabled = value;
 				removeBtn.enabled = value;
 				removeBtn.buttonMode = value;
@@ -513,7 +532,6 @@
 				addBtn.buttonMode = value;
 				entries.editable = value;
 				saveBtn.enabled = value;
-//				showLinks = value;
 			}
 
 
@@ -557,7 +575,11 @@
 				<mx:Label text="{resourceManager.getString('cms', 'tags') + ':'}" styleName="formLabel"/>
 			</mx:GridItem>
 			<mx:GridItem width="100%" height="100%">
-				<mx:TextInput id="playlistTags" width="100%"/>
+				<!--<mx:TextInput id="playlistTags" width="100%"/>-->
+				<components:AutoComplete id="tagsComplete" width="100%" height="{playlistDescription.height}" 
+										 selectedItemStyleName="facebook" showRemoveIcon="true" allowMultipleSelection="true"
+										 allowNewValues="true" labelField="tag"
+										 prompt="{resourceManager.getString('drilldown','tagsPrompt')}" />
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>

@@ -161,10 +161,6 @@ package com.kaltura.kmc.modules.content.business
 		}
 		
 		
-//		private function onHelp(e:KmcHelpEvent):void {
-//			dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-//		}
-		
 		/**
 		 * request to close the popup as response of window "x" button
 		 * @param e
@@ -498,6 +494,7 @@ package com.kaltura.kmc.modules.content.business
 			var mpw:ManualPlaylistWindow = new ManualPlaylistWindow();
 			mpw.rootUrl = model.context.rootUrl;
 			mpw.filterData = model.filterModel;
+			mpw.client = model.context.kc;
 			
 			if (model.playlistModel.onTheFlyPlaylistType == SetPlaylistTypeEvent.MANUAL_PLAYLIST) {
 				// this is not an empty or edit existing playlist - this is a
@@ -593,9 +590,11 @@ package com.kaltura.kmc.modules.content.business
 			rpw.filterData = model.filterModel;
 			
 			rpw.distributionProfilesArr = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+			rpw.client = model.context.kc;
 			// assign the current fiter to the new window 
 			rpw.onTheFlyFilter = model.playlistModel.onTheFlyFilter;
 			model.playlistModel.onTheFlyFilter = null;
+			
 			return rpw;
 		}
 		
