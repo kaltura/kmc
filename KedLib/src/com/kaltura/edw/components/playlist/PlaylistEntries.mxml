@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:et="com.kaltura.edw.view.et.*"
-		 creationComplete="onCreationComplete()" verticalGap="0" xmlns:et1="com.kaltura.edw.components.et.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()" verticalGap="0"
+		 xmlns:et="com.kaltura.edw.components.et.*">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.et.EntryTableColumns;
@@ -11,23 +11,37 @@
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CollectionEvent;
-			
+
 			public static const MAX_ENTRIES_IN_PL:int = 200;
-			
+
 			[Bindable]
 			public var limit:uint = 20;
-			
+
 			[Bindable]
 			private var _dataProvider:ArrayCollection;
-			
+
 			[Bindable]
+			[Inspectable(enumeration = "true,false")]
+			/**
+			 * make entries names in the table clickable (open details)
+			 * */
 			public var showLinks:Boolean = true;
+
 			[Bindable]
+			[Inspectable(enumeration = "true,false")]
+			/**
+			 * show the selection column in the entry table
+			 * */
+			public var showTableSelection:Boolean = true;
+
+			[Bindable]
+			[Inspectable(enumeration = "true,false")]
 			public var allowSort:Boolean = false;
+
 			[Bindable]
 			public var tableTitle:String;
 
@@ -38,7 +52,7 @@
 
 			[ArrayElementType("String")]
 			public static const ORDER_BY_ARR:Array = [KalturaPlayableEntryOrderBy.PLAYS_DESC,
-				"recent" /* KalturaPlayableEntryOrderBy.CREATED_AT_DESC */,
+				KalturaPlayableEntryOrderBy.RECENT_DESC,
 				KalturaPlayableEntryOrderBy.RANK_DESC];
 
 
@@ -80,7 +94,7 @@
 
 			public function getSelectedOrderBy():String {
 				var index:int = ruleBasedPlaylistOrderBy.selectedIndex;
-				if (index > -1 ) {
+				if (index > -1) {
 					return ORDER_BY_ARR[index].toString();
 				}
 				return null;
@@ -90,29 +104,26 @@
 			public function setSelectedOrderBy(orderBy:String):void {
 				if (orderBy == KalturaPlayableEntryOrderBy.CREATED_AT_DESC) {
 					// somewhere during Caasiopeia we broke backwards compat., this is a fix.
-					orderBy = "recent";
+					orderBy = KalturaPlayableEntryOrderBy.RECENT_DESC;
 				}
 				for (var i:uint = 0; i < ORDER_BY_ARR.length; i++) {
 					if (ORDER_BY_ARR[i] == orderBy)
 						ruleBasedPlaylistOrderBy.selectedIndex = i;
 				}
 			}
-			
+
+
 			public function getPlaylistLimit():int {
 				return maxEntriesInPlaylist.value;
 			}
 
 
 			private function onEntryTableCreatedComplete():void {
-				var ar:Array = [EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE, 
+				var ar:Array = [EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
 					EntryTableColumns.PLAYS, EntryTableColumns.DURATION];
 				playlistEntriesList.showColumns(ar);
-				
-				playlistEntriesList.allowMultipleSelection = false;
 
-				for each (var col:DataGridColumn in playlistEntriesList.columns) {
-					col.width = 40;
-				}
+				playlistEntriesList.singleSelection = true;
 
 			}
 
@@ -179,10 +190,10 @@
 	<mx:Label text="{tableTitle}" width="100%" styleName="formLabel"/>
 	<mx:HBox id="controlBar" width="100%" styleName="DataGridActions" visible="false" includeInLayout="false">
 	</mx:HBox>
-	<et1:EntryTable id="playlistEntriesList" width="100%" height="100%" kalturaSorting="false"
+	<et:EntryTable id="playlistEntriesList" width="100%" height="100%" kalturaSorting="false"
 				   sortableColumns="{allowSort}" showLinks="{showLinks}" dataProvider="{dataProvider}"
-				   creationComplete="onEntryTableCreatedComplete()" dragEnabled="false" dropEnabled="false"
-				   dragMoveEnabled="false" showDetails="playlistEntriesList_showDetailsHandler(event)"/>
+				   showSelection="{showTableSelection}" creationComplete="onEntryTableCreatedComplete()"
+				   showDetails="playlistEntriesList_showDetailsHandler(event)"/>
 	<mx:HBox id="playlistSummery" width="100%" styleName="DataGridActions" height="40">
 		<mx:HBox width="100%" horizontalAlign="center">
 			<mx:HBox horizontalGap="1">
@@ -216,7 +227,7 @@
 			</mx:dataProvider>
 		</mx:ComboBox>
 		<mx:Label text="{resourceManager.getString('cms', 'maxDynPlst')}"/>
-		<mx:NumericStepper id="maxEntriesInPlaylist" minimum="1" maximum="{MAX_ENTRIES_IN_PL}" width="52" value="{limit}"
-						   change="{onNumericChange()}"/>
+		<mx:NumericStepper id="maxEntriesInPlaylist" minimum="1" maximum="{MAX_ENTRIES_IN_PL}" width="52"
+						   value="{limit}" change="{onNumericChange()}"/>
 	</mx:HBox>
 </mx:VBox>

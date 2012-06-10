@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--- 
+<!---
  OneRule encapsulates a filter with entries list.
 -->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 		 creationComplete="onCreationComplete()"
-		 xmlns:filter="com.kaltura.edw.view.filter.*" xmlns:playlist="com.kaltura.edw.components.playlist.*"
-		 xmlns:filter1="com.kaltura.edw.components.filter.*" xmlns:fltr="com.kaltura.edw.components.fltr.*" 
+		 xmlns:playlist="com.kaltura.edw.components.playlist.*"
+		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
 		 >
 	<mx:Script>
 		<![CDATA[
@@ -24,7 +24,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaPlaylist;
-			
+
 			import mx.collections.ArrayCollection;
 
 			/**
@@ -37,11 +37,11 @@
 			 * a list of entries which make up the playlist
 			 * */
 			public var playlistEntries:ArrayCollection = new ArrayCollection();
-			
-			
-			
+
+
+
 			private var _ruleToEdit:KalturaMediaEntryFilterForPlaylist;
-			
+
 			public function set ruleToEdit(value:KalturaMediaEntryFilterForPlaylist):void {
 				_ruleToEdit = value;
 				// make sure to view only allowed content and hide moderation container
@@ -52,17 +52,17 @@
 				entries.limit = value.limit;
 				entries.ruleBasedPlaylistOrderBy.selectedIndex = PlaylistEntries.ORDER_BY_ARR.indexOf(value.orderBy);
 			}
-			
+
 			public function get ruleToEdit():KalturaMediaEntryFilterForPlaylist {
 				return _ruleToEdit;
 			}
-			
+
 			[Bindable]
 			public var filterData:FilterModel;
 
 			[Bindable]
 			public var distributionProfilesArray : Array;
-			
+
 
 			private function onCreationComplete():void {
 				entries.upDownContainer.visible = false;
@@ -111,11 +111,11 @@
 				plf.orderBy = entries.getSelectedOrderBy();
 				return plf;
 			}
-			
+
 			public function get editable():Boolean {
 				return entries.enabled;
 			}
-			
+
 			public function set editable(value:Boolean):void {
 				filter.enabled = value;
 				entries.editable = value;
@@ -149,5 +149,6 @@
 							enableModeration="false" enableScheduling="false"/>
 	</mx:VBox>
 	<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
+							  showTableSelection="false"
 							  updatedData="{runRule()}" showEntryDetails="entries_showEntryDetailsHandler(event)"/>
 </mx:HBox>

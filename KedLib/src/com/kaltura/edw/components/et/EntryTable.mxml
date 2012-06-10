@@ -2,7 +2,7 @@
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 rowHeight="60" selectable="false" headerRelease="{headerReleaseHandler(event)}" 
 			 creationComplete="creationCompleteHandler(event)" 
-			 xmlns:view="com.kaltura.kmc.modules.content.view.*">
+			 >
 	<mx:Metadata>
 		
 		[ResourceBundle("entrytable")]
@@ -27,7 +27,7 @@
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.vo.KalturaBaseEntry;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
@@ -43,7 +43,7 @@
 			public static const ASCENDING:String = "ASC";
 			public static const DESCENDING:String = "DESC";
 
-			
+
 			// events
 			// ==================
 			/**
@@ -55,18 +55,32 @@
 			 * defines the value of the type property for the <code>openEntry</code> event.
 			 * */
 			public static const OPEN_ENTRY:String = "openEntry";
-			
-			
-			
+
+
+
 
 			/**
 			 * controller for communication with application model
 			 * */
 			public var controller:KMvCController;
 
+
 			[Bindable]
+			[Inspectable(enumeration="true,false")]
+			/**
+			 * show the thumbnails column
+			 * */
 			public var showThumbnails:Boolean = false;
-			
+
+
+			[Bindable]
+			[Inspectable(enumeration="true,false")]
+			/**
+			 * show the selection column
+			 * */
+			public var showSelection:Boolean = true;
+
+
 			/**
 			 * show the delete action in the actions renderer
 			 * */
@@ -81,7 +95,7 @@
 				}
 				return found;
 			}
-			
+
 			public function set showDelete(value:Boolean):void {
 				var actions:Array = ActionsRenderer.actions;
 				var i:int;
@@ -96,7 +110,7 @@
 					if (!found) {
 						actions.push(EntryTableActions.DELETE);
 					}
-					
+
 				}
 				else {
 					for (i = 0; i<actions.length; i++) {
@@ -107,9 +121,9 @@
 					}
 				}
 			}
-			
-			
-			
+
+
+
 			[Bindable]
 			/**
 			 * the text to show under "publish" column.
@@ -137,18 +151,18 @@
 			 *  Storage for the singleSelection property.
 			 */
 			private var _singleSelection:Boolean = false;
-			
+
 			/**
 			 * @internal
-			 * multiple selection is not traditional, 
-			 * as far as the DataGrid is concerned it is always set to false 
+			 * multiple selection is not traditional,
+			 * as far as the DataGrid is concerned it is always set to false
 			 * though the default applicative value is true.
 			 * */
 			override public function set allowMultipleSelection(value:Boolean):void {
 				super.allowMultipleSelection = false;
-				
+
 			}
-			
+
 			/**
 			 * allow only a single item to be selected at each time. <br>
 			 * this attribute replaces ListBase.allowMultipleSelection
@@ -158,24 +172,24 @@
 					setSelectedItems(null);
 				}
 				_singleSelection = value;
-				
+
 			}
 			public function get singleSelection():Boolean {
 				return _singleSelection;
 			}
-			
+
 			override public function set selectedItem(item:Object):void {
 				setSelectedItems([item]);
 			}
-			
+
 			override public function set selectedItems(items:Array):void {
 				setSelectedItems(items);
 			}
-			
-			
-			
+
+
+
 			/**
-			 * set the SELECTION_ATTRIBUTE on the given objects to true, 
+			 * set the SELECTION_ATTRIBUTE on the given objects to true,
 			 * then set them as selected items
 			 * */
 			protected function setSelectedItems(items:Array):void {
@@ -207,7 +221,7 @@
 					super.selectedItems = si;
 				}
 				setSelection();
-				
+
 			}
 
 			/**
@@ -230,7 +244,7 @@
 
 
 			private var _selectedEntry:KalturaBaseEntry;
-			
+
 			[Bindable]
 			/**
 			 * the latest selected entry in the table
@@ -302,22 +316,22 @@
 				}
 			}
 
-			
+
 
 			public function openEditEntry(e:Object):void {
 				var entry:KalturaBaseEntry;
-				
+
 				if (!showLinks) {
 					return;
 				}
-				
+
 				if (e is KalturaBaseEntry) {
 					entry = e as KalturaBaseEntry;
 				}
 				else if (e is Event) {
 					entry = e.target.data as KalturaBaseEntry;
 				}
-				
+
 				if (entry) {
 					var ete:EntryTableEvent = new EntryTableEvent(EntryTableEvent.SHOW_DETAILS);
 					ete.data = entry;
@@ -332,10 +346,10 @@
 
 			/**
 			 * remove columns which are not in the list
-			 * in case we don't want to show all of the entry table's columns, 
+			 * in case we don't want to show all of the entry table's columns,
 			 * pass in a list of columns we want shown.
-			 * @param columnsList	array with "ids" of columns to show 
-			 * 
+			 * @param columnsList	array with "ids" of columns to show
+			 *
 			 * @see EntryTableColumns
 			 * */
 			public function showColumns(columnKeys:Array):void {
@@ -344,7 +358,7 @@
 				for each (var str:String in columnKeys) {
 					columnsList.push(resourceManager.getString('entrytable', str));
 				}
-				
+
 				var found:Boolean;
 				for (var i:int = arrCol.length - 1; i>0 ; i--) {	// arrcol[0] is the selection column
 					found = false;
@@ -355,23 +369,13 @@
 						}
 					}
 					if (!found) {
-						arrCol.removeItemAt(i);
+						arrCol.getItemAt(i).visible = false;
 					}
 				}
-				this.columns = arrCol.source;
+				
+				selectionColumn.width = 32;
 			}
-			
-			private function removeColumn(headerTxt:String):void {
-				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
-				for (var i:int = 0; i < arrCol.length; ++i) {
-					if (arrCol[i].headerText == headerTxt) {
-						arrCol.removeItemAt(i);
-						this.columns = arrCol.source;
-						return;
-					}
-				}
-			}
-			
+
 
 
 			/**
@@ -384,10 +388,14 @@
 			}
 
 
-			
+
 
 
 			private function headerReleaseHandler(event:DataGridEvent):void {
+				if (event.itemRenderer && event.itemRenderer.data == selectionColumn) {
+					event.preventDefault();
+					return;
+				}
 				if (!kalturaSorting) {
 					return;
 				}
@@ -448,7 +456,7 @@
 				this.mx_internal::sortDirection = _sortDirection;
 			}
 
-			
+
 			/**
 			 * dispatch a deleteEntry event
 			 * */
@@ -457,12 +465,12 @@
 				e.data = event.target.data as KalturaBaseEntry;
 				dispatchEvent(e);
 			}
-			
+
 
 			/**
 			 * request opening preview & embed popup for an entry.
 			 * @param item	either a KalturaBaseEntry or an event whose target.data is a KalturaBaseEntry.
-			 * 
+			 *
 			 * @internal
 			 * the event is probably from the preview IR of the table and the other option is left for backwards compat.
 			 * */
@@ -474,7 +482,7 @@
 				else {
 					entry = item as KalturaBaseEntry;
 				}
-				
+
 				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.OPEN_PREVIEW);
 				e.data = entry;
 				dispatchEvent(e);
@@ -490,7 +498,7 @@
 				selectedItems = (dataProvider as ArrayCollection).source;
 			}
 
-			
+
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				// add IR listernes
 				addEventListener(SelectionRenderer.SELECTION_CHANGED, handleSelectionChanged, false, 0, true);
@@ -499,15 +507,15 @@
 				addEventListener(EntryTableActions.EMBED, preview, false, 0, true);
 				addEventListener(EntryTableActions.EDIT, openEditEntry, false, 0, true);
 				addEventListener(EntryTableActions.DELETE, deleteEntry, false, 0, true);
-				
+
 				updateDefaultSortColumn();
 			}
-			
-			
+
+
 			/**
 			 * if e.target.data is datagridcolumn:
 			 * select / deselect all
-			 * 
+			 *
 			 * if e.target.data is entry:
 			 * set new selection value to the vo
 			 * add/remove the vo to the selected items
@@ -557,12 +565,12 @@
 						selectAll();
 						e.target.cb.selected = true;
 					}
-					
+
 				}
 				setSelection();
 			}
-			
-			
+
+
 
 			/**
 			 * table ordering, optional values listed in <code>KalturaMediaEntryOrderBy</code>
@@ -600,43 +608,43 @@
 
 
 	<mx:columns>
-		<mx:DataGridColumn width="32" minWidth="32" id="selectionColumn"
+		<mx:DataGridColumn width="32" minWidth="32" id="selectionColumn" visible="{showSelection}"
 						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
 						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
-		
+
 		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" visible="{showThumbnails}"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="id" width="90"
 						   headerText="{resourceManager.getString('entrytable', 'idHeader')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
 						   headerText="{resourceManager.getString('entrytable', 'name')}" 
 						   itemRenderer="com.kaltura.edw.components.et.ir.NameRenderer" />
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80" 
 						   headerText="{resourceManager.getString('entrytable', 'playlistType')}"
 						   labelFunction="{EntryTableLabelFunctions.getPlaylistMediaTypes}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
-		
+
 		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('entrytable', 'type')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.MediaTypeRenderer"
 						   headerStyleName="centerTableColumnHeader"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="views" width="80"
 						   headerText="{resourceManager.getString('entrytable', 'playerLoads')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="plays" width="55"
 						   headerText="{resourceManager.getString('entrytable', 'plays')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"
 						   headerStyleName="centerTableColumnHeader"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="rank" width="50"
 						   headerText="{resourceManager.getString('entrytable', 'rating')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="userId" width="90"
 						   headerText="{resourceManager.getString('entrytable', 'creator')}" showDataTips="true"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
@@ -655,19 +663,19 @@
 						   headerText="{resourceManager.getString('entrytable', 'duration')}"
 						   labelFunction="{EntryTableLabelFunctions.getTimeFormat}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="moderationCount" width="40"
 						   headerText="{resourceManager.getString('entrytable', 'flags')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
 						   headerText="{usedForModeration ? resourceManager.getString('entrytable', 'moderationStatus') : resourceManager.getString('entrytable', 'status')}"
 						   labelFunction="{usedForModeration ? EntryTableLabelFunctions.getStatusForModeration : EntryTableLabelFunctions.getStatus}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="140"
 						   headerText="{resourceManager.getString('entrytable', 'actions')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ActionsRenderer" />
-			
+
 	</mx:columns>
 </mx:DataGrid>

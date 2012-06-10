@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.kaltura.kmc.view.*" layout="absolute"
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"  layout="absolute"
 				minWidth="955" minHeight="600" creationComplete="creationCompleteHandler(event)" paddingLeft="0"
 				paddingRight="0" paddingBottom="0" paddingTop="0" verticalGap="0" backgroundColor="0xFFFFFF" >
 	<mx:Metadata>
@@ -42,7 +42,7 @@
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUser;
 			import com.kaltura.vo.KalturaUserRole;
-			
+
 			import mx.controls.Alert;
 			import mx.core.Application;
 			import mx.events.CloseEvent;
@@ -53,12 +53,12 @@
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
-						
+
 			/**
 			 * KMC version
 			 * */
 			public var VERSION:String = "5.6";
-			
+
 			// ==============================================================================
 			// members
 			// ==============================================================================
@@ -110,17 +110,17 @@
 
 			private var _moduleLoader:ModuleLoader;
 			private var _currentObject:Object;
-			
+
 			/**
 			 * _kmcFunction[0]: module on which we expect to find the following function. <br>
 			 * _kmcFunction[1]: name of function to execute when the requested module is loaded.
 			 * */
 			private var _kmcFunction:Array;
-			
+
 			/**
 			 * plugins are FlexModules which do not function as KmcModules.
 			 * they are loaded as simple flex modules and can be refered to
-			 * by their id, via the plugins manager. 
+			 * by their id, via the plugins manager.
 			 * */
 			private var _pluginManager:KmcPluginManager;
 
@@ -161,7 +161,7 @@
 				// switch to needed tab
 				gotoPage(ExternalInterface.call("kmc.mediator.readUrlHash"));
 			}
-			
+
 			protected function loadPlugins():void {
 				var handlers:Object = {};
 				handlers[KmcNavigationEvent.NAVIGATE] = navigateToModule;
@@ -169,9 +169,9 @@
 				_pluginManager.addEventListener(KmcErrorEvent.ERROR, onError);
 				_pluginManager.loadPlugins(_uiconf);
 			}
-			
-			
-			
+
+
+
 
 
 			/**
@@ -222,7 +222,7 @@
 					jstab.display_name = tabName;
 					jstab.module_name = xmltab.@id.toString();
 					jstab.subtab = xmltab.@subtab.toString();
-					
+
 					if (xmltab.@kmcFunction.toString().length > 0) {
 						jstab.type = "action";
 					}
@@ -277,14 +277,14 @@
 					objParam[key] = oLowers[key];
 				}
 				_flashvars = objParam;
-				
+
 				// hook ExternalInterface:
 				if (ExternalInterface.available) {
 					ExternalInterface.addCallback("gotoPage", gotoPage);
 					ExternalInterface.addCallback("alert", alert);
 					ExternalInterface.addCallback("hasOngoingProcess", hasOngoingProcess);
 				}
-				
+
 				// handle stats:
 				if (objParam.suppressAnalytics) {
 					GoogleAnalyticsTracker.getInstance().enabled = false;
@@ -304,7 +304,7 @@
 				_modelLocator.kalturaClient.queueing = true;
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.CALL_QUEUED, setTimer);
 				_modelLocator.kalturaClient.addEventListener(KalturaClient.QUEUE_FLUSHED, setTimer);
-				
+
 				var contextData:ContextDataPack = KMvCModel.getInstance().getDataPack(ContextDataPack) as ContextDataPack;
 				contextData.sourceUrl = systemManager.loaderInfo.url.substr(0, systemManager.loaderInfo.url.lastIndexOf("/"));
 
@@ -465,7 +465,7 @@
 				// GAtracking
 				var ga:GoogleAnalyticsTracker = GoogleAnalyticsTracker.getInstance();
 				ga.init(_modelLocator.userInfo.user.partnerId.toString(), _modelLocator.userInfo.user.id, this, "KMC", _flashvars.urchinnumber, "AS3", _flashvars.gaDebug == "true" ? true : false);
-			
+
 				// load locale
 				loadLocale(getUrl(_uiconf.locale.path.toString()), _uiconf.locale.language.toString());
 
@@ -675,7 +675,7 @@
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATION_COMPLETE, o.moduleName, o.subtab)); 
 			}
 
-			
+
 			/**
 			 * execute given function either on KMC itself, a module or a plugin
 			 * */
@@ -690,7 +690,7 @@
 				else {
 					func_name = funky[0];	
 				}
-				
+
 				// triggering KMC method
 				if (!module_id) {
 					this[func_name]();
@@ -715,17 +715,17 @@
 						// start loading the relevant module
 						_currentObject = {moduleName: module_id, subtab: mInfo.@subtab.toString()};
 						loadModule(mInfo);
-					
+
 					}
 					// no module, try triggering plugin method
 					else {
 						_pluginManager.executePluginMethod(module_id, func_name);
-						// this is our last option, and if it fails a KmcErrorEvent is dispatched
-						// so basically, wer'e good.
+							// this is our last option, and if it fails a KmcErrorEvent is dispatched
+							// so basically, wer'e good.
 					}
 				}
 			}
-			
+
 			/**
 			 * if a kmcFunction is waiting to execute for the ready module, execute it.
 			 * */
@@ -804,7 +804,7 @@
 					}
 				}
 				return null;
-				
+
 			}
 
 
@@ -873,7 +873,7 @@
 			}
 
 
-			
+
 
 		]]>
 	</mx:Script>

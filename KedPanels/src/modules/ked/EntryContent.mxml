@@ -2,7 +2,7 @@
 <mx:Module layout="vertical" xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="noVGap"
 		   implements="com.kaltura.edw.business.IDrilldownPanel"
 		   xmlns:controls="com.kaltura.controls.*" 
-		   xmlns:view="com.kaltura.edw.view.*" xmlns:et="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*"
+		   xmlns:et="com.kaltura.edw.components.et.*" xmlns:control="com.kaltura.edw.control.*"
 		   label="{resourceManager.getString('drilldown', 'mixesTab')}">
 	<mx:Metadata>
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
@@ -28,42 +28,42 @@
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMixEntry;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
-			
+
 			[Bindable]
 			/**
 			 * @copy #selectedEntry
 			 * */
 			private var _selectedEntry:KalturaBaseEntry;
-			
+
 			private var _model:ContentDataPack;
-			
+
 			/**
 			 * to watch when <code>selectedEntry.parts</code> change
 			 * */
 			private var _cw:ChangeWatcher;
-			
+
 			/**
 			 * whether we should load roughcuts
 			 * */
 			public var loadRoughcuts:Boolean = true;
-			
+
 			private var _dpModel:IDataPackRepository;
-			
+
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
-			
-			
+
+
 			public function set selectedEntry(value:KalturaBaseEntry):void {
 				_selectedEntry = value;
-				
+
 				var resourceName:String = (_selectedEntry is KalturaMixEntry) ? 'content' : 'mixesTab';
 				label = resourceManager.getString('drilldown', resourceName);
 			}
-			
+
 			public function get dataPackModel():IDataPackRepository{
 				return _dpModel;
 			}
@@ -72,40 +72,40 @@
 				var edp:EntryDataPack = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
 				loadRoughcuts = edp.loadRoughcuts;
 			}
-			
+
 			public function get helpAnchor():String{
 				return "entry_content";
 			}
-			
-			
+
+
 			public function validate():void {
 				var e:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true);
 				dispatchEvent(e);
 			}
-			
-			
+
+
 			public function save():void {
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
-			
-			
+
+
 			public function clear():void {
 				var e:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_PARTS, null);
 				controller.dispatch(e);
 			}
-			
-			
+
+
 			public function isChanged():Boolean {
 				return false;
 			}
-			
-			
+
+
 			public function initData():void {
 				// get data
 				loadEntries();
 			}
-			
-			
+
+
 			public function init():void {
 				// monitor data change if needed
 				if (!_cw) {
@@ -114,20 +114,20 @@
 					_model = KMvCModel.getInstance().getDataPack(ContentDataPack) as ContentDataPack;
 					_cw = BindingUtils.bindSetter(removeTab, _model, "contentParts");
 				}
-				
+
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.CONTENT_PANEL);
 			}
-			
+
 			public function destroy():void {
 				_cw.unwatch();
 			}
-			
+
 			private function onPaging():void {
 				loadEntries();
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
-			
+
 			/**
 			 * load all mix entries or load mixes that uses this entry if it is not a mix
 			 */
@@ -142,9 +142,9 @@
 					var getRoughcuts:KedEntryEvent = new KedEntryEvent(KedEntryEvent.GET_ENTRY_ROUGHCUTS, _selectedEntry);
 					controller.dispatch(getRoughcuts);
 				}
-				
+
 			}
-			
+
 			/**
 			 * remove column that are not relevant for
 			 * this view from the entry contents table
@@ -152,10 +152,10 @@
 			private function removeColumns(event:Event):void {
 				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.NAME, EntryTableColumns.PLAYS,
 					EntryTableColumns.CREATE_AT, EntryTableColumns.DURATION, EntryTableColumns.STATUS];
-				
+
 				table.showColumns(ar);
 			}
-			
+
 			private function removeTab(value:Array):void {
 				if (value) {
 					if (value.length == 0 && this.parent) {
@@ -169,7 +169,7 @@
 	</mx:Script>
 	<control:ContentTabController id="controller" />
 	<et:EntryTable id="table" width="100%" height="100%" creationComplete="{removeColumns(event)}"
-				   sortableColumns="false" showLinks="false"/>
+				   sortableColumns="false" showLinks="false" showSelection="false"/>
 	<controls:Paging id="paging" width="100%" nextPage="onPaging()" prvPage="onPaging()" 
 					 getPageNum="onPaging()" showRowsInPage="false"/>
 </mx:Module>

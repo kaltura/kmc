@@ -5,9 +5,7 @@
 <HelpTitleWindow xmlns="com.kaltura.containers.*" showCloseButton="true" xmlns:mx="http://www.adobe.com/2006/mxml"
 				 help="{onHelp()}" creationComplete="creationCompleteHandler()" verticalScrollPolicy="off"
 				 horizontalAlign="center" width="780" height="585" layout="vertical" styleName="TitleWindowType2"
-				 close="{onClose()}" xmlns:view="com.kaltura.kmc.modules.content.view.*"
-				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*" 
-				 xmlns:controls="com.kaltura.controls.*" 
+				 close="{onClose()}" 
 				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*"
 				 implements="com.kaltura.edw.business.IDataOwner">
 	<mx:Script>
@@ -34,7 +32,7 @@
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaPlaylist;
-			
+
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -43,43 +41,43 @@
 			import mx.managers.PopUpManager;
 			import mx.validators.ValidationResult;
 
-			
+
 			[Bindable]
 			/**
 			 * data for filter
 			 * */
 			public var filterData:FilterModel;
-			
+
 			[Bindable]
 			/**
 			 * playlist related data from the model
 			 * */
 			public var rulePlaylistData:PlaylistModel;
-			
+
 			[Bindable]
 			/**
 			 * list of distribution profiles
 			 * */
 			public var distributionProfilesArr : Array;
-			
+
 			/**
 			 * address of the server the application is running on
 			 * */
 			public var rootUrl:String;
 
- 			public var addRuleWin:AddRuleWin;
-			
+			public var addRuleWin:AddRuleWin;
+
 			/**
 			 * indicates the filter changed
 			 * (so need to prompt for save, etc)
 			 * */
 			private var _filterTouched:Boolean;
-			
+
 			/**
 			 * the playlist currently being edited
 			 * */
 			public var editPlaylist:KalturaPlaylist;
-			
+
 			/**
 			 * when creating a playlist from "manage" page, the filter used to create it.
 			 * */
@@ -89,44 +87,44 @@
 			 * allow opening entry drilldown on entry name click
 			 * */
 			public var showLinks:Boolean = true;
-			
+
 			/**
 			 * indicates this playlist is made of multiple rules
 			 * */
 			private var _isAdvanced:Boolean;
-			
+
 			[Bindable]
 			/**
 			 * indicates this is a new playlist (not edit)
 			 * */
 			private var _isNewPlaylist:Boolean;
-			
+
 			[Bindable]
 			/**
 			 * KalturaMediaEntryFilterForPlaylist objects
 			 * */
 			private var _filters:ArrayCollection = new ArrayCollection();
-			
+
 			private var _ruleIndex:Number;
 
-			
-			
+
+
 			private function creationCompleteHandler():void {
 				// load the data required by filter 
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
 				KedController.getInstance().dispatch(fe);
 			}
-			
-			
-			
+
+
+
 			public function onRequestedDataLoaded():void {
 				// after filter data was loaded, init stuff
 				initWindow();
 			}
-			
-			
+
+
 			/**
-			 * initialize the window showing new playlist state 
+			 * initialize the window showing new playlist state
 			 * */
 			private function initNewState():void {
 				title = resourceManager.getString('cms', 'newRuleBasedPlaylist');
@@ -142,10 +140,10 @@
 				simpleRule.runRule();
 				PermissionManager.getInstance().applyAllAttributes(this, "ruleBasedPlaylistDrilldown_add");
 			}
-			
-			
+
+
 			/**
-			 * initialize the window showing edit state 
+			 * initialize the window showing edit state
 			 * */
 			private function initEditState():void {
 				title = editPlaylist.name;
@@ -214,9 +212,9 @@
 			private function onAdvancedModeRequested(evt:Event = null):void {
 				if (_filterTouched)
 					Alert.show(resourceManager.getString('cms', 'switchToAdvanceWorning'),
-														 resourceManager.getString('cms',
-																				   'switchToAdvanceWorningTitle'),
-														 Alert.YES | Alert.NO, null, applyAdvanceMode);
+						resourceManager.getString('cms',
+						'switchToAdvanceWorningTitle'),
+						Alert.YES | Alert.NO, null, applyAdvanceMode);
 				else
 					applyAdvanceMode();
 
@@ -264,9 +262,9 @@
 			private function popRule(filterVo:KalturaMediaEntryFilterForPlaylist = null):void {
 				addRuleWin = new AddRuleWin();
 				addRuleWin.title = filterVo == null ? 
-						resourceManager.getString('cms', 'addRule') :
-						resourceManager.getString('cms', 'editRule');
-				
+					resourceManager.getString('cms', 'addRule') :
+					resourceManager.getString('cms', 'editRule');
+
 				addRuleWin.filterData = filterData;	
 				addRuleWin.distributionProfilesArr = distributionProfilesArr;
 				addRuleWin.filterForSingleRule = filterVo;
@@ -283,7 +281,7 @@
 			}
 
 
-			
+
 
 
 			/**
@@ -351,8 +349,8 @@
 				}
 				PopUpManager.removePopUp(this);
 			}
-			
-			
+
+
 			/**
 			 * create a new playlist object with screen params and save it.
 			 * @param filtersArray	a list of KalturaMediaEntryFilterForPlaylist defining the playlist
@@ -369,7 +367,7 @@
 				var addEntryEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.ADD_PLAYLIST, newPlaylist);
 				addEntryEvent.dispatch();
 			}
-			
+
 			private function saveUpdatedPlaylist(filtersArray:Array):void {
 				editPlaylist.name = playlistName.text;
 				// always pass the max limit, this way the sum of filters limits will apply.
@@ -385,9 +383,9 @@
 					"RulePlayList>EditPlayList>" + editPlaylist.id,
 					editPlaylist.id);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST,GoogleAnalyticsConsts.CONTENT);
-				
+
 			}
-			
+
 
 
 			/**
@@ -450,24 +448,24 @@
 					previewRuleBasedPlaylist();
 				}
 			}
-			
-			
+
+
 			/**
 			 * reset the _model duration & total items in playlist preview
 			 * */
 			private function onClose():void {
 				var cgEvent:CairngormEvent = new KMCEntryEvent(KMCEntryEvent.RESET_RULE_BASED_DATA, null);
 				cgEvent.dispatch();
-				
+
 				cgEvent = new WindowEvent(WindowEvent.CLOSE);
 				cgEvent.dispatch();
 			}
 
-			
+
 			public function get editable():Boolean {
 				return saveBtn.enabled;
 			}
-			
+
 			public function set editable(value:Boolean):void {
 				playlistName.enabled = value;
 				playlistDescription.enabled = value;
@@ -540,7 +538,7 @@
 		</mx:VBox>
 		<mx:VBox id="advancedModeContainer" width="100%" height="100%" >
 			<mx:DataGrid id="filtersList" dataProvider="{_filters}" width="100%" height="100%" rowHeight="60"
-						 headerRelease="{event.preventDefault()}">
+						 headerRelease="{event.preventDefault()}" >
 				<mx:columns>
 					<mx:DataGridColumn headerText="{resourceManager.getString('cms','type')}" 
 									   width="60" paddingLeft="4"

@@ -4,8 +4,6 @@
 	 opened from <code>RulePlaylistWindow</code>
 -->
 <HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns="com.kaltura.containers.*"
-				 xmlns:view="com.kaltura.kmc.modules.content.view.*" 
-				 xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
 				 xmlns:window="com.kaltura.kmc.modules.content.view.window.*" 
 				 showCloseButton="true" close="onClose()" help="{onHelp()}" 
 				 implements="com.kaltura.edw.business.IDataOwner"
@@ -13,7 +11,7 @@
 	<mx:Metadata>
 		[Event (name="removeMe", type="flash.events.Event")]
 	</mx:Metadata>
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.IDataOwner;
@@ -25,13 +23,13 @@
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
-			
+
 
 			/**
 			 * defines the value of the type property of the "removeMe" event
 			 * */
 			public static const REMOVE_ME:String = "removeMe";
-			
+
 			/**
 			 * in case of editing an existing filter (rule), this is it.
 			 * */
@@ -42,33 +40,33 @@
 			 * data (model) for filter
 			 * */
 			public var filterData:FilterModel;
-			
+
 			[Bindable]
 			/**
 			 * a list of distibution profiles for the filter
 			 * */
 			public var distributionProfilesArr : Array;
 
-			
+
 			/**
 			 * dispatch a help event with relevant section data.
 			 * */
 			private function onHelp():void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_edit_rule'));
 			}
-			
+
 			/**
 			 * triggered by command after filter data is loaded
 			 * */
 			public function onRequestedDataLoaded():void {
 				initWindow();
 			}
-			
+
 			private function loadFilterData():void {
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterData);
 				KedController.getInstance().dispatch(fe);
 			}
-			
+
 			private function initWindow():void {
 				if (filterForSingleRule) {
 					singleRule.ruleToEdit = filterForSingleRule;
