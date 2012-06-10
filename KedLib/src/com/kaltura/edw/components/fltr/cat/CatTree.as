@@ -5,7 +5,6 @@ package com.kaltura.edw.components.fltr.cat
 	import com.kaltura.edw.components.fltr.FilterComponentEvent;
 	import com.kaltura.edw.components.fltr.IFilterComponent;
 	import com.kaltura.edw.components.fltr.cat.data.*;
-	import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
 	import com.kaltura.edw.components.fltr.cat.events.CategoriesDataManagerEvent;
 	import com.kaltura.edw.components.fltr.cat.renderers.*;
 	import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
@@ -14,24 +13,16 @@ package com.kaltura.edw.components.fltr.cat
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.vo.KalturaCategory;
 	
-	import flash.display.DisplayObject;
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
-	import flash.events.MouseEvent;
-	import flash.net.SharedObject;
 	
 	import mx.collections.ArrayCollection;
-	import mx.collections.ICollectionView;
-	import mx.controls.Button;
 	import mx.controls.Tree;
-	import mx.core.Application;
 	import mx.core.ClassFactory;
-	import mx.events.CloseEvent;
 	import mx.events.CollectionEvent;
 	import mx.events.FlexEvent;
 	import mx.events.PropertyChangeEvent;
 	import mx.events.TreeEvent;
-	import mx.managers.PopUpManager;
 
 	
 	/**
@@ -220,14 +211,6 @@ package com.kaltura.edw.components.fltr.cat
 			addEventListener(Event.CHANGE, onSelectionChange, false, 0, true);
 			addEventListener(TreeEvent.ITEM_OPEN, onItemOpen, false, 0, true);
 			
-			if (selectionMode != CatTreeSelectionMode.SINGLE_SELECT) {
-				// get selection mode from SO
-				var so:SharedObject = SharedObject.getLocal("KMC_catTree");
-				if (so.data && so.data.selectionMode) {
-					selectionMode = so.data.selectionMode;
-				}
-			}
-			showRoot = false;
 		}
 		
 		
@@ -419,7 +402,7 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		private function remarkParents(cat:CategoryVO):void {
 			var c1:CategoryVO = cat;
-			while (c1.category.parentId != int.MIN_VALUE) {
+			while (c1.category.parentId != int.MIN_VALUE && c1.category.parentId != 0) {
 				c1 = categories.getValue(c1.category.parentId.toString()) as CategoryVO;
 				
 				// scan the parent's children to decide its state
