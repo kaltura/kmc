@@ -53,7 +53,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 					cu.updateMethod = KalturaUpdateMethodType.AUTOMATIC;
 				}
 				cu.setUpdatedFieldsOnly(true);
-				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu));
+				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu, true));
 			} 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
@@ -62,8 +62,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
-			cg.dispatch();
+			if (!checkError(data)) {
+				var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
+				cg.dispatch();
+			}
 			_model.decreaseLoadCounter();
 		}
 	}

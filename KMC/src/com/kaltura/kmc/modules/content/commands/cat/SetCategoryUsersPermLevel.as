@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 				cu = _usrs[i] as KalturaCategoryUser;
 				cu.permissionLevel = _perm;
 				cu.setUpdatedFieldsOnly(true);
-				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu));
+				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu, true));
 			} 			
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
