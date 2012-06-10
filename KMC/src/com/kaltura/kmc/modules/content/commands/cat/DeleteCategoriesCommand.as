@@ -86,7 +86,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 				}
 			}
 			if (!isError) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'categoryDeleteDoneMsg'));
+				Alert.show(rm.getString('cms', 'categoryDeleteDoneMsg'), rm.getString('cms', 'categoryDeleteDoneMsgTitle'));
 				if (_model.filterModel.catTreeDataManager) {
 					_model.filterModel.catTreeDataManager.resetData();
 				}
