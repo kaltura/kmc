@@ -94,9 +94,7 @@ package com.kaltura.edw.components.fltr.cat
 		override public function set dataProvider(value:Object):void {
 			super.dataProvider = value;
 			if (value && _initialFilter) {
-				for each (var catvo:CategoryVO in value) {
-					selectFromInitial(catvo);
-				}
+				selectFromInitialStartWithRoot();
 			}
 		}
 		
@@ -259,7 +257,6 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		private function onItemOpen(event:TreeEvent):void {
 			_dataManager.branchClicked(event.itemRenderer.data as CategoryVO);
-//			selectFromInitial(event.itemRenderer.data as CategoryVO); // complete manager does nothing, so we can mark here
 			disableItems();
 		}
 		
@@ -510,10 +507,16 @@ package com.kaltura.edw.components.fltr.cat
 			_initialFilter = value.toString();
 			
 			if ((dataProvider as ArrayCollection).length > 0) {
-				for each (var catvo:CategoryVO in dataProvider) {
-					selectFromInitial(catvo);
-				}
+				selectFromInitialStartWithRoot();
 			}
+		}
+		
+		private function selectFromInitialStartWithRoot():void {
+			// create a dummy root category
+			var dummyRoot:CategoryVO = new CategoryVO(0, "root", new KalturaCategory());
+			dummyRoot.children = dataProvider as ArrayCollection;
+			// start marking
+			selectFromInitial(dummyRoot);
 		}
 		
 		/**

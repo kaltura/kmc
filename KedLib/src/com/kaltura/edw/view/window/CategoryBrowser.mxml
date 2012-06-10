@@ -84,18 +84,32 @@
 			{
 				var fromTree:Array = catTree.getSelectedCategories(); // CategoryVo objects
 				var fromAC:ArrayCollection = catComplete.selectedItems;			// KalturaCategory objects
-				// get unique KalturaCategories
-				var found:Boolean;
-				for each (var catvo:CategoryVO in fromTree) {
-					found = false;
-					for each (var kCat:KalturaCategory in fromAC) {
-						if (kCat.id == catvo.id) {
-							found = true;
-							break;
+				
+				var kCat:KalturaCategory;
+				if (event.kind == FilterComponentEvent.EVENT_KIND_ADD) {
+					// get unique KalturaCategories
+					var found:Boolean;
+					for each (var catvo:CategoryVO in fromTree) {
+						found = false;
+						for each (kCat in fromAC) {
+							if (kCat.id == catvo.id) {
+								found = true;
+								break;
+							}
+						}
+						if (!found) {
+							fromAC.addItem(catvo.category);
 						}
 					}
-					if (!found) {
-						fromAC.addItem(catvo.category);
+				}
+				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE) {
+					// event.data.value is cat.id
+					for (var i:int = 0; i< fromAC.length; i++) {
+						kCat = fromAC.getItemAt(i) as KalturaCategory;
+						if (kCat.id == event.data.value) {
+							// if in autocomplete, remove it.
+							fromAC.removeItemAt(i);
+						} 
 					}
 				}
 			}

@@ -52,18 +52,18 @@ package com.kaltura.edw.control.commands.categories
 		}
 		
 		private function buildCategoriesHyrarchy(kCats:Array, catMap:HashMap):void {
-			// create category VOs
-			var categories:ArrayCollection = new ArrayCollection();
+			var allCategories:ArrayCollection = new ArrayCollection();	// all categories, so we can scan them easily
+			var rootLevel:ArrayCollection = new ArrayCollection();	// categories in the root level
 			var category:CategoryVO;
-			// add to hashmap
+			// create category VOs and add to hashmap
 			for each (var kCat:KalturaCategory in kCats) {
 				category = new CategoryVO(kCat.id, kCat.name, kCat);
 				catMap.put(kCat.id + '', category);
-				categories.addItem(category)
+				allCategories.addItem(category)
 			}
 			
 			// create tree: list children on parent categories
-			for each (var cat:CategoryVO in categories) {
+			for each (var cat:CategoryVO in allCategories) {
 				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
 				if (parentCategory != null) {
  					if (!parentCategory.children) {
@@ -75,12 +75,11 @@ package com.kaltura.edw.control.commands.categories
 				}
 				else {
 					// parent is root
-					if (!_filterModel.categories) {
-						_filterModel.categories = new ArrayCollection();
-					}
-					_filterModel.categories.addItem(cat);
+					rootLevel.addItem(cat);
 				}
 			}
+			// set root level categories to the model
+			_filterModel.categories = rootLevel;
 		}
 		
 		
