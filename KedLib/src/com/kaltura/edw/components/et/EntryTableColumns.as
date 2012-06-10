@@ -21,6 +21,7 @@ package com.kaltura.edw.components.et
 		public static const DURATION:String = 'duration';
 		public static const FLAGS:String = 'flags';
 		public static const STATUS:String = 'status';
+		public static const MOD_STATUS:String = 'moderationStatus';
 		public static const ACTIONS:String = 'actions';
 		
 	}

@@ -139,13 +139,6 @@
 			 * */
 			public var showLinks:Boolean = true;
 
-			[Bindable]
-			/**
-			 * used for setting a difference between entries table
-			 * for moderation screen and any other screen
-			 */
-			public var usedForModeration:Boolean = false;
-
 			/**
 			 *  @private
 			 *  Storage for the singleSelection property.
@@ -669,8 +662,13 @@
 						   itemRenderer="com.kaltura.edw.components.et.ir.DataGridColumnLabel"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
-						   headerText="{usedForModeration ? resourceManager.getString('entrytable', 'moderationStatus') : resourceManager.getString('entrytable', 'status')}"
-						   labelFunction="{usedForModeration ? EntryTableLabelFunctions.getStatusForModeration : EntryTableLabelFunctions.getStatus}"
+						   headerText="{resourceManager.getString('entrytable', 'status')}"
+						   labelFunction="{EntryTableLabelFunctions.getStatus}"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+		
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
+						   headerText="{resourceManager.getString('entrytable', 'moderationStatus')}"
+						   labelFunction="{EntryTableLabelFunctions.getStatusForModeration}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="140"
