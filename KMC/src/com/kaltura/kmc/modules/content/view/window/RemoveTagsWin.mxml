@@ -32,6 +32,7 @@
 			 * */
 			private var _listDP:ArrayCollection = new ArrayCollection();
 
+			[Bindable]
 			/**
 			 * optional values: "entry" / "category"
 			 * */
@@ -104,9 +105,20 @@
 				uniqeArr.sort();
 				_listDP = new ArrayCollection(uniqeArr);
 			}
+			
+			
+			private function getDescription(objectType:String):String {
+				if (objectType == OBJECT_TYPE_ENTRY) {
+					return resourceManager.getString('cms', 'removeTagsDescription')
+				}
+				else {
+					return resourceManager.getString('cms', 'removeTagsDescriptionCats')
+				}
+			}
+			
 		]]>
 	</mx:Script>
-	<mx:Text id="removeTagsText" text="{resourceManager.getString('cms', 'removeTagsDescription')}"/>
+	<mx:Text id="removeTagsText" text="{getDescription(objectType)}"/>
 	<mx:List id="list" minWidth="150" width="100%" dataProvider="{_listDP}" allowMultipleSelection="true"
 			 variableRowHeight="true"/>
 	<mx:ControlBar>

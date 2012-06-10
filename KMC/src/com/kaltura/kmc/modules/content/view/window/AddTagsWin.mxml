@@ -25,6 +25,7 @@
 			public static const OBJECT_TYPE_ENTRY:String = "entry";
 			public static const OBJECT_TYPE_CATEGORY:String = "category";
 			
+			[Bindable]
 			/**
 			 * optional values: "entry" / "category"
 			 * */
@@ -87,10 +88,18 @@
 				_objects = arr;
 			}
 
+			private function getDescription(objectType:String):String {
+				if (objectType == OBJECT_TYPE_ENTRY) {
+				 	return resourceManager.getString('cms', 'howToEnterTags')
+				}
+				else {
+					return resourceManager.getString('cms', 'howToEnterTagsCats')
+				}
+			}
 			
 		]]>
 	</mx:Script>
-	<mx:Text id="addTagsText" text="{resourceManager.getString('cms', 'howToEnterTags')}"/>
+	<mx:Text id="addTagsText" text="{getDescription(objectType)}"/>
 	<mx:TextInput id="tags" width="100%"/>
 	<mx:ControlBar>
 		<mx:Button label="{resourceManager.getString('cms', 'saveChanges')}" click="save()" buttonMode="true"/>
