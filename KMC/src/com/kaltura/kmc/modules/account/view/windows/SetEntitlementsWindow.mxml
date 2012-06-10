@@ -19,6 +19,7 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
 
 			
 			private var _category:KalturaCategory;
@@ -52,6 +53,9 @@
 				}
 				else  if (!_category && kCat.privacyContext) {
 					Alert.show(resourceManager.getString('account', 'contextAlreadySet'), resourceManager.getString('account', 'error'));
+				}
+				else  if (StringUtil.trim(getPrivacyContextString()) == '') {
+					Alert.show(resourceManager.getString('account', 'noContext'), resourceManager.getString('account', 'error'));
 				}
 				else {
 					Alert.show(resourceManager.getString('account', 'setEntNote', [kCat.name]), resourceManager.getString('account', 'important'), Alert.OK|Alert.CANCEL, null, savePrivacyContext);
