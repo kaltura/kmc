@@ -11,6 +11,7 @@
 			import com.kaltura.types.KalturaCategoryUserPermissionLevel;
 			import com.kaltura.types.KalturaContributionPolicyType;
 			import com.kaltura.types.KalturaInheritanceType;
+			import com.kaltura.types.KalturaNullableBoolean;
 			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.types.KalturaUserJoinPolicyType;
 			import com.kaltura.vo.KalturaCategory;
@@ -107,7 +108,18 @@
 					case KalturaCategoryUserPermissionLevel.MANAGER:
 						levelCb.selectedIndex = 3;
 						break;
-				}	
+				}
+				
+				switch (_category.moderation) {
+					case KalturaNullableBoolean.TRUE_VALUE:
+						modCb.selected = true;
+						break;
+					case KalturaNullableBoolean.FALSE_VALUE:
+					case KalturaNullableBoolean.NULL_VALUE:
+						modCb.selected = false;
+						break;
+					
+				}
 			}
 
 			/**
@@ -209,7 +221,16 @@
 			public function isChanged():Boolean {
 				return false;
 			}
-
+			
+			
+			private function modCb_changeHandler(event:Event):void {
+				if (modCb.selected) {
+					_category.moderation = KalturaNullableBoolean.TRUE_VALUE;
+				}
+				else {
+					_category.moderation = KalturaNullableBoolean.FALSE_VALUE;
+				}
+			}
 
 			private function levelCb_changeHandler(event:ListEvent):void {
 				_category.defaultPermissionLevel = levelCb.selectedItem.data;
@@ -419,5 +440,10 @@
 				  text="{resourceManager.getString('cms', 'defaultPermissionLevel')}"/>
 		<mx:ComboBox id="levelCb" change="levelCb_changeHandler(event)" width="250"
 					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
+	</mx:HBox>
+	<mx:HBox width="100%" styleName="noPadding">
+		<mx:Label width="{LABEL_WIDTH + helpIco.width + 10}" styleName="drillDownLabel"
+				  text="{resourceManager.getString('cms', 'moderateContent')}"/>
+		<mx:CheckBox id="modCb" change="modCb_changeHandler(event)" width="250" />
 	</mx:HBox>
 </mx:VBox>
