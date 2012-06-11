@@ -23,6 +23,7 @@ package com.kaltura.edw.components.fltr.panels {
 		public function AdditionalFilter() {
 			
 			this.horizontalScrollPolicy = ScrollPolicy.OFF;
+			setStyle("styleName", "additionalFilter");
 		}
 		
 
