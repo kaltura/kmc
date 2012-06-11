@@ -64,6 +64,15 @@ package com.kaltura.vo
 		 **/
 		public var categoryFullIdsEqual : String = null;
 
+		/**
+		 * @see com.kaltura.types.KalturaCategoryEntryStatus
+		 **/
+		public var statusEqual : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var statusIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -76,6 +85,8 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('categoryFullIdsStartsWith');
 			arr.push('categoryFullIdsEqual');
+			arr.push('statusEqual');
+			arr.push('statusIn');
 			return arr;
 		}
 

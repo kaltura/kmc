@@ -34,7 +34,6 @@ package com.kaltura.types
 		public static const ASSET : String = '3';
 		public static const FLAVORASSET : String = '4';
 		public static const THUMBASSET : String = '5';
-		public static const UICONF : String = '6';
 		public static const CONVERSIONPROFILE2 : String = '7';
 		public static const KUSER : String = '8';
 		public static const PERMISSION : String = '9';

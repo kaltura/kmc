@@ -221,6 +221,19 @@ package com.kaltura.vo
 		 **/
 		public var directSubCategoriesCount : int = int.MIN_VALUE;
 
+		/**
+		 * Entries moderation
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var moderation : Boolean;
+
+		/**
+		 * Nunber of pending moderation entries
+		 * 
+		 **/
+		public var pendingEntriesCount : int = int.MIN_VALUE;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -245,6 +258,7 @@ package com.kaltura.vo
 			arr.push('partnerData');
 			arr.push('defaultOrderBy');
 			arr.push('directSubCategoriesCount');
+			arr.push('moderation');
 			return arr;
 		}
 

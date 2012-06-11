@@ -25,62 +25,19 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.delegates.categoryEntry
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.config.KalturaConfig;
+	import com.kaltura.net.KalturaCall;
+	import com.kaltura.delegates.WebDelegateBase;
+	import flash.utils.getDefinitionByName;
 
-	[Bindable]
-	public dynamic class KalturaCategoryEntry extends BaseFlexVo
+	public class CategoryEntryActivateDelegate extends WebDelegateBase
 	{
-		/**
-		 **/
-		public var categoryId : int = int.MIN_VALUE;
-
-		/**
-		 * User id
-		 * 
-		 **/
-		public var entryId : String = null;
-
-		/**
-		 * Creation date as Unix timestamp (In seconds)
-		 * 
-		 **/
-		public var createdAt : int = int.MIN_VALUE;
-
-		/**
-		 * The full ids of the Category
-		 * 
-		 **/
-		public var categoryFullIds : String = null;
-
-		/**
-		 * CategroyEntry status
-		 * 
-		 * @see com.kaltura.types.KalturaCategoryEntryStatus
-		 **/
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryEntryActivateDelegate(call:KalturaCall, config:KalturaConfig)
 		{
-			var arr : Array;
-			arr = new Array();
-			arr.push('categoryId');
-			arr.push('entryId');
-			return arr;
+			super(call, config);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
-		}
 	}
 }

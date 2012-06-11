@@ -25,62 +25,42 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.commands.categoryEntry
 {
-	import com.kaltura.vo.BaseFlexVo;
+	import com.kaltura.delegates.categoryEntry.CategoryEntryRejectDelegate;
+	import com.kaltura.net.KalturaCall;
 
-	[Bindable]
-	public dynamic class KalturaCategoryEntry extends BaseFlexVo
+	/**
+	 * activate CategoryEntry when it is pending moderation
+	 * 
+	 **/
+	public class CategoryEntryReject extends KalturaCall
 	{
+		public var filterFields : String;
+		
 		/**
+		 * @param entryId String
+		 * @param categoryId int
 		 **/
-		public var categoryId : int = int.MIN_VALUE;
-
-		/**
-		 * User id
-		 * 
-		 **/
-		public var entryId : String = null;
-
-		/**
-		 * Creation date as Unix timestamp (In seconds)
-		 * 
-		 **/
-		public var createdAt : int = int.MIN_VALUE;
-
-		/**
-		 * The full ids of the Category
-		 * 
-		 **/
-		public var categoryFullIds : String = null;
-
-		/**
-		 * CategroyEntry status
-		 * 
-		 * @see com.kaltura.types.KalturaCategoryEntryStatus
-		 **/
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
+		public function CategoryEntryReject( entryId : String,categoryId : int )
 		{
-			var arr : Array;
-			arr = new Array();
-			arr.push('categoryId');
-			arr.push('entryId');
-			return arr;
+			service= 'categoryentry';
+			action= 'reject';
+
+			var keyArr : Array = new Array();
+			var valueArr : Array = new Array();
+			var keyValArr : Array = new Array();
+			keyArr.push('entryId');
+			valueArr.push(entryId);
+			keyArr.push('categoryId');
+			valueArr.push(categoryId);
+			applySchema(keyArr, valueArr);
 		}
 
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
+		override public function execute() : void
 		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
+			setRequestArgument('filterFields', filterFields);
+			delegate = new CategoryEntryRejectDelegate( this , config );
 		}
 	}
 }

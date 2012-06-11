@@ -128,6 +128,11 @@ package com.kaltura.vo
 		public var referenceIdEqual : String = null;
 
 		/**
+		 * @see com.kaltura.types.KalturaContributionPolicyType
+		 **/
+		public var contributionPolicyEqual : int = int.MIN_VALUE;
+
+		/**
 		 **/
 		public var membersCountGreaterThanOrEqual : int = int.MIN_VALUE;
 
@@ -199,6 +204,7 @@ package com.kaltura.vo
 			arr.push('inheritanceTypeEqual');
 			arr.push('inheritanceTypeIn');
 			arr.push('referenceIdEqual');
+			arr.push('contributionPolicyEqual');
 			arr.push('membersCountGreaterThanOrEqual');
 			arr.push('membersCountLessThanOrEqual');
 			arr.push('pendingMembersCountGreaterThanOrEqual');

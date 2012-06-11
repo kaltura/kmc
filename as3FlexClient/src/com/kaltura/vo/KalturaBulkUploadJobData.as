@@ -106,11 +106,25 @@ package com.kaltura.vo
 		 **/
 		public var type : String = null;
 
+		/**
+		 * Recipients of the email for bulk upload success/failure
+		 * 
+		 **/
+		public var emailRecipients : String = null;
+
+		/**
+		 * Number of objects that finished on error status
+		 * 
+		 **/
+		public var numOfErrorObjects : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('fileName');
+			arr.push('emailRecipients');
+			arr.push('numOfErrorObjects');
 			return arr;
 		}
 

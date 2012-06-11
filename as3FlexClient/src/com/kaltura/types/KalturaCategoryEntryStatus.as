@@ -25,62 +25,13 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.vo
+package com.kaltura.types
 {
-	import com.kaltura.vo.BaseFlexVo;
-
-	[Bindable]
-	public dynamic class KalturaCategoryEntry extends BaseFlexVo
+	public class KalturaCategoryEntryStatus
 	{
-		/**
-		 **/
-		public var categoryId : int = int.MIN_VALUE;
-
-		/**
-		 * User id
-		 * 
-		 **/
-		public var entryId : String = null;
-
-		/**
-		 * Creation date as Unix timestamp (In seconds)
-		 * 
-		 **/
-		public var createdAt : int = int.MIN_VALUE;
-
-		/**
-		 * The full ids of the Category
-		 * 
-		 **/
-		public var categoryFullIds : String = null;
-
-		/**
-		 * CategroyEntry status
-		 * 
-		 * @see com.kaltura.types.KalturaCategoryEntryStatus
-		 **/
-		public var status : int = int.MIN_VALUE;
-
-		/** 
-		 * a list of attributes which may be updated on this object 
-		 **/ 
-		public function getUpdateableParamKeys():Array
-		{
-			var arr : Array;
-			arr = new Array();
-			arr.push('categoryId');
-			arr.push('entryId');
-			return arr;
-		}
-
-		/** 
-		 * a list of attributes which may only be inserted when initializing this object 
-		 **/ 
-		public function getInsertableParamKeys():Array
-		{
-			var arr : Array;
-			arr = new Array();
-			return arr;
-		}
+		public static const PENDING : int = 1;
+		public static const ACTIVE : int = 2;
+		public static const DELETED : int = 3;
+		public static const REJECTED : int = 4;
 	}
 }
