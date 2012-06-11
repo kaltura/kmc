@@ -102,7 +102,7 @@ package com.kaltura.edw.business {
 				// pass relevant model parts:
 				compInstance["filterModel"] = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 				compInstance["distributionProfilesArr"] = (_model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
-				compInstance["selectedEntry"] = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
+				compInstance["editedItem"] = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
 				
 				return true;
 			}

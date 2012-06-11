@@ -15,14 +15,12 @@
 				import com.kaltura.edw.control.DataTabController;
 				import com.kaltura.edw.control.events.LoadEvent;
 				import com.kaltura.edw.control.events.SearchEvent;
-				import com.kaltura.edw.model.DummyModelLocator;
 				import com.kaltura.edw.model.FilterModel;
 				import com.kaltura.edw.model.MetadataDataObject;
 				import com.kaltura.edw.model.datapacks.ContextDataPack;
-				import com.kaltura.edw.model.datapacks.EntryDataPack;
 				import com.kaltura.edw.vo.ListableVo;
 				import com.kaltura.events.KalturaEvent;
-				import com.kaltura.kmvc.model.KMvCModel;
+				import com.kaltura.vo.BaseFlexVo;
 				import com.kaltura.vo.KalturaBaseEntry;
 				
 				import mx.collections.ArrayCollection;
@@ -43,9 +41,9 @@
 				public var filterModel:FilterModel;
 				
 				/**
-				 * the selected entry
+				 * the item this custom data relates to
 				 * */
-				public var selectedEntry:KalturaBaseEntry;
+				public var editedItem:BaseFlexVo;
 				
 				/**
 				 * the custom data profile name
@@ -128,7 +126,7 @@
 				 * */
 				private function editExistingList():void {
 					var manualPlaylist:ManualPlaylistWindow = new ManualPlaylistWindow();
-					manualPlaylist.editedItem = /* (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack). */selectedEntry;
+					manualPlaylist.editedItem = /* (KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack). */editedItem;
 					manualPlaylist.rootUrl = context.rootUrl;
 					manualPlaylist.filterData = filterModel;
 					manualPlaylist.showLinks = false;

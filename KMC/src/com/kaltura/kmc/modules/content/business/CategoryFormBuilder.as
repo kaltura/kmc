@@ -8,6 +8,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.edw.model.datapacks.EntryDataPack;
 	import com.kaltura.edw.model.datapacks.FilterDataPack;
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;
+	import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 	import com.kaltura.kmvc.model.KMvCModel;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadata;
@@ -17,7 +18,7 @@ package com.kaltura.kmc.modules.content.business
 	
 	public class CategoryFormBuilder extends FormBuilderBase
 	{
-		private var _model:KMvCModel = KMvCModel.getInstance();
+		private var _model:CmsModelLocator = CmsModelLocator.getInstance();
 		
 		public function CategoryFormBuilder(metadataProfile:KMCMetadataProfileVO)
 		{
@@ -47,7 +48,7 @@ package com.kaltura.kmc.modules.content.business
 		
 		override protected function buildComponentCheckHook(componentNode:XML, compInstance:UIComponent):void{
 			if (componentNode.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
-				compInstance["context"] = _model.getDataPack(ContextDataPack);
+				compInstance["context"] = _model.context;
 				compInstance["profileName"] = _metadataProfile.profile.name;
 			}
 		}
@@ -57,10 +58,9 @@ package com.kaltura.kmc.modules.content.business
 				compInstance.id = component.@name;
 				compInstance["metadataObject"] = boundModel;
 				// pass relevant model parts:
-				compInstance["filterModel"] = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-				compInstance["distributionProfilesArr"] = (_model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
-				compInstance["selectedEntry"] = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
-				
+				compInstance["filterModel"] = _model.filterModel;
+				compInstance["distributionProfilesArr"] = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+				compInstance["editedItem"] = _model.categoriesModel.selectedCategory; //TODO get the selected category
 				return true;
 			}
 			return false;
