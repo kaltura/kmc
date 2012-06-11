@@ -75,7 +75,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 			super.createChildren();
 
 			//Setting this keeps the label field from jumping around on resizes
-			setStyle("verticalAlign", "top");
+			setStyle("verticalAlign", "middle");
 			setStyle("percentWidth", "100");
 		}
 
