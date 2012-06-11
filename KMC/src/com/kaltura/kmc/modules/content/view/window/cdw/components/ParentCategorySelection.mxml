@@ -57,13 +57,32 @@
 		]]>
 	</mx:Script>
 	
-	<mx:Label text="{resourceManager.getString('cms', 'selectParentCategory')}" />
-	<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" click="none_clickHandler(event)"/>
-	<mx:HRule width="90%" />
-	<cat:CatTree id="catTree" width="100%" height="100%" selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
-				 categories="{_filterModel.categoriesMap}" dataProvider="{_filterModel.categories}" 
-				 chunkedData="{_filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" 
-				 valueChange="onParentCategorySelected(event)" />
 	
-	<mx:Button id="nextBtn" label="{resourceManager.getString('cms', 'selectParentCategoryNext')}" enabled="false" click="{dispatchEvent(new Event(Event.CHANGE))}"/>
+	<mx:HBox width="100%" height="100%" styleName="categoryDetails">
+		<mx:TabBar id="tabBar" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
+				   useHandCursor="true" buttonMode="true" tabHeight="25" />
+		
+		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all"
+					  styleName="sectionViewStack" selectedIndex="{tabBar.selectedIndex}">
+			
+			<mx:VBox label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%" height="100%" >
+				<mx:Text text="{resourceManager.getString('cms', 'selectParentCategory')}" />
+				<mx:VBox width="100%" height="100%" styleName="whiteBg" >
+					<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" click="none_clickHandler(event)"/>
+					<mx:HRule width="90%" />
+					<cat:CatTree id="catTree" width="100%" height="100%" selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
+								 categories="{_filterModel.categoriesMap}" dataProvider="{_filterModel.categories}" 
+								 chunkedData="{_filterModel.chunkedCategoriesLoad}" styleName="categoriesTree" 
+								 valueChange="onParentCategorySelected(event)" />
+				</mx:VBox>
+				
+				<mx:LinkButton id="nextBtn" label="{resourceManager.getString('cms', 'selectParentCategoryNext')}"
+							   enabled="false" click="{dispatchEvent(new Event(Event.CHANGE))}"
+							   styleName="drillDownNavNextBtn" labelPlacement="left"/>
+				
+			</mx:VBox>		
+		</mx:ViewStack>
+	</mx:HBox>
+	
+	
 </mx:VBox>
