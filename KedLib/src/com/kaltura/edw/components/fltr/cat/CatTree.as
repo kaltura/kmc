@@ -182,23 +182,29 @@ package com.kaltura.edw.components.fltr.cat
 		 * */
 		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
 			var cat:KalturaCategory = event.data as KalturaCategory;
-			addByCatId(cat.id);
+			addByCatId(cat.id.toString(), true);
 		}
 		
 		
 		/**
 		 * 
 		 * @param catid
-		 * 
+		 * @param keep if category already selected, don't toggle (remove)
 		 */
-		public function addByCatId(catid:int):void {
-			if (categories.containsKey(catid.toString())) {
-				var catvo:CategoryVO = categories.getValue(catid.toString()) as CategoryVO;
+		public function addByCatId(catid:String, keep:Boolean = false):void {
+			if (categories.containsKey(catid)) {
+				var catvo:CategoryVO = categories.getValue(catid) as CategoryVO;
+				if (keep && _selectedCategories[catid]) {
+					return;
+				}
 				handleSelectionChange(catvo);
 			}
 			else {
-				// the part of the tree that holsd this category was not yet loaded
-				_initialFilter = catid + "," + _initialFilter;
+				// the part of the tree that holds this category was not yet loaded
+				if (_initialFilter.indexOf(catid) == -1) {
+					// category not yet selected)
+					_initialFilter = catid + "," + _initialFilter;
+				}
 			}
 		}
 		
