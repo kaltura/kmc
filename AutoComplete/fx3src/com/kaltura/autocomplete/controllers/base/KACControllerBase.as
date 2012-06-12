@@ -25,6 +25,7 @@ package com.kaltura.autocomplete.controllers.base
 		{
 			_elementSelection = new ArrayCollection();
 			_autoComp = autoComp;
+			_autoComp.autoSelectEnabled = false;
 			_client = client;
 			
 			_autoComp.dataProvider = _elementSelection;
