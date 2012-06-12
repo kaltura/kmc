@@ -16,6 +16,7 @@ package com.kaltura.edw.components.fltr
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.utils.setTimeout;
 	
 	import mx.collections.ArrayCollection;
 	import mx.containers.VBox;
@@ -41,6 +42,21 @@ package com.kaltura.edw.components.fltr
 		 * public because used in different panels
 		 * */
 		public static const DATE_FIELD_WIDTH:Number = 80;
+		
+		/**
+		 * a flag indicating an update event should be disaptched
+		 * @internal
+		 * try to accumulate filter updates if a few attributes 
+		 * are changes at once, i.e. initial filter is set 
+		 */		
+		protected var updateRequested:Boolean = false;
+		
+		protected function dispatchUpdate():void {
+			if (updateRequested) {
+				updateRequested = false;
+				dispatchEvent(new Event("filterChanged"));
+			}
+		} 
 		
 		/**
 		 * set new value on the changed panel's attribute 
@@ -70,7 +86,8 @@ package com.kaltura.edw.components.fltr
 			updateIndicators(event.kind, event.data);
 			
 			// tell the world
-			dispatchEvent(new Event("filterChanged"));
+			updateRequested = true;
+			setTimeout(dispatchUpdate, 150);
 		}
 		
 		

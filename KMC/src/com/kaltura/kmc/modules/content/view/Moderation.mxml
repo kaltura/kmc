@@ -156,7 +156,8 @@
 			// ===============================================
 
 			public function onRequestedDataLoaded():void {
-				loadEntries();
+				// loadEntries();
+				// do nothing here, entries will be loaded when filter is set
 			}
 
 			/**
@@ -455,6 +456,11 @@
 					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
 			}
 
+			
+			private function filter_filterChangedHandler(event:Event):void {
+				paging.selectedPage = 1;
+				loadEntries();
+			}
 
 			// ===============================================
 			// getters / setters
@@ -494,7 +500,7 @@
 							metadataProfiles="{filterModel.metadataProfiles}"
 							context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
 							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
-							filterModel="{filterModel}" filterChanged="{paging.selectedPage=1;loadEntries()}"/>
+							filterModel="{filterModel}" filterChanged="filter_filterChangedHandler(event)"/>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
 				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
