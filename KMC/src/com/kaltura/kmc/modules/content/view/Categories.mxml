@@ -33,6 +33,9 @@
 			import mx.controls.Alert;
 			import mx.events.FlexEvent;
 
+			
+			private var _isCreationComplete:Boolean;
+			
 			[Bindable]
 			/**
 			 * screen data
@@ -61,6 +64,9 @@
 			 * @param initFilter	filter for initial entry loading. (not relevant for this panel)
 			 * */
 			public function init(initFilter:KalturaBaseEntryFilter = null):void {
+				if (!_isCreationComplete) {
+					return;
+				}
 				if (this.enabled) {
 					paging.selectedPage = 1;
 					paging.pageSize = paging.rowInPageCb.value as int;
@@ -156,6 +162,9 @@
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
+				_isCreationComplete = true;
+				// there's an assumption that init was triggered before by Content.
+				init();
 			}
 
 
@@ -197,7 +206,7 @@
 
 					<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{categoriesModel.totalCategories}"
 									 rowsInPageChange="loadCategories()" nextPage="loadCategories()" prvPage="loadCategories()"
-									 getPageNum="loadCategories()" showRowsInPage="true" defaultPageSize="50"/>
+									 getPageNum="loadCategories()" showRowsInPage="true" />
 
 				</mx:HBox>
 			</mx:VBox>
