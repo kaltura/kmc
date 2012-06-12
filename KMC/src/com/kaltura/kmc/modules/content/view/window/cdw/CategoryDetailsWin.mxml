@@ -2,16 +2,12 @@
 <navigation:ChangeableDataViewer xmlns:navigation="com.kaltura.edw.business.*" xmlns:mx="http://www.adobe.com/2006/mxml"
 								 height="595" width="890" showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
 								 close="onClose(event)" layout="horizontal" horizontalScrollPolicy="off" paddingTop="18"
-								 xmlns:containers="com.kaltura.containers.*"
-								 xmlns:cat="com.kaltura.edw.components.fltr.cat.*"
-								 xmlns:window="com.kaltura.kmc.view.window.*"
 								 xmlns:components="com.kaltura.kmc.modules.content.view.window.cdw.components.*"
 								 initialize="onInitialize(event)" paddingBottom="0" paddingLeft="0" paddingRight="0"
 								 title="{setTitle(_undoCategory)}"
 								 styleName="WinTitleStyle">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.commands.category.CategoryUpdate;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
@@ -25,14 +21,13 @@
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
-			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 
 			[Bindable]
 			private var _isNewCategory:Boolean;
-			
+
 			public function set isNewCategory(value:Boolean):void {
 				_isNewCategory = value;
 				if (_isNewCategory && showNextPrevBtns) {
@@ -43,7 +38,7 @@
 
 			[Bindable]
 			private var _model:CategoriesModel;
-			
+
 			public function set categoriesModel(value:CategoriesModel):void {
 				if (_selectedCatWatcher) {
 					_selectedCatWatcher.unwatch();
@@ -52,11 +47,11 @@
 				_itemsAC = value.categoriesList;
 				_selectedCatWatcher = BindingUtils.bindSetter(setCategory, _model, "selectedCategory");
 			}
-			
+
 			public function get categoriesModel():CategoriesModel {
 				return _model;
 			}
-			
+
 
 			private var _origCategory:KalturaCategory;
 
@@ -88,7 +83,7 @@
 			 * RnP - allow saving changes in the window
 			 * */
 			public var enableSave:Boolean = true; 
-			
+
 			private function setTitle(cat:KalturaCategory):String {
 				var title:String = '';
 				if (_isNewCategory) {
@@ -99,7 +94,7 @@
 				}
 				return title;
 			}
-			
+
 			private function onClose(event:Event):void {
 				if ((_isNewCategory && _model.processingNewCategory) || hasChanged()) {
 					// discard changes?
@@ -109,7 +104,7 @@
 					removeMe();
 				}
 			}
-			
+
 			private function removeMe(event:CloseEvent = null):void {
 				if (event && event.detail == Alert.NO) {
 					return;
@@ -146,8 +141,8 @@
 					currentState = "tabs";
 				}
 			}
-			
-			
+
+
 			private function validate():Boolean {
 				return tabsNav.validate();
 			}
@@ -165,13 +160,13 @@
 						_undoCategory.privacyContexts = null;
 						_undoCategory.pendingMembersCount = int.MIN_VALUE;
 						_undoCategory.membersCount = int.MIN_VALUE;
-						
+
 						// if category inherits members from parent, don't send inherited values
 						if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
 							_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
 							_undoCategory.userJoinPolicy = int.MIN_VALUE;
 						}
-						
+
 						// add category
 						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
 						cgEvent.data = [_undoCategory, refreshLists];
@@ -199,7 +194,7 @@
 					}
 				}
 			}
-			
+
 			/**
 			 * perform the actual update
 			 * */
@@ -211,7 +206,7 @@
 						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
 						_undoCategory.userJoinPolicy = int.MIN_VALUE;
 					}
-					
+
 					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
 					cgEvent2.data = [catVO, _refreshListsRequired];
@@ -284,7 +279,7 @@
 				else if (currentState == "tabsNav") {
 					anchor = tabsNav.helpAnchor;
 				}
-				
+
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor, true));
 			}
 
@@ -309,7 +304,7 @@
 			<mx:SetProperty target="{saveAndCloseBtn}" name="enabled" value="false" />
 		</mx:State>
 	</navigation:states>
-	
+
 	<mx:ControlBar horizontalGap="5" width="100%">
 		<mx:Spacer width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
