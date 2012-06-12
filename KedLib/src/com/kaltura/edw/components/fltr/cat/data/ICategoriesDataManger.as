@@ -26,6 +26,11 @@ package com.kaltura.edw.components.fltr.cat.data
 		 */
 		function resetData():void;
 		
+		/**
+		 * remove any references, listeners, etc 
+		 */		
+		function destroy():void;
+		
 		
 		/**
 		 * set the controller 

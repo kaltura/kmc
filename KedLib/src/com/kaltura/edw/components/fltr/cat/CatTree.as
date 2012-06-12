@@ -61,7 +61,7 @@ package com.kaltura.edw.components.fltr.cat
 		// Chunked Data
 		// -----------------------
 		
-		private var _chunkedData:Boolean;
+		private var _chunkedData:Boolean = true;
 
 		/**
 		 * a flag indicating if data load should be by levels or complete tree 
@@ -215,22 +215,42 @@ package com.kaltura.edw.components.fltr.cat
 		
 		
 		private function initDataManager():void {
-			// destroy old controller
-			if (_dataManager) {
-				return;
-			}
-			
 			// select IDataManager
+			var isNewManager:Boolean;
 			if (_chunkedData) {
-				_dataManager = new ChunkedDataManager();
+ 				if (_dataManager) {
+					if (!(_dataManager is ChunkedDataManager)) {
+						_dataManager.destroy();
+						_dataManager.removeEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch);
+						_dataManager = new ChunkedDataManager();
+						isNewManager = true;
+					}
+				}
+				else {
+					_dataManager = new ChunkedDataManager();
+					isNewManager = true;
+				}
 			}
 			else {
-				_dataManager = new CompleteDataManager();
+				if (_dataManager) {
+					if (!(_dataManager is CompleteDataManager)) {
+						_dataManager.destroy();
+						_dataManager.removeEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch);
+						_dataManager = new CompleteDataManager();
+						isNewManager = true;
+					}
+				}
+				else {
+					_dataManager = new CompleteDataManager();
+					isNewManager = true;
+				}
 			}
-			_dataManager.addEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch, false, 0, true);
-			_dataManager.controller = new CategoriesTreeController();
-			// only load cat list if it doesn't exist yet
-			_dataManager.loadInitialData();
+			if (isNewManager) {
+				_dataManager.addEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch, false, 0, true);
+				_dataManager.controller = new CategoriesTreeController();
+				// only load cat list if it doesn't exist yet
+				_dataManager.loadInitialData();
+			}
 		}
 		
 		
