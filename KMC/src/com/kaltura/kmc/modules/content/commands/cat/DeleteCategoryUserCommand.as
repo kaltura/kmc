@@ -54,8 +54,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
-			cg.dispatch();
+			if (!checkError(data)) {
+				var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
+				cg.dispatch();
+			}
 			_model.decreaseLoadCounter();
 		}
 	}
