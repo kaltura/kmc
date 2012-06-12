@@ -10,6 +10,7 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.types.KalturaCategoryOrderBy;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
@@ -48,6 +49,7 @@ package com.kaltura.edw.control.commands.categories
 			else {
 				kcf.parentIdEqual = 0;
 			}
+			kcf.orderBy = KalturaCategoryOrderBy.PARTNER_SORT_VALUE_DESC;
 			var listCategories:CategoryList = new CategoryList(kcf);
 			
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);

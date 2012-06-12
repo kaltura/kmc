@@ -17,6 +17,8 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.vo.KalturaMediaEntryFilter;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.Sort;
+	import mx.collections.SortField;
 	import mx.resources.ResourceManager;
 
 	public class ListAllCategoriesCommand extends KedCommand {
@@ -70,8 +72,9 @@ package com.kaltura.edw.control.commands.categories
 						parentCategory.children = new ArrayCollection();
 					}
 					parentCategory.children.addItem(cat);
-					// (for falcon, don't sort, use received value)
-					// sortCategories(parentCategory.children);
+					if (cat.category.partnerSortValue) {
+						sortCategories(parentCategory.children);
+					}
 				}
 				else {
 					// parent is root
@@ -83,15 +86,30 @@ package com.kaltura.edw.control.commands.categories
 		}
 		
 		
-		//		private function sortCategories(catArrCol:ArrayCollection):void {
-		//			var dataSortField:SortField = new SortField();
-		//			dataSortField.name = "name";
-		//			dataSortField.caseInsensitive = true;
-		//			dataSortField.descending = false;
-		//			var dataSort:Sort = new Sort();
-		//			dataSort.fields = [dataSortField];
-		//			catArrCol.sort = dataSort;
-		//			catArrCol.refresh();
-		//		}
+		private function sortCategories(catArrCol:ArrayCollection):void {
+			var dataSort:Sort = new Sort();
+			dataSort.compareFunction = compareValues;
+			catArrCol.sort = dataSort;
+			catArrCol.refresh();
+		}
+		
+		private function compareValues(a:CategoryVO, b:CategoryVO, fields:Array = null):int {
+			if (a == null && b == null)
+				return 0;
+			
+			if (a == null)
+				return 1;
+			
+			if (b == null)
+				return -1;
+			
+			if (a.category.partnerSortValue < b.category.partnerSortValue)
+				return -1;
+			
+			if (a.category.partnerSortValue > b.category.partnerSortValue)
+				return 1;
+			
+			return 0;
+		}
 	}
 }
