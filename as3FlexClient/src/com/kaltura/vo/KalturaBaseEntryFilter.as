@@ -45,6 +45,10 @@ package com.kaltura.vo
 		 **/
 		public var categoriesFullNameIn : String = null;
 
+		/**
+		 **/
+		public var categoryEntryStatusIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -52,6 +56,7 @@ package com.kaltura.vo
 			arr.push('freeText');
 			arr.push('isRoot');
 			arr.push('categoriesFullNameIn');
+			arr.push('categoryEntryStatusIn');
 			return arr;
 		}
 

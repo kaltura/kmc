@@ -27,67 +27,42 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaReportInputBaseFilter;
+	import com.kaltura.vo.BaseFlexVo;
 
 	[Bindable]
-	public dynamic class KalturaReportInputFilter extends KalturaReportInputBaseFilter
+	public dynamic class KalturaReportInputBaseFilter extends BaseFlexVo
 	{
 		/**
-		 * Search keywords to filter objects
+		 * Start date as Unix timestamp (In seconds)
 		 * 
 		 **/
-		public var keywords : String = null;
+		public var fromDate : int = int.MIN_VALUE;
 
 		/**
-		 * Search keywords in onjects tags
-		 * 
-		 * @see com.kaltura.types.kalturaBoolean
-		 **/
-		public var searchInTags : Boolean;
-
-		/**
-		 * Search keywords in onjects admin tags
-		 * 
-		 * @see com.kaltura.types.kalturaBoolean
-		 **/
-		public var searchInAdminTags : Boolean;
-
-		/**
-		 * Search onjects in specified categories
+		 * End date as Unix timestamp (In seconds)
 		 * 
 		 **/
-		public var categories : String = null;
+		public var toDate : int = int.MIN_VALUE;
 
-		/**
-		 * Time zone offset in minutes
-		 * 
-		 **/
-		public var timeZoneOffset : int = int.MIN_VALUE;
-
-		/**
-		 * Aggregated results according to interval
-		 * 
-		 * @see com.kaltura.types.KalturaReportInterval
-		 **/
-		public var interval : String = null;
-
-		override public function getUpdateableParamKeys():Array
+		/** 
+		 * a list of attributes which may be updated on this object 
+		 **/ 
+		public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getUpdateableParamKeys();
-			arr.push('keywords');
-			arr.push('searchInTags');
-			arr.push('searchInAdminTags');
-			arr.push('categories');
-			arr.push('timeZoneOffset');
-			arr.push('interval');
+			arr = new Array();
+			arr.push('fromDate');
+			arr.push('toDate');
 			return arr;
 		}
 
-		override public function getInsertableParamKeys():Array
+		/** 
+		 * a list of attributes which may only be inserted when initializing this object 
+		 **/ 
+		public function getInsertableParamKeys():Array
 		{
 			var arr : Array;
-			arr = super.getInsertableParamKeys();
+			arr = new Array();
 			return arr;
 		}
 	}

@@ -62,7 +62,7 @@ package com.kaltura.vo
 
 		/**
 		 **/
-		public var inheritance : int = int.MIN_VALUE;
+		public var inheritanceType : int = int.MIN_VALUE;
 
 		/**
 		 **/
@@ -80,6 +80,15 @@ package com.kaltura.vo
 		 **/
 		public var contributionPolicy : int = int.MIN_VALUE;
 
+		/**
+		 **/
+		public var partnerSortValue : int = int.MIN_VALUE;
+
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var moderation : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -91,11 +100,13 @@ package com.kaltura.vo
 			arr.push('tags');
 			arr.push('appearInList');
 			arr.push('privacy');
-			arr.push('inheritance');
+			arr.push('inheritanceType');
 			arr.push('userJoinPolicy');
 			arr.push('defaultPermissionLevel');
 			arr.push('owner');
 			arr.push('contributionPolicy');
+			arr.push('partnerSortValue');
+			arr.push('moderation');
 			return arr;
 		}
 

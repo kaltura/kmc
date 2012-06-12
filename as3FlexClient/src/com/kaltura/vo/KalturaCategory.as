@@ -224,9 +224,9 @@ package com.kaltura.vo
 		/**
 		 * Entries moderation
 		 * 
-		 * @see com.kaltura.types.kalturaBoolean
+		 * @see com.kaltura.types.KalturaNullableBoolean
 		 **/
-		public var moderation : Boolean;
+		public var moderation : int = int.MIN_VALUE;
 
 		/**
 		 * Nunber of pending moderation entries
