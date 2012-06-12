@@ -338,13 +338,14 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		private function handleSelectionChange(cat:CategoryVO):void {
 			var eventKind:String;
+			var catid:String = cat.id.toString();
 			// set value according to mode 
 			switch (_selectionMode) {
 				case CatTreeSelectionMode.SINGLE_SELECT:
 					// deselect previous
 					deselectAllCategories();
 					// select new
-					_selectedCategories[cat.id.toString()] = cat;
+					_selectedCategories[catid] = cat;
 					setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
 					break;
 				
@@ -356,15 +357,17 @@ package com.kaltura.edw.components.fltr.cat
 						// deselect previous
 						deselectAllCategories();
 					}
-					else if (_selectedCategories[cat.id.toString()]) {
+					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
-						delete _selectedCategories[cat.id.toString()];
+						delete _selectedCategories[catid];
+						_initialFilter = _initialFilter.replace(catid + ',', '');
 						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
-						_selectedCategories[cat.id.toString()] = cat;
+						_selectedCategories[catid] = cat;
+						_initialFilter = catid + "," + _initialFilter;
 						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
@@ -378,7 +381,7 @@ package com.kaltura.edw.components.fltr.cat
 						// deselect previous
 						deselectAllCategories();
 					}
-					else if (_selectedCategories[cat.id.toString()]) {
+					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED);
 						makeParentsPartial(cat);
