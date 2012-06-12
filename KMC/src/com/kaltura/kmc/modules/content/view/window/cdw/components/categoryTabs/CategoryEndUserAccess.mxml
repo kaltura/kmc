@@ -78,6 +78,10 @@
 					_category.defaultPermissionLevel = KalturaCategoryUserPermissionLevel.MEMBER;
 				}
 				
+				if (_category && (_category.moderation == int.MIN_VALUE || _category.moderation == KalturaNullableBoolean.NULL_VALUE)) {
+					_category.moderation = KalturaNullableBoolean.FALSE_VALUE;
+				}
+				
 				setCBValuesFromCategory();
 			}
 
@@ -110,16 +114,6 @@
 						break;
 				}
 				
-				switch (_category.moderation) {
-					case KalturaNullableBoolean.TRUE_VALUE:
-						modCb.selected = true;
-						break;
-					case KalturaNullableBoolean.FALSE_VALUE:
-					case KalturaNullableBoolean.NULL_VALUE:
-						modCb.selected = false;
-						break;
-					
-				}
 			}
 
 			/**
@@ -219,19 +213,10 @@
 
 
 			public function isChanged():Boolean {
+				// we only change values on the actual category, and the check if these have changed is in CategoryDetailsWin
 				return false;
 			}
 			
-			
-			private function modCb_changeHandler(event:Event):void {
-				if (modCb.selected) {
-					_category.moderation = KalturaNullableBoolean.TRUE_VALUE;
-				}
-				else {
-					_category.moderation = KalturaNullableBoolean.FALSE_VALUE;
-				}
-			}
-
 			private function levelCb_changeHandler(event:ListEvent):void {
 				_category.defaultPermissionLevel = levelCb.selectedItem.data;
 			}
@@ -441,9 +426,24 @@
 		<mx:ComboBox id="levelCb" change="levelCb_changeHandler(event)" width="250"
 					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
 	</mx:HBox>
-	<mx:HBox width="100%" styleName="noPadding">
+	
+	<mx:HBox width="100%">
 		<mx:Label width="{LABEL_WIDTH + helpIco.width + 10}" styleName="drillDownLabel"
 				  text="{resourceManager.getString('cms', 'moderateContent')}"/>
-		<mx:CheckBox id="modCb" change="modCb_changeHandler(event)" width="250" />
+		<mx:VBox width="100%">
+			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButtonGroup enabled="{changesEnabled}" id="categoryModeration" />
+				<mx:RadioButton label="{resourceManager.getString('cms','no')}"
+								selected="{_category.moderation == KalturaNullableBoolean.FALSE_VALUE}"
+								change="{ if((event.target as RadioButton).selected)_category.moderation = KalturaNullableBoolean.FALSE_VALUE }"
+								groupName="categoryModeration"/>
+			</mx:HBox>
+			<mx:HBox styleName="plstAddRemoveCont">
+				<mx:RadioButton label="{resourceManager.getString('cms','yes')}"
+								selected="{_category.moderation == KalturaNullableBoolean.TRUE_VALUE}"
+								change="{ if((event.target as RadioButton).selected)_category.moderation = KalturaNullableBoolean.TRUE_VALUE }"
+								groupName="categoryModeration"/>
+			</mx:HBox>
+		</mx:VBox>
 	</mx:HBox>
 </mx:VBox>
