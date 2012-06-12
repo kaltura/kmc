@@ -26,6 +26,7 @@ package com.kaltura.autocomplete.controllers.base
 			_elementSelection = new ArrayCollection();
 			_autoComp = autoComp;
 			_autoComp.autoSelectEnabled = false;
+			_autoComp.backspaceAction = AutoComplete.BACKSPACE_REMOVE;
 			_client = client;
 			
 			_autoComp.dataProvider = _elementSelection;
