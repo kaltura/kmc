@@ -23,6 +23,8 @@ package com.kaltura.kmc.modules.analytics.control
 			addCommand( ReportEvent.GET_MULTI_DATA , GetAllReportsCommand );
 			addCommand( ReportEvent.EXPORT_TO_EXCEL , ExportToExcelCommand );
 			
+			addCommand( ReportDataEvent.SET_REPORT_DATA, SetReportDataCommand );
+			
 			//Command Event
 			addCommand( GraphEvent.CHANGE_DIM , ChangeDimCommand );
 			

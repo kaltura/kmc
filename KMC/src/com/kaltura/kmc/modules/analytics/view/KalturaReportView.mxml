@@ -10,6 +10,7 @@
 			import com.kaltura.autocomplete.controllers.KACUsersController;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.analytics.control.PageEvent;
+			import com.kaltura.kmc.modules.analytics.control.ReportDataEvent;
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
@@ -47,6 +48,8 @@
 			public var reportData:ReportData;
 			[Bindable]
 			public var reportType:int;
+			[Bindable]
+			public var screenType:int;
 			[Bindable]
 			public var backScreenType:int;
 
@@ -256,23 +259,23 @@
 
 					//drillDownObjectName.text = rdtc.objectName;
 
-					// set all the reportData parameters form the current report view:
-					rdtc.title = this.label;
-					rdtc.type = this.reportType;
-					rdtc.totalHeaders = aggregatedHeaders;
-					rdtc.tableHeaders = tableHeaders;
-
-					if (filterVo && filterVo.keywords) {
-						if (filterVo.searchInTags && filterVo.searchInAdminTags)
-							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAllMessage', [filterVo.keywords]);
-						else if (filterVo.searchInTags)
-							rdtc.filterMessage = resourceManager.getString('analytics', 'filterTagsOnlyMessage', [filterVo.keywords]);
-						else if (filterVo.searchInAdminTags)
-							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAdminOnlyMessage', [filterVo.keywords]);
-					}
-					else {
-						rdtc.filterMessage = '';
-					}
+//					// set all the reportData parameters form the current report view:
+//					rdtc.title = this.label;
+//					rdtc.type = this.reportType;
+//					rdtc.totalHeaders = aggregatedHeaders;
+//					rdtc.tableHeaders = tableHeaders;
+//
+//					if (filterVo && filterVo.keywords) {
+//						if (filterVo.searchInTags && filterVo.searchInAdminTags)
+//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAllMessage', [filterVo.keywords]);
+//						else if (filterVo.searchInTags)
+//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterTagsOnlyMessage', [filterVo.keywords]);
+//						else if (filterVo.searchInAdminTags)
+//							rdtc.filterMessage = resourceManager.getString('analytics', 'filterAdminOnlyMessage', [filterVo.keywords]);
+//					}
+//					else {
+//						rdtc.filterMessage = '';
+//					}
 
 					set3rdLvlSelection();
 
@@ -288,6 +291,9 @@
 			 * ask for needed reports
 			 * */
 			private function getReports(event:Event = null):void {
+				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders);
+				reportSetDataEvent.dispatch();
+				
 				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType);
 				reportTotalEvent.dispatch();
 

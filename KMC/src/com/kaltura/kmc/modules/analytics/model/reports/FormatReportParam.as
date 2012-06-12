@@ -68,7 +68,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "month_id":
 					year = String(value).substring(0,4);
 					month = String(value).substring(4,6);
-					date = new Date( Number(year) , Number(month)-1 , 0);
+					date = new Date( Number(year) , Number(month) , 0);
 					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "monthlyDateMask");
 					return _dateFormatter.format(date) ;
 					break;

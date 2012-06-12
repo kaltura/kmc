@@ -58,6 +58,8 @@ package com.kaltura.kmc.modules.analytics.commands
 			var export2Csv : ReportGetUrlForReportAsCsv;
 			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
 				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE ||
+				_model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
 				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS )
