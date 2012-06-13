@@ -78,9 +78,12 @@ package com.kaltura.vo
 		public var createdAtLessThanOrEqual : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaNullableBoolean
 		 **/
-		public var isAdminEqual : int = int.MIN_VALUE;
+		public var firstNameStartsWith : String = null;
+
+		/**
+		 **/
+		public var lastNameStartsWith : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -97,7 +100,8 @@ package com.kaltura.vo
 			arr.push('statusIn');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
-			arr.push('isAdminEqual');
+			arr.push('firstNameStartsWith');
+			arr.push('lastNameStartsWith');
 			return arr;
 		}
 

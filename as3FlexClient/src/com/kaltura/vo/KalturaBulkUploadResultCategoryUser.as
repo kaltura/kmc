@@ -45,12 +45,10 @@ package com.kaltura.vo
 		public var userId : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaCategoryUserPermissionLevel
 		 **/
 		public var permissionLevel : int = int.MIN_VALUE;
 
 		/**
-		 * @see com.kaltura.types.KalturaUpdateMethodType
 		 **/
 		public var updateMethod : int = int.MIN_VALUE;
 

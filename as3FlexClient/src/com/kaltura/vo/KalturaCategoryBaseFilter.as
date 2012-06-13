@@ -74,6 +74,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var fullIdsMatchOr : String = null;
+
+		/**
+		 **/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
@@ -191,6 +195,7 @@ package com.kaltura.vo
 			arr.push('fullNameIn');
 			arr.push('fullIdsEqual');
 			arr.push('fullIdsStartsWith');
+			arr.push('fullIdsMatchOr');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('updatedAtGreaterThanOrEqual');

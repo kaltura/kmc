@@ -31,7 +31,7 @@ package com.kaltura.commands.category
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Move categories that belong to the same parent category to a traget categroy
+	 * Move categories that belong to the same parent category to a traget categroy - enabled only for ks with disable entitlement
 	 * 
 	 **/
 	public class CategoryMove extends KalturaCall
