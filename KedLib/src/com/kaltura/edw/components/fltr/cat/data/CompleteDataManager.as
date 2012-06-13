@@ -38,7 +38,6 @@ package com.kaltura.edw.components.fltr.cat.data {
 		 * load all categories list
 		 */
 		public function loadInitialData():void {
-			trace("CompleteDataManager.loadInitialData");
 			reloadAllCategories();
 		}
 

@@ -39,7 +39,6 @@ package com.kaltura.edw.components.fltr.cat.data {
 		 * load first level categories
 		 */
 		public function loadInitialData():void {
-			trace("ChunkedDataManager.loadInitialData");
 			// initialy, flush old data
 			var cte:CategoriesTreeEvent = new CategoriesTreeEvent(CategoriesTreeEvent.FLUSH_CATEGORIES);
 			_controller.dispatch(cte);
