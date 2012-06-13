@@ -739,7 +739,7 @@
 			
 			protected function handleKeyDown( event:KeyboardEvent ):void
 			{
-				if (isDropDownVisible())
+				if (isDropDownVisible() && _dropDown.selectedIndex != -1)
 				{
 					if (event.keyCode == Keyboard.DOWN)
 					{
@@ -871,26 +871,35 @@
 					}
 					else if (event.keyCode == Keyboard.UP)
 					{
-						pos = flowBox.getItemPosition( target );
-						pos.y--;
+						if (isDropDownVisible()){
+							_dropDown.scrollToIndex(_dataProvider.length - 1);
+							_dropDown.selectedIndex = _dataProvider.length - 1;
+						}else {
+							pos = flowBox.getItemPosition( target );
+							pos.y--;
+								
+							comboItem = flowBox.getItemByPosition( pos );
 							
-						comboItem = flowBox.getItemByPosition( pos );
-						
-						if (comboItem)
-						{
-							comboItem.setTextFocus();
+							if (comboItem)
+							{
+								comboItem.setTextFocus();
+							}
 						}
 					}
 					else if (event.keyCode == Keyboard.DOWN)
 					{
-						pos = flowBox.getItemPosition( target );
-						pos.y++;
-						
-						comboItem = flowBox.getItemByPosition( pos );
-						
-						if (comboItem)
-						{
-							comboItem.setTextFocus();
+						if (isDropDownVisible()){ 
+							_dropDown.selectedIndex = 0;
+						} else {
+							pos = flowBox.getItemPosition( target );
+							pos.y++;
+							
+							comboItem = flowBox.getItemByPosition( pos );
+							
+							if (comboItem)
+							{
+								comboItem.setTextFocus();
+							}
 						}
 					}
 					else if (event.keyCode == Keyboard.LEFT)
@@ -1226,15 +1235,15 @@
 				if (isDropDownVisible())
 				{
 					_dropDown.rowCount = (_dataProvider.length < _dropDownRowCount ? _dataProvider.length : _dropDownRowCount);
-					callLater( highlightFirstItem );
+//					callLater( highlightFirstItem );
 					callLater( positionDropDown );									
 				}
 			}
 			
-			protected function highlightFirstItem():void
-			{
-				_dropDown.selectedIndex = 0;
-			}
+//			protected function highlightFirstItem():void
+//			{
+//				_dropDown.selectedIndex = 0;
+//			}
 			
 			protected function isPerfectMatch():Boolean
 			{
@@ -1329,7 +1338,7 @@
 			
 			protected function initDropDown():void
 			{
-				_dropDown.selectedIndex = 0;
+//				_dropDown.selectedIndex = 0;
 				_dropDown.rowCount = (_dataProvider.length < _dropDownRowCount ? _dataProvider.length : _dropDownRowCount);
 				_dropDown.invalidateSize();
 			}
@@ -1890,7 +1899,7 @@
 			}
 			
 			private function initMsgPopup():void{
-				_messagePopup.selectedIndex = 0;
+//				_messagePopup.selectedIndex = 0;
 				_messagePopup.rowCount = 1;
 			}
 			
