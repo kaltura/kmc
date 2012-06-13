@@ -2,7 +2,7 @@
 <mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
 			 rowHeight="60" selectable="false" headerRelease="{headerReleaseHandler(event)}" 
 			 creationComplete="creationCompleteHandler(event)" 
-			 >
+			 implements="com.kaltura.controls.table.ISelectionTable">
 	<mx:Metadata>
 		
 		[ResourceBundle("entrytable")]
@@ -20,6 +20,7 @@
 			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.et.business.EntryTableActions;
+			import com.kaltura.controls.table.ISelectionTable;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
@@ -27,17 +28,14 @@
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.vo.KalturaBaseEntry;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DataGridEvent;
-			import mx.events.DragEvent;
 			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
 			import mx.events.PropertyChangeEvent;
-			import mx.managers.CursorManager;
 			import mx.resources.ResourceManager;
 
 			public static const ASCENDING:String = "ASC";
@@ -57,7 +55,17 @@
 			public static const OPEN_ENTRY:String = "openEntry";
 
 
-
+			/**
+			 * container variable for the selectionAttribute variable
+			 * */
+			private var _selectionAttribute:String = "tableSelected";
+			
+			public function set selectionAttribute(value:String):void {
+				_selectionAttribute = value;
+			}
+			public function get selectionAttribute():String {
+				return _selectionAttribute;
+			}
 
 			/**
 			 * controller for communication with application model
@@ -191,8 +199,8 @@
 				// mark all currently selected items as not selected
 				for (var i:int = si.length-1; i>=0; i--) {
 					entry = si[i] as KalturaBaseEntry;
-					entry[SelectionRenderer.SELECTION_ATTRIBUTE] = false;
-					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, true, false));
+					entry[_selectionAttribute] = false;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, _selectionAttribute, true, false));
 				}
 				if (items == null) {
 					super.selectedItems = null;
@@ -205,8 +213,8 @@
 							if (nkbe.id == entry.id) {
 								// add the item that was in the dataprovider to start with
 								si.push(entry);
-								entry[SelectionRenderer.SELECTION_ATTRIBUTE] = true;
-								entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, false, true));
+								entry[_selectionAttribute] = true;
+								entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, _selectionAttribute, false, true));
 								break;
 							}
 						}
@@ -365,7 +373,7 @@
 						arrCol.getItemAt(i).visible = false;
 					}
 				}
-				
+
 				selectionColumn.width = 32;
 			}
 
@@ -518,9 +526,9 @@
 				var entry:KalturaBaseEntry = e.target.data as KalturaBaseEntry;
 				if (entry) {
 					// the click was inside the table
-					var oldVal:Boolean = entry[SelectionRenderer.SELECTION_ATTRIBUTE]; 
-					entry[SelectionRenderer.SELECTION_ATTRIBUTE] = !oldVal;
-					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, SelectionRenderer.SELECTION_ATTRIBUTE, oldVal, !oldVal));
+					var oldVal:Boolean = entry[_selectionAttribute]; 
+					entry[_selectionAttribute] = !oldVal;
+					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, _selectionAttribute, oldVal, !oldVal));
 					// set value on selectedItems array
 					var si:Array = selectedItems;
 					if (oldVal) {
@@ -665,7 +673,7 @@
 						   headerText="{resourceManager.getString('entrytable', 'status')}"
 						   labelFunction="{EntryTableLabelFunctions.getStatus}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
-		
+
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
 						   headerText="{resourceManager.getString('entrytable', 'moderationStatus')}"
 						   labelFunction="{EntryTableLabelFunctions.getStatusForModeration}"

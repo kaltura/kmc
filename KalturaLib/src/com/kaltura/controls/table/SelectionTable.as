@@ -27,7 +27,7 @@ package com.kaltura.controls.table
 	 * 
 	 * @author atar.shadmi
 	 */	
-	public class SelectionTable extends DataGrid {
+	public class SelectionTable extends DataGrid implements ISelectionTable {
 		
 		
 		public static const ASCENDING:String = "ASC";
@@ -43,6 +43,19 @@ package com.kaltura.controls.table
 		 * (if two objects have the same value for this attribute, they are considered the same object) 
 		 */		
 		public var identifier:String = "id";
+		
+		
+		/**
+		 * container variable for the selectionAttribute variable
+		 * */
+		private var _selectionAttribute:String = "tableSelected";
+		
+		public function set selectionAttribute(value:String):void {
+			_selectionAttribute = value;
+		}
+		public function get selectionAttribute():String {
+			return _selectionAttribute;
+		}
 		
 		protected var columnsSortMap:HashMap = new HashMap();
 		
@@ -91,9 +104,9 @@ package com.kaltura.controls.table
 				var item:Object = e.target.data;
 				
 				// the click was inside the table
-				var oldVal:Boolean = item[SelectionRenderer.SELECTION_ATTRIBUTE]; 
-				item[SelectionRenderer.SELECTION_ATTRIBUTE] = !oldVal;
-				item.dispatchEvent(PropertyChangeEvent.createUpdateEvent(item, SelectionRenderer.SELECTION_ATTRIBUTE, oldVal, !oldVal));
+				var oldVal:Boolean = item[selectionAttribute]; 
+				item[selectionAttribute] = !oldVal;
+				item.dispatchEvent(PropertyChangeEvent.createUpdateEvent(item, selectionAttribute, oldVal, !oldVal));
 				// set value on selectedItems array
 				var si:Array = selectedItems;
 				if (oldVal) {
@@ -142,8 +155,8 @@ package com.kaltura.controls.table
 			// mark all currently selected items as not selected
 			for (var i:int = si.length-1; i>=0; i--) {
 				oItem = si[i];
-				oItem[SelectionRenderer.SELECTION_ATTRIBUTE] = false;
-				oItem.dispatchEvent(PropertyChangeEvent.createUpdateEvent(oItem, SelectionRenderer.SELECTION_ATTRIBUTE, true, false));
+				oItem[selectionAttribute] = false;
+				oItem.dispatchEvent(PropertyChangeEvent.createUpdateEvent(oItem, selectionAttribute, true, false));
 			}
 			if (items == null) {
 				super.selectedItems = null;
@@ -156,8 +169,8 @@ package com.kaltura.controls.table
 						if (nItem[identifier] == oItem[identifier]) {
 							// add the item that was in the dataprovider to start with
 							si.push(oItem);
-							oItem[SelectionRenderer.SELECTION_ATTRIBUTE] = true;
-							oItem.dispatchEvent(PropertyChangeEvent.createUpdateEvent(oItem, SelectionRenderer.SELECTION_ATTRIBUTE, false, true));
+							oItem[selectionAttribute] = true;
+							oItem.dispatchEvent(PropertyChangeEvent.createUpdateEvent(oItem, selectionAttribute, false, true));
 							break;
 						}
 					}

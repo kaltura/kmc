@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" verticalAlign="middle">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalAlign="center" verticalAlign="middle"
+		 implements="mx.controls.listClasses.IDropInListItemRenderer">
 	<mx:Script>
 		<![CDATA[
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.controls.dataGridClasses.DataGridColumn;
-			
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.listClasses.IDropInListItemRenderer;
+
+
+			public static const SELECTION_CHANGED:String = "ET_selection_changed";
+
+
+
+
 			/**
 			 * name of the attribute on VO objects that the table uses to mark selection
 			 * */
-			public static const SELECTION_ATTRIBUTE:String = "tableSelected";
-			
-			public static const SELECTION_CHANGED:String = "ET_selection_changed";
-			
+			private var _selectionAttribute:String = "tableSelected";
+
+			/**
+			 * Internal variable for the listData value.
+			 * */
+			private var _listData:BaseListData;
+
+
+			[Bindable("dataChange")]
+			public function get listData():BaseListData {
+				return _listData;
+			}
+
+
+			public function set listData(value:BaseListData):void {
+				_listData = value;
+				_selectionAttribute = (_listData.owner as ISelectionTable).selectionAttribute;
+			}
+
+
+
+
 			private var _watcher:ChangeWatcher;
-			
+
+
 			override public function set data(value:Object):void {
 				super.data = value;
-				
+
 				if (value is DataGridColumn) {
 					return;
 				}
@@ -25,20 +53,20 @@
 				if (_watcher) {
 					_watcher.unwatch();
 				}
-				_watcher = BindingUtils.bindSetter(selectionStatusChanged, value, SELECTION_ATTRIBUTE);
+				_watcher = BindingUtils.bindSetter(selectionStatusChanged, value, _selectionAttribute);
 			}
-			
-			
+
+
 			private function selectionStatusChanged(value:Boolean):void {
 				cb.selected = value;
 			}
+
 
 			protected function cb_changeHandler(event:Event):void {
 				event.stopPropagation();
 				// let the table know this item was clicked
 				dispatchEvent(new Event(SelectionRenderer.SELECTION_CHANGED, true));
 			}
-
 		]]>
 	</mx:Script>
 	<mx:CheckBox id="cb" change="cb_changeHandler(event)"/>
