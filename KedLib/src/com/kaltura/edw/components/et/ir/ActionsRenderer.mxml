@@ -1,66 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
-		 horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
-		 implements="mx.controls.listClasses.IDropInListItemRenderer">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" horizontalScrollPolicy="off" verticalScrollPolicy="off"
+		 verticalAlign="middle" implements="mx.controls.listClasses.IDropInListItemRenderer">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.et.EntryTable;
 			import com.kaltura.edw.components.et.business.EntryTableActions;
+			import com.kaltura.types.KalturaEntryStatus;
+			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.controls.listClasses.BaseListData;
 			import mx.controls.listClasses.IDropInListItemRenderer;
 			import mx.events.ListEvent;
-			
-			
-			
-			
-			[Bindable] 
+
+
 			/**
-			 * Internal variable for the property value. 
+			 * all actions available for dropdown
+			 * */
+			public static var allActions:Array = [EntryTableActions.EMBED, EntryTableActions.DELETE, EntryTableActions.EDIT];
+
+			
+
+			[Bindable]
+			/**
+			 * Internal variable for the property value.
 			 * */
 			private var _listData:BaseListData;
-			
+
 			[Bindable("dataChange")]
-			/**
-			 * Define the getter method and make the listData property bindable.
-			 * */
-			public function get listData():BaseListData
-			{
+			public function get listData():BaseListData {
 				return _listData;
 			}
-			
-			/**
-			 * Define the setter method,
-			 * */
-			public function set listData(value:BaseListData):void
-			{
+
+			public function set listData(value:BaseListData):void {
 				_listData = value;
 			}
+			
+			
+
+			override public function set data(value:Object):void {
+				super.data = value;
+				
+				if (value is KalturaBaseEntry) {
+					// work on dummy array so binding to CB will be triggered
+					var a:Array = allActions.concat();
+					if ((value as KalturaBaseEntry).status != KalturaEntryStatus.READY) {
+						a.splice(0, 1);
+					}
+					_actions = a;
+				}
+				else {
+					_actions = null;
+				}
+			}
+
+
+			
 
 			[Bindable]
 			/**
 			 * dp for actions drop down
 			 * */
-			public static var actions:Array = [EntryTableActions.EMBED, EntryTableActions.DELETE, EntryTableActions.EDIT];
-			
-			
+			private var _actions:Array;
+
+
 			private function getLabel(item:Object):String {
-				
 				if (item.toString() == EntryTableActions.EMBED) {
 					return (_listData.owner as EntryTable).previewLabel;
 				}
 				// else 
 				return resourceManager.getString('entrytable', item.toString());
 			}
-			
+
+
 			protected function combobox1_changeHandler(event:ListEvent):void {
 				dispatchEvent(new Event(dropdown.selectedItem.toString(), true));
 				dropdown.selectedIndex = -1;
 			}
-
 		]]>
 	</mx:Script>
-	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1"
+	<mx:ComboBox id="dropdown" styleName="actionsComboBox" selectedIndex="-1" width="100%"
 				 prompt="{resourceManager.getString('entrytable', 'selectActionLabel')}"
-				 change="combobox1_changeHandler(event)" dataProvider="{actions}" labelFunction="getLabel"/>
+				 change="combobox1_changeHandler(event)" dataProvider="{_actions}" labelFunction="getLabel"/>
 </mx:HBox>
