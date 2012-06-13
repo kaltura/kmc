@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.analytics.commands
 	import com.kaltura.kmc.modules.analytics.control.ReportDataEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
+	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.resources.ResourceManager;
 	import mx.rpc.IResponder;
@@ -23,11 +24,19 @@ package com.kaltura.kmc.modules.analytics.commands
 			}
 			
 			var reportData:ReportData = _model.reportDataMap[rdEvt.screenType] as ReportData;
+			if (reportData.pager == null){
+				reportData.pager = new KalturaFilterPager();
+				reportData.pager.pageSize = 10;
+			}
+			
 			// set all the reportData parameters form the current report view:
 			reportData.title = rdEvt.label;
 			reportData.type = rdEvt.reportType;
 			reportData.totalHeaders = rdEvt.totalHeaders;
 			reportData.tableHeaders = rdEvt.tableHeaders;
+			
+			// Reseting page index
+			reportData.pager.pageIndex = 1;
 			
 			if (_model.filter && _model.filter.keywords) {
 				if (_model.filter.searchInTags && _model.filter.searchInAdminTags)
