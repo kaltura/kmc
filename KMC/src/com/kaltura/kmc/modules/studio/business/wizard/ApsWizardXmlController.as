@@ -343,9 +343,10 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 				for each (var onscreenXML:XML in onScreenButtonsList) {
 					if (onscreenXML.@k_value.toString() == "true") {
 						contButton = (fullPlayerCopy.descendants().(attribute("id") == (featureXml.@id.toString() + onscreenXML.@id.toString()))[0]);
+						//TODO add buttonType attribute on the checkboxes, with default value for old template (buttonVideoArea)
+						// and for new template (falconButtonVideoArea)
 						if (contButton) {
-							if (controllerButtons.@k_value == "falconButtonIconControllerArea") {
-								// assume if the controller button was falcon skin (no coloring), the screen button will be so too
+							if (onscreenXML.@k_buttonType == "falconButtonVideoArea") {
 								clearIconsOrLabels(contButton, "falconButtonVideoArea", style);
 							}
 							else {
