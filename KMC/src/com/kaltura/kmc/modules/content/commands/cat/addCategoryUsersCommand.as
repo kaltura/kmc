@@ -12,7 +12,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	
 	import mx.collections.ArrayCollection;
 
-	public class addUsersCommand extends KalturaCommand {
+	public class addCategoryUsersCommand extends KalturaCommand {
 		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
