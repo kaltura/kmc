@@ -418,10 +418,9 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		private function makeParentsPartial(cat:CategoryVO):void {
 			var c:CategoryVO = cat;
-			while (c.category.parentId != int.MIN_VALUE) {
+			while (c.category.parentId != int.MIN_VALUE && c.category.parentId != 0) {
 				c = categories.getValue(c.category.parentId.toString()) as CategoryVO;
 				setCatSelectionStatus(c, CatSelectionStatus.PARTIAL);
-//				c.selected = CatSelectionStatus.PARTIAL;
 			}
 		}
 		
@@ -430,35 +429,43 @@ package com.kaltura.edw.components.fltr.cat
 		 * @param cat
 		 */
 		private function remarkParents(cat:CategoryVO):void {
-			var c1:CategoryVO = cat;
-			while (c1.category.parentId != int.MIN_VALUE && c1.category.parentId != 0) {
-				c1 = categories.getValue(c1.category.parentId.toString()) as CategoryVO;
+			var prnt:CategoryVO = cat;
+			while (prnt.category.parentId != int.MIN_VALUE && prnt.category.parentId != 0) {
+				prnt = categories.getValue(prnt.category.parentId.toString()) as CategoryVO;
 				
-				// scan the parent's children to decide its state
 				var gotSelectedChildren:Boolean = false;
 				var gotUnselectedChildren:Boolean = false;
 				var gotPartialChildren:Boolean = false;
-				for each (var c2:CategoryVO in c1.children) {
-					if (c2[selectionAttribute] == CatSelectionStatus.SELECTED) {
+				
+				// scan the parent's children to decide its state
+				for each (var cld:CategoryVO in prnt.children) {
+					if (cld[selectionAttribute] == CatSelectionStatus.SELECTED) {
 						gotSelectedChildren = true;
 					}
-					else  if (c2[selectionAttribute] == CatSelectionStatus.UNSELECTED) {
+					else  if (cld[selectionAttribute] == CatSelectionStatus.UNSELECTED || !cld[selectionAttribute]) {
 						gotUnselectedChildren = true;
 					}
-					else  if (c2[selectionAttribute] == CatSelectionStatus.PARTIAL) {
+					else  if (cld[selectionAttribute] == CatSelectionStatus.PARTIAL) {
 						gotPartialChildren = true;
 						break;
 					}
 				}
 				
 				if (gotPartialChildren) {
-					setCatSelectionStatus(c1, CatSelectionStatus.PARTIAL);
+					// at least one child is partial
+					setCatSelectionStatus(prnt, CatSelectionStatus.PARTIAL);
 				}
 				else if (gotSelectedChildren && !gotUnselectedChildren) {
-					setCatSelectionStatus(c1, CatSelectionStatus.SELECTED);
+					// all children are selected
+					setCatSelectionStatus(prnt, CatSelectionStatus.SELECTED);
 				}
 				else if (!gotSelectedChildren && gotUnselectedChildren) {
-					setCatSelectionStatus(c1, CatSelectionStatus.UNSELECTED);
+					// all children are unselected
+					setCatSelectionStatus(prnt, CatSelectionStatus.UNSELECTED);
+				}
+				else if (gotSelectedChildren && gotUnselectedChildren) {
+					// some children selected, some children unselected
+					setCatSelectionStatus(prnt, CatSelectionStatus.PARTIAL);
 				}
 			}
 		}
@@ -615,6 +622,9 @@ package com.kaltura.edw.components.fltr.cat
 		}
 		
 		public function set selectionMode(value:int):void {
+			if (!value) {
+				return;
+			}
 			_selectionMode = value;
 			switch (value) {
 				case CatTreeSelectionMode.SINGLE_SELECT:

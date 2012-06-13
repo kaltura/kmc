@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="noPadding"
-		 xmlns:cat="com.kaltura.edw.components.fltr.cat.*" implements="com.kaltura.edw.components.fltr.IFilterComponent"
+		 xmlns:cat="com.kaltura.edw.components.fltr.cat.*" 
+		 implements="com.kaltura.edw.components.fltr.IFilterComponent"
 		 creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		/**
@@ -43,14 +44,33 @@
 			 */
 			public var selectionAttribute:String = "selected";
 
+			
+			
+			// ----------------------------
+			// filter attribute
+			// ----------------------------
+			/* 	need to keep 2 attributes, one for each selection mode.
+				the attribute getter will return the correct attribute 
+				according to current selection status. */
+			
 			/**
-			 * container valiable for "attribute"
+			 * container valiable for "attribute" value when in exact selection mode
+			 * */
+			public var exactAttribute:String;
+			
+			/**
+			 * container valiable for "attribute" value when in plus-children selection mode
+			 * */
+			public var plusAttribute:String;
+			
+			/**
+			 * container valiable for "attribute" value when in single selection mode
 			 * */
 			private var _attribute:String;
 
-
 			/**
-			 * Name of the <code>KalturaFilter</code> attribute this component handles. <br>
+			 * Name of the <code>KalturaFilter</code> attribute this component handles
+			 * when in SINGLE_SELECT mode. <br>
 			 * delegate to the tree
 			 */
 			public function set attribute(value:String):void {
@@ -60,16 +80,31 @@
 				}
 			}
 
-
 			public function get attribute():String {
-				return _attribute;
+				// align selection mode with actual tree
+				selectionMode = catTree.selectionMode;
+				// get matching attribute
+				if (selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
+					return exactAttribute;
+				}
+				else if (selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+					return plusAttribute;
+				}
+				else {
+					return _attribute;
+				}
 			}
+			
+			
+			
+			// ----------------------------
+			// filter value
+			// ----------------------------
 
 			/**
 			 * container variable for "filter"
 			 * */
 			private var _filter:String;
-
 
 			/**
 			 * Value for the relevant attribute on <code>KalturaFilter</code>. <br>
@@ -81,7 +116,6 @@
 					catTree.filter = value;
 				}
 			}
-
 
 			public function get filter():Object {
 				return catTree.filter;
@@ -114,7 +148,7 @@
 			// ---------------------
 
 			[Bindable]
-			public var selectionMode:int = CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
+			public var selectionMode:int;
 			
 			/**
 			 * preferences button
