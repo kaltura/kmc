@@ -2,11 +2,13 @@ package com.kaltura.kmc.modules.content.commands.cat
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
+	import com.kaltura.commands.category.CategoryGet;
 	import com.kaltura.commands.categoryUser.CategoryUserDelete;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
+	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryUser;
 	
 	import mx.controls.Alert;
@@ -46,7 +48,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 			for (var i:int = 0; i<_usrs.length; i++) {
 				cu = _usrs[i] as KalturaCategoryUser;
 				mr.addAction(new CategoryUserDelete(cu.categoryId, cu.userId));
-			} 			
+			} 	
+			var getCat:CategoryGet = new CategoryGet(cu.categoryId);
+			mr.addAction(getCat);
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr);	   
@@ -57,6 +61,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 			if (!checkError(data)) {
 				var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
 				cg.dispatch();
+				// set new numbers of members to the category object
+				var updatedCat:KalturaCategory = data.data[data.data.length-1] as KalturaCategory;
+				_model.categoriesModel.selectedCategory.membersCount = updatedCat.membersCount;
+				_model.categoriesModel.selectedCategory.pendingMembersCount = updatedCat.pendingMembersCount;
 			}
 			_model.decreaseLoadCounter();
 		}

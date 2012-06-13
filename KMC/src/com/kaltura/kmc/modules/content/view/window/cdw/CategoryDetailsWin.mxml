@@ -24,6 +24,8 @@
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
+			import mx.events.PropertyChangeEvent;
+			import mx.events.PropertyChangeEventKind;
 
 			[Bindable]
 			private var _isNewCategory:Boolean;
@@ -262,12 +264,29 @@
 
 
 			private function setCategory(selectedCategory:KalturaCategory):void {
+				// clear any previous
+				if (_origCategory) {
+					_origCategory.removeEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo);
+				}
+				// set new value
 				_origCategory = selectedCategory;
+				_origCategory.addEventListener(PropertyChangeEvent.PROPERTY_CHANGE, copyToUndoTo, false, 0, true);
+				// create copy
 				var kCat:KalturaCategory = new KalturaCategory();
 				ObjectUtil.copyObject(_origCategory, kCat);
 				_undoCategory = kCat;
+				// set paging
 				if (_model.categoriesList) {
 					itemIndex = _model.categoriesList.getItemIndex(selectedCategory);
+				}
+			}
+			
+			/**
+			 * after save/update, copy new attributes to _undoToEntry
+			 * */
+			private function copyToUndoTo(e:PropertyChangeEvent):void {
+				if (_undoCategory && e.kind == PropertyChangeEventKind.UPDATE) {
+					_undoCategory[e.property] = e.newValue;
 				}
 			}
 

@@ -50,13 +50,6 @@
 				title = ResourceManager.getInstance().getString('cms', 'usersPermissionsTitle', [_category.name]);
 			}
 
-
-			/**
-			 * retreive current nuber of category users
-			 * */
-			public function getCurrentUsersCount():int {
-				return model.totalCategoryUsers;
-			}
 			
 			private function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, "endUserPermissionsWin");
@@ -128,7 +121,7 @@
 			 * */
 			private function inheritFromParent(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
-					var cge:CategoryEvent = new CategoryEvent(CategoryEvent.INHERIT_USERS_FROM_PARENT);
+					var cge:CategoryUserEvent = new CategoryUserEvent(CategoryUserEvent.INHERIT_USERS_FROM_PARENT);
 					cge.data = category;
 					cge.dispatch();
 				}

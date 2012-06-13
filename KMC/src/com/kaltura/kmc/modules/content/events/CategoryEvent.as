@@ -127,18 +127,6 @@ package com.kaltura.kmc.modules.content.events
 		 */
 		public static const RESET_CATEGORY_USER_LIST:String = 'content_resetCategoryUserList';
 		
-		/**
-		 * add the users associated with parent category to the current selected category
-		 * event.data is current category
-		 */
-		public static const INHERIT_USERS_FROM_PARENT : String = "content_inheritUsersFromParent";
-		
-		/**
-		 * add users to the current selected category
-		 * event.data is [categoryid, permission level, update method, ([KalturaUsers])]
-		 */
-		public static const ADD_CATEGORY_USERS : String = "content_addCategoryUsers";
-		
 		
 		
 		public function CategoryEvent( type:String , 
