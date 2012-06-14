@@ -47,14 +47,15 @@
 
 
 			private function validate(event:MouseEvent):void {
+				var contexts:String = getPrivacyContextString();
 				var kCat:KalturaCategory = catComplete.selectedItem;
 				if (!kCat) {
 					Alert.show(resourceManager.getString('account', 'noCatSelected'), resourceManager.getString('account', 'error'));
 				}
-				else  if (!_category && kCat.privacyContext) {
+				else if (!_category && kCat.privacyContext) {
 					Alert.show(resourceManager.getString('account', 'contextAlreadySet'), resourceManager.getString('account', 'error'));
 				}
-				else  if (StringUtil.trim(getPrivacyContextString()) == '') {
+				else if (StringUtil.trim(contexts) == '') {
 					Alert.show(resourceManager.getString('account', 'noContext'), resourceManager.getString('account', 'error'));
 				}
 				else {
