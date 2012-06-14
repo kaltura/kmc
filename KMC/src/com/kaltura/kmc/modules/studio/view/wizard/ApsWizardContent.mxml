@@ -30,27 +30,17 @@
 
 			public static const LIST_PLAYLIST_DONE:String = "listPlaylistDone";
 
-			[Bindable]
-			private var _srvFullUrl:String = "http://www.kaltura.com/index.php/partnerservices2";
-
-			private const LIST_PLAYLIST:String = "listplaylists";
-			private const EXECUTE_PLAYLIST:String = "executeplaylist";
-
-			public var ks:String = "";
-			public var partnerId:String = "1";
+			
 			public var isSingleContent:Boolean = false;
 
 			[Bindable]
 			private var _playlistsTableDP:ArrayCollection = new ArrayCollection();
+			
 			[Bindable]
 			private var _widgetPlstDP:ArrayCollection = new ArrayCollection();
 
-			[Bindable]
-			private var _tableHieght:Number = 280;
-			[Bindable]
-			private var _tableWidth:Number = 360;
-			[Bindable]
-			private var _rightLblsWidth:Number = 150;
+			private const RIGHT_LABELS_WIDTH:Number = 150;
+			
 			[Bindable]
 			private var _plTotalDuration:String = "";
 
@@ -284,10 +274,11 @@
 		[Event(name="groupPlaylistChange", type="flash.events.Event")]
 	</mx:Metadata>
 
-	<mx:VBox >
-		<mx:HBox id="all" disabledOverlayAlpha="0">
-			<mx:VBox width="{_tableWidth}" height="{_tableHieght}" styleName="noVGap">
+	<mx:VBox height="100%" width="100%">
+		<mx:HBox id="all" disabledOverlayAlpha="0" height="100%" width="100%">
+			<mx:VBox width="100%" height="100%" styleName="noVGap">
 				<mx:Label text="All Playlists (as created in the Content tab):"/>
+				
 				<mx:DataGrid id="playlistsTable" width="100%" height="100%" styleName="borderedDataGrid" rowHeight="23"
 							 draggableColumns="false" sortableColumns="false" doubleClickEnabled="true"
 							 itemDoubleClick="{addPlaylistItem()}" dataProvider="{_playlistsTableDP}">
@@ -304,18 +295,19 @@
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="Created At" dataField="createAtAsString"/>
+						<mx:DataGridColumn headerText="Created At" dataField="createAtAsString" width="140"/>
 					</mx:columns>
 				</mx:DataGrid>
-				<mx:HBox height="{widgetPlstToolbar.height}" width="100%" styleName="DataGridActions">
-
-				</mx:HBox>
+				
+				<mx:HBox height="{widgetPlstToolbar.height}" width="100%" styleName="DataGridActions" />
 			</mx:VBox>
-			<mx:HBox height="{_tableHieght}" styleName="plstAddRemoveCont" horizontalGap="0">
+			
+			<mx:HBox height="100%" styleName="plstAddRemoveCont" horizontalGap="0">
 				<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="removePlaylistItem()"/>
 				<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtn" click="addPlaylistItem()"/>
 			</mx:HBox>
-			<mx:VBox width="{_tableWidth}" height="{_tableHieght}" styleName="noVGap">
+			
+			<mx:VBox width="100%" height="100%" styleName="noVGap">
 				<mx:Label text="Playlist Tabs (each playlist represents a new tab):"/>
 				<mx:DataGrid id="widgetPlst" width="100%" height="100%" styleName="borderedDataGrid" rowHeight="23"
 							 sortableColumns="false" doubleClickEnabled="true" itemDoubleClick="{addPlaylistItem()}"
@@ -333,7 +325,7 @@
 								</mx:Component>
 							</mx:itemRenderer>
 						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="Created Date" dataField="createAtAsString"/>
+						<mx:DataGridColumn headerText="Created Date" dataField="createAtAsString" width="140"/>
 					</mx:columns>
 				</mx:DataGrid>
 				<mx:VBox id="widgetPlstToolbar" width="100%" styleName="DataGridActions" verticalGap="0">
@@ -344,8 +336,7 @@
 		</mx:HBox>
 
 		<mx:VBox width="100%" styleName="plstContentDtlsCont" horizontalAlign="right">
-			<mx:Label text="Total Playlists: {_widgetPlstDP.length}" width="{_rightLblsWidth}"/>
-			<!-- <mx:Label id="totalDur" text="{_plTotalDuration}" width="{_rightLblsWidth}"/> -->
+			<mx:Label text="Total Playlists: {_widgetPlstDP.length}" width="{RIGHT_LABELS_WIDTH}"/>
 		</mx:VBox>
 	</mx:VBox>
 </mx:VBox>
