@@ -46,26 +46,6 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			topLevel.children = [];
 			actions.push(topLevel);
 
-			if (includeCategoryUserActions) {
-				if (includeEntitlement) {
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
-					mi.data = "changeListing";
-					topLevel.children.push(mi);
-					
-					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
-					mi.data = "changeAccess";
-					topLevel.children.push(mi);
-				}
-				
-				mi = new MenuItemVo();
-				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
-				mi.data = "changeOwner";
-				topLevel.children.push(mi);
-			}
-			// --- TAGS
-			
 			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'editTags');
 			mi.children = [];
@@ -86,6 +66,26 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			mi.label = resourceManager.getString('cms', 'bulkMoveCategories');
 			mi.data = "moveCategories";
 			topLevel.children.push(mi);
+			
+			
+			if (includeCategoryUserActions) {
+				if (includeEntitlement) {
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+					mi.data = "changeListing";
+					topLevel.children.push(mi);
+					
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
+					mi.data = "changeAccess";
+					topLevel.children.push(mi);
+				}
+				
+				mi = new MenuItemVo();
+				mi.label = resourceManager.getString('cms', 'bulkChangeCategoryOwner');
+				mi.data = "changeOwner";
+				topLevel.children.push(mi);
+			}
 			
 			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'deleteCategoryAction');

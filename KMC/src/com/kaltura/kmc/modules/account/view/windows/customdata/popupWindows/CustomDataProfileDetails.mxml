@@ -100,18 +100,17 @@ Use the 'newProfileState' state for the 'Add New..' action
 					{data: KalturaMetadataObjectType.CATEGORY, label: resourceManager.getString('account', 'customSchemasCategoryType')}];
 
 				if (metadataProfile) {
-					if (metadataProfile.profile.metadataObjectType) {
+					if (metadataProfile.profile.id && metadataProfile.profile.id != int.MIN_VALUE) {
 						// this is an existing profile
-						objectTypeCB.selectedIndex = getItemIndex(metadataProfile.profile.metadataObjectType, objectTypes);
-						objectTypeCB.enabled = false;
-
 						title = resourceManager.getString('account', 'editMetadataSchema', [getSchemaObjectTypeLabel(metadataProfile.profile)]);
+						objectTypeCB.enabled = false;
 					}
-					else {
+					
+					if (!metadataProfile.profile.metadataObjectType) {
 						// this is a new profile
-						objectTypeCB.prompt = resourceManager.getString('account', 'metadataSchemaSelectObjectType');
-						objectTypeCB.selectedIndex = -1;
+						metadataProfile.profile.metadataObjectType = KalturaMetadataObjectType.ENTRY;
 					}
+					objectTypeCB.selectedIndex = getItemIndex(metadataProfile.profile.metadataObjectType, objectTypes);
 				}
 
 
