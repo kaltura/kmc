@@ -638,6 +638,5 @@ package com.kaltura.edw.components.fltr.cat
 					break;
 			}
 		}
-		
 	 }
 }
