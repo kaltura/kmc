@@ -37,11 +37,6 @@ package com.kaltura.edw.control.commands.categories
 			_source = event.source;
 			_onComplete = event.onComplete;
 			
-//			if (!_branchCat) {
-//				// if not provided, use root
-//				_branchCat = _filterModel.categories;
-//			}
-			
 			var kcf:KalturaCategoryFilter = new KalturaCategoryFilter();
 			if (_branchCat) {
 				kcf.parentIdEqual = _branchCat.id;
@@ -49,7 +44,7 @@ package com.kaltura.edw.control.commands.categories
 			else {
 				kcf.parentIdEqual = 0;
 			}
-			kcf.orderBy = KalturaCategoryOrderBy.PARTNER_SORT_VALUE_DESC;
+//			kcf.orderBy = KalturaCategoryOrderBy.PARTNER_SORT_VALUE_DESC;
 			var listCategories:CategoryList = new CategoryList(kcf);
 			
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
