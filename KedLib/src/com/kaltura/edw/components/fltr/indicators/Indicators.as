@@ -4,9 +4,11 @@ package com.kaltura.edw.components.fltr.indicators {
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	import mx.controls.Button;
 	import mx.controls.ButtonLabelPlacement;
+	import mx.controls.Label;
 	import mx.core.ScrollPolicy;
 	import mx.events.CollectionEvent;
 	import mx.events.CollectionEventKind;
@@ -64,7 +66,6 @@ package com.kaltura.edw.components.fltr.indicators {
 
 			invalidateProperties();
 			invalidateSize();
-//			invalidateDisplayList();
 		}
 
 
@@ -103,8 +104,12 @@ package com.kaltura.edw.components.fltr.indicators {
 				}
 				addChild(wrapVo.button);
 			}
+			if (_finalLabel) {
+				_finalLabel.text = resourceManager.getString('drilldown', 'indicatorsLabel', [collection.length - numChildren]); 
+			}
 			// do layout 
 			invalidateDisplayList();
+			
 		}
 
 		private function createButton(ivo:IndicatorVo):Button {
@@ -133,7 +138,33 @@ package com.kaltura.edw.components.fltr.indicators {
 
 		private function onExceeded(e:Event):void {
 			e.stopImmediatePropagation();
-			trace("exceeded:", numChildren, collection.length - numChildren);
+			trace("exceeded:", numChildren, collection.length);
+//			if (!_finalLabel) {
+//				createFinalLabel();
+//			}
+//			var btn:Button;
+//			// get the last button before the label
+//			if (_finalLabel.parent) {
+//				for (var i:int =0; i<indicators.length; i++) {
+//					
+//				}
+//				btn = indicators[numChildren-2].button;
+//			}
+//			else {
+//				btn = indicators[numChildren-1].button;
+//			}
+//			removeChild(btn);
+//			addChild(_finalLabel);
+//			// do layout 
+//			invalidateDisplayList();
+		}
+		
+		private var _finalLabel:Label;
+		
+		private function createFinalLabel():void {
+			_finalLabel = new Label();
+			_finalLabel.text = resourceManager.getString('filter', 'indicatorsLabel', [collection.length - numChildren + 1]); 
+			_finalLabel.setStyle("styleName", "indicatorsLabel");
 		}
 	}
 }
