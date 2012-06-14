@@ -158,16 +158,17 @@
 			private function onSave(refreshLists:Boolean):void {
 				if (validate()) {
 					if (_isNewCategory && _model.processingNewCategory) {
+						// if category inherits members from parent, don't send inherited values
+						if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT || !_undoCategory.privacyContexts) {
+							_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+							_undoCategory.userJoinPolicy = int.MIN_VALUE;
+						}
+						
 						// remove any privacy contexts (if required, they will be set by server)
 						_undoCategory.privacyContexts = null;
 						_undoCategory.pendingMembersCount = int.MIN_VALUE;
 						_undoCategory.membersCount = int.MIN_VALUE;
 
-						// if category inherits members from parent, don't send inherited values
-						if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
-							_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-							_undoCategory.userJoinPolicy = int.MIN_VALUE;
-						}
 
 						// add category
 						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
