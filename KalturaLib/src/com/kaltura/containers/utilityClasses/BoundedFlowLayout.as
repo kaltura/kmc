@@ -89,6 +89,7 @@ package com.kaltura.containers.utilityClasses {
 			var maxLines:int = (target as BoundedFlowBox) ? (target as BoundedFlowBox).limitRows : 0;
 			var currentLine:int = 1;
 
+			var boxFull:Boolean;
 			for (var i:int = 0; i < len; i++) {
 				child = IFlexDisplayObject(target.getChildAt(i));
 
@@ -96,56 +97,57 @@ package com.kaltura.containers.utilityClasses {
 					continue;
 				}
 
-				// If the child can't be placed in the current row....
-				if (currentRowLastX + child.width > unscaledWidth - paddingRight) {
-					currentRowLastX -= hGap;
-
-					rowExcessSpace = unscaledWidth - paddingRight - currentRowLastX;
-					rowExcessSpace *= hAlign;
-					currentRowLastX = rowExcessSpace == 0 ? paddingLeft : rowExcessSpace;
-
-					// Go back through the row and adjust the children for
-					// their vertical and horizontal align values
-					for (var j:int = 0; j < currentRowChildren.length; j++) {
-						tmpChild = currentRowChildren[j];
-
-						top = (currentRowHeight - tmpChild.height) * vAlign;
-						if (moveChildren) {
-							tmpChild.move(Math.floor(currentRowLastX), currentRowY + Math.floor(top));
+				if (!boxFull) {
+					// If the child can't be placed in the current row....
+					if (currentRowLastX + child.width > unscaledWidth - paddingRight) {
+						currentRowLastX -= hGap;
+	
+						rowExcessSpace = unscaledWidth - paddingRight - currentRowLastX;
+						rowExcessSpace *= hAlign;
+						currentRowLastX = rowExcessSpace == 0 ? paddingLeft : rowExcessSpace;
+	
+						// Go back through the row and adjust the children for
+						// their vertical and horizontal align values
+						for (var j:int = 0; j < currentRowChildren.length; j++) {
+							tmpChild = currentRowChildren[j];
+	
+							top = (currentRowHeight - tmpChild.height) * vAlign;
+							if (moveChildren) {
+								tmpChild.move(Math.floor(currentRowLastX), currentRowY + Math.floor(top));
+							}
+							currentRowLastX += tmpChild.width + hGap;
 						}
-						currentRowLastX += tmpChild.width + hGap;
+	
+						
+						currentLine++;
+						if (maxLines > 0 && currentLine > maxLines) {
+							boxFull = true;
+						}
+						else {
+							// Start a new row
+							currentRowY += currentRowHeight + vGap;
+							currentRowLastX = paddingLeft;
+							currentRowHeight = 0;
+							currentRowChildren = [];
+						}
 					}
-
-					
-					currentLine++;
-					if (maxLines > 0 && currentLine > maxLines) {
-						target.removeChild(child as DisplayObject);
-						(target as BoundedFlowBox).exceeded();
-						break;
-					}
-					else {
-						// Start a new row
-						currentRowY += currentRowHeight + vGap;
-						currentRowLastX = paddingLeft;
-						currentRowHeight = 0;
-						currentRowChildren = [];
-					}
+	
+					// Don't actually move the child yet because that'd done when we
+					// "finish" a row
+					//child.move( currentRowLastX, currentRowY );
+	
+					// Move on to the next x location in the row
+					currentRowLastX += child.width + hGap;
+	
+					// Add the child to the current row so we can adjust the
+					// coordinates based on vAlign and hAlign
+					currentRowChildren.push(child);
+	
+					// The largest child height in the row is the height for the
+					// entire row
+					currentRowHeight = Math.max(child.height, currentRowHeight);
+				
 				}
-
-				// Don't actually move the child yet because that'd done when we
-				// "finish" a row
-				//child.move( currentRowLastX, currentRowY );
-
-				// Move on to the next x location in the row
-				currentRowLastX += child.width + hGap;
-
-				// Add the child to the current row so we can adjust the
-				// coordinates based on vAlign and hAlign
-				currentRowChildren.push(child);
-
-				// The largest child height in the row is the height for the
-				// entire row
-				currentRowHeight = Math.max(child.height, currentRowHeight);
 			}
 
 
@@ -174,6 +176,9 @@ package com.kaltura.containers.utilityClasses {
 
 			if (!moveChildren) {
 				target.measuredHeight = currentRowY + currentRowHeight + vm.bottom + vm.top;
+			}
+			if (boxFull) {
+				(target as BoundedFlowBox).exceeded();
 			}
 		}
 	}
