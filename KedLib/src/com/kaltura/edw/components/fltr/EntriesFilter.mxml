@@ -6,6 +6,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.base.types.MetadataCustomFieldTypes;
+			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
@@ -168,6 +169,12 @@
 			 * */
 			public var categoriesTreeSelectionAttribute:String = "selectedEntries";
 			
+			[Bindable]
+			public var categoriesRoot:ArrayCollection;
+			
+			[Bindable]
+			public var allCategories:HashMap;
+			
 			// ----------------
 			// general
 			// ----------------
@@ -219,7 +226,7 @@
 			<cat:CatTreeWrapper height="100%" width="100%" 
 								exactAttribute="categoriesIdsMatchOr" plusAttribute="categoriesMatchOr" 
 								selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" valueChange="updateFilterValue(event)"
-								dataProvider="{filterModel.categoriesForEntries}" categories="{filterModel.categoriesMapForEntries}"
+								dataProvider="{categoriesRoot}" categories="{allCategories}"
 								selectionAttribute="{categoriesTreeSelectionAttribute}" prefsButton="{prefs}"
 								chunkedData="{filterModel.chunkedCategoriesLoad}" kClient="{context.kc}"/>
 			<mx:Button id="prefs" styleName="catTreePrefs" />

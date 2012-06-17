@@ -49,6 +49,8 @@ package com.kaltura.edw.control.commands.categories
 			// set root level categories to the model
 			_filterModel.categoriesForEntries = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
 			// set root level categories to the model
+			_filterModel.categoriesForMod = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForMod);
+			// set root level categories to the model
 			_filterModel.categoriesForCats = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
 			// set root level categories to the model
 			_filterModel.categoriesGeneral = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);

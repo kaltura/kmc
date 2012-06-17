@@ -63,12 +63,14 @@ package com.kaltura.edw.control.commands.categories
 				if (_branchCat) {
 					// set result in the existing tree 
 					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
+					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForMod);
 					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
 					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);
 				}
 				else {
 					// use result as tree base
 					_filterModel.categoriesForEntries = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
+					_filterModel.categoriesForMod = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForMod);
 					_filterModel.categoriesForCats = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
 					_filterModel.categoriesGeneral = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);
 				}

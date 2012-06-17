@@ -12,6 +12,9 @@ package com.kaltura.edw.control.commands.categories
 			filterModel.categoriesMapForEntries.clear();
 			filterModel.categoriesForEntries = null;
 			
+			filterModel.categoriesMapForMod.clear();
+			filterModel.categoriesForMod = null;
+			
 			filterModel.categoriesMapForCats.clear();
 			filterModel.categoriesForCats = null;
 			
