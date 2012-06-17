@@ -116,7 +116,7 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 		{
 			super.styleChanged( styleProp );
 			
-			if (!styleProp || styleProp == "selectedItemStyleName")
+			if (!styleProp || styleProp == "selectedItemStyleName" || styleProp == "unregisteredSelectedItemStyleName")
 			{
 				_buttonStyleChanged = true;					
 				invalidateDisplayList();
