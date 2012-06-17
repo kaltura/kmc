@@ -4,6 +4,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.autocomplete.itemRenderers.selection.UserSelectedItem;
 			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
@@ -505,8 +506,8 @@
 	</mx:HBox>
 	<mx:HBox width="100%" verticalAlign="middle" includeInLayout="{filterUsersFlag}" visible="{filterUsersFlag}">
 		<mx:Label width="{LBL_WIDTH}" text="{resourceManager.getString('analytics','searchUser')}" />
-		<components:AutoComplete id="usersComplete" width="{INPUT_WIDTH}"
-								 selectedItemStyleName="selectionBox"
+		<components:AutoComplete id="usersComplete" width="{INPUT_WIDTH}" unregisteredSelectedItemStyleName="unregisteredSelectionBox"
+								 selectedItemStyleName="selectionBox" selectionItemRendererClassFactory="{new ClassFactory(UserSelectedItem)}"
 								 allowNewValues="false" labelField="id" showRemoveIcon="true"
 								 creationComplete="{new KACUsersController(usersComplete, kc)}"
 								 allowMultipleSelection="true" change="usersComplete_changeHandler(event)"

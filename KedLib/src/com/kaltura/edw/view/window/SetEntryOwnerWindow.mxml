@@ -16,6 +16,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.autocomplete.itemRenderers.selection.UserSelectedItem;
 			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.UsersEvent;
@@ -103,8 +104,8 @@
 		]]>
 	</mx:Script>
 	<mx:Label text="{resourceManager.getString('drilldown', 'changeOwnerText')}" width="100%" />
-	<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true"
-							 prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}" />
+	<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true" selectionItemRendererClassFactory="{new ClassFactory(UserSelectedItem)}"
+							 selectedItemStyleName="selectionBox" unregisteredSelectedItemStyleName="unregisteredSelectionBox" prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}" />
 	
 	 <mx:ControlBar width="100%" horizontalAlign="right">
 		 <mx:Button label="{resourceManager.getString('drilldown', 'cancel')}" styleName="cancelBtnStyle"

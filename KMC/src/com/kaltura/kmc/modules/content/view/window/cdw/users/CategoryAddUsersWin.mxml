@@ -10,6 +10,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACUsersController;
+			import com.kaltura.autocomplete.itemRenderers.selection.UserSelectedItem;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryUserEvent;
@@ -119,8 +120,8 @@
 	<mx:HBox width="100%">
 		<mx:Label text="{resourceManager.getString('cms','selectUsers')}" width="{LABEL_WIDTH}"
 				  styleName="feedParamLabel"/>
-		<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true"
-							 allowMultipleSelection="true" width="{TEXT_WIDTH}"/>
+		<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true" selectionItemRendererClassFactory="{new ClassFactory(UserSelectedItem)}"
+								 selectedItemStyleName="selectionBox" unregisteredSelectedItemStyleName="unregisteredSelectionBox" allowMultipleSelection="true" width="{TEXT_WIDTH}"/>
 	</mx:HBox>
 	<mx:ControlBar horizontalAlign="center" horizontalGap="5">
 		<mx:Button label="{resourceManager.getString('cms', 'add')}" click="submit(event)"/>
