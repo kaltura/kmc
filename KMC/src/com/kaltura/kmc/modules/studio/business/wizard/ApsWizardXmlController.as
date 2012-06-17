@@ -415,7 +415,7 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 							rowHeight = labels.length() * 20 + 10;
 							if (imgNode && imgNode.@height) {
 								// if the image is taller than the labels, use image height (added for falcon skin)
-								rowHeight = Math.max(rowHeight, imgNode.@height + 10);
+								rowHeight = Math.max(rowHeight, (parseInt(imgNode.@height) + 10));
 							}
 						}
 						else {
