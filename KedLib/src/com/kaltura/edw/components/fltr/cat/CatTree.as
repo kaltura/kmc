@@ -11,6 +11,7 @@ package com.kaltura.edw.components.fltr.cat
 	import com.kaltura.edw.control.CategoriesTreeController;
 	import com.kaltura.edw.events.GeneralNonCairngormEvent;
 	import com.kaltura.edw.vo.CategoryVO;
+	import com.kaltura.types.KalturaNullableBoolean;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import flash.events.Event;
@@ -391,7 +392,7 @@ package com.kaltura.edw.components.fltr.cat
 						// if there is a value, it means it was selected before
 						setCatSelectionStatus(cat, TriStateCheckBox.UNSELECTED); 
 						delete _selectedCategories[cat.id];
-						
+						_initialFilter = _initialFilter.replace(catid + ',', '');
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
@@ -400,7 +401,7 @@ package com.kaltura.edw.components.fltr.cat
 						// otherwise, add the category
 						setCatSelectionStatus(cat, TriStateCheckBox.SELECTED); 
 						_selectedCategories[cat.id] = cat;
-						
+						_initialFilter = catid + "," + _initialFilter;		
 						setChildrenSelection(cat, TriStateCheckBox.SELECTED, true);
 						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;

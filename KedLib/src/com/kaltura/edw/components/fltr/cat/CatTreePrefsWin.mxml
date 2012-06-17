@@ -12,20 +12,15 @@
 			import mx.events.FlexEvent;
 			
 			
-			private var _so:SharedObject;
-
 			private var _oldSelectionMode:int;
-			private var _selectionMode:int;
+			public var selectionMode:int;
 			
 			/**
 			 * save prefs and dispatch change event if needed, then request close.
 			 * */
 			protected function saveBtn_clickHandler(event:MouseEvent):void {
-				if (_selectionMode != _oldSelectionMode) {
-					// save data in sharedObject
-					_so.data.selectionMode = _selectionMode;
-					_so.flush();
-					dispatchEvent(new CatTreePrefsEvent(CatTreePrefsEvent.PREFS_CHANGED, _selectionMode));
+				if (selectionMode != _oldSelectionMode) {
+					dispatchEvent(new CatTreePrefsEvent(CatTreePrefsEvent.PREFS_CHANGED, selectionMode));
 				}
 				// dispatch close event
 				dispatchEvent(new CloseEvent(CloseEvent.CLOSE));
@@ -36,7 +31,7 @@
 			 * return current value
 			 * */
 			public function getValue():int {
-				if (selectionMode.selection == exact) {
+				if (selectionModeGroup.selection == exact) {
 					return CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
 				}
 				else {
@@ -49,9 +44,9 @@
 			 * save old value and show it in radio buttons
 			 * */
 			protected function creationCompleteHandler(event:FlexEvent):void {
-				_so = SharedObject.getLocal("KMC_catTree");
-				if (_so.data.selectionMode) {
-					_oldSelectionMode = _so.data.selectionMode;
+				if (selectionMode) {
+					_oldSelectionMode = selectionMode;
+				
 					if (_oldSelectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
 						exact.selected = true;
 						plus.selected = false;
@@ -73,20 +68,20 @@
 			 * */
 			protected function selectionMode_changeHandler(event:Event):void
 			{
-				if (selectionMode.selection == exact) {
-					_selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
+				if (selectionModeGroup.selection == exact) {
+					selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_EXACT;
 				}
-				else if (selectionMode.selection == plus) {
-					_selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_PLUS;
+				else if (selectionModeGroup.selection == plus) {
+					selectionMode = CatTreeSelectionMode.MULTIPLE_SELECT_PLUS;
 				}
 			}
 
 
 		]]>
 	</mx:Script>
-	<mx:RadioButtonGroup id="selectionMode" change="selectionMode_changeHandler(event)"/>
-	<mx:RadioButton id="exact" group="{selectionMode}" label="{resourceManager.getString('filter', 'preferencesExact')}" />
-	<mx:RadioButton id="plus" group="{selectionMode}" label="{resourceManager.getString('filter', 'preferencesPlus')}" />
+	<mx:RadioButtonGroup id="selectionModeGroup" change="selectionMode_changeHandler(event)"/>
+	<mx:RadioButton id="exact" group="{selectionModeGroup}" label="{resourceManager.getString('filter', 'preferencesExact')}" />
+	<mx:RadioButton id="plus" group="{selectionModeGroup}" label="{resourceManager.getString('filter', 'preferencesPlus')}" />
 	<mx:ControlBar horizontalGap="5">
 		<mx:Button id="saveBtn" label="{resourceManager.getString('filter','save')}" click="saveBtn_clickHandler(event)"/>
 	</mx:ControlBar>

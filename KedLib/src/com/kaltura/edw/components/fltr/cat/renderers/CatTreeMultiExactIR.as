@@ -2,6 +2,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 	import com.kaltura.edw.components.fltr.cat.CatSelectionStatus;
 	import com.kaltura.edw.components.fltr.cat.CatTree;
 	import com.kaltura.edw.vo.CategoryVO;
+	import com.kaltura.types.KalturaNullableBoolean;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -193,11 +194,7 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		override protected function commitProperties():void {
 			super.commitProperties();
 			var vo:CategoryVO = data as CategoryVO;
-//			if (getLabel().text && getLabel().text != " ") {
-//				// if there is text on the label it means there is data
-//				label.htmlText = vo.name + " <font color='#666666' size='11'> (" + vo.category.entriesCount + ")</font>";
-//			}
-			if (vo ){
+			if (vo){
 				cb.selected = vo[_listOwner.selectionAttribute] && vo[_listOwner.selectionAttribute] != CatSelectionStatus.UNSELECTED;
 				cb.enabled = vo.enabled;
 			}

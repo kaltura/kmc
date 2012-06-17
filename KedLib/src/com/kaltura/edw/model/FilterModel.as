@@ -18,25 +18,43 @@ package com.kaltura.edw.model {
 		// --------------------
 		public var catTreeDataManager:ICategoriesDataManger;
 
+		
 		/**
 		 * the root of a category hierarchy.
 		 * */
-		public var categories:ArrayCollection = null;
-//		/**
-//		 * the root of a category hierarchy.
-//		 * */
-//		public var categories:CategoryVO = null;
-
-		/**
-		 * should categories data be loaded in chunks
-		 */
-		public var chunkedCategoriesLoad:Boolean = true;
+		public var categoriesForEntries:ArrayCollection = null;
 
 		/**
 		 * categories listing
 		 * */
-		public var categoriesMap:HashMap = new HashMap();
+		public var categoriesMapForEntries:HashMap = new HashMap();
+		
+		
+		/**
+		 * the root of a category hierarchy.
+		 * */
+		public var categoriesForCats:ArrayCollection = null;
 
+		/**
+		 * categories listing
+		 * */
+		public var categoriesMapForCats:HashMap = new HashMap();
+		
+		/**
+		 * the root of a category hierarchy.
+		 * */
+		public var categoriesGeneral:ArrayCollection = null;
+
+		/**
+		 * categories listing
+		 * */
+		public var categoriesMapGeneral:HashMap = new HashMap();
+		
+		
+		/**
+		 * should categories data be loaded in chunks
+		 */
+		public var chunkedCategoriesLoad:Boolean = true;
 
 
 		/**

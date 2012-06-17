@@ -197,10 +197,6 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		override protected function commitProperties():void {
 			super.commitProperties();
 			var vo:CategoryVO = data as CategoryVO;
-//			if (getLabel().text && getLabel().text != " ") {
-//				// if there is text on the label it means there is data
-//				label.htmlText = vo.name + " <font color='#666666' size='11'> (" + vo.category.entriesCount + ")</font>";
-//			}
 			if (vo ){
 				switch (vo[_listOwner.selectionAttribute]){
 					case CatSelectionStatus.PARTIAL:

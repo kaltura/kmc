@@ -9,8 +9,14 @@ package com.kaltura.edw.control.commands.categories
 		
 		override public function execute(event:KMvCEvent):void {
 			var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-			filterModel.categoriesMap.clear();
-			filterModel.categories = null;
+			filterModel.categoriesMapForEntries.clear();
+			filterModel.categoriesForEntries = null;
+			
+			filterModel.categoriesMapForCats.clear();
+			filterModel.categoriesForCats = null;
+			
+			filterModel.categoriesMapGeneral.clear();
+			filterModel.categoriesGeneral = null;
 		}
 	}
 }

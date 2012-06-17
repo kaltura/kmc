@@ -60,7 +60,18 @@ package com.kaltura.edw.control.commands.categories
 				Alert.show(ResourceManager.getInstance().getString('filter', 'catsSingleLevelExceeded', [limit]));
 			}
 			else {
-				addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMap);
+				if (_branchCat) {
+					// set result in the existing tree 
+					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
+					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
+					addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);
+				}
+				else {
+					// use result as tree base
+					_filterModel.categoriesForEntries = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
+					_filterModel.categoriesForCats = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
+					_filterModel.categoriesGeneral = addCategoriesToTree((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);
+				}
 			}
 			if (_source && _onComplete != null) {
 				_onComplete.apply(_source, [_branchCat]);
@@ -68,7 +79,7 @@ package com.kaltura.edw.control.commands.categories
 			_model.decreaseLoadCounter();
 		}
 		
-		private function addCategoriesToTree(kCats:Array, catMap:HashMap):void {
+		private function addCategoriesToTree(kCats:Array, catMap:HashMap):ArrayCollection {
 			// create category VOs
 			var categories:ArrayCollection = new ArrayCollection();
 			var category:CategoryVO;
@@ -89,10 +100,11 @@ package com.kaltura.edw.control.commands.categories
 					_branchCat.children.addItem(cat);
 				}
 			}
-			else {
-				// first level
-				_filterModel.categories = categories;
-			}
+//			else {
+//				// first level
+//				_filterModel.categories = categories;
+//			}
+			return categories;
 		}
 	}
 }

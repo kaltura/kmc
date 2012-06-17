@@ -46,14 +46,16 @@ package com.kaltura.edw.control.commands.categories
 		override public function result(data:Object):void {
 			super.result(data);
 			_filterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-			buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMap);
-			if (_source && _onComplete != null) {
-				_onComplete.apply(_source, [_filterModel.categories]);
-			}
+			// set root level categories to the model
+			_filterModel.categoriesForEntries = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForEntries);
+			// set root level categories to the model
+			_filterModel.categoriesForCats = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapForCats);
+			// set root level categories to the model
+			_filterModel.categoriesGeneral = buildCategoriesHyrarchy((data.data as KalturaCategoryListResponse).objects, _filterModel.categoriesMapGeneral);
 			_model.decreaseLoadCounter();
 		}
 		
-		private function buildCategoriesHyrarchy(kCats:Array, catMap:HashMap):void {
+		private function buildCategoriesHyrarchy(kCats:Array, catMap:HashMap):ArrayCollection {
 			var allCategories:ArrayCollection = new ArrayCollection();	// all categories, so we can scan them easily
 			var rootLevel:ArrayCollection = new ArrayCollection();	// categories in the root level
 			var category:CategoryVO;
@@ -81,8 +83,7 @@ package com.kaltura.edw.control.commands.categories
 					rootLevel.addItem(cat);
 				}
 			}
-			// set root level categories to the model
-			_filterModel.categories = rootLevel;
+			return rootLevel;
 		}
 		
 		

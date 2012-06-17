@@ -22,11 +22,6 @@ package com.kaltura.edw.control.events
 		public static const FLUSH_CATEGORIES:String = "flush_categories"; 
 
 		/**
-		 * flush all categories data 
-		 */
-		public static const CREATE_ROOT_CATEGORY:String = "create_root_category"; 
-		
-		/**
 		 * remember the data manager on the model so we can trigger its methods 
 		 * from commands which manipulate categories
 		 * event.data is the ICategoriesDataManager 
