@@ -297,7 +297,11 @@
 		<indicators:Indicators id="indicators" width="100%" height="60"
 							   dataProvider="{filter.indicators}"
 							   boxClicked="filter.removeFilter(event.data)"/>
-		<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList(event)" styleName="recycleIcon"/>
+		<mx:VBox styleName="noPadding">
+			<mx:LinkButton label="{resourceManager.getString('cms','refresh')}" click="refreshList(event)" styleName="recycleIcon"/>
+			<mx:Label text="{resourceManager.getString('filter', 'indicatorsLabel', [indicators.numExceeded])}" 
+					  visible="{indicators.numExceeded > 0}" styleName="indicatorsLabel"/>
+		</mx:VBox>
 	</mx:HBox>
 	
 	<mx:HDividedBox id="topContainer" width="100%" height="100%" verticalScrollPolicy="off" >

@@ -16,6 +16,12 @@ package com.kaltura.containers
 		
 		public static const ROWS_LIMIT_EXCEEDED:String = "rowsLimitExceeded";
 		
+		[Bindable]
+		/**
+		 * index of the the last child that is visible in the box 
+		 */		
+		public var lastVisibleItemIndex:int;
+		
 		private var _limitRows:int = 2;
 
 		public function get limitRows():int
@@ -39,7 +45,7 @@ package com.kaltura.containers
 		}
 		
 		
-		public function exceeded():void {
+		public function exceeded(lastVisibleItemIndex:int):void {
 			dispatchEvent(new Event(BoundedFlowBox.ROWS_LIMIT_EXCEEDED));
 		}
 	}

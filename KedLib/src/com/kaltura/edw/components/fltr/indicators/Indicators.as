@@ -18,6 +18,11 @@ package com.kaltura.edw.components.fltr.indicators {
 	
 	public class Indicators extends BoundedFlowBox {
 
+		[Bindable]
+		/**
+		 * number of indicators that are not showing
+		 * */
+		public var numExceeded:int;
 		
 		/**
 		 * all the data for the component.
@@ -40,10 +45,17 @@ package com.kaltura.edw.components.fltr.indicators {
 			if (!collection) {
 				dataProvider = new ArrayCollection();
 			}
-				
-			addEventListener(BoundedFlowBox.ROWS_LIMIT_EXCEEDED, onExceeded, false, 0, true);
+			BindingUtils.bindSetter(setNumExceeded, this, "lastVisibleItemIndex");
 		}
 
+		protected function setNumExceeded(lastVisible:int):void {
+			if (lastVisible >= 0) {
+				numExceeded = numChildren - lastVisible;
+			}
+			else {
+				numExceeded = 0;
+			}
+		}		
 
 		[Bindable("collectionChange")]
 		public function get dataProvider():ArrayCollection {
@@ -104,12 +116,9 @@ package com.kaltura.edw.components.fltr.indicators {
 				}
 				addChild(wrapVo.button);
 			}
-			if (_finalLabel) {
-				_finalLabel.text = resourceManager.getString('drilldown', 'indicatorsLabel', [collection.length - numChildren]); 
-			}
 			// do layout 
 			invalidateDisplayList();
-			
+			setNumExceeded(lastVisibleItemIndex);
 		}
 
 		private function createButton(ivo:IndicatorVo):Button {
@@ -135,37 +144,13 @@ package com.kaltura.edw.components.fltr.indicators {
 				}
 			} 
 		}
-
-		private function onExceeded(e:Event):void {
-			e.stopImmediatePropagation();
-			trace("exceeded:", numChildren, collection.length);
-//			if (!_finalLabel) {
-//				createFinalLabel();
-//			}
-//			var btn:Button;
-//			// get the last button before the label
-//			if (_finalLabel.parent) {
-//				for (var i:int =0; i<indicators.length; i++) {
-//					
-//				}
-//				btn = indicators[numChildren-2].button;
-//			}
-//			else {
-//				btn = indicators[numChildren-1].button;
-//			}
-//			removeChild(btn);
-//			addChild(_finalLabel);
-//			// do layout 
-//			invalidateDisplayList();
-		}
 		
-		private var _finalLabel:Label;
+//		private function onExceeded(e:Event):void {
+//			e.stopImmediatePropagation();
+//			trace("exceeded:", numChildren, collection.length);
+//			numExceeded = 
+//		}
 		
-		private function createFinalLabel():void {
-			_finalLabel = new Label();
-			_finalLabel.text = resourceManager.getString('filter', 'indicatorsLabel', [collection.length - numChildren + 1]); 
-			_finalLabel.setStyle("styleName", "indicatorsLabel");
-		}
 	}
 }
 

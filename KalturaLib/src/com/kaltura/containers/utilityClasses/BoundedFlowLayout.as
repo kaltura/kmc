@@ -89,7 +89,7 @@ package com.kaltura.containers.utilityClasses {
 			var maxLines:int = (target as BoundedFlowBox) ? (target as BoundedFlowBox).limitRows : 0;
 			var currentLine:int = 1;
 
-			var boxFull:Boolean;
+			var lastVisibleItemIndex:int = -1;
 			for (var i:int = 0; i < len; i++) {
 				child = IFlexDisplayObject(target.getChildAt(i));
 
@@ -97,10 +97,10 @@ package com.kaltura.containers.utilityClasses {
 					continue;
 				}
 
-				if (!boxFull) {
+				if (lastVisibleItemIndex < 0) {
 					// If the child can't be placed in the current row....
 					if (currentRowLastX + child.width > unscaledWidth - paddingRight) {
-						currentRowLastX -= hGap;
+						currentRowLastX -= hGap; 
 	
 						rowExcessSpace = unscaledWidth - paddingRight - currentRowLastX;
 						rowExcessSpace *= hAlign;
@@ -121,7 +121,7 @@ package com.kaltura.containers.utilityClasses {
 						
 						currentLine++;
 						if (maxLines > 0 && currentLine > maxLines) {
-							boxFull = true;
+							lastVisibleItemIndex = i;
 						}
 						else {
 							// Start a new row
@@ -132,21 +132,22 @@ package com.kaltura.containers.utilityClasses {
 						}
 					}
 	
-					// Don't actually move the child yet because that'd done when we
-					// "finish" a row
-					//child.move( currentRowLastX, currentRowY );
-	
-					// Move on to the next x location in the row
-					currentRowLastX += child.width + hGap;
-	
-					// Add the child to the current row so we can adjust the
-					// coordinates based on vAlign and hAlign
-					currentRowChildren.push(child);
-	
-					// The largest child height in the row is the height for the
-					// entire row
-					currentRowHeight = Math.max(child.height, currentRowHeight);
-				
+					if (lastVisibleItemIndex < 0) {
+						// Don't actually move the child yet because that'd done when we
+						// "finish" a row
+						//child.move( currentRowLastX, currentRowY );
+		
+						// Move on to the next x location in the row
+						currentRowLastX += child.width + hGap;
+		
+						// Add the child to the current row so we can adjust the
+						// coordinates based on vAlign and hAlign
+						currentRowChildren.push(child);
+		
+						// The largest child height in the row is the height for the
+						// entire row
+						currentRowHeight = Math.max(child.height, currentRowHeight);
+					}
 				}
 			}
 
@@ -177,8 +178,9 @@ package com.kaltura.containers.utilityClasses {
 			if (!moveChildren) {
 				target.measuredHeight = currentRowY + currentRowHeight + vm.bottom + vm.top;
 			}
-			if (boxFull) {
-				(target as BoundedFlowBox).exceeded();
+			(target as BoundedFlowBox).lastVisibleItemIndex = lastVisibleItemIndex;
+			if (lastVisibleItemIndex >= 0) {
+				(target as BoundedFlowBox).exceeded(lastVisibleItemIndex);
 			}
 		}
 	}
