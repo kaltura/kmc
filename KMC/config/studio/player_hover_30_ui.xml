@@ -50,6 +50,52 @@
                watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topRight"/>
          
 
+		  <VBox id="relatedViewVBox" horizontalAlign="center" verticalAlign="middle" width="100%" height="100%" visible="{relatedView.visible}" includeInLayout="{relatedView.visible}" verticalGap="10" styleName="black">
+          <VBox id="relatedVBox" width="100%" height="100%" maxWidth="800" maxHeight="600" paddingLeft="13" paddingRight="13" styleName="black" verticalAlign="bottom">
+            <HBox id="upNextHbox" width="100%" height="35" paddingTop="10" horizontalGap="0" visible="{not(layoutProxy.isInFullScreen)}" includeInLayout="{not(layoutProxy.isInFullScreen)}">
+              <Label id="upNextLabel" visible="{relatedEntries.autoPlay}" text="Up next in" width="63" height="20" styleName="Related_Text_UpNext"/>
+              <Label id="upNextTime" visible="{relatedEntries.autoPlay}" text="{relatedEntries.timeRemaining}" width="25" height="20" styleName="Related_Text_Number"/>
+              <Label id="upNextLabel2" visible="{relatedEntries.autoPlay}" text="secs" width="32" height="20" styleName="Related_Text_UpNext"/>
+              <HBox id="pauseConteinueHBox" width="63" height="20" visible="{relatedEntries.autoPlay}" paddingLeft="0" verticalAlign="middle" >
+                <Button id="pauseRelatedBtn" width="30" height="20" label="Pause" visible="{relatedEntries.isTimerRunning}" includeInLayout="{relatedEntries.isTimerRunning}" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton"  color1="0xCECECE" color2="0xFFFFFF" />
+                <Button id="playRelatedBtn" width="63" height="20" visible="{not(relatedEntries.isTimerRunning)}" includeInLayout="{not(relatedEntries.isTimerRunning)}" label="Continue" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton" color1="0xCECECE" color2="0xFFFFFF" />
+              </HBox>
+              
+              <HBox id="actionsHBox" width="100%" height="35" horizontalAlign="right" horizontalGap="5">
+                <Button id="replayOnRelatedScreen" kClick="sendNotification('doSeek','0');sendNotification('doPlay')" label="Replay" labelPlacement="right" textPadding="5" minWidth="80" visible="{relatedView.showReplayBtn}"
+                  icon="replayIcon_Up" upIcon="replayIcon_Up" overIcon="replayIcon_Hover" downIcon="replayIcon_Down" disabeledIcon="replayIcon_Disabled"/>
+                <Button id="shareOnRelatedWithAutoPlay" visible="{and(relatedEntries.autoPlay,relatedEntries.isTimerRunning)}" includeInLayout="{shareOnRelatedWithAutoPlay.visible}" kClick="sendNotification ('pauseResumeRelatedTimer');sendNotification('doGigya')" textPadding="5" label="Share" labelPlacement="right" minWidth="80"
+                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
+                <Button id="shareOnRelated" visible="{not(shareOnRelatedWithAutoPlay.visible)}" includeInLayout="{shareOnRelated.visible}" kClick="sendNotification('doGigya')" label="Share" textPadding="5" labelPlacement="right" minWidth="80"
+                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
+              </HBox>
+            </HBox>
+
+            <!-- different styles when in full screen -->
+            <HBox id="upNextHboxFS" width="100%" height="50" paddingTop="10" horizontalGap="0" visible="{layoutProxy.isInFullScreen}" includeInLayout="{layoutProxy.isInFullScreen}">
+              <Label id="upNextLabelFS" visible="{relatedEntries.autoPlay}" text="Up next in {relatedEntries.timeRemaining} secs" width="135" height="20" styleName="RelatedFS_Text_UpNext"/>
+              <HBox width="85" height="20" visible="{relatedEntries.autoPlay}" paddingLeft="0" verticalAlign="middle" >
+                <Button id="pauseRelatedBtnFS" width="40" height="30" label="Pause" visible="{relatedEntries.isTimerRunning}" includeInLayout="{relatedEntries.isTimerRunning}" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton"  color1="0xCECECE" color2="0xFFFFFF" styleName="FS"/>
+                <Button id="playRelatedBtnFS" width="85" height="30" visible="{not(relatedEntries.isTimerRunning)}" includeInLayout="{not(relatedEntries.isTimerRunning)}" label="Continue" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton" color1="0xCECECE" color2="0xFFFFFF" styleName="FS"/>
+              </HBox>
+              
+              <HBox width="100%" height="50" horizontalAlign="right" horizontalGap="5">
+                <Button id="replayOnRelatedScreenFS" kClick="sendNotification('doSeek','0');sendNotification('doPlay')" label="Replay" labelPlacement="right" textPadding="5" minWidth="80" visible="{relatedView.showReplayBtn}"
+                  icon="replayIcon_Up" upIcon="replayIcon_Up" overIcon="replayIcon_Hover" downIcon="replayIcon_Down" disabeledIcon="replayIcon_Disabled"/>
+                <Button id="shareOnRelatedWithAutoPlayFS" visible="{and(relatedEntries.autoPlay,relatedEntries.isTimerRunning)}" includeInLayout="{shareOnRelatedWithAutoPlay.visible}" kClick="sendNotification ('pauseResumeRelatedTimer');sendNotification('doGigya')" textPadding="5" label="Share" labelPlacement="right" minWidth="80"
+                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
+                <Button id="shareOnRelatedFS" visible="{not(shareOnRelatedWithAutoPlay.visible)}" includeInLayout="{shareOnRelated.visible}" kClick="sendNotification('doGigya')" label="Share" textPadding="5" labelPlacement="right" minWidth="80"
+                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
+              </HBox>
+            </HBox>
+            
+          
+            <Spacer height="20"/>
+            
+            <Plugin id="relatedView" visible="false" width="100%" height="100%" dataProvider="{relatedEntries.dataProvider}" itemRenderer="relatedViewItemRenderer" viewType="tile"/> 
+          </VBox>
+        </VBox>
+        
 		<VBox id="controllersVbox" width="100%" height="100%" verticalAlign="Bottom">
 			<Spacer id="controllerPusher" width="100%" height="100%" />
 			<VBox id="ControllerScreenHolder" width="100%" height="80" verticalAlign="middle" paddingLeft="5" paddingTop="8" styleName="Player_bg_hover">
@@ -122,8 +168,6 @@
 						   usePixels="{mediaProxy.displayFlavorPixels}"
 						   isAutoSwitch="{mediaProxy.isFlavorSwitching}"/>
 
-					<Spacer id="buttonsPusher" width="100%"/>
-					
 					<Button id="fullScreenBtnControllerScreen" command="fullScreen"
 						width="20" height="30" styleName="controllerScreen"
 						allowDisable="false" tooltip="Toggle fullscreen"
@@ -179,54 +223,7 @@
               kevent_change="sendNotification( 'closedCaptionsSelected' , ccOverComboBox.selectedItem)" 
               dataProvider="{closedCaptionsOverPlayer.availableCCFilesLabels}" prompt="Captions" visible="{closedCaptionsOverPlayer.hasCaptions}"/>
         </HBox>
-        
-        
-          <VBox id="relatedViewVBox" horizontalAlign="center" verticalAlign="middle" width="100%" height="100%" visible="{relatedView.visible}" includeInLayout="{relatedView.visible}" verticalGap="10" styleName="black">
-          <VBox id="relatedVBox" width="100%" height="100%" maxWidth="800" maxHeight="600" paddingLeft="13" paddingRight="13" styleName="black" verticalAlign="bottom">
-            <HBox id="upNextHbox" width="100%" height="35" paddingTop="10" horizontalGap="0" visible="{not(layoutProxy.isInFullScreen)}" includeInLayout="{not(layoutProxy.isInFullScreen)}">
-              <Label id="upNextLabel" visible="{relatedEntries.autoPlay}" text="Up next in" width="63" height="20" styleName="Related_Text_UpNext"/>
-              <Label id="upNextTime" visible="{relatedEntries.autoPlay}" text="{relatedEntries.timeRemaining}" width="25" height="20" styleName="Related_Text_Number"/>
-              <Label id="upNextLabel2" visible="{relatedEntries.autoPlay}" text="secs" width="32" height="20" styleName="Related_Text_UpNext"/>
-              <HBox id="pauseConteinueHBox" width="63" height="20" visible="{relatedEntries.autoPlay}" paddingLeft="0" verticalAlign="middle" >
-                <Button id="pauseRelatedBtn" width="30" height="20" label="Pause" visible="{relatedEntries.isTimerRunning}" includeInLayout="{relatedEntries.isTimerRunning}" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton"  color1="0xCECECE" color2="0xFFFFFF" />
-                <Button id="playRelatedBtn" width="63" height="20" visible="{not(relatedEntries.isTimerRunning)}" includeInLayout="{not(relatedEntries.isTimerRunning)}" label="Continue" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton" color1="0xCECECE" color2="0xFFFFFF" />
-              </HBox>
-              
-              <HBox id="actionsHBox" width="100%" height="35" horizontalAlign="right" horizontalGap="5">
-                <Button id="replayOnRelatedScreen" kClick="sendNotification('doSeek','0');sendNotification('doPlay')" label="Replay" labelPlacement="right" textPadding="5" minWidth="80" visible="{relatedView.showReplayBtn}"
-                  icon="replayIcon_Up" upIcon="replayIcon_Up" overIcon="replayIcon_Hover" downIcon="replayIcon_Down" disabeledIcon="replayIcon_Disabled"/>
-                <Button id="shareOnRelatedWithAutoPlay" visible="{and(relatedEntries.autoPlay,relatedEntries.isTimerRunning)}" includeInLayout="{shareOnRelatedWithAutoPlay.visible}" kClick="sendNotification ('pauseResumeRelatedTimer');sendNotification('doGigya')" textPadding="5" label="Share" labelPlacement="right" minWidth="80"
-                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
-                <Button id="shareOnRelated" visible="{not(shareOnRelatedWithAutoPlay.visible)}" includeInLayout="{shareOnRelated.visible}" kClick="sendNotification('doGigya')" label="Share" textPadding="5" labelPlacement="right" minWidth="80"
-                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
-              </HBox>
-            </HBox>
-
-            <!-- different styles when in full screen -->
-            <HBox id="upNextHboxFS" width="100%" height="50" paddingTop="10" horizontalGap="0" visible="{layoutProxy.isInFullScreen}" includeInLayout="{layoutProxy.isInFullScreen}">
-              <Label id="upNextLabelFS" visible="{relatedEntries.autoPlay}" text="Up next in {relatedEntries.timeRemaining} secs" width="135" height="20" styleName="RelatedFS_Text_UpNext"/>
-              <HBox width="85" height="20" visible="{relatedEntries.autoPlay}" paddingLeft="0" verticalAlign="middle" >
-                <Button id="pauseRelatedBtnFS" width="40" height="30" label="Pause" visible="{relatedEntries.isTimerRunning}" includeInLayout="{relatedEntries.isTimerRunning}" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton"  color1="0xCECECE" color2="0xFFFFFF" styleName="FS"/>
-                <Button id="playRelatedBtnFS" width="85" height="30" visible="{not(relatedEntries.isTimerRunning)}" includeInLayout="{not(relatedEntries.isTimerRunning)}" label="Continue" kClick="sendNotification('pauseResumeRelatedTimer')" buttonType="labelButton" color1="0xCECECE" color2="0xFFFFFF" styleName="FS"/>
-              </HBox>
-              
-              <HBox width="100%" height="50" horizontalAlign="right" horizontalGap="5">
-                <Button id="replayOnRelatedScreenFS" kClick="sendNotification('doSeek','0');sendNotification('doPlay')" label="Replay" labelPlacement="right" textPadding="5" minWidth="80" visible="{relatedView.showReplayBtn}"
-                  icon="replayIcon_Up" upIcon="replayIcon_Up" overIcon="replayIcon_Hover" downIcon="replayIcon_Down" disabeledIcon="replayIcon_Disabled"/>
-                <Button id="shareOnRelatedWithAutoPlayFS" visible="{and(relatedEntries.autoPlay,relatedEntries.isTimerRunning)}" includeInLayout="{shareOnRelatedWithAutoPlay.visible}" kClick="sendNotification ('pauseResumeRelatedTimer');sendNotification('doGigya')" textPadding="5" label="Share" labelPlacement="right" minWidth="80"
-                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
-                <Button id="shareOnRelatedFS" visible="{not(shareOnRelatedWithAutoPlay.visible)}" includeInLayout="{shareOnRelated.visible}" kClick="sendNotification('doGigya')" label="Share" textPadding="5" labelPlacement="right" minWidth="80"
-                  icon="shareIcon_Up" upIcon="shareIcon_Up" overIcon="shareIcon_Hover" downIcon="shareIcon_Down" disabeledIcon="shareIcon_Disabled"/>
-              </HBox>
-            </HBox>
-            
-          
-            <Spacer height="20"/>
-            
-            <Plugin id="relatedView" visible="false" width="100%" height="100%" dataProvider="{relatedEntries.dataProvider}" itemRenderer="relatedViewItemRenderer" viewType="tile"/> 
-          </VBox>
-        </VBox>
-    
+         
         <Plugin id="gigya" width="100%" height="100%" loadingPolicy="noWait"  title="{mediaProxy.entry.name}"
             shareEmailBody="Hi,&lt;br&gt;I watched this video and thought you'd enjoy it too. &lt;br&gt;$URL$ to watch.&lt;br&gt; $sender$"
             shareEmailSubject="Take a look at this video"/>
