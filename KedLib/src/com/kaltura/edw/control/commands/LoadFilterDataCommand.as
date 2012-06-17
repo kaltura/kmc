@@ -32,6 +32,7 @@ package com.kaltura.edw.control.commands
 	import com.kaltura.vo.KalturaCategoryListResponse;
 	import com.kaltura.vo.KalturaDistributionProfile;
 	import com.kaltura.vo.KalturaDistributionProfileListResponse;
+	import com.kaltura.vo.KalturaDistributionThumbDimensions;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaFlavorParams;
 	import com.kaltura.vo.KalturaFlavorParamsListResponse;
@@ -142,6 +143,7 @@ package com.kaltura.edw.control.commands
 		 * coppied from ListDistributionProfilesCommand 
 		 */
 		private function handleListDistributionProfileResult(profilesResult:KalturaDistributionProfileListResponse) : void {
+			var dum:KalturaDistributionThumbDimensions;
 			var profilesArray:Array = new Array();
 			//as3flexClient can't generate these objects since we don't include them in the swf 
 			for each (var profile:Object in profilesResult.objects) {
