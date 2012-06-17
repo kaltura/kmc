@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Module layout="horizontal" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:utils="com.kaltura.edw.business.*"
+<mx:Module layout="horizontal" xmlns:mx="http://www.adobe.com/2006/mxml" 
 		   creationComplete="onCreationComplete()" implements="com.kaltura.edw.business.IDrilldownPanel"
-		   xmlns:control="com.kaltura.edw.control.*" label="{resourceManager.getString('drilldown', 'metadata')}"
+		   label="{resourceManager.getString('drilldown', 'metadata')}"
 		   xmlns:components="com.hillelcoren.components.*" hide="pausePreview()">
 	<mx:Metadata> 
 		[Event(name="validationComplete", type="com.kaltura.edw.events.ValidationResultEvent")] 
@@ -139,6 +139,11 @@
 			 * RnP: edit custom data
 			 * */
 			public var customDataEditable:Boolean = true;
+
+			/**
+			 * disable alerts in KDP
+			 * */
+			public var disableKDPAlerts:Boolean = true;
 
 
 			// =================================================================
@@ -590,6 +595,7 @@
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
 
+				params.disableAlerts = disableKDPAlerts;
 				params.debugMode = context.debugMode;
 
 				kdp3StaticSwfLoader.content["flashvars"] = params;
@@ -941,7 +947,7 @@
 		<!-- player -->
 		<mx:HBox width="100%" horizontalAlign="center" id="kdpContainer">
 			<!--<mx:HBox id="kdpContainer" styleName="playerContainer">-->
-				<mx:SWFLoader id="kdp3Loader" width="340" height="194" complete="{onKDP3Loaded(event)}"/>
+			<mx:SWFLoader id="kdp3Loader" width="340" height="194" complete="{onKDP3Loaded(event)}"/>
 			<!--</mx:HBox>-->
 		</mx:HBox>
 		<!-- actions -->
