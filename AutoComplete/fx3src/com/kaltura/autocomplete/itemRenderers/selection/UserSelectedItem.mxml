@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*"
-						toolTipCreate="onTooltipCreated(event)" toolTip=" ">
+<base:SelectionItemBase xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:base="com.kaltura.autocomplete.itemRenderers.selection.base.*" xmlns:classes="com.hillelcoren.components.autoComplete.classes.*" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.vo.KalturaUser;
-			private function onTooltipCreated(evt:Event):void{
+			
+			
+			override public function set item(value:Object):void{
+				super.item = value;
 				var user:KalturaUser = _item as KalturaUser;
+				if (user == null || (user != null && user.createdAt == int.MIN_VALUE)){
+					toolTip = resourceManager.getString("autocomplete", "unregisteredUserMsg", [user ? user.id : _item]);
+				}
 			}
 			
 			override protected function getCurrStyle():String{
-				return getStyle("unregisteredSelectedItemStyleName");
+				var user:KalturaUser = _item as KalturaUser;
+				if (user == null || (user != null && user.createdAt == int.MIN_VALUE)) {
+					return getStyle("unregisteredSelectedItemStyleName");
+				} else {
+					return getStyle("selectedItemStyleName");
+				}
 			}
 		]]>
 	</mx:Script>
-	
+	<classes:ShorterTextInput id="textInput" />
+	<classes:IconButton id="button"/>
+	<mx:Spacer id="spacer"/>
 </base:SelectionItemBase>
