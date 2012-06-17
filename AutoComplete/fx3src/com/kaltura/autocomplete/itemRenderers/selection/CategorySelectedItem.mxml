@@ -7,44 +7,85 @@
 		<![CDATA[
 			import com.kaltura.autocomplete.itemRenderers.selection.utils.CategoryToolTip;
 			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaContributionPolicyType;
 			import com.kaltura.types.KalturaPrivacyType;
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.events.ToolTipEvent;
 			import mx.managers.ToolTipManager;
-			override protected function initButtonsHook():void{
-//				button.addEventListener(Mouse
+			
+			private var _customTip:CategoryToolTip;
+			
+			override public function set item(value:Object):void{
+				super.item = value;
+				var category:KalturaCategory = _item as KalturaCategory;
+				if (category.privacyContexts != null){
+					_customTip = new CategoryToolTip();
+					
+					// Full path
+					_customTip.fullPath = category.fullName;
+					
+					// Privacy context
+					_customTip.privacyContext = resourceManager.getString('autocomplete', 'privacyContext' ,[category.privacyContext]);
+					
+					// Content Privacy
+					var accessString:String 
+					switch (category.privacy){
+						case KalturaPrivacyType.ALL:
+							accessString = resourceManager.getString('autocomplete', 'noRestriction');
+							break;
+						case KalturaPrivacyType.AUTHENTICATED_USERS:
+							accessString = resourceManager.getString('autocomplete', 'requiresAuthentication');
+							break;
+						case KalturaPrivacyType.MEMBERS_ONLY:
+							accessString = resourceManager.getString('autocomplete', 'private');
+							break;
+					}
+					_customTip.access = resourceManager.getString('autocomplete', 'contentPrivacy', [accessString]);
+					
+					// Category Listing
+					var listedString:String;
+					switch (category.appearInList){
+						case KalturaAppearInListType.CATEGORY_MEMBERS_ONLY:
+							listedString = resourceManager.getString('autocomplete', 'private');
+							break;
+						case KalturaAppearInListType.PARTNER_ONLY:
+							listedString = resourceManager.getString('autocomplete', 'noRestriction');
+							break;
+					}
+					_customTip.listed = resourceManager.getString('autocomplete', 'categoryListing', [listedString]);
+					
+					// Contribution Policy
+					var contributionString:String;
+					switch (category.contributionPolicy){
+						 case KalturaContributionPolicyType.ALL:
+							 contributionString = resourceManager.getString('autocomplete', 'noRestriction');
+							 break;
+						 case KalturaContributionPolicyType.MEMBERS_WITH_CONTRIBUTION_PERMISSION:
+							 contributionString = resourceManager.getString('autocomplete', 'private');
+							 break;
+					}
+					_customTip.contribution = resourceManager.getString('autocomplete', 'contributionPolicy', [contributionString]);
+					
+					// Specific end user permissions
+					var permissionsString:String;
+					if (category.membersCount > 0){
+						permissionsString = resourceManager.getString('autocomplete', 'positivePresence');
+					} else {
+						permissionsString = resourceManager.getString('autocomplete', 'negativePresence');
+					}
+					_customTip.specificPermissions = resourceManager.getString('autocomplete', 'specificPermissions', [permissionsString]);
+					
+				} else {
+					toolTip = category.fullName;
+				}
 			}
 			
 			protected function selectionitembase1_toolTipCreateHandler(event:ToolTipEvent):void
 			{
-				var category:KalturaCategory = _item as KalturaCategory;
-				var customTip:CategoryToolTip = new CategoryToolTip();
-				customTip.fullPath = category.fullName;
-				
-				switch (category.privacy){
-					case KalturaPrivacyType.ALL:
-						customTip.access = resourceManager.getString('autocomplete', 'accessPublic');
-						break;
-					case KalturaPrivacyType.AUTHENTICATED_USERS:
-						customTip.access = resourceManager.getString('autocomplete', 'accessAuthorized');
-						break;
-					case KalturaPrivacyType.MEMBERS_ONLY:
-						customTip.access = resourceManager.getString('autocomplete', 'accessAuthorized');
-						break;
+				if (_customTip){
+					event.toolTip = _customTip;
 				}
-				
-				customTip.hasMembers = category.membersCount != 0 ? resourceManager.getString('autocomplete', 'hasMembers') : resourceManager.getString('autocomplete', 'noMembers');
-				switch (category.appearInList){
-					case KalturaAppearInListType.CATEGORY_MEMBERS_ONLY:
-						customTip.isListed = resourceManager.getString('autocomplete', 'categoryListed');
-						break;
-					case KalturaAppearInListType.PARTNER_ONLY:
-						customTip.isListed = resourceManager.getString('autocomplete', 'categoryUnlisted');
-						break;
-				}
-				
-				event.toolTip = customTip;
 			}
 			
 		]]>
