@@ -320,6 +320,7 @@ package com.kaltura.edw.components.fltr.cat
 			var kCat:KalturaCategory = new KalturaCategory();
 			kCat.directSubCategoriesCount = 0;
 			var dummy:CategoryVO = new CategoryVO(0, "root", kCat);
+			dummy.children = dataProvider as ArrayCollection;
 			handleSelectionChange(dummy);
 		}
 		
@@ -357,8 +358,7 @@ package com.kaltura.edw.components.fltr.cat
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_EXACT:
 					if (cat.id == 0) {
-						// root category clicked; remove all selections
-						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
+						// root category "clicked"; remove all selections
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						deselectAllCategories();
@@ -381,21 +381,27 @@ package com.kaltura.edw.components.fltr.cat
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_PLUS:
 					if (cat.id == 0) {
-						// root category clicked; remove all selections
-						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
+						// root category "clicked"; remove all selections
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
+						
 						// deselect previous
-						deselectAllCategories();
+						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 					}
 					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
-						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED);
-						makeParentsPartial(cat);
+						setCatSelectionStatus(cat, TriStateCheckBox.UNSELECTED); 
+						delete _selectedCategories[cat.id];
+						
+						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
+						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
-						setChildrenSelection(cat, TriStateCheckBox.SELECTED);
+						setCatSelectionStatus(cat, TriStateCheckBox.SELECTED); 
+						_selectedCategories[cat.id] = cat;
+						
+						setChildrenSelection(cat, TriStateCheckBox.SELECTED, true);
 						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
@@ -404,6 +410,16 @@ package com.kaltura.edw.components.fltr.cat
 			
 			
 			// indicators: no need to handle single select state (doesn't exist in filter)
+			dispatchChange(cat, eventKind);
+		}
+		
+		
+		/**
+		 * dispatch the filter valueChange event 
+		 * @param cat
+		 * @param eventKind
+		 */		
+		private function dispatchChange(cat:CategoryVO, eventKind:String):void {
 			var ivo:IndicatorVo = new IndicatorVo();
 			ivo.label = cat.category.name;
 			ivo.tooltip = cat.category.fullName;
@@ -411,18 +427,7 @@ package com.kaltura.edw.components.fltr.cat
 			ivo.value = cat.id;
 			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, ivo, eventKind));
 		}
-		
-		/**
-		 * mark the ancestors of the given category vo as selected=partial 
-		 * @param cat
-		 */
-		private function makeParentsPartial(cat:CategoryVO):void {
-			var c:CategoryVO = cat;
-			while (c.category.parentId != int.MIN_VALUE && c.category.parentId != 0) {
-				c = categories.getValue(c.category.parentId.toString()) as CategoryVO;
-				setCatSelectionStatus(c, CatSelectionStatus.PARTIAL);
-			}
-		}
+
 		
 		/**
 		 * calculate ancestors selection status according to siblings
@@ -434,68 +439,59 @@ package com.kaltura.edw.components.fltr.cat
 				prnt = categories.getValue(prnt.category.parentId.toString()) as CategoryVO;
 				
 				var gotSelectedChildren:Boolean = false;
-				var gotUnselectedChildren:Boolean = false;
-				var gotPartialChildren:Boolean = false;
 				
 				// scan the parent's children to decide its state
 				for each (var cld:CategoryVO in prnt.children) {
-					if (cld[selectionAttribute] == CatSelectionStatus.SELECTED) {
+					if (cld[selectionAttribute] == CatSelectionStatus.SELECTED 
+						|| cld[selectionAttribute] == CatSelectionStatus.PARTIAL) {
 						gotSelectedChildren = true;
-					}
-					else  if (cld[selectionAttribute] == CatSelectionStatus.UNSELECTED || !cld[selectionAttribute]) {
-						gotUnselectedChildren = true;
-					}
-					else  if (cld[selectionAttribute] == CatSelectionStatus.PARTIAL) {
-						gotPartialChildren = true;
 						break;
 					}
 				}
 				
-				if (gotPartialChildren) {
-					// at least one child is partial
+				if (gotSelectedChildren) {
+					// at least one child is partial or selected
 					setCatSelectionStatus(prnt, CatSelectionStatus.PARTIAL);
 				}
-				else if (gotSelectedChildren && !gotUnselectedChildren) {
-					// all children are selected
-					setCatSelectionStatus(prnt, CatSelectionStatus.SELECTED);
-				}
-				else if (!gotSelectedChildren && gotUnselectedChildren) {
+				else {
 					// all children are unselected
 					setCatSelectionStatus(prnt, CatSelectionStatus.UNSELECTED);
 				}
-				else if (gotSelectedChildren && gotUnselectedChildren) {
-					// some children selected, some children unselected
-					setCatSelectionStatus(prnt, CatSelectionStatus.PARTIAL);
-				}
 			}
 		}
+		
 		
 		/**
 		 * set the "selected" value on a branch of the tree 
 		 * @param parent	branch category
 		 * @param value		the value to give "selected" (TriStateCheckBox values)
-		 * 
+		 * @param enable_disable	if true, the category will be disabled if selected or enabled if deselected
 		 */
-		private function setChildrenSelection(parent:CategoryVO, value:int):void {
-			setCatSelectionStatus(parent, value);
-			if (value == TriStateCheckBox.SELECTED){
-				_selectedCategories[parent.id] = parent;
-			}
-			else if (value == TriStateCheckBox.UNSELECTED){
-				delete _selectedCategories[parent.id];
-			}
-			
+		private function setChildrenSelection(parent:CategoryVO, value:int, enable_disable:Boolean = false):void {
 			for each (var cat:CategoryVO in parent.children) {
 				setCatSelectionStatus(cat, value);
 				if (value == TriStateCheckBox.SELECTED){
-					_selectedCategories[cat.id] = cat;
+					// if child is listed as selected, remove it.
+					if (_selectedCategories[cat.id]) {
+						delete _selectedCategories[cat.id];
+						dispatchChange(cat, FilterComponentEvent.EVENT_KIND_REMOVE);
+					}
+					// disable child
+					cat.enabled = false;
 				}
 				else if (value == TriStateCheckBox.UNSELECTED){
-					delete _selectedCategories[cat.id];
+					// if child is listed as selected, remove it.
+					if (_selectedCategories[cat.id]) {
+						// this is only when removing all selection
+						delete _selectedCategories[cat.id];
+						dispatchChange(cat, FilterComponentEvent.EVENT_KIND_REMOVE);
+					}
+					// enable child
+					cat.enabled = true;
 				}
 				// handle children
 				if (cat.children) {
-					setChildrenSelection(cat, value);
+					setChildrenSelection(cat, value, enable_disable);
 				}
 			}
 		}
