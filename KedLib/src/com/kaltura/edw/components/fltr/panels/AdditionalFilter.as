@@ -248,6 +248,11 @@ package com.kaltura.edw.components.fltr.panels {
 				_buttons[0].selected = false;
 				eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 			}
+			
+			dispatchChange(generateIndicatorVo(btn), eventKind);
+		}
+		
+		protected function generateIndicatorVo(btn:Button):IndicatorVo {
 			var vo:IndicatorVo = new IndicatorVo();
 			vo.label = btn.label;
 			if (friendlyName) {
@@ -255,7 +260,7 @@ package com.kaltura.edw.components.fltr.panels {
 			}
 			vo.attribute = attribute;
 			vo.value = btn.data ? btn.data : btn.label;
-			dispatchChange(vo, eventKind);
+			return vo;
 		}
 	}
 }

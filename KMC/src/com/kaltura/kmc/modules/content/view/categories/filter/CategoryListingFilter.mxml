@@ -4,8 +4,10 @@
 						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 			import com.kaltura.types.KalturaAppearInListType;
 			
+			import mx.controls.Button;
 			import mx.events.FlexEvent;
 			
 			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
@@ -61,6 +63,17 @@
 					}
 				}
 			}
+			
+			override protected function generateIndicatorVo(btn:Button):IndicatorVo {
+				var vo:IndicatorVo = new IndicatorVo();
+				vo.label = friendlyName + " - " + btn.label;
+				vo.tooltip = friendlyName + " - " + btn.label;
+				
+				vo.attribute = attribute;
+				vo.value = btn.data ? btn.data : btn.label;
+				return vo;
+			}
+			
 			
 		]]>
 	</mx:Script>
