@@ -177,7 +177,7 @@
 
 					// add category
 					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-					cgEvent.data = [_undoCategory, _refreshListsRequired];
+					cgEvent.data = [_undoCategory, tabsNav.isMetadataChanged(), _refreshListsRequired];
 					cgEvent.dispatch();
 					if (_refreshListsRequired) {
 						// it's actually "saveAndClose"
@@ -205,9 +205,8 @@
 			private function saveTabsData(e:CloseEvent = null):void {
 				if (!e || e.detail == Alert.OK) {
 					tabsNav.save();
-					// this eventually leads to tabsNav_savedHandler();
+					// this eventually leads to updateCategory();
 				}
-				
 				else {
 					// e.detail = cancel, so revert
 					_undoCategory.name = _origCategory.name;
@@ -231,39 +230,7 @@
 				// eventually leads to tabsNav_validationCompleteHandler
 			}
 
-			/**
-			 * perform the actual update
-			 * */
-			private function updateCategory():void {
-				_undoCategory.setUpdatedFieldsOnly(true);
-				// no entitlements to category
-				if (!_undoCategory.privacyContexts) {
-					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-					_undoCategory.userJoinPolicy = int.MIN_VALUE;
-					_undoCategory.contributionPolicy = int.MIN_VALUE;
-					_undoCategory.privacy = int.MIN_VALUE;
-					_undoCategory.appearInList = int.MIN_VALUE;
-					_undoCategory.moderation = int.MIN_VALUE;
-					_undoCategory.inheritanceType = int.MIN_VALUE;
-					_undoCategory.owner = null;
-				}
-				
-				// if category inherits members from parent, don't send inherited values
-				else if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
-					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-					_undoCategory.userJoinPolicy = int.MIN_VALUE;
-				}
-
-				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
-				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-				cgEvent2.data = [catVO, _refreshListsRequired];
-				cgEvent2.dispatch();
-				if (_refreshListsRequired) {
-					// it's actually "saveAndClose"
-					removeMe();
-				}
-			}
-
+			
 
 			private function hasChanged():Boolean {
 				var res:Boolean = !ObjectHelpers.compareKalturaObjects(_origCategory, _undoCategory);
@@ -364,11 +331,40 @@
 					save();
 //				}
 			}
-
-			private function tabsNav_savedHandler(event:Event):void {
-				updateCategory();
-			}
 			
+			/**
+			 * perform the actual update
+			 * */
+			private function updateCategory(event:Event):void {
+				_undoCategory.setUpdatedFieldsOnly(true);
+				// no entitlements to category
+				if (!_undoCategory.privacyContexts) {
+					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+					_undoCategory.userJoinPolicy = int.MIN_VALUE;
+					_undoCategory.contributionPolicy = int.MIN_VALUE;
+					_undoCategory.privacy = int.MIN_VALUE;
+					_undoCategory.appearInList = int.MIN_VALUE;
+					_undoCategory.moderation = int.MIN_VALUE;
+					_undoCategory.inheritanceType = int.MIN_VALUE;
+					_undoCategory.owner = null;
+				}
+					
+					// if category inherits members from parent, don't send inherited values
+				else if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
+					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+					_undoCategory.userJoinPolicy = int.MIN_VALUE;
+				}
+				
+				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
+				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+				cgEvent2.data = [catVO, _refreshListsRequired];
+				cgEvent2.dispatch();
+				if (_refreshListsRequired) {
+					// it's actually "saveAndClose"
+					removeMe();
+				}
+			}
+
 
 		]]>
 	</mx:Script>
@@ -379,7 +375,7 @@
 												category="{_undoCategory}" model="{_model}"
 												isNewCategory="{_isNewCategory}"
 												validationComplete="tabsNav_validationCompleteHandler(event)"
-												saved="tabsNav_savedHandler(event)"/>
+												saved="updateCategory(event)"/>
 			</mx:AddChild>
 			<mx:SetProperty target="{saveBtn}" name="enabled" value="true" />
 			<mx:SetProperty target="{saveAndCloseBtn}" name="enabled" value="true" />

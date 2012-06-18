@@ -18,9 +18,16 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		 */		
 		private var _refreshList:Boolean;
 		
+		/**
+		 * should (custom) metadata be saved after category creation
+		 * (only saved if values are set) 
+		 */		
+		private var _saveMetadata:Boolean;
+		
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
-			_refreshList = event.data[1];
+			_saveMetadata = event.data[1];
+			_refreshList = event.data[2];
 			var newCategory:KalturaCategory = event.data[0] as KalturaCategory;
 			var addCategory:CategoryAdd = new CategoryAdd(newCategory);
 			addCategory.addEventListener(KalturaEvent.COMPLETE, result);
@@ -31,14 +38,20 @@ package com.kaltura.kmc.modules.content.commands.cat {
 
 		override public function result(data:Object):void {
 			super.result(data);
-			if (data.data is KalturaCategory) {
+			if (!checkError(data) && data.data is KalturaCategory) {
 				// addition worked out fine
 				_model.categoriesModel.processingNewCategory = false;
 
+				var cgEvent:CairngormEvent;
 				// if need to add entries to the created category
 				if (_model.categoriesModel.onTheFlyCategoryEntries) {
-					var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.ADD_ON_THE_FLY_CATEGORY);
+					cgEvent = new EntriesEvent(EntriesEvent.ADD_ON_THE_FLY_CATEGORY);
 					cgEvent.data = [data.data];
+					cgEvent.dispatch();
+				}
+				if (_saveMetadata) {
+					cgEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
+					cgEvent.data = (data.data as KalturaCategory).id;
 					cgEvent.dispatch();
 				}
 				
@@ -51,7 +64,6 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					// retrigger binding
 					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
 				}
-				
 			}
 			_model.decreaseLoadCounter();
 		}

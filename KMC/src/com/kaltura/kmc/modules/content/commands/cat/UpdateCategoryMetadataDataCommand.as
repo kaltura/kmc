@@ -22,7 +22,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 		override public function execute(event:CairngormEvent):void{
 			_model.increaseLoadCounter();
 			
-			var selectedCat:KalturaCategory = _model.categoriesModel.selectedCategory;
+			var catid:String = event.data;
 			
 			var mr:MultiRequest = new MultiRequest();
 			
@@ -46,7 +46,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 					else if (newMetadataXML.children().length() > 0) {
 						var metadataAdd:MetadataAdd = new MetadataAdd(profile.profile.id,
 							KalturaMetadataObjectType.CATEGORY,
-							String(selectedCat.id),
+							catid,
 							newMetadataXML.toXMLString());
 						mr.addAction(metadataAdd);
 					}
