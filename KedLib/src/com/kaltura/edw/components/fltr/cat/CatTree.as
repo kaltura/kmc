@@ -353,8 +353,11 @@ package com.kaltura.edw.components.fltr.cat
 					// deselect previous
 					deselectAllCategories();
 					// select new
-					_selectedCategories[catid] = cat;
-					setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
+					if (catid != "0") {
+						// cannot "remember" root category
+						_selectedCategories[catid] = cat;
+						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
+					}
 					break;
 				
 				case CatTreeSelectionMode.MULTIPLE_SELECT_EXACT:
