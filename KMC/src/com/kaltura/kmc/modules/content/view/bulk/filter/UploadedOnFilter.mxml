@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:MultiAttributeFilter xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+							 creationComplete="multiattributefilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.BaseFilter;
+			import com.kaltura.edw.components.fltr.FilterComponentEvent;
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.events.FlexEvent;
+			
+			/**
+			 * when changing dates of search range, saves the old starting
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentStartOld:Date = null;
+			
+			/**
+			 * when changing dates of search range, saves the old ending
+			 * date so we can revert if new value is invalid
+			 * */
+			private var _currentEndOld:Date = null;
+			
+			
+			override public function set kfilters(value:Array):void {
+				// update vo:
+				super.kfilters = value;
+				
+				// update ui:
+				var date:Date;
+				// from date:
+				if (!_vo.uploadedOnGreaterThanOrEqual || _vo.uploadedOnGreaterThanOrEqual == int.MIN_VALUE) {
+					fromDate.selectedDate = null;
+				} 
+				else {
+					date = new Date(_vo.uploadedOnGreaterThanOrEqual * 1000);
+					fromDate.selectedDate = date;
+				}
+				
+				// to date:
+				if (!_vo.uploadedOnLessThanOrEqual || _vo.uploadedOnLessThanOrEqual == int.MIN_VALUE) {
+					toDate.selectedDate = null;
+				}
+				else {
+					date = new Date(_vo.uploadedOnLessThanOrEqual * 1000);
+					toDate.selectedDate = date;
+				}
+			}
+			
+			override public function removeItem(item:IndicatorVo):void {
+				clearDates();
+			} 
+			
+			
+			private function clearDates():void {
+				fromDate.selectedDate = null;
+				fromDate.selectedItem = new Date();
+				_vo.uploadedOnGreaterThanOrEqual = int.MIN_VALUE;
+				
+				toDate.selectedDate = null;
+				toDate.selectedItem = new Date();
+				_vo.uploadedOnLessThanOrEqual = int.MIN_VALUE;
+				
+				var ivo:IndicatorVo = new IndicatorVo();
+				ivo.attribute = attributes.join("~~"); // horrible convention for which I'll be sorry soon
+				dispatchChange(ivo, FilterComponentEvent.EVENT_KIND_REMOVE_ALL);
+			}
+			
+			private function currentDatesChange(event:Event):void {
+				if (validateDates(fromDate, toDate)) {
+					if (fromDate.selectedDate != null) {
+						_currentStartOld = fromDate.selectedDate;
+						_vo.uploadedOnGreaterThanOrEqual = _currentStartOld.time / 1000; 
+					}
+					else {
+						_currentStartOld = null;
+						_vo.uploadedOnGreaterThanOrEqual = int.MIN_VALUE;
+					}
+					
+					if (toDate.selectedDate != null) {
+						_currentEndOld = toDate.selectedDate;
+						_vo.uploadedOnLessThanOrEqual = _currentEndOld.time / 1000; 
+					}
+					else {
+						_currentEndOld = null;
+						_vo.uploadedOnLessThanOrEqual = int.MIN_VALUE;
+					}
+					
+					// check the new values and decide what kind of event should be dispatched
+					var eventKind:String = FilterComponentEvent.EVENT_KIND_UPDATE;
+					if (!_currentStartOld && !_currentEndOld) {
+						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
+					}
+					var ivo:IndicatorVo = new IndicatorVo();
+					ivo.attribute = attributes.join("~~"); // horrible convention for which I'll be sorry soon;
+					ivo.label = friendlyName;
+					ivo.tooltip = friendlyName;
+					dispatchChange(ivo, eventKind);				
+				}
+				else {
+					Alert.show(resourceManager.getString('filter', 'fromToDateAlert'));
+					toDate.selectedDate = _currentEndOld;
+					fromDate.selectedDate = _currentStartOld;
+				}
+			}
+			
+			
+			/**
+			 * validate start date is before end date.
+			 * @param fromDate	starting date
+			 * @param toDate	end date
+			 * @return true if dates are valid, false otherwise.
+			 * */
+			private function validateDates(fromDate:DateField, toDate:DateField):Boolean {
+				var isDatesOk:Boolean = true;
+				if ((fromDate.selectedDate != null) && (toDate.selectedDate != null)) {
+					// starting date is after ending date.
+					if (fromDate.selectedDate.time >= toDate.selectedDate.time) {
+						isDatesOk = false;
+					}
+				}
+				return isDatesOk;
+			}	
+			
+			
+			
+			protected function multiattributefilter1_creationCompleteHandler(event:FlexEvent):void {
+				friendlyName = resourceManager.getString('filter', 'createdBetweenTooltip');
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Label id="dateTitle" width="100%" text="{resourceManager.getString('filter', 'createdBetween')}"
+			  styleName="drillDownLabel"/>
+	<mx:HBox styleName="innerUpperDatesHBox">
+		<mx:DateField id="fromDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  toolTip="{resourceManager.getString('filter', 'from')}"
+					  change="{currentDatesChange(event)}"/>
+		<mx:Label id="toDateTxt" text="-"/>
+		<mx:DateField id="toDate" width="{BaseFilter.DATE_FIELD_WIDTH}" fontSize="11"
+					  toolTip="{resourceManager.getString('filter', 'to')}"
+					  change="{currentDatesChange(event)}"/>
+	</mx:HBox>
+	<mx:LinkButton label="{resourceManager.getString('filter', 'clearDates')}" click="clearDates()" height="17"
+				   enabled="{fromDate.selectedDate || toDate.selectedDate}" styleName="clearDateButton"/>
+</panels:MultiAttributeFilter>
