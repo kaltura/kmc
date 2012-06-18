@@ -8,6 +8,8 @@
 			import com.kaltura.edw.business.EntryFormBuilder;
 			import com.kaltura.edw.business.MetadataDataParser;
 			import com.kaltura.edw.control.events.MetadataDataEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.view.customData.SingleCustomData;
 			import com.kaltura.edw.vo.CustomMetadataDataVO;
@@ -99,29 +101,30 @@
 			}
 
 
-			public function validate():Boolean {
+			public function validate():void {
 				var isOk:Boolean = true;
 				// Name: Mandatory field – not possible to create a category without it.
-				var vre:ValidationResultEvent = nameValidator.validate();
+				var vre:mx.events.ValidationResultEvent = nameValidator.validate();
 				if ((vre.results != null) && (vre.results.length > 0)) {
 					isOk = !(vre.results[0] as ValidationResult).isError;
 				}
-				if (!isOk) {
-					Alert.show(resourceManager.getString('cms', 'categoryNameIsMandatory'));
-					return false;
-				}
 				
-//				Reference ID: Should be unique under a category under the same parent category. 
-//								any attempt to create/move a category with existing Reference ID 
-//								from the KMC under a parent category should prompt an warning message 
-//								(same as in entry reference ID)
-				return true;
+				var ivre:com.kaltura.edw.events.ValidationResultEvent;
+				
+				if (!isOk) {
+					ivre = new com.kaltura.edw.events.ValidationResultEvent(com.kaltura.edw.events.ValidationResultEvent.VALIDATION_COMPLETE, false, resourceManager.getString('cms', 'categoryNameIsMandatory')); 
+				}
+				else {
+					ivre = new com.kaltura.edw.events.ValidationResultEvent(com.kaltura.edw.events.ValidationResultEvent.VALIDATION_COMPLETE, true); 
+				}
+				dispatchEvent(ivre);
 			}
 
 
 			public function save():void {
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY_METADATA_DATA);
 				cgEvent.dispatch();
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 
 

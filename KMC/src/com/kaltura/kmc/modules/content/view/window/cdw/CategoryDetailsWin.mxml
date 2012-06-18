@@ -9,6 +9,7 @@
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.events.KedDataEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.kmc.events.KmcHelpEvent;
@@ -86,6 +87,23 @@
 			 * */
 			public var enableSave:Boolean = true; 
 
+			
+			/**
+			 * select window state according to category
+			 * */
+			private function onInitialize(evt:FlexEvent):void {
+				if (_isNewCategory) {
+					currentState = "parentSelect";
+				}
+				else {
+					currentState = "tabs";
+				}
+			}
+			
+			
+			/**
+			 * set window title according to category
+			 * */
 			private function setTitle(cat:KalturaCategory):String {
 				var title:String = '';
 				if (_isNewCategory) {
@@ -97,6 +115,7 @@
 				return title;
 			}
 
+			
 			private function onClose(event:Event):void {
 				if ((_isNewCategory && _model.processingNewCategory) || hasChanged()) {
 					// discard changes?
@@ -107,6 +126,10 @@
 				}
 			}
 
+			
+			/**
+			 * clear and close the window
+			 * */
 			private function removeMe(event:CloseEvent = null):void {
 				if (event && event.detail == Alert.NO) {
 					return;
@@ -135,19 +158,62 @@
 			}
 
 
-			private function onInitialize(evt:FlexEvent):void {
-				if (_isNewCategory) {
-					currentState = "parentSelect";
+			
+			
+			
+			private function save():void {
+				if (_isNewCategory && _model.processingNewCategory) {
+					// if category inherits members from parent, don't send inherited values
+					if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT || !_undoCategory.privacyContexts) {
+						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+						_undoCategory.userJoinPolicy = int.MIN_VALUE;
+					}
+					
+					// remove any privacy contexts (if required, they will be set by server)
+					_undoCategory.privacyContexts = null;
+					_undoCategory.pendingMembersCount = int.MIN_VALUE;
+					_undoCategory.membersCount = int.MIN_VALUE;
+
+
+					// add category
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+					cgEvent.data = [_undoCategory, _refreshListsRequired];
+					cgEvent.dispatch();
+					if (_refreshListsRequired) {
+						// it's actually "saveAndClose"
+						removeMe();
+					}
 				}
 				else {
-					currentState = "tabs";
+					if (hasChanged()) {
+						if (_origCategory.name != _undoCategory.name) {
+							var action:String = resourceManager.getString('cms', 'catBatchName');
+							Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, saveTabsData); 
+						}
+						else {
+							saveTabsData();
+						}
+					}
+					else if (_refreshListsRequired) {
+						// it's actually "saveAndClose"
+						removeMe();
+					}
+				}
+			}
+			
+			
+			private function saveTabsData(e:CloseEvent = null):void {
+				if (!e || e.detail == Alert.OK) {
+					tabsNav.save();
+					// this eventually leads to tabsNav_savedHandler();
+				}
+				
+				else {
+					// e.detail = cancel, so revert
+					_undoCategory.name = _origCategory.name;
 				}
 			}
 
-
-			private function validate():Boolean {
-				return tabsNav.validate();
-			}
 
 			/**
 			 * should categories/entries list be refreshed after save action
@@ -155,86 +221,46 @@
 			 * */
 			private var _refreshListsRequired:Boolean;
 
-			private function onSave(refreshLists:Boolean):void {
-				if (validate()) {
-					if (_isNewCategory && _model.processingNewCategory) {
-						// if category inherits members from parent, don't send inherited values
-						if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT || !_undoCategory.privacyContexts) {
-							_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-							_undoCategory.userJoinPolicy = int.MIN_VALUE;
-						}
-						
-						// remove any privacy contexts (if required, they will be set by server)
-						_undoCategory.privacyContexts = null;
-						_undoCategory.pendingMembersCount = int.MIN_VALUE;
-						_undoCategory.membersCount = int.MIN_VALUE;
-
-
-						// add category
-						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-						cgEvent.data = [_undoCategory, refreshLists];
-						cgEvent.dispatch();
-						if (refreshLists) {
-							// it's actually "saveAndClose"
-							removeMe();
-						}
-					}
-					else {
-						if (hasChanged()) {
-							_refreshListsRequired = refreshLists;
-							if (_origCategory.name != _undoCategory.name) {
-								var action:String = resourceManager.getString('cms', 'catBatchName');
-								Alert.show(resourceManager.getString('cms', 'catBatchNotice', [action]), resourceManager.getString('cms', 'attention'), Alert.CANCEL|Alert.OK, null, updateCategory); 
-							}
-							else {
-								updateCategory();
-							}
-						}
-						else if (refreshLists) {
-							// it's actually "saveAndClose"
-							removeMe();
-						}
-					}
-				}
+			
+			/**
+			 * start save process
+			 * */
+			private function submitChanges(refreshLists:Boolean):void {
+				_refreshListsRequired = refreshLists;
+				tabsNav.validate();
+				// eventually leads to tabsNav_validationCompleteHandler
 			}
 
 			/**
 			 * perform the actual update
 			 * */
-			private function updateCategory(e:CloseEvent = null):void {
-				if (!e || e.detail == Alert.OK) {
-					tabsNav.save();
-					_undoCategory.setUpdatedFieldsOnly(true);
-					// no entitlements to category
-					if (!_undoCategory.privacyContexts) {
-						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-						_undoCategory.userJoinPolicy = int.MIN_VALUE;
-						_undoCategory.contributionPolicy = int.MIN_VALUE;
-						_undoCategory.privacy = int.MIN_VALUE;
-						_undoCategory.appearInList = int.MIN_VALUE;
-						_undoCategory.moderation = int.MIN_VALUE;
-						_undoCategory.inheritanceType = int.MIN_VALUE;
-						_undoCategory.owner = null;
-					}
-					
-					// if category inherits members from parent, don't send inherited values
-					if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
-						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-						_undoCategory.userJoinPolicy = int.MIN_VALUE;
-					}
-
-					var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
-					var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-					cgEvent2.data = [catVO, _refreshListsRequired];
-					cgEvent2.dispatch();
-					if (_refreshListsRequired) {
-						// it's actually "saveAndClose"
-						removeMe();
-					}
+			private function updateCategory():void {
+				_undoCategory.setUpdatedFieldsOnly(true);
+				// no entitlements to category
+				if (!_undoCategory.privacyContexts) {
+					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+					_undoCategory.userJoinPolicy = int.MIN_VALUE;
+					_undoCategory.contributionPolicy = int.MIN_VALUE;
+					_undoCategory.privacy = int.MIN_VALUE;
+					_undoCategory.appearInList = int.MIN_VALUE;
+					_undoCategory.moderation = int.MIN_VALUE;
+					_undoCategory.inheritanceType = int.MIN_VALUE;
+					_undoCategory.owner = null;
 				}
-				else {
-					// e.detail = cancel, so revert
-					_undoCategory.name = _origCategory.name;
+				
+				// if category inherits members from parent, don't send inherited values
+				else if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
+					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+					_undoCategory.userJoinPolicy = int.MIN_VALUE;
+				}
+
+				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
+				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+				cgEvent2.data = [catVO, _refreshListsRequired];
+				cgEvent2.dispatch();
+				if (_refreshListsRequired) {
+					// it's actually "saveAndClose"
+					removeMe();
 				}
 			}
 
@@ -316,6 +342,34 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor, true));
 			}
 
+
+			private function tabsNav_validationCompleteHandler(event:ValidationResultEvent):void {
+//				Reference ID: Should be unique under a category under the same parent category. 
+//								any attempt to create/move a category with existing Reference ID 
+//								from the KMC under a parent category should prompt an warning message 
+//								(same as in entry reference ID)
+				
+				// if referenceId was changed
+//				if (_undoCategory.referenceId && _undoCategory.referenceId != KalturaClient.NULL_STRING && _origCategory.referenceId != _undoCategory.referenceId) {
+//					// list all entries with the same refid , if any - show message
+//					if (!_sameRefidWatcher) {
+//						_entryDp.entriesWSameRefidAsSelected = new Array();
+//						_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _entryDp, "entriesWSameRefidAsSelected");
+//					}
+//					var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, undoToEntry);
+//					edwController.dispatch(cg);
+//				}
+//				else {
+					// just save it
+					save();
+//				}
+			}
+
+			private function tabsNav_savedHandler(event:Event):void {
+				updateCategory();
+			}
+			
+
 		]]>
 	</mx:Script>
 	<navigation:states>
@@ -323,7 +377,9 @@
 			<mx:AddChild>
 				<components:CategoryDetailsTabs id="tabsNav" width="100%" height="100%" filterModel="{_filterModel}"
 												category="{_undoCategory}" model="{_model}"
-												isNewCategory="{_isNewCategory}"/>
+												isNewCategory="{_isNewCategory}"
+												validationComplete="tabsNav_validationCompleteHandler(event)"
+												saved="tabsNav_savedHandler(event)"/>
 			</mx:AddChild>
 			<mx:SetProperty target="{saveBtn}" name="enabled" value="true" />
 			<mx:SetProperty target="{saveAndCloseBtn}" name="enabled" value="true" />
@@ -342,10 +398,10 @@
 		<mx:Spacer width="33%"/>
 		<mx:HBox width="33%" horizontalAlign="center">
 			<mx:Button id="saveBtn" label="{resourceManager.getString('cms', 'categorySave')}" 
-					   click="onSave(false)" buttonMode="{enabled}" 
+					   click="submitChanges(false)" buttonMode="{enabled}" 
 					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 			<mx:Button id="saveAndCloseBtn" label="{resourceManager.getString('cms', 'categorySaveAndClose')}" 
-					   click="onSave(true)" buttonMode="{enabled}" 
+					   click="submitChanges(true)" buttonMode="{enabled}" 
 					   enabled="{currentState=='tabs' &amp;&amp; !_model.loadingFlag &amp;&amp; enableSave}" />
 		</mx:HBox>
 		<mx:HBox horizontalAlign="right" width="33%">

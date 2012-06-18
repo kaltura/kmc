@@ -3,6 +3,8 @@
 		 implements="com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.cdw.users.EndUsersPermissionsWin;
@@ -154,8 +156,9 @@
 				}
 			}
 
-			public function validate():Boolean {
-				return true;
+			public function validate():void {
+				var ivre:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true); 
+				dispatchEvent(ivre);
 			}
 
 
@@ -166,6 +169,7 @@
 					category.owner = null;
 					category.defaultPermissionLevel = int.MIN_VALUE;
 				}
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 
 

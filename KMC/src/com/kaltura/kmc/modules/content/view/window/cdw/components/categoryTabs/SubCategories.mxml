@@ -5,6 +5,8 @@
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
@@ -88,8 +90,9 @@
 			}
 			
 			
-			public function validate():Boolean {
-				return true;
+			public function validate():void {
+				var ivre:ValidationResultEvent = new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true); 
+				dispatchEvent(ivre);
 			}
 			
 			public function save():void {
@@ -109,6 +112,7 @@
 						cgEvent.dispatch();
 					}
 				}
+				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 			
 			public function destroy():void {

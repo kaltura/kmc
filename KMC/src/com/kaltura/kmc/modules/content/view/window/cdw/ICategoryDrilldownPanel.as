@@ -1,16 +1,18 @@
 package com.kaltura.kmc.modules.content.view.window.cdw
 {
 	import com.kaltura.kmc.modules.content.model.CategoriesModel;
+	
+	import flash.events.IEventDispatcher;
 
-	public interface ICategoryDrilldownPanel {
+	public interface ICategoryDrilldownPanel extends IEventDispatcher {
 		
 		
 		/**
 		 * the panel will see if the info it holds is valid for saving. When 
-		 * validation process is complete, the panel will return the result.
+		 * validation process is complete, the panel will dispatch ValidationResultEvent.
 		 * (true if valid, false otherwise)
 		 */
-		function validate():Boolean;
+		function validate():void;
 		
 		/**
 		 * the panel will save its data. When save is complete, panel informs the 

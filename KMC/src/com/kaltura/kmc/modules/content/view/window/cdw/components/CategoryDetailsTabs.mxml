@@ -3,14 +3,14 @@
 		 xmlns:categoryTabs="com.kaltura.kmc.modules.content.view.window.cdw.components.categoryTabs.*"
 		 horizontalAlign="center" styleName="noPadding" creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
-		[Event(name="save",type="flash.events.Event")]
-		[Event(name="close",type="flash.events.Event")]
-		[Event(name="gotoNext",type="flash.events.Event")]
-		[Event(name="gotoPrev",type="flash.events.Event")]
+		[Event(name="validationComplete",type="com.kaltura.edw.events.ValidationResultEvent")]
+		[Event(name="saved",type="flash.events.Event")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.events.InternalKedEvent;
+			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
 			import com.kaltura.kmc.modules.content.view.window.cdw.ICategoryDrilldownPanel;
@@ -18,12 +18,9 @@
 			
 			import flash.utils.setTimeout;
 			
+			import mx.controls.Alert;
+			import mx.core.UIComponent;
 			import mx.events.FlexEvent;
-
-			public static const SAVE_EVENT:String = "save";
-			public static const CLOSE_EVENT:String = "close";
-			public static const GOTO_NEXT_EVENT:String = "gotoNext";
-			public static const GOTO_PREV_EVENT:String = "gotoPrev";
 
 			[Bindable]
 			public var filterModel:FilterModel;
@@ -36,6 +33,17 @@
 			private var _category:KalturaCategory;
 
 			private var _tabs:Vector.<ICategoryDrilldownPanel>;
+			
+			
+			/**
+			 * stores returned events after calls to <code>validate()</code>
+			 * or <code>save()</code>.
+			 *
+			 * @internal
+			 * it is ok to use the same array because
+			 * the processes cannot happen simultanously.
+			 * */
+			private var _results:Array;
 
 			/**
 			 * RnP
@@ -58,27 +66,83 @@
 				return null;
 			}
 			
+			// --------------------------------
+			// validation
+			// --------------------------------
+			
 			public function validate():Boolean {
-				
+				_results = new Array();
 				var tab:ICategoryDrilldownPanel;
 				for (var i:int = 0; i<viewStack.numChildren; i++) {
 					tab = viewStack.getChildAt(i) as ICategoryDrilldownPanel;
-					if (!tab.validate()) {
-//						trace(tab["id"], "has invalid data");
-						return false;
+					if (!tab.hasEventListener(ValidationResultEvent.VALIDATION_COMPLETE)) {
+						tab.addEventListener(ValidationResultEvent.VALIDATION_COMPLETE, onPanelValidationComplete);
 					}
+					tab.validate();
 				}
 				return true;
 			}
 
+			
+			/**
+			 * wait for all panels validation to complete while keeping VREs
+			 * */
+			private function onPanelValidationComplete(e:ValidationResultEvent):void {
+				_results.push(e);
+				if (_results.length == viewStack.numChildren) {
+					// all panels returned results
+					var success:Boolean = true;
+					for each (var vre:ValidationResultEvent in _results) {
+						if (!vre.success) {
+							handleValidationError(vre.target as UIComponent, vre.errorMessage, vre.errorTitle);
+							success = false;
+							// no need to go over other results
+							break;
+						}
+					}
+					if (success) {
+						dispatchEvent(new ValidationResultEvent(ValidationResultEvent.VALIDATION_COMPLETE, true));
+					}
+				}
+			}
+			
+			
+			/**
+			 * displays the validation error and navigates to the relevant tab
+			 * */
+			private function handleValidationError(tabToGo:DisplayObject, errorString:String = '', errorTitle:String = ''):void {
+				if (errorString != '')
+					Alert.show(errorString, errorTitle);
+//				isUiEnabled = true;
+//				_nextPendingEntry = 0;
+				viewStack.selectedIndex = viewStack.getChildIndex(tabToGo);
+			}
+			
+			// --------------------------------
+			// save
+			// --------------------------------
 
 			public function save():void {
+				_results = new Array();
+				
 				var tab:ICategoryDrilldownPanel;
 				for (var i:int = 0; i<viewStack.numChildren; i++) {
 					tab = viewStack.getChildAt(i) as ICategoryDrilldownPanel;
+					if (!tab.hasEventListener(InternalKedEvent.SAVED)) {
+						tab.addEventListener(InternalKedEvent.SAVED, onPanelSaveComplete);
+					}
 					tab.save();
 				}
 			}
+			
+			private function onPanelSaveComplete(e:InternalKedEvent):void {
+				_results.push(e);
+				if (_results.length == viewStack.numChildren) {
+					// all panels finished their save/update process
+					dispatchEvent(new Event("saved"));
+				}
+			}
+
 
 
 			private function onCreationComplete(event:FlexEvent):void {
