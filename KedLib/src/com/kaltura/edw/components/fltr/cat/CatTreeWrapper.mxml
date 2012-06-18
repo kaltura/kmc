@@ -17,6 +17,7 @@
 			import com.kaltura.edw.components.fltr.IFilterComponent;
 			import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
 			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			import com.kaltura.edw.vo.CategoryVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Button;
@@ -219,6 +220,14 @@
 				else if (event.kind == FilterComponentEvent.EVENT_KIND_REMOVE_ALL){
 					allBtn.selected = true;
 				}
+				
+				// Disabling categories from autocomplete to prevent double selection
+				var catCollection:ArrayCollection = new ArrayCollection();
+				for each (var catVo:CategoryVO in catTree.getSelectedCategories()){
+					catCollection.addItem(catVo.category);
+				}
+				autoCompWrapper.disabledCategories = catCollection;
+				
 				dispatchEvent(event.clone());
 			}
 
@@ -257,5 +266,5 @@
 				 dataProvider="{dataProvider}" categories="{categories}" valueChange="catTree_valueChangeHandler(event)"
 				 selectionMode="{selectionMode}" selectionAttribute="{selectionAttribute}"
 				 chunkedData="{chunkedData}"/>
-	<cat:CategoryAutocomplete kClient="{kClient}" width="100%" valueChange="{catTree.addFromAutoComplete(event)}"/>
+	<cat:CategoryAutocomplete id="autoCompWrapper" kClient="{kClient}" width="100%" valueChange="{catTree.addFromAutoComplete(event)}" keepValues="true"/>
 </mx:VBox>

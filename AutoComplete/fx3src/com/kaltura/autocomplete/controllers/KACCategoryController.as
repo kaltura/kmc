@@ -51,7 +51,25 @@ package com.kaltura.autocomplete.controllers
 			
 			var returnStr:String = StringUtils.highlightMatch( labelText, searchStr );
 			
-			if (_autoComp.selectedItems.getItemIndex( item ) >= 0 || _autoComp.disabledItems.getItemIndex( item ) >= 0)
+			var isDisabled:Boolean = false;
+			var currCat:KalturaCategory = item as KalturaCategory;
+			var kc:KalturaCategory;
+			for each (kc in _autoComp.disabledItems.source){
+				if (kc.id == currCat.id){
+					isDisabled = true;
+					break;
+				}
+			}
+			
+			var isSelected:Boolean = false;
+			for each (kc in _autoComp.selectedItems.source){
+				if (kc.id == currCat.id){
+					isSelected = true;
+					break;
+				}
+			}
+			
+			if (isSelected || isDisabled)
 			{
 				returnStr = "<font color='" + Consts.COLOR_TEXT_DISABLED + "'>" + returnStr + "</font>";
 			}

@@ -38,6 +38,9 @@
 			 * */
 			public var keepValues:Boolean;
 			
+			[Bindable]
+			public var disabledCategories:ArrayCollection = new ArrayCollection();
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				new KACCategoryController(completor, kClient);
 			}
@@ -67,7 +70,7 @@
 	</mx:Script>
 	
 	<components:AutoComplete id="completor" width="100%" height="100%" labelField="name"
-							 allowMultipleSelection="true" prompt="Search Categories"
+							 allowMultipleSelection="true" prompt="Search Categories" disabledItems="{disabledCategories}"
 							 change="completor_changeHandler(event)" selectedItemStyleName="selectionBox"
 							 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"/>
 </mx:VBox>
