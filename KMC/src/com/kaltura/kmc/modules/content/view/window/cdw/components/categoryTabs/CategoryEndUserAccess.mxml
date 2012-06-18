@@ -41,7 +41,7 @@
 			private var _category:KalturaCategory;
 			
 			private var _originalOwner:String;
-			private var _originalJoinPolicy:int;
+//			private var _originalJoinPolicy:int;
 			private var _originalPermLvl:int;
 			private var _orginalInheritanceValue:int;
 
@@ -54,7 +54,7 @@
 				
 				_category = value;
 				_originalOwner = value.owner;
-				_originalJoinPolicy = value.userJoinPolicy;
+//				_originalJoinPolicy = value.userJoinPolicy;
 				_originalPermLvl = value.defaultPermissionLevel;
 				_orginalInheritanceValue = value.inheritanceType;
 				
@@ -64,13 +64,13 @@
 
 
 			protected function initCategoryEndUserAcessTab(event:FlexEvent):void {
-				// join policy:
-				policyCb.dataProvider = [{label: resourceManager.getString('cms', 'jpNotAllowd'), data: KalturaUserJoinPolicyType.NOT_ALLOWED},
-					{label: resourceManager.getString('cms', 'jpAutoJoin'), data: KalturaUserJoinPolicyType.AUTO_JOIN},
-					{label: resourceManager.getString('cms', 'jpRequestToJoin'), data: KalturaUserJoinPolicyType.REQUEST_TO_JOIN}];
-				if (_category && _category.userJoinPolicy == int.MIN_VALUE) {
-					_category.userJoinPolicy = KalturaUserJoinPolicyType.NOT_ALLOWED;
-				}
+//				// join policy:
+//				policyCb.dataProvider = [{label: resourceManager.getString('cms', 'jpNotAllowd'), data: KalturaUserJoinPolicyType.NOT_ALLOWED},
+//					{label: resourceManager.getString('cms', 'jpAutoJoin'), data: KalturaUserJoinPolicyType.AUTO_JOIN},
+//					{label: resourceManager.getString('cms', 'jpRequestToJoin'), data: KalturaUserJoinPolicyType.REQUEST_TO_JOIN}];
+//				if (_category && _category.userJoinPolicy == int.MIN_VALUE) {
+//					_category.userJoinPolicy = KalturaUserJoinPolicyType.NOT_ALLOWED;
+//				}
 				
 				// default permissions
 				levelCb.dataProvider = [{label: resourceManager.getString('cms', 'permLvlMember'), data: KalturaCategoryUserPermissionLevel.MEMBER},
@@ -90,17 +90,17 @@
 
 			private function setCBValuesFromCategory():void {
 				if (!_category) return;
-				switch (_category.userJoinPolicy) {
-					case KalturaUserJoinPolicyType.NOT_ALLOWED:
-						policyCb.selectedIndex = 0;
-						break;
-					case KalturaUserJoinPolicyType.AUTO_JOIN:
-						policyCb.selectedIndex = 1;
-						break;
-					case KalturaUserJoinPolicyType.REQUEST_TO_JOIN:
-						policyCb.selectedIndex = 2;
-						break;
-				}
+//				switch (_category.userJoinPolicy) {
+//					case KalturaUserJoinPolicyType.NOT_ALLOWED:
+//						policyCb.selectedIndex = 0;
+//						break;
+//					case KalturaUserJoinPolicyType.AUTO_JOIN:
+//						policyCb.selectedIndex = 1;
+//						break;
+//					case KalturaUserJoinPolicyType.REQUEST_TO_JOIN:
+//						policyCb.selectedIndex = 2;
+//						break;
+//				}
 
 				switch (_category.defaultPermissionLevel) {
 					case KalturaCategoryUserPermissionLevel.MEMBER:
@@ -165,7 +165,7 @@
 			public function save():void {
 				if (category.inheritanceType == KalturaInheritanceType.INHERIT) {
 					// make sure we don't send inherited fields
-					category.userJoinPolicy = int.MIN_VALUE;
+//					category.userJoinPolicy = int.MIN_VALUE;
 					category.owner = null;
 					category.defaultPermissionLevel = int.MIN_VALUE;
 				}
@@ -222,16 +222,16 @@
 			}
 
 
-			private function policyCb_changeHandler(event:ListEvent):void {
-				_category.userJoinPolicy = policyCb.selectedItem.data;
-			}
+//			private function policyCb_changeHandler(event:ListEvent):void {
+//				_category.userJoinPolicy = policyCb.selectedItem.data;
+//			}
 
 			
 			private function inheritNo_changeHandler(event:Event):void {
 				if((event.target as RadioButton).selected) {
 					_category.inheritanceType = KalturaInheritanceType.MANUAL; 
 					_category.owner = _originalOwner;
-					_category.userJoinPolicy = _originalJoinPolicy;
+//					_category.userJoinPolicy = _originalJoinPolicy;
 					_category.defaultPermissionLevel = _originalPermLvl;
 					setCBValuesFromCategory();
 				}
@@ -261,7 +261,7 @@
 						parentCat = model.parentCategory;
 					}
 					_category.owner = parentCat.owner;
-					_category.userJoinPolicy = parentCat.userJoinPolicy;
+//					_category.userJoinPolicy = parentCat.userJoinPolicy;
 					_category.defaultPermissionLevel = parentCat.defaultPermissionLevel;
 					setCBValuesFromCategory();
 				}
@@ -416,12 +416,12 @@
 	</mx:VBox>
 
 	<mx:Spacer height="10"/>
-	<mx:HBox width="100%" styleName="noPadding">
+	<!--<mx:HBox width="100%" styleName="noPadding">
 		<mx:Label width="{LABEL_WIDTH + helpIco.width + 10}" styleName="drillDownLabel"
 				  text="{resourceManager.getString('cms', 'joinGroupPolicy')}"/>
 		<mx:ComboBox id="policyCb" change="policyCb_changeHandler(event)" width="250"
 					 enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; changesEnabled}"/>
-	</mx:HBox>
+	</mx:HBox>-->
 	<mx:HBox width="100%" styleName="noPadding">
 		<mx:Label width="{LABEL_WIDTH + helpIco.width + 10}" styleName="drillDownLabel"
 				  text="{resourceManager.getString('cms', 'defaultPermissionLevel')}"/>
