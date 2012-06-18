@@ -58,9 +58,22 @@
 				else if (StringUtil.trim(contexts) == '') {
 					Alert.show(resourceManager.getString('account', 'noContext'), resourceManager.getString('account', 'error'));
 				}
+				else if (!verifyFourChars(contexts)) {
+					Alert.show(resourceManager.getString('account', 'entLabelShort'), resourceManager.getString('account', 'error'));
+				}
 				else {
 					Alert.show(resourceManager.getString('account', 'setEntNote', [kCat.name]), resourceManager.getString('account', 'important'), Alert.OK|Alert.CANCEL, null, savePrivacyContext);
 				}
+			}
+			
+			private function verifyFourChars(contexts:String):Boolean {
+				var ar:Array = contexts.split(',');
+				for each (var str:String in ar) {
+					if (str.length < 4) {
+						return false;
+					}
+				}
+				return true;
 			}
 			
 			
