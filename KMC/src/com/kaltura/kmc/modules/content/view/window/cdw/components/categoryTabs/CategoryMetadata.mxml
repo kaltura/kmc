@@ -97,7 +97,7 @@
 			 * jump to the top profile (entry data)
 			 * */
 			private function scrollToTop(event:Event):void {
-				editableBox.verticalScrollPosition = 0;
+				dataContainer.verticalScrollPosition = 0;
 			}
 
 
@@ -211,7 +211,7 @@
 					for (var i:int = 0; i < childIndex; i++) {
 						scrollPos += editableBox.getChildAt(i).height + customDataVerticalGap;
 					}
-					editableBox.verticalScrollPosition = scrollPos;
+					dataContainer.verticalScrollPosition = scrollPos;
 				}
 				profilesCB.selectedIndex = -1;
 			}
@@ -236,43 +236,57 @@
 	<mx:StringValidator id="nameValidator" source="{nameInput}" property="text" triggerEvent="change"
 						required="true" requiredFieldError="{resourceManager.getString('cms', 'categoryNameIsMandatory')}"/>
 	
-	<mx:VBox width="100%" height="{height}" horizontalAlign="right">
+	<mx:VBox width="100%" height="{height}" >
+		<mx:HBox width="100%" id="catIdBox">
+			<mx:Label text="{resourceManager.getString('cms','categoryId')}:" styleName="drillDownTitleLabel"/>
+			<mx:Label text="{category.id}" selectable="true" styleName="drillDownTitleLabel"/>
+		</mx:HBox>
+		
 		<!-- navigation -->
-		<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()"
-					 styleName="customDataProfilesCB" prompt="{resourceManager.getString('drilldown','jumpToPrompt')}"
-					 selectedIndex="-1" fontWeight="bold" visible="{_profileNames.length > 2}"
-					 includeInLayout="{_profileNames.length > 2}"/>
-		<mx:VBox id="editableBox" styleName="noPadding" verticalGap="{customDataVerticalGap}"
-				 height="{height - profilesCB.height - getStyle('verticalGap')}" width="100%">
-			<mx:VBox id="categoryMetadata" width="100%">
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drilldownInput"
-								  text="{category.name}" change="{category.name = nameInput.text}"/>
-				</mx:HBox>
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:TextArea id="descriptionInput" width="{TEXT_WIDTH}" styleName="drilldownInput"
-								 text="{category.description}" change="{category.description = descriptionInput.text}"/>
-				</mx:HBox>
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="selectionBox"
-											 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true"
-											 labelField="tag" height="{descriptionInput.height}"
-											 change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
-				</mx:HBox>
-				<mx:HBox width="100%">
-					<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
-					<mx:TextArea id="referenceIdInput" styleName="drilldownInput" width="{TEXT_WIDTH}"
-								 text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
-				</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Spacer width="{LABEL_WIDTH}" />
+			<mx:ComboBox id="profilesCB" dataProvider="{_profileNames}" change="jumpToProfile()"
+						 styleName="customDataProfilesCB" prompt="{resourceManager.getString('drilldown','jumpToPrompt')}"
+						 selectedIndex="-1" fontWeight="bold" visible="{_profileNames.length > 2}"
+						 includeInLayout="{_profileNames.length > 2}" width="{TEXT_WIDTH}"/>
+		</mx:HBox>
+		
+		<mx:HBox id="dataContainer" styleName="noPadding" height="{height - catIdBox.height - profilesCB.height - 2*getStyle('verticalGap')}" width="100%">
+			<!-- info -->
+			<mx:VBox id="editableBox" styleName="noPadding" verticalGap="{customDataVerticalGap}"
+					 height="100%" width="100%">
+				<mx:VBox id="categoryMetadata" width="100%">
+					
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'metadataName')}" width="{LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:TextInput id="nameInput" width="{TEXT_WIDTH}" styleName="drilldownInput"
+									  text="{category.name}" change="{category.name = nameInput.text}"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'metadataDescription')}" width="{LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:TextArea id="descriptionInput" width="{TEXT_WIDTH}" styleName="drilldownInput"
+									 text="{category.description}" change="{category.description = descriptionInput.text}"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'metadataTags')}" width="{LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<components:AutoComplete id="tagsInput" width="{TEXT_WIDTH}" selectedItemStyleName="selectionBox"
+												 showRemoveIcon="true" allowMultipleSelection="true" allowNewValues="true"
+												 labelField="tag" height="{descriptionInput.height}"
+												 change="{category.tags = tagsInput.selectedItems.source.join(',')}"/>
+					</mx:HBox>
+					<mx:HBox width="100%">
+						<mx:Label text="{resourceManager.getString('cms', 'metadataReference')}" width="{LABEL_WIDTH}"
+								  styleName="drillDownLabel"/>
+						<mx:TextArea id="referenceIdInput" styleName="drilldownInput" width="{TEXT_WIDTH}"
+									 text="{category.referenceId}" change="{category.referenceId = referenceIdInput.text}"/>
+					</mx:HBox>
+				</mx:VBox>
 			</mx:VBox>
-		</mx:VBox>
+			<mx:Spacer width="310" />
+		</mx:HBox>
 	</mx:VBox>
 
 </mx:HBox>
