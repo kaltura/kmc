@@ -60,7 +60,8 @@ package com.kaltura.edw.components.fltr.cat.renderers {
 		 * @param value new cat selection status
 		 */
 		private function catSelectionStatusChanged(value:int):void {
-			if (!value || value == CatSelectionStatus.UNSELECTED) {
+			if (!value || value == CatSelectionStatus.UNSELECTED || value == CatSelectionStatus.PARTIAL) {
+				// the partial happens when switching between selection modes
 				cb.selected = false;
 			}
 			else {

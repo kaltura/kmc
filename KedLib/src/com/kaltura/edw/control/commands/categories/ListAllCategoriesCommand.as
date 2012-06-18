@@ -69,32 +69,40 @@ package com.kaltura.edw.control.commands.categories
 			}
 			
 			// create tree: list children on parent categories
-			for each (var cat:CategoryVO in allCategories) {
-				var parentCategory:CategoryVO = catMap.getValue(cat.category.parentId + '') as CategoryVO;
+			for each (category in allCategories) {
+				var parentCategory:CategoryVO = catMap.getValue(category.category.parentId + '') as CategoryVO;
 				if (parentCategory != null) {
  					if (!parentCategory.children) {
 						parentCategory.children = new ArrayCollection();
 					}
-					parentCategory.children.addItem(cat);
-					if (cat.category.partnerSortValue) {
-						sortCategories(parentCategory.children);
-					}
+					parentCategory.children.addItem(category);
 				}
 				else {
 					// parent is root
-					rootLevel.addItem(cat);
+					rootLevel.addItem(category);
 				}
 			}
+			
+			var temp:Array;
+			// sort on partnerSortValue
+			for each (category in allCategories) {
+				if (category.children) {
+					temp = category.children.source;
+					temp.sort(compareValues);
+				}
+			}
+			
 			return rootLevel;
 		}
 		
 		
-		private function sortCategories(catArrCol:ArrayCollection):void {
-			var dataSort:Sort = new Sort();
-			dataSort.compareFunction = compareValues;
-			catArrCol.sort = dataSort;
-			catArrCol.refresh();
-		}
+//		private function sortCategories(catArrCol:ArrayCollection):void {
+//			// using this fucks up for each loops!!!!
+//			var dataSort:Sort = new Sort();
+//			dataSort.compareFunction = compareValues;
+//			catArrCol.sort = dataSort;
+//			catArrCol.refresh();
+//		}
 		
 		private function compareValues(a:CategoryVO, b:CategoryVO, fields:Array = null):int {
 			if (a == null && b == null)

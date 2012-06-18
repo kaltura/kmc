@@ -101,12 +101,34 @@ package com.kaltura.edw.control.commands.categories
 				for each (var cat:CategoryVO in categories) {
 					_branchCat.children.addItem(cat);
 				}
+				// sort on partnerSortValue
+				var temp:Array = cat.children.source;
+				temp.sort(compareValues);
 			}
 //			else {
 //				// first level
 //				_filterModel.categories = categories;
 //			}
 			return categories;
+		}
+		
+		private function compareValues(a:CategoryVO, b:CategoryVO, fields:Array = null):int {
+			if (a == null && b == null)
+				return 0;
+			
+			if (a == null)
+				return 1;
+			
+			if (b == null)
+				return -1;
+			
+			if (a.category.partnerSortValue < b.category.partnerSortValue)
+				return -1;
+			
+			if (a.category.partnerSortValue > b.category.partnerSortValue)
+				return 1;
+			
+			return 0;
 		}
 	}
 }

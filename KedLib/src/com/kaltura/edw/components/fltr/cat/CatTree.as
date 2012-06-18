@@ -365,6 +365,7 @@ package com.kaltura.edw.components.fltr.cat
 						// root category "clicked"; remove all selections
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
+						_initialFilter = '';
 						deselectAllCategories();
 					}
 					else if (_selectedCategories[catid]) {
@@ -387,8 +388,8 @@ package com.kaltura.edw.components.fltr.cat
 					if (cat.id == 0) {
 						// root category "clicked"; remove all selections
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
-						
 						// deselect previous
+						_initialFilter = '';
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 					}
 					else if (_selectedCategories[catid]) {
@@ -495,9 +496,13 @@ package com.kaltura.edw.components.fltr.cat
 				}
 				// handle children
 				if (cat.children) {
-					setChildrenSelection(cat, value, enable_disable);
+					recSetChildrenSelection(cat, value, enable_disable);
 				}
 			}
+		}
+		
+		private function recSetChildrenSelection(parent:CategoryVO, value:int, enable_disable:Boolean):void {
+			setChildrenSelection(parent, value, enable_disable);
 		}
 		
 		
