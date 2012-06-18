@@ -47,7 +47,7 @@ package com.kaltura.vo
 
 		/**
 		 **/
-		public var parentCategoryIdIn : String = null;
+		public var categoryAncestorIdIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -56,7 +56,7 @@ package com.kaltura.vo
 			arr.push('freeText');
 			arr.push('isRoot');
 			arr.push('categoriesFullNameIn');
-			arr.push('parentCategoryIdIn');
+			arr.push('categoryAncestorIdIn');
 			return arr;
 		}
 

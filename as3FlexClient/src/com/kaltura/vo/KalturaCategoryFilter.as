@@ -58,7 +58,7 @@ package com.kaltura.vo
 
 		/**
 		 **/
-		public var parentCategoryIdIn : String = null;
+		public var ancestorIdIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
@@ -70,7 +70,7 @@ package com.kaltura.vo
 			arr.push('managerEqual');
 			arr.push('memberEqual');
 			arr.push('fullNameStartsWithIn');
-			arr.push('parentCategoryIdIn');
+			arr.push('ancestorIdIn');
 			return arr;
 		}
 
