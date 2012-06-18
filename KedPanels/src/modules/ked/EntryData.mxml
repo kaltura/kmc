@@ -50,7 +50,7 @@
 			import com.kaltura.vo.KalturaCategory;
 			import com.kaltura.vo.KalturaLiveStreamAdminEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -131,6 +131,11 @@
 			private var _catWatcher:ChangeWatcher;
 
 			/**
+			 * change watcher for data load
+			 * */
+			private var _loadWatcher:ChangeWatcher;
+
+			/**
 			 * change watcher for custom data profiles, if not previously loaded via filter
 			 * */
 			private var _profsWatcher:ChangeWatcher;
@@ -141,9 +146,15 @@
 			public var customDataEditable:Boolean = true;
 
 			/**
-			 * disable alerts in KDP
+			 * RnP (feature): disable alerts in KDP
 			 * */
 			public var disableKDPAlerts:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * RnP: should category selection controls be available
+			 * */
+			public var categoriesEditable:Boolean = true;
 
 
 			// =================================================================
@@ -213,12 +224,15 @@
 				_distributionData = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				_entryData = _dpModel.getDataPack(EntryDataPack) as EntryDataPack;
 
+				_loadWatcher = BindingUtils.bindProperty(this, "loadingFlag", _dpModel, "loadingFlag");
 				_catWatcher = BindingUtils.bindSetter(setCategoriesOnScreen, _entryData, ["entryCategories"]);
 
 				var context:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				showEmbed = context.showEmbedCode;
 			}
 
+			[Bindable]
+			public var loadingFlag:Boolean;
 
 			public function get helpAnchor():String {
 				return "entry_metadata";
@@ -391,6 +405,10 @@
 			public function destroy():void {
 				if (_catWatcher) {
 					_catWatcher.unwatch();
+				}
+				
+				if (_loadWatcher) {
+					_loadWatcher.unwatch();
 				}
 
 				if (_profsWatcher) {
@@ -897,12 +915,12 @@
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Label id="tagsLbl" text="{resourceManager.getString('drilldown','tags')}:" width="{LABEL_WIDTH}"
-							  styleName="drillDownLabel"/>
+							  styleName="drillDownLabel" />
 
 					<components:AutoComplete id="tagsComplete" width="{TEXT_WIDTH}" height="{descriptionTi.height}"
 											 selectedItemStyleName="selectionBox" showRemoveIcon="true"
 											 allowMultipleSelection="true" allowNewValues="true" labelField="tag"
-											 change="tagsComplete_changeHandler(event)"
+											 change="tagsComplete_changeHandler(event)" 
 											 prompt="{resourceManager.getString('drilldown','tagsPrompt')}"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
@@ -910,11 +928,11 @@
 						<mx:Label text="{resourceManager.getString('drilldown','drillDownCategories')}:"
 								  styleName="drillDownLabel"/>
 						<mx:LinkButton id="btnCategories" click="btnCategories_clickHandler(event)"
-									   styleName="editButton"/>
+									   styleName="editButton" enabled="{!loadingFlag}" visible="{categoriesEditable}"/>
 					</mx:HBox>
 					<components:AutoComplete id="catComplete" width="{TEXT_WIDTH}" height="{descriptionTi.height}"
 											 selectedItemStyleName="selectionBox" showRemoveIcon="true"
-											 allowMultipleSelection="true" labelField="name"
+											 allowMultipleSelection="true" labelField="name" enabled="{categoriesEditable &amp;&amp; !loadingFlag}"
 											 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"
 											 prompt="{resourceManager.getString('drilldown','categoriesPrompt')}"/>
 				</mx:HBox>
