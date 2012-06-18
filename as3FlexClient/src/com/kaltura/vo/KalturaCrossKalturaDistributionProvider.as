@@ -25,16 +25,25 @@
 //
 // @ignore
 // ===================================================================================================
-package com.kaltura.types
+package com.kaltura.vo
 {
-	public class KalturaDistributionProviderType
+	import com.kaltura.vo.KalturaDistributionProvider;
+
+	[Bindable]
+	public dynamic class KalturaCrossKalturaDistributionProvider extends KalturaDistributionProvider
 	{
-		public static const GENERIC : String = '1';
-		public static const SYNDICATION : String = '2';
-		public static const HULU : String = 'huluDistribution.HULU';
-		public static const YOUTUBE_API : String = 'youtubeApiDistribution.YOUTUBE_API';
-		public static const IDETIC : String = 'ideticDistribution.IDETIC';
-		public static const YAHOO : String = 'yahooDistribution.YAHOO';
-		public static const CROSS_KALTURA : String = 'crossKalturaDistribution.CROSS_KALTURA';
+		override public function getUpdateableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getUpdateableParamKeys();
+			return arr;
+		}
+
+		override public function getInsertableParamKeys():Array
+		{
+			var arr : Array;
+			arr = super.getInsertableParamKeys();
+			return arr;
+		}
 	}
 }

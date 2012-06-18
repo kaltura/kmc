@@ -27,36 +27,50 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaBaseEntryBaseFilter;
+	import com.kaltura.vo.KalturaConfigurableDistributionJobProviderData;
 
 	[Bindable]
-	public dynamic class KalturaBaseEntryFilter extends KalturaBaseEntryBaseFilter
+	public dynamic class KalturaCrossKalturaDistributionJobProviderData extends KalturaConfigurableDistributionJobProviderData
 	{
 		/**
+		 * Key-value array where the keys are IDs of distributed flavor assets in the source account and the values are the matching IDs in the target account
+		 * 
 		 **/
-		public var freeText : String = null;
+		public var distributedFlavorAssets : String = null;
 
 		/**
-		 * @see com.kaltura.types.KalturaNullableBoolean
+		 * Key-value array where the keys are IDs of distributed thumb assets in the source account and the values are the matching IDs in the target account
+		 * 
 		 **/
-		public var isRoot : int = int.MIN_VALUE;
+		public var distributedThumbAssets : String = null;
 
 		/**
+		 * Key-value array where the keys are IDs of distributed metadata objects in the source account and the values are the matching IDs in the target account
+		 * 
 		 **/
-		public var categoriesFullNameIn : String = null;
+		public var distributedMetadata : String = null;
 
 		/**
+		 * Key-value array where the keys are IDs of distributed caption assets in the source account and the values are the matching IDs in the target account
+		 * 
 		 **/
-		public var parentCategoryIdIn : String = null;
+		public var distributedCaptionAssets : String = null;
+
+		/**
+		 * Key-value array where the keys are IDs of distributed cue points in the source account and the values are the matching IDs in the target account
+		 * 
+		 **/
+		public var distributedCuePoints : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('freeText');
-			arr.push('isRoot');
-			arr.push('categoriesFullNameIn');
-			arr.push('parentCategoryIdIn');
+			arr.push('distributedFlavorAssets');
+			arr.push('distributedThumbAssets');
+			arr.push('distributedMetadata');
+			arr.push('distributedCaptionAssets');
+			arr.push('distributedCuePoints');
 			return arr;
 		}
 

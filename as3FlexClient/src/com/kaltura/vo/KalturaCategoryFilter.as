@@ -56,6 +56,10 @@ package com.kaltura.vo
 		 **/
 		public var fullNameStartsWithIn : String = null;
 
+		/**
+		 **/
+		public var parentCategoryIdIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -66,6 +70,7 @@ package com.kaltura.vo
 			arr.push('managerEqual');
 			arr.push('memberEqual');
 			arr.push('fullNameStartsWithIn');
+			arr.push('parentCategoryIdIn');
 			return arr;
 		}
 

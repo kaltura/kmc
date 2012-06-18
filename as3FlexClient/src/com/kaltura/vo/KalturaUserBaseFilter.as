@@ -85,6 +85,11 @@ package com.kaltura.vo
 		 **/
 		public var lastNameStartsWith : String = null;
 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var isAdminEqual : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -102,6 +107,7 @@ package com.kaltura.vo
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('firstNameStartsWith');
 			arr.push('lastNameStartsWith');
+			arr.push('isAdminEqual');
 			return arr;
 		}
 

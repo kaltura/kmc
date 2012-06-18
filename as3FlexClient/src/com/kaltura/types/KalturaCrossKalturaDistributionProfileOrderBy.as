@@ -27,14 +27,11 @@
 // ===================================================================================================
 package com.kaltura.types
 {
-	public class KalturaDistributionProviderType
+	public class KalturaCrossKalturaDistributionProfileOrderBy
 	{
-		public static const GENERIC : String = '1';
-		public static const SYNDICATION : String = '2';
-		public static const HULU : String = 'huluDistribution.HULU';
-		public static const YOUTUBE_API : String = 'youtubeApiDistribution.YOUTUBE_API';
-		public static const IDETIC : String = 'ideticDistribution.IDETIC';
-		public static const YAHOO : String = 'yahooDistribution.YAHOO';
-		public static const CROSS_KALTURA : String = 'crossKalturaDistribution.CROSS_KALTURA';
+		public static const CREATED_AT_ASC : String = '+createdAt';
+		public static const CREATED_AT_DESC : String = '-createdAt';
+		public static const UPDATED_AT_ASC : String = '+updatedAt';
+		public static const UPDATED_AT_DESC : String = '-updatedAt';
 	}
 }
