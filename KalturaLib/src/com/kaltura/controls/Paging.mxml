@@ -99,12 +99,12 @@
 			public var kalturaFilterPager:KalturaFilterPager;
 			
 			[Bindable]
-			public var rowsInPage:Array = [10, 25, 50, 100, 250, 500];
+			public var rowsInPage:Array = [25, 50, 100, 250, 500];
 			
 			[Bindable]
 			public var showRowsInPage:Boolean = true;
 			
-			public var defaultPageSize:int = 10;
+			public var defaultPageSize:int = 25;
 
 
 			[Bindable]
@@ -374,32 +374,31 @@
 
 				// page size
 				var selectedFromSO:Boolean = true;
-				var selectedIndex:int;
+				var defaultInd:int = 0;
 				// if page size selection available, used saved value:
 				if (showRowsInPage) {
 					var kmcSO:SharedObject = SharedObject.getLocal("kmcSO");
 					var soRowInPage:int = kmcSO.data.rowInPage;
-					if (int(soRowInPage) != int(rowInPageCb.selectedItem)) {
+					
+					if (soRowInPage != rowInPageCb.selectedItem) {
 						selectedFromSO = false;
 						for (var i:int = 0; i < rowsInPage.length; i++) {
-							if (int(rowsInPage[i]) == soRowInPage) {
+							if (rowsInPage[i] == soRowInPage) {
 								rowInPageCb.selectedIndex = i;
 								selectedFromSO = true;
 								resultSizeChange();
 							}
 							//will be used in case we have no saved value in the SO
-							else if (int(rowsInPage[i]) == defaultPageSize) {
-								selectedIndex = i;
+							else if (rowsInPage[i] == defaultPageSize) {
+								defaultInd = i;
 							}
 						}
-						
 					}
 				}
 				if (!selectedFromSO) {
-					rowInPageCb.selectedIndex = selectedIndex;
+					rowInPageCb.selectedIndex = defaultInd;
 					resultSizeChange();
 				}
-				
 				
 			}
 		]]>
