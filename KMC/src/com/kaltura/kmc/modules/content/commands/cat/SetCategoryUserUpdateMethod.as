@@ -50,7 +50,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 					cu.updateMethod = KalturaUpdateMethodType.AUTOMATIC;
 				}
 				else if (_eventType == CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE){
-					cu.updateMethod = KalturaUpdateMethodType.AUTOMATIC;
+					cu.updateMethod = KalturaUpdateMethodType.MANUAL;
 				}
 				cu.setUpdatedFieldsOnly(true);
 				mr.addAction(new CategoryUserUpdate(cu.categoryId, cu.userId, cu, true));
