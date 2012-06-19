@@ -5,6 +5,8 @@ package com.kaltura.kmc.business
 	import flash.events.Event;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	
+	import mx.messaging.channels.StreamingAMFChannel;
 
 	/**
 	 * this class handles all help-related issues - it has the listener for the help event, 
@@ -42,7 +44,7 @@ package com.kaltura.kmc.business
 		 * based on the anchor in the event.
 		 * @param e	help request dispatched by anything on the displayList.
 		 * */
-		public static function showHelp(e:Event):void {
+		public static function showHelp(e:*):void {
 			e.stopImmediatePropagation();
 			var url:String = _protocol;
 			if (!url) {
@@ -51,6 +53,9 @@ package com.kaltura.kmc.business
 			var key:String;
 			if (e is KmcHelpEvent) {
 				key = (e as KmcHelpEvent).anchor;
+			}
+			else if (e is String) {
+				key = e;
 			}
 			else {
 				key = e["data"];
