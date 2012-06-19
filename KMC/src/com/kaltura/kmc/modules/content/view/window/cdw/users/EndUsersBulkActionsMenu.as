@@ -29,10 +29,10 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 			topLevel.children = [];
 			actions.push(topLevel);
 			
-			mi = new MenuItemVo();
-			mi.label = resourceManager.getString('cms', 'usersBulkApprove');
-			mi.data = "usersBulkApprove";
-			topLevel.children.push(mi);
+//			mi = new MenuItemVo();
+//			mi.label = resourceManager.getString('cms', 'usersBulkApprove');
+//			mi.data = "usersBulkApprove";
+//			topLevel.children.push(mi);
 			
 			mi = new MenuItemVo();
 			mi.label = resourceManager.getString('cms', 'usersBulkDeactivate');
@@ -73,7 +73,7 @@ package com.kaltura.kmc.modules.content.view.window.cdw.users
 				return;
 			}
 			switch (event.item.data) {
-				case "usersBulkApprove":
+//				case "usersBulkApprove":
 				case "usersBulkActivate":
 					cue = new CategoryUserEvent(CategoryUserEvent.ACTIVATE_CATEGORY_USER);
 					cue.data = users;
