@@ -12,6 +12,8 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.vo.KalturaUser;
 	
 	import mx.collections.ArrayCollection;
+	import mx.controls.Alert;
+	import mx.resources.ResourceManager;
 
 	public class addCategoryUsersCommand extends KalturaCommand {
 		
@@ -70,11 +72,11 @@ package com.kaltura.kmc.modules.content.commands.cat
 								// so we'll only show this once
 								CATEGORY_USER_ALREADY_EXISTS = true;
 							} 
-							str = rm.getString('cms', o.error.code);
+							var str:String = ResourceManager.getInstance().getString('cms', o.error.code);
 							if (!str) {
 								str = o.error.message;
 							} 
-							Alert.show(str, rm.getString('cms', 'error'));
+							Alert.show(str, ResourceManager.getInstance().getString('cms', 'error'));
 						}
 					}
 				}
