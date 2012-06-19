@@ -218,8 +218,9 @@
 			}
 			
 			private function deleteCategory(e:Event):void {
+				var kCat:KalturaCategory = e.target.data as KalturaCategory;
 				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
-				cgEvent.data = [(e.target.data as KalturaCategory).id];
+				cgEvent.data = [[kCat.id], kCat.directSubCategoriesCount > 0];
 				cgEvent.dispatch();
 			}
 			

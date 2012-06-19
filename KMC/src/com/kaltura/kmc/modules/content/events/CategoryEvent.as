@@ -69,7 +69,8 @@ package com.kaltura.kmc.modules.content.events
 		
 		/**
 		 * delete a category
-		 * event.data is an array of category ids 
+		 * event.data is: [[categoryIds], hasSub] (second parameter only relevant if categoryIds.length == 1) 
+		 * if event has no data, selectedCategories on the model are used
 		 */
 		public static const DELETE_CATEGORIES : String = "content_deleteCategories";
 		

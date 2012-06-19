@@ -20,8 +20,11 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		
 		override public function execute(event:CairngormEvent):void {
 			var rm:IResourceManager = ResourceManager.getInstance();
-			
-			ids = event.data as Array;
+			var hasSubCats:Boolean;
+			if (event.data) {
+				hasSubCats = event.data[1]; 
+				ids = event.data[0] as Array;
+			}
 			if (!ids) {
 				// get from model
 				ids = [];
@@ -29,16 +32,31 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					ids.push(kCat.id);
 				}
 			}
+			
+			var msg:String;
 			if (ids.length == 0) {
 				// no categories
-				
 				Alert.show(rm.getString('entrytable', 'selectCategoriesFirst'),
 					rm.getString('cms', 'selectCategoriesFirstTitle'));
 				return;
 			}
-
-			// let the user know this is an async action:
-			Alert.show(rm.getString('cms', 'asyncCategoryWarn'), rm.getString('cms', 'attention'), Alert.OK|Alert.CANCEL, null, deleteCats);
+			else if (ids.length == 1) {
+				// batch action
+				if (hasSubCats) {
+					// "subcats will be deleted"
+					msg = rm.getString('cms', 'deleteCategoryWarn');
+				}
+				else {
+					// simple "Are you sure"
+					msg = rm.getString('cms', 'deleteCategoryWarn2');
+				}
+			}
+			else {
+				msg = rm.getString('cms', 'deleteCategoriesWarn');
+			}
+			
+			// let the user know:
+			Alert.show(msg, rm.getString('cms', 'attention'), Alert.OK|Alert.CANCEL, null, deleteCats);
 		}
 		
 		private function deleteCats(e:CloseEvent):void {
