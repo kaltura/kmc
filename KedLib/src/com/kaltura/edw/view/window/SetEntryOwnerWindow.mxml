@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- change entry owner window -->
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							height="220" width="390" layout="vertical" 
-							showCloseButton="true" showHelpButton="true" help="helpHandler(event)" 
+							height="170" width="400" layout="vertical" showCloseButton="true" showHelpButton="true"
+							help="helpHandler(event)"
 							title="{resourceManager.getString('drilldown', 'changeOwnerTitle')}"
-							creationComplete="creationCompleteHandler(event)" xmlns:components="com.hillelcoren.components.*">
+							creationComplete="creationCompleteHandler(event)"
+							xmlns:components="com.hillelcoren.components.*">
 	<mx:Metadata>
 		/**
 		 * dispatched when user requests save
 		 * */
 		[Event(name="save", type="fl.events.Event")]
 	</mx:Metadata>
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
@@ -24,23 +25,24 @@
 			import com.kaltura.edw.model.datapacks.EntryDataPack;
 			import com.kaltura.edw.view.EntryDetailsWin;
 			import com.kaltura.vo.KalturaUser;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
-			
+
 			public var entryData:EntryDataPack;
-			
-			
+
+
 			/**
 			 * client for autocomplete API calls
 			 * */
 			public var kClient:KalturaClient
-			
+
 			private var _userWatcher:ChangeWatcher;
+
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				new KACUsersController(usersComplete, kClient);
@@ -49,19 +51,21 @@
 				}
 			}
 
-			
+
 			/**
 			 * container for selected user if not creationComplete yet
 			 * */
 			private var _selectedUser:KalturaUser
-			
+
+
 			/**
 			 * retreive the currently selected user
 			 * */
 			public function get selectedUser():KalturaUser {
 				return usersComplete.selectedItem as KalturaUser;
 			}
-			
+
+
 			public function set selectedUser(value:KalturaUser):void {
 				if (usersComplete) {
 					usersComplete.selectedItems = new ArrayCollection([value]);
@@ -70,8 +74,8 @@
 					_selectedUser = value;
 				}
 			}
-			
-			
+
+
 			public function setUserById(userid:String):void {
 				_userWatcher = BindingUtils.bindProperty(this, "selecteduser", entryData, "selectedEntryOwner");
 				var kEvent:UsersEvent = new UsersEvent(UsersEvent.GET_ENTRY_OWNER);
@@ -96,22 +100,24 @@
 
 			private function helpHandler(event:Event):void {
 				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent(EntryDetailsWin.HELP_REQUEST, true);
-				e.data = 'section_entry_owner' 
+				e.data = 'section_entry_owner'
 				dispatchEvent(e);
-				
-			}
 
+			}
 		]]>
 	</mx:Script>
-	<mx:Label text="{resourceManager.getString('drilldown', 'changeOwnerText')}" width="100%" />
-	<components:AutoComplete id="usersComplete" allowNewValues="true" labelField="id" showRemoveIcon="true" selectionItemRendererClassFactory="{new ClassFactory(UserSelectedItem)}"
-							 selectedItemStyleName="selectionBox" unregisteredSelectedItemStyleName="unregisteredSelectionBox" prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}" />
-	
-	 <mx:ControlBar width="100%" horizontalAlign="right">
-		 <mx:Button label="{resourceManager.getString('drilldown', 'cancel')}" styleName="cancelBtnStyle"
-					click="closeWin(event)"/>
-		 <mx:VRule height="25" />
-		 <mx:Button label="{resourceManager.getString('drilldown', 'save')}" styleName="saveBtnStyle"
-					click="apply(event)"/>
-	 </mx:ControlBar>
+	<mx:Label text="{resourceManager.getString('drilldown', 'changeOwnerText')}" width="100%"/>
+	<components:AutoComplete id="usersComplete" width="100%" allowNewValues="true" labelField="id" showRemoveIcon="true"
+							 selectionItemRendererClassFactory="{new ClassFactory(UserSelectedItem)}"
+							 selectedItemStyleName="selectionBox"
+							 unregisteredSelectedItemStyleName="unregisteredSelectionBox"
+							 prompt="{resourceManager.getString('drilldown', 'changeOwnerPrompt')}"/>
+
+	<mx:ControlBar width="100%" horizontalAlign="right">
+		<mx:Button label="{resourceManager.getString('drilldown', 'cancel')}" styleName="cancelBtnStyle"
+				   click="closeWin(event)"/>
+		<mx:VRule height="25"/>
+		<mx:Button label="{resourceManager.getString('drilldown', 'save')}" styleName="saveBtnStyle"
+				   click="apply(event)"/>
+	</mx:ControlBar>
 </containers:HelpTitleWindow>
