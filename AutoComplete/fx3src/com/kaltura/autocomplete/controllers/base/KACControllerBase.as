@@ -27,6 +27,8 @@ package com.kaltura.autocomplete.controllers.base
 			_autoComp = autoComp;
 			_autoComp.autoSelectEnabled = false;
 			_autoComp.backspaceAction = AutoComplete.BACKSPACE_REMOVE;
+			_autoComp.showRemoveIcon = true;
+			_autoComp.setStyle("selectedItemStyleName", "selectionBox"); 
 			_client = client;
 			
 			_autoComp.dataProvider = _elementSelection;

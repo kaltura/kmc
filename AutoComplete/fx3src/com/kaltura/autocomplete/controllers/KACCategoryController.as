@@ -4,6 +4,7 @@ package com.kaltura.autocomplete.controllers
 	import com.hillelcoren.utils.StringUtils;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.autocomplete.controllers.base.KACControllerBase;
+	import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
 	import com.kaltura.commands.category.CategoryList;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.net.KalturaCall;
@@ -15,6 +16,8 @@ package com.kaltura.autocomplete.controllers
 	import flash.utils.setTimeout;
 	
 	import mx.collections.ArrayCollection;
+	import mx.core.ClassFactory;
+	import mx.utils.ArrayUtil;
 
 	public class KACCategoryController extends KACControllerBase
 	{
@@ -22,6 +25,7 @@ package com.kaltura.autocomplete.controllers
 		{
 			super(autoComp, client);
 			autoComp.dropDownLabelFunction = categoryLabelFunction;
+			autoComp.dropDownItemRenderer = new ClassFactory(CategorySelectedItem);
 		}
 		
 		override protected function createCallHook():KalturaCall{
@@ -33,7 +37,11 @@ package com.kaltura.autocomplete.controllers
 		}
 		
 		override protected function fetchElements(data:Object):Array{
-			return (data.data as KalturaCategoryListResponse).objects;
+			var ret:Array = (data.data as KalturaCategoryListResponse).objects;
+			if (ret != null){
+				ret.sortOn("fullName", Array.CASEINSENSITIVE);
+			}
+			return ret;
 		}
 		
 		private function categoryLabelFunction(item:Object):String{
