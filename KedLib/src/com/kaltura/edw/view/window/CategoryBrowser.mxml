@@ -15,6 +15,7 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
 			import com.kaltura.vo.KalturaCategory;
@@ -114,11 +115,30 @@
 				}
 			}
 
+
+			protected function catComplete_valueChangeHandler(event:GeneralNonCairngormEvent):void {
+				if (event.data) {
+					// event.data is selected item in autocomplete
+					catTree.addFromAutoComplete(event);
+				}
+				else {
+					// reset selected items in tree
+					var catids:String = '';
+					for each (var kCat:KalturaCategory in catComplete.selectedItems) {
+						catids += kCat.id + ",";
+					}
+					if (catids.length) {
+						catids = catids.substring(0, catids.length-1);
+					}
+					catTree.filter = catids;
+				}
+			}
+
 		]]>
 	</mx:Script>
 	<cat:CategoryAutocomplete id="catComplete" kClient="{kClient}" width="100%" height="60" 
 							  visible="{showText}" includeInLayout="{showText}"
-							  valueChange="{catTree.addFromAutoComplete(event)}"
+							  valueChange="catComplete_valueChangeHandler(event)"
 							  keepValues="true"/>
 	<cat:CatTree id="catTree" styleName="categoriesTree" width="100%" height="100%" 
 				 selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}"

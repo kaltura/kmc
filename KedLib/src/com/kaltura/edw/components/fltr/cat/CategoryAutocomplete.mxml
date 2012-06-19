@@ -49,12 +49,17 @@
 			protected function completor_changeHandler(event:Event):void {
 				event.stopImmediatePropagation();
 				var e:GeneralNonCairngormEvent = new GeneralNonCairngormEvent("valueChange");
-				e.data = completor.selectedItem;
-				dispatchEvent(e); 
 				if (!keepValues) {
+					// (i.e, in filter)
+					e.data = completor.selectedItem;
 					// remove the old text
 					completor.selectedItems = new ArrayCollection();
 				}
+				else {
+					// (i.e, in cat.brs)
+					// need to know what the chagne was so it can be handled correctly
+				}
+				dispatchEvent(e); 
 				
 			}
 			
