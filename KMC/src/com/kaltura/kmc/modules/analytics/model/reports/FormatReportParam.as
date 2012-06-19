@@ -41,6 +41,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case 'count_mix':
 				case "count_loads": return _numberFormatter.format(int(value)) ; break;
 				
+				case 'avg_view_drop_off':
 				case 'play_through_ratio':
 				case "load_play_ratio": return (Number(value) * 100).toFixed(2) + "%"; break;
 				
@@ -61,7 +62,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 					var day : String = String(value).substring(6,8);
 					
 					// There was a deduction of the month number, but it was removed as it was found unnecessary.
-					date = new Date( Number(year) , Number(month) , Number(day) );
+					date = new Date( Number(year) , Number(month) - 1 , Number(day) );
 					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "dailyDateMask");
 					return _dateFormatter.format(date) ; 
 					break;
@@ -78,15 +79,15 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "combined_bandwidth_storage":
 				case "added_storage_mb":
 				case "total_storage_mb":
-					return Math.ceil(parseFloat(value)).toString() + " MB";
+					return Math.ceil(parseFloat(value)).toString();
 					break;
 				case "added_msecs":
 				case "total_msecs":
 					var numValue:Number = Math.abs(Number(value));
 					var wholeMinutes:Number = Math.floor(numValue / 60000);
 					var wholeSeconds:Number = Math.floor((numValue - (wholeMinutes * 60000)) / 1000);
-					var secondsText:String = wholeMinutes < 10 ? "0" + wholeSeconds.toString() : wholeSeconds.toString(); 
-					var formattedTime:String = wholeMinutes.toString() + ":" + secondsText
+					var secondsText:String = wholeSeconds < 10 ? "0" + wholeSeconds.toString() : wholeSeconds.toString(); 
+					var formattedTime:String = wholeMinutes.toString() + ":" + secondsText;
 					
 					if (Number(value) < 0){
 						formattedTime = "-" + formattedTime;
