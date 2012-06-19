@@ -25,7 +25,7 @@ package com.kaltura.autocomplete.controllers
 		{
 			super(autoComp, client);
 			autoComp.dropDownLabelFunction = categoryLabelFunction;
-			autoComp.dropDownItemRenderer = new ClassFactory(CategorySelectedItem);
+			autoComp.selectionItemRendererClassFactory = new ClassFactory(CategorySelectedItem);
 		}
 		
 		override protected function createCallHook():KalturaCall{
