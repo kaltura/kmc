@@ -45,7 +45,9 @@ package com.kaltura.kmc.business
 		 * @param e	help request dispatched by anything on the displayList.
 		 * */
 		public static function showHelp(e:*):void {
-			e.stopImmediatePropagation();
+			if (e is Event) {
+				e.stopImmediatePropagation();
+			}
 			var url:String = _protocol;
 			if (!url) {
 				url = "http://";
@@ -71,7 +73,12 @@ package com.kaltura.kmc.business
 		 */		
 		public static function getMapping(key:String):String {
 			var xml:XML = _map.(@key==key)[0];
-			return xml.@anchor;
+			if (xml) {
+				return xml.@anchor;
+			}
+			else {
+				return '';
+			}
 		}
 		
 	}
