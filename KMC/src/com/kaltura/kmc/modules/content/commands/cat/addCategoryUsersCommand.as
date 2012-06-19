@@ -43,15 +43,45 @@ package com.kaltura.kmc.modules.content.commands.cat
 		
 		override public function result(data:Object):void {
 			super.result(data);
-			if (!checkError(data)) {
-				// get updated list of users
-				var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
-				cg.dispatch();
-				// set new numbers of members to the category object
-				var updatedCat:KalturaCategory = data.data[data.data.length-1] as KalturaCategory;
-				_model.categoriesModel.selectedCategory.membersCount = updatedCat.membersCount;
-				_model.categoriesModel.selectedCategory.pendingMembersCount = updatedCat.pendingMembersCount;
+			
+			// this is instead of the standard checkError
+			if (data.data.length == 2) {
+				// we won't have more than a single "user already exists" error, so handle regularly 
+				if (!checkError(data)) {
+					// get updated list of users
+					var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
+					cg.dispatch();
+					// set new numbers of members to the category object
+					var updatedCat:KalturaCategory = data.data[data.data.length-1] as KalturaCategory;
+					_model.categoriesModel.selectedCategory.membersCount = updatedCat.membersCount;
+					_model.categoriesModel.selectedCategory.pendingMembersCount = updatedCat.pendingMembersCount;
+				}
 			}
+			else {
+				// count CATEGORY_USER_ALREADY_EXISTS errors, only display one.
+				// this was a multirequest, we need to check its contents.
+				var CATEGORY_USER_ALREADY_EXISTS:Boolean = false;
+				for (var i:int = 0; i<data.data.length; i++) {
+					var o:Object = data.data[i];
+					if (o.error) {
+						// in MR errors aren't created
+						if (o.error.code != "CATEGORY_USER_ALREADY_EXISTS" || !CATEGORY_USER_ALREADY_EXISTS) {
+							if (o.error.code == "CATEGORY_USER_ALREADY_EXISTS") {
+								// so we'll only show this once
+								CATEGORY_USER_ALREADY_EXISTS = true;
+							} 
+							str = rm.getString('cms', o.error.code);
+							if (!str) {
+								str = o.error.message;
+							} 
+							Alert.show(str, rm.getString('cms', 'error'));
+						}
+					}
+				}
+			}
+			
+			
+			
 			_model.decreaseLoadCounter();
 		}
 	}
