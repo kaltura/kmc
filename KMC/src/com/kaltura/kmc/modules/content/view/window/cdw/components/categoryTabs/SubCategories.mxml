@@ -63,6 +63,7 @@
 			 * <code>isFirst/isLast</code> to decide if up/down buttons should be shown 
 			 * */
 			private function handleMove(e:Event):void {
+				_changeFlag = true;
 				var cat:KalturaCategory = e.target.data as KalturaCategory;
 				var ind:int = _subCategories.getItemIndex(cat);
 				
@@ -112,6 +113,7 @@
 						cgEvent.dispatch();
 					}
 				}
+				_changeFlag = false;
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
 			
@@ -130,6 +132,7 @@
 						this.parent.removeChild(this);
 					}
 					else {
+						_changeFlag = false;
 						var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.GET_SUB_CATEGORIES);
 						cgEvent.dispatch();
 					}
@@ -139,15 +142,10 @@
 			public function init():void {
 			}
 			
+			private var _changeFlag:Boolean = false;
+			
 			public function isChanged():Boolean {
-				var cat:KalturaCategory;
-				for (var i:int = 0; i<_subCategories.length; i++) {
-					cat = _subCategories.getItemAt(i) as KalturaCategory;
-					if (cat.partnerSortValue != i) {
-						return true;
-					}
-				}
-				return false;
+				return _changeFlag;
 			}
 			
 
