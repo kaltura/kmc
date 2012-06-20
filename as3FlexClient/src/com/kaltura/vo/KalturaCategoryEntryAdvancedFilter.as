@@ -27,75 +27,25 @@
 // ===================================================================================================
 package com.kaltura.vo
 {
-	import com.kaltura.vo.KalturaBulkUploadResult;
+	import com.kaltura.vo.KalturaSearchOperator;
 
 	[Bindable]
-	public dynamic class KalturaBulkUploadResultUser extends KalturaBulkUploadResult
+	public dynamic class KalturaCategoryEntryAdvancedFilter extends KalturaSearchOperator
 	{
 		/**
 		 **/
-		public var screenName : String = null;
+		public var categoriesMatchOr : String = null;
 
 		/**
 		 **/
-		public var email : String = null;
-
-		/**
-		 **/
-		public var description : String = null;
-
-		/**
-		 **/
-		public var tags : String = null;
-
-		/**
-		 **/
-		public var dateOfBirth : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var country : String = null;
-
-		/**
-		 **/
-		public var state : String = null;
-
-		/**
-		 **/
-		public var city : String = null;
-
-		/**
-		 **/
-		public var zip : String = null;
-
-		/**
-		 **/
-		public var gender : int = int.MIN_VALUE;
-
-		/**
-		 **/
-		public var firstName : String = null;
-
-		/**
-		 **/
-		public var lastName : String = null;
+		public var categoryEntryStatusIn : String = null;
 
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
-			arr.push('screenName');
-			arr.push('email');
-			arr.push('description');
-			arr.push('tags');
-			arr.push('dateOfBirth');
-			arr.push('country');
-			arr.push('state');
-			arr.push('city');
-			arr.push('zip');
-			arr.push('gender');
-			arr.push('firstName');
-			arr.push('lastName');
+			arr.push('categoriesMatchOr');
+			arr.push('categoryEntryStatusIn');
 			return arr;
 		}
 

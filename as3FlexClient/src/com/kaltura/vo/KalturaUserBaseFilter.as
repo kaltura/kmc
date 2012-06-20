@@ -86,9 +86,9 @@ package com.kaltura.vo
 		public var lastNameStartsWith : String = null;
 
 		/**
-		 * @see com.kaltura.types.kalturaBoolean
+		 * @see com.kaltura.types.KalturaNullableBoolean
 		 **/
-		public var isAdminEqual : Boolean;
+		public var isAdminEqual : int = int.MIN_VALUE;
 
 		override public function getUpdateableParamKeys():Array
 		{

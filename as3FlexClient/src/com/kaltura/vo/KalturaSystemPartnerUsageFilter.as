@@ -44,12 +44,19 @@ package com.kaltura.vo
 		 **/
 		public var toDate : int = int.MIN_VALUE;
 
+		/**
+		 * Time zone offset
+		 * 
+		 **/
+		public var timezoneOffset : int = int.MIN_VALUE;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
 			arr.push('fromDate');
 			arr.push('toDate');
+			arr.push('timezoneOffset');
 			return arr;
 		}
 

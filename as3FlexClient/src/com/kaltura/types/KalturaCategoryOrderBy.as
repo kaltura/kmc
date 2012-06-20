@@ -45,5 +45,7 @@ package com.kaltura.types
 		public static const MEMBERS_COUNT_DESC : String = '-membersCount';
 		public static const PARTNER_SORT_VALUE_ASC : String = '+partnerSortValue';
 		public static const PARTNER_SORT_VALUE_DESC : String = '-partnerSortValue';
+		public static const DIRECT_SUB_CATEGORIES_COUNT_ASC : String = '+directSubCategoriesCount';
+		public static const DIRECT_SUB_CATEGORIES_COUNT_DESC : String = '-directSubCategoriesCount';
 	}
 }
