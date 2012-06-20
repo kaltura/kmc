@@ -405,13 +405,15 @@
 				var listAccessControlProfs:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				listAccessControlProfs.dispatch();
 
-				var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-				DataTabController.getInstance().dispatch(lmdp);
-
-				// Should happen soon enough before it's needed - Biton. 
-				var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
-				listCategoryMetadata.dispatch();
-
+				if (_model.filterModel.enableCustomData) {
+					var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+					DataTabController.getInstance().dispatch(lmdp);
+	
+					// Should happen soon enough before it's needed - Biton. 
+					var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
+					listCategoryMetadata.dispatch();
+				}
+				
 				if (contentView.selectedChild == manage) {
 					manage.loadEntries();
 				}
