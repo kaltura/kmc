@@ -47,7 +47,7 @@
 
         <Watermark id="watermark" width="100%" height="100%"
                watermarkPath="http://www.kaltura.com/content/uiconf/kaltura/kmc/appstudio/kdp3/exampleWatermark.png"
-               watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topRight"/>
+               watermarkClickPath="http://www.kaltura.com/" watermarkPosition="topRight" padding="10"/>
          
 
 		  <VBox id="relatedViewVBox" horizontalAlign="center" verticalAlign="middle" width="100%" height="100%" visible="{relatedView.visible}" includeInLayout="{relatedView.visible}" verticalGap="10" styleName="black">
@@ -96,25 +96,24 @@
           </VBox>
         </VBox>
         
-		<VBox id="controllersVbox" width="100%" height="100%" verticalAlign="Bottom">
+		<VBox id="controllersVbox" width="100%" height="100%" paddingBottom="5" verticalAlign="Bottom">
 			<Spacer id="controllerPusher" width="100%" height="100%" />
-			<VBox id="ControllerScreenHolder" width="100%" height="80" verticalAlign="middle" paddingLeft="5" paddingTop="8" styleName="Player_bg_hover">
+			<VBox id="ControllerScreenHolder" width="100%" height="80" verticalAlign="middle" styleName="Player_bg_hover">
 	
 			  <!-- scrubber box. the scrubber and 2 timers -->
-			  <HBox id="scrubberBox" width="100%" height="25" verticalAlign="middle" paddingRight="8">
-				<HBox id="scrubberContainer" visible="{not(mediaProxy.isLive)}" width="100%" height="25" horizontalGap="0">
-				  <Timer id="timerControllerScreen1" width="55" styleName="timerProgressLeft" format="mm:ss" height="24" timerType="forwards"/>
-				  <Label id="label" text="/" width="10" color1="0xFFFFFF" dynamicColor="true" styleName="timerProgressRight"/>
-				  <Timer id="timerControllerScreen2" width="55" styleName="timerProgressRight" format="mm:ss" height="24" timerType="total"/>
-				  <VBox width="100%" height="100%" paddingLeft="8" paddingRight="8">
-					<Scrubber id="scrubber" width="100%" height="100%"/>
-				  </VBox>
-				</HBox>
-				<Button id="kalturaLogo" height="30" minWidth="50" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
-			  </HBox>
+			   <HBox id="scrubberBox" width="100%" height="28" verticalAlign="middle" paddingRight="10" paddingLeft="10">
+	            <HBox id="scrubberContainer" visible="{not(mediaProxy.isLive)}" width="100%" height="28" horizontalGap="0" paddingRight="9" verticalAlign="middle">
+	              <Timer id="timerControllerScreen1" width="45" height="25" styleName="timerProgressLeft" format="mm:ss" timerType="forwards"/>
+	              <Label id="label" text="/" width="10" height="25" color1="0xFFFFFF" dynamicColor="true" styleName="timerProgressRight"/>
+	              <Timer id="timerControllerScreen2" width="45" height="25" styleName="timerProgressRight" format="mm:ss" timerType="total"/>
+	              <VBox width="100%" height="28" paddingLeft="8" paddingRight="8">
+	                <Scrubber id="scrubber" width="100%" height="100%"/>
+	              </VBox>
+	            </HBox>
+	            <Button id="kalturaLogo" minWidth="50" kClick="navigate('http://www.kaltura.com')" styleName="controllerScreen" icon="kalturaLogo"/>
+	          </HBox>
 
-			  <HBox id="ControllerScreen" width="100%" height="40" horizontalGap="5" paddingLeft="9" paddingBottom="8"
-				  verticalAlign="middle" >
+			   <HBox id="ControllerScreen" width="100%" height="100%" horizontalGap="5" paddingLeft="25" paddingBottom="8" paddingRight="25" verticalAlign="middle">
 					
 					<Button id="playBtnControllerScreen" width="20" height="30" command="play" icon="playIcon_up" upIcon="playIcon_up" overIcon="playIcon_Hover" downIcon="playIcon_Down" disabeledIcon="playIcon_Disabled" selectedUpIcon="pauseIcon_Up" selectedOverIcon="pauseIcon_Hover" selectedDownIcon="pauseIcon_Down" selectedDisabledIcon="pauseIcon_Disabled"
 					tooltip="Play" upTooltip="Play" selectedTooltip="Pause"/>
@@ -125,12 +124,10 @@
 						selectedDownIcon="offlineIcon_Down" selectedDisabledIcon="offlineIcon_Disabled"
 						isSelected="{mediaProxy.isOffline}" visible="{mediaProxy.isLive}"
 						includeInLayout="{mediaProxy.isLive}" mouseEnable="false" useHandCursor=""/>
-
 					
-					<VolumeBar id="volumeBar" width="30" height="30" tooltip="Change volume"
-					icon="VolumeIcon_Up" buttonUpSkin="VolumeIcon_Up" styleName="controllerScreen" buttonOverSkin="VolumeIcon_Hover" buttonDownSkin="VolumeIcon_Down" buttonDisabledSkin="VolumeIcon_Disabled" buttonSelectedUpSkin="MuteIcon_up" buttonSelectedOverSkin="MuteIcon_Hover" buttonSelectedDownSkin="MuteIcon_Down" buttonSelectedDisabledSkin="MuteIcon_Disabled"/>
+					<Spacer id="buttonsPusher" width="100%"/>
+				
 					<!-- Combo box for captions control -->
-					
 					<ComboBox id="ccUnderComboBox" width="90" height="28" styleName="_kdp" selectedIndex="{closedCaptionsUnderPlayer.currentCCFileIndex}" 
 					  kevent_change="sendNotification( 'closedCaptionsSelected' , ccUnderComboBox.selectedItem)" 
 					  dataProvider="{closedCaptionsUnderPlayer.availableCCFilesLabels}" prompt="Captions"
@@ -167,13 +164,14 @@
 						   tooltip="{flavorComboControllerScreen.selectedMessage}"
 						   usePixels="{mediaProxy.displayFlavorPixels}"
 						   isAutoSwitch="{mediaProxy.isFlavorSwitching}"/>
-
-					<Spacer id="buttonsPusher" width="100%"/>
+					
+					<VolumeBar id="volumeBar" width="30" height="30" tooltip="Change volume"
+					icon="VolumeIcon_Up" buttonUpSkin="VolumeIcon_Up" styleName="controllerScreen" buttonOverSkin="VolumeIcon_Hover" buttonDownSkin="VolumeIcon_Down" buttonDisabledSkin="VolumeIcon_Disabled" buttonSelectedUpSkin="MuteIcon_up" buttonSelectedOverSkin="MuteIcon_Hover" buttonSelectedDownSkin="MuteIcon_Down" buttonSelectedDisabledSkin="MuteIcon_Disabled"/>
 					
 					<Button id="fullScreenBtnControllerScreen" command="fullScreen"
 						height="30" styleName="controllerScreen"
 						allowDisable="false" tooltip="Toggle fullscreen"
-						icon="closeFullScreenIcon_Up" upIcon="closeFullScreenIcon_Up" overIcon="closeFullScreenIcon_Hover" downIcon="closeFullScreenIcon_Down" disabeledIcon="closeFullScreenIcon_Disabled" selectedUpIcon="openFullScreenIcon_Up" selectedOverIcon="openFullScreenIcon_Hover" selectedDownIcon="openFullScreenIcon_Down" selectedDisabledIcon="openFullScreenIcon_Disabled"/>
+						icon="closeFullScreenIcon_Up" overIcon="closeFullScreenIcon_Hover" downIcon="closeFullScreenIcon_Down" disabeledIcon="closeFullScreenIcon_Disabled" selectedUpIcon="openFullScreenIcon_Up" selectedOverIcon="openFullScreenIcon_Hover" selectedDownIcon="openFullScreenIcon_Down" selectedDisabledIcon="openFullScreenIcon_Disabled"/>
 					<Button id="custom1BtnControllerScreen" height="30"
 						kClick="jsCall('customFunc1', mediaProxy.entry.id )" label="Custom 1"
 						styleName="controllerScreen" 
@@ -196,7 +194,6 @@
 						icon="CustomIcon_Up" upIcon="CustomIcon_Up" overIcon="CustomIcon_Hover" downIcon="CustomIcon_Down" disabeledIcon="CustomIcon_Disabled"/>
 				  </HBox>
 			</VBox>
-			<Spacer id="PaddingBottom" height="5" />
 		</VBox>
 
 		 
@@ -427,15 +424,15 @@
           <VBox id="relatedVBox" width="100%" height="100%" visible="{not(this.isOver)}" styleName="TileUp"/>
           <VBox id="upNextVBox" width="100%" height="100%" visible="{this.isUpNext}" styleName="TileSelected"/>
     
-          <VBox id="labelsHolder" width="100%" height="100%" visible="{this.isOver}" styleName="TileSelected" paddingLeft="5" paddingRight="5" paddingTop="5" >
-            <Text id="relatedHoverNameAndDesc" height="20" width="100%" text="{this.entry.name}" styleName="Tile_itemOver_Title"/>
-            <Text id="relatedHoverUserId" height="20" width="100%" text="{this.entry.userId}"  styleName="Tile_itemOver_Title"/>
-            <HBox id="durationHBox" width="100%" height="20" paddingRight="15" verticalAlign="middle">
-             <Label id="relatedDurationIrScreen" height="18" width="40" text="{formatDate(this.entry.duration, 'NN:SS')}" styleName="Tile_itemOver_duration"/>
-             <Spacer width="100%"/>
-             <Button id="playIconBtn" icon="Tile_itemOver_icon"/>
+          <VBox id="labelsHolder" width="100%" height="100%" visible="{this.isOver}" styleName="TileSelected" paddingLeft="7" paddingRight="8" paddingTop="5" paddingBottom="7">
+            <Text id="relatedHoverNameAndDesc" height="18" width="100%" text="{this.entry.name}" styleName="Tile_itemOver_Title"/>
+            <Text id="relatedHoverUserId" height="18" width="100%" text="{this.entry.userId}" styleName="Tile_itemOver_Title"/>
+            <HBox id="durationHBox" width="100%" height="100%" verticalAlign="bottom">
+              <Label id="relatedDurationIrScreen" height="15" width="40" text="{formatDate(this.entry.duration, 'NN:SS')}" styleName="Tile_itemOver_duration"/>
+              <Spacer width="100%"/>
+              <Button id="playIconBtn" icon="Tile_itemOver_icon"/>
             </HBox>
-          </VBox>    
+          </VBox>
         </Canvas>
       </VBox>
     </renderer>
