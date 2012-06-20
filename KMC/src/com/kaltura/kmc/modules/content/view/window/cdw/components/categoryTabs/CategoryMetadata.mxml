@@ -149,14 +149,19 @@
 
 
 			public function init():void {
-				if (filterModel.categoryMetadataProfiles) {
-					buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+				if (filterModel.enableCustomData) {
+					if (filterModel.categoryMetadataProfiles) {
+						buildProfiles(filterModel.categoryMetadataProfiles, filterModel.categoryFormBuilders);
+					}
+					else {
+						// if custom data profiles are not loaded, load them
+						_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterModel, ["categoryFormBuilders"]);
+						var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
+						listCategoryMetadata.dispatch();
+					}
 				}
 				else {
-					// if custom data profiles are not loaded, load them
-					_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterModel, ["categoryFormBuilders"]);
-					var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
-					listCategoryMetadata.dispatch();
+					_profileNames = new ArrayCollection();
 				}
 				new KACTagsController(tagsInput, CmsModelLocator.getInstance().context.kc);
 			}
@@ -164,6 +169,11 @@
 
 			public function isChanged():Boolean {
 				// see if custom data has changed. values of the actual categoryare checked in CategoryDetailsWin
+				
+				if (!filterModel.enableCustomData) {
+					return false;
+				}
+				
 				var res:Boolean = false;
 
 				var infoArray:ArrayCollection = model.metadataInfo;

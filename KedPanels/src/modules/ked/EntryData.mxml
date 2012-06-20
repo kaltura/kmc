@@ -459,17 +459,21 @@
 			public function init():void {
 				Security.allowDomain("*");
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.METADATA_PANEL);
-
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 
-				if (filterData.filterModel.metadataProfiles) {
-					buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+				if (filterData.filterModel.enableCustomData) {
+					if (filterData.filterModel.metadataProfiles) {
+						buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
+					}
+					else {
+						// if custom data profiles are not loaded, load them
+						_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterData, ["filterModel", "formBuilders"]);
+						var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+						controller.dispatch(lmdp);
+					}
 				}
 				else {
-					// if custom data profiles are not loaded, load them
-					_profsWatcher = BindingUtils.bindSetter(onSetProfiles, filterData, ["filterModel", "formBuilders"]);
-					var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-					controller.dispatch(lmdp);
+					_profileNames = new ArrayCollection();
 				}
 			}
 

@@ -85,8 +85,10 @@ package com.kaltura.edw.control.commands
 			_model.increaseLoadCounter();
 			
 			// custom data hack
-			var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
-			DataTabController.getInstance().dispatch(lmdp);
+			if (_filterModel.enableCustomData) {
+				var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
+				DataTabController.getInstance().dispatch(lmdp);
+			}
 			
 			var multiRequest:MultiRequest = new MultiRequest();
 			
