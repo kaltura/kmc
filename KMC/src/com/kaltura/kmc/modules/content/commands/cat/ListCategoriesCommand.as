@@ -57,14 +57,15 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		override public function result(data:Object):void {
 			_model.decreaseLoadCounter();
 			super.result(data);
-		
-			var er:KalturaError = (data as KalturaEvent).error;
-			if (er) { 
-				Alert.show(getErrorText(er), ResourceManager.getInstance().getString('cms', 'error'));
-				return;
+			if (!checkError(data)) {		
+//			var er:KalturaError = (data as KalturaEvent).error;
+//			if (er) { 
+//				Alert.show(getErrorText(er), ResourceManager.getInstance().getString('cms', 'error'));
+//				return;
+//			}
+				_model.categoriesModel.categoriesList = new ArrayCollection((data.data as KalturaCategoryListResponse).objects);
+				_model.categoriesModel.totalCategories = (data.data as KalturaCategoryListResponse).totalCount;
 			}
-			_model.categoriesModel.categoriesList = new ArrayCollection((data.data as KalturaCategoryListResponse).objects);
-			_model.categoriesModel.totalCategories = (data.data as KalturaCategoryListResponse).totalCount;
 		}
 		
 		

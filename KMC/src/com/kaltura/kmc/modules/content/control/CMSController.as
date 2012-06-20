@@ -144,6 +144,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.SET_SELECTED_CATEGORY, SetSelectedCategoryCommand);
 			addCommand(CategoryEvent.LIST_CATEGORY_USERS, ListCategoryUsersCommand);
 			addCommand(CategoryEvent.RESET_CATEGORY_USER_LIST, ListCategoryUsersCommand);
+			addCommand(CategoryEvent.SET_REFRESH_REQUIRED, SetRefreshCatsRequiredCommand);
 			
 			
 			// category users

@@ -248,7 +248,6 @@ package com.kaltura.vo
 			arr.push('appearInList');
 			arr.push('privacy');
 			arr.push('inheritanceType');
-			arr.push('userJoinPolicy');
 			arr.push('defaultPermissionLevel');
 			arr.push('owner');
 			arr.push('referenceId');

@@ -106,6 +106,12 @@ package com.kaltura.kmc.modules.content.model
 		public var processingNewCategory:Boolean = false;
 		
 		/**
+		 * should categories list be reloaded <br/>
+		 * used when closing CDW 
+		 */		
+		public var refreshCategoriesRequired:Boolean = false;
+		
+		/**
 		 * predefined entries to add to newly created category
 		 * (from entries screen>bulk actions)
 		 */

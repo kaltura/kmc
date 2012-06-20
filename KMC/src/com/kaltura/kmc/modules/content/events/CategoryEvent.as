@@ -7,6 +7,12 @@ package com.kaltura.kmc.modules.content.events
 		
 		
 		/**
+		 * set the refreshCategoriesRequired flag
+		 * event.data is new value 
+		 */
+		public static const SET_REFRESH_REQUIRED : String = "content_setRefreshCatsRequired";
+		
+		/**
 		 * clear the list of subcategories of the current selected category (category drilldown) 
 		 */
 		public static const RESET_SUB_CATEGORIES : String = "content_resetSubCategories";

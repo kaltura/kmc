@@ -63,6 +63,8 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
 					// retrigger binding
 					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
+//					// add this category to the head of the list
+//					_model.categoriesModel.categoriesList.addItemAt(_model.categoriesModel.selectedCategory, 0);
 				}
 			}
 			_model.decreaseLoadCounter();

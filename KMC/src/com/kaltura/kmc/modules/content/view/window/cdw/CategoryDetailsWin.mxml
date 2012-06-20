@@ -226,6 +226,10 @@
 			 * */
 			private function submitChanges(refreshLists:Boolean):void {
 				_refreshListsRequired = refreshLists;
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_REFRESH_REQUIRED);
+				cgEvent.data = !refreshLists;
+				cgEvent.dispatch();
+				
 				tabsNav.validate();
 				// eventually leads to tabsNav_validationCompleteHandler
 			}
@@ -345,6 +349,7 @@
 					_undoCategory.owner = null;
 					_undoCategory.contributionPolicy = int.MIN_VALUE;
 					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
+					_undoCategory.inheritanceType = int.MIN_VALUE;
 //					_undoCategory.userJoinPolicy = int.MIN_VALUE;
 				}
 					

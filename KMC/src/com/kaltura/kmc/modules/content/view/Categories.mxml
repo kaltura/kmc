@@ -54,10 +54,6 @@
 			 * */
 			public var entryDetailsModel:KMvCModel;
 
-			/**
-			 * file reference object for bulk uploads
-			 * */
-			private var _bulkUpldFileRef:FileReference;
 
 			/**
 			 * initialize the panel.
@@ -89,11 +85,11 @@
 			 * list categories according to current filter
 			 * @param resetTree	if tre, category tree in filter is re-loaded
 			 * */
-			private function loadCategories(resetTree:Boolean = false):void {
+			public function loadCategories(resetTree:Boolean = false):void {
 				// dispatch event that will load data according to screen filter
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				filter.kalturaFilter.orderBy = categoriesTable.orderBy;
-				cgEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager];
+				cgEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager, resetTree];
 				cgEvent.dispatch();
 			}
 
