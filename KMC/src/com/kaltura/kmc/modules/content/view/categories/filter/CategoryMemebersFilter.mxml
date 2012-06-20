@@ -4,8 +4,10 @@
 						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
 			import com.kaltura.types.KalturaAppearInListType;
 			
+			import mx.controls.Button;
 			import mx.events.FlexEvent;
 			
 			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
@@ -46,7 +48,8 @@
 			override protected function onDynamicTitleClicked(event:MouseEvent):void {
 				_vo.membersCountLessThanOrEqual = int.MIN_VALUE;
 				_vo.membersCountGreaterThanOrEqual = int.MIN_VALUE;
-				super.onDynamicTitleClicked(event);
+				super.onDynamicTitleClicked(event); 
+			
 			}
 			
 			override protected function onDynamicMemberClicked(event:MouseEvent):void {
@@ -68,6 +71,15 @@
 				}
 				super.onDynamicMemberClicked(event);
 			}
+			
+//			override public function removeItem(item:IndicatorVo):void {
+//				clearDates();
+//			} 
+			
+			override public function get attribute():String {
+				return attributes.join("~~"); // horrible convention for which I'll be sorry soon;
+			}
+			
 			
 		]]>
 	</mx:Script>
