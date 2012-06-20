@@ -127,9 +127,6 @@ package com.kaltura.kmvc.model
 		public function increaseLoadCounter():void {
 			++_loadingCounter;
 			if (_loadingCounter == 1) {
-//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
-//					edm.loadingFlag = true;
-//				}
 				dispatchEvent(new Event(KMvCModel.LOADING_FLAG_CHANGED));
 			}
 		}
@@ -141,9 +138,6 @@ package com.kaltura.kmvc.model
 		public function decreaseLoadCounter():void {
 			--_loadingCounter;
 			if (_loadingCounter == 0) {
-//				for each (var edm:EntryDetailsModel in entryDetailsModelsArray) {
-//					edm.loadingFlag = false;
-//				}
 				dispatchEvent(new Event(KMvCModel.LOADING_FLAG_CHANGED));
 			}
 		}

@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <modules:KmcModule xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:modules="com.kaltura.kmc.modules.*"
-				   xmlns:content="com.kaltura.kmc.modules.content.view.content.*"
 				   xmlns:business="com.kaltura.kmc.modules.content.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.content.control.*"
-				   xmlns:playlist="com.kaltura.kmc.modules.content.view.content.playlist.*"
 				   implements="com.kaltura.edw.business.IDataOwner" layout="vertical" 
 				   minWidth="950" borderThickness="0" borderStyle="solid" verticalGap="0" paddingLeft="0"
 				   paddingRight="0" paddingTop="0" paddingBottom="0" preloader="com.kaltura.preloaders.KmcPreloader"
-				   enabled="{!_model.loadingFlag}" xmlns:view="com.kaltura.kmc.modules.content.view.*" xmlns:playlist1="com.kaltura.kmc.modules.content.view.playlist.*">
+				   enabled="{!_model.loadingFlag &amp;&amp; !KMvCModel.getInstance().loadingFlag}" xmlns:view="com.kaltura.kmc.modules.content.view.*" >
 
 	<mx:Metadata>
 		[ResourceBundle("cms")]
@@ -72,18 +70,17 @@
 			import mx.resources.ResourceManager;
 			import mx.utils.Base64Decoder;
 
-		
+			
+			/**
+			 * layout: navigation buttons height
+			 * */
+			private static const SUB_MENU_HEIGHT : int = 18;
+
 			/**
 			 * max number of categories an entry may be associated with,
 			 * may be overriden with maxNumCategories flashvar
 			 * */
 			private static const DEFAULT_CATEGORIES_NUM:int = 32;
-			private static const SUB_MENU_HEIGHT : int = 18;
-			
-			[Bindable]
-			private var _tabBarViewStack:ViewStack;
-			[Bindable]
-			private var _rightBtnsViewStack:ViewStack;
 
 
 			[Bindable]
@@ -97,22 +94,17 @@
 			 * entry data
 			 * */
 			private var _entryData:EntryDataPack = KMvCModel.getInstance().getDataPack(EntryDataPack) as EntryDataPack;
-			
+
 			/**
 			 * custom data information
 			 * */
 			private var _customDataData:CustomDataDataPack = KMvCModel.getInstance().getDataPack(CustomDataDataPack) as CustomDataDataPack;
-			
+
 			[Bindable]
 			/**
 			 * reference to the current files in the upload file list
 			 * */
 			private var _files : ArrayCollection = FileUploadManager.getInstance().filesCollection;
-			
-			/**
-			 * Google analytics tracker identifier
-			 * */
-			private var _urchinNumber:String;
 
 
 			/**
@@ -171,7 +163,7 @@
 				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
 
 				systemManager.addEventListener(ResizeEvent.RESIZE, stopEvent, false, 1);
-				
+
 				// flashvars and uiconf vars processing
 				if (!_flashvars.maxnumcategories) {
 					_flashvars.maxnumcategories = DEFAULT_CATEGORIES_NUM;
@@ -179,7 +171,7 @@
 				saveUiconfVars();
 				initModelContext(_flashvars);
 				initModel(_flashvars);
-				
+
 
 				//Bindings 
 				BindingUtils.bindSetter(changeWindowState, _model, "windowState");
@@ -199,20 +191,20 @@
 				_ready = true;
 
 				FileUploadManager.getInstance().addEventListener(FileUploadEvent.UPLOAD_ERROR, showError);
-	
+
 				addEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 				createChildren();
 
 			}
 
-			
+
 			/**
 			 * a workaround to allow the windowsManager access to this method
 			 * */
 			public function pEnableHtmlTabs(enable:Boolean):void {
 				enableHtmlTabs(enable);
 			}
-			
+
 			private function stopEvent(e:Event):void {
 				var cl:String = getQualifiedClassName(e);
 				if (e.type == "resize" &&  cl == "fl.events::ComponentEvent") {
@@ -222,7 +214,7 @@
 					e.preventDefault();
 				}
 			}
-			
+
 			/**
 			 * create a new audio entry
 			 * */
@@ -234,7 +226,7 @@
 				addMedia.data = entry;
 				addMedia.dispatch();
 			}
-			
+
 			/**
 			 * create a new video entry
 			 * */
@@ -246,8 +238,8 @@
 				addMedia.data = entry;
 				addMedia.dispatch();
 			}
-			
-			
+
+
 			/**
 			 * create a new livestream entry
 			 * */
@@ -255,7 +247,7 @@
 				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.ADD_LIVE_STREAM);
 				cgEvent.dispatch();
 			}
-			
+
 
 
 			protected function showError(e:FileUploadEvent):void {
@@ -300,11 +292,11 @@
 					_model.attic.entryid = null;
 				}
 			}
-			
-			
+
+
 			/**
-			 * when opening KMC with a drilldown, need to supply ked with 
-			 * a dummy dispatcher because the the drilldown only updates 
+			 * when opening KMC with a drilldown, need to supply ked with
+			 * a dummy dispatcher because the the drilldown only updates
 			 * this value after it is created. use this.
 			 * */
 			private var _entryIdDispatcher:IEventDispatcher;
@@ -332,7 +324,7 @@
 				removeEventListener(FlexEvent.CREATION_COMPLETE, initChildren);
 
 				handleEntryId();
-				
+
 				// roles and permissions 
 				var tabsToHide:Array = PermissionManager.getInstance().getRelevantSubTabsToHide(NAME);
 				for each (var subtabName:String in tabsToHide) {
@@ -345,22 +337,11 @@
 
 				}
 
-				if (_initialTab && _initialTab != "manage") {
-//					_model.attic.kmef = kmef;
-					// switch tab if asked
-					switchToTab(_initialTab);
+				if (!_initialTab) {
+					_initialTab = "manage";
 				}
-				else {
-					// if initial filter provided
-					var kmef:KalturaBaseEntryFilter;
-					if (_model.attic.filter) {
-						kmef = createFilterFromString(_model.attic.filter);
-						_model.attic.filter = null;
-						_model.attic.kmef = kmef;
-					}
-					(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
-					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
-				}
+				switchToTab(_initialTab);
+				
 				setModuleReady();
 
 			}
@@ -423,10 +404,10 @@
 			private function loadChangableData():void {
 				var listAccessControlProfs:AccessControlProfileEvent = new AccessControlProfileEvent(AccessControlProfileEvent.LIST_ACCESS_CONTROLS_PROFILES);
 				listAccessControlProfs.dispatch();
-				
+
 				var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
 				DataTabController.getInstance().dispatch(lmdp);
-				
+
 				// Should happen soon enough before it's needed - Biton. 
 				var listCategoryMetadata:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_METADATA_PROFILES);
 				listCategoryMetadata.dispatch();
@@ -454,7 +435,6 @@
 				if (willTrigger(Event.ADDED_TO_STAGE)) {
 					removeEventListener(Event.ADDED_TO_STAGE, initTrackers);
 				}
-				_urchinNumber = _flashvars.urchinnumber;
 				GoogleAnalyticsTracker.getInstance().setBasePath("KMC/content");
 				var ka:KAnalyticsTracker = KAnalyticsTracker.getInstance();
 
@@ -482,19 +462,19 @@
 				// model:
 				_customDataData.metadataDefaultUiconf = confFile.uiconf.metadata.text().toString();
 				(_model.entryDetailsModel.getDataPack(CuePointsDataPack)as CuePointsDataPack).cuepointsSamplesUrl = getFullUrl(confFile.cuepoints.text().toString());
-				
+
 				// Remove this later? - Biton.
 				if (confFile.uiconf.entryDrilldown.mixesTab.text().toString() != '') {
 					(_model.entryDetailsModel.getDataPack(ContentDataPack) as ContentDataPack).showMixesTab = (confFile.uiconf.entryDrilldown.mixesTab.text().toString() == "true");
 				}
-				
+
 				(_model.entryDetailsModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).fileFilters = confFile.filters.filter;
-				
+
 				(_model.entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).singleLevelMaxCategories = parseInt(confFile.categories.@singleLevelMax);
-				
+
 				categoriesTracker.sampleRate = parseInt(confFile.categories.@sampleRate);
 			}
-			
+
 			protected function getFullUrl(url:String):String {
 				if (url.indexOf('://') == -1) {
 					// no protocol, concat from client
@@ -522,9 +502,9 @@
 				if (objParam.openplayer) {
 					_model.openPlayer = objParam.openplayer;
 				}
-				
+
 				_entryData.maxNumCategories = objParam.maxnumcategories;
-				
+
 				_model.categoriesModel.client = _kc;
 			}
 
@@ -554,12 +534,19 @@
 					_model.attic.filter = null;
 					_model.attic.kmef = kmef;
 				}
-				//unselect old tab
-				setSelectionValueToButton(contentView.selectedIndex, false);
+				
 				// get the correct index from the viewstack, so it'll work after removing items as well.
 				var selectedIndex:int = getSubtabIndex(tab);
-				contentView.selectedIndex = selectedIndex;
-				setSelectionValueToButton(contentView.selectedIndex, true);
+				if (selectedIndex != contentView.selectedIndex) { 
+					//unselect old tab
+					setSelectionValueToButton(contentView.selectedIndex, false);
+					contentView.selectedIndex = selectedIndex;
+					setSelectionValueToButton(contentView.selectedIndex, true);
+				}
+				// init selected
+				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
+				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
+				
 			}
 
 
@@ -632,7 +619,7 @@
 
 
 
-			
+
 
 
 			/**
@@ -786,7 +773,7 @@
 				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
 			}
 
-			
+
 			/**
 			 * refresh bulk uploads list
 			 * @internal
@@ -797,7 +784,7 @@
 					uploads.bulk.loadEntries();
 				}
 			}
-			
+
 			private function getUploadsTabLabel(files:int):String {
 				var s:String = resourceManager.getString('cms','uploads'); 
 				if (files > 0) {
@@ -859,28 +846,28 @@
 		<mx:ViewStack id="contentView" width="100%" height="100%" styleName="contentViewStack" 
 					  change="initSelectedTab(event)" >
 			<view:Entries id="manage" height="100%" styleName="pageStyle"
-							 entryDetailsModel="{_model.entryDetailsModel}" 
-							 filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
-							 windowState="{_model.windowState}"/>
+						  entryDetailsModel="{_model.entryDetailsModel}" 
+						  filterModel="{_model.filterModel}" showEmbed="{_model.showSingleEntryEmbedCode}"
+						  windowState="{_model.windowState}"/>
 			<view:Moderation id="moderation" styleName="pageStyle" height="100%" entryDetailsModel="{_model.entryDetailsModel}"
-								context="{_model.context}" filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}" />
+							 context="{_model.context}" filterModel="{_model.filterModel}" moderationModel="{_model.moderationModel}" />
 			<view:Playlist id="playlists" width="100%" height="100%" styleName="pageStyle"
-							   selectedEntry="{_entryData.selectedEntry}"
-							   showEmbed="{_model.showPlaylistEmbedCode}"/>
+						   selectedEntry="{_entryData.selectedEntry}"
+						   showEmbed="{_model.showPlaylistEmbedCode}"/>
 			<view:ExternalSyndication id="syndication" styleName="pageStyle" 
-										 flavorParams="{_model.filterModel.flavorParams}"
-										 rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
+									  flavorParams="{_model.filterModel.flavorParams}"
+									  rootUrl="{_model.context.rootUrl}" extSynModel="{_model.extSynModel}"/>
 			<view:Categories id="categories" width="100%" height="100%" styleName="pageStyle"
-								entryDetailsModel="{_model.entryDetailsModel}" 
-								filterModel="{_model.filterModel}" 
-								categoriesModel="{_model.categoriesModel}"/>
+							 entryDetailsModel="{_model.entryDetailsModel}" 
+							 filterModel="{_model.filterModel}" 
+							 categoriesModel="{_model.categoriesModel}"/>
 
 			<view:Uploads id="uploads" width="100%" height="100%" 
-							 files="{_files}"
-							 styleName="pageStyle" 
-							 bulkUploadDataProvider="{_model.bulkUploadModel}" />
+						  files="{_files}"
+						  styleName="pageStyle" 
+						  bulkUploadDataProvider="{_model.bulkUploadModel}" />
 			<view:DropFolders id="dropFolders" width="100%" height="100%" styleName="pageStyle"	  
-									  dropFolderModel="{_model.dropFolderModel}" />
+							  dropFolderModel="{_model.dropFolderModel}" />
 
 		</mx:ViewStack>
 	</mx:VBox>

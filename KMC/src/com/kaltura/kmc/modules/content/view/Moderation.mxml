@@ -4,9 +4,9 @@
 	 allows moderating flagged entries.
 -->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" hide="{stopPlayer()}" verticalScrollPolicy="off"
-		 xmlns:controls="com.kaltura.controls.*"
+		 creationComplete="onRequestedDataLoaded()"
 		 implements="com.kaltura.kmc.modules.content.business.IContentPanel,com.kaltura.edw.business.IDataOwner"
-		 creationComplete="init()" xmlns:et1="com.kaltura.edw.components.et.*"
+		 xmlns:et1="com.kaltura.edw.components.et.*" xmlns:controls="com.kaltura.controls.*"
 		 xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:indicators="com.kaltura.edw.components.fltr.indicators.*"
 		 xmlns:business="com.kaltura.kmc.modules.content.business.*"
 		 xmlns:bulkactions="com.kaltura.kmc.modules.content.view.controls.bulkactions.*">
@@ -54,7 +54,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
-			
+
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -78,9 +78,10 @@
 				if (_disProfWatcher) {
 					_disProfWatcher.unwatch();
 				}
-				var dpi:DistributionProfileInfo = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo; 
-				_disProfWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", dpi, "kalturaDistributionProfilesArray"); 
+				var dpi:DistributionProfileInfo = (entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo;
+				_disProfWatcher = BindingUtils.bindProperty(this, "distributionProfilesArray", dpi, "kalturaDistributionProfilesArray");
 			}
+
 
 			public function get entryDetailsModel():KMvCModel {
 				return _entryDetailsModel;
@@ -136,7 +137,7 @@
 			/**
 			 * Distribution profiles
 			 * */
-			public var distributionProfilesArray : Array;
+			public var distributionProfilesArray:Array;
 
 			private var _initialFilter:KalturaMediaEntryFilter;
 
@@ -151,24 +152,12 @@
 			 * */
 			private var _initOnce:Boolean;
 
+
 			// ===============================================
 			// methods
 			// ===============================================
 
 			public function onRequestedDataLoaded():void {
-				// loadEntries();
-				// do nothing here, entries will be loaded when filter is set
-			}
-
-			/**
-			 * this is the old creationComplete handler, it needs to be triggered
-			 * only after all data is present, and also after creationComplete,
-			 * so we trigger it manualy (through init())
-			 * */
-			public function init(entryFilter:KalturaBaseEntryFilter = null):void {
-				if (entryFilter && entryFilter is KalturaMediaEntryFilter) {
-					_initialFilter = entryFilter as KalturaMediaEntryFilter;
-				}
 				if (_ready) {
 					paging.selectedPage = 1;
 					paging.kalturaFilterPager.pageSize = paging.rowInPageCb.value as int;
@@ -179,8 +168,6 @@
 					else {
 						initOnce();
 					}
-
-
 				}
 				else {
 					_ready = true;
@@ -189,10 +176,30 @@
 
 
 			/**
+			 * this is the old creationComplete handler, it needs to be triggered
+			 * only after all data is present, and also after creationComplete,
+			 * so we trigger it manualy (through init())
+			 * */
+			public function init(entryFilter:KalturaBaseEntryFilter = null):void {
+				if (entryFilter && entryFilter is KalturaMediaEntryFilter) {
+					_initialFilter = entryFilter as KalturaMediaEntryFilter;
+				}
+
+				if (filterModel.loadingRequired) {
+					// load all the data the filter needs
+					var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
+					KedController.getInstance().dispatch(fe);
+				}
+				else {
+					onRequestedDataLoaded();
+				}
+			}
+
+
+			/**
 			 * load all the data the filter needs
 			 * */
 			private function initOnce():void {
-
 				var kFilter:KalturaMediaEntryFilter;
 				if (_initialFilter) {
 					kFilter = _initialFilter
@@ -205,10 +212,6 @@
 				filter.kalturaFilter = kFilter;
 
 				loadKDP();
-
-				// load filter data
-				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
-				KedController.getInstance().dispatch(fe);
 
 				PermissionManager.getInstance().applyAllAttributes(this, this.id);
 
@@ -245,10 +248,9 @@
 
 			private function clearKdp(event:MouseEvent = null):void {
 				entryTable.selectedIndex = -1;
-				if (_kdp3SwfLoader && _kdp3SwfLoader.content)
-				{
+				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
 					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CLEAN_MEDIA);
-					moderationModel.moderationsArray.source = [];					
+					moderationModel.moderationsArray.source = [];
 				}
 			}
 
@@ -271,17 +273,17 @@
 			//paging
 			private function gotoPage():void {
 				loadEntries();
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE,GoogleAnalyticsConsts.CONTENT);
-				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.GO_TO_PAGE, GoogleAnalyticsConsts.CONTENT);
+				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_CONTENT_GO_TO_PAGE, "content>Show Rows");
 			}
 
 
 			private function getModeration():void {
 				var entry:KalturaBaseEntry = entryTable.selectedItem as KalturaBaseEntry;
-				
+
 				if (_selectedEntry != entry) {
-					_selectedEntry = entry;	// remember 
-				
+					_selectedEntry = entry; // remember 
+
 					if (entry && entry.moderationCount > 0) {
 						entry.moderations = new ArrayCollection();
 						var cgEvent:KMCEntryEvent = new KMCEntryEvent(KMCEntryEvent.LIST_ENTRY_MODERATION, entry);
@@ -329,23 +331,24 @@
 			 */
 			private function onApprove(evt:Event):void {
 				_affectedEntries = entryTable.selectedItems.concat();
-				if(_affectedEntries.length == 0) {
-					Alert.show( resourceManager.getString('cms','pleaseSelectEntriesFirst') , 
-						resourceManager.getString('cms','pleaseSelectEntriesFirstTitle') );
+				if (_affectedEntries.length == 0) {
+					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'),
+						resourceManager.getString('cms', 'pleaseSelectEntriesFirstTitle'));
 					return;
 				}
 				if (_moderationModel.confirmModeration) {
 
 					var confirmString:String = resourceManager.getString('cms', 'confirmApprove');
-					for (var i:int = 0; i<_affectedEntries.length; i++) {
-						confirmString += (i+1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
+					for (var i:int = 0; i < _affectedEntries.length; i++) {
+						confirmString += (i + 1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
 					}
-					Alert.show(confirmString, resourceManager.getString('cms', 'confirmApproveTitle'), Alert.YES|Alert.NO, this, approveEntries);
+					Alert.show(confirmString, resourceManager.getString('cms', 'confirmApproveTitle'), Alert.YES | Alert.NO, this, approveEntries);
 				}
 				else {
 					approveEntries();
 				}
 			}
+
 
 			private function approveEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
@@ -362,22 +365,23 @@
 			 */
 			private function onReject(evt:Event):void {
 				_affectedEntries = entryTable.selectedItems.concat();
-				if(_affectedEntries.length == 0) {
-					Alert.show( resourceManager.getString('cms','pleaseSelectEntriesFirst') , 
-						resourceManager.getString('cms','pleaseSelectEntriesFirstTitle') );
+				if (_affectedEntries.length == 0) {
+					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'),
+						resourceManager.getString('cms', 'pleaseSelectEntriesFirstTitle'));
 					return;
 				}
 				if (_moderationModel.confirmModeration) {
 					var confirmString:String = resourceManager.getString('cms', 'confirmReject');
-					for (var i:int = 0; i<_affectedEntries.length; i++) {
-						confirmString += (i+1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
+					for (var i:int = 0; i < _affectedEntries.length; i++) {
+						confirmString += (i + 1) + '. ' + (_affectedEntries[i] as KalturaBaseEntry).name + '\n';
 					}
-					Alert.show(confirmString, resourceManager.getString('cms', 'confirmRejectTitle'), Alert.YES|Alert.NO, this, rejectEntries);
+					Alert.show(confirmString, resourceManager.getString('cms', 'confirmRejectTitle'), Alert.YES | Alert.NO, this, rejectEntries);
 				}
 				else {
 					rejectEntries();
 				}
 			}
+
 
 			private function rejectEntries(e:CloseEvent = null):void {
 				if (!e || (e && e.detail == Alert.YES)) {
@@ -442,7 +446,7 @@
 
 					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + moderationUiconf + "/nowrapper/1";
 					kdp3Loader.scaleContent = false;
-					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
 					kdp3Loader.load(newUrl);
 				}
 			}
@@ -456,11 +460,12 @@
 					_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
 			}
 
-			
+
 			private function filter_filterChangedHandler(event:Event):void {
 				paging.selectedPage = 1;
 				loadEntries();
 			}
+
 
 			// ===============================================
 			// getters / setters
@@ -475,54 +480,51 @@
 			public function set moderationModel(value:ModerationModel):void {
 				_moderationModel = value;
 			}
-
-
 		]]>
 	</mx:Script>
-	<business:EntryTableActionsManager id="actionsManager" />
+	<business:EntryTableActionsManager id="actionsManager"/>
 
 	<mx:HBox width="100%" verticalAlign="middle">
-		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'moderation')}" styleName="filterTitleHeader" 
+		<mx:Label id="pageLabel" text="{resourceManager.getString('cms', 'moderation')}" styleName="filterTitleHeader"
 				  width="{filter.width}"/>
 		<fltr:FreeTextSearch id="searchBox" styleName="searchHBox" width="{245}" height="{pageLabel.height}"
-							 attribute="freeText" defaultText="{resourceManager.getString('filter', 'searchEntries')}" />
-		<indicators:Indicators id="indicators" width="100%" height="60"
-							   dataProvider="{filter.indicators}"
+							 attribute="freeText" defaultText="{resourceManager.getString('filter', 'searchEntries')}"/>
+		<indicators:Indicators id="indicators" width="100%" height="60" dataProvider="{filter.indicators}"
 							   boxClicked="filter.removeFilter(event.data)"/>
 		<mx:VBox styleName="noPadding">
 			<mx:LinkButton click="loadEntries()" label="{resourceManager.getString('cms','refresh')}"
 						   styleName="recycleIcon"/>
-			<mx:Label text="{resourceManager.getString('filter', 'indicatorsLabel', [indicators.numExceeded])}" 
+			<mx:Label text="{resourceManager.getString('filter', 'indicatorsLabel', [indicators.numExceeded])}"
 					  visible="{indicators.numExceeded > 0}" styleName="indicatorsLabel"/>
 		</mx:VBox>
 	</mx:HBox>
 
 	<mx:HDividedBox id="topContainer" width="100%" height="100%">
-		<fltr:EntriesFilter id="filter" height="100%" width="245"  
-							freeTextSearch="{searchBox}" metadataProfiles="{filterModel.metadataProfiles}"
+		<fltr:EntriesFilter id="filter" height="100%" width="245" freeTextSearch="{searchBox}"
+							metadataProfiles="{filterModel.metadataProfiles}"
 							context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
 							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
 							filterModel="{filterModel}" categoriesTreeSelectionAttribute="selectedModScreen"
-							categoriesRoot="{filterModel.categoriesForMod}" allCategories="{filterModel.categoriesMapForMod}"
+							categoriesRoot="{filterModel.categoriesForMod}"
+							allCategories="{filterModel.categoriesMapForMod}"
 							filterChanged="filter_filterChangedHandler(event)"/>
 		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
-				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}" 
-								selectionChanged="actionsManager.itemClickHandler(event); getModeration();" 
+				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
+								selectionChanged="actionsManager.itemClickHandler(event); getModeration();"
 								showDetails="actionsManager.showEntryDetailsHandler(event)"
-								openPreview="actionsManager.preview(event)"
-								sortDirection="{EntryTable.ASCENDING}" 
-								dataProvider="{_listableVo.arrayCollection}"
-								orderByChanged="{onOrderByChanged()}"
-								creationComplete="removeColums( event )" 
-								dragEnabled="false" dragMoveEnabled="false" dropEnabled="false" />
-				<mx:Panel id="kdpContainer" height="100%" minWidth="290"
-						  styleName="modPrev" toolTip="{entryTable.selectedItem.name}" layout="vertical" 
+								openPreview="actionsManager.preview(event)" sortDirection="{EntryTable.ASCENDING}"
+								dataProvider="{_listableVo.arrayCollection}" orderByChanged="{onOrderByChanged()}"
+								creationComplete="removeColums( event )" dragEnabled="false" dragMoveEnabled="false"
+								dropEnabled="false"/>
+				<mx:Panel id="kdpContainer" height="100%" minWidth="290" styleName="modPrev"
+						  toolTip="{entryTable.selectedItem.name}" layout="vertical"
 						  title="{resourceManager.getString('cms', 'preview')} - {entryTable.selectedItem.name}">
 					<mx:SWFLoader id="kdp3Loader" width="280" height="255" init="{onKDP3Loaded(event)}"/>
-					<mx:VBox width="280" height="100%" >
-						<mx:HBox width="100%" styleName="modPrevToolBar" >
-							<mx:Label text="{entryTable.selectedItem.moderationCount} {resourceManager.getString('cms', 'flag')}"/>
+					<mx:VBox width="280" height="100%">
+						<mx:HBox width="100%" styleName="modPrevToolBar">
+							<mx:Label 
+									  text="{entryTable.selectedItem.moderationCount} {resourceManager.getString('cms', 'flag')}"/>
 							<mx:Spacer width="100%"/>
 							<mx:LinkButton label="{resourceManager.getString('cms', 'viewFullDetails')}"
 										   click="{entryTable.openEditEntry(entryTable.selectedItem)}"/>
@@ -530,7 +532,7 @@
 										   labelPlacement="left" styleName="banUser"/>
 						</mx:HBox>
 						<mx:List id="modList" width="100%" height="100%" minHeight="80" borderThickness="1"
-								 styleName="flagList" selectable="false" borderColor="0xCCCCCC" borderStyle="solid" 
+								 styleName="flagList" selectable="false" borderColor="0xCCCCCC" borderStyle="solid"
 								 rowHeight="80" dataProvider="{moderationModel.moderationsArray}"
 								 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.ModerationItemRenderer"/>
 
@@ -538,10 +540,11 @@
 				</mx:Panel>
 			</mx:HBox>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
-				<bulkactions:BulkModerationActionsMenu id="bulkActions" height="{paging.height}" 
+				<bulkactions:BulkModerationActionsMenu id="bulkActions" height="{paging.height}"
 													   approveEntries="onApprove(event)" rejectEntries="onReject(event)"/>
 				<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="100%"
-								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" showRowsInPage="true" />
+								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()"
+								 showRowsInPage="true"/>
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HDividedBox>
