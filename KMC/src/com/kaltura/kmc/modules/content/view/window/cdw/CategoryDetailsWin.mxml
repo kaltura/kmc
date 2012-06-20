@@ -163,26 +163,7 @@
 			
 			private function save():void {
 				if (_isNewCategory && _model.processingNewCategory) {
-					// if category inherits members from parent, don't send inherited values
-					if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT || !_undoCategory.privacyContexts) {
-						_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-//						_undoCategory.userJoinPolicy = int.MIN_VALUE;
-					}
-					
-					// remove any privacy contexts (if required, they will be set by server)
-					_undoCategory.privacyContexts = null;
-					_undoCategory.pendingMembersCount = int.MIN_VALUE;
-					_undoCategory.membersCount = int.MIN_VALUE;
-
-
-					// add category
-					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-					cgEvent.data = [_undoCategory, tabsNav.isMetadataChanged(), _refreshListsRequired];
-					cgEvent.dispatch();
-					if (_refreshListsRequired) {
-						// it's actually "saveAndClose"
-						removeMe();
-					}
+					addCategory();
 				}
 				else {
 					if (hasChanged()) {
@@ -210,6 +191,74 @@
 				else {
 					// e.detail = cancel, so revert
 					_undoCategory.name = _origCategory.name;
+				}
+			}
+			
+			
+			/**
+			 * nullify fields that shouldn't be sent
+			 * */
+			private function removeUnnecessaryFields(cat:KalturaCategory):void {
+				// no entitlements to category
+				if (!cat.privacyContexts) {
+					cat.appearInList = int.MIN_VALUE;
+					cat.moderation = int.MIN_VALUE;
+					cat.privacy = int.MIN_VALUE;
+					cat.owner = null;
+					cat.contributionPolicy = int.MIN_VALUE;
+					cat.defaultPermissionLevel = int.MIN_VALUE;
+					cat.inheritanceType = int.MIN_VALUE;
+					//	cat.userJoinPolicy = int.MIN_VALUE;
+				}
+					
+					
+				// if category inherits members from parent, don't send inherited values
+				else if (cat.inheritanceType == KalturaInheritanceType.INHERIT) {
+					cat.defaultPermissionLevel = int.MIN_VALUE;
+					//	cat.userJoinPolicy = int.MIN_VALUE;
+				}
+			}
+			
+			
+			/**
+			 * perform the actual add
+			 * */
+			private function addCategory():void {
+				
+				removeUnnecessaryFields(_undoCategory);
+				
+				// remove any privacy contexts (if required, they will be set by server)
+				_undoCategory.privacyContexts = null;
+				_undoCategory.pendingMembersCount = int.MIN_VALUE;
+				_undoCategory.membersCount = int.MIN_VALUE;
+				
+				
+				// add category
+				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+				cgEvent.data = [_undoCategory, tabsNav.isMetadataChanged(), _refreshListsRequired];
+				cgEvent.dispatch();
+				if (_refreshListsRequired) {
+					// it's actually "saveAndClose"
+					removeMe();
+				}
+			}
+			
+			
+			/**
+			 * perform the actual update
+			 * */
+			private function updateCategory(event:Event):void {
+				_undoCategory.setUpdatedFieldsOnly(true);
+				
+				removeUnnecessaryFields(_undoCategory);
+				
+				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
+				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
+				cgEvent2.data = [catVO, _refreshListsRequired];
+				cgEvent2.dispatch();
+				if (_refreshListsRequired) {
+					// it's actually "saveAndClose"
+					removeMe();
 				}
 			}
 
@@ -336,38 +385,7 @@
 //				}
 			}
 			
-			/**
-			 * perform the actual update
-			 * */
-			private function updateCategory(event:Event):void {
-				_undoCategory.setUpdatedFieldsOnly(true);
-				// no entitlements to category
-				if (!_undoCategory.privacyContexts) {
-					_undoCategory.appearInList = int.MIN_VALUE;
-					_undoCategory.moderation = int.MIN_VALUE;
-					_undoCategory.privacy = int.MIN_VALUE;
-					_undoCategory.owner = null;
-					_undoCategory.contributionPolicy = int.MIN_VALUE;
-					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-					_undoCategory.inheritanceType = int.MIN_VALUE;
-//					_undoCategory.userJoinPolicy = int.MIN_VALUE;
-				}
-					
-					// if category inherits members from parent, don't send inherited values
-				else if (_undoCategory.inheritanceType == KalturaInheritanceType.INHERIT) {
-					_undoCategory.defaultPermissionLevel = int.MIN_VALUE;
-//					_undoCategory.userJoinPolicy = int.MIN_VALUE;
-				}
-				
-				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
-				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-				cgEvent2.data = [catVO, _refreshListsRequired];
-				cgEvent2.dispatch();
-				if (_refreshListsRequired) {
-					// it's actually "saveAndClose"
-					removeMe();
-				}
-			}
+			
 
 
 		]]>
