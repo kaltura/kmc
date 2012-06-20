@@ -144,6 +144,11 @@
 			 * RnP: edit custom data
 			 * */
 			public var customDataEditable:Boolean = true;
+			
+			/**
+			 * 
+			 * */
+			private var _enableCustomData:Boolean = true;
 
 			/**
 			 * RnP (feature): disable alerts in KDP
@@ -229,6 +234,9 @@
 
 				var context:ContextDataPack = _dpModel.getDataPack(ContextDataPack) as ContextDataPack;
 				showEmbed = context.showEmbedCode;
+				
+				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
+				_enableCustomData = filterData.filterModel.enableCustomData;
 			}
 
 			[Bindable]
@@ -285,22 +293,24 @@
 				}
 
 				// custom data:
-				var customDataDataPack:CustomDataDataPack = _dpModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-				if (_profilesAC.length && customDataDataPack.metadataInfoArray && customDataDataPack.metadataInfoArray.length) {
-					for (var i:int = 0; i < _profilesAC.length; i++) {
-						var metadataInfo:CustomMetadataDataVO = customDataDataPack.metadataInfoArray.getItemAt(i) as CustomMetadataDataVO;
-						var metadataProfile:KMCMetadataProfileVO = _profilesAC.getItemAt(i) as KMCMetadataProfileVO;
-						if (metadataProfile && metadataProfile.profile && metadataInfo) {
-							var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo, metadataProfile);
-							if (metadataInfo.metadata) {
-								var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
-								if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+				if (_enableCustomData) {
+					var customDataDataPack:CustomDataDataPack = _dpModel.getDataPack(CustomDataDataPack) as CustomDataDataPack;
+					if (_profilesAC.length && customDataDataPack.metadataInfoArray && customDataDataPack.metadataInfoArray.length) {
+						for (var i:int = 0; i < _profilesAC.length; i++) {
+							var metadataInfo:CustomMetadataDataVO = customDataDataPack.metadataInfoArray.getItemAt(i) as CustomMetadataDataVO;
+							var metadataProfile:KMCMetadataProfileVO = _profilesAC.getItemAt(i) as KMCMetadataProfileVO;
+							if (metadataProfile && metadataProfile.profile && metadataInfo) {
+								var newMetadataXML:XML = MetadataDataParser.toMetadataXML(metadataInfo, metadataProfile);
+								if (metadataInfo.metadata) {
+									var originalMetadataXML:XML = new XML(metadataInfo.metadata.xml);
+									if (!(MetadataDataParser.compareMetadata(newMetadataXML, originalMetadataXML))) {
+										res = true;
+									}
+								}
+								//new metadata was inserted
+								else if (newMetadataXML.children().length() > 0) {
 									res = true;
 								}
-							}
-							//new metadata was inserted
-							else if (newMetadataXML.children().length() > 0) {
-								res = true;
 							}
 						}
 					}
@@ -391,7 +401,7 @@
 						landingPageLabel.text = landingPage + _selectedEntry.id;
 				}
 
-				if (_profilesAC) {
+				if (_enableCustomData && _profilesAC) {
 					// only list custom data if custom data profiles are loaded
 					var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
 					controller.dispatch(listCustomData);
@@ -448,10 +458,11 @@
 //						curCustomData.destroy();
 //					}
 //				}
-
-				var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
-				controller.dispatch(reset);
-
+				
+				if (_enableCustomData) {
+					var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
+					controller.dispatch(reset);
+				}
 			}
 
 
@@ -459,9 +470,8 @@
 			public function init():void {
 				Security.allowDomain("*");
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.METADATA_PANEL);
-				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
-
-				if (filterData.filterModel.enableCustomData) {
+				if (_enableCustomData) {
+					var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 					if (filterData.filterModel.metadataProfiles) {
 						buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
 					}
