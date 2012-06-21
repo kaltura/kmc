@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<panels:AdditionalFilter xmlns:mx="http://www.adobe.com/2006/mxml" 
+						 xmlns:panels="com.kaltura.edw.components.fltr.panels.*"
+						 creationComplete="additionalfilter1_creationCompleteHandler(event)">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.edw.components.fltr.indicators.IndicatorVo;
+			import com.kaltura.types.KalturaContributionPolicyType;
+			
+			import mx.controls.Button;
+			import mx.events.FlexEvent;
+			
+			protected function additionalfilter1_creationCompleteHandler(event:FlexEvent):void
+			{
+				_buttons = [allBtn, polAllBtn, polMemBtn];
+				friendlyName = resourceManager.getString('filter', 'conPolTooltip');
+			}
+			
+			override public function get filter():Object {
+				var accessString:int = int.MIN_VALUE;
+				//if non of the items are selected or all selected
+				if ((polAllBtn.selected && polMemBtn.selected ) 
+					|| (!polAllBtn.selected && !polMemBtn.selected)) {
+					accessString = int.MIN_VALUE;
+				}
+				else {
+					if (polMemBtn.selected) {
+						accessString = KalturaContributionPolicyType.MEMBERS_WITH_CONTRIBUTION_PERMISSION /* + "," */;
+					}
+						// the state of both selected is handled in the first condition
+					else if (polAllBtn.selected) {
+						accessString = KalturaContributionPolicyType.ALL /* + "," */;
+					}
+					//remove last , 
+					//					accessString = accessString.slice(0, accessString.length - 1);
+				}
+				return accessString;
+			}
+			
+			
+			override public function set filter(value:Object):void {
+				if (!value) {
+					// no duration 
+					allBtn.selected = true;
+					polAllBtn.selected = false;
+					polMemBtn.selected = false;
+				}
+				else {
+					//set all duration to unselected
+					allBtn.selected = false;
+					
+					var arr:Array = value.split(',');
+					for each (var code:String in arr) {
+						switch (code) {
+							case KalturaContributionPolicyType.MEMBERS_WITH_CONTRIBUTION_PERMISSION:
+								polMemBtn.selected = true;
+								break;
+							
+							case KalturaContributionPolicyType.ALL:
+								polAllBtn.selected = true;
+								break;
+						}
+					}
+				}
+			}
+			
+			override protected function generateIndicatorVo(btn:Button):IndicatorVo {
+				var vo:IndicatorVo = new IndicatorVo();
+				vo.label = friendlyName + " - " + btn.label;
+				vo.tooltip = friendlyName + " - " + btn.label;
+				
+				vo.attribute = attribute;
+				vo.value = btn.data ? btn.data : btn.label;
+				return vo;
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="allBtn" width="100%" label="{resourceManager.getString('filter', 'conPolAllBtn')}"
+				 selected="true" click="onDynamicTitleClicked(event)" styleName="mainFilterGroupButton"/>
+	<mx:CheckBox id="polAllBtn" width="100%" label="{resourceManager.getString('filter', 'conPolAllMemBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+	<mx:CheckBox id="polMemBtn" width="100%" label="{resourceManager.getString('filter', 'conPolMemBtn')}"
+				 click="onDynamicMemberClicked(event)" styleName="innerFilterGroupButton"/>
+</panels:AdditionalFilter>
