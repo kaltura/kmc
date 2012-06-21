@@ -266,7 +266,22 @@
 				cursorManager.removeAllCursors();
 				_currentPage = 1;
 				_count = evt.data.totalCount;
-				playerListDg.dataProvider = new ArrayCollection(evt.data.objects);
+				var temp:ArrayCollection = new ArrayCollection(evt.data.objects);
+				
+				var uiconf:KalturaUiConf;
+				for (var i:int = temp.length-1; i>=0; i--) {
+					uiconf = temp.getItemAt(i) as KalturaUiConf;
+					try {
+						XML(uiconf.confFile);
+						XML(uiconf.confFileFeatures);
+					}
+					catch (e:Error) {
+						Alert.show(resourceManager.getString('aps', 'playerCorrupt', [uiconf.id]));
+						temp.removeItemAt(i);
+					}
+				}
+				
+				playerListDg.dataProvider = temp; 
 				_count = (evt.data as KalturaUiConfListResponse).totalCount;
 				makePaging();
 				onTableResize();
