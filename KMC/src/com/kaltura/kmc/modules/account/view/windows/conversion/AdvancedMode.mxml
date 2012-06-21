@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 		 xmlns:conversion="com.kaltura.kmc.modules.account.view.windows.conversion.*"
-		 xmlns:controls="com.kaltura.controls.*">
+		 xmlns:controls="com.kaltura.controls.*" creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="changeState", type="flash.events.Event")]
 	</mx:Metadata>
@@ -12,6 +12,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.Application;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
 			
@@ -32,15 +33,12 @@
 			}
 			
 			
-			private function doPaging():void {
-				listProfiles(paging.selectedPage, paging.pageSize);
-			}
-			
-			
-			public function listProfiles(pageIndex:Number = 0, pageSize:Number = 0):void {
-				var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
-				getAllData.data = [pageIndex, pageSize];
-				getAllData.dispatch();
+			public function listProfiles():void {
+				if (paging) {
+					var getAllData:ConversionSettingsEvent = new ConversionSettingsEvent(ConversionSettingsEvent.LIST_CONVERSION_PROFILES_AND_FLAVOR_PARAMS);
+					getAllData.data = [paging.selectedPage, paging.pageSize];
+					getAllData.dispatch();
+				}
 			}
 
 			private function simpleModeBtn_clickHandler(event:MouseEvent):void {
@@ -53,6 +51,13 @@
 				PopUpManager.centerPopUp(addNewConversionProfileWindow);
 			}
 
+
+
+			private function creationCompleteHandler(event:FlexEvent):void
+			{
+				paging.selectedPage = 1;
+				paging.pageSize = paging.rowInPageCb.value as int;
+			}
 
 		]]>
 	</mx:Script>
@@ -67,8 +72,8 @@
 						   useHandCursor="true" buttonMode="true"/>
 			</mx:HBox>
 			
-			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="doPaging()"
-							 nextPage="{doPaging()}" prvPage="{doPaging()}" getPageNum="doPaging()"
+			<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="listProfiles()"
+							 nextPage="listProfiles()" prvPage="listProfiles()" getPageNum="listProfiles()"
 							 totalCount="{totalProfiles}" showRowsInPage="true"/>
 		</mx:HBox>
 		<mx:HBox width="100%" styleName="DataGridActions" horizontalAlign="left">

@@ -6,14 +6,15 @@ package com.kaltura.kmc.modules.account.model {
 	import com.kaltura.kmc.modules.account.vo.PackagesVO;
 	import com.kaltura.kmc.modules.account.vo.PartnerVO;
 	import com.kaltura.types.KalturaAccessControlOrderBy;
+	import com.kaltura.types.KalturaConversionProfileOrderBy;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaAccessControlFilter;
 	import com.kaltura.vo.KalturaBaseEntry;
+	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaConversionProfileFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaStorageProfile;
 	import com.kaltura.vo.KalturaUser;
-	import com.kaltura.vo.KalturaCategory;
 	
 	import flash.events.EventDispatcher;
 	
@@ -112,6 +113,11 @@ package com.kaltura.kmc.modules.account.model {
 		public var cpFilter:KalturaConversionProfileFilter;
 		
 		/**
+		 * default pager for conversion profiles in KMC
+		 * */
+		public var cpPager:KalturaFilterPager;
+		
+		/**
 		 * the default entry for the current conversion profile
 		 * (only loaded during save for validation) 
 		 */
@@ -168,7 +174,8 @@ package com.kaltura.kmc.modules.account.model {
 			acpFilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
 
 			cpFilter = new KalturaConversionProfileFilter();
-			//		cpFilter.orderBy = KalturaConversionProfileOrderBy.
+			cpFilter.orderBy = KalturaConversionProfileOrderBy.CREATED_AT_DESC;
+				
 		}
 
 

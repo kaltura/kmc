@@ -27,7 +27,11 @@ package com.kaltura.kmc.modules.account.command {
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			var mr:MultiRequest = new MultiRequest();
-			var lcp:ConversionProfileList = new ConversionProfileList(_model.cpFilter, new KalturaFilterPager());
+			if (_model.cpPager) {
+				// here we always want the first page
+				_model.cpPager.pageIndex = 1;
+			}
+			var lcp:ConversionProfileList = new ConversionProfileList(_model.cpFilter, _model.cpPager);
 			mr.addAction(lcp);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();

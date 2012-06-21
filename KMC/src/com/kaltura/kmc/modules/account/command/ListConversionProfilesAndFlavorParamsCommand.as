@@ -43,12 +43,14 @@ package com.kaltura.kmc.modules.account.command {
 			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
 			mr.addAction(listFlavorParams);
 
-			pager = new KalturaFilterPager();
-			if (event.data) {
-				pager.pageIndex = event.data[0];
-				pager.pageSize = event.data[1];
+			if (!_model.cpPager) {
+				_model.cpPager = new KalturaFilterPager();
 			}
-			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, pager);
+			if (event.data) {
+				_model.cpPager.pageIndex = event.data[0];
+				_model.cpPager.pageSize = event.data[1];
+			}
+			var listConversionProfiles:ConversionProfileList = new ConversionProfileList(_model.cpFilter, _model.cpPager);
 			mr.addAction(listConversionProfiles);
 			
 			var p:KalturaFilterPager = new KalturaFilterPager();
