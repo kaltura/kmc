@@ -1,6 +1,7 @@
 package com.kaltura.autocomplete.controllers
 {
 	import com.hillelcoren.components.AutoComplete;
+	import com.hillelcoren.utils.StringUtils;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.autocomplete.controllers.base.KACControllerBase;
 	import com.kaltura.commands.user.UserGet;
@@ -23,6 +24,9 @@ package com.kaltura.autocomplete.controllers
 		{
 			super(autoComp, client);
 			
+			autoComp.labelField = "id";
+			autoComp.dropDownLabelFunction = userLabelFunction;
+			autoComp.setStyle("unregisteredSelectedItemStyleName", "unregisteredSelectionBox"); 
 			BindingUtils.bindSetter(onIdentifierSet, autoComp, "selectedItemIdentifier");
 			autoComp.addEventListener(Event.CHANGE, onSelectionChanged, false, int.MAX_VALUE);
 		}
@@ -83,6 +87,47 @@ package com.kaltura.autocomplete.controllers
 		
 		override protected function fetchElements(data:Object):Array{
 			return (data.data as KalturaUserListResponse).objects;
+		}
+		
+		private function userLabelFunction(item:Object):String{
+			var user:KalturaUser = item as KalturaUser;
+			
+			var labelText:String = user.id;
+			if (user.screenName != null && user.screenName != ""){
+				labelText += " (" + user.screenName + ")";
+			}
+			
+			var searchStr:String = _autoComp.searchText;
+			
+			// there are problems using ">"s and "<"s in HTML
+			labelText = labelText.replace( "<", "&lt;" ).replace( ">", "&gt;" );				
+			
+			var returnStr:String = StringUtils.highlightMatch( labelText, searchStr );
+			
+			var isDisabled:Boolean = false;
+			var currUser:KalturaUser = item as KalturaUser;
+			var ku:KalturaUser;
+			for each (ku in _autoComp.disabledItems.source){
+				if (ku.id == currUser.id){
+					isDisabled = true;
+					break;
+				}
+			}
+			
+			var isSelected:Boolean = false;
+			for each (ku in _autoComp.selectedItems.source){
+				if (ku.id == currUser.id){
+					isSelected = true;
+					break;
+				}
+			}
+			
+			if (isSelected || isDisabled)
+			{
+				returnStr = "<font color='" + Consts.COLOR_TEXT_DISABLED + "'>" + returnStr + "</font>";
+			}
+			
+			return returnStr;
 		}
 	}
 }
