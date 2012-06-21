@@ -102,6 +102,13 @@
 					filter.kalturaFilter = initFilter as KalturaMediaEntryFilter;
 				}
 				
+				//When one click on switch tab and get back if the accordion filter is not the first child 
+				//everything looked curapted. This will resolve the issue when one swith tabs
+				/////////////////////////////////////////////////////////////////////////////////
+				if(filter && filter.accordion)
+					filter.accordion.selectedIndex = 0;
+				/////////////////////////////////////////////////////////////////////////////////
+				
 				// load all the data the filter needs
 				var fe:LoadEvent = new LoadEvent(LoadEvent.LOAD_FILTER_DATA, this, filterModel);
 				KedController.getInstance().dispatch(fe);
@@ -288,7 +295,7 @@
 	</mx:HBox>
 	<!--<mx:Spacer height="15" />-->
 	<mx:HDividedBox id="topContainer" width="100%" height="100%">
-		<fltr:EntriesFilter id="filter" height="100%" width="245"  
+		<fltr:EntriesFilter id="filter" height="100%" width="245" 
 							freeTextSearch="{searchBox}" metadataProfiles="{filterModel.metadataProfiles}"
 							context="{entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack}"
 							distributionProfiles="{entryDetailsModel.getDataPack(DistributionDataPack)['distributionProfileInfo'].kalturaDistributionProfilesArray}"
