@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" styleName="mainACPvBox"
-		 implements="com.kaltura.kmc.modules.account.view.interfaces.IUndoable" 
+		 implements="com.kaltura.kmc.modules.account.view.interfaces.IAccountPanel" 
 		 xmlns:controls="com.kaltura.controls.*" 
 		 creationComplete="creationCompleteHandler(event)" width="100%" height="100%"
 		 xmlns:ac="com.kaltura.kmc.modules.account.view.windows.accesscontrol.*">
@@ -32,6 +32,10 @@
 
 
 			private function loadAccessControlsList():void {
+				if (!paging) {
+					// we are before paging.creationComplete, the list will be triggered then.
+					return;
+				}
 				if (paging.pageSize == 10) {
 					tableContainer.height = (accessControlProfilesTable.rowHeight * 11) + accessControlProfilesTable.headerHeight + paging.height + 15;
 					accessControlProfilesTable.height = tableContainer.height - (accessControlProfilesTable.headerHeight + paging.height ); 
@@ -94,14 +98,6 @@
 			}
 
 
-
-			//paging
-			private function gotoPage():void {
-				// update filter here
-				loadAccessControlsList();
-			}
-
-
 			private function onPagerCreationComplete(event:Event):void {
 				AccountModelLocator.getInstance().filterPager = paging.kalturaFilterPager;
 				paging.selectedPage = 1;
@@ -125,6 +121,11 @@
 
 
 			public function resetClonedData():void {
+			}
+			
+			
+			public function init():void {
+				loadAccessControlsList();
 			}
 
 
@@ -150,9 +151,9 @@
 					<mx:Button id='deleteProfilesBtn' label="{resourceManager.getString('account','disabledDeleteButton')}"
 							   useHandCursor="true" buttonMode="true" click='deleteProfiles(event)'/>
 				</mx:HBox>
-				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="gotoPage()"
+				<controls:Paging id="paging" width="100%" styleName="paging" rowsInPageChange="loadAccessControlsList()"
 							 totalCount="{AccountModelLocator.getInstance().accessControlProfilesTotalCount}"
-							 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" visible="true"
+							 nextPage="loadAccessControlsList()" prvPage="loadAccessControlsList()" getPageNum="loadAccessControlsList()" visible="true"
 							 showRowsInPage="true" creationComplete="onPagerCreationComplete(event)" />
 			</mx:HBox>
 		</mx:VBox>

@@ -20,10 +20,12 @@ package com.kaltura.kmc.modules.account.command {
 
 
 		public function execute(event:CairngormEvent):void {
-			var getListAccessControlProfiles:AccessControlList = new AccessControlList(_model.acpFilter, _model.filterPager);
-			getListAccessControlProfiles.addEventListener(KalturaEvent.COMPLETE, result);
-			getListAccessControlProfiles.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(getListAccessControlProfiles);
+			if (_model.filterPager) {
+				var getListAccessControlProfiles:AccessControlList = new AccessControlList(_model.acpFilter, _model.filterPager);
+				getListAccessControlProfiles.addEventListener(KalturaEvent.COMPLETE, result);
+				getListAccessControlProfiles.addEventListener(KalturaEvent.FAILED, fault);
+				_model.context.kc.post(getListAccessControlProfiles);
+			}
 		}
 
 

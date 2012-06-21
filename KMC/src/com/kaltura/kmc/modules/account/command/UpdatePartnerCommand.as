@@ -77,23 +77,13 @@ package com.kaltura.kmc.modules.account.command
 			return str;
 		}
 		
-//		public function closeAlert( alertRef : Alert ) : void
-//		{
-//			PopUpManager.removePopUp( alertRef );
-//		}
 		
 		private function result(data:Object):void
 		{
 			KalturaPartner(data.data);
 			_model.loadingFlag = false;
-			if(_model.saveAndExitFlag)
-			{
-				JSGate.onTabChange();
-				return;
-			}
 			
 			var alert : Alert =  Alert.show( ResourceManager.getInstance().getString('account', 'changesSaved') );
-//			setTimeout( closeAlert , 3000 , alert);
 		}
 		
 		private function fault(info:Object):void
@@ -105,7 +95,6 @@ package com.kaltura.kmc.modules.account.command
 				return;
 			}
 			var alert : Alert =  Alert.show(info.error.errorMsg, ResourceManager.getInstance().getString('account', 'error'));
-//			setTimeout( closeAlert , 3000 , alert);
 		}
 	}
 }

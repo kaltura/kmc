@@ -3,7 +3,7 @@
 				   xmlns:view="com.kaltura.kmc.modules.account.view.*"
 				   xmlns:business="com.kaltura.kmc.modules.account.business.*"
 				   xmlns:control="com.kaltura.kmc.modules.account.control.*"
-				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#034F57" layout="vertical"
+				   preloader="com.kaltura.preloaders.KmcPreloader" backgroundColor="#FFFFFF" layout="vertical"
 				   minHeight="520" minWidth="950" borderThickness="0" borderStyle="solid" paddingLeft="0"
 				   paddingRight="0" paddingTop="0" paddingBottom="0">
 
@@ -22,6 +22,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.account.model.AccountModelLocator;
 			import com.kaltura.kmc.modules.account.view.CustomData;
+			import com.kaltura.kmc.modules.account.view.interfaces.IAccountPanel;
 			import com.kaltura.kmc.modules.account.view.interfaces.IUndoable;
 			import com.kaltura.kmc.modules.account.vo.AdminVO;
 			import com.kaltura.types.KalturaStatsKmcEventType;
@@ -112,11 +113,6 @@
 
 			override protected function start():void {
 				Security.allowDomain('*');
-
-				ExternalInterface.addCallback("saveAndClose", onExternalTabChange);
-				setStyle("backgroundColor", 0xFFFFFF);
-
-				//Binding
 				BindingUtils.bindSetter(toggleLoading, _model, "loadingFlag");
 
 				urchinNumber = _flashvars.urchinnumber;
@@ -154,15 +150,15 @@
 //				if (overview.parent) {
 //					overview.init();
 //				}
-				if (integration.parent) {
-					integration.init();
-				}
-				if (transcoding.parent) {
-					transcoding.init();
-				}
-				if (metadata.parent) {
-					metadata.init();
-				}
+//				if (integration.parent) {
+//					integration.init();
+//				}
+//				if (transcoding.parent) {
+//					transcoding.init();
+//				}
+//				if (metadata.parent) {
+//					metadata.init();
+//				}
 
 				if (stage) {
 					onAddedToStage();
@@ -170,18 +166,6 @@
 				else {
 					addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 				}
-			}
-
-
-
-			public function onExternalTabChange():void {
-				_model.saveAndExitFlag = true;
-				if ((contentView.getChildAt(_oldSelectedTab) as IUndoable).isChanged()) {
-					Alert.show(resourceManager.getString('account', 'saveChangesQ'), "", Alert.YES | Alert.NO, null, saveChangesQAndExit);
-					return;
-				}
-
-				JSGate.onTabChange();
 			}
 
 
@@ -259,17 +243,9 @@
 
 				_oldSelectedTab = _newSelectedTab;
 				contentView.selectedIndex = _newSelectedTab;
-
+				
+				(contentView.selectedChild as IAccountPanel).init();
 				JSGate.writeUrlHash("account", contentView.selectedChild.id);
-			}
-
-
-			private function saveChangesQAndExit(event:CloseEvent):void {
-				if (event.detail == Alert.YES) {
-					(contentView.getChildAt(_oldSelectedTab) as IUndoable).saveChanges();
-				}
-				else
-					JSGate.onTabChange();
 			}
 
 
