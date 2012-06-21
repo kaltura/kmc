@@ -200,6 +200,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				)
 			{
 				_model.reportDataMap[_model.currentScreenState].dataFieldDp = headersArr = headersArr.slice(1, headersArr.length); //remove the entry_id
+				_model.reportDataMap[_model.currentScreenState].wasObjectIdDropped = true;
 			}
 			else
 			{

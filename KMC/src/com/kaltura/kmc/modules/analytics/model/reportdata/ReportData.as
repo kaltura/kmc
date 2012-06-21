@@ -28,6 +28,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		public var seletedMediaEntry : KalturaBaseEntry;
 		
 		public var dataFieldDp : Array;
+		public var wasObjectIdDropped:Boolean = false;
 		public var tableDp: ArrayCollection;
 		public var pager : KalturaFilterPager;
 		public var totalCount : int;

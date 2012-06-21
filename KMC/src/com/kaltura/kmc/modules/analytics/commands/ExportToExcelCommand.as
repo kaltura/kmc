@@ -33,7 +33,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			headers = headers.substr(0,headers.length-1);
 			headers += ";";	//";Object Id,"; (see mantis ticket 13090 requesting to remove this header)
 			
-			if (_model.selectedReportData.objectIds == "" || _model.selectedReportData.objectIds == null){
+			if (_model.selectedReportData.wasObjectIdDropped && (_model.selectedReportData.objectIds == "" || _model.selectedReportData.objectIds == null)){
 				headers += "Object Id,";
 			}
 			
