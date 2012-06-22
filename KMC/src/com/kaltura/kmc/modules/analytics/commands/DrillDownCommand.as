@@ -54,15 +54,21 @@ package com.kaltura.kmc.modules.analytics.commands
 					break;
 					case ScreenTypes.CONTENT_CONTRIBUTIONS: 
 						getEntryFlag = false;
+						_model.tableSupportDrillDown = false;
 						_model.currentScreenState = ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN; 
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
 					break;
 					case ScreenTypes.MAP_OVERLAY:
 						getEntryFlag = false;
+						_model.tableSupportDrillDown = false;
 						_model.currentScreenState = ScreenTypes.MAP_OVERLAY_DRILL_DOWN;
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
 					break;
 					case ScreenTypes.TOP_SYNDICATIONS: 
 						getEntryFlag = false;
+						_model.tableSupportDrillDown = false;
 						_model.currentScreenState = ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN;
+						_model.selectedEntry = (event as DrillDownEvent).entryId;
 					break;
 					case ScreenTypes.END_USER_ENGAGEMENT:
 						_model.tableSupportDrillDown = false;
