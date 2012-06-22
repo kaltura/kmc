@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<treeClasses:TreeItemRenderer xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:treeClasses="mx.controls.treeClasses.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Tree;
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.treeClasses.TreeListData;
+			
+			
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				
+				var listOwner:Tree = Tree(listData.owner);
+				if (data && parent)
+				{
+					var format:TextFormat = label.getTextFormat();
+					format.bold = listOwner.isItemSelected(listData.uid);
+					label.setTextFormat(format);
+				}
+			}
+		]]>
+	</mx:Script>
+</treeClasses:TreeItemRenderer>
