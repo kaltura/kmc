@@ -292,21 +292,21 @@
 				var reportSetDataEvent:ReportDataEvent = new ReportDataEvent(ReportDataEvent.SET_REPORT_DATA, reportType, screenType,  label, aggregatedHeaders, tableHeaders);
 				reportSetDataEvent.dispatch();
 				
-				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType);
+				var reportTotalEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TOTAL, reportType, screenType);
 				reportTotalEvent.dispatch();
 
 				if (showTable) {
-					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType, ktable.orderBy, true, true, true, false, addTableTotals);
+					var reportTableEvent:ReportEvent = new ReportEvent(ReportEvent.GET_TABLE, reportType , screenType, ktable.orderBy, true, true, true, false, addTableTotals);
 					reportTableEvent.dispatch();
 				}
 
 				if (showLineChart || showColumnChart) {
-					var reportGraphEvent:ReportEvent = new ReportEvent(ReportEvent.GET_GRAPH, reportType, '', true, true, true, true, false, addGraphTotals);
+					var reportGraphEvent:ReportEvent = new ReportEvent(ReportEvent.GET_GRAPH, reportType, screenType, '', true, true, true, true, false, addGraphTotals);
 					reportGraphEvent.dispatch();
 				}
 				
 				if (addGraphTotals || addTableTotals){
-					var reportBaseTotalsEvent:ReportEvent = new ReportEvent(ReportEvent.GET_BASE_TOTALS, reportType);
+					var reportBaseTotalsEvent:ReportEvent = new ReportEvent(ReportEvent.GET_BASE_TOTALS, reportType, screenType);
 					reportBaseTotalsEvent.dispatch();
 				}
 			}

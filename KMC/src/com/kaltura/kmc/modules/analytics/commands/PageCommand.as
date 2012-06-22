@@ -13,7 +13,7 @@ package com.kaltura.kmc.modules.analytics.commands
 		{
 			_model.selectedReportData.pager.pageIndex = (event as PageEvent).currentPage;
 			_model.selectedReportData.pager.pageSize = (event as PageEvent).currentSize;
-			var reportEvent : ReportEvent = new ReportEvent( ReportEvent.GET_TABLE , (event as PageEvent).reportType);
+			var reportEvent : ReportEvent = new ReportEvent( ReportEvent.GET_TABLE , (event as PageEvent).reportType, _model.currentScreenState);
 			reportEvent.dispatch();
 		}
 	}

@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+	import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 	import com.kaltura.kmc.modules.analytics.model.reports.FormatReportParam;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 	import com.kaltura.vo.KalturaEndUserReportInputFilter;
@@ -29,20 +30,27 @@ package com.kaltura.kmc.modules.analytics.commands {
 		public function execute(event:CairngormEvent):void {
 			_model.loadingFlag = true;
 			_model.loadingTableFlag = true;
+			var reportEvt:ReportEvent = event as ReportEvent;
 
-			_addTotals = (event as ReportEvent).addTableTotals;
+			_addTotals = reportEvt.addTableTotals;
 			
+			var selectedReportData:ReportData;
+			if (reportEvt.screenType != -1){
+				selectedReportData = _model.reportDataMap[reportEvt.screenType] as ReportData;
+			} else {
+				selectedReportData = _model.reportDataMap[_model.currentScreenState] as ReportData;
+			}
 			ExecuteReportHelper.reportSetupBeforeExecution();
 
-			if (!_model.selectedReportData.pager) {
-				_model.selectedReportData.pager = new KalturaFilterPager();
-				_model.selectedReportData.pager.pageSize = 10;
-				_model.selectedReportData.pager.pageIndex = 1;
+			if (!selectedReportData.pager) {
+				selectedReportData.pager = new KalturaFilterPager();
+				selectedReportData.pager.pageSize = 10;
+				selectedReportData.pager.pageIndex = 1;
 			}
 			
 			// Workaround to the base total limitation
 			if (_addTotals){
-				_model.selectedReportData.pager.pageSize = 500;
+				selectedReportData.pager.pageSize = 500;
 			}
 
 			var objectIds:String = '';
@@ -54,11 +62,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 										|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
 										|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
 										|| _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
-				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
+				objectIds = selectedReportData.objectIds = _model.selectedEntry;
 			}
 
 			if ((event as ReportEvent).orderBy)
-				_model.selectedReportData.orderBy = (event as ReportEvent).orderBy;
+				selectedReportData.orderBy = reportEvt.orderBy;
 
 			var reportGetTable:ReportGetTable;
 			//If we have a user report call we need to have another fileter (that support application and users) 
@@ -77,16 +85,16 @@ package com.kaltura.kmc.modules.analytics.commands {
 				keurif.playbackContext = keurif.categories;
 				keurif.categories = null;
 				
-				reportGetTable = new ReportGetTable((event as ReportEvent).reportType, keurif, 
-					_model.selectedReportData.pager, 
-					_model.selectedReportData.orderBy, objectIds);
+				reportGetTable = new ReportGetTable(reportEvt.reportType, keurif, 
+					selectedReportData.pager, 
+					selectedReportData.orderBy, objectIds);
 			}
 			else
 			{
 				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
-				reportGetTable = new ReportGetTable((event as ReportEvent).reportType, krif, 
-					_model.selectedReportData.pager, 
-					_model.selectedReportData.orderBy, objectIds);
+				reportGetTable = new ReportGetTable(reportEvt.reportType, krif, 
+					selectedReportData.pager, 
+					selectedReportData.orderBy, objectIds);
 			}
 			 
 			reportGetTable.queued = false;

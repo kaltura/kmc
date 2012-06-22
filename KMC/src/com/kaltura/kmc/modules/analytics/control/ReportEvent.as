@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.analytics.control
 		public static const GET_BASE_TOTALS : String = "analytics_getBaseTotals";
 		
 		public var reportType : int;
+		public var screenType : int;
 		public var orderBy : String;
 		public var getTable : Boolean; 
 		public var getGraph : Boolean;
@@ -22,7 +23,8 @@ package com.kaltura.kmc.modules.analytics.control
 		public var addGraphTotals:Boolean;
 		
 		public function ReportEvent( type:String, 
-									 reportType : int , 
+									 reportType : int ,
+									 screenType : int = -1,
 									 orderBy : String = '',
 									 getTable : Boolean = true, 
 									 getGraph : Boolean = true, 
@@ -35,6 +37,7 @@ package com.kaltura.kmc.modules.analytics.control
 		{
 			super(type, bubbles, cancelable);
 			this.reportType = reportType;
+			this.screenType = screenType;
 			this.orderBy = orderBy;
 			this.getTable = getTable;
 			this.getGraph = getGraph;
