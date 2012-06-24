@@ -148,6 +148,13 @@
 			// preferences selection
 			// ---------------------
 
+			
+			/**
+			 * identifier to use when saving prefrences
+			 * */
+			public var prefsIdentifier:String;
+			
+			
 			[Bindable]
 			public var selectionMode:int;
 			
@@ -182,6 +189,7 @@
 			private function openPrefsWindow(e:MouseEvent):void {
 				_prefsWin = new CatTreePrefsWin();
 				_prefsWin.selectionMode = selectionMode;
+				_prefsWin.setMode(prefsIdentifier);
 				_prefsWin.addEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
 				_prefsWin.addEventListener(CloseEvent.CLOSE, handlePrefsWin);
 				PopUpManager.addPopUp(_prefsWin, Application.application as DisplayObject, true);
@@ -192,7 +200,7 @@
 			private function handlePrefsWin(e:Event):void {
 				if (e.type == CatTreePrefsEvent.PREFS_CHANGED) {
 					// save data in sharedObject
-					var so:SharedObject = SharedObject.getLocal("KMC_catTree_" + _attribute);
+					var so:SharedObject = SharedObject.getLocal("KMC_catTree_" + prefsIdentifier);
 					so.data.selectionMode = (e as CatTreePrefsEvent).newValue;
 					so.flush();
 					// reset tree
@@ -238,7 +246,7 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (selectionMode != CatTreeSelectionMode.SINGLE_SELECT) {
 					// get selection mode from SO
-					var so:SharedObject = SharedObject.getLocal("KMC_catTree_" + _attribute);
+					var so:SharedObject = SharedObject.getLocal("KMC_catTree_" + prefsIdentifier);
 					if (so.data && so.data.selectionMode) {
 						selectionMode = so.data.selectionMode;
 					}

@@ -15,6 +15,23 @@
 			private var _oldSelectionMode:int;
 			public var selectionMode:int;
 			
+			[Bindable]
+			private var _exactString:String;
+			
+			[Bindable]
+			private var _plusString:String;
+			
+			public function setMode(object:String):void {
+				if (object == "entries") {
+					_exactString = resourceManager.getString('filter', 'preferencesExactEnt');
+					_plusString = resourceManager.getString('filter', 'preferencesPlusEnt');
+				}
+				else {
+					_exactString = resourceManager.getString('filter', 'preferencesExactCat');
+					_plusString = resourceManager.getString('filter', 'preferencesPlusCat');
+				}
+			}
+			
 			/**
 			 * save prefs and dispatch change event if needed, then request close.
 			 * */
@@ -80,8 +97,8 @@
 		]]>
 	</mx:Script>
 	<mx:RadioButtonGroup id="selectionModeGroup" change="selectionMode_changeHandler(event)"/>
-	<mx:RadioButton id="exact" group="{selectionModeGroup}" label="{resourceManager.getString('filter', 'preferencesExact')}" />
-	<mx:RadioButton id="plus" group="{selectionModeGroup}" label="{resourceManager.getString('filter', 'preferencesPlus')}" />
+	<mx:RadioButton id="exact" group="{selectionModeGroup}" label="{_exactString}" />
+	<mx:RadioButton id="plus" group="{selectionModeGroup}" label="{_plusString}" />
 	<mx:ControlBar horizontalGap="5">
 		<mx:Button id="saveBtn" label="{resourceManager.getString('filter','save')}" click="saveBtn_clickHandler(event)"/>
 	</mx:ControlBar>
