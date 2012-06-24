@@ -26,6 +26,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 				if (_type == CategoryEvent.SET_CATEGORIES_LISTING) {
 					kCat.appearInList = event.data as int;
 				}
+				else if (_type == CategoryEvent.SET_CATEGORIES_CONTRIBUTION) {
+					kCat.contributionPolicy = event.data as int;
+				} 
 				else if (_type == CategoryEvent.SET_CATEGORIES_ACCESS) {
 					kCat.privacy = event.data as int;
 				} 
@@ -49,6 +52,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 			if (!isErr) {
 				if (_type == CategoryEvent.SET_CATEGORIES_LISTING) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'catListSuccess'));
+				}
+				else if (_type == CategoryEvent.SET_CATEGORIES_CONTRIBUTION) {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'catContPolSuccess'));
 				}
 				else if (_type == CategoryEvent.SET_CATEGORIES_ACCESS) {
 					Alert.show(ResourceManager.getInstance().getString('cms', 'catAcSuccess'));

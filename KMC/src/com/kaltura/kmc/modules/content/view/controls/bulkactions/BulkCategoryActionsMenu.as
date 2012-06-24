@@ -79,6 +79,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
 					mi.data = "changeAccess";
 					topLevel.children.push(mi);
+					
+					mi = new MenuItemVo();
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryPolicy');
+					mi.data = "changeContribution";
+					topLevel.children.push(mi);
 				}
 				
 				mi = new MenuItemVo();
@@ -99,6 +104,11 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			switch (event.item.data) {
 				case "delete":
 					cgEvent = new CategoryEvent(CategoryEvent.DELETE_CATEGORIES);
+					cgEvent.dispatch();
+					break;
+				
+				case "changeContribution":
+					cgEvent = new WindowEvent(WindowEvent.OPEN, WindowsStates.CATEGORIES_CONTRIBUTION_WINDOW);
 					cgEvent.dispatch();
 					break;
 				

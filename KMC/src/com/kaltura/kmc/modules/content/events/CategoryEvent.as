@@ -61,6 +61,12 @@ package com.kaltura.kmc.modules.content.events
 		public static const SET_CATEGORIES_LISTING : String = "content_setCategoriesListing";
 		
 		/**
+		 * set the contribution policy of the currently selected categories
+		 * event.data is new contributnio policy value (KalturaContributionPolicyType)
+		 */
+		public static const SET_CATEGORIES_CONTRIBUTION : String = "content_setCategoriesContribution";
+		
+		/**
 		 * set the access of the currently selected categories
 		 * event.data is new access value (KalturaPrivacyType)
 		 */

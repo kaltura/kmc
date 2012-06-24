@@ -28,6 +28,7 @@ package com.kaltura.edw.model.types
 		public static const MOVE_CATEGORY_WINDOW : String = "moveCategoryWindow";
 		public static const CATEGORIES_LISTING_WINDOW : String = "categoriesListingWindow";
 		public static const CATEGORIES_ACCESS_WINDOW : String = "categoriesAccessWindow";
+		public static const CATEGORIES_CONTRIBUTION_WINDOW : String = "categoriesContributionWindow";
 		public static const CATEGORIES_OWNER_WINDOW : String = "categoriesOwnerWindow";
 		
 		public static const CATEGORY_DETAILS_WINDOW:String = "categoryDetailsWindow";

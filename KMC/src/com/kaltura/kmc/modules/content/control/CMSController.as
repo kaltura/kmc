@@ -127,6 +127,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.DELETE_CATEGORIES, DeleteCategoriesCommand);
 			addCommand(CategoryEvent.MOVE_CATEGORIES, ReparentCategoriesCommand);
 			addCommand(CategoryEvent.SET_CATEGORIES_LISTING, SetCategoriesAttributeCommand);
+			addCommand(CategoryEvent.SET_CATEGORIES_CONTRIBUTION, SetCategoriesAttributeCommand);
 			addCommand(CategoryEvent.SET_CATEGORIES_ACCESS, SetCategoriesAttributeCommand);
 			addCommand(CategoryEvent.SET_CATEGORIES_OWNER, SetCategoriesAttributeCommand);
 			addCommand(CategoryEvent.GET_SUB_CATEGORIES, GetSubCategoriesCommand);

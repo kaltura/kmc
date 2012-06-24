@@ -37,6 +37,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.kmc.modules.content.view.window.AddStream;
 	import com.kaltura.kmc.modules.content.view.window.AddTagsWin;
 	import com.kaltura.kmc.modules.content.view.window.CategoriesAccessWindow;
+	import com.kaltura.kmc.modules.content.view.window.CategoriesContributionWindow;
 	import com.kaltura.kmc.modules.content.view.window.CategoriesListingWindow;
 	import com.kaltura.kmc.modules.content.view.window.DownloadWin;
 	import com.kaltura.kmc.modules.content.view.window.MoveCategoriesWindow;
@@ -283,6 +284,11 @@ package com.kaltura.kmc.modules.content.business
 					case WindowsStates.CATEGORIES_ACCESS_WINDOW:
 						currentPopUp = new CategoriesAccessWindow();
 						currentPopUp.addEventListener("apply", handleCategoriesAccessEvents, false, 0, true);
+						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
+						break;
+					case WindowsStates.CATEGORIES_CONTRIBUTION_WINDOW:
+						currentPopUp = new CategoriesContributionWindow();
+						currentPopUp.addEventListener("apply", handleCategoriesContributionEvents, false, 0, true);
 						currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 						break;
 					case WindowsStates.CATEGORIES_OWNER_WINDOW:
@@ -725,6 +731,18 @@ package com.kaltura.kmc.modules.content.business
 					var tgt:CategoriesListingWindow = e.target as CategoriesListingWindow;
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_LISTING);
 					kEvent.data = tgt.getListing();
+					kEvent.dispatch();
+					break;
+			}
+		}
+		
+		
+		private function handleCategoriesContributionEvents(e:Event):void {
+			switch (e.type) {
+				case "apply": 
+					var tgt:CategoriesContributionWindow = e.target as CategoriesContributionWindow
+					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_CONTRIBUTION);
+					kEvent.data = tgt.getContributionPolicy();
 					kEvent.dispatch();
 					break;
 			}

@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
-							layout="vertical" width="400" height="190"
+							layout="vertical" width="450" height="190"
 							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
-							title="{resourceManager.getString('cms', 'catListTitle')}">
+							title="{resourceManager.getString('cms', 'catContPolTitle')}">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.types.KalturaAppearInListType;
+			import com.kaltura.types.KalturaContributionPolicyType;
 			
-
-
-			public function getListing():int {
+			
+			
+			public function getContributionPolicy():int {
 				return myGroup.selectedValue as int;
 			}
-
+			
 			protected function applyBtn_clickHandler(event:MouseEvent):void {
 				dispatchEvent(new Event("apply"));
 				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
-
-
+			
+			
 			protected function myGroup_changeHandler(event:Event):void {
 				applyBtn.enabled = true;
 			}
-
-
+			
+			
 			private function helpHandler(event:Event):void
 			{
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cats_list", true));
+				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cats_cont", true));
 			}
-
+			
 		]]>
 	</mx:Script>
 	
-	<mx:Text width="100%" text="{resourceManager.getString('cms', 'catListDesc')}" />
+	<mx:Text width="100%" text="{resourceManager.getString('cms', 'catContPolDesc')}" />
 	
 	<mx:RadioButtonGroup id="myGroup" change="myGroup_changeHandler(event)"/>
-	<mx:RadioButton label="{resourceManager.getString('cms', 'catListListed')}" 
-					value="{KalturaAppearInListType.PARTNER_ONLY}" groupName="myGroup" />
-	<mx:RadioButton label="{resourceManager.getString('cms', 'catListUnlisted')}" 
-					value="{KalturaAppearInListType.CATEGORY_MEMBERS_ONLY}" groupName="myGroup" />
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catContPolPublic')}" 
+					value="{KalturaContributionPolicyType.ALL}" groupName="myGroup" />
+	<mx:RadioButton label="{resourceManager.getString('cms', 'catContPolPrivate')}" 
+					value="{KalturaContributionPolicyType.MEMBERS_WITH_CONTRIBUTION_PERMISSION}" groupName="myGroup" />
 	
 	
 	<mx:ControlBar>
