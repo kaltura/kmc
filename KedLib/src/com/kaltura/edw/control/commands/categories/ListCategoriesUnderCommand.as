@@ -95,14 +95,16 @@ package com.kaltura.edw.control.commands.categories
 			
 			// add to tree: list children on parent category
 			if (_branchCat) {
-				if (!_branchCat.children) {
-					_branchCat.children = new ArrayCollection();
+				// get the matching catVo from the given hashmap so we add to all relevant catVos
+				var catvo:CategoryVO = catMap.getValue(_branchCat.id.toString());
+				if (!catvo.children) {
+					catvo.children = new ArrayCollection();
 				}
 				for each (var cat:CategoryVO in categories) {
-					_branchCat.children.addItem(cat);
+					catvo.children.addItem(cat);
 				}
 				// sort on partnerSortValue
-				var temp:Array = cat.children.source;
+				var temp:Array = catvo.children.source;
 				temp.sort(compareValues);
 			}
 //			else {
