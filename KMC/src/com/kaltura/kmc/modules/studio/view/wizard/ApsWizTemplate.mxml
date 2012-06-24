@@ -6,6 +6,7 @@
 		 paddingLeft="0" paddingRight="0" paddingTop="0" height="100%" width="100%">
 	<mx:Metadata>
 		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
+		[Event(name="detailsChanged", type="flash.events.Event")] 
 	</mx:Metadata>
 
 	<mx:Script>
@@ -92,7 +93,7 @@
 			/**
 			 * removes the text from the textfield on focus in
 			 * */
-			protected function removeText(event:FocusEvent):void {
+			private function removeText(event:FocusEvent):void {
 				if (_data.playerName == resourceManager.getString('aps', 'playerName')) {
 					_data.playerName = '';
 				}
@@ -103,7 +104,7 @@
 			 * restores the default text in the textfield if no
 			 * text was entered on focus out
 			 * */
-			protected function restoreDefaultText(event:FocusEvent):void {
+			private function restoreDefaultText(event:FocusEvent):void {
 				if (_data.playerName == '') {
 					_data.playerName = resourceManager.getString('aps', 'playerName');
 				}
@@ -113,15 +114,16 @@
 			/**
 			 * saves player name on change
 			 * */
-			protected function saveName(event:Event):void {
+			private function saveName(event:Event):void {
 				_data.playerName = playerName.text;
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
 			/**
 			 * saves autoplay value on change
 			 * */
-			protected function templateAutoPlay_changeHandler(event:Event):void {
+			private function templateAutoPlay_changeHandler(event:Event):void {
 				if (!templateAutoPlay.selected) {
 					_data.autoMute = false;
 					_data.autoPlay = false;
@@ -129,46 +131,51 @@
 				else {
 					_data.autoPlay = true;
 				}
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
 			/**
 			 * saves automute value on change
 			 * */
-			protected function templateAutoMute_changeHandler(event:Event):void {
+			private function templateAutoMute_changeHandler(event:Event):void {
 				if (templateAutoMute.selected) {
 					_data.autoMute = true;
 				}
 				else {
 					_data.autoMute = false;
 				}
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 			/**
 			 * saves stretch / keep ratio value on change
 			 * */
-			protected function keepOriginalRatio_changeHandler(event:Event):void {
+			private function keepOriginalRatio_changeHandler(event:Event):void {
 				if (mediaRatioGroup.selection == keepOriginalRatio) {
 					_data.keepAspectRatio = true;
 				}
 				else {
 					_data.keepAspectRatio = false;
 				}
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
 			/**
 			 * saves playlist autocontinue value on change
 			 * */
-			protected function playlistAutoContinue_changeHandler(event:Event):void {
+			private function playlistAutoContinue_changeHandler(event:Event):void {
 				_data.playlistAutoContinue = playlistAutoContinue.selected;
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 			/**
 			 * saves image view duration on change
 			 * */
-			protected function playlistImagesInterval_changeHandler(event:NumericStepperEvent):void {
+			private function playlistImagesInterval_changeHandler(event:NumericStepperEvent):void {
 				_data.imageDefaultDuration = playlistImagesInterval.value;
+				dispatchEvent(new Event("detailsChanged"));
 			}
 		]]>
 	</mx:Script>

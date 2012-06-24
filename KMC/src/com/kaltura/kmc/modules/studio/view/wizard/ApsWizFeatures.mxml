@@ -11,6 +11,7 @@
 	<mx:Metadata>
 		[Event(name="alertUser", type="flash.events.ErrorEvent")]
 		[Event(name="refreshKdp", type="flash.events.Event")] 
+		[Event(name="detailsChanged", type="flash.events.Event")]
 	</mx:Metadata>
 	
 	<mx:Script>
@@ -61,6 +62,7 @@
 				myFeatureXml.@k_value = myFeatureXml.@selected = (evt.type == ApsFeatureEvent.FEATURE_SELECTED) ? "true" : "false";
 
 				showFeature();
+				dispatchEvent(new Event("detailsChanged"));
 				// add remove the feature from ItemRenderer if available
 				var xmlIdToGet:String = myFeatureXml.(attribute("customXmlId"));
 				xmlIdToGet = myFeatureXml.@customXmlId.toString();
@@ -296,6 +298,7 @@
 					kv.overridable = true;
 					keyvals.addItemAt(kv, 0);
 				}
+				
 			}
 
 
@@ -329,6 +332,16 @@
 			{
 				_editable = value;
 			}
+			
+			
+			
+
+
+			protected function featureScreen_savedFeatureHandler(event:Event):void
+			{
+				dispatchEvent(new Event("detailsChanged"));
+				dispatchEvent(new Event(REFRESH_KDP));
+			}
 
 		]]>
 	</mx:Script>
@@ -344,7 +357,7 @@
 		</mx:VBox>
 	</mx:HBox>
 	<wizardView:ApsWizardFeatureForm id="featureScreen" height="100%" width="100%" editable="{editable}"
-									 savedFeature="dispatchEvent(new Event(REFRESH_KDP));" visible="false"/>
+									 savedFeature="featureScreen_savedFeatureHandler(event)" visible="false"/>
 	<mx:VBox id="keyValueBox" visible="false" width="100%" height="90%" paddingLeft="5" paddingRight="5"
 			 horizontalScrollPolicy="off" includeInLayout="false" disabledOverlayAlpha="0" enabled="{editable}">
 		<mx:Spacer height="10"/>

@@ -6,7 +6,9 @@
 		 xmlns:form="com.kaltura.kmc.modules.studio.view.form.*" xmlns:controls="com.kaltura.controls.*"
 		 xmlns:validators="com.kaltura.validators.*" width="100%" minWidth="620" horizontalScrollPolicy="off"
 		 backgroundColor="#F7F7F7" hide="update()" show="onShow()">
-
+	<mx:Metadata>
+		[Event(name="detailsChanged", type="flash.events.Event")]
+	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
@@ -483,6 +485,7 @@
 					tiPostrollUrl.errorString = '';
 					selectTimelinePanel(btnBumper);
 				}
+				notifyChange();
 			}
 
 
@@ -504,6 +507,7 @@
 						tiOverlayUrl.errorString = '';
 						break;
 				}
+				notifyChange();
 			}
 
 
@@ -590,13 +594,17 @@
 			public function get editable():Boolean {
 				return _editable;
 			}
+			
+			private function notifyChange():void {
+				dispatchEvent(new Event("detailsChanged"));
+			}
 		]]>
 	</mx:Script>
 	<mx:Validator id="bumperEntryValidator"/>
 	<validators:URLValidator id="urlValidator"/>
 	<mx:VBox id="all" disabledOverlayAlpha="0">
 		<mx:Label text="{resourceManager.getString('advertising', 'adstatus')}" styleName="pageTitle"/>
-		<form:YesNoQuestion id="ynAds" labelWidth="180" yesLabel="Yes" noLabel="No"
+		<form:YesNoQuestion id="ynAds" labelWidth="180" yesLabel="Yes" noLabel="No" change="notifyChange()"
 							text="{resourceManager.getString('advertising', 'requestAds')}:"/>
 		<mx:Spacer height="10"/>
 		<mx:VBox id="allContent" visible="{ynAds.selected}" includeInLayout="{ynAds.selected}">
@@ -611,13 +619,13 @@
 								width="100%">
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('advertising', 'swfurl')}:" width="180"/>
-					<mx:TextInput id="tiSrcUrl" text="{adsourceCB.selectedItem.url}"
+					<mx:TextInput id="tiSrcUrl" text="{adsourceCB.selectedItem.url}" change="notifyChange()"
 								  enabled="{adsourceCB.selectedItem.id == CUSTOM}" width="400"/>
 				</mx:HBox>
 				<mx:HBox width="100%">
 					<mx:Text width="180"
 							 htmlText="{resourceManager.getString('advertising', 'keyValue')}:&lt;br&gt;{resourceManager.getString('advertising', 'separate')}"/>
-					<mx:TextArea id="tiPlayerKv" width="400" height="100%"/>
+					<mx:TextArea id="tiPlayerKv" width="400" height="100%" change="notifyChange()"/>
 				</mx:HBox>
 			</form:DisablableBox>
 			<mx:Spacer height="10"/>
@@ -625,23 +633,23 @@
 			<!-- - - - - - - - - - - - - - - player config - - - - - - - - - - - - - - - -->
 			<form:DisablableBox id="playerConfigBox" direction="vertical" enabled="{KUtils.logicalAnd((adsourceCB.selectedItem.id == VAST), _editable)}" width="100%">
 				<mx:Label text="{resourceManager.getString('advertising', 'playerConfig')}" styleName="pageTitle"/>
-				<form:YesNoQuestion id="ynCuePoints" labelWidth="180" yesLabel="Yes" noLabel="No"
+				<form:YesNoQuestion id="ynCuePoints" labelWidth="180" yesLabel="Yes" noLabel="No" change="notifyChange()"
 									text="{resourceManager.getString('advertising', 'useCuePoints')}:"/>
-				<form:YesNoQuestion id="ynNotice" labelWidth="180" yesLabel="Yes" noLabel="No"
+				<form:YesNoQuestion id="ynNotice" labelWidth="180" yesLabel="Yes" noLabel="No" change="notifyChange()"
 									text="{resourceManager.getString('advertising', 'notice')}:"/>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('advertising', 'noticeText')}:" width="180"/>
-					<mx:TextInput id="tiNotice" width="400" enabled="{ynNotice.selected}"/>
+					<mx:TextInput id="tiNotice" width="400" enabled="{ynNotice.selected}" change="notifyChange()"/>
 				</mx:HBox>
-				<form:YesNoQuestion id="ynSkip" labelWidth="180" yesLabel="Yes" noLabel="No"
+				<form:YesNoQuestion id="ynSkip" labelWidth="180" yesLabel="Yes" noLabel="No" change="notifyChange()"
 									text="{resourceManager.getString('advertising', 'skip')}:"/>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('advertising', 'skipText')}:" width="180"/>
-					<mx:TextInput id="tiSkip" width="400" enabled="{ynSkip.selected}"/>
+					<mx:TextInput id="tiSkip" width="400" enabled="{ynSkip.selected}" change="notifyChange()"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Text htmlText="{resourceManager.getString('advertising', 'timeout',['&lt;br&gt;'])}" width="180"/>
-					<mx:TextInput id="tiTimeout" width="400"/>
+					<mx:TextInput id="tiTimeout" width="400" change="notifyChange()"/>
 				</mx:HBox>
 				<mx:HBox>
 					<mx:Label text="{resourceManager.getString('advertising', 'companions', ['HTML'])}" width="180"/>
@@ -684,57 +692,57 @@
 					<!-- - - - - - - - - - - - - - - - preroll - - - - - - - - - - - - - - - - -->
 					<form:DisablableBox id="pre" direction="vertical" width="100%"
 										label="{resourceManager.getString('advertising', 'preroll')}:" >
-						<form:YesNoQuestion id="ynPreroll" labelWidth="180"
+						<form:YesNoQuestion id="ynPreroll" labelWidth="180" change="notifyChange()"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
 											text="{resourceManager.getString('advertising', 'request', ['PreRoll'])}"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
-							<mx:TextInput id="tiPrerollUrl" width="400" enabled="{ynPreroll.selected}"/>
+							<mx:TextInput id="tiPrerollUrl" width="400" enabled="{ynPreroll.selected}" change="notifyChange()"/>
 						</mx:HBox>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
-							<mx:ComboBox id="cbPreNads" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:ComboBox id="cbPreNads" labelField="label" enabled="{ynPreroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'before')}"/>
-							<mx:ComboBox id="cbPreFrequency" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:ComboBox id="cbPreFrequency" labelField="label" enabled="{ynPreroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
-							<mx:ComboBox id="cbPreStart" labelField="label" enabled="{ynPreroll.selected}"/>
+							<mx:ComboBox id="cbPreStart" labelField="label" enabled="{ynPreroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
 						</mx:HBox>
 					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - bumper - - - - - - - - - - - - - - - - -->
 					<form:DisablableBox id="bumper" label="{resourceManager.getString('advertising', 'bumper')}:" direction="vertical" width="100%">
-						<form:YesNoQuestion id="ynBumper" labelWidth="180"
+						<form:YesNoQuestion id="ynBumper" labelWidth="180" 
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
 											change="yn_changeHandler(event)"
 											text="{resourceManager.getString('advertising', 'showBumper')}:"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'entryid')}:" width="180"/>
-							<mx:TextInput id="tiBumperEntry" width="400" enabled="{ynBumper.selected}"/>
+							<mx:TextInput id="tiBumperEntry" width="400" enabled="{ynBumper.selected}" change="notifyChange()"/>
 						</mx:HBox>
 
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'clickurl')}:" width="180"/>
-							<mx:TextInput id="tiBumperUrl" width="400" enabled="{ynBumper.selected}"/>
+							<mx:TextInput id="tiBumperUrl" width="400" enabled="{ynBumper.selected}" change="notifyChange()"/>
 						</mx:HBox>
 					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - overlay - - - - - - - - - - - - - - - - -->
 					<form:DisablableBox id="over" direction="vertical" width="100%"
 										label="{resourceManager.getString('advertising', 'overlay')}:">
-						<form:YesNoQuestion id="ynOverlay" labelWidth="180"
+						<form:YesNoQuestion id="ynOverlay" labelWidth="180" change="notifyChange()"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
 											text="{resourceManager.getString('advertising', 'request', ['Overlay'])}"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
-							<mx:TextInput id="tiOverlayUrl" width="400" enabled="{ynOverlay.selected}"/>
+							<mx:TextInput id="tiOverlayUrl" width="400" enabled="{ynOverlay.selected}" change="notifyChange()"/>
 						</mx:HBox>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'firstOverlay')}" width="180"/>
 							<controls:TimeStepper id="fsFirstOverlay" showAMPMLabel="false" showHours="false"
 												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="20"
-												  height="25" styleName="timeEntry"/>
+												  height="25" styleName="timeEntry" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
 
 						</mx:HBox>
@@ -742,35 +750,35 @@
 							<mx:Label text="{resourceManager.getString('advertising', 'frequencyOverlay')}" width="180"/>
 							<controls:TimeStepper id="fsFrequencyOverlay" showAMPMLabel="false" showHours="false"
 												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="30"
-												  height="25" styleName="timeEntry"/>
+												  height="25" styleName="timeEntry" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
 						</mx:HBox>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'durationOverlay')}" width="180"/>
 							<controls:TimeStepper id="fsDurationOverlay" showAMPMLabel="false" showHours="false"
 												  showSeconds="true" enabled="{ynOverlay.selected}" minimum="5"
-												  height="25" styleName="timeEntry"/>
+												  height="25" styleName="timeEntry" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'minsec')}"/>
 						</mx:HBox>
 					</form:DisablableBox>
 					<!-- - - - - - - - - - - - - - - - postroll - - - - - - - - - - - - - - - - -->
 					<form:DisablableBox id="post" direction="vertical" width="100%"
 										label="{resourceManager.getString('advertising', 'postroll')}:" >
-						<form:YesNoQuestion id="ynPostroll" labelWidth="180"
+						<form:YesNoQuestion id="ynPostroll" labelWidth="180" change="notifyChange()"
 											yesLabel="{resourceManager.getString('advertising', 'enabled')}"
 											noLabel="{resourceManager.getString('advertising', 'disabled')}"
 											text="{resourceManager.getString('advertising', 'request', ['PostRoll'])}"/>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'adtag')}:" width="180"/>
-							<mx:TextInput id="tiPostrollUrl" width="400" enabled="{ynPostroll.selected}"/>
+							<mx:TextInput id="tiPostrollUrl" width="400" enabled="{ynPostroll.selected}" change="notifyChange()"/>
 						</mx:HBox>
 						<mx:HBox>
 							<mx:Label text="{resourceManager.getString('advertising', 'display')}"/>
-							<mx:ComboBox id="cbPostNads" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:ComboBox id="cbPostNads" labelField="label" enabled="{ynPostroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'after')}"/>
-							<mx:ComboBox id="cbPostFrequency" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:ComboBox id="cbPostFrequency" labelField="label" enabled="{ynPostroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'starting')}"/>
-							<mx:ComboBox id="cbPostStart" labelField="label" enabled="{ynPostroll.selected}"/>
+							<mx:ComboBox id="cbPostStart" labelField="label" enabled="{ynPostroll.selected}" change="notifyChange()"/>
 							<mx:Label text="{resourceManager.getString('advertising', 'video')}."/>
 						</mx:HBox>
 					</form:DisablableBox>

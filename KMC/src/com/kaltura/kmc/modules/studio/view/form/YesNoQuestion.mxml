@@ -63,9 +63,15 @@
 			}
 				
 
+
+			protected function rbg_changeHandler(event:Event):void {
+				dispatchEvent(new Event(Event.CHANGE));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:Label text="{text}" width="{labelWidth}" />
-	<mx:RadioButton id="yes" label="{yesLabel}" selected="{_selected}" change="{ selected = yes.selected }" enabled="{_enabled}"/>
-	<mx:RadioButton id="no" label="{noLabel}" selected="{!_selected}" change="{ selected = !no.selected }" enabled="{_enabled}"/>
+	<mx:RadioButtonGroup id="rbg" change="rbg_changeHandler(event)"/>
+	<mx:RadioButton id="yes" label="{yesLabel}" selected="{_selected}" change="{ selected = yes.selected }" groupName="rbg" enabled="{_enabled}"/>
+	<mx:RadioButton id="no" label="{noLabel}" selected="{!_selected}" change="{ selected = !no.selected }" groupName="rbg" enabled="{_enabled}"/>
 </mx:HBox>

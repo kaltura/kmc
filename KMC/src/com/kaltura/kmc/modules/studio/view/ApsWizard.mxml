@@ -54,6 +54,12 @@ The main window for new player wizard.
 			private var _enableAdsTab:Boolean = true;
 			
 			/**
+			 * flag indicating there was a change in the any of the panels since last save
+			 * */
+			private var _isChanged:Boolean;
+			
+			
+			/**
 			 * flag to know if the content page was changed or not - so we save playlist rendering after each change
 			 * */
 			private var _isContentChanged:Boolean;
@@ -602,8 +608,8 @@ The main window for new player wizard.
 			
 			
 			
-			private function onCloseHandler(event:CloseEvent):void {
-				if (event.detail == Alert.YES) {
+			private function onCloseHandler(event:CloseEvent = null):void {
+				if (!event || event.detail == Alert.YES) {
 					this.enabled = false;
 					// close wizard
 					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.CLOSE_WIZARD));
@@ -612,7 +618,12 @@ The main window for new player wizard.
 			
 			
 			public function onWizardCancel():void {
-				Alert.show(resourceManager.getString('aps', 'discardAllChanges'), "", Alert.YES | Alert.NO, this, onCloseHandler);
+				if (_isChanged) {
+					Alert.show(resourceManager.getString('aps', 'discardAllChanges'), "", Alert.YES | Alert.NO, this, onCloseHandler);
+				}
+				else {
+					onCloseHandler(null);
+				}
 			}
 			
 			
@@ -672,6 +683,11 @@ The main window for new player wizard.
 			 * manipulate XML and save on server
 			 * */
 			private function onSave(evt:MouseEvent = null):void {
+				if (!_isChanged) {
+					dispatchEvent(new ApsNavigationEvent(ApsNavigationEvent.CLOSE_WIZARD));
+					return;
+				}
+				
 				if (!validate()) {
 					Alert.show(resourceManager.getString('aps', 'checkErrors'));
 					return;
@@ -829,6 +845,7 @@ The main window for new player wizard.
 			 * */
 			private function onContentGroupChange():void {
 				_isContentChanged = true;
+				_isChanged = true;
 			}
 			
 			
@@ -1127,28 +1144,28 @@ The main window for new player wizard.
 						  creationPolicy="all" change="resizeWizardViewStack(event)"
 						  selectedIndex="{linkDtn.selectedIndex}">
 				<wv:ApsWizTemplate id="templatePage" height="100%" label="{resourceManager.getString('aps','template')}"
-								   alertUser="{alertUser(event)}"/>
+								   alertUser="{alertUser(event)}" detailsChanged="{_isChanged=true}"/>
 				
 				<wv:ApsWizFeatures id="featurePage" height="{previewPlayerPage.height - 35}"
 								   refreshKdp="onFeatureChanged()" playerUiconfVo="{_playerUiConfVO}"
 								   label="{resourceManager.getString('aps','featureTab')}"
-								   alertUser="{alertUser(event)}"/>
+								   alertUser="{alertUser(event)}" detailsChanged="{_isChanged=true}"/>
 				
 				<wv:ApsWizAdvertizing id="advertizingPage" playerUiconfVo="{_playerUiConfVO}"
-									  label="{resourceManager.getString('aps','advertising')}"/>
+									  label="{resourceManager.getString('aps','advertising')}" detailsChanged="{_isChanged=true}"/>
 				
 				<wv:ApsWizStyle id="stylePage" height="100%" refreshKdp="onFeatureChanged()"
-								label="{resourceManager.getString('aps','style')}"/>
+								label="{resourceManager.getString('aps','style')}" detailsChanged="{_isChanged=true}"/>
 				
 				<wv:ApsWizardContent id="contentPage" height="100%" width="100%" 
 									 creationComplete="{onContentCreationComplete()}" verticalAlign="top"
-									 horizontalAlign="center" groupPlaylistChange="onContentGroupChange()"
-									 isSingleContent="{_playerUiConfVO.isSinglePlaylist}"
+									 horizontalAlign="center" detailsChanged="onContentGroupChange()"
+									 isSingleContent="{_playerUiConfVO.isSinglePlaylist}" 
 									 label="{resourceManager.getString('aps','content')}" alertUser="{alertUser(event)}"/>
 			</mx:ViewStack>
 			<wv:ApsWizPreviewPlayer id="previewPlayerPage" autoPreviewChanged="onAutoPreviewChanged()"
 									firstTimeLoad="onFirstTimeLoaded()" finishLoading="onFinishLoading()"
-									errorLoading="onErrorLoading(event)"
+									errorLoading="onErrorLoading(event)" detailsChanged="{_isChanged=true}"
 									alertUser="{alertUser(event)}" visible="false" includeInLayout="false" height="100%"
 									width="100%" context="{_context}" content="{media}"
 									playerUiConfVo="{_playerUiConfVO}" openPreview="openPreview()"

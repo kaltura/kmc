@@ -13,6 +13,7 @@
 		[Event(name="openPreview", type="flash.events.Event")] 
 		[Event(name="closePreview", type="flash.events.Event")] 
 		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
+		[Event(name="detailsChanged", type="flash.events.Event")]
 	</mx:Metadata>
 	
 	<mx:Script>
@@ -27,6 +28,7 @@
 			import modules.Studio;
 			
 			import mx.controls.Button;
+			import mx.events.NumericStepperEvent;
 			import mx.resources.ResourceManager;
 
 			public static const PREVIEW_PLAYER_READY:String = "previewPlayerReady";
@@ -129,7 +131,7 @@
 				}
 				kdp3Loader.scaleContent = false;
 				kdp3Loader.trustContent = true;
-				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain());
+				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
 				// if we don't set size here wierd things happen.
 				kdp3Loader.width = kdpWidth.value;
 				kdp3Loader.height = kdpHeight.value;
@@ -184,7 +186,7 @@
 				}
 				autoPreview.selected = autopreview;
 				autoPreviewChanged();
-				
+				trace("use alt+ctrl+p to trace current uiconf");
 			}
 
 
@@ -354,6 +356,11 @@
 				}
 			}
 
+
+			private function sizeChangeHandler(event:NumericStepperEvent):void {
+				dispatchEvent(new Event("detailsChanged"));
+			}
+
 		]]>
 	</mx:Script>
 	<mx:HBox width="100%" verticalAlign="middle">
@@ -365,9 +372,11 @@
 	<mx:VBox id="controls" disabledOverlayAlpha="0">
 		<mx:HBox id="resizeContainer">
 			<mx:Label text="{resourceManager.getString('aps','playerSize')}"/>
-			<mx:NumericStepper id="kdpWidth" width="60" value="500" maximum="2300" minimum="100"/>
+			<mx:NumericStepper id="kdpWidth" width="60" value="500" maximum="2300" minimum="100"
+							   change="sizeChangeHandler(event)"/>
 			<mx:Label text="x" textAlign="center"/>
-			<mx:NumericStepper id="kdpHeight" width="60" value="500" maximum="2300" minimum="30"/>
+			<mx:NumericStepper id="kdpHeight" width="60" value="500" maximum="2300" minimum="30"
+							   change="sizeChangeHandler(event)"/>
 			<mx:Spacer width="10"/>
 			<mx:Button id="refreshKdp3" buttonMode="true" label="{resourceManager.getString('aps','preview')}"
 					   click="reloadPlayer()"/>
