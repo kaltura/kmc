@@ -153,7 +153,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryUserEvent.DEACTIVATE_CATEGORY_USER, ToggleCategoryUserStatusCommand);
 			addCommand(CategoryUserEvent.ADD_CATEGORY_USERS, addCategoryUsersCommand);
 			addCommand(CategoryUserEvent.DELETE_CATEGORY_USERS, DeleteCategoryUserCommand);
-			addCommand(CategoryUserEvent.INHERIT_USERS_FROM_PARENT, inheritUsersCommand);
+			addCommand(CategoryUserEvent.INHERIT_USERS_FROM_PARENT, InheritUsersCommand);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_AUTO_UPDATE, SetCategoryUserUpdateMethod);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_MANUAL_UPDATE, SetCategoryUserUpdateMethod);
 			addCommand(CategoryUserEvent.SET_CATEGORY_USERS_PERMISSION_LEVEL, SetCategoryUsersPermLevel);

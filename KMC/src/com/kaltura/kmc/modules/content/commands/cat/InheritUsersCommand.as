@@ -15,7 +15,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.vo.KalturaCategoryUserListResponse;
 	import com.kaltura.vo.KalturaFilterPager;
 
-	public class aInheritUsersCommand extends KalturaCommand {
+	public class InheritUsersCommand extends KalturaCommand {
 		
 //		/**
 //		 * total number of userse on parent category 
