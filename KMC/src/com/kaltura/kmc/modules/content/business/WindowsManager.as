@@ -116,7 +116,6 @@ package com.kaltura.kmc.modules.content.business
 		 * adds a popup window to the screen
 		 * */
 		private function addPopup(currentPopUp:TitleWindow):void {
-//			currentPopUp.addEventListener(KmcHelpEvent.HELP, onHelp, false, 0, true);
 			// remember the new window
 			model.popups.push(currentPopUp);
 			if (model.popups.length == 1) {
@@ -137,7 +136,6 @@ package com.kaltura.kmc.modules.content.business
 		private function closePopup():void {
 			var popup:TitleWindow = model.topPopup;
 			if (popup) {
-//				popup.removeEventListener(KmcHelpEvent.HELP, onHelp, false);
 				PopUpManager.removePopUp(popup);
 				model.popups.pop();
 			}
