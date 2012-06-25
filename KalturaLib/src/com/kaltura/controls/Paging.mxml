@@ -43,10 +43,6 @@
 
 			// locale for end/start button 
 			public var prevString:String;
-//			public var nextString:String;
-
-//			public var firstString:String;
-//			public var lastString:String;
 
 			[Bindable]
 			public var rowsComboLabel:String;
@@ -55,8 +51,6 @@
 			private var _outOfText:String;
 			
 
-			[Bindable]
-			protected var _visible:Boolean = false;
 			private var _showFirstLast:Boolean = false;
 
 			/**
@@ -65,25 +59,12 @@
 			 */
 			public var disableSideButtons:Boolean = false; // TODO implement
 
-			/**
-			 * Total pages count
-			 */
-//			protected var _totalPageCount:int;
-
-			/**
-			 * Current page
-			 */
-//			protected var _selectedPage:int = 1;
 
 			/**
 			 * Total items count. The division of _totalCount with _pageSize will output the _totalPageCount
 			 */
 			protected var _totalCount:int;
 		
-			/**
-			 * Total items in page to view
-			 */
-//			protected var _pageSize:int = 10;
 		
 			/**
 			 * How many pages to show from each side of the selected page.
@@ -116,14 +97,11 @@
 				return _behavior.selectedPage;
 			}
 
-
 			public function set selectedPage(value:int):void {
 				_behavior.selectedPage = value;
 				onSelectedPageChanged();
 			}
 
-
-			
 			[Bindable]
 			/**
 			 * the total count of the entries that the pager represent
@@ -131,7 +109,6 @@
 			public function get totalCount():int {
 				return _totalCount;
 			}
-
 
 			public function set totalCount(value:int):void {
 				if (_totalCount == value)
@@ -159,7 +136,6 @@
 				_behavior.pageSize = currSize;
 				
 				setBehaviorListeners(true);
-//				_totalPageCount = Math.ceil(_totalCount / _pageSize);
 				
 				updatePaging();
 			}
@@ -201,10 +177,8 @@
 			public function set pageSize(value:int):void {
 				_behavior.pageSize = value;
 				kalturaFilterPager.pageSize = value;
-//				_totalPageCount = Math.ceil(_totalCount / _pageSize);
 				updatePaging();
 			}
-
 
 			/**
 			 * @copy _sideLinkCount
@@ -214,14 +188,12 @@
 				return _sideLinkCount;
 			}
 
-
 			/**
 			 * @copy _sideLinkCount
 			 */
 			public function set sideLinkCount(value:int):void {
 				_sideLinkCount = value;
 			}
-
 
 			/**
 			 * This is the function that builds the paging UI.
@@ -244,115 +216,7 @@
 				_behavior.createMiddleButtons();
 				_behavior.createNextButtons();
 				_behavior.createLabelIndicators();
-//				var min:int = 0; // = _selectedPage-_sideLinkCount;
-//				var max:int = _totalPageCount; // = _selectedPage+_sideLinkCount;
-//				// case end / begin 
-//				if (doubleEnd) {
-//					var total:int = _sideLinkCount * 2 + 1;
-//
-//					for (var j:uint = 1; j <= total; j++) {
-//						if (Math.abs(max - min) == total - 1)
-//							break;
-//
-//						if (_selectedPage + j <= _totalPageCount)
-//							max = _selectedPage + j;
-//						if (_selectedPage - j >= 1)
-//							min = _selectedPage - j;
-//					}
-//
-//					// handle end case of selected is 1
-//					if (_selectedPage == 1 && max < _totalPageCount && max < total)
-//						max = total;
-//				}
-//				else {
-//					min = _selectedPage - _sideLinkCount
-//					max = _selectedPage + _sideLinkCount
-//				}
-//
-//
-//
-//
-//				for (var i:int = min; i <= max; i++) {
-//					//paging must be positive and less the total page count
-//					if (i > 0 && i <= _totalPageCount) {
-//						var linkBtn:LinkButton = new LinkButton();
-//						linkBtn.toggle = true;
-//						linkBtn.label = i.toString();
-//						linkBtn.styleName = "pagerBtn";
-//
-//						if (i == _selectedPage) {
-//							linkBtn.selected = true;
-//							linkBtn.enabled = false;
-//						}
-//						else
-//							linkBtn.addEventListener(MouseEvent.CLICK, setNewPage);
-//
-//						pagingContainer.addChild(linkBtn);
-//					}
-//					_visible = true;
-//				}
-
-//				if (_selectedPage < _totalPageCount) {
-//					//add previous button
-//					var btn2:Button = new LinkButton();
-//					btn2.label = nextString;
-//					btn2.styleName = "pagerNextBtn";
-//					btn2.addEventListener(MouseEvent.CLICK, next);
-//					pagingContainer.addChild(btn2);
-//				}
-//				if (showFirstLast && _selectedPage < _totalPageCount) {
-//					btn = new LinkButton();
-//					btn.label = lastString;
-//					btn.styleName = "pagerLastBtn";
-//					btn.addEventListener(MouseEvent.CLICK, last);
-//					pagingContainer.addChild(btn);
-//				}
-				
-//				// out-of text:
-//				var firstItem:int = (kalturaFilterPager.pageIndex-1) * kalturaFilterPager.pageSize + 1;
-//				var lastItem:int = kalturaFilterPager.pageIndex * kalturaFilterPager.pageSize;
-//				if (lastItem > _totalCount) {
-//					lastItem = _totalCount;
-//				}
-//				if (_totalCount == 0) {
-//					firstItem = 0;
-//				}
-//				_outOfText = resourceManager.getString('windows', 'outOfText', [firstItem, lastItem, _totalCount]);
-
 			}
-
-
-			/**
-			 * User clicked on last button (number)
-			 * @mouseEvent
-			 */
-//			protected function last(event:MouseEvent):void {
-//				selectedPage = _totalPageCount;
-////				kalturaFilterPager.pageIndex = selectedPage;
-//				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
-//			}
-
-
-			/**
-			 * User clicked on first button (number)
-			 * @mouseEvent
-			 */
-//			protected function first(event:MouseEvent):void {
-//				selectedPage = 1;
-////				kalturaFilterPager.pageIndex = selectedPage;
-//				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
-//			}
-
-
-			/**
-			 * User clicked on a regular button (number)
-			 * @mouseEvent
-			 */
-//			protected function setNewPage(event:MouseEvent):void {
-//				selectedPage = int((event.target as LinkButton).label);
-////				kalturaFilterPager.pageIndex = selectedPage;
-//				dispatchEvent(new PagingEvent(PagingEvent.GET_PAGE_NUM));
-//			}
 
 
 			/**
@@ -366,14 +230,10 @@
 				kmcSO.flush();
 				selectedPage = 1;
 
-//				kalturaFilterPager.pageSize = pageSize;
-//				kalturaFilterPager.pageIndex = 1;
-
 				//only if not manually executed dispatch it
 				if (event)
 					dispatchEvent(new PagingEvent(PagingEvent.ROWS_IN_PAGE_CHANGE));
 			}
-
 
 			/**
 			 * user clicked on previous button
@@ -382,24 +242,9 @@
 			public function previous(event:MouseEvent = null):void {
 				if (_behavior.selectedPage > 1) {
 					selectedPage = _behavior.selectedPage - 1;
-//					kalturaFilterPager.pageIndex = selectedPage;
 					dispatchEvent(new PagingEvent(PagingEvent.PRV_PAGE));
 				}
 			}
-
-
-			/**
-			 * User clicked on next button
-			 * @mouseEvent
-			 */
-//			public function next(event:MouseEvent = null):void {
-//				if (_behavior.selectedPage < _totalPageCount) {
-//					selectedPage = _behavior.selectedPage + 1;
-////					kalturaFilterPager.pageIndex = selectedPage;
-//					dispatchEvent(new PagingEvent(PagingEvent.NEXT_PAGE));
-//				}
-//			}
-
 
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				// pager:
@@ -409,9 +254,6 @@
 				
 				// texts:
 				prevString = resourceManager.getString('windows', 'prv');
-//				nextString = resourceManager.getString('windows', 'next');
-//				firstString = resourceManager.getString('windows', 'first');
-//				lastString = resourceManager.getString('windows', 'last');
 				rowsComboLabel = resourceManager.getString('windows', 'rowsInPage');
 
 				// page size
