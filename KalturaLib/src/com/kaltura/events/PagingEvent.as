@@ -20,5 +20,9 @@ package com.kaltura.events
 		{
 			super(type, bubbles, cancelable);
 		}	
+		
+		override public function clone():Event{
+			return new PagingEvent(type);
+		}
 	}
 }

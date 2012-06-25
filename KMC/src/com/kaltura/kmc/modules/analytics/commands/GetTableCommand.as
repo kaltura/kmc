@@ -217,8 +217,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 			
 			_model.reportDataMap[_model.currentScreenState].tableDp = arrCol;
 			
-			if(_tableData.totalCount != int.MIN_VALUE)
-				_model.reportDataMap[_model.currentScreenState].totalCount = _tableData.totalCount;
+//			if(_tableData.totalCount != int.MIN_VALUE)
+			_model.reportDataMap[_model.currentScreenState].totalCount = _tableData.totalCount;
 			
 			if (_addTotals){
 				_model.selectedReportData.pager.pageSize = arrCol.length;
