@@ -88,6 +88,7 @@ package com.kaltura.edw.components.fltr.cat
 			if (value && _initialFilter) {
 				selectFromInitialStartWithRoot();
 			}
+			disableItems();
 		}
 		
 		
@@ -106,9 +107,7 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		public function set disabledCategories(value:Array):void {
 			_disabledCategories = value;
-			if (categories) {
-				disableItems();
-			}
+			disableItems();
 		}
 
 		
@@ -116,7 +115,7 @@ package com.kaltura.edw.components.fltr.cat
 		 * mark items that should be disabled as disabled in the dataprovider 
 		 */		
 		private function disableItems(e:CollectionEvent=null):void {
-			if (!_disabledCategories) {
+			if (!_disabledCategories || !categories) {
 				return;
 			}
 			var kCat:CategoryVO;
