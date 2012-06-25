@@ -92,9 +92,11 @@ package com.kaltura.autocomplete.controllers
 		private function userLabelFunction(item:Object):String{
 			var user:KalturaUser = item as KalturaUser;
 			
-			var labelText:String = user.id;
+			var labelText:String;
 			if (user.screenName != null && user.screenName != ""){
-				labelText += " (" + user.screenName + ")";
+				labelText = user.screenName + " (" + user.id + ")";
+			} else {
+				labelText = user.id;
 			}
 			
 			var searchStr:String = _autoComp.searchText;

@@ -209,7 +209,7 @@ package com.kaltura.autocomplete.itemRenderers.selection.base
 			setText(AutoComplete.getLabel(_item, _labelField));
 		}
 		
-		private function setText( value:String ):void
+		protected function setText( value:String ):void
 		{
 			if (_text != value)
 			{
