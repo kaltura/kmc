@@ -180,6 +180,14 @@ package com.kaltura.kmc.business
 		}
 		
 		
+		/**
+		 * enable/disable header tabs
+		 * @param enable	if true enable, otherwise disable  
+		 */
+		public static function maskHeader(enable:Boolean):void {
+			KedJSGate.maskHeader(enable);
+		}
+		
 		public static function alerti(str:String):void {
 			ExternalInterface.call("alert", str);
 		}

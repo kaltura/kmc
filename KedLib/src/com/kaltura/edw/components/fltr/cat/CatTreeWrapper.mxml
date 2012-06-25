@@ -13,6 +13,7 @@
 		<![CDATA[
 			import com.kaltura.KalturaClient;
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.business.KedJSGate;
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.IFilterComponent;
 			import com.kaltura.edw.components.fltr.cat.events.CatTreePrefsEvent;
@@ -194,6 +195,7 @@
 				_prefsWin.addEventListener(CloseEvent.CLOSE, handlePrefsWin);
 				PopUpManager.addPopUp(_prefsWin, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(_prefsWin);
+				KedJSGate.maskHeader(false);
 			}
 
 
@@ -211,6 +213,7 @@
 					_prefsWin.removeEventListener(CatTreePrefsEvent.PREFS_CHANGED, handlePrefsWin);
 					_prefsWin.removeEventListener(CloseEvent.CLOSE, handlePrefsWin);
 					PopUpManager.removePopUp(_prefsWin);
+					KedJSGate.maskHeader(true);
 					_prefsWin = null
 				}
 			}

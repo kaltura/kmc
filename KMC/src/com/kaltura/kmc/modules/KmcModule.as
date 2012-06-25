@@ -1,8 +1,9 @@
 package com.kaltura.kmc.modules {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.uiConf.UiConfGet;
-	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.edw.business.permissions.PermissionManager;
+	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.JSGate;
 	import com.kaltura.kmc.events.KmcErrorEvent;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
 	import com.kaltura.kmc.utils.XMLUtils;
@@ -345,7 +346,8 @@ package com.kaltura.kmc.modules {
 		 * @param enable	if true enables, if false disables
 		 */
 		protected function enableHtmlTabs(enable:Boolean):void {
-			ExternalInterface.call("kmc.utils.maskHeader", enable);
+//			ExternalInterface.call("kmc.utils.maskHeader", enable);
+			JSGate.maskHeader(enable);
 		}
 		
 		

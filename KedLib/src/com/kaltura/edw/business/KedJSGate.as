@@ -43,5 +43,13 @@ package com.kaltura.edw.business
 		public static function expired():void {
 			ExternalInterface.call("kmc.functions.expired");
 		}
+		
+		/**
+		 * enable/disable header tabs
+		 * @param enable	if true enable, otherwise disable  
+		 */
+		public static function maskHeader(enable:Boolean):void {
+			ExternalInterface.call("kmc.utils.maskHeader", enable);
+		}
 	}
 }
