@@ -38,7 +38,7 @@
 			public var model:RolesModel;
 			[Bindable]
 			public var isLoading:Boolean;
-
+			
 			/**
 			 * a popup window with role details
 			 * */
@@ -51,18 +51,18 @@
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				BindingUtils.bindSetter(onDrilldownStateChange, model, "drilldownMode");
 				BindingUtils.bindSetter(onNewRoleChanged, model, "newRole");
-				BindingUtils.bindSetter(onRolesListChange, model, "roles");
+				//				BindingUtils.bindSetter(onRolesListChange, model, "roles");
 				PermissionManager.getInstance().applyAllAttributes(this,id);
 			}
 			
-			/**
-			 * if a user drilldown window is opened, update its roles list.
-			 * */
-			protected function onRolesListChange(value:ArrayCollection):void {
-				tableHBox.height = (table.rowHeight * 10) + table.headerHeight + 10;
-				superTanker.height = tableHBox.height + paging.height;
-			}
-
+			//			/**
+			//			 * if a user drilldown window is opened, update its roles list.
+			//			 * */
+			//			protected function onRolesListChange(value:ArrayCollection):void {
+			//				tableHBox.height = (table.rowHeight * 10) + table.headerHeight + 10;
+			//				superTanker.height = tableHBox.height + paging.height;
+			//			}
+			
 			private function onNavigate(event:KmcNavigationEvent):void
 			{
 				// close drilldown 
@@ -86,17 +86,6 @@
 			 * dispatch Cairngorm event to raise a list roles command 
 			 * */
 			protected function listRoles(pageNumber:int):void {
-				// set table size
-				if (paging) {
-					if (paging.pageSize == 10) {
-						superTanker.height = (table.rowHeight * 10) + table.headerHeight + paging.height;
-						table.rowCount = 10;
-					}
-					else {
-						superTanker.percentHeight = 100;
-						table.percentHeight = 100;
-					}
-				}
 				// list
 				var kfp:KalturaFilterPager = new KalturaFilterPager();
 				if (paging && paging.kalturaFilterPager.pageSize != int.MIN_VALUE) {
@@ -192,17 +181,17 @@
 				rd.addEventListener(RoleDrilldown.SAVE, saveRoleData);
 				rd.addEventListener(RoleDrilldown.CLOSE, closeRoleDrilldown);
 				rd.addEventListener(KmcNavigationEvent.NAVIGATE, onNavigate);
-//				rd.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
+				//				rd.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
 				PopUpManager.addPopUp(rd, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(rd);
 				dispatchEvent(new GeneralEvent("enableHeader", false));
 				return rd;
 			}
 			
-//			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
-//			{
-//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-//			}
+			//			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
+			//			{
+			//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+			//			}
 			
 			/**
 			 * show the "add user" dialog
@@ -280,19 +269,19 @@
 				}
 			}
 			
-
+			
 		]]>
 	</mx:Script>
-		
-
+	
+	
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_tab')}" styleName="filterTitleHeader"/>
-
+	
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'roles_page_description')}" styleName="pageDescription"/>
-
-	<mx:HBox width="100%" height="100%" id="superTanker"  verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	
+	<mx:HBox width="100%" height="100%" id="superTanker" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 		<mx:VBox id="tableContainer" width="100%" styleName="noVGap" height="100%">
-			<mx:HBox id="tableHBox" width="100%" >
-				<view:RolesTable id="table" height="100%" width="100%" dataProvider="{model.roles}" rowCount="10"
+			<mx:HBox id="tableHBox" width="100%" height="100%">
+				<view:RolesTable id="table" height="100%" width="100%" dataProvider="{model.roles}" 
 								 drillDown="openEditRoleDialog(event)" deleteRole="deleteRole(event)" 
 								 duplicateRole="duplicateRole(event)" selectRole="setSelectedRole(event)" sortableColumns="{false}"/>
 			</mx:HBox>

@@ -35,10 +35,10 @@
 			import mx.managers.PopUpManager;
 			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
-
+			
 			[Bindable]
 			public var userInfo:UserVO;
-
+			
 			private var _isLoading:Boolean;
 			
 			[Bindable]
@@ -52,13 +52,13 @@
 			 * roles related part of the main model
 			 * */
 			public var rolesModel:RolesModel;
-
+			
 			
 			/**
 			 * a popup window with user details
 			 * */
 			protected var _userDrilldown:UserDrilldown;
-
+			
 			
 			/**
 			 * a popup window with user details
@@ -71,18 +71,18 @@
 			 * used to tell if data should be reloaded when closing user drilldown.
 			 * */
 			protected var _needToRefreshData:Boolean;
-
+			
 			[Bindable]
 			public function get isLoading():Boolean
 			{
 				return _isLoading;
 			}
-
+			
 			public function set isLoading(value:Boolean):void
 			{
 				_isLoading = value;
 			}
-
+			
 			/**
 			 * refresh subtab data
 			 * */
@@ -112,7 +112,7 @@
 				ce.dispatch();
 			}
 			
-			 
+			
 			/**
 			 * bind setters and apply permissions 
 			 * */
@@ -169,9 +169,6 @@
 				if (_userDrilldown) {
 					_userDrilldown.roles = value;
 				}
-
-				tableHBox.height = (table.rowHeight * 10) + table.headerHeight + 10;
-				superTanker.height = tableHBox.height + paging.height;
 			}
 			
 			/**
@@ -247,16 +244,16 @@
 				var ce:ListItemsEvent = new ListItemsEvent(ListItemsEvent.LIST_USERS, model.usersFilter, kfp);
 				ce.dispatch();
 			}
-
-
+			
+			
 			/**
 			 * link to a .corp up-sell link
 			 * */
 			protected function getMoreUsers(event:MouseEvent):void {
 				navigateToURL(new URLRequest(model.usersUpgradeLink),"_blank"); 
 			}
-
-
+			
+			
 			/**
 			 * load users according to paging component value
 			 * */
@@ -367,17 +364,17 @@
 				ud.addEventListener(UserDrilldown.SAVE, saveUserData);
 				ud.addEventListener(UserDrilldown.CLOSE, closeUserDrilldown);
 				ud.addEventListener(UserDrilldown.ADD_ROLE, openAddRoleDialog);
-//				ud.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
+				//				ud.addEventListener(KmcHelpEvent.HELP, onHelpClickedInDrilldown);
 				PopUpManager.addPopUp(ud, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(ud);
 				return ud;
 			}
 			
-//			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
-//			{
-//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
-//			}
-
+			//			protected function onHelpClickedInDrilldown (e : KmcHelpEvent) : void
+			//			{
+			//				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, e.anchor));
+			//			}
+			
 			/**
 			 * show the "add user" dialog
 			 * */
@@ -399,8 +396,8 @@
 				// analytics:
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_ADD);
 			}
-
-
+			
+			
 			/**
 			 * show the "edit user" dialog
 			 * */
@@ -413,8 +410,8 @@
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_EDIT);
 			}
 			
-
-
+			
+			
 			/**
 			 * delete selected user, refresh quota data.
 			 * */
@@ -427,8 +424,8 @@
 				// analytics:
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.ADMIN_USER_DELETE);
 			}
-
-
+			
+			
 			/**
 			 * toggle between blocked / active stauses of the selected user 
 			 * */
@@ -442,8 +439,8 @@
 				var ce:UserEvent = new UserEvent(UserEvent.TOGGLE_USER_STATUS, model.selectedUser);
 				ce.dispatch();
 			}
-
-
+			
+			
 			/**
 			 * select a user
 			 * */
@@ -451,26 +448,26 @@
 				var ce:UserEvent = new UserEvent(UserEvent.SELECT_USER, table.selectedUser);
 				ce.dispatch();
 			}
-
+			
 		]]>
 	</mx:Script>
-
+	
 	<mx:Label text="{ResourceManager.getInstance().getString('admin', 'authorized_users')}" styleName="filterTitleHeader"/>
-
+	
 	<mx:VBox styleName="usersTitleHbox" >
 		<mx:Text text="{ResourceManager.getInstance().getString('admin', 'usersPageDesc')}"/>
 		<mx:HBox>
 			<mx:Label id="usersQuota" />
 			<mx:Text htmlText="{ResourceManager.getInstance().getString('admin', 'upgrade',[model.usersUpgradeLink])}" 
-				   id="usersQuotaBtn" />
+					 id="usersQuotaBtn" />
 		</mx:HBox>
 	</mx:VBox>
-
+	
 	<mx:HBox width="100%" height="100%" id="superTanker" verticalScrollPolicy="off" horizontalScrollPolicy="off">
 		<mx:VBox id="tableContainer" width="100%" height="100%" styleName="entriesTablePagerAndButtonsVbox">
-			<mx:HBox id="tableHBox" width="100%" >
+			<mx:HBox id="tableHBox" width="100%" height="100%" >
 				<view:UsersTable id="table" width="100%" height="100%" dataProvider="{model.users}" roles="{rolesModel.roles}" 
-								 rowCount="10" drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
+								 drillDown="openEditUserDialog(event)" deleteUser="deleteUser(event)" 
 								 toggleBlock="toggleUserStatus(event)" selectUser="setSelectedUser(event)" 
 								 crippledUsersIds="{model.crippledUsers}" sortableColumns="false"/>
 				
@@ -480,7 +477,7 @@
 							 showRowsInPage="{true}" totalCount="{model.totalUsers}" />
 			
 		</mx:VBox>
-
+		
 		<mx:VBox id="actionButtonsContainer" styleName="blueBox" height="100%" horizontalAlign="left">
 			<mx:Button id="addBtn" label="{resourceManager.getString('admin','add_user')}" styleName="addPlst" 
 					   width="100%" height="30" buttonMode="{addBtn.enabled}" click="openAddUserDialog(event)"/>
