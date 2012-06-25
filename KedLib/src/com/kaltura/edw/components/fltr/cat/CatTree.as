@@ -404,7 +404,7 @@ package com.kaltura.edw.components.fltr.cat
 					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
 						setCatSelectionStatus(cat, TriStateCheckBox.UNSELECTED); 
-						delete _selectedCategories[cat.id];
+						delete _selectedCategories[catid];
 						removeFromCurrentFilter(catid);
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 						remarkParents(cat);
@@ -413,7 +413,7 @@ package com.kaltura.edw.components.fltr.cat
 					else {
 						// otherwise, add the category
 						setCatSelectionStatus(cat, TriStateCheckBox.SELECTED); 
-						_selectedCategories[cat.id] = cat;
+						_selectedCategories[catid] = cat;
 						addToCurrentFilter(catid);		
 						setChildrenSelection(cat, TriStateCheckBox.SELECTED, true);
 						remarkParents(cat);
@@ -509,6 +509,7 @@ package com.kaltura.edw.components.fltr.cat
 					// if child is listed as selected, remove it.
 					if (_selectedCategories[cat.id]) {
 						delete _selectedCategories[cat.id];
+						removeFromCurrentFilter(cat.id.toString());
 						dispatchChange(cat, FilterComponentEvent.EVENT_KIND_REMOVE);
 					}
 					// disable child
@@ -519,6 +520,7 @@ package com.kaltura.edw.components.fltr.cat
 					if (_selectedCategories[cat.id]) {
 						// this is only when removing all selection
 						delete _selectedCategories[cat.id];
+						removeFromCurrentFilter(cat.id.toString());
 						dispatchChange(cat, FilterComponentEvent.EVENT_KIND_REMOVE);
 					}
 					// enable child
