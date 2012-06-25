@@ -53,6 +53,10 @@ package com.kaltura.vo
 		 **/
 		public var roleIdEqual : String = null;
 
+		/**
+		 **/
+		public var firstNameOrLastNameStartsWith : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -62,6 +66,7 @@ package com.kaltura.vo
 			arr.push('idIn');
 			arr.push('loginEnabledEqual');
 			arr.push('roleIdEqual');
+			arr.push('firstNameOrLastNameStartsWith');
 			return arr;
 		}
 

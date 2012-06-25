@@ -3,18 +3,12 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryGet;
-	import com.kaltura.commands.categoryUser.CategoryUserAdd;
-	import com.kaltura.commands.categoryUser.CategoryUserCopyFromCaregory;
-	import com.kaltura.commands.categoryUser.CategoryUserList;
+	import com.kaltura.commands.category.CategoryUserCopyFromCategory;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.net.KalturaCall;
 	import com.kaltura.vo.KalturaCategory;
-	import com.kaltura.vo.KalturaCategoryUser;
-	import com.kaltura.vo.KalturaCategoryUserFilter;
-	import com.kaltura.vo.KalturaCategoryUserListResponse;
-	import com.kaltura.vo.KalturaFilterPager;
 	
 	public class InheritUsersCommand extends KalturaCommand {
 		
@@ -23,7 +17,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			_model.increaseLoadCounter();
 			var catid:int = (event.data as KalturaCategory).id;
 			var mr:MultiRequest = new MultiRequest();
-			var call:KalturaCall = new CategoryUserCopyFromCaregory(catid);
+			var call:KalturaCall = new CategoryUserCopyFromCategory(catid);
 			mr.addAction(call);
 			call = new CategoryGet(catid);
 			mr.addAction(call);

@@ -37,7 +37,7 @@ package com.kaltura.vo
 		public var categoryId : int = int.MIN_VALUE;
 
 		/**
-		 * User id
+		 * entry id
 		 * 
 		 **/
 		public var entryId : String = null;

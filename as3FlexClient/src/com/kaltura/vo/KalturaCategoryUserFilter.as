@@ -32,10 +32,18 @@ package com.kaltura.vo
 	[Bindable]
 	public dynamic class KalturaCategoryUserFilter extends KalturaCategoryUserBaseFilter
 	{
+		/**
+		 * Return the list of categoryUser that are not inherited from parent category - only the direct categoryUsers.
+		 * 
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var categoryDirectMembers : Boolean;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
 			arr = super.getUpdateableParamKeys();
+			arr.push('categoryDirectMembers');
 			return arr;
 		}
 

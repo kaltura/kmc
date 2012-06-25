@@ -31,7 +31,7 @@ package com.kaltura.commands.categoryEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Delete CategoryUser
+	 * Delete CategoryEntry
 	 * 
 	 **/
 	public class CategoryEntryDelete extends KalturaCall

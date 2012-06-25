@@ -31,7 +31,7 @@ package com.kaltura.commands.category
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Unlock categories - this is only for debuging - and should not be uploaded in flacon version
+	 * Unlock categories
 	 * 
 	 **/
 	public class CategoryUnlockCategories extends KalturaCall

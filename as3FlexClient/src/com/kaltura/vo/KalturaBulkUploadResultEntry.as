@@ -113,6 +113,10 @@ package com.kaltura.vo
 		 **/
 		public var entitledUsersPublish : String = null;
 
+		/**
+		 **/
+		public var ownerId : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -137,6 +141,7 @@ package com.kaltura.vo
 			arr.push('creatorId');
 			arr.push('entitledUsersEdit');
 			arr.push('entitledUsersPublish');
+			arr.push('ownerId');
 			return arr;
 		}
 

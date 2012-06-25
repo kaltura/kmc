@@ -27,24 +27,24 @@
 // ===================================================================================================
 package com.kaltura.commands.categoryUser
 {
-	import com.kaltura.delegates.categoryUser.CategoryUserCopyFromCaregoryDelegate;
+	import com.kaltura.delegates.categoryUser.CategoryUserCopyFromCategoryDelegate;
 	import com.kaltura.net.KalturaCall;
 
 	/**
 	 * Copy all memeber from parent category
 	 * 
 	 **/
-	public class CategoryUserCopyFromCaregory extends KalturaCall
+	public class CategoryUserCopyFromCategory extends KalturaCall
 	{
 		public var filterFields : String;
 		
 		/**
 		 * @param categoryId int
 		 **/
-		public function CategoryUserCopyFromCaregory( categoryId : int )
+		public function CategoryUserCopyFromCategory( categoryId : int )
 		{
 			service= 'categoryuser';
-			action= 'copyFromCaregory';
+			action= 'copyFromCategory';
 
 			var keyArr : Array = new Array();
 			var valueArr : Array = new Array();
@@ -57,7 +57,7 @@ package com.kaltura.commands.categoryUser
 		override public function execute() : void
 		{
 			setRequestArgument('filterFields', filterFields);
-			delegate = new CategoryUserCopyFromCaregoryDelegate( this , config );
+			delegate = new CategoryUserCopyFromCategoryDelegate( this , config );
 		}
 	}
 }

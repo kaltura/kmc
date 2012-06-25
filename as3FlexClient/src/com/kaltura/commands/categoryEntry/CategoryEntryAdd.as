@@ -32,7 +32,7 @@ package com.kaltura.commands.categoryEntry
 	import com.kaltura.net.KalturaCall;
 
 	/**
-	 * Add new CategoryUser
+	 * Add new CategoryEntry
 	 * 
 	 **/
 	public class CategoryEntryAdd extends KalturaCall

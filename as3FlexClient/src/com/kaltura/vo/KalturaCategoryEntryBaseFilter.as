@@ -46,6 +46,10 @@ package com.kaltura.vo
 
 		/**
 		 **/
+		public var entryIdIn : String = null;
+
+		/**
+		 **/
 		public var createdAtGreaterThanOrEqual : int = int.MIN_VALUE;
 
 		/**
@@ -72,6 +76,7 @@ package com.kaltura.vo
 			arr.push('categoryIdEqual');
 			arr.push('categoryIdIn');
 			arr.push('entryIdEqual');
+			arr.push('entryIdIn');
 			arr.push('createdAtGreaterThanOrEqual');
 			arr.push('createdAtLessThanOrEqual');
 			arr.push('categoryFullIdsStartsWith');

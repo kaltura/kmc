@@ -57,6 +57,8 @@ package com.kaltura.vo
 		public var fullNameStartsWithIn : String = null;
 
 		/**
+		 * not includes the category itself (only sub categories)
+		 * 
 		 **/
 		public var ancestorIdIn : String = null;
 

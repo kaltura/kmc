@@ -32,9 +32,9 @@ package com.kaltura.delegates.categoryUser
 	import com.kaltura.delegates.WebDelegateBase;
 	import flash.utils.getDefinitionByName;
 
-	public class CategoryUserCopyFromCaregoryDelegate extends WebDelegateBase
+	public class CategoryUserCopyFromCategoryDelegate extends WebDelegateBase
 	{
-		public function CategoryUserCopyFromCaregoryDelegate(call:KalturaCall, config:KalturaConfig)
+		public function CategoryUserCopyFromCategoryDelegate(call:KalturaCall, config:KalturaConfig)
 		{
 			super(call, config);
 		}
