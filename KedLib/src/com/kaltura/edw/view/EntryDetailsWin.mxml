@@ -577,9 +577,8 @@
 			private function newEntryQuestionHandler(event:CloseEvent):void {
 				if (event.detail == Alert.YES) {
 					submitChanges(true);
-					//a new entry was added so we should refresh
-					/* (entryDetailsModel.getDataPack(ContextDataPack) as ContextDataPack).dispatcher. */
-					dispatchEvent(new KedDataEvent(KedDataEvent.ENTRY_UPDATED));
+//					//a new entry was added so we should refresh
+//					dispatchEvent(new KedDataEvent(KedDataEvent.ENTRY_UPDATED));
 				}
 				else {
 					// delete the entry we created
@@ -595,11 +594,13 @@
 			 * */
 			private function onClose():void {
 				if (isNewEntry) {
-					Alert.show(resourceManager.getString('drilldown', 'saveNoMediaEntryQ'), resourceManager.getString('drilldown', 'save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
+					Alert.show(resourceManager.getString('drilldown', 'saveNoMediaEntryQ'), 
+						resourceManager.getString('drilldown', 'save'), Alert.YES | Alert.NO, null, newEntryQuestionHandler);
 				}
 				else if (isDataChanged()) {
 					// discard changes?
-					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
+					Alert.show(resourceManager.getString('drilldown', 'undoEntryDetails'), 
+						resourceManager.getString('drilldown', 'undoEntryDetailsTitle'), Alert.YES | Alert.NO, null, removeMe);
 				}
 				else {
 					// remove window
