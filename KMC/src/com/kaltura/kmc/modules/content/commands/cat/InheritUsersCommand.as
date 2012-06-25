@@ -3,7 +3,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryGet;
-	import com.kaltura.commands.category.CategoryUserCopyFromCategory;
+	import com.kaltura.commands.categoryUser.CategoryUserCopyFromCategory;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
