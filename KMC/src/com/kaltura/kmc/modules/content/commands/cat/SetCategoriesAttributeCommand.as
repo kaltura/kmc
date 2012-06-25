@@ -63,6 +63,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 					Alert.show(ResourceManager.getInstance().getString('cms', 'catOwnSuccess'));
 				}
 			}
+			// reload categories for table (also if no update, so values will be reset)
+			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+			getCategoriesList.dispatch();
 		}
 	}
 }
