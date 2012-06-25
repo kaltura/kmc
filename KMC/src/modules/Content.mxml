@@ -140,7 +140,11 @@
 				}
 				// show the tab
 				_initialTab = subtab;
+				
 				if (_ready) {
+					if (subtab == contentView.selectedChild.id) {
+						return;
+					}
 					handleEntryId();
 					_model.filterModel.loadingRequired = true;
 					(_model.entryDetailsModel.getDataPack(FlavorsDataPack) as FlavorsDataPack).conversionProfileLoaded = false;
@@ -150,7 +154,10 @@
 				}
 			}
 
-
+			
+			/**
+			 * postpone createChildren until after start()
+			 * */
 			override protected function createChildren():void {
 				if (_ready) {
 					super.createChildren();
@@ -257,12 +264,6 @@
 			 * entry details data loaded (triggered by command)
 			 * */
 			public function onRequestedDataLoaded():void {
-				// init entry details window
-//				var popup:TitleWindow = _model.topPopup;
-
-//				if (popup && popup is EntryDetailsWin) {
-//					(popup as EntryDetailsWin).init();
-//				}
 			}
 
 
@@ -534,9 +535,11 @@
 					setSelectionValueToButton(contentView.selectedIndex, true);
 				}
 				// init selected
-				(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
-				JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
-				
+				if (selectedIndex == 0) {
+					// otherwise the "change" event will trigger these
+					(contentView.selectedChild as IContentPanel).init(_model.attic.kmef);
+					JSGate.writeUrlHash(NAME, contentView.selectedChild.id);
+				}
 			}
 
 
