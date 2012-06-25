@@ -24,13 +24,13 @@ package com.kaltura.edw.components.fltr.cat
 	import mx.events.FlexEvent;
 	import mx.events.PropertyChangeEvent;
 	import mx.events.TreeEvent;
-
+	
 	
 	/**
 	 * dispatched when the value of the component have changed 
 	 */	
 	[Event(name="valueChange", type="com.kaltura.edw.components.fltr.FilterComponentEvent")]
-
+	
 	
 	/**
 	 * The category tree component is used to browse categories 
@@ -38,7 +38,7 @@ package com.kaltura.edw.components.fltr.cat
 	 * 
 	 */
 	public class CatTree extends Tree implements IFilterComponent {
- 
+		
 		/**
 		 * allow multiple instances use the same data provider by using different attributes 
 		 * to mark selection in tree (entriesSelected, moderationSelected, etc).
@@ -63,14 +63,14 @@ package com.kaltura.edw.components.fltr.cat
 		// -----------------------
 		
 		private var _chunkedData:Boolean = true;
-
+		
 		/**
 		 * a flag indicating if data load should be by levels or complete tree 
 		 */
 		public function get chunkedData():Boolean {
 			return _chunkedData;
 		}
-
+		
 		/**
 		 * @private
 		 */
@@ -82,11 +82,12 @@ package com.kaltura.edw.components.fltr.cat
 		// -----------------------
 		// Data
 		// -----------------------		
-
+		
 		override public function set dataProvider(value:Object):void {
 			super.dataProvider = value;
-			if (value && _initialFilter) {
-				selectFromInitialStartWithRoot();
+			if (value && _currentFilter) {
+				deselectAllCategories();
+				remarkPreviouslySelected();
 			}
 			disableItems();
 		}
@@ -109,7 +110,7 @@ package com.kaltura.edw.components.fltr.cat
 			_disabledCategories = value;
 			disableItems();
 		}
-
+		
 		
 		/**
 		 * mark items that should be disabled as disabled in the dataprovider 
@@ -124,7 +125,7 @@ package com.kaltura.edw.components.fltr.cat
 			
 			for (var i:int=0; i<_disabledCategories.length; i++) {
 				disCat = _disabledCategories[i] as KalturaCategory;
-			
+				
 				if (categories.containsKey(disCat.id.toString())) {
 					var catvo:CategoryVO = categories.getValue(disCat.id.toString()) as CategoryVO;
 					catvo.enabled = false;
@@ -167,6 +168,12 @@ package com.kaltura.edw.components.fltr.cat
 		 */		
 		protected var _initialFilter:String = '';
 		
+		/**
+		 * string representation of current filter (catids), 
+		 * from both seletedCategories and initialFilter 
+		 */		
+		protected var _currentFilter:String = '';
+		
 		
 		
 		public function CatTree() {
@@ -202,8 +209,8 @@ package com.kaltura.edw.components.fltr.cat
 			else {
 				// the part of the tree that holds this category was not yet loaded
 				if (_initialFilter.indexOf(catid) == -1) {
-					// category not yet selected)
-					_initialFilter = catid + "," + _initialFilter;
+					// category not yet selected
+					addToCurrentFilter(catid);
 				}
 			}
 		}
@@ -224,7 +231,7 @@ package com.kaltura.edw.components.fltr.cat
 			// select IDataManager
 			var isNewManager:Boolean;
 			if (_chunkedData) {
- 				if (_dataManager) {
+				if (_dataManager) {
 					if (!(_dataManager is ChunkedDataManager)) {
 						_dataManager.destroy();
 						_dataManager.removeEventListener(CategoriesDataManagerEvent.REOPEN_BRANCH, handleReopenBranch);
@@ -286,7 +293,7 @@ package com.kaltura.edw.components.fltr.cat
 			expandItem(catvo, false);
 			expandItem(catvo, true);
 			// mark cats from initFilter
-			selectFromInitial(catvo);
+			_initialFilter = selectFromInitial(catvo, _initialFilter);
 			disableItems();
 		}
 		
@@ -311,7 +318,7 @@ package com.kaltura.edw.components.fltr.cat
 			handleSelectionChange(e.target.data as CategoryVO);
 		}
 		
-
+		
 		/**
 		 * set all categories as un-selected 
 		 */
@@ -343,7 +350,7 @@ package com.kaltura.edw.components.fltr.cat
 		 * set selected categories according to selection mode
 		 * @param cat	category subject of change
 		 */
-		private function handleSelectionChange(cat:CategoryVO):void {
+		private function handleSelectionChange(cat:CategoryVO, dispatch:Boolean = true):void {
 			var eventKind:String;
 			var catid:String = cat.id.toString();
 			// set value according to mode 
@@ -355,6 +362,7 @@ package com.kaltura.edw.components.fltr.cat
 					if (catid != "0") {
 						// cannot "remember" root category
 						_selectedCategories[catid] = cat;
+						_currentFilter = catid;
 						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
 					}
 					break;
@@ -365,19 +373,20 @@ package com.kaltura.edw.components.fltr.cat
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						_initialFilter = '';
+						_currentFilter = '';
 						deselectAllCategories();
 					}
 					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
 						delete _selectedCategories[catid];
-						_initialFilter = _initialFilter.replace(catid + ',', '');
+						removeFromCurrentFilter(catid);
 						setCatSelectionStatus(cat, CatSelectionStatus.UNSELECTED);
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
 					}
 					else {
 						// otherwise, add the category
 						_selectedCategories[catid] = cat;
-						_initialFilter = catid + "," + _initialFilter;
+						addToCurrentFilter(catid);
 						setCatSelectionStatus(cat, CatSelectionStatus.SELECTED);
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
 					}
@@ -389,13 +398,14 @@ package com.kaltura.edw.components.fltr.cat
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE_ALL;
 						// deselect previous
 						_initialFilter = '';
+						_currentFilter = '';
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 					}
 					else if (_selectedCategories[catid]) {
 						// if there is a value, it means it was selected before
 						setCatSelectionStatus(cat, TriStateCheckBox.UNSELECTED); 
 						delete _selectedCategories[cat.id];
-						_initialFilter = _initialFilter.replace(catid + ',', '');
+						removeFromCurrentFilter(catid);
 						setChildrenSelection(cat, TriStateCheckBox.UNSELECTED, true);
 						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_REMOVE;
@@ -404,7 +414,7 @@ package com.kaltura.edw.components.fltr.cat
 						// otherwise, add the category
 						setCatSelectionStatus(cat, TriStateCheckBox.SELECTED); 
 						_selectedCategories[cat.id] = cat;
-						_initialFilter = catid + "," + _initialFilter;		
+						addToCurrentFilter(catid);		
 						setChildrenSelection(cat, TriStateCheckBox.SELECTED, true);
 						remarkParents(cat);
 						eventKind = FilterComponentEvent.EVENT_KIND_ADD;
@@ -414,9 +424,30 @@ package com.kaltura.edw.components.fltr.cat
 			
 			
 			// indicators: no need to handle single select state (doesn't exist in filter)
-			dispatchChange(cat, eventKind);
+			if (dispatch) {
+				dispatchChange(cat, eventKind);
+			}
 		}
 		
+		
+		/**
+		 * remove an item from the current filter data 
+		 * @param catid	id of category to remove
+		 */		
+		private function removeFromCurrentFilter(catid:String):void {
+			_currentFilter = _currentFilter.replace(catid + ',', '');
+		}
+		
+		
+		/**
+		 * add an item to the current filter data
+		 * @param catid	id of category to add
+		 * */
+		private function addToCurrentFilter(catid:String):void {
+			if (_currentFilter.indexOf(catid + ",") == -1) {
+				_currentFilter = catid + "," + _currentFilter;
+			}
+		}
 		
 		/**
 		 * dispatch the filter valueChange event 
@@ -431,7 +462,7 @@ package com.kaltura.edw.components.fltr.cat
 			ivo.value = cat.id;
 			dispatchEvent(new FilterComponentEvent(FilterComponentEvent.VALUE_CHANGE, ivo, eventKind));
 		}
-
+		
 		
 		/**
 		 * calculate ancestors selection status according to siblings
@@ -528,18 +559,19 @@ package com.kaltura.edw.components.fltr.cat
 			
 			// save value (assume it was string..)
 			_initialFilter = value.toString();
+			_currentFilter = value.toString();
 			
 			if ((dataProvider as ArrayCollection).length > 0) {
-				selectFromInitialStartWithRoot();
+				remarkPreviouslySelected();
 			}
 		}
 		
-		private function selectFromInitialStartWithRoot():void {
+		private function remarkPreviouslySelected():void {
 			// create a dummy root category
 			var dummyRoot:CategoryVO = new CategoryVO(0, "root", new KalturaCategory());
 			dummyRoot.children = dataProvider as ArrayCollection;
 			// start marking
-			selectFromInitial(dummyRoot);
+			selectFromInitial(dummyRoot, _currentFilter, true);
 		}
 		
 		/**
@@ -548,64 +580,50 @@ package com.kaltura.edw.components.fltr.cat
 		 * @param selectedIds	ids to mark
 		 * @return 	ids left to mark after removing the "used" ones
 		 */		
-		private function selectFromInitialRec(headCat:CategoryVO, selectedIds:ArrayCollection):ArrayCollection {
+		private function selectFromInitialRec(headCat:CategoryVO, selectedIds:ArrayCollection, silent:Boolean):ArrayCollection {
 			// add from new value:
 			for each (var cat:CategoryVO in headCat.children) {
 				if (selectedIds.contains(cat.id.toString())) {
-					handleSelectionChange(cat);
+					handleSelectionChange(cat, !silent);
 					
 					// remove from initial filter
 					var i:int = selectedIds.getItemIndex(cat.id.toString());
 					selectedIds.removeItemAt(i);
 				}
-				selectedIds = selectFromInitialRec(cat, selectedIds);
+				selectedIds = selectFromInitialRec(cat, selectedIds, silent);
 			}
 			return selectedIds;
 		}
 		
+		
 		/**
-		 * mark categories that appear in the initial filter 
+		 * mark categories that appear in the initial filter on the given branch
 		 * @param headCat
-		 * 
+		 * @param idsToMark
 		 */		
-		private function selectFromInitial(headCat:CategoryVO):void {
-			if (!_initialFilter) { return; }
-			var selectedIds:ArrayCollection = new ArrayCollection(_initialFilter.split(","));
-			selectedIds = selectFromInitialRec(headCat, selectedIds);
-			_initialFilter = selectedIds.source.join(',');
+		private function selectFromInitial(headCat:CategoryVO, idsToMark:String, silent:Boolean = false):String {
+			if (!idsToMark) { return ''; }
+			var selectedIds:ArrayCollection = new ArrayCollection(idsToMark.split(","));
+			selectedIds = selectFromInitialRec(headCat, selectedIds, silent);
+			return selectedIds.source.join(',');
 		}
+		
 		
 		/**
 		 * comma seperated list of category ids (String)
 		 */		
 		public function get filter():Object{
-			var result:String = '';
-			// add from selected categories
-			for each(var cat:CategoryVO in _selectedCategories) {
-				result += cat.id + ",";
-			}
-			
-			// add from initial filter (if category never showed in tree)
-			if (_initialFilter) {
-				var temp:Array = _initialFilter.split(",");
-				for each (var catid:String in temp) {
-					if (result.indexOf(","+catid+",") < 0) {
-						// the id doesn't appear in result string, add it
-						result += catid + ",";
-					}
-				}
-			}
-			if (result != '') {
-				// remove last comma and return result
-				return result.substring(0, result.length - 1);
+			if (_currentFilter != '') {
+				return _currentFilter;
 			}
 			return null;
 		}
 		
+		
 		public function removeItem(item:IndicatorVo):void {
 			// item.value is id of cat to remove
 			handleSelectionChange(_selectedCategories[item.value] as CategoryVO);
-				
+			
 		}
 		
 		// --------------------
@@ -642,5 +660,5 @@ package com.kaltura.edw.components.fltr.cat
 					break;
 			}
 		}
-	 }
+	}
 }
