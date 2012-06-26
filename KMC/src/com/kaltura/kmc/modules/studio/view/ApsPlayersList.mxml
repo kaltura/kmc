@@ -13,7 +13,6 @@
 			import com.kaltura.commands.uiConf.UiConfList;
 			import com.kaltura.commands.uiConf.UiConfUpdate;
 			import com.kaltura.events.KalturaEvent;
-			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsNavigationEvent;
 			import com.kaltura.kmc.modules.studio.events.ApsUiConfEvent;
@@ -23,7 +22,6 @@
 			import com.kaltura.types.KalturaUiConfCreationMode;
 			import com.kaltura.types.KalturaUiConfObjType;
 			import com.kaltura.types.KalturaUiConfOrderBy;
-			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaUiConf;
 			import com.kaltura.vo.KalturaUiConfFilter;
 			import com.kaltura.vo.KalturaUiConfListResponse;
@@ -32,6 +30,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.controls.Button;
 			import mx.controls.Label;
 			import mx.events.CloseEvent;
 			import mx.formatters.DateFormatter;
@@ -48,17 +47,6 @@
 			 * */
 			private var _count:Number;
 
-			[Bindable]
-			/**
-			 * current paging
-			 * */
-			private var _currentPage:uint;
-
-			[Bindable]
-			/**
-			 * paging ammount
-			 * */
-			private var _pageSize:Number = 10;
 
 			[Bindable]
 			/**
@@ -223,7 +211,7 @@
 			
 			
 			private function onDeleted(evt:KalturaEvent):void {
-				loadList(_currentPage, _pageSize);
+				loadList();
 				ExternalInterface.call("playlistAdded");
 				ExternalInterface.call("playerAdded");
 			}
@@ -264,7 +252,6 @@
 			private function onListComplete(evt:KalturaEvent):void {
 				this.enabled = true;
 				cursorManager.removeAllCursors();
-				_currentPage = 1;
 				_count = evt.data.totalCount;
 				var temp:ArrayCollection = new ArrayCollection(evt.data.objects);
 				
@@ -284,7 +271,6 @@
 				playerListDg.dataProvider = temp; 
 				_count = (evt.data as KalturaUiConfListResponse).totalCount;
 				makePaging();
-				onTableResize();
 			}
 
 
@@ -304,10 +290,6 @@
 			}
 
 
-			private function gotoPage():void {
-				loadList(paging.selectedPage);
-			}
-
 
 			/**
 			 * reload players list and notify JS of the change.
@@ -322,18 +304,13 @@
 			}
 
 
-			private function loadList(page:Number = 0, pageSize:Number = 0):void {
+			private function loadList():void {
 				var filter:KalturaUiConfFilter = new KalturaUiConfFilter();
 				filter.orderBy = KalturaUiConfOrderBy.UPDATED_AT_DESC;
 				filter.tagsMultiLikeOr = "kdp3";
 				filter.objTypeEqual = KalturaUiConfObjType.PLAYER;
 				filter.creationModeEqual = KalturaUiConfCreationMode.WIZARD;
-				var pager:KalturaFilterPager = new KalturaFilterPager();
-				if (pageSize == 0) {
-					pager.pageSize = _pageSize
-				}
-				pager.pageIndex = page;
-				var uiconfList:UiConfList = new UiConfList(filter, pager);
+				var uiconfList:UiConfList = new UiConfList(filter, paging.kalturaFilterPager);
 				uiconfList.addEventListener(KalturaEvent.COMPLETE, onListComplete);
 				uiconfList.addEventListener(KalturaEvent.FAILED, fault);
 				Studio.kc.post(uiconfList);
@@ -417,23 +394,6 @@
 
 			}
 
-
-			/**
-			 * fix rowheight to correct onscreen presentation.
-			 * */
-			private function onTableResize():void {
-				if (playerListDg && playerListDg.dataProvider && playerListDg.dataProvider.length > 0) {
-					playerListDg.rowHeight = (playerListDg.height / _pageSize) - (playerListDg.headerHeight / _pageSize) - 0.5;
-				}
-			}
-
-
-			/**
-			 * dispatch help event with relevant data
-			 * */
-			private function help():void {
-				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, 'section_studio_player_list'));
-			}
 
 
 			/**
@@ -651,70 +611,68 @@
 		[Event(name="editPlayer", type="com.kaltura.kmc.modules.studio.events.ApsNavigationEvent")] 
 	</mx:Metadata>
 	
+	<mx:DateFormatter id="gridDateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
+	
 	<mx:Label text="{resourceManager.getString('aps', 'playersList')}" styleName="filterTitleHeader"/>
 	<mx:VBox width="100%">
-		<mx:HBox width="100%">
+		<!--<mx:HBox width="100%">-->
 			<mx:Text width="100%" text="{resourceManager.getString('aps','playerListDecription')}"/>
-			<mx:Spacer width="100%"/>
+			<!--<mx:Spacer width="100%"/>
 			<mx:Button styleName="help" buttonMode="true" click="{help()}"/>
-		</mx:HBox>
+		</mx:HBox>-->
 
 	</mx:VBox>
 	<mx:HBox width="100%" height="100%" styleName="moderationHBox">
 		<mx:VBox height="100%" width="100%" id="listContainer" verticalGap="0">
-			<mx:DataGrid id="playerListDg" width="100%" height="100%" verticalScrollPolicy="off" selectable="false"
-						 resize="onTableResize()" draggableColumns="false" sortableColumns="false">
+			<mx:DataGrid id="playerListDg" width="100%" height="100%" selectable="false"
+						 draggableColumns="false" sortableColumns="false" rowHeight="36">
 				<mx:columns>
-					<mx:DataGridColumn id="playerName"
-									   headerText="{resourceManager.getString('aps','playlistNameCollumn')}" width="120">
+					<mx:DataGridColumn id="playerName" paddingLeft="4" paddingRight="4"
+									   headerText="{resourceManager.getString('aps','playlistNameCollumn')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="2"
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" 
 										 verticalAlign="middle">
-									<mx:Label textAlign="left" text="{data.name}"/>
+									<mx:Label text="{data.name}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="playerId" headerText="{resourceManager.getString('aps','playlistidCollumn')}"
-									   width="50">
+					<mx:DataGridColumn id="playerId" paddingLeft="4" paddingRight="4" width="80" 
+									   headerText="{resourceManager.getString('aps','playlistidCollumn')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle"
-										 paddingLeft="2">
-									<mx:Label textAlign="left" text="{data.id}" selectable="true"/>
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" >
+									<mx:Label text="{data.id}" selectable="true"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="playerDate"
-									   headerText="{resourceManager.getString('aps','playlistDateCollumn')}" width="120">
+					<mx:DataGridColumn id="playerDate" paddingLeft="4" paddingRight="4" width="130"
+									   headerText="{resourceManager.getString('aps','playlistDateCollumn')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" paddingLeft="2"
-										 verticalAlign="middle">
-									<mx:Label textAlign="left" text="{outerDocument.formatUiconfDate(data.updatedAt)}"
-											  selectable="true"/>
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" >
+									<mx:Label text="{outerDocument.formatUiconfDate(data.updatedAt)}" selectable="true"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn headerText="{resourceManager.getString('aps','playlistSizeCollumn')}" width="50">
+					<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80"
+									   headerText="{resourceManager.getString('aps','playlistSizeCollumn')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-										 paddingLeft="2" verticalAlign="middle">
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
 									<mx:Label text="{data.width}x{data.height}"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
-					<mx:DataGridColumn id="template" headerText="{resourceManager.getString('aps','template')}"
-									   width="70">
+					<mx:DataGridColumn id="template" paddingLeft="4" paddingRight="4" width="80"
+									   headerText="{resourceManager.getString('aps','template')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox verticalGap="2" horizontalScrollPolicy="off" verticalScrollPolicy="off"
-										 paddingLeft="2" verticalAlign="middle">
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
 									<mx:Label text="{outerDocument.getTemplateName(data)}"/>
 								</mx:VBox>
 							</mx:Component>
@@ -725,12 +683,12 @@
 									   itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.StudioActionsIR" />
 				</mx:columns>
 			</mx:DataGrid>
-			<controls:Paging id="paging" width="100%" rowsInPageChange="{gotoPage()}" nextPage="{gotoPage()}"
-							 prvPage="{gotoPage()}" getPageNum="{gotoPage()}" showRowsInPage="false"
-							 pageSize="{_pageSize}" totalCount="{_count}" selectedPage="{_currentPage}"/>
+			
+			<controls:Paging id="paging" width="100%" styleName="paging" totalCount="{_count}" 
+							 rowsInPageChange="loadList()" nextPage="loadList()" prvPage="loadList()" getPageNum="loadList()" />
 		</mx:VBox>
 		<mx:Spacer width="5"/>
 		<mx:VBox height="100%" id="templatesHolder" styleName="blueBox" horizontalAlign="left" />
 	</mx:HBox>
-	<mx:DateFormatter id="gridDateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
+	
 </mx:VBox>
