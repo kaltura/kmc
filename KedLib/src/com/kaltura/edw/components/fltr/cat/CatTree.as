@@ -87,7 +87,7 @@ package com.kaltura.edw.components.fltr.cat
 			super.dataProvider = value;
 			if (value && _currentFilter) {
 				deselectAllCategories();
-				remarkPreviouslySelected();
+				remarkPreviouslySelected(true);
 			}
 			disableItems();
 		}
@@ -564,16 +564,16 @@ package com.kaltura.edw.components.fltr.cat
 			_currentFilter = value.toString();
 			
 			if ((dataProvider as ArrayCollection).length > 0) {
-				remarkPreviouslySelected();
+				remarkPreviouslySelected(false);
 			}
 		}
 		
-		private function remarkPreviouslySelected():void {
+		private function remarkPreviouslySelected(silent:Boolean):void {
 			// create a dummy root category
 			var dummyRoot:CategoryVO = new CategoryVO(0, "root", new KalturaCategory());
 			dummyRoot.children = dataProvider as ArrayCollection;
 			// start marking
-			selectFromInitial(dummyRoot, _currentFilter, true);
+			selectFromInitial(dummyRoot, _currentFilter, silent);
 		}
 		
 		/**
