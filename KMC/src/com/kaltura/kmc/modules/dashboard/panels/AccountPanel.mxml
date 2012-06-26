@@ -4,7 +4,7 @@
 	 Account Panel section
 
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" styleName="accountBox">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" initialize="onInitialize()" width="100%" height="100%" styleName="accountBox" xmlns:states="com.kaltura.kmc.modules.account.model.states.*">
 
 	<mx:Script>
 		<![CDATA[
@@ -15,8 +15,13 @@
 			import com.kaltura.kmc.events.KmcNavigationEvent;
 			import com.kaltura.kmc.modules.dashboard.DashboardManager;
 			import com.kaltura.types.KalturaStatsKmcEventType;
-
-
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var _showUsagePercent:Boolean;
+			
 			private function contactUs():void {
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.DASHBOARD_ACCOUNT_CONTACT_US, GoogleAnalyticsConsts.DASHBOARD);
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.DASHBOARD,KalturaStatsKmcEventType.DASHBOARD_ACCOUNT_CONTACT_US,
@@ -24,13 +29,34 @@
 //				DashboardManager.instance.loadKMCModule('account', 'Account Upgrade')
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, 'account', 'upgrade'));
 			}
+			
+			private function onInitialize():void
+			{
+				BindingUtils.bindSetter(onPackageReceived, DashboardManager.instance, "partnerPackage");
+				BindingUtils.bindSetter(onPercentSet, DashboardManager.instance, "totalPercentSoFar");
+			}
+			
+			private function onPackageReceived(partnerPackage:String):void{
+				_showUsagePercent = partnerPackage == "10";
+			}
+			
+			private function onPercentSet(percent:String):void{
+				usageProgress.setProgress(Number(percent), 100);
+				usageProgress.label = resourceManager.getString('kdashboard', 'trial_percent', [percent])
+			}
 		]]>
 	</mx:Script>
+	<!--mx:states>
+		<mx:State
+	</mx:states-->
 	<mx:Label text="{resourceManager.getString('kdashboard', 'account_title')}" id="accountTitleLabel"
 			  styleName="accountSubTitleLabel"/>
-	<mx:Label 
-			  text="{resourceManager.getString('kdashboard', 'total_bandwidth') + ' ' + DashboardManager.instance.totalBWSoFar + ' ' + resourceManager.getString('kdashboard', 'GB') +  ', ' + resourceManager.getString('kdashboard', 'include_storage') + ' ' +  DashboardManager.instance.hostingGB + ' ' + resourceManager.getString('kdashboard', 'GB')}"
-			  id="usageMsgLabel" styleName="featureLineLabel"/>
+	<mx:ProgressBar id="usageProgress" includeInLayout="{_showUsagePercent}" visible="{_showUsagePercent}" labelPlacement="bottom" themeColor="#F20D7A"
+					minimum="0" maximum="100" direction="right" mode="manual" width="100%"/>
+	<mx:Label text="{resourceManager.getString('kdashboard', 'total_bandwidth') + ' ' + DashboardManager.instance.totalBWSoFar + ' ' + resourceManager.getString('kdashboard', 'GB') }"
+			  styleName="featureLineLabel" visible="{! _showUsagePercent}" includeInLayout="{! _showUsagePercent}"/>
+	<mx:Label text="{resourceManager.getString('kdashboard', 'total_storage') + ' ' +  DashboardManager.instance.hostingGB + ' ' + resourceManager.getString('kdashboard', 'GB')}"
+			 styleName="featureLineLabel" visible="{! _showUsagePercent}" includeInLayout="{! _showUsagePercent}"/>
 	<mx:Text id="customizeOptionText" text="{resourceManager.getString('kdashboard', 'contact_us_text')}"
 			 styleName="featureLineLabel" width="100%"/>
 	<mx:Button id='contactUsLinkButton' label="{resourceManager.getString('kdashboard', 'contact_us_link')}"

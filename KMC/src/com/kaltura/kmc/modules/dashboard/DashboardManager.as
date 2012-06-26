@@ -1,20 +1,23 @@
 package com.kaltura.kmc.modules.dashboard {
 	import com.kaltura.KalturaClient;
 	import com.kaltura.commands.partner.PartnerGetInfo;
+	import com.kaltura.commands.partner.PartnerGetStatistics;
 	import com.kaltura.commands.partner.PartnerGetUsage;
 	import com.kaltura.commands.report.ReportGetGraphs;
 	import com.kaltura.dataStructures.HashMap;
+	import com.kaltura.edw.business.permissions.PermissionManager;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.business.JSGate;
-	import com.kaltura.edw.business.permissions.PermissionManager;
 	import com.kaltura.kmc.events.KmcNavigationEvent;
-	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.kmc.modules.KmcModule;
 	import com.kaltura.vo.KalturaPartner;
+	import com.kaltura.vo.KalturaPartnerStatistics;
 	import com.kaltura.vo.KalturaPartnerUsage;
 	import com.kaltura.vo.KalturaReportGraph;
 	import com.kaltura.vo.KalturaReportInputFilter;
 	
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	import flash.external.ExternalInterface;
@@ -62,7 +65,8 @@ package com.kaltura.kmc.modules.dashboard {
 		public var totalPercentSoFar:String = '0';
 		[Bindable]
 		public var hostingGB:String = '0';
-		
+		[Bindable]
+		public var partnerPackage:String = '0';
 		
 		[Bindable]
 		/**
@@ -149,10 +153,23 @@ package com.kaltura.kmc.modules.dashboard {
 		private function getUsageData():void {
 			var now:Date = new Date();
 			new KalturaPartnerUsage();
-			var getPartnerUsage:PartnerGetUsage = new PartnerGetUsage(int.MIN_VALUE, int.MIN_VALUE, null);
-			getPartnerUsage.addEventListener(KalturaEvent.COMPLETE, onSrvRes);
-			getPartnerUsage.addEventListener(KalturaEvent.FAILED, onSrvFlt);
-			kc.post(getPartnerUsage);
+//			var getPartnerUsage:PartnerGetUsage = new PartnerGetUsage(int.MIN_VALUE, int.MIN_VALUE, null);
+//			getPartnerUsage.addEventListener(KalturaEvent.COMPLETE, onSrvRes);
+//			getPartnerUsage.addEventListener(KalturaEvent.FAILED, onSrvFlt);
+//			kc.post(getPartnerUsage);
+			var partnerGetStatistics:PartnerGetStatistics = new PartnerGetStatistics();
+			partnerGetStatistics.addEventListener(KalturaEvent.COMPLETE, onPartnerStatistics);
+			partnerGetStatistics.addEventListener(KalturaEvent.FAILED, fault);
+			kc.post(partnerGetStatistics);	
+		}
+		
+		protected function onPartnerStatistics(result:Object):void
+		{
+			var statistics:KalturaPartnerStatistics = result.data as KalturaPartnerStatistics;
+			totalBWSoFar = statistics.bandwidth.toFixed(2);
+			totalPercentSoFar = statistics.usagePercent.toFixed();
+			hostingGB = statistics.hosting.toFixed(2);
+			partnerPackage = statistics.packageBandwidthAndStorage.toFixed();
 		}
 
 
