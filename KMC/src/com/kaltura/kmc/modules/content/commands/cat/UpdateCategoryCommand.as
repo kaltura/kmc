@@ -17,18 +17,12 @@ package com.kaltura.kmc.modules.content.commands.cat
 	
 	public class UpdateCategoryCommand extends KalturaCommand 
 	{
-		/**
-		 * should categories / entries lists be refreshed after save
-		 * (only refreshed if cat drilldown is closed) 
-		 */		
-		private var _refreshList:Boolean;
 		
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.increaseLoadCounter();
 			var cat:CategoryVO = event.data[0] as CategoryVO;
 			cat.category.setUpdatedFieldsOnly(true);
-			_refreshList = event.data[1];
 		 	var updateCategory:CategoryUpdate = new CategoryUpdate(cat.id, cat.category);
 		 	updateCategory.addEventListener(KalturaEvent.COMPLETE, result);
 			updateCategory.addEventListener(KalturaEvent.FAILED, fault);
@@ -40,15 +34,10 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			_model.decreaseLoadCounter();
 			if (!checkError(data)) {
-				if (_refreshList) {
-					refreshLists();
-				}
-				else {
-					// copy any attributes from the server object to the client object 
-					ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
-					// retrigger binding
-					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
-				}
+				// copy any attributes from the server object to the client object 
+				ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
+				// retrigger binding
+				_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
 			}
 		}
 		

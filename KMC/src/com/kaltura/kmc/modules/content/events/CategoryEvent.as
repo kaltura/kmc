@@ -94,13 +94,13 @@ package com.kaltura.kmc.modules.content.events
 		
 		/**
 		 * Update the selected category with new set values.
-		 * event.data is [CategoryVO, refreshList]
+		 * event.data is [CategoryVO]
 		 */
 		public static const UPDATE_CATEGORY : String = "content_updateCategory";
 		
 		/**
 		 * Add a new category with new set values.
-		 * event.data is [CategoryVO, saveMetadataFlag, refreshList]
+		 * event.data is [CategoryVO, saveMetadataFlag]
 		 */
 		public static const ADD_CATEGORY    : String = "content_addCategory";
 		

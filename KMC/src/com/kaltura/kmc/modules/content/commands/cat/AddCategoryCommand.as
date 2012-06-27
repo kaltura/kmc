@@ -13,12 +13,6 @@ package com.kaltura.kmc.modules.content.commands.cat {
 	public class AddCategoryCommand extends KalturaCommand {
 		
 		/**
-		 * should categories list be refreshed after save
-		 * (only refreshed if cat drilldown is closed) 
-		 */		
-		private var _refreshList:Boolean;
-		
-		/**
 		 * should (custom) metadata be saved after category creation
 		 * (only saved if values are set) 
 		 */		
@@ -27,7 +21,6 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			_saveMetadata = event.data[1];
-			_refreshList = event.data[2];
 			var newCategory:KalturaCategory = event.data[0] as KalturaCategory;
 			var addCategory:CategoryAdd = new CategoryAdd(newCategory);
 			addCategory.addEventListener(KalturaEvent.COMPLETE, result);
@@ -55,34 +48,14 @@ package com.kaltura.kmc.modules.content.commands.cat {
 					cgEvent.dispatch();
 				}
 				
-				if (_refreshList) {
-					refreshLists();
-				}
-				else {
-					// copy any attributes from the server object to the client object 
-					ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
-					// retrigger binding
-					_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
-//					// add this category to the head of the list
-//					_model.categoriesModel.categoriesList.addItemAt(_model.categoriesModel.selectedCategory, 0);
-				}
+				// copy any attributes from the server object to the client object 
+				ObjectUtil.copyObject(data.data, _model.categoriesModel.selectedCategory);
+				// retrigger binding
+				_model.categoriesModel.dispatchEvent(PropertyChangeEvent.createUpdateEvent(_model.categoriesModel, "selectedCategory", _model.categoriesModel.selectedCategory, _model.categoriesModel.selectedCategory));
 			}
 			_model.decreaseLoadCounter();
 		}
 		
-		/**
-		 * reloads data 
-		 */		
-		private function refreshLists():void {
-			// reload categories for table
-			var getCategoriesList:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-			getCategoriesList.dispatch();
-			
-			// reload categories for tree
-			if (_model.filterModel.catTreeDataManager) {
-				_model.filterModel.catTreeDataManager.resetData();
-			}
-		}
 
 	}
 }

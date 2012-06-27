@@ -234,8 +234,14 @@
 				
 				
 				// add category
-				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
-				cgEvent.data = [_undoCategory, tabsNav.isMetadataChanged(), _refreshListsRequired];
+				if (!_refreshListsRequired) {
+					// if _refreshListsRequired we already set to true in submitChanges(), no need to do again
+					var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_REFRESH_REQUIRED);
+					cgEvent.data = true;
+					cgEvent.dispatch();
+				}
+				cgEvent = new CategoryEvent(CategoryEvent.ADD_CATEGORY);
+				cgEvent.data = [_undoCategory, tabsNav.isMetadataChanged()];
 				cgEvent.dispatch();
 				if (_refreshListsRequired) {
 					// it's actually "saveAndClose"
@@ -254,7 +260,7 @@
 				
 				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
-				cgEvent2.data = [catVO, _refreshListsRequired];
+				cgEvent2.data = [catVO];
 				cgEvent2.dispatch();
 				if (_refreshListsRequired) {
 					// it's actually "saveAndClose"
@@ -276,7 +282,7 @@
 			private function submitChanges(refreshLists:Boolean):void {
 				_refreshListsRequired = refreshLists;
 				var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_REFRESH_REQUIRED);
-				cgEvent.data = !refreshLists;
+				cgEvent.data = refreshLists;
 				cgEvent.dispatch();
 				
 				tabsNav.validate();
