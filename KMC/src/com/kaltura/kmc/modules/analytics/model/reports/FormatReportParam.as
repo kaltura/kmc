@@ -79,6 +79,9 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "combined_bandwidth_storage":
 				case "added_storage_mb":
 				case "total_storage_mb":
+				case "average_storage":
+				case "peak_storage":
+				case "added_storage":
 					return Math.ceil(parseFloat(value)).toString();
 					break;
 				case "added_msecs":
