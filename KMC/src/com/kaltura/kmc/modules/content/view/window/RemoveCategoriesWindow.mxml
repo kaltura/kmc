@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*" 
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							layout="vertical" width="400" height="300" 
-							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
+							showCloseButton="true" close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							title="{resourceManager.getString('cms', 'removeCategoriesTitle')}"
 							creationComplete="creationCompleteHandler(event)"
 							visible="{model.selectedEntriesCategories &amp;&amp; model.selectedEntriesCategories.length > 0}">
-	
+
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.EntriesEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
-			
+
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
-			
+
 			[Bindable]
 			public var model:CmsModelLocator;
-			
-			
+
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				// dispatch a CG event to get categories from all selected entries
@@ -28,8 +27,7 @@
 			}
 
 
-			protected function button1_clickHandler(event:MouseEvent):void
-			{
+			protected function button1_clickHandler(event:MouseEvent):void {
 				// for each entry, if it has the category remove it.
 				// pass on the event the list of categories to remove.
 				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.REMOVE_CATEGORIES_ENTRIES, null);
@@ -39,17 +37,22 @@
 			}
 
 
-			private function helpHandler(event:Event):void
-			{
+			private function helpHandler(event:Event):void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_entry_remove_cats", true));
 			}
 
+
+			private function closeHandler(event:CloseEvent):void {
+				var cgEvent:EntriesEvent = new EntriesEvent(EntriesEvent.RESET_SELECTED_ENTRIES_CATEGORIES, null);
+				cgEvent.dispatch();
+				// actual close is handled by WindowsManager
+			}
 		]]>
 	</mx:Script>
-	
-	<mx:Label text="{resourceManager.getString('cms', 'removeCategoriesText')}" width="100%" />
+
+	<mx:Label text="{resourceManager.getString('cms', 'removeCategoriesText')}" width="100%"/>
 	<mx:List id="lst" width="100%" dataProvider="{model.selectedEntriesCategories}" height="100%"
-			 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.RemoveCategoriesRenderer" />
+			 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.RemoveCategoriesRenderer"/>
 	<mx:ControlBar width="100%">
 		<mx:Button label="{resourceManager.getString('cms', 'apply')}" click="button1_clickHandler(event)"
 				   enabled="{model.selectedEntriesCategories.length > 0}"/>

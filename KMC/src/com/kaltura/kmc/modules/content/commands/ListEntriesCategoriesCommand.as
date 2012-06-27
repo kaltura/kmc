@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.commands.categoryEntry.CategoryEntryList;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.modules.content.events.EntriesEvent;
 	import com.kaltura.kmc.modules.content.view.window.RemoveCategoriesWindow;
 	import com.kaltura.vo.KalturaBaseEntry;
 	import com.kaltura.vo.KalturaCategoryEntry;
@@ -24,6 +25,12 @@ package com.kaltura.kmc.modules.content.commands
 		private var _origin:RemoveCategoriesWindow; 
 		
 		override public function execute(event:CairngormEvent):void {
+			
+			if (event.type == EntriesEvent.RESET_SELECTED_ENTRIES_CATEGORIES) {
+				_model.selectedEntriesCategories = null;
+				return;	
+			}
+			
 			_model.increaseLoadCounter();
 			_model.selectedEntriesCategories = null;
 			

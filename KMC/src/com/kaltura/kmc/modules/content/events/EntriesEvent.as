@@ -28,6 +28,11 @@ package com.kaltura.kmc.modules.content.events {
 		public static const DELETE_ENTRIES:String = "content_deleteEntries";
 		
 		/**
+		 * reset the value of the attribute on the model that holds selected entries categories
+		 */
+		public static const RESET_SELECTED_ENTRIES_CATEGORIES:String = "content_resetSelectedEntriesCategories";
+		
+		/**
 		 * get the categories to which the selected entries are assigned 
 		 */
 		public static const GET_SELECTED_ENTRIES_CATEGORIES:String = "content_getSelectedEntriesCategories";
