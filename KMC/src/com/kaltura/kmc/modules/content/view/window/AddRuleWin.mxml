@@ -16,10 +16,10 @@
 		<![CDATA[
 			import com.kaltura.edw.business.IDataOwner;
 			import com.kaltura.edw.business.permissions.PermissionManager;
+			import com.kaltura.edw.control.KedController;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.kmc.events.KmcHelpEvent;
-			import com.kaltura.edw.control.KedController;
 			import com.kaltura.kmc.modules.content.events.NewFilterEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
@@ -70,9 +70,12 @@
 			private function initWindow():void {
 				if (filterForSingleRule) {
 					singleRule.ruleToEdit = filterForSingleRule;
-					//async call to the kaltura server to run the rule filter 
-					singleRule.runRule();
 				}
+				else {
+					singleRule.ruleToEdit = new KalturaMediaEntryFilterForPlaylist();
+				}
+				//async call to the kaltura server to run the rule filter 
+				singleRule.runRule();
 				PermissionManager.getInstance().applyAllAttributes(this, "addRuleWin");
 			}
 

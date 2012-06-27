@@ -382,7 +382,10 @@
 			private function saveUpdatedPlaylist(filtersArray:Array):void {
 				editPlaylist.name = playlistName.text;
 				// always pass the max limit, this way the sum of filters limits will apply.
-				editPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL;
+				if (editPlaylist.totalResults == int.MIN_VALUE || editPlaylist.totalResults == 0) {
+					// don't override existing values)
+					editPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL;
+				}
 				editPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				editPlaylist.description = playlistDescription.text;
 				editPlaylist.tags = getPlaylistTags();
@@ -392,7 +395,7 @@
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
 					"RulePlayList>EditPlayList>" + editPlaylist.id,
 					editPlaylist.id);
-				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST,GoogleAnalyticsConsts.CONTENT);
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST, GoogleAnalyticsConsts.CONTENT);
 			}
 
 			private function getPlaylistTags():String {
@@ -526,6 +529,8 @@
 	<mx:StringValidator id='playListValidator' source="{playlistName}" property="text" trigger="{playlistName}"
 						triggerEvent="change" required="true"
 						requiredFieldError="{resourceManager.getString('cms', 'nameIsMandatory')}"/>
+	
+	<!-- properties -->
 	<mx:Grid width="100%" borderThickness="10">
 		<mx:GridRow width="100%" height="100%">
 			<mx:GridItem>
@@ -557,8 +562,11 @@
 			</mx:GridItem>
 		</mx:GridRow>
 	</mx:Grid>
+	
 	<mx:ViewStack id="advanceOrSimpleContainer" width="100%" height="400" paddingBottom="0" paddingLeft="0"
 				  paddingRight="0" paddingTop="0">
+		
+		<!-- simple mode -->
 		<mx:VBox width="100%" height="100%">
 			<window:OneRule id="simpleRule" height="370" filterWasChanged="{onFilterWasChanged()}"
 							filterData="{filterData}" distributionProfilesArray="{distributionProfilesArr}"/>
@@ -566,6 +574,8 @@
 						   toolTip="{resourceManager.getString('cms','switchToAdvanceModeTooltip')}"
 						   click="{onAdvancedModeRequested()}"/>
 		</mx:VBox>
+		
+		<!-- advanced mode -->
 		<mx:VBox id="advancedModeContainer" width="100%" height="100%" >
 			<mx:DataGrid id="filtersList" dataProvider="{_filters}" width="100%" height="100%" rowHeight="60"
 						 headerRelease="{event.preventDefault()}" >
@@ -602,6 +612,7 @@
 			</mx:HBox>
 		</mx:VBox>
 	</mx:ViewStack>
+	
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>
 	</mx:ControlBar>
