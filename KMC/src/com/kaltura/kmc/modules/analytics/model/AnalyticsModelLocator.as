@@ -108,9 +108,22 @@ package com.kaltura.kmc.modules.analytics.model
 						ResourceManager.getInstance().getString('analytics','topSyndications')]);
 			}
 		}
-		public var usageDtnDp : ArrayCollection = new ArrayCollection(
-				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
-					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
+//		public var usageDtnDp : ArrayCollection = new ArrayCollection(
+//				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
+//					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
+		
+		public function get usageDtnDp() : ArrayCollection {
+			if (entitlementEnabled){
+				return new ArrayCollection( 
+					[	ResourceManager.getInstance().getString('analytics', 'pbns'),
+						ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
+			}
+			else
+			{
+				return new ArrayCollection( 
+					[ ResourceManager.getInstance().getString('analytics', 'pbns') ]);
+			}
+		}
 									 								 
 	    //---------------------------------------------------------
 		/**
