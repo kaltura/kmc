@@ -356,7 +356,9 @@
 					// edit mode - update service
 					saveUpdatedPlaylist(filtersArray);
 				}
-				PopUpManager.removePopUp(this);
+				
+				clear();
+				// window close is triggered after the command is executed
 			}
 
 
@@ -366,9 +368,9 @@
 			 * */
 			private function saveNewPlaylist(filtersArray:Array):void {
 				var newPlaylist:KalturaPlaylist = new KalturaPlaylist();
+				newPlaylist.name = playlistName.text;
 				// always pass the max limit, this way the sum of filters limits will apply. 
 				newPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL; 
-				newPlaylist.name = playlistName.text;
 				newPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
 				newPlaylist.description = playlistDescription.text;
 				newPlaylist.tags = getPlaylistTags();
@@ -382,17 +384,15 @@
 				// always pass the max limit, this way the sum of filters limits will apply.
 				editPlaylist.totalResults = PlaylistEntries.MAX_ENTRIES_IN_PL;
 				editPlaylist.playlistType = KalturaPlaylistType.DYNAMIC;
-				editPlaylist.filters = filtersArray;
 				editPlaylist.description = playlistDescription.text;
 				editPlaylist.tags = getPlaylistTags();
-				var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS,
-					new ArrayCollection([editPlaylist]));
+				editPlaylist.filters = filtersArray;
+				var entriesEvent:EntriesEvent = new EntriesEvent(EntriesEvent.UPDATE_PLAYLISTS, new ArrayCollection([editPlaylist]));
 				entriesEvent.dispatch();
 				KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT,KalturaStatsKmcEventType.CONTENT_EDIT_PLAYLIST,
 					"RulePlayList>EditPlayList>" + editPlaylist.id,
 					editPlaylist.id);
 				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_EDIT_PLAYLIST,GoogleAnalyticsConsts.CONTENT);
-
 			}
 
 			private function getPlaylistTags():String {
@@ -473,11 +473,16 @@
 			/**
 			 * reset the _model duration & total items in playlist preview
 			 * */
-			private function onClose():void {
+			private function clear():void {
 				var cgEvent:CairngormEvent = new KMCEntryEvent(KMCEntryEvent.RESET_RULE_BASED_DATA, null);
 				cgEvent.dispatch();
-
-				cgEvent = new WindowEvent(WindowEvent.CLOSE);
+				
+				simpleRule.clear();
+			}
+			
+			private function onClose():void {
+				clear();
+				var cgEvent:CairngormEvent = new WindowEvent(WindowEvent.CLOSE);
 				cgEvent.dispatch();
 			}
 

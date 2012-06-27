@@ -9,11 +9,6 @@ package com.kaltura.kmc.modules.content.commands
 	 */	
 	public class ResetRuleBasedDataCommand extends KalturaCommand implements ICommand {
 		
-		public function ResetRuleBasedDataCommand()
-		{
-			super();
-		}
-		
 		override public function execute(event:CairngormEvent):void
 		{
 			_model.playlistModel.ruleBasedDuration = '';
