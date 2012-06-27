@@ -74,6 +74,7 @@ package com.kaltura.kmc.modules.content.commands
 				var i:int;
 				var found:Boolean;
 				for (i = 0; i<orig.length; i++) {
+					found = false;
 					for each (var kce:KalturaCategoryEntry in uniques) {
 						if (kce.categoryId == orig[i].categoryId) {
 							found = true;
