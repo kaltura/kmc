@@ -2,6 +2,7 @@
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingTop="0" paddingBottom="0">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.types.KalturaDurationType;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			/**
 			 * concat a string representing a short summary of the playlist filter
@@ -11,25 +12,52 @@
 			private function renderSummary(data:Object):String {
 				var kmefpl:KalturaMediaEntryFilterForPlaylist = data as KalturaMediaEntryFilterForPlaylist;
 				var summary:String = "";
+				// tags
 				if (kmefpl.tagsNameMultiLikeOr)
-					summary += resourceManager.getString('cms', "tags") + kmefpl.tagsNameMultiLikeOr + "/n";
-				var mediaTypesString:String = "";
-				//handle types
-				if (kmefpl.mediaTypeIn.indexOf("1") > -1)
-					mediaTypesString += resourceManager.getString('cms', "video");
-				if (kmefpl.mediaTypeIn.indexOf("6") > -1)
-					mediaTypesString += resourceManager.getString('cms', "videoMix");
-				if (kmefpl.mediaTypeIn.indexOf("5") > -1)
-					mediaTypesString += resourceManager.getString('cms', "audio");
-				if (kmefpl.mediaTypeIn.indexOf("2") > -1)
-					mediaTypesString += resourceManager.getString('cms', "image");
-				//remove last , 
-				mediaTypesString.slice(0, mediaTypesString.length - 1);
-				//handle durations
-				summary += resourceManager.getString('cms', "mediaType") + mediaTypesString;
+					summary += resourceManager.getString('cms', 'tags') + kmefpl.tagsNameMultiLikeOr + ", ";
+				
+				var tempString:String = "";
+				// handle types
+				if (kmefpl.mediaTypeIn) {
+					if (kmefpl.mediaTypeIn.indexOf("1") > -1)
+						tempString += resourceManager.getString('filter', 'video') + ", ";
+					if (kmefpl.mediaTypeIn.indexOf("6") > -1)
+						tempString += resourceManager.getString('filter', 'videoMix') + ", ";
+					if (kmefpl.mediaTypeIn.indexOf("5") > -1)
+						tempString += resourceManager.getString('filter', 'audio') + ", ";
+					if (kmefpl.mediaTypeIn.indexOf("2") > -1)
+						tempString += resourceManager.getString('filter', 'image') + ", ";
+					tempString.slice(0, tempString.length - 2);
+					summary += resourceManager.getString('filter', 'mediaTypeTooltip') + tempString + ", ";
+				}
+				
+				// categories:
+				if (kmefpl.categoriesIdsMatchOr) {
+					summary += resourceManager.getString('filter', 'categoriesLabel') + ", ";
+				}
+				
+				// dates:
+				if (kmefpl.createdAtGreaterThanOrEqual != int.MIN_VALUE || kmefpl.createdAtLessThanOrEqual != int.MIN_VALUE) {
+					summary += resourceManager.getString('filter', 'createdBetweenTooltip') + ", ";
+				}
+				
+				// duration:
+				tempString = '';
+				if (kmefpl.durationTypeMatchOr) {
+					if (kmefpl.durationTypeMatchOr.indexOf(KalturaDurationType.SHORT) > -1)
+						tempString += resourceManager.getString('filter', 'shortduration') + ", ";
+					if (kmefpl.durationTypeMatchOr.indexOf(KalturaDurationType.MEDIUM) > -1)
+						tempString += resourceManager.getString('filter', 'mediumduration') + ", ";
+					if (kmefpl.durationTypeMatchOr.indexOf(KalturaDurationType.LONG) > -1)
+						tempString += resourceManager.getString('filter', 'longduration') + ", ";
+					tempString.slice(0, tempString.length - 2);
+					summary += resourceManager.getString('filter', 'durationToolTip') + tempString + ", ";
+				}
+				
+				
 				return summary;
 			}
 		]]>
 	</mx:Script>
-	<mx:Text height="100%" text="{renderSummary(data)}" selectable="false"/>
+	<mx:Text height="100%" text="{renderSummary(data)}" />
 </mx:HBox>
