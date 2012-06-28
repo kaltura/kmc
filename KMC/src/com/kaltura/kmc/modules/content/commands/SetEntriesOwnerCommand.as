@@ -30,6 +30,10 @@ package com.kaltura.kmc.modules.content.commands
 				if (entry.conversionProfileId) {
 					entry.conversionProfileId = int.MIN_VALUE;
 				}
+				// don't send categories - we use categoryEntry service to update them in EntryData panel
+				entry.categories = null;
+				entry.categoriesIds = null;
+				
 				updateEntry = new BaseEntryUpdate(entry.id, entry);
 				mr.addAction(updateEntry);
 			}

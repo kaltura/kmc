@@ -73,6 +73,10 @@ package com.kaltura.kmc.modules.content.commands {
 						be.setUpdatedFieldsOnly(true);
 						if (be is KalturaMixEntry)
 							(be as KalturaMixEntry).dataContent = null;
+						// don't send categories - we use categoryEntry service to update them in EntryData panel
+						be.categories = null;
+						be.categoriesIds = null;
+						
 						var updateEntry1:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry1);
 					}
@@ -115,6 +119,10 @@ package com.kaltura.kmc.modules.content.commands {
 						if (be.status != KalturaEntryStatus.NO_CONTENT) {
 							be.conversionProfileId = int.MIN_VALUE;
 						}
+						// don't send categories - we use categoryEntry service to update them in EntryData panel
+						be.categories = null;
+						be.categoriesIds = null;
+						
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry);
 					}
