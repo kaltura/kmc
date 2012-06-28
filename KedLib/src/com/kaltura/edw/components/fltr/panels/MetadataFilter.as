@@ -29,6 +29,7 @@ package com.kaltura.edw.components.fltr.panels
 					for each (var cb:CheckBox in _buttons) {
 						if (cb.data == field.value) {
 							cb.selected = true;
+							break;
 						}
 					}
 				}

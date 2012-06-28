@@ -5,6 +5,7 @@ package com.kaltura.edw.components.fltr.panels
 	import com.kaltura.edw.components.fltr.IAdvancedSearchFilterComponent;
 	import com.kaltura.types.KalturaSearchOperatorType;
 	import com.kaltura.vo.KalturaMetadataSearchItem;
+	import com.kaltura.vo.KalturaSearchCondition;
 	import com.kaltura.vo.MetadataFieldVO;
 	
 	import flash.events.Event;
@@ -18,14 +19,18 @@ package com.kaltura.edw.components.fltr.panels
 		 * filter is KalturaMetadataSearchItem whose items are KalturaMetadataSearchItems
 		 */
 		override public function set filter(value:Object):void {
-			//TODO implement set filter
-//			// scan filter items (fields)
-//			for each (var msi:KalturaMetadataSearchItem in value.items) {
-//				// for each field, find a matching filter and set it.
-//				for (var i:int = 0; i<numChildren; i++) {
-//					if ((getChildAt(i) as MetadataFilter).
-//				}
-//			}
+			// scan filter items (fields)
+			for each (var msi:KalturaMetadataSearchItem in value.items) {
+				// for each field, find a matching filter and set it.
+				for (var i:int = 0; i<numChildren; i++) {
+					// MetadataFilter.data is the field MFVO 
+					var child:MetadataFilter = getChildAt(i) as MetadataFilter;
+					var mfvo:MetadataFieldVO = child.data as MetadataFieldVO;
+					if (mfvo.xpath == (msi.items[0] as KalturaSearchCondition).field) {
+						child.filter = msi;
+					}
+				}
+			}
 		}
 		
 		override public function get filter():Object {

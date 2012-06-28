@@ -148,8 +148,9 @@ package com.kaltura.edw.components.fltr
 		 * remove relevant searchItem according to filterType, then add the given one 
 		 * @param searchItem	search item to add to filter
 		 * @param filterType	search item identifier
+		 * @param addOnly		if true, existing search item will not be replaced and given item will not be added
 		 */
-		protected function handelAdvancedSearchComponent(searchItem:KalturaSearchItem, filterId:String):void {
+		protected function handelAdvancedSearchComponent(searchItem:KalturaSearchItem, filterId:String, addOnly:Boolean=false):void {
 			// create advanced search item if required:
 			if (!_kalturaFilter.advancedSearch) {
 				_kalturaFilter.advancedSearch = new KalturaSearchOperator();
@@ -158,6 +159,7 @@ package com.kaltura.edw.components.fltr
 			}
 			var items:Array = (_kalturaFilter.advancedSearch as KalturaSearchOperator).items;
 			var i:int;
+			var found:Boolean;
 			// if distribution filter:
 			if (filterId == "distributionProfiles") {
 				// find the distribtion search item and remove it.
@@ -166,7 +168,10 @@ package com.kaltura.edw.components.fltr
 					var ksi:KalturaSearchOperator = items[i] as KalturaSearchOperator; 
 					if (ksi) { // SearchItems which are not SearchOpreators will fall here
 						if (ksi.items && ksi.items[0] is KalturaContentDistributionSearchItem) {
-							(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.splice(i, 1);
+							found = true;
+							if (!addOnly) {
+								(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.splice(i, 1);
+							}
 							break;
 						}
 					} 
@@ -180,7 +185,10 @@ package com.kaltura.edw.components.fltr
 					var msi:KalturaMetadataSearchItem = items[i] as KalturaMetadataSearchItem; 
 					if (msi) { // SearchItems which are not KalturaMetadataSearchItem will fall here
 						if (msi.metadataProfileId.toString() == filterId) {
-							(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.splice(i, 1);
+							found = true;
+							if (!addOnly) {
+								(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.splice(i, 1);
+							}
 							break;
 						}
 					} 
@@ -189,7 +197,9 @@ package com.kaltura.edw.components.fltr
 			
 			// add new 
 			if (searchItem) {
-				(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.push(searchItem);	
+				if (!addOnly || !found) {
+					(_kalturaFilter.advancedSearch as KalturaSearchOperator).items.push(searchItem);
+				}
 			}
 		}
 		
@@ -380,7 +390,14 @@ package com.kaltura.edw.components.fltr
 			for (var i:int = 0; i<keys.length; i++) {
 				att = keys[i];
 				if (_kalturaFilter[att] && _kalturaFilter[att] != int.MIN_VALUE) { // default value for strings is null, numbers int.MIN_VALUE
-					comp = getComponentByAttribute(att, this);
+					if (att == "advancedSearch") {
+						setFilterValuesToAdvancedSearchComponents(_kalturaFilter[att]);
+					}
+					else {
+						comp = getComponentByAttribute(att, this);
+						comp = null;
+					}
+					
 					if (comp) {
 						comp.filter = _kalturaFilter[att];
 					}
@@ -388,9 +405,26 @@ package com.kaltura.edw.components.fltr
 						if (_freeTextSearch && att == _freeTextSearch.attribute) {
 							_freeTextSearch.filter = _kalturaFilter[att];
 						}
+						
 					}
 				}
 			}
+		}
+		
+		/**
+		 * for each element in advancedSearch, get relevant ui component and set its filter 
+		 * @param kse root search item
+		 * 
+		 */
+		protected function setFilterValuesToAdvancedSearchComponents(kse:KalturaSearchItem):void {
+			var comp:IFilterComponent;
+			for each (var kmsi:KalturaMetadataSearchItem in kse.items) {
+				comp = getComponentByAttribute(kmsi.metadataProfileId.toString(), this);
+				if (comp) {
+					comp.filter = kmsi;
+				}
+			}
+			
 		}
 		
 		// ----------------
@@ -431,7 +465,7 @@ package com.kaltura.edw.components.fltr
 			metadataTab.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 			
 			// update filter data 
-			handelAdvancedSearchComponent(metadataTab.filter as KalturaSearchItem, metadataTab.attribute);
+			handelAdvancedSearchComponent(metadataTab.filter as KalturaSearchItem, metadataTab.attribute, true);
 			
 			return metadataTab;
 		}
