@@ -34,6 +34,7 @@
 			{
 				BindingUtils.bindSetter(onPackageReceived, DashboardManager.instance, "partnerPackage");
 				BindingUtils.bindSetter(onPercentSet, DashboardManager.instance, "totalPercentSoFar");
+//				BindingUtils.bindSetter(onUsageSet, DashboardManager.instance, "totalUsage");
 			}
 			
 			private function onPackageReceived(partnerPackage:String):void{
@@ -42,8 +43,12 @@
 			
 			private function onPercentSet(percent:String):void{
 				usageProgress.setProgress(Number(percent), 100);
-				usageProgress.label = resourceManager.getString('kdashboard', 'trial_percent', [percent])
+				usageProgress.label = percent + "%";
 			}
+			
+//			private function onUsageSet(usage:String):void{
+//				
+//			}
 		]]>
 	</mx:Script>
 	<!--mx:states>
@@ -51,6 +56,8 @@
 	</mx:states-->
 	<mx:Label text="{resourceManager.getString('kdashboard', 'account_title')}" id="accountTitleLabel"
 			  styleName="accountSubTitleLabel"/>
+	<mx:Label text="{resourceManager.getString('kdashboard', 'trial_usage') + ' ' +  DashboardManager.instance.totalUsage + ' ' + resourceManager.getString('kdashboard', 'GB')}"
+			  includeInLayout="{_showUsagePercent}" visible="{_showUsagePercent}" styleName="featureLineLabel"/>
 	<mx:ProgressBar id="usageProgress" includeInLayout="{_showUsagePercent}" visible="{_showUsagePercent}" labelPlacement="bottom" themeColor="#F20D7A"
 					minimum="0" maximum="100" direction="right" mode="manual" width="100%"/>
 	<mx:Label text="{resourceManager.getString('kdashboard', 'total_bandwidth') + ' ' + DashboardManager.instance.totalBWSoFar + ' ' + resourceManager.getString('kdashboard', 'GB') }"

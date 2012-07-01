@@ -23,6 +23,7 @@ package com.kaltura.kmc.modules.dashboard {
 	import flash.external.ExternalInterface;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	import flash.text.StaticText;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -63,6 +64,8 @@ package com.kaltura.kmc.modules.dashboard {
 		public var totalBWSoFar:String = '0';
 		[Bindable]
 		public var totalPercentSoFar:String = '0';
+		[Bindable]
+		public var totalUsage:String = '0';
 		[Bindable]
 		public var hostingGB:String = '0';
 		[Bindable]
@@ -170,6 +173,7 @@ package com.kaltura.kmc.modules.dashboard {
 			totalPercentSoFar = statistics.usagePercent.toFixed();
 			hostingGB = statistics.hosting.toFixed(2);
 			partnerPackage = statistics.packageBandwidthAndStorage.toFixed();
+			totalUsage = statistics.usage.toString();
 		}
 
 
