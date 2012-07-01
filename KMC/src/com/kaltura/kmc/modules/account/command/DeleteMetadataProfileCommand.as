@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.account.command {
 	import com.kaltura.kmc.utils.ListMetadataProfileUtil;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
+	import com.kaltura.types.KalturaMetadataProfileCreateMode;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaMetadataProfile;
@@ -67,6 +68,7 @@ package com.kaltura.kmc.modules.account.command {
 				// list the latest metadata profiles (after all deletion is done)s
 				var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 				filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
+				filter.createModeNotEqual = KalturaMetadataProfileCreateMode.APP;
 				filter.metadataObjectTypeIn = KalturaMetadataObjectType.ENTRY + "," + KalturaMetadataObjectType.CATEGORY;
 				var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, _model.metadataFilterPager);
 				mr.addAction(listMetadataProfile);

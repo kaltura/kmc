@@ -11,6 +11,7 @@ package com.kaltura.edw.control.commands.customData {
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaMetadataObjectType;
 	import com.kaltura.types.KalturaMetadataOrderBy;
+	import com.kaltura.types.KalturaMetadataProfileCreateMode;
 	import com.kaltura.utils.parsers.MetadataProfileParser;
 	import com.kaltura.vo.KMCMetadataProfileVO;
 	import com.kaltura.vo.KalturaFilterPager;
@@ -45,9 +46,9 @@ package com.kaltura.edw.control.commands.customData {
 			_model.increaseLoadCounter();
 			var filter:KalturaMetadataProfileFilter = new KalturaMetadataProfileFilter();
 			filter.orderBy = KalturaMetadataOrderBy.CREATED_AT_DESC;
+			filter.createModeNotEqual = KalturaMetadataProfileCreateMode.APP;
 			filter.metadataObjectTypeEqual = KalturaMetadataObjectType.ENTRY;
-			var pager:KalturaFilterPager = new KalturaFilterPager();
-			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter, pager);
+			var listMetadataProfile:MetadataProfileList = new MetadataProfileList(filter);
 			listMetadataProfile.addEventListener(KalturaEvent.COMPLETE, result);
 			listMetadataProfile.addEventListener(KalturaEvent.FAILED, fault);
 
