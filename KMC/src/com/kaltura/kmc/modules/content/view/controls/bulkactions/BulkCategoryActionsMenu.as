@@ -71,13 +71,13 @@ package com.kaltura.kmc.modules.content.view.controls.bulkactions
 			if (includeCategoryUserActions) {
 				if (includeEntitlement) {
 					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
-					mi.data = "changeListing";
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
+					mi.data = "changeAccess";
 					topLevel.children.push(mi);
 					
 					mi = new MenuItemVo();
-					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryAccess');
-					mi.data = "changeAccess";
+					mi.label = resourceManager.getString('cms', 'bulkChangeCategoryListing');
+					mi.data = "changeListing";
 					topLevel.children.push(mi);
 					
 					mi = new MenuItemVo();
