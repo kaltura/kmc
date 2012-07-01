@@ -227,7 +227,12 @@
 				switch (e.type) {
 					case "apply":
 						model.categoryOwner = tgt.ownerUser;
-						_category.owner = tgt.ownerUser.id;
+						if (tgt.ownerUser) {
+							_category.owner = tgt.ownerUser.id;
+						}
+						else {
+							_category.owner = KalturaClient.NULL_STRING;
+						}
 						txtOwner.text = getOwnerName(_categoryForInheritedFields);
 						break;
 					case CloseEvent.CLOSE:
