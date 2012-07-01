@@ -4,6 +4,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryUpdate;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.CategoryUtils;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.vo.KalturaCategory;
 	
@@ -19,6 +20,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			var mr:MultiRequest = new MultiRequest();
 			for each (var kCat:KalturaCategory in cats) {
 				kCat.setUpdatedFieldsOnly(true);
+				CategoryUtils.resetUnupdateableFields(kCat);
 				var update:CategoryUpdate = new CategoryUpdate(kCat.id, kCat);
 				mr.addAction(update);
 			}

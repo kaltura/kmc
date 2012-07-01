@@ -12,6 +12,7 @@
 			import com.kaltura.edw.events.ValidationResultEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.business.CategoryUtils;
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.events.CategoryEvent;
 			import com.kaltura.kmc.modules.content.model.CategoriesModel;
@@ -196,36 +197,11 @@
 			
 			
 			/**
-			 * nullify fields that shouldn't be sent
-			 * */
-			private function removeUnnecessaryFields(cat:KalturaCategory):void {
-				// no entitlements to category
-				if (!cat.privacyContexts) {
-					cat.appearInList = int.MIN_VALUE;
-					cat.moderation = int.MIN_VALUE;
-					cat.privacy = int.MIN_VALUE;
-					cat.owner = null;
-					cat.contributionPolicy = int.MIN_VALUE;
-					cat.defaultPermissionLevel = int.MIN_VALUE;
-					cat.inheritanceType = int.MIN_VALUE;
-					//	cat.userJoinPolicy = int.MIN_VALUE;
-				}
-					
-					
-				// if category inherits members from parent, don't send inherited values
-				else if (cat.inheritanceType == KalturaInheritanceType.INHERIT) {
-					cat.defaultPermissionLevel = int.MIN_VALUE;
-					//	cat.userJoinPolicy = int.MIN_VALUE;
-				}
-			}
-			
-			
-			/**
 			 * perform the actual add
 			 * */
 			private function addCategory():void {
 				
-				removeUnnecessaryFields(_undoCategory);
+				CategoryUtils.resetUnupdateableFields(_undoCategory);
 				
 				// remove any privacy contexts (if required, they will be set by server)
 				_undoCategory.privacyContexts = null;
@@ -256,7 +232,7 @@
 			private function updateCategory(event:Event):void {
 				_undoCategory.setUpdatedFieldsOnly(true);
 				
-				removeUnnecessaryFields(_undoCategory);
+				CategoryUtils.resetUnupdateableFields(_undoCategory);
 				
 				var catVO:CategoryVO = new CategoryVO(_origCategory.id, _undoCategory.name, _undoCategory);
 				var cgEvent2:CategoryEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORY);
