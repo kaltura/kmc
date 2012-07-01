@@ -1,13 +1,16 @@
 package com.kaltura.kmc.modules.content.commands.cat
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryGet;
+	import com.kaltura.commands.user.UserGet;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.types.KalturaInheritanceType;
 	import com.kaltura.vo.KalturaCategory;
+	import com.kaltura.vo.KalturaUser;
 	
 	import mx.controls.Alert;
 	import mx.resources.ResourceManager;
@@ -21,13 +24,13 @@ package com.kaltura.kmc.modules.content.commands.cat
 			
 			switch (event.type){
 				case CategoryEvent.CLEAR_PARENT_CATEGORY:
-					_model.categoriesModel.parentCategory = null;
 					_model.categoriesModel.inheritedParentCategory = null;
 					break;
 				
 				case CategoryEvent.GET_PARENT_CATEGORY:
 				case CategoryEvent.GET_INHERITED_PARENT_CATEGORY:
 					_model.increaseLoadCounter();
+					var mr:MultiRequest = new MultiRequest();
 					
 					var selectedCat:KalturaCategory = event.data as KalturaCategory;
 					var req:CategoryGet;
@@ -38,10 +41,17 @@ package com.kaltura.kmc.modules.content.commands.cat
 						req = new CategoryGet(selectedCat.inheritedParentId);
 					}
 					
-					req.addEventListener(KalturaEvent.COMPLETE, result);
-					req.addEventListener(KalturaEvent.FAILED, fault);
+					mr.addAction(req);
+					
+					// inheritedOwner
+					var getOwner:UserGet = new UserGet("1"); // dummy value, overriden in 2 lines
+					mr.addAction(getOwner);
+					mr.mapMultiRequestParam(1, "owner", 2, "userId");
+					
+					mr.addEventListener(KalturaEvent.COMPLETE, result);
+					mr.addEventListener(KalturaEvent.FAILED, fault);
 		
-					_model.context.kc.post(req);
+					_model.context.kc.post(mr);
 					
 					break;
 					
@@ -52,30 +62,21 @@ package com.kaltura.kmc.modules.content.commands.cat
 			super.result(data);
 			_model.decreaseLoadCounter();
 			
-			if (data && data.data is KalturaError){
-				Alert.show(ResourceManager.getInstance().getString('cms', 'error') + ": " +
-					(data.data  as KalturaError).errorMsg);
+			if (!checkError(data)) {
+				//inheritedOwner
+				if (data.data[1] is KalturaUser) {
+					_model.categoriesModel.inheritedOwner = data.data[1] as KalturaUser;
+				}
 				
-				return;
-			}
-			
-			if (data && data.data is KalturaCategory){
-				var kalCat:KalturaCategory = data.data as KalturaCategory; 
-				if (_eventType == CategoryEvent.GET_PARENT_CATEGORY) {
-					_model.categoriesModel.parentCategory = kalCat;
-					if (kalCat.inheritanceType == KalturaInheritanceType.INHERIT) {
-						// get the inherited parent of the parent
-						var cgEvent:CategoryEvent = new CategoryEvent(CategoryEvent.GET_INHERITED_PARENT_CATEGORY);
-						cgEvent.data = kalCat;
-						cgEvent.dispatch();
-					}
+				// category
+				if (data.data[0] is KalturaCategory){
+					_model.categoriesModel.inheritedParentCategory = data.data[0] as KalturaCategory;
 				}
-				else if (_eventType == CategoryEvent.GET_INHERITED_PARENT_CATEGORY) {
-					_model.categoriesModel.inheritedParentCategory = data.data as KalturaCategory;
+				else {
+					Alert.show(ResourceManager.getInstance().getString('cms', 'error') + ": " +
+						ResourceManager.getInstance().getString('cms', 'noMatchingParentError'));
 				}
-			} else {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'error') + ": " +
-					ResourceManager.getInstance().getString('cms', 'noMatchingParentError'));
+				
 			}
 		}
 	}

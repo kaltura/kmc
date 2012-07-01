@@ -764,7 +764,7 @@ package com.kaltura.kmc.modules.content.business
 			switch (e.type) {
 				case "apply":
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_OWNER);
-					kEvent.data = tgt.ownerId;
+					kEvent.data = tgt.ownerUser.id;
 					kEvent.dispatch();
 					break;
 			}

@@ -4,9 +4,10 @@ package com.kaltura.kmc.modules.content.model
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaFilterPager;
+	import com.kaltura.vo.KalturaUser;
 	
 	import mx.collections.ArrayCollection;
-
+	
 	[Bindable]
 	public class CategoriesModel {
 		
@@ -58,46 +59,8 @@ package com.kaltura.kmc.modules.content.model
 		 */
 		public var pager:KalturaFilterPager;
 		
-		/**
-		 * sub categories of selected category (category drilldown) 
-		 */
-		public var subCategories:ArrayCollection;
 		
-		/**
-		 * Metadata info array of the selected category (category metadata --> category drilldown)
-		 */		
-		public var metadataInfo:ArrayCollection;
 		
-		/**
-		 * The parent category of the selected category (category drilldown).
-		 */
-		public var parentCategory:KalturaCategory;
-		
-		/**
-		 * The category from which the selected category inherits values (category drilldown).
-		 */
-		public var inheritedParentCategory:KalturaCategory;
-		
-		/**
-		 * users associated with selected category (KalturaCategoryUser objects, end users popup)
-		 */
-		public var categoryUsers:ArrayCollection;
-		
-		/**
-		 * the totalCount of the latest users list action (end users popup)
-		 */
-		public var totalCategoryUsers:int;
-
-		/**
-		 * selected users in table (KalturaCategoryUser objects, end users popup)
-		 */
-		public var selectedCategoryUsers:Array;
-		
-		/**
-		 * indicates the first action in the end users permissions popup had occured
-		 * (used to show confirmation message) 
-		 */		
-		public var categoryUserFirstAction:Boolean;
 		
 		/**
 		 * indicates the category currently being edited in 
@@ -116,6 +79,74 @@ package com.kaltura.kmc.modules.content.model
 		 * (from entries screen>bulk actions)
 		 */
 		public var onTheFlyCategoryEntries:Array;
+		
+		
+		// -----------------------------------------
+		// cat.drilldown: metadata tab
+		// -----------------------------------------
+		
+		/**
+		 * Metadata info array of the selected category (category metadata --> category drilldown)
+		 */		
+		public var metadataInfo:ArrayCollection;
+		
+		
+		// -----------------------------------------
+		// cat.drilldown: sub categories tab
+		// -----------------------------------------
+		
+		/**
+		 * sub categories of selected category (category drilldown) 
+		 */
+		public var subCategories:ArrayCollection;
+		
+		
+		// -----------------------------------------
+		// cat.drilldown: entitlements tab
+		// -----------------------------------------
+		
+		/**
+		 * The category from which the selected category inherits values, or the parent category if no inheritedParent .
+		 */
+		public var inheritedParentCategory:KalturaCategory;
+		
+		/**
+		 * the KalturaUser that is set as owner of the parent category of selected category (category drilldown > ent)
+		 */
+		public var inheritedOwner:KalturaUser;
+		
+		/**
+		 * the KalturaUser that is set as owner of the selected category (category drilldown > ent) 
+		 */		
+		public var categoryOwner:KalturaUser;
+		
+		
+		// -----------------------------------------
+		// category users popup
+		// -----------------------------------------
+		
+		/**
+		 * users associated with selected category (KalturaCategoryUser objects, end users popup)
+		 */
+		public var categoryUsers:ArrayCollection;
+		
+		/**
+		 * the totalCount of the latest users list action (end users popup)
+		 */
+		public var totalCategoryUsers:int;
+		
+		/**
+		 * selected users in table (KalturaCategoryUser objects, end users popup)
+		 */
+		public var selectedCategoryUsers:Array;
+		
+		/**
+		 * indicates the first action in the end users permissions popup had occured
+		 * (used to show confirmation message) 
+		 */		
+		public var categoryUserFirstAction:Boolean;
+		
+		
 		
 	}
 }

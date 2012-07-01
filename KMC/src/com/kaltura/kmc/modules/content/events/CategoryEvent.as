@@ -126,6 +126,17 @@ package com.kaltura.kmc.modules.content.events
 		public static const CLEAR_PARENT_CATEGORY : String = "content_clearParentCategory";
 		
 		/**
+		 * get the KalturaUser that is set as owner for selected category
+		 * event.data is KalturaCategory
+		 */
+		public static const GET_CATEGORY_OWNER : String = "content_getCategoryOwner";
+		
+		/**
+		 * clear owner value on model
+		 */
+		public static const CLEAR_CATEGORY_OWNER : String = "content_clearCategoryOwner";
+		
+		/**
 		 * Set the selected category in the category drilldown.
 		 */
 		public static const SET_SELECTED_CATEGORY : String = "content_setSelectedCategory";

@@ -15,6 +15,7 @@
 			import com.kaltura.kmc.events.KmcHelpEvent;
 			import com.kaltura.kmc.modules.content.model.CmsModelLocator;
 			import com.kaltura.vo.KalturaCategory;
+			import com.kaltura.vo.KalturaUser;
 			
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
@@ -22,43 +23,21 @@
 			import mx.managers.PopUpManager;
 
 			
-			public var ownerId:String;
-
-//			[Bindable]
-//			private var _category:KalturaCategory;
-//
-//			public function get category():KalturaCategory {
-//				return _category;
-//			}
-
-//			[Bindable]
-//			public function set category(value:KalturaCategory):void {
-//				_category = value;
-//				_undoOwnerId = value.owner;
-//			}
-
-//			[Bindable]
-//			private var _undoOwnerId:String;
+			public var ownerUser:KalturaUser;
 
 
 			private function onInit(event:FlexEvent):void {
 				// Create a new Controler that wrap the Auto Complete component
 				new KACUsersController(usersComplete, CmsModelLocator.getInstance().context.kc);
 				
-//				if (_undoOwnerId) {
+//				if (ownerId) {
 //					// only set if there is actual value
-//					usersComplete.selectedItemIdentifier = _undoOwnerId;
+//					usersComplete.selectedItemIdentifier = ownerId;
 //				}
-				if (ownerId) {
-					// only set if there is actual value
-					usersComplete.selectedItemIdentifier = ownerId;
-				}
 			}
 
 
 			private function onSave():void {
-//				_category.owner = _undoOwnerId;
-//				PopUpManager.removePopUp(this);
 				dispatchEvent(new Event("apply"));
 				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
@@ -67,13 +46,11 @@
 
 			private function usersComplete_changeHandler(event:Event):void {
 				if (usersComplete.selectedItem) {
-//					_undoOwnerId = usersComplete.selectedItem.id;
-					ownerId = usersComplete.selectedItem.id;
+					ownerUser = usersComplete.selectedItem;
 					
 				}
 				else {
-//					_undoOwnerId = KalturaClient.NULL_STRING;
-					ownerId = KalturaClient.NULL_STRING;
+					ownerUser = null;
 				}
 			}
 

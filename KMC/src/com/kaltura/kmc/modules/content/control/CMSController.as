@@ -143,6 +143,8 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.GET_PARENT_CATEGORY, ManageParentCategoryCommand);
 			addCommand(CategoryEvent.GET_INHERITED_PARENT_CATEGORY, ManageParentCategoryCommand);
 			addCommand(CategoryEvent.CLEAR_PARENT_CATEGORY, ManageParentCategoryCommand);
+			addCommand(CategoryEvent.GET_CATEGORY_OWNER, GetCategoryOwnerCommand);
+			addCommand(CategoryEvent.CLEAR_CATEGORY_OWNER, GetCategoryOwnerCommand);
 			addCommand(CategoryEvent.SET_SELECTED_CATEGORY, SetSelectedCategoryCommand);
 			addCommand(CategoryEvent.LIST_CATEGORY_USERS, ListCategoryUsersCommand);
 			addCommand(CategoryEvent.RESET_CATEGORY_USER_LIST, ListCategoryUsersCommand);
