@@ -7,6 +7,7 @@
 			import com.kaltura.kmc.modules.analytics.control.ReportEvent;
 			import com.kaltura.kmc.modules.analytics.model.reportdata.ReportData;
 			import com.kaltura.kmc.modules.analytics.view.renderers.DrillDownLinkButton;
+			import com.kaltura.kmc.modules.analytics.view.renderers.TooltipedColumnHeader;
 			
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.DataGridEvent;
@@ -30,7 +31,15 @@
 					for(var i : int = 0 ; i<headerTextArr.length; i++)
 					{
 						var dgc : DataGridColumn = new DataGridColumn();
-						dgc.headerText = resourceManager.getString('analytics' , headerTextArr[i]);
+						
+						// Patch to present a specific tooltip in the 'date_id' column header.
+						if (headerTextArr[i] == "date_id"){
+							dgc.headerRenderer = new ClassFactory(TooltipedColumnHeader);
+							dgc.headerText = resourceManager.getString('analytics' , headerTextArr[i]) + ";" + resourceManager.getString('analytics', 'date_idToolTip');
+						} else {
+							dgc.headerText = resourceManager.getString('analytics' , headerTextArr[i]);
+						}
+						
 						//dgc.dataField = headerTextArr[i];
 						if(firstProp)
 						{

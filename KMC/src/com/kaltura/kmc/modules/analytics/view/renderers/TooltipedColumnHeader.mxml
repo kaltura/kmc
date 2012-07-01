@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.dataGridClasses.DataGridColumn;
+			[Bindable]
+			private var _label:String;
+			[Bindable]
+			private var _toolTip:String;
+			
+			override public function set data(value:Object):void{
+				super.data = value;
+				var dgc:DataGridColumn = value as DataGridColumn;
+				var seperated:Vector.<String> = Vector.<String>((dgc.headerText).split(";"));
+				_label = seperated[0];
+				_toolTip = seperated[1];
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="{_label}" fontWeight="bold"/>
+	<mx:Spacer width="100%" />
+	<mx:Button styleName="toolTipHelp" toolTip="{_toolTip}"/>
+</mx:HBox>
