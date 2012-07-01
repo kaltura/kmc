@@ -90,6 +90,24 @@ package com.kaltura.vo
 		 **/
 		public var statusIn : String = null;
 
+		/**
+		 * @see com.kaltura.types.KalturaMetadataProfileCreateMode
+		 **/
+		public var createModeEqual : int = int.MIN_VALUE;
+
+		/**
+		 * @see com.kaltura.types.KalturaMetadataProfileCreateMode
+		 **/
+		public var createModeNotEqual : int = int.MIN_VALUE;
+
+		/**
+		 **/
+		public var createModeIn : String = null;
+
+		/**
+		 **/
+		public var createModeNotIn : String = null;
+
 		override public function getUpdateableParamKeys():Array
 		{
 			var arr : Array;
@@ -108,6 +126,10 @@ package com.kaltura.vo
 			arr.push('updatedAtLessThanOrEqual');
 			arr.push('statusEqual');
 			arr.push('statusIn');
+			arr.push('createModeEqual');
+			arr.push('createModeNotEqual');
+			arr.push('createModeIn');
+			arr.push('createModeNotIn');
 			return arr;
 		}
 

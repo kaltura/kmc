@@ -129,6 +129,24 @@ package com.kaltura.vo
 		 **/
 		public var storage : Number = Number.NEGATIVE_INFINITY;
 
+		/**
+		 * The peak amount of storage consumption during the given date range for the specific publisher
+		 * 
+		 **/
+		public var peakStorage : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		 * The average amount of storage consumption during the given date range for the specific publisher
+		 * 
+		 **/
+		public var avgStorage : Number = Number.NEGATIVE_INFINITY;
+
+		/**
+		 * The combined amount of bandwidth and storage consumed during the given date range for the specific publisher
+		 * 
+		 **/
+		public var combinedStorageBandwidth : Number = Number.NEGATIVE_INFINITY;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -152,6 +170,9 @@ package com.kaltura.vo
 			arr.push('bandwidth');
 			arr.push('totalStorage');
 			arr.push('storage');
+			arr.push('peakStorage');
+			arr.push('avgStorage');
+			arr.push('combinedStorageBandwidth');
 			return arr;
 		}
 

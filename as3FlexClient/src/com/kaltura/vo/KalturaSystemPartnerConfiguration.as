@@ -102,6 +102,11 @@ package com.kaltura.vo
 		public var restrictThumbnailByKs : int = int.MIN_VALUE;
 
 		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var supportAnimatedThumbnails : Boolean;
+
+		/**
 		 **/
 		public var defThumbOffset : int = int.MIN_VALUE;
 
@@ -246,6 +251,11 @@ package com.kaltura.vo
 		 **/
 		public var logoutUrl : String = null;
 
+		/**
+		 * @see com.kaltura.types.kalturaBoolean
+		 **/
+		public var defaultEntitlementEnforcement : Boolean;
+
 		/** 
 		 * a list of attributes which may be updated on this object 
 		 **/ 
@@ -268,6 +278,7 @@ package com.kaltura.vo
 			arr.push('storageServePriority');
 			arr.push('kmcVersion');
 			arr.push('restrictThumbnailByKs');
+			arr.push('supportAnimatedThumbnails');
 			arr.push('defThumbOffset');
 			arr.push('defThumbDensity');
 			arr.push('userSessionRoleId');
@@ -301,6 +312,7 @@ package com.kaltura.vo
 			arr.push('liveStreamProvisionParams');
 			arr.push('autoModerateEntryFilter');
 			arr.push('logoutUrl');
+			arr.push('defaultEntitlementEnforcement');
 			return arr;
 		}
 
