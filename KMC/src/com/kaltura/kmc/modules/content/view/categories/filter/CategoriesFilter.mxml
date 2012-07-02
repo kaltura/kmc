@@ -9,6 +9,7 @@
 			import com.kaltura.edw.components.fltr.panels.MetadataProfileFilter;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaFilter;
 			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
@@ -81,6 +82,23 @@
 			}
 			
 			
+			override public function set kalturaFilter(value:KalturaFilter):void {
+				// fix the attribute for categoriesTree if needed, then call super()
+				if (catTree.selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+					if (value[catTree.exactAttribute]) {
+						value[catTree.plusAttribute] = value[catTree.exactAttribute];
+						value[catTree.exactAttribute] = null;
+					}
+				}
+				else if (catTree.selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
+					if (value[catTree.plusAttribute]) {
+						value[catTree.exactAttribute] = value[catTree.plusAttribute];
+						value[catTree.plusAttribute] = null;
+					}
+				}
+				super.kalturaFilter = value;
+			}
+			
 		]]>
 	</mx:Script>
 	<mx:Accordion id="accordion" height="100%" width="100%" >
@@ -91,7 +109,7 @@
 		</mx:headerRenderer>
 		<mx:Canvas id="categoriesBox" label="{resourceManager.getString('filter', 'categoriesLabel')}" width="100%"
 				   height="100%" styleName="categoriesTreeVBox">
-			<cat:CatTreeWrapper height="100%" width="100%" 
+			<cat:CatTreeWrapper id="catTree" height="100%" width="100%" 
 								exactAttribute="parentIdIn" plusAttribute="ancestorIdIn"
 								selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_PLUS}" valueChange="updateFilterValue(event)"
 								dataProvider="{filterModel.categoriesForCats}" categories="{filterModel.categoriesMapForCats}"

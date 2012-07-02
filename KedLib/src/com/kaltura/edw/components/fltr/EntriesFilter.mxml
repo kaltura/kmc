@@ -14,6 +14,7 @@
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaSearchOperatorType;
 			import com.kaltura.vo.KMCMetadataProfileVO;
+			import com.kaltura.vo.KalturaFilter;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaPlayableEntryFilter;
 			import com.kaltura.vo.KalturaSearchItem;
@@ -204,11 +205,30 @@
 				return _kalturaFilter;
 			}
 			
+			
 			protected function creationCompleteHandler(event:FlexEvent):void {
 				if (!_kalturaFilter) {
 					_kalturaFilter = EntriesFilter.generateBaseFilter();
 				}
 				BindingUtils.bindSetter(wrapInAC, this, "distributionProfiles");
+			}
+			
+			
+			override public function set kalturaFilter(value:KalturaFilter):void {
+				// fix the attribute for categoriesTree if needed, then call super()
+				if (catTree.selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+					if (value[catTree.exactAttribute]) {
+						value[catTree.plusAttribute] = value[catTree.exactAttribute];
+						value[catTree.exactAttribute] = null;
+					}
+				}
+				else if (catTree.selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_EXACT) {
+					if (value[catTree.plusAttribute]) {
+						value[catTree.exactAttribute] = value[catTree.plusAttribute];
+						value[catTree.plusAttribute] = null;
+					}
+				}
+				super.kalturaFilter = value;
 			}
 			
 			
