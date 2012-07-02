@@ -35,11 +35,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 			_addTotals = reportEvt.addTableTotals;
 			
 			var selectedReportData:ReportData;
+			var screenType:int;
 			if (reportEvt.screenType != -1){
-				selectedReportData = _model.reportDataMap[reportEvt.screenType] as ReportData;
+				screenType = reportEvt.screenType;
 			} else {
-				selectedReportData = _model.reportDataMap[_model.currentScreenState] as ReportData;
+				screenType = _model.currentScreenState;
 			}
+			selectedReportData = _model.reportDataMap[screenType] as ReportData;
 			ExecuteReportHelper.reportSetupBeforeExecution();
 
 			if (!selectedReportData.pager) {
@@ -54,14 +56,14 @@ package com.kaltura.kmc.modules.analytics.commands {
 			}
 
 			var objectIds:String = '';
-			if (_model.selectedEntry && (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
-										|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
-										|| _model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
-										|| _model.currentScreenState == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
-										|| _model.currentScreenState == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
-										|| _model.currentScreenState == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
-										|| _model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
-										|| _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
+			if (_model.selectedEntry && (screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT 
+										|| screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF 
+										|| screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS 
+										|| screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN 
+										|| screenType == ScreenTypes.MAP_OVERLAY_DRILL_DOWN 
+										|| screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN
+										|| screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN
+										|| screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)) {
 				objectIds = selectedReportData.objectIds = _model.selectedEntry;
 			}
 
@@ -71,13 +73,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var reportGetTable:ReportGetTable;
 			//If we have a user report call we need to have another fileter (that support application and users) 
 			//when we generate the report get total call
-			if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT || 
-				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
-				_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
-				_model.currentScreenState == ScreenTypes.END_USER_STORAGE || 
-				_model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
+			if (screenType == ScreenTypes.END_USER_ENGAGEMENT || 
+				screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+				screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
+				screenType == ScreenTypes.END_USER_STORAGE || 
+				screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				
