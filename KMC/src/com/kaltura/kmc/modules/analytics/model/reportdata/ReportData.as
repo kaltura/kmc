@@ -31,7 +31,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		public var wasObjectIdDropped:Boolean = false;
 		public var tableDp: ArrayCollection;
 		public var pager : KalturaFilterPager;
-		public var totalCount : int;
+		public var totalCount : int = 0;
 		
 		public var mapDp : ArrayCollection;
 		
