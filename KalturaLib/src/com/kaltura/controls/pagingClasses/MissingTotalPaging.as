@@ -63,6 +63,12 @@ package com.kaltura.controls.pagingClasses
 			return _selectedPage;
 		}
 		
+		
+		[Bindable]
+		public function set visible(value:Boolean):void{
+			
+		}
+		
 		public function get visible():Boolean{
 			return false;
 		}
