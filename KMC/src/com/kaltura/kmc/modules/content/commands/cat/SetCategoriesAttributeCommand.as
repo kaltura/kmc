@@ -22,6 +22,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 			var cats:Array = _model.categoriesModel.selectedCategories;
 			var mr:MultiRequest = new MultiRequest();
 			for each (var kCat:KalturaCategory in cats) {
+				if (!kCat.privacyContexts) {
+					continue;
+				}
 				kCat.setUpdatedFieldsOnly(true);
 				if (_type == CategoryEvent.SET_CATEGORIES_LISTING) {
 					kCat.appearInList = event.data as int;
