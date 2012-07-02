@@ -13,6 +13,7 @@ package com.kaltura.kmc.modules.content.commands
 	import com.kaltura.vo.KalturaCategoryEntryListResponse;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
+	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
@@ -45,7 +46,10 @@ package com.kaltura.kmc.modules.content.commands
 			}
 			f.entryIdIn = ids;
 			
-			var list:CategoryEntryList = new CategoryEntryList(f);
+			var p:KalturaFilterPager = new KalturaFilterPager();
+			p.pageIndex = 1;
+			p.pageSize = 1000;	// very big number, should get all
+			var list:CategoryEntryList = new CategoryEntryList(f, p);
 			list.addEventListener(KalturaEvent.COMPLETE, result);
 			list.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(list);
