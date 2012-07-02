@@ -5,6 +5,7 @@ package com.kaltura.autocomplete.controllers
 	import com.kaltura.autocomplete.controllers.base.KACControllerBase;
 	import com.kaltura.commands.tag.TagSearch;
 	import com.kaltura.net.KalturaCall;
+	import com.kaltura.types.KalturaTaggedObjectType;
 	import com.kaltura.vo.KalturaFilterPager;
 	import com.kaltura.vo.KalturaTag;
 	import com.kaltura.vo.KalturaTagFilter;
@@ -12,14 +13,18 @@ package com.kaltura.autocomplete.controllers
 	
 	public class KACTagsController extends KACControllerBase
 	{
-		public function KACTagsController(autoComp:AutoComplete, client:KalturaClient)
+		private var _objType:String;
+		
+		public function KACTagsController(autoComp:AutoComplete, client:KalturaClient, objType:String)
 		{
 			super(autoComp, client);
+			_objType = objType;
 		}
 		
 		override protected function createCallHook():KalturaCall{
 			var filter:KalturaTagFilter = new KalturaTagFilter();
 			filter.tagStartsWith = _autoComp.searchText;
+			filter.objectTypeEqual = _objType;
 			var pager:KalturaFilterPager = new KalturaFilterPager();
 			
 			// TODO: Check size limit?
