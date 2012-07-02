@@ -7,7 +7,7 @@ package com.kaltura.controls.pagingClasses
 	
 	public class PlaceHolderPagingBehavior extends EventDispatcher implements IPagingBehavior
 	{
-		private var _selectedPage:int;
+		private var _selectedPage:int = 1;	// page index should never ever be 0!!!
 		private var _pageSize:int = 25;
 		private var _currRowsInPage:int;
 		
