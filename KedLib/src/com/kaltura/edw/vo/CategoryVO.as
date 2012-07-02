@@ -32,7 +32,7 @@ package com.kaltura.edw.vo
 			this.name = name;
 			this.category = category;
 			
-			if (category.directSubCategoriesCount > 0) {
+			if (category && category.directSubCategoriesCount > 0) {
 				children = new ArrayCollection();
 			}
 		}

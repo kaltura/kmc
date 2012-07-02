@@ -624,7 +624,15 @@ package com.kaltura.edw.components.fltr.cat
 		
 		public function removeItem(item:IndicatorVo):void {
 			// item.value is id of cat to remove
-			handleSelectionChange(_selectedCategories[item.value] as CategoryVO);
+			if (_selectedCategories[item.value] is CategoryVO) {
+				handleSelectionChange(_selectedCategories[item.value] as CategoryVO);
+			}
+			else {
+				if (_currentFilter.indexOf(item.value + ',') > -1) {
+					removeFromCurrentFilter(item.value);
+					dispatchChange(new CategoryVO(item.value, null, new KalturaCategory()), FilterComponentEvent.EVENT_KIND_REMOVE); 
+				}
+			}
 			
 		}
 		
