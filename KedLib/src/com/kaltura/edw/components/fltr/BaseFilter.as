@@ -388,6 +388,7 @@ package com.kaltura.edw.components.fltr
 			var att:String;
 			var keys:Array = ObjectUtil.getObjectAllKeys(_kalturaFilter);
 			for (var i:int = 0; i<keys.length; i++) {
+				comp = null;
 				att = keys[i];
 				if (_kalturaFilter[att] && _kalturaFilter[att] != int.MIN_VALUE) { // default value for strings is null, numbers int.MIN_VALUE
 					if (att == "advancedSearch") {
@@ -395,7 +396,6 @@ package com.kaltura.edw.components.fltr
 					}
 					else {
 						comp = getComponentByAttribute(att, this);
-						comp = null;
 					}
 					
 					if (comp) {
