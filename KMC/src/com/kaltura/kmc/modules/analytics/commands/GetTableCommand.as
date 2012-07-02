@@ -160,6 +160,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			if (_addTotals){
 				var tempHeaders:Array = new Array();
 				for each (var header:String in headersArr){
+					
 					tempHeaders.push(header);
 					if (header.substr(0, 5) == "added"){
 						var totalHeader:String = "total" + header.slice(5);
@@ -169,6 +170,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 				}
 				headersArr = tempHeaders;
 			}
+
 			
 			var arrCol:ArrayCollection = new ArrayCollection();
 			
@@ -180,6 +182,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 					var propCounter:int = 0;
 					for (var j:int = 0; j < headersArr.length; j++) {
 						var currHeader:String = headersArr[j] as String;
+						if (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT && 
+							currHeader == 'unique_videos'){
+							propCounter++;
+							continue;
+						}
 						if (_addTotals && currHeader.indexOf("total") != -1){
 							totalCounters[currHeader] += parseFloat(propArr[propCounter - 1]);
 							obj[currHeader] = FormatReportParam.format(currHeader, totalCounters[currHeader]);
@@ -194,6 +201,11 @@ package com.kaltura.kmc.modules.analytics.commands {
 					
 					
 				}
+			}
+			
+			if (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT && 
+				headersArr.indexOf('unique_videos') != -1){
+				headersArr.splice(headersArr.indexOf('unique_videos'), 1);
 			}
 
 			//On some cases we have id that return from the server and we need to filter it 
