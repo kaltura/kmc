@@ -37,11 +37,11 @@ package com.kaltura.kmc.modules.analytics.commands
 				headers += "Object Id,";
 			}
 			
-			if(_model.selectedReportData.tableHeaders)
+			if(_model.selectedReportData.originalTableHeaders)
 			{
-				for(var i:int=0;i<_model.selectedReportData.tableHeaders.length; i++)
-					if(_model.selectedReportData.tableHeaders[i] != "object_id")
-						headers +=  ResourceManager.getInstance().getString('analytics',_model.selectedReportData.tableHeaders[i]) + ",";
+				for(var i:int=0;i<_model.selectedReportData.originalTableHeaders.length; i++)
+					if(_model.selectedReportData.originalTableHeaders[i] != "object_id")
+						headers +=  ResourceManager.getInstance().getString('analytics',_model.selectedReportData.originalTableHeaders[i]) + ",";
 			}
 			else
 			{

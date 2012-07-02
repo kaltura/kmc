@@ -152,6 +152,7 @@ package com.kaltura.kmc.modules.analytics.commands {
 			var i:int;
 			var tablesArr:Array = _tableData.data.split(";");
 			var headersArr:Array = _tableData.header.split(",");
+			var originalHeaders:Array = headersArr.slice();
 			
 			var totalCounters:Object = new Object();
 			if (_addTotals){
@@ -208,11 +209,14 @@ package com.kaltura.kmc.modules.analytics.commands {
 				)
 			{
 				_model.reportDataMap[_model.currentScreenState].dataFieldDp = headersArr = headersArr.slice(1, headersArr.length); //remove the entry_id
+				_model.reportDataMap[_model.currentScreenState].originalTableHeaders = originalHeaders = originalHeaders.slice(1, originalHeaders.length); //remove the entry_id
+				
 				_model.reportDataMap[_model.currentScreenState].wasObjectIdDropped = true;
 			}
 			else
 			{
 				_model.reportDataMap[_model.currentScreenState].dataFieldDp = headersArr;
+				_model.reportDataMap[_model.currentScreenState].originalTableHeaders = originalHeaders;
 			}
 			
 			_model.reportDataMap[_model.currentScreenState].tableDp = arrCol;
