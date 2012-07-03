@@ -15,6 +15,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.events.FlexEvent;
+			import mx.events.PropertyChangeEvent;
 			
 			public var category:KalturaCategory;
 			
@@ -52,6 +53,12 @@
 			 * tell the head and tail of the list they are head and tail
 			 * */
 			private function setFirstLast():void {
+				// reset all
+				for each (var kCat:KalturaCategory in _subCategories) {
+					kCat.isFirst = false;
+					kCat.isLast = false;
+				}
+				// set new
 				_subCategories.getItemAt(0).isFirst = true;
 				_subCategories.getItemAt(_subCategories.length-1).isLast = true;
 			}
@@ -68,22 +75,10 @@
 				var ind:int = _subCategories.getItemIndex(cat);
 				
 				if (e.type == CategoryPositionRenderer.MOVE_DOWN) {
-					if (ind == _subCategories.length - 2) {
-						_subCategories.getItemAt(_subCategories.length - 1).isLast = false;
-					}
-					else if (ind == 0) {
-						cat.isFirst = false;
-					}
 					_subCategories.removeItemAt(ind);
 					_subCategories.addItemAt(cat, ind + 1);
 				}
 				else if (e.type == CategoryPositionRenderer.MOVE_UP) {
-					if (ind == 1) {
-						_subCategories.getItemAt(0).isFirst = false;
-					}
-					else if (ind == _subCategories.length-1) {
-						cat.isLast = false;
-					}
 					_subCategories.removeItemAt(ind);
 					_subCategories.addItemAt(cat, ind - 1);
 				}
