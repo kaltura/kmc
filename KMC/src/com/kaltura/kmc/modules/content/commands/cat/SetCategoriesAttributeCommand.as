@@ -9,6 +9,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	
 	public class SetCategoriesAttributeCommand extends KalturaCommand {
@@ -18,11 +19,12 @@ package com.kaltura.kmc.modules.content.commands.cat
 		override public function execute(event:CairngormEvent):void
 		{
 			_type = event.type;
-			_model.increaseLoadCounter();
+			var nonUpdate:Boolean;
 			var cats:Array = _model.categoriesModel.selectedCategories;
 			var mr:MultiRequest = new MultiRequest();
 			for each (var kCat:KalturaCategory in cats) {
 				if (!kCat.privacyContexts) {
+					nonUpdate = true;
 					continue;
 				}
 				kCat.setUpdatedFieldsOnly(true);
@@ -42,9 +44,17 @@ package com.kaltura.kmc.modules.content.commands.cat
 				mr.addAction(update);
 			}
 			
-			mr.addEventListener(KalturaEvent.COMPLETE, result);
-			mr.addEventListener(KalturaEvent.FAILED, fault);
-			_model.context.kc.post(mr); 
+			if (mr.actions.length) {
+				_model.increaseLoadCounter();
+				mr.addEventListener(KalturaEvent.COMPLETE, result);
+				mr.addEventListener(KalturaEvent.FAILED, fault);
+				_model.context.kc.post(mr);
+			}
+			if (nonUpdate) {
+				var rm:IResourceManager = ResourceManager.getInstance();
+				Alert.show(rm.getString('cms', 'catNotUpdateEnt'), rm.getString('cms', 'attention'));
+			}
+			
 		}
 		
 		override public function result(data:Object):void {
