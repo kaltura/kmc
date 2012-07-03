@@ -326,6 +326,7 @@ package com.kaltura.kmc.modules.content.business
 			currentPopUp.addEventListener("apply", handleMoveCategoriesEvents, false, 0, true);
 			currentPopUp.addEventListener(CloseEvent.CLOSE, handleClosePopup, false, 0, true);
 			(currentPopUp as MoveCategoriesWindow).filterModel = model.filterModel;
+			(currentPopUp as MoveCategoriesWindow).kClient = model.context.kc;
 			if (newState == WindowsStates.MOVE_CATEGORIES_WINDOW) {
 				(currentPopUp as MoveCategoriesWindow).setCategories(model.categoriesModel.selectedCategories);
 			}

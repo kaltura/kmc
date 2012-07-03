@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
-							xmlns:containers="com.kaltura.containers.*" 
+<containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:components="com.hillelcoren.components.*"
+							xmlns:containers="com.kaltura.containers.*" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" 
 							layout="vertical" width="400" height="400"
 							showCloseButton="true" showHelpButton="true" help="helpHandler(event)"
-							title="{_windowTitle}" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
+							title="{_windowTitle}" 
+							creationComplete="creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACCategoryController;
+			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.model.FilterModel;
@@ -15,26 +18,31 @@
 			import com.kaltura.vo.KalturaCategory;
 			
 			import mx.core.mx_internal;
+			import mx.events.FlexEvent;
 			
 			import org.hamcrest.collection.array;
-			
+
 			[Bindable]
 			private var _windowTitle:String;
-			
+
 			[Bindable]
 			private var _descriptionTxt:String;
-			
-			
+
 			[Bindable]
 			public var filterModel:FilterModel;
-			
-			
+
+			/**
+			 * client for autocomplete calls
+			 * */
+			public var kClient:KalturaClient;
+
+
 			[Bindable]
 			/**
 			 * container variable for affected categories list
 			 * */
 			private var _categories:Array;
-			
+
 			/**
 			 * list of categories to move
 			 * KalturaCategory objects
@@ -50,32 +58,46 @@
 					_descriptionTxt = resourceManager.getString('cms', 'moveMultiCategoriesText');
 				}
 			}
-			
+
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				new KACCategoryController(catComplete, kClient);
+			}
+
+
 			/**
 			 * retrieve a list of affected categories
 			 * */
 			public function getCategories():Array {
 				return _categories;
 			}
+
 			
 			/**
 			 * get new parent category
 			 * */
 			public function getParent():KalturaCategory {
+				var kCat:KalturaCategory;
 				if (none.selected) {
 					// return the "root"
-					var kCat:KalturaCategory = new KalturaCategory();
+					kCat = new KalturaCategory();
 					kCat.id = 0;
-					return kCat;
 				}
-				return (catTree.getSelectedCategories()[0] as CategoryVO).category;
+				else if (catComplete.selectedItem) {
+					kCat = catComplete.selectedItem as KalturaCategory;
+				}
+				else {
+					kCat = (catTree.getSelectedCategories()[0] as CategoryVO).category;
+				}
+		
+				return kCat;
 			}
-			
+
 			protected function button1_clickHandler(event:MouseEvent):void {
 				dispatchEvent(new Event("apply"));
 				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
 			}
-			
+
 
 			private function helpHandler(event:Event):void {
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, "section_cat_move", true));
@@ -85,19 +107,47 @@
 			protected function catTree_valueChangeHandler(event:FilterComponentEvent):void {
 				if (catTree.getSelectedCategories().length > 0) {
 					none.selected = false;
+					catComplete.selectedItems = null;
 				}
 			}
 
 
 			protected function none_clickHandler(event:MouseEvent):void {
 				catTree.clearSelection();
+				catComplete.selectedItems = null;
+			}
+
+
+			/**
+			 * autocomplete change handler
+			 * <br/>
+			 * unselect none button, clear selection in catTree
+			 * */
+			private function catComplete_changeHandler(event:Event):void {
+				if (catComplete.selectedItem) {
+					// value entered
+					catTree.clearSelection();
+					none.selected = false;
+				}
+				else {
+					// value removed
+					none.selected = true;
+				}
 			}
 
 		]]>
 	</mx:Script>
+
 	<mx:Text text="{_descriptionTxt}" width="100%"/>
-	<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" selected="true" click="none_clickHandler(event)"/>
-	<mx:HRule width="90%" />
+	<mx:HBox width="100%" >
+		<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" selected="true" click="none_clickHandler(event)"/>
+		<mx:Spacer width="30%" />
+		<components:AutoComplete id="catComplete" width="70%" labelField="name"
+								 prompt="{resourceManager.getString('drilldown', 'searchCats')}" 
+								 selectedItemStyleName="selectionBox" change="catComplete_changeHandler(event)" 
+								 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"/>
+	</mx:HBox>
+	<mx:HRule width="100%" />
 	<cat:CatTree id="catTree" styleName="categoriesTree" width="100%" height="100%" 
 				 selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}"
 				 chunkedData="{filterModel.chunkedCategoriesLoad}"
