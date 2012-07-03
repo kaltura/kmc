@@ -245,6 +245,7 @@ package com.kaltura.kmc.modules.content.business
 						if (model.categoriesModel.selectedCategory.name == null){
 							model.categoriesModel.processingNewCategory = true;	//TODO make pretty
 							catDetails.isNewCategory = true;
+							catDetails.kClient = model.context.kc;
 						}
 						catDetails.filterModel = model.filterModel;
 						catDetails.categoriesModel = model.categoriesModel;

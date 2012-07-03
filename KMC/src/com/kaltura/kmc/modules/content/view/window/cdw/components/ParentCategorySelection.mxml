@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:cat="com.kaltura.edw.components.fltr.cat.*" xmlns:components="com.hillelcoren.components.*"
+		 creationComplete="creationCompleteHandler(event)">
 	<mx:Metadata>
 		[Event(name="change",type="flash.events.Event")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.KalturaClient;
+			import com.kaltura.autocomplete.controllers.KACCategoryController;
+			import com.kaltura.autocomplete.itemRenderers.selection.CategorySelectedItem;
 			import com.kaltura.edw.components.fltr.FilterComponentEvent;
 			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
 			import com.kaltura.edw.events.KedDataEvent;
@@ -15,33 +19,27 @@
 			import mx.events.CloseEvent;
 			import mx.events.FlexEvent;
 			
+			
+			/**
+			 * client for autocomplete calls
+			 * */
+			public var kClient:KalturaClient;
+			
+
 			[Bindable]
 			private var _filterModel:FilterModel;
-			
-			
+
+
 			public function get filterModel():FilterModel {
 				return _filterModel;
 			}
-			
+
 			public function set filterModel(value:FilterModel):void {
 				_filterModel = value;
 			}
 			
-			private function onClose(event:CloseEvent):void{
-				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
-			}
 			
-			private function onParentCategorySelected(event:FilterComponentEvent):void {
-				if (catTree.getSelectedCategories().length > 0){
-					nextBtn.enabled = true;
-					none.selected = false;
-				}
-			}
 			
-			protected function none_clickHandler(event:MouseEvent):void {
-				catTree.clearSelection();
-				nextBtn.enabled = true;
-			}
 			
 			public function get selectedCategory():KalturaCategory {
 				var kCat:KalturaCategory;
@@ -49,41 +47,113 @@
 					kCat = new KalturaCategory();
 					kCat.id = 0;
 				}
+				else if (catComplete.selectedItem) {
+					kCat = catComplete.selectedItem as KalturaCategory;
+				}
 				else {
 					kCat = (catTree.getSelectedCategories()[0] as CategoryVO).category;
 				}
 				return kCat;
 			}
+			
+			
+
+			/**
+			 * request WM to close the window
+			 * */
+			private function onClose(event:CloseEvent):void{
+				dispatchEvent(new KedDataEvent(KedDataEvent.CLOSE_WINDOW));
+			}
+
+			
+			/**
+			 * change handler for catTree
+			 * <br/>
+			 * unselect none button, clear autocomplete 
+			 * */
+			private function onCategorySelected(event:FilterComponentEvent):void {
+				if (catTree.getSelectedCategories().length > 0){
+					nextBtn.enabled = true;
+					none.selected = false;
+					catComplete.selectedItems = null;
+				}
+			}
+
+			
+			/**
+			 * "no parent" button click handler
+			 * <br/>
+			 * clear autocomplete, clear selection in catTree
+			 * */
+			private function none_clickHandler(event:MouseEvent):void {
+				catTree.clearSelection();
+				catComplete.selectedItems = null;
+				nextBtn.enabled = true;
+			}
+
+			
+			/**
+			 * autocomplete change handler 
+			 * <br/>
+			 * unselect none button, clear selection in catTree
+			 * */
+			private function catComplete_changeHandler(event:Event):void {
+				if (catComplete.selectedItem) {
+					// value entered
+					catTree.clearSelection();
+					none.selected = false;
+				}
+				else {
+					// value removed
+					none.selected = true;
+				}
+				nextBtn.enabled = true;
+			}
+
+
+			private function creationCompleteHandler(event:FlexEvent):void {
+				if (kClient) {
+					new KACCategoryController(catComplete, kClient);
+				}
+			}
+
 		]]>
 	</mx:Script>
-	
-	
+
+
 	<mx:HBox width="100%" height="100%" styleName="categoryDetails">
 		<mx:TabBar id="tabBar" width="140" dataProvider="{viewStack}" direction="vertical" styleName="dtn"
 				   useHandCursor="true" buttonMode="true" tabHeight="25" />
-		
+
 		<mx:ViewStack id="viewStack" width="100%" height="100%" creationPolicy="all"
 					  styleName="sectionViewStack" selectedIndex="{tabBar.selectedIndex}">
-			
+
 			<mx:VBox label="{resourceManager.getString('cms', 'categoryMetadata')}" width="100%" height="100%" >
 				<mx:Text text="{resourceManager.getString('cms', 'selectParentCategory')}" />
 				<mx:VBox width="100%" height="100%" styleName="whiteBg" >
-					<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" click="none_clickHandler(event)"/>
+					<mx:HBox width="90%" >
+						<mx:RadioButton id="none" label="{resourceManager.getString('cms', 'noParentLbl')}" click="none_clickHandler(event)"/>
+						<mx:Spacer width="100%" />
+						<components:AutoComplete id="catComplete" width="100%" labelField="name"
+												 prompt="{resourceManager.getString('drilldown', 'searchCats')}" 
+												 selectedItemStyleName="selectionBox" change="catComplete_changeHandler(event)" 
+												 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"/>
+					</mx:HBox>
 					<mx:HRule width="90%" />
 					<cat:CatTree id="catTree" width="100%" height="100%" styleName="categoriesTree"
 								 selectionMode="{CatTreeSelectionMode.SINGLE_SELECT}" selectionAttribute="newCatSelected"
 								 categories="{_filterModel.categoriesMapGeneral}" dataProvider="{_filterModel.categoriesGeneral}" 
 								 chunkedData="{_filterModel.chunkedCategoriesLoad}"  
-								 valueChange="onParentCategorySelected(event)" />
+								 valueChange="onCategorySelected(event)" />
 				</mx:VBox>
-				
+
 				<mx:LinkButton id="nextBtn" label="{resourceManager.getString('cms', 'selectParentCategoryNext')}"
 							   enabled="false" click="{dispatchEvent(new Event(Event.CHANGE))}"
 							   styleName="drillDownNavNextBtn" labelPlacement="left"/>
-				
+
 			</mx:VBox>		
 		</mx:ViewStack>
 	</mx:HBox>
-	
-	
+
+
 </mx:VBox>
