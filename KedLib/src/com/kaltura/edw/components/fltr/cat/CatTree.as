@@ -189,16 +189,17 @@ package com.kaltura.edw.components.fltr.cat
 		 * */
 		public function addFromAutoComplete(event:GeneralNonCairngormEvent):void {
 			var cat:KalturaCategory = event.data as KalturaCategory;
-			addByCatId(cat.id.toString(), true);
+			addByCatId(cat.id.toString(), true, cat);
 		}
 		
 		
 		/**
 		 * 
 		 * @param catid
-		 * @param keep if category already selected, don't toggle (remove)
+		 * @param keep	if category already selected, don't toggle (remove)
+		 * @param cat	KalturaCategory obejct of the affected category
 		 */
-		public function addByCatId(catid:String, keep:Boolean = false):void {
+		public function addByCatId(catid:String, keep:Boolean = false, cat:KalturaCategory = null):void {
 			if (categories.containsKey(catid)) {
 				var catvo:CategoryVO = categories.getValue(catid) as CategoryVO;
 				if (keep && _selectedCategories[catid]) {
@@ -211,6 +212,9 @@ package com.kaltura.edw.components.fltr.cat
 				if (_initialFilter.indexOf(catid) == -1) {
 					// category not yet selected
 					addToCurrentFilter(catid);
+					if (cat) {
+						dispatchChange(new CategoryVO(cat.id, cat.name, cat), FilterComponentEvent.EVENT_KIND_ADD);
+					}
 				}
 			}
 		}
