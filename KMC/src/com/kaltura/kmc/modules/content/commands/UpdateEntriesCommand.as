@@ -41,12 +41,9 @@ package com.kaltura.kmc.modules.content.commands {
 			var e:EntriesEvent = event as EntriesEvent;
 			_entries = e.entries;
 			if (e.entries.length > 50) {
-				Alert.show(ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesMsgPart1') +
-					' ' + _entries.length + ' ' +
-					ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesMsgPart2'),
+				Alert.show(ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesMsg', [_entries.length]),
 					ResourceManager.getInstance().getString('cms', 'updateLotsOfEntriesTitle'),
 					Alert.YES | Alert.NO, null, responesFnc);
-
 			}
 			// for small update
 			else {
