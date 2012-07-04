@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ColumnChart xmlns:mx="http://www.adobe.com/2006/mxml" showDataTips="true" dataTipFunction="getDataTip" height="200">
+	<mx:Script>
+		<![CDATA[
+			import com.kaltura.kmc.modules.analytics.utils.FormattingUtil;
+			
+			import mx.formatters.DateFormatter;
+			
+//			[Bindable]
+//			private var _chartPoints:Object;
+			
+			public var dimName:String;
+			
+			private function getDataTip(data:Object):String
+			{
+				var catAxis:CategoryAxis = colTimeAxis ;
+				return  FormattingUtil.formatMonthString(data.item.x) + '\n' + dimName + ': ' + Number(data.item.y).toFixed(2);
+			}
+			
+			override public function set dataProvider(value:Object):void{
+				super.dataProvider = value;
+				
+//				_chartPoints = value;
+				colTimeAxis.dataProvider = value;
+			}
+			
+			private function categoryLabelFunc(categoryValue:Object, previousCategoryValue:Object, axis:CategoryAxis, categoryItem:Object):String{
+				var monthString:String = categoryValue as String;
+				return FormattingUtil.formatMonthString(monthString);
+			}
+			
+//			private function formatMonth(monthStr:String):String{
+//				var formatter:DateFormatter = new DateFormatter();
+//				formatter.formatString = 
+//			}
+		]]>
+	</mx:Script>
+		<mx:horizontalAxis>
+			<mx:CategoryAxis id='colTimeAxis'
+							 categoryField="x" title="{resourceManager.getString('analytics', 'month')}" labelFunction="categoryLabelFunc"/>
+		</mx:horizontalAxis>
+		<mx:series>
+			<mx:ColumnSeries displayName="Usage" yField="y" xField="x">
+				<mx:fills>
+					<mx:SolidColor color="#9ab40c"/>
+				</mx:fills>
+			</mx:ColumnSeries>
+		</mx:series>
+</mx:ColumnChart>

@@ -6,6 +6,7 @@ package com.kaltura.controls.pagingClasses
 	import flash.events.MouseEvent;
 	
 	import mx.controls.Button;
+	import mx.controls.Label;
 	import mx.controls.LinkButton;
 	import mx.core.Container;
 	import mx.resources.ResourceManager;
@@ -13,6 +14,7 @@ package com.kaltura.controls.pagingClasses
 	public class MissingTotalPaging extends EventDispatcher implements IPagingBehavior
 	{
 		private var _pagingContainer:Container;
+		private var _labelContainer:Container;
 		private var _selectedPage:int;
 		private var _pageSize:int = 25;
 		private var _currRows:int;
@@ -23,6 +25,7 @@ package com.kaltura.controls.pagingClasses
 		
 		public function init(pagingContainer:Container, labelContainer:Container):void{
 			_pagingContainer = pagingContainer;
+			_labelContainer = labelContainer;
 //			_pageSize = pageSize;
 		}
 		
@@ -52,7 +55,14 @@ package com.kaltura.controls.pagingClasses
 		}
 		
 		public function createLabelIndicators():void{
+			var firstItem:int = (_selectedPage-1) * _pageSize + 1;
+			var lastItem:int = _currRows == _pageSize ? _selectedPage * _pageSize : firstItem + _currRows - 1;
 			
+			var label:Label = new Label();
+			label.text = ResourceManager.getInstance().getString('windows', 'outOfNoTotal', [firstItem, lastItem, _selectedPage]);
+			label.setStyle("styleName", "selectRowsLable");
+			
+			_labelContainer.addChild(label);
 		}
 		
 		public function set selectedPage(value:int):void{

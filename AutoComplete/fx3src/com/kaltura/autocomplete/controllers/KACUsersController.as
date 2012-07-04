@@ -26,9 +26,14 @@ package com.kaltura.autocomplete.controllers
 			
 			autoComp.labelField = "id";
 			autoComp.dropDownLabelFunction = userLabelFunction;
+			autoComp.autoSelectFunction = userSelectFunction;
 			autoComp.setStyle("unregisteredSelectedItemStyleName", "unregisteredSelectionBox"); 
 			BindingUtils.bindSetter(onIdentifierSet, autoComp, "selectedItemIdentifier");
 			autoComp.addEventListener(Event.CHANGE, onSelectionChanged, false, int.MAX_VALUE);
+		}
+		
+		private function userSelectFunction(user:KalturaUser, text:String):Boolean{
+			return user.id == text;
 		}
 		
 		private function onSelectionChanged(event:Event):void

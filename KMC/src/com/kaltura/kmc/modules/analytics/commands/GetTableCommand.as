@@ -182,8 +182,8 @@ package com.kaltura.kmc.modules.analytics.commands {
 					var propCounter:int = 0;
 					for (var j:int = 0; j < headersArr.length; j++) {
 						var currHeader:String = headersArr[j] as String;
-						if (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT && 
-							currHeader == 'unique_videos'){
+						if ((_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+							_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN) &&	currHeader == 'unique_videos'){
 							propCounter++;
 							continue;
 						}
@@ -203,10 +203,13 @@ package com.kaltura.kmc.modules.analytics.commands {
 				}
 			}
 			
-			if (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT && 
-				headersArr.indexOf('unique_videos') != -1){
+			
+			// Patches for specific data removal
+			if ((_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN) &&	headersArr.indexOf('unique_videos') != -1){
 				headersArr.splice(headersArr.indexOf('unique_videos'), 1);
 			}
+			
 
 			//On some cases we have id that return from the server and we need to filter it 
 			//for presentation without id as a table column but in some cases we want to show it

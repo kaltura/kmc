@@ -23,6 +23,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 		public var specificEndUserStorage : Array = ['date_id', 'added_entries', 'total_entries', 'added_storage_mb', 'total_storage_mb', 'added_msecs', 'total_msecs'];
 
 		public var userEngagement : Array = ['name','unique_videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
+		public var userEngagementDrilldown : Array = ['name','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 
 	}
 }

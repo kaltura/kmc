@@ -2,6 +2,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 {
 	import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 	import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
+	import com.kaltura.kmc.modules.analytics.utils.FormattingUtil;
 	import com.kaltura.utils.KTimeUtil;
 	
 	import mx.formatters.DateFormatter;
@@ -57,21 +58,10 @@ package com.kaltura.kmc.modules.analytics.model.reports
 					return result; 
 					break;
 				case "date_id":
-					year = String(value).substring(0,4);
-					month = String(value).substring(4,6);
-					var day : String = String(value).substring(6,8);
-					
-					// There was a deduction of the month number, but it was removed as it was found unnecessary.
-					date = new Date( Number(year) , Number(month) - 1 , Number(day) );
-					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "dailyDateMask");
-					return _dateFormatter.format(date) ; 
+					return FormattingUtil.formatFullDateString(value);
 					break;
 				case "month_id":
-					year = String(value).substring(0,4);
-					month = String(value).substring(4,6);
-					date = new Date( Number(year) , Number(month) , 0);
-					_dateFormatter.formatString = ResourceManager.getInstance().getString("analytics", "monthlyDateMask");
-					return _dateFormatter.format(date) ;
+					return FormattingUtil.formatMonthString(value);
 					break;
 				case "bandwidth_consumption":
 				case "storage_used":
@@ -82,7 +72,8 @@ package com.kaltura.kmc.modules.analytics.model.reports
 				case "average_storage":
 				case "peak_storage":
 				case "added_storage":
-					return Math.ceil(parseFloat(value)).toString();
+					var currValue:Number = Math.ceil(parseFloat(value))
+					return isNaN(currValue) ? "N/A" : currValue.toString();
 					break;
 				case "added_msecs":
 				case "total_msecs":

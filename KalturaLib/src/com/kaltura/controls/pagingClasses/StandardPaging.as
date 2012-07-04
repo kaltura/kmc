@@ -22,6 +22,7 @@ package com.kaltura.controls.pagingClasses
 		private var _sideLinkCount:int;
 		private var _visible:Boolean;
 		private var _pageSize:int = 25;
+		private var _currRowsInPage:int;
 		
 		public function StandardPaging(totalCount:int, showFirstLast:Boolean, doubleEnd:Boolean, sideLinkCount:int)
 		{
@@ -187,11 +188,11 @@ package com.kaltura.controls.pagingClasses
 		}
 		
 		public function set currRowsInPage(value:int):void{
-			
+			_currRowsInPage = value;
 		}
 		
 		public function get currRowsInPage():int{
-			return _pageSize;
+			return _currRowsInPage;
 		}
 	}
 }

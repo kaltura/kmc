@@ -91,10 +91,17 @@ package com.kaltura.kmc.modules.analytics.commands
 			var arrCol : ArrayCollection = new ArrayCollection();
 			for(var i:int=0; i<aggArr.length; i++)
 			{
+				
+				// Patches for data removal
 				if (_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT &&
 					aggLbls[i] == 'unique_videos'){
 					continue;
 				}
+				if (_model.currentScreenState == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN &&
+					aggLbls[i] == 'unique_known_users'){
+					continue;
+				}
+				
 				var aggDataVo : AggregateDataVo = new AggregateDataVo();
 				aggDataVo.title = ResourceManager.getInstance().getString('analytics',aggLbls[i]);
 				aggDataVo.value = FormatReportParam.format( aggLbls[i] , aggArr[i] );

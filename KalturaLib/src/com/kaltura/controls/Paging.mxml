@@ -63,7 +63,7 @@
 			/**
 			 * Total items count. The division of _totalCount with _pageSize will output the _totalPageCount
 			 */
-			protected var _totalCount:int;
+			protected var _totalCount:int= int.MIN_VALUE + 1;
 		
 		
 			/**
@@ -111,7 +111,8 @@
 			}
 
 			public function set totalCount(value:int):void {
-				if (_totalCount == value)
+				trace ("totalCount " + _totalCount);
+				if (_totalCount == value || (value > 0 && _behavior is StandardPaging) || (value <= 0 && _behavior is MissingTotalPaging))
 					return;
 
 				_totalCount = value;
@@ -124,8 +125,10 @@
 				
 				if (_totalCount > 0){
 					_behavior = new StandardPaging(_totalCount, _showFirstLast, doubleEnd, sideLinkCount);
+					trace ("StandardPaging");
 				} else {
 					_behavior = new MissingTotalPaging();
+					trace ("MissingTotalPaging");
 				}
 				
 				_behavior.init(pagingContainer, labelContainer);
@@ -320,7 +323,7 @@
 	<!--<mx:Label text="{_outOfText}" styleName="selectRowsLable"/>-->
 	<mx:Spacer width="100%" />
 	<!-- rows in page -->
-	<mx:HBox visible="{_behavior.visible}" includeInLayout="{_behavior.visible}" verticalAlign="middle">
+	<mx:HBox visible="{_behavior.visible}" includeInLayout="{_behavior.visible}" verticalAlign="middle" paddingRight="5">
 		<mx:Label id="rowInPageLbl" text="{rowsComboLabel}" visible="{showRowsInPage}" styleName="selectRowsLable"/>
 		<mx:ComboBox id="rowInPageCb" visible="{showRowsInPage}" includeInLayout="{showRowsInPage}" styleName="boldComboText"
 					 dataProvider="{rowsInPage}" rowCount="{rowsInPage.length}" change="{resultSizeChange(event)}"/>

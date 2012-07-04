@@ -167,33 +167,48 @@ package com.kaltura.kmc.modules.analytics.commands
 					if( pointsArr[j])
 					{
 						var xYArr : Array = pointsArr[j].split(",");
+						var yVal:Number = parseFloat(xYArr[1]);
+						yVal = isNaN(yVal) ? 0 : yVal;
 						if(_model.currentScreenState != ScreenTypes.CONTENT_DROPOFF && 
 						   _model.currentScreenState != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
 						{
-							var date : Date;
-							var year : String = String(xYArr[0]).substring(0,4);
-							var month : String = String(xYArr[0]).substring(4,6);
-							
+							// For full dates
 							if (String(xYArr[0]).length == 8){
+								var date : Date;
+								var year : String = String(xYArr[0]).substring(0,4);
+								var month : String = String(xYArr[0]).substring(4,6);
+							
 								var day : String = String(xYArr[0]).substring(6,8);	
 								date = new Date( Number(year) , Number(month)-1 , Number(day) );
+								
+								var timestamp : Number = date.time;
+								graphPoints.addItem( {x: timestamp,y: standartize(yVal, krp.id) } );
+								
+								if (_addTotals && krp.id.substr(0,5) == "added"){
+									totalCounter += yVal;
+									totalPoints.addItem( {x: timestamp, y: standartize(totalCounter, totalDimName)} );
+								}
+								
+							// for months
 							} else {
-								date = new Date( Number(year) , Number(month)-1 , 0 );
+								graphPoints.addItem( {x: xYArr[0] ,y: standartize(yVal, krp.id) } );
+								if (_addTotals && krp.id.substr(0,5) == "added"){
+									totalCounter += yVal;
+									totalPoints.addItem( {x: xYArr[0], y: standartize(totalCounter, totalDimName)} );
+								}
 							}
 							
-							var timestamp : Number = date.time;
-							graphPoints.addItem( {x: timestamp,y: standartize(parseFloat(xYArr[1]), krp.id) } );
 							
-							if (_addTotals && krp.id.substr(0,5) == "added"){
-								totalCounter += parseFloat(xYArr[1]);
-								totalPoints.addItem( {x: timestamp, y: standartize(totalCounter, totalDimName)} );
-							}
+//							if (_addTotals && krp.id.substr(0,5) == "added"){
+//								totalCounter += parseFloat(xYArr[1]);
+//								totalPoints.addItem( {x: timestamp, y: standartize(totalCounter, totalDimName)} );
+//							}
 						}
 						else
 						{
 							var obj : Object = new Object();
 							obj.x = ResourceManager.getInstance().getString('analytics', xYArr[0]);
-							obj.y =  xYArr[1]
+							obj.y =  yVal
 							graphPoints.addItem( obj );
 						}
 					}

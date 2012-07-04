@@ -66,6 +66,11 @@ package com.kaltura.controls.pagingClasses
 			return _currRowsInPage;
 		}
 		
+		[Bindable]
+		public function set visible(value:Boolean):void{
+			
+		}
+		
 		public function get visible():Boolean
 		{
 			return false;

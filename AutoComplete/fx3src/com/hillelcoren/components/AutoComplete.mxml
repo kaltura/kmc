@@ -977,8 +977,10 @@
 						}
 						else if (target.text && _allowNewValues && target.isEditable())
 						{
-							_selectedItems.addItem( target.text );
-							dispatchEvent( new Event( Event.CHANGE ) );																														
+							if (! isPerfectMatch()){
+								_selectedItems.addItem( target.text );
+								dispatchEvent( new Event( Event.CHANGE ) );																														
+							}
 							return;
 						}
 						else if (event.keyCode == Keyboard.ENTER)
@@ -1256,28 +1258,30 @@
 				
 				var str:String = StringUtils.trimCommas( _searchText );
 				
-				if (_dataProvider && _dataProvider.length == 1)
+				if (_dataProvider && _dataProvider.length > 0)
 				{
-					var item:Object = _dataProvider.getItemAt( 0 );
-					
-					if (_autoSelectFunction != null)
-					{
-						if (_autoSelectFunction( item, str ))
-						{
-							_selectedItems.addItem( item );
-							dispatchEvent( new Event( Event.CHANGE ) );
-							return true;
-						}
-					}
-					else
-					{
-						var label:String = getLabel( item, _labelField );
+					for (var index:uint = 0; index < _dataProvider.length; index++){
+						var item:Object = _dataProvider.getItemAt( index );
 						
-						if (label.toLowerCase() == str.toLowerCase())
+						if (_autoSelectFunction != null)
 						{
-							_selectedItems.addItem( item );
-							dispatchEvent( new Event( Event.CHANGE ) );
-							return true;
+							if (_autoSelectFunction( item, str ))
+							{
+								_selectedItems.addItem( item );
+								dispatchEvent( new Event( Event.CHANGE ) );
+								return true;
+							}
+						}
+						else
+						{
+							var label:String = getLabel( item, _labelField );
+							
+							if (label.toLowerCase() == str.toLowerCase())
+							{
+								_selectedItems.addItem( item );
+								dispatchEvent( new Event( Event.CHANGE ) );
+								return true;
+							}
 						}
 					}
 				}
