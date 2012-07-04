@@ -16,31 +16,37 @@ package com.kaltura.kmc.modules.content.commands.cat {
 
 	public class DeleteCategoriesCommand extends KalturaCommand {
 		
-		private var ids:Array;
+		private var _ids:Array;
+		
+		private var _numOfGroups:int = 1;	// numbre of groups to process
+		
+		private var _callsCompleted:int = 0;	// number of calls (groups) already processed
+		
+		private var _callFailed:Boolean = false;	// if any call failed, set to true
 		
 		override public function execute(event:CairngormEvent):void {
 			var rm:IResourceManager = ResourceManager.getInstance();
 			var hasSubCats:Boolean;
 			if (event.data) {
 				hasSubCats = event.data[1]; 
-				ids = event.data[0] as Array;
+				_ids = event.data[0] as Array;
 			}
-			if (!ids) {
+			if (!_ids) {
 				// get from model
-				ids = [];
+				_ids = [];
 				for each (var kCat:KalturaCategory in _model.categoriesModel.selectedCategories) {
-					ids.push(kCat.id);
+					_ids.push(kCat.id);
 				}
 			}
 			
 			var msg:String;
-			if (ids.length == 0) {
+			if (_ids.length == 0) {
 				// no categories
 				Alert.show(rm.getString('entrytable', 'selectCategoriesFirst'),
 					rm.getString('cms', 'selectCategoriesFirstTitle'));
 				return;
 			}
-			else if (ids.length == 1) {
+			else if (_ids.length == 1) {
 				// batch action
 				if (hasSubCats) {
 					// "subcats will be deleted"
@@ -61,60 +67,56 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		
 		private function deleteCats(e:CloseEvent):void {
 			if (e.detail == Alert.OK) {
-				var mr:MultiRequest = new MultiRequest();
-				for each (var id:int in ids) {
-					var deleteCategory:CategoryDelete = new CategoryDelete(id);
-					mr.addAction(deleteCategory);
+				_numOfGroups = Math.floor(_ids.length / 50);
+				var lastGroupSize:int = _ids.length % 50;
+				if (lastGroupSize != 0) {
+					_numOfGroups++;
 				}
 				
-				_model.increaseLoadCounter();
-				mr.addEventListener(KalturaEvent.COMPLETE, result);
-				mr.addEventListener(KalturaEvent.FAILED, fault);
-				_model.context.kc.post(mr);
+				var groupSize:int;
+				var mr:MultiRequest;
+				for (var groupIndex:int = 0; groupIndex < _numOfGroups; groupIndex++) {
+					mr = new MultiRequest();
+					mr.addEventListener(KalturaEvent.COMPLETE, result);
+					mr.addEventListener(KalturaEvent.FAILED, fault);
+					mr.queued = false;
+					
+					groupSize = (groupIndex < (_numOfGroups - 1)) ? 50 : lastGroupSize;
+					for (var entryIndexInGroup:int = 0; entryIndexInGroup < groupSize; entryIndexInGroup++) {
+						var index:int = ((groupIndex * 50) + entryIndexInGroup);
+						var keepId:int = _ids[index];
+						var deleteCategory:CategoryDelete = new CategoryDelete(keepId);
+						mr.addAction(deleteCategory);
+					}
+					_model.increaseLoadCounter();
+					_model.context.kc.post(mr);
+				}
 			}
 		}
 
 
 		override public function result(data:Object):void {
 			super.result(data);
+			_model.decreaseLoadCounter();
 			var rm:IResourceManager = ResourceManager.getInstance();
-			var er:KalturaError = (data as KalturaEvent).error;
-			var isError:Boolean;
-			if (er) {
-				Alert.show(getErrorText(er), rm.getString('cms', 'error'));
-				isError = true;
-			}
-			else {
-				// look iside MR
-				for each (var o:Object in data.data) {
-					er = o as KalturaError;
-					if (er) {
-						Alert.show(getErrorText(er), rm.getString('cms', 'error'));
-						isError = true;
-					}
-					else if (o.error) {
-						// in MR errors aren't created
-						var str:String = rm.getString('cms', o.error.code);
-						if (!str) {
-							str = o.error.message;
-						}
-						Alert.show(str, rm.getString('cms', 'error'));
-						isError = true;
-					}
+			
+			_callsCompleted ++;
+			_callFailed ||= checkError(data);
+			if (_callsCompleted == _numOfGroups) {
+				if (!_callFailed) {
+					Alert.show(rm.getString('cms', 'categoryDeleteDoneMsg'), rm.getString('cms', 'categoryDeleteDoneMsgTitle'));
+					
 				}
-			}
-			if (!isError) {
-				Alert.show(rm.getString('cms', 'categoryDeleteDoneMsg'), rm.getString('cms', 'categoryDeleteDoneMsgTitle'));
+				
 				if (_model.filterModel.catTreeDataManager) {
 					_model.filterModel.catTreeDataManager.resetData();
 				}
-
+				
 				var cgEvent:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
 				cgEvent.dispatch();
 				cgEvent = new CatTrackEvent(CatTrackEvent.UPDATE_STATUS);
 				cgEvent.dispatch();
 			}
-			_model.decreaseLoadCounter();
 		}
 	}
 }
