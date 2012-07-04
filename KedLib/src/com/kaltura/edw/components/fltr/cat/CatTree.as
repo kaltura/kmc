@@ -362,6 +362,8 @@ package com.kaltura.edw.components.fltr.cat
 				case CatTreeSelectionMode.SINGLE_SELECT:
 					// deselect previous
 					deselectAllCategories();
+					_initialFilter = '';
+					_currentFilter = '';
 					// select new
 					if (catid != "0") {
 						// cannot "remember" root category
