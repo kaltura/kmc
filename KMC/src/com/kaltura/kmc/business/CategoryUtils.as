@@ -23,14 +23,15 @@ package com.kaltura.kmc.business
 				cat.contributionPolicy = int.MIN_VALUE;
 				cat.defaultPermissionLevel = int.MIN_VALUE;
 				cat.inheritanceType = int.MIN_VALUE;
-				//	cat.userJoinPolicy = int.MIN_VALUE;
+				// cat.userJoinPolicy = int.MIN_VALUE;
 			}
 				
 				
-				// if category inherits members from parent, don't send inherited values
+			// if category inherits members from parent, don't send inherited values
 			else if (cat.inheritanceType == KalturaInheritanceType.INHERIT) {
 				cat.defaultPermissionLevel = int.MIN_VALUE;
-				//	cat.userJoinPolicy = int.MIN_VALUE;
+				cat.owner = null;
+				// cat.userJoinPolicy = int.MIN_VALUE;
 			}
 		}
 	}

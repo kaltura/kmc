@@ -105,6 +105,7 @@ package com.kaltura.kmc.modules.content.commands {
 					mr = new MultiRequest();
 					mr.addEventListener(KalturaEvent.COMPLETE, result);
 					mr.addEventListener(KalturaEvent.FAILED, fault);
+					mr.queued = false;
 
 					groupSize = (groupIndex < (numOfGroups - 1)) ? 50 : lastGroupSize;
 					for (var entryIndexInGroup:int = 0; entryIndexInGroup < groupSize; entryIndexInGroup++) {
