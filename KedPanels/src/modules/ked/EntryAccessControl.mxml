@@ -60,17 +60,12 @@ access control tab of EntryDetailsWin
 				_dpModel = value;
 				filterModel = (_dpModel.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
 				BindingUtils.bindProperty(this, "accessControlData", filterModel, "accessControlProfiles");
-//				accessControlData = filterModel.accessControlProfiles;
 			}
 			
 			public function get helpAnchor():String{
 				return "entry_accesscontrol";
 			}
 			
-			/**
-			 * list of entries to edit in SetAccessControlProfileWin
-			 * */
-//			public var selectedEntries:ArrayCollection;
 			
 			/**
 			 * filtering parameters
@@ -96,9 +91,6 @@ access control tab of EntryDetailsWin
 					var getAllProfilesEvent:AccessControlEvent = new AccessControlEvent(AccessControlEvent.LIST_ACCESS_CONTROLS_PROFILES);
 					controller.dispatch(getAllProfilesEvent);
 				}
-				//					else {
-				//					updateAccessSection()
-				//				}
 				
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.ACCESS_CONTROL_PANEL);
 			}
@@ -121,6 +113,7 @@ access control tab of EntryDetailsWin
 			
 			
 			public function save():void {
+				_isChanged = false;
 				// only chages value on the entry
 				dispatchEvent(new InternalKedEvent(InternalKedEvent.SAVED));
 			}
@@ -178,7 +171,6 @@ access control tab of EntryDetailsWin
 				PopUpManager.centerPopUp(newProfileWin);
 				
 				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE, saveProfile, false, 0, true);
-				//				newProfileWin.addEventListener(AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE, saveProfile, false, 0, true);
 			}
 			
 			
@@ -187,14 +179,7 @@ access control tab of EntryDetailsWin
 			 * */
 			private function saveProfile(event:Event):void {
 				var saveProfileChangesEvent:AccessControlEvent;
-				//				switch (event.type) {
-				//					case AccessControlProfilePopUpWindow.SAVE_NEW_PROFILE:
 				saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.ADD_NEW_ACCESS_CONTROL_PROFILE);
-				//						break;
-				//					case AccessControlProfilePopUpWindow.SAVE_UPDATED_PROFILE:
-				//						saveProfileChangesEvent = new AccessControlEvent(AccessControlEvent.UPDATE_ACCESS_CONTROL_PROFILE);
-				//						break;
-				//				}
 				saveProfileChangesEvent.data = (event.target as AccessControlProfilePopUpWindow).accessControlProfile;
 				controller.dispatch(saveProfileChangesEvent);
 			}
