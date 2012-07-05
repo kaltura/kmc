@@ -344,6 +344,10 @@ package com.kaltura.edw.components.fltr.cat
 			if (_selectedCategories) {
 				for each (var oldcat:CategoryVO in _selectedCategories) {
 					setCatSelectionStatus(oldcat, CatSelectionStatus.UNSELECTED);
+					if (selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+						setChildrenSelection(oldcat, TriStateCheckBox.UNSELECTED, true);
+						remarkParents(oldcat);
+					}
 				}
 			}
 			
