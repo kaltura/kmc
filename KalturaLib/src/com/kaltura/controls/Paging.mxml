@@ -111,23 +111,25 @@
 			}
 
 			public function set totalCount(value:int):void {
-				if (_totalCount == value || (value > 0 && _behavior is StandardPaging) || (value <= 0 && _behavior is MissingTotalPaging))
+				if (_totalCount == value)
 					return;
 
 				_totalCount = value;
 				
+				// Saving last behavior properties
 				setBehaviorListeners(false);
 				var currPage:int = _behavior.selectedPage;
 				var currRows:int = _behavior.currRowsInPage;
 				var currSize:int = _behavior.pageSize;
 				
-				
+				// Creating the new behavior according to the circumstances
 				if (_totalCount > 0){
 					_behavior = new StandardPaging(_totalCount, _showFirstLast, doubleEnd, sideLinkCount);
 				} else {
 					_behavior = new MissingTotalPaging();
 				}
 				
+				// Initializing the behavior with view containers
 				_behavior.init(pagingContainer, labelContainer);
 				
 				// Transferring data from old behavior
@@ -136,7 +138,7 @@
 				_behavior.pageSize = currSize;
 				
 				setBehaviorListeners(true);
-				
+	
 				updatePaging();
 			}
 
