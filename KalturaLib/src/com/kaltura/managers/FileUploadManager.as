@@ -645,15 +645,21 @@ package com.kaltura.managers {
 			if (!file) {
 				return;
 			}
-			// call uploadToken.delete with relevant upload token.
-			var utd:UploadTokenDelete = new UploadTokenDelete(file.uploadToken);
-			file.addEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
-			file.addEventListener(KalturaEvent.FAILED, handleDeleteResult);
 			
-			utd.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
-			utd.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
-			
-			_kc.post(utd);
+			if (file.status == FileUploadVO.STATUS_UPLOADING) {
+				file.file.cancel();
+			}
+			else {
+				// call uploadToken.delete with relevant upload token.
+				var utd:UploadTokenDelete = new UploadTokenDelete(file.uploadToken);
+				file.addEventListener(KalturaEvent.COMPLETE, handleDeleteResult);
+				file.addEventListener(KalturaEvent.FAILED, handleDeleteResult);
+				
+				utd.addEventListener(KalturaEvent.COMPLETE, file.bubbleEvent);
+				utd.addEventListener(KalturaEvent.FAILED, file.bubbleEvent);
+				
+				_kc.post(utd);
+			}
 			// Dispatch "fileUploadCanceled" event.
 			dispatchEvent(new FileUploadEvent(FileUploadEvent.UPLOAD_CANCELED, uploadid));
 			// Remove relevant fileVo from files list.	
@@ -661,6 +667,7 @@ package com.kaltura.managers {
 			_files.splice(ind, 1);
 			filesCollection.refresh();
 			if (file.status == FileUploadVO.STATUS_UPLOADING) {
+				_ongoingUploads--;
 				uploadNextFile();
 			}
 		}

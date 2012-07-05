@@ -94,7 +94,7 @@ package com.kaltura.utils
     	}
 		
 		public static function traceObject(o:*):void {
-			for each (var s:String in o) {
+			for (var s:String in o) {
 				trace(s, ":", o[s]);
 			}
 			trace("---");
