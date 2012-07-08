@@ -23,6 +23,7 @@ package com.kaltura.edw.components.fltr.panels
 			}
 			
 			if (_buttons) {
+				_buttons[0].selected = false;
 				// scan the fields (filter.items)
 				for each (var field:KalturaSearchCondition in value.items) {
 					// for each field, find a matching button and select it
@@ -33,6 +34,7 @@ package com.kaltura.edw.components.fltr.panels
 						}
 					}
 				}
+				//TODO if all buttons are selected..
 			}
 			else {
 				// keep the value for later
