@@ -73,6 +73,7 @@ package com.kaltura.controls.table
 		
 		override public function set dataProvider(value:Object):void {
 			super.dataProvider = value;
+			setSortIndicator();
 			mx_internal::columnRendererChanged(columns[0]);
 		}
 		

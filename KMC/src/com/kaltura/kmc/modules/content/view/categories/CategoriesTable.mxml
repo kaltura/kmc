@@ -14,6 +14,7 @@
 			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.et.EntryTableLabelFunctions;
 			import com.kaltura.edw.components.fltr.EntriesFilter;
 			import com.kaltura.edw.events.GeneralNonCairngormEvent;
 			import com.kaltura.kmc.events.KmcNavigationEvent;
@@ -78,9 +79,9 @@
 					
 					var sortDir:Boolean = columnsSortMap.getValue(headerText) as Boolean;
 					switch (event.itemRenderer.data.headerText) {
-//						case resourceManager.getString('entrytable', 'createAt'):
-//							_orderBy = sortDir ? KalturaCategoryOrderBy.CREATED_AT_ASC : KalturaCategoryOrderBy.CREATED_AT_DESC;
-//							break;
+						case resourceManager.getString('cms', 'createAt'):
+							_orderBy = sortDir ? KalturaCategoryOrderBy.CREATED_AT_ASC : KalturaCategoryOrderBy.CREATED_AT_DESC;
+							break;
 //						case resourceManager.getString('entrytable', 'idHeader'):
 //							_orderBy = sortDir ? KalturaCategoryOrderBy.PLAYS_ASC : KalturaCategoryOrderBy.PLAYS_DESC;
 //							break;
@@ -112,7 +113,7 @@
 			
 
 			private function creationCompleteHandler(event:FlexEvent):void {
-				_sortIndex = 5;
+				_sortIndex = 3;
 				addEventListener(NameRenderer.NAME_CLICKED, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.EDIT, openDrilldown, false, 0, true);
 				addEventListener(CategoriesTableActions.DELETE, deleteCategory, false, 0, true);
@@ -240,6 +241,7 @@
 				
 				dispatchEvent(new KmcNavigationEvent(KmcNavigationEvent.NAVIGATE, "content", "manage", {kmef: kmef}));
 			}
+			
 
 		]]>
 	</mx:Script>
@@ -255,6 +257,11 @@
 		<mx:DataGridColumn id="cname" dataField="name" paddingLeft="4" paddingRight="4"
 						   headerText="{resourceManager.getString('cms', 'name')}" 
 						   itemRenderer="com.kaltura.kmc.modules.content.view.categories.renderers.NameRenderer"/>
+		
+		<mx:DataGridColumn id="cCreated" dataField="createdAt" paddingLeft="4" paddingRight="4"
+						   width="100" headerText="{resourceManager.getString('cms', 'createAt')}" 
+						   labelFunction="{EntryTableLabelFunctions.formatDate}"
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 		
 		<mx:DataGridColumn id="subcats" dataField="directSubCategoriesCount" paddingLeft="10" paddingRight="4"
 						   width="140" headerText="{resourceManager.getString('cms', 'subCategoriesTitle')}" 
