@@ -81,6 +81,13 @@ package com.kaltura.kmc.modules.content.model
 		public var onTheFlyCategoryEntries:Array;
 		
 		
+		/**
+		 * when saving a category we list all categories that have the same 
+		 * referenceId as the category being saved. this is the list.
+		 */
+		public var categoriesWSameRefidAsSelected:Array;
+		
+		
 		// -----------------------------------------
 		// cat.drilldown: metadata tab
 		// -----------------------------------------

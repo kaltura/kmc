@@ -8,6 +8,7 @@
 								 styleName="WinTitleStyle">
 	<mx:Script>
 		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEvent;
 			import com.kaltura.KalturaClient;
 			import com.kaltura.edw.events.KedDataEvent;
 			import com.kaltura.edw.events.ValidationResultEvent;
@@ -168,9 +169,16 @@
 
 
 			
-			
-			
-			private function save():void {
+			/**
+			* @internal
+			* the close event is there in case the function is triggered from refid alert
+			* */
+			private function save(e:CloseEvent = null):void {
+				if (e && e.detail == Alert.NO) {
+					_nextPendingCategory = 0;
+					return;
+				}
+				
 				if (_isNewCategory && _model.processingNewCategory) {
 					addCategory();
 				}
@@ -353,6 +361,12 @@
 				dispatchEvent(new KmcHelpEvent(KmcHelpEvent.HELP, anchor, true));
 			}
 
+			
+			/**
+			 * watcher for categories with the same refid
+			 * */
+			private var _sameRefidWatcher:ChangeWatcher;
+			
 
 			private function tabsNav_validationCompleteHandler(event:ValidationResultEvent):void {
 //				Reference ID: Should be unique under a category under the same parent category. 
@@ -361,22 +375,43 @@
 //								(same as in entry reference ID)
 				
 				// if referenceId was changed
-//				if (_undoCategory.referenceId && _undoCategory.referenceId != KalturaClient.NULL_STRING && _origCategory.referenceId != _undoCategory.referenceId) {
-//					// list all entries with the same refid , if any - show message
-//					if (!_sameRefidWatcher) {
-//						_entryDp.entriesWSameRefidAsSelected = new Array();
-//						_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _entryDp, "entriesWSameRefidAsSelected");
-//					}
-//					var cg:KMvCEvent = new KedEntryEvent(KedEntryEvent.LIST_ENTRIES_BY_REFID, undoToEntry);
-//					edwController.dispatch(cg);
-//				}
-//				else {
+				if (_undoCategory.referenceId && _undoCategory.referenceId != KalturaClient.NULL_STRING && _origCategory.referenceId != _undoCategory.referenceId) {
+					// list all entries with the same refid , if any - show message
+					if (!_sameRefidWatcher) {
+						_model.categoriesWSameRefidAsSelected = new Array();
+						_sameRefidWatcher = BindingUtils.bindSetter(confirmSameRefid, _model, "categoriesWSameRefidAsSelected");
+					}
+					var cg:CairngormEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES_BY_REFID);
+					cg.data = _undoCategory;
+					cg.dispatch();
+				}
+				else {
 					// just save it
 					save();
-//				}
+				}
 			}
 			
-			
+			/**
+			 * confirm saving category with existing referenceId
+			 * */
+			private function confirmSameRefid(value:Object):void {
+				if (value && value.length > 0) {
+					// we have categories with the same refid
+					var str:String = '';
+					for each (var o:KalturaCategory in value) {
+						str += resourceManager.getString('cms', 'existingRefidCat', [o.fullName, o.id]);
+					}
+					Alert.show(resourceManager.getString('cms', 'existingRefid', [_undoCategory.referenceId, str]),
+						resourceManager.getString('cms', 'attention'), Alert.YES | Alert.NO, this, save);
+				}
+				else if (!value) {
+					save();
+				}
+				
+				if (!value || value.length > 0) {
+					_model.categoriesWSameRefidAsSelected = new Array();
+				}
+			}
 
 
 		]]>

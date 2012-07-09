@@ -152,6 +152,12 @@ package com.kaltura.kmc.modules.content.events
 		 */
 		public static const RESET_CATEGORY_USER_LIST:String = 'content_resetCategoryUserList';
 		
+		/**
+		 * get a list of categories with the same reference id as the given
+		 * event.data is KalturaCategory
+		 * */
+		public static const LIST_CATEGORIES_BY_REFID:String = "content_list_categories_by_refid"; 
+		
 		
 		
 		public function CategoryEvent( type:String , 

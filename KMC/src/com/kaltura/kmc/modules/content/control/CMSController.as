@@ -149,6 +149,7 @@ package com.kaltura.kmc.modules.content.control {
 			addCommand(CategoryEvent.LIST_CATEGORY_USERS, ListCategoryUsersCommand);
 			addCommand(CategoryEvent.RESET_CATEGORY_USER_LIST, ListCategoryUsersCommand);
 			addCommand(CategoryEvent.SET_REFRESH_REQUIRED, SetRefreshCatsRequiredCommand);
+			addCommand(CategoryEvent.LIST_CATEGORIES_BY_REFID, ListCategoriesByRefidCommand);
 			
 			
 			// category users
