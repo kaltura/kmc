@@ -84,6 +84,8 @@ package com.kaltura.edw.control.commands
 			
 			_model.increaseLoadCounter();
 			
+			var pager:KalturaFilterPager;
+			
 			// custom data hack
 			if (_filterModel.enableCustomData) {
 				var lmdp:MetadataProfileEvent = new MetadataProfileEvent(MetadataProfileEvent.LIST);
@@ -94,20 +96,22 @@ package com.kaltura.edw.control.commands
 			
 			// distribution
 			if (_filterModel.enableDistribution) {
-				var listDistributionProfile:DistributionProfileList = new DistributionProfileList();
+				pager = new KalturaFilterPager();
+				pager.pageSize = DEFAULT_PAGE_SIZE;
+				var listDistributionProfile:DistributionProfileList = new DistributionProfileList(null, pager);
 				multiRequest.addAction(listDistributionProfile);
 			}
 			// flavor params
-			var flavorsPager:KalturaFilterPager = new KalturaFilterPager();
-			flavorsPager.pageSize = DEFAULT_PAGE_SIZE;
-			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, flavorsPager);
+			pager = new KalturaFilterPager();
+			pager.pageSize = DEFAULT_PAGE_SIZE;
+			var listFlavorParams:FlavorParamsList = new FlavorParamsList(null, pager);
 			multiRequest.addAction(listFlavorParams);
 			// access control
 			var acfilter:KalturaAccessControlFilter = new KalturaAccessControlFilter();
 			acfilter.orderBy = KalturaAccessControlOrderBy.CREATED_AT_DESC;
-			var pager1:KalturaFilterPager = new KalturaFilterPager();
-			pager1.pageSize = 1000;
-			var getListAccessControlProfiles:AccessControlList = new AccessControlList(acfilter, pager1);
+			pager = new KalturaFilterPager();
+			pager.pageSize = 1000;
+			var getListAccessControlProfiles:AccessControlList = new AccessControlList(acfilter, pager);
 			multiRequest.addAction(getListAccessControlProfiles);
 			
 			// listeners
