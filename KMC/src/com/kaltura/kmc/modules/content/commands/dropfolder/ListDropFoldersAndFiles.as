@@ -30,6 +30,8 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.core.mx_internal;
+	import mx.resources.IResourceBundle;
+	import mx.resources.IResourceManager;
 	import mx.resources.ResourceManager;
 	
 //	use namespace mx.core.mx_internal;
@@ -60,10 +62,11 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 
 
 		override public function result(data:Object):void {
+			var rm:IResourceManager = ResourceManager.getInstance();
 			if (data.error) {
 				var er:KalturaError = data.error as KalturaError;
 				if (er) {
-					Alert.show(er.errorMsg, "Error");
+					Alert.show(er.errorMsg, rm.getString('cms', 'error'));
 				}
 			}
 			else {
@@ -71,9 +74,9 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 				_model.dropFolderModel.dropFolders = new ArrayCollection(ar);
 				
 				if (ar.length == 0) {
-					// show the annoying product-team alert
-					var str:String = ResourceManager.getInstance().getString('cms', 'dfUpsale');
-					var alert:Alert = Alert.show(str, ResourceManager.getInstance().getString('cms', 'attention'));
+					// show upsale alert
+					var str:String = rm.getString('cms', 'dfUpsale');
+					var alert:Alert = Alert.show(str, rm.getString('cms', 'attention'));
 					alert.mx_internal::alertForm.mx_internal::textField.htmlText = str; // because it includes links and stuff
 					_model.decreaseLoadCounter();
 				}
@@ -99,7 +102,7 @@ package com.kaltura.kmc.modules.content.commands.dropfolder {
 							KalturaDropFolderFileStatus.WAITING; 
 						_model.dropFolderModel.filter = _fileFilter;
 					}
-					var listFiles:DropFolderFileList = new DropFolderFileList(_fileFilter);
+					var listFiles:DropFolderFileList = new DropFolderFileList(_fileFilter, _model.dropFolderModel.pager);
 	
 					listFiles.addEventListener(KalturaEvent.COMPLETE, filesResult);
 					listFiles.addEventListener(KalturaEvent.FAILED, fault);
