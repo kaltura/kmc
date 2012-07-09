@@ -114,6 +114,7 @@ package com.kaltura.kmc.modules.analytics.commands
 				_model.reportDataMap[_model.currentScreenState].objectName = _model.drillDownName; 
 				
 			_model.reportDataMap[_model.currentScreenState].aggregatedDataArrCol = arrCol;
+			_model.reportDataMap[_model.currentScreenState].originalTotalHeaders = aggLbls;
 			_model.filter = _model.filter;
 			
 			//if we have entitlement and the uniqe users are known

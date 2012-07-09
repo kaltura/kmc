@@ -26,9 +26,9 @@ package com.kaltura.kmc.modules.analytics.commands
 			_model.loadingFlag = true;
 			var headers : String = "";
 			
-			for(var j:int=0;j<_model.selectedReportData.totalHeaders.length; j++)
-				if(_model.selectedReportData.totalHeaders[j] != "object_id")
-					headers += ResourceManager.getInstance().getString('analytics',_model.selectedReportData.totalHeaders[j]) + ",";
+			for(var j:int=0;j<_model.selectedReportData.originalTotalHeaders.length; j++)
+				if(_model.selectedReportData.originalTotalHeaders[j] != "object_id")
+					headers += ResourceManager.getInstance().getString('analytics',_model.selectedReportData.originalTotalHeaders[j]) + ",";
 					
 			headers = headers.substr(0,headers.length-1);
 			headers += ";";	//";Object Id,"; (see mantis ticket 13090 requesting to remove this header)

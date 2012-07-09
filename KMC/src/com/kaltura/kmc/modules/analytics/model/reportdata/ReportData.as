@@ -29,6 +29,7 @@ package com.kaltura.kmc.modules.analytics.model.reportdata
 		
 		public var dataFieldDp : Array;
 		public var originalTableHeaders:Array;
+		public var originalTotalHeaders:Array;
 		public var wasObjectIdDropped:Boolean = false;
 		public var tableDp: ArrayCollection;
 		public var pager : KalturaFilterPager;
