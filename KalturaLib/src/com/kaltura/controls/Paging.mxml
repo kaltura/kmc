@@ -116,6 +116,13 @@
 
 				_totalCount = value;
 				
+				changeBehavior();
+	
+				updatePaging();
+			}
+			
+			private function changeBehavior():void{
+				
 				// Saving last behavior properties
 				setBehaviorListeners(false);
 				var currPage:int = _behavior.selectedPage;
@@ -123,7 +130,7 @@
 				var currSize:int = _behavior.pageSize;
 				
 				// Creating the new behavior according to the circumstances
-				if (_totalCount > 0){
+				if (_totalCount > 0 || currRows == 0){
 					_behavior = new StandardPaging(_totalCount, _showFirstLast, doubleEnd, sideLinkCount);
 				} else {
 					_behavior = new MissingTotalPaging();
@@ -138,8 +145,6 @@
 				_behavior.pageSize = currSize;
 				
 				setBehaviorListeners(true);
-	
-				updatePaging();
 			}
 
 			private function setBehaviorListeners(doAdd:Boolean):void{
@@ -305,7 +310,12 @@
 			}
 			
 			public function set currRowsInPage(value:int):void{
+				if (_behavior.currRowsInPage == value){
+					return;
+				}
 				_behavior.currRowsInPage = value;
+				
+				changeBehavior();
 			}
 			
 			public function get currRowsInPage():int{
