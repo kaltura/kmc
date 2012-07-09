@@ -45,27 +45,8 @@ package com.kaltura.kmc.modules.content.commands
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
-			var str:String;
-			var er:KalturaError = (data as KalturaEvent).error;
-			var rm:IResourceManager = ResourceManager.getInstance();
-			if (er) {
-				str = rm.getString('cms', er.errorCode);
-				if (!str) {
-					str = er.errorMsg;
-				} 
-				Alert.show(str, rm.getString('cms', 'error'));
-			}
-			else {
-				for each (var o:Object in data.data) {
-					er = o as KalturaError;
-					if (er) {
-						str = rm.getString('cms', er.errorCode);
-						if (!str) {
-							str = er.errorMsg;
-						} 
-						Alert.show(str, rm.getString('cms', 'error'));
-					}
-				}
+			if (!checkError(data)) {
+				Alert.show(ResourceManager.getInstance().getString('cms', 'updateCompleteOwner'));
 			}
 		}
 	}
