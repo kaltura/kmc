@@ -11,6 +11,7 @@ package com.kaltura.kmc.modules.content.commands.bulk
 		
 		override public function execute(event:CairngormEvent):void
 		{
+			_model.increaseLoadCounter();
 			var kbu:BulkUploadAbort = new BulkUploadAbort(event.data);
 			kbu.addEventListener(KalturaEvent.COMPLETE, result);
 			kbu.addEventListener(KalturaEvent.FAILED, fault);
@@ -23,6 +24,7 @@ package com.kaltura.kmc.modules.content.commands.bulk
 			var temp:KalturaBulkUpload;
 			var bulkEvent : BulkEvent = new BulkEvent( BulkEvent.LIST_BULK_UPLOAD );
 			bulkEvent.dispatch();
+			_model.decreaseLoadCounter();
 		}
 	}
 }
