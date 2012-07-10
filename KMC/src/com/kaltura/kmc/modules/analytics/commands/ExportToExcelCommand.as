@@ -52,7 +52,8 @@ package com.kaltura.kmc.modules.analytics.commands
 			
 			
 			//NEVER SHOULD HAPPEN BUT IF DOES THEN IT'S BETTER THEN FAIL SENDING MASSAGE
-			if( _model.selectedReportData.message == "" || _model.selectedReportData.message == null) _model.selectedReportData.message="no message"; 
+			var message2Send:String = _model.selectedReportData.message;
+			if( _model.selectedReportData.message == "" || _model.selectedReportData.message == null) message2Send="no message"; 
 			if( _model.selectedReportData.title == "" || _model.selectedReportData.title == null) _model.selectedReportData.title="no title"; 
 			
 			var export2Csv : ReportGetUrlForReportAsCsv;
@@ -66,7 +67,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				export2Csv = new ReportGetUrlForReportAsCsv( _model.selectedReportData.title, 
-					_model.selectedReportData.message,
+					message2Send,
 					headers,
 					_model.selectedReportData.type,
 					keurif,
@@ -79,7 +80,7 @@ package com.kaltura.kmc.modules.analytics.commands
 			{
 				var krif : KalturaReportInputFilter = ExecuteReportHelper.createFilterFromCurrentReport();
 				export2Csv = new ReportGetUrlForReportAsCsv( _model.selectedReportData.title, 
-					_model.selectedReportData.message,
+					message2Send,
 					headers,
 					_model.selectedReportData.type,
 					krif,
