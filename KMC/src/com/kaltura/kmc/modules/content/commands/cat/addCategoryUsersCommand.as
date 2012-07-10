@@ -50,9 +50,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			if (data.data.length == 2) {
 				// we won't have more than a single "user already exists" error, so handle regularly 
 				if (!checkError(data)) {
-					// get updated list of users
-					var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
-					cg.dispatch();
+					
 					// set new numbers of members to the category object
 					var updatedCat:KalturaCategory = data.data[data.data.length-1] as KalturaCategory;
 					_model.categoriesModel.selectedCategory.membersCount = updatedCat.membersCount;
@@ -82,7 +80,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 				}
 			}
 			
-			
+			// get updated list of users
+			var cg:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORY_USERS);
+			cg.dispatch();
 			
 			_model.decreaseLoadCounter();
 		}
