@@ -84,12 +84,19 @@ package com.kaltura.edw.components.fltr.cat
 		// -----------------------		
 		
 		override public function set dataProvider(value:Object):void {
+			var savedOpenItems:Array = openItems as Array; // returns a copy of the array
 			super.dataProvider = value;
+			validateNow();
 			if (value && _currentFilter) {
 				deselectAllCategories();
 				remarkPreviouslySelected(true);
 			}
 			disableItems();
+			for each (var o:Object in savedOpenItems) {
+				if (!isItemOpen(o)) {
+					expandItem(o, true);
+				}
+			}
 		}
 		
 		
@@ -431,7 +438,19 @@ package com.kaltura.edw.components.fltr.cat
 					}
 					break;
 			}
-			
+
+			if (eventKind == FilterComponentEvent.EVENT_KIND_ADD) {
+				var shouldOpen:Boolean = true;
+				for each (var catvo:CategoryVO in openItems) {
+					if (catvo == cat) {
+						shouldOpen = false;
+						break;
+					}
+				}
+				if (shouldOpen) {
+					expandToItem(cat, true);
+				}
+			}
 			
 			// indicators: no need to handle single select state (doesn't exist in filter)
 			if (dispatch) {
@@ -439,6 +458,24 @@ package com.kaltura.edw.components.fltr.cat
 			}
 		}
 		
+		
+		/**
+		 * expand all ancestors of the given item 
+		 * @param item	Item to affect
+		 * @param open	Specify true to open, false to close
+		 */		
+		private function expandToItem(item:Object, open:Boolean):void {
+			var cat:CategoryVO = item as CategoryVO;
+			while (cat.category.parentId != 0) {
+				cat = categories.getValue(cat.category.parentId.toString());
+				if (cat) {
+					expandItem(cat, open);
+				}
+				else {
+					break;
+				}
+			}
+		}
 		
 		/**
 		 * remove an item from the current filter data 
