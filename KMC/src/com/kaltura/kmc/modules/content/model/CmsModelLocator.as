@@ -208,6 +208,14 @@ package com.kaltura.kmc.modules.content.model {
 			if (_loadingCounter == 0) {
 				dispatchEvent(new Event(CmsModelLocator.LOADING_FLAG_CHANGED));
 			}
+			else if (_loadingCounter < 0) {
+				try {
+					throw new Error("loading counter below zero");
+				} 
+				catch (e:Error) {
+					trace(e.getStackTrace());
+				}
+			}
 		}
 		
 		
