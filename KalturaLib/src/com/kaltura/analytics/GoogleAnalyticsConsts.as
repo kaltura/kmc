@@ -111,9 +111,19 @@ package com.kaltura.analytics {
 		public static const CONTENT_ADD_TAGS:String = "Add tags Multiple Entries"; 
 		
 		/**
+		 * add tags to multiple categories
+		 */
+		public static const CONTENT_ADD_CATEGORY_TAGS:String = "Add tags Multiple Categories"; 
+		
+		/**
 		 * remove tags from Multiple Entries 
 		 */
 		public static const CONTENT_REMOVE_TAGS:String = "Remove Tags Multiple Entries"; 
+		
+		/**
+		 * remove tags from Multiple categories 
+		 */
+		public static const CONTENT_REMOVE_CATEGORY_TAGS:String = "Remove Tags Multiple Categories"; 
 		
 		/**
 		 * create new category 

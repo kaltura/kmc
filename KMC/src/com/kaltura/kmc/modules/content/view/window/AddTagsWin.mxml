@@ -53,7 +53,7 @@
 				if (_objects) {
 					for (var i:int = 0; i < _objects.length; i++) {
 						if (_objects[i].tags) {
-							_objects[i].tags = _objects[i].tags + "," + tags.text;
+							_objects[i].tags = _objects[i].tags + ", " + tags.text;
 						}
 						else {
 							_objects[i].tags = tags.text;
@@ -76,6 +76,7 @@
 					cgEvent = new CategoryEvent(CategoryEvent.UPDATE_CATEGORIES);
 					cgEvent.data = _objects;
 					cgEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_ADD_CATEGORY_TAGS,GoogleAnalyticsConsts.CONTENT);
 				}
 				// close window
 				mx_internal::closeButton.dispatchEvent(new MouseEvent(MouseEvent.CLICK));

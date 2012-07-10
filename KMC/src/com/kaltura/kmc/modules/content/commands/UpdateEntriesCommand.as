@@ -3,12 +3,13 @@ package com.kaltura.kmc.modules.content.commands {
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.baseEntry.BaseEntryUpdate;
 	import com.kaltura.commands.playlist.PlaylistUpdate;
-	import com.kaltura.kmc.modules.content.events.CategoryEvent;
-	import com.kaltura.kmc.modules.content.events.EntriesEvent;
+	import com.kaltura.edw.business.EntryUtil;
 	import com.kaltura.edw.control.events.SearchEvent;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
+	import com.kaltura.kmc.modules.content.events.EntriesEvent;
 	import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 	import com.kaltura.kmc.modules.content.events.WindowEvent;
 	import com.kaltura.types.KalturaEntryStatus;
@@ -140,25 +141,31 @@ package com.kaltura.kmc.modules.content.commands {
 		 * */
 		override public function result(data:Object):void {
 			super.result(data);
-			// if updated more than 1 entry, check if any result is error
-			if (data.data && data.data is Array) {
-				for (var i:uint = 0; i < (data.data as Array).length; i++) {
-					if ((data.data as Array)[i] is KalturaError) {
-						Alert.show(ResourceManager.getInstance().getString('cms', 'error') + ": " +
-							((data.data as Array)[i] as KalturaError).errorMsg);
-					}
-					else if ((data.data as Array)[i].hasOwnProperty("error")) {
-						Alert.show((data.data as Array)[i].error.message, ResourceManager.getInstance().getString('cms', 'error'));
+			var searchEvent:KMCSearchEvent;
+			if (!checkError(data)) {
+				if (_isPlaylist) {
+					// refresh playlists list
+					searchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
+					searchEvent.dispatch();
+					var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
+					cgEvent.dispatch();
+				}
+				else {
+					for each (var entry:KalturaBaseEntry in data.data) {
+						EntryUtil.updateSelectedEntryInList(entry, _entries);
 					}
 				}
 			}
-
-			// refresh playlists list
-			if (_isPlaylist) {
-				var searchEvent:KMCSearchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
-				searchEvent.dispatch();
-				var cgEvent:WindowEvent = new WindowEvent(WindowEvent.CLOSE);
-				cgEvent.dispatch();
+			else {
+				// reload data to reset changes that weren't made
+				if (_isPlaylist) {
+					searchEvent = new KMCSearchEvent(KMCSearchEvent.SEARCH_PLAYLIST, _model.listableVo);
+					searchEvent.dispatch();
+				}
+				else {
+					searchEvent = new KMCSearchEvent(KMCSearchEvent.DO_SEARCH_ENTRIES, _model.listableVo);
+					searchEvent.dispatch();
+				}
 			}
 			_model.decreaseLoadCounter();
 		}
