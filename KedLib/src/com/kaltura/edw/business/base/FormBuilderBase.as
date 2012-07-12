@@ -9,14 +9,15 @@ package com.kaltura.edw.business.base
 	import com.kaltura.edw.model.types.CustomMetadataConstantTypes;
 	import com.kaltura.edw.view.customData.ConsistentDateField;
 	import com.kaltura.edw.view.customData.DateFieldWithTime;
+	import com.kaltura.edw.view.customData.DeselectionComboBox;
 	import com.kaltura.edw.view.customData.MultiComponent;
 	import com.kaltura.edw.vo.CustomMetadataDataVO;
 	import com.kaltura.vo.KMCMetadataProfileVO;
-	import com.kaltura.vo.KalturaMetadata;
 	import com.kaltura.vo.MetadataFieldVO;
 	
 	import flash.display.DisplayObject;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
@@ -255,20 +256,23 @@ package com.kaltura.edw.business.base
 		public function buildComponent(component:XML, boundModel:MetadataDataObject, nestedFieldsArray:ArrayCollection):UIComponent {
 			var compInstance:UIComponent;
 			
-			// Specific handling for date- prevents issues with the DateField's auto correction (Mantis 11155)
-			if (component.localName() == "DateField"){
-				compInstance = new ConsistentDateField();
-			} else {
-				var componentName:String = component.@compPackage + component.localName();
-				var ClassReference:Class = getDefinitionByName(componentName) as Class;
-				compInstance = new ClassReference();
+			switch (component.localName()) {
+				case "DateField":
+					// Specific handling for date- prevents issues with the DateField's auto correction (Mantis 11155)
+					compInstance = new ConsistentDateField();
+					break;
+				case "ComboBox":
+					// use custom combobox (QC 2632)
+					compInstance = new DeselectionComboBox();
+					break;
+				default:
+					var componentName:String = component.@compPackage + component.localName();
+					var ClassReference:Class = getDefinitionByName(componentName) as Class;
+					compInstance = new ClassReference();
+					break;
 			}
-			//!setting the context param should be here, we will need it to set the dataArray property
-//			if (component.@id == CustomMetadataConstantTypes.ENTRY_LINK_TABLE) {
-//				compInstance["context"] = _model.getDataPack(ContextDataPack);
-//				compInstance["profileName"] = metadataProfile.profile.name;
-//			}
 			
+			//!setting the context param should be here, we will need it to set the dataArray property
 			buildComponentCheckHook(component, compInstance);
 			
 			var attributes:XMLList = component.attributes();
@@ -282,6 +286,7 @@ package com.kaltura.edw.business.base
 				}
 				else if (attrName == "dataProvider") {
 					compInstance[attrName] = attrValue.split(",");
+//					compInstance.validateNow();
 				}
 				else {
 					//if the attribute should be bound to another component
@@ -290,7 +295,7 @@ package com.kaltura.edw.business.base
 						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
 						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
-					else {
+					else if (attrName != "compPackage" && attrName != "metadataData") {
 						compInstance.setStyle(attrName, attrValue); // try to set the property as a style
 						var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
 						// if the style value is null the propery is not a style
@@ -299,7 +304,7 @@ package com.kaltura.edw.business.base
 						}
 						catch (e:Error) {
 							//this case is ok, we have a few attributes that are only used for the building of the view
-							//trace("could not push", attrName, "=", attrValue, "to", compInstance);
+							trace("could not push", attrName, "=", attrValue, "to", getQualifiedClassName(compInstance));
 						}
 						
 					}
