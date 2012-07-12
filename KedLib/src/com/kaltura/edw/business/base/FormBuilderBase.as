@@ -295,17 +295,23 @@ package com.kaltura.edw.business.base
 						var chainArray:Array = attrValue.substring(1, attrValue.length -1).split(".");
 						BindingUtils.bindProperty(compInstance, attrName, _objectsHM.getValue(chainArray[0]), chainArray[1]);
 					}
-					else if (attrName != "compPackage" && attrName != "metadataData") {
-						compInstance.setStyle(attrName, attrValue); // try to set the property as a style
-						var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
-						// if the style value is null the propery is not a style
-						try {
+					else if (attrName != "compPackage" && attrName != "metadataData" && attrName != "dataType" && attrName != "label") {
+						if (compInstance.hasOwnProperty(attrName)) {
+							var processedValue:Object = (attrValue == "true") ? true : ((attrValue == "false") ? false : attrValue);
 							compInstance[attrName] = processedValue;
 						}
-						catch (e:Error) {
-							//this case is ok, we have a few attributes that are only used for the building of the view
-							trace("could not push", attrName, "=", attrValue, "to", getQualifiedClassName(compInstance));
+						else {
+							// try to set the property as a style
+							compInstance.setStyle(attrName, attrValue); 
 						}
+//						// if the style value is null the propery is not a style
+//						try {
+//							compInstance[attrName] = processedValue;
+//						}
+//						catch (e:Error) {
+//							//this case is ok, we have a few attributes that are only used for the building of the view
+//							trace("could not push", attrName, "=", attrValue, "to", getQualifiedClassName(compInstance));
+//						}
 						
 					}
 				}

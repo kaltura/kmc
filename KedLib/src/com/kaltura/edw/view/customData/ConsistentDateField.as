@@ -1,11 +1,8 @@
 package com.kaltura.edw.view.customData
 {
-	import flash.events.Event;
-	
-	import mx.controls.DateField;
 	import mx.events.CalendarLayoutChangeEvent;
 	
-	public class ConsistentDateField extends DateField
+	public class ConsistentDateField extends KDateField
 	{
 		private var _nonChangedDate:Date;
 		
