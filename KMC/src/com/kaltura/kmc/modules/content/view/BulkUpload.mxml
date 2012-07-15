@@ -59,7 +59,9 @@
 			 * load bulkuploads list
 			 * */
 			public function loadEntries():void {
-				if (bulkUploadEnabled) {
+				if (bulkUploadEnabled && filter && paging) {
+					// if there is no filter or pager there's no point in listing, and this call probably came from Content.refreshBulk.
+					// in this case, we'll get a "list" when we switch to this page.
 					var bulkEvent:BulkEvent = new BulkEvent(BulkEvent.LIST_BULK_UPLOAD);
 					bulkEvent.data = [filter.kalturaFilter, paging.kalturaFilterPager];
 					bulkEvent.dispatch();
