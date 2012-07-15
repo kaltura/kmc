@@ -44,6 +44,7 @@
 			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryModerationStatus;
+			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.types.KalturaMediaType;
 			import com.kaltura.types.KalturaPlaylistType;
@@ -54,7 +55,7 @@
 			import com.kaltura.vo.KalturaMediaEntryFilter;
 			import com.kaltura.vo.KalturaMixEntry;
 			import com.kaltura.vo.KalturaPlaylist;
-
+			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
@@ -151,6 +152,11 @@
 			 * a flag indicating the tab was intialised
 			 * */
 			private var _initOnce:Boolean;
+			
+			/**
+			 * RnP (feature): disable alerts in KDP
+			 * */
+			public var disableKDPAlerts:Boolean = true;
 
 
 			// ===============================================
@@ -292,7 +298,8 @@
 					}
 					if (kdp3Loader && _kdp3SwfLoader.content) {
 						kdp3Loader.content["sendNotification"](KdpEventTypes.DO_PAUSE);
-						if (entry) {
+						if (entry && entry.status == KalturaEntryStatus.READY) {
+							// only changeMedia to ready entries
 							_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: entry.id});
 						}
 					}
@@ -412,12 +419,13 @@
 
 				var params:Object = new Object();
 				params.host = context.rootUrl;
-				params.widgetId = "_" + context.kc.partnerId;
+//				params.widgetId = "_" + context.kc.partnerId;
 				params.entryId = "-1";
 				params.ks = context.kc.ks;
 				params.partnerId = context.kc.partnerId;
 				params.subpId = context.kc.partnerId + "00";
 				params.cdnHost = context.cdnHost;
+				params.disableAlerts = disableKDPAlerts;
 				params.debugMode = context.debugMode;
 
 				_kdp3SwfLoader.content["flashvars"] = params; //set flashvars
@@ -512,8 +520,7 @@
 					<mx:SWFLoader id="kdp3Loader" width="280" height="255" init="{onKDP3Loaded(event)}"/>
 					<mx:VBox width="280" height="100%">
 						<mx:HBox width="100%" styleName="modPrevToolBar">
-							<mx:Label 
-									  text="{entryTable.selectedItem.moderationCount} {resourceManager.getString('cms', 'flag')}"/>
+							<mx:Label text="{entryTable.selectedItem.moderationCount} {resourceManager.getString('cms', 'flag')}"/>
 							<mx:Spacer width="100%"/>
 							<mx:LinkButton label="{resourceManager.getString('cms', 'viewFullDetails')}"
 										   click="{entryTable.openEditEntry(entryTable.selectedItem)}"/>
@@ -531,8 +538,7 @@
 				<bulkactions:BulkModerationActionsMenu id="bulkActions" height="{paging.height}"
 													   approveEntries="onApprove(event)" rejectEntries="onReject(event)"/>
 				<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="100%"
-								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()"
-								 showRowsInPage="true"/>
+								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" />
 			</mx:HBox>
 		</mx:VBox>
 	</mx:HDividedBox>
