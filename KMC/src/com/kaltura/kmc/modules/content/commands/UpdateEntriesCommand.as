@@ -125,6 +125,7 @@ package com.kaltura.kmc.modules.content.commands {
 						var updateEntry:BaseEntryUpdate = new BaseEntryUpdate(keepId, be);
 						mr.addAction(updateEntry);
 					}
+					_model.increaseLoadCounter();
 					_model.context.kc.post(mr);
 				}
 			}
