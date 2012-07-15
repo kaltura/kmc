@@ -430,26 +430,14 @@
 			 *
 			 */
 			private function loadKDP():void {
-				if (_kdp3SwfLoader && _kdp3SwfLoader.content) {
-					var kdp3LoaderParent:DisplayObjectContainer = kdp3Loader.parent;
-					kdp3LoaderParent.addChildAt(_kdp3SwfLoader, kdp3LoaderParent.getChildIndex(kdp3Loader));
-					//Change media
-					if (data && data is KalturaBaseEntry) {
-						_kdp3SwfLoader.content["sendNotification"](KdpEventTypes.CHANGE_MEDIA, {entryId: (data as KalturaBaseEntry).id});
-					}
-				}
-				else {
-					// default
-					var moderationUiconf:String = "48503";
-					// dynamic uiconf from flashvar 
-					if (context.moderationUiconf)
-						moderationUiconf = context.moderationUiconf;
+				var moderationUiconf:String = "48503";	// fallback to the ice age
+				if (context.moderationUiconf)
+					moderationUiconf = context.moderationUiconf;
 
-					var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + moderationUiconf + "/nowrapper/1";
-					kdp3Loader.scaleContent = false;
-					kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
-					kdp3Loader.load(newUrl);
-				}
+				var newUrl:String = "http://" + context.cdnHost + "/kwidget/wid/_" + context.kc.partnerId + "/ui_conf_id/" + moderationUiconf + "/nowrapper/1";
+				kdp3Loader.scaleContent = false;
+				kdp3Loader.loaderContext = new LoaderContext(true, new ApplicationDomain(), SecurityDomain.currentDomain);
+				kdp3Loader.load(newUrl);
 			}
 
 
@@ -509,7 +497,7 @@
 							categoriesRoot="{filterModel.categoriesForMod}"
 							allCategories="{filterModel.categoriesMapForMod}"
 							filterChanged="filter_filterChangedHandler(event)"/>
-		<mx:VBox id='entryTableContainer' styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
+		<mx:VBox id="entryTableContainer" styleName="entriesTablePagerAndButtonsVbox" width="100%" height="100%">
 			<mx:HBox id="mainCont" height="100%" width="100%" styleName="moderationHBox" paddingTop="0">
 				<et1:EntryTable id="entryTable" width="100%" openEntry="{onDrillDown()}"
 								selectionChanged="actionsManager.itemClickHandler(event); getModeration();"
@@ -532,9 +520,8 @@
 							<mx:LinkButton label="{resourceManager.getString('cms', 'banUser')}" click="banUser()"
 										   labelPlacement="left" styleName="banUser"/>
 						</mx:HBox>
-						<mx:List id="modList" width="100%" height="100%" minHeight="80" borderThickness="1"
-								 styleName="flagList" selectable="false" borderColor="0xCCCCCC" borderStyle="solid"
-								 rowHeight="80" dataProvider="{moderationModel.moderationsArray}"
+						<mx:List id="modList" width="100%" height="100%" minHeight="80" rowHeight="80" 
+								 styleName="flagList" selectable="false" dataProvider="{moderationModel.moderationsArray}"
 								 itemRenderer="com.kaltura.kmc.modules.content.view.itemrenderers.ModerationItemRenderer"/>
 
 					</mx:VBox>
