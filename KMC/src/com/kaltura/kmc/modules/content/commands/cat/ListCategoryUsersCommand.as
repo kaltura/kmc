@@ -1,8 +1,11 @@
 package com.kaltura.kmc.modules.content.commands.cat
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.categoryUser.CategoryUserList;
+	import com.kaltura.commands.user.UserGet;
 	import com.kaltura.commands.user.UserList;
+	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CategoryEvent;
@@ -13,6 +16,8 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.vo.KalturaUser;
 	import com.kaltura.vo.KalturaUserFilter;
 	import com.kaltura.vo.KalturaUserListResponse;
+	
+	import flash.events.Event;
 	
 	import mx.collections.ArrayCollection;
 
@@ -79,10 +84,36 @@ package com.kaltura.kmc.modules.content.commands.cat
 				
 				_users = [];
 				
-				getUsersChunk();
+				
+				var mr:MultiRequest = new MultiRequest();
+				var ug:UserGet;
+				for each (var kcu:KalturaCategoryUser in _categoryUsers) {
+					ug = new UserGet(kcu.userId);
+					mr.addAction(ug);
+				}
+				mr.addEventListener(KalturaEvent.COMPLETE, getUsersResult);
+				mr.addEventListener(KalturaEvent.FAILED, fault);
+				
+				_model.increaseLoadCounter();
+				_model.context.kc.post(mr);
+				
 			}
 			_model.decreaseLoadCounter();
 		}
+		
+		
+		private function getUsersResult(e:KalturaEvent):void {
+			_model.decreaseLoadCounter();
+			for each (var o:Object in e.data) {
+				if (o is KalturaUser) {
+					_users.push(o);
+				}
+			}
+			
+			// match to categoryUsers
+			addNameToCategoryUsers();
+		}
+		
 		
 		
 		/**
