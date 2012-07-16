@@ -2,7 +2,7 @@
 <containers:HelpTitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:containers="com.kaltura.containers.*"
 							xmlns:filter="com.kaltura.kmc.modules.content.view.window.cdw.components.filter.*"
 							xmlns:fltr="com.kaltura.edw.components.fltr.*" xmlns:controls="flexlib.controls.*"
-							layout="vertical" width="940" height="500" showCloseButton="true" enabled="{!model.loadingFlag}"
+							layout="vertical" width="940" height="520" showCloseButton="true" enabled="{!model.loadingFlag}"
 							close="closeHandler(event)" showHelpButton="true" help="helpHandler(event)"
 							creationComplete="creationCompleteHandler(event)" xmlns:ctrls="com.kaltura.controls.*"
 							xmlns:users="com.kaltura.kmc.modules.content.view.window.cdw.users.*" xmlns:catusrtable="com.kaltura.kmc.modules.content.view.window.cdw.components.catusrtable.*">
@@ -53,8 +53,8 @@
 			
 			private function creationCompleteHandler(event:FlexEvent):void {
 				PermissionManager.getInstance().applyAllAttributes(this, "endUserPermissionsWin");
-				loadUsers();
 				BindingUtils.bindSetter(hideParentBtn, model, "categoryUsers");
+				loadUsers();
 			}
 
 
@@ -176,7 +176,8 @@
 					   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL}"/>
 			<controls:CanvasButton id="addFromParentBtn" styleName="listActionButton" width="100%"
 								   click="addFromParentBtn_clickHandler(event)"
-								   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp; _category.parentId != 0}">
+								   enabled="{_category.inheritanceType == KalturaInheritanceType.MANUAL &amp;&amp;
+								   _category.parentId != 0 &amp;&amp; model.inheritedParentCategory.membersCount>0}">
 				<mx:Text text="{resourceManager.getString('cms', 'addFromParentBtn')}" styleName="listActionButton"
 						 width="100%"/>
 			</controls:CanvasButton>
