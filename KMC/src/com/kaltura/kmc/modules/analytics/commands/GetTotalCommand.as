@@ -105,7 +105,11 @@ package com.kaltura.kmc.modules.analytics.commands
 				var aggDataVo : AggregateDataVo = new AggregateDataVo();
 				aggDataVo.title = ResourceManager.getInstance().getString('analytics',aggLbls[i]);
 				aggDataVo.value = FormatReportParam.format( aggLbls[i] , aggArr[i] );
-				aggDataVo.helpToolTip =ResourceManager.getInstance().getString('analytics',aggLbls[i]+"ToolTip");
+				if ( _model.entitlementEnabled && _model.currentScreenState == ScreenTypes.END_USER_STORAGE_DRILL_DOWN){
+					aggDataVo.helpToolTip =ResourceManager.getInstance().getString('analytics', "user_" + aggLbls[i] + "ToolTip");
+				} else {
+					aggDataVo.helpToolTip =ResourceManager.getInstance().getString('analytics',aggLbls[i]+"ToolTip");
+				}
 				arrCol.addItem( aggDataVo );
 			}
 			

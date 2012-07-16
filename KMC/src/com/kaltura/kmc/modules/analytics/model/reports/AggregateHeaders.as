@@ -18,6 +18,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 
 		public var publisherBandwidthNStorage : Array = ['bandwidth_consumption', 'average_storage', 'peak_storage', 'added_storage', 'combined_bandwidth_storage'];
 		public var endUserStorage : Array = ['added_entries', 'total_entries', 'added_storage_mb', 'total_storage_mb', 'added_msecs', 'total_msecs'];
+		public var specificEndUserStorage : Array = ['user_added_entries', 'user_total_entries', 'user_added_storage_mb', 'user_total_storage_mb', 'user_added_msecs', 'user_total_msecs'];
 		
 		public var userEngagement : Array = ['unique_known_users','unique_videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
 		public var userEngagementDrilldown : Array = ['unique_videos','count_plays','sum_time_viewed','avg_time_viewed','avg_view_drop_off','count_loads','load_play_ratio'];
