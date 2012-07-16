@@ -63,30 +63,7 @@
 				else
 					metadataObject[child.name] = new MetadataDataObject();
 
-				var doc:DisplayObject = super.removeChild(child);
-				setChildrenRemoveEnabled();
-				return doc;
-			}
-
-
-			private function setChildrenRemoveEnabled():void {
-				var i:int;
-				var child:MultiFieldComponent;
-				if (numChildren > 2) {
-					for (i = numChildren - 2; i >= 0; i--) {
-						var diso:DisplayObject = getChildAt(i); 
-						child = getChildAt(i) as MultiFieldComponent;
-						if (child) {
-							child.removeEnabled = true;
-						}
-					}
-				}
-				else {
-					child = getChildAt(0) as MultiFieldComponent;
-					if (child) {
-						child.removeEnabled = false;
-					}
-				}
+				return super.removeChild(child);
 			}
 
 
@@ -117,7 +94,6 @@
 				var newComponent:UIComponent = formBuilder.buildComponent(newChildXML, metadataObject, nestedFieldsArray);
 				newField.addChildAt(newComponent, 0);
 				addChildAt(newField, index);
-				setChildrenRemoveEnabled();
 			}
 
 
