@@ -20,6 +20,7 @@
 			import com.kaltura.vo.KMCMetadataProfileVO;
 			import com.kaltura.vo.MetadataFieldVO;
 			
+			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
 			import mx.events.CloseEvent;
 			import mx.events.ListEvent;
@@ -302,16 +303,18 @@
 					metadataField.fullDescription = StringUtil.trim(fullDescriptionInput.text);
 
 					if (fieldTypeList.selectedLabel == _listType) {
-						var values:Array = optionalValuesInput.text.split('\r');
-						metadataField.optionalValues = new Array();
-						for each (var val:String in values) {
+						var input:Array = optionalValuesInput.text.split('\r');
+						var output:ArrayCollection = new ArrayCollection();
+						for each (var val:String in input) {
 							//to avoid inserting of empty lines
 							if (val != "") {
 								val = StringUtil.trim(val);
-//								val = CustomDataStringUtil.escapeAmps(val);
-								metadataField.optionalValues.push(val);
+								if (!output.contains(val)) {
+									output.addItem(val);
+								}
 							}
 						}
+						metadataField.optionalValues = output.source;
 					}
 				}
 			}
