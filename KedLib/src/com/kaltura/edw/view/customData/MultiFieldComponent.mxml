@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!---
+	An HBox with "remove" link button, used as a container for any UIComponent that is optional for MultiComponent
+-->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
+			
+			public static const REMOVE_CLICKED:String = "removeClicked";
+			
+			[Bindable]
+			public var removeEnabled:Boolean = true;
+			
+			
 			private function onItemClick():void {
-				this.parent.removeChild(this);
+				dispatchEvent(new Event(REMOVE_CLICKED));
+				// this.parent.removeChild(this);
 			}
 		]]>
 	</mx:Script>
-	<mx:LinkButton label="{resourceManager.getString('drilldown','MultiRemove')}" click="onItemClick()" styleName="multiRemoveButton"/>
+	<mx:LinkButton label="{resourceManager.getString('drilldown','MultiRemove')}" styleName="multiRemoveButton" click="onItemClick()" 
+				   enabled="{removeEnabled}"/>
 </mx:HBox>

@@ -1,59 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!---
+	A wrapper component that wraps together multiple MultiFieldComponents and adds an "add" button at the bottom.
+	The component handles creation and layout of inner components.
+-->
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.edw.business.EntryFormBuilder;
 			import com.kaltura.edw.business.base.FormBuilderBase;
 			import com.kaltura.edw.model.MetadataDataObject;
-			import com.kaltura.vo.MetadataFieldVO;
 			
 			import mx.collections.ArrayCollection;
 			import mx.core.Container;
 			import mx.core.UIComponent;
-			
+
 			private var _childXML:XML;
-			
-			//nested fields in children of type container
+
+			/**
+			 * nested fields in children of type container
+			 * */
 			public var nestedFieldsArray:ArrayCollection = new ArrayCollection();
+
 			public var formBuilder:FormBuilderBase;
+
 			/**
 			 * the bound object that listens to the inserted metadata
 			 * */
 			public var metadataObject:MetadataDataObject;
-			
+
+
+
+			/**
+			 * create a MultiFieldComponent with the given child and add it to the MultiComponent
+			 * */
 			override public function addChild(child:DisplayObject):DisplayObject {
-				if ( child == linkButton )
+				if (child == linkButton)
 					return super.addChild(child);
-				
-				var newChildField:MultiFieldComponent = new MultiFieldComponent();
-				newChildField.addChildAt(child, 0);
+
+				var newField:MultiFieldComponent = new MultiFieldComponent();
+				newField.addEventListener(MultiFieldComponent.REMOVE_CLICKED, removeItem);
+				newField.addChildAt(child, 0);
 				var index:int = 0;
-				//always adds as the last child (besided the "add" button child)
+				//always adds as the last child (beside the "add" button child)
 				if (this.numChildren > 0) {
 					if (this.getChildByName("linkButton"))
 						index = this.numChildren - 1; //we want to add the child before the button
 					else
 						index = this.numChildren;
 				}
-				
-				return this.addChildAt(newChildField, index);
+				return addChildAt(newField, index);
 			}
-			
-			override public function removeChild(child:DisplayObject):DisplayObject  {
+
+
+			/**
+			 * remove the correct child as well as relevant metadata
+			 * */
+			override public function removeChild(child:DisplayObject):DisplayObject {
 				if (child == linkButton)
 					return super.removeChild(linkButton);
 				//reset metadataData object, so the saved data will be erased
 				if (child is Container)
 					metadataObject[(child as Container).getChildAt(0).name] = new MetadataDataObject();
-				else 
+				else
 					metadataObject[child.name] = new MetadataDataObject();
-				
-				//if we are now removing the last child, we will also remove the "Add" button
-				if (this.numChildren == 2)
-					super.removeChild(linkButton);
-				return super.removeChild(child);
+
+				var doc:DisplayObject = super.removeChild(child);
+				setChildrenRemoveEnabled();
+				return doc;
 			}
-			
+
+
+			private function setChildrenRemoveEnabled():void {
+				var i:int;
+				var child:MultiFieldComponent;
+				if (numChildren > 2) {
+					for (i = numChildren - 2; i >= 0; i--) {
+						var diso:DisplayObject = getChildAt(i); 
+						child = getChildAt(i) as MultiFieldComponent;
+						if (child) {
+							child.removeEnabled = true;
+						}
+					}
+				}
+				else {
+					child = getChildAt(0) as MultiFieldComponent;
+					if (child) {
+						child.removeEnabled = false;
+					}
+				}
+			}
+
+
+			private function removeItem(e:Event):void {
+				var child:MultiFieldComponent = e.target as MultiFieldComponent;
+				if (child.parent == this) {
+					removeChild(child);
+				}
+			}
+
+
 			/**
 			 * this function adds a nested component,
 			 * it uses the _nestedComponentName in order to create the suitable uiComponent
@@ -63,33 +107,35 @@
 				if (!childXML)
 					return;
 				var newField:MultiFieldComponent = new MultiFieldComponent();
-				var index:int = this.numChildren - 1;
+				newField.addEventListener(MultiFieldComponent.REMOVE_CLICKED, removeItem);
+				var index:int = numChildren - 1;
 				var newChildXML:XML = childXML.copy();
-				newChildXML.@name = this.name+index;
-				newChildXML.@parentName = this.name;
+				newChildXML.@name = name + index;
+				newChildXML.@parentName = name;
 				resetAllXMLFields(newChildXML);
-				
+
 				var newComponent:UIComponent = formBuilder.buildComponent(newChildXML, metadataObject, nestedFieldsArray);
-				
-				newField.addChildAt(newComponent ,0);
-				
-				this.addChildAt(newField, index);
+				newField.addChildAt(newComponent, 0);
+				addChildAt(newField, index);
+				setChildrenRemoveEnabled();
 			}
-			
+
+
 			/**
 			 * this function resets all metadata data attributes in the given XML
 			 * */
-			private function resetAllXMLFields(xml:XML) : void {
+			private function resetAllXMLFields(xml:XML):void {
 				if (xml.children().length() > 0) {
 					for each (var child:XML in xml.children()) {
 						resetAllXMLFields(child);
 					}
 				}
-				else 
+				else
 					resetMetadataData(xml);
-				
+
 			}
-			
+
+
 			/**
 			 * reset the metadataData attribute in the given node
 			 * */
@@ -99,27 +145,26 @@
 					delete xml.@[propertyName];
 				}
 			}
-			
+
+
 			/**
-			 * returns the xml that represents the uicomponent that will be added with
-			 * every click on "add" buttno
+			 * the XML that represents the uicomponent that will be added with
+			 * every click on "add" button
 			 * */
-			public function get childXML():XML
-			{
+			public function get childXML():XML {
 				return _childXML;
 			}
-			
+
+
 			/**
-			 * sets the XML that represents that uicomponent that will be added with every 
+			 * @private
+			 * sets the XML that represents that uicomponent that will be added with every
 			 * click on "add" button.
 			 * also sets _metadataProperty from the given XML, or _metadataPropertyArray in case of nested fields inside the childXML
 			 * */
-			public function set childXML(value:XML):void
-			{
+			public function set childXML(value:XML):void {
 				_childXML = value;
 			}
-			
-			
 		]]>
 	</mx:Script>
 	<mx:LinkButton id="linkButton" label="{resourceManager.getString('drilldown','MultiAdd')}" click="{addComponent()}"

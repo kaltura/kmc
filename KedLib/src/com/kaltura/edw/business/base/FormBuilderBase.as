@@ -286,7 +286,6 @@ package com.kaltura.edw.business.base
 				}
 				else if (attrName == "dataProvider") {
 					compInstance[attrName] = attrValue.split(",");
-//					compInstance.validateNow();
 				}
 				else {
 					//if the attribute should be bound to another component
@@ -329,7 +328,6 @@ package com.kaltura.edw.business.base
 				boundModel[newProperty] = new MetadataDataObject();
 				if (compInstance is MultiComponent) {
 					if (component.children().length() > 0) {
-						//this is the child that will be added with every click on the "add" button
 						(compInstance as MultiComponent).childXML = XML(component.children()[0]).copy();
 						(compInstance as MultiComponent).nestedFieldsArray = nestedFieldsArray;
 						(compInstance as MultiComponent).formBuilder = this;
