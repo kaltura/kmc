@@ -26,6 +26,13 @@ package com.kaltura.edw.components.fltr.panels {
 			setStyle("styleName", "additionalFilter");
 		}
 		
+		
+		override public function set width(value:Number):void {
+			super.width = value;
+			for (var i:int = 0; i<numChildren; i++) {
+				getChildAt(i).width = value - getStyle("paddingLeft") - getStyle("paddingRight");
+			}
+		}
 
 		/**
 		 * the name of the field on the objects in the list to use as button label
@@ -99,7 +106,7 @@ package com.kaltura.edw.components.fltr.panels {
 			}
 			_buttons = new Array();
 			var btn:CheckBox = new CheckBox();
-			btn.percentWidth = 100;
+//			btn.percentWidth = 100;
 			btn.label = _mainButtonTitle;
 			btn.selected = true;
 			btn.styleName = "mainFilterGroupButton";
@@ -109,7 +116,7 @@ package com.kaltura.edw.components.fltr.panels {
 			// rest of buttons
 			for (var i:int = 0; i < _dataProvider.length; i++) {
 				btn = new CheckBox();
-				btn.percentWidth = 100;
+//				btn.percentWidth = 100;
 				btn.data = _dataProvider.getItemAt(i);
 				if (labelFunction != null) {
 					btn.label = labelFunction.apply(null,[_dataProvider.getItemAt(i)]);

@@ -10,11 +10,21 @@ package com.kaltura.edw.components.fltr.panels
 	
 	import flash.events.Event;
 	
+	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
 	
 	public class MetadataProfileFilter extends AdditionalFilter implements IAdvancedSearchFilterComponent {
 		
-	
+		public function MetadataProfileFilter(){
+			BindingUtils.bindSetter(www, this, "width");
+		} 
+		private function www(value:Number):void {
+			
+			for (var i:int = 0; i<numChildren; i++) {
+				getChildAt(i).width = value - getStyle("paddingLeft") - getStyle("paddingRight");
+			}
+		} 
+		
 		/**
 		 * filter is KalturaMetadataSearchItem whose items are KalturaMetadataSearchItems
 		 */
@@ -68,6 +78,7 @@ package com.kaltura.edw.components.fltr.panels
 			for each (var mfvo:MetadataFieldVO in _dataProvider) {
 				if (mfvo.appearInSearch && mfvo.type == MetadataCustomFieldTypes.LIST) {
 					metadataFilter = new MetadataFilter();
+//					metadataFilter.percentWidth = 100;
 					metadataFilter.addEventListener(FilterComponentEvent.VALUE_CHANGE, updateFilterValue, false, 0, true);
 					metadataFilter.data = mfvo;
 					metadataFilter.attribute = mfvo.id;
