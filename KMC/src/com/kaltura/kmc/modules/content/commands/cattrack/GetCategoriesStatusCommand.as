@@ -21,6 +21,7 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 		
 		override public function execute(event:CairngormEvent):void {
 			var mr:PartnerListFeatureStatus = new PartnerListFeatureStatus();
+			mr.useTimeout = false; // if a TO is encountered, it lowers the loadCounter below 0.
 			mr.addEventListener(KalturaEvent.COMPLETE, result);
 			mr.addEventListener(KalturaEvent.FAILED, fault);
 			_model.context.kc.post(mr);
