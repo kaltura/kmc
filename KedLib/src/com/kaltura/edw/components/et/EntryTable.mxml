@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto"
-			 rowHeight="60" selectable="false" headerRelease="{headerReleaseHandler(event)}" 
-			 creationComplete="creationCompleteHandler(event)" 
-			 implements="com.kaltura.controls.table.ISelectionTable">
+<mx:DataGrid xmlns:mx="http://www.adobe.com/2006/mxml" height="100%" verticalScrollPolicy="auto" rowHeight="60"
+			 selectable="false" headerRelease="{headerReleaseHandler(event)}"
+			 creationComplete="creationCompleteHandler(event)" implements="com.kaltura.controls.table.ISelectionTable">
 	<mx:Metadata>
 		
 		[ResourceBundle("entrytable")]
@@ -17,19 +16,21 @@
 
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.controls.table.ISelectionTable;
 			import com.kaltura.controls.table.SelectionRenderer;
 			import com.kaltura.dataStructures.HashMap;
 			import com.kaltura.edw.components.et.business.EntryTableActions;
-			import com.kaltura.controls.table.ISelectionTable;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.components.et.ir.ActionsRenderer;
 			import com.kaltura.edw.components.et.ir.NameRenderer;
+			import com.kaltura.edw.control.commands.UpdateSingleEntry;
 			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.kmvc.control.KMvCController;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
 			import com.kaltura.vo.KalturaBaseEntry;
 			
 			import mx.collections.ArrayCollection;
+			import mx.collections.ICollectionView;
 			import mx.controls.Alert;
 			import mx.controls.CheckBox;
 			import mx.controls.dataGridClasses.DataGridColumn;
@@ -59,10 +60,13 @@
 			 * container variable for the selectionAttribute variable
 			 * */
 			private var _selectionAttribute:String = "tableSelected";
-			
+
+
 			public function set selectionAttribute(value:String):void {
 				_selectionAttribute = value;
 			}
+
+
 			public function get selectionAttribute():String {
 				return _selectionAttribute;
 			}
@@ -74,7 +78,7 @@
 
 
 			[Bindable]
-			[Inspectable(enumeration="true,false")]
+			[Inspectable(enumeration = "true,false")]
 			/**
 			 * show the thumbnails column
 			 * */
@@ -82,7 +86,7 @@
 
 
 			[Bindable]
-			[Inspectable(enumeration="true,false")]
+			[Inspectable(enumeration = "true,false")]
 			/**
 			 * show the selection column
 			 * */
@@ -95,7 +99,7 @@
 			public function get showDelete():Boolean {
 				var actions:Array = ActionsRenderer.allActions;
 				var found:Boolean;
-				for (var i:int = 0; i<actions.length; i++) {
+				for (var i:int = 0; i < actions.length; i++) {
 					if (actions[i] == EntryTableActions.DELETE) {
 						found = true;
 						break;
@@ -104,12 +108,13 @@
 				return found;
 			}
 
+
 			public function set showDelete(value:Boolean):void {
 				var actions:Array = ActionsRenderer.allActions;
 				var i:int;
 				if (value) {
 					var found:Boolean;
-					for (i = 0; i<actions.length; i++) {
+					for (i = 0; i < actions.length; i++) {
 						if (actions[i] == EntryTableActions.DELETE) {
 							found = true;
 							break;
@@ -121,7 +126,7 @@
 
 				}
 				else {
-					for (i = 0; i<actions.length; i++) {
+					for (i = 0; i < actions.length; i++) {
 						if (actions[i] == EntryTableActions.DELETE) {
 							actions.splice(i, 1);
 							break;
@@ -153,6 +158,7 @@
 			 */
 			private var _singleSelection:Boolean = false;
 
+
 			/**
 			 * @internal
 			 * multiple selection is not traditional,
@@ -163,6 +169,7 @@
 				super.allowMultipleSelection = false;
 
 			}
+
 
 			/**
 			 * allow only a single item to be selected at each time. <br>
@@ -175,13 +182,17 @@
 				_singleSelection = value;
 
 			}
+
+
 			public function get singleSelection():Boolean {
 				return _singleSelection;
 			}
 
+
 			override public function set selectedItem(item:Object):void {
 				setSelectedItems([item]);
 			}
+
 
 			override public function set selectedItems(items:Array):void {
 				setSelectedItems(items);
@@ -197,7 +208,7 @@
 				var entry:KalturaBaseEntry;
 				var si:Array = super.selectedItems; // currently selected items
 				// mark all currently selected items as not selected
-				for (var i:int = si.length-1; i>=0; i--) {
+				for (var i:int = si.length - 1; i >= 0; i--) {
 					entry = si[i] as KalturaBaseEntry;
 					entry[_selectionAttribute] = false;
 					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, _selectionAttribute, true, false));
@@ -246,6 +257,7 @@
 
 			private var _selectedEntry:KalturaBaseEntry;
 
+
 			[Bindable]
 			/**
 			 * the latest selected entry in the table
@@ -253,6 +265,8 @@
 			public function get selectedEntry():KalturaBaseEntry {
 				return _selectedEntry;
 			}
+
+
 			/**
 			 * @private
 			 */
@@ -285,7 +299,7 @@
 			public function updateDefaultSortColumn():void {
 				var cols:Array = this.columns;
 				var col:DataGridColumn;
-				for (var i:int = 0; i<cols.length; i++) {
+				for (var i:int = 0; i < cols.length; i++) {
 					if ((cols[i] as DataGridColumn).headerText == resourceManager.getString('entrytable', 'createAt')) {
 						_sortIndex = i;
 						break;
@@ -293,6 +307,15 @@
 				}
 
 				setSortIndicator();
+			}
+
+
+			public function removeSort():void {
+				_sortIndex = -1;
+				sortDirection = '';
+				(dataProvider as ICollectionView).sort = null;
+				(dataProvider as ICollectionView).refresh();
+//				setSortIndicator();
 			}
 
 
@@ -355,15 +378,15 @@
 			 * */
 			public function showColumns(columnKeys:Array):void {
 				var arrCol:ArrayCollection = new ArrayCollection(this.columns);
-				var columnsList:Array = [];	// column names (headerText)
+				var columnsList:Array = []; // column names (headerText)
 				for each (var str:String in columnKeys) {
 					columnsList.push(resourceManager.getString('entrytable', str));
 				}
 
 				var found:Boolean;
-				for (var i:int = arrCol.length - 1; i>0 ; i--) {	// arrcol[0] is the selection column
+				for (var i:int = arrCol.length - 1; i > 0; i--) { // arrcol[0] is the selection column
 					found = false;
-					for (var j:int = 0; j<columnsList.length; j++) {
+					for (var j:int = 0; j < columnsList.length; j++) {
 						if (arrCol[i].headerText == columnsList[j]) {
 							found = true;
 							break;
@@ -397,57 +420,111 @@
 					event.preventDefault();
 					return;
 				}
-				if (!kalturaSorting) {
-					return;
-				}
-
 				event.preventDefault();
-
+				
 				if (event.itemRenderer && event.itemRenderer.data && event.itemRenderer.data.headerText) {
 					var headerText:String = event.itemRenderer.data.headerText;
 					if (!_columnsSortMap.containsKey(headerText)) {
 						_columnsSortMap.put(headerText, false);
 					}
-
+				
 					var sortDir:Boolean = _columnsSortMap.getValue(headerText) as Boolean;
-					switch (event.itemRenderer.data.headerText) {
-						case resourceManager.getString('entrytable', 'createAt'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.CREATED_AT_ASC : KalturaMediaEntryOrderBy.CREATED_AT_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'name'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.NAME_ASC : KalturaMediaEntryOrderBy.NAME_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'playerLoads'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.VIEWS_ASC : KalturaMediaEntryOrderBy.VIEWS_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'plays'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.PLAYS_ASC : KalturaMediaEntryOrderBy.PLAYS_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'type'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MEDIA_TYPE_ASC : KalturaMediaEntryOrderBy.MEDIA_TYPE_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'flags'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.MODERATION_COUNT_ASC : KalturaMediaEntryOrderBy.MODERATION_COUNT_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'rating'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.RANK_ASC : KalturaMediaEntryOrderBy.RANK_DESC;
-							break;
-						case resourceManager.getString('entrytable', 'duration'):
-							_orderBy = sortDir ? KalturaMediaEntryOrderBy.DURATION_ASC : KalturaMediaEntryOrderBy.DURATION_DESC;
-							break;
-						default:
-							Alert.show(resourceManager.getString('entrytable', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('entrydetails', 'cannotOrderByItTitle'));
-							return;
-							break;
+					if (kalturaSorting) {
+						switch (event.itemRenderer.data.headerText) {
+							case resourceManager.getString('entrytable', 'createAt'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.CREATED_AT_ASC : KalturaMediaEntryOrderBy.CREATED_AT_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'name'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.NAME_ASC : KalturaMediaEntryOrderBy.NAME_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'playerLoads'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.VIEWS_ASC : KalturaMediaEntryOrderBy.VIEWS_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'plays'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.PLAYS_ASC : KalturaMediaEntryOrderBy.PLAYS_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'type'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.MEDIA_TYPE_ASC : KalturaMediaEntryOrderBy.MEDIA_TYPE_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'flags'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.MODERATION_COUNT_ASC : KalturaMediaEntryOrderBy.MODERATION_COUNT_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'rating'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.RANK_ASC : KalturaMediaEntryOrderBy.RANK_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'duration'):
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.DURATION_ASC : KalturaMediaEntryOrderBy.DURATION_DESC;
+								break;
+							default:
+								Alert.show(resourceManager.getString('entrytable', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('entrydetails', 'cannotOrderByItTitle'));
+								return;
+								break;
+						}
+
+						// remember the direction and change the sign
+						_sortIndex = event.columnIndex;
+						_sortDirection = sortDir ? ASCENDING : DESCENDING;
+						_columnsSortMap.setValue(headerText, !sortDir);
+						setSortIndicator();
+
+						dispatchEvent(new Event(ORDER_BY_CHANGED));
 					}
-
-					// remember the direction and change the sign
-					_sortIndex = event.columnIndex;
-					_sortDirection = sortDir ? ASCENDING : DESCENDING;
-					_columnsSortMap.setValue(headerText, !sortDir);
-					setSortIndicator();
-
-					dispatchEvent(new Event(ORDER_BY_CHANGED));
+					else {
+						// local sort, no server
+						var src:Array = (dataProvider as ArrayCollection).source;
+						var att:String;
+						switch (event.itemRenderer.data.headerText) {
+							case resourceManager.getString('entrytable', 'createAt'):
+								att = "createdAt";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.CREATED_AT_ASC : KalturaMediaEntryOrderBy.CREATED_AT_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'name'):
+								att = "name";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.NAME_ASC : KalturaMediaEntryOrderBy.NAME_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'playerLoads'):
+								att = "views";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.VIEWS_ASC : KalturaMediaEntryOrderBy.VIEWS_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'plays'):
+								att = "plays";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.PLAYS_ASC : KalturaMediaEntryOrderBy.PLAYS_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'type'):
+								att = "mediaType";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.MEDIA_TYPE_ASC : KalturaMediaEntryOrderBy.MEDIA_TYPE_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'flags'):
+								att = "moderationCount";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.MODERATION_COUNT_ASC : KalturaMediaEntryOrderBy.MODERATION_COUNT_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'rating'):
+								att = "rank";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.RANK_ASC : KalturaMediaEntryOrderBy.RANK_DESC;
+								break;
+							case resourceManager.getString('entrytable', 'duration'):
+								att = "duration";
+								_orderBy = sortDir ? KalturaMediaEntryOrderBy.DURATION_ASC : KalturaMediaEntryOrderBy.DURATION_DESC;
+								break;
+							default:
+								Alert.show(resourceManager.getString('entrytable', 'cannotOrderByIt', [event.itemRenderer.data.headerText]), resourceManager.getString('entrydetails', 'cannotOrderByItTitle'));
+								return;
+								break;
+						}
+						
+						// remember the direction and change the sign
+						_sortDirection = sortDir ? ASCENDING : DESCENDING;
+						_sortIndex = event.columnIndex;
+						_columnsSortMap.setValue(headerText, !sortDir);
+						if (sortDir) {
+							src.sortOn(att, Array.CASEINSENSITIVE);
+						}
+						else {
+							src.sortOn(att, Array.CASEINSENSITIVE | Array.DESCENDING);
+						}
+						(dataProvider as ICollectionView).refresh();
+						setSortIndicator();
+					}
 				}
 			}
 
@@ -526,14 +603,14 @@
 				var entry:KalturaBaseEntry = e.target.data as KalturaBaseEntry;
 				if (entry) {
 					// the click was inside the table
-					var oldVal:Boolean = entry[_selectionAttribute]; 
+					var oldVal:Boolean = entry[_selectionAttribute];
 					entry[_selectionAttribute] = !oldVal;
 					entry.dispatchEvent(PropertyChangeEvent.createUpdateEvent(entry, _selectionAttribute, oldVal, !oldVal));
 					// set value on selectedItems array
 					var si:Array = selectedItems;
 					if (oldVal) {
 						// the entry was in the selectedItems array, remove it
-						for (var i:int = 0; i<si.length; i++) {
+						for (var i:int = 0; i < si.length; i++) {
 							if ((si[i] as KalturaBaseEntry) === entry) {
 								si.splice(i, 1);
 								break;
@@ -584,6 +661,7 @@
 			 */
 			private var _showEmbed:Boolean = true;
 
+
 			[Bindable]
 			/**
 			 * @copy #_showEmbed
@@ -601,7 +679,6 @@
 			public function get showEmbed():Boolean {
 				return _showEmbed;
 			}
-
 		]]>
 	</mx:Script>
 
@@ -610,7 +687,7 @@
 	<mx:columns>
 		<mx:DataGridColumn width="32" minWidth="32" id="selectionColumn" visible="{showSelection}"
 						   headerRenderer="com.kaltura.controls.table.SelectionRenderer"
-						   itemRenderer="com.kaltura.controls.table.SelectionRenderer" />
+						   itemRenderer="com.kaltura.controls.table.SelectionRenderer"/>
 
 		<mx:DataGridColumn headerText="{resourceManager.getString('entrytable', 'thumbnail')}" width="72" minWidth="54"
 						   itemRenderer="com.kaltura.edw.components.et.ir.ThumbnailRenderer" visible="{showThumbnails}"/>
@@ -620,13 +697,13 @@
 						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
-						   headerText="{resourceManager.getString('entrytable', 'name')}" 
-						   itemRenderer="com.kaltura.edw.components.et.ir.NameRenderer" />
+						   headerText="{resourceManager.getString('entrytable', 'name')}"
+						   itemRenderer="com.kaltura.edw.components.et.ir.NameRenderer"/>
 
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80" 
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80"
 						   headerText="{resourceManager.getString('entrytable', 'playlistType')}"
 						   labelFunction="{EntryTableLabelFunctions.getPlaylistMediaTypes}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn width="40" headerText="{resourceManager.getString('entrytable', 'type')}"
 						   itemRenderer="com.kaltura.edw.components.et.ir.MediaTypeRenderer"
@@ -652,17 +729,17 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
 						   headerText="{resourceManager.getString('entrytable', 'createAt')}"
 						   labelFunction="{EntryTableLabelFunctions.formatDate}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75"
 						   headerText="{resourceManager.getString('entrytable', 'intime')}"
 						   labelFunction="{EntryTableLabelFunctions.formatDate}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
-		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75" 
+		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="75"
 						   headerText="{resourceManager.getString('entrytable', 'duration')}"
 						   labelFunction="{EntryTableLabelFunctions.getTimeFormat}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="moderationCount" width="40"
 						   headerText="{resourceManager.getString('entrytable', 'flags')}"
@@ -671,16 +748,16 @@
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
 						   headerText="{resourceManager.getString('entrytable', 'status')}"
 						   labelFunction="{EntryTableLabelFunctions.getStatus}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="110"
 						   headerText="{resourceManager.getString('entrytable', 'moderationStatus')}"
 						   labelFunction="{EntryTableLabelFunctions.getStatusForModeration}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.GeneralRenderer"/>
 
 		<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="140"
 						   headerText="{resourceManager.getString('entrytable', 'actions')}"
-						   itemRenderer="com.kaltura.edw.components.et.ir.ActionsRenderer" />
+						   itemRenderer="com.kaltura.edw.components.et.ir.ActionsRenderer"/>
 
 	</mx:columns>
 </mx:DataGrid>
