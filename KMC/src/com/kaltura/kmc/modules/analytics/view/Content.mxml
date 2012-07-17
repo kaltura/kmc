@@ -177,11 +177,13 @@
 							break;
 						case ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS:
 							if (selectedReport.seletedMediaEntry && selectedReport.seletedMediaEntry.name && selectedReport.aggregatedDataArrCol && selectedReport.aggregatedDataArrCol[4] && selectedReport.aggregatedDataArrCol[4].value != null) {
-								var sum2:int = int(selectedReport.aggregatedDataArrCol[5].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
-								if(_model.entitlementEnabled)
-									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', [selectedReport.seletedMediaEntry.name, sum2,selectedReport.aggregatedDataArrCol[0].value]);
-								else	
+								if(_model.entitlementEnabled){
+									var sum1:int = int(selectedReport.aggregatedDataArrCol[5].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
+									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsEntitlementLbl', [selectedReport.seletedMediaEntry.name, sum1,selectedReport.aggregatedDataArrCol[0].value]);
+								}else{	
+									var sum2:int = int(selectedReport.aggregatedDataArrCol[0].value) + int(selectedReport.aggregatedDataArrCol[1].value) + int(selectedReport.aggregatedDataArrCol[2].value) + int(selectedReport.aggregatedDataArrCol[3].value) + int(selectedReport.aggregatedDataArrCol[4].value);
 									selectedReport.message = resourceManager.getString('analytics', 'videoDrillDownInteractionsLbl', [selectedReport.seletedMediaEntry.name, sum2]);
+								}
 							}
 							else
 								selectedReport.message = '';
@@ -300,7 +302,7 @@
 								loadChart="{_model.loadingChartFlag}" loadTotal="{_model.loadingTotalFlag}"
 								loadEntry="{_model.loadingEntryFlag}" isLoading="{_model.loadingFlag}"
 								showKDP="{!_model.entitlementEnabled}" screenType="{ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS}"
-								showTable="{_model.entitlementEnabled}"
+								showTable="{_model.entitlementEnabled}" filterApplicationsFlag="{_model.entitlementEnabled}" filterUsersFlag="{_model.entitlementEnabled}"
 								dateOnlyFlag="{true}" showDrillDownNav="{true}" isDrillDown="{true}" width="100%"
 								height="100%" reportData="{_model.selectedReportData}"
 								aggregatedHeaders="{ _model.entitlementEnabled ? _model.aggregateHeaders.contentInteractionPerUser : _model.aggregateHeaders.contentInteraction }"
