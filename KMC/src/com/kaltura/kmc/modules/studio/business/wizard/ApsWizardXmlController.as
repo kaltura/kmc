@@ -1140,10 +1140,9 @@ package com.kaltura.kmc.modules.studio.business.wizard {
 			param.@key = "imageDefaultDuration";
 			param.@value = template.imageDefaultDuration.toString();
 			uiVars.appendChild(param);
-			param = <var></var>;
 
 			// autoplay:
-
+			param = <var></var>;
 			if (templateType == "playlist")
 				param.@key = "playlistAPI.autoPlay";
 			else

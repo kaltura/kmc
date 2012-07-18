@@ -2,24 +2,36 @@
 <!---
 The ItemRenderer for key:value pairs (additional parameters).
 -->
-<mx:VBox  paddingRight="10" paddingLeft="10" paddingTop="4" paddingBottom="2"
-	verticalGap="2" 
-	xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" 
-	horizontalScrollPolicy="off" xmlns:controls="flexlib.controls.*" >
+<mx:VBox paddingRight="10" paddingLeft="10" paddingTop="4" paddingBottom="2" verticalGap="2"
+		 xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" horizontalScrollPolicy="off"
+		 xmlns:controls="flexlib.controls.*" >
 	<mx:Script>
 		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.binding.utils.ChangeWatcher;
+			import mx.events.FlexEvent;
 			import mx.resources.ResourceManager;
+			
+
+			private var watcher:ChangeWatcher; 
+			
+			override public function set data(value:Object):void {
+				if (watcher) {
+					watcher.unwatch();
+				}
+				super.data = value;
+				watcher = BindingUtils.bindProperty(key, "errorString", value, "error");
+			}
+
 		]]>
 	</mx:Script>
-	<controls:PromptingTextInput id="key" text="{data.key}" width="100%" 
-		paddingTop="1" paddingBottom="1" 
-		height="23" 
-		prompt="{ResourceManager.getInstance().getString('aps','key')}" 
-		change="{data.key = key.text}"  fontSize="10"/>
-	<controls:PromptingTextInput id="val" text="{data.val}" width="100%"
-		paddingTop="1" paddingBottom="1" 
-		height="23" 
-		prompt="{ResourceManager.getInstance().getString('aps','value')}" 
-		change="{data.val = val.text}"/>
-	<mx:CheckBox id="overridable" label="{ResourceManager.getInstance().getString('aps','overrideFlashvar')}" labelPlacement="right" selected="{data.overridable}" change="{data.overridable = overridable.selected}" />
+	<controls:PromptingTextInput id="key" text="{data.key}" width="100%" paddingTop="1" paddingBottom="1" height="23"
+								 prompt="{ResourceManager.getInstance().getString('aps','key')}"
+								 change="{data.key = key.text; dispatchEvent(new Event('keyvalChanged', true))}" fontSize="10"/>
+	<controls:PromptingTextInput id="val" text="{data.val}" width="100%" paddingTop="1" paddingBottom="1" height="23"
+								 prompt="{ResourceManager.getInstance().getString('aps','value')}" errorString="{key.errorString}"
+								 change="{data.val = val.text; dispatchEvent(new Event('keyvalChanged', true))}"/>
+	<mx:CheckBox id="overridable" label="{ResourceManager.getInstance().getString('aps','overrideFlashvar')}"
+				 labelPlacement="right" selected="{data.overridable}" 
+				 change="{data.overridable = overridable.selected; dispatchEvent(new Event('keyvalChanged', true))}"/>
 </mx:VBox>

@@ -19,18 +19,21 @@
 			import com.kaltura.kmc.modules.studio.events.ApsFeatureEvent;
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
 			import com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.BoxedList;
+			import com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.KeyValueIr;
 			import com.kaltura.kmc.modules.studio.vo.KeyValVo;
 			import com.kaltura.kmc.modules.studio.vo.PlayerUiConfVo;
 			
 			import mx.collections.ArrayCollection;
 			import mx.collections.XMLListCollection;
 			import mx.containers.VBox;
+			import mx.controls.Alert;
 			import mx.controls.Label;
 			import mx.controls.List;
 			import mx.controls.TextInput;
 			import mx.events.FlexEvent;
 			import mx.events.IndexChangedEvent;
 			import mx.events.ListEvent;
+			import mx.resources.IResourceManager;
 			import mx.resources.ResourceManager;
 
 			private var _featuresXML:XML;
@@ -100,12 +103,6 @@
 			 * */
 			private function openOptionScreen(evt:ApsFeatureEvent):void {
 				featureScreen.initFeature(_selectedFeatureData);
-
-//				var xmlIdToGet:String = _selectedFeatureData.(attribute("customXmlId"));
-//				if (xmlIdToGet) {
-//					var lis:XMLList = _playerUiconfVo.fullplayer..descendants();
-//					featureScreen.customXML = lis..screen.(attribute("id").toString() == xmlIdToGet)[0];
-//				}
 				featureScreen.renderFeatureScreen();
 				featureScreen.visible = true; // "false" in mxml
 			}
@@ -113,11 +110,15 @@
 
 
 			/**
-			 * validate data in this panel: </br>
-			 * - no data is being validated. But someday..
+			 * validate data in this panel: uivars
 			 * @return true if all valid, false otherwise.
 			 * */
 			public function validate():Boolean {
+				for each (var kv:KeyValVo in keyvals) {
+					if (!kv.validate()) {
+						return false;
+					}
+				}
 				return true;
 			}
 
@@ -217,6 +218,7 @@
 			 * init player with current states of the template 
 			 * */
 			public function init():void {
+				kvList.addEventListener("keyvalChanged", kvList_changeHandler, false, 0, true);
 				showFeature();
 				var isPlaylist:Boolean = _playerUiconfVo.isMultiPlaylistTemplate || _playerUiconfVo.isSinglePlaylist;
 				if (isPlaylist) {
@@ -258,13 +260,10 @@
 				if (accordi.getChildAt(event.oldIndex) is BoxedList)
 					(accordi.getChildAt(event.oldIndex) as BoxedList).bList.selectedIndex = -1;
 			}
+			
 			// key value code
 			[Bindable]
-			public var keyvals:ArrayCollection = new ArrayCollection(new Array());
-			public var urlPath:String = "http://www.kaltura.com";
-			[Bindable]
-			public var link:String = "<font color='#0000BB' ><u><a href='" + urlPath + "'>" + urlPath + '</a></u></font>';
-
+			public var keyvals:ArrayCollection = new ArrayCollection();
 
 			private function onAddKeyVal():void {
 				var kv:KeyValVo = new KeyValVo();
@@ -273,12 +272,15 @@
 				// scroll the list to the added item
 				kvList.verticalScrollPosition = kvList.maxVerticalScrollPosition;
 				kvList.selectedItem = kv;
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
 			private function onRemoveKeyVal():void {
-				if (kvList.selectedIndex != -1)
+				if (kvList.selectedIndex != -1) {
 					keyvals.removeItemAt(kvList.selectedIndex);
+					dispatchEvent(new Event("detailsChanged"));
+				}
 			}
 
 
@@ -286,7 +288,7 @@
 			 * take an encoded plugin line, decoded it, seperate
 			 * it by the '&' string, and build
 			 */
-			public function onParsePluginLine():void {
+			private function onParsePluginLine():void {
 //				var pluginLine:String = unescape(pluginLine.text);
 				var pluginLine:String = pluginLine.text;
 				var attributes:Array = pluginLine.split("&");
@@ -298,20 +300,31 @@
 					kv.overridable = true;
 					keyvals.addItemAt(kv, 0);
 				}
-				
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
-			public function deleteAll():void {
+			private function deleteAll():void {
 				keyvals.removeAll();
+				dispatchEvent(new Event("detailsChanged"));
 			}
 
 
+			/**
+			 * create an XML that holds current uivars values
+			 * @return XML representation of current uivars
+			 * */
 			public function populateKeyValues():XML {
 				var kvXml:XML = <uiVars />;
 				for each (var kv:KeyValVo in keyvals) {
-					var newPair:XML = XML('<var key="' + kv.key + '" value="' + kv.val + '" overrideFlashvar="' + kv.overridable + '" />');
-					kvXml.appendChild(newPair);
+					try {
+						var newPair:XML = XML('<var key="' + kv.key + '" value="' + kv.val + '" overrideFlashvar="' + kv.overridable + '" />');
+						kvXml.appendChild(newPair);
+					}
+					catch(e:Error) {
+//						Alert.show(resourceManager.getString('aps', 'invalidUiVars'), resourceManager.getString('aps', 'error'));
+//						break;
+					}
 				}
 				return kvXml;
 			}
@@ -341,6 +354,19 @@
 			{
 				dispatchEvent(new Event("detailsChanged"));
 				dispatchEvent(new Event(REFRESH_KDP));
+			}
+
+
+			protected function kvList_changeHandler(event:Event):void
+			{
+				if (event.target is KeyValueIr) {
+					// prevent confusion wth list change event
+					event.stopImmediatePropagation();
+					event.preventDefault();
+					
+					// notify wizard of change
+					dispatchEvent(new Event("detailsChanged"));
+				}
 			}
 
 		]]>
@@ -376,9 +402,7 @@
 			<mx:LinkButton label="{ResourceManager.getInstance().getString('aps','deleteAllParams')}"
 						   click="{deleteAll()}"/>
 		</mx:HBox>
-		<mx:List id="kvList" width="100%" height="100%"
-				 itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.KeyValueIr"
-				 dataProvider="{keyvals}" />
-
+		<mx:List id="kvList" width="100%" height="100%" dataProvider="{keyvals}"  
+				 itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.KeyValueIr" />
 	</mx:VBox>
 </mx:Canvas>
