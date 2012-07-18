@@ -593,7 +593,7 @@ The main window for new player wizard.
 			
 			private function onSaved(evt:KalturaEvent):void {
 				cursorManager.removeBusyCursor();
-				var alert:Alert = Alert.show(ResourceManager.getInstance().getString("aps", "savedPlayer") + " " + (evt.data as KalturaUiConf).name + " " + ResourceManager.getInstance().getString("aps", "playerId") + " " + (evt.data as KalturaUiConf).id);
+				var alert:Alert = Alert.show(ResourceManager.getInstance().getString("aps", "savedPlayer", [(evt.data as KalturaUiConf).name, (evt.data as KalturaUiConf).id]));
 				alert.addEventListener(CloseEvent.CLOSE, onPlayerSavedAlertClose);
 			}
 			
@@ -636,13 +636,11 @@ The main window for new player wizard.
 				featurePage.dispose();
 				advertizingPage.dispose();
 				stylePage.dispose();
-				//monitizationPage.dispose();
 				previewPlayerPage.dispose();
 				templatePage = null;
 				featurePage = null;
 				advertizingPage = null;
 				stylePage = null;
-				//monitizationPage = null;
 				previewPlayerPage = null;
 				removeAllChildren();
 			}
@@ -947,11 +945,6 @@ The main window for new player wizard.
 			
 			
 			
-			public function onContentCreationComplete():void {
-				contentPage.addEventListener(ApsWizardContent.LIST_PLAYLIST_DONE, onAllListLoaded);
-			}
-			
-			
 			public function onAllListLoaded(evt:Event = null):void {
 				if (_playerUiConfVO.isMultiPlaylistTemplate) {
 					//check if there is a custom playlist made in this player. if not - show default content
@@ -1161,7 +1154,7 @@ The main window for new player wizard.
 								label="{resourceManager.getString('aps','style')}" detailsChanged="{_isChanged=true}"/>
 				
 				<wv:ApsWizardContent id="contentPage" height="100%" width="100%" 
-									 creationComplete="{onContentCreationComplete()}" verticalAlign="top"
+									 listPlaylistDone="onAllListLoaded()" verticalAlign="top"
 									 horizontalAlign="center" detailsChanged="onContentGroupChange()"
 									 isSingleContent="{_playerUiConfVO.isSinglePlaylist}" 
 									 label="{resourceManager.getString('aps','content')}" alertUser="{alertUser(event)}"/>
