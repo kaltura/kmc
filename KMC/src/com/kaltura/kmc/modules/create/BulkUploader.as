@@ -22,6 +22,7 @@ package com.kaltura.kmc.modules.create
 	import flash.events.EventDispatcher;
 	import flash.net.FileFilter;
 	import flash.net.FileReference;
+	import flash.net.FileReferenceList;
 	
 	import mx.controls.Alert;
 	import mx.core.mx_internal;
@@ -47,9 +48,16 @@ package com.kaltura.kmc.modules.create
 		private var _uploadType:String;
 		
 		/**
-		 * file reference object for bulk uploads
+		 * file reference list object for bulk uploads
 		 * */
-		private var _bulkUpldFileRef:FileReference;
+		private var _bulkUpldFileRef:FileReferenceList;
+		
+		/**
+		 * list of FileReference objects to upload
+		 */		
+		private var _files:Array;
+		
+		private var _processedFilesCounter:int = 0;
 		
 		public function BulkUploader(client:KalturaClient) {
 			super(this);
@@ -61,39 +69,48 @@ package com.kaltura.kmc.modules.create
 		 * */
 		public function doUpload(type:String):void {
 			_uploadType = type;
-			_bulkUpldFileRef = new FileReference();
-			_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUpload);
+			_bulkUpldFileRef = new FileReferenceList();
+			_bulkUpldFileRef.addEventListener(Event.SELECT, addBulkUploads);
 			_bulkUpldFileRef.browse(getBulkUploadFilter(type));
 		}
 		
 		
-		protected function addBulkUpload(event:Event):void {
+		protected function addBulkUploads(event:Event):void {
+			var defaultConversionProfileId:int = -1;
+			var file:FileReference;
 			var kbu:KalturaCall;
-			var jobData:KalturaBulkUploadCsvJobData = new KalturaBulkUploadCsvJobData();
-			jobData.fileName = _bulkUpldFileRef.name;
-			switch (_uploadType) {
-				case BulkTypes.MEDIA:
-					var defaultConversionProfileId:int = -1;
-					// pass in xml or csv file type
-					kbu = new BulkUploadAdd(defaultConversionProfileId, _bulkUpldFileRef, getUploadType(_bulkUpldFileRef.name));
-					break;
+			var jobData:KalturaBulkUploadCsvJobData;
+			_files = [];
+			for (var i:int = 0; i<_bulkUpldFileRef.fileList.length; i++) {
+				file = _bulkUpldFileRef.fileList[i] as FileReference;
+				// save the file
+				_files.push(file);
+			
+				jobData = new KalturaBulkUploadCsvJobData();
+				jobData.fileName = file.name;
+				switch (_uploadType) {
+					case BulkTypes.MEDIA:
+						// pass in xml or csv file type
+						kbu = new BulkUploadAdd(defaultConversionProfileId, file, getUploadType(file.name));
+						break;
+					
+					case BulkTypes.CATEGORY:
+						kbu = new CategoryAddFromBulkUpload(file, jobData, new KalturaBulkUploadCategoryData());
+						break;
+					case BulkTypes.USER:
+						kbu = new UserAddFromBulkUpload(file, jobData, new KalturaBulkUploadUserData());
+						break;
+					case BulkTypes.CATEGORY_USER:
+						kbu = new CategoryUserAddFromBulkUpload(file, jobData, new KalturaBulkUploadCategoryUserData());
+						break;
+				}
 				
-				case BulkTypes.CATEGORY:
-					kbu = new CategoryAddFromBulkUpload(_bulkUpldFileRef, jobData, new KalturaBulkUploadCategoryData());
-					break;
-				case BulkTypes.USER:
-					kbu = new UserAddFromBulkUpload(_bulkUpldFileRef, jobData, new KalturaBulkUploadUserData());
-					break;
-				case BulkTypes.CATEGORY_USER:
-					kbu = new CategoryUserAddFromBulkUpload(_bulkUpldFileRef, jobData, new KalturaBulkUploadCategoryUserData());
-					break;
+				
+				kbu.addEventListener(KalturaEvent.COMPLETE, bulkUploadCompleteHandler);
+				kbu.addEventListener(KalturaEvent.FAILED, bulkUploadCompleteHandler);
+				kbu.queued = false;
+				_client.post(kbu);
 			}
-			
-			
-			kbu.addEventListener(KalturaEvent.COMPLETE, bulkUploadCompleteHandler);
-			kbu.addEventListener(KalturaEvent.FAILED, bulkUploadCompleteHandler);
-			kbu.queued = false;
-			_client.post(kbu);
 		}
 		
 		/**
@@ -128,28 +145,38 @@ package com.kaltura.kmc.modules.create
 		}
 		
 		
+		/**
+		 * notify user 
+		 */		
+		protected function onComplete():void {
+			var string:String = ResourceManager.getInstance().getString('create', 'bulk_submitted');
+			var alert:Alert = Alert.show(string);
+			alert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
+			
+			// dispatch complete event
+			dispatchEvent(new Event(Event.COMPLETE));	
+		}
+		
 		
 		protected function bulkUploadCompleteHandler(e:KalturaEvent):void {
-			if (e.success)  {
-				var string:String = ResourceManager.getInstance().getString('create', 'bulk_submitted');
-				var alert:Alert = Alert.show(string);
-				alert.mx_internal::alertForm.mx_internal::textField.htmlText = string;
-
-				// dispatch complete event
-				dispatchEvent(new Event(Event.COMPLETE));
-				return;
+			if (!e.success)  {
+				var er:KalturaError = e.error;
+				if (er.errorCode == APIErrorCode.INVALID_KS) {
+					JSGate.expired();
+				}
+				else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
+					// added the support of non closable window
+					Alert.show(ResourceManager.getInstance().getString('common','forbiddenError',[er.errorMsg]), 
+						ResourceManager.getInstance().getString('create', 'forbiden_error_title'), Alert.OK, null, logout);
+				}
+				else if (er.errorMsg) {
+					Alert.show(er.errorMsg, ResourceManager.getInstance().getString('common', 'error'));
+				}
 			}
-			var er:KalturaError = e.error;
-			if (er.errorCode == APIErrorCode.INVALID_KS) {
-				JSGate.expired();
-			}
-			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
-				// added the support of non closable window
-				Alert.show(ResourceManager.getInstance().getString('common','forbiddenError',[er.errorMsg]), 
-					ResourceManager.getInstance().getString('create', 'forbiden_error_title'), Alert.OK, null, logout);
-			}
-			else if (er.errorMsg) {
-				Alert.show(er.errorMsg, ResourceManager.getInstance().getString('common', 'error'));
+			
+			_processedFilesCounter ++;
+			if (_processedFilesCounter == _files.length) {
+				onComplete();
 			}
 		}
 		
