@@ -2,17 +2,19 @@
 <!---
 	 graphic interface for changing player playlists (multiple playlist only).
 -->
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init()">
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
 	<mx:Metadata>
-		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
-		[Event(name="detailsChanged", type="flash.events.Event")]
 		
+		[Event(name="alertUser", type="flash.events.ErrorEvent")] 
+		
+		[Event(name="detailsChanged", type="flash.events.Event")]
 		
 		/**
 		 * Dispatched when playlists are loaded
 		 * */
 		[Event(name="listPlaylistDone", type="flash.events.Event")]
 	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.commands.playlist.PlaylistList;
@@ -21,17 +23,15 @@
 			import com.kaltura.kmc.modules.studio.view.ApsWizard;
 			import com.kaltura.kmc.modules.studio.vo.PlaylistVO;
 			import com.kaltura.types.KalturaPlaylistOrderBy;
-			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaFilterPager;
 			import com.kaltura.vo.KalturaMediaEntryFilterForPlaylist;
 			import com.kaltura.vo.KalturaPlaylist;
 			import com.kaltura.vo.KalturaPlaylistFilter;
 			import com.kaltura.vo.KalturaPlaylistListResponse;
-
+			
 			import modules.Studio;
-
+			
 			import mx.collections.ArrayCollection;
-			import mx.core.Application;
 			import mx.formatters.DateFormatter;
 			import mx.resources.ResourceManager;
 
@@ -40,27 +40,21 @@
 			 * */
 			public static const LIST_PLAYLIST_DONE:String = "listPlaylistDone";
 
-			
 			public var isSingleContent:Boolean = false;
 
 			[Bindable]
+			/**
+			 * DataProvider for the "all playlists" table
+			 * */
 			private var _playlistsTableDP:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			/**
+			 * DataProvider for the "selected playlists" table
+			 * */
 			private var _widgetPlstDP:ArrayCollection = new ArrayCollection();
 
-			private const RIGHT_LABELS_WIDTH:Number = 150;
-			
-			[Bindable]
-			private var _plTotalDuration:String = "";
-
-			private var _dateFormatter:DateFormatter = new DateFormatter();
 			private var _contentXml:XML;
-
-
-			private function init():void {
-				_dateFormatter.formatString = "DD-MMM-YYYY H:NN";
-			}
 
 
 			/**
@@ -76,7 +70,6 @@
 			//Handle List Playlist
 			////////////////////////////////////////////
 			public function listPlaylist():void {
-				//params.page_size = 300; // hard coded, Ariel 
 				var pager:KalturaFilterPager = new KalturaFilterPager();
 				pager.pageIndex = 1;
 				pager.pageSize = 500;
@@ -90,7 +83,7 @@
 
 
 			/**
-			 * All playlist were loaded - place them on the left side table
+			 * All playlists were loaded - place them on the left side table
 			 */
 			private function onPlaylistLoaded(event:KalturaEvent):void {
 				var kplrl:KalturaPlaylistListResponse;
@@ -106,7 +99,7 @@
 					plstVo.mediaType = playlist.playlistType.toString();
 					var playlistUrl:String = "http://" + Studio.flashvars.host + "/index.php/partnerservices2/executeplaylist?playlist_id=" + playlist.id + "&partner_id=" + playlist.partnerId + "&subp_id=" + (Number(playlist.partnerId) * 100).toString() + "&format=8" + "&ks={ks}";
 					plstVo.playlistUrl = encodeURIComponent(playlistUrl);
-					plstVo.createAtAsString = _dateFormatter.format(new Date(int(playlist.createdAt) * 1000));
+					plstVo.createAtAsString = dateFormatter.format(new Date(int(playlist.createdAt) * 1000));
 					plstVo.duration = playlist.duration;
 					arr.push(plstVo);
 				}
@@ -123,8 +116,6 @@
 
 			}
 
-
-			////////////////////////////////////////////
 
 
 			//Group Playlist Manipulation
@@ -146,9 +137,8 @@
 					if (oldPos > 0)
 						widgetPlst.scrollToIndex(oldPos);
 
-					_plTotalDuration = "Total Duration:" + getTotalDuration();
 
-					dispatchEvent(new Event("groupPlaylistChange"));
+					dispatchEvent(new Event("detailsChanged"));
 				}
 
 			}
@@ -168,9 +158,8 @@
 					if (oldPos > 0)
 						widgetPlst.scrollToIndex(oldPos);
 
-					_plTotalDuration = "Total Duration:" + getTotalDuration();
 
-					dispatchEvent(new Event("groupPlaylistChange"));
+					dispatchEvent(new Event("detailsChanged"));
 				}
 			}
 
@@ -186,7 +175,7 @@
 						if (widgetPlst.selectedIndex - 1 > 0)
 							widgetPlst.scrollToIndex(widgetPlst.selectedIndex - 1);
 
-						dispatchEvent(new Event("groupPlaylistChange"));
+						dispatchEvent(new Event("detailsChanged"));
 					}
 				}
 			}
@@ -204,43 +193,39 @@
 						if (widgetPlst.selectedIndex + 1 > 0)
 							widgetPlst.scrollToIndex(widgetPlst.selectedIndex + 1);
 
-						dispatchEvent(new Event("groupPlaylistChange"));
+						dispatchEvent(new Event("detailsChanged"));
 					}
 				}
 			}
 
 
-			////////////////////////////////////////////
 
-			public function getPlaylistMediaTypes(str:String):String {
-				switch (str) {
+			/**
+			 * label function for media type column
+			 * */
+			private function getPlaylistMediaTypes(item:Object, column:DataGridColumn):String {
+				var res:String = '';
+				switch (item.mediaType) {
 					case PlaylistTypes.STATIC:
-						return 'Manual';
+						res = resourceManager.getString('aps', 'plTypeManual');
 						break;
 					case PlaylistTypes.DYNAMIC:
-						return 'Rule Based';
+						res = resourceManager.getString('aps', 'plTypeDynamic');
 						break;
 					case PlaylistTypes.EXTERNAL:
-						return 'External Rss';
+						res = resourceManager.getString('aps', 'plTypeExternal');
 						break;
 				}
 
-				return "";
+				return res;
 			}
 
 
-			public function getTotalDuration():String {
-				var totalDur:Number = 0;
-				for (var i:int = 0; i < _widgetPlstDP.length; i++) {
-					totalDur += _widgetPlstDP[i].duration;
-				}
-				return KTimeUtil.formatTime(totalDur);
-			}
 
-
-			//API
-			////////////////////////////////////////////
-
+			/**
+			 * generate XML representation for currently selected playlists
+			 * @return XML
+			 * */
 			public function getWidgetPlaylistXML():XML {
 				var str:String = "<playlistGroup id='' groupName=''>";
 				for (var i:int = 0; i < _widgetPlstDP.length; i++) {
@@ -253,6 +238,10 @@
 			}
 
 
+			/**
+			 * set selected lists
+			 * @param xml	representation of required playlists
+			 * */
 			public function setWidgetPlaylistXML(xml:XML):Boolean {
 				_widgetPlstDP.source = new Array();
 				_contentXml = xml;
@@ -269,7 +258,7 @@
 			}
 
 
-			public function addPlaylistByEntryId(entryId:String):void {
+			private function addPlaylistByEntryId(entryId:String):void {
 				for (var i:int = 0; i < _playlistsTableDP.length; i++) {
 					if ((_playlistsTableDP[i] as PlaylistVO).entryId == entryId) {
 						_widgetPlstDP.addItem((_playlistsTableDP[i] as PlaylistVO).clone());
@@ -278,70 +267,67 @@
 			}
 		]]>
 	</mx:Script>
+	
+	<mx:DateFormatter id="dateFormatter" formatString="DD-MMM-YYYY H:NN" />
 
-	<mx:VBox height="100%" width="100%">
-		<mx:HBox id="all" disabledOverlayAlpha="0" height="100%" width="100%">
-			<mx:VBox width="100%" height="100%" styleName="noVGap">
-				<mx:Label text="All Playlists (as created in the Content tab):"/>
-				
-				<mx:DataGrid id="playlistsTable" width="100%" height="100%" styleName="borderedDataGrid" rowHeight="23"
+	<mx:HBox id="all" disabledOverlayAlpha="0" height="100%" width="100%">
+		<mx:VBox width="100%" height="100%">
+			<mx:Label text="{resourceManager.getString('aps', 'allPlaylists')}"/>
+			
+			<mx:VBox styleName="noVGap" width="100%" height="100%" >
+				<mx:DataGrid id="playlistsTable" width="100%" height="100%" styleName="borderedDataGrid"
 							 draggableColumns="false" sortableColumns="false" doubleClickEnabled="true"
 							 itemDoubleClick="{addPlaylistItem()}" dataProvider="{_playlistsTableDP}">
 					<mx:columns>
-						<mx:DataGridColumn headerText="Name" dataField="name"/>
-						<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80" headerText="Playlist Type"
-										   dataField="mediaType">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:HBox width="100%" height="100%" verticalAlign="middle"
-											 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-										<mx:Label text="{outerDocument.getPlaylistMediaTypes(data.mediaType)}"/>
-									</mx:HBox>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="Created At" dataField="createAtAsString" width="140"/>
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
+										   headerText="{resourceManager.getString('aps', 'plNameHeader')}"/>
+						
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="mediaType" width="80" 
+										   headerText="{resourceManager.getString('aps', 'plTypeHeader')}" 
+										   labelFunction="getPlaylistMediaTypes" />
+							
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="createAtAsString" width="140"
+										   headerText="{resourceManager.getString('aps', 'plCreateHeader')}"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox height="{widgetPlstToolbar.height}" width="100%" styleName="DataGridActions" />
+			</mx:VBox>
+		</mx:VBox>
+		
+		<mx:HBox height="100%" styleName="plstAddRemoveCont" >
+			<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="removePlaylistItem()"/>
+			<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtn" click="addPlaylistItem()"/>
+		</mx:HBox>
+		
+		<mx:VBox width="100%" height="100%" >
+			<mx:Label text="{resourceManager.getString('aps', 'selectedPlaylists')}"/>
+			<mx:VBox styleName="noVGap" width="100%" height="100%" >
+				<mx:DataGrid id="widgetPlst" width="100%" height="100%" styleName="borderedDataGrid" 
+							 sortableColumns="false" doubleClickEnabled="true" itemDoubleClick="{removePlaylistItem()}"
+							 dataProvider="{_widgetPlstDP}">
+					<mx:columns>
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="name"
+										   headerText="{resourceManager.getString('aps', 'plNameHeader')}"/>
+						
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="mediaType" width="80" 
+										   headerText="{resourceManager.getString('aps', 'plTypeHeader')}" 
+										   labelFunction="getPlaylistMediaTypes" />
+						
+						<mx:DataGridColumn paddingLeft="4" paddingRight="4" dataField="createAtAsString" width="140"
+										   headerText="{resourceManager.getString('aps', 'plCreateHeader')}"/>
 					</mx:columns>
 				</mx:DataGrid>
 				
-				<mx:HBox height="{widgetPlstToolbar.height}" width="100%" styleName="DataGridActions" />
-			</mx:VBox>
-			
-			<mx:HBox height="100%" styleName="plstAddRemoveCont" horizontalGap="0">
-				<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="removePlaylistItem()"/>
-				<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtn" click="addPlaylistItem()"/>
-			</mx:HBox>
-			
-			<mx:VBox width="100%" height="100%" styleName="noVGap">
-				<mx:Label text="Playlist Tabs (each playlist represents a new tab):"/>
-				<mx:DataGrid id="widgetPlst" width="100%" height="100%" styleName="borderedDataGrid" rowHeight="23"
-							 sortableColumns="false" doubleClickEnabled="true" itemDoubleClick="{addPlaylistItem()}"
-							 keyDown="{if(event.keyCode == Keyboard.DELETE)removePlaylistItem()}"
-							 dataProvider="{_widgetPlstDP}">
-					<mx:columns>
-						<mx:DataGridColumn headerText="Name" dataField="name"/>
-						<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80" headerText="Playlist Type">
-							<mx:itemRenderer>
-								<mx:Component>
-									<mx:HBox width="100%" height="100%" verticalAlign="middle"
-											 horizontalScrollPolicy="off" verticalScrollPolicy="off">
-										<mx:Label text="{outerDocument.getPlaylistMediaTypes(data.mediaType)}"/>
-									</mx:HBox>
-								</mx:Component>
-							</mx:itemRenderer>
-						</mx:DataGridColumn>
-						<mx:DataGridColumn headerText="Created Date" dataField="createAtAsString" width="140"/>
-					</mx:columns>
-				</mx:DataGrid>
 				<mx:VBox id="widgetPlstToolbar" width="100%" styleName="DataGridActions" verticalGap="0">
 					<mx:Button id="upBtn" buttonMode="true" styleName="movUpBtn" click="movePlstItemUp()"/>
 					<mx:Button id="downBtn" buttonMode="true" styleName="movDownBtn" click="movePlstItemDown()"/>
 				</mx:VBox>
 			</mx:VBox>
-		</mx:HBox>
-
-		<mx:VBox width="100%" styleName="plstContentDtlsCont" horizontalAlign="right">
-			<mx:Label text="Total Playlists: {_widgetPlstDP.length}" width="{RIGHT_LABELS_WIDTH}"/>
+				
 		</mx:VBox>
+	</mx:HBox>
+
+	<mx:VBox width="100%" styleName="plstContentDtlsCont" >
+		<mx:Label text="{resourceManager.getString('aps', 'totalPlaylists', [_widgetPlstDP.length])}" />
 	</mx:VBox>
 </mx:VBox>
