@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
 		 xmlns:playerlist="com.kaltura.kmc.modules.studio.business.playerlist.*"
 		 xmlns:view="com.kaltura.kmc.modules.studio.view.*" xmlns:controls="com.kaltura.controls.*"
-		 creationComplete="onCreationComplete()" horizontalGap="0" verticalGap="0" >
+		 creationComplete="onCreationComplete()" styleName="studioPageStyle" >
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.analytics.GoogleAnalyticsConsts;
@@ -418,10 +418,10 @@
 			 * retreive the locale version for uiconf type (player,
 			 * playlist, multiplaylist) for display in item renderer
 			 * */
-			public function getTemplateName(data:Object):String {
+			private function getTemplateName(item:Object, column:DataGridColumn):String {
 				var result:String = ''
-				if (data) {
-					var confFileXml:XML = XML(data.confFile.toString());
+				if (item) {
+					var confFileXml:XML = XML(item.confFile.toString());
 					var type:uint = 1;
 					if (confFileXml.@isPlaylist == "false")
 						type = 1;
@@ -437,14 +437,20 @@
 			}
 
 
-
 			/**
-			 * formats a date object for display in the item renderer
+			 * label function for uiconf date column
 			 * */
-			public function formatUiconfDate(data:Object):String {
-				var date:Date = new Date(Number(data) * 1000);
+			private function formatUiconfDate(item:Object, column:DataGridColumn):String {
+				var date:Date = new Date(Number(item.updatedAt) * 1000);
 				var str:String = gridDateFormatter.format(date);
 				return str;
+			}
+
+			/**
+			 * label function for Player Dimensions column
+			 * */
+			private function getPlayerDim(item:Object, column:DataGridColumn):String {
+				return resourceManager.getString('aps', 'dimensionFormat', [item.width, item.height]);
 			}
 
 
@@ -624,61 +630,36 @@
 	</mx:VBox>
 	<mx:HBox width="100%" height="100%" styleName="moderationHBox">
 		<mx:VBox height="100%" width="100%" id="listContainer" verticalGap="0">
-			<mx:DataGrid id="playerListDg" width="100%" height="100%" selectable="false"
+			<mx:DataGrid id="playerListDg" width="100%" height="100%" verticalAlign="middle"
 						 draggableColumns="false" sortableColumns="false" rowHeight="36">
 				<mx:columns>
-					<mx:DataGridColumn id="playerName" paddingLeft="4" paddingRight="4"
-									   headerText="{resourceManager.getString('aps','playerNameColumn')}" >
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" 
-										 verticalAlign="middle">
-									<mx:Label text="{data.name}"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
+					<mx:DataGridColumn id="playerName" paddingLeft="4" paddingRight="4" dataField="name"
+									   headerText="{resourceManager.getString('aps','playerNameColumn')}" />
+						
 					<mx:DataGridColumn id="playerId" paddingLeft="4" paddingRight="4" width="80" 
 									   headerText="{resourceManager.getString('aps','playeridColumn')}" >
 						<mx:itemRenderer>
 							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" >
+								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" >
 									<mx:Label text="{data.id}" selectable="true"/>
 								</mx:VBox>
 							</mx:Component>
 						</mx:itemRenderer>
 					</mx:DataGridColumn>
+					
 					<mx:DataGridColumn id="playerDate" paddingLeft="4" paddingRight="4" width="130"
-									   headerText="{resourceManager.getString('aps','playerDateColumn')}" >
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" >
-									<mx:Label text="{outerDocument.formatUiconfDate(data.updatedAt)}" selectable="true"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
+									   headerText="{resourceManager.getString('aps','playerDateColumn')}"
+									   labelFunction="formatUiconfDate" />
+					
 					<mx:DataGridColumn paddingLeft="4" paddingRight="4" width="80"
-									   headerText="{resourceManager.getString('aps','playerSizeColumn')}" >
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
-									<mx:Label text="{data.width}x{data.height}"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn id="template" paddingLeft="4" paddingRight="4" width="80"
-									   headerText="{resourceManager.getString('aps','template')}" >
-						<mx:itemRenderer>
-							<mx:Component>
-								<mx:VBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle">
-									<mx:Label text="{outerDocument.getTemplateName(data)}"/>
-								</mx:VBox>
-							</mx:Component>
-						</mx:itemRenderer>
-					</mx:DataGridColumn>
-					<mx:DataGridColumn id="actions" width="130"
+									   headerText="{resourceManager.getString('aps','playerSizeColumn')}" 
+									   labelFunction="getPlayerDim" />
+						
+					<mx:DataGridColumn id="template" paddingLeft="4" paddingRight="4" width="100"
+									   headerText="{resourceManager.getString('aps','template')}" 
+									   labelFunction="getTemplateName" />
+					
+					<mx:DataGridColumn id="actions" paddingLeft="4" paddingRight="4" width="130"
 									   headerText="{resourceManager.getString('aps','actions')}"
 									   itemRenderer="com.kaltura.kmc.modules.studio.view.wizard.itemRenderers.StudioActionsIR" />
 				</mx:columns>
