@@ -32,6 +32,8 @@ package com.kaltura.kmc.modules.analytics.commands
 		private var _graphDataArr : Array;
 		private var _baseTotalsWatcher:ChangeWatcher;
 		private var _isDataPending:Boolean;
+		
+		private var _screenType:int;
 		/**
 		 * will execute the request to get all the graph results accourding to the current filter
 		 * @param event (ReportEvent) 
@@ -47,21 +49,20 @@ package com.kaltura.kmc.modules.analytics.commands
 			ExecuteReportHelper.reportSetupBeforeExecution();
 			
 			var reportEvent:ReportEvent = event as ReportEvent;
-			var screenType:int;
 			if (reportEvent.screenType != -1){
-				screenType = reportEvent.screenType;
+				_screenType = reportEvent.screenType;
 			} else {
-				screenType = _model.currentScreenState;
+				_screenType = _model.currentScreenState;
 			}
 
 			var objectIds : String = '';
 			if( _model.selectedEntry &&  
-				( screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || 
-					screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || 
-					screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
-					screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN || 
-					screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN ||
-					screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) )
+				( _screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT || 
+					_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF || 
+					_screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
+					_screenType == ScreenTypes.CONTENT_CONTRIBUTIONS_DRILL_DOWN || 
+					_screenType == ScreenTypes.TOP_SYNDICATIONS_DRILL_DOWN ||
+					_screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN) )
 			{
 				objectIds = _model.selectedReportData.objectIds = _model.selectedEntry;
 			}
@@ -69,13 +70,13 @@ package com.kaltura.kmc.modules.analytics.commands
 			var reportGetGraphs : ReportGetGraphs;
 			//If we have a user report call we need to have another fileter (that support application and users) 
 			//when we generate the report get total call
-			if (screenType == ScreenTypes.END_USER_ENGAGEMENT || 
-				screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
-				screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
-				screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
-				screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
-				screenType == ScreenTypes.END_USER_STORAGE ||
-				screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
+			if (_screenType == ScreenTypes.END_USER_ENGAGEMENT || 
+				_screenType == ScreenTypes.END_USER_ENGAGEMENT_DRILL_DOWN ||
+				_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DEFAULT ||
+				_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF ||
+				_screenType == ScreenTypes.VIDEO_DRILL_DOWN_INTERACTIONS ||
+				_screenType == ScreenTypes.END_USER_STORAGE ||
+				_screenType == ScreenTypes.END_USER_STORAGE_DRILL_DOWN)
 			{
 				var keurif : KalturaEndUserReportInputFilter = ExecuteReportHelper.createEndUserFilterFromCurrentReport();
 				
@@ -131,8 +132,8 @@ package com.kaltura.kmc.modules.analytics.commands
 		
 		private function parseData():void{
 			//_model.reportDataMap[_model.currentScreenState].
-			_model.reportDataMap[_model.currentScreenState].dimToChartDpMap = new Object();
-			_model.reportDataMap[_model.currentScreenState].dimArrColl = new ArrayCollection();
+			_model.reportDataMap[_screenType].dimToChartDpMap = new Object();
+			_model.reportDataMap[_screenType].dimArrColl = new ArrayCollection();
 			
 			var firstDim : String = null;
 			for(var i:int=0; i<_graphDataArr.length; i++)
@@ -142,12 +143,12 @@ package com.kaltura.kmc.modules.analytics.commands
 				var pointsArr : Array = krp.data.split(";");
 				var graphPoints : ArrayCollection = new ArrayCollection();
 				
-				if(!_model.reportDataMap[_model.currentScreenState])	
-					_model.reportDataMap[_model.currentScreenState] = new ReportData();
+				if(!_model.reportDataMap[_screenType])	
+					_model.reportDataMap[_screenType] = new ReportData();
 				
 				var dimObj:Object = createDimObject(krp.id);
 				if(!firstDim) firstDim = dimObj.data;
-				(_model.reportDataMap[_model.currentScreenState].dimArrColl as ArrayCollection).addItem( dimObj );
+				(_model.reportDataMap[_screenType].dimArrColl as ArrayCollection).addItem( dimObj );
 				
 				// for totals calculation
 				var totalPoints : ArrayCollection;
@@ -159,7 +160,7 @@ package com.kaltura.kmc.modules.analytics.commands
 					totalCounter = getBaseTotal(totalDimName);
 					var totalDimObj:Object = createDimObject(totalDimName);
 					
-					(_model.reportDataMap[_model.currentScreenState].dimArrColl as ArrayCollection).addItem( totalDimObj );
+					(_model.reportDataMap[_screenType].dimArrColl as ArrayCollection).addItem( totalDimObj );
 				}
 				
 				for(var j:int=0; j<pointsArr.length; j++)
@@ -169,8 +170,8 @@ package com.kaltura.kmc.modules.analytics.commands
 						var xYArr : Array = pointsArr[j].split(",");
 						var yVal:Number = parseFloat(xYArr[1]);
 						yVal = isNaN(yVal) ? 0 : yVal;
-						if(_model.currentScreenState != ScreenTypes.CONTENT_DROPOFF && 
-						   _model.currentScreenState != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
+						if(_screenType != ScreenTypes.CONTENT_DROPOFF && 
+							_screenType != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
 						{
 							// For full dates
 							if (String(xYArr[0]).length == 8){
@@ -215,32 +216,32 @@ package com.kaltura.kmc.modules.analytics.commands
 				}
 	
 				
-				_model.reportDataMap[_model.currentScreenState].dimToChartDpMap[krp.id] = graphPoints;
+				_model.reportDataMap[_screenType].dimToChartDpMap[krp.id] = graphPoints;
 				
 				if (_addTotals && krp.id.substr(0,5) == "added"){
-					_model.reportDataMap[_model.currentScreenState].dimToChartDpMap[totalDimName] = totalPoints;
+					_model.reportDataMap[_screenType].dimToChartDpMap[totalDimName] = totalPoints;
 				}
 				
-				if(!_model.reportDataMap[_model.currentScreenState].selectedDim && i==0)
-					_model.reportDataMap[_model.currentScreenState].selectedDim = _graphDataArr[i].id;
+				if(!_model.reportDataMap[_screenType].selectedDim && i==0)
+					_model.reportDataMap[_screenType].selectedDim = _graphDataArr[i].id;
 			}
-			if(_model.currentScreenState != ScreenTypes.CONTENT_DROPOFF && _model.currentScreenState != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
+			if(_screenType != ScreenTypes.CONTENT_DROPOFF && _screenType != ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF)
 			{
-				if(!_model.reportDataMap[_model.currentScreenState].selectedDim)
-					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap[firstDim];
+				if(!_model.reportDataMap[_screenType].selectedDim)
+					_model.reportDataMap[_screenType].chartDp = _model.reportDataMap[_screenType].dimToChartDpMap[firstDim];
 				else
-					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap[_model.reportDataMap[_model.currentScreenState].selectedDim];
+					_model.reportDataMap[_screenType].chartDp = _model.reportDataMap[_screenType].dimToChartDpMap[_model.reportDataMap[_screenType].selectedDim];
 			}
 			else
 			{
-				if(_model.currentScreenState == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF && _model.entitlementEnabled)
-					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap["user_content_dropoff"];
+				if(_screenType == ScreenTypes.VIDEO_DRILL_DOWN_DROP_OFF && _model.entitlementEnabled)
+					_model.reportDataMap[_screenType].chartDp = _model.reportDataMap[_screenType].dimToChartDpMap["user_content_dropoff"];
 				else
-					_model.reportDataMap[_model.currentScreenState].chartDp = _model.reportDataMap[_model.currentScreenState].dimToChartDpMap["content_dropoff"];
+					_model.reportDataMap[_screenType].chartDp = _model.reportDataMap[_screenType].dimToChartDpMap["content_dropoff"];
 			}	
 			_model.filter = _model.filter;
 			_model.selectedReportData = null; //refreash
-			_model.selectedReportData = _model.reportDataMap[_model.currentScreenState];	
+			_model.selectedReportData = _model.reportDataMap[_screenType];	
 		}
 		
 		
