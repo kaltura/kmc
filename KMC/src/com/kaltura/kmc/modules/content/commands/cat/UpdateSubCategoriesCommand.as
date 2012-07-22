@@ -5,7 +5,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.commands.category.CategoryUpdate;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
+	import com.kaltura.kmc.business.CategoryUtils;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
+	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
 	import mx.resources.IResourceManager;
@@ -21,6 +23,7 @@ package com.kaltura.kmc.modules.content.commands.cat
 			var catUpdate:CategoryUpdate;
 			for (var i:int = 0; i<ar.length; i++) {
 				ar[i].setUpdatedFieldsOnly(true);
+				CategoryUtils.resetUnupdateableFields(ar[i] as KalturaCategory);
 				catUpdate = new CategoryUpdate(ar[i].id, ar[i]);
 				mr.addAction(catUpdate);
 			}
