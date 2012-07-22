@@ -399,6 +399,7 @@ package com.kaltura.edw.business.base
 				
 				var spacer:Spacer = new Spacer();
 				spacer.height = FIELDS_GAP;
+				BindingUtils.bindProperty(spacer, "includeInLayout", child, "includeInLayout");
 				newLayout.addChild(spacer);
 			}
 			
