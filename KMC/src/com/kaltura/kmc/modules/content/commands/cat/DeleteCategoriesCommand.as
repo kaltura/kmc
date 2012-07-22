@@ -1,5 +1,7 @@
 package com.kaltura.kmc.modules.content.commands.cat {
 	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.kaltura.analytics.GoogleAnalyticsConsts;
+	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.commands.MultiRequest;
 	import com.kaltura.commands.category.CategoryDelete;
 	import com.kaltura.errors.KalturaError;
@@ -18,7 +20,7 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		
 		private var _ids:Array;
 		
-		private var _numOfGroups:int = 1;	// numbre of groups to process
+		private var _numOfGroups:int = 1;	// number of groups to process
 		
 		private var _callsCompleted:int = 0;	// number of calls (groups) already processed
 		
@@ -67,6 +69,9 @@ package com.kaltura.kmc.modules.content.commands.cat {
 		
 		private function deleteCats(e:CloseEvent):void {
 			if (e.detail == Alert.OK) {
+				
+				GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_DELETE_BULK, GoogleAnalyticsConsts.CONTENT);
+				
 				_numOfGroups = Math.floor(_ids.length / 50);
 				var lastGroupSize:int = _ids.length % 50;
 				if (lastGroupSize != 0) {

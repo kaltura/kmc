@@ -120,7 +120,7 @@ package com.kaltura.kmc.modules.content.commands {
 						deleteEntry = new BaseEntryDelete((_entries[i] as KalturaBaseEntry).id);
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_DELETE_ITEM,
 							"Delete Entry", _entries[i].id);
-						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_ITEM, GoogleAnalyticsConsts.CONTENT);
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_DELETE_MEDIA_ENTRY, GoogleAnalyticsConsts.CONTENT);
 					}
 
 					mr.addAction(deleteEntry);

@@ -721,6 +721,7 @@ package com.kaltura.kmc.modules.content.business
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.MOVE_CATEGORIES);
 					kEvent.data = [tgt.getCategories(), tgt.getParent()];
 					kEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_MOVE, GoogleAnalyticsConsts.CONTENT);
 					break;
 			}
 		}
@@ -732,6 +733,7 @@ package com.kaltura.kmc.modules.content.business
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_LISTING);
 					kEvent.data = tgt.getListing();
 					kEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_LISTING, GoogleAnalyticsConsts.CONTENT);
 					break;
 			}
 		}
@@ -744,6 +746,7 @@ package com.kaltura.kmc.modules.content.business
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_CONTRIBUTION);
 					kEvent.data = tgt.getContributionPolicy();
 					kEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_CONTRIBUTION_POLICY, GoogleAnalyticsConsts.CONTENT);
 					break;
 			}
 		}
@@ -756,6 +759,7 @@ package com.kaltura.kmc.modules.content.business
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_ACCESS);
 					kEvent.data = tgt.getAccess();
 					kEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_ACCESS, GoogleAnalyticsConsts.CONTENT);
 					break;
 			}
 		}
@@ -768,6 +772,7 @@ package com.kaltura.kmc.modules.content.business
 					var kEvent:CategoryEvent = new CategoryEvent(CategoryEvent.SET_CATEGORIES_OWNER);
 					kEvent.data = tgt.ownerUser.id;
 					kEvent.dispatch();
+					GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.CONTENT_CATS_OWNER, GoogleAnalyticsConsts.CONTENT);
 					break;
 			}
 		}		

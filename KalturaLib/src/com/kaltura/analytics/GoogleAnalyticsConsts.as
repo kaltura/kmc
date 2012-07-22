@@ -33,6 +33,7 @@ package com.kaltura.analytics {
 		public static const CONTENT_MODERATION:String = "Moderation";
 		public static const CONTENT_PLAYLISTS:String = "Playlists";
 		public static const CONTENT_SYNDICATION:String = "Syndication";
+		public static const CONTENT_CATEGORIES:String = "Categories";
 		public static const CONTENT_UPLOADS:String = "Uploads";
 		public static const CONTENT_BULK_UPLOADS:String = "Bulk Uploads";
 		public static const CONTENT_DROP_FOLDERS:String = "Drop Folders";
@@ -51,6 +52,11 @@ package com.kaltura.analytics {
 		public static const CONTENT_DRILLDOWN_CLIPS:String = "DrillDown/Clips";
 		public static const CONTENT_DRILLDOWN_CONTENT:String = "DrillDown/Content";
 		public static const CONTENT_DRILLDOWN_LIVE:String = "DrillDown/Live Streaming";
+		
+		// ==============================
+		public static const CONTENT_CAT_DRILLDOWN_METADATA:String = "Category DrillDown/Metadata";
+		public static const CONTENT_CAT_DRILLDOWN_ENTITLEMENTS:String = "Category DrillDown/Entitlements";
+		public static const CONTENT_CAT_DRILLDOWN_SUBCATS:String = "Category DrillDown/Subcategories";
 		
 		// actions
 		// ==============================
@@ -77,7 +83,7 @@ package com.kaltura.analytics {
 		/**
 		 * delete regular entry
 		 */
-		public static const CONTENT_DELETE_ITEM:String = "Delete Entry";
+		public static const CONTENT_DELETE_MEDIA_ENTRY:String = "Delete Entry";
 		
 		/**
 		 * delete mix entry
@@ -113,7 +119,7 @@ package com.kaltura.analytics {
 		/**
 		 * add tags to multiple categories
 		 */
-		public static const CONTENT_ADD_CATEGORY_TAGS:String = "Add tags Multiple Categories"; 
+		public static const CONTENT_ADD_CATEGORY_TAGS:String = "Categories/Add tags Multiple Categories"; 
 		
 		/**
 		 * remove tags from Multiple Entries 
@@ -123,17 +129,17 @@ package com.kaltura.analytics {
 		/**
 		 * remove tags from Multiple categories 
 		 */
-		public static const CONTENT_REMOVE_CATEGORY_TAGS:String = "Remove Tags Multiple Categories"; 
+		public static const CONTENT_REMOVE_CATEGORY_TAGS:String = "Categories/Remove Tags Multiple Categories"; 
 		
 		/**
 		 * create new category 
 		 */
-		public static const CONTENT_ADD_CATEGORY:String = "Add Category";
+		public static const CONTENT_ADD_CATEGORY:String = "Categories/Add Category";
 		
 		/**
-		 * delete existing category
+		 * delete existing category (single)
 		 */
-		public static const CONTENT_DELETE_CATEGORY:String = "Delete Category"; 
+		public static const CONTENT_DELETE_CATEGORY:String = "Categories/Delete Category"; 
 		
 		/**
 		 * download of entry
@@ -202,6 +208,37 @@ package com.kaltura.analytics {
 		public static const CONTENT_DRILLDOWN_RELATED_DNLD:String = "DrillDown/Download Related File";
 		
 		
+		// categories actions
+		// ==============================
+		/**
+		 * delete multiple categories (in bulk)  
+		 */		
+		public static const CONTENT_CATS_DELETE_BULK:String = "Categories/Delete Multiple Categories";
+		
+		/**
+		 * move categories (single / multiple)
+		 */
+		public static const CONTENT_CATS_MOVE:String = "Categories/Move Categories";
+		
+		/**
+		 * change multiple categories access
+		 */
+		public static const CONTENT_CATS_ACCESS:String = "Categories/Change Categories Access";
+		
+		/**
+		 * change multiple categories listing
+		 */
+		public static const CONTENT_CATS_LISTING:String = "Categories/Change Categories Listing";
+		
+		/**
+		 * change multiple categories contribution policy
+		 */
+		public static const CONTENT_CATS_CONTRIBUTION_POLICY:String = "Categories/Change Categories Contribution Policy";
+		
+		/**
+		 * change multiple categories owner
+		 */
+		public static const CONTENT_CATS_OWNER:String = "Categories/Change Categories Owner";
 		
 		
 		// ==================================================================

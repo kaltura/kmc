@@ -676,29 +676,31 @@
 			 * track tab changes in analytics and URL hash
 			 * */
 			private function trackTabChange(evt:Event):void {
-				var label:String = contentView.selectedChild.id;
-				switch (label) {
-					case "manage":
+				switch (contentView.selectedChild) {
+					case manage:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInEntryTable>Manage");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_ENTRIES, GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "playlists":
+					case playlists:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInPlaylistTable>Playlists");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_PLAYLISTS, GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "moderate":
+					case moderation:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInModerationTable>Moderate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_MODERATION, GoogleAnalyticsConsts.CONTENT)
 						break;
-					case "syndication":
+					case syndication:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInSyndicateTable>Syndicate");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_SYNDICATION, GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "uploads":
+					case categories:
+						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_CATEGORIES, GoogleAnalyticsConsts.CONTENT);
+						break;
+					case uploads:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "pagingInBulkUploadTable>Upload");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_BULK_UPLOADS, GoogleAnalyticsConsts.CONTENT);
 						break;
-					case "dropFolders":
+					case dropFolders:
 						KAnalyticsTracker.getInstance().sendEvent(KAnalyticsTrackerConsts.CONTENT, KalturaStatsKmcEventType.CONTENT_PAGE_VIEW, "navigateToDropFoldersPage");
 						GoogleAnalyticsTracker.getInstance().sendToGA(GoogleAnalyticsConsts.PAGE_VIEW + GoogleAnalyticsConsts.CONTENT_DROP_FOLDERS, GoogleAnalyticsConsts.CONTENT);
 						break;
