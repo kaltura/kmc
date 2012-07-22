@@ -68,13 +68,13 @@ package com.kaltura.kmc.modules.content.commands {
 		 * @return true if error was encountered, false otherwise
 		 */		
 		protected function checkError(resultData:Object, header:String = ''):Boolean {
+			var rm:IResourceManager = ResourceManager.getInstance();
 			if (!header) {
 				header = rm.getString('cms', 'error');
 			}
 			// look for error
 			var str:String = '';
 			var er:KalturaError = (resultData as KalturaEvent).error;
-			var rm:IResourceManager = ResourceManager.getInstance();
 			if (er) {
 				str = rm.getString('cms', er.errorCode);
 				if (!str) {
