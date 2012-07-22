@@ -64,9 +64,13 @@ package com.kaltura.kmc.modules.content.commands {
 		/**
 		 * displays any erorr in the response 
 		 * @param resultData
+		 * @param header	optional header for error message
 		 * @return true if error was encountered, false otherwise
 		 */		
-		protected function checkError(resultData:Object):Boolean {
+		protected function checkError(resultData:Object, header:String = ''):Boolean {
+			if (!header) {
+				header = rm.getString('cms', 'error');
+			}
 			// look for error
 			var str:String = '';
 			var er:KalturaError = (resultData as KalturaEvent).error;
@@ -76,7 +80,7 @@ package com.kaltura.kmc.modules.content.commands {
 				if (!str) {
 					str = er.errorMsg;
 				} 
-				Alert.show(str, rm.getString('cms', 'error'));
+				Alert.show(str, header);
 				return true;
 			} 
 			else {
@@ -90,7 +94,7 @@ package com.kaltura.kmc.modules.content.commands {
 							if (!str) {
 								str = o.error.message;
 							} 
-							Alert.show(str, rm.getString('cms', 'error'));
+							Alert.show(str, header);
 							return true;
 						}
 					}
