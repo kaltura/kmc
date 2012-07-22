@@ -136,22 +136,13 @@ package com.kaltura.kmc.modules.content.commands {
 		override public function result(data:Object):void {
 			super.result(data);
 			_model.decreaseLoadCounter();
-			var er:KalturaError = (data as KalturaEvent).error;
 			var rm:IResourceManager = ResourceManager.getInstance();
-			if (er) {
-				var str:String = rm.getString('cms', er.errorCode);
-				if (!str) {
-					str = er.errorMsg;
-				} 
-				Alert.show(str, rm.getString('cms', 'deleteEntries'));
-			}
-			else {
+			var erHeader:String = _isPlaylist ?  rm.getString('cms', 'deletePlaylists') : rm.getString('cms', 'deleteEntries');
+			if (!checkError(data, erHeader)) {
 				if (_isPlaylist) {
-					Alert.show(rm.getString('cms', 'playlistsDeleted'),
-						rm.getString('cms', 'deletePlaylists'), 4, null, refresh);
+					Alert.show(rm.getString('cms', 'playlistsDeleted'), erHeader, 4, null, refresh);
 				} else {
-					Alert.show(rm.getString('cms', 'entriesDeleted'),
-						rm.getString('cms', 'deleteEntries'), 4, null, refresh);
+					Alert.show(rm.getString('cms', 'entriesDeleted'), erHeader, 4, null, refresh);
 				}
 			}
 		}
