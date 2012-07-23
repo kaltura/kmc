@@ -255,11 +255,6 @@
 
 			private var _entryData:EntryDataPack;
 
-			/**
-			 * thumbnail for image entries
-			 * */
-			private var _entryImg:Image;
-
 
 			[Bindable]
 			/**
@@ -547,7 +542,6 @@
 			private function showKDP(event:Event = null):void {
 				kdp3StaticSwfLoader.visible = true;
 				kdp3StaticSwfLoader.includeInLayout = true;
-//				kdpContainer.validateNow();
 			}
 
 
@@ -572,24 +566,17 @@
 					// if we start with no content image after we already have a KDP
 					kdp3Loader.includeInLayout = kdp3Loader.visible = false;
 				}
-				_entryImg = new Image();
-				_entryImg.width = 340;
-				_entryImg.height = 194;
-				_entryImg.maintainAspectRatio = true;
-				_entryImg.setStyle("horizontalAlign", "center");
-				_entryImg.setStyle("verticalAlign", "middle");
 				if (imgSource) {
-					_entryImg.source = imgSource;
+					entryImg.source = imgSource;
 				}
 				else {
 					if ((KMvCModel.getInstance().getDataPack(PermissionsDataPack) as PermissionsDataPack).enableThumbResize) {
-						_entryImg.source = _selectedEntry.thumbnailUrl + "/width/290/height/160/bgcolor/F7F7F7/type/2";
+						entryImg.source = _selectedEntry.thumbnailUrl + "/width/290/height/160/bgcolor/F7F7F7/type/2";
 					}
 					else {
-						_entryImg.source = _selectedEntry.thumbnailUrl;
+						entryImg.source = _selectedEntry.thumbnailUrl;
 					}
 				}
-				kdpContainer.addChildAt(_entryImg, 0);
 			}
 
 
@@ -981,6 +968,8 @@
 		<mx:HBox width="100%" horizontalAlign="center" id="kdpContainer">
 			<!--<mx:HBox id="kdpContainer" styleName="playerContainer">-->
 			<mx:SWFLoader id="kdp3Loader" width="340" height="194" complete="{onKDP3Loaded(event)}"/>
+			<mx:Image id="entryImg" width="340" height="194" maintainAspectRatio="true" horizontalAlign="center" verticalAlign="middle" 
+					  includeInLayout="{!kdp3Loader.includeInLayout}" visible="{!kdp3Loader.visible}"/>
 			<!--</mx:HBox>-->
 		</mx:HBox>
 		<!-- actions -->
