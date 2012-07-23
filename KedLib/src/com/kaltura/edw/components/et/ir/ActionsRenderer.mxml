@@ -18,6 +18,11 @@
 			 * */
 			public static var allActions:Array = [EntryTableActions.EMBED, EntryTableActions.DELETE, EntryTableActions.EDIT];
 
+			/**
+			 * moderation actions
+			 * */
+			public static var moderationActions:Array = [EntryTableActions.APPROVE, EntryTableActions.REJECT];
+
 			
 
 			[Bindable]
@@ -41,10 +46,16 @@
 				super.data = value;
 				
 				if (value is KalturaBaseEntry) {
-					// work on dummy array so binding to CB will be triggered
-					var a:Array = allActions.concat();
-					if ((value as KalturaBaseEntry).status != KalturaEntryStatus.READY) {
-						a.splice(0, 1);
+					var a:Array;
+					if ((_listData.owner as EntryTable).showModerationActions) {
+						a = moderationActions.concat();
+					}
+					else {
+						// work on dummy array so binding to CB will be triggered
+						a = allActions.concat();
+						if ((value as KalturaBaseEntry).status != KalturaEntryStatus.READY) {
+							a.splice(0, 1);
+						}
 					}
 					_actions = a;
 				}

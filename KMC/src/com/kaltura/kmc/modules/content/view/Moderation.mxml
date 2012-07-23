@@ -22,39 +22,28 @@
 			import com.kaltura.edw.components.et.EntryTableColumns;
 			import com.kaltura.edw.components.et.events.EntryTableEvent;
 			import com.kaltura.edw.control.KedController;
-			import com.kaltura.edw.control.events.KedEntryEvent;
 			import com.kaltura.edw.control.events.LoadEvent;
 			import com.kaltura.edw.model.FilterModel;
 			import com.kaltura.edw.model.datapacks.ContextDataPack;
 			import com.kaltura.edw.model.datapacks.DistributionDataPack;
-			import com.kaltura.edw.model.datapacks.PermissionsDataPack;
-			import com.kaltura.edw.model.types.WindowsStates;
 			import com.kaltura.edw.vo.DistributionProfileInfo;
 			import com.kaltura.edw.vo.ListableVo;
 			import com.kaltura.events.KdpEventTypes;
 			import com.kaltura.kmc.modules.content.events.KMCEntryEvent;
 			import com.kaltura.kmc.modules.content.events.KMCSearchEvent;
 			import com.kaltura.kmc.modules.content.events.ModerationsEvent;
-			import com.kaltura.kmc.modules.content.events.SelectionEvent;
 			import com.kaltura.kmc.modules.content.events.SetListableEvent;
 			import com.kaltura.kmc.modules.content.events.UserEvent;
-			import com.kaltura.kmc.modules.content.events.WindowEvent;
 			import com.kaltura.kmc.modules.content.model.ModerationModel;
 			import com.kaltura.kmc.modules.content.vo.UserVO;
-			import com.kaltura.kmvc.control.KMvCEvent;
 			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryModerationStatus;
 			import com.kaltura.types.KalturaEntryStatus;
 			import com.kaltura.types.KalturaMediaEntryOrderBy;
-			import com.kaltura.types.KalturaMediaType;
-			import com.kaltura.types.KalturaPlaylistType;
 			import com.kaltura.types.KalturaStatsKmcEventType;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaBaseEntryFilter;
-			import com.kaltura.vo.KalturaMediaEntry;
 			import com.kaltura.vo.KalturaMediaEntryFilter;
-			import com.kaltura.vo.KalturaMixEntry;
-			import com.kaltura.vo.KalturaPlaylist;
 			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
@@ -62,8 +51,6 @@
 			import mx.controls.Alert;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CloseEvent;
-			import mx.events.FlexEvent;
-			import mx.events.ListEvent;
 
 
 			// ===============================================
@@ -267,7 +254,7 @@
 			private function removeColums(event:Event):void {
 
 				var ar:Array = [EntryTableColumns.THUMBNAIL, EntryTableColumns.ID, EntryTableColumns.NAME, EntryTableColumns.MEDIA_TYPE,
-					EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT, EntryTableColumns.FLAGS, EntryTableColumns.MOD_STATUS];
+					EntryTableColumns.PLAYS, EntryTableColumns.CREATE_AT, EntryTableColumns.FLAGS, EntryTableColumns.MOD_STATUS, EntryTableColumns.ACTIONS];
 				entryTable.showColumns(ar);
 
 				for each (var col:DataGridColumn in entryTable.columns) {
@@ -334,12 +321,25 @@
 				entryTable.deselectAll();
 			}
 
+			private function entryTable_approveRejectHandler(event:EntryTableEvent):void {
+				var entry:KalturaBaseEntry = event.data as KalturaBaseEntry;
+				if (event.type == EntryTableEvent.APPROVE_ENTRY) {
+					onApprove([entry]);
+				} else if (event.type == EntryTableEvent.REJECT_ENTRY) {
+					onReject([entry]);
+				}
+			}
 
 			/**
 			 * approve button was clicked
 			 */
-			private function onApprove(evt:Event):void {
-				_affectedEntries = entryTable.selectedItems.concat();
+			private function onApprove(entries:Array = null):void {
+				if (entries) {
+					_affectedEntries = entries;
+				}
+				else {
+					_affectedEntries = entryTable.selectedItems.concat();
+				}
 				if (_affectedEntries.length == 0) {
 					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'),
 						resourceManager.getString('cms', 'pleaseSelectEntriesFirstTitle'));
@@ -372,8 +372,13 @@
 			/**
 			 * reject button was clicked
 			 */
-			private function onReject(evt:Event):void {
-				_affectedEntries = entryTable.selectedItems.concat();
+			private function onReject(entries:Array = null):void {
+				if (entries) {
+					_affectedEntries = entries;
+				}
+				else {
+					_affectedEntries = entryTable.selectedItems.concat();
+				}
 				if (_affectedEntries.length == 0) {
 					Alert.show(resourceManager.getString('cms', 'pleaseSelectEntriesFirst'),
 						resourceManager.getString('cms', 'pleaseSelectEntriesFirstTitle'));
@@ -478,6 +483,8 @@
 			public function set moderationModel(value:ModerationModel):void {
 				_moderationModel = value;
 			}
+
+
 		]]>
 	</mx:Script>
 	<business:EntryTableActionsManager id="actionsManager"/>
@@ -513,8 +520,8 @@
 								showDetails="actionsManager.showEntryDetailsHandler(event)"
 								openPreview="actionsManager.preview(event)" sortDirection="{EntryTable.ASCENDING}"
 								dataProvider="{_listableVo.arrayCollection}" orderByChanged="{onOrderByChanged()}"
-								creationComplete="removeColums( event )" dragEnabled="false" dragMoveEnabled="false"
-								dropEnabled="false"/>
+								creationComplete="removeColums(event)" showModerationActions="true"
+								approveEntry="entryTable_approveRejectHandler(event)" rejectEntry="entryTable_approveRejectHandler(event)"/>
 				<mx:Panel id="kdpContainer" height="100%" minWidth="290" styleName="modPrev"
 						  toolTip="{entryTable.selectedItem.name}" layout="vertical"
 						  title="{resourceManager.getString('cms', 'preview')} - {entryTable.selectedItem.name}">
@@ -542,7 +549,7 @@
 			</mx:HBox>
 			<mx:HBox width="100%" styleName="noPadding" horizontalGap="0">
 				<bulkactions:BulkModerationActionsMenu id="bulkActions" height="{paging.height}"
-													   approveEntries="onApprove(event)" rejectEntries="onReject(event)"/>
+													   approveEntries="onApprove()" rejectEntries="onReject()"/>
 				<controls:Paging id="paging" styleName="paging" rowsInPageChange="gotoPage()" width="100%"
 								 nextPage="gotoPage()" prvPage="gotoPage()" getPageNum="gotoPage()" />
 			</mx:HBox>

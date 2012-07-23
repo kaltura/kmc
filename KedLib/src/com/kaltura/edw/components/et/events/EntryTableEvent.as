@@ -26,6 +26,18 @@ package com.kaltura.edw.components.et.events
 		 * "data" attribute holds the required entry
 		 */		
 		public static const DELETE_ENTRY:String = "deleteEntry";
+
+		/**
+		 * approve entry moderation
+		 * "data" attribute holds the required entry
+		 */		
+		public static const APPROVE_ENTRY:String = "approveEntry";
+
+		/**
+		 * reject entry moderation
+		 * "data" attribute holds the required entry
+		 */		
+		public static const REJECT_ENTRY:String = "rejectEntry";
 		
 		
 		

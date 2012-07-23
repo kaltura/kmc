@@ -12,6 +12,8 @@
 		[Event(name="showDetails", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="openPreview", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 		[Event(name="deleteEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
+		[Event(name="approveEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
+		[Event(name="rejectEntry", type="com.kaltura.edw.components.et.events.EntryTableEvent")] 
 	</mx:Metadata>
 
 	<mx:Script>
@@ -143,6 +145,15 @@
 			 * (public because it is used in the item renderer)
 			 * */
 			public var previewLabel:String = ResourceManager.getInstance().getString('entrytable', 'previewAndEmbed');
+			
+			
+			[Inspectable(enumeration = "true,false")]
+			/**
+			 * show only actions relevant to moderation screen
+			 * @internal
+			 * used by actions IR
+			 * */
+			public var showModerationActions:Boolean;
 
 
 			public var kalturaSorting:Boolean = true;
@@ -536,6 +547,24 @@
 
 
 			/**
+			 * dispatch an approveEntry event
+			 * */
+			private function approveEntry(event:Event):void {
+				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.APPROVE_ENTRY);
+				e.data = event.target.data as KalturaBaseEntry;
+				dispatchEvent(e);
+			}
+			
+			/**
+			 * dispatch a rejectEntry event
+			 * */
+			private function rejectEntry(event:Event):void {
+				var e:EntryTableEvent = new EntryTableEvent(EntryTableEvent.REJECT_ENTRY);
+				e.data = event.target.data as KalturaBaseEntry;
+				dispatchEvent(e);
+			}
+
+			/**
 			 * dispatch a deleteEntry event
 			 * */
 			private function deleteEntry(event:Event):void {
@@ -585,6 +614,8 @@
 				addEventListener(EntryTableActions.EMBED, preview, false, 0, true);
 				addEventListener(EntryTableActions.EDIT, openEditEntry, false, 0, true);
 				addEventListener(EntryTableActions.DELETE, deleteEntry, false, 0, true);
+				addEventListener(EntryTableActions.APPROVE, approveEntry, false, 0, true);
+				addEventListener(EntryTableActions.REJECT, rejectEntry, false, 0, true);
 
 				updateDefaultSortColumn();
 			}
