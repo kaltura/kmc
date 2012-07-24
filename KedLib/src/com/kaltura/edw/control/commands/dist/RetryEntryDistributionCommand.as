@@ -31,7 +31,7 @@ package com.kaltura.edw.control.commands.dist
 			//for data binding
 			
 			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			ddp.distributionProfileInfo.entryDistributionArray = ddp.distributionProfileInfo.entryDistributionArray.concat();
+			ddp.distributionInfo.entryDistributions = ddp.distributionInfo.entryDistributions.concat();
 		}
 	}
 }

@@ -13,7 +13,6 @@ Distribution tab of EntryDetailsWin
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.kaltura.commands.data.DataDelete;
 			import com.kaltura.edw.business.permissions.PermissionManager;
 			import com.kaltura.edw.constants.DistributionActionType;
 			import com.kaltura.edw.constants.PanelConsts;
@@ -27,17 +26,13 @@ Distribution tab of EntryDetailsWin
 			import com.kaltura.edw.view.window.DistributionDetailsWindow;
 			import com.kaltura.edw.view.window.SelectDistributorsWindow;
 			import com.kaltura.kmvc.model.IDataPackRepository;
-			import com.kaltura.kmvc.model.KMvCModel;
 			import com.kaltura.types.KalturaEntryDistributionStatus;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaEntryDistribution;
 			
-			import flash.utils.getDefinitionByName;
-			
 			import mx.binding.utils.BindingUtils;
 			import mx.binding.utils.ChangeWatcher;
 			import mx.collections.ArrayCollection;
-			import mx.containers.ViewStack;
 			import mx.core.Application;
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
@@ -71,8 +66,6 @@ Distribution tab of EntryDetailsWin
 			
 			private var _distributionDetailsWindow:DistributionDetailsWindow;
 			
-			[Bindable]
-			private var _entryDistributions:Array;
 			
 			[Bindable]
 			private var _notDeletedEntries:Array;
@@ -94,10 +87,6 @@ Distribution tab of EntryDetailsWin
 			}
 			
 			public function init():void {
-				if (!_cw) {
-					var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
-					_cw = BindingUtils.bindSetter(setEntryDistributions, ddp.distributionProfileInfo, "entryDistributionArray");
-				}
 				
 				PermissionManager.getInstance().applyAllAttributes(this, PanelConsts.DISTRIBUTION_PANEL);
 			}
@@ -127,14 +116,19 @@ Distribution tab of EntryDetailsWin
 			 * loads required data from server
 			 * */
 			public function initData():void {
-				var updateEntryDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
-				controller.dispatch(updateEntryDistributions);
+				if (_cw) {
+					_cw.unwatch();
+				}
+				_cw = BindingUtils.bindSetter(setEntryDistributions, _distributionData.distributionInfo, "entryDistributions");
+				
+				var listDistributions:EntryDistributionEvent = new EntryDistributionEvent(EntryDistributionEvent.LIST);
+				controller.dispatch(listDistributions);
 				
 				_distributionData.loadFlavors(controller, _selectedEntry);
 				_distributionData.loadThumbs(controller, _selectedEntry);
 				
-				var kalturaDistributionProfilesArray:Array = (_dpModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray; 
-				if (!kalturaDistributionProfilesArray || kalturaDistributionProfilesArray.length == 0) {
+				var distributionProfiles:Array = (_dpModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionInfo.distributionProfiles; 
+				if (!distributionProfiles || distributionProfiles.length == 0) {
 					_selectDistributorsEnabled = false;
 				}
 				else {
@@ -163,10 +157,9 @@ Distribution tab of EntryDetailsWin
 			}
 			
 			
-			public function setEntryDistributions(value:Array):void {
-				_entryDistributions = value;
+			private function setEntryDistributions(value:Array):void {
 				_notDeletedEntries = new Array();
-				for each (var entryDis:EntryDistributionWithProfile in _entryDistributions) {
+				for each (var entryDis:EntryDistributionWithProfile in value) {
 					//do not display removed entries
 					if (entryDis.kalturaEntryDistribution.status != KalturaEntryDistributionStatus.REMOVED) {
 						_notDeletedEntries.push(entryDis);
@@ -180,8 +173,8 @@ Distribution tab of EntryDetailsWin
 				selectDistributorWin.selectedEntry = _selectedEntry;
 				var ddp:DistributionDataPack = _dpModel.getDataPack(DistributionDataPack) as DistributionDataPack;
 				selectDistributorWin.entryFlavors = ddp.flavorParamsAndAssetsByEntryId;
-				selectDistributorWin.entryThumbs = ddp.distributionProfileInfo.thumbnailDimensionsArray;
-				selectDistributorWin.buildDistributorsWindow(ddp.distributionProfileInfo.kalturaDistributionProfilesArray, ddp.distributionProfileInfo.entryDistributionArray);
+				selectDistributorWin.entryThumbs = ddp.distributionInfo.thumbnailDimensions;
+				selectDistributorWin.buildDistributorsWindow(ddp.distributionInfo.distributionProfiles, ddp.distributionInfo.entryDistributions);
 				selectDistributorWin.addEventListener(SelectDistributorsWindow.UPDATE_LISTS, updateLists, false, 0, true);
 				PopUpManager.addPopUp(selectDistributorWin, (Application.application as DisplayObject), true);
 				PopUpManager.centerPopUp(selectDistributorWin);

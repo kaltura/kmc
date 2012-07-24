@@ -39,8 +39,8 @@ package com.kaltura.edw.control.commands.dist
 		public function handleEntryDistributionResult(result:KalturaEntryDistributionListResponse):void 
 		{
 			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			var distributionArray:Array = new Array();
-			var profilesArray:Array = ddp.distributionProfileInfo.kalturaDistributionProfilesArray;
+			var distributionArray:Array = [];
+			var profilesArray:Array = ddp.distributionInfo.distributionProfiles;
 			for each (var distribution:KalturaEntryDistribution in result.objects) {
 				if (distribution.status != KalturaEntryDistributionStatus.DELETED) {
 					for each (var profile:KalturaDistributionProfile in profilesArray) {
@@ -54,7 +54,7 @@ package com.kaltura.edw.control.commands.dist
 				}
 			}
 			
-			ddp.distributionProfileInfo.entryDistributionArray = distributionArray;
+			ddp.distributionInfo.entryDistributions = distributionArray;
 		}
 	}
 }

@@ -59,8 +59,8 @@ package com.kaltura.kmc.modules.content.business
 				compInstance["metadataObject"] = boundModel;
 				// pass relevant model parts:
 				compInstance["filterModel"] = _model.filterModel;
-				compInstance["distributionProfilesArr"] = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
-				compInstance["editedItem"] = _model.categoriesModel.selectedCategory; //TODO get the selected category
+				compInstance["distributionProfilesArr"] = (_model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionInfo.distributionProfiles;
+				compInstance["editedItem"] = _model.categoriesModel.selectedCategory; 
 				return true;
 			}
 			return false;

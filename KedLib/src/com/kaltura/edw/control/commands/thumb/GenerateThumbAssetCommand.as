@@ -38,7 +38,7 @@ package com.kaltura.edw.control.commands.thumb
 			super.result(data);
 			_ddp = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
 			var newThumb:KalturaThumbAsset =  data.data as KalturaThumbAsset;
-			_thumbsArray = _ddp.distributionProfileInfo.thumbnailDimensionsArray;
+			_thumbsArray = _ddp.distributionInfo.thumbnailDimensions;
 			var curUsedProfiles:Array = new Array();
 			var thumbExist:Boolean = false;
 			for each (var thumb:ThumbnailWithDimensions in _thumbsArray) {
@@ -68,7 +68,7 @@ package com.kaltura.edw.control.commands.thumb
 		 * only after user approval for the new thumbnail alert, the model will reload the thumbs
 		 * */
 		private function onUserOK(event:CloseEvent):void {
-			_ddp.distributionProfileInfo.thumbnailDimensionsArray = _thumbsArray.concat();
+			_ddp.distributionInfo.thumbnailDimensions = _thumbsArray.concat();
 		}
 		
 	}

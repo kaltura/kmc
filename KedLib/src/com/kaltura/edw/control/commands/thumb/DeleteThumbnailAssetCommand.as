@@ -28,7 +28,7 @@ package com.kaltura.edw.control.commands.thumb
 			_model.decreaseLoadCounter();
 			super.result(data);
 			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			var thumbsArray:Array = ddp.distributionProfileInfo.thumbnailDimensionsArray;
+			var thumbsArray:Array = ddp.distributionInfo.thumbnailDimensions;
 			for (var i:int = 0; i<thumbsArray.length; i++) {
 				var currentThumb:ThumbnailWithDimensions = thumbsArray[i] as ThumbnailWithDimensions;
 				if (currentThumb==_thumbToRemove) {
@@ -39,7 +39,7 @@ package com.kaltura.edw.control.commands.thumb
 					else 
 						thumbsArray.splice(i, 1);
 					
-					ddp.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();
+					ddp.distributionInfo.thumbnailDimensions = thumbsArray.concat();
 					return;
 				}
 			}			

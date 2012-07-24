@@ -161,8 +161,8 @@ package com.kaltura.edw.control.commands
 					profilesArray.push(newProfile);
 			}
 			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			ddp.distributionProfileInfo.kalturaDistributionProfilesArray = profilesArray;
-			ddp.distributionProfileInfo.entryDistributionArray = new Array();
+			ddp.distributionInfo.distributionProfiles = profilesArray;
+			ddp.distributionInfo.entryDistributions = new Array();
 		}
 		
 		

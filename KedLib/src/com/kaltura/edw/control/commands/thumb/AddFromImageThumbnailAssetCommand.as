@@ -31,7 +31,7 @@ package com.kaltura.edw.control.commands.thumb
 		
 		private function insertToThumbsArray(thumbAsset:KalturaThumbAsset):void {
 			var distDp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			var thumbsArray:Array = distDp.distributionProfileInfo.thumbnailDimensionsArray;
+			var thumbsArray:Array = distDp.distributionInfo.thumbnailDimensions;
 			var newThumb:ThumbnailWithDimensions = new ThumbnailWithDimensions(thumbAsset.width, thumbAsset.height, thumbAsset);
 			newThumb.thumbUrl = newThumb.buildThumbUrl(_client);
 			for each (var thumb:ThumbnailWithDimensions in thumbsArray) {
@@ -53,7 +53,7 @@ package com.kaltura.edw.control.commands.thumb
 			//add last
 			thumbsArray.splice(thumbsArray.length, 0, newThumb); 
 			//for data binding
-			distDp.distributionProfileInfo.thumbnailDimensionsArray = thumbsArray.concat();	
+			distDp.distributionInfo.thumbnailDimensions = thumbsArray.concat();	
 		}
 		
 	}

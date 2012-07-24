@@ -45,7 +45,7 @@ package com.kaltura.edw.control.commands.thumb
 		 */		
 		private function updateThumbnailsState(thumbsArray:Array):void {
 			var ddp:DistributionDataPack = _model.getDataPack(DistributionDataPack) as DistributionDataPack;
-			var currentThumbsArray:Array = ddp.distributionProfileInfo.thumbnailDimensionsArray;
+			var currentThumbsArray:Array = ddp.distributionInfo.thumbnailDimensions;
 			for (var i:int=0; i<thumbsArray.length; i++) {
 				var thumbAsset:KalturaThumbAsset = thumbsArray[i] as KalturaThumbAsset;
 				for (var j:int=0; j<currentThumbsArray.length; j++) {
@@ -58,7 +58,7 @@ package com.kaltura.edw.control.commands.thumb
 			}
 			
 			//for data binding
-			ddp.distributionProfileInfo.thumbnailDimensionsArray = currentThumbsArray.concat();
+			ddp.distributionInfo.thumbnailDimensions = currentThumbsArray.concat();
 		}
 	}
 }

@@ -36,10 +36,10 @@ package com.kaltura.edw.control.commands.thumb
 			
 			var thumbsResultArray:Array = data.data as Array;
 			//copy this array so we can delete from it without damage the original profiles array
-			var profilesArray:Array = _ddp.distributionProfileInfo.kalturaDistributionProfilesArray.concat();
+			var profilesArray:Array = _ddp.distributionInfo.distributionProfiles.concat();
 			//resets old data
-			_ddp.distributionProfileInfo.thumbnailDimensionsArray = new Array();
-			buildThumbsWithDimensionsArray(_ddp.distributionProfileInfo.thumbnailDimensionsArray, profilesArray, thumbsResultArray);
+			_ddp.distributionInfo.thumbnailDimensions = new Array();
+			buildThumbsWithDimensionsArray(_ddp.distributionInfo.thumbnailDimensions, profilesArray, thumbsResultArray);
 		}
 		
 		
@@ -131,7 +131,7 @@ package com.kaltura.edw.control.commands.thumb
 			
 			thumbsWithDimensionsArray = thumbsWithDimensionsArray.concat(remainingProfilesArray);
 			thumbsWithDimensionsArray.sortOn(["width", "height"], Array.NUMERIC | Array.DESCENDING);
-			_ddp.distributionProfileInfo.thumbnailDimensionsArray = thumbsWithDimensionsArray;
+			_ddp.distributionInfo.thumbnailDimensions = thumbsWithDimensionsArray;
 		}
 		
 	}

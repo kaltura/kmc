@@ -2,7 +2,7 @@ package com.kaltura.edw.model.datapacks
 {
 	import com.kaltura.edw.control.events.KedEntryEvent;
 	import com.kaltura.edw.control.events.ThumbnailAssetEvent;
-	import com.kaltura.edw.vo.DistributionProfileInfo;
+	import com.kaltura.edw.vo.DistributionInfo;
 	import com.kaltura.events.FileUploadEvent;
 	import com.kaltura.kmvc.control.KMvCController;
 	import com.kaltura.kmvc.model.IDataPack;
@@ -29,7 +29,7 @@ package com.kaltura.edw.model.datapacks
 		/**
 		 * contains all info regarding distribution profiles: distribution profiles and thumbnails 
 		 */		
-		public var distributionProfileInfo:DistributionProfileInfo = new DistributionProfileInfo();
+		public var distributionInfo:DistributionInfo = new DistributionInfo();
 		
 		
 		/**

@@ -101,7 +101,7 @@ package com.kaltura.edw.business {
 				compInstance["metadataObject"] = boundModel;
 				// pass relevant model parts:
 				compInstance["filterModel"] = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-				compInstance["distributionProfilesArr"] = (_model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+				compInstance["distributionProfilesArr"] = (_model.getDataPack(DistributionDataPack) as DistributionDataPack).distributionInfo.distributionProfiles;
 				compInstance["editedItem"] = (_model.getDataPack(EntryDataPack) as EntryDataPack).selectedEntry;
 				
 				return true;

@@ -508,7 +508,7 @@ package com.kaltura.kmc.modules.content.business
 				mpw.onTheFlyEntries = model.playlistModel.onTheFlyPlaylistEntries;
 			}	
 			
-			mpw.distributionProfilesArray = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+			mpw.distributionProfilesArray = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionInfo.distributionProfiles;
 			mpw.editedItem = _entryData.selectedEntry;
 			if (_entryData.selectedEntry && _entryData.selectedEntry.id){
 				mpw.context = ManualPlaylistWindowMode.EDIT_PLAYLIST_MODE;
@@ -595,7 +595,7 @@ package com.kaltura.kmc.modules.content.business
 			}
 			rpw.filterData = model.filterModel;
 			
-			rpw.distributionProfilesArr = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionProfileInfo.kalturaDistributionProfilesArray;
+			rpw.distributionProfilesArr = (model.entryDetailsModel.getDataPack(DistributionDataPack) as DistributionDataPack).distributionInfo.distributionProfiles;
 			rpw.client = model.context.kc;
 			// assign the current fiter to the new window 
 			rpw.onTheFlyFilter = model.playlistModel.onTheFlyFilter;
