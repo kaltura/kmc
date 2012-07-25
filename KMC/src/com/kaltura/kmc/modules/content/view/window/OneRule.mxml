@@ -3,10 +3,8 @@
  OneRule encapsulates a filter with entries list.
 -->
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
-		 creationComplete="onCreationComplete()"
 		 xmlns:playlist="com.kaltura.edw.components.playlist.*"
-		 xmlns:fltr="com.kaltura.edw.components.fltr.*" 
-		 >
+		 xmlns:fltr="com.kaltura.edw.components.fltr.*" >
 	<mx:Script>
 		<![CDATA[
 			import com.adobe.cairngorm.control.CairngormEvent;
@@ -66,13 +64,6 @@
 			[Bindable]
 			public var distributionProfilesArray : Array;
 
-
-			private function onCreationComplete():void {
-				entries.upDownContainer.visible = false;
-				entries.upDownContainer.includeInLayout = false;
-//				filter.kalturaFilter = new KalturaMediaEntryFilterForPlaylist();
-				//not necessary, we always set filter.kalturaFilter
-			}
 
 			public function clear():void {
 				filter.clearCategoriesSelection();
@@ -162,6 +153,6 @@
 							creationComplete="filter_creationCompleteHandler(event)"/>
 	</mx:VBox>
 	<playlist:PlaylistEntries id="entries" width="100%" height="100%" dataProvider="{playlistEntries}"
-							  showTableSelection="false"
+							  showTableSelection="false" allowManualActions="false"
 							  updatedData="{runRule()}" showEntryDetails="entries_showEntryDetailsHandler(event)"/>
 </mx:HBox>

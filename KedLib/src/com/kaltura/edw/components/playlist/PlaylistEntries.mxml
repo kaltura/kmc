@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="onCreationComplete()" verticalGap="0"
 		 xmlns:et="com.kaltura.edw.components.et.*">
+	
+	<mx:Metadata>
+		[Event(name="showEntryDetails", type="com.kaltura.edw.events.KedDataEvent")] 
+		[Event(name="moveItem", type="flash.events.Event")] 
+		[Event(name="updatedData", type="flash.events.Event")] 
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
 			import com.kaltura.edw.components.et.EntryTableColumns;
@@ -11,12 +18,23 @@
 			import com.kaltura.utils.KTimeUtil;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
-
+			
 			import mx.collections.ArrayCollection;
 			import mx.controls.dataGridClasses.DataGridColumn;
 			import mx.events.CollectionEvent;
+			import mx.events.ListEvent;
 
 			public static const MAX_ENTRIES_IN_PL:int = 200;
+			
+			
+			private static const MOVE_TO_BOTTOM:String = "bottom";
+			private static const MOVE_TO_TOP:String = "top";
+			private static const DELETE:String = "deleteItem";
+			
+			
+			public static const MOVE_ITEM:String = "moveItem";
+			public static const UPDATED_DATA:String = "updatedData";
+			
 
 			[Bindable]
 			public var limit:uint = 20;
@@ -41,14 +59,18 @@
 			[Bindable]
 			[Inspectable(enumeration = "true,false")]
 			public var allowSort:Boolean = false;
+			
+			[Bindable]
+			[Inspectable(enumeration = "true,false")]
+			public var allowManualActions:Boolean = true;
+			
+			[Bindable]
+			[Inspectable(enumeration = "true,false")]
+			public var allowRuleBasedActions:Boolean = true;
 
 			[Bindable]
 			public var tableTitle:String;
 
-
-			public static const MOVE_ITEM_UP:String = "moveItemUp";
-			public static const MOVE_ITEM_DOWN:String = "moveItemDown";
-			public static const UPDATED_DATA:String = "updatedData";
 
 			[ArrayElementType("String")]
 			public static const ORDER_BY_ARR:Array = [KalturaPlayableEntryOrderBy.PLAYS_DESC,
@@ -69,6 +91,72 @@
 				_dataProvider = dataProvider;
 				_dataProvider.addEventListener(CollectionEvent.COLLECTION_CHANGE, onDpChange);
 				onDpChange();
+			}
+
+			
+			/**
+			 * move selected item in playlistEntries one step down
+			 */
+			private function moveItemDown():void {
+				if (playlistEntriesList.selectedItem) {
+					var oldIndex:uint = playlistEntriesList.selectedIndex;
+					if ((oldIndex == (_dataProvider as ArrayCollection).length - 1))
+						return;
+					var o:KalturaBaseEntry = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
+					_dataProvider.addItemAt(o, (oldIndex + 1));
+					playlistEntriesList.selectedItem = o;
+				}
+				dispatchEvent(new Event(MOVE_ITEM));
+			}
+			
+			
+			/**
+			 * move selected item in playlistEntries one step up
+			 */
+			private function moveItemUp():void {
+				if (playlistEntriesList.selectedItem) {
+					var oldIndex:uint = playlistEntriesList.selectedIndex;
+					if (oldIndex == 0)
+						return;
+					var o:KalturaBaseEntry = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
+					_dataProvider.addItemAt(o, (oldIndex - 1));
+					playlistEntriesList.selectedItem = o;
+				}
+				dispatchEvent(new Event(MOVE_ITEM));
+			}
+
+			
+			
+			private function actionsCB_changeHandler(event:ListEvent):void {
+				if (!playlistEntriesList.selectedItem) {
+					return;
+				}
+				var oldIndex:uint = playlistEntriesList.selectedIndex;;
+				var o:KalturaBaseEntry;
+				switch ((event.target as ComboBox).selectedItem) {
+					case MOVE_TO_TOP:
+						if (oldIndex == 0)
+							return;
+						o = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
+						_dataProvider.addItemAt(o, 0);
+						playlistEntriesList.selectedItem = o;
+						break;
+					case MOVE_TO_BOTTOM:
+						if ((oldIndex == _dataProvider.length - 1))
+							return;
+						o = _dataProvider.removeItemAt(oldIndex) as KalturaBaseEntry;
+						_dataProvider.addItem(o);
+						playlistEntriesList.selectedItem = o;
+						break;
+					case DELETE:
+						_dataProvider.removeItemAt(oldIndex);
+						dispatchEvent(new Event(MOVE_ITEM));
+						break;
+				}
+				
+				
+				
+				dispatchEvent(new Event(MOVE_ITEM));
 			}
 
 
@@ -173,20 +261,32 @@
 			}
 
 
-			protected function playlistEntriesList_showDetailsHandler(event:EntryTableEvent):void {
+			private function playlistEntriesList_showDetailsHandler(event:EntryTableEvent):void {
 				var e:KedDataEvent = new KedDataEvent(ManualPlaylistWindowEvent.SHOW_ENTRY_DETAILS);
 				e.data = event.data as KalturaBaseEntry;
 				dispatchEvent(e);
 			}
+
+			
+			private function getActionLabel(item:Object):String {
+				var str:String;
+				switch (item) {
+					case MOVE_TO_BOTTOM:
+						str = resourceManager.getString('cms', 'moveToBottom');
+						break;
+					case MOVE_TO_TOP:
+						str = resourceManager.getString('cms', 'moveToTop');
+						break;
+					case DELETE:
+						str = resourceManager.getString('cms', 'deletePlaylistItem');
+						break;
+				}
+				return str;
+			}
+			
 		]]>
 	</mx:Script>
 
-	<mx:Metadata>
-		[Event(name="showEntryDetails", type="com.kaltura.edw.events.KedDataEvent")] 
-		[Event(name="moveItemUp", type="flash.events.Event")] 
-		[Event(name="moveItemDown", type="flash.events.Event")] 
-		[Event(name="updatedData", type="flash.events.Event")] 
-	</mx:Metadata>
 
 	<mx:Label text="{tableTitle}" width="100%" styleName="formLabel"/>
 
@@ -197,6 +297,10 @@
 				   showDetails="playlistEntriesList_showDetailsHandler(event)"/>
 
 	<mx:HBox width="100%" height="40" styleName="DataGridActions">
+		<mx:ComboBox id="actionsCB" includeInLayout="{allowManualActions}" visible="{allowManualActions}" width="110"
+					 selectedIndex="-1" prompt="{resourceManager.getString('cms', 'actions')}" labelFunction="getActionLabel"
+					 dataProvider="{[MOVE_TO_TOP, MOVE_TO_BOTTOM, DELETE]}" change="actionsCB_changeHandler(event)"/>
+		
 		<mx:HBox width="100%" horizontalAlign="center" horizontalGap="1">
 			<mx:Label text="{resourceManager.getString('cms', 'entries') + ':'}"/>
 			<mx:Label id="entriesAmount" text="{dataProvider.length}"/>
@@ -205,15 +309,13 @@
 			<mx:Label id="playlistDuration" text='00:00'/>
 		</mx:HBox>
 
-		<mx:VBox id="upDownContainer" styleName="upDownButtonsBox">
-			<mx:Button id="upBtn" buttonMode="true" styleName="movUpBtn"
-					   click="{dispatchEvent(new Event(MOVE_ITEM_UP))}"/>
-			<mx:Button id="downBtn" buttonMode="true" styleName="movDownBtn"
-					   click="{dispatchEvent(new Event(MOVE_ITEM_DOWN))}"/>
+		<mx:VBox id="upDownContainer" styleName="upDownButtonsBox" includeInLayout="{allowManualActions}" visible="{allowManualActions}">
+			<mx:Button id="upBtn" buttonMode="true" styleName="movUpBtn" click="moveItemUp()"/>
+			<mx:Button id="downBtn" buttonMode="true" styleName="movDownBtn" click="moveItemDown()"/>
 		</mx:VBox>
 	</mx:HBox>
 
-	<mx:HBox id="ruleBaseBar" width="100%" styleName="DataGridActions">
+	<mx:HBox id="ruleBaseBar" width="100%" styleName="DataGridActions" includeInLayout="{allowRuleBasedActions}" visible="{allowRuleBasedActions}" >
 		<mx:Label text="{resourceManager.getString('cms', 'orderBy')}"/>
 		<mx:ComboBox id="ruleBasedPlaylistOrderBy" width="150" change="{changedData()}">
 			<mx:dataProvider>

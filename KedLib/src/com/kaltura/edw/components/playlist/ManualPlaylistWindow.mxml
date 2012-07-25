@@ -212,9 +212,6 @@
 			private function onCreationComplete():void {
 				new KACTagsController(tagsComplete, client, KalturaTaggedObjectType.ENTRY);
 				
-				//hide the box of the rule based
-				entries.ruleBaseBar.includeInLayout = false;
-				entries.ruleBaseBar.visible = false;
 				//switch edit or new manual playlist
 				if (editedItem && (editedItem is KalturaPlaylist)) {
 					// edit existing playlist
@@ -320,17 +317,6 @@
 			}
 
 
-			/**
-			 * Remove selected entry from the playlist
-			 */
-			private function remove():void {
-				if (entries.playlistEntriesList.selectedItem) {
-					var selectedIndex:int = entries.playlistEntriesList.selectedIndex;
-					_playlistArrayCollection.removeItemAt(selectedIndex);
-					dispatchRefreshEntriesList();
-				}
-			}
-
 
 			/**
 			 * add selected items to the current playlist
@@ -356,42 +342,6 @@
 				}
 			}
 
-
-
-			/**
-			 * move selected item in playlistEntries one step down
-			 */
-			private function moveItemDown():void {
-
-				if (entries.playlistEntriesList.selectedItem) {
-					var oldIndex:uint = entries.playlistEntriesList.selectedIndex;
-					if ((oldIndex == (entries.playlistEntriesList.dataProvider as ArrayCollection).length - 1))
-						return;
-					var o:KalturaBaseEntry = _playlistArrayCollection.removeItemAt(oldIndex) as KalturaBaseEntry;
-					_playlistArrayCollection.addItemAt(o, (oldIndex + 1));
-					entries.playlistEntriesList.selectedItem = o;
-					entries.playlistEntriesList.removeSort();
-				}
-				dispatchRefreshEntriesList();
-			}
-
-
-			/**
-			 * move selected item in playlistEntries one step up
-			 */
-			private function moveItemUp():void {
-
-				if (entries.playlistEntriesList.selectedItem) {
-					var oldIndex:uint = entries.playlistEntriesList.selectedIndex;
-					if (oldIndex == 0)
-						return;
-					var o:KalturaBaseEntry = _playlistArrayCollection.removeItemAt(oldIndex) as KalturaBaseEntry;
-					_playlistArrayCollection.addItemAt(o, (oldIndex - 1));
-					entries.playlistEntriesList.selectedItem = o;
-					entries.playlistEntriesList.removeSort();
-				}
-				dispatchRefreshEntriesList();
-			}
 
 
 			/**
@@ -539,8 +489,8 @@
 				playlistDescription.enabled = value;
 				tagsComplete.enabled = value;
 				filter.enabled = value;
-				removeBtn.enabled = value;
-				removeBtn.buttonMode = value;
+//				removeBtn.enabled = value;
+//				removeBtn.buttonMode = value;
 				addBtn.enabled = value;
 				addBtn.buttonMode = value;
 				entries.editable = value;
@@ -622,14 +572,14 @@
 		</mx:VBox>
 
 		<mx:HBox id="addRemoveContainer" styleName="plstAddRemoveCont">
-			<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="remove()"/>
-			<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtn" click="addToPlaylist()"/>
+			<!--<mx:Button id="removeBtn" buttonMode="true" styleName="removeLeftBtn" click="remove()"/>-->
+			<mx:Button id="addBtn" buttonMode="true" styleName="addRightBtnWide" click="addToPlaylist()"/>
 		</mx:HBox>
 
 		<playlist:PlaylistEntries id="entries" width="100%" height="400" dataProvider="{_playlistArrayCollection}"
-								  showLinks="{showLinks}" allowSort="true" moveItemUp="{moveItemUp()}" 
-								  moveItemDown="{moveItemDown()}" showEntryDetails="entryTable_showDetailsHandler(event)" 
-								  creationComplete="setEntriesListTitle(event)" />
+								  showLinks="{showLinks}" allowSort="true"  
+								  moveItem="dispatchRefreshEntriesList()" showEntryDetails="entryTable_showDetailsHandler(event)" 
+								  creationComplete="setEntriesListTitle(event)" allowRuleBasedActions="false" />
 	</mx:HBox>
 	<mx:ControlBar>
 		<mx:Button id="saveBtn" label="{resourceManager.getString('cms','save')}" click="{save()}"/>
