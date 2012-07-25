@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 	layout="vertical" creationComplete="onCreationCompleteHelpWindow()" resize="onResize()" styleName="TitleWindowType2"
-	implements="mx.managers.IFocusManagerComponent">
+	implements="mx.managers.IFocusManagerComponent" move="doMove(event)">
 	<mx:Script>
 		<![CDATA[
 			import mx.binding.utils.BindingUtils;
 			import mx.controls.Button;
+			import mx.core.Application;
 			import mx.core.UIComponent;
 			import mx.events.ResizeEvent;
 
@@ -18,9 +19,31 @@
 			protected var _titleBtnWidth : Number = 16;
 			private var _helpCloseGap : Number = 5;
 			private var _showHelpButton : Boolean = false;
-			
+
 			//Private Functions
 			////////////////////////////////////////////////////
+
+			/**
+			 * keeps TW inside layout
+			 * */
+			private function doMove(event:Event):void { 
+				var appW:Number = Application.application.width;
+				var appH:Number = Application.application.height;
+				if (this.x + this.width > appW) {
+					this.x = appW - this.width;
+				}
+				if (this.x < 0) {
+					this.x = 0;
+				}
+				if (this.y + this.height > appH) {
+					this.y = appH - this.height;
+				}
+				if (this.y < 0) {
+					this.y = 0;
+				}
+			}
+
+
 			
 			protected function onCreationCompleteHelpWindow() : void
 			{
