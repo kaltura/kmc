@@ -10,9 +10,11 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
+	import com.kaltura.types.KalturaCategoryOrderBy;
 	import com.kaltura.types.KalturaEntryStatus;
 	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaCategory;
+	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
 	import com.kaltura.vo.KalturaMediaEntryFilter;
 	
@@ -35,7 +37,9 @@ package com.kaltura.edw.control.commands.categories
 			_source = event.source;
 			_onComplete = event.onComplete;
 			
-			var listCategories:CategoryList = new CategoryList();
+			var f:KalturaCategoryFilter = new KalturaCategoryFilter();
+			f.orderBy = KalturaCategoryOrderBy.NAME_DESC;
+			var listCategories:CategoryList = new CategoryList(f);
 			// listeners
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
 			listCategories.addEventListener(KalturaEvent.FAILED, fault);
@@ -97,7 +101,7 @@ package com.kaltura.edw.control.commands.categories
 		
 		
 //		private function sortCategories(catArrCol:ArrayCollection):void {
-//			// using this fucks up for each loops!!!!
+//			// using this messes up "for each" loops!!!!
 //			var dataSort:Sort = new Sort();
 //			dataSort.compareFunction = compareValues;
 //			catArrCol.sort = dataSort;

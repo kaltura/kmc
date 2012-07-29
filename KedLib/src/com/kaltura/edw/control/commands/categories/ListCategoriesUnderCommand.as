@@ -38,6 +38,7 @@ package com.kaltura.edw.control.commands.categories
 			_onComplete = event.onComplete;
 			
 			var kcf:KalturaCategoryFilter = new KalturaCategoryFilter();
+			kcf.orderBy = KalturaCategoryOrderBy.NAME_ASC;
 			if (_branchCat) {
 				kcf.parentIdEqual = _branchCat.id;
 			}
