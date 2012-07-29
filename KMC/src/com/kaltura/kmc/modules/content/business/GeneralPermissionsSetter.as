@@ -26,17 +26,16 @@ package com.kaltura.kmc.modules.content.business {
 		
 		public static const PERMISSIONS_SET:String = "permissionsSet";
 		
-		
 		public function GeneralPermissionsSetter() {
 			super();
 			addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
-			dispatchEvent(new Event(GeneralPermissionsSetter.PERMISSIONS_SET, true));
 		}
 
 
 		protected function creationCompleteHandler(e:FlexEvent):void {
 			removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 			PermissionManager.getInstance().applyAllAttributes(this, this.id);
+			dispatchEvent(new Event(GeneralPermissionsSetter.PERMISSIONS_SET));
 		}
 
 
