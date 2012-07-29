@@ -38,7 +38,7 @@ package com.kaltura.edw.control.commands.categories
 			_onComplete = event.onComplete;
 			
 			var f:KalturaCategoryFilter = new KalturaCategoryFilter();
-			f.orderBy = KalturaCategoryOrderBy.NAME_DESC;
+			f.orderBy = KalturaCategoryOrderBy.NAME_ASC;
 			var listCategories:CategoryList = new CategoryList(f);
 			// listeners
 			listCategories.addEventListener(KalturaEvent.COMPLETE, result);
