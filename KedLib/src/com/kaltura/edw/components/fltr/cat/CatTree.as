@@ -16,6 +16,7 @@ package com.kaltura.edw.components.fltr.cat
 	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
+	import flash.utils.setTimeout;
 	
 	import mx.collections.ArrayCollection;
 	import mx.controls.Tree;
@@ -76,7 +77,23 @@ package com.kaltura.edw.components.fltr.cat
 		 */
 		public function set chunkedData(value:Boolean):void {
 			_chunkedData = value;
-			initDataManager(); 
+			_initDataManagerRequested = true;
+			setTimeout(delayInitDataManager, 500);
+		}
+		
+		private var _initDataManagerRequested:Boolean = false;
+		
+		/**
+		 * @internal
+		 * assume the second call (triggered by general permissions setter setting
+		 * chunkedDataLoad flag) will come up to a 500 ms after the initial set, 
+		 * this way we will only init once, with the correct value. 
+		 */
+		private function delayInitDataManager():void {
+			if (_initDataManagerRequested) {
+				initDataManager();
+				_initDataManagerRequested = false;
+			}
 		}
 		
 		// -----------------------
