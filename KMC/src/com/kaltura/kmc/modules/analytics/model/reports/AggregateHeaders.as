@@ -5,7 +5,7 @@ package com.kaltura.kmc.modules.analytics.model.reports
 	[Bindable]
 	public class AggregateHeaders
 	{
-		public var topContent : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads','load_play_ratio']; //,'distinct_plays'
+		public var topContent : Array = [ 'count_plays','sum_time_viewed','avg_time_viewed','count_loads','load_play_ratio', 'avg_view_drop_off']; //,'distinct_plays'
 		public var topContentPerUser : Array = [ 'unique_known_users','count_plays','sum_time_viewed','avg_time_viewed', 'avg_view_drop_off', 'count_loads','load_play_ratio'];
 		public var contentDropoff : Array = [ 'count_plays','count_plays_25','count_plays_50','count_plays_75','count_plays_100','play_through_ratio'];
 		public var contentDropoffPerUser : Array = [ 'unique_known_users','count_plays','count_plays_25','count_plays_50','count_plays_75','count_plays_100','play_through_ratio'];
