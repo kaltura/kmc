@@ -2,6 +2,8 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 {
 	import com.adobe.cairngorm.control.CairngormEvent;
 	import com.kaltura.commands.partner.PartnerListFeatureStatus;
+	import com.kaltura.edw.business.KedJSGate;
+	import com.kaltura.edw.model.types.APIErrorCode;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
@@ -65,6 +67,22 @@ package com.kaltura.kmc.modules.content.commands.cattrack
 				}
 				
 				
+			}
+		}
+		
+		override public function fault(info:Object):void {
+			var er:KalturaError = (info as KalturaEvent).error;
+			if (!er) return;
+			
+			trace("GetCategoriesStatusCommand.fault:", er.errorCode);
+			if (er.errorCode == APIErrorCode.INVALID_KS) {
+				KedJSGate.expired();
+			}
+			else if (er.errorCode == APIErrorCode.SERVICE_FORBIDDEN) {
+				KedJSGate.expired();
+			}
+			else if (er.errorMsg) {
+				var alert:Alert = Alert.show(er.errorMsg, ResourceManager.getInstance().getString('cms', 'error'));
 			}
 		}
 	}
