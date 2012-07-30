@@ -35,8 +35,14 @@ package com.kaltura.edw.control.commands.thumb
 			super.result(data);
 			
 			var thumbsResultArray:Array = data.data as Array;
-			//copy this array so we can delete from it without damage the original profiles array
-			var profilesArray:Array = _ddp.distributionInfo.distributionProfiles.concat();
+			var profilesArray:Array;
+			if (_ddp.distributionInfo.distributionProfiles) {
+				//copy this array so we can delete from it without damage the original profiles array
+				profilesArray = _ddp.distributionInfo.distributionProfiles.concat();
+			}
+			else {
+				profilesArray = [];
+			}
 			//resets old data
 			_ddp.distributionInfo.thumbnailDimensions = new Array();
 			buildThumbsWithDimensionsArray(_ddp.distributionInfo.thumbnailDimensions, profilesArray, thumbsResultArray);
