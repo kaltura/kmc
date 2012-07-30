@@ -366,11 +366,6 @@
 			public function initData():void {
 				_originalRefid = _selectedEntry.referenceId;
 
-				if (kdpContainer.getChildAt(0) is Image) {
-					// remove previous image
-					kdpContainer.removeChildAt(0);
-				}
-
 				if (_selectedEntry.status == KalturaEntryStatus.NO_CONTENT) {
 					addImageThumb(noMediaImage);
 					_entryHasContent = false;
@@ -456,8 +451,11 @@
 //				}
 				
 				if (_enableCustomData) {
+					var d1:Date, d2:Date = new Date();
 					var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
 					controller.dispatch(reset);
+					d1 = new Date();
+					trace("clear custom data:", d1.time - d2.time);
 				}
 			}
 
@@ -491,6 +489,7 @@
 				if (!value) {
 					return;
 				}
+				_profsWatcher.unwatch();
 				var filterData:FilterDataPack = _dpModel.getDataPack(FilterDataPack) as FilterDataPack;
 				buildProfiles(filterData.filterModel.metadataProfiles, filterData.filterModel.formBuilders);
 				var listCustomData:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.LIST);
