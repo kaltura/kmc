@@ -6,6 +6,7 @@
 				creationComplete="titlewindow1_creationCompleteHandler(event)">
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.analytics.model.Context;
 			import com.kaltura.vo.KalturaBaseEntry;
 			import com.kaltura.vo.KalturaMediaEntry;
@@ -26,12 +27,13 @@
 			//the entry id you preview
 			[Bindable] public var uiconfId:String;
 			
-			[Bindable] private var _lblWidth : Number = 140;
+			private const _lblWidth : Number = 140;
 			
 			protected function titlewindow1_closeHandler(event:CloseEvent):void
 			{
 				disposeAll();
 				PopUpManager.removePopUp(this);
+				JSGate.maskHeader(true);
 			}
 			
 			protected function disposeAll() : void
