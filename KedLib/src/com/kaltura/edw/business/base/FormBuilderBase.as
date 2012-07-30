@@ -63,6 +63,11 @@ package com.kaltura.edw.business.base
 			_objectsHM = new HashMap();
 		}
 		
+		
+		/**
+		 * set entry metadata values in the view mxml
+		 * and set it as final view
+		 */		
 		public function updateMultiTags():void {
 			if (!_metadataProfile.viewXML) {
 				// the profile has no view definitions
