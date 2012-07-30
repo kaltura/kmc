@@ -438,8 +438,9 @@ package com.kaltura.edw.business.base
 			
 			//if it's a nested component we will recieve the bound metadata object. otherwhise use the one from the model
 			var boundObject:MetadataDataObject = metadataObject ? metadataObject : _metadataInfo.metadataDataObject;
+			var child:UIComponent;
 			try {
-				var child:UIComponent = buildComponent(field, boundObject, fieldsArray);
+				child = buildComponent(field, boundObject, fieldsArray);
 			}
 			catch (e:Error) {
 				if (!_isInvalidView) {
@@ -459,6 +460,7 @@ package com.kaltura.edw.business.base
 					spacer.height = FIELDS_GAP;
 					item.addChild(spacer);
 				}
+				
 				BindingUtils.bindProperty(item, "visible", child, "visible");
 				BindingUtils.bindProperty(item, "includeInLayout", child, "visible");
 			}
