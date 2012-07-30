@@ -105,8 +105,9 @@ package com.kaltura.edw.control.commands.customData {
 							var isViewExist:Boolean = false;
 	
 							if (recievedProfile.views) {
+								var recievedView:XML;
 								try {
-									var recievedView:XML = new XML(recievedProfile.views);
+									recievedView = new XML(recievedProfile.views);
 								}
 								catch (e:Error) {
 									//invalid view xmls
@@ -122,17 +123,17 @@ package com.kaltura.edw.control.commands.customData {
 							}
 							if (!isViewExist) {
 								var cddp:CustomDataDataPack = _model.getDataPack(CustomDataDataPack) as CustomDataDataPack;
-								//if no view was retruned, or no view with "KMC" name, we will set the default uiconf XML
+								//if no view was retruned, or no view with "KMC" name, we will set the default metadata view uiconf XML
 								if (cddp.metadataDefaultUiconfXML){
 									metadataProfile.viewXML = cddp.metadataDefaultUiconfXML.copy();
 								}
+								// create the actual view:
 								fb.buildInitialMxml();
 							}
 						}
 					}
 				}
 				var filterModel:FilterModel = (_model.getDataPack(FilterDataPack) as FilterDataPack).filterModel;
-//				var filterModel:FilterModel = _model.filterModel;
 				filterModel.metadataProfiles = new ArrayCollection(metadataProfiles);
 				filterModel.formBuilders = new ArrayCollection(formBuilders);
 			}

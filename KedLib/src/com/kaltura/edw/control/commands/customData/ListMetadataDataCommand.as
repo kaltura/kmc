@@ -57,9 +57,8 @@ package com.kaltura.edw.control.commands.customData {
 
 				var filter:KalturaMetadataFilter = new KalturaMetadataFilter();
 				filter.objectIdEqual = edp.selectedEntry.id;
-				var pager:KalturaFilterPager = new KalturaFilterPager();
 
-				var listMetadataData:MetadataList = new MetadataList(filter, pager);
+				var listMetadataData:MetadataList = new MetadataList(filter);
 				listMetadataData.addEventListener(KalturaEvent.COMPLETE, result);
 				listMetadataData.addEventListener(KalturaEvent.FAILED, fault);
 
