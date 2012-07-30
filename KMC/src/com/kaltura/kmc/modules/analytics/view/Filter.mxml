@@ -375,20 +375,22 @@
 					allCategoriesBtn.setStyle("textDecoration", "none");
 					allCategoriesBtn.toolTip = resourceManager.getString('analytics', 'allCategoriesSelectedToolTip');
 					allCategoriesBtn.removeEventListener(MouseEvent.CLICK, allCategoriesClick);
-					//selectedCategoriesBtn.setStyle("color", "#bcbffa");
-					selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectCategories');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectCategoriesToolTip');
+					if (playbackContextFlag) {
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectPlaybackContext');
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectPlaybackContextToolTip');
+					}
+					else {
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectCategories');
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectCategoriesToolTip');
+					}
 					_filterVo.categories = null;
 
 				}
 				else {
-					//allCategoriesBtn.setStyle("color", "#bcbffa");
 					allCategoriesBtn.clearStyle("color");
 					allCategoriesBtn.clearStyle("rollOverColor");
 					allCategoriesBtn.toolTip = resourceManager.getString('analytics', 'allCategoriesToolTip');
 					allCategoriesBtn.addEventListener(MouseEvent.CLICK, allCategoriesClick);
-					//selectedCategoriesBtn.setStyle("color", "#000000");
-					selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + selectedCategoriesArr.length + ")";
 					var catsStr:String = '';
 					var categories:Array = [];
 					for each (var cat:String in selectedCategoriesArr) {
@@ -396,7 +398,14 @@
 						categories.push(cat);
 					}
 					_filterVo.categories = categories.join(',');
-					selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + catsStr;
+					if (playbackContextFlag) {
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedPlaybackContext') + ":\n" + catsStr;
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedPlaybackContext') + "(" + selectedCategoriesArr.length + ")";
+					}
+					else {
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + catsStr;
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + selectedCategoriesArr.length + ")";
+					}
 				}
 			}
 
