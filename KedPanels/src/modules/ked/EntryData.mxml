@@ -427,9 +427,7 @@
 			}
 
 
-			/**
-			 * remove any playing entry from the preview player
-			 * */
+			
 			public function clear():void {
 
 				var listCats:KedEntryEvent = new KedEntryEvent(KedEntryEvent.RESET_ENTRY_CATEGORIES, null);
@@ -441,22 +439,16 @@
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.DO_PAUSE);
 					kdp3StaticSwfLoader.content['sendNotification'](KdpEventTypes.CLEAN_MEDIA); //clear the entry from the kdp
 				}
-//				var curCustomData:SingleCustomData;
-//				for (var i:int = editableBox.numChildren-1; i>=1; i--) {
-//					curCustomData = editableBox.getChildAt(i) as SingleCustomData; 
-//					if (curCustomData) {
-//						curCustomData.removeEventListener(SingleCustomData.SCROLL_TO_TOP, scrollToTop);
-//						curCustomData.destroy();
-//					}
-//				}
 				
-				if (_enableCustomData) {
-					var d1:Date, d2:Date = new Date();
-					var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
-					controller.dispatch(reset);
-					d1 = new Date();
-					trace("clear custom data:", d1.time - d2.time);
-				}
+				// custom data (SingleCustomData) is built from scratch every time final mxml is set, so no need to clear it
+				// (takes a lot of time for large schemas)
+//				if (_enableCustomData) {
+//					var d1:Date, d2:Date = new Date();
+//					var reset:MetadataDataEvent = new MetadataDataEvent(MetadataDataEvent.RESET);
+//					controller.dispatch(reset);
+//					d1 = new Date();
+//					trace("clear custom data:", d1.time - d2.time);
+//				}
 			}
 
 
