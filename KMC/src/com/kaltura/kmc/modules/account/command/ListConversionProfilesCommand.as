@@ -65,6 +65,7 @@ package com.kaltura.kmc.modules.account.command {
 				var cpaps:Array = (event.data[1] as KalturaConversionProfileAssetParamsListResponse).objects;
 				ListConversionProfilesUtil.addAssetParams(ac, cpaps);
 				_model.conversionData = ac;
+				_model.totalConversionProfiles = ac.length; 
 			}
 			_model.loadingFlag = false;
 		}
