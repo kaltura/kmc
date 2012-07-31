@@ -67,8 +67,12 @@
 				// if already added to stage, just go there
 				if (stage) {
 					showTab(_initialTab);
+					//TODO load categories everytime we navigate to analytics
+					var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+					listCategories.dispatch();
 				}
 				// otherwise we'll have _initialTab when we get addedToStage, and we'll switch there.
+				
 			}
 			
 			
@@ -88,9 +92,6 @@
 				Alert.noLabel = resourceManager.getString('analytics', 'no');
 				Alert.okLabel = resourceManager.getString('analytics', 'ok');
 				Alert.cancelLabel = resourceManager.getString('analytics', 'cancel');
-				
-				var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
-				listCategories.dispatch();
 				
 				//Get all the partner applications list
 				var getPartner : PartnerEvent = new PartnerEvent( PartnerEvent.GET_PARTNER_APPLICATIONS );
@@ -166,6 +167,9 @@
 				/* this must happen after trackers have been initialized because it logs something */
 				if (_initialTab) {
 					showTab(_initialTab);
+					//TODO load categories everytime we navigate to analytics
+					var listCategories:CategoryEvent = new CategoryEvent(CategoryEvent.LIST_CATEGORIES);
+					listCategories.dispatch();
 				}
 				setModuleReady();
 				// Roles and permission code here
@@ -195,8 +199,6 @@
 			 * @param event
 			 * */
 			private function onItemClick(event:ItemClickEvent):void {
-				
-				
 				if (event.index == 0) {
 					var stateEvent:StateEvent;
 					stateEvent = new StateEvent(StateEvent.STATE_CHANGE, ScreenTypes.TOP_CONTENT);
@@ -269,8 +271,6 @@
 			}
 		]]>
 	</mx:Script>
-	<!-- the ServiceLocator where we specify the remote services -->
-	<!--business:Services  /-->
 	
 	<!-- the FrontController, containing Commands specific to this appliation -->
 	<control:AnalyticsController/>
