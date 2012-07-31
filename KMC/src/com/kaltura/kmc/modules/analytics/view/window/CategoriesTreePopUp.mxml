@@ -36,14 +36,14 @@
 			 * elements are CategoryVOs.
 			 * an actual reference to the same ArrayCollection the Filter uses 
 			 * */
-			private var _selectedCategoriesArr:ArrayCollection;
+			private var _selectedCategories:ArrayCollection;
 
-			public function get selectedCategoriesArr():ArrayCollection {
-				return _selectedCategoriesArr;
+			public function get selectedCategories():ArrayCollection {
+				return _selectedCategories;
 			}
 
-			public function set selectedCategoriesArr(selectedCategoriesArr:ArrayCollection):void {
-				_selectedCategoriesArr = selectedCategoriesArr;
+			public function set selectedCategories(selectedCategoriesArr:ArrayCollection):void {
+				_selectedCategories = selectedCategoriesArr;
 			}
 
 
@@ -61,14 +61,14 @@
 			 * change the contents of the AC to match user selection
 			 * */
 			private function onSubmitClick(event:Event):void {
-				_selectedCategoriesArr.removeAll();
+				_selectedCategories.removeAll();
 				if (catTree.filter) {
 					var catNames:Array = catTree.filter.split(',');
 					var catsMap:HashMap = _model.categoriesMap;
 					for (var i:int = 0; i<catNames.length; i++) {
 						for each (var catvo:CategoryVO in catsMap) {
 							if (catvo.id == catNames[i]) {
-								_selectedCategoriesArr.addItem(catvo);
+								_selectedCategories.addItem(catvo);
 								break;
 							}
 						}
@@ -80,9 +80,9 @@
 			}
 
 
-			private function onTreeCreationComplete(event:Event):void {
+			private function onTreeCreationComplete():void {
 				var categories:String = '';
-				for each (var catvo:CategoryVO in _selectedCategoriesArr) {
+				for each (var catvo:CategoryVO in _selectedCategories) {
 					categories += catvo.id + ",";
 				}
 				catTree.filter = categories;
@@ -93,7 +93,8 @@
 	<cat:CatTreeWrapper id="catTree" height="100%" width="100%" 
 						selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" 
 						dataProvider="{_model.categories}" categories="{_model.categoriesMap}"
-						kClient="{_model.kc}" /> <!--chunkedData="{filterModel.chunkedCategoriesLoad}"-->
+						kClient="{_model.kc}"
+						creationComplete="onTreeCreationComplete()"/> <!--chunkedData="{filterModel.chunkedCategoriesLoad}"-->
 
 	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
 		<mx:Button label="{resourceManager.getString('analytics', 'filter')}" useHandCursor="true" buttonMode="true" id="submitBtn" click="onSubmitClick(event)"/>
