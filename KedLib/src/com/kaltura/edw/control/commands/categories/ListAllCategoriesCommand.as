@@ -1,7 +1,5 @@
 package com.kaltura.edw.control.commands.categories
 {
-	import com.kaltura.commands.MultiRequest;
-	import com.kaltura.commands.baseEntry.BaseEntryCount;
 	import com.kaltura.commands.category.CategoryList;
 	import com.kaltura.dataStructures.HashMap;
 	import com.kaltura.edw.control.commands.KedCommand;
@@ -11,17 +9,11 @@ package com.kaltura.edw.control.commands.categories
 	import com.kaltura.events.KalturaEvent;
 	import com.kaltura.kmvc.control.KMvCEvent;
 	import com.kaltura.types.KalturaCategoryOrderBy;
-	import com.kaltura.types.KalturaEntryStatus;
-	import com.kaltura.types.KalturaMediaType;
 	import com.kaltura.vo.KalturaCategory;
 	import com.kaltura.vo.KalturaCategoryFilter;
 	import com.kaltura.vo.KalturaCategoryListResponse;
-	import com.kaltura.vo.KalturaMediaEntryFilter;
 	
 	import mx.collections.ArrayCollection;
-	import mx.collections.Sort;
-	import mx.collections.SortField;
-	import mx.resources.ResourceManager;
 
 	public class ListAllCategoriesCommand extends KedCommand {
 		
@@ -126,5 +118,6 @@ package com.kaltura.edw.control.commands.categories
 			
 			return 0;
 		}
+		
 	}
 }
