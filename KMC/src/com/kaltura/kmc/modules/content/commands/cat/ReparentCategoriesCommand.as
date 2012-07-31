@@ -4,9 +4,9 @@ package com.kaltura.kmc.modules.content.commands.cat
 	import com.kaltura.commands.category.CategoryMove;
 	import com.kaltura.errors.KalturaError;
 	import com.kaltura.events.KalturaEvent;
-	import com.kaltura.kmc.modules.analytics.control.CategoryEvent;
 	import com.kaltura.kmc.modules.content.commands.KalturaCommand;
 	import com.kaltura.kmc.modules.content.events.CatTrackEvent;
+	import com.kaltura.kmc.modules.content.events.CategoryEvent;
 	import com.kaltura.vo.KalturaCategory;
 	
 	import mx.controls.Alert;
