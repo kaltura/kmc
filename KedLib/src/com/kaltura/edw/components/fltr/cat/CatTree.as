@@ -323,6 +323,9 @@ package com.kaltura.edw.components.fltr.cat
 			// mark cats from initFilter
 			_initialFilter = selectFromInitial(catvo, _initialFilter);
 			disableItems();
+			if (catvo[selectionAttribute] == CatSelectionStatus.SELECTED && selectionMode == CatTreeSelectionMode.MULTIPLE_SELECT_PLUS) {
+				setChildrenSelection(catvo, CatSelectionStatus.SELECTED, true);
+			}
 		}
 		
 		
