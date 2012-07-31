@@ -1,5 +1,4 @@
-package com.kaltura.kmc.modules.analytics.model
-{
+package com.kaltura.kmc.modules.analytics.model {
 	import com.adobe.cairngorm.model.IModelLocator;
 	import com.kaltura.KalturaClient;
 	import com.kaltura.dataStructures.HashMap;
@@ -11,176 +10,172 @@ package com.kaltura.kmc.modules.analytics.model
 	import com.kaltura.kmc.modules.analytics.vo.AccountUsageVO;
 	import com.kaltura.kmc.modules.analytics.vo.FilterVo;
 	import com.kaltura.kmc.modules.analytics.vo.PartnerVO;
-	
+
 	import mx.collections.ArrayCollection;
 	import mx.resources.ResourceManager;
-	
+
 	[Bindable]
-	public class AnalyticsModelLocator implements IModelLocator
-	{
-		
+	public class AnalyticsModelLocator implements IModelLocator {
+
 		/**
 		 * the hour 23:59 in seconds
-		 */		
-		public const END_OF_DAY_IN_SECONDS : Number = 86399; 
-		
+		 */
+		public const END_OF_DAY_IN_SECONDS:Number = 86399;
+
 		/**
 		 * kaltura client that make all kaltura API calls
-		 */		
-		public var kc : KalturaClient; 
-		
+		 */
+		public var kc:KalturaClient;
+
 		/**
-		 * application context data 
-		 */		
-		public var context : Context = null;
-		
+		 * application context data
+		 */
+		public var context:Context = null;
+
 		//---------------------------------------------------------
-		
+
 		/**
-		 * the uiconf that the loaded KDP uses 
+		 * the uiconf that the loaded KDP uses
 		 */
 		public var kdpUiConf:String;
-		
+
 		//---------------------------------------------------------
 		//data objects
-		private var _drillDownName : String = "";
-		public function get drillDownName():String { return _drillDownName; }
-		public function set drillDownName(str:String):void { 
-			_drillDownName=str; 
-		}
-		public var reportDataMap : Object = new Object();
-		
+		public var drillDownName:String = "";
+		public var reportDataMap:Object = new Object();
+
 		/**
-		 * data of currently shown report 
+		 * data of currently shown report
 		 */
-		public var selectedReportData : ReportData;
-		public var partnerData : PartnerVO = new PartnerVO();
-		public var usageData : AccountUsageVO = new AccountUsageVO();
-		public var filter :FilterVo = new FilterVo();
-		public var reportDimension : ReportDimension = new ReportDimension();
-		public var aggregateHeaders : AggregateHeaders = new AggregateHeaders();
-		public var tableHeaders : TableHeaders = new TableHeaders();
-		public var selectedEntry : String;
-		public var selectedUserId : String;
-		public var tableSupportDrillDown : Boolean = true;
-		public var showRefererIcon : Boolean = false;
+		public var selectedReportData:ReportData;
+		public var partnerData:PartnerVO = new PartnerVO();
+		public var usageData:AccountUsageVO = new AccountUsageVO();
+		public var filter:FilterVo = new FilterVo();
+		public var reportDimension:ReportDimension = new ReportDimension();
+		public var aggregateHeaders:AggregateHeaders = new AggregateHeaders();
+		public var tableHeaders:TableHeaders = new TableHeaders();
+		public var selectedEntry:String;
+		public var selectedUserId:String;
+		public var tableSupportDrillDown:Boolean = true;
+		public var showRefererIcon:Boolean = false;
+
 		
-		public var categories : Object = null;
-		public var categoriesMap : HashMap = new HashMap();
-		public var categoriesFullNameList : ArrayCollection  = new ArrayCollection();
+		public var categories:ArrayCollection;
 		
+		public var categoriesMap:HashMap = new HashMap();
+		
+		public var categoriesFullNameList:ArrayCollection = new ArrayCollection();
+
 		/**
 		 * Set to enable disable entitlement feature in analytics
 		 * and by that hide/show the relevent UI
 		 */
-		public var entitlementEnabled : Boolean = true;
-		
+		public var entitlementEnabled:Boolean = true;
+
 		/**
 		 * All the applications of the partner is listed here
 		 */
-		public var applicationsList : ArrayCollection = new ArrayCollection();
-		
+		public var applicationsList:ArrayCollection = new ArrayCollection();
+
 		/**
-		 * dataprovider for content reports tab sub-navigation 
-		 */		
-		public var contentDtnDp : ArrayCollection = new ArrayCollection( 
-										  [ ResourceManager.getInstance().getString('analytics','topContent') ,
-										    ResourceManager.getInstance().getString('analytics','contentDropOff') ,
-										    ResourceManager.getInstance().getString('analytics','contentInteractions') ,
-										    ResourceManager.getInstance().getString('analytics','contentContributions') ]);
-		
+		 * dataprovider for content reports tab sub-navigation
+		 */
+		public var contentDtnDp:ArrayCollection = new ArrayCollection(
+			[ResourceManager.getInstance().getString('analytics', 'topContent'),
+			ResourceManager.getInstance().getString('analytics', 'contentDropOff'),
+			ResourceManager.getInstance().getString('analytics', 'contentInteractions'),
+			ResourceManager.getInstance().getString('analytics', 'contentContributions')]);
+
+
 		/**
-		 * dataprovider for the community reports tab sub-navigation 
-		 */		
-		public function get userDtnDp() : ArrayCollection {
-			if(entitlementEnabled){
-				return new ArrayCollection( 
-					[ ResourceManager.getInstance().getString('analytics','topContributors') ,
-						ResourceManager.getInstance().getString('analytics','mapOverlay') ,
-						ResourceManager.getInstance().getString('analytics','topSyndications'),
-						ResourceManager.getInstance().getString('analytics','userEngagement')]);
+		 * dataprovider for the community reports tab sub-navigation
+		 */
+		public function get userDtnDp():ArrayCollection {
+			if (entitlementEnabled) {
+				return new ArrayCollection(
+					[ResourceManager.getInstance().getString('analytics', 'topContributors'),
+					ResourceManager.getInstance().getString('analytics', 'mapOverlay'),
+					ResourceManager.getInstance().getString('analytics', 'topSyndications'),
+					ResourceManager.getInstance().getString('analytics', 'userEngagement')]);
 			}
-			else
-			{
-				return new ArrayCollection( 
-					[ ResourceManager.getInstance().getString('analytics','topContributors') ,
-						ResourceManager.getInstance().getString('analytics','mapOverlay') ,
-						ResourceManager.getInstance().getString('analytics','topSyndications')]);
+			else {
+				return new ArrayCollection(
+					[ResourceManager.getInstance().getString('analytics', 'topContributors'),
+					ResourceManager.getInstance().getString('analytics', 'mapOverlay'),
+					ResourceManager.getInstance().getString('analytics', 'topSyndications')]);
 			}
 		}
+
+
 //		public var usageDtnDp : ArrayCollection = new ArrayCollection(
 //				[ 	ResourceManager.getInstance().getString('analytics', 'pbns'),
 //					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
-		
-		public function get usageDtnDp() : ArrayCollection {
-			if (entitlementEnabled){
-				return new ArrayCollection( 
-					[	ResourceManager.getInstance().getString('analytics', 'pbns'),
-						ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
+
+		public function get usageDtnDp():ArrayCollection {
+			if (entitlementEnabled) {
+				return new ArrayCollection(
+					[ResourceManager.getInstance().getString('analytics', 'pbns'),
+					ResourceManager.getInstance().getString('analytics', 'endUserStorage')]);
 			}
-			else
-			{
-				return new ArrayCollection( 
-					[ ResourceManager.getInstance().getString('analytics', 'pbns') ]);
+			else {
+				return new ArrayCollection(
+					[ResourceManager.getInstance().getString('analytics', 'pbns')]);
 			}
 		}
-									 								 
-	    //---------------------------------------------------------
+
+		//---------------------------------------------------------
 		/**
 		 * current showing screen, enumerated in <code>ScreenTypes</code>.
-		 */	    
-	    public var currentScreenState : int = ScreenTypes.TOP_CONTENT;
-	    
+		 */
+		public var currentScreenState:int = ScreenTypes.TOP_CONTENT;
+
 		//---------------------------------------------------------
 		//Flags 
-		public var loadingFlag : Boolean = false;
-		public var loadingChartFlag : Boolean = false;
-		public var loadingTableFlag : Boolean = false;
-		public var loadingTotalFlag : Boolean = false;
-		public var loadingEntryFlag : Boolean = false;
-		public var partnerInfoLoaded : Boolean = false;
-		public var loadingApplicationsFlag : Boolean = false;
-		public var loadingBaseTotals : Boolean = false;
-		
+		public var loadingFlag:Boolean = false;
+		public var loadingChartFlag:Boolean = false;
+		public var loadingTableFlag:Boolean = false;
+		public var loadingTotalFlag:Boolean = false;
+		public var loadingEntryFlag:Boolean = false;
+		public var partnerInfoLoaded:Boolean = false;
+		public var loadingApplicationsFlag:Boolean = false;
+		public var loadingBaseTotals:Boolean = false;
+
 		//---------------------------------------------------------
 		//singleton methods
-		private static var _modelLocator : AnalyticsModelLocator;
-		
+		private static var _modelLocator:AnalyticsModelLocator;
+
+
 		/**
-		 * retreives an instance of the KMCModelLocator class 
-		 */		
-		public static function getInstance() : AnalyticsModelLocator
-		{
-			if ( _modelLocator == null )
-			{
+		 * retreives an instance of the KMCModelLocator class
+		 */
+		public static function getInstance():AnalyticsModelLocator {
+			if (_modelLocator == null) {
 				_modelLocator = new AnalyticsModelLocator(new Enforcer());
 			}
 
 			return _modelLocator;
 		}
 
+
 		/**
 		 * Disabled singleton constructor.
-		 */		
-		public function AnalyticsModelLocator(enforcer:Enforcer)
-		{
+		 */
+		public function AnalyticsModelLocator(enforcer:Enforcer) {
 			context = new Context();
 		}
-		
+
+
 		/**
 		 * set value of loadingFlag according to the partial loading flags
-		 */		
-		public function checkLoading() : void
-		{
-			if( !loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && !loadingEntryFlag && !loadingBaseTotals)
-			{
+		 */
+		public function checkLoading():void {
+			if (!loadingChartFlag && !loadingTableFlag && !loadingTotalFlag && !loadingEntryFlag && !loadingBaseTotals) {
 				this.loadingFlag = false;
 			}
 		}
 	}
 }
 
-class Enforcer
-{
-	
+class Enforcer {
+
 }

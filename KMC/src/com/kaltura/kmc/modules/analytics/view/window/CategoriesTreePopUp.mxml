@@ -1,24 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--- Category selection tool for analytics 
+ @see com.kaltura.kmc.modules.analytics.view.Filter
+-->
 <HelpTitleWindow xmlns="com.kaltura.containers.*" xmlns:mx="http://www.adobe.com/2006/mxml" width="250" height="450"
 				 xmlns:view="com.kaltura.kmc.modules.analytics.view.*" showCloseButton="true" close="closeWindow(event)"
-				 title="Categories" showHelpButton="false">
+				 title="{resourceManager.getString('analytics', 'categoriesTitle')}" showHelpButton="false" xmlns:cat="com.kaltura.edw.components.fltr.cat.*">
+	
+	<mx:Metadata>
+		/**
+		 * dispatched when "submit" button is clicked
+		 * */
+		[Event(name="filterByCategories",type="flash.events.Event")]
+	</mx:Metadata>
+	
 	<mx:Script>
 		<![CDATA[
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.components.fltr.cat.CatTreeSelectionMode;
+			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.business.JSGate;
+			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
+			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
-			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
-
-			[Bindable]
-			private var _selectedCategoriesArr:ArrayCollection;
+			
+			
+			public static const FILTER_BY_CATEGORIES:String = "filterByCategories";
+			
+			
 			[Bindable]
 			private var _model:AnalyticsModelLocator = AnalyticsModelLocator.getInstance();
+			
 
+			/**
+			 * elements are CategoryVOs.
+			 * an actual reference to the same ArrayCollection the Filter uses 
+			 * */
+			private var _selectedCategoriesArr:ArrayCollection;
 
-			[Bindable]
 			public function get selectedCategoriesArr():ArrayCollection {
 				return _selectedCategoriesArr;
 			}
-
 
 			public function set selectedCategoriesArr(selectedCategoriesArr:ArrayCollection):void {
 				_selectedCategoriesArr = selectedCategoriesArr;
@@ -30,39 +52,50 @@
 			 */
 			private function closeWindow(event:Event = null):void {
 				PopUpManager.removePopUp(this);
+				JSGate.maskHeader(true);
+				catTree.filter = '';
 			}
 
 
+			/**
+			 * change the contents of the AC to match user selection
+			 * */
 			private function onSubmitClick(event:Event):void {
-				var categories:String = tree.selectedFilterCategories;
-				var catArr:Array = categories.split(',');
-
 				_selectedCategoriesArr.removeAll();
-				for each (var cat:String in catArr) {
-					if (cat != '') {
-						_selectedCategoriesArr.addItem(cat);
+				if (catTree.filter) {
+					var catNames:Array = catTree.filter.split(',');
+					var catsMap:HashMap = _model.categoriesMap;
+					for (var i:int = 0; i<catNames.length; i++) {
+						for each (var catvo:CategoryVO in catsMap) {
+							if (catvo.id == catNames[i]) {
+								_selectedCategoriesArr.addItem(catvo);
+								break;
+							}
+						}
 					}
 				}
-				dispatchEvent(new Event("filterByCategories"));
+
+				dispatchEvent(new Event(CategoriesTreePopUp.FILTER_BY_CATEGORIES));
 				closeWindow();
 			}
 
 
 			private function onTreeCreationComplete(event:Event):void {
-				var categories:String = _selectedCategoriesArr.source.join(',');
-				tree.selectedFilterCategories = categories;
+				var categories:String = '';
+				for each (var catvo:CategoryVO in _selectedCategoriesArr) {
+					categories += catvo.id + ",";
+				}
+				catTree.filter = categories;
 			}
 		]]>
 	</mx:Script>
-	<mx:Metadata>
-		[Event(name="filterByCategories",type="flash.events.Event")]
-	</mx:Metadata>
-	<view:CategoriesTree id='tree' dataProvider="{_model.categories}" showRoot="false"
-						 creationComplete="onTreeCreationComplete(event)" visible="{_model.categories.children.length}">
+	
+	<cat:CatTreeWrapper id="catTree" height="100%" width="100%" 
+						selectionMode="{CatTreeSelectionMode.MULTIPLE_SELECT_EXACT}" 
+						dataProvider="{_model.categories}" categories="{_model.categoriesMap}"
+						kClient="{_model.kc}" /> <!--chunkedData="{filterModel.chunkedCategoriesLoad}"-->
 
-	</view:CategoriesTree>
-	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2"
-				   paddingTop="2">
-		<mx:Button label="Filter" useHandCursor="true" buttonMode="true" id="submitBtn" click="onSubmitClick(event)"/>
+	<mx:ControlBar width="100%" horizontalAlign="center" paddingBottom="2" paddingLeft="2" paddingRight="2" paddingTop="2">
+		<mx:Button label="{resourceManager.getString('analytics', 'filter')}" useHandCursor="true" buttonMode="true" id="submitBtn" click="onSubmitClick(event)"/>
 	</mx:ControlBar>
 </HelpTitleWindow>

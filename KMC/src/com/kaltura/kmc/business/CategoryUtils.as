@@ -1,5 +1,6 @@
 package com.kaltura.kmc.business
 {
+	import com.kaltura.edw.vo.CategoryVO;
 	import com.kaltura.types.KalturaInheritanceType;
 	import com.kaltura.vo.KalturaCategory;
 
@@ -33,6 +34,25 @@ package com.kaltura.kmc.business
 				cat.owner = null;
 				// cat.userJoinPolicy = int.MIN_VALUE;
 			}
+		}
+		
+		public static function compareValues(a:CategoryVO, b:CategoryVO, fields:Array = null):int {
+			if (a == null && b == null)
+				return 0;
+			
+			if (a == null)
+				return 1;
+			
+			if (b == null)
+				return -1;
+			
+			if (a.category.partnerSortValue < b.category.partnerSortValue)
+				return -1;
+			
+			if (a.category.partnerSortValue > b.category.partnerSortValue)
+				return 1;
+			
+			return 0;
 		}
 	}
 }

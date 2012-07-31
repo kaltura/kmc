@@ -10,7 +10,12 @@ package com.kaltura.kmc.modules.analytics.vo
 		public var selectedDate : String = ResourceManager.getInstance().getString('analytics', 'last30Days');
 		public var fromDate : Date;
 		public var toDate : Date;
+		
+		/**
+		 * comma-separated list of categories full-names 
+		 */		
 		public var categories : String;
+		
 		public var keywords : String;
 		public var searchInAdminTags : Boolean = false;
 		public var searchInTags : Boolean = true;

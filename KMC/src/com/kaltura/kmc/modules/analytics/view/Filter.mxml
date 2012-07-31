@@ -5,8 +5,12 @@
 			import com.kaltura.KalturaClient;
 			import com.kaltura.autocomplete.controllers.KACUsersController;
 			import com.kaltura.autocomplete.itemRenderers.selection.UserSelectedItem;
+			import com.kaltura.dataStructures.HashMap;
+			import com.kaltura.edw.vo.CategoryVO;
+			import com.kaltura.kmc.business.JSGate;
 			import com.kaltura.kmc.modules.analytics.control.DrillDownEvent;
 			import com.kaltura.kmc.modules.analytics.control.StateEvent;
+			import com.kaltura.kmc.modules.analytics.model.AnalyticsModelLocator;
 			import com.kaltura.kmc.modules.analytics.model.types.ScreenTypes;
 			import com.kaltura.kmc.modules.analytics.view.window.CategoriesTreePopUp;
 			import com.kaltura.kmc.modules.analytics.vo.FilterVo;
@@ -16,6 +20,7 @@
 			
 			import mx.collections.ArrayCollection;
 			import mx.controls.Alert;
+			import mx.core.Application;
 			import mx.events.CalendarLayoutChangeEvent;
 			import mx.events.CollectionEvent;
 			import mx.events.ListEvent;
@@ -31,10 +36,15 @@
 			
 			public var objectIds:String = '';
 			
-			[Bindable]
-			private var selectedCategoriesArr:ArrayCollection = new ArrayCollection();
+			/**
+			 * elements are of type CategoryVO 
+			 * */
+			private var _selectedCategoriesArr:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
+			/**
+			 * set texts to playbackContext related
+			 * */
 			public var playbackContextFlag : Boolean;
 			
 			[Bindable]
@@ -87,17 +97,20 @@
 			[Bindable]
 			public var dateOnlyFlag:Boolean = false;
 			
+			[Bindable]
 			/**
 			 * Show or Hide the user filter UI
 			 * */
-			[Bindable] public var filterUsersFlag:Boolean = true;
+			public var filterUsersFlag:Boolean = true;
 			
+			[Bindable] 
 			/**
 			 * Show or Hide the application filter UI
 			 * */
-			[Bindable] public var filterApplicationsFlag:Boolean = true;
+			public var filterApplicationsFlag:Boolean = true;
 			
-			[Bindable] public var showDrillDownNav:Boolean = false;
+			[Bindable] 
+			public var showDrillDownNav:Boolean = false;
 
 			private var _oldToDate:Date;
 			private var _oldFromDate:Date;
@@ -117,16 +130,34 @@
 					}
 					
 					if (_filterVo.categories == null) {
-						selectedCategoriesArr = new ArrayCollection();
+						_selectedCategoriesArr = new ArrayCollection();
 					}
 					else {
-						selectedCategoriesArr = new ArrayCollection(_filterVo.categories.split(','));
+						_selectedCategoriesArr = getCategoriesFromNames(_filterVo.categories.split(','));
 					}
 					onCategoriesChange();
 				}
-				selectedCategoriesArr.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCategoriesChange);
+				_selectedCategoriesArr.addEventListener(CollectionEvent.COLLECTION_CHANGE, onCategoriesChange);
 			}
 
+			/**
+			 * given a list of category full names, retrieve a list of matching CategoryVO objects
+			 * @param ar	categries full names
+			 * @return ArrayCollection with CategoryVO objects 
+			 * */
+			private function getCategoriesFromNames(ar:Array):ArrayCollection {
+				var result:ArrayCollection = new ArrayCollection();
+				var catsMap:HashMap = AnalyticsModelLocator.getInstance().categoriesMap;
+				for (var i:int = 0; i<ar.length; i++) {
+					for each (var catvo:CategoryVO in catsMap) {
+						if (catvo.category.fullName == ar[i]) {
+							result.addItem(catvo);
+							break;
+						}
+					}
+				}
+				return result;
+			}
 
 			/**
 			 * This is an event handler that will be called whenever the "fromDate" DateField changes
@@ -344,32 +375,28 @@
 
 			private function onCategoriesTreeOpen(event:Event):void {
 				var categoryPopUp:CategoriesTreePopUp = new CategoriesTreePopUp();
-				categoryPopUp.selectedCategoriesArr = selectedCategoriesArr;
-				categoryPopUp.addEventListener("filterByCategories", onCategoriesSelected);
-				var p:Point = new Point(categoriesBox.x, categoriesBox.y);
-				var np:Point = contentToGlobal(p);
-				categoryPopUp.x = np.x + categoriesBox.width - 5;
-				categoryPopUp.y = np.y + 5;
-				PopUpManager.addPopUp(categoryPopUp, this as DisplayObject, true);
+				categoryPopUp.selectedCategoriesArr = _selectedCategoriesArr;
+				categoryPopUp.addEventListener(CategoriesTreePopUp.FILTER_BY_CATEGORIES, onCategoriesSelected);
+				PopUpManager.addPopUp(categoryPopUp, Application.application as DisplayObject, true);
 				PopUpManager.centerPopUp(categoryPopUp);
+				JSGate.maskHeader(false);
 			}
 
 
 			private function onCategoriesSelected(event:Event):void {
-				if ((event.target as CategoriesTreePopUp).selectedCategoriesArr.length > 0)
+				if ((event.target as CategoriesTreePopUp).selectedCategoriesArr.length > 0) {
 					dispatchEvent(new Event('apply'));
-				//else
-				//Alert.show( resourceManager.getString('cms','');
+				}
 			}
 
 
 			private function onAllCategoriesSelection(event:Event):void {
-				selectedCategoriesArr.removeAll();
+				_selectedCategoriesArr.removeAll();
 			}
 
 
 			private function onCategoriesChange(event:Event = null):void {
-				if (selectedCategoriesArr.length == 0) {
+				if (_selectedCategoriesArr.length == 0) {
 					allCategoriesBtn.setStyle("color", "#000000");
 					allCategoriesBtn.setStyle("rollOverColor", "#000000");
 					allCategoriesBtn.setStyle("textDecoration", "none");
@@ -391,20 +418,23 @@
 					allCategoriesBtn.clearStyle("rollOverColor");
 					allCategoriesBtn.toolTip = resourceManager.getString('analytics', 'allCategoriesToolTip');
 					allCategoriesBtn.addEventListener(MouseEvent.CLICK, allCategoriesClick);
-					var catsStr:String = '';
-					var categories:Array = [];
-					for each (var cat:String in selectedCategoriesArr) {
-						catsStr += cat + "\n";
-						categories.push(cat);
+					var tooltipCats:String = '';
+					var filterCats:String = '';
+					for each (var catvo:CategoryVO in _selectedCategoriesArr) {
+						tooltipCats += catvo.category.fullName + "\n";
+						filterCats += catvo.category.fullName + ",";
 					}
-					_filterVo.categories = categories.join(',');
+					if (filterCats.lastIndexOf(',') == filterCats.length - 1) {
+						filterCats = filterCats.substr(0, filterCats.length - 1);
+					}
+					_filterVo.categories = filterCats;
 					if (playbackContextFlag) {
-						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedPlaybackContext') + ":\n" + catsStr;
-						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedPlaybackContext') + "(" + selectedCategoriesArr.length + ")";
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedPlaybackContext') + ":\n" + tooltipCats;
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedPlaybackContext') + "(" + _selectedCategoriesArr.length + ")";
 					}
 					else {
-						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + catsStr;
-						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + selectedCategoriesArr.length + ")";
+						selectedCategoriesBtn.toolTip = resourceManager.getString('analytics', 'selectedCategories') + ":\n" + tooltipCats;
+						selectedCategoriesBtn.label = resourceManager.getString('analytics', 'selectedCategories') + "(" + _selectedCategoriesArr.length + ")";
 					}
 				}
 			}
@@ -468,7 +498,7 @@
 	</mx:HBox>
 	<mx:HBox id="categoriesBox" verticalAlign="middle" includeInLayout="{ !dateOnlyFlag || playbackContextFlag }" visible="{!dateOnlyFlag || playbackContextFlag}">
 		<mx:Label width="{LBL_WIDTH}" 
-				  text="{ playbackContextFlag ? resourceManager.getString('analytics','playbackContext') :  resourceManager.getString('analytics','categoriesTitle')}"/>
+				  text="{ playbackContextFlag ? resourceManager.getString('analytics','playbackContext') :  resourceManager.getString('analytics','categoriesTitle')}:"/>
 		<mx:LinkButton id='allCategoriesBtn' 
 					   label="{ resourceManager.getString('analytics','categoriesAll')}"
 					   click="onAllCategoriesSelection(event)" enabled="{!isLoading}"/>
