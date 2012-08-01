@@ -97,7 +97,12 @@ package com.kaltura.kmc.modules.content.commands
 			super.result(data);
 			if (!checkError(data)) {
 				// concat result to previous results
-				_categoryEntries = _categoryEntries.concat((data.data as KalturaCategoryEntryListResponse).objects);
+				var curResult:Array = (data.data as KalturaCategoryEntryListResponse).objects;
+				if (curResult && curResult.length) {
+					// if categories were deleted or something and are still listed on the entry
+					// but don't come back on list, we might get an empty array
+					_categoryEntries = _categoryEntries.concat(curResult);
+				}
 				if (_lastObjectIndex < _model.selectedEntries.length) {
 					listCategoryEntriesChunk();
 				}
