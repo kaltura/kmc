@@ -106,7 +106,15 @@ package com.kaltura.edw.control.commands.categories
 				}
 				// sort on partnerSortValue
 				var temp:Array = catvo.children.source;
-				temp.sort(compareValues);
+				if (temp.length > 1) {
+					if (temp[0].category.partnerSortValue || temp[1].category.partnerSortValue) {
+						// even if the first one has 0, if it is real order the second one will have a real value
+						temp.sort(compareValues);
+					}
+					else {
+						temp.sortOn("name");
+					}
+				}
 			}
 //			else {
 //				// first level
@@ -128,7 +136,7 @@ package com.kaltura.edw.control.commands.categories
 			if (a.category.partnerSortValue < b.category.partnerSortValue)
 				return -1;
 			
-			if (a.category.partnerSortValue > b.category.partnerSortValue)
+			else if (a.category.partnerSortValue > b.category.partnerSortValue)
 				return 1;
 			
 			return 0;

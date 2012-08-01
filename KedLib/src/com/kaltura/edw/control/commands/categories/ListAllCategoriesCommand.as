@@ -82,9 +82,15 @@ package com.kaltura.edw.control.commands.categories
 			var temp:Array;
 			// sort on partnerSortValue
 			for each (category in allCategories) {
-				if (category.children) {
+				if (category.children && category.children.length > 1) {
 					temp = category.children.source;
-					temp.sort(compareValues);
+					if (temp[0].category.partnerSortValue || temp[1].category.partnerSortValue) {
+						// even if the first one has 0, if it is real order the second one will have a real value
+						temp.sort(compareValues);
+					}
+					else {
+						temp.sortOn("name");
+					}
 				}
 			}
 			
