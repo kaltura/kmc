@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox verticalAlign="middle" horizontalAlign="left" paddingLeft="6" xmlns:mx="http://www.adobe.com/2006/mxml"
-		 xmlns:containers="flexlib.containers.*" width="100%" height="100%">
+<containers:FlowBox verticalAlign="middle" xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:containers="flexlib.containers.*" 
+		 width="100%" height="100%" verticalGap="0" horizontalGap="0" >
 
 	<mx:Metadata>
 		[ResourceBundle("drilldown")]
@@ -145,8 +146,8 @@
 			private function setErrosTexts():void {
 				//whether latest link buttons are visible, will indicate if we need to add comma to the earlier buttons labels
 				var previousVisibleBtn:Boolean = false;
-				for (var i:int = (tile.numChildren - 1); i >= 0; i--) {
-					var curBtn:LinkButton = tile.getChildAt(i) as LinkButton;
+				for (var i:int = (numChildren - 1); i >= 0; i--) {
+					var curBtn:LinkButton = getChildAt(i) as LinkButton;
 					if (curBtn && (curBtn.label.charAt(curBtn.label.length - 1) != ',')) {
 						if (previousVisibleBtn) {
 							curBtn.label = curBtn.label + ',';
@@ -296,7 +297,7 @@
 
 
 			private function onMetadataErrorLink():void {
-				//buildMockUpErrors();
+				
 				var errorDetails:ErrorDetailsWindow = createErrorPopup(ErrorDetailsWindow.METADATA_ERROR, resourceManager.getString('drilldown', 'metadataValidationFailed'));
 				for (var i:int = 0; i < _metadataErrorsArray.length; i++) {
 					if (_metadataErrorsArray[i] is KalturaDistributionValidationErrorInvalidMetadata)
@@ -335,7 +336,7 @@
 		]]>
 	</mx:Script>
 
-	<containers:FlowBox id="tile" width="100%" height="100%" verticalGap="0" horizontalGap="0" >
+	<!--<containers:FlowBox id="tile" width="100%" height="100%"  borderColor="red" borderStyle="solid">-->
 		<mx:Label id="statusLabel" visible="{_statusVisible}" includeInLayout="{_statusVisible}" />
 		
 		<mx:LinkButton id="distributionErrorLink" label="{resourceManager.getString('drilldown','distributionError')}"
@@ -358,5 +359,5 @@
 					   visible="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}" 
 					   includeInLayout="{(_errorsVisible &amp;&amp; _metadataErrorVisible)}"
 					   styleName="distributionError" click="{onMetadataErrorLink()}"/>
-	</containers:FlowBox>
-</mx:VBox>
+	<!--</containers:FlowBox>-->
+</containers:FlowBox>
