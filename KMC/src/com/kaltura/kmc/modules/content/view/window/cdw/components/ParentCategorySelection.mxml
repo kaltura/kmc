@@ -110,12 +110,22 @@
 				nextBtn.enabled = true;
 			}
 
+			private function catComplete_searchChangeHandler(event:Event):void {
+				// handle cases when there was a value selected in AC, then user 
+				// started typing (thus deselecting previously selected value)
+				if (nextBtn.enabled && !none.selected && !catTree.selectedItem) {
+					nextBtn.enabled = false;
+				}
+			}
 
 			private function creationCompleteHandler(event:FlexEvent):void {
 				if (kClient) {
 					new KACCategoryController(catComplete, kClient);
 				}
 			}
+
+
+			
 
 		]]>
 	</mx:Script>
@@ -136,7 +146,8 @@
 						<mx:Spacer width="100%" />
 						<components:AutoComplete id="catComplete" width="100%" labelField="name"
 												 prompt="{resourceManager.getString('drilldown', 'searchCats')}" 
-												 selectedItemStyleName="selectionBox" change="catComplete_changeHandler(event)" 
+												 selectedItemStyleName="selectionBox" 
+												 change="catComplete_changeHandler(event)" searchChange="catComplete_searchChangeHandler(event)" 
 												 selectionItemRendererClassFactory="{new ClassFactory(CategorySelectedItem)}"/>
 					</mx:HBox>
 					<mx:HRule width="90%" />
