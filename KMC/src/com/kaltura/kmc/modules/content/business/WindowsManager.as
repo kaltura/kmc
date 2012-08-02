@@ -5,6 +5,7 @@ package com.kaltura.kmc.modules.content.business
 	import com.kaltura.analytics.GoogleAnalyticsTracker;
 	import com.kaltura.analytics.KAnalyticsTracker;
 	import com.kaltura.analytics.KAnalyticsTrackerConsts;
+	import com.kaltura.containers.ConfinedTitleWindow;
 	import com.kaltura.edw.business.IDataOwner;
 	import com.kaltura.edw.components.playlist.ManualPlaylistWindow;
 	import com.kaltura.edw.components.playlist.events.ManualPlaylistWindowEvent;
@@ -69,7 +70,6 @@ package com.kaltura.kmc.modules.content.business
 	import modules.Content;
 	
 	import mx.collections.ArrayCollection;
-	import mx.containers.TitleWindow;
 	import mx.containers.ViewStack;
 	import mx.core.Application;
 	import mx.events.CloseEvent;
@@ -115,7 +115,7 @@ package com.kaltura.kmc.modules.content.business
 		/**
 		 * adds a popup window to the screen
 		 * */
-		private function addPopup(currentPopUp:TitleWindow):void {
+		private function addPopup(currentPopUp:ConfinedTitleWindow):void {
 			// remember the new window
 			model.popups.push(currentPopUp);
 			if (model.popups.length == 1) {
@@ -134,7 +134,7 @@ package com.kaltura.kmc.modules.content.business
 		 * if this was the last opened popup, enable HTML tabs
 		 * */
 		private function closePopup():void {
-			var popup:TitleWindow = model.topPopup;
+			var popup:ConfinedTitleWindow = model.topPopup;
 			if (popup) {
 				PopUpManager.removePopUp(popup);
 				model.popups.pop();
@@ -184,7 +184,7 @@ package com.kaltura.kmc.modules.content.business
 			}
 			else {
 				owner.enabled = false;
-				var currentPopUp:TitleWindow;
+				var currentPopUp:ConfinedTitleWindow;
 				switch (newState) {
 					case WindowsStates.REPLACEMENT_ENTRY_DETAILS_WINDOW:
 						currentPopUp = openEntryDetails(EntryDetailsWindowState.REPLACEMENT_ENTRY);

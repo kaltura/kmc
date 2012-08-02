@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.content.model {
 	import com.adobe.cairngorm.model.IModelLocator;
+	import com.kaltura.containers.ConfinedTitleWindow;
 	import com.kaltura.edw.model.FilterModel;
 	import com.kaltura.edw.model.PlaylistModel;
 	import com.kaltura.edw.model.datapacks.ContextDataPack;
@@ -16,7 +17,6 @@ package com.kaltura.kmc.modules.content.model {
 	
 	import mx.binding.utils.BindingUtils;
 	import mx.collections.ArrayCollection;
-	import mx.containers.TitleWindow;
 	import mx.core.IFlexDisplayObject;
 
 	[Bindable]
@@ -62,12 +62,12 @@ package com.kaltura.kmc.modules.content.model {
 		/**
 		 * list of opened popups 
 		 */
-		public var popups:Vector.<TitleWindow>;
+		public var popups:Vector.<ConfinedTitleWindow>;
 		
 		/**
 		 * returns the last popup added to the app 
 		 */
-		public function get topPopup():TitleWindow {
+		public function get topPopup():ConfinedTitleWindow {
 			if (popups.length > 0) {
 				return popups[popups.length-1];
 			}
@@ -77,7 +77,7 @@ package com.kaltura.kmc.modules.content.model {
 		/**
 		 * returns the one before last popup added to the app 
 		 */
-		public function get prevPopup():TitleWindow {
+		public function get prevPopup():ConfinedTitleWindow {
 			if (popups.length > 1) {
 				return popups[popups.length-2];
 			}
@@ -263,7 +263,7 @@ package com.kaltura.kmc.modules.content.model {
 			fdp.filterModel = filterModel;
 			entryDetailsModel.setDataPack(fdp);
 			
-			popups = new Vector.<TitleWindow>();
+			popups = new Vector.<ConfinedTitleWindow>();
 			
 			playlistModel = new PlaylistModel();
 			moderationModel = new ModerationModel();
