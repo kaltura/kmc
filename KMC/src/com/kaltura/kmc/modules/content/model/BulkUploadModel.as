@@ -1,5 +1,6 @@
 package com.kaltura.kmc.modules.content.model
 {
+	import com.kaltura.vo.KalturaBulkUploadFilter;
 	import com.kaltura.vo.KalturaFilterPager;
 	
 	import mx.collections.ArrayCollection;
@@ -10,6 +11,15 @@ package com.kaltura.kmc.modules.content.model
 	 */
 	public class BulkUploadModel {
 		
+		/**
+		 * the last filter used in list action in bulk uploads log page 
+		 */		
+		public var lastFilterUsed:KalturaBulkUploadFilter;
+		
+		/**
+		 * the last pager used in list action in bulk uploads log page 
+		 */		
+		public var lastPagerUsed:KalturaFilterPager;
 		
 		/**
 		 * list of <code>KalturaBulkUpload</code>

@@ -14,8 +14,20 @@ package com.kaltura.kmc.modules.content.commands.bulk {
 		override public function execute(event:CairngormEvent):void {
 			_model.increaseLoadCounter();
 			
-			var f:KalturaBulkUploadFilter = event.data[0] as KalturaBulkUploadFilter;
-			var p:KalturaFilterPager = event.data[1] as KalturaFilterPager;
+			var f:KalturaBulkUploadFilter;
+			var p:KalturaFilterPager;
+			
+			if (event.data) {
+				// use given and save
+				_model.bulkUploadModel.lastFilterUsed = f = event.data[0] as KalturaBulkUploadFilter;
+				_model.bulkUploadModel.lastPagerUsed = p = event.data[1] as KalturaFilterPager;
+			}
+			else {
+				// use saved
+				f = _model.bulkUploadModel.lastFilterUsed;
+				p = _model.bulkUploadModel.lastPagerUsed;
+			}
+			
 			
 			var listBulks:BulkList = new BulkList(f, p);
 			listBulks.addEventListener(KalturaEvent.COMPLETE, result);
