@@ -30,6 +30,7 @@ package com.kaltura.kmc.modules.content.commands
 				case WindowsStates.REMOVE_CATEGORIES_WINDOW: 
 				case WindowsStates.SETTING_ACCESS_CONTROL_PROFILES_WINDOW:
 				case WindowsStates.SETTING_SCHEDULING_WINDOW:
+				case WindowsStates.CHANGE_ENTRY_OWNER_WINDOW:
 					if(_model.selectedEntries.length > 0)
 						_model.windowState =  newState;
 					else
